@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<!-- ======================================================================
+  Builds the project holding code in common between projects.
+
+  The default target is listTargets
+
+  The directory structure of the application is:
+
+    src                Java source code (and associated resource files)
+                       and junit test files.
+
+    lib                any 3rd party libraries needed by application
+
+    bin/classes        compiled code
+
+    src/main/resources resource files, including persisted for use in future runs
+
+    docs               Javadocs for developers
+
+    src/test           unit tests small enough to run with every build
+
+    bin      compiled classes, code coverage results, and static analysis results
+ ====================================================================== -->
+<project xmlns:jacoco="antlib:org.jacoco.ant" name="shared" default="listTargets" basedir=".">
+
+    <!-- ================= set env properties ================= -->
+    <property environment="env"/>
+
+    <!-- assignment name to be used in archive -->
+    <property name="app.name"            value="${ant.project.name}"/>
+
+    <!-- =========== the application file directories ========-->
+    <property name="src.dir"             value="${basedir}/src/main/java"/>
+    <property name="lib.dir"             value="${basedir}/lib"/>
+    <property name="classes.dir"         value="${basedir}/bin"/>
+    <property name="resources.dir"       value="${basedir}/src/main/resources"/>
+    <property name="src.out.dir"         value="${classes.dir}/classes"/>
+    <property name="doc.dir"             value="${basedir}/docs"/>
+    <property name="tests.dir"           value="${basedir}/src/test/java"/>
+    <property name="tests.out.dir"       value="${classes.dir}/test-classes"/>
+    <property name="instr.out.dir"       value="${classes.dir}/instr-classes" />
+    <property name="log.dir"             value="${basedir}/log"/>
+    <property name="logfile"             value="${log.dir}/build.log"/>
+
+    <!-- set compiler options -->
+    <!--<property name="compile.debug"   value="false"/>-->
+    <property name="compile.deprecation" value="true"/>
+    <property name="compile.optimize"    value="false"/>
+    <property name="compile.target"      value="1.6"/>
+
+    <!-- print usage: prints all targets -->
+    <target name="listTargets"
+        description="prints all targets in this any file">
+        <echo message="listTargets:                prints all targets in this ant file"/>
+        <echo message="prepare:                    prepare directories"/>
+        <echo message="clean:                      deletes old classes, logs, build, and javadocs"/>
+        <echo message="compile:                    compile source files"/>
+        <echo message="compileTests:               compile test files"/>
+        <echo message="runTests:                   run tests"/>
+        <echo message="runTest:                    run test with -Dtest=fqn of test"/>
+        <echo message="debugTests:                 run tests and use jdwp"/>
+        <echo message="debugTest:                  debug test with -Dtest= fqn of test and jdwp"/>
+        <echo message="javadoc:                    create javadocs"/>
+        <echo message="runCoverage                 create code coverage reports"/>
+        <echo message="package                     build jar with compiled classes"/>
+    </target>
+    
+    <property name="jacoco.exec.dir" location="bin/jacoco"/>
+
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${env.JACOCO_HOME}/lib/jacocoant.jar"/>
+    </taskdef>
+
+    <condition property="jar.mf" value="${package.mf}" else="${resources.dir}/shared.mf">
+        <isset property="package.mf" />
+    </condition>
+
+    <!-- set compile classpath  -->
+    <path id="compile.classpath">
+        <pathelement location="${src.out.dir}"/>
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- set test classpath  -->
+    <path id="test.classpath">
+        <pathelement location="${tests.dir}" />
+        <path refid="compile.classpath"/>
+    </path>
+
+    <target name="debug" description="sets compile.debug to true" >
+        <property name="compile.debug" value="true" />
+    </target>
+
+    <!-- =========== clean  ========== -->
+    <target name="clean"
+        description="Delete dirs: build, doc/api, and src tree classes">
+        <delete failonerror="false">
+            <fileset dir="${classes.dir}" />
+        </delete>
+        <delete failonerror="false">
+            <fileset dir="${log.dir}" includes="*" />
+        </delete>
+    </target>
+
+    <!-- prepare is called by compile -->
+    <target name="prepare" description="create directories">
+        <mkdir  dir="${classes.dir}"/>
+        <mkdir  dir="${src.out.dir}"/>
+        <mkdir  dir="${tests.out.dir}"/>
+        <mkdir  dir="${instr.out.dir}"/>
+        <mkdir  dir="${log.dir}"/>
+    </target>
+
+    <!-- compile sources -->
+    <target name="compile" depends="prepare" description="Compile Java classes">
+        <record name="${logfile}" append="yes" loglevel="info"/>
+
+        <!--
+        <property name="printclasspath" refid="compile.classpath"/>
+        <echo message="classpath=${printclasspath}" />
+        -->
+
+        <javac srcdir="${src.dir}"
+            destdir="${src.out.dir}"
+            source="${compile.target}"
+            debug="${compile.debug}"
+            deprecation="${compile.deprecation}"
+            includeAntRuntime="false"
+            optimize="${compile.optimize}">
+            <src path="${src.dir}"/>
+            <src path="${extra.src.dir}"/>
+            <classpath refid="compile.classpath"/>
+            <include name="**/*.java"/>
+            <exclude name="**/*Test*.java"/>
+        </javac>
+
+        <copy file="${resources.dir}/logging.properties" todir="${src.out.dir}" />
+
+    </target>
+
+    <!-- compile tests  -->
+    <target name="compileTests" depends="debug,compile" description="Compile Java tests" >
+        <record name="${logfile}" append="yes" loglevel="info"/>
+
+    	<javac srcdir="${tests.dir}"
+    	    destdir="${tests.out.dir}"
+    	    source="${compile.target}"
+            debug="true"
+            includes="**/*Test.java"
+            includeAntRuntime="false"
+    	    deprecation="${compile.deprecation}"
+    	    optimize="${compile.optimize}" >
+    	    <classpath refid="test.classpath"/>
+            <src path="${tests.dir}"/>
+            <src path="${src.dir}"/>
+            <compilerarg value="-Xlint"/>
+    	</javac>
+    </target>
+
+    <!-- javadoc -->
+    <target name="javadoc" depends="compile"
+        description="Create Javadoc API documentation">
+        <record name="${logfile}" append="yes" loglevel="info"/>
+        <delete dir="${doc.dir}/api"/>
+        <mkdir dir="${doc.dir}/api"/>
+        <javadoc
+            sourcepath="${src.dir}"
+            destdir="${doc.dir}/api"
+            package="true"
+            packagenames="algorithms.*,com.climbwithyourfeet.*" >
+            <classpath refid="compile.classpath"/>
+        </javadoc>
+    </target>
+
+    <!-- prepare,clean,debug,compile,JUnit,compileTests -->
+    <target name="runTests" if="junit.present" depends="clean,debug,compileTests,JUnit">
+        <record name="${logfile}" append="yes" loglevel="debug"/>
+        <echo message="running tests." />
+        <junit fork="yes" showoutput="false" filtertrace="off" printsummary="yes" haltonerror="true" haltonfailure="true">
+            
+            <assertions enablesystemassertions="true">
+                <enable/>
+            </assertions>
+            
+            <classpath>
+                <pathelement location="${tests.out.dir}"/>
+                <path refid="test.classpath"/>
+            </classpath>
+            <formatter type="plain" usefile="true"/>
+            <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
+            <jvmarg value="-XX:-UseSplitVerifier" />
+            <jvmarg value="-enableassertions" />
+            <batchtest fork="yes" todir="${tests.out.dir}">
+                <fileset dir="${tests.out.dir}">
+                    <include name="**/*Test*.class"/>
+                    <exclude name= "**/*$*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- prepare,clean,debug,compile,JUnit,compileTests -->
+    <target name="runTest" if="junit.present" depends="prepare,debug,compile,JUnit,compileTests">
+        <record name="${logfile}" append="yes" loglevel="debug"/>
+        <fail unless="test">
+            Requires -Dtest=class
+                Example: 
+                    -Dtest=algorithms.compression.huffman.HuffmanTest
+            Note that to set jvm properties, set the shell variable JAVA_OPTS.
+                Example:
+                    export JAVA_OPTS=-Xms1024m
+        </fail>
+        <copy file="${resources.dir}/logging.properties" todir="${src.out.dir}" />
+        <junit fork="yes" showoutput="false" filtertrace="off" printsummary="yes" haltonerror="true" haltonfailure="true">
+            <assertions enablesystemassertions="true">
+                <enable/>
+            </assertions>
+            <classpath>
+                <pathelement location="${tests.out.dir}"/>
+                <path refid="test.classpath"/>
+            </classpath>
+            <formatter type="plain" usefile="true"/>
+            <jvmarg value="-XX:-UseSplitVerifier" />
+            <jvmarg value="-enableassertions" />
+            <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
+            <test name="${test}" fork="yes" haltonfailure="yes">
+                <formatter type="plain" usefile="false"/>
+            </test>
+        </junit>
+    </target>
+
+    <target name="debugTests" if="junit.present" depends="clean,debug,compileTests,JUnit">
+        <record name="${logfile}" append="yes" loglevel="debug"/>
+        <echo message="connect to port 5005, running tests, output is in ${tests.out.dir}" />
+        <junit fork="yes" showoutput="false" filtertrace="off" printsummary="yes" haltonerror="true" haltonfailure="true">
+            <jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y"/>
+            <classpath>
+                <pathelement location="${tests.out.dir}"/>
+                <path refid="test.classpath"/>
+                <pathelement location="${src.out.dir}"/>
+            </classpath>
+            <formatter type="plain" usefile="true"/>
+            <jvmarg value="-XX:-UseSplitVerifier" />
+            <jvmarg value="-enableassertions" />
+            <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
+            <batchtest fork="yes" todir="${tests.out.dir}">
+                <fileset dir="${tests.out.dir}">
+                    <include name="**/*Test*.class"/>
+                	<exclude name= "**/*$*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="debugTest" if="junit.present" depends="clean,prepare,debug,compile,JUnit,compileTests">
+        <record name="${logfile}" append="yes" loglevel="info"/>
+        <fail unless="test">
+            Set class to test.  example: -Dtest=algorithms.compression.huffman.HuffmanTest
+        </fail>
+        <junit fork="yes" showoutput="true" filtertrace="off">
+            
+            <!--<jvmarg value="-ea"/>-->
+            <assertions enablesystemassertions="true">
+                <enable/>
+            </assertions>
+
+            <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y -XX:-UseSplitVerifier"/>
+ 
+            <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
+            
+            <classpath>
+                <pathelement location="${tests.out.dir}"/>
+                <path refid="test.classpath"/>
+            </classpath>
+            <test name="${test}" fork="yes" haltonfailure="yes">
+                <formatter type="plain" usefile="false"/>
+            </test>
+        </junit>
+    </target>
+
+    <!-- set junit.present property -->
+    <target name="JUnit">
+        <available property="junit.present" classname="junit.framework.TestCase" >
+            <classpath refid="test.classpath"/>
+        </available>
+    </target>
+
+    <target name="package" depends="compileTests">
+        <record name="${logfile}" append="yes" loglevel="debug"/>
+        <echo message="making jar file of class files, output is in ${classes.dir}/com.climbwithyourfeet.shared.jar" />
+        <tstamp>
+            <format property="TS" pattern="yyyy-MM-dd" locale="en,US"/>
+        </tstamp>
+        <jar destfile="${classes.dir}/com.climbwithyourfeet.shared_${TS}.jar" manifest="${jar.mf}">
+            <fileset dir="${src.out.dir}" includes="com/climbwithyourfeet/clustering/**"/>
+            <fileset dir="${basedir}" includes="LICENSE.txt"/>
+            <fileset dir="${basedir}" includes="README.txt"/>
+        </jar>
+        <mkdir dir="dist" />
+        <copy file="${classes.dir}/com.climbwithyourfeet.shared_${TS}.jar" 
+              tofile="dist/com.climbwithyourfeet.shared.jar" />
+    </target>
+    
+    <target name="coverage">
+        <record name="${logfile}" append="yes" loglevel="info"/>
+        <echo message="coverage"/>
+        <jacoco:coverage enabled="true" classdumpdir="bin/instr-classes"
+            destfile="${classes.dir}/merged.exec">
+            <junit fork="true" forkmode="once" printsummary="yes" haltonerror="true" haltonfailure="true">
+                <formatter type="plain" usefile="true"/>
+                <sysproperty key="java.util.logging.config.file"
+                    value="${src.out.dir}/logging.properties"/>
+                <batchtest todir="${tests.out.dir}">
+                    <fileset dir="${tests.out.dir}">
+                        <exclude name="**/*$*.class" />
+                        <include name="**/*Test.class" />
+                    </fileset>
+                </batchtest>
+                <classpath>
+                    <pathelement location="${tests.out.dir}"/>
+                    <path refid="compile.classpath"/>
+                </classpath>
+            </junit>
+        </jacoco:coverage>
+    </target>
+    
+    <target name="report">
+        <jacoco:report>
+            <executiondata>
+                <file file="${classes.dir}/merged.exec"/>
+            </executiondata>
+            <structure name="Jacoco Report">
+                <classfiles>
+                    <fileset dir="${src.out.dir}">
+                        <include name="**/*.class" />
+                        <exclude name="**/*$*.class" />
+                    </fileset>
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}"/>
+                </sourcefiles>
+            </structure>
+            <html destdir="${classes.dir}/jacoco"/>
+        </jacoco:report>
+        <echo message="wrote reports to ${classes.dir}/jacoco" />
+    </target>
+
+    <target name="runCoverage" depends="clean,debug,compile,compileTests,coverage,report"/>
+    
+</project>

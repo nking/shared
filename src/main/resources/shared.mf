@@ -1,0 +1,4 @@
+Implementation-Title: Shared ClimbWithYourFeet
+Implementation-Version: 1.1
+Implementation-Vendor: NicholeKing
+Implementation-URL: http://nking.github.io/shared/
