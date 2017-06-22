@@ -130,7 +130,6 @@
             includeAntRuntime="false"
             optimize="${compile.optimize}">
             <src path="${src.dir}"/>
-            <src path="${extra.src.dir}"/>
             <classpath refid="compile.classpath"/>
             <include name="**/*.java"/>
             <exclude name="**/*Test*.java"/>
