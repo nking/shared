@@ -293,7 +293,7 @@
             <format property="TS" pattern="yyyy-MM-dd" locale="en,US"/>
         </tstamp>
         <jar destfile="${classes.dir}/com.climbwithyourfeet.shared_${TS}.jar" manifest="${jar.mf}">
-            <fileset dir="${src.out.dir}" includes="com/climbwithyourfeet/clustering/**"/>
+            <fileset dir="${src.out.dir}" includes="*/**"/>
             <fileset dir="${basedir}" includes="LICENSE.txt"/>
             <fileset dir="${basedir}" includes="README.txt"/>
         </jar>
