@@ -1,9 +1,13 @@
 package algorithms.misc;
 
 import algorithms.CountingSort;
+import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
+import gnu.trove.set.TIntSet;
+import gnu.trove.iterator.TIntIterator;
 
 /**
     miscellaneous math methods. some could probably be improved.
@@ -473,4 +477,130 @@ public class MiscMath0 {
         
         return r2Offsets;
     }
+
+     /**
+     *
+     * @param a
+     * @return
+     */
+    public static int[] findMinMaxValues(int[][] a) {
+        
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        
+        for (int i = 0; i < a.length; ++i) {
+            for (int j = 0; j < a[i].length; ++j) {
+                int v = a[i][j];
+                if (v < min) {
+                    min = v;
+                }
+                if (v > max) {
+                    max = v;
+                }
+            }
+        }
+        
+        return new int[]{min, max};
+    }
+
+    /**
+     * find the minima and maxima of x and y and return them as
+     * int[]{xMin, xMax, yMin, yMax}
+     * @param points
+     * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
+     */
+    public static int[] findMinMaxXY(Collection<PairInt> points) {
+        
+        int xMin = Integer.MAX_VALUE;
+        int xMax = Integer.MIN_VALUE;
+        int yMin = Integer.MAX_VALUE;
+        int yMax = Integer.MIN_VALUE;
+        
+        for (PairInt p : points) {
+            int x = p.getX();
+            int y = p.getY();
+            if (x < xMin) {
+                xMin = x;
+            }
+            if (y < yMin) {
+                yMin = y;
+            }
+            if (x > xMax) {
+                xMax = x;
+            }
+            if (y > yMax) {
+                yMax = y;
+            }
+        }
+        return new int[]{xMin, xMax, yMin, yMax};
+    }
+    
+    /**
+     * find the minima and maxima of x and y and return them as
+     * int[]{xMin, xMax, yMin, yMax}
+     * @param points
+     * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
+     */
+    public static int[] findMinMaxXY(TIntSet pixelIdxs, int imgWidth) {
+        
+        int xMin = Integer.MAX_VALUE;
+        int xMax = Integer.MIN_VALUE;
+        int yMin = Integer.MAX_VALUE;
+        int yMax = Integer.MIN_VALUE;
+        
+        TIntIterator iter = pixelIdxs.iterator();
+        
+        while (iter.hasNext()) {
+            
+            int pixIdx = iter.next();
+            int y = pixIdx/imgWidth;
+            int x = pixIdx - (y * imgWidth);
+            if (x < xMin) {
+                xMin = x;
+            }
+            if (y < yMin) {
+                yMin = y;
+            }
+            if (x > xMax) {
+                xMax = x;
+            }
+            if (y > yMax) {
+                yMax = y;
+            }
+        }
+        return new int[]{xMin, xMax, yMin, yMax};
+    }
+
+    /**
+     * find the minima and maxima of x and y and return them as
+     * int[]{xMin, xMax, yMin, yMax}
+     * @param points
+     * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
+     */
+    public static int[] findMinMaxXY(PairIntArray points) {
+        
+        int xMin = Integer.MAX_VALUE;
+        int xMax = Integer.MIN_VALUE;
+        int yMin = Integer.MAX_VALUE;
+        int yMax = Integer.MIN_VALUE;
+        
+        for (int i = 0; i < points.getN(); ++i) {
+            int x = points.getX(i);
+            int y = points.getY(i);
+            if (x < xMin) {
+                xMin = x;
+            }
+            if (y < yMin) {
+                yMin = y;
+            }
+            if (x > xMax) {
+                xMax = x;
+            }
+            if (y > yMax) {
+                yMax = y;
+            }
+        }
+        return new int[]{xMin, xMax, yMin, yMax};
+    }
+    
 }
