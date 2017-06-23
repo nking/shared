@@ -2,4 +2,4 @@ Implementation-Title: Shared ClimbWithYourFeet
 Implementation-Version: 1.1
 Implementation-Vendor: NicholeKing
 Implementation-URL: http://github.com/nking/shared
-Class-Path: lib/trove4j-3.0.3.jar
+Class-Path: trove4j-3.0.3.jar
