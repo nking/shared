@@ -38,7 +38,10 @@ To run a specific test:
 
 To generate coverage reports:
   ant runCoverage
-
+  
+------------
+Dependencies
+------------
 If you build the jar file to use as an API
 NOTE that it depends upon lib/trove4j-3.0.3.jar
 
