@@ -2,7 +2,9 @@ package algorithms.util;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.iterator.TIntIterator;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -28,6 +30,18 @@ public class PixelHelper {
         TIntSet set = new TIntHashSet();
         for (PairInt p : points) {
             set.add(toPixelIndex(p, width));
+        }
+        return set;
+    }
+
+    public Set convert(TIntSet pixIdxs, int width) {
+        HashSet set = new HashSet();
+        TIntIterator iter = pixIdxs.iterator();
+        int[] xy = new int[2];
+        while (iter.hasNext()) {
+            int pixIdx = iter.next();
+            toPixelCoords(pixIdx, width, xy);
+            set.add(new PairInt(xy[0], xy[1]));
         }
         return set;
     }
