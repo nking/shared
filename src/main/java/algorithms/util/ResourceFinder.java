@@ -80,22 +80,14 @@ public class ResourceFinder {
 
         File f = new File(filePath);
         if (!f.exists()) {
-            filePath = cwd + sep + ".." + sep + dirName;
-            f = new File(filePath);
+            ClassLoader cls = ResourceFinder.class.getClassLoader();
+            URL url = cls.getResource(dirName);
+            if (url == null) {
+                throw new IOException("could not find directory named " + dirName);
+            }
+            f = new File(url.getPath());
             if (!f.exists()) {
-                filePath = cwd + sep + ".." + sep + ".." + sep + dirName;
-                f = new File(filePath);
-                if (!f.exists()) {
-                    ClassLoader cls = ResourceFinder.class.getClassLoader();
-                    URL url = cls.getResource(dirName);
-                    if (url == null) {
-                        throw new IOException("could not find directory named " + dirName);
-                    }
-                    f = new File(url.getPath());
-                    if (!f.exists()) {
-                        throw new IOException("could not find directory named " + dirName);
-                    }
-                }
+                throw new IOException("could not find directory named " + dirName);
             }
         }
         return filePath;
@@ -115,22 +107,14 @@ public class ResourceFinder {
 
         File f = new File(filePath);
         if (!f.exists()) {
-            filePath = cwd + sep + ".." + sep + dirName;
-            f = new File(filePath);
+            ClassLoader cls = ResourceFinder.class.getClassLoader();
+            URL url = cls.getResource(dirName);
+            if (url == null) {
+                throw new IOException("could not find directory named " + dirName);
+            }
+            f = new File(url.getPath());
             if (!f.exists()) {
-                filePath = cwd + sep + ".." + sep + ".." + sep + dirName;
-                f = new File(filePath);
-                if (!f.exists()) {
-                    ClassLoader cls = ResourceFinder.class.getClassLoader();
-                    URL url = cls.getResource(dirName);
-                    if (url == null) {
-                        throw new IOException("could not find directory named " + dirName);
-                    }
-                    f = new File(url.getPath());
-                    if (!f.exists()) {
-                        throw new IOException("could not find directory named " + dirName);
-                    }
-                }
+                throw new IOException("could not find directory named " + dirName);
             }
         }
         return filePath;
@@ -152,7 +136,7 @@ public class ResourceFinder {
         } catch (IOException e) {
 
             String dirPath = 
-                findDirectory(new String[]{"src", "main"}, "resources");
+                findDirectory(new String[]{"src", "test"}, "resources");
             
             String filePath = dirPath + sep + fileName;
 
