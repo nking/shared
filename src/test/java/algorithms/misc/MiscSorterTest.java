@@ -1,5 +1,6 @@
-package algorithms.util;
+package algorithms.misc;
 
+import java.util.Arrays;
 import junit.framework.TestCase;
 
 /**
@@ -28,4 +29,19 @@ public class MiscSorterTest extends TestCase {
         assertTrue(b[3] == 1); 
     }
  
+    public void testSortByDecr() throws Exception {
+        
+        int[] a = new int[]{1, 2, 3, 4, 5, 6};
+    	int[] b = new int[]{0, 1, 2, 3, 4, 5};
+
+    	MiscSorter.sortByDecr(a, b);
+    	assertTrue(a.length == b.length);
+
+    	int[] expectedA = new int[]{6, 5, 4, 3, 2, 1};
+        int[] expectedB = new int[]{5, 4, 3, 2, 1, 0};
+        
+        assertTrue(Arrays.equals(expectedA, a));
+        assertTrue(Arrays.equals(expectedB, b));
+    }
+    
 }

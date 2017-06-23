@@ -38,6 +38,11 @@ public class PairFloatArray {
         y = new float[10];
     }
     
+    public PairFloatArray(float[] x, float[] y) {
+        this.x = x;
+        this.y = y;
+    }
+    
     public int getN() {
         return n;
     }
