@@ -44,4 +44,117 @@ public class MiscSorterTest extends TestCase {
         assertTrue(Arrays.equals(expectedB, b));
     }
     
+    public void testSortBy1stArgThen2nd_int(){
+
+        /*   10
+         *
+         *                *p12
+         *    9
+         *
+         *
+         *    8
+         *
+         *
+         *    7
+         *
+         *
+         *    6                             *p10 *p11
+         *
+         *                   *p9       *p8
+         *    5         *p7
+         *
+         *                        *p6
+         *    4                                            *p5        *p4
+         *
+         *     p3*
+         *    3                                                 *p2
+         *
+         *
+         *    2                                                   *p1
+         *
+         *
+         *    1            *p0
+         *
+         *
+         *    0    1    2    3    4    5    6    7    8    9   10   11   12
+         */
+        int[] x = new int[13];
+        int[] y = new int[13];
+        x[0] =  25;
+        y[0] =  10;
+        x[1] = 105;
+        y[1] =  20;
+        x[2] = 100;
+        y[2] =  30;
+        x[3] =  5;
+        y[3] =  32;
+        x[5] =  90;
+        y[5] =  40;
+
+        x[4] = 112;
+        y[4] =  40;
+        x[6] =  40;
+        y[6] =  42;
+        x[7] =  20;
+        y[7] =  50;
+        x[9] =  30;
+        y[9] =  53;
+        x[8] =  50;
+        y[8] =  53;
+        
+        x[10] =  60;
+        y[10] =  60;
+        x[11] =  70;
+        y[11] =  60;
+        x[12] =  23;
+        y[12] =  93;
+
+
+        int[] ex = Arrays.copyOf(x, x.length);
+        int[] ey = Arrays.copyOf(y, y.length);
+        ex[4] =  x[5];
+        ey[4] =  y[5];
+        ex[5] =  x[4];
+        ey[5] =  y[4];
+
+        ex[8] =  x[9];
+        ey[8] =  y[9];
+        ex[9] =  x[8];
+        ey[9] =  y[8];
+        
+        MiscSorter.sortBy1stArgThen2nd(y, x);
+
+        assertTrue(x.length == ex.length);
+
+        for (int i=0; i < ex.length; i++) {
+            assertTrue( Math.abs(ex[i] - x[i]) < 0.01);
+            assertTrue( Math.abs(ey[i] - y[i]) < 0.01);
+        }
+
+        boolean caughtException = true;
+        try {
+            int[] a0 = null;
+            int[] a1 = null;
+            MiscSorter.sortBy1stArgThen2nd(a0, a1);
+        } catch (IllegalArgumentException t) {
+            caughtException = true;
+        }
+        assertTrue(caughtException);
+        caughtException = true;
+        try {
+            int[] a1 = null;
+            MiscSorter.sortBy1stArgThen2nd(new int[]{1, 2}, a1);
+        } catch (IllegalArgumentException t) {
+            caughtException = true;
+        }
+        assertTrue(caughtException);
+
+        caughtException = true;
+        try {
+            MiscSorter.sortBy1stArgThen2nd(new int[]{1, 2}, new int[]{1, 2, 3});
+        } catch (IllegalArgumentException t) {
+            caughtException = true;
+        }
+        assertTrue(caughtException);
+    }
 }
