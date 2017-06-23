@@ -2,7 +2,7 @@ code containing algorithms used by more than one project,
 specifically by 
 http://nking.github.io/two-point-correlation/
 and
-ttp://nking.github.io/curvature-scale-space-corners-and-transformations
+http://nking.github.io/curvature-scale-space-corners-and-transformations
 ================================================================
 
 To build and run the project, you need to have installed java,
