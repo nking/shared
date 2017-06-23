@@ -366,7 +366,7 @@ public class PairIntArray {
      * by y ascending.
      */
     public void sortByXAsc() {
-        MiscSorter.sortBy1stArg(x, y, 0, n - 1);
+        MiscSorter.sortBy1stArgThen2nd(x, y, 0, n - 1);
     }
     
     /**
