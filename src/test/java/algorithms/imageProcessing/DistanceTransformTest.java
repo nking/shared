@@ -5,7 +5,10 @@ import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import algorithms.util.Errors;
 import algorithms.util.PairInt;
+import algorithms.util.PixelHelper;
 import algorithms.util.ResourceFinder;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.HashSet;
 import java.util.Set;
 import junit.framework.TestCase;
@@ -24,7 +27,6 @@ public class DistanceTransformTest extends TestCase {
         int w = 9;
         int h = 9;
         
-        Set<PairInt> pointsM = new HashSet<PairInt>();
         double[][] data = new double[w][h];
         for (int x = 0; x < w; ++x) {
             data[x] = new double[h];
@@ -44,6 +46,7 @@ public class DistanceTransformTest extends TestCase {
         8  -  -  -  -  -  -  1  -  -
            0  1  2  3  4  5  6  7  8  9
         */
+        Set<PairInt> pointsM = new HashSet<PairInt>();
         for (int x = 3; x <= 5; ++x) {
             for (int y = 2; y <= 6; ++y) {
                 pointsM.add(new PairInt(x, y));
@@ -83,6 +86,11 @@ public class DistanceTransformTest extends TestCase {
         
         int[][] dtInvM = dtr.applyMeijsterEtAl(pointsInvM, w, h);
         
+        assertFabbri(dtInvM, w, h);
+    }
+    
+    private void assertFabbri(int[][] dtInvM, int w, int h) {
+        
         /*StringBuilder sb2 = new StringBuilder();
         for (int j = 0; j < h; ++j) {
             sb2.append("row ").append(j).append(": ");
@@ -110,6 +118,77 @@ public class DistanceTransformTest extends TestCase {
                 assertTrue(a == b);
             }
         }
+    }
+    
+    public void testApplyTransforms4_2() throws Exception {
+
+        int w = 9;
+        int h = 9;
+        
+        double[][] data = new double[w][h];
+        for (int x = 0; x < w; ++x) {
+            data[x] = new double[h];
+        }
+        
+        /*
+        making the pattern from Fig 1.a of Fabbri et al.
+           0  1  2  3  4  5  6  7  8 
+        0  -  -  -  -  -  -  -  -  - 
+        1  -  -  -  -  -  -  -  -  - 
+        2  -  -  -  1  1  1  -  -  -
+        3  -  -  1  1  1  1  1  -  -
+        4  -  -  1  1  1  1  1  -  -
+        5  -  -  1  1  1  1  1  -  -
+        6  -  -  -  1  1  1  -  -  -
+        7  -  -  -  -  -  -  -  1  -
+        8  -  -  -  -  -  -  1  -  -
+           0  1  2  3  4  5  6  7  8  9
+        */
+        
+        PixelHelper ph = new PixelHelper();
+        
+        TIntSet pointsM = new TIntHashSet();
+        
+        for (int x = 3; x <= 5; ++x) {
+            for (int y = 2; y <= 6; ++y) {
+                pointsM.add(ph.toPixelIndex(x, y, w));
+                data[x][y] = 1;
+            }
+        }
+        for (int x = 2; x <= 2; ++x) {
+            for (int y = 3; y <= 5; ++y) {
+                pointsM.add(ph.toPixelIndex(x, y, w));
+                data[x][y] = 1;
+            }
+        }
+        for (int x = 6; x <= 6; ++x) {
+            for (int y = 3; y <= 5; ++y) {
+                pointsM.add(ph.toPixelIndex(x, y, w));
+                data[x][y] = 1;
+            }
+        }
+        pointsM.add(ph.toPixelIndex(6, 8, w));
+        data[6][8] = 1;
+        pointsM.add(ph.toPixelIndex(7, 7, w));
+        data[7][7] = 1;
+            
+        DistanceTransform dtr = new DistanceTransform();
+        
+        // ----- inverse binary of that  ----------
+        TIntSet pointsInvM = new TIntHashSet();
+        
+        for (int x = 0; x < w; ++x) {
+            for (int y = 0; y < h; ++y) {
+                int pixIdx = ph.toPixelIndex(x, y, w);
+                if (!pointsM.contains(pixIdx)) {
+                    pointsInvM.add(pixIdx);
+                }
+            }
+        }
+        
+        int[][] dtInvM = dtr.applyMeijsterEtAl(pointsInvM, w, h);
+        
+        assertFabbri(dtInvM, w, h);
     }
     
     public void testApplyTransforms5() throws Exception {

@@ -1,6 +1,8 @@
 package algorithms.imageProcessing;
 
 import algorithms.util.PairInt;
+import algorithms.util.PixelHelper;
+import gnu.trove.set.TIntSet;
 import java.util.Set;
 
 /**
@@ -137,6 +139,60 @@ public class DistanceTransform {
         
         return dt;
     }
+    
+    /**
+     * The square of Euclidean distances are computed for every zero pixel 
+     * relative to the nearest non-zero pixels for two-dimensional input.
+     * <pre>
+     * For example
+     * original data:
+        row 0:  1 1 1 1 1 1 1 1 1 
+        row 1:  1 1 1 1 1 1 1 1 1 
+        row 2:  1 1 1 0 0 0 1 1 1 
+        row 3:  1 1 0 0 0 0 0 1 1 
+        row 4:  1 1 0 0 0 0 0 1 1 
+        row 5:  1 1 0 0 0 0 0 1 1 
+        row 6:  1 1 1 0 0 0 1 1 1 
+        row 7:  1 1 1 1 1 1 1 0 1 
+        row 8:  1 1 1 1 1 1 0 1 1 
+
+        distance transform:
+        row 0:  0 0 0 0 0 0 0 0 0 
+        row 1:  0 0 0 0 0 0 0 0 0 
+        row 2:  0 0 0 1 1 1 0 0 0 
+        row 3:  0 0 1 2 4 2 1 0 0 
+        row 4:  0 0 1 4 8 4 1 0 0 
+        row 5:  0 0 1 2 4 2 1 0 0 
+        row 6:  0 0 0 1 1 1 0 0 0 
+        row 7:  0 0 0 0 0 0 0 1 0 
+        row 8:  0 0 0 0 0 0 1 0 0
+     * </pre>
+     * 
+     * an O(N) runtime complexity algorithm for computing the distance transform
+     * by Meijster, Roerdink, and Hesselink 2000, implemented from their pseudocode.
+     * "Mathematical Morphology and its Applications to Image and Signal Processing",
+       in Volume 18 of the series Computational Imaging and Vision, 200, pp 331-340
+       * ISBN 978-0-306-47025-7
+     *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
+     * 
+     * @param points pixel indexes
+     * @param width
+     * @param height
+     * @return 
+     */
+    public int[][] applyMeijsterEtAl(TIntSet points, final int width, final int height) {
+        
+        int[][] g = new int[width][height];
+        for (int i = 0; i < width; ++i) {
+            g[i] = new int[height];
+        }
+        
+        applyPhase1(points, g, width, height);
+        
+        int[][] dt = applyPhase2(g, width, height);
+        
+        return dt;
+    }
 
     private void applyPhase1(int[][] input, int[][] g, final int width, 
         final int height) {
@@ -181,6 +237,42 @@ public class DistanceTransform {
         
             for (int y = 1; y < height; ++y) {
                 if (points.contains(new PairInt(x, y))) {
+                    g[x][y] = 0;
+                } else {
+                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;
+                }
+            }
+            
+            // scan 2
+            for (int y = height - 2; y > -1; --y) {
+                if (g[x][y + 1] < g[x][y]) {
+                    g[x][y] = g[x][y + 1] + 1;
+                }
+            }
+        }
+    }
+    
+    private void applyPhase1(TIntSet points, int[][] g, final int width, 
+        final int height) {
+        
+        PixelHelper ph = new PixelHelper();
+        
+        int pixIdx0, pixIdx1;
+        
+        for (int x = 0; x < width; ++x) {
+            
+            pixIdx0 = ph.toPixelIndex(x, 0, width);
+            
+            // scan 1
+            if (points.contains(pixIdx0)) {
+                g[x][0] = 0;
+            } else {
+                g[x][0] = inf;
+            }
+        
+            for (int y = 1; y < height; ++y) {
+                pixIdx1 = ph.toPixelIndex(x, y, width);
+                if (points.contains(pixIdx1)) {
                     g[x][y] = 0;
                 } else {
                     g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;
