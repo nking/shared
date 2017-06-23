@@ -356,7 +356,8 @@ public class PolygonAndPointPlotter {
     }
 
     protected StringBuffer getTemplateHtmlPlot(String fileName) 
-        throws FileNotFoundException, IOException {
+        throws FileNotFoundException, IOException 
+    {
             
         try {
             
@@ -389,18 +390,28 @@ public class PolygonAndPointPlotter {
             String jarFilePath = "com.climbwithyourfeet.shared.jar";
             jarFilePath = cwd + sep + "lib" + sep + jarFilePath; 
           
-            InputStream inStream = ResourceFinder.findJarEntry(jarFilePath, fileName);
+            InputStream inStream = null;
+            ByteArrayOutputStream out = null;
             
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            int c;
-            while ((c = inStream.read()) != -1) {
-                out.write(c);
-            }
-            inStream.close();
-            StringBuffer contents = new StringBuffer(out.toString());
-            out.close();
-            
-            return contents;
+            try {
+                inStream = ResourceFinder.findJarEntry(jarFilePath, fileName);
+                out = new ByteArrayOutputStream();
+                int c;
+                while ((c = inStream.read()) != -1) {
+                    out.write(c);
+                }
+                StringBuffer contents = new StringBuffer(out.toString());
+
+                return contents;
+                
+            } finally {
+                if (inStream != null) {
+                    inStream.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+            }            
         }
 
         
