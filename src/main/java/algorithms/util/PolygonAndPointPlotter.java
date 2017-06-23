@@ -2,10 +2,15 @@ package algorithms.util;
 
 import algorithms.misc.MiscMath0;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.JarEntry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -350,30 +355,55 @@ public class PolygonAndPointPlotter {
         return getTemplateHtmlPlot("plot_points_and_polygon.html");
     }
 
-    protected StringBuffer getTemplateHtmlPlot(String fileName) throws FileNotFoundException, IOException {
-
-        String path = ResourceFinder.findFileInResources(fileName);
-
-        StringBuffer sb = new StringBuffer();
-
-        BufferedReader in = null;
-
+    protected StringBuffer getTemplateHtmlPlot(String fileName) 
+        throws FileNotFoundException, IOException {
+            
         try {
-            in = new BufferedReader(new FileReader(new File(path)));
-
-            String line = in.readLine();
-
-            while (line != null) {
-                sb.append(line).append("\n");
-                line = in.readLine();
+            
+            String path = ResourceFinder.findFileInResources(fileName);
+        
+            StringBuffer sb = new StringBuffer();
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new FileReader(new File(path)));
+                String line = in.readLine();
+                while (line != null) {
+                    sb.append(line).append("\n");
+                    line = in.readLine();
+                }
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
             }
-        } finally {
-            if (in != null) {
-                in.close();
+            return sb;
+            
+        } catch (IOException ex) {
+            
+            // this class and resources might be in a jar file, so look
+            // for that
+            
+            String sep = System.getProperty("file.separator");
+            String cwd = System.getProperty("user.dir");
+                        
+            String jarFilePath = "com.climbwithyourfeet.shared.jar";
+            jarFilePath = cwd + sep + "lib" + sep + jarFilePath; 
+          
+            InputStream inStream = ResourceFinder.findJarEntry(jarFilePath, fileName);
+            
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            int c;
+            while ((c = inStream.read()) != -1) {
+                out.write(c);
             }
+            inStream.close();
+            StringBuffer contents = new StringBuffer(out.toString());
+            out.close();
+            
+            return contents;
         }
 
-        return sb;
+        
     }
 
     public String writeFile() throws IOException {

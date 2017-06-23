@@ -296,6 +296,8 @@
             <fileset dir="${src.out.dir}" includes="*/**"/>
             <fileset dir="${basedir}" includes="LICENSE.txt"/>
             <fileset dir="${basedir}" includes="README.txt"/>
+            <fileset dir="${resources.dir}" 
+                 includes="plot_points_and_polygon.html"/>
         </jar>
         <mkdir dir="dist" />
         <copy file="${classes.dir}/com.climbwithyourfeet.shared_${TS}.jar" 

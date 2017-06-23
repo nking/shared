@@ -4,7 +4,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URL;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -28,6 +33,51 @@ public class ResourceFinder {
 
     protected final static String sep = System.getProperty("file.separator");
 
+    /**
+     * find the jar file then the entry for the filePath within it.
+     * 
+     * NOTE: to read the file into a string, can use:
+     * <pre>
+            inStream = findJarEntry(...);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            int c;
+            while ((c = inStream.read()) != -1) {
+                out.write(c);
+            }
+            inStream.close();
+            String contents = out.toString();
+            out.close();
+     * </pre>
+     * 
+     * @param jarPath
+     * @param filePath
+     * @return
+     * @throws IOException 
+     */
+    public static InputStream findJarEntry(String jarPath, String filePath) throws IOException {
+        
+        //String cwd = System.getProperty("user.dir");
+        //String jarFileName = "trove4j-3.0.3.jar";
+        //jarFileName = cwd + sep + "lib" + sep + jarFileName; 
+        
+        File f = new File(jarPath);
+        if (!f.exists()) {
+            throw new IOException("could not find jar at " + jarPath);
+        }
+        
+        JarFile jarFile = new JarFile(jarPath);
+        
+        /*for (Enumeration<JarEntry> em = jarFile.entries(); 
+            em.hasMoreElements();) {
+            String s= em.nextElement().toString();
+            System.out.println("FILE=" + s);
+        }*/
+        
+        JarEntry je = jarFile.getJarEntry(filePath);
+
+        return jarFile.getInputStream(je);
+    }
+    
     public static String findFileInResources(String fileName) throws IOException {
 
         String dirPath = findResourcesDirectory();
