@@ -34,8 +34,8 @@ public class PixelHelper {
         return set;
     }
 
-    public Set convert(TIntSet pixIdxs, int width) {
-        HashSet set = new HashSet();
+    public Set<PairInt> convert(TIntSet pixIdxs, int width) {
+        HashSet<PairInt> set = new HashSet<PairInt>();
         TIntIterator iter = pixIdxs.iterator();
         int[] xy = new int[2];
         while (iter.hasNext()) {
