@@ -66,34 +66,8 @@ public class ATrousWaveletTransform1DTest extends TestCase {
     public void testB3SplineScalingFunction() throws IOException {
     
         ATrousWaveletTransform1D wave = new ATrousWaveletTransform1D();
-        float fwhm;
-        
-        float sigma = 1.f;
-        
-        float[] a = createGaussian(sigma, 0);
-        
-        /*
-        using a middle line bias of 5,
-           will subtract the gaussian from 5,
-           then next segment added to 5,
-           then next segment subtracted from 5
-        */
-        int n = a.length;
-        float bias = 5.f;
-        
-        float[] input = new float[n*3];
-        for (int i = 0; i < n; ++i) {
-            input[i] = bias + 4.f*a[i];
-        }
-        int idx = n;
-        for (int i = 0; i < n; ++i) {
-            input[idx] = bias - 4.f*a[i];
-            idx++;
-        }
-        for (int i = 0; i < n; ++i) {
-            input[idx] = bias + 4.f*a[i];
-            idx++;
-        }
+               
+        float[] input = createCurve1();
         
         List<OneDFloatArray> outputTransformed = new 
             ArrayList<OneDFloatArray>();
@@ -131,9 +105,79 @@ public class ATrousWaveletTransform1DTest extends TestCase {
         assertEquals(min0, min1);
     }
 
-    public void testReconstruct() {
+    public void testReconstruct() throws IOException {
+        
         ATrousWaveletTransform1D wave = new ATrousWaveletTransform1D();
         
+        float[] input = createCurve1();
+        
+        List<OneDFloatArray> outputTransformed = new 
+            ArrayList<OneDFloatArray>();
+        List<OneDFloatArray> outputCoeff = new 
+            ArrayList<OneDFloatArray>();
+        wave.calculateWithB3SplineScalingFunction(input, outputTransformed, 
+            outputCoeff);
+        
+        float[] r = wave.reconstruct(
+            outputTransformed.get(outputTransformed.size() - 1).a, 
+            outputCoeff);
+    
+        float[] x = new float[input.length];
+        for (int i = 0; i < x.length; ++i) {
+            x[i] = i;
+        }
+        
+        /*
+        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+        plotter.addPlot(0.f, input.length, 0.f, 10.f, 
+            x, input, x, input, 
+            "input");
+        plotter.addPlot(0.f, input.length, 0.f, 10.f, 
+            x, 
+            outputTransformed.get(outputTransformed.size() - 1).a, 
+            x, 
+            outputTransformed.get(outputTransformed.size() - 1).a, 
+            "transformed");
+        plotter.addPlot(0.f, input.length, 0.f, 10.f, 
+            x, r, 
+            x, r, 
+            "reconstructed");
+        
+        System.out.println(plotter.writeFile2());
+        */
+            
+        for (int i = 0; i < input.length; ++i) {
+            float v0 = input[i];
+            float v1 = r[i];
+            float diff = Math.abs(v0 - v1);
+            //System.out.println("diff=" + diff);
+            assertEquals(0.f, diff);
+        }
+        
+    }
+    
+    private float[] createCurve1() {
+        float sigma = 1.f;
+        
+        float[] a = createGaussian(sigma, 0);
+       
+        int n = a.length;
+        float bias = 5.f;
+        
+        float[] input = new float[n*3];
+        for (int i = 0; i < n; ++i) {
+            input[i] = bias + 4.f*a[i];
+        }
+        int idx = n;
+        for (int i = 0; i < n; ++i) {
+            input[idx] = bias - 4.f*a[i];
+            idx++;
+        }
+        for (int i = 0; i < n; ++i) {
+            input[idx] = bias + 4.f*a[i];
+            idx++;
+        }
+        return input;
     }
     
     /*
@@ -224,8 +268,8 @@ public class ATrousWaveletTransform1DTest extends TestCase {
             }
         }
         
-        System.out.println("max=" + xMax + "\n" +
-            " " + xHalfMax0Idx + " : " + xMaxIdx + " : " + xHalfMax1Idx);
+        //System.out.println("max=" + xMax + "\n" +
+        //   " " + xHalfMax0Idx + " : " + xMaxIdx + " : " + xHalfMax1Idx);
         
         if ((xHalfMax1Idx == -1) || (xHalfMax0Idx == -1)) {
             return -1;
