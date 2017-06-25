@@ -112,6 +112,24 @@ public class PolygonAndPointPlotter {
             xPolygon, yPolygon, plotLabel);
     }
 
+    public void addPlot(float[] xPoints, int[] yPoints, float[] xPolygon, 
+        int[] yPolygon, String plotLabel) {
+        
+        int n0 = (xPoints != null) ? xPoints.length : 0;
+        int n1 = (xPolygon != null) ? xPolygon.length : 0;
+      
+    	float[] yy = new float[n0];
+        for (int i = 0; i < n0; i++) {
+    		yy[i] = (float)yPoints[i];
+    	}
+        
+    	float[] yp = new float[n1];
+    	for (int i = 0; i < n1; i++) {
+    		yp[i] = (float)yPolygon[i];
+    	}
+        
+    	addPlot(xPoints, yy, null, null, xPolygon, yp,  plotLabel);
+    }
     public void addPlot(int[] xPoints, float[] yPoints, int[] xPolygon, 
         float[] yPolygon, String plotLabel) {
         
