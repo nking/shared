@@ -79,6 +79,27 @@ public class PolygonAndPointPlotter {
     }
 
     public void addPlot(float minX, float maxX, float minY, float maxY,
+        float[] xPoints, int[] yPoints, float[] xPolygon, int[] yPolygon, 
+        String plotLabel) {
+
+        int n0 = (xPoints != null) ? xPoints.length : 0;
+        int n1 = (xPolygon != null) ? xPolygon.length : 0;
+        
+    	float[] y0 = new float[n0];
+    	float[] y1 = new float[n1];
+        
+        for (int i = 0; i < n0; i++) {
+            y0[i] = yPoints[i];
+        }
+        
+        for (int i = 0; i < n1; i++) {
+            y1[i] = yPolygon[i];
+        }
+        
+        addPlot(minX, maxX, minY, maxY, xPoints, y0, null, null,
+            xPolygon, y1, plotLabel);
+    }
+    public void addPlot(float minX, float maxX, float minY, float maxY,
         int[] xPoints, int[] yPoints, int[] xPolygon, int[] yPolygon, 
         String plotLabel) {
 
