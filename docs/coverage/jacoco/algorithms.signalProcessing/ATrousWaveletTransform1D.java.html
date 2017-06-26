@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ATrousWaveletTransform1D.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.signalProcessing</a> &gt; <span class="el_source">ATrousWaveletTransform1D.java</span></div><h1>ATrousWaveletTransform1D.java</h1><pre class="source lang-java linenums">package algorithms.signalProcessing;
+
+import algorithms.util.OneDFloatArray;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="pc bpc" id="L11" title="1 of 2 branches missed.">public class ATrousWaveletTransform1D {</span>
+   
+    /**
+     * The a trous algorithm is a fast implementation of a wavelet transform 
+     * with no downsampling.   It is non-orthogonal, semi-linear runtime
+     * complexity, is invariant under translation, and the transform is 
+     * isotropic.
+     * Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
+       The scaling function used is the lower resolution choice, the triangle
+       * function.
+       * &lt;pre&gt;
+       * The method uses recursive convolution operations, including previous
+       * result to make next.
+       * &lt;/pre&gt;
+     * @param input
+     * @param outputTransformed
+     * @param outputCoeff 
+     */
+    public void calculateWithTriangleScalingFunction(float[] input,
+        List&lt;OneDFloatArray&gt; outputTransformed, List&lt;OneDFloatArray&gt; outputCoeff) {
+        
+<span class="fc" id="L32">        int imgDimen = input.length;</span>
+
+<span class="fc" id="L34">        int nr = (int)(Math.log(imgDimen)/Math.log(2));</span>
+
+<span class="fc" id="L36">        TriangleFunction1D scalingFunction = new TriangleFunction1D();</span>
+        
+<span class="fc" id="L38">        OneDFloatArray cp = new OneDFloatArray(Arrays.copyOf(input, input.length));</span>
+<span class="fc" id="L39">        outputTransformed.add(cp);</span>
+        
+<span class="fc" id="L41">        OneDFloatArray cf = new OneDFloatArray(new float[input.length]);</span>
+<span class="fc" id="L42">        outputCoeff.add(cf);</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (int j = 0; j &lt; nr; ++j) {</span>
+            
+<span class="fc" id="L46">            OneDFloatArray cJ = outputTransformed.get(j);</span>
+ 
+<span class="fc" id="L48">            OneDFloatArray cJPlus1 = new OneDFloatArray(</span>
+<span class="fc" id="L49">                scalingFunction.calculateNextLevel(cJ.a, j));</span>
+           
+<span class="fc" id="L51">            outputTransformed.add(cJPlus1);</span>
+            
+            // c_(j,k) − c_(j+1,k)
+<span class="fc" id="L54">            float[] s = Arrays.copyOf(cJ.a, cJ.a.length);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            for (int jj = 0; jj &lt; s.length; ++jj) {</span>
+<span class="fc" id="L56">                s[jj] -= cJPlus1.a[jj];</span>
+            }
+<span class="fc" id="L58">            OneDFloatArray wJPlus1 = new OneDFloatArray(s);</span>
+          
+<span class="fc" id="L60">            outputCoeff.add(wJPlus1);</span>
+        }
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * The a trous algorithm is a fast implementation of a wavelet transform 
+     * with no downsampling.   It is non-orthogonal, has semi-linear runtime
+     * complexity, is invariant under translation, and the transform is 
+     * isotropic.
+     * Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
+     * The scaling function used is the higher resolution choice, the 3rd order 
+     * B Spline function.
+     * &lt;pre&gt;
+     * The method uses recursive convolution operations, including previous
+       * result to make next.
+       * Each convolution uses two passes of one dimensional binomial kernels,
+       * starting with the equivalent of sigma=1.
+       * For each step, the equivalent resulting sigma is from 
+       * sigma^2 = sigma_1^2 + sigma_2^2.
+       * 
+       * outputTransformed[1] = sigma = 1 convolution
+       * outputTransformed[2] = sqrt( (1)^2 + (1)^2 ) = sqrt(2) convolution
+       * outputTransformed[3] = sqrt( 2 + 1 ) = sqrt(3) convolution
+       * outputTransformed[4] = sqrt( 3 + 1 ) = sqrt(4) = 2 convolution
+       * outputTransformed[5] = sqrt( 4 + 1 ) = sqrt(5) convolution
+       * outputTransformed[6] = sqrt( 5 + 1 ) = sqrt(6) convolution
+       * ...
+       * outputTransformed[8] = sqrt( 8 + 1 ) = sqrt(9) = 3 convolution
+       * &lt;/pre&gt;
+     * @param input
+     * @param outputTransformed
+     * @param outputCoeff 
+     */
+    public void calculateWithB3SplineScalingFunction(float[] input,
+        List&lt;OneDFloatArray&gt; outputTransformed, List&lt;OneDFloatArray&gt; outputCoeff) {
+
+<span class="fc" id="L96">        int imgDimen = input.length;</span>
+
+<span class="fc" id="L98">        int nr = (int)(Math.log(imgDimen)/Math.log(2));</span>
+
+<span class="fc" id="L100">        B3SplineFunction1D scalingFunction = new B3SplineFunction1D();</span>
+        
+<span class="fc" id="L102">        OneDFloatArray cp = new OneDFloatArray(Arrays.copyOf(input, input.length));</span>
+<span class="fc" id="L103">        outputTransformed.add(cp);</span>
+        
+<span class="fc" id="L105">        OneDFloatArray cf = new OneDFloatArray(new float[input.length]);</span>
+<span class="fc" id="L106">        outputCoeff.add(cf);</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (int j = 0; j &lt; nr; ++j) {</span>
+            
+<span class="fc" id="L110">            OneDFloatArray cJ = outputTransformed.get(j);</span>
+ 
+<span class="fc" id="L112">            OneDFloatArray cJPlus1 = new OneDFloatArray(</span>
+<span class="fc" id="L113">                scalingFunction.calculate(cJ.a));</span>
+           
+<span class="fc" id="L115">            outputTransformed.add(cJPlus1);</span>
+            
+            // c_(j,k) − c_(j+1,k)
+<span class="fc" id="L118">            float[] s = Arrays.copyOf(cJ.a, cJ.a.length);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            for (int jj = 0; jj &lt; s.length; ++jj) {</span>
+<span class="fc" id="L120">                s[jj] -= cJPlus1.a[jj];</span>
+            }
+<span class="fc" id="L122">            OneDFloatArray wJPlus1 = new OneDFloatArray(s);</span>
+            
+<span class="fc" id="L124">            outputCoeff.add(wJPlus1);</span>
+        }
+        
+<span class="fc" id="L127">    }</span>
+    
+    /**
+     * The a trous algorithm is a fast implementation of a wavelet transform 
+     * with no downsampling.   It is non-orthogonal, has semi-linear runtime
+     * complexity, is invariant under translation, and the transform is 
+     * isotropic.
+     * Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
+     * The scaling function used is the higher resolution choice, the 3rd order 
+     * B Spline function.
+     * &lt;pre&gt;
+     * The method uses recursive convolution operations, including previous
+       * result to make next.
+       * Each convolution uses two passes of one dimensional binomial kernels,
+       * starting with the equivalent of sigma=1.
+       * For each step, the equivalent resulting sigma is from 
+       * sigma^2 = sigma_1^2 + sigma_2^2.
+       * 
+       * This method takes an argument stopIter to indicate that only stopIter
+       * number of iterations are needed.  For instance, to retrieve only the
+       * first populated wavelet, use stopIter = 2 (the first is initialization,
+       * and the second is the calculation).
+       * &lt;/pre&gt;
+     * @param input
+     * @param outputTransformed
+     * @param outputCoeff
+     * @param stopIter
+     */
+    public void calculateWithB3SplineScalingFunction(float[] input,
+        List&lt;OneDFloatArray&gt; outputTransformed, List&lt;OneDFloatArray&gt; outputCoeff,
+        int stopIter) {
+
+<span class="nc" id="L159">        int imgDimen = input.length;</span>
+
+<span class="nc" id="L161">        int nr = (int)(Math.log(imgDimen)/Math.log(2));</span>
+
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (nr &gt; stopIter) {</span>
+<span class="nc" id="L164">            nr = stopIter;</span>
+        }
+        
+<span class="nc" id="L167">        B3SplineFunction1D scalingFunction = new B3SplineFunction1D();</span>
+        
+<span class="nc" id="L169">        OneDFloatArray cp = new OneDFloatArray(Arrays.copyOf(input, input.length));</span>
+<span class="nc" id="L170">        outputTransformed.add(cp);</span>
+        
+<span class="nc" id="L172">        OneDFloatArray cf = new OneDFloatArray(new float[input.length]);</span>
+<span class="nc" id="L173">        outputCoeff.add(cf);</span>
+
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        for (int j = 0; j &lt; nr; ++j) {</span>
+            
+<span class="nc" id="L177">            OneDFloatArray cJ = outputTransformed.get(j);</span>
+ 
+<span class="nc" id="L179">            OneDFloatArray cJPlus1 = new OneDFloatArray(</span>
+<span class="nc" id="L180">                scalingFunction.calculate(cJ.a));</span>
+           
+<span class="nc" id="L182">            outputTransformed.add(cJPlus1);</span>
+            
+            // c_(j,k) − c_(j+1,k)
+<span class="nc" id="L185">            float[] s = Arrays.copyOf(cJ.a, cJ.a.length);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            for (int jj = 0; jj &lt; s.length; ++jj) {</span>
+<span class="nc" id="L187">                s[jj] -= cJPlus1.a[jj];</span>
+            }
+<span class="nc" id="L189">            OneDFloatArray wJPlus1 = new OneDFloatArray(s);</span>
+            
+<span class="nc" id="L191">            outputCoeff.add(wJPlus1);</span>
+        }
+        
+<span class="nc" id="L194">    }</span>
+   
+    public float[] reconstruct(float[] c0, List&lt;OneDFloatArray&gt; mmCoeff) {
+
+<span class="fc" id="L198">        int nr = mmCoeff.size();</span>
+
+<span class="fc" id="L200">        OneDFloatArray output = new OneDFloatArray(Arrays.copyOf(c0, c0.length));</span>
+
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        for (int j = 0; j &lt; nr; ++j) {</span>
+           
+<span class="fc" id="L204">            float[] add = mmCoeff.get(j).a;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">            for (int jj = 0; jj &lt; add.length; ++jj) {</span>
+<span class="fc" id="L206">                output.a[jj] += add[jj];</span>
+            }
+        }
+
+<span class="fc" id="L210">        return output.a;</span>
+    }
+    
+    /**
+     * Following
+     * &quot;Edge-Optimized À-Trous Wavelets for Local Contrast Enhancement with 
+     * Robust Denoising&quot; by Johannes Hanika, Holger Dammertz, and Hendrik Lensch
+     * https://jo.dreggn.org/home/2011_atrous.pdf
+     * to estimate del c_i_jj as part of creating an error image.
+     * The authors calculate gradient c_i_jj using Cranley Patterson rotation 
+       sampling within the A Trous B3Spline window (which is 25 pixels).
+       
+       This looks a little like calculating auto-correlation, except not wanting 
+       the center pixel as the fixed first pixel of the difference.
+       
+       If gradient c_i_jj is meant to be a measure of local image noise, would 
+       presumably want to select only differences between adjacent pixel pairs.
+       So the use of Cranley Patterson rotation must be in selecting the second
+       point using an offset chosen from the vector U of values.
+       That offset is applied uniformly to the set to help choose the 2nd point.
+       The universe of offsets U can only be the offsets to result in the 8
+       neighbor region.
+        
+       Not sure, but I think that is what the authors implemented.
+        
+       Given to this method are the center pixel index for the A Trous window
+       and the offsets as dx and dy chosen from the universe U of 8 neigbhor
+       offsets.
+        
+       For each pixel in the window, will determine its intensity difference 
+       from the pixel and the pixel that is it's coordinates plus the offsets.
+       The result returned will be the average of those.
+       
+       Note that another paper 
+       (&quot;Efficient Multidimensional Sampling&quot; by Kollig and Keller, 
+       http://www.uni-kl.de/AG-Heinrich/EMS.pdf)
+       suggests different sampling methods, so may change this in the future.
+        
+     * @return 
+     */
+    private float estimateLocalNoise(float[] data, int pixIdx, int xOffset) {
+        
+<span class="nc" id="L252">        int len = data.length;</span>
+        
+<span class="nc" id="L254">        float v = data[pixIdx];</span>
+        
+<span class="nc" id="L256">        int count = 0;</span>
+<span class="nc" id="L257">        float diff = 0;</span>
+        // iterate within window to find first pixel
+<span class="nc bnc" id="L259" title="All 2 branches missed.">        for (int dx = -2; dx &lt;= 2; ++dx) {</span>
+<span class="nc" id="L260">            int x1 = pixIdx + dx;</span>
+<span class="nc bnc" id="L261" title="All 4 branches missed.">            if (x1 &lt; 0 || x1 &gt; (len - 1)) {</span>
+<span class="nc" id="L262">                continue;</span>
+            }
+                          
+<span class="nc" id="L265">            int x2 = x1 + xOffset;</span>
+<span class="nc bnc" id="L266" title="All 4 branches missed.">            if ((x2 &lt; 0) || (x2 &gt; (len - 1))) {</span>
+<span class="nc" id="L267">                continue;</span>
+            }
+
+<span class="nc" id="L270">            diff += Math.abs(data[x1] - data[x2]);</span>
+
+<span class="nc" id="L272">            count++;</span>
+        }
+<span class="nc bnc" id="L274" title="All 4 branches missed.">        assert(count &gt; 0);</span>
+        
+<span class="nc" id="L276">        diff /= (float)count;</span>
+        
+<span class="nc" id="L278">        return diff;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

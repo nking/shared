@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DistanceTransform.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.imageProcessing</a> &gt; <span class="el_source">DistanceTransform.java</span></div><h1>DistanceTransform.java</h1><pre class="source lang-java linenums">package algorithms.imageProcessing;
+
+import algorithms.util.PairInt;
+import algorithms.util.PixelHelper;
+import gnu.trove.set.TIntSet;
+import java.util.Set;
+
+/**
+ * Euclidean square distance transforms are computed for every zero pixel 
+ * relative to a non-zero point.
+ *
+ * The implementations are euclidean distance by default unless stated otherwise.
+ * Chessboard implementations may be added.  All adjacent pixels, including 
+ * diagonal have a distance of '1' for chessboard implementation.
+ * 
+ * Useful papers in current implementations and tests were:
+ * Meijster, Roerdink, and Hesselink 2000, 
+   https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
+ * and
+ * http://www.agencia.fapesp.br/arquivos/survey-final-fabbri-ACMCSurvFeb2008.pdf
+ * 
+   first implemented in project
+     http://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+   then moved here to share with other projects.
+
+ * @author nichole
+ */
+<span class="fc" id="L30">public class DistanceTransform {</span>
+    
+<span class="fc" id="L32">    private static int inf = Integer.MAX_VALUE;</span>
+    
+    /**
+     * The square of Euclidean distances are computed for every zero pixel 
+     * relative to the nearest non-zero pixels for two-dimensional input.
+     * &lt;pre&gt;
+     * For example
+     * original data:
+        row 0:  1 1 1 1 1 1 1 1 1 
+        row 1:  1 1 1 1 1 1 1 1 1 
+        row 2:  1 1 1 0 0 0 1 1 1 
+        row 3:  1 1 0 0 0 0 0 1 1 
+        row 4:  1 1 0 0 0 0 0 1 1 
+        row 5:  1 1 0 0 0 0 0 1 1 
+        row 6:  1 1 1 0 0 0 1 1 1 
+        row 7:  1 1 1 1 1 1 1 0 1 
+        row 8:  1 1 1 1 1 1 0 1 1 
+
+        distance transform:
+        row 0:  0 0 0 0 0 0 0 0 0 
+        row 1:  0 0 0 0 0 0 0 0 0 
+        row 2:  0 0 0 1 1 1 0 0 0 
+        row 3:  0 0 1 2 4 2 1 0 0 
+        row 4:  0 0 1 4 8 4 1 0 0 
+        row 5:  0 0 1 2 4 2 1 0 0 
+        row 6:  0 0 0 1 1 1 0 0 0 
+        row 7:  0 0 0 0 0 0 0 1 0 
+        row 8:  0 0 0 0 0 0 1 0 0
+     * &lt;/pre&gt;
+     * 
+     * an O(N) runtime complexity algorithm for computing the distance transform
+     * by Meijster, Roerdink, and Hesselink 2000, implemented from their pseudocode.
+     * &quot;Mathematical Morphology and its Applications to Image and Signal Processing&quot;,
+       in Volume 18 of the series Computational Imaging and Vision, 200, pp 331-340
+       * ISBN 978-0-306-47025-7
+     *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
+     * 
+     * @param input
+     * @return 
+     */
+    public int[][] applyMeijsterEtAl(int[][] input) {
+        
+<span class="nc" id="L74">        int width = input.length;</span>
+<span class="nc" id="L75">        int height = input[0].length;</span>
+        
+<span class="nc" id="L77">        int[][] g = new int[width][height];</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="nc" id="L79">            g[i] = new int[height];</span>
+        }
+        
+<span class="nc" id="L82">        applyPhase1(input, g, width, height);</span>
+        
+<span class="nc" id="L84">        int[][] dt = applyPhase2(g, width, height);</span>
+        
+<span class="nc" id="L86">        return dt;</span>
+    }
+    
+    /**
+     * The square of Euclidean distances are computed for every zero pixel 
+     * relative to the nearest non-zero pixels for two-dimensional input.
+     * &lt;pre&gt;
+     * For example
+     * original data:
+        row 0:  1 1 1 1 1 1 1 1 1 
+        row 1:  1 1 1 1 1 1 1 1 1 
+        row 2:  1 1 1 0 0 0 1 1 1 
+        row 3:  1 1 0 0 0 0 0 1 1 
+        row 4:  1 1 0 0 0 0 0 1 1 
+        row 5:  1 1 0 0 0 0 0 1 1 
+        row 6:  1 1 1 0 0 0 1 1 1 
+        row 7:  1 1 1 1 1 1 1 0 1 
+        row 8:  1 1 1 1 1 1 0 1 1 
+
+        distance transform:
+        row 0:  0 0 0 0 0 0 0 0 0 
+        row 1:  0 0 0 0 0 0 0 0 0 
+        row 2:  0 0 0 1 1 1 0 0 0 
+        row 3:  0 0 1 2 4 2 1 0 0 
+        row 4:  0 0 1 4 8 4 1 0 0 
+        row 5:  0 0 1 2 4 2 1 0 0 
+        row 6:  0 0 0 1 1 1 0 0 0 
+        row 7:  0 0 0 0 0 0 0 1 0 
+        row 8:  0 0 0 0 0 0 1 0 0
+     * &lt;/pre&gt;
+     * 
+     * an O(N) runtime complexity algorithm for computing the distance transform
+     * by Meijster, Roerdink, and Hesselink 2000, implemented from their pseudocode.
+     * &quot;Mathematical Morphology and its Applications to Image and Signal Processing&quot;,
+       in Volume 18 of the series Computational Imaging and Vision, 200, pp 331-340
+       * ISBN 978-0-306-47025-7
+     *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
+     * 
+     * @param points
+     * @param width
+     * @param height
+     * @return 
+     */
+    public int[][] applyMeijsterEtAl(Set&lt;PairInt&gt; points, final int width, final int height) {
+        
+<span class="fc" id="L131">        int[][] g = new int[width][height];</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L133">            g[i] = new int[height];</span>
+        }
+        
+<span class="fc" id="L136">        applyPhase1(points, g, width, height);</span>
+        
+<span class="fc" id="L138">        int[][] dt = applyPhase2(g, width, height);</span>
+        
+<span class="fc" id="L140">        return dt;</span>
+    }
+    
+    /**
+     * The square of Euclidean distances are computed for every zero pixel 
+     * relative to the nearest non-zero pixels for two-dimensional input.
+     * &lt;pre&gt;
+     * For example
+     * original data:
+        row 0:  1 1 1 1 1 1 1 1 1 
+        row 1:  1 1 1 1 1 1 1 1 1 
+        row 2:  1 1 1 0 0 0 1 1 1 
+        row 3:  1 1 0 0 0 0 0 1 1 
+        row 4:  1 1 0 0 0 0 0 1 1 
+        row 5:  1 1 0 0 0 0 0 1 1 
+        row 6:  1 1 1 0 0 0 1 1 1 
+        row 7:  1 1 1 1 1 1 1 0 1 
+        row 8:  1 1 1 1 1 1 0 1 1 
+
+        distance transform:
+        row 0:  0 0 0 0 0 0 0 0 0 
+        row 1:  0 0 0 0 0 0 0 0 0 
+        row 2:  0 0 0 1 1 1 0 0 0 
+        row 3:  0 0 1 2 4 2 1 0 0 
+        row 4:  0 0 1 4 8 4 1 0 0 
+        row 5:  0 0 1 2 4 2 1 0 0 
+        row 6:  0 0 0 1 1 1 0 0 0 
+        row 7:  0 0 0 0 0 0 0 1 0 
+        row 8:  0 0 0 0 0 0 1 0 0
+     * &lt;/pre&gt;
+     * 
+     * an O(N) runtime complexity algorithm for computing the distance transform
+     * by Meijster, Roerdink, and Hesselink 2000, implemented from their pseudocode.
+     * &quot;Mathematical Morphology and its Applications to Image and Signal Processing&quot;,
+       in Volume 18 of the series Computational Imaging and Vision, 200, pp 331-340
+       * ISBN 978-0-306-47025-7
+     *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
+     * 
+     * @param points pixel indexes
+     * @param width
+     * @param height
+     * @return 
+     */
+    public int[][] applyMeijsterEtAl(TIntSet points, final int width, final int height) {
+        
+<span class="fc" id="L185">        int[][] g = new int[width][height];</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L187">            g[i] = new int[height];</span>
+        }
+        
+<span class="fc" id="L190">        applyPhase1(points, g, width, height);</span>
+        
+<span class="fc" id="L192">        int[][] dt = applyPhase2(g, width, height);</span>
+        
+<span class="fc" id="L194">        return dt;</span>
+    }
+
+    private void applyPhase1(int[][] input, int[][] g, final int width, 
+        final int height) {
+               
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        for (int x = 0; x &lt; width; ++x) {</span>
+            
+            // scan 1
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (input[x][0] &gt; 0) {</span>
+<span class="nc" id="L204">                g[x][0] = 0;</span>
+            } else {
+<span class="nc" id="L206">                g[x][0] = inf;</span>
+            }
+        
+<span class="nc bnc" id="L209" title="All 2 branches missed.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                if (input[x][y] &gt; 0) {</span>
+<span class="nc" id="L211">                    g[x][y] = 0;</span>
+                } else {
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+                }
+            }
+            
+            // scan 2
+<span class="nc bnc" id="L218" title="All 2 branches missed.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="nc" id="L220">                    g[x][y] = g[x][y + 1] + 1;</span>
+                }
+            }
+        }
+<span class="nc" id="L224">    }</span>
+    
+    private void applyPhase1(Set&lt;PairInt&gt; points, int[][] g, final int width, 
+        final int height) {
+               
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
+            
+            // scan 1
+<span class="fc bfc" id="L232" title="All 2 branches covered.">            if (points.contains(new PairInt(x, 0))) {</span>
+<span class="fc" id="L233">                g[x][0] = 0;</span>
+            } else {
+<span class="fc" id="L235">                g[x][0] = inf;</span>
+            }
+        
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">                if (points.contains(new PairInt(x, y))) {</span>
+<span class="fc" id="L240">                    g[x][y] = 0;</span>
+                } else {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+                }
+            }
+            
+            // scan 2
+<span class="fc bfc" id="L247" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="fc" id="L249">                    g[x][y] = g[x][y + 1] + 1;</span>
+                }
+            }
+        }
+<span class="fc" id="L253">    }</span>
+    
+    private void applyPhase1(TIntSet points, int[][] g, final int width, 
+        final int height) {
+        
+<span class="fc" id="L258">        PixelHelper ph = new PixelHelper();</span>
+        
+        int pixIdx0, pixIdx1;
+        
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
+            
+<span class="fc" id="L264">            pixIdx0 = ph.toPixelIndex(x, 0, width);</span>
+            
+            // scan 1
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">            if (points.contains(pixIdx0)) {</span>
+<span class="fc" id="L268">                g[x][0] = 0;</span>
+            } else {
+<span class="nc" id="L270">                g[x][0] = inf;</span>
+            }
+        
+<span class="fc bfc" id="L273" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="fc" id="L274">                pixIdx1 = ph.toPixelIndex(x, y, width);</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">                if (points.contains(pixIdx1)) {</span>
+<span class="fc" id="L276">                    g[x][y] = 0;</span>
+                } else {
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+                }
+            }
+            
+            // scan 2
+<span class="fc bfc" id="L283" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="fc" id="L285">                    g[x][y] = g[x][y + 1] + 1;</span>
+                }
+            }
+        }
+<span class="fc" id="L289">    }</span>
+    
+    private int[][] applyPhase2(int[][] g, final int width, 
+        final int height) {
+                
+<span class="fc" id="L294">        int[][] dt = new int[width][height];</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L296">            dt[i] = new int[height];</span>
+        }
+                
+<span class="fc" id="L299">        int[] s = new int[width + 1];</span>
+<span class="fc" id="L300">        int[] t = new int[width + 1];</span>
+        
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        for (int y = 0; y &lt; height; ++y) {</span>
+            
+<span class="fc" id="L304">            int q = 0;</span>
+<span class="fc" id="L305">            s[0] = 0;</span>
+<span class="fc" id="L306">            t[0] = 0;</span>
+            
+            /*
+            avoids a comparison with the entire column by limiting the search
+            using tests of voronoi diagram regions, that is bisectors of points
+            intersecting with the current row.
+            */
+            
+<span class="fc bfc" id="L314" title="All 2 branches covered.">            for (int u = 1; u &lt; width; ++u) {</span>
+                
+                // g(i) = G(i, y)
+                
+<span class="fc bfc" id="L318" title="All 4 branches covered.">                while ((q &gt;= 0) &amp;&amp; (f(t[q], s[q], g[s[q]][y]) &gt; f(t[q], u, g[u][y]))) {</span>
+<span class="fc" id="L319">                    q--;</span>
+                }
+<span class="fc bfc" id="L321" title="All 2 branches covered.">                if (q &lt; 0) {</span>
+<span class="fc" id="L322">                    q = 0;</span>
+<span class="fc" id="L323">                    s[0] = u;</span>
+                } else {
+<span class="fc" id="L325">                    int sep = sep(s[q], u, g[s[q]][y], g[u][y]);</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">                    if (sep &lt; inf) {</span>
+<span class="fc" id="L327">                        int w = 1 + sep;</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">                        if (w &lt; width) {</span>
+<span class="fc" id="L329">                            q++;</span>
+<span class="fc" id="L330">                            s[q] = u;</span>
+<span class="fc" id="L331">                            t[q] = w;</span>
+                        }
+                    }
+                }
+            }
+<span class="fc bfc" id="L336" title="All 2 branches covered.">            for (int u = (width - 1); u &gt; -1; --u) {</span>
+<span class="fc" id="L337">                dt[u][y] = f(u, s[q], g[s[q]][y]);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">                if (u == t[q]) {</span>
+<span class="fc" id="L339">                    q--;</span>
+                }
+            }
+        }
+        
+<span class="fc" id="L344">        return dt;</span>
+    }
+
+    private int f(int x, int i, int gi) {
+                
+<span class="fc" id="L349">        int xi = x - i;</span>
+        
+<span class="pc bpc" id="L351" title="1 of 4 branches missed.">        if (gi == inf || x == inf) {</span>
+<span class="fc" id="L352">            return inf;</span>
+        }
+        
+<span class="fc" id="L355">        int f = (xi * xi) + (gi * gi);</span>
+        
+<span class="fc" id="L357">        return f;</span>
+    }
+
+    private int sep(int i, int u, int gi, int gu) {
+ 
+<span class="pc bpc" id="L362" title="1 of 4 branches missed.">        if (gu == inf || u == inf) {</span>
+<span class="fc" id="L363">            return inf;</span>
+        }
+        
+<span class="fc" id="L366">        int sep = ((u * u) - (i * i) + (gu * gu) - (gi * gi))/(2 * (u - i));</span>
+        
+<span class="fc" id="L368">        return sep;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

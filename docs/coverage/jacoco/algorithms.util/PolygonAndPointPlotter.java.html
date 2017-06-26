@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PolygonAndPointPlotter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.util</a> &gt; <span class="el_source">PolygonAndPointPlotter.java</span></div><h1>PolygonAndPointPlotter.java</h1><pre class="source lang-java linenums">package algorithms.util;
+
+import algorithms.misc.MiscMath0;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.JarEntry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+   first implemented in projects
+     https://github.com/nking/two-point-correlation
+     w/ Copyright (c) 2013-2015 Nichole King
+     http://nking.github.io/two-point-correlation/
+     using The MIT License (MIT)
+     and
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+   and license.
+
+ * @author nichole
+ */
+public class PolygonAndPointPlotter {
+
+    protected final StringBuffer plotContent;
+
+<span class="pc" id="L36">    protected int plotNumber = 0;</span>
+
+<span class="pc" id="L38">    protected boolean dataMinMaxAreSet = false;</span>
+    
+    protected float minX, maxX, minY, maxY;
+
+    public PolygonAndPointPlotter(float minX, float maxX, float minY, 
+<span class="nc" id="L43">        float maxY) throws FileNotFoundException, IOException {</span>
+
+<span class="nc" id="L45">        plotContent = getTemplateHtmlPlot();</span>
+
+<span class="nc" id="L47">        setDataMinMax(plotContent, minX, maxX, minY, maxY);</span>
+<span class="nc" id="L48">    }</span>
+
+<span class="fc" id="L50">    public PolygonAndPointPlotter() throws FileNotFoundException, IOException {</span>
+
+<span class="fc" id="L52">        plotContent = getTemplateHtmlPlot();</span>
+<span class="fc" id="L53">    }</span>
+
+    protected void setDataMinMax(StringBuffer plotContent, 
+        float minX, float maxX, float minY, float maxY) {
+
+<span class="nc" id="L58">        this.minX = minX;</span>
+<span class="nc" id="L59">        this.maxX = maxX;</span>
+<span class="nc" id="L60">        this.minY = minY;</span>
+<span class="nc" id="L61">        this.maxY = maxY;</span>
+        
+<span class="nc" id="L63">        StringBuilder dataSB = new StringBuilder();</span>
+
+<span class="nc" id="L65">        dataSB.append(&quot;\nvar xmin = &quot;).append(minX).append(&quot;;\n&quot;);</span>
+<span class="nc" id="L66">        dataSB.append(&quot;var xmax = &quot;).append(maxX).append(&quot;;\n&quot;);</span>
+<span class="nc" id="L67">        dataSB.append(&quot;var ymin = &quot;).append(minY).append(&quot;;\n&quot;);</span>
+<span class="nc" id="L68">        dataSB.append(&quot;var ymax = &quot;).append(maxY).append(&quot;;\n&quot;);</span>
+
+<span class="nc" id="L70">        String srchFor = &quot;/* === DO NOT REMOVE THIS == START DATA */&quot;;</span>
+<span class="nc" id="L71">        int insertOffset = plotContent.indexOf(srchFor);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (insertOffset == -1) {</span>
+<span class="nc" id="L73">            throw new IllegalStateException(&quot;cannot find END DATA marker&quot;);</span>
+        }
+<span class="nc" id="L75">        insertOffset += srchFor.length();</span>
+<span class="nc" id="L76">        plotContent.insert(insertOffset, dataSB.toString());</span>
+
+<span class="nc" id="L78">        dataMinMaxAreSet = true;</span>
+<span class="nc" id="L79">    }</span>
+
+    public void addPlot(float minX, float maxX, float minY, float maxY,
+        float[] xPoints, int[] yPoints, float[] xPolygon, int[] yPolygon, 
+        String plotLabel) {
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+        
+<span class="nc" id="L88">    	float[] y0 = new float[n0];</span>
+<span class="nc" id="L89">    	float[] y1 = new float[n1];</span>
+        
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        for (int i = 0; i &lt; n0; i++) {</span>
+<span class="nc" id="L92">            y0[i] = yPoints[i];</span>
+        }
+        
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L96">            y1[i] = yPolygon[i];</span>
+        }
+        
+<span class="nc" id="L99">        addPlot(minX, maxX, minY, maxY, xPoints, y0, null, null,</span>
+            xPolygon, y1, plotLabel);
+<span class="nc" id="L101">    }</span>
+    public void addPlot(float minX, float maxX, float minY, float maxY,
+        int[] xPoints, int[] yPoints, int[] xPolygon, int[] yPolygon, 
+        String plotLabel) {
+
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+        
+<span class="nc" id="L109">        float[] x0 = new float[n0];</span>
+<span class="nc" id="L110">    	float[] y0 = new float[n0];</span>
+<span class="nc" id="L111">        float[] x1 = new float[n1];</span>
+<span class="nc" id="L112">    	float[] y1 = new float[n1];</span>
+        
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        for (int i = 0; i &lt; n0; i++) {</span>
+<span class="nc" id="L115">            x0[i] = xPoints[i];</span>
+<span class="nc" id="L116">            y0[i] = yPoints[i];</span>
+        }
+        
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L120">            x1[i] = xPolygon[i];</span>
+<span class="nc" id="L121">            y1[i] = yPolygon[i];</span>
+        }
+        
+<span class="nc" id="L124">        addPlot(minX, maxX, minY, maxY, x0, y0, null, null,</span>
+            x1, y1, plotLabel);
+<span class="nc" id="L126">    }</span>
+    
+    public void addPlot(float minX, float maxX, float minY, float maxY,
+        float[] xPoints, float[] yPoints, float[] xPolygon, float[] yPolygon, 
+        String plotLabel) {
+
+<span class="fc" id="L132">        addPlot(minX, maxX, minY, maxY, xPoints, yPoints, null, null,</span>
+            xPolygon, yPolygon, plotLabel);
+<span class="fc" id="L134">    }</span>
+
+    public void addPlot(float[] xPoints, int[] yPoints, float[] xPolygon, 
+        int[] yPolygon, String plotLabel) {
+        
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+      
+<span class="nc" id="L142">    	float[] yy = new float[n0];</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        for (int i = 0; i &lt; n0; i++) {</span>
+<span class="nc" id="L144">    		yy[i] = (float)yPoints[i];</span>
+    	}
+        
+<span class="nc" id="L147">    	float[] yp = new float[n1];</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    	for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L149">    		yp[i] = (float)yPolygon[i];</span>
+    	}
+        
+<span class="nc" id="L152">    	addPlot(xPoints, yy, null, null, xPolygon, yp,  plotLabel);</span>
+<span class="nc" id="L153">    }</span>
+    public void addPlot(int[] xPoints, float[] yPoints, int[] xPolygon, 
+        float[] yPolygon, String plotLabel) {
+        
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+      
+<span class="nc" id="L160">    	float[] xx = new float[n0];</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        for (int i = 0; i &lt; n0; i++) {</span>
+<span class="nc" id="L162">    		xx[i] = (float)xPoints[i];</span>
+    	}
+        
+<span class="nc" id="L165">    	float[] xp = new float[n1];</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    	for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L167">    		xp[i] = (float)xPolygon[i];</span>
+    	}
+        
+<span class="nc" id="L170">    	addPlot(xx, yPoints, null, null, xp, yPolygon, plotLabel);</span>
+<span class="nc" id="L171">    }</span>
+
+    public void addPlot(float[] xPoints, float[] yPoints, float[] xPolygon, 
+        float[] yPolygon, String plotLabel) {
+        
+<span class="nc" id="L176">        addPlot(xPoints, yPoints, null, null, xPolygon, yPolygon, plotLabel);</span>
+<span class="nc" id="L177">    }</span>
+    
+    public void addPlot(int[] xPoints, int[] yPoints, int[] xPolygon, 
+        int[] yPolygon, String plotLabel) {
+        
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+        
+<span class="nc" id="L185">        float[] x0 = new float[n0];</span>
+<span class="nc" id="L186">    	float[] y0 = new float[n0];</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">    	for (int i = 0; i &lt; n0; i++) {</span>
+<span class="nc" id="L188">    		x0[i] = (float)xPoints[i];</span>
+<span class="nc" id="L189">    		y0[i] = (float)yPoints[i];</span>
+    	}
+<span class="nc" id="L191">        float[] x1 = new float[n1];</span>
+<span class="nc" id="L192">    	float[] y1 = new float[n1];</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">    	for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L194">    		x1[i] = (float)xPolygon[i];</span>
+<span class="nc" id="L195">    		y1[i] = (float)yPolygon[i];</span>
+    	}
+        
+<span class="nc" id="L198">        float[] Null = null;</span>
+        
+<span class="nc" id="L200">        addPlot(x0, y0, Null, Null, x1, y1, plotLabel);</span>
+<span class="nc" id="L201">    }</span>
+    
+    public void addPlot(float[] xPoints, float[] yPoints, int[] xPolygon, 
+        int[] yPolygon, String plotLabel) {
+        
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+        
+<span class="nc" id="L209">        float[] x1 = new float[n1];</span>
+<span class="nc" id="L210">    	float[] y1 = new float[n1];</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">    	for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L212">    		x1[i] = (float)xPolygon[i];</span>
+<span class="nc" id="L213">    		y1[i] = (float)yPolygon[i];</span>
+    	}
+        
+<span class="nc" id="L216">        float[] Null = null;</span>
+        
+<span class="nc" id="L218">        addPlot(xPoints, yPoints, Null, Null, x1, y1, plotLabel);</span>
+<span class="nc" id="L219">    }</span>
+    
+    public void addPlotWithLines(float[] xPoints, float[] yPoints, 
+        float[] xLinePairs, float[] yLinePairs, 
+        String plotLabel) {
+        
+<span class="nc" id="L225">        float[] xErrPoints = null; </span>
+<span class="nc" id="L226">        float[] yErrPoints = null;</span>
+
+<span class="nc" id="L228">        addPlot(xPoints, yPoints, xErrPoints, yErrPoints,</span>
+            xLinePairs, yLinePairs, plotLabel);
+        
+<span class="nc" id="L231">        String srch = &quot;renderPlot('&quot;;</span>
+<span class="nc" id="L232">        int srchIdx = this.plotContent.lastIndexOf(srch);</span>
+<span class="nc" id="L233">        plotContent.insert(srchIdx + srch.length() - 2, </span>
+            &quot;WithLines&quot;);
+<span class="nc" id="L235">    }</span>
+    
+    public void addPlot(float[] xPoints, float[] yPoints, 
+        float[] xErrPoints, float[] yErrPoints, 
+        float[] xPolygon, float[] yPolygon, 
+        String plotLabel) {
+        
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if (!dataMinMaxAreSet) {</span>
+
+<span class="nc" id="L244">            float minX0 = MiscMath0.findMin(xPoints);</span>
+<span class="nc" id="L245">            float maxX0 = MiscMath0.findMax(xPoints);</span>
+<span class="nc" id="L246">            float minY0 = MiscMath0.findMin(yPoints);</span>
+<span class="nc" id="L247">            float maxY0 = MiscMath0.findMax(yPoints);</span>
+            
+<span class="nc" id="L249">            addPlot(minX0, maxX0, minY0, maxY0, xPoints, yPoints, </span>
+                xErrPoints, yErrPoints, xPolygon, yPolygon, plotLabel);
+            
+<span class="nc" id="L252">        } else {</span>
+            
+<span class="nc" id="L254">            addPlot(minX, maxX, minY, maxY, xPoints, yPoints, </span>
+                xErrPoints, yErrPoints, xPolygon, yPolygon, plotLabel);
+            
+        }
+<span class="nc" id="L258">    }</span>
+
+    /**
+     * 
+     * @param xmn
+     * @param xmx
+     * @param ymn
+     * @param ymx
+     * @param xPoints
+     * @param yPoints
+     * @param xErrPoints can be null
+     * @param yErrPoints can be null
+     * @param xPolygon can be null
+     * @param yPolygon can be null
+     * @param plotLabel 
+     */
+    public void addPlot(float xmn, float xmx, float ymn, float ymx,
+        float[] xPoints, float[] yPoints, 
+        float[] xErrPoints, float[] yErrPoints,
+        float[] xPolygon, float[] yPolygon, String plotLabel) {
+
+<span class="fc" id="L279">        StringBuffer dataSB = new StringBuffer(&quot;\n&quot;);</span>
+        
+        //  ===== add plotLabel data =====
+<span class="fc" id="L282">        dataSB.append(&quot;var data_plot_label_&quot;).append(plotNumber)</span>
+<span class="fc" id="L283">            .append(&quot; = '&quot;).append(plotLabel).append(&quot;';\n&quot;);</span>
+
+        //  ===== add points data =====
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (xPoints == null) {</span>
+<span class="nc" id="L287">            dataSB.append(&quot;var data_points_&quot;).append(plotNumber)</span>
+<span class="nc" id="L288">                .append(&quot; = undefined;\n&quot;);</span>
+        } else {
+<span class="fc" id="L290">            dataSB.append(&quot;var data_points_&quot;).append(plotNumber).append(&quot; = [\n&quot;);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            for (int i = 0; i &lt; xPoints.length; i++) {</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">                if (i &gt; 0) {</span>
+<span class="fc" id="L293">                    dataSB.append(&quot;,\n&quot;);</span>
+                }
+<span class="fc" id="L295">                dataSB.append(&quot;    {x:&quot;).append(xPoints[i]).append(&quot;, y:&quot;).append(yPoints[i]);</span>
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">                if (xErrPoints != null) {</span>
+<span class="nc" id="L297">                    dataSB.append(&quot;, dx:&quot;).append(xErrPoints[i]).append(&quot;, dy:&quot;).append(yErrPoints[i]);</span>
+                }
+<span class="fc" id="L299">                dataSB.append(&quot;}&quot;);</span>
+            }
+<span class="fc" id="L301">            dataSB.append(&quot;\n];\n&quot;);</span>
+        }
+
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">        if (xPolygon == null) {</span>
+<span class="nc" id="L305">            dataSB.append(&quot;var data_polygon_&quot;).append(plotNumber)</span>
+<span class="nc" id="L306">                .append(&quot; = undefined;\n&quot;);</span>
+        } else {
+            //  ===== add polygon =====
+<span class="fc" id="L309">            dataSB.append(&quot;var data_polygon_&quot;).append(plotNumber).append(&quot; = [\n&quot;);</span>
+<span class="fc" id="L310">            dataSB.append(&quot;    [&quot;);</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">            for (int ii = 0; ii &lt; xPolygon.length; ii++) {</span>
+<span class="fc" id="L312">                String xStr = String.format(&quot;%.7f&quot;, xPolygon[ii]);</span>
+<span class="fc" id="L313">                String yStr = String.format(&quot;%.7f&quot;, yPolygon[ii]);</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">                if (ii &gt; 0) {</span>
+<span class="fc" id="L315">                    dataSB.append(&quot;, &quot;);</span>
+                }
+<span class="fc" id="L317">                dataSB.append(&quot;    {x:&quot;).append(xStr)</span>
+<span class="fc" id="L318">                    .append(&quot;, y:&quot;).append(yStr).append(&quot;}&quot;);</span>
+            }
+<span class="fc" id="L320">            dataSB.append(&quot;],\n &quot;);</span>
+<span class="fc" id="L321">            dataSB.append(&quot;];\n&quot;);</span>
+        }
+
+<span class="fc" id="L324">        dataSB.append(&quot;var xmin_&quot;).append(plotNumber).append(&quot;=&quot;)</span>
+<span class="fc" id="L325">            .append(xmn).append(&quot;;\n&quot;);</span>
+<span class="fc" id="L326">        dataSB.append(&quot;var xmax_&quot;).append(plotNumber).append(&quot;=&quot;)</span>
+<span class="fc" id="L327">            .append(xmx).append(&quot;;\n&quot;);</span>
+<span class="fc" id="L328">        dataSB.append(&quot;var ymin_&quot;).append(plotNumber).append(&quot;=&quot;)</span>
+<span class="fc" id="L329">            .append(ymn).append(&quot;;\n&quot;);</span>
+<span class="fc" id="L330">        dataSB.append(&quot;var ymax_&quot;).append(plotNumber).append(&quot;=&quot;)</span>
+<span class="fc" id="L331">            .append(ymx).append(&quot;;\n&quot;);</span>
+
+        // ======= add RENDER statement ==========
+<span class="fc" id="L334">        dataSB.append(&quot;\nrenderPlot('plot&quot;).append(plotNumber)</span>
+<span class="fc" id="L335">            .append(&quot;', data_points_&quot;).append(plotNumber)</span>
+<span class="fc" id="L336">            .append(&quot;, data_polygon_&quot;).append(plotNumber)</span>
+<span class="fc" id="L337">            .append(&quot;, data_plot_label_&quot;).append(plotNumber)</span>
+<span class="fc" id="L338">            .append(&quot;, &quot;)</span>
+<span class="fc" id="L339">            .append(&quot; xmin_&quot;).append(plotNumber).append(&quot;, &quot;)</span>
+<span class="fc" id="L340">            .append(&quot; xmax_&quot;).append(plotNumber).append(&quot;, &quot;)</span>
+<span class="fc" id="L341">            .append(&quot; ymin_&quot;).append(plotNumber).append(&quot;, &quot;)</span>
+<span class="fc" id="L342">            .append(&quot; ymax_&quot;).append(plotNumber)</span>
+<span class="fc" id="L343">            .append( &quot;);\n\n&quot;);</span>
+
+<span class="fc" id="L345">        String srchFor = &quot;/* === DO NOT REMOVE THIS == END DATA */&quot;;</span>
+<span class="fc" id="L346">        int insertOffset = plotContent.indexOf(srchFor);</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">        if (insertOffset == -1) {</span>
+<span class="nc" id="L348">            throw new IllegalStateException(&quot;cannot find END DATA marker&quot;);</span>
+        }
+<span class="fc" id="L350">        plotContent.insert(insertOffset, dataSB.toString());</span>
+<span class="fc" id="L351">        dataSB = null;</span>
+
+
+        // ========== add the PLOT DIVS ==============
+<span class="fc" id="L355">        StringBuffer plotDivs = new StringBuffer();</span>
+<span class="fc" id="L356">        plotDivs.append(&quot;&lt;div id='plot&quot;).append(plotNumber).append(&quot;' class='plot'&gt;&lt;/div&gt;\n&quot;);</span>
+
+
+<span class="fc" id="L359">        srchFor = &quot;&lt;!-- === DO NOT REMOVE THIS == END PLOT DIVS --&gt;&quot;;</span>
+<span class="fc" id="L360">        insertOffset = plotContent.indexOf(srchFor);</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (insertOffset == -1) {</span>
+<span class="nc" id="L362">            throw new IllegalStateException(&quot;cannot find END DATA marker&quot;);</span>
+        }
+<span class="fc" id="L364">        plotContent.insert(insertOffset, plotDivs.toString());</span>
+<span class="fc" id="L365">        plotDivs = null;</span>
+
+<span class="fc" id="L367">        plotNumber++;</span>
+<span class="fc" id="L368">    }</span>
+
+    public void addPlot(double[] xPoints, double[] yPoints, double[] xPolygon, 
+        double[] yPolygon, String plotLabel) {
+
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        int n0 = (xPoints != null) ? xPoints.length : 0;</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">        int n1 = (xPolygon != null) ? xPolygon.length : 0;</span>
+        
+<span class="nc" id="L376">        float[] xx = new float[n0];</span>
+<span class="nc" id="L377">        float[] yy = new float[n0];</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">    	for (int i = 0; i &lt; n0; i++) {</span>
+<span class="nc" id="L379">    		xx[i] = (float)xPoints[i];</span>
+<span class="nc" id="L380">            yy[i] = (float)yPoints[i];</span>
+    	}
+        
+<span class="nc" id="L383">        float[] xp = new float[n1];</span>
+<span class="nc" id="L384">        float[] yp = new float[n1];</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">        for (int i = 0; i &lt; n1; i++) {</span>
+<span class="nc" id="L386">            xp[i] = (float) xPolygon[i];</span>
+<span class="nc" id="L387">            yp[i] = (float) yPolygon[i];</span>
+        }
+        
+<span class="nc" id="L390">        addPlot(xx, yy, null, null, xp, yp, plotLabel);</span>
+<span class="nc" id="L391">    }</span>
+
+    protected StringBuffer getTemplateHtmlPlot() throws FileNotFoundException, IOException {
+<span class="fc" id="L394">        return getTemplateHtmlPlot(&quot;plot_points_and_polygon.html&quot;);</span>
+    }
+
+    protected StringBuffer getTemplateHtmlPlot(String fileName) 
+        throws FileNotFoundException, IOException 
+    {
+            
+        try {
+            
+<span class="fc" id="L403">            String path = ResourceFinder.findFileInResources(fileName);</span>
+        
+<span class="fc" id="L405">            StringBuffer sb = new StringBuffer();</span>
+<span class="fc" id="L406">            BufferedReader in = null;</span>
+            try {
+<span class="fc" id="L408">                in = new BufferedReader(new FileReader(new File(path)));</span>
+<span class="fc" id="L409">                String line = in.readLine();</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">                while (line != null) {</span>
+<span class="fc" id="L411">                    sb.append(line).append(&quot;\n&quot;);</span>
+<span class="fc" id="L412">                    line = in.readLine();</span>
+                }
+            } finally {
+<span class="pc bpc" id="L415" title="3 of 4 branches missed.">                if (in != null) {</span>
+<span class="pc" id="L416">                    in.close();</span>
+                }
+            }
+<span class="fc" id="L419">            return sb;</span>
+            
+<span class="nc" id="L421">        } catch (IOException ex) {</span>
+            
+            // this class and resources might be in a jar file, so look
+            // for that
+            
+<span class="nc" id="L426">            String sep = System.getProperty(&quot;file.separator&quot;);</span>
+<span class="nc" id="L427">            String cwd = System.getProperty(&quot;user.dir&quot;);</span>
+                        
+<span class="nc" id="L429">            String jarFilePath = &quot;com.climbwithyourfeet.shared.jar&quot;;</span>
+<span class="nc" id="L430">            jarFilePath = cwd + sep + &quot;lib&quot; + sep + jarFilePath; </span>
+          
+<span class="nc" id="L432">            InputStream inStream = null;</span>
+<span class="nc" id="L433">            ByteArrayOutputStream out = null;</span>
+            
+            try {
+<span class="nc" id="L436">                inStream = ResourceFinder.findJarEntry(jarFilePath, fileName);</span>
+<span class="nc" id="L437">                out = new ByteArrayOutputStream();</span>
+                int c;
+<span class="nc bnc" id="L439" title="All 2 branches missed.">                while ((c = inStream.read()) != -1) {</span>
+<span class="nc" id="L440">                    out.write(c);</span>
+                }
+<span class="nc" id="L442">                StringBuffer contents = new StringBuffer(out.toString());</span>
+
+<span class="nc" id="L444">                return contents;</span>
+                
+            } finally {
+<span class="nc bnc" id="L447" title="All 4 branches missed.">                if (inStream != null) {</span>
+<span class="nc" id="L448">                    inStream.close();</span>
+                }
+<span class="nc bnc" id="L450" title="All 4 branches missed.">                if (out != null) {</span>
+<span class="nc" id="L451">                    out.close();</span>
+                }
+            }            
+        }
+
+        
+    }
+
+    public String writeFile() throws IOException {
+<span class="fc" id="L460">        return writeToFile(this.plotContent.toString(), &quot;points_and_polygon.html&quot;);</span>
+    }
+
+    public String writeFile2() throws IOException {
+<span class="fc" id="L464">        return writeToFile(this.plotContent.toString(), &quot;points_and_polygon2.html&quot;);</span>
+    }
+
+    public String writeFile3() throws IOException {
+<span class="nc" id="L468">        return writeToFile(this.plotContent.toString(), &quot;points_and_polygon3.html&quot;);</span>
+    }
+    
+    public String writeFile(Integer num) throws IOException {
+<span class="nc" id="L472">        return writeToFile(this.plotContent.toString(), </span>
+<span class="nc" id="L473">            &quot;points_and_polygon&quot; + num.toString() +&quot;.html&quot;);</span>
+    }
+    
+    public String writeFile(String fileSuffix) throws IOException {
+<span class="fc" id="L477">        return writeToFile(this.plotContent.toString(), </span>
+            &quot;points_and_polygon_&quot; + fileSuffix + &quot;.html&quot;);
+    }
+    
+    public String writeFile(long num) throws IOException {
+<span class="nc" id="L482">        return writeToFile(this.plotContent.toString(), </span>
+<span class="nc" id="L483">            &quot;points_and_polygon&quot; + Long.toString(num) +&quot;.html&quot;);</span>
+    }
+
+    protected String writeToFile(String fileContent, String fileName) throws IOException {
+
+<span class="fc" id="L488">        return ResourceFinder.writeToCWD(fileContent, fileName);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

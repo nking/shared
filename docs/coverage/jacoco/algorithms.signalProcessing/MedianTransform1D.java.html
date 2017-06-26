@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MedianTransform1D.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.signalProcessing</a> &gt; <span class="el_source">MedianTransform1D.java</span></div><h1>MedianTransform1D.java</h1><pre class="source lang-java linenums">package algorithms.signalProcessing;
+
+import algorithms.util.OneDFloatArray;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="pc bpc" id="L11" title="1 of 2 branches missed.">public class MedianTransform1D {</span>
+    
+    /**
+     * pyramidal median transform (faster than multiscalePyramidalMedianTransform
+     * but reconstruction from coefficients is not exact, so prefer
+     * multiscalePyramidalMedianTransform(...) if exact is needed);
+     * following pseudocode in http://www.multiresolution.com/svbook.pdf
+     * &quot;Handbook of Astronomical Data Analysis&quot; by
+     * Jean-Luc Starck and Fionn Murtagh
+     * @param input
+     * @param outputTransformed
+     * @param outputCoeff 
+     */
+    public void multiscalePyramidalMedianTransform2(
+        float[] input,
+        List&lt;OneDFloatArray&gt; outputTransformed, 
+        List&lt;OneDFloatArray&gt; outputCoeff) {
+
+<span class="fc" id="L29">        int imgDimen = input.length;</span>
+
+<span class="fc" id="L31">        int nr = (int)(Math.log(imgDimen)/Math.log(2));</span>
+<span class="fc" id="L32">        int s = 1;</span>
+<span class="fc" id="L33">        int winL = 2*s + 1;</span>
+        
+        //GreyscaleImage img0 = input.copyImage();
+
+<span class="fc" id="L37">        Interp interp = new Interp();</span>
+        
+<span class="fc" id="L39">        MedianSmooth1D med = new MedianSmooth1D();</span>
+        
+<span class="fc" id="L41">        outputTransformed.add(</span>
+<span class="fc" id="L42">            new OneDFloatArray(Arrays.copyOf(input, input.length)));</span>
+        
+<span class="fc" id="L44">        outputCoeff.add(</span>
+            new OneDFloatArray(new float[input.length]));
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int j = 0; j &lt; (nr - 1); ++j) {</span>
+                       
+<span class="fc" id="L49">            OneDFloatArray cJ = outputTransformed.get(j);</span>
+            
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">            if (cJ.a.length &lt; winL) {</span>
+<span class="nc" id="L52">                break;</span>
+            }
+            
+<span class="fc" id="L55">            float[] cJPlus1Ast = med.calculate(cJ.a, winL);   </span>
+            
+            // decimation:
+<span class="fc" id="L58">            float[] cJPlus1 = interp.bin(cJPlus1Ast, 2);</span>
+            
+<span class="fc" id="L60">            float[] tmp = Arrays.copyOf(cJ.a, cJ.a.length);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            for (int ii = 0; ii &lt; cJPlus1Ast.length; ++ii) {</span>
+<span class="fc" id="L62">                tmp[ii] -= cJPlus1Ast[ii];</span>
+            }
+<span class="fc" id="L64">            OneDFloatArray wJPlus1 = new OneDFloatArray(tmp);</span>
+            
+<span class="fc" id="L66">            outputTransformed.add(new OneDFloatArray(cJPlus1));</span>
+            
+<span class="fc" id="L68">            outputCoeff.add(wJPlus1);</span>
+            
+<span class="pc bpc" id="L70" title="3 of 4 branches missed.">            assert(cJ.a.length == wJPlus1.a.length);</span>
+        }
+        
+        // empty full size image
+<span class="fc" id="L74">        outputCoeff.remove(0);</span>
+<span class="fc" id="L75">    }</span>
+    
+     /**
+     * reconstruct image from products of pyramidal median transform.
+     * following pseudocode in http://www.multiresolution.com/svbook.pdf
+     * &quot;Handbook of Astronomical Data Analysis&quot; by
+     * Jean-Luc Starck and Fionn Murtagh
+     * 
+     * @param c0
+     * @param mmCoeff
+     * @return 
+     */
+    public OneDFloatArray reconstructPyramidalMultiscaleMedianTransform(
+        OneDFloatArray c0, List&lt;OneDFloatArray&gt; mmCoeff) {
+
+<span class="nc" id="L90">        int nr = mmCoeff.size();</span>
+
+<span class="nc" id="L92">        Interp interp = new Interp();</span>
+        
+<span class="nc" id="L94">        OneDFloatArray output = new OneDFloatArray(</span>
+<span class="nc" id="L95">            Arrays.copyOf(c0.a, c0.a.length));</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        for (int j = (nr - 1); j &gt; -1; --j) {</span>
+
+<span class="nc" id="L99">            OneDFloatArray wJ = mmCoeff.get(j);</span>
+            
+            //up-sample wJ to size output
+            float[] cJPrime;
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (output.a.length * 2 == wJ.a.length) {</span>
+                
+<span class="nc" id="L105">                cJPrime = interp.unbin(output.a, 2);</span>
+               
+            } else {
+                
+<span class="nc" id="L109">                cJPrime = interp.linearInterp(</span>
+                    output.a, wJ.a.length, -256, 255);
+            }
+            
+<span class="nc" id="L113">            output.a = Arrays.copyOf(cJPrime, cJPrime.length);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            for (int ii = 0; ii &lt; wJ.a.length; ++ii) {</span>
+<span class="nc" id="L115">                output.a[ii] += wJ.a[ii];</span>
+            }            
+        }
+
+<span class="nc" id="L119">        return output;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
