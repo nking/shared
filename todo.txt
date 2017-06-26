@@ -8,8 +8,5 @@
          - KDTreeFloat
          --> consider improving the code by using trove maps
          -- portions of MultiArrayMergeSort
-     - KDE:
-         - consider making a 1D atrous wavelet using the TriangleFunction
-           scaling function...
            
 -- build the javadocs and coverage reports and commit them
