@@ -29,15 +29,13 @@ public class Interp {
                     continue;
                 }
 
-                float v = input[jj];
+                vSum += input[jj];
 
-                vSum += v;
                 count++;
             }
 
             if (count > 0) {
-                float v = vSum/(float)count;
-                vSum = Math.round(v);
+                vSum /= (float)count;
             }
 
             out[j] = vSum;
@@ -83,18 +81,15 @@ public class Interp {
         final int w0 = input.length;
         final int w2 = outLength;
 
-        if (w2 < w0) {
-            throw new IllegalArgumentException("output dimensions cannot be"
-                + " less than input dimensions for upsample");
-        }
-        
         float[] output = new float[w2];
 
-        final float yFactor = (float)w2/(float)(w0 - 1);
+        final float yFactor = (float)(w0 - 1)/(float)(w2 - 1);
 
+        //System.out.println("w0=" + w0 + " w1=" + w2 + " f=" + yFactor);
+        
         for (int i = 0; i < w2; ++i) {
 
-            float i0 = i / yFactor;
+            float i0 = (float)i * yFactor;
             int i0_0 = (int)i0;
             int i0_1 = (int)Math.ceil(i0);
             
@@ -102,13 +97,16 @@ public class Interp {
                 output[i] = input[i0_0];
                 continue;
             }
-            
+                        
             float va = input[i0_0];
             float vb = input[i0_1];
             
-            float v = ((i0_1 - i0)/(i0_1 - i0_0)) * va +
-                ((i0 - i0_0)/(i0_1 - i0_0)) * vb;
-
+            float d = (float)(i0_1 - i0_0);
+            float fa = ((float)i0_1 - i0)/d;
+            float fb = (i0 - (float)i0_0)/d;
+                        
+            float v = va * fa + vb * fb;
+            
             output[i] = v;
         }
 

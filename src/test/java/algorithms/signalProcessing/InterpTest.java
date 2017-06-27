@@ -38,21 +38,32 @@ public class InterpTest extends TestCase {
     
         Interp interp = new Interp();
         
-        float[] values = new float[10];
+        int n = 10;
+        
+        float[] values = new float[n];
         for (int i = 0; i < values.length; ++i) {
             values[i] = i;
         }
         
-        int outLength = (int)Math.ceil(scale * values.length);
+        int outLength = (int)Math.ceil(scale * (float)values.length);
         
         float[] r = interp.linearInterp(
             values, outLength, 0.f, 255.f);
         
         assertEquals(outLength, r.length);
         
-        System.out.println(Arrays.toString(values));
-        System.out.println(Arrays.toString(r));
+        //System.out.println(Arrays.toString(values));
         
+        //System.out.println(Arrays.toString(r));
+        
+        float[] r2 = interp.linearInterp(
+            r, n, 0.f, 255.f);
+        
+        assertEquals(n, r2.length);
+        
+        System.out.println(Arrays.toString(r2));
+        for (int i = 0; i < n; ++i) {
+            assertTrue(Math.abs(values[i] - r2[i]) < 0.001);
+        }
     }
-    
 }
