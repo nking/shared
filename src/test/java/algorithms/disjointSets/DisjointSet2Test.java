@@ -20,6 +20,9 @@ public class DisjointSet2Test extends TestCase {
        
         DisjointSet2Node<String> x2 = new DisjointSet2Node<String>();
         x2.setMember(new String("h"));
+        x2.setDeta(new String("h data"));
+        assertEquals("h", x2.getMember());
+        assertEquals("h data", x2.getObject());
         
         DisjointSet2Node<String> x2Tree = disjointSetHelper.makeSet(x2);
         
@@ -46,6 +49,7 @@ public class DisjointSet2Test extends TestCase {
         assertTrue(x3Tree.getParent().equals(x3));
         assertTrue(x3Tree.getRank() == 0);
         
+        assertFalse(xTree.getParent().equals(x3Tree.getParent()));
         
         xTree = disjointSetHelper.union(xTree, x3Tree);
         assertTrue(x.getParent().equals(x));
@@ -54,6 +58,7 @@ public class DisjointSet2Test extends TestCase {
         assertTrue(xTree.getParent().equals(x));
         // the rank doesn't increase unless they have equal ranks
         assertTrue(xTree.getRank() == 1);
+        assertTrue(disjointSetHelper.findSet(x3).equals(x));
         
         
         DisjointSet2Node<String> x4 = new DisjointSet2Node<String>();
@@ -68,5 +73,16 @@ public class DisjointSet2Test extends TestCase {
         assertTrue(x4.getParent().equals(x));
         assertTrue(xTree.getParent().equals(x));
         assertTrue(xTree.getRank() == 1);
+    
+        assertEquals("h", x2.getMember());
+        assertEquals("h data", x2.getObject());
+        
+        // for test coverage:
+        assertNotNull(x2.toString());
+        
+        String traversal = DisjointSet2Helper.<String>print(xTree);
+        assertNotNull(traversal);
+        
     }
+    
 }

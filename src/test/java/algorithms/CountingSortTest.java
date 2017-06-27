@@ -46,6 +46,21 @@ public class CountingSortTest extends TestCase {
         assertTrue(Arrays.equals(expected, b));
     }
     
+    public void testsort2_obj() throws Exception {
+        
+        int[] a = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
+        Integer[] b = new Integer[]{2, 5, 3, 0, 2, 3, 0, 3};
+        
+        CountingSort.sort(a, b, 5);
+        
+        int[] expected = new int[]{0, 0, 2, 2, 3, 3, 3, 5};
+        
+        assertTrue(Arrays.equals(expected, a));
+        for (int i = 0; i < b.length; ++i) {
+            assertEquals(expected[i], b[i].intValue());
+        }
+    }
+    
     public void testsort3() throws Exception {
         
         // use more than 46340 random numbers whose value is higher than

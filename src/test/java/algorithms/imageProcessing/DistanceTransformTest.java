@@ -89,6 +89,73 @@ public class DistanceTransformTest extends TestCase {
         assertFabbri(dtInvM, w, h);
     }
     
+    public void testApplyTransforms4_int() throws Exception {
+
+        int w = 9;
+        int h = 9;
+        
+        int[][] data = new int[w][h];
+        for (int x = 0; x < w; ++x) {
+            data[x] = new int[h];
+        }
+        
+        /*
+        making the pattern from Fig 1.a of Fabbri et al.
+           0  1  2  3  4  5  6  7  8 
+        0  -  -  -  -  -  -  -  -  - 
+        1  -  -  -  -  -  -  -  -  - 
+        2  -  -  -  1  1  1  -  -  -
+        3  -  -  1  1  1  1  1  -  -
+        4  -  -  1  1  1  1  1  -  -
+        5  -  -  1  1  1  1  1  -  -
+        6  -  -  -  1  1  1  -  -  -
+        7  -  -  -  -  -  -  -  1  -
+        8  -  -  -  -  -  -  1  -  -
+           0  1  2  3  4  5  6  7  8  9
+        */
+        Set<PairInt> pointsM = new HashSet<PairInt>();
+        for (int x = 3; x <= 5; ++x) {
+            for (int y = 2; y <= 6; ++y) {
+                pointsM.add(new PairInt(x, y));
+                data[x][y] = 1;
+            }
+        }
+        for (int x = 2; x <= 2; ++x) {
+            for (int y = 3; y <= 5; ++y) {
+                pointsM.add(new PairInt(x, y));
+                data[x][y] = 1;
+            }
+        }
+        for (int x = 6; x <= 6; ++x) {
+            for (int y = 3; y <= 5; ++y) {
+                pointsM.add(new PairInt(x, y));
+                data[x][y] = 1;
+            }
+        }
+        pointsM.add(new PairInt(6, 8));
+        data[6][8] = 1;
+        pointsM.add(new PairInt(7, 7));
+        data[7][7] = 1;
+            
+        DistanceTransform dtr = new DistanceTransform();
+        
+        // ----- inverse binary of that  ----------
+        Set<PairInt> pointsInvM = new HashSet<PairInt>();
+        
+        for (int x = 0; x < w; ++x) {
+            for (int y = 0; y < h; ++y) {
+                PairInt p = new PairInt(x, y);
+                if (!pointsM.contains(p)) {
+                    pointsInvM.add(new PairInt(x, y));
+                }
+            }
+        }
+        
+        int[][] dtInvM = dtr.applyMeijsterEtAl(pointsInvM, w, h);
+        
+        assertFabbri(dtInvM, w, h);
+    }
+    
     private void assertFabbri(int[][] dtInvM, int w, int h) {
         
         /*StringBuilder sb2 = new StringBuilder();
