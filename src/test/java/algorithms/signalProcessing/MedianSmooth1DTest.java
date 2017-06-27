@@ -28,10 +28,12 @@ public class MedianSmooth1DTest extends TestCase {
         float[] curveY = new float[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
         int kPoints = 3;
         float[] result = interp.calculate(curveY, kPoints);
-                
-        float[] expected = new float[]{4, 4, 4, 4, 4, 4, 4, 4};
         
-        assertTrue(result.length == expected.length);
+        //System.out.println("result=" + Arrays.toString(result));
+        
+        float[] expected = new float[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
+        
+        assertTrue(result.length == curveY.length);
         
         assertTrue(Arrays.equals(result, expected));
         
@@ -52,10 +54,13 @@ public class MedianSmooth1DTest extends TestCase {
         float[] curveY = new float[]{2, 3, 4, 3, 2, 4, 4, 4, 4, 4};
         int kPoints = 3;
         float[] result = interp.calculate(curveY, kPoints);
-                
-        float[] expected = new float[]{3, 3, 3, 3, 4, 4, 4, 4};
         
-        assertTrue(result.length == expected.length);
+        //System.out.println("result=" + Arrays.toString(result));
+        
+        float[] expected = new float[]{
+            2, 3, 3, 3, 3, 4, 4, 4, 4, 4};
+        
+        assertTrue(result.length == curveY.length);
         
         assertTrue(Arrays.equals(result, expected));
         
