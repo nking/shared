@@ -71,19 +71,19 @@ import java.util.Set;
      */
     public int[][] applyMeijsterEtAl(int[][] input) {
         
-<span class="nc" id="L74">        int width = input.length;</span>
-<span class="nc" id="L75">        int height = input[0].length;</span>
+<span class="fc" id="L74">        int width = input.length;</span>
+<span class="fc" id="L75">        int height = input[0].length;</span>
         
-<span class="nc" id="L77">        int[][] g = new int[width][height];</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">        for (int i = 0; i &lt; width; ++i) {</span>
-<span class="nc" id="L79">            g[i] = new int[height];</span>
+<span class="fc" id="L77">        int[][] g = new int[width][height];</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L79">            g[i] = new int[height];</span>
         }
         
-<span class="nc" id="L82">        applyPhase1(input, g, width, height);</span>
+<span class="fc" id="L82">        applyPhase1(input, g, width, height);</span>
         
-<span class="nc" id="L84">        int[][] dt = applyPhase2(g, width, height);</span>
+<span class="fc" id="L84">        int[][] dt = applyPhase2(g, width, height);</span>
         
-<span class="nc" id="L86">        return dt;</span>
+<span class="fc" id="L86">        return dt;</span>
     }
     
     /**
@@ -197,31 +197,31 @@ import java.util.Set;
     private void applyPhase1(int[][] input, int[][] g, final int width, 
         final int height) {
                
-<span class="nc bnc" id="L200" title="All 2 branches missed.">        for (int x = 0; x &lt; width; ++x) {</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
             
             // scan 1
-<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (input[x][0] &gt; 0) {</span>
-<span class="nc" id="L204">                g[x][0] = 0;</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">            if (input[x][0] &gt; 0) {</span>
+<span class="fc" id="L204">                g[x][0] = 0;</span>
             } else {
 <span class="nc" id="L206">                g[x][0] = inf;</span>
             }
         
-<span class="nc bnc" id="L209" title="All 2 branches missed.">            for (int y = 1; y &lt; height; ++y) {</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">                if (input[x][y] &gt; 0) {</span>
-<span class="nc" id="L211">                    g[x][y] = 0;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">                if (input[x][y] &gt; 0) {</span>
+<span class="fc" id="L211">                    g[x][y] = 0;</span>
                 } else {
-<span class="nc bnc" id="L213" title="All 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
                 }
             }
             
             // scan 2
-<span class="nc bnc" id="L218" title="All 2 branches missed.">            for (int y = height - 2; y &gt; -1; --y) {</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
-<span class="nc" id="L220">                    g[x][y] = g[x][y + 1] + 1;</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="fc" id="L220">                    g[x][y] = g[x][y + 1] + 1;</span>
                 }
             }
         }
-<span class="nc" id="L224">    }</span>
+<span class="fc" id="L224">    }</span>
     
     private void applyPhase1(Set&lt;PairInt&gt; points, int[][] g, final int width, 
         final int height) {

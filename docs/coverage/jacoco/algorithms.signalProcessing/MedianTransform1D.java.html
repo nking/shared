@@ -32,47 +32,52 @@ import java.util.List;
 <span class="fc" id="L32">        int s = 1;</span>
 <span class="fc" id="L33">        int winL = 2*s + 1;</span>
         
-        //GreyscaleImage img0 = input.copyImage();
-
-<span class="fc" id="L37">        Interp interp = new Interp();</span>
+<span class="fc" id="L35">        Interp interp = new Interp();</span>
         
-<span class="fc" id="L39">        MedianSmooth1D med = new MedianSmooth1D();</span>
+<span class="fc" id="L37">        MedianSmooth1D med = new MedianSmooth1D();</span>
         
-<span class="fc" id="L41">        outputTransformed.add(</span>
-<span class="fc" id="L42">            new OneDFloatArray(Arrays.copyOf(input, input.length)));</span>
+<span class="fc" id="L39">        outputTransformed.add(</span>
+<span class="fc" id="L40">            new OneDFloatArray(Arrays.copyOf(input, input.length)));</span>
         
-<span class="fc" id="L44">        outputCoeff.add(</span>
+<span class="fc" id="L42">        outputCoeff.add(</span>
             new OneDFloatArray(new float[input.length]));
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int j = 0; j &lt; (nr - 1); ++j) {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (int j = 0; j &lt; (nr - 1); ++j) {</span>
                        
-<span class="fc" id="L49">            OneDFloatArray cJ = outputTransformed.get(j);</span>
+<span class="fc" id="L47">            OneDFloatArray cJ = outputTransformed.get(j);</span>
             
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">            if (cJ.a.length &lt; winL) {</span>
-<span class="nc" id="L52">                break;</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">            if (cJ.a.length &lt;= winL) {</span>
+<span class="nc" id="L50">                break;</span>
             }
             
-<span class="fc" id="L55">            float[] cJPlus1Ast = med.calculate(cJ.a, winL);   </span>
+<span class="fc" id="L53">            float[] cJPlus1Ast = med.calculate(cJ.a, winL);   </span>
+            
+<span class="pc bpc" id="L55" title="3 of 4 branches missed.">            assert(cJ.a.length == cJPlus1Ast.length);</span>
             
             // decimation:
-<span class="fc" id="L58">            float[] cJPlus1 = interp.bin(cJPlus1Ast, 2);</span>
-            
-<span class="fc" id="L60">            float[] tmp = Arrays.copyOf(cJ.a, cJ.a.length);</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">            for (int ii = 0; ii &lt; cJPlus1Ast.length; ++ii) {</span>
-<span class="fc" id="L62">                tmp[ii] -= cJPlus1Ast[ii];</span>
+            float[] cJPlus1;
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">            if ((cJPlus1Ast.length &amp; 1) == 1) {</span>
+<span class="fc" id="L60">                int outLength = cJ.a.length;</span>
+<span class="fc" id="L61">                cJPlus1 = interp.linearInterp(</span>
+                    cJPlus1Ast, outLength, -256, 255);
+<span class="fc" id="L63">            } else {</span>
+<span class="nc" id="L64">                cJPlus1 = interp.bin(cJPlus1Ast, 2);</span>
             }
-<span class="fc" id="L64">            OneDFloatArray wJPlus1 = new OneDFloatArray(tmp);</span>
-            
 <span class="fc" id="L66">            outputTransformed.add(new OneDFloatArray(cJPlus1));</span>
             
-<span class="fc" id="L68">            outputCoeff.add(wJPlus1);</span>
+<span class="fc" id="L68">            OneDFloatArray wJPlus1 = new OneDFloatArray(new float[cJ.a.length]);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            for (int ii = 0; ii &lt; cJPlus1Ast.length; ++ii) {</span>
+<span class="fc" id="L70">                wJPlus1.a[ii] = cJ.a[ii] - cJPlus1Ast[ii];</span>
+            }            
             
-<span class="pc bpc" id="L70" title="3 of 4 branches missed.">            assert(cJ.a.length == wJPlus1.a.length);</span>
+<span class="fc" id="L73">            outputCoeff.add(wJPlus1);</span>
+            
+<span class="pc bpc" id="L75" title="3 of 4 branches missed.">            assert(cJ.a.length == wJPlus1.a.length);</span>
         }
         
         // empty full size image
-<span class="fc" id="L74">        outputCoeff.remove(0);</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L79">        outputCoeff.remove(0);</span>
+<span class="fc" id="L80">    }</span>
     
      /**
      * reconstruct image from products of pyramidal median transform.
@@ -84,39 +89,39 @@ import java.util.List;
      * @param mmCoeff
      * @return 
      */
-    public OneDFloatArray reconstructPyramidalMultiscaleMedianTransform(
+    public float[] reconstructPyramidalMultiscaleMedianTransform(
         OneDFloatArray c0, List&lt;OneDFloatArray&gt; mmCoeff) {
 
-<span class="nc" id="L90">        int nr = mmCoeff.size();</span>
+<span class="fc" id="L95">        int nr = mmCoeff.size();</span>
 
-<span class="nc" id="L92">        Interp interp = new Interp();</span>
+<span class="fc" id="L97">        Interp interp = new Interp();</span>
         
-<span class="nc" id="L94">        OneDFloatArray output = new OneDFloatArray(</span>
-<span class="nc" id="L95">            Arrays.copyOf(c0.a, c0.a.length));</span>
+<span class="fc" id="L99">        float[] output = Arrays.copyOf(c0.a, c0.a.length);</span>
 
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        for (int j = (nr - 1); j &gt; -1; --j) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int j = (nr - 1); j &gt; -1; --j) {</span>
 
-<span class="nc" id="L99">            OneDFloatArray wJ = mmCoeff.get(j);</span>
+<span class="fc" id="L103">            OneDFloatArray wJ = mmCoeff.get(j);</span>
             
             //up-sample wJ to size output
             float[] cJPrime;
-<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (output.a.length * 2 == wJ.a.length) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            if (output.length * 2 == wJ.a.length) {</span>
                 
-<span class="nc" id="L105">                cJPrime = interp.unbin(output.a, 2);</span>
+<span class="nc" id="L109">                cJPrime = interp.unbin(output, 2);</span>
                
             } else {
                 
-<span class="nc" id="L109">                cJPrime = interp.linearInterp(</span>
-                    output.a, wJ.a.length, -256, 255);
+<span class="fc" id="L113">                cJPrime = interp.linearInterp(</span>
+                    output, wJ.a.length, -256, 255);
             }
             
-<span class="nc" id="L113">            output.a = Arrays.copyOf(cJPrime, cJPrime.length);</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">            for (int ii = 0; ii &lt; wJ.a.length; ++ii) {</span>
-<span class="nc" id="L115">                output.a[ii] += wJ.a[ii];</span>
-            }            
+<span class="fc" id="L117">            output = Arrays.copyOf(cJPrime, cJPrime.length);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            for (int ii = 0; ii &lt; wJ.a.length; ++ii) {</span>
+<span class="fc" id="L119">                output[ii] += wJ.a[ii];</span>
+            }
+            
         }
 
-<span class="nc" id="L119">        return output;</span>
+<span class="fc" id="L124">        return output;</span>
     }
 
 }

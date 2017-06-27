@@ -14,56 +14,82 @@ import java.util.Arrays;
  
  * @author nichole
  */
-<span class="fc" id="L17">public class MedianSmooth1D {</span>
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">public class MedianSmooth1D {</span>
     
     /**
-     * calculate a running median of the k previous points of curveY.
-     * runtime complexity is O(k) + O(N*lg_2(k)) at most.
-     * @param curveY
-     * @param kPoints
+     * calculate a running median of a window of size xWindow, yWindow.
+     * runtime complexity is
+     *     n_rows * ((xWindow * yWindow) + ((n_cols)*lg2(xWindow * yWindow)))
+     * so is roughly O(n_pixels * lg_2(window area)) where n_pixels = n_rows * n_cols
+     *
+     * NOTE: should only be used by a single thread.
+     * 
+     * NOTE: the border points outside of the window retain their 
+     * initial values.
+     *
+     * @param input
+     * @param window
      * @return
      */
-    public float[] calculate(float[] curveY, int kPoints) {
+    public float[] calculate(float[] input, int window) {
 
-<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (curveY == null) {</span>
-<span class="fc" id="L29">            throw new IllegalArgumentException(&quot;curveY cannot be null&quot;);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (input == null) {</span>
+<span class="fc" id="L37">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (curveY.length &lt; kPoints) {</span>
-<span class="nc" id="L32">            throw new IllegalArgumentException(</span>
-            &quot;curveY.length must be equal to or greater than kPoints&quot;);
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (input.length &lt; window) {</span>
+<span class="nc" id="L40">            throw new IllegalArgumentException(</span>
+            &quot;input.lenth must be equal to or greater than window&quot;);
         }
 
-<span class="fc" id="L36">        float[] medians = new float[curveY.length - kPoints + 1];</span>
+<span class="fc" id="L44">        int nW = window;</span>
 
-<span class="fc" id="L38">        SortedVector sVec = new SortedVector(kPoints);</span>
+<span class="fc" id="L46">        int xh = window/2;</span>
 
-        // add the first k-1 to the list container
-<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; (kPoints - 1); i++) {</span>
-<span class="fc" id="L42">            sVec.append(curveY[i]);</span>
+        //NOTE: to use zero-padding: output = input.createWithDimensions();
+<span class="fc" id="L49">        float[] output = Arrays.copyOf(input, input.length);</span>
+
+<span class="fc" id="L51">        SortedVector sVec = new SortedVector(nW);</span>
+
+        // add the first nW to the sorted vector
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (int i = 0; i &lt; window; ++i) {</span>
+<span class="fc" id="L55">            sVec.append(input[i]);</span>
         }
-        //O(k) + + (N)*lg2(k)
+
+<span class="pc bpc" id="L58" title="3 of 4 branches missed.">        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L59" title="3 of 4 branches missed.">        assert(sVec.sorted);</span>
+
+        //O(k) + (N)*lg2(k)
         float median;
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = (kPoints - 1); i &lt; curveY.length; i++) {</span>
-
-            // add the kth item to the list: O(log_2(k)) + &lt; O(k)
-            // the list state is sorted at the end of the method.
-<span class="fc" id="L51">            sVec.insertIntoOpenSlot(curveY[i]);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (int i = (window - 1); i &lt; input.length; ++i) {</span>
 
             //O(1)
-<span class="fc" id="L54">            median = sVec.getMedian();</span>
+<span class="fc" id="L67">            median = sVec.getMedian();</span>
 
-<span class="fc" id="L56">            int idx = i - kPoints + 1;</span>
+<span class="fc" id="L69">            output[i - xh] = median;</span>
 
-            // remove the x[i - k + 1] item from sorted list : O(log_2(k))
-<span class="fc" id="L59">            sVec.remove(curveY[idx]);</span>
+            // remove each item from last column in window
+            // and add each item in next column for window,
 
-<span class="fc" id="L61">            medians[idx] = median;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if ((i + 1) &lt; input.length) {</span>
+
+<span class="pc bpc" id="L76" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+
+                // remove : O(log_2(k))
+<span class="fc" id="L79">                sVec.remove(input[i - window + 1]);</span>
+
+<span class="pc bpc" id="L81" title="3 of 4 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
+
+                // add : O(log_2(k)) + &lt; O(k)
+<span class="fc" id="L84">                sVec.insertIntoOpenSlot(input[i + 1]);</span>
+
+<span class="pc bpc" id="L86" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+            }
         }
 
-<span class="fc" id="L64">        return medians;</span>
+<span class="fc" id="L90">        return output;</span>
     }
-    
+     
     /**
      * a fixed size list that keeps the contents sorted after the capacity is
      * reached.  points are added one at a time and removed one at a time
