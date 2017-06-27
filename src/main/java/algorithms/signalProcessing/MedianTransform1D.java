@@ -32,8 +32,6 @@ public class MedianTransform1D {
         int s = 1;
         int winL = 2*s + 1;
         
-        //GreyscaleImage img0 = input.copyImage();
-
         Interp interp = new Interp();
         
         MedianSmooth1D med = new MedianSmooth1D();
@@ -48,22 +46,29 @@ public class MedianTransform1D {
                        
             OneDFloatArray cJ = outputTransformed.get(j);
             
-            if (cJ.a.length < winL) {
+            if (cJ.a.length <= winL) {
                 break;
             }
             
             float[] cJPlus1Ast = med.calculate(cJ.a, winL);   
             
+            assert(cJ.a.length == cJPlus1Ast.length);
+            
             // decimation:
-            float[] cJPlus1 = interp.bin(cJPlus1Ast, 2);
-            
-            float[] tmp = Arrays.copyOf(cJ.a, cJ.a.length);
-            for (int ii = 0; ii < cJPlus1Ast.length; ++ii) {
-                tmp[ii] -= cJPlus1Ast[ii];
+            float[] cJPlus1;
+            if ((cJPlus1Ast.length & 1) == 1) {
+                int outLength = cJ.a.length;
+                cJPlus1 = interp.linearInterp(
+                    cJPlus1Ast, outLength, -256, 255);
+            } else {
+                cJPlus1 = interp.bin(cJPlus1Ast, 2);
             }
-            OneDFloatArray wJPlus1 = new OneDFloatArray(tmp);
-            
             outputTransformed.add(new OneDFloatArray(cJPlus1));
+            
+            OneDFloatArray wJPlus1 = new OneDFloatArray(new float[cJ.a.length]);
+            for (int ii = 0; ii < cJPlus1Ast.length; ++ii) {
+                wJPlus1.a[ii] = cJ.a[ii] - cJPlus1Ast[ii];
+            }            
             
             outputCoeff.add(wJPlus1);
             
@@ -84,15 +89,14 @@ public class MedianTransform1D {
      * @param mmCoeff
      * @return 
      */
-    public OneDFloatArray reconstructPyramidalMultiscaleMedianTransform(
+    public float[] reconstructPyramidalMultiscaleMedianTransform(
         OneDFloatArray c0, List<OneDFloatArray> mmCoeff) {
 
         int nr = mmCoeff.size();
 
         Interp interp = new Interp();
         
-        OneDFloatArray output = new OneDFloatArray(
-            Arrays.copyOf(c0.a, c0.a.length));
+        float[] output = Arrays.copyOf(c0.a, c0.a.length);
 
         for (int j = (nr - 1); j > -1; --j) {
 
@@ -100,20 +104,21 @@ public class MedianTransform1D {
             
             //up-sample wJ to size output
             float[] cJPrime;
-            if (output.a.length * 2 == wJ.a.length) {
+            if (output.length * 2 == wJ.a.length) {
                 
-                cJPrime = interp.unbin(output.a, 2);
+                cJPrime = interp.unbin(output, 2);
                
             } else {
                 
                 cJPrime = interp.linearInterp(
-                    output.a, wJ.a.length, -256, 255);
+                    output, wJ.a.length, -256, 255);
             }
             
-            output.a = Arrays.copyOf(cJPrime, cJPrime.length);
+            output = Arrays.copyOf(cJPrime, cJPrime.length);
             for (int ii = 0; ii < wJ.a.length; ++ii) {
-                output.a[ii] += wJ.a[ii];
-            }            
+                output[ii] += wJ.a[ii];
+            }
+            
         }
 
         return output;

@@ -17,53 +17,79 @@ import java.util.Arrays;
 public class MedianSmooth1D {
     
     /**
-     * calculate a running median of the k previous points of curveY.
-     * runtime complexity is O(k) + O(N*lg_2(k)) at most.
-     * @param curveY
-     * @param kPoints
+     * calculate a running median of a window of size xWindow, yWindow.
+     * runtime complexity is
+     *     n_rows * ((xWindow * yWindow) + ((n_cols)*lg2(xWindow * yWindow)))
+     * so is roughly O(n_pixels * lg_2(window area)) where n_pixels = n_rows * n_cols
+     *
+     * NOTE: should only be used by a single thread.
+     * 
+     * NOTE: the border points outside of the window retain their 
+     * initial values.
+     *
+     * @param input
+     * @param window
      * @return
      */
-    public float[] calculate(float[] curveY, int kPoints) {
+    public float[] calculate(float[] input, int window) {
 
-        if (curveY == null) {
-            throw new IllegalArgumentException("curveY cannot be null");
+        if (input == null) {
+            throw new IllegalArgumentException("input cannot be null");
         }
-        if (curveY.length < kPoints) {
+        if (input.length < window) {
             throw new IllegalArgumentException(
-            "curveY.length must be equal to or greater than kPoints");
+            "input.lenth must be equal to or greater than window");
         }
 
-        float[] medians = new float[curveY.length - kPoints + 1];
+        int nW = window;
 
-        SortedVector sVec = new SortedVector(kPoints);
+        int xh = window/2;
 
-        // add the first k-1 to the list container
-        for (int i = 0; i < (kPoints - 1); i++) {
-            sVec.append(curveY[i]);
+        //NOTE: to use zero-padding: output = input.createWithDimensions();
+        float[] output = Arrays.copyOf(input, input.length);
+
+        SortedVector sVec = new SortedVector(nW);
+
+        // add the first nW to the sorted vector
+        for (int i = 0; i < window; ++i) {
+            sVec.append(input[i]);
         }
-        //O(k) + + (N)*lg2(k)
+
+        assert(sVec.n == sVec.a.length);
+        assert(sVec.sorted);
+
+        //O(k) + (N)*lg2(k)
         float median;
 
-        for (int i = (kPoints - 1); i < curveY.length; i++) {
-
-            // add the kth item to the list: O(log_2(k)) + < O(k)
-            // the list state is sorted at the end of the method.
-            sVec.insertIntoOpenSlot(curveY[i]);
+        for (int i = (window - 1); i < input.length; ++i) {
 
             //O(1)
             median = sVec.getMedian();
 
-            int idx = i - kPoints + 1;
+            output[i - xh] = median;
 
-            // remove the x[i - k + 1] item from sorted list : O(log_2(k))
-            sVec.remove(curveY[idx]);
+            // remove each item from last column in window
+            // and add each item in next column for window,
 
-            medians[idx] = median;
+            if ((i + 1) < input.length) {
+
+                assert(sVec.n == sVec.a.length);
+
+                // remove : O(log_2(k))
+                sVec.remove(input[i - window + 1]);
+
+                assert(sVec.n == (sVec.a.length - 1));
+
+                // add : O(log_2(k)) + < O(k)
+                sVec.insertIntoOpenSlot(input[i + 1]);
+
+                assert(sVec.n == sVec.a.length);
+            }
         }
 
-        return medians;
+        return output;
     }
-    
+     
     /**
      * a fixed size list that keeps the contents sorted after the capacity is
      * reached.  points are added one at a time and removed one at a time

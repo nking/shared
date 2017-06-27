@@ -33,6 +33,7 @@ public class MedianTransform1DTest extends TestCase {
         wave.multiscalePyramidalMedianTransform2(
             input, outputTransformed, outputCoeff);
       
+        /*
         System.out.println("input=" + Arrays.toString(input));
         
         float[] x = new float[input.length];
@@ -63,41 +64,58 @@ public class MedianTransform1DTest extends TestCase {
         }
                
         System.out.println(plotter.writeFile());
+        */
         
-    }
-
-    public void testReconstruct() throws IOException {
+        /*
+        plotter = new PolygonAndPointPlotter();
         
-        ATrousWaveletTransform1D wave = new ATrousWaveletTransform1D();
+        for (int i = 0; i < outputCoeff.size(); ++i) {
+            
+            //System.out.println("last=" + Arrays.toString(
+            //    outputTransformed.get(i).a));
+            
+            x = new float[outputCoeff.get(i).a.length];
+            for (int ii = 0; ii < x.length; ++ii) {
+                x[ii] = ii;
+            }
+            
+            float yMin = MiscMath0.findMin(outputCoeff.get(i).a);
+            float yMax = MiscMath0.findMax(outputCoeff.get(i).a);
+         
+            plotter.addPlot(0.f, outputCoeff.get(i).a.length, 
+                yMin, yMax, 
+            x, outputCoeff.get(i).a, 
+            x, outputCoeff.get(i).a, 
+            "coeff");
+        }
+               
+        System.out.println(plotter.writeFile2());
+        */
         
-        float[] input = createCurve1();
         
-        List<OneDFloatArray> outputTransformed = new 
-            ArrayList<OneDFloatArray>();
-        List<OneDFloatArray> outputCoeff = new 
-            ArrayList<OneDFloatArray>();
-        wave.calculateWithB3SplineScalingFunction(input, outputTransformed, 
+        //plotter = new PolygonAndPointPlotter();
+        
+        float[] r = wave.reconstructPyramidalMultiscaleMedianTransform(
+            outputTransformed.get(outputTransformed.size() - 1),
             outputCoeff);
         
-        float[] r = wave.reconstruct(
-            outputTransformed.get(outputTransformed.size() - 1).a, 
-            outputCoeff);
-    
-        float[] x = new float[input.length];
+        /*
+        x = new float[input.length];
         for (int i = 0; i < x.length; ++i) {
             x[i] = i;
         }
         
-        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
         plotter.addPlot(0.f, input.length, 0.f, 10.f, 
             x, input, x, input, 
             "input");
+        
         plotter.addPlot(0.f, input.length, 0.f, 10.f, 
             x, r, 
             x, r, 
             "reconstructed");
         
-        System.out.println(plotter.writeFile2());
+        System.out.println(plotter.writeFile3());
+        */
             
         for (int i = 0; i < input.length; ++i) {
             float v0 = input[i];
