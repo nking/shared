@@ -126,73 +126,6 @@ public class ATrousWaveletTransform1D {
         
     }
     
-    /**
-     * The a trous algorithm is a fast implementation of a wavelet transform 
-     * with no downsampling.   It is non-orthogonal, has semi-linear runtime
-     * complexity, is invariant under translation, and the transform is 
-     * isotropic.
-     * Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
-     * The scaling function used is the higher resolution choice, the 3rd order 
-     * B Spline function.
-     * <pre>
-     * The method uses recursive convolution operations, including previous
-       * result to make next.
-       * Each convolution uses two passes of one dimensional binomial kernels,
-       * starting with the equivalent of sigma=1.
-       * For each step, the equivalent resulting sigma is from 
-       * sigma^2 = sigma_1^2 + sigma_2^2.
-       * 
-       * This method takes an argument stopIter to indicate that only stopIter
-       * number of iterations are needed.  For instance, to retrieve only the
-       * first populated wavelet, use stopIter = 2 (the first is initialization,
-       * and the second is the calculation).
-       * </pre>
-     * @param input
-     * @param outputTransformed
-     * @param outputCoeff
-     * @param stopIter
-     */
-    public void calculateWithB3SplineScalingFunction(float[] input,
-        List<OneDFloatArray> outputTransformed, List<OneDFloatArray> outputCoeff,
-        int stopIter) {
-
-        int imgDimen = input.length;
-
-        int nr = (int)(Math.log(imgDimen)/Math.log(2));
-
-        if (nr > stopIter) {
-            nr = stopIter;
-        }
-        
-        B3SplineFunction1D scalingFunction = new B3SplineFunction1D();
-        
-        OneDFloatArray cp = new OneDFloatArray(Arrays.copyOf(input, input.length));
-        outputTransformed.add(cp);
-        
-        OneDFloatArray cf = new OneDFloatArray(new float[input.length]);
-        outputCoeff.add(cf);
-
-        for (int j = 0; j < nr; ++j) {
-            
-            OneDFloatArray cJ = outputTransformed.get(j);
- 
-            OneDFloatArray cJPlus1 = new OneDFloatArray(
-                scalingFunction.calculate(cJ.a));
-           
-            outputTransformed.add(cJPlus1);
-            
-            // c_(j,k) − c_(j+1,k)
-            float[] s = Arrays.copyOf(cJ.a, cJ.a.length);
-            for (int jj = 0; jj < s.length; ++jj) {
-                s[jj] -= cJPlus1.a[jj];
-            }
-            OneDFloatArray wJPlus1 = new OneDFloatArray(s);
-            
-            outputCoeff.add(wJPlus1);
-        }
-        
-    }
-   
     public float[] reconstruct(float[] c0, List<OneDFloatArray> mmCoeff) {
 
         int nr = mmCoeff.size();
@@ -247,6 +180,7 @@ public class ATrousWaveletTransform1D {
         
      * @return 
      */
+    /*
     private float estimateLocalNoise(float[] data, int pixIdx, int xOffset) {
         
         int len = data.length;
@@ -277,4 +211,5 @@ public class ATrousWaveletTransform1D {
         
         return diff;
     }
+    */
 }

@@ -2,8 +2,10 @@ package algorithms.signalProcessing;
 
 import algorithms.misc.MiscMath0;
 import algorithms.util.OneDFloatArray;
+import algorithms.util.PolygonAndPointPlotter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;
 
@@ -74,28 +76,50 @@ public class ATrousWaveletTransform1DTest extends TestCase {
         wave.calculateWithB3SplineScalingFunction(input, outputTransformed, 
             outputCoeff);
       
-        /*
-        System.out.println("input=" + Arrays.toString(input));
-        System.out.println("last=" + Arrays.toString(
-            outputTransformed.get(outputTransformed.size() - 1).a));
+        
+        //System.out.println("input=" + Arrays.toString(input));
+        //System.out.println("last=" + Arrays.toString(
+        //    outputTransformed.get(outputTransformed.size() - 1).a));
           
         float[] x = new float[input.length];
         for (int i = 0; i < x.length; ++i) {
             x[i] = i;
         }
         
+        // errors:
+        float[] diffSq = Arrays.copyOf(outputCoeff.get(outputTransformed.size() - 1).a,
+            outputCoeff.get(outputTransformed.size() - 1).a.length);
+        float[] diffX = new float[diffSq.length];
+        for (int i = 0; i < diffSq.length; ++i) {
+            //TODO: should add these differences in quadrature for all 
+            //   transformations up to the index of transformed, 
+            //   which is the last index here
+            diffSq[i] *= diffSq[i];
+            diffSq[i] *= outputTransformed.get(outputTransformed.size() - 1).a[i];
+        }
+        
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
-        plotter.addPlot(0.f, input.length, 0.f, 2.f*bias, 
+        plotter.addPlot(0.f, input.length, 0.f, 10, 
             x, input, x, input, 
             "input");
-        plotter.addPlot(0.f, input.length, 0.f, 2.f*bias, 
+        plotter.addPlot(0.f, input.length, 0.f, 10, 
             x, 
             outputTransformed.get(outputTransformed.size() - 1).a, 
+            diffX, diffSq,
             x, 
             outputTransformed.get(outputTransformed.size() - 1).a, 
             "transformed");
+        plotter.addPlot(0.f, input.length, 
+            0.9f*MiscMath0.findMin(outputCoeff.get(outputTransformed.size() - 1).a), 
+            1.2f*MiscMath0.findMax(outputCoeff.get(outputTransformed.size() - 1).a), 
+            x, 
+            outputCoeff.get(outputTransformed.size() - 1).a, 
+            x, 
+            outputCoeff.get(outputTransformed.size() - 1).a, 
+            "coeff");
+        
         System.out.println(plotter.writeFile());
-        */
+        
         
         int min0 = MiscMath0.findYMaxIndex(input);
         int min1 = MiscMath0.findYMaxIndex(
