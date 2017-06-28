@@ -293,8 +293,8 @@ public class PolygonAndPointPlotter {
 <span class="fc" id="L293">                    dataSB.append(&quot;,\n&quot;);</span>
                 }
 <span class="fc" id="L295">                dataSB.append(&quot;    {x:&quot;).append(xPoints[i]).append(&quot;, y:&quot;).append(yPoints[i]);</span>
-<span class="pc bpc" id="L296" title="1 of 2 branches missed.">                if (xErrPoints != null) {</span>
-<span class="nc" id="L297">                    dataSB.append(&quot;, dx:&quot;).append(xErrPoints[i]).append(&quot;, dy:&quot;).append(yErrPoints[i]);</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">                if (xErrPoints != null) {</span>
+<span class="fc" id="L297">                    dataSB.append(&quot;, dx:&quot;).append(xErrPoints[i]).append(&quot;, dy:&quot;).append(yErrPoints[i]);</span>
                 }
 <span class="fc" id="L299">                dataSB.append(&quot;}&quot;);</span>
             }
@@ -457,7 +457,7 @@ public class PolygonAndPointPlotter {
     }
 
     public String writeFile() throws IOException {
-<span class="nc" id="L460">        return writeToFile(this.plotContent.toString(), &quot;points_and_polygon.html&quot;);</span>
+<span class="fc" id="L460">        return writeToFile(this.plotContent.toString(), &quot;points_and_polygon.html&quot;);</span>
     }
 
     public String writeFile2() throws IOException {
