@@ -140,6 +140,59 @@ public class NearestNeighbor2D {
         }
     }
     
+    /**
+     * 
+     * @param pointIdxs pixel indexes formed from relationship
+     *   pixIdx = (row * width) + col
+     * @param imgWidth maximum x value of any data point including
+     *    those to be queries
+     * @param maxY maximum y value of any data point including
+     *    those to be queries
+     */
+    public NearestNeighbor2D(TIntSet pointIdxs, int imgWidth, int maxY) {
+        
+        this.width = imgWidth;
+        this.height = maxY + 1;
+                
+        maxIndex = width * height;
+        
+        Integerizer<Integer> it = new Integerizer<Integer>() {
+            @Override
+            public int intValue(Integer x) {
+                return x;
+            }
+        };
+        
+        int maxW = 1 + (int)Math.ceil(Math.log(maxIndex)/Math.log(2));
+        
+        xbt = new XFastTrie<XFastTrieNode<Integer>, Integer>(
+            new XFastTrieNode<Integer>(), it, maxW);
+        
+        TIntIterator iter = pointIdxs.iterator();
+        while (iter.hasNext()) {
+            
+            int pixIdx = iter.next();
+            
+            int x = getCol(pixIdx);
+            int y = getRow(pixIdx);
+            
+            if (x > width || x < 0) {
+                throw new IllegalArgumentException(
+                    "x cannot be larger than "
+                    + " maxX given in constructor " + width
+                    + ". x=" + x);
+            }
+
+            if (y > height || y < 0) {
+                throw new IllegalArgumentException(
+                    "y cannot be larger than "
+                    + " maxY given in constructor " + height + ". y=" + y);
+            }
+            
+            xbt.add(Integer.valueOf(pixIdx));
+        }
+    }
+    
     public void doNotUseCache() {
         useCache = false;
     }
