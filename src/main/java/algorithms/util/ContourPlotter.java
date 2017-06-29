@@ -61,6 +61,7 @@ public class ContourPlotter {
             values[pixIdx] = p;
         }
 
+        content.append("var values=[");
         for (int ii = 0; ii < values.length; ++ii) {
             content.append(String.format("%.3f", values[ii]));
             content.append(", ");
@@ -68,7 +69,7 @@ public class ContourPlotter {
                 content.append("\n");
             }
         }
-        content.append("]");
+        content.append("];\n");
         content.append("var n=").append(width)
             .append(", m=").append(height).append("\n");
     
@@ -127,7 +128,7 @@ public class ContourPlotter {
         content.append("   path = d3.geoPath(null, context),\n");
         content.append("   thresholds = d3.range(-1.2, 1, 0.2),\n");
         content.append("   contours = d3.contours().size([n, m]);\n");
-        content.append("context.scale((canvas.width/n), (canvas.height/n));\n");
+        content.append("context.scale((canvas.width/n), (canvas.height/m));\n");
         content.append("var dv = 0;\n");
         content.append("contours\n");
         content.append("   .thresholds(thresholds.map(function(v) { return v + dv; }))\n");
