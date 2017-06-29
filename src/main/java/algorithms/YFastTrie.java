@@ -415,7 +415,7 @@ YFastTrie
                 + "be greater than or equal to 0");
         } else if (node > maxC) {
             throw new IllegalArgumentException("node must "
-                + "be less than " + maxC);
+                + "be less than " + maxC + ". node=" + node);
         }
                 
         int index = node/binSz;
