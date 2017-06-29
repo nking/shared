@@ -674,6 +674,13 @@ public class NearestNeighbor2D {
         
         double dp2 = dist(x, y, predecessor);
         double ds2 = dist(x, y, successor);
+        if (!includeEquals) {
+            if (dp2 == 0) {
+                ds2 = Integer.MAX_VALUE;
+            } else if (ds2 == 0) {
+                ds2 = Integer.MAX_VALUE;
+            }
+        }
         if (dp2 <= ds2 && (dp2 <= dMax)) {
             closestDist = dp2;
             closestIndexes.add(predecessor.intValue());
@@ -741,6 +748,11 @@ public class NearestNeighbor2D {
                 dp2 = dist(x, y, p2);
                 ds2 = dist(x, y, s2);
             }
+            if (!includeEquals) {
+                if (s2 != null && s2.intValue() == idx) {
+                    ds2 = Integer.MAX_VALUE;
+                }
+            }
             if ((dp2 < ds2) && (dp2 < closestDist) && (dp2 <= dMax)) {
                 closestIndexes.clear();
                 closestDist = dp2;
@@ -751,6 +763,7 @@ public class NearestNeighbor2D {
                 }
                 yLow = estimateLowBound(y, goal);                
             } else if ((ds2 < dp2) && (ds2 < closestDist) && (ds2 <= dMax)) {
+                           
                 closestIndexes.clear();
                 closestDist = ds2;
                 closestIndexes.add(s2);
@@ -760,13 +773,13 @@ public class NearestNeighbor2D {
                 }
                 yLow = estimateLowBound(y, goal);
             } else if (dp2 == closestDist && (dp2 != Double.MAX_VALUE)
-                && (dp2 <= dMax)) {
+                && (dp2 <= dMax)) {               
                 closestIndexes.add(p2.intValue());
                 if (dp2 == ds2) {
                     closestIndexes.add(s2.intValue());
                 }
             } else if (ds2 == closestDist && (ds2 != Double.MAX_VALUE)
-                && (ds2 <= dMax)) {
+                && (ds2 <= dMax)) {                
                 closestIndexes.add(s2.intValue());
             }
             
@@ -825,16 +838,23 @@ public class NearestNeighbor2D {
                 dp2 = dist(x, y, p2);
                 ds2 = dist(x, y, s2);
             }
+            if (!includeEquals) {
+                if (p2 != null && p2.intValue() == idx) {
+                    dp2 = Integer.MAX_VALUE;
+                } else if (s2 != null && s2.intValue() == idx) {
+                    ds2 = Integer.MAX_VALUE;
+                }
+            }
             if ((dp2 < ds2) && (dp2 < closestDist) && (dp2 <= dMax)) {
                 closestIndexes.clear();
-                closestDist = dp2;
+                closestDist = dp2;                
                 closestIndexes.add(p2);
                 goal = (int)Math.ceil(closestDist);
                 if (goal > dMax) {
                     goal = dMax;
                 }
                 yHigh = estimateHighBound(y, goal);
-            } else if ((ds2 < dp2) && (ds2 < closestDist) && (ds2 <= dMax)) {
+            } else if ((ds2 < dp2) && (ds2 < closestDist) && (ds2 <= dMax)) {                
                 closestIndexes.clear();
                 closestDist = ds2;
                 closestIndexes.add(s2);
@@ -844,13 +864,13 @@ public class NearestNeighbor2D {
                 }
                 yHigh = estimateHighBound(y, goal);
             } else if (dp2 == closestDist && (dp2 != Double.MAX_VALUE)
-                && (dp2 <= dMax)) {
+                && (dp2 <= dMax)) {                
                 closestIndexes.add(p2.intValue());
-                if (dp2 == ds2) {
+                if (dp2 == ds2) {                    
                     closestIndexes.add(s2.intValue());
                 }
             } else if (ds2 == closestDist && (ds2 != Double.MAX_VALUE)
-                && (ds2 <= dMax)) {
+                && (ds2 <= dMax)) {                
                 closestIndexes.add(s2.intValue());
             } 
             
