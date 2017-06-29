@@ -245,7 +245,8 @@ public class NearestNeighbor2D {
      * method to return only the nearest point and any
      * that are at the same distance within a tolerance.
      * This is meant to be a nearest neighbor method
-     * with a tolerance.  
+     * with ability to return more than one at same distance within a tolerance
+     * of that distance.  
      * TODO: calculate the runtime complexity bounds....
      * @param x non-negative x coord to query for
      * @param y non-negative y coord to query for
@@ -544,6 +545,35 @@ public class NearestNeighbor2D {
  
         return results;
     }
+   
+       
+    /**
+    <pre>
+      runtime complexity is
+         best case: 2 * O(log_2(maxW)).
+            Note that caching leads to an O(1) term
+            over time instead of the logarithmic term.
+            
+         worst case: nRows * 2 * O(log_2(maxW))
+         
+         Note, worst case is: first column
+         filled with points and all else is empty and
+         the number of rows is same or larger than 
+         number of columns and the
+         query is for the point in the last column and
+         last row... a predecessor call is necessary for
+         each row in the worst case.
+          
+     Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));            
+     </ore>
+    
+     * @param x non-negative x coord to query for
+     * @param y non-negative y coord to query for
+     */
+    public Set<PairInt> findClosestNotEqual(final int x, final int y) {
+        
+        return findClosest(x, y, Integer.MAX_VALUE, false);
+    }
     
     /**
     <pre>
@@ -564,6 +594,28 @@ public class NearestNeighbor2D {
      * closest points, else returns an empty set
      */
     public Set<PairInt> findClosest(int x, int y, int dMax) {
+        return findClosest(x, y, dMax, true);
+    }
+    
+    /**
+    <pre>
+      runtime complexity is
+         best case: 2 * O(log_2(maxW)).
+            Note that caching leads to an O(1) term
+            over time instead of the logarithmic term.
+            
+         worst case: dMax * 4 * O(log_2(maxW))
+         
+      Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));
+     </ore>
+    
+     * @param x
+     * @param y
+     * @param dMax
+     * @return a set of points within dMax that are the 
+     * closest points, else returns an empty set
+     */
+    private Set<PairInt> findClosest(int x, int y, int dMax, boolean includeEquals) {
         
         if (x >= width || x < 0) {
             //throw new IllegalArgumentException(
@@ -585,11 +637,13 @@ public class NearestNeighbor2D {
         int idx = getInternalIndex(x, y);
         Integer index = Integer.valueOf(idx);
         
-        Integer q = xbt.find(index);
-        if (q != null) {
-            Set<PairInt> results = new HashSet<PairInt>();
-            results.add(new PairInt(x, y));
-            return results;
+        if (includeEquals) {
+            Integer q = xbt.find(index);
+            if (q != null) {
+                Set<PairInt> results = new HashSet<PairInt>();
+                results.add(new PairInt(x, y));
+                return results;
+            }
         }
                 
         TIntSet closestIndexes = new TIntHashSet();
@@ -660,7 +714,7 @@ public class NearestNeighbor2D {
             int cIdx = getInternalIndex(x, yCurrent);
             Integer cIndex = Integer.valueOf(cIdx);
             
-            q = xbt.find(cIndex);
+            Integer q = xbt.find(cIndex);
             if (q != null) {
                 p2 = q;
                 dp2 = dist(x, y, p2);
@@ -744,7 +798,7 @@ public class NearestNeighbor2D {
         while (yCurrent <= yHigh) {
             int cIdx = getInternalIndex(x, yCurrent);
             Integer cIndex = Integer.valueOf(cIdx);            
-            q = xbt.find(cIndex);
+            Integer q = xbt.find(cIndex);
             if (q != null) {
                 p2 = q;
                 dp2 = dist(x, y, p2);
