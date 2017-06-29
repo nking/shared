@@ -13,7 +13,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * writes an html file using the d3.js library.
+ * https://github.com/d3/
+ * which has a BSD 3-clause "New" or "Revised" License
+ * https://github.com/d3/d3/blob/master/LICENSE
+ * 
+ * 
    first implemented in projects
      https://github.com/nking/two-point-correlation
      w/ Copyright (c) 2013-2015 Nichole King
