@@ -415,7 +415,7 @@ YFastTrie
                 + &quot;be greater than or equal to 0&quot;);
 <span class="pc bpc" id="L416" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
 <span class="nc" id="L417">            throw new IllegalArgumentException(&quot;node must &quot;</span>
-                + &quot;be less than &quot; + maxC);
+                + &quot;be less than &quot; + maxC + &quot;. node=&quot; + node);
         }
                 
 <span class="fc" id="L421">        int index = node/binSz;</span>

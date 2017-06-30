@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ContourPlotter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.util</a> &gt; <span class="el_source">ContourPlotter.java</span></div><h1>ContourPlotter.java</h1><pre class="source lang-java linenums">package algorithms.util;
+
+import gnu.trove.iterator.TIntFloatIterator;
+import gnu.trove.map.TIntFloatMap;
+import java.io.IOException;
+
+/**
+ * uses the d3.js library and contour example to make an
+ * html contour plot.
+ * 
+ * https://github.com/d3/d3-contour
+ * which has a BSD 3-clause &quot;New&quot; or &quot;Revised&quot; License
+ * https://github.com/d3/d3/blob/master/LICENSE
+ * 
+ * https://bl.ocks.org/mbostock/7f5f22524bd1d824dd53c535eda0187f
+ * is Released under the GNU General Public License, version 3.
+ * 
+ * @author nichole
+ */
+<span class="nc" id="L20">public class ContourPlotter {</span>
+        
+    private StringBuilder init() {
+<span class="nc" id="L23">        StringBuilder content = new StringBuilder();</span>
+<span class="nc" id="L24">        content.append(&quot;&lt;!DOCTYPE html&gt;\n&quot;);</span>
+<span class="nc" id="L25">        content.append(&quot;&lt;style&gt;&quot;);</span>
+<span class="nc" id="L26">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L27">        content.append(&quot;.domain { display: none;}&quot;);</span>
+<span class="nc" id="L28">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L29">        content.append(&quot;.axis line { fill: none; stroke: black; stroke-width: 1; shape-rendering: crispEdges; }&quot;);</span>
+<span class="nc" id="L30">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L31">        content.append(&quot;text { dominant-baseline: central; font-size: 14pt; font-weight: bold; }&quot;);</span>
+<span class="nc" id="L32">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L33">        content.append(&quot;&lt;/style&gt;&quot;);</span>
+<span class="nc" id="L34">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L35">        content.append(&quot;&lt;canvas width='960' height='960'&gt;&lt;/canvas&gt;&quot;);</span>
+<span class="nc" id="L36">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L37">        content.append(&quot;&lt;svg width='1060' height='1060' style='position: absolute; left: 0; top: 0;'&gt;&lt;/svg&gt;&quot;);</span>
+<span class="nc" id="L38">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L39">        content.append(&quot;&lt;script src='https://d3js.org/d3.v4.min.js'&gt;&lt;/script&gt;&quot;);</span>
+<span class="nc" id="L40">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L41">        content.append(&quot;&lt;script src='https://d3js.org/d3-contour.v1.min.js'&gt;&lt;/script&gt;&quot;);</span>
+<span class="nc" id="L42">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L43">        content.append(&quot;&lt;script src='https://d3js.org/d3-scale-chromatic.v1.min.js'&gt;&lt;/script&gt;&quot;);</span>
+<span class="nc" id="L44">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L45">        content.append(&quot;&lt;script&gt;&quot;);</span>
+<span class="nc" id="L46">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L47">        return content;</span>
+    }
+    
+    public String writeFile(TIntFloatMap pixValueMap, int width, int height,
+        String fileName) throws IOException {
+        
+<span class="nc" id="L53">        StringBuilder content = init();</span>
+       
+<span class="nc" id="L55">        float[] values = new float[width * height];</span>
+<span class="nc" id="L56">        TIntFloatIterator iter2 = pixValueMap.iterator();</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        for (int ii = 0; ii &lt; pixValueMap.size(); ++ii) {</span>
+<span class="nc" id="L58">            iter2.advance();</span>
+<span class="nc" id="L59">            int pixIdx = iter2.key();</span>
+<span class="nc" id="L60">            float p = iter2.value();</span>
+<span class="nc" id="L61">            values[pixIdx] = p;</span>
+        }
+
+<span class="nc" id="L64">        content.append(&quot;var values=[&quot;);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        for (int ii = 0; ii &lt; values.length; ++ii) {</span>
+<span class="nc" id="L66">            content.append(String.format(&quot;%.3f&quot;, values[ii]));</span>
+<span class="nc" id="L67">            content.append(&quot;, &quot;);</span>
+<span class="nc bnc" id="L68" title="All 4 branches missed.">            if (ii &gt; 0 &amp;&amp; ((ii % 10) == 0)) {</span>
+<span class="nc" id="L69">                content.append(&quot;\n&quot;);</span>
+            }
+        }
+<span class="nc" id="L72">        content.append(&quot;];\n&quot;);</span>
+<span class="nc" id="L73">        content.append(&quot;var n=&quot;).append(width)</span>
+<span class="nc" id="L74">            .append(&quot;, m=&quot;).append(height).append(&quot;\n&quot;);</span>
+    
+<span class="nc" id="L76">        addClose(content);</span>
+    
+<span class="nc" id="L78">        return writeToFile(content.toString(), fileName);</span>
+    }
+    
+    private void addClose(StringBuilder content) {
+        
+<span class="nc" id="L83">        content.append(&quot;var w=n, h=m;&quot;);</span>
+<span class="nc" id="L84">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L85">        content.append(&quot;var svg = d3.select('svg'),&quot;);</span>
+<span class="nc" id="L86">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L87">        content.append(&quot;  width = +svg.attr('width'),&quot;);</span>
+<span class="nc" id="L88">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L89">        content.append(&quot;  height = +svg.attr('height'),&quot;);</span>
+<span class="nc" id="L90">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L91">        content.append(&quot;  margin = {top: 0, right: 100, bottom: 100, left: 0};&quot;);</span>
+<span class="nc" id="L92">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L93">        content.append(&quot;var x = d3.scaleLinear().domain([0, n]).range([0, width]);&quot;);</span>
+<span class="nc" id="L94">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L95">        content.append(&quot;y = d3.scaleLinear().domain([m, 0]).range([height - margin.bottom, margin.top]);&quot;);</span>
+<span class="nc" id="L96">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L97">        content.append(&quot;var color = d3.scaleSequential(d3.interpolateYlGnBu)&quot;);</span>
+<span class="nc" id="L98">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L99">        content.append(&quot;   .domain([0, 1.8]); // Points per square pixel.&quot;);</span>
+<span class="nc" id="L100">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L101">        content.append(&quot;svg.append('g')&quot;);</span>
+<span class="nc" id="L102">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L103">        content.append(&quot;   .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')&quot;);</span>
+<span class="nc" id="L104">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L105">        content.append(&quot;   .call(d3.axisBottom(x).ticks(null, '.1f'))&quot;);</span>
+<span class="nc" id="L106">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L107">        content.append(&quot;   .select('.tick:last-of-type text')&quot;);</span>
+<span class="nc" id="L108">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L109">        content.append(&quot;   .select(function() { return this.parentNode.appendChild(this.cloneNode()); })&quot;);</span>
+<span class="nc" id="L110">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L111">        content.append(&quot;   .attr('y', -3).attr('dy', null)&quot;);</span>
+<span class="nc" id="L112">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L113">        content.append(&quot;   .attr('font-weight', 'bold')&quot;);</span>
+<span class="nc" id="L114">        content.append(&quot;\n&quot;);</span>
+<span class="nc" id="L115">        content.append(&quot;   .text('X');\n&quot;);</span>
+<span class="nc" id="L116">        content.append(&quot;svg.append('g')\n&quot;);</span>
+<span class="nc" id="L117">        content.append(&quot;   .attr('transform', 'translate(' + 960 + ',0)')\n&quot;);</span>
+<span class="nc" id="L118">        content.append(&quot;   .call(d3.axisRight(y).ticks(null, '.1s'))\n&quot;);</span>
+<span class="nc" id="L119">        content.append(&quot;   .select('.tick:last-of-type text')\n&quot;);</span>
+<span class="nc" id="L120">        content.append(&quot;   .select(function() { return this.parentNode.appendChild(this.cloneNode()); })\n&quot;);</span>
+<span class="nc" id="L121">        content.append(&quot;   .attr('x', 3)\n&quot;);</span>
+<span class="nc" id="L122">        content.append(&quot;   .attr('text-anchor', 'start')\n&quot;);</span>
+<span class="nc" id="L123">        content.append(&quot;   .attr('font-weight', 'bold')\n&quot;);</span>
+<span class="nc" id="L124">        content.append(&quot;   .text('Y');\n&quot;);</span>
+<span class="nc" id="L125">        content.append(&quot;var canvas = document.querySelector('canvas'),\n&quot;);</span>
+<span class="nc" id="L126">        content.append(&quot;   context = canvas.getContext('2d'),\n&quot;);</span>
+<span class="nc" id="L127">        content.append(&quot;   color = d3.scaleSequential(d3.interpolateRdBu).domain([-1, 1]),\n&quot;);</span>
+<span class="nc" id="L128">        content.append(&quot;   path = d3.geoPath(null, context),\n&quot;);</span>
+<span class="nc" id="L129">        content.append(&quot;   thresholds = d3.range(-1.2, 1, 0.2),\n&quot;);</span>
+<span class="nc" id="L130">        content.append(&quot;   contours = d3.contours().size([n, m]);\n&quot;);</span>
+<span class="nc" id="L131">        content.append(&quot;context.scale((canvas.width/n), (canvas.height/m));\n&quot;);</span>
+<span class="nc" id="L132">        content.append(&quot;var dv = 0;\n&quot;);</span>
+<span class="nc" id="L133">        content.append(&quot;contours\n&quot;);</span>
+<span class="nc" id="L134">        content.append(&quot;   .thresholds(thresholds.map(function(v) { return v + dv; }))\n&quot;);</span>
+<span class="nc" id="L135">        content.append(&quot;   (values)\n&quot;);</span>
+<span class="nc" id="L136">        content.append(&quot;   .forEach(fill);\n&quot;);</span>
+<span class="nc" id="L137">        content.append(&quot;function fill(geometry) {\n&quot;);</span>
+<span class="nc" id="L138">        content.append(&quot;   context.beginPath();\n&quot;);</span>
+<span class="nc" id="L139">        content.append(&quot;   path(geometry);\n&quot;);</span>
+<span class="nc" id="L140">        content.append(&quot;   context.fillStyle = color(geometry.value);\n&quot;);</span>
+<span class="nc" id="L141">        content.append(&quot;   context.fill();\n&quot;);</span>
+<span class="nc" id="L142">        content.append(&quot;}\n&quot;);</span>
+<span class="nc" id="L143">        content.append(&quot;&lt;/script&gt;\n&quot;);</span>
+<span class="nc" id="L144">    }</span>
+    
+    protected String writeToFile(String fileContent, String fileName) throws IOException {
+
+<span class="nc" id="L148">        return ResourceFinder.writeToCWD(fileContent, fileName);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
