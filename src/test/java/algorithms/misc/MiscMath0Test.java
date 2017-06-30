@@ -1,17 +1,13 @@
 package algorithms.misc;
 
-import algorithms.util.Errors;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
-import java.security.SecureRandom;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import java.util.logging.Logger;
-import algorithms.util.PolygonAndPointPlotter;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import junit.framework.TestCase;
@@ -256,5 +252,13 @@ public class MiscMath0Test extends TestCase {
         assertEquals(2, minmaxXY[3]);
     }
 
-    
+    public void testFindYMaxIndex_list() {
+        
+        int[] a = new int[]{1,5,7,2,4,8,3};
+        TIntList input = new TIntArrayList(a);
+        
+        int maxIdx = MiscMath0.findYMaxIndex(input);
+        
+        assertEquals(5, maxIdx);
+    }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import gnu.trove.set.TIntSet;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
 
 /**
     miscellaneous math methods. some could probably be improved.
@@ -209,6 +210,21 @@ public class MiscMath0 {
         for (int i = 0; i < a.length; i++) {
             if (a[i] > max) {
                 max = a[i];
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public static int findYMaxIndex(TIntList a) {
+        if (a == null || a.size() == 0) {
+            return -1;
+        }
+        int max = Integer.MIN_VALUE;
+        int index = 0;
+        for (int i = 0; i < a.size(); i++) {
+            if (a.get(i) > max) {
+                max = a.get(i);
                 index = i;
             }
         }
