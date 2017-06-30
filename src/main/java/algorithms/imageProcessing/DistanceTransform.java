@@ -386,7 +386,7 @@ public class DistanceTransform {
           1 1 0 0 0 0 0 1 1 
 
         distance transform:
-          0 0 1 2 4 2 1 0 0
+          0 0 1 2 3 2 1 0 0
      * </pre>
      * 
      * an O(N) runtime complexity algorithm for computing the distance transform
