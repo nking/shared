@@ -401,15 +401,31 @@ public class DistanceTransform {
      */
     public int[] applyMeijsterEtAl1D(int[] input) {
         
-        int[][] in = new int[1][];
-        in[0] = Arrays.copyOf(input, input.length);
+        int[] g = new int[input.length];
         
-        int[][] out = new int[1][];
-        out[0] = new int[input.length];
+        // scan 1
+        if (input[0] > 0) {
+            g[0] = 0;
+        } else {
+            g[0] = inf;
+        }
+
+        for (int y = 1; y < input.length; ++y) {
+            if (input[y] > 0) {
+                g[y] = 0;
+            } else {
+                g[y] = (g[y - 1] == inf) ? inf : g[y - 1] + 1;
+            }
+        }
+
+        // scan 2
+        for (int y = input.length - 2; y > -1; --y) {
+            if (g[y + 1] < g[y]) {
+                g[y] = g[y + 1] + 1;
+            }
+        }
         
-        applyPhase1(in, out, in.length, in[0].length);
-                
-        return out[0];
+        return g;
     }
     
 }
