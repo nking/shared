@@ -9,6 +9,7 @@ import algorithms.util.PixelHelper;
 import algorithms.util.ResourceFinder;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import junit.framework.TestCase;
@@ -357,7 +358,7 @@ public class DistanceTransformTest extends TestCase {
         histSqrtInv.plotHistogram("clstr", "_cluster_inv");
         
         String bin = ResourceFinder.findDirectory("bin");
-        
+        /*
         for (int row = (h - 1); row > -1; row--) {
             StringBuilder sb = new StringBuilder(String.format("row %2d:  ", row));
             for (int col = 0; col < w; col++) {
@@ -373,7 +374,7 @@ public class DistanceTransformTest extends TestCase {
         }
         System.out.println(sb.toString());
         System.out.println("\n");
-        
+        */
     }
     
     public static Set<PairInt> getWikipediaDBScanExampleData() {
@@ -497,7 +498,7 @@ public class DistanceTransformTest extends TestCase {
             }
         }
         
-        System.out.println("xmin=" + xMin + " xmax=" + xMax + " ymin=" + yMin + " yMax=" + yMax);
+        //System.out.println("xmin=" + xMin + " xmax=" + xMax + " ymin=" + yMin + " yMax=" + yMax);
         
         Set<PairInt> points = new HashSet<PairInt>();
         for (int i = 0; i < x.length; i++) {
@@ -506,5 +507,17 @@ public class DistanceTransformTest extends TestCase {
         }
         
         return points;
+    }
+    
+    public void test1D() {
+        
+        int[] a = new int[]{1, 1, 0, 0, 0, 0, 0, 1, 1};
+        
+        int[] expected = new int[]{0, 0, 1, 2, 3, 2, 1, 0, 0};
+       
+        DistanceTransform distTrans = new DistanceTransform();
+        int[] b = distTrans.applyMeijsterEtAl1D(a);
+        
+        assertTrue(Arrays.equals(expected, b));
     }
 }

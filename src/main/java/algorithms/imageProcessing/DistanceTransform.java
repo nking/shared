@@ -3,6 +3,7 @@ package algorithms.imageProcessing;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
 import gnu.trove.set.TIntSet;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -367,4 +368,42 @@ public class DistanceTransform {
         
         return sep;
     }
+    
+    /**
+     * The square of Euclidean distances are computed for every zero pixel 
+     * relative to the nearest non-zero pixels for one-dimensional input.
+     * <pre>
+     * For example
+     * original data:
+          1 1 0 0 0 0 0 1 1 
+
+        distance transform:
+          0 0 1 2 4 2 1 0 0
+     * </pre>
+     * 
+     * an O(N) runtime complexity algorithm for computing the distance transform
+     * by Meijster, Roerdink, and Hesselink 2000, implemented from their pseudocode.
+     * "Mathematical Morphology and its Applications to Image and Signal Processing",
+       in Volume 18 of the series Computational Imaging and Vision, 200, pp 331-340
+       * ISBN 978-0-306-47025-7
+     *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
+     * 
+     * @param input
+     * @return 
+     */
+    public int[] applyMeijsterEtAl1D(int[] input) {
+        
+        int[][] in = new int[1][];
+        in[0] = Arrays.copyOf(input, input.length);
+        
+        int[][] out = applyMeijsterEtAl(in);
+        
+        int[] out1D = out[0];
+        for (int i = 0; i < out1D.length; ++i) {
+            out1D[i] = (int)Math.round(Math.sqrt(out1D[i]));
+        }
+        
+        return out1D;
+    }
+    
 }
