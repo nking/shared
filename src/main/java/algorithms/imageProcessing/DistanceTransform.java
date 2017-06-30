@@ -222,6 +222,14 @@ public class DistanceTransform {
                 }
             }
         }
+        
+        /*
+        {//DEBUG
+            System.out.println("phase1: g=");
+            for (int i = 0; i < g.length; ++i) {
+                System.out.println(Arrays.toString(g[i]));
+            }
+        }*/
     }
     
     private void applyPhase1(Set<PairInt> points, int[][] g, final int width, 
@@ -396,14 +404,12 @@ public class DistanceTransform {
         int[][] in = new int[1][];
         in[0] = Arrays.copyOf(input, input.length);
         
-        int[][] out = applyMeijsterEtAl(in);
+        int[][] out = new int[1][];
+        out[0] = new int[input.length];
         
-        int[] out1D = out[0];
-        for (int i = 0; i < out1D.length; ++i) {
-            out1D[i] = (int)Math.round(Math.sqrt(out1D[i]));
-        }
-        
-        return out1D;
+        applyPhase1(in, out, in.length, in[0].length);
+                
+        return out[0];
     }
     
 }
