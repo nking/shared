@@ -93,11 +93,15 @@ public class Interp {
             int i0_0 = (int)i0;
             int i0_1 = (int)Math.ceil(i0);
             
+            if (i0_1 >= input.length) {
+                i0_1 = input.length - 1;
+            }
+             
             if (i0_1 == i0_0) {
                 output[i] = input[i0_0];
                 continue;
             }
-                        
+                       
             float va = input[i0_0];
             float vb = input[i0_1];
             

@@ -16,7 +16,11 @@ public class MedianTransform1D {
      * multiscalePyramidalMedianTransform(...) if exact is needed);
      * following pseudocode in http://www.multiresolution.com/svbook.pdf
      * "Handbook of Astronomical Data Analysis" by
-     * Jean-Luc Starck and Fionn Murtagh, pg 121
+     * Jean-Luc Starck and Fionn Murtagh, pg 121.
+     * 
+     * Note that the length of outputCoeff is one less than 
+     * outputTransformed because the iteration stops and cannot calculate the
+     * next difference.
      * @param input
      * @param outputTransformed
      * @param outputCoeff 
@@ -54,10 +58,12 @@ public class MedianTransform1D {
             
             assert(cJ.a.length == cJPlus1Ast.length);
             
+            printSizes(outputTransformed, outputCoeff);
+            
             // decimation:
             float[] cJPlus1;
             if ((cJPlus1Ast.length & 1) == 1) {
-                int outLength = cJ.a.length/2;
+                int outLength = cJPlus1Ast.length/2;
                 cJPlus1 = interp.linearInterp(
                     cJPlus1Ast, outLength, -256, 255);
             } else {
@@ -74,9 +80,15 @@ public class MedianTransform1D {
             
             assert(cJ.a.length == wJPlus1.a.length);
         }
-        
-        // empty full size image
         outputCoeff.remove(0);
+    }
+    private void printSizes(List<OneDFloatArray> t, List<OneDFloatArray> c) {
+        for (int i = 0; i < t.size(); ++i) {
+            System.out.println("i=" + i + " tr.len=" + t.get(i).a.length);
+        }
+        for (int i = 0; i < c.size(); ++i) {
+            System.out.println("i=" + i + " c.len=" + c.get(i).a.length);
+        }
     }
     
      /**
