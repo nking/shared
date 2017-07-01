@@ -16,7 +16,7 @@ public class MedianTransform1D {
      * multiscalePyramidalMedianTransform(...) if exact is needed);
      * following pseudocode in http://www.multiresolution.com/svbook.pdf
      * "Handbook of Astronomical Data Analysis" by
-     * Jean-Luc Starck and Fionn Murtagh
+     * Jean-Luc Starck and Fionn Murtagh, pg 121
      * @param input
      * @param outputTransformed
      * @param outputCoeff 
@@ -57,7 +57,7 @@ public class MedianTransform1D {
             // decimation:
             float[] cJPlus1;
             if ((cJPlus1Ast.length & 1) == 1) {
-                int outLength = cJ.a.length;
+                int outLength = cJ.a.length/2;
                 cJPlus1 = interp.linearInterp(
                     cJPlus1Ast, outLength, -256, 255);
             } else {

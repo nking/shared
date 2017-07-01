@@ -117,12 +117,14 @@ public class MedianTransform1DTest extends TestCase {
         System.out.println(plotter.writeFile3());
         */
             
+        assertEquals(r.length, input.length);
+        
         for (int i = 0; i < input.length; ++i) {
             float v0 = input[i];
             float v1 = r[i];
             float diff = Math.abs(v0 - v1);
             //System.out.println("diff=" + diff);
-            assertEquals(0.f, diff);
+            assertTrue(Math.abs(diff) < 1);
         }
         
     }
