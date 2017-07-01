@@ -28,6 +28,14 @@ import java.util.Arrays;
  */
 public class MinMaxPeakFinder {
     
+    /**
+     * find the indexes of the array values which are local maxima 
+     * whose values are above a calculated lowThreshold and a 
+     * fixed factor 2.5 above
+     * one of the adjacent minima.
+     * @param values
+     * @return 
+     */
     public int[] findPeaks(float[] values) {
                 
         float mean3Percent = calculateMeanOfSmallest(values, 0.03f);
@@ -62,6 +70,16 @@ public class MinMaxPeakFinder {
         return mean;
     }
     
+    /**
+     * find the indexes of the array values which are local maxima whose
+     * values are above lowThreshold and a factor factorAboveMin above
+     * one of the adjacent minima.
+     * 
+     * @param values
+     * @param lowThreshold
+     * @param factorAboveMin
+     * @return 
+     */
     public int[] findPeaks(float[] values, float lowThreshold, 
         float factorAboveMin) {
         
