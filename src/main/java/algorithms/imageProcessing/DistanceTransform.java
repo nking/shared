@@ -35,6 +35,8 @@ public class DistanceTransform {
     /**
      * The square of Euclidean distances are computed for every zero pixel 
      * relative to the nearest non-zero pixels for two-dimensional input.
+     * Note that values 1 and 2 do not need square root applied 
+     * when extracting the distances.
      * <pre>
      * For example
      * original data:
@@ -90,6 +92,8 @@ public class DistanceTransform {
     /**
      * The square of Euclidean distances are computed for every zero pixel 
      * relative to the nearest non-zero pixels for two-dimensional input.
+     * Note that values 1 and 2 do not need square root applied 
+     * when extracting the distances.
      * <pre>
      * For example
      * original data:
@@ -144,6 +148,8 @@ public class DistanceTransform {
     /**
      * The square of Euclidean distances are computed for every zero pixel 
      * relative to the nearest non-zero pixels for two-dimensional input.
+     * Note that values 1 and 2 do not need square root applied 
+     * when extracting the distances.
      * <pre>
      * For example
      * original data:
@@ -378,7 +384,7 @@ public class DistanceTransform {
     }
     
     /**
-     * The square of Euclidean distances are computed for every zero pixel 
+     * The Euclidean distances are computed for every zero pixel 
      * relative to the nearest non-zero pixels for one-dimensional input.
      * <pre>
      * For example
