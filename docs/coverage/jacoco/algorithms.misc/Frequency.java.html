@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Frequency.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.misc</a> &gt; <span class="el_source">Frequency.java</span></div><h1>Frequency.java</h1><pre class="source lang-java linenums">package algorithms.misc;
+
+import gnu.trove.list.TIntList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+
+/**
+ * miscellaneous methods for counting the occurrence
+ * of numbers
+ * 
+ * @author nichole
+ */
+<span class="fc" id="L13">public class Frequency {</span>
+    
+    /**
+     * create sorted frequency arrays of input values.
+     * 
+     * runtime complexity is O(N*log_2(N))
+     * 
+     * @param input
+     * @param outputValues
+     * @param outputCounts
+     * @param excludeZeros 
+     */
+    public void calcFrequency(int[][] input, TIntList outputValues,
+        TIntList outputCounts, boolean excludeZeros) {
+        
+<span class="fc" id="L28">        TIntIntMap valueCountMap = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        for (int i = 0; i &lt; input.length; ++i) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">            for (int j = 0; j &lt; input[i].length; ++j) {</span>
+       
+<span class="fc" id="L32">                int v = input[i][j];</span>
+<span class="pc bpc" id="L33" title="1 of 4 branches missed.">                if (v == 0 &amp;&amp; excludeZeros) {</span>
+<span class="fc" id="L34">                    continue;</span>
+                }
+                //NOTE: trove maps return value 0 when key isn'r present
+<span class="fc" id="L37">                int c = valueCountMap.get(v);</span>
+<span class="fc" id="L38">                valueCountMap.put(v, c + 1);</span>
+            }
+        }
+<span class="fc" id="L41">        outputValues.clear();</span>
+<span class="fc" id="L42">        outputValues.add(valueCountMap.keys());</span>
+<span class="fc" id="L43">        outputValues.sort();</span>
+    
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (int i = 0;i &lt; outputValues.size(); ++i) {</span>
+<span class="fc" id="L46">            int v = outputValues.get(i);</span>
+<span class="fc" id="L47">            outputCounts.add(valueCountMap.get(v));</span>
+        }
+<span class="fc" id="L49">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

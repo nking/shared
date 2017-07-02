@@ -93,24 +93,28 @@
 <span class="fc" id="L93">            int i0_0 = (int)i0;</span>
 <span class="fc" id="L94">            int i0_1 = (int)Math.ceil(i0);</span>
             
-<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (i0_1 == i0_0) {</span>
-<span class="fc" id="L97">                output[i] = input[i0_0];</span>
-<span class="fc" id="L98">                continue;</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">            if (i0_1 &gt;= input.length) {</span>
+<span class="nc" id="L97">                i0_1 = input.length - 1;</span>
             }
-                        
-<span class="fc" id="L101">            float va = input[i0_0];</span>
-<span class="fc" id="L102">            float vb = input[i0_1];</span>
+             
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if (i0_1 == i0_0) {</span>
+<span class="fc" id="L101">                output[i] = input[i0_0];</span>
+<span class="fc" id="L102">                continue;</span>
+            }
+                       
+<span class="fc" id="L105">            float va = input[i0_0];</span>
+<span class="fc" id="L106">            float vb = input[i0_1];</span>
             
-<span class="fc" id="L104">            float d = (float)(i0_1 - i0_0);</span>
-<span class="fc" id="L105">            float fa = ((float)i0_1 - i0)/d;</span>
-<span class="fc" id="L106">            float fb = (i0 - (float)i0_0)/d;</span>
+<span class="fc" id="L108">            float d = (float)(i0_1 - i0_0);</span>
+<span class="fc" id="L109">            float fa = ((float)i0_1 - i0)/d;</span>
+<span class="fc" id="L110">            float fb = (i0 - (float)i0_0)/d;</span>
                         
-<span class="fc" id="L108">            float v = va * fa + vb * fb;</span>
+<span class="fc" id="L112">            float v = va * fa + vb * fb;</span>
             
-<span class="fc" id="L110">            output[i] = v;</span>
+<span class="fc" id="L114">            output[i] = v;</span>
         }
 
-<span class="fc" id="L113">        return output;</span>
+<span class="fc" id="L117">        return output;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
