@@ -57,9 +57,7 @@ public class MedianTransform1D {
             float[] cJPlus1Ast = med.calculate(cJ.a, winL);   
             
             assert(cJ.a.length == cJPlus1Ast.length);
-            
-            printSizes(outputTransformed, outputCoeff);
-            
+                        
             // decimation:
             float[] cJPlus1;
             if ((cJPlus1Ast.length & 1) == 1) {
@@ -81,14 +79,6 @@ public class MedianTransform1D {
             assert(cJ.a.length == wJPlus1.a.length);
         }
         outputCoeff.remove(0);
-    }
-    private void printSizes(List<OneDFloatArray> t, List<OneDFloatArray> c) {
-        for (int i = 0; i < t.size(); ++i) {
-            System.out.println("i=" + i + " tr.len=" + t.get(i).a.length);
-        }
-        for (int i = 0; i < c.size(); ++i) {
-            System.out.println("i=" + i + " c.len=" + c.get(i).a.length);
-        }
     }
     
      /**
