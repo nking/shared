@@ -281,6 +281,54 @@ public class MiscMath0 {
         }
         return max;
     }
+    
+    public static int findMax(int[][] a) {
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                if (a[i][j] > max) {
+                    max = a[i][j];
+                }
+            }
+        }
+        return max;
+    }
+    
+    public static int findMin(int[][] a) {
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                if (a[i][j] < min) {
+                    min = a[i][j];
+                }
+            }
+        }
+        return min;
+    }
+    
+    public static float findMax(float[][] a) {
+        float max = Float.NEGATIVE_INFINITY;
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                if (a[i][j] > max) {
+                    max = a[i][j];
+                }
+            }
+        }
+        return max;
+    }
+    
+    public static float findMin(float[][] a) {
+        float min = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                if (a[i][j] < min) {
+                    min = a[i][j];
+                }
+            }
+        }
+        return min;
+    }
 
     /**
      * find max 
@@ -294,6 +342,38 @@ public class MiscMath0 {
                 max = a[i];
             }
         }
+        return max;
+    }
+    
+    public static double findMin(double[][] img) {
+        
+        double min = Double.POSITIVE_INFINITY;
+        
+        for (int i = 0; i < img.length; ++i) {
+            for (int j = 0; j < img[i].length; ++j) {
+                double v = img[i][j];
+                if (v < min) {
+                    min = v;
+                }
+            }
+        }
+        
+        return min;
+    }
+    
+    public static double findMax(double[][] img) {
+        
+        double max = Double.NEGATIVE_INFINITY;
+        
+        for (int i = 0; i < img.length; ++i) {
+            for (int j = 0; j < img[i].length; ++j) {
+                double v = img[i][j];
+                if (v > max) {
+                    max = v;
+                }
+            }
+        }
+        
         return max;
     }
 

@@ -294,7 +294,6 @@ public class MiscMath0Test extends TestCase {
         }
     }
 
-    
     public void testBitReverse() throws Exception {
 
         int max = 1 << 4;
@@ -323,5 +322,37 @@ public class MiscMath0Test extends TestCase {
             assertTrue(rev == result);
         }
 
+    }
+    
+    public void testFindMinMax_int_array_2d() {
+        
+        int[][] a = new int[3][3];
+        a[0] = new int[]{1, 2, 3};
+        a[1] = new int[]{1, 100, 1};
+        a[2] = new int[]{-1, -2, -3};
+        
+        int max = MiscMath0.findMax(a);
+        
+        assertEquals(100, max);
+        
+        int min = MiscMath0.findMin(a);
+        
+        assertEquals(-3, min);
+    }
+    
+    public void testFindMinMax_float_array_2d() {
+        
+        float[][] a = new float[3][3];
+        a[0] = new float[]{1, 2, 3};
+        a[1] = new float[]{1, 100, 1};
+        a[2] = new float[]{-1, -2, -3};
+        
+        float max = MiscMath0.findMax(a);
+        
+        assertEquals(100.f, max);
+        
+        float min = MiscMath0.findMin(a);
+        
+        assertEquals(-3.f, min);
     }
 }

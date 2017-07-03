@@ -12,7 +12,7 @@ http://java.com
 https://ant.apache.org/bindownload.cgi
 http://eclemma.org/download.html
 
-The project requires java 1.6 or greater.
+The project requires java 1.7 or greater.
 The ant version should be 1.9.6 or greater.
 The jacoco version should be jacoco-0.7.5.201505241946 or greater.
 Then need to set an environment variable called JACOCO_HOME
