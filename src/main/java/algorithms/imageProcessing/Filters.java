@@ -130,7 +130,9 @@ public class Filters {
         // a fudge to match results of scipy which must store same windows at
         // locations shifted by minDistance or so in x and y from the
         // beginning of the sliding window
-        applyShift(imageMax, minDistance, nRows, nCols);
+        if (minDistance != 0) {
+            applyShift(imageMax, minDistance, nRows, nCols);
+        }
         
         // 1's where same, else 0's
         int[][] mask = new int[nRows][nCols];
@@ -245,18 +247,18 @@ public class Filters {
             for (int j = 0; j < minDistance; ++j) {
                 imageMax[i][j] = 0;
             }
-            for (int j = (nCols - minDistance); j < nCols; ++j) {
+            for (int j = (nCols - minDistance) - 1; j < nCols; ++j) {
                 imageMax[i][j] = 0;
             }
         }
         for (int j = 0; j < nCols; ++j) {
-            for (int i = (nRows - minDistance); i >= minDistance; --i) {
+            for (int i = (nRows - minDistance) - 1; i >= minDistance; --i) {
                 imageMax[i][j] = imageMax[i - minDistance][j];
             }
             for (int i = 0; i < minDistance; ++i) {
                 imageMax[i][j] = 0;
             }
-            for (int i = (nRows - minDistance); i < nRows; ++i) {
+            for (int i = (nRows - minDistance) - 1; i < nRows; ++i) {
                 imageMax[i][j] = 0;
             }
         }
