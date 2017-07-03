@@ -619,5 +619,44 @@ import gnu.trove.list.TIntList;
 <span class="nc" id="L619">        return new int[]{xMin, xMax, yMin, yMax};</span>
     }
     
+    public static boolean isAPowerOf2(int n) {
+        // n XOR n-1
+<span class="pc bpc" id="L624" title="1 of 4 branches missed.">        return ((n == 0) || ((n &amp; (n - 1)) == 0));</span>
+    }
+    
+    /**
+     * determine the number of bits, that is, the msb position + 1.
+     * Note that a value of 0 returns a bit length of 1.
+     * @param v
+     * @return 
+     */
+    public static int numberOfBits(int v) {
+        
+<span class="pc bpc" id="L635" title="1 of 2 branches missed.">        if (v &lt; 0) {</span>
+<span class="nc" id="L636">            v *= -1;</span>
+<span class="fc bfc" id="L637" title="All 2 branches covered.">        } else if (v == 0) {</span>
+<span class="fc" id="L638">            return 1;</span>
+        }
+<span class="fc" id="L640">        return 32 - Integer.numberOfLeadingZeros(v);</span>
+    }
+    
+    /**
+     * 
+     * @param v
+     * @return 
+     */
+    public static int bitReverse(int v, int nBits) {
+
+<span class="fc" id="L650">        int r = v;</span>
+                
+<span class="fc" id="L652">        int rev = 0;</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">        for (int i = 0; i &lt; nBits; i++) {</span>
+<span class="fc" id="L654">            rev = (rev &lt;&lt; 1) | (r &amp; 1);</span>
+<span class="fc" id="L655">            r &gt;&gt;= 1;</span>
+        }
+        
+<span class="fc" id="L658">        return rev;</span>
+        
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

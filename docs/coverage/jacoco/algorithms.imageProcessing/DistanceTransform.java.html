@@ -207,17 +207,17 @@ import java.util.Set;
 <span class="fc bfc" id="L207" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
             
             // scan 1
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">            if (input[x][0] &gt; 0) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (input[x][0] &gt; 0) {</span>
 <span class="fc" id="L211">                g[x][0] = 0;</span>
             } else {
-<span class="nc" id="L213">                g[x][0] = inf;</span>
+<span class="fc" id="L213">                g[x][0] = inf;</span>
             }
         
 <span class="fc bfc" id="L216" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
 <span class="fc bfc" id="L217" title="All 2 branches covered.">                if (input[x][y] &gt; 0) {</span>
 <span class="fc" id="L218">                    g[x][y] = 0;</span>
                 } else {
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
                 }
             }
             
