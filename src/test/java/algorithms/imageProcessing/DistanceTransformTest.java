@@ -219,6 +219,86 @@ public class DistanceTransformTest extends TestCase {
         assertFabbri(dtInvM, w, h);
     }
     
+    public void testApplyTransforms4_int_ext() throws Exception {
+
+        int w = 11;
+        int h = 9;
+        
+        int[][] data = new int[w][h];
+        for (int x = 0; x < w; ++x) {
+            data[x] = new int[h];
+        }
+        
+        /*
+        making the pattern from Fig 1.a of Fabbri et al. but elongated
+           0  1  2  3  4  5  6  7  8  9  10
+        0  -  -  -  -  -  -  -  -  -  -  - 
+        1  -  -  -  -  -  -  -  -  -  -  - 
+        2  -  -  -  1  1  1  1  1  -  -  -
+        3  -  -  1  1  1  1  1  1  1  -  -
+        4  -  -  1  1  1  1  1  1  1  -  -
+        5  -  -  1  1  1  1  1  1  1  -  -
+        6  -  -  -  1  1  1  1  1  -  -  -
+        7  -  -  -  -  -  -  -  1  -  -  -
+        8  -  -  -  -  -  -  1  -  -  -  -
+           0  1  2  3  4  5  6  7  8  9
+        */
+        Set<PairInt> pointsM = new HashSet<PairInt>();
+        for (int x = 2; x <= 8; ++x) {
+            for (int y = 2; y <= 6; ++y) {
+                if ((x == 2 && (y==2 || y==6)) || (x == 8 && (y==2 || y==6))) {
+                    continue;
+                }
+                pointsM.add(new PairInt(x, y));
+                data[x][y] = 1;
+            }
+        }
+        pointsM.add(new PairInt(6, 8));
+        data[6][8] = 1;
+        pointsM.add(new PairInt(7, 7));
+        data[7][7] = 1;
+            
+        DistanceTransform dtr = new DistanceTransform();
+        
+        // ----- inverse binary of that  ----------
+        Set<PairInt> pointsInvM = new HashSet<PairInt>();
+        
+        for (int x = 0; x < w; ++x) {
+            for (int y = 0; y < h; ++y) {
+                PairInt p = new PairInt(x, y);
+                if (!pointsM.contains(p)) {
+                    pointsInvM.add(new PairInt(x, y));
+                }
+            }
+        }
+        
+        int[][] dtInvM = dtr.applyMeijsterEtAl(pointsInvM, w, h);
+        
+        System.out.println("inverse: ");
+        printDT(dtInvM);
+        
+        System.out.println("default: ");
+        int[][] dt = dtr.applyMeijsterEtAl(data);
+        printDT(dt);
+        
+    }
+    
+    private void printDT(int[][] dt) {
+        
+        int w = dt.length;
+        int h = dt[0].length;
+        
+        StringBuilder sb2 = new StringBuilder();
+        for (int j = 0; j < h; ++j) {
+            sb2.append("row ").append(j).append(": ");
+            for (int i = 0; i < w; ++i) {
+                sb2.append(String.format(" %3d", dt[i][j]));
+            }
+            sb2.append("\n");
+        }
+        System.out.println(sb2.toString());
+    }
+    
     private void assertFabbri(int[][] dtInvM, int w, int h) {
         
         /*StringBuilder sb2 = new StringBuilder();

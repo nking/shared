@@ -619,4 +619,43 @@ public class MiscMath0 {
         return new int[]{xMin, xMax, yMin, yMax};
     }
     
+    public static boolean isAPowerOf2(int n) {
+        // n XOR n-1
+        return ((n == 0) || ((n & (n - 1)) == 0));
+    }
+    
+    /**
+     * determine the number of bits, that is, the msb position + 1.
+     * Note that a value of 0 returns a bit length of 1.
+     * @param v
+     * @return 
+     */
+    public static int numberOfBits(int v) {
+        
+        if (v < 0) {
+            v *= -1;
+        } else if (v == 0) {
+            return 1;
+        }
+        return 32 - Integer.numberOfLeadingZeros(v);
+    }
+    
+    /**
+     * 
+     * @param v
+     * @return 
+     */
+    public static int bitReverse(int v, int nBits) {
+
+        int r = v;
+                
+        int rev = 0;
+        for (int i = 0; i < nBits; i++) {
+            rev = (rev << 1) | (r & 1);
+            r >>= 1;
+        }
+        
+        return rev;
+        
+    }
 }

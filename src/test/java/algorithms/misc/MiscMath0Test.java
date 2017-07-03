@@ -261,4 +261,67 @@ public class MiscMath0Test extends TestCase {
         
         assertEquals(5, maxIdx);
     }
+    
+    public void testIsAPowerOf2() throws Exception {
+
+        assertTrue(MiscMath0.isAPowerOf2(2));
+
+        assertTrue(MiscMath0.isAPowerOf2(1<<2));
+
+        assertTrue(MiscMath0.isAPowerOf2(1<<7));
+
+        assertFalse(MiscMath0.isAPowerOf2(71));
+
+        assertFalse(MiscMath0.isAPowerOf2(17));
+    }
+
+    public void testNumberOfBits() throws Exception {
+
+        for (int i = -256; i >= 0; i--) {
+            String bitstring = Integer.toBinaryString(i);
+            int expected = bitstring.length();
+            int result = MiscMath0.numberOfBits(i);
+            assertTrue(expected == result);
+        }
+
+        for (int i = 0; i <= 256; i++) {
+            String bitstring = Integer.toBinaryString(i);
+            int expected = bitstring.length();
+            int result = MiscMath0.numberOfBits(i);
+   // System.out.println(i + ") " + bitstring 
+   // + " exp=" + expected + " r=" + result);
+            assertTrue(expected == result);
+        }
+    }
+
+    
+    public void testBitReverse() throws Exception {
+
+        int max = 1 << 4;
+        int nBits = MiscMath0.numberOfBits(max);
+
+        for (int i = 0; i <= max; i++) {
+
+            String bitstring = Integer.toBinaryString(i);
+            while (bitstring.length() < nBits) {
+                bitstring = "0" + bitstring;
+            }
+            char[] revBitstring = bitstring.toCharArray();
+            for (int ii = 0; ii < (bitstring.length()/2); ii++) {
+                int idx2 = bitstring.length() - ii - 1;
+                char swap = revBitstring[ii];
+                revBitstring[ii] = revBitstring[idx2];
+                revBitstring[idx2] = swap;
+            }
+
+            String rBitstring = String.valueOf(revBitstring);
+
+            int rev = Integer.parseInt(rBitstring, 2);
+
+            int result = MiscMath0.bitReverse(i, nBits);
+
+            assertTrue(rev == result);
+        }
+
+    }
 }
