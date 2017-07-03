@@ -285,7 +285,7 @@ public class MiscMath0 {
     public static int findMax(int[][] a) {
         int max = Integer.MIN_VALUE;
         for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a.length; j++) {
+            for (int j = 0; j < a[i].length; j++) {
                 if (a[i][j] > max) {
                     max = a[i][j];
                 }
@@ -297,7 +297,7 @@ public class MiscMath0 {
     public static int findMin(int[][] a) {
         int min = Integer.MAX_VALUE;
         for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a.length; j++) {
+            for (int j = 0; j < a[i].length; j++) {
                 if (a[i][j] < min) {
                     min = a[i][j];
                 }
@@ -309,7 +309,7 @@ public class MiscMath0 {
     public static float findMax(float[][] a) {
         float max = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a.length; j++) {
+            for (int j = 0; j < a[i].length; j++) {
                 if (a[i][j] > max) {
                     max = a[i][j];
                 }
@@ -321,7 +321,7 @@ public class MiscMath0 {
     public static float findMin(float[][] a) {
         float min = Float.POSITIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a.length; j++) {
+            for (int j = 0; j < a[i].length; j++) {
                 if (a[i][j] < min) {
                     min = a[i][j];
                 }

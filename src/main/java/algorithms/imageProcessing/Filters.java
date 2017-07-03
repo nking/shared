@@ -258,7 +258,7 @@ public class Filters {
             for (int i = 0; i < minDistance; ++i) {
                 imageMax[i][j] = 0;
             }
-            for (int i = (nRows - minDistance) - 1; i < nRows; ++i) {
+            for (int i = (nRows - minDistance); i < nRows; ++i) {
                 imageMax[i][j] = 0;
             }
         }
