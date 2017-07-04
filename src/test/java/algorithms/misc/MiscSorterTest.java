@@ -172,4 +172,27 @@ public class MiscSorterTest extends TestCase {
         }
         assertTrue(caughtException);
     }
+    
+    public void testSortBy1stArgDecrThen2ndIncr() {
+        
+        int[] a = new int[] {
+            1, 2, 2, 1 
+        };
+        int[] b = new int[] {
+            1, 2, 3, 1
+        };
+        
+        int[] ea = new int[] {
+            2, 2, 1, 1
+        };
+        int[] eb = new int[] {
+            2, 3, 1, 1
+        };
+        
+        MiscSorter.sortBy1stArgDecrThen2ndIncr(a, b);
+        
+        assertTrue(Arrays.equals(ea, a));
+        assertTrue(Arrays.equals(eb, b));
+        
+    }
 }

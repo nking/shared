@@ -114,6 +114,22 @@ public class MiscSorter {
         sortByDecr(a1, a2, 0, a1.length - 1);
               
     }
+    
+    public static void sortBy1stArgDecrThen2ndIncr(int[] a1, int[] a2) {
+        
+        if (a1 == null) {
+            throw new IllegalArgumentException("a1 cannot be null");
+        }
+        if (a2 == null) {
+            throw new IllegalArgumentException("a2 cannot be null");
+        }
+        if (a1.length != a2.length) {
+            throw new IllegalArgumentException(
+            "number of items in a1 must be the same as in a2");
+        }
+        
+        sortBy1stArgDecrThen2ndIncr(a1, a2, 0, a1.length - 1);
+    }
 
     /**
      * use mergesort to sort by decreasing value a1 and apply 
@@ -138,6 +154,21 @@ public class MiscSorter {
         
         sortByDecr(a1, a2, 0, a1.length - 1);
               
+    }
+
+    public static void sortBy1stArgDecrThen2ndIncr(int[] a1, int[] a2, 
+        int idxLo, int idxHi) {
+
+        if (idxLo < idxHi) {
+
+            int indexMid = (idxLo + idxHi) >> 1;
+            
+            sortBy1stArgDecrThen2ndIncr(a1, a2, idxLo, indexMid);
+            
+            sortBy1stArgDecrThen2ndIncr(a1, a2, indexMid + 1, idxHi);
+            
+            mergeBy1stArgDecrThen2ndIncr(a1, a2, idxLo, indexMid, idxHi);
+        }
     }
 
     /**
@@ -189,7 +220,7 @@ public class MiscSorter {
             mergeByDecr(a1, a2, idxLo, indexMid, idxHi);
         }
     }
-
+    
     private static void mergeByDecr(int[] a1, int[] a2, int idxLo, 
         int idxMid, int idxHi) {
 
@@ -221,6 +252,63 @@ public class MiscSorter {
             int l = a1Left[leftPos];
             int r = a1Right[rightPos];
             if (l >= r) {
+                a2[k] = a2Left[leftPos];
+                a1[k] = a1Left[leftPos];
+                leftPos++;
+            } else {
+                a2[k] = a2Right[rightPos];
+                a1[k] = a1Right[rightPos];
+                rightPos++;
+            }
+        }
+    }
+    
+    private static void mergeBy1stArgDecrThen2ndIncr(int[] a1, int[] a2, 
+        int idxLo, int idxMid, int idxHi) {
+
+        int nLeft = idxMid - idxLo + 1;
+        int nRight = idxHi - idxMid;
+
+        int[] a2Left = new int[nLeft + 1];
+        int[] a1Left = new int[nLeft + 1];
+
+        int[] a2Right = new int[nRight + 1];
+        int[] a1Right = new int[nRight + 1];
+
+        System.arraycopy(a1, idxLo, a1Left, 0, nLeft);
+        System.arraycopy(a2, idxLo, a2Left, 0, nLeft);
+        
+        System.arraycopy(a1, idxMid + 1, a1Right, 0, nRight);
+        System.arraycopy(a2, idxMid + 1, a2Right, 0, nRight);
+        
+        int sentinel = Integer.MIN_VALUE;
+        a2Left[nLeft] = sentinel;
+        a1Left[nLeft] = sentinel;
+        a2Right[nRight] = sentinel;
+        a1Right[nRight] = sentinel;
+        
+        int leftPos = 0;
+        int rightPos = 0;
+        boolean lft = false;
+        
+        for (int k = idxLo; k <= idxHi; k++) {
+            int l = a1Left[leftPos];
+            int r = a1Right[rightPos];
+            if (l > r) {
+                lft = true;
+            } else if (l == r) {
+                int l2 = a2Left[leftPos];
+                int r2 = a2Right[rightPos];
+                if (l2 <= r2) {
+                    lft = true;
+                } else {
+                    lft = false;
+                }
+            } else {
+                lft = false;
+            }
+            
+            if (lft) {
                 a2[k] = a2Left[leftPos];
                 a1[k] = a1Left[leftPos];
                 leftPos++;
