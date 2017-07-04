@@ -88,6 +88,25 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         }
         
         //-------
+        expected = new ArrayList<TIntSet>();
+        a = new TIntHashSet();
+        for (int i = 0; i < h; ++i) {
+            a.add(ph.toPixelIndex(0, i, w));
+            a.add(ph.toPixelIndex(4, i, w));
+            a.add(ph.toPixelIndex(i, 0, w));
+            a.add(ph.toPixelIndex(i, 4, w));
+        }
+        expected.add(a);
+        assertEquals(16, a.size());
+        a = new TIntHashSet();//1
+        a.add(ph.toPixelIndex(1, 1, w));
+        a.add(ph.toPixelIndex(1, 2, w));
+        a.add(ph.toPixelIndex(2, 1, w));
+        expected.add(a);
+        a = new TIntHashSet();//3
+        a.add(ph.toPixelIndex(1, 3, w));
+        a.add(ph.toPixelIndex(2, 3, w));
+        expected.add(a);
         /*
         data[0] = new int[]{0, 0, 0, 0, 0};
         data[1] = new int[]{0, 1, 1, 3, 0};
@@ -102,5 +121,29 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         groups = finder.findGroups(data);
         
         assertEquals(3, groups.size());
+    
+        assertEquals(expected.size(), groups.size());
+        
+        for (int i = 0; i < groups.size(); ++i) {
+            TIntSet group = groups.get(i);
+            
+            int t = group.iterator().next();
+            TIntSet e = null;
+            for (int j = 0; j < expected.size(); ++j) {
+                TIntSet e2 = expected.get(j);
+                if (e2.contains(t)) {
+                    e = e2; break;
+                }
+            }
+            assertNotNull(e);
+            
+            TIntIterator iter = group.iterator();
+            while (iter.hasNext()) {
+                int pIdx = iter.next();
+                assertTrue(e.remove(pIdx));
+            }
+            assertTrue(e.isEmpty());
+            expected.remove(e);
+        }
     }
 }
