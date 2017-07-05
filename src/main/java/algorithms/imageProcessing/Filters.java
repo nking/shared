@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package algorithms.imageProcessing;
 
 import algorithms.FixedSizeSortedVector;
@@ -48,7 +43,27 @@ public class Filters {
         return out;
     }
     
-       /**
+    /**
+     * @author nichole
+     * @param img
+     * @param size
+     * @return
+     */
+    public static float[] maximumFilter(float[] img, int size) {
+
+        int nRows = img.length;
+
+        // return_value = out
+        float[] out = new float[nRows];
+        
+        // have adapted median window algorithm for this:
+        StatsInSlidingWindow maxWindow = new StatsInSlidingWindow();
+        maxWindow.calculateMaximum(img, out, size);
+
+        return out;
+    }
+    
+    /**
      Find peaks in an image as coordinate list
      Peaks are the local maxima in a region of `2 * min_distance + 1`
      (i.e. peaks are separated by at least `min_distance`).
@@ -220,6 +235,156 @@ public class Filters {
         }
     }
     
+    /**
+     Find peaks in an array as coordinate list
+     Peaks are the local maxima in a region of `2 * min_distance + 1`
+     (i.e. peaks are separated by at least `min_distance`).
+     If peaks are flat (i.e. multiple adjacent pixels have identical
+     intensities), the coordinates of all such pixels are returned.
+     If both `threshold_abs` and `threshold_rel` are provided, the maximum
+     of the two is chosen as the minimum intensity threshold of peaks.
+
+      adapted from
+     https://github.com/scikit-image/scikit-image/blob/92a38515ac7222aab5e606f9de46caf5f503a7bd/skimage/feature/peak.py
+
+     The implementation below is adapted from the scipy implementation which has
+     * the following copyright:
+
+     https://github.com/scikit-image/scikit-image/blob/master/LICENSE.txt
+
+    -- begin scipy, skimage copyright ---
+    Unless otherwise specified by LICENSE.txt files in individual
+    directories, all code is
+
+    Copyright (C) 2011, the scikit-image team
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+     1. Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+     2. Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+     3. Neither the name of skimage nor the names of its contributors may be
+        used to endorse or promote products derived from this software without
+        specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+    -- end scipy, skimage copyright ---
+    */
+    public void peakLocalMax(float[] img, int minDistance, float thresholdRel,
+        TIntList outputKeypoints) {
+
+        int excludeBorder = minDistance;
+        int numPeaks = Integer.MAX_VALUE;
+        //int numPeaksPerLabel = Integer.MAX_VALUE;
+        
+        /*
+        The peak local maximum function returns the coordinates of local peaks
+        (maxima) in an image. A maximum filter is used for finding local maxima.
+        This operation dilates the original image. After comparison of the dilated
+        and original image, this function returns the coordinates or a mask of the
+        peaks where the dilated image equals the original image.
+        */
+
+        int nRows = img.length;
+
+        //# Non maximum filter
+        int size = 2 * minDistance + 1;
+        float[] imageMax = maximumFilter(img, size);
+        assert(nRows == imageMax.length);
+
+        // a fudge to match results of scipy which must store same windows at
+        // locations shifted by minDistance or so in x and y from the
+        // beginning of the sliding window
+        if (minDistance != 0) {
+            applyShift(imageMax, minDistance);
+        }
+        
+        // 1's where same, else 0's
+        int[] mask = new int[nRows];
+        for (int i = 0; i < nRows; ++i) {
+            if (img[i] == imageMax[i]) {
+                mask[i] = 1;
+            }
+        }
+        
+        // exclude border
+        for (int i = 0; i < excludeBorder; ++i) {
+            mask[i] = 0;
+        }
+        for (int i = nRows - 1 - excludeBorder; i < nRows; ++i) {
+            mask[i] = 0;
+        }
+
+        // find top peak candidates above a threshold.
+        // TODO: should this use mask so excluding borders?
+        float thresholdAbs = MiscMath0.findMin(img);
+        float thresholdMax = thresholdRel * MiscMath0.findMax(img);
+        thresholdAbs = Math.max(thresholdAbs, thresholdMax);
+        
+        // mask &= image > 0.1
+        for (int i = 0; i < nRows; ++i) {
+            if (imageMax[i] > thresholdAbs) {
+                mask[i] &= 1;
+            } else {
+                mask[i] = 0;
+            }
+        }
+        
+        //TODO: should num_peaks be this.nKeypoints?  re-read paper...
+        if (numPeaks == Integer.MAX_VALUE) {
+            // find non-zero pixels in mask
+            float[] values = new float[nRows];
+            int[] pixIdxs = new int[values.length];
+            int count = 0;
+            for (int i = 0; i < mask.length; ++i) {
+                if (mask[i] > 0.f) {
+                    values[count] = img[i];
+                    //(row * width) + col
+                    pixIdxs[count] = i;
+                    count++;
+                }
+            }
+            values = Arrays.copyOf(values, count);
+            pixIdxs = Arrays.copyOf(pixIdxs, count);
+            MiscSorter.sortByDecr(values, pixIdxs);
+            
+            for (int i = 0; i < values.length; ++i) {
+                int pixIdx = pixIdxs[i];
+                outputKeypoints.add(pixIdx);
+            }
+        } else {
+            //need to sort to keep top numPeaks
+            FixedSizeSortedVector<Pix> vec = new
+                FixedSizeSortedVector<Pix>(numPeaks, Pix.class);
+            for (int i = 0; i < mask.length; ++i) {
+                if (mask[i] > 0.f) {
+                    Pix pix = new Pix(i, 0, Float.valueOf(img[i]));
+                    vec.add(pix);
+                }
+            }
+            for (int i = 0; i < vec.getNumberOfItems(); ++i) {
+                Pix pix = vec.getArray()[i];
+                outputKeypoints.add(pix.i);
+            }
+        }
+    }
+    
     private static class Pix implements Comparable<Pix> {
 
         public final int i;
@@ -261,6 +426,19 @@ public class Filters {
             for (int i = (nRows - minDistance); i < nRows; ++i) {
                 imageMax[i][j] = 0;
             }
+        }
+    }
+    
+    private static void applyShift(float[] imageMax, int minDistance) {
+
+        System.arraycopy(imageMax, 0, imageMax, minDistance,
+            imageMax.length - minDistance);
+        
+        for (int j = 0; j < minDistance; ++j) {
+            imageMax[j] = 0;
+        }
+        for (int j = (imageMax.length - minDistance) - 1; j < imageMax.length; ++j) {
+            imageMax[j] = 0;
         }
     }
 }
