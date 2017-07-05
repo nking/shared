@@ -147,6 +147,24 @@ public class FFTUtil {
     }
     
     /**
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2,
+     * else is
+     *
+     * perform fft on input.
+     * @param input
+     * @param forward
+     * @return
+     */
+    public Complex[] create1DFFT(final double[] input, boolean forward) {
+
+        Complex1D input2 = copyToComplex1D(input);
+        Complex1D output = create1DFFT2(input2, forward);
+        Complex[] output2 = copyToComplex(output);
+        
+        return output2;
+    }
+    
+    /**
      * perform a 2-dimension FFT using the JFFTPack library.
      *
      * @param input double array of complex data in format double[nRows][2*nColumns]
@@ -297,6 +315,17 @@ public class FFTUtil {
             output.x[i] = input[i].re();
             output.y[i] = input[i].im();
         }
+
+        return output;
+    }
+    
+    public Complex1D copyToComplex1D(double[] input) {
+
+        int n0 = input.length;
+
+        Complex1D output = new Complex1D();
+        output.x = Arrays.copyOf(input, input.length);
+        output.y = new double[n0];
 
         return output;
     }
