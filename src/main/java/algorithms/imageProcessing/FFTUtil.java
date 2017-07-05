@@ -129,6 +129,24 @@ public class FFTUtil {
     }
     
     /**
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2,
+     * else is
+     *
+     * perform fft on input.
+     * @param input
+     * @param forward
+     * @return
+     */
+    public Complex[] create1DFFT(final Complex[] input, boolean forward) {
+
+        Complex1D input2 = copyToComplex1D(input);
+        Complex1D output = create1DFFT2(input2, forward);
+        Complex[] output2 = copyToComplex(output);
+        
+        return output2;
+    }
+    
+    /**
      * perform a 2-dimension FFT using the JFFTPack library.
      *
      * @param input double array of complex data in format double[nRows][2*nColumns]
@@ -218,6 +236,36 @@ public class FFTUtil {
 
         return output;
     }
+    
+    /**
+     * perform a 1-dimension FFT using the JFFTPack library.
+     *
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2.
+     *
+     * @param input double array of complex data in format double[nRows][2*nColumns]
+     * where the column elements are alternately the complex real number and the
+     * complex imaginary number.
+     * @param forward
+     * @return two dimensional complex array of size Complex[nRows][input.nCols/2)
+     */
+    public Complex1D create1DFFT2(Complex1D input, boolean forward) {
+
+        final int n0 = input.x.length;
+
+        Complex1D output = new Complex1D();
+        output.x = Arrays.copyOf(input.x, input.x.length);
+        output.y = Arrays.copyOf(input.y, input.y.length);
+
+        ComplexDoubleFFT fft1 = new ComplexDoubleFFT(n0);
+
+        if (forward) {
+            fft1.ft(output);
+        } else {
+            fft1.bt(output);
+        }
+
+        return output;
+    }
 
     public Complex1D[] copyToComplex1D(Complex[][] input) {
 
@@ -233,6 +281,33 @@ public class FFTUtil {
                 output[i].x[j] = input[i][j].re();
                 output[i].y[j] = input[i][j].im();
             }
+        }
+
+        return output;
+    }
+    
+    public Complex1D copyToComplex1D(Complex[] input) {
+
+        int n0 = input.length;
+
+        Complex1D output = new Complex1D();
+        output.x = new double[n0];
+        output.y = new double[n0];
+        for (int i = 0; i < n0; ++i) {
+            output.x[i] = input[i].re();
+            output.y[i] = input[i].im();
+        }
+
+        return output;
+    }
+    
+    public Complex[] copyToComplex(Complex1D input) {
+
+        int n0 = input.x.length;
+
+        Complex[] output = new Complex[n0];
+        for (int i = 0; i < n0; ++i) {
+            output[i] = new Complex(input.x[i], input.y[i]);
         }
 
         return output;
