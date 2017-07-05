@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Filters.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.imageProcessing</a> &gt; <span class="el_source">Filters.java</span></div><h1>Filters.java</h1><pre class="source lang-java linenums">package algorithms.imageProcessing;
+
+import algorithms.FixedSizeSortedVector;
+import algorithms.misc.MiscMath0;
+import algorithms.misc.MiscSorter;
+import gnu.trove.list.TIntList;
+import java.util.Arrays;
+
+/**
+ * first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+   and license.
+   * 
+ * @author nichole
+ */
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">public class Filters {</span>
+    
+    /**
+     * @author nichole
+     * @param img
+     * @param size
+     * @return
+     */
+    public static float[][] maximumFilter(float[][] img, int size) {
+
+<span class="nc" id="L30">        int nRows = img.length;</span>
+<span class="nc" id="L31">        int nCols = img[0].length;</span>
+
+        // return_value = out
+<span class="nc" id="L34">        float[][] out = new float[nRows][nCols];</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L36">            out[i] = new float[nCols];</span>
+        }
+
+        // have adapted median window algorithm for this:
+<span class="nc" id="L40">        StatsInSlidingWindow maxWindow = new StatsInSlidingWindow();</span>
+<span class="nc" id="L41">        maxWindow.calculateMaximum(img, out, size, size);</span>
+
+<span class="nc" id="L43">        return out;</span>
+    }
+    
+    /**
+     * @author nichole
+     * @param img
+     * @param size
+     * @return
+     */
+    public static float[] maximumFilter(float[] img, int size) {
+
+<span class="fc" id="L54">        int nRows = img.length;</span>
+
+        // return_value = out
+<span class="fc" id="L57">        float[] out = new float[nRows];</span>
+        
+        // have adapted median window algorithm for this:
+<span class="fc" id="L60">        StatsInSlidingWindow maxWindow = new StatsInSlidingWindow();</span>
+<span class="fc" id="L61">        maxWindow.calculateMaximum(img, out, size);</span>
+
+<span class="fc" id="L63">        return out;</span>
+    }
+    
+    /**
+     Find peaks in an image as coordinate list
+     Peaks are the local maxima in a region of `2 * min_distance + 1`
+     (i.e. peaks are separated by at least `min_distance`).
+     If peaks are flat (i.e. multiple adjacent pixels have identical
+     intensities), the coordinates of all such pixels are returned.
+     If both `threshold_abs` and `threshold_rel` are provided, the maximum
+     of the two is chosen as the minimum intensity threshold of peaks.
+
+      adapted from
+     https://github.com/scikit-image/scikit-image/blob/92a38515ac7222aab5e606f9de46caf5f503a7bd/skimage/feature/peak.py
+
+     The implementation below is adapted from the scipy implementation which has
+     * the following copyright:
+
+     https://github.com/scikit-image/scikit-image/blob/master/LICENSE.txt
+
+    -- begin scipy, skimage copyright ---
+    Unless otherwise specified by LICENSE.txt files in individual
+    directories, all code is
+
+    Copyright (C) 2011, the scikit-image team
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+     1. Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+     2. Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+     3. Neither the name of skimage nor the names of its contributors may be
+        used to endorse or promote products derived from this software without
+        specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+    -- end scipy, skimage copyright ---
+    */
+    public void peakLocalMax(float[][] img, int minDistance,
+        float thresholdRel,
+        TIntList outputKeypoints0, TIntList outputKeypoints1) {
+
+<span class="nc" id="L121">        int excludeBorder = minDistance;</span>
+<span class="nc" id="L122">        int numPeaks = Integer.MAX_VALUE;</span>
+        //int numPeaksPerLabel = Integer.MAX_VALUE;
+        
+        /*
+        The peak local maximum function returns the coordinates of local peaks
+        (maxima) in an image. A maximum filter is used for finding local maxima.
+        This operation dilates the original image. After comparison of the dilated
+        and original image, this function returns the coordinates or a mask of the
+        peaks where the dilated image equals the original image.
+        */
+
+<span class="nc" id="L133">        int nRows = img.length;</span>
+<span class="nc" id="L134">        int nCols = img[0].length;</span>
+
+        //# Non maximum filter
+<span class="nc" id="L137">        int size = 2 * minDistance + 1;</span>
+<span class="nc" id="L138">        float[][] imageMax = maximumFilter(img, size);</span>
+<span class="nc bnc" id="L139" title="All 4 branches missed.">        assert(nRows == imageMax.length);</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">        assert(nCols == imageMax[0].length);</span>
+        //mask = image == image_max
+
+        //debugPrint(&quot;before shift imageMax=&quot;, imageMax);
+
+        // a fudge to match results of scipy which must store same windows at
+        // locations shifted by minDistance or so in x and y from the
+        // beginning of the sliding window
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (minDistance != 0) {</span>
+<span class="nc" id="L149">            applyShift(imageMax, minDistance, nRows, nCols);</span>
+        }
+        
+        // 1's where same, else 0's
+<span class="nc" id="L153">        int[][] mask = new int[nRows][nCols];</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L155">            mask[i] = new int[nCols];</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            for (int j = 0; j &lt; nCols; ++j) {</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                if (img[i][j] == imageMax[i][j]) {</span>
+<span class="nc" id="L158">                    mask[i][j] = 1;</span>
+                }
+            }
+        }
+        
+        // exclude border
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc bnc" id="L165" title="All 4 branches missed.">            if ((i &lt; excludeBorder) || (i &gt; (nRows - 1 - excludeBorder))){</span>
+<span class="nc" id="L166">                Arrays.fill(mask[i], 0);</span>
+            } else {
+<span class="nc" id="L168">                Arrays.fill(mask[i], 0, excludeBorder, 0);</span>
+<span class="nc" id="L169">                Arrays.fill(mask[i], nCols - excludeBorder, nCols, 0);</span>
+            }
+        }
+
+
+        // find top peak candidates above a threshold.
+        // TODO: should this use mask so excluding borders?
+<span class="nc" id="L176">        float thresholdAbs = MiscMath0.findMin(img);</span>
+<span class="nc" id="L177">        float thresholdMax = thresholdRel * MiscMath0.findMax(img);</span>
+<span class="nc" id="L178">        thresholdAbs = Math.max(thresholdAbs, thresholdMax);</span>
+        
+        // mask &amp;= image &gt; 0.1
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            for (int j = 0; j &lt; nCols; ++j) {</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                if (imageMax[i][j] &gt; thresholdAbs) {</span>
+<span class="nc" id="L184">                    mask[i][j] &amp;= 1;</span>
+                } else {
+<span class="nc" id="L186">                    mask[i][j] = 0;</span>
+                }
+            }
+        }
+        
+        //TODO: should num_peaks be this.nKeypoints?  re-read paper...
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        if (numPeaks == Integer.MAX_VALUE) {</span>
+            // find non-zero pixels in mask
+<span class="nc" id="L194">            float[] values = new float[nRows * nCols];</span>
+<span class="nc" id="L195">            int[] pixIdxs = new int[values.length];</span>
+<span class="nc" id="L196">            int count = 0;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            for (int i = 0; i &lt; mask.length; ++i) {</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                for (int j = 0; j &lt; mask[i].length; ++j) {</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                    if (mask[i][j] &gt; 0.f) {</span>
+<span class="nc" id="L200">                        values[count] = img[i][j];</span>
+                        //(row * width) + col
+<span class="nc" id="L202">                        pixIdxs[count] = (j * nRows) + i;</span>
+<span class="nc" id="L203">                        count++;</span>
+                    }
+                }
+            }
+<span class="nc" id="L207">            values = Arrays.copyOf(values, count);</span>
+<span class="nc" id="L208">            pixIdxs = Arrays.copyOf(pixIdxs, count);</span>
+<span class="nc" id="L209">            MiscSorter.sortByDecr(values, pixIdxs);</span>
+            
+<span class="nc bnc" id="L211" title="All 2 branches missed.">            for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="nc" id="L212">                int pixIdx = pixIdxs[i];</span>
+<span class="nc" id="L213">                int jj = pixIdx/nRows;</span>
+<span class="nc" id="L214">                int ii = pixIdx - (jj * nRows);</span>
+<span class="nc" id="L215">                outputKeypoints0.add(ii);</span>
+<span class="nc" id="L216">                outputKeypoints1.add(jj);</span>
+            }
+<span class="nc" id="L218">        } else {</span>
+            //need to sort to keep top numPeaks
+<span class="nc" id="L220">            FixedSizeSortedVector&lt;Pix&gt; vec = new</span>
+                FixedSizeSortedVector&lt;Pix&gt;(numPeaks, Pix.class);
+<span class="nc bnc" id="L222" title="All 2 branches missed.">            for (int i = 0; i &lt; mask.length; ++i) {</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                for (int j = 0; j &lt; mask[i].length; ++j) {</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                    if (mask[i][j] &gt; 0.f) {</span>
+<span class="nc" id="L225">                        Pix pix = new Pix(i, j, Float.valueOf(img[i][j]));</span>
+<span class="nc" id="L226">                        vec.add(pix);</span>
+                    }
+                }
+            }
+<span class="nc bnc" id="L230" title="All 2 branches missed.">            for (int i = 0; i &lt; vec.getNumberOfItems(); ++i) {</span>
+<span class="nc" id="L231">                Pix pix = vec.getArray()[i];</span>
+<span class="nc" id="L232">                outputKeypoints0.add(pix.i);</span>
+<span class="nc" id="L233">                outputKeypoints1.add(pix.j);</span>
+            }
+        }
+<span class="nc" id="L236">    }</span>
+    
+    /**
+     Find peaks in an array as coordinate list
+     Peaks are the local maxima in a region of `2 * min_distance + 1`
+     (i.e. peaks are separated by at least `min_distance`).
+     If peaks are flat (i.e. multiple adjacent pixels have identical
+     intensities), the coordinates of all such pixels are returned.
+     If both `threshold_abs` and `threshold_rel` are provided, the maximum
+     of the two is chosen as the minimum intensity threshold of peaks.
+
+      adapted from
+     https://github.com/scikit-image/scikit-image/blob/92a38515ac7222aab5e606f9de46caf5f503a7bd/skimage/feature/peak.py
+
+     The implementation below is adapted from the scipy implementation which has
+     * the following copyright:
+
+     https://github.com/scikit-image/scikit-image/blob/master/LICENSE.txt
+
+    -- begin scipy, skimage copyright ---
+    Unless otherwise specified by LICENSE.txt files in individual
+    directories, all code is
+
+    Copyright (C) 2011, the scikit-image team
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+     1. Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+     2. Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+     3. Neither the name of skimage nor the names of its contributors may be
+        used to endorse or promote products derived from this software without
+        specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+    -- end scipy, skimage copyright ---
+    */
+    public void peakLocalMax(float[] img, int minDistance, float thresholdRel,
+        TIntList outputKeypoints) {
+
+<span class="fc" id="L292">        int excludeBorder = minDistance;</span>
+<span class="fc" id="L293">        int numPeaks = Integer.MAX_VALUE;</span>
+        //int numPeaksPerLabel = Integer.MAX_VALUE;
+        
+        /*
+        The peak local maximum function returns the coordinates of local peaks
+        (maxima) in an image. A maximum filter is used for finding local maxima.
+        This operation dilates the original image. After comparison of the dilated
+        and original image, this function returns the coordinates or a mask of the
+        peaks where the dilated image equals the original image.
+        */
+
+<span class="fc" id="L304">        int nRows = img.length;</span>
+
+        //# Non maximum filter
+<span class="fc" id="L307">        int size = 2 * minDistance + 1;</span>
+<span class="fc" id="L308">        float[] imageMax = maximumFilter(img, size);</span>
+<span class="pc bpc" id="L309" title="3 of 4 branches missed.">        assert(nRows == imageMax.length);</span>
+
+        // a fudge to match results of scipy which must store same windows at
+        // locations shifted by minDistance or so in x and y from the
+        // beginning of the sliding window
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">        if (minDistance != 0) {</span>
+<span class="nc" id="L315">            applyShift(imageMax, minDistance);</span>
+        }
+        
+        // 1's where same, else 0's
+<span class="fc" id="L319">        int[] mask = new int[nRows];</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">            if (img[i] == imageMax[i]) {</span>
+<span class="fc" id="L322">                mask[i] = 1;</span>
+            }
+        }
+        
+        // exclude border
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">        for (int i = 0; i &lt; excludeBorder; ++i) {</span>
+<span class="nc" id="L328">            mask[i] = 0;</span>
+        }
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (int i = nRows - 1 - excludeBorder; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L331">            mask[i] = 0;</span>
+        }
+
+        // find top peak candidates above a threshold.
+        // TODO: should this use mask so excluding borders?
+<span class="fc" id="L336">        float thresholdAbs = MiscMath0.findMin(img);</span>
+<span class="fc" id="L337">        float thresholdMax = thresholdRel * MiscMath0.findMax(img);</span>
+<span class="fc" id="L338">        thresholdAbs = Math.max(thresholdAbs, thresholdMax);</span>
+        
+        // mask &amp;= image &gt; 0.1
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">            if (imageMax[i] &gt; thresholdAbs) {</span>
+<span class="fc" id="L343">                mask[i] &amp;= 1;</span>
+            } else {
+<span class="fc" id="L345">                mask[i] = 0;</span>
+            }
+        }
+        
+        //TODO: should num_peaks be this.nKeypoints?  re-read paper...
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">        if (numPeaks == Integer.MAX_VALUE) {</span>
+            // find non-zero pixels in mask
+<span class="fc" id="L352">            float[] values = new float[nRows];</span>
+<span class="fc" id="L353">            int[] pixIdxs = new int[values.length];</span>
+<span class="fc" id="L354">            int count = 0;</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">            for (int i = 0; i &lt; mask.length; ++i) {</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">                if (mask[i] &gt; 0.f) {</span>
+<span class="fc" id="L357">                    values[count] = img[i];</span>
+                    //(row * width) + col
+<span class="fc" id="L359">                    pixIdxs[count] = i;</span>
+<span class="fc" id="L360">                    count++;</span>
+                }
+            }
+<span class="fc" id="L363">            values = Arrays.copyOf(values, count);</span>
+<span class="fc" id="L364">            pixIdxs = Arrays.copyOf(pixIdxs, count);</span>
+<span class="fc" id="L365">            MiscSorter.sortByDecr(values, pixIdxs);</span>
+            
+<span class="fc bfc" id="L367" title="All 2 branches covered.">            for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="fc" id="L368">                int pixIdx = pixIdxs[i];</span>
+<span class="fc" id="L369">                outputKeypoints.add(pixIdx);</span>
+            }
+<span class="fc" id="L371">        } else {</span>
+            //need to sort to keep top numPeaks
+<span class="nc" id="L373">            FixedSizeSortedVector&lt;Pix&gt; vec = new</span>
+                FixedSizeSortedVector&lt;Pix&gt;(numPeaks, Pix.class);
+<span class="nc bnc" id="L375" title="All 2 branches missed.">            for (int i = 0; i &lt; mask.length; ++i) {</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">                if (mask[i] &gt; 0.f) {</span>
+<span class="nc" id="L377">                    Pix pix = new Pix(i, 0, Float.valueOf(img[i]));</span>
+<span class="nc" id="L378">                    vec.add(pix);</span>
+                }
+            }
+<span class="nc bnc" id="L381" title="All 2 branches missed.">            for (int i = 0; i &lt; vec.getNumberOfItems(); ++i) {</span>
+<span class="nc" id="L382">                Pix pix = vec.getArray()[i];</span>
+<span class="nc" id="L383">                outputKeypoints.add(pix.i);</span>
+            }
+        }
+<span class="fc" id="L386">    }</span>
+    
+    private static class Pix implements Comparable&lt;Pix&gt; {
+
+        public final int i;
+        public final int j;
+        public final Float value;
+        public Pix(int i, int j, Float v) {
+            this.i = i;
+            this.j = j;
+            this.value = v;
+        }
+        @Override
+        public int compareTo(Pix other) {
+            // changed for a descending sort
+            return other.value.compareTo(this.value);
+        }
+
+    }
+   
+    private static void applyShift(float[][] imageMax, int minDistance, int nRows,
+        int nCols) {
+
+<span class="nc bnc" id="L409" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L410">            System.arraycopy(imageMax[i], 0, imageMax[i], minDistance,</span>
+                nCols - minDistance);
+<span class="nc bnc" id="L412" title="All 2 branches missed.">            for (int j = 0; j &lt; minDistance; ++j) {</span>
+<span class="nc" id="L413">                imageMax[i][j] = 0;</span>
+            }
+<span class="nc bnc" id="L415" title="All 2 branches missed.">            for (int j = (nCols - minDistance) - 1; j &lt; nCols; ++j) {</span>
+<span class="nc" id="L416">                imageMax[i][j] = 0;</span>
+            }
+        }
+<span class="nc bnc" id="L419" title="All 2 branches missed.">        for (int j = 0; j &lt; nCols; ++j) {</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">            for (int i = (nRows - minDistance) - 1; i &gt;= minDistance; --i) {</span>
+<span class="nc" id="L421">                imageMax[i][j] = imageMax[i - minDistance][j];</span>
+            }
+<span class="nc bnc" id="L423" title="All 2 branches missed.">            for (int i = 0; i &lt; minDistance; ++i) {</span>
+<span class="nc" id="L424">                imageMax[i][j] = 0;</span>
+            }
+<span class="nc bnc" id="L426" title="All 2 branches missed.">            for (int i = (nRows - minDistance); i &lt; nRows; ++i) {</span>
+<span class="nc" id="L427">                imageMax[i][j] = 0;</span>
+            }
+        }
+<span class="nc" id="L430">    }</span>
+    
+    private static void applyShift(float[] imageMax, int minDistance) {
+
+<span class="nc" id="L434">        System.arraycopy(imageMax, 0, imageMax, minDistance,</span>
+            imageMax.length - minDistance);
+        
+<span class="nc bnc" id="L437" title="All 2 branches missed.">        for (int j = 0; j &lt; minDistance; ++j) {</span>
+<span class="nc" id="L438">            imageMax[j] = 0;</span>
+        }
+<span class="nc bnc" id="L440" title="All 2 branches missed.">        for (int j = (imageMax.length - minDistance) - 1; j &lt; imageMax.length; ++j) {</span>
+<span class="nc" id="L441">            imageMax[j] = 0;</span>
+        }
+<span class="nc" id="L443">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

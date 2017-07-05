@@ -129,6 +129,42 @@ import thirdparty.ca.uol.aig.fftpack.ComplexDoubleFFT;
     }
     
     /**
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2,
+     * else is
+     *
+     * perform fft on input.
+     * @param input
+     * @param forward
+     * @return
+     */
+    public Complex[] create1DFFT(final Complex[] input, boolean forward) {
+
+<span class="nc" id="L142">        Complex1D input2 = copyToComplex1D(input);</span>
+<span class="nc" id="L143">        Complex1D output = create1DFFT2(input2, forward);</span>
+<span class="nc" id="L144">        Complex[] output2 = copyToComplex(output);</span>
+        
+<span class="nc" id="L146">        return output2;</span>
+    }
+    
+    /**
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2,
+     * else is
+     *
+     * perform fft on input.
+     * @param input
+     * @param forward
+     * @return
+     */
+    public Complex[] create1DFFT(final double[] input, boolean forward) {
+
+<span class="nc" id="L160">        Complex1D input2 = copyToComplex1D(input);</span>
+<span class="nc" id="L161">        Complex1D output = create1DFFT2(input2, forward);</span>
+<span class="nc" id="L162">        Complex[] output2 = copyToComplex(output);</span>
+        
+<span class="nc" id="L164">        return output2;</span>
+    }
+    
+    /**
      * perform a 2-dimension FFT using the JFFTPack library.
      *
      * @param input double array of complex data in format double[nRows][2*nColumns]
@@ -140,7 +176,7 @@ import thirdparty.ca.uol.aig.fftpack.ComplexDoubleFFT;
     public Complex1D[] create2DFFT2(Complex1D[] input, boolean forward) {
 
         // perform normalization by default
-<span class="nc" id="L143">        return create2DFFT2(input, true, forward);</span>
+<span class="nc" id="L179">        return create2DFFT2(input, true, forward);</span>
     }
 
     /**
@@ -157,113 +193,181 @@ import thirdparty.ca.uol.aig.fftpack.ComplexDoubleFFT;
     public Complex1D[] create2DFFT2(Complex1D[] input, boolean performNormalization,
         boolean forward) {
 
-<span class="fc" id="L160">        final int n0 = input.length;</span>
-<span class="fc" id="L161">        final int n1 = input[0].x.length;</span>
+<span class="fc" id="L196">        final int n0 = input.length;</span>
+<span class="fc" id="L197">        final int n1 = input[0].x.length;</span>
 
-<span class="fc" id="L163">        Complex1D[] output = Arrays.copyOf(input, input.length);</span>
+<span class="fc" id="L199">        Complex1D[] output = Arrays.copyOf(input, input.length);</span>
 
-<span class="fc" id="L165">        ComplexDoubleFFT fft1 = new ComplexDoubleFFT(n1);</span>
+<span class="fc" id="L201">        ComplexDoubleFFT fft1 = new ComplexDoubleFFT(n1);</span>
 
-<span class="fc" id="L167">        final double norm1 = 1./Math.sqrt(n1);</span>
+<span class="fc" id="L203">        final double norm1 = 1./Math.sqrt(n1);</span>
 
         // ----- perform FFT by dimension 0 -----
-<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n0; i0++) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n0; i0++) {</span>
 
-<span class="fc bfc" id="L172" title="All 2 branches covered.">            if (forward) {</span>
-<span class="fc" id="L173">                fft1.ft(output[i0]);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">            if (forward) {</span>
+<span class="fc" id="L209">                fft1.ft(output[i0]);</span>
             } else {
-<span class="fc" id="L175">                fft1.bt(output[i0]);</span>
+<span class="fc" id="L211">                fft1.bt(output[i0]);</span>
             }
 
             // normalize the data
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">            if (performNormalization) {</span>
-<span class="nc" id="L180">                Complex1D a = output[i0];</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">                for (int idx = 0; idx &lt; a.x.length; ++idx) {</span>
-<span class="nc" id="L182">                    a.x[idx] *= norm1;</span>
-<span class="nc" id="L183">                    a.y[idx] *= norm1;</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">            if (performNormalization) {</span>
+<span class="nc" id="L216">                Complex1D a = output[i0];</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">                for (int idx = 0; idx &lt; a.x.length; ++idx) {</span>
+<span class="nc" id="L218">                    a.x[idx] *= norm1;</span>
+<span class="nc" id="L219">                    a.y[idx] *= norm1;</span>
                 }
             }
         }
 
         // re-use array for the FFT by dimension 1 (across rows)
-<span class="fc" id="L189">        Complex1D tmp = new Complex1D();</span>
-<span class="fc" id="L190">        tmp.x = new double[n0];</span>
-<span class="fc" id="L191">        tmp.y = new double[n0];</span>
+<span class="fc" id="L225">        Complex1D tmp = new Complex1D();</span>
+<span class="fc" id="L226">        tmp.x = new double[n0];</span>
+<span class="fc" id="L227">        tmp.y = new double[n0];</span>
 
-<span class="fc" id="L193">        ComplexDoubleFFT fft0 = new ComplexDoubleFFT(n0);</span>
+<span class="fc" id="L229">        ComplexDoubleFFT fft0 = new ComplexDoubleFFT(n0);</span>
 
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        final double norm0 = performNormalization ? (1./Math.sqrt(n0)) : 1.;</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        final double norm0 = performNormalization ? (1./Math.sqrt(n0)) : 1.;</span>
 
         // ----- perform the FFT on dimension 1 ------
-<span class="fc bfc" id="L198" title="All 2 branches covered.">        for (int i1 = 0; i1 &lt; n1; ++i1) {</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        for (int i1 = 0; i1 &lt; n1; ++i1) {</span>
 
             // store each column in tmp array and perform fft on it then
             // recopy values back into columns
-<span class="fc bfc" id="L202" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; n0; ++i0) {</span>
-<span class="fc" id="L203">                tmp.x[i0] = output[i0].x[i1];</span>
-<span class="fc" id="L204">                tmp.y[i0] = output[i0].y[i1];</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; n0; ++i0) {</span>
+<span class="fc" id="L239">                tmp.x[i0] = output[i0].x[i1];</span>
+<span class="fc" id="L240">                tmp.y[i0] = output[i0].y[i1];</span>
             }
 
-<span class="fc bfc" id="L207" title="All 2 branches covered.">            if (forward) {</span>
-<span class="fc" id="L208">                fft0.ft(tmp);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">            if (forward) {</span>
+<span class="fc" id="L244">                fft0.ft(tmp);</span>
             } else {
-<span class="fc" id="L210">                fft0.bt(tmp);</span>
+<span class="fc" id="L246">                fft0.bt(tmp);</span>
             }
 
-<span class="fc bfc" id="L213" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; n0; ++i0) {</span>
-<span class="fc" id="L214">                output[i0].x[i1] = tmp.x[i0] * norm0;</span>
-<span class="fc" id="L215">                output[i0].y[i1] = tmp.y[i0] * norm0;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; n0; ++i0) {</span>
+<span class="fc" id="L250">                output[i0].x[i1] = tmp.x[i0] * norm0;</span>
+<span class="fc" id="L251">                output[i0].y[i1] = tmp.y[i0] * norm0;</span>
             }
         }
 
-<span class="fc" id="L219">        return output;</span>
+<span class="fc" id="L255">        return output;</span>
+    }
+    
+    /**
+     * perform a 1-dimension FFT using the JFFTPack library.
+     *
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2.
+     *
+     * @param input double array of complex data in format double[nRows][2*nColumns]
+     * where the column elements are alternately the complex real number and the
+     * complex imaginary number.
+     * @param forward
+     * @return two dimensional complex array of size Complex[nRows][input.nCols/2)
+     */
+    public Complex1D create1DFFT2(Complex1D input, boolean forward) {
+
+<span class="nc" id="L271">        final int n0 = input.x.length;</span>
+
+<span class="nc" id="L273">        Complex1D output = new Complex1D();</span>
+<span class="nc" id="L274">        output.x = Arrays.copyOf(input.x, input.x.length);</span>
+<span class="nc" id="L275">        output.y = Arrays.copyOf(input.y, input.y.length);</span>
+
+<span class="nc" id="L277">        ComplexDoubleFFT fft1 = new ComplexDoubleFFT(n0);</span>
+
+<span class="nc bnc" id="L279" title="All 2 branches missed.">        if (forward) {</span>
+<span class="nc" id="L280">            fft1.ft(output);</span>
+        } else {
+<span class="nc" id="L282">            fft1.bt(output);</span>
+        }
+
+<span class="nc" id="L285">        return output;</span>
     }
 
     public Complex1D[] copyToComplex1D(Complex[][] input) {
 
-<span class="fc" id="L224">        int n0 = input.length;</span>
-<span class="fc" id="L225">        int n1 = input[0].length;</span>
+<span class="fc" id="L290">        int n0 = input.length;</span>
+<span class="fc" id="L291">        int n1 = input[0].length;</span>
 
-<span class="fc" id="L227">        Complex1D[] output = new Complex1D[n0];</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (int i = 0; i &lt; n0; ++i) {</span>
-<span class="fc" id="L229">            output[i] = new Complex1D();</span>
-<span class="fc" id="L230">            output[i].x = new double[n1];</span>
-<span class="fc" id="L231">            output[i].y = new double[n1];</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">            for (int j = 0; j &lt; n1; ++j) {</span>
-<span class="fc" id="L233">                output[i].x[j] = input[i][j].re();</span>
-<span class="fc" id="L234">                output[i].y[j] = input[i][j].im();</span>
+<span class="fc" id="L293">        Complex1D[] output = new Complex1D[n0];</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        for (int i = 0; i &lt; n0; ++i) {</span>
+<span class="fc" id="L295">            output[i] = new Complex1D();</span>
+<span class="fc" id="L296">            output[i].x = new double[n1];</span>
+<span class="fc" id="L297">            output[i].y = new double[n1];</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">            for (int j = 0; j &lt; n1; ++j) {</span>
+<span class="fc" id="L299">                output[i].x[j] = input[i][j].re();</span>
+<span class="fc" id="L300">                output[i].y[j] = input[i][j].im();</span>
             }
         }
 
-<span class="fc" id="L238">        return output;</span>
+<span class="fc" id="L304">        return output;</span>
+    }
+    
+    public Complex1D copyToComplex1D(Complex[] input) {
+
+<span class="nc" id="L309">        int n0 = input.length;</span>
+
+<span class="nc" id="L311">        Complex1D output = new Complex1D();</span>
+<span class="nc" id="L312">        output.x = new double[n0];</span>
+<span class="nc" id="L313">        output.y = new double[n0];</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        for (int i = 0; i &lt; n0; ++i) {</span>
+<span class="nc" id="L315">            output.x[i] = input[i].re();</span>
+<span class="nc" id="L316">            output.y[i] = input[i].im();</span>
+        }
+
+<span class="nc" id="L319">        return output;</span>
+    }
+    
+    public Complex1D copyToComplex1D(double[] input) {
+
+<span class="nc" id="L324">        int n0 = input.length;</span>
+
+<span class="nc" id="L326">        Complex1D output = new Complex1D();</span>
+<span class="nc" id="L327">        output.x = Arrays.copyOf(input, input.length);</span>
+<span class="nc" id="L328">        output.y = new double[n0];</span>
+
+<span class="nc" id="L330">        return output;</span>
+    }
+    
+    public Complex[] copyToComplex(Complex1D input) {
+
+<span class="nc" id="L335">        int n0 = input.x.length;</span>
+
+<span class="nc" id="L337">        Complex[] output = new Complex[n0];</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        for (int i = 0; i &lt; n0; ++i) {</span>
+<span class="nc" id="L339">            output[i] = new Complex(input.x[i], input.y[i]);</span>
+        }
+
+<span class="nc" id="L342">        return output;</span>
     }
     
     public Complex[][] copyToComplex(Complex1D[] input) {
 
-<span class="fc" id="L243">        int n0 = input.length;</span>
-<span class="fc" id="L244">        int n1 = input[0].x.length;</span>
+<span class="fc" id="L347">        int n0 = input.length;</span>
+<span class="fc" id="L348">        int n1 = input[0].x.length;</span>
 
-<span class="fc" id="L246">        Complex[][] output = new Complex[n0][];</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">        for (int i = 0; i &lt; n0; ++i) {</span>
-<span class="fc" id="L248">            output[i] = new Complex[n1];</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">            for (int j = 0; j &lt; n1; ++j) {</span>
-<span class="fc" id="L250">                output[i][j] = new Complex(input[i].x[j], input[i].y[j]);</span>
+<span class="fc" id="L350">        Complex[][] output = new Complex[n0][];</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        for (int i = 0; i &lt; n0; ++i) {</span>
+<span class="fc" id="L352">            output[i] = new Complex[n1];</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">            for (int j = 0; j &lt; n1; ++j) {</span>
+<span class="fc" id="L354">                output[i][j] = new Complex(input[i].x[j], input[i].y[j]);</span>
             }
         }
 
-<span class="fc" id="L254">        return output;</span>
+<span class="fc" id="L358">        return output;</span>
     }
 
     public Complex[][] copy(Complex[][] input) {
 
-<span class="fc" id="L259">        int n0 = input.length;</span>
+<span class="fc" id="L363">        int n0 = input.length;</span>
 
-<span class="fc" id="L261">        Complex[][] output = new Complex[n0][];</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 0; i &lt; n0; ++i) {</span>
-<span class="fc" id="L263">            output[i] = Arrays.copyOf(input[i], input[i].length);</span>
+<span class="fc" id="L365">        Complex[][] output = new Complex[n0][];</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        for (int i = 0; i &lt; n0; ++i) {</span>
+<span class="fc" id="L367">            output[i] = Arrays.copyOf(input[i], input[i].length);</span>
         }
 
-<span class="fc" id="L266">        return output;</span>
+<span class="fc" id="L370">        return output;</span>
     }
 
 }
