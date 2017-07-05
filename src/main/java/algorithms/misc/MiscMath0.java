@@ -9,6 +9,7 @@ import java.util.Collection;
 import gnu.trove.set.TIntSet;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
+import java.util.Arrays;
 
 /**
     miscellaneous math methods. some could probably be improved.
@@ -737,5 +738,40 @@ public class MiscMath0 {
         
         return rev;
         
+    }
+    
+    public static float[] calcQuartiles(float[] a, boolean isSorted) {
+        
+        // 0 : 0.25
+        // 0 : 0.5
+        // 0 : 0.75
+        // 0 : 1
+        
+        if (!isSorted) {
+            a = Arrays.copyOf(a, a.length);
+            Arrays.sort(a);
+        }
+        
+        int n = a.length;
+        float norm = 0;
+        float[] sums = new float[4];    
+        for (int i = 0; i < n; ++i) {
+            if (i < ((float)n/4.f)) {
+                sums[0] += a[i];
+            } else if (i < ((float)n/2.f)) {
+                sums[1] += a[i];
+            } else if (i < ((float)n*3.f/4.f)) {
+                sums[2] += a[i];
+            } else {
+                sums[3] += a[i];
+            }
+            norm += a[i];
+        }
+        
+        for (int i = 0; i < sums.length; ++i) {
+            sums[i] /= norm;
+        }
+        
+        return sums;
     }
 }

@@ -71,6 +71,33 @@ public class MinMaxPeakFinder {
     }
     
     /**
+     * copies and sorts values, then takes the fraction*values.length
+     * first indexes and calculates the mean for them and returns it.
+     * 
+     * @param values
+     * @param fraction
+     * @return 
+     */
+    public float calculateMeanOfSmallest(int[] values, float fraction) {
+        
+        int[] a = Arrays.copyOf(values, values.length);
+        
+        Arrays.sort(a);
+        
+        float mean = 0;
+        int end = Math.round(fraction * values.length);
+        if (end == 0) {
+            end = 1;
+        }
+        for (int i = 0; i < end; ++i) {
+            mean += a[i];
+        }
+        mean /= (float)end;
+        
+        return mean;
+    }
+    
+    /**
      * find the indexes of the array values which are local maxima whose
      * values are above lowThreshold and a factor factorAboveMin above
      * one of the adjacent minima.

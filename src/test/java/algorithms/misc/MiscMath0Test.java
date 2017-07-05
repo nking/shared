@@ -7,6 +7,7 @@ import gnu.trove.list.array.TIntArrayList;
 import java.util.logging.Logger;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -354,5 +355,28 @@ public class MiscMath0Test extends TestCase {
         float min = MiscMath0.findMin(a);
         
         assertEquals(-3.f, min);
+    }
+    
+    //public static float[] calcQuartiles(float[] a, boolean isSorted) {
+    public void testCalcQuartilesTest() {
+        
+        // 0 1 2  4 4 4  4 6 8  12 12 16
+        //   3      12     18      40
+        //  3/73    ...
+        
+        float[] a = new float[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
+        
+        float[] expected = new float[]{
+            3.f/73.f, 12.f/73.f, 18.f/73.f, 40.f/73.f};
+    
+        float[] b = MiscMath0.calcQuartiles(a, true);
+        
+        assertTrue(Arrays.equals(b, expected));
+        
+        a = new float[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
+        
+        b = MiscMath0.calcQuartiles(a, false);
+        
+        assertTrue(Arrays.equals(b, expected));
     }
 }

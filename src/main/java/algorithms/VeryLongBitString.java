@@ -18,7 +18,7 @@ import java.util.Arrays;
 
    then moved to this shared library project which has the same copyright
    and license.
-   * 
+  
  * @author nichole
  */
 public final class VeryLongBitString {
