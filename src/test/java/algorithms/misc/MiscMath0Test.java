@@ -411,11 +411,10 @@ public class MiscMath0Test extends TestCase {
         
         int[] a = new int[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
         
-        int[] expected = new int[]{
-            Math.round(3.f/73.f), Math.round(12.f/73.f), Math.round(18.f/73.f), 
-            Math.round(40.f/73.f)};
+        float[] expected = new float[]{
+            (3.f/73.f), (12.f/73.f), (18.f/73.f), (40.f/73.f)};
     
-        int[] b = MiscMath0.calcQuartiles(a, true);
+        float[] b = MiscMath0.calcQuartiles(a, true);
         
         assertTrue(Arrays.equals(b, expected));
         

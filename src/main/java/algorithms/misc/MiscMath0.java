@@ -740,7 +740,7 @@ public class MiscMath0 {
         
     }
     
-    public static int[] calcQuartiles(int[] a, boolean isSorted) {
+    public static float[] calcQuartiles(int[] a, boolean isSorted) {
         
         // 0 : 0.25
         // 0 : 0.5
@@ -754,7 +754,7 @@ public class MiscMath0 {
         
         int n = a.length;
         int norm = 0;
-        int[] sums = new int[4];    
+        float[] sums = new float[4];    
         for (int i = 0; i < n; ++i) {
             if (i < ((float)n/4.f)) {
                 sums[0] += a[i];
@@ -769,7 +769,7 @@ public class MiscMath0 {
         }
         
         for (int i = 0; i < sums.length; ++i) {
-            sums[i] = Math.round((float)sums[i]/(float)norm);
+            sums[i] = (float)sums[i]/(float)norm;
         }
         
         return sums;
