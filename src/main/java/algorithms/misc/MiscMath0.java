@@ -753,14 +753,18 @@ public class MiscMath0 {
         }
         
         int n = a.length;
+        float t25 = (float)n/4.f;
+        float t50 = (float)n/2.f;
+        float t75 = (float)n*3.f/4.f;
+        
         int norm = 0;
         float[] sums = new float[4];    
         for (int i = 0; i < n; ++i) {
-            if (i < ((float)n/4.f)) {
+            if (i < t25) {
                 sums[0] += a[i];
-            } else if (i < ((float)n/2.f)) {
+            } else if (i < t50) {
                 sums[1] += a[i];
-            } else if (i < ((float)n*3.f/4.f)) {
+            } else if (i < t75) {
                 sums[2] += a[i];
             } else {
                 sums[3] += a[i];
@@ -789,13 +793,17 @@ public class MiscMath0 {
         
         int n = a.length;
         float norm = 0;
+        float t25 = (float)n/4.f;
+        float t50 = (float)n/2.f;
+        float t75 = (float)n*3.f/4.f;
+        
         float[] sums = new float[4];    
         for (int i = 0; i < n; ++i) {
-            if (i < ((float)n/4.f)) {
+            if (i < t25) {
                 sums[0] += a[i];
-            } else if (i < ((float)n/2.f)) {
+            } else if (i < t50) {
                 sums[1] += a[i];
-            } else if (i < ((float)n*3.f/4.f)) {
+            } else if (i < t75) {
                 sums[2] += a[i];
             } else {
                 sums[3] += a[i];
@@ -824,13 +832,17 @@ public class MiscMath0 {
         
         int n = a.length;
         double norm = 0;
+        float t25 = (float)n/4.f;
+        float t50 = (float)n/2.f;
+        float t75 = (float)n*3.f/4.f;
+        
         double[] sums = new double[4];    
         for (int i = 0; i < n; ++i) {
-            if (i < ((float)n/4.f)) {
+            if (i < t25) {
                 sums[0] += a[i];
-            } else if (i < ((float)n/2.f)) {
+            } else if (i < t50) {
                 sums[1] += a[i];
-            } else if (i < ((float)n*3.f/4.f)) {
+            } else if (i < t75) {
                 sums[2] += a[i];
             } else {
                 sums[3] += a[i];
