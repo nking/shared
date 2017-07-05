@@ -357,8 +357,7 @@ public class MiscMath0Test extends TestCase {
         assertEquals(-3.f, min);
     }
     
-    //public static float[] calcQuartiles(float[] a, boolean isSorted) {
-    public void testCalcQuartilesTest() {
+    public void testCalcQuartilesTest_float() {
         
         // 0 1 2  4 4 4  4 6 8  12 12 16
         //   3      12     18      40
@@ -374,6 +373,53 @@ public class MiscMath0Test extends TestCase {
         assertTrue(Arrays.equals(b, expected));
         
         a = new float[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
+        
+        b = MiscMath0.calcQuartiles(a, false);
+        
+        assertTrue(Arrays.equals(b, expected));
+    }
+    
+    public void testCalcQuartilesTest_double() {
+        
+        // 0 1 2  4 4 4  4 6 8  12 12 16
+        //   3      12     18      40
+        //  3/73    ...
+        
+        double[] a = new double[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
+        
+        double[] expected = new double[]{
+            3./73., 12./73., 18./73., 40./73.};
+    
+        double[] b = MiscMath0.calcQuartiles(a, true);
+        
+        assertTrue(Arrays.equals(b, expected));
+        
+        a = new double[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
+        
+        b = MiscMath0.calcQuartiles(a, false);
+        
+        assertTrue(Arrays.equals(b, expected));
+    }
+    
+    public void testCalcQuartilesTest_int() {
+        
+        // 0 1 2  4 4 4  4 6 8  12 12 16
+        //   3      12     18      40
+        //  3/73    ...
+        
+        float norm = 73.f;
+        
+        int[] a = new int[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
+        
+        int[] expected = new int[]{
+            Math.round(3.f/73.f), Math.round(12.f/73.f), Math.round(18.f/73.f), 
+            Math.round(40.f/73.f)};
+    
+        int[] b = MiscMath0.calcQuartiles(a, true);
+        
+        assertTrue(Arrays.equals(b, expected));
+        
+        a = new int[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
         
         b = MiscMath0.calcQuartiles(a, false);
         

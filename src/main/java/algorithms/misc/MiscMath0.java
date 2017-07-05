@@ -740,6 +740,41 @@ public class MiscMath0 {
         
     }
     
+    public static int[] calcQuartiles(int[] a, boolean isSorted) {
+        
+        // 0 : 0.25
+        // 0 : 0.5
+        // 0 : 0.75
+        // 0 : 1
+        
+        if (!isSorted) {
+            a = Arrays.copyOf(a, a.length);
+            Arrays.sort(a);
+        }
+        
+        int n = a.length;
+        int norm = 0;
+        int[] sums = new int[4];    
+        for (int i = 0; i < n; ++i) {
+            if (i < ((float)n/4.f)) {
+                sums[0] += a[i];
+            } else if (i < ((float)n/2.f)) {
+                sums[1] += a[i];
+            } else if (i < ((float)n*3.f/4.f)) {
+                sums[2] += a[i];
+            } else {
+                sums[3] += a[i];
+            }
+            norm += a[i];
+        }
+        
+        for (int i = 0; i < sums.length; ++i) {
+            sums[i] = Math.round((float)sums[i]/(float)norm);
+        }
+        
+        return sums;
+    }
+    
     public static float[] calcQuartiles(float[] a, boolean isSorted) {
         
         // 0 : 0.25
@@ -755,6 +790,41 @@ public class MiscMath0 {
         int n = a.length;
         float norm = 0;
         float[] sums = new float[4];    
+        for (int i = 0; i < n; ++i) {
+            if (i < ((float)n/4.f)) {
+                sums[0] += a[i];
+            } else if (i < ((float)n/2.f)) {
+                sums[1] += a[i];
+            } else if (i < ((float)n*3.f/4.f)) {
+                sums[2] += a[i];
+            } else {
+                sums[3] += a[i];
+            }
+            norm += a[i];
+        }
+        
+        for (int i = 0; i < sums.length; ++i) {
+            sums[i] /= norm;
+        }
+        
+        return sums;
+    }
+    
+    public static double[] calcQuartiles(double[] a, boolean isSorted) {
+        
+        // 0 : 0.25
+        // 0 : 0.5
+        // 0 : 0.75
+        // 0 : 1
+        
+        if (!isSorted) {
+            a = Arrays.copyOf(a, a.length);
+            Arrays.sort(a);
+        }
+        
+        int n = a.length;
+        double norm = 0;
+        double[] sums = new double[4];    
         for (int i = 0; i < n; ++i) {
             if (i < ((float)n/4.f)) {
                 sums[0] += a[i];
