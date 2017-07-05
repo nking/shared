@@ -90,4 +90,20 @@ public class StatsInSlidingWindowTest extends TestCase {
         
         //------
     }
+    
+    public void testCalculateMaximum_1d() {
+        
+        float[] input = new float[]{4, 3, 2, 0, 5};
+        float[] output = new float[5];
+        
+        //4 3 2 4 0        
+        int window = 3;
+        float[] expected = new float[]{4, 3, 5, 5, 5};
+        
+        StatsInSlidingWindow sw = new StatsInSlidingWindow();
+        
+        sw.calculateMaximum(input, output, 3);
+                
+        assertTrue(Arrays.equals(expected, output));
+    }
 }

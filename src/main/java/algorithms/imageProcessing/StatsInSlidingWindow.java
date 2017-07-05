@@ -150,6 +150,93 @@ public class StatsInSlidingWindow {
     }
     
     /**
+     * calculate a running maximum of a window of size window
+     * runtime complexity is
+     *     (window) + (input.length *lg2(window))
+     *
+     * NOTE: should only be used by a single thread.
+     * 
+     * NOTE: the border points outside of the window retain their 
+     * initial values.
+     *
+     * @param input
+     * @param output
+     * @param window
+     */
+    public void calculateMaximum(float[] input, float[] output, int window) {
+
+        if (input == null) {
+            throw new IllegalArgumentException("input cannot be null");
+        }
+        if (input.length < window) {
+            throw new IllegalArgumentException(
+            "input.length must be equal to or greater than xWindow");
+        }
+        if (output == null) {
+            throw new IllegalArgumentException("input cannot be null");
+        }
+        if (input.length != output.length) {
+            throw new IllegalArgumentException(
+            "input.length must be equal to output.length");
+        }
+        
+        // tailored for maximum stats
+        int xLen2 = input.length + window;
+        float[] input2 = Arrays.copyOf(input, xLen2);
+        
+        int nW = window;
+        int xh = window/2;
+        boolean xHEven = (xh & 1) == 0;
+        int w = input2.length;
+        int w0 = input.length;
+        
+        SortedVector sVec = new SortedVector(nW);
+
+        // add the first nW to the sorted vector
+        for (int i = 0; i < window; ++i) {
+            sVec.append(input2[i]);
+        }
+
+        assert(sVec.n == sVec.a.length);
+        assert(sVec.sorted);
+
+        //O(k) + (N)*lg2(k)
+        float maximum;
+
+        for (int i = (window - 1); i < w; ++i) {
+
+            int iIdx = i - window + 1;
+
+            if (iIdx >= w0) {
+                break;
+            }
+
+            //O(1)
+            maximum = sVec.getMaximum();
+
+            output[iIdx] = maximum;
+
+            // remove each item from last column in window
+            // and add each item in next column for window,
+
+            if ((i + 1) < w) {
+
+                assert(sVec.n == sVec.a.length);
+
+                // remove : O(log_2(k))
+                sVec.remove(input2[i - window + 1]);
+
+                assert(sVec.n == (sVec.a.length - 1));
+
+                // add : O(log_2(k)) + < O(k)
+                sVec.insertIntoOpenSlot(input2[i + 1]);
+
+                assert(sVec.n == sVec.a.length);
+            }
+        }                                
+    }
+    
+    /**
      * a fixed size list that keeps the contents sorted after the capacity is
      * reached.  points are added one at a time and removed one at a time
      * and there are rules to prevent removing when list is not full or
