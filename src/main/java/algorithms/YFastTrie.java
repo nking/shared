@@ -448,22 +448,21 @@ YFastTrie
         
         int nodeIndex = node/binSz;
         
+        // the repr is stored in xft and it is always the minium for the bin
         boolean isAMinimum = xft.find(nodeKey) != null;
         
         /*
         if the node is not a minima, the answer is in
            the node's map if its size is larger > 1
         */
-        if (!isAMinimum && (rbs.get(nodeIndex).size() > 1)) {
         
-            TreeMap<Integer, Integer> map = getTreeMap(nodeIndex);
-          
+        TreeMap<Integer, Integer> map = getTreeMap(nodeIndex);
+        
+        if (!isAMinimum && (map.size() > 1)) {
             Entry<Integer, Integer> pred = map.lowerEntry(nodeKey);
-            if (pred == null) {
-                return -1;
+            if (pred != null) {
+                return pred.getKey().intValue();
             }
-            
-            return pred.getKey().intValue();
         }
        
         // else, predeccessor is in the closest bin < nodeIndex that has
@@ -476,8 +475,8 @@ YFastTrie
         
         int prev0Index = prev.intValue()/binSz;
             
-        TreeMap<Integer, Integer> map = getTreeMap(prev0Index);
-        
+        map = getTreeMap(prev0Index);
+                
         Entry<Integer, Integer> lastItem = map.lastEntry();
                
         if (lastItem == null) {
@@ -503,11 +502,11 @@ YFastTrie
         
         boolean isAMinimum = xft.find(nodeKey) != null;
         
+        TreeMap<Integer, Integer> nodeMap = getTreeMap(nodeIndex);
+        
         if (isAMinimum) {
             // if tree size > 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
-            
-            TreeMap<Integer, Integer> nodeMap = getTreeMap(nodeIndex);
             
             if (nodeMap.size() > 1) {
                 Entry<Integer, Integer> successor = nodeMap.higherEntry(nodeKey);
@@ -527,9 +526,7 @@ YFastTrie
         // else, the node is not a repr
         //   if there is a tree successor to the node, that is the successor
         //   else, the xft successor to nodeIndex is the successor
-        
-        TreeMap<Integer, Integer> nodeMap = getTreeMap(nodeIndex);
-            
+                    
         Entry<Integer, Integer> sEntry = nodeMap.higherEntry(nodeKey);
         
         if (sEntry != null) {
