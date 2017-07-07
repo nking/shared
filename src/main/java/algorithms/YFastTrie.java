@@ -295,12 +295,10 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly
-     *    O(log_2(w)) + O(w-l) + O(log_2(N/w))
-     * where N is total number of nodes in the YFastTrie,
-     * w is the maximum value possible in bit length,
-     * and l is the number of levels in the prefix trie 
-     * already filled with other entries.
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
      * 
      * @param node a number >= 0 and having bit length 
      * less than or equal to w.
@@ -340,6 +338,10 @@ YFastTrie
     }
 
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
      * 
      * @param node
      * @return 
@@ -405,6 +407,11 @@ YFastTrie
     }
 
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
      * @param node
      * @return 
      */
@@ -431,6 +438,11 @@ YFastTrie
     }
 
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
      * @param node
      * @return value preceding node, else -1 if there is not one
      */
@@ -486,6 +498,15 @@ YFastTrie
         return lastItem.getKey();
     }
     
+    /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
+     * @param node
+     * @return 
+     */
     public int successor(int node) {
                 
         if (node < 0) {
@@ -543,6 +564,11 @@ YFastTrie
     }
 
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
      * runtime complexity is O(log_2(w)) 
      * @return minimum, else -1 if empty
      */
@@ -560,6 +586,11 @@ YFastTrie
     }
 
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
      * @return maximum, else -1 if empty
      */
     public int maximum() {
@@ -586,6 +617,11 @@ YFastTrie
     }
     
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
      * TODO: calc runtime complexity again
      * 
      * @return minumum, else -1 if empty
@@ -606,6 +642,11 @@ YFastTrie
     }
     
     /**
+     * runtime complexity is roughly .lte. O(10) and may be better than this
+     * for some datasets.  The runtime is dependent on the bit length of the
+     * largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * 
      * TODO: calc runtime complexity again
      * 
      * @return maximum, else -1 if empty
