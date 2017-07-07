@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>QuadTreeInterval2D.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.edu.princeton.cs.algs4</a> &gt; <span class="el_source">QuadTreeInterval2D.java</span></div><h1>QuadTreeInterval2D.java</h1><pre class="source lang-java linenums">package thirdparty.edu.princeton.cs.algs4;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+
+/**
+ * adapted from and added to QuadTree implementation 
+ * from the code from the book &quot;Algorithms&quot;
+ * by Sedgewick and Wayne from 
+ * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
+ * copyright for authors Robert Sedgewick and Kevin Wayne
+ * is GPLV3, http://algs4.cs.princeton.edu/faq/
+ */
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">public class QuadTreeInterval2D&lt;T extends Comparable&lt;T&gt;, Value&gt;  {</span>
+    
+    private Node&lt;T&gt; root;
+
+    // helper node data type
+    private class Node&lt;T extends Comparable&lt;T&gt;&gt; {
+        Interval2D&lt;T&gt; xy;
+        Node&lt;T&gt; NW, NE, SE, SW;   // four subtrees
+        Value value;           // associated data
+
+        Node(Interval2D&lt;T&gt; box, Value value) {
+            this.xy = box;
+            this.value = value;
+        }
+    }
+
+
+  /***********************************************************************
+    *  Insert (x, y) into appropriate quadrant
+    ***************************************************************************/
+    public void insert(Interval2D&lt;T&gt; box, Value value) {
+<span class="fc" id="L39">        root = insert(root, box, value);</span>
+<span class="fc" id="L40">    }</span>
+
+    private Node&lt;T&gt; insert(Node&lt;T&gt; h, Interval2D&lt;T&gt; box, Value value) {
+        
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (h == null) {</span>
+<span class="fc" id="L45">            return new Node&lt;T&gt;(box, value);</span>
+        }
+        
+<span class="fc" id="L48">        int cX = h.xy.intervalX.compareTo(box.intervalX);</span>
+<span class="fc" id="L49">        int cY = h.xy.intervalY.compareTo(box.intervalY);</span>
+        
+        //System.out.println(&quot;ins cX=&quot; + cX + &quot; cY=&quot; + cY
+        //+ &quot; for (&quot; + box.toString() + &quot;)&quot;);
+
+<span class="fc bfc" id="L54" title="All 4 branches covered.">        if ((cX &lt; 0) &amp;&amp; (cY &lt; 0)) { </span>
+<span class="fc" id="L55">            h.SW = insert(h.SW, box, value);</span>
+<span class="pc bpc" id="L56" title="1 of 4 branches missed.">        } else if ((cX &lt; 0) &amp;&amp; (cY &gt;= 0)) {</span>
+<span class="fc" id="L57">            h.NW = insert(h.NW, box, value);</span>
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">        } else if ((cX &gt;= 0) &amp;&amp; (cY &lt; 0)) {</span>
+<span class="fc" id="L59">            h.SE = insert(h.SE, box, value);</span>
+<span class="pc bpc" id="L60" title="2 of 4 branches missed.">        } else if ((cX &gt;= 0) &amp;&amp; (cY &gt;= 0)) { </span>
+<span class="fc" id="L61">            h.NE = insert(h.NE, box, value);</span>
+        }
+        
+<span class="fc" id="L64">        return h;</span>
+    }
+
+    public void remove(Interval2D&lt;T&gt; box) {
+<span class="fc" id="L68">        List&lt;Node&lt;T&gt;&gt; parents = new ArrayList&lt;Node&lt;T&gt;&gt;();</span>
+<span class="fc" id="L69">        remove(root, box, parents);</span>
+<span class="fc" id="L70">    }</span>
+    
+    private void remove(Node&lt;T&gt; h, Interval2D&lt;T&gt; box, 
+        List&lt;Node&lt;T&gt;&gt; parents) {
+                
+<span class="pc bpc" id="L75" title="1 of 4 branches missed.">        boolean isH = (h != null) &amp;&amp; h.xy.equals(box);</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">        boolean isRoot = isH &amp;&amp; h.equals(root);</span>
+        
+<span class="pc bpc" id="L78" title="1 of 6 branches missed.">        if ((h == null) || isRoot || isH) {</span>
+            
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">            if (parents.isEmpty() &amp;&amp; !isRoot) {</span>
+<span class="nc" id="L81">                return;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            } else if (isRoot) {</span>
+<span class="fc" id="L83">                List&lt;Interval2D&lt;T&gt;&gt; boxes = new</span>
+                    ArrayList&lt;Interval2D&lt;T&gt;&gt;();
+<span class="fc" id="L85">                List&lt;Value&gt; values = new ArrayList&lt;Value&gt;();</span>
+<span class="fc" id="L86">                getAllNodes(boxes, values);</span>
+<span class="fc" id="L87">                root = null;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                for (int i = 0; i &lt; boxes.size(); ++i) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                    if (!boxes.get(i).equals(box)) {</span>
+<span class="fc" id="L90">                        insert(boxes.get(i), values.get(i));</span>
+                    }
+                }
+<span class="fc" id="L93">                return;</span>
+            } else {
+<span class="pc bpc" id="L95" title="3 of 4 branches missed.">                assert(!parents.isEmpty());</span>
+<span class="fc" id="L96">                Node&lt;T&gt; parent = parents.get(parents.size() - 1);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">                if (isH) {</span>
+<span class="fc" id="L98">                    removeNodeReattachChildren(parent, box);</span>
+<span class="fc" id="L99">                    return;</span>
+                }
+            }
+        }
+        
+<span class="fc" id="L104">        parents.add(h);</span>
+        
+<span class="fc" id="L106">        int cX = h.xy.intervalX.compareTo(box.intervalX);</span>
+<span class="fc" id="L107">        int cY = h.xy.intervalY.compareTo(box.intervalY);</span>
+        
+<span class="fc bfc" id="L109" title="All 4 branches covered.">        if ((cX &lt; 0) &amp;&amp; (cY &lt; 0)) { </span>
+<span class="fc" id="L110">            remove(h.SW, box, parents);</span>
+<span class="pc bpc" id="L111" title="1 of 4 branches missed.">        } else if ((cX &lt; 0) &amp;&amp; (cY &gt;= 0)) {</span>
+<span class="fc" id="L112">            remove(h.NW, box, parents);</span>
+<span class="pc bpc" id="L113" title="1 of 4 branches missed.">        } else if ((cX &gt;= 0) &amp;&amp; (cY &lt; 0)) {</span>
+<span class="fc" id="L114">            remove(h.SE, box, parents);</span>
+<span class="pc bpc" id="L115" title="2 of 4 branches missed.">        } else if ((cX &gt;= 0) &amp;&amp; (cY &gt;= 0)) { </span>
+<span class="fc" id="L116">            remove(h.NE, box, parents);</span>
+        }
+<span class="fc" id="L118">    }</span>
+    
+    private void removeNodeReattachChildren(Node&lt;T&gt; parent, 
+        Interval2D&lt;T&gt; rmBox) {
+
+<span class="fc" id="L123">        Node&lt;T&gt; node = null;</span>
+<span class="fc bfc" id="L124" title="All 4 branches covered.">        if (parent.NW != null &amp;&amp; parent.NW.xy.equals(rmBox)) {</span>
+<span class="fc" id="L125">            node = parent.NW;</span>
+<span class="fc" id="L126">            parent.NW = null;</span>
+<span class="fc bfc" id="L127" title="All 4 branches covered.">        } else if (parent.NE != null &amp;&amp; parent.NE.xy.equals(rmBox)) {</span>
+<span class="fc" id="L128">            node = parent.NE;</span>
+<span class="fc" id="L129">            parent.NE = null;</span>
+<span class="fc bfc" id="L130" title="All 4 branches covered.">        } else if (parent.SW != null &amp;&amp; parent.SW.xy.equals(rmBox)) {</span>
+<span class="fc" id="L131">            node = parent.SW;</span>
+<span class="fc" id="L132">            parent.SW = null;</span>
+<span class="pc bpc" id="L133" title="2 of 4 branches missed.">        } else if (parent.SE != null &amp;&amp; parent.SE.xy.equals(rmBox)) {</span>
+<span class="fc" id="L134">            node = parent.SE;</span>
+<span class="fc" id="L135">            parent.SE = null;</span>
+        } else {
+<span class="nc" id="L137">            throw new IllegalStateException(</span>
+            &quot;Error in algorithm. parent is not correct&quot;);
+        }
+        
+<span class="fc" id="L141">        List&lt;Interval2D&lt;T&gt;&gt; boxes = new ArrayList&lt;Interval2D&lt;T&gt;&gt;();</span>
+<span class="fc" id="L142">        List&lt;Value&gt; values = new ArrayList&lt;Value&gt;();</span>
+<span class="fc" id="L143">        getAllNodes(node, boxes, values);</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int i = 0; i &lt; boxes.size(); ++i) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            if (!boxes.get(i).equals(rmBox)) {</span>
+<span class="fc" id="L146">                insert(boxes.get(i), values.get(i));</span>
+            }
+        }
+<span class="fc" id="L149">    }</span>
+    
+    private Node&lt;T&gt; insert(Node&lt;T&gt; h, Node&lt;T&gt; insNode) {
+        
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (h == null) {</span>
+<span class="nc" id="L154">            return insNode;</span>
+        }
+        
+<span class="nc" id="L157">        int cX = h.xy.intervalX.compareTo(insNode.xy.intervalX);</span>
+<span class="nc" id="L158">        int cY = h.xy.intervalY.compareTo(insNode.xy.intervalY);</span>
+        
+        //System.out.println(&quot;ins node cX=&quot; + cX + &quot; cY=&quot; + cY
+        //+ &quot; for (&quot; + insNode.xy.toString() + &quot;)&quot;);
+
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        if ((cX &lt; 0) &amp;&amp; (cY &lt; 0)) { </span>
+<span class="nc" id="L164">            h.SW = insert(h.SW, insNode);</span>
+<span class="nc bnc" id="L165" title="All 4 branches missed.">        } else if ((cX &lt; 0) &amp;&amp; (cY &gt;= 0)) {</span>
+<span class="nc" id="L166">            h.NW = insert(h.NW, insNode);</span>
+<span class="nc bnc" id="L167" title="All 4 branches missed.">        } else if ((cX &gt;= 0) &amp;&amp; (cY &lt; 0)) {</span>
+<span class="nc" id="L168">            h.SE = insert(h.SE, insNode);</span>
+<span class="nc bnc" id="L169" title="All 4 branches missed.">        } else if ((cX &gt;= 0) &amp;&amp; (cY &gt;= 0)) { </span>
+<span class="nc" id="L170">            h.NE = insert(h.NE, insNode);</span>
+        }
+        
+<span class="nc" id="L173">        return h;</span>
+    }
+    
+  /***********************************************************************
+    *  Range search.
+    ***************************************************************************/
+
+    public List&lt;Interval2D&lt;T&gt;&gt; query2D(Interval2D&lt;T&gt; rect) {
+        
+<span class="fc" id="L182">        List&lt;Interval2D&lt;T&gt;&gt; output = new ArrayList&lt;Interval2D&lt;T&gt;&gt;();</span>
+        
+<span class="fc" id="L184">        query2D(root, rect, output);</span>
+        
+<span class="fc" id="L186">        return output;</span>
+    }
+
+    private void query2D(Node&lt;T&gt; h, Interval2D&lt;T&gt; srch,
+        List&lt;Interval2D&lt;T&gt;&gt; output) {
+      
+        /*
+        TODO:
+        consider improvements that lead to a balanced
+        tree, hence faster queries.
+        
+        a search returns this which I havent read:
+        &quot;Improving the Performance of Region
+        Quadtrees&quot; by Wolfensberger
+        http://www.ifi.uzh.ch/dam/jcr:ffffffff-96c1-007c-ffff-fffff2d50548/ReportWolfensbergerFA.pdf
+        
+        TODO:
+        consider adding other methods:
+        http://www.cs.cmu.edu/~rcm/papers/thesis/ch4.pdf
+        
+        */
+        
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (h == null) return;</span>
+        
+<span class="fc" id="L210">        int cX = h.xy.intervalX.compareTo(srch.intervalX);</span>
+<span class="fc" id="L211">        int cY = h.xy.intervalY.compareTo(srch.intervalY);</span>
+        
+        //System.out.println(&quot;qry cX=&quot; + cX + &quot; cY=&quot; + cY
+        //+ &quot; for (&quot; + srch.toString() + &quot;)&quot;);
+    
+<span class="fc bfc" id="L216" title="All 4 branches covered.">        if ((cX == 0) &amp;&amp; (cY == 0)) {</span>
+<span class="fc" id="L217">            output.add(h.xy);</span>
+        }
+        
+        /*
+        unlike inserts, for queries, need to search 0's
+        for all directions due to overlap,
+        which unfortunately increases the recursion
+        */
+        
+<span class="fc bfc" id="L226" title="All 6 branches covered.">        if (h.SW != null &amp;&amp; (cX &lt;= 0) &amp;&amp; (cY &lt;= 0)) {</span>
+            //System.out.println(&quot;-&gt;SW parent=&quot; + h.toString());
+<span class="fc" id="L228">            query2D(h.SW, srch, output);</span>
+        }
+<span class="fc bfc" id="L230" title="All 6 branches covered.">        if (h.NW != null &amp;&amp; (cX &lt;= 0) &amp;&amp; (cY &gt;= 0)) { </span>
+            //System.out.println(&quot;-&gt;NW parent=&quot; + h.toString());
+<span class="fc" id="L232">            query2D(h.NW, srch, output);</span>
+        }
+<span class="fc bfc" id="L234" title="All 6 branches covered.">        if (h.SE != null &amp;&amp; (cX &gt;= 0) &amp;&amp; (cY &lt;= 0)) { </span>
+            //System.out.println(&quot;-&gt;SE parent=&quot; + h.toString());
+<span class="fc" id="L236">            query2D(h.SE, srch, output);</span>
+        }
+<span class="fc bfc" id="L238" title="All 6 branches covered.">        if (h.NE != null &amp;&amp; (cX &gt;= 0) &amp;&amp; (cY &gt;= 0)) { </span>
+            //System.out.println(&quot;-&gt;NE parent=&quot; + h.toString());
+<span class="fc" id="L240">            query2D(h.NE, srch, output);</span>
+        }
+<span class="fc" id="L242">    }</span>
+
+    /**
+     * using pre-order traversal, return all nodes
+     * @param output
+     */
+    protected void getAllNodes(List&lt;Interval2D&lt;T&gt;&gt; output,
+        List&lt;Value&gt; output2) {
+<span class="fc" id="L250">        getAllNodes(root, output, output2);</span>
+<span class="fc" id="L251">    }</span>
+    /**
+     * using pre-order traversal, return all nodes
+     * @param output
+     */
+    protected void getAllNodes(Node&lt;T&gt; node, List&lt;Interval2D&lt;T&gt;&gt; output,
+        List&lt;Value&gt; output2) {
+        
+<span class="fc" id="L259">        Set&lt;Interval2D&lt;T&gt;&gt; added = new HashSet&lt;Interval2D&lt;T&gt;&gt;();</span>
+
+<span class="fc" id="L261">        ArrayDeque&lt;Node&lt;T&gt;&gt; children = new ArrayDeque&lt;Node&lt;T&gt;&gt;();</span>
+<span class="fc" id="L262">        Stack&lt;Node&lt;T&gt;&gt; stack = new Stack&lt;Node&lt;T&gt;&gt;();</span>
+<span class="fc bfc" id="L263" title="All 4 branches covered.">        while (!stack.isEmpty() || (node != null)) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            if (node != null) {</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">                if (!added.contains(node.xy)) {</span>
+<span class="fc" id="L266">                    output.add(node.xy);</span>
+<span class="fc" id="L267">                    output2.add(node.value);</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">                    if (node.NW != null) {</span>
+<span class="fc" id="L269">                        children.add(node.NW);</span>
+                    } 
+<span class="fc bfc" id="L271" title="All 2 branches covered.">                    if (node.NE != null) {</span>
+<span class="fc" id="L272">                        children.add(node.NE);</span>
+                    } 
+<span class="fc bfc" id="L274" title="All 2 branches covered.">                    if (node.SW != null) {</span>
+<span class="fc" id="L275">                        children.add(node.SW);</span>
+                    } 
+<span class="fc bfc" id="L277" title="All 2 branches covered.">                    if (node.SE != null) {</span>
+<span class="fc" id="L278">                        children.add(node.SE);</span>
+                    }
+                }
+<span class="fc" id="L281">                stack.push(node);</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">                if (children.isEmpty()) {</span>
+<span class="fc" id="L283">                    node = null;</span>
+                } else {
+<span class="fc" id="L285">                    node = children.poll();</span>
+                }
+            } else {
+<span class="fc" id="L288">                node = stack.pop();</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">                if (children.isEmpty()) {</span>
+<span class="fc" id="L290">                    node = null;</span>
+                } else {
+<span class="nc" id="L292">                    node = children.poll();</span>
+                }
+            }
+        }
+<span class="fc" id="L296">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
