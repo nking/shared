@@ -448,101 +448,98 @@ YFastTrie
         
 <span class="fc" id="L449">        int nodeIndex = node/binSz;</span>
         
-<span class="fc bfc" id="L451" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
+        // the repr is stored in xft and it is always the minium for the bin
+<span class="fc bfc" id="L452" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
         
         /*
         if the node is not a minima, the answer is in
            the node's map if its size is larger &gt; 1
         */
-<span class="fc bfc" id="L457" title="All 4 branches covered.">        if (!isAMinimum &amp;&amp; (rbs.get(nodeIndex).size() &gt; 1)) {</span>
         
-<span class="fc" id="L459">            TreeMap&lt;Integer, Integer&gt; map = getTreeMap(nodeIndex);</span>
-          
-<span class="fc" id="L461">            Entry&lt;Integer, Integer&gt; pred = map.lowerEntry(nodeKey);</span>
-<span class="pc bpc" id="L462" title="1 of 2 branches missed.">            if (pred == null) {</span>
-<span class="nc" id="L463">                return -1;</span>
+<span class="fc" id="L459">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(nodeIndex);</span>
+        
+<span class="fc bfc" id="L461" title="All 4 branches covered.">        if (!isAMinimum &amp;&amp; (map.size() &gt; 1)) {</span>
+<span class="fc" id="L462">            Entry&lt;Integer, Integer&gt; pred = map.lowerEntry(nodeKey);</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">            if (pred != null) {</span>
+<span class="fc" id="L464">                return pred.getKey().intValue();</span>
             }
-            
-<span class="fc" id="L466">            return pred.getKey().intValue();</span>
         }
        
         // else, predeccessor is in the closest bin &lt; nodeIndex that has
         //    items in it.
                 
-<span class="fc" id="L472">        Integer prev = xft.predecessor(nodeKey);</span>
-<span class="fc bfc" id="L473" title="All 2 branches covered.">        if (prev == null) {</span>
-<span class="fc" id="L474">            return -1;</span>
+<span class="fc" id="L471">        Integer prev = xft.predecessor(nodeKey);</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">        if (prev == null) {</span>
+<span class="fc" id="L473">            return -1;</span>
         }
         
-<span class="fc" id="L477">        int prev0Index = prev.intValue()/binSz;</span>
+<span class="fc" id="L476">        int prev0Index = prev.intValue()/binSz;</span>
             
-<span class="fc" id="L479">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(prev0Index);</span>
-        
-<span class="fc" id="L481">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
+<span class="fc" id="L478">        map = getTreeMap(prev0Index);</span>
+                
+<span class="fc" id="L480">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
                
-<span class="pc bpc" id="L483" title="1 of 2 branches missed.">        if (lastItem == null) {</span>
-<span class="nc" id="L484">            return -1;</span>
+<span class="pc bpc" id="L482" title="1 of 2 branches missed.">        if (lastItem == null) {</span>
+<span class="nc" id="L483">            return -1;</span>
         }
         
-<span class="fc" id="L487">        return lastItem.getKey();</span>
+<span class="fc" id="L486">        return lastItem.getKey();</span>
     }
     
     public int successor(int node) {
                 
-<span class="pc bpc" id="L492" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L493">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L491" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L492">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L495" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L496">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L494" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L495">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
         
-<span class="fc" id="L500">        Integer nodeKey = Integer.valueOf(node);</span>
+<span class="fc" id="L499">        Integer nodeKey = Integer.valueOf(node);</span>
         
-<span class="fc" id="L502">        int nodeIndex = node/binSz;</span>
+<span class="fc" id="L501">        int nodeIndex = node/binSz;</span>
         
-<span class="fc bfc" id="L504" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
         
-<span class="fc bfc" id="L506" title="All 2 branches covered.">        if (isAMinimum) {</span>
+<span class="fc" id="L505">        TreeMap&lt;Integer, Integer&gt; nodeMap = getTreeMap(nodeIndex);</span>
+        
+<span class="fc bfc" id="L507" title="All 2 branches covered.">        if (isAMinimum) {</span>
             // if tree size &gt; 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
             
-<span class="fc" id="L510">            TreeMap&lt;Integer, Integer&gt; nodeMap = getTreeMap(nodeIndex);</span>
-            
-<span class="pc bpc" id="L512" title="1 of 2 branches missed.">            if (nodeMap.size() &gt; 1) {</span>
-<span class="fc" id="L513">                Entry&lt;Integer, Integer&gt; successor = nodeMap.higherEntry(nodeKey);</span>
-<span class="pc bpc" id="L514" title="3 of 4 branches missed.">                assert(successor != null);</span>
-<span class="fc" id="L515">                return successor.getKey();</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">            if (nodeMap.size() &gt; 1) {</span>
+<span class="fc" id="L512">                Entry&lt;Integer, Integer&gt; successor = nodeMap.higherEntry(nodeKey);</span>
+<span class="pc bpc" id="L513" title="3 of 4 branches missed.">                assert(successor != null);</span>
+<span class="fc" id="L514">                return successor.getKey();</span>
             }
             
-<span class="nc" id="L518">            Integer successorRepr = xft.successor(nodeKey);</span>
-<span class="nc bnc" id="L519" title="All 2 branches missed.">            if (successorRepr == null) {</span>
-<span class="nc" id="L520">                return -1;</span>
+<span class="nc" id="L517">            Integer successorRepr = xft.successor(nodeKey);</span>
+<span class="nc bnc" id="L518" title="All 2 branches missed.">            if (successorRepr == null) {</span>
+<span class="nc" id="L519">                return -1;</span>
             }
             
             // the successor representative is then the next value
-<span class="nc" id="L524">            return successorRepr;</span>
+<span class="nc" id="L523">            return successorRepr;</span>
         }
         
         // else, the node is not a repr
         //   if there is a tree successor to the node, that is the successor
         //   else, the xft successor to nodeIndex is the successor
+                    
+<span class="fc" id="L530">        Entry&lt;Integer, Integer&gt; sEntry = nodeMap.higherEntry(nodeKey);</span>
         
-<span class="fc" id="L531">        TreeMap&lt;Integer, Integer&gt; nodeMap = getTreeMap(nodeIndex);</span>
-            
-<span class="fc" id="L533">        Entry&lt;Integer, Integer&gt; sEntry = nodeMap.higherEntry(nodeKey);</span>
-        
-<span class="fc bfc" id="L535" title="All 2 branches covered.">        if (sEntry != null) {</span>
-<span class="fc" id="L536">            return sEntry.getKey();</span>
+<span class="fc bfc" id="L532" title="All 2 branches covered.">        if (sEntry != null) {</span>
+<span class="fc" id="L533">            return sEntry.getKey();</span>
         }
         
-<span class="fc" id="L539">        Integer successorRepr = xft.successor(nodeKey);</span>
-<span class="fc bfc" id="L540" title="All 2 branches covered.">        if (successorRepr == null) {</span>
-<span class="fc" id="L541">            return -1;</span>
+<span class="fc" id="L536">        Integer successorRepr = xft.successor(nodeKey);</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">        if (successorRepr == null) {</span>
+<span class="fc" id="L538">            return -1;</span>
         }
 
         // the successor representative is then the next value
-<span class="fc" id="L545">        return successorRepr;</span>
+<span class="fc" id="L542">        return successorRepr;</span>
     }
 
     /**
@@ -551,15 +548,15 @@ YFastTrie
      */
     public int minimum() {
         
-<span class="pc bpc" id="L554" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
-<span class="nc" id="L555">            return -1;</span>
+<span class="pc bpc" id="L551" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
+<span class="nc" id="L552">            return -1;</span>
         }
         
-<span class="fc" id="L558">        Integer repr = xft.minimum();</span>
+<span class="fc" id="L555">        Integer repr = xft.minimum();</span>
         
-<span class="pc bpc" id="L560" title="3 of 4 branches missed.">        assert(repr != null);</span>
+<span class="pc bpc" id="L557" title="3 of 4 branches missed.">        assert(repr != null);</span>
        
-<span class="fc" id="L562">        return repr.intValue();</span>
+<span class="fc" id="L559">        return repr.intValue();</span>
     }
 
     /**
@@ -567,25 +564,25 @@ YFastTrie
      */
     public int maximum() {
         
-<span class="pc bpc" id="L570" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
-<span class="nc" id="L571">            return -1;</span>
+<span class="pc bpc" id="L567" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
+<span class="nc" id="L568">            return -1;</span>
         }
         
-<span class="fc" id="L574">        Integer maxRepr = xft.maximum();</span>
+<span class="fc" id="L571">        Integer maxRepr = xft.maximum();</span>
         
-<span class="pc bpc" id="L576" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
+<span class="pc bpc" id="L573" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
         
-<span class="fc" id="L578">        int index = maxRepr.intValue()/binSz;</span>
+<span class="fc" id="L575">        int index = maxRepr.intValue()/binSz;</span>
         
-<span class="fc" id="L580">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
+<span class="fc" id="L577">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L582" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bpc" id="L579" title="3 of 4 branches missed.">        assert(map != null);</span>
         
-<span class="fc" id="L584">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
+<span class="fc" id="L581">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
         
-<span class="pc bpc" id="L586" title="3 of 4 branches missed.">        assert(lastItem != null);</span>
+<span class="pc bpc" id="L583" title="3 of 4 branches missed.">        assert(lastItem != null);</span>
         
-<span class="fc" id="L588">        return lastItem.getKey();</span>
+<span class="fc" id="L585">        return lastItem.getKey();</span>
     }
     
     /**
@@ -596,16 +593,16 @@ YFastTrie
     public int extractMinimum() {
         
         //O(log_2(w))
-<span class="fc" id="L599">        int min = minimum();</span>
+<span class="fc" id="L596">        int min = minimum();</span>
 
-<span class="pc bpc" id="L601" title="1 of 2 branches missed.">        if (min == -1) {</span>
-<span class="nc bnc" id="L602" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
-<span class="nc" id="L603">            return -1;</span>
+<span class="pc bpc" id="L598" title="1 of 2 branches missed.">        if (min == -1) {</span>
+<span class="nc bnc" id="L599" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc" id="L600">            return -1;</span>
         }
                 
-<span class="fc" id="L606">        remove(min);</span>
+<span class="fc" id="L603">        remove(min);</span>
         
-<span class="fc" id="L608">        return min;</span>
+<span class="fc" id="L605">        return min;</span>
     }
     
     /**
@@ -615,46 +612,46 @@ YFastTrie
      */
     public int extractMaximum() {
         
-<span class="fc" id="L618">        int max = maximum();</span>
+<span class="fc" id="L615">        int max = maximum();</span>
 
-<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (max == -1) {</span>
-<span class="nc bnc" id="L621" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
-<span class="nc" id="L622">            return -1;</span>
+<span class="pc bpc" id="L617" title="1 of 2 branches missed.">        if (max == -1) {</span>
+<span class="nc bnc" id="L618" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc" id="L619">            return -1;</span>
         }
                 
-<span class="fc" id="L625">        remove(max);</span>
+<span class="fc" id="L622">        remove(max);</span>
         
-<span class="fc" id="L627">        return max;</span>
+<span class="fc" id="L624">        return max;</span>
     }
     
     public int size() {
-<span class="fc" id="L631">        return n;</span>
+<span class="fc" id="L628">        return n;</span>
     }
 
     private int chooseBinSizeByN() {
         
-<span class="fc" id="L636">        long totalMemory = Runtime.getRuntime().totalMemory();</span>
-<span class="fc" id="L637">        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();</span>
-<span class="fc" id="L638">        long heapUsage = mbean.getHeapMemoryUsage().getUsed();</span>
-<span class="fc" id="L639">        long avail = totalMemory - heapUsage;</span>
+<span class="fc" id="L633">        long totalMemory = Runtime.getRuntime().totalMemory();</span>
+<span class="fc" id="L634">        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();</span>
+<span class="fc" id="L635">        long heapUsage = mbean.getHeapMemoryUsage().getUsed();</span>
+<span class="fc" id="L636">        long avail = totalMemory - heapUsage;</span>
 
-<span class="fc" id="L641">        long n = avail/32;</span>
+<span class="fc" id="L638">        long n = avail/32;</span>
         
         // n = maxC/binsz
-<span class="fc" id="L644">        int bs = (int)(maxC/n);</span>
+<span class="fc" id="L641">        int bs = (int)(maxC/n);</span>
         
-<span class="fc" id="L646">        double rt = Math.log(bs)/Math.log(2);</span>
+<span class="fc" id="L643">        double rt = Math.log(bs)/Math.log(2);</span>
         
-<span class="pc bpc" id="L648" title="1 of 2 branches missed.">        if (rt &lt; 10) {</span>
-<span class="fc bfc" id="L649" title="All 2 branches covered.">            if (bs &gt; 10) {</span>
+<span class="pc bpc" id="L645" title="1 of 2 branches missed.">        if (rt &lt; 10) {</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">            if (bs &gt; 10) {</span>
                 //this is the number of items, that is capacity, of each map
-<span class="fc" id="L651">                return bs;</span>
+<span class="fc" id="L648">                return bs;</span>
             }
         }
         
         // else, fall back to using the default for rt = O(10)
         
-<span class="fc" id="L657">        return (int)Math.ceil((float)maxC/(float)w);</span>
+<span class="fc" id="L654">        return (int)Math.ceil((float)maxC/(float)w);</span>
         
         /*
         LG binsize = (int)Math.ceil((float)maxC/(float)w);
@@ -683,7 +680,7 @@ YFastTrie
     }
     
     protected int getBinSz() {
-<span class="nc" id="L686">        return binSz;</span>
+<span class="nc" id="L683">        return binSz;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
