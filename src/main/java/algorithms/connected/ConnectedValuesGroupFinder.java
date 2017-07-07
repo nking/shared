@@ -39,6 +39,8 @@ public class ConnectedValuesGroupFinder {
     protected Logger log = Logger.getLogger(this.getClass().getName());
 
     protected boolean debug = false;
+    
+    protected TIntSet excludeValues = null;
 
     public ConnectedValuesGroupFinder() {
 
@@ -55,6 +57,10 @@ public class ConnectedValuesGroupFinder {
 
     public void setToUse8Neighbors() {
         use4Neighbors = false;
+    }
+    
+    public void setValuesToExclude(TIntSet values) {
+        this.excludeValues = values;
     }
 
     /**
@@ -110,6 +116,10 @@ public class ConnectedValuesGroupFinder {
                 
                 int uValue = data[uX][uY];
                 
+                if (excludeValues != null && excludeValues.contains(uValue)) {
+                    continue;
+                }
+                
                 for (int k = 0; k < dxs.length; ++k) {
                     
                     int vX = uX + dxs[k];
@@ -120,6 +130,10 @@ public class ConnectedValuesGroupFinder {
                     }
                     
                     int vValue = data[vX][vY];
+                    
+                    if (excludeValues != null && excludeValues.contains(vValue)) {
+                        continue;
+                    }
                     
                     if (uValue != vValue) {
                         continue;
