@@ -36,7 +36,7 @@ public class NearestNeighbor2DTest extends TestCase {
         9
         */
         
-        int maxX = 10;
+        int maxX = 11;
         int maxY = 10;
         int k = 5;
 
@@ -123,7 +123,7 @@ public class NearestNeighbor2DTest extends TestCase {
         9
         */
         
-        int maxX = 10;
+        int maxX = 11;
         int maxY = 10;
         int k = 5;
 
@@ -215,7 +215,7 @@ public class NearestNeighbor2DTest extends TestCase {
         9
         */
         
-        int maxX = 10;
+        int maxX = 11;
         int maxY = 10;
         int k = 5;
         
@@ -253,7 +253,7 @@ public class NearestNeighbor2DTest extends TestCase {
         1
         2 22    24    26    28    30    
         3 
-        4 44    46          50    52    
+        4 44    46    48    50    52    
         5
         6 66    68    70    72    74    
         7
@@ -261,7 +261,7 @@ public class NearestNeighbor2DTest extends TestCase {
         9
         */
         
-        int maxX = 10;
+        int maxX = 11;
         int maxY = 10;
         int k = 5;
         
@@ -314,7 +314,7 @@ public class NearestNeighbor2DTest extends TestCase {
         9
         */
         
-        int maxX = 10;
+        int maxX = 11;
         int maxY = 10;
         int k = 5;
         
