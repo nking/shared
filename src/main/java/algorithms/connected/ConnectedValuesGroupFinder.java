@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author nichole
  */
-public class ConnectedValuesGroupFinder {
+public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
 
     private final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();
 
