@@ -2,8 +2,7 @@ package algorithms.imageProcessing;
 
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
-import gnu.trove.set.TIntSet;
-import java.util.Arrays;
+import gnu.trove.set.TLongSet;
 import java.util.Set;
 
 /**
@@ -187,7 +186,7 @@ public class DistanceTransform {
      * @param height
      * @return 
      */
-    public int[][] applyMeijsterEtAl(TIntSet points, final int width, final int height) {
+    public int[][] applyMeijsterEtAl(TLongSet points, final int width, final int height) {
         
         int[][] g = new int[width][height];
         for (int i = 0; i < width; ++i) {
@@ -267,12 +266,12 @@ public class DistanceTransform {
         }
     }
     
-    private void applyPhase1(TIntSet points, int[][] g, final int width, 
+    private void applyPhase1(TLongSet points, int[][] g, final int width, 
         final int height) {
         
         PixelHelper ph = new PixelHelper();
         
-        int pixIdx0, pixIdx1;
+        long pixIdx0, pixIdx1;
         
         for (int x = 0; x < width; ++x) {
             

@@ -1,8 +1,10 @@
 package algorithms.util;
 
 import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -12,24 +14,25 @@ import java.util.HashSet;
  */
 public class PixelHelper {
     
-    public int toPixelIndex(PairInt p, int width) {
-        return (p.getY() * width) + p.getX();
+    public long toPixelIndex(PairInt p, int width) {
+        return ((long)width * p.getY()) + p.getX();
     }
     
-    public int toPixelIndex(int x, int y, int width) {
-        return (y * width) + x;
+    public long toPixelIndex(int x, int y, int width) {
+        return ((long)width * y) + x;
     }
     
-    public void toPixelCoords(int pixIdx, int width, 
+    public void toPixelCoords(long pixIdx, int width, 
         int[] outputXY) {
-        outputXY[1] = pixIdx/width;
-        outputXY[0] = pixIdx - (outputXY[1] * width);
+        outputXY[1] = (int)(pixIdx/width);
+        outputXY[0] = (int)(pixIdx - (outputXY[1] * width));
     }
 
-    public TIntSet convert(Set<PairInt> points, int width) {
-        TIntSet set = new TIntHashSet();
+    public TLongSet convert(Set<PairInt> points, int width) {
+        TLongSet set = new TLongHashSet();
         for (PairInt p : points) {
-            set.add(toPixelIndex(p, width));
+            long pixIdx = toPixelIndex(p, width);
+            set.add(pixIdx);
         }
         return set;
     }
@@ -41,6 +44,19 @@ public class PixelHelper {
         int[] xy = new int[2];
         while (iter.hasNext()) {
             int pixIdx = iter.next();
+            toPixelCoords(pixIdx, width, xy);
+            set.add(new PairInt(xy[0], xy[1]));
+        }
+        return set;
+    }
+    
+    @SuppressWarnings({"unchecked"})
+    public Set<PairInt> convert(TLongSet pixIdxs, int width) {
+        HashSet<PairInt> set = new HashSet<PairInt>();
+        TLongIterator iter = pixIdxs.iterator();
+        int[] xy = new int[2];
+        while (iter.hasNext()) {
+            long pixIdx = iter.next();
             toPixelCoords(pixIdx, width, xy);
             set.add(new PairInt(xy[0], xy[1]));
         }

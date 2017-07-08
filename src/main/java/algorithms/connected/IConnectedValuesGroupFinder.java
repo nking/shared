@@ -1,6 +1,7 @@
 package algorithms.connected;
 
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.TLongSet;
 import java.util.List;
 
 /**
@@ -31,6 +32,6 @@ public interface IConnectedValuesGroupFinder {
      *
      * @param data
      */
-    public List<TIntSet> findGroups(int[][] data);
+    public List<TLongSet> findGroups(int[][] data);
 
 }

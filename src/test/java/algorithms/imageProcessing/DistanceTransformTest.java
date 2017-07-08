@@ -7,8 +7,8 @@ import algorithms.util.Errors;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
 import algorithms.util.ResourceFinder;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -357,7 +357,7 @@ public class DistanceTransformTest extends TestCase {
         
         PixelHelper ph = new PixelHelper();
         
-        TIntSet pointsM = new TIntHashSet();
+        TLongSet pointsM = new TLongHashSet();
         
         for (int x = 3; x <= 5; ++x) {
             for (int y = 2; y <= 6; ++y) {
@@ -385,11 +385,11 @@ public class DistanceTransformTest extends TestCase {
         DistanceTransform dtr = new DistanceTransform();
         
         // ----- inverse binary of that  ----------
-        TIntSet pointsInvM = new TIntHashSet();
+        TLongSet pointsInvM = new TLongHashSet();
         
         for (int x = 0; x < w; ++x) {
             for (int y = 0; y < h; ++y) {
-                int pixIdx = ph.toPixelIndex(x, y, w);
+                long pixIdx = ph.toPixelIndex(x, y, w);
                 if (!pointsM.contains(pixIdx)) {
                     pointsInvM.add(pixIdx);
                 }

@@ -3,10 +3,12 @@ package algorithms.search;
 import algorithms.YFastTrie;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.TLongSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -126,6 +128,7 @@ public class NearestNeighbor2D {
             }
             
             int index = getInternalIndex(x, y);
+            
             xbt.add(index);
         }
     }
@@ -180,17 +183,22 @@ public class NearestNeighbor2D {
     }
     
     protected int getInternalIndex(int col, int row) {
-        return (row * width) + col;
+        long t = ((long)width * row) + col;
+        if (t > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("this version of NN2D requires "
+                + " that coordinate pixel indexes be < 31 bits");
+        }
+        return (int)t;
     }
     
     protected int getRow(int internalIndex) {
-        int row = internalIndex/width;        
+        int row = (internalIndex/width);        
         return row;
     }
     
     protected int getCol(int internalIndex) {
-        int row = internalIndex/width;
-        int col = internalIndex - (row * width);
+        int row = (internalIndex/width);
+        int col = (internalIndex - (row * width));
         return col;
     }
     
@@ -262,6 +270,8 @@ public class NearestNeighbor2D {
         
         int idx = getInternalIndex(x, y);
         
+        //System.out.println("find " + idx);
+        
         //O(1)
         int q = xbt.find(idx);
         if (q != -1) {
@@ -298,6 +308,8 @@ public class NearestNeighbor2D {
         double ds2 = dist(x, y, successor);
         double dMin = Math.min(dp2, ds2);
         
+        //System.out.println("p=" + predecessor + " s=" + successor);
+ 
         /*
         if smallest is smaller than closest 
            if the new closest diff with current is greater 
@@ -354,6 +366,8 @@ public class NearestNeighbor2D {
                 yCurrent = pRow - 1;
             }
         }
+        
+        //System.out.println("yCurrent=" + yCurrent + " yLow=" + yLow);
         
         // predecessor searches until reach yLow, adjusting goal by
         //   min distances
@@ -427,6 +441,9 @@ public class NearestNeighbor2D {
             }
         }
        
+        //System.out.println("yCurrent=" + yCurrent + " yLow=" + yLow);
+        //System.out.println("p=" + p2 + " s=" + s2);
+        
         // successor searches to higher bounds
         if (successor == -1) {
             yCurrent = Integer.MAX_VALUE;
@@ -439,6 +456,8 @@ public class NearestNeighbor2D {
             }
         }
         int yHigh = estimateHighBound(y, goal);
+        
+        //System.out.println("yCurrent=" + yCurrent + " yHigh=" + yHigh);
         
         while (yCurrent <= yHigh) {
             int cIdx = getInternalIndex(x, yCurrent);
@@ -506,6 +525,8 @@ public class NearestNeighbor2D {
             } else {
                 yCurrent = Integer.MAX_VALUE;
             }
+            
+            //System.out.println("yCurrent=" + yCurrent + " yHigh=" + yHigh);
         }
         
         //filter results for closest and tolerance
@@ -652,9 +673,9 @@ public class NearestNeighbor2D {
         double ds2 = dist(x, y, successor);
         if (!includeEquals) {
             if (dp2 == 0) {
-                ds2 = Integer.MAX_VALUE;
+                ds2 = Double.MAX_VALUE;
             } else if (ds2 == 0) {
-                ds2 = Integer.MAX_VALUE;
+                ds2 = Double.MAX_VALUE;
             }
         }
         if (dp2 <= ds2 && (dp2 <= dMax)) {
@@ -725,7 +746,7 @@ public class NearestNeighbor2D {
             }
             if (!includeEquals) {
                 if (s2 != -1 && s2 == idx) {
-                    ds2 = Integer.MAX_VALUE;
+                    ds2 = Double.MAX_VALUE;
                 }
             }
             if ((dp2 < ds2) && (dp2 < closestDist) && (dp2 <= dMax)) {
@@ -814,9 +835,9 @@ public class NearestNeighbor2D {
             }
             if (!includeEquals) {
                 if (p2 != -1 && p2 == idx) {
-                    dp2 = Integer.MAX_VALUE;
+                    dp2 = Double.MAX_VALUE;
                 } else if (s2 != -1 && s2 == idx) {
-                    ds2 = Integer.MAX_VALUE;
+                    ds2 = Double.MAX_VALUE;
                 }
             }
             if ((dp2 < ds2) && (dp2 < closestDist) && (dp2 <= dMax)) {

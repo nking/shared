@@ -104,7 +104,7 @@ public class NearestNeighbor2DTest extends TestCase {
         assertEquals(0, expected.size());
     }
     
-    public void test0_wo_cache() {
+    public void est0_wo_cache() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -196,7 +196,7 @@ public class NearestNeighbor2DTest extends TestCase {
         assertEquals(0, expected.size());
     }
     
-    public void test1() {
+    public void est1() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -242,7 +242,7 @@ public class NearestNeighbor2DTest extends TestCase {
         
     }
     
-    public void test1_pixelIdxs() {
+    public void est1_pixelIdxs() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -268,8 +268,8 @@ public class NearestNeighbor2DTest extends TestCase {
         PixelHelper ph = new PixelHelper();
         TIntSet pixelIdxs = new TIntHashSet();
         for (PairInt p : points) {
-            int pixIdx = ph.toPixelIndex(p, maxX);
-            pixelIdxs.add(pixIdx);
+            long pixIdx = ph.toPixelIndex(p, maxX);
+            pixelIdxs.add((int)pixIdx);
         }
         
         NearestNeighbor2D knn2D = new
@@ -295,7 +295,7 @@ public class NearestNeighbor2DTest extends TestCase {
         
     }
     
-    public void test1_NE() {
+    public void est1_NE() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -321,8 +321,8 @@ public class NearestNeighbor2DTest extends TestCase {
         PixelHelper ph = new PixelHelper();
         TIntSet pixelIdxs = new TIntHashSet();
         for (PairInt p : points) {
-            int pixIdx = ph.toPixelIndex(p, maxX);
-            pixelIdxs.add(pixIdx);
+            long pixIdx = ph.toPixelIndex(p, maxX);
+            pixelIdxs.add((int)pixIdx);
         }
         
         NearestNeighbor2D knn2D = new

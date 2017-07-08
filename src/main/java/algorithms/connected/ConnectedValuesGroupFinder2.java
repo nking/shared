@@ -1,14 +1,15 @@
 package algorithms.connected;
 
-import algorithms.StackIntLarge;
+import algorithms.StackLongLarge;
 import algorithms.util.PixelHelper;
-import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongLongMap;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -30,9 +31,9 @@ import java.util.logging.Logger;
 public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder {
 
     // key = pixel index, value = key of pixNodes
-    private TIntIntMap pixKeyMap = new TIntIntHashMap();
+    private TLongLongMap pixKeyMap = new TLongLongHashMap();
     
-    private TIntObjectMap<TIntSet> keySetMap = new TIntObjectHashMap<TIntSet>();
+    private TLongObjectMap<TLongSet> keySetMap = new TLongObjectHashMap<TLongSet>();
     
     /**
      * uses the 4 neighbor region if true, else the 8-neighbor region
@@ -77,11 +78,11 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
      *
      * @param data
      */
-    public List<TIntSet> findGroups(int[][] data) {
+    public List<TLongSet> findGroups(int[][] data) {
 
         findClustersIterative(data);
 
-        List<TIntSet> groupList = prune();
+        List<TLongSet> groupList = prune();
         
         return groupList;
     }
@@ -115,12 +116,12 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
         int n2 = w * h;
         n2 += (int)(Math.log(n2)/Math.log(2));
             
-        StackIntLarge stack = new StackIntLarge(n2);
+        StackLongLarge stack = new StackLongLarge(n2);
         
         for (int uX = 0; uX < data.length; ++uX) {
             for (int uY = 0; uY < data[uX].length; ++uY) {
                 
-                int uPixIdx = ph.toPixelIndex(uX, uY, w);
+                long uPixIdx = ph.toPixelIndex(uX, uY, w);
                 
                 int uValue = data[uX][uY];
                 
@@ -132,13 +133,12 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             }
         }
         
-        TIntSet visited = new TIntHashSet();
+        TLongSet visited = new TLongHashSet();
         int[] xy = new int[2];
         
         while (!stack.isEmpty()) {
             
-            Integer uIndex = stack.pop();
-            int uIdx = uIndex.intValue();
+            long uIdx = stack.pop();
             if (visited.contains(uIdx)) {
                 continue;
             }
@@ -168,7 +168,7 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
                     continue;
                 }
 
-                int vIdx = ph.toPixelIndex(vX, vY, w);
+                long vIdx = ph.toPixelIndex(vX, vY, w);
 
                 processPair(uIdx, vIdx);
                 
@@ -181,14 +181,14 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
         }
     }
     
-    private int getKeyRecipr(int pixIdx) {
+    private long getKeyRecipr(long pixIdx) {
         
         if (!pixKeyMap.containsKey(pixIdx)) {
             return -1;
         }
-        int prevKey = pixIdx;
-        int key = pixKeyMap.get(pixIdx);
-        int tmp;
+        long prevKey = pixIdx;
+        long key = pixKeyMap.get(pixIdx);
+        long tmp;
         while (prevKey != key) {
             tmp = key;
             key = pixKeyMap.get(key);
@@ -199,12 +199,12 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
         return key;
     }
 
-    protected void processPair(int uPoint, int vPoint) {
+    protected void processPair(long uPoint, long vPoint) {
         
         if (pixKeyMap.containsKey(uPoint) && pixKeyMap.containsKey(vPoint)) {
             // put all in u
-            int uKey = pixKeyMap.get(uPoint);
-            int vKey = pixKeyMap.get(vPoint);
+            long uKey = pixKeyMap.get(uPoint);
+            long vKey = pixKeyMap.get(vPoint);
             
             //System.out.println("*u=" + uPoint + " *v=" + vPoint
             //    + " orig keys=" + uKey + " " + vKey);
@@ -218,8 +218,8 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
                 return;
             }
             //System.out.println("  rec keys=" + uKey + " " + vKey);
-            TIntSet uSet = keySetMap.get(uKey);
-            TIntSet vSet = keySetMap.remove(vKey);
+            TLongSet uSet = keySetMap.get(uKey);
+            TLongSet vSet = keySetMap.remove(vKey);
             uSet.addAll(vSet);
             pixKeyMap.put(vPoint, uKey);
             pixKeyMap.put(vKey, uKey);
@@ -231,8 +231,8 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             //System.out.println("  getKeyRecipr(vKey)=" + getKeyRecipr(vKey));
             
         } else if (pixKeyMap.containsKey(uPoint)) {
-            int uKey = getKeyRecipr(uPoint);
-            TIntSet uSet = keySetMap.get(uKey);
+            long uKey = getKeyRecipr(uPoint);
+            TLongSet uSet = keySetMap.get(uKey);
             uSet.add(vPoint);
             pixKeyMap.put(vPoint, uKey);
             
@@ -240,8 +240,8 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             //    " key=" + uKey);
             
         } else if (pixKeyMap.containsKey(vPoint)) {
-            int vKey = getKeyRecipr(vPoint);
-            TIntSet vSet = keySetMap.get(vKey);
+            long vKey = getKeyRecipr(vPoint);
+            TLongSet vSet = keySetMap.get(vKey);
             vSet.add(uPoint);
             pixKeyMap.put(uPoint, vKey);
             
@@ -249,7 +249,7 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             //    " key=" + vKey);
             
         } else {
-            TIntSet pixSet = new TIntHashSet();
+            TLongSet pixSet = new TLongHashSet();
             pixSet.add(uPoint);
             pixSet.add(vPoint);
             pixKeyMap.put(uPoint, uPoint);
@@ -264,19 +264,19 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
     
     }
 
-    private List<TIntSet> prune() {
+    private List<TLongSet> prune() {
 
         // remove from keySetMap, sets smaller than min limit
         
-        List<TIntSet> groups = new ArrayList<TIntSet>();
+        List<TLongSet> groups = new ArrayList<TLongSet>();
             
-        TIntObjectIterator<TIntSet> iter = keySetMap.iterator();
+        TLongObjectIterator<TLongSet> iter = keySetMap.iterator();
         
         for (int i = 0; i < keySetMap.size(); ++i) {
 
             iter.advance();
             
-            TIntSet pixSet = iter.value();
+            TLongSet pixSet = iter.value();
             
             if (pixSet.size() < minimumNumberInCluster) {
                 continue;

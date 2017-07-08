@@ -1,9 +1,11 @@
 package algorithms.connected;
 
 import algorithms.util.PixelHelper;
-import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
@@ -25,8 +27,8 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
        
         PixelHelper ph = new PixelHelper();
        
-        List<TIntSet> expected = new ArrayList<TIntSet>();
-        TIntSet a = new TIntHashSet();
+        List<TLongSet> expected = new ArrayList<TLongSet>();
+        TLongSet a = new TLongHashSet();
         for (int i = 0; i < h; ++i) {
             a.add(ph.toPixelIndex(0, i, w));
             a.add(ph.toPixelIndex(4, i, w));
@@ -35,16 +37,16 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         }
         expected.add(a);
         assertEquals(16, a.size());
-        a = new TIntHashSet();//1
+        a = new TLongHashSet();//1
         a.add(ph.toPixelIndex(1, 1, w));
         a.add(ph.toPixelIndex(1, 2, w));
         a.add(ph.toPixelIndex(2, 1, w));
         expected.add(a);
-        a = new TIntHashSet();//2
+        a = new TLongHashSet();//2
         a.add(ph.toPixelIndex(2, 2, w));
         a.add(ph.toPixelIndex(3, 1, w));
         expected.add(a);
-        a = new TIntHashSet();//3
+        a = new TLongHashSet();//3
         a.add(ph.toPixelIndex(1, 3, w));
         a.add(ph.toPixelIndex(2, 3, w));
         a.add(ph.toPixelIndex(3, 2, w));
@@ -60,27 +62,27 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         ConnectedValuesGroupFinder finder = new ConnectedValuesGroupFinder();
         finder.setMinimumNumberInCluster(2);
         finder.setToUse8Neighbors();
-        List<TIntSet> groups = finder.findGroups(data);
+        List<TLongSet> groups = finder.findGroups(data);
         
         assertEquals(4, groups.size());
         assertEquals(4, expected.size());
         
         for (int i = 0; i < groups.size(); ++i) {
-            TIntSet group = groups.get(i);
+            TLongSet group = groups.get(i);
             
-            int t = group.iterator().next();
-            TIntSet e = null;
+            long t = group.iterator().next();
+            TLongSet e = null;
             for (int j = 0; j < expected.size(); ++j) {
-                TIntSet e2 = expected.get(j);
+                TLongSet e2 = expected.get(j);
                 if (e2.contains(t)) {
                     e = e2; break;
                 }
             }
             assertNotNull(e);
             
-            TIntIterator iter = group.iterator();
+            TLongIterator iter = group.iterator();
             while (iter.hasNext()) {
-                int pIdx = iter.next();
+                long pIdx = iter.next();
                 assertTrue(e.remove(pIdx));
             }
             assertTrue(e.isEmpty());
@@ -88,8 +90,8 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         }
         
         //-------
-        expected = new ArrayList<TIntSet>();
-        a = new TIntHashSet();
+        expected = new ArrayList<TLongSet>();
+        a = new TLongHashSet();
         for (int i = 0; i < h; ++i) {
             a.add(ph.toPixelIndex(0, i, w));
             a.add(ph.toPixelIndex(4, i, w));
@@ -98,12 +100,12 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         }
         expected.add(a);
         assertEquals(16, a.size());
-        a = new TIntHashSet();//1
+        a = new TLongHashSet();//1
         a.add(ph.toPixelIndex(1, 1, w));
         a.add(ph.toPixelIndex(1, 2, w));
         a.add(ph.toPixelIndex(2, 1, w));
         expected.add(a);
-        a = new TIntHashSet();//3
+        a = new TLongHashSet();//3
         a.add(ph.toPixelIndex(1, 3, w));
         a.add(ph.toPixelIndex(2, 3, w));
         expected.add(a);
@@ -125,21 +127,21 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         assertEquals(expected.size(), groups.size());
         
         for (int i = 0; i < groups.size(); ++i) {
-            TIntSet group = groups.get(i);
+            TLongSet group = groups.get(i);
             
-            int t = group.iterator().next();
-            TIntSet e = null;
+            long t = group.iterator().next();
+            TLongSet e = null;
             for (int j = 0; j < expected.size(); ++j) {
-                TIntSet e2 = expected.get(j);
+                TLongSet e2 = expected.get(j);
                 if (e2.contains(t)) {
                     e = e2; break;
                 }
             }
             assertNotNull(e);
             
-            TIntIterator iter = group.iterator();
+            TLongIterator iter = group.iterator();
             while (iter.hasNext()) {
-                int pIdx = iter.next();
+                long pIdx = iter.next();
                 assertTrue(e.remove(pIdx));
             }
             assertTrue(e.isEmpty());
@@ -147,13 +149,13 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         }
         
          //-------
-        expected = new ArrayList<TIntSet>();
-        a = new TIntHashSet();//1
+        expected = new ArrayList<TLongSet>();
+        a = new TLongHashSet();//1
         a.add(ph.toPixelIndex(1, 1, w));
         a.add(ph.toPixelIndex(1, 2, w));
         a.add(ph.toPixelIndex(2, 1, w));
         expected.add(a);
-        a = new TIntHashSet();//3
+        a = new TLongHashSet();//3
         a.add(ph.toPixelIndex(1, 3, w));
         a.add(ph.toPixelIndex(2, 3, w));
         expected.add(a);
@@ -176,21 +178,21 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         assertEquals(expected.size(), groups.size());
         
         for (int i = 0; i < groups.size(); ++i) {
-            TIntSet group = groups.get(i);
+            TLongSet group = groups.get(i);
             
-            int t = group.iterator().next();
-            TIntSet e = null;
+            long t = group.iterator().next();
+            TLongSet e = null;
             for (int j = 0; j < expected.size(); ++j) {
-                TIntSet e2 = expected.get(j);
+                TLongSet e2 = expected.get(j);
                 if (e2.contains(t)) {
                     e = e2; break;
                 }
             }
             assertNotNull(e);
             
-            TIntIterator iter = group.iterator();
+            TLongIterator iter = group.iterator();
             while (iter.hasNext()) {
-                int pIdx = iter.next();
+                long pIdx = iter.next();
                 assertTrue(e.remove(pIdx));
             }
             assertTrue(e.isEmpty());

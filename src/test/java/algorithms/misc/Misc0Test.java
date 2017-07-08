@@ -2,7 +2,9 @@ package algorithms.misc;
 
 import algorithms.util.PixelHelper;
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.util.Random;
 import junit.framework.TestCase;
 
@@ -28,13 +30,13 @@ public class Misc0Test extends TestCase {
         int w = 10;
         int h = 10;
         
-        TIntSet pixIdxs = new TIntHashSet();
+        TLongSet pixIdxs = new TLongHashSet();
         
         PixelHelper ph = new PixelHelper();
         
         for (int i = 0; i < w; i+=2) {
             for (int j = 1; j < h; j+=2) {
-                int pixIdx = ph.toPixelIndex(i, j, w);
+                long pixIdx = ph.toPixelIndex(i, j, w);
                 pixIdxs.add(pixIdx);
             }
         }
@@ -48,7 +50,7 @@ public class Misc0Test extends TestCase {
         
         for (int i = 0; i < w; ++i) {
             for (int j = 1; j < h; ++j) {
-                int pixIdx = ph.toPixelIndex(i, j, w);
+                long pixIdx = ph.toPixelIndex(i, j, w);
                 if (d[i][j] == 1) {
                     assertTrue(pixIdxs.contains(pixIdx));
                 } else {
