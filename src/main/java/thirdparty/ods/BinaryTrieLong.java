@@ -117,7 +117,7 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
             this.w = maxNumBits;
         } else {
             throw new IllegalStateException("maxNumBits "
-                + " should be greater than 1 and less than 31");
+                + " should be greater than 1 and less than 63");
         }
         maxC = (1L << w) - 1;
 		this.sampleNode = sampleNode;
