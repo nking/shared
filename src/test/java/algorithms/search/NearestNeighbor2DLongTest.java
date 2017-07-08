@@ -3,7 +3,9 @@ package algorithms.search;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.util.HashSet;
 import java.util.Set;
 import junit.framework.TestCase;
@@ -12,9 +14,9 @@ import junit.framework.TestCase;
  *
  * @author nichole
  */
-public class NearestNeighbor2DTest extends TestCase {
+public class NearestNeighbor2DLongTest extends TestCase {
     
-    public NearestNeighbor2DTest() {
+    public NearestNeighbor2DLongTest() {
     }
     
     public void test0() {
@@ -42,8 +44,8 @@ public class NearestNeighbor2DTest extends TestCase {
 
         points.remove(new PairInt(4, 4));
         
-        NearestNeighbor2D knn2D = new
-            NearestNeighbor2D(points, maxX, maxY);
+        NearestNeighbor2DLong knn2D = new
+            NearestNeighbor2DLong(points, maxX, maxY);
         
         Set<PairInt> nearest;
         
@@ -88,7 +90,7 @@ public class NearestNeighbor2DTest extends TestCase {
         // -----------------------------------
         points.add(new PairInt(4, 4));
         
-        knn2D = new NearestNeighbor2D(points, maxX, maxY);
+        knn2D = new NearestNeighbor2DLong(points, maxX, maxY);
         
         nearest = knn2D.findClosest(4, 4);
         
@@ -129,8 +131,8 @@ public class NearestNeighbor2DTest extends TestCase {
 
         points.remove(new PairInt(4, 4));
         
-        NearestNeighbor2D knn2D = new
-            NearestNeighbor2D(points, maxX, maxY);
+        NearestNeighbor2DLong knn2D = new
+            NearestNeighbor2DLong(points, maxX, maxY);
         
         knn2D.doNotUseCache();
         
@@ -180,7 +182,7 @@ public class NearestNeighbor2DTest extends TestCase {
         // -----------------------------------
         points.add(new PairInt(4, 4));
         
-        knn2D = new NearestNeighbor2D(points, maxX, maxY);
+        knn2D = new NearestNeighbor2DLong(points, maxX, maxY);
         
         nearest = knn2D.findClosest(4, 4);
         
@@ -219,8 +221,8 @@ public class NearestNeighbor2DTest extends TestCase {
         int maxY = 10;
         int k = 5;
         
-        NearestNeighbor2D knn2D = new
-            NearestNeighbor2D(points, maxX, maxY);
+        NearestNeighbor2DLong knn2D = new
+            NearestNeighbor2DLong(points, maxX, maxY);
         
         Set<PairInt> nearest = knn2D.findClosestWithinTolerance(
             4, 4, 2);
@@ -266,14 +268,14 @@ public class NearestNeighbor2DTest extends TestCase {
         int k = 5;
         
         PixelHelper ph = new PixelHelper();
-        TIntSet pixelIdxs = new TIntHashSet();
+        TLongSet pixelIdxs = new TLongHashSet();
         for (PairInt p : points) {
             long pixIdx = ph.toPixelIndex(p, maxX);
-            pixelIdxs.add((int)pixIdx);
+            pixelIdxs.add(pixIdx);
         }
         
-        NearestNeighbor2D knn2D = new
-            NearestNeighbor2D(pixelIdxs, maxX, maxY);
+        NearestNeighbor2DLong knn2D = new
+            NearestNeighbor2DLong(pixelIdxs, maxX, maxY);
         
         Set<PairInt> nearest = knn2D.findClosestWithinTolerance(
             4, 4, 2);
@@ -319,14 +321,14 @@ public class NearestNeighbor2DTest extends TestCase {
         int k = 5;
         
         PixelHelper ph = new PixelHelper();
-        TIntSet pixelIdxs = new TIntHashSet();
+        TLongSet pixelIdxs = new TLongHashSet();
         for (PairInt p : points) {
             long pixIdx = ph.toPixelIndex(p, maxX);
-            pixelIdxs.add((int)pixIdx);
+            pixelIdxs.add(pixIdx);
         }
         
-        NearestNeighbor2D knn2D = new
-            NearestNeighbor2D(pixelIdxs, maxX, maxY);
+        NearestNeighbor2DLong knn2D = new
+            NearestNeighbor2DLong(pixelIdxs, maxX, maxY);
         
         Set<PairInt> nearest = knn2D.findClosestNotEqual(
             4, 4);
