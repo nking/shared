@@ -1,2 +1,4 @@
+-- need to convert the single index pixel indexes to long
+   everywhere and then the code using those.
 -- add unit tests where missing
 
