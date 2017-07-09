@@ -1,13 +1,14 @@
 package algorithms.search;
 
+import algorithms.misc.Misc0;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
-import gnu.trove.set.TIntSet;
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TIntHashSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
@@ -19,7 +20,79 @@ public class NearestNeighbor2DLongTest extends TestCase {
     public NearestNeighbor2DLongTest() {
     }
     
-    public void test0() {
+    public void testLarge() {
+        
+        // exercising the code for large range dense filling
+        
+        int w = 7000;
+        int h = 5000;
+        int bSz = 50;
+        
+        TLongSet pixIdxs = new TLongHashSet();
+        
+        //randomly draw multiples of bSz in x and y and draw 
+        //    squares that have random gaps added
+        
+        Random rand = Misc0.getSecureRandom();
+        long seed = System.currentTimeMillis();
+        //seed = 1499572125948L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        int nDraws = 25;
+        int count = 0;
+        
+        int nBX = w/bSz;
+        int nBY = h/bSz;
+        Set<PairInt> chosen = new HashSet<PairInt>();
+        int xc, yc;
+        PairInt p;
+        while (count < nDraws) {
+            do {
+                xc = rand.nextInt(nBX);
+                yc = rand.nextInt(nBY);
+                p = new PairInt(xc, yc);
+            } while (chosen.contains(p));
+            chosen.add(p);
+            int x = xc*bSz;
+            int y = yc*bSz;
+            //System.out.format("%d:%d  %d:%d\n", x, x+bSz, y, y+bSz);
+            draw(pixIdxs, w, h, x, y, bSz, rand);
+            count++;
+        }
+        
+        PixelHelper ph = new PixelHelper();
+        
+        long n2;
+        //n2 = (w*h)/10;
+        n2 = w*h/100;
+        
+        for (long i = 0; i < n2; ++i) {
+            xc = rand.nextInt(w);
+            yc = rand.nextInt(h);
+            pixIdxs.add(ph.toPixelIndex(xc, yc, w));
+        }
+        
+        Set<PairInt> nearest = null;
+        
+        NearestNeighbor2DLong nn2d = new NearestNeighbor2DLong(pixIdxs, w, h);
+        nn2d.doNotUseCache();
+        
+        System.out.println("n in NN2D=" + pixIdxs.size() + " nQueries=" + n2);
+        
+        for (long i = 0; i < n2; ++i) {
+            xc = rand.nextInt(w);
+            yc = rand.nextInt(h);
+            
+            nearest = nn2d.findClosest(xc, yc);
+            nearest = nn2d.findClosest(xc, yc, bSz);
+            nearest = nn2d.findClosestNotEqual(xc, yc);
+            nearest = nn2d.findClosestWithinTolerance(xc, yc, 10.5);
+        }
+        
+    }
+    
+    public void est0() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -106,7 +179,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         assertEquals(0, expected.size());
     }
     
-    public void test0_wo_cache() {
+    public void est0_wo_cache() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -198,7 +271,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         assertEquals(0, expected.size());
     }
     
-    public void test1() {
+    public void est1() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -244,7 +317,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
     }
     
-    public void test1_pixelIdxs() {
+    public void est1_pixelIdxs() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -297,7 +370,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
     }
     
-    public void test1_NE() {
+    public void est1_NE() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -361,5 +434,24 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
         return points;
     }
-    
+ 
+    private void draw(TLongSet pixIdxs, int w, int h, 
+        int xc, int yc, int bSz, Random rand) {
+
+        PixelHelper ph = new PixelHelper();
+        
+        for (int i = xc; i < xc + bSz; ++i) {
+            if (i >= w) {
+                break;
+            }
+            for (int j = yc; j < yc + bSz; ++j) {
+                if (j >= h) {
+                    break;
+                }
+                pixIdxs.add(ph.toPixelIndex(i, j, w));
+                j += rand.nextInt(bSz/2);
+            }
+            i += rand.nextInt(bSz/2);
+        }
+    }
 }
