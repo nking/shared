@@ -80,8 +80,6 @@ import java.util.logging.Logger;
  */
 
 public class RedBlackBSTLongInt {
-
-    //TODO: edit for keyIsSet = 0
     
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
@@ -90,10 +88,9 @@ public class RedBlackBSTLongInt {
 
     // BST helper node data type
     private class Node {
-        // long 8 bytes + int indicating whether key is set is 4 Bytes = 12 Bytes
+        // long 8 bytes
         // Long is 16Bytes + 8 bytes = 24 Bytes
         private long key;           // key
-        private int keyIsSet = 0;
         private int val;         // associated data
         private Node left, right;  // links to left and right subtrees
         private boolean color;     // color of parent link
@@ -101,7 +98,6 @@ public class RedBlackBSTLongInt {
 
         public Node(long key, int val, boolean color, int size) {
             this.key = key;
-            this.keyIsSet = 1;
             this.val = val;
             this.color = color;
             this.size = size;
