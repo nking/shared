@@ -1,7 +1,7 @@
 package algorithms.util;
 
-import gnu.trove.iterator.TIntFloatIterator;
-import gnu.trove.map.TIntFloatMap;
+import gnu.trove.iterator.TLongFloatIterator;
+import gnu.trove.map.TLongFloatMap;
 import java.io.IOException;
 
 /**
@@ -47,28 +47,25 @@ public class ContourPlotter {
         return content;
     }
     
-    public String writeFile(TIntFloatMap pixValueMap, int width, int height,
+    public String writeFile(TLongFloatMap pixValueMap, int width, int height,
         String fileName) throws IOException {
         
         StringBuilder content = init();
-       
-        float[] values = new float[width * height];
-        TIntFloatIterator iter2 = pixValueMap.iterator();
+        content.append("var values=[");
+        
+        TLongFloatIterator iter2 = pixValueMap.iterator();
         for (int ii = 0; ii < pixValueMap.size(); ++ii) {
             iter2.advance();
-            int pixIdx = iter2.key();
+            long pixIdx = iter2.key();
             float p = iter2.value();
-            values[pixIdx] = p;
-        }
-
-        content.append("var values=[");
-        for (int ii = 0; ii < values.length; ++ii) {
-            content.append(String.format("%.3f", values[ii]));
+        
+            content.append(String.format("%.3f", p));
             content.append(", ");
             if (ii > 0 && ((ii % 10) == 0)) {
                 content.append("\n");
             }
         }
+
         content.append("];\n");
         content.append("var n=").append(width)
             .append(", m=").append(height).append("\n");
