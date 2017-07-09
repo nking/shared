@@ -88,8 +88,12 @@ public class RedBlackBSTLongInt {
 
     // BST helper node data type
     private class Node {
-        // long 8 bytes
-        // Long is 16Bytes + 8 bytes = 24 Bytes
+        // changing Key to long primitive saves factor of 3 on 32 bit platforms,
+        //    else factor of 2 on 64 bit platforms.
+        //    (long size on stack is 64 bits, or 128 bits, respectively)
+        //    Object Long is 16Bytes overhead + contents.
+        // changing value from Integer to int saves factor of 5 on 32 bit
+        //    platforms else 3 on 64 bit platforms
         private long key;           // key
         private int val;         // associated data
         private Node left, right;  // links to left and right subtrees
