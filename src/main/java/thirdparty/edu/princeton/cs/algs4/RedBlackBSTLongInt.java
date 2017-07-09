@@ -1,7 +1,8 @@
 package thirdparty.edu.princeton.cs.algs4;
 
 /******************************************************************************
-   from RedBlackBST.java from the 
+   adapted from RedBlackBST.java 
+   from the 
    book "Algorithms" by Sedgewick and Wayne
    http://algs4.cs.princeton.edu/33balanced/RedBlackBST.java
    copyright for authors Robert Sedgewick and Kevin Wayne
@@ -80,6 +81,8 @@ import java.util.logging.Logger;
 
 public class RedBlackBSTLongInt {
 
+    //TODO: edit for keyIsSet = 0
+    
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
 
