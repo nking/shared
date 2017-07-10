@@ -329,6 +329,9 @@ public final class VeryLongBitString {
      * @return 
      */
     protected long approximateMemoryUsed_Heap() {
+        
+        //TODO: update this using ObjectSpaceEstimator
+        
         /*
         see comments within approximateMemoryUsed_Stack
         
