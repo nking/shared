@@ -8,6 +8,9 @@ package thirdparty.edu.princeton.cs.algs4;
    copyright for authors Robert Sedgewick and Kevin Wayne
    is GPLV3, http://algs4.cs.princeton.edu/faq/
 
+*     x.left.key .lte. x.key
+*     x.right.key .gte. x.key
+* 
  *  Compilation:  javac RedBlackBST.java
  *  Execution:    java RedBlackBST left-pipe input.txt
  *  Dependencies: StdIn.java StdOut.java  
@@ -38,10 +41,9 @@ package thirdparty.edu.princeton.cs.algs4;
 
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  The {@code BST} class represents an ordered symbol table of generic
@@ -454,8 +456,10 @@ public class RedBlackBSTLongInt {
     // the smallest key in subtree rooted at x; null if no such key
     private Node min(Node x) { 
         // assert x != null;
-        if (x.left == null) return x; 
-        else                return min(x.left); 
+        while (x.left != null) {
+            x = x.left;
+        }
+        return x;
     } 
 
     /**
@@ -543,6 +547,32 @@ public class RedBlackBSTLongInt {
         }
     }
 
+    /**
+     * Returns the smallest key in the symbol table greater than {@code key}.
+     * @param key the key
+     * @param output if output[0] == -1, the key was not present, 
+     * else output[1] holds
+     * the smallest key in the symbol table greater than or equal to {@code key}
+     * @throws NoSuchElementException if the tree is empty
+     */
+    public void higher(long key, long[] output) {
+        if (output == null || output.length != 2) {
+            throw new IllegalArgumentException("output must be length 2");
+        }
+        if (isEmpty()) {
+            output[0] = -1;
+            throw new NoSuchElementException("called floor() with empty symbol table");
+        }
+        List<Node> stack = new ArrayList<Node>();
+        Node x = higher(root, key, stack, false);
+        if (x == null) {
+            output[0] = -1;
+        } else   {
+            output[0] = 0;
+            output[1] = x.key;
+        }
+    }
+    
     // the smallest key in the subtree rooted at x greater than or equal to the given key
     private Node ceiling(Node x, long key) {  
         if (x == null) return null;
@@ -552,6 +582,65 @@ public class RedBlackBSTLongInt {
         Node t = ceiling(x.left, key);
         if (t != null) return t; 
         else           return x;
+    }
+    
+    /** the smallest key in the subtree rooted at x greater than the given key.
+     * 
+     * NOTE: the method uses in part, a pattern adapted from the Cormen et al.
+     * book "Introduction to Algorithms" for their Red Black Tree.
+     * 
+     * @param x
+     * @param key
+     * @return 
+     */
+    private Node higher(Node x, long key, List<Node> stack, boolean is2ndSrch) {  
+                        
+        /*
+        higher
+                    X
+        left .lte.     right .gte.
+        */
+        
+        //binary search until overshoot
+        while (x != null && key != x.key) {
+            stack.add(x);
+            System.out.println("higher: x=" + x.key + " q=" + key);
+            if (key < x.key) {
+                x = x.left;
+            } else {
+                //right is towards numbers larger than x.key
+                x = x.right;
+            }
+        }
+        
+        Node y = null;
+        int yIdx = -1;
+        
+        if (x == null) {
+            if (stack.size() > 1) {
+                x = stack.get(stack.size() - 1);
+                yIdx = stack.size() - 2;
+                y = stack.get(yIdx);
+            } else if (stack.size() == 1) {
+                x = stack.get(stack.size() - 1);
+            }
+        } else if (!stack.isEmpty()) {
+            yIdx = stack.size() - 1;
+            y = stack.get(yIdx);
+        }
+        
+        if (x.right != null) {
+            return min(x.right);
+        }
+        
+        while (y != null && x == y.right) {
+            //System.out.println("higher: y=" + y.key + " q=" + key);
+            x = y;
+            yIdx--;
+            if (yIdx < 0) break;
+            y = stack.get(yIdx);
+        }
+        return y;
     }
 
     /**
