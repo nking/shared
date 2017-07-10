@@ -6,6 +6,8 @@ package algorithms.util;
  * stack (method local variables) when comparing the results to 
  * available memory.
  * 
+ * Options for other data-types will be added as needed.
+ * 
  * @author nichole
  */
 public class ObjectSpaceEstimator {
@@ -62,4 +64,175 @@ public class ObjectSpaceEstimator {
                -- jvm loads constants, local variable values, or fields onto operand stack
         -- default size dpends on architecture and impl.  usually is 512K or 1024K
     */
+
+    private int nBoolean = 0;
+    private int nByte = 0;
+    private int nChar = 0;
+    private int nShort = 0;
+    private int nInt = 0;
+    private int nFloat = 0;
+    private int nObjRefs = 0;
+    private int nArrayRefs = 0;
+    private int nLong = 0;
+    private int nDouble = 0;
+    private int nReturnAddress = 0;
+    
+    // sizes in bytes as [heap 32 bit, stack 32 bit, heap 54 bit, stack 64 bit]
+    private final static int objOverheadSz = 16;
+    
+    private final static int[] word3264 = new int[]{4, 4, 4, 8};
+    
+    private static String arch = System.getProperty("sun.arch.data.model");
+    private static boolean is32Bit = ((arch != null) && arch.equals("64")) ? false : true;
+    
+    private final static int[] booleanSz = word3264;
+    private final static int[] byteSz = word3264;
+    private final static int[] charSz = word3264;
+    private final static int[] shortSz = word3264;
+    private final static int[] intSz  = word3264;
+    private final static int[] floatSz = word3264;
+    private final static int[] refSz = new int[]{4, 4, 8, 8};
+    private final static int[] arrayRefSz = new int[]{4, 4, 4, 4};
+    private final static int[] returnAddressSz = new int[]{4, 4, 8, 8};
+    private final static int[] longSz = new int[]{8, 8, 8, 16};
+    private final static int[] doubleSz = new int[]{8, 8, 8, 16};
+
+    /**
+     * @param nBoolean  the number of boolean primitives
+     */
+    public void setNBooleanFields(int nBoolean) {
+        this.nBoolean = nBoolean;
+    }
+
+    /**
+     * @param nByte  the number of byte primitives
+     */
+    public void setNByteFields(int nByte) {
+        this.nByte = nByte;
+    }
+
+    /**
+     * @param nChar the number of char primitives to set
+     */
+    public void setNCharFields(int nChar) {
+        this.nChar = nChar;
+    }
+
+    /**
+     * @param nShort  the number of short primitives
+     */
+    public void setNShortFields(int nShort) {
+        this.nShort = nShort;
+    }
+
+    /**
+     * @param nInt  the number of int primitives
+     */
+    public void setNIntFields(int nInt) {
+        this.nInt = nInt;
+    }
+
+    /**
+     * @param nFloat  the number of float primitives
+     */
+    public void setNFloatFields(int nFloat) {
+        this.nFloat = nFloat;
+    }
+
+    /**
+     * @param nObjRefs  the number of object references
+     */
+    public void setNObjRefsFields(int nObjRefs) {
+        this.nObjRefs = nObjRefs;
+    }
+
+    /**
+     * @param nArrayRefs  the number of array references to set
+     */
+    public void setNArrayRefsFields(int nArrayRefs) {
+        this.nArrayRefs = nArrayRefs;
+    }
+
+    /**
+     * @param nLong  the number of long primitives
+     */
+    public void setNLongFields(int nLong) {
+        this.nLong = nLong;
+    }
+
+    /**
+     * @param nDouble the number of double primitives
+     */
+    public void setNDoubleFields(int nDouble) {
+        this.nDouble = nDouble;
+    }
+
+    /**
+     * @param nReturnAddress the nReturnAddress to set
+     */
+    public void setNReturnAddress(int nReturnAddress) {
+        this.nReturnAddress = nReturnAddress;
+    }
+   
+    /**
+     * estimate the size of an object in bytes for the given settings and for
+     * placement on the heap.
+     * @return total size in bytes for the object placed on the heap.
+     */
+    public long estimateSizeOnHeap() {
+        return estimateSize(true);
+    }
+    
+    /**
+     * estimate the size of an object in bytes for the given settings and for
+     * placement on the stack (variables specific to a method frame, that is,
+     * local variables).
+     * 
+     * @return total size in bytes for the object places on the stack.
+     */
+    public long estimateSizeOnStack() {
+        return estimateSize(false);
+    }
+    
+    private long estimateSize(boolean calcForHeap) {
+        
+        int idx;
+        if (is32Bit) {
+            if (calcForHeap) {
+                idx = 0;
+            } else {
+                idx = 1;
+            }
+        } else {
+            if (calcForHeap) {
+                idx = 2;
+            } else {
+                idx = 3;
+            }
+        }
+        
+        long total = 0;
+
+        // add fields
+        total += nBoolean * booleanSz[idx];
+        total += nByte * byteSz[idx];
+        total += nChar * charSz[idx];
+        total += nShort * shortSz[idx];
+        total += nInt * intSz[idx];
+        total += nFloat * floatSz[idx];
+        total += nObjRefs * refSz[idx];
+        total += nArrayRefs * arrayRefSz[idx];
+        total += nLong * longSz[idx];
+        total += nDouble * doubleSz[idx];
+        total += nReturnAddress * returnAddressSz[idx];
+
+        // add object overhead
+        total += 8;
+
+        // pad up to 8 byte boundary
+        long pad = total % 8;
+        total += pad;
+        
+        return total;
+    }
 }
