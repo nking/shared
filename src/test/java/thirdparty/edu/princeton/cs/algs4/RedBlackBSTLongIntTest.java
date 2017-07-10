@@ -28,6 +28,10 @@ public class RedBlackBSTLongIntTest extends TestCase {
         System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
+        long seed = System.currentTimeMillis();
+        //seed = 1499675478087L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
         
         RedBlackBSTLongInt bt = new RedBlackBSTLongInt();
         

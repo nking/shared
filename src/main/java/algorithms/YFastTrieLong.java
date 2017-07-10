@@ -6,8 +6,7 @@ import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt;
 import thirdparty.ods.Longizer;
 import thirdparty.ods.XFastTrieLong;
 import thirdparty.ods.XFastTrieNodeLong;
@@ -127,7 +126,7 @@ YFastTrie
     // each list item is a sorted binary search tree of numbers in that bin.
     //    the value is the tree holds the number of times that number is present.
     // hashkey= node/binSz;     treemap key=node, value=multiplicity
-    private final TLongObjectMap<TreeMap<Long, Integer>> rbs;
+    private final TLongObjectMap<RedBlackBSTLongInt> rbs;
 
     private boolean chooseByN = true;
 
@@ -181,7 +180,7 @@ YFastTrie
         System.out.println("nBins=" + nBins + "  rt of ops=" +
             (Math.log(binSz)/Math.log(2)));
         
-        rbs = new TLongObjectHashMap<TreeMap<Long, Integer>>();
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
          
         XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
         Longizer<Long> it = new Longizer<Long>() {
@@ -216,7 +215,7 @@ YFastTrie
         System.out.println("nBins=" + nBins + "  rt of ops=" +
             (Math.log(binSz)/Math.log(2)));
         
-        rbs = new TLongObjectHashMap<TreeMap<Long, Integer>>();
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
         
         XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
         Longizer<Long> it = new Longizer<Long>() {
@@ -229,14 +228,13 @@ YFastTrie
         xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
     }
     
-    protected TreeMap<Long, Integer> getTreeMap(long index) {
-        Long key = Long.valueOf(index);
-        TreeMap<Long, Integer> map = rbs.get(key);
-        if (map == null) {
-            map = new TreeMap<Long, Integer>();
-            rbs.put(key, map);
+    protected RedBlackBSTLongInt getTreeMap(long index) {
+        RedBlackBSTLongInt tree = rbs.get(index);
+        if (tree == null) {
+            tree = new RedBlackBSTLongInt();
+            rbs.put(index, tree);
         }
-        return map;
+        return tree;
     }
 
     /**
@@ -246,21 +244,22 @@ YFastTrie
      */
     private void addToRBTree(long node, long index) {
         
-        TreeMap<Long, Integer> map = getTreeMap(index);
+        RedBlackBSTLongInt tree = getTreeMap(index);
         
-        assert(map != null);
+        assert(tree != null);
+                
+        int[] output = new int[2];
         
-        Long key = Long.valueOf(node);
-        
-        Integer multiplicity = map.get(key);
+        tree.get(node, output);
     
-        if (multiplicity == null) {
-            multiplicity = Integer.valueOf(1);
+        int multiplicity;
+        if (output[0] == -1) {
+            multiplicity = 1;
         } else {
-            multiplicity = Integer.valueOf(1 + multiplicity.intValue());
+            multiplicity = 1 + output[1];
         }
         
-        map.put(key, multiplicity);        
+        tree.put(node, multiplicity);        
     }
     
     /**
@@ -270,26 +269,27 @@ YFastTrie
      */
     private boolean deleteFromRBTree(long node, long index) {
                 
-        TreeMap<Long, Integer> map = getTreeMap(index);
+        RedBlackBSTLongInt tree = getTreeMap(index);
         
-        assert(map != null);
+        assert(tree != null);
         
-        Long key = Long.valueOf(node);
-
-        Integer multiplicity = map.get(key);
+        int[] output = new int[2];
+        
+        tree.get(node, output);
     
-        if (multiplicity == null) {
+        if (output[0] == -1) {
             return false;
         }
         
-        if (multiplicity.intValue() > 0) {
-            multiplicity = Integer.valueOf(multiplicity.intValue() - 1);
-            if (multiplicity.intValue() > 0) {
-                map.put(key, multiplicity);
+        int multiplicity = output[1];
+        if (multiplicity > 0) {
+            multiplicity = output[1] - 1;
+            if (multiplicity > 0) {
+                tree.put(node, multiplicity);
             }
         }
-        if (multiplicity.intValue() == 0) {
-            map.remove(key);
+        if (multiplicity == 0) {
+            tree.delete(node);
         }
         
         return true;
@@ -369,11 +369,11 @@ YFastTrie
             return false;
         }
         
-        TreeMap<Long, Integer> map = getTreeMap(index);
+        RedBlackBSTLongInt tree = getTreeMap(index);
       
         long existingRepr = xftReps.get(index);
       
-        if (map.isEmpty()) {
+        if (tree.isEmpty()) {
             // just deleted the last item so remove from rbs
             // delete is O(log_2(w)) + O(w-l)
             if (xftReps.containsKey(index)) {
@@ -386,19 +386,21 @@ YFastTrie
             //   so if a node w/ this value is removed and the multiplicity
             //      was 1, need to assign a new repr
             
-            // O(log_2(N/w))
-            Integer multiplicity = map.get(Long.valueOf(node));
+            int[] output = new int[2];
+            tree.get(node, output);
+            
+            int multiplicity = output[1];
     
-            if (multiplicity == null) {
+            if (output[0] == -1) {
                 // remove the current repr and assign a new one
                 // delete is O(log_2(w)) + O(w-l)
                 xft.remove(Long.valueOf(existingRepr));
                 xftReps.remove(index);
             
                 // O(log_2(N/w))
-                Entry<Long, Integer> minEntry = map.firstEntry(); 
-                xft.add(minEntry.getKey());
-                xftReps.put(index, minEntry.getKey()); 
+                long minKey = tree.min();
+                xft.add(minKey);
+                xftReps.put(index, minKey); 
             }            
         }
         
@@ -428,10 +430,12 @@ YFastTrie
                 
         long index = node/binSz;
                 
-        TreeMap<Long, Integer> map = getTreeMap(index);
+        RedBlackBSTLongInt tree = getTreeMap(index);
         
-        Integer multiplicity = map.get(Long.valueOf(node));
-        if (multiplicity == null) {
+        int[] output = new int[2];
+        tree.get(node, output);
+        
+        if (output[0] == -1) {
             return -1;
         }
         
@@ -456,47 +460,46 @@ YFastTrie
             throw new IllegalArgumentException("node must "
                 + "be less than " + maxC);
         }
-        
-        Long nodeKey = Long.valueOf(node);
-        
+                
         long nodeIndex = node/binSz;
         
         // the repr is stored in xft and it is always the minium for the bin
-        boolean isAMinimum = xft.find(nodeKey) != null;
+        boolean isAMinimum = xft.find(Long.valueOf(node)) != null;
         
         /*
         if the node is not a minima, the answer is in
            the node's map if its size is larger > 1
         */
         
-        TreeMap<Long, Integer> map = getTreeMap(nodeIndex);
+        RedBlackBSTLongInt tree = getTreeMap(nodeIndex);
         
-        if (!isAMinimum && (map.size() > 1)) {
-            Entry<Long, Integer> pred = map.lowerEntry(nodeKey);
-            if (pred != null) {
-                return pred.getKey().intValue();
+        if (!isAMinimum && (tree.size() > 1)) {
+            long[] output = new long[2];
+            tree.lower(node, output);
+            if (output[0] != -1) {
+                return output[1];
             }
         }
        
         // else, predeccessor is in the closest bin < nodeIndex that has
         //    items in it.
                 
-        Long prev = xft.predecessor(nodeKey);
+        Long prev = xft.predecessor(Long.valueOf(node));
         if (prev == null) {
             return -1;
         }
         
         long prev0Index = prev.longValue()/binSz;
             
-        map = getTreeMap(prev0Index);
-                
-        Entry<Long, Integer> lastItem = map.lastEntry();
-               
-        if (lastItem == null) {
+        tree = getTreeMap(prev0Index);
+        
+        if (tree.isEmpty()) {
             return -1;
         }
         
-        return lastItem.getKey();
+        long lastKey = tree.max();
+        
+        return lastKey;
     }
     
     /**
@@ -524,16 +527,17 @@ YFastTrie
         
         boolean isAMinimum = xft.find(nodeKey) != null;
         
-        TreeMap<Long, Integer> nodeMap = getTreeMap(nodeIndex);
+        RedBlackBSTLongInt tree = getTreeMap(nodeIndex);
         
         if (isAMinimum) {
             // if tree size > 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
             
-            if (nodeMap.size() > 1) {
-                Entry<Long, Integer> successor = nodeMap.higherEntry(nodeKey);
-                assert(successor != null);
-                return successor.getKey();
+            if (tree.size() > 1) {
+                long[] output = new long[2];
+                tree.higher(node, output);
+                assert(output[0] != -1);
+                return output[1];
             }
             
             Long successorRepr = xft.successor(nodeKey);
@@ -549,10 +553,11 @@ YFastTrie
         //   if there is a tree successor to the node, that is the successor
         //   else, the xft successor to nodeIndex is the successor
                     
-        Entry<Long, Integer> sEntry = nodeMap.higherEntry(nodeKey);
+        long[] output = new long[2];
+        tree.higher(node, output);
         
-        if (sEntry != null) {
-            return sEntry.getKey();
+        if (output[0] != -1) {
+            return output[1];
         }
         
         Long successorRepr = xft.successor(nodeKey);
@@ -607,15 +612,14 @@ YFastTrie
         
         long index = maxRepr.longValue()/binSz;
         
-        TreeMap<Long, Integer> map = getTreeMap(index);
+        RedBlackBSTLongInt tree = getTreeMap(index);
         
-        assert(map != null);
+        assert(tree != null);
+        assert(!tree.isEmpty());
         
-        Entry<Long, Integer> lastItem = map.lastEntry();
-        
-        assert(lastItem != null);
-        
-        return lastItem.getKey();
+        long lastKey = tree.max();
+                
+        return lastKey;
     }
     
     /**

@@ -537,8 +537,6 @@ public class RedBlackBSTLongInt {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
-        //TODO: could improve this list.  it only needs to be the latest 3 
-        //   nodes in search
         List<Node> stack = new ArrayList<Node>();
         Node x = lower(root, key, stack);
         if (x == null) {
@@ -665,8 +663,6 @@ public class RedBlackBSTLongInt {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
-        //TODO: could improve this list.  it only needs to be the latest 3 
-        //   nodes in search
         List<Node> stack = new ArrayList<Node>();
         Node x = higher(root, key, stack);
         if (x == null) {
