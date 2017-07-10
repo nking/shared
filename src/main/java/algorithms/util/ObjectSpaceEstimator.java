@@ -45,7 +45,8 @@ public class ObjectSpaceEstimator {
         -- shared among all virtual machine threads.  
            holds instance variables, static fields, array elements
         -- strings are stored on the heap
-    JVM METHOD AREA: [THIS is logically part of the HEAP, but in small vms may not gc it.]
+    JVM METHOD AREA: [THIS is logically part of the HEAP, 
+        but small vms may not gc it.]
         -- shared among all virtual machine threads.  
            holds structures for compiled code:  
                runtime constant pool
@@ -190,8 +191,8 @@ public class ObjectSpaceEstimator {
      * estimate the size of an object in bytes for the given settings and for
      * placement on the heap.
      * 
-     * Note that the string estimates are the maximum size they could occupy
-     * and does not include consideration for pooling.
+     * Note that the string estimates are the maximum size in memory they could 
+     * occupy and do not include consideration for pooling.
      * 
      * @return total size in bytes for the object placed on the heap.
      */
