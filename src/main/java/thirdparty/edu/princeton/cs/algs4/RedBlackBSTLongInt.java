@@ -39,6 +39,7 @@ package thirdparty.edu.princeton.cs.algs4;
  *
  ******************************************************************************/
 
+import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
 import java.util.ArrayList;
@@ -89,8 +90,32 @@ public class RedBlackBSTLongInt {
 
     private Node root;     // root of the BST
 
+    /**
+     * estimate the size that an instance of RedBlackBSTLongInt with
+     * n entries would occupy in heap space in Bytes.
+     * 
+     * @param numberOfEntries amount of space for this object's instance
+     * with n entries in Bytes on the heap.
+     * 
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries) {
+        
+        long total = 0;
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNBooleanFields(2);
+        est.setNObjRefsFields(1);
+       
+        total += est.estimateSizeOnHeap();
+        
+        total += numberOfEntries * Node.estimateSizeOnHeap();
+    
+        return total;
+    }
+    
     // BST helper node data type
-    private class Node {
+    private static class Node {
         // changing Key to long primitive saves factor of 3 on 32 bit platforms,
         //    else factor of 2 on 64 bit platforms.
         //    (long size on stack is 64 bits, or 128 bits, respectively)
@@ -109,7 +134,16 @@ public class RedBlackBSTLongInt {
             this.color = color;
             this.size = size;
         }
-
+        
+        public static long estimateSizeOnHeap() {
+            ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+            est.setNBooleanFields(1);
+            est.setNLongFields(1);
+            est.setNIntFields(2);
+            est.setNObjRefsFields(2);
+            return est.estimateSizeOnHeap();
+        }
+        
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
