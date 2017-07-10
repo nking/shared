@@ -68,228 +68,108 @@ public class RedBlackBSTLongIntTest extends TestCase {
         assertEquals(count, nodes.size());
         
         long[] kOutput = new long[2];
-        
-        for (int i = 0; i < n2 - 1; ++i) {
-            long idx = nodes.get(i);
-            long foundIndex = bt.contains(idx) ? idx : -1;
-            assertTrue(foundIndex > -1);
-            
-            long expected = nodes.get(i + 1);
-            //System.out.println("\n* " + idx + " expected next=" + expected);
-            
-            bt.higher(idx, kOutput);
-            assertTrue(kOutput[0] != -1);
-            long next = kOutput[1];
-            //System.out.println(idx + "   next=" + next);
-            assertEquals(expected, next);
-        }
-        
-        for (int i = 1; i < n2; ++i) {
-            long idx = nodes.get(i);
-            long foundIndex = bt.contains(idx) ? idx : -1;
-            assertTrue(foundIndex > -1);
-            
-            long expected = nodes.get(i - 1);
-            //System.out.println("\n* " + idx + " expected prev=" + expected);
-            
-            bt.lower(idx, kOutput);
-            assertTrue(kOutput[0] != -1);
-            long prev = kOutput[1];
-            //System.out.println(idx + "   prev=" + prev);
-            assertEquals(expected, prev);
-        }
-    }
-    
-    public void estKeyOperations() throws Exception {
-    
-        System.out.println("testKeyOperations");
-        
-        RedBlackBSTLongInt bt = new RedBlackBSTLongInt();
-        
-        int n = 100;
-        
-        TIntList nodes = new TIntArrayList(2*n);
-        
-        for (int i = 0; i < n/2; ++i) {
-            nodes.add(i);
-            bt.put(i, i);
-            assertTrue(bt.contains(i));
-            assertEquals(0, bt.min());
-            assertEquals(i, bt.max());
-        }
-        for (int i = (n - 1); i >= (n/2); --i) {
-            nodes.add(i);
-            bt.put(i, i);
-            assertTrue(bt.contains(i));
-            assertEquals(0, bt.min());
-            assertEquals((n - 1), bt.max());
-        }
-        
-        assertEquals(n, bt.size());
-                
-        assertEquals(n - 1, bt.max());
-        
-        assertEquals(0L, bt.min());
-        
         int[] vOutput = new int[2];
-        long[] kOutput = new long[2];
         
-        for (int i = 0; i < n; ++i) {
-            long foundIndex = bt.contains(i) ? i : -1;
-            assertTrue(foundIndex > -1);
-            
-            /*
-            smallest element in the tree with key greater
-            than node.key.            
-            */
-            
-            if (i < (n - 1)) {
-                bt.higher(i, kOutput);
+        for (int nIter = 0; nIter < 3; ++nIter){
+            n2 = bt.size();
+            assertEquals(n2, nodes.size());
+
+            for (int i = 0; i < n2 - 1; ++i) {
+                long idx = nodes.get(i);
+                long foundIndex = bt.contains(idx) ? idx : -1;
+                assertTrue(foundIndex > -1);
+
+                long expected = nodes.get(i + 1);
+                //System.out.println("\n* " + idx + " expected next=" + expected);
+
+                bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long next = kOutput[1];
-                System.out.println(i + " next=" + next);
-                assertEquals((i + 1), next);
+                //System.out.println(idx + "   next=" + next);
+                assertEquals(expected, next);
+
+                if (next > (idx + 1)) {
+                    // test ceiling of idx+1
+                    bt.ceiling(idx + 1, kOutput);
+                    assertTrue(kOutput[0] != -1);
+                    long ceil = kOutput[1];
+                    assertEquals(expected, ceil);
+                }
             }
-            /*
-            the largest element in the tree with key smaller 
-            than node.key
-            */
-            /*
-            if (i > 0) {
-                bt.lower(i, kOutput);
+
+            for (int i = 1; i < n2; ++i) {
+                long idx = nodes.get(i);
+                long foundIndex = bt.contains(idx) ? idx : -1;
+                assertTrue(foundIndex > -1);
+
+                bt.get(idx, vOutput);
+                assertTrue(vOutput[0] != -1);
+                assertEquals(idx, vOutput[1]);
+                
+                long expected = nodes.get(i - 1);
+                //System.out.println("\n* " + idx + " expected prev=" + expected);
+
+                bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long prev = kOutput[1];
-                System.out.println(i + " prev=" + prev);
-                assertEquals((i - 1), prev);
-            }*/
-        }
-        
-        // remove some nodes randomly
-        TIntSet rm = new TIntHashSet();
-        
-        SecureRandom sr = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
-        //seed = 1465940667831L;
-        sr.setSeed(seed);
-        System.out.println("SEED=" + seed);
-        
-        bt.delete(nodes.get(0));
-        long nod = bt.contains(nodes.get(0)) ? nodes.get(0) : -1;
-        assertEquals(-1, nod);
-        rm.add(nodes.get(0));
-        
-        for (int i = 0; i < n/2; ++i) {
-            int idx = sr.nextInt(n);
-            Integer r = nodes.get(idx);
-            if (!rm.contains(r)) {
-                bt.delete(r.longValue());
-                rm.add(r);
+                //System.out.println(idx + "   prev=" + prev);
+                assertEquals(expected, prev);
+
+                if (prev < (idx - 1)) {
+                    // test floor of idx-1
+                    bt.floor(idx - 1, kOutput);
+                    assertTrue(kOutput[0] != -1);
+                    long floor = kOutput[1];
+                    assertEquals(expected, floor);
+                }
             }
-        }
         
-        assertEquals((n - rm.size()), bt.size());
-                
-        boolean minChecked = false;
-        
-        for (int i = 0; i < n; ++i) {
-            Integer index = nodes.get(i);
-            long foundIndex = bt.contains(index.longValue()) ? index.longValue() : -1;
-            if (rm.contains(index)) {
-                assertEquals(-1, foundIndex);
+            if ((nIter & 1) == 1) {
+                //randomly remove some nodes
+                for (int i = 0; i < n2/4; ++i) {
+                    int idx = rand.nextInt(nodes.size());
+                    long v = nodes.get(idx);
+                    assertTrue(bt.contains(v));
+                    bt.delete(v);
+                    assertFalse(bt.contains(v));
+                    nodes.removeAt(idx);
+                    assertEquals(nodes.size(), bt.size());
+                }
             } else {
-                if (!minChecked) {
-                    long min = bt.min();
-                    assertEquals(index.intValue(), min);
-                    minChecked = true;
-                }
-                assertEquals(index.intValue(), foundIndex);
-                if (index.intValue() < (n - 1)) {
-                    bt.higher(index, kOutput);
-                    assertTrue(kOutput[0] != -1);
-                    long next = kOutput[1];
-                    int expected = index.intValue() + 1;
-                    while (expected < n) {
-                        if (rm.contains(Integer.valueOf(expected))) {
-                            ++expected;
-                        } else {
-                            assertEquals(expected, next);
-                            break;
-                        }
+                //randomly add some nodes
+                for (int i = 0; i < n2/4; ++i) {
+                    int idx = nodes.size() + rand.nextInt(2*nodes.size());
+                    // the nodes contains is linear search, so could use a temp
+                    // set if this test gets large one day
+                    if (!nodes.contains(idx)) {
+                        bt.put(idx, idx);
+                        nodes.add(idx);
+                        assertTrue(bt.contains(idx));
                     }
                 }
             }
-        }
+            
+            n2 = nodes.size();
+            nodes.sort();
+           
+            assertEquals(nodes.get(nodes.size()/2), bt.select(nodes.size()/2));            
+                    
+            long max = nodes.get(nodes.size() - 1);
+            assertTrue(bt.contains(max));
+            //System.out.println("will delete max=" + max + " from this tree:");
+            //bt.printPreOrderTraversal();
+            bt.deleteMax();
+            //System.out.println(" after delete:");
+            //bt.printPreOrderTraversal();
+            assertFalse(bt.contains(max));
+            nodes.removeAt(nodes.size() - 1);
 
-        // ==== then add n more nodes and repeat assertions
-        for (int i = n; i < 2*n; ++i) {
-            nodes.add(i);
-            bt.put(i, i);
-        }
-
-        assertEquals((n - rm.size()) + n, bt.size());
-
-        Integer maxExpected = Integer.valueOf(2*n - 1);
-        while (rm.contains(maxExpected)) {
-            maxExpected = Integer.valueOf(maxExpected.intValue() - 1);
-        }
-        
-        assertEquals(maxExpected.intValue(), bt.max());
-        
-        for (int i = n; i < 2*n; ++i) {
-            Integer index = nodes.get(i);
-            long foundIndex = bt.contains(index) ? index.longValue() : -1;
-            assertEquals(index.intValue(), foundIndex);
-            if (index.intValue() < (n - 1)) {
-                bt.higher(index, kOutput);
-                assertTrue(kOutput[0] != -1);
-                long next = kOutput[1];
-                assertEquals(index.intValue() + 1, next);
-            }
-        }
-
-        for (int i = 0; i < n/2; ++i) {
-            int idx = sr.nextInt(n);
-            Integer r = nodes.get(idx);
-            if (!rm.contains(r)) {
-                rm.add(r);
-                bt.delete(r.longValue());
-                assertFalse(bt.contains(r.longValue()));
-            }
-        }
-        
-        assertEquals((2*n - rm.size()), bt.size());
-
-        minChecked = false;
-        
-        for (int i = 0; i < 2*n; ++i) {
-            Integer index = nodes.get(i);
-            long foundIndex  = bt.contains(index.longValue()) 
-                ? index.longValue() : -1;
-            if (rm.contains(index)) {
-                assertEquals(-1, foundIndex);
-            } else {  
-                if (!minChecked) {
-                    long min = bt.min();
-                    assertEquals(index.intValue(), min);
-                    minChecked = true;
-                }
-                assertEquals(index.intValue(), foundIndex);
-
-                if (index.intValue() < (n - 1)) {
-                    bt.higher(index.longValue(), kOutput);
-                    assertTrue(kOutput[0] != -1);
-                    long next = kOutput[1];
-                    int expected = index.intValue() + 1;
-                    while (expected < n) {
-                        if (rm.contains(Integer.valueOf(expected))) {
-                            ++expected;
-                        } else {
-                            assertEquals(expected, next);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+            long min = nodes.get(0);
+            assertTrue(bt.contains(min));
+            bt.deleteMin();
+            assertFalse(bt.contains(min));
+            nodes.removeAt(0);
+        }        
     }
+    
 }

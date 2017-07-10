@@ -44,6 +44,7 @@ import gnu.trove.list.array.TLongArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 
 /**
  *  The {@code BST} class represents an ordered symbol table of generic
@@ -108,6 +109,18 @@ public class RedBlackBSTLongInt {
             this.color = color;
             this.size = size;
         }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("key=").append(key);
+            sb.append(" val=").append(val);
+            sb.append(" color=").append(color);
+            sb.append(" size=").append(size);
+            return sb.toString();
+        }
+        
+        
     }
 
     /**
@@ -280,14 +293,20 @@ public class RedBlackBSTLongInt {
 
     // delete the key-value pair with the maximum key rooted at h
     private Node deleteMax(Node h) { 
-        if (isRed(h.left))
+    
+        //TODO: make this iterative
+        if (isRed(h.left)) {
             h = rotateRight(h);
+        }
 
-        if (h.right == null)
+        if (h.right == null) {
+            // h is max key
             return null;
+        }
 
-        if (!isRed(h.right) && !isRed(h.right.left))
+        if (!isRed(h.right) && !isRed(h.right.left)) {
             h = moveRedRight(h);
+        }
 
         h.right = deleteMax(h.right);
 
@@ -320,8 +339,7 @@ public class RedBlackBSTLongInt {
             if (!isRed(h.left) && !isRed(h.left.left))
                 h = moveRedLeft(h);
             h.left = delete(h.left, key);
-        }
-        else {
+        } else {
             if (isRed(h.left))
                 h = rotateRight(h);
             if (key == h.key && (h.right == null))
@@ -335,8 +353,7 @@ public class RedBlackBSTLongInt {
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
                 h.right = deleteMin(h.right);
-            }
-            else h.right = delete(h.right, key);
+            } else h.right = delete(h.right, key);
         }
         return balance(h);
     }
@@ -455,7 +472,7 @@ public class RedBlackBSTLongInt {
 
     // the smallest key in subtree rooted at x; null if no such key
     private Node min(Node x) { 
-        // assert x != null;
+        assert(x != null);
         while (x.left != null) {
             x = x.left;
         }
@@ -474,11 +491,12 @@ public class RedBlackBSTLongInt {
 
     // the largest key in the subtree rooted at x; null if no such key
     private Node max(Node x) { 
-        // assert x != null;
-        if (x.right == null) return x; 
-        else                 return max(x.right); 
-    } 
-
+        assert(x != null);
+        while (x.right != null) {
+            x = x.right;
+        }
+        return x; 
+    }
 
     /**
      * Returns the largest key in the symbol table less than or equal to {@code key}.
@@ -519,6 +537,8 @@ public class RedBlackBSTLongInt {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
+        //TODO: could improve this list.  it only needs to be the latest 3 
+        //   nodes in search
         List<Node> stack = new ArrayList<Node>();
         Node x = lower(root, key, stack);
         if (x == null) {
@@ -567,7 +587,6 @@ public class RedBlackBSTLongInt {
             if (key < x.key) {
                 x = x.left;
             } else {
-                //right is towards numbers larger than x.key
                 //System.out.println("   x.key=" + x.key);
                 x = x.right;
             }
@@ -594,14 +613,15 @@ public class RedBlackBSTLongInt {
         }
       
         while (y != null && x == y.left) {
-            System.out.println("lower: y=" + y.key + " q=" + key);
+            //System.out.println("lower: y=" + y.key + " q=" + key);
             x = y;
             yIdx--;
             if (yIdx < 0) break;
             y = stack.get(yIdx);
         }
-        return y;
         
+        //System.out.println("    y=" + y.key + " q=" + key);
+        return y;
     }
 
     /**
@@ -645,6 +665,8 @@ public class RedBlackBSTLongInt {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
+        //TODO: could improve this list.  it only needs to be the latest 3 
+        //   nodes in search
         List<Node> stack = new ArrayList<Node>();
         Node x = higher(root, key, stack);
         if (x == null) {
@@ -656,7 +678,8 @@ public class RedBlackBSTLongInt {
     }
     
     // the smallest key in the subtree rooted at x greater than or equal to the given key
-    private Node ceiling(Node x, long key) {  
+    private Node ceiling(Node x, long key) {
+        //TODO: make this iterative
         if (x == null) return null;
         int cmp = key < x.key ? -1 : (key > x.key) ? 1 : 0; 
         if (cmp == 0) return x;
@@ -685,7 +708,7 @@ public class RedBlackBSTLongInt {
         //binary search until overshoot
         while (x != null && key != x.key) {
             stack.add(x);
-            System.out.println("higher: x=" + x.key + " q=" + key);
+            //System.out.println("higher: x=" + x.key + " q=" + key);
             if (key < x.key) {
                 x = x.left;
             } else {
@@ -741,6 +764,7 @@ public class RedBlackBSTLongInt {
 
     // the key of rank k in the subtree rooted at x
     private Node select(Node x, int k) {
+        //TODO: make this iterative
         // assert x != null;
         // assert k >= 0 && k < size(x);
         int t = size(x.left); 
@@ -761,6 +785,7 @@ public class RedBlackBSTLongInt {
 
     // number of keys less than key in the subtree rooted at x
     private int rank(long key, Node x) {
+        //TODO: make this iterative
         if (x == null) return 0; 
         int cmp = key < x.key ? -1 : (key > x.key) ? 1 : 0;  
         if      (cmp < 0) return rank(key, x.left); 
@@ -805,6 +830,7 @@ public class RedBlackBSTLongInt {
     // add the keys between lo and hi in the subtree rooted at x
     // to the queue
     private void keys(Node x, TLongList queue, long lo, long hi) { 
+        //TODO: make this iterative
         if (x == null) return; 
         int cmplo = lo < x.key ? -1 : (lo > x.key) ? 1 : 0;
         int cmphi = hi < x.key ? -1 : (hi > x.key) ? 1 : 0; 
@@ -911,5 +937,147 @@ public class RedBlackBSTLongInt {
         if (!isRed(x)) black--;
         return isBalanced(x.left, black) && isBalanced(x.right, black);
     } 
+    
+    /**
+     * left subtree, root, right subtree
+     */
+    public void printInOrderTraversal() {
+        Node[] nodes = getInOrderTraversalIterative(root);
+        for (Node node : nodes) {
+            System.out.println("node=" + node.toString());
+        }
+    }
+    
+    /**
+     * root, left subtree, right subtree
+     */
+    public void printPreOrderTraversal() {
+        Node[] nodes = getPreOrderTraversalIterative(root);
+        for (Node node : nodes) {
+            System.out.println("node=" + node.toString());
+        }
+    }
+    
+    /**
+     * left subtree, right subtree, root subtree
+     */
+    public void printPostOrderTraversal() {
+        Node[] nodes = getPostOrderTraversalIterative(root);
+        for (Node node : nodes) {
+            System.out.println("node=" + node.toString());
+        }
+    }
 
+    /**
+     * visit each node using pattern left subtree, root, right subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected Node[] getInOrderTraversalIterative(Node node) {
+       
+        Node[] array = new Node[size()];
+        int count = 0;
+        
+        Stack<Node> stack = new Stack<>();
+               
+        while (!stack.isEmpty() || (node != null)) {
+            if (node != null) {
+                 
+                stack.push(node);
+                
+                node = node.left;
+            
+            } else {
+                
+                node = stack.pop();
+                
+                array[count] = node;
+                count++;
+                
+                //System.out.println(node.key);
+                
+                node = node.right;
+            }
+        }
+        
+        return array;
+    }
+    
+    /**
+     * visit each node using pattern: root, left subtree, right subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected Node[] getPreOrderTraversalIterative(Node node) {
+       
+        Node[] array = new Node[size()];
+        int count = 0;
+        
+        Stack<Node> stack = new Stack<>();
+        
+        while (!stack.isEmpty() || (node != null)) {
+            if (node != null) {
+                
+                array[count] = node;
+                count++;
+                //System.out.println(node.key);
+                
+                stack.push(node);
+                
+                node = node.left;
+            
+            } else {
+                
+                node = stack.pop();
+                
+                node = node.right;
+            }
+        }
+        
+        return array;
+    }
+
+    /**
+     * visit each node using pattern: left subtree, right subtree, root subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected Node[] getPostOrderTraversalIterative(Node node) {
+        
+        Node[] array = new Node[size()];
+        int count = 0;
+        
+        if (node == null) {
+            return array;
+        }
+        
+        Stack<Node> stack = new Stack<Node>();
+        Stack<Node> stack2 = new Stack<Node>();
+        stack.push(node);
+        
+        while (!stack.isEmpty()) {
+            
+            node = stack.pop();
+            
+            stack2.push(node);
+            
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+
+            if (node.right != null) {
+                stack.push(node.right);
+            }            
+        }
+        
+        while (!stack2.isEmpty()) {
+            
+            node = stack2.pop();
+            
+            //process(node);
+            array[count] = node;
+            count++;
+            //System.out.println(node.key);
+        }
+         
+        return array;
+    }
+    
 }
