@@ -696,8 +696,10 @@ YFastTrie
             }
         }
         
-        // else, fall back to using the default for rt = O(10)
+        // 2^10 = binSz/2 -->binSz = 2^11
+        //return 2048;
         
+        // else, fall back to using the default for rt = O(10)
         return (long)Math.ceil((double)maxC/(double)w);
         
         /*

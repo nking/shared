@@ -1,4 +1,15 @@
--- need to convert the single index pixel indexes to long
-   everywhere and then the code using those.
+-- for each class used by NN2Dlong,
+    need it to be able to report the
+    expected memory use by heap and 
+    largest temporary memory used by stack.
+
+-- for NN2DLong caches, consider using WeakHashMap instead even though
+    it takes up more memory.
+         
 -- add unit tests where missing
+-- has trove implemented a primitive based balanced binary tree?
+   if yes, YFastTrieLong could use them
+
+-- consider porting the c judyarray to java:
+   http://judy.sourceforge.net/downloads/10minutes.htm
 
