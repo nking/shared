@@ -77,6 +77,9 @@ public class ObjectSpaceEstimator {
     private int nDouble = 0;
     private int nReturnAddress = 0;
     
+    //TODO: handle string, which is a character array but is ALWAYS on the heap
+    //   and for some jvm, strings are pooled objects, re-used.
+    
     // sizes in bytes as [heap 32 bit, stack 32 bit, heap 54 bit, stack 64 bit]
     private final static int objOverheadSz = 16;
     
