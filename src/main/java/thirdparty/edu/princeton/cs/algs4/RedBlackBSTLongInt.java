@@ -504,6 +504,31 @@ public class RedBlackBSTLongInt {
         }
     }    
 
+    /**
+     * Returns the largest key in the symbol table less than {@code key}.
+     * @param key the key
+     * @param output if output[0] == -1, the key was not present, 
+     * else output[1] holds the largest key in the symbol table less than or equal to {@code key}
+     @throws NoSuchElementException if the tree is empty
+     */
+    public void lower(long key, long[] output) {
+        if (output == null || output.length != 2) {
+            throw new IllegalArgumentException("output must be length 2");
+        }
+        if (isEmpty()) {
+            output[0] = -1;
+            throw new NoSuchElementException("called floor() with empty symbol table");
+        }
+        List<Node> stack = new ArrayList<Node>();
+        Node x = lower(root, key, stack);
+        if (x == null) {
+            output[0] = -1;
+        } else {
+            output[0] = 0;
+            output[1] = x.key;
+        }
+    }    
+    
     // the largest key in the subtree rooted at x less than or equal to the given key
     private Node floor(Node x, long key) {
         if (x == null) return null;
@@ -520,6 +545,63 @@ public class RedBlackBSTLongInt {
         } else {
             return x;
         }
+    }
+    
+    /** the largest key in the subtree rooted at x less than the given key
+     * 
+     * The method is symmetric t the successor method called 
+     * higher, as suggested by Cormen et al. in
+     * the book "Introduction to Algorithms".
+     * 
+     * @param x
+     * @param key
+     * @param stack
+     * @return 
+     */
+    private Node lower(Node x, long key, List<Node> stack) { 
+        
+        //binary search until overshoot
+        while (x != null && key != x.key) {
+            stack.add(x);
+            //System.out.println("lower: x=" + x.key + " q=" + key);
+            if (key < x.key) {
+                x = x.left;
+            } else {
+                //right is towards numbers larger than x.key
+                //System.out.println("   x.key=" + x.key);
+                x = x.right;
+            }
+        }
+        
+        Node y = null;
+        int yIdx = -1;
+        
+        if (x == null) {
+            if (stack.size() > 1) {
+                x = stack.get(stack.size() - 1);
+                yIdx = stack.size() - 2;
+                y = stack.get(yIdx);
+            } else if (stack.size() == 1) {
+                x = stack.get(stack.size() - 1);
+            }
+        } else if (!stack.isEmpty()) {
+            yIdx = stack.size() - 1;
+            y = stack.get(yIdx);
+        }
+        
+        if (x.left != null) {
+            return max(x.left);
+        }
+      
+        while (y != null && x == y.left) {
+            System.out.println("lower: y=" + y.key + " q=" + key);
+            x = y;
+            yIdx--;
+            if (yIdx < 0) break;
+            y = stack.get(yIdx);
+        }
+        return y;
+        
     }
 
     /**
@@ -564,7 +646,7 @@ public class RedBlackBSTLongInt {
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
         List<Node> stack = new ArrayList<Node>();
-        Node x = higher(root, key, stack, false);
+        Node x = higher(root, key, stack);
         if (x == null) {
             output[0] = -1;
         } else   {
@@ -593,10 +675,9 @@ public class RedBlackBSTLongInt {
      * @param key
      * @return 
      */
-    private Node higher(Node x, long key, List<Node> stack, boolean is2ndSrch) {  
+    private Node higher(Node x, long key, List<Node> stack) {  
                         
         /*
-        higher
                     X
         left .lte.     right .gte.
         */
