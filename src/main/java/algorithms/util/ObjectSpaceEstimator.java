@@ -77,9 +77,13 @@ public class ObjectSpaceEstimator {
     private int nDouble = 0;
     private int nReturnAddress = 0;
     
-    //TODO: handle string, which is a character array but is ALWAYS on the heap
-    //   and for some jvm, strings are pooled objects, re-used.
-    
+    /**
+     * Strings have special handling.  They are always on the heap and they
+     * may be pooled (re-used) for some JVMs.
+     */
+    private int nStrings = 0;
+    private int maxStringLength = 0;
+     
     // sizes in bytes as [heap 32 bit, stack 32 bit, heap 54 bit, stack 64 bit]
     private final static int objOverheadSz = 16;
     
@@ -176,10 +180,19 @@ public class ObjectSpaceEstimator {
     public void setNReturnAddress(int nReturnAddress) {
         this.nReturnAddress = nReturnAddress;
     }
+    
+    public void setStrings(int numberOfStrings, int maximumNumberOfLetters) {
+        nStrings = numberOfStrings;
+        maxStringLength = maximumNumberOfLetters;
+    }
    
     /**
      * estimate the size of an object in bytes for the given settings and for
      * placement on the heap.
+     * 
+     * Note that the string estimates are the maximum size they could occupy
+     * and does not include consideration for pooling.
+     * 
      * @return total size in bytes for the object placed on the heap.
      */
     public long estimateSizeOnHeap() {
@@ -190,6 +203,9 @@ public class ObjectSpaceEstimator {
      * estimate the size of an object in bytes for the given settings and for
      * placement on the stack (variables specific to a method frame, that is,
      * local variables).
+     * 
+     * Note that the string estimates will not be in the stack estimate as they
+     * are purely heap objects.
      * 
      * @return total size in bytes for the object places on the stack.
      */
@@ -228,7 +244,11 @@ public class ObjectSpaceEstimator {
         total += nLong * longSz[idx];
         total += nDouble * doubleSz[idx];
         total += nReturnAddress * returnAddressSz[idx];
-
+        
+        if (calcForHeap) {
+            total += nStrings * estimateAStringSize(maxStringLength);
+        }
+        
         // add object overhead
         total += 8;
 
@@ -238,4 +258,20 @@ public class ObjectSpaceEstimator {
         
         return total;
     }
+
+    public static long estimateAStringSize(int maxNumberOfLetters) {
+        
+        // strings are always on the heap
+        int idx;
+        if (is32Bit) {
+            idx = 0;
+        } else {
+            idx = 2;
+        }
+        
+        long total = arrayRefSz[idx];
+        total += maxNumberOfLetters * charSz[idx];
+        
+        return total;
+    }   
 }
