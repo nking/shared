@@ -1,8 +1,7 @@
 package thirdparty.ods;
 
-import gnu.trove.iterator.TIntObjectIterator;
+import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.iterator.TLongObjectIterator;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -446,6 +445,7 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
             return;
         }
         
+        int count = 0;
         for (int i = 1; i <= w; ++i) {
             System.out.println("level=" + i);
             TLongObjectHashMap<S> nodesMap = t.get(i);
@@ -455,8 +455,99 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
                 iter.advance();
                 S nodeL = iter.value();
                 System.out.println(nodeL.toString2());
+                count++;
             }
         }
+        System.out.println("nNodes=" + count);
     }
-    
+   
+     /**
+     * NOTE: there are prefix entries in the trie, created as needed. total
+     * number of trie prefix nodes for sequential data is 2 * n + padding to
+     * next power of 2. The number of prefix nodes is due to the pattern of
+     * numbers, so not predictable, but a few tests show range of factor 2 to 5
+     * times the number of added nodes.
+     * A factor of 5 is used here.
+     * Also, the primitive long keys for the hash map are added here too.
+     */
+    public static long estimateSizeOfTriePrefixNodes(int numberOfEntries) {
+        
+        long factor = 5;
+        
+        long nodeSz = XFastTrieNodeLong.estimateSizeOnHeap();
+        
+        long total = factor * numberOfEntries * nodeSz;
+        
+        total += factor * numberOfEntries * 
+            ObjectSpaceEstimator.estimateLongSize();
+        
+        return total;
+    }
+   
+    /**
+     * estimate the size of an instance of this class on the heap with
+     * n number of inserted entries.
+     * 
+     * Note, the default number of bits used is the maximum, 62, in
+     * constructing the trie.  If you know the numbers will be smaller,
+     * the method using w bits argument should be used instead.
+     * 
+     * NOTE, there are prefix entries in the trie, created as
+       needed and the separate method should be
+       used for those: estimateSizeOfTrieNodes()
+       
+     * @param numberOfEntries
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries) {
+        return estimateSizeOnHeap(numberOfEntries, 62);
+    }
+   
+    /**
+     * estimate the size of an instance of this class on the heap with
+     * n number of inserted entries.
+       * 
+     * @param numberOfEntries
+     * @param wNumberOfBits
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries,
+        long wNumberOfBits) {
+       
+        //long maxCw = (1L << wNumberOfBits) - 1;
+        
+        // includes the class and inserted nodes.
+        // the trie prefix nodes are not included
+        long total = BinaryTrieLong.estimateSizeOnHeap(numberOfEntries);
+        
+        // subtract the BinaryTrieLongNodes and add nodes for this class
+        long subtrNodes =  
+            BinaryTrieLong.estimateSizeOfTriePrefixNodes(numberOfEntries);
+        long addNodes =  
+            XFastTrieLong.estimateSizeOfTriePrefixNodes(numberOfEntries);
+        
+        total -= subtrNodes;
+        total += addNodes;
+        
+        // List t:
+        total += ObjectSpaceEstimator.estimateArrayList();
+        
+        // items in List t:
+        long hashMapSize = ObjectSpaceEstimator.estimateTLongObjectHashMap();
+        for (int i = 0; i <= wNumberOfBits; i++) {
+            total += hashMapSize;
+            // TODO: add expected number of entries here per map.
+            // That is done in a separate method
+		}
+                
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();        
+        est.setNIntFields(6);
+        est.setNObjRefsFields(4);
+        est.setNLongFields(1);
+       
+        total += est.estimateSizeOnHeap();
+        
+        return total;
+    }
+   
 }

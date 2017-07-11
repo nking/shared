@@ -1,9 +1,15 @@
 package thirdparty.ods;
 
+import algorithms.misc.Misc0;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.array.TLongArrayList;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
@@ -17,6 +23,159 @@ public class XFastTrieLongTest extends TestCase {
     public XFastTrieLongTest() {
     }
 
+    public void testKeyOperations0() throws Exception {
+    
+        System.out.println("testKeyOperations");
+        
+        Random rand = Misc0.getSecureRandom();
+        long seed = System.currentTimeMillis();
+        //seed = 1499675478087L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+                
+        int n = 100;
+        
+        XFastTrieNodeLong<Integer> node = new XFastTrieNodeLong<Integer>();
+		
+        Longizer<Integer> it = new Longizer<Integer>() {
+            @Override
+            public long longValue(Integer x) {
+                return x;
+            }
+        };
+        
+        int[] ws = new int[]{7, 62};
+        
+        for (int w : ws) {
+		
+            XFastTrieLong<XFastTrieNodeLong<Integer>, Integer> bt
+                = new XFastTrieLong<XFastTrieNodeLong<Integer>, 
+                    Integer>(node, it, w);
+
+            int count = 0;
+
+            TIntList nodes = new TIntArrayList(2*n);
+
+            for (int i = 0; i < n/2; ++i) {
+                if (rand.nextBoolean()) {
+                    int skip = rand.nextInt(5);
+                    i += skip;
+                    continue;
+                }
+                nodes.add(i);
+                bt.add(i);
+                Integer found = bt.find(i);
+                assertEquals(i, found.intValue());
+                assertEquals(nodes.get(0), bt.minimum().intValue());
+                assertEquals(i, bt.maximum().intValue());
+                count++;
+            }
+            for (int i = (n - 1); i >= (n/2); --i) {
+                if (rand.nextBoolean()) {
+                    int skip = rand.nextInt(5);
+                    i -= skip;
+                    continue;
+                }
+                nodes.add(i);
+                bt.add(i);
+                Integer found = bt.find(i);
+                assertEquals(i, found.intValue());
+                assertEquals(nodes.get(0), bt.minimum().intValue());
+                count++;
+            }
+            
+            bt.debugNodes();
+            System.out.println("bt.n=" + bt.n);
+            
+            nodes.sort();
+            int n2 = bt.size();
+            assertEquals(count, n2);
+            assertEquals(count, nodes.size());
+
+            for (int nIter = 0; nIter < 3; ++nIter){
+                n2 = bt.size();
+                assertEquals(n2, nodes.size());
+
+                for (int i = 0; i < n2 - 1; ++i) {
+                    int idx = nodes.get(i);
+                    Integer foundIndex = bt.find(idx);
+                    assertTrue(foundIndex > -1);
+
+                    int expected = nodes.get(i + 1);
+                    //System.out.println("\n* " + idx + " expected next=" + expected);
+
+                    Integer next = bt.successor(idx);
+                    //System.out.println(idx + "   next=" + next);
+                    assertEquals(expected, next.intValue());
+
+                }
+
+                for (int i = 1; i < n2; ++i) {
+                    int idx = nodes.get(i);
+                    Integer foundIndex = bt.find(idx);
+                    assertTrue(foundIndex > -1);
+
+                    Integer found = bt.find(idx);
+                    assertEquals(idx, found.intValue());
+
+                    int expected = nodes.get(i - 1);
+                    //System.out.println("\n* " + idx + " expected prev=" + expected);
+
+                    Integer prev = bt.predecessor(idx);
+                    assertEquals(expected, prev.intValue());
+
+                }
+
+                if ((nIter & 1) == 1) {
+                    //randomly remove some nodes
+                    for (int i = 0; i < n2/4; ++i) {
+                        int idx = rand.nextInt(nodes.size());
+                        int v = nodes.get(idx);
+                        assertTrue(bt.find(v) != null);
+                        bt.remove(v);
+                        assertNull(bt.find(v));
+                        nodes.removeAt(idx);
+                        assertEquals(nodes.size(), bt.size());
+                    }
+                } else {
+                    //randomly add some nodes
+                    for (int i = 0; i < n2/4; ++i) {
+                        int idx = nodes.size() + rand.nextInt(2*nodes.size());
+                        // the nodes contains is linear search, so could use a temp
+                        // set if this test gets large one day
+                        if (!nodes.contains(idx)) {
+                            bt.add(idx);
+                            nodes.add(idx);
+                            assertEquals(idx, bt.find(idx).intValue());
+                        }
+                    }
+                }
+                
+                bt.debugNodes();
+                System.out.println("bt.n=" + bt.n);
+
+                n2 = nodes.size();
+                nodes.sort();
+
+                int max = nodes.get(nodes.size() - 1);
+                assertEquals(max, bt.find(max).intValue());
+                //System.out.println("will delete max=" + max + " from this tree:");
+                //bt.printPreOrderTraversal();
+                bt.remove(max);
+                //System.out.println(" after delete:");
+                //bt.printPreOrderTraversal();
+                assertNull(bt.find(max));
+                nodes.removeAt(nodes.size() - 1);
+
+                int min = nodes.get(0);
+                assertEquals(min, bt.find(min).intValue());
+                bt.remove(min);
+                assertNull(bt.find(min));
+                nodes.removeAt(0);
+            }
+        }        
+    }
+    
     public void test0() {
         
         System.out.println("test0");

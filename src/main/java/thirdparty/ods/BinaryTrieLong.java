@@ -35,6 +35,9 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
 	
 	protected int w = 62;
     protected final long maxC;
+    
+    // debug
+    protected long nNewNodes = 0;
 	
 	/**
 	* The root node
@@ -69,6 +72,7 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
 	 * @return
 	 */
 	protected S newNode() {
+        nNewNodes++;
 		try {
             S u = (S)sampleNode.getClass().newInstance();
 			u.parent = u.child[0] = u.child[1] = null;
@@ -152,7 +156,7 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
             assert(c == 0 || c == 1);
 			if (u.child[c] == null) break;
 			u = u.child[c];
-		}		
+		}
 		if (i == w) return false; // already contains x - abort
 		BinaryTrieNode<T> pred = (c == right) ? u.jump : u.jump.child[0];
 		u.jump = null;  // u will have two children shortly
@@ -423,6 +427,10 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
 	public int size() {
 		return n;
 	}
+    
+    public long getNumberOfNewNodes() {
+        return nNewNodes;
+    }
 	
 	public void clear() {
 		n = 0;
@@ -459,38 +467,70 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
         Deque<S> q1 = new ArrayDeque<S>();
         q0.offer(r);
         
+        int level = 0;
         int count = 0;
         boolean skip = true;
-        while(!q0.isEmpty() && count < w) {
-            System.out.println("count=" + count);
+        while(!q0.isEmpty() && level < w) {
+            System.out.println("count=" + level);
             while(!q0.isEmpty()) {
                 node = q0.poll();
                 if (!node.equals(r)) {
                     System.out.println(node.toString2());
+                    count++;
                 }
                 if (node.child[0] != null) {
                     int hc = node.child[0].hashCode();
-                    if (count < w) {
+                    if (level < w) {
                         q1.offer((S) node.child[0]);
                     }
                 }
                 if (node.child[1] != null) {
                     int hc = node.child[1].hashCode();
-                    if (count < w) {
+                    if (level < w) {
                         q1.offer((S) node.child[1]);
                     }
                 }
             }
             if (!skip) {
-                count++;
+                level++;
             } else {
                 skip = false;
             }
             q0.addAll(q1);
             q1.clear();
-        }        
+        }
+        System.out.println("number of trie nodes=" + count);
     }
     
+    /**
+     * NOTE: there are prefix entries in the trie, created as needed. total
+     * number of trie prefix nodes for sequential data is 2 * n + padding to
+     * next power of 2. The number of prefix nodes is due to the pattern of
+     * numbers, so not predictable, but a few tests show range of factor 2 to 5
+     * times the number of added nodes.
+     * A factor of 5 is used here.
+     */
+    public static long estimateSizeOfTriePrefixNodes(int numberOfEntries) {
+        
+        long factor = 5;
+        
+        long nodeSz = BinaryTrieNode.estimateSizeOnHeap();
+        
+        long total = factor * numberOfEntries * nodeSz;
+        
+        return total;
+    }
+    
+    /**
+     * estimate the size of an instance of this class on the heap with
+     * n number of inserted entries.
+     * NOTE there are prefix entries in the trie, created as
+       needed and the separate method should be
+       used for those: estimateSizeOfTrieNodes()
+        
+     * @param numberOfEntries
+     * @return 
+     */
     public static long estimateSizeOnHeap(int numberOfEntries) {
        
         long nodeSz = BinaryTrieNode.estimateSizeOnHeap();

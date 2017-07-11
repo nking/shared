@@ -69,4 +69,16 @@ public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
         return hash;
     }
 
+    
+    public static long estimateSizeOnHeap() {
+        
+        long total = BinaryTrieNode.estimateSizeOnHeap();
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNLongFields(1);
+        
+        total += est.estimateSizeOnHeap();
+                   
+        return total;
+    }
 }

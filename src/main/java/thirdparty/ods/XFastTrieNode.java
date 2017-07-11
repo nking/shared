@@ -1,5 +1,7 @@
 package thirdparty.ods;
 
+import algorithms.util.ObjectSpaceEstimator;
+
 /**
  */
 public class XFastTrieNode<T> extends BinaryTrieNode<T> {
@@ -27,5 +29,5 @@ public class XFastTrieNode<T> extends BinaryTrieNode<T> {
     public int hashCode() {
         return prefix;
     }
-        
+   
 }

@@ -108,6 +108,9 @@ public class BinaryTrieLongTest extends TestCase {
         assertEquals(5, bt.find(Integer.valueOf(5)).intValue());
 
         assertNull(bt.find(Integer.valueOf(0)));
+    
+        bt.debugNodes();
+        System.out.println("bt.n=" + bt.n);
     }
         
     public void test1() throws Exception {
@@ -141,6 +144,9 @@ public class BinaryTrieLongTest extends TestCase {
             nodes.add(ii);
             bt.add(ii);
         }
+        
+        bt.debugNodes();
+        System.out.println("bt.n=" + bt.n);
         
         assertEquals(n, bt.size());
         
@@ -313,6 +319,9 @@ public class BinaryTrieLongTest extends TestCase {
             nodes.add(ii);
             bt.add(ii);
         }
+       
+        bt.debugNodes();
+        System.out.println("bt.n=" + bt.n);
         
         for (long i = start; i < (start + n); ++i) {
             Long ii = Long.valueOf(i);
