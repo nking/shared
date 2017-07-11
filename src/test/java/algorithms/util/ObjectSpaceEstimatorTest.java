@@ -2,6 +2,8 @@ package algorithms.util;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -16,7 +18,42 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         super(testName);
     }
     
+    /*
     public void test0() throws InterruptedException {
+        
+        
+        final int nObjects = 200000;
+         
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
+        
+        long heapUsage = mbean.getHeapMemoryUsage().getUsed();
+        long avail = totalMemory - heapUsage;
+
+        List list = new ArrayList(10);
+        
+        long heapUsage1 = mbean.getHeapMemoryUsage().getUsed();
+        long avail1 = totalMemory - heapUsage1;
+        long used1 = avail - avail1;
+        
+        for (int i = 0; i < 10; ++i) {
+            list.add(new Object());
+        }
+        
+        long heapUsage2 = mbean.getHeapMemoryUsage().getUsed();
+        long avail2 = totalMemory - heapUsage2;
+        long used2 = avail - avail2;
+    
+        System.out.println("list with no objects size =");
+        
+        System.out.format("list with %d objects size =", nObjects);
+        
+        long nObjectsSize = nObjects + 
+        
+        assertTrue(Math.abs(used - heapEstimate) <= eps);
+    }
+    */
+    public void test1() throws InterruptedException {
         
         /*
         test creation of a large object.
@@ -47,9 +84,9 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         long avail2 = totalMemory - heapUsage2;
         long used = avail - avail2;
     
-        // seems to be off by 16 Bytes.
+        // seems to be off by 8 Bytes.
         // is the object overhead larger than 16 Bytes on 64 bit platforms?
-        long eps = 16;
+        long eps = 8;
      
         /*
         long nonheapUsage = mbean.getNonHeapMemoryUsage().getUsed();
@@ -58,9 +95,6 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         
         long nonheapUsage2 = mbean.getNonHeapMemoryUsage().getUsed();
         long usedNH = nonheapUsage2 - nonheapUsage;
-        
-        System.out.println("heap used=" + used + " est=" + 
-            heapEstimate);
                 
         System.out.println("NON HEAP used=" + frameUsed + " then after frme=" + usedNH);
         
@@ -70,6 +104,9 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         
         System.out.println("heap used 3 =" + used3);
         */
+        
+        System.out.println("heap used=" + used + " est=" + 
+            heapEstimate);
         
         assertTrue(Math.abs(used - heapEstimate) <= eps);
     }

@@ -89,30 +89,6 @@ public class RedBlackBSTLongInt {
     private static final boolean BLACK = false;
 
     private Node root;     // root of the BST
-
-    /**
-     * estimate the size that an instance of RedBlackBSTLongInt with
-     * n entries would occupy in heap space in Bytes.
-     * 
-     * @param numberOfEntries amount of space for this object's instance
-     * with n entries in Bytes on the heap.
-     * 
-     * @return 
-     */
-    public static long estimateSizeOnHeap(int numberOfEntries) {
-        
-        long total = 0;
-        
-        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
-        est.setNBooleanFields(2);
-        est.setNObjRefsFields(1);
-       
-        total += est.estimateSizeOnHeap();
-        
-        total += numberOfEntries * Node.estimateSizeOnHeap();
-    
-        return total;
-    }
     
     // BST helper node data type
     private static class Node {
@@ -1110,4 +1086,27 @@ public class RedBlackBSTLongInt {
         return array;
     }
     
+    /**
+     * estimate the size that an instance of RedBlackBSTLongInt with
+     * n entries would occupy in heap space in Bytes.
+     * 
+     * @param numberOfEntries amount of space for this object's instance
+     * with n entries in Bytes on the heap.
+     * 
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries) {
+        
+        long total = 0;
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNBooleanFields(2);
+        est.setNObjRefsFields(1);
+       
+        total += est.estimateSizeOnHeap();
+        
+        total += numberOfEntries * Node.estimateSizeOnHeap();
+    
+        return total;
+    }
 }

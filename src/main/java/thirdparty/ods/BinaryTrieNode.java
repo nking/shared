@@ -1,5 +1,6 @@
 package thirdparty.ods;
 
+import algorithms.util.ObjectSpaceEstimator;
 import java.lang.reflect.Array;
 
 /**
@@ -52,4 +53,12 @@ public class BinaryTrieNode<T> {
         return sb.toString();
     }
 
+     
+    public static long estimateSizeOnHeap() {
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNObjRefsFields(4);
+                   
+        return est.estimateSizeOnHeap();
+    }
 }

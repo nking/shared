@@ -8,6 +8,13 @@ package algorithms.util;
  * 
  * Options for other data-types will be added as needed.
  * 
+ * NOTE: haven't considered whether jvm option  UseCompressedOops is used.
+ * 
+ * NOTE: suggested other tools for determinging object size are
+ *    java's Instrumentation.getObjectSize()
+ *    and third party library JOL
+ *        http://openjdk.java.net/projects/code-tools/jol/
+ * 
  * @author nichole
  */
 public class ObjectSpaceEstimator {
@@ -86,7 +93,7 @@ public class ObjectSpaceEstimator {
     private int maxStringLength = 0;
      
     // sizes in bytes as [heap 32 bit, stack 32 bit, heap 54 bit, stack 64 bit]
-    private final static int objOverheadSz = 16;
+    //private final static int objOverheadSz = 16;
     
     private final static int[] word3264 = new int[]{4, 4, 4, 8};
     
@@ -110,6 +117,14 @@ public class ObjectSpaceEstimator {
      */
     public void setNBooleanFields(int nBoolean) {
         this.nBoolean = nBoolean;
+    }
+    
+    public static long getWordSize() {
+        if (is32Bit) {
+            return 4;
+        } else {
+            return 8;
+        }
     }
 
     /**
@@ -186,6 +201,22 @@ public class ObjectSpaceEstimator {
         nStrings = numberOfStrings;
         maxStringLength = maximumNumberOfLetters;
     }
+    
+    /**
+     * estimate the size of a list object by creating instances and calculating
+     * the difference in heap memory.
+     * 
+     * @param numberOfObjects
+     * @return 
+     */
+    /*
+    public static long estimateList(int numberOfObjects) {
+        Instrumentation.getObjectSize(Object objectToSize)
+    }
+    
+    public static long estimateTLongObjectHashMap(int numberOfKeys) {
+        
+    }*/
    
     /**
      * estimate the size of an object in bytes for the given settings and for
@@ -216,48 +247,64 @@ public class ObjectSpaceEstimator {
     
     private long estimateSize(boolean calcForHeap) {
         
-        int idx;
+        int index;
+        long overhead;
         if (is32Bit) {
             if (calcForHeap) {
-                idx = 0;
+                index = 0;
             } else {
-                idx = 1;
+                index = 1;
             }
+            overhead = 8;
         } else {
             if (calcForHeap) {
-                idx = 2;
+                index = 2;
             } else {
-                idx = 3;
+                index = 3;
             }
+            overhead = 16;
         }
+        long pad = getWordSize();
         
         long total = 0;
 
         // add fields
-        total += nBoolean * booleanSz[idx];
-        total += nByte * byteSz[idx];
-        total += nChar * charSz[idx];
-        total += nShort * shortSz[idx];
-        total += nInt * intSz[idx];
-        total += nFloat * floatSz[idx];
-        total += nObjRefs * refSz[idx];
-        total += nArrayRefs * arrayRefSz[idx];
-        total += nLong * longSz[idx];
-        total += nDouble * doubleSz[idx];
-        total += nReturnAddress * returnAddressSz[idx];
+        total += nBoolean * booleanSz[index];
+        total += nByte * byteSz[index];
+        total += nChar * charSz[index];
+        total += nShort * shortSz[index];
+        total += nInt * intSz[index];
+        total += nFloat * floatSz[index];
+        total += nObjRefs * refSz[index];
+        total += nArrayRefs * arrayRefSz[index];
+        total += nLong * longSz[index];
+        total += nDouble * doubleSz[index];
+        total += nReturnAddress * returnAddressSz[index];
         
         if (calcForHeap) {
             total += nStrings * estimateAStringSize(maxStringLength);
         }
         
         // add object overhead
-        total += 8;
+        total += overhead;
 
         // pad up to 8 byte boundary
-        long pad = total % 8;
-        total += pad;
+        long padding = total % pad;
+        total += padding;
         
         return total;
+    }
+   
+    public static long estimateLongSize() {
+        
+        int idx;
+        if (is32Bit) {
+            idx = 0;
+        } else {
+            idx = 2;
+        }
+        
+        return longSz[idx];
     }
 
     public static long estimateAStringSize(int maxNumberOfLetters) {
@@ -272,7 +319,13 @@ public class ObjectSpaceEstimator {
         
         long total = arrayRefSz[idx];
         total += maxNumberOfLetters * charSz[idx];
+        total += 3*intSz[idx];
+        
+        long pad = total % getWordSize();
+        
+        total += pad;
         
         return total;
-    }   
+    }
+    
 }
