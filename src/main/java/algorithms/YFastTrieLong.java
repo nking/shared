@@ -1,5 +1,6 @@
 package algorithms;
 
+import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongLongHashMap;
@@ -29,8 +30,10 @@ import thirdparty.ods.XFastTrieNodeLong;
    predecessor.
    
    NOTE that the runtime complexities listed are not yet achieved.
-   The current operations depend upon settings, but should be 
-   constant runtime complexity .lte. O(10).
+   The current operations depend upon settings to compromise between
+   number of secondary hashmaps and the number of objects within those, 
+   but the runtime should be 
+   constant runtime complexity usually .lte. O(10).
 
    Find(k): find the value associated with the given key.
        runtime complexity is O(log log(M))
@@ -115,14 +118,21 @@ YFastTrie
     private final long binSz;
     
     private long nBins;
-
+    
+    /**
+     * the minimum of each bin range, if it is populated, is the representative
+     * node, and that is held in 2 data structures:
+     *    xft holds the number, allowing fast repr prev and next lookups.
+     *    xftReps holds the repr as the value, found by key = binNumber.
+     */
     private final XFastTrieLong<XFastTrieNodeLong<Long>, Long> xft;
     
     // key = bin index (which is node/binSz), value = repr value.
     // each repr value is the minimum stored in the bin.
+    // the max number of map entries will be nBins.
     private final TLongLongMap xftReps = new TLongLongHashMap();
     
-    // there are w items in rbs
+    // all inserts of this class are held in w trees in list rbs.
     // each list item is a sorted binary search tree of numbers in that bin.
     //    the value is the tree holds the number of times that number is present.
     // hashkey= node/binSz;     treemap key=node, value=multiplicity
@@ -674,8 +684,14 @@ YFastTrie
     public int size() {
         return n;
     }
-
+    
     private long chooseBinSizeByN() {
+        return chooseBinSizeByN(w);
+    }
+
+    private static long chooseBinSizeByN(long maxNumberOfBits) {
+
+        long maxNumber = (1L << maxNumberOfBits) - 1;
         
         long totalMemory = Runtime.getRuntime().totalMemory();
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
@@ -685,7 +701,7 @@ YFastTrie
         long n = avail/32;
         
         // n = maxC/binsz
-        long bs = maxC/n;
+        long bs = maxNumber/n;
         
         double rt = Math.log(bs)/Math.log(2);
         
@@ -700,7 +716,7 @@ YFastTrie
         //return 2048;
         
         // else, fall back to using the default for rt = O(10)
-        return (long)Math.ceil((double)maxC/(double)w);
+        return (long)Math.ceil((double)maxNumber/(double)maxNumberOfBits);
         
         /*
         LG binsize = (int)Math.ceil((float)maxC/(float)w);
@@ -731,4 +747,95 @@ YFastTrie
     protected long getBinSz() {
         return binSz;
     }
+    
+    public static long estimateSizeOnHeap(int numberOfEntries) {
+        return estimateSizeOnHeap(numberOfEntries, 62);
+    }
+   
+    /**
+     * estimate the size that an instance of YFastTrieLong with
+     * n added entries would occupy in heap space in Bytes.
+     * 
+     * NOTE: assumes chooseByN==true, giving binSz=chooseBinSizeByN(...)
+     * 
+     * NOTE: there are some varying components to estimating the memory that
+     * depend upon the properties of the numbers inserted.
+     * For example:
+     * <pre>
+     *     -- xft is an XFastTrie instantiated with maxNumberOfBits.
+     *        It will have at most, nBins number of entries, where nBins
+     *        is determined as a compromizing distribution of numberOfEntries
+     *        into nBins holding partitions of numberOfEntries.
+     *        In addition to the number of inserted items (which is only one
+     *        per bin of numberOfEntries), there will be some undetermined
+     *        number of prefix nodes created in the process.
+     *        A factor of 5 more is assumed here to over estimate the total 
+     *        number of trie nodes that includes the internal predix nodes.
+     *        -- THE LOGIC is still in progress to determine
+     *           an upper and lower limit to estimate the number of populated 
+     *           nBins w/o knowing prperties of the numbers, such as whether 
+     *           they are sequential, or have large gaps, etc.
+     *    -- xftReps is a hashMap with same number of inserts as xft,
+     *       so has the same need for an upper and lower estimate.
+     * </pre>
+     * 
+     * @param numberOfEntries amount of space for this object's instance
+     * with n entries in Bytes on the heap.
+     * 
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries, long
+        maxNumberOfBits) {
+    
+        long ww = maxNumberOfBits;
+        
+        long maxNumber = (1L << ww) - 1;
+        
+        long binSz = chooseBinSizeByN(ww);
+        
+        long nBins = (long)Math.ceil((double)maxNumber/(double)binSz);
+        
+        long total = 0;
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNIntFields(2);
+        est.setNLongFields(3);
+        est.setNBooleanFields(1);
+        //objects: xft, xftReps, rbs
+        est.setNObjRefsFields(3);
+       
+        total += est.estimateSizeOnHeap();
+       
+        // --------- include contents of the objects --------------
+        
+        /*
+         the minimum of each bin range, if it is populated, is the representative
+         node, and that is held in 2 data structures:
+            xft holds the number, allowing fast repr prev and next lookups.
+            xftReps holds the repr as the value, found by key = binNumber.
+         * the max number of trie entries will be nBins
+             but there will be prefix trie nodes too
+        private final XFastTrieLong<XFastTrieNodeLong<Long>, Long> xft;
+        
+        // key = bin index (which is node/binSz), value = repr value.
+        // each repr value is the minimum stored in the bin.
+        // * the max number of map entries will be nBins.
+        private final TLongLongMap xftReps = new TLongLongHashMap();
+   
+        // all inserts of this class are held in 
+        //    * w trees in list rbs.
+        // each list item is a sorted binary search tree of numbers in that bin.
+        //    the value is the tree holds the number of times that number is present.
+        // each list index can be found by node/binSz
+        // each sorted tree has 
+        //    key = node (inserted number), w/ value=
+        //        the number of times that number is present.
+        TLongObjectMap<RedBlackBSTLongInt> rbs;
+        */
+        
+        throw new UnsupportedOperationException("not yet finished");
+    
+        //return total;
+    }
+    
 }
