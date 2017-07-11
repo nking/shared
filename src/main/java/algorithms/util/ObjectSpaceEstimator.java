@@ -1,5 +1,11 @@
 package algorithms.util;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class to estimate the amount of memory an object takes.
  * The user should know if it is to be on the heap or
@@ -126,7 +132,23 @@ public class ObjectSpaceEstimator {
             return 8;
         }
     }
+    
+    public static long getObjectOverhead() {
+        if (is32Bit) {
+            return 8;
+        } else {
+            return 16;
+        }
+    }
 
+    public static long getReferenceSize() {
+        if (is32Bit) {
+            return 4;
+        } else {
+            return 6;
+        }
+    }
+    
     /**
      * @param nByte  the number of byte primitives
      */
@@ -203,20 +225,123 @@ public class ObjectSpaceEstimator {
     }
     
     /**
-     * estimate the size of a list object by creating instances and calculating
-     * the difference in heap memory.
+     * A rough estimate of an instance of ArrayList without objects in it.
      * 
      * @param numberOfObjects
      * @return 
      */
-    /*
-    public static long estimateList(int numberOfObjects) {
-        Instrumentation.getObjectSize(Object objectToSize)
+    public static long estimateArrayList(int numberOfObjects) {
+        
+        final int nLists = 10000;
+        final int nObjects = 25;
+         
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
+        
+        long heapUsage = mbean.getHeapMemoryUsage().getUsed();
+        long avail = totalMemory - heapUsage;
+
+        List[] lists = new List[nLists];
+        for (int i = 0; i < nLists/2; ++i) {
+            lists[i] = new ArrayList();
+            for (int j = 0; j < nObjects; ++j) {
+                lists[i].add(new Object());
+            }
+        }
+        
+        long heapUsage1 = mbean.getHeapMemoryUsage().getUsed();
+        long avail1 = totalMemory - heapUsage1;
+        long used1 = heapUsage1 - heapUsage;
+        
+        for (int i = nLists/2; i < nLists; ++i) {
+            for (int j = 0; j < nObjects; ++j) {
+                lists[i].add(new Object());
+            }
+        }
+       
+        long heapUsage2 = mbean.getHeapMemoryUsage().getUsed();
+        long avail2 = totalMemory - heapUsage2;
+        long used2 = heapUsage2 - heapUsage;
+    
+        //System.out.format("%d lists with no objects size =%d\n", nLists, used1);
+        //System.out.format("list with %d objects size =%d\n", nObjects, used2);
+    
+        long nObjectsSize = 
+            nObjects * ObjectSpaceEstimator.getReferenceSize();
+            //+ nObjects * ObjectSpaceEstimator.getObjectOverhead();    
+        
+        long diff = used2 - used1;
+        diff /= (nLists/2);
+        
+        // assume that the List and the fields which are not the backing
+        // arrays are small in size compared to the nObjects
+        diff /= nObjectsSize;
+        
+        //System.out.println("list after subtracting nObjects from difference =" 
+        //    + diff);
+        
+        return diff;
     }
     
+    /**
+     * a rough estimate of an instance of TLongObjectHashMap without objects
+     * in it.
+     * @param numberOfKeys
+     * @return 
+     */
     public static long estimateTLongObjectHashMap(int numberOfKeys) {
+     
+        final int nMaps = 10000;
+        final int nObjects = 25;
+         
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
         
-    }*/
+        long heapUsage = mbean.getHeapMemoryUsage().getUsed();
+        long avail = totalMemory - heapUsage;
+        
+        TLongObjectHashMap[] maps = new TLongObjectHashMap[nMaps];
+        for (int i = 1; i < nMaps/2; ++i) {
+            maps[i] = new TLongObjectHashMap();
+            for (int j = 0; j < nObjects; ++j) {
+                maps[i].put(j, new Object());
+            }
+        }
+        
+        long heapUsage1 = mbean.getHeapMemoryUsage().getUsed();
+        long avail1 = totalMemory - heapUsage1;
+        long used1 = heapUsage1 - heapUsage;
+        
+        for (int i = nMaps/2; i < nMaps; ++i) {
+            maps[i] = new TLongObjectHashMap();
+            for (int j = 0; j < nObjects; ++j) {
+                maps[i].put(j, new Object());
+            }
+        }
+       
+        long heapUsage2 = mbean.getHeapMemoryUsage().getUsed();
+        long avail2 = totalMemory - heapUsage2;
+        long used2 = heapUsage2 - heapUsage;
+    
+        System.out.format("%d maps with no objects size =%d\n", nMaps, used1);
+        
+        System.out.format("map with %d objects size =%d\n", nObjects, used2);
+        
+        long nObjectsSize = 
+            nObjects * ObjectSpaceEstimator.getReferenceSize();
+        
+        long diff = used2 - used1;
+        diff /= (nMaps/2);
+        
+        // assume that the List and the fields which are not the backing
+        // arrays are small in size compared to the nObjects
+        diff /= (2*nObjects);
+        
+        //System.out.println("map after subtracting nObjects from difference =" 
+        //    + diff);
+        
+        return diff;
+    }
    
     /**
      * estimate the size of an object in bytes for the given settings and for

@@ -1,5 +1,7 @@
 package algorithms.util;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
+import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
@@ -17,42 +19,7 @@ public class ObjectSpaceEstimatorTest extends TestCase {
     public ObjectSpaceEstimatorTest(String testName) {
         super(testName);
     }
-    
-    /*
-    public void test0() throws InterruptedException {
-        
-        
-        final int nObjects = 200000;
-         
-        long totalMemory = Runtime.getRuntime().totalMemory();
-        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
-        
-        long heapUsage = mbean.getHeapMemoryUsage().getUsed();
-        long avail = totalMemory - heapUsage;
-
-        List list = new ArrayList(10);
-        
-        long heapUsage1 = mbean.getHeapMemoryUsage().getUsed();
-        long avail1 = totalMemory - heapUsage1;
-        long used1 = avail - avail1;
-        
-        for (int i = 0; i < 10; ++i) {
-            list.add(new Object());
-        }
-        
-        long heapUsage2 = mbean.getHeapMemoryUsage().getUsed();
-        long avail2 = totalMemory - heapUsage2;
-        long used2 = avail - avail2;
-    
-        System.out.println("list with no objects size =");
-        
-        System.out.format("list with %d objects size =", nObjects);
-        
-        long nObjectsSize = nObjects + 
-        
-        assertTrue(Math.abs(used - heapEstimate) <= eps);
-    }
-    */
+  
     public void test1() throws InterruptedException {
         
         /*
