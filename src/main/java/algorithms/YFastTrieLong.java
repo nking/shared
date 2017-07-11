@@ -698,6 +698,60 @@ YFastTrie
         long heapUsage = mbean.getHeapMemoryUsage().getUsed();
         long avail = totalMemory - heapUsage;
 
+        /*        
+        avail = max memory to use
+              = (xFt+xftReps holding at most nBins inserts each) 
+                + nBins * (nRBs trees) + nEntries
+             largest scaling component is nEntries nodes
+        
+        wanting small nBins, but with nEntries/nBins not too large nor too small
+        
+        let w = max bit length specified by user, else is default 62 bits.
+        
+        a few examples here with data in mind for image pixel indexes, in which
+        the maximum pixel index = width * height:
+        
+        if nBins = w:
+            nEntries        w  nBins   binsz,   runtime      space
+           
+            5000*7000=35e6  62  62     564516     19       in progress
+            5000*7000=35e6  26  26   1346153      20 
+         .1*5000*7000=35e5  62  62     56451      16
+         .1*5000*7000=35e5  22  22     56451      18
+        
+            500*700=35e4    62  62      5645      13
+            500*700=35e4    19  19     18421      14
+         .1*500*700=35e3    62  62       564      10
+         .1*500*700=35e3    16  16       564      12
+        
+        can see that can improve the runtime by decreasing the binSz at
+        expense of increasing nBins (which leads to creating more items
+        on the space hog xfasttrielong).
+        
+        If instead, one uses binSz = w to get the suggested yfasttrie runtime,
+        one would have nEntries/binSz number of representatives.
+        This becomes a larger consumer of resources, though still 
+        better than an xfasttrie alone by a factor of w.
+        
+        The calculations above for the suggested yfasttrie model:
+        
+        if binsz = w:
+            nEntries        w  nBins   binsz,   runtime      space
+           
+            5000*7000=35e6  62  564516  62       6       in progress
+            5000*7000=35e6  26  1346153 26       5   
+         .1*5000*7000=35e5  62  56451   62       6
+         .1*5000*7000=35e5  22  56451   22       5
+        
+            500*700=35e4    62  5645    62       6   
+            500*700=35e4    19  18421   19       5    
+         .1*500*700=35e3    62  564     62       6    
+         .1*500*700=35e3    16  564     16       4    
+
+        Recalculating the memory requirements for both models
+        and if have enough memory, prefering the one with 
+        better runtime unless a user setting requests smaller space use.        
+        */
         long n = avail/32;
         
         // n = maxC/binsz
