@@ -107,7 +107,7 @@ public class ObjectSpaceEstimator {
     private final static int[] intSz  = word3264;
     private final static int[] floatSz = word3264;
     private final static int[] refSz = new int[]{4, 4, 8, 8};
-    private final static int[] arrayRefSz = new int[]{4, 4, 4, 4};
+    private final static int[] arrayRefSz = new int[]{4, 4, 8, 8};//= new int[]{4, 4, 4, 4};
     private final static int[] returnAddressSz = new int[]{4, 4, 8, 8};
     private final static int[] longSz = new int[]{8, 8, 8, 16};
     private final static int[] doubleSz = new int[]{8, 8, 8, 16};

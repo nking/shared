@@ -84,9 +84,7 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         long avail2 = totalMemory - heapUsage2;
         long used = avail - avail2;
     
-        // seems to be off by 8 Bytes.
-        // is the object overhead larger than 16 Bytes on 64 bit platforms?
-        long eps = 8;
+        long eps = 0;
      
         /*
         long nonheapUsage = mbean.getNonHeapMemoryUsage().getUsed();
