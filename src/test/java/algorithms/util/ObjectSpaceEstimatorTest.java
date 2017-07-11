@@ -2,6 +2,8 @@ package algorithms.util;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -15,6 +17,19 @@ public class ObjectSpaceEstimatorTest extends TestCase {
     public ObjectSpaceEstimatorTest(String testName) {
         super(testName);
     }
+    
+    private class Vars {
+        long a = 1;
+        int b = 1;
+        char c = 1;
+        byte d = 1;
+        float f = 1;
+        short h = 1;
+        boolean j = true;
+        double g = 1;
+        String s = "s";
+        int[] arrayRef = new int[1];
+    }
   
     public void test1() throws InterruptedException {
         
@@ -24,50 +39,51 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         object with array of 1000 primitive longs
                and  array of 1000 primitive ints
         */
-        final int nL = 100000;
-        final int nI = 200000;
-        
-        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
-        est.setNArrayRefsFields(2);
-        est.setNLongFields(nL);
-        est.setNIntFields(nI);
-        long heapEstimate = est.estimateSizeOnHeap();
         
         long totalMemory = Runtime.getRuntime().totalMemory();
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
+        
+        final int nL = 1<<16;
+        final int nI = 1<<16;
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNArrayRefsFields(6);
+        est.setNLongFields(1);
+        est.setNIntFields(1);
+        est.setNCharFields(1);
+        est.setNByteFields(1);
+        est.setNFloatFields(1);
+        est.setNDoubleFields(1);
+        est.setNShortFields(1);
+        est.setNBooleanFields(1);
+        // since strings are interned and re-used, will not include it except 
+        //  as single addition
+        //est.setNStrings(1, 1);
+        
+        long heapEstimate = nL * est.estimateSizeOnHeap() +
+            ObjectSpaceEstimator.getArrayReferenceSize()
+            + ObjectSpaceEstimator.estimateAStringSize(1);
+       
         long heapUsage = mbean.getHeapMemoryUsage().getUsed();
-        long avail = totalMemory - heapUsage;
+        long nonHeapUsage = mbean.getNonHeapMemoryUsage().getUsed();
 
-        Object obj = new Object() {
-            long[] a = new long[nL];
-            int[] b = new int[nI];
-        };
+        Vars[] a = new Vars[nL];
+        for (int i = 0; i < nL; ++i) {
+            a[i] = new Vars();
+        }
        
         long heapUsage2 = mbean.getHeapMemoryUsage().getUsed();
-        long avail2 = totalMemory - heapUsage2;
-        long used = avail - avail2;
+        long nonHeapUsage2 = mbean.getNonHeapMemoryUsage().getUsed();
+        long used = heapUsage2 - heapUsage;
+        long nhUsed = nonHeapUsage2 - nonHeapUsage;
     
-        long eps = 0;
+        int code = a.hashCode();
+        
+        long eps = 8 * nL;
      
-        /*
-        long nonheapUsage = mbean.getNonHeapMemoryUsage().getUsed();
-        
-        long frameUsed = loadInMethod(mbean, nonheapUsage, nL, nI);
-        
-        long nonheapUsage2 = mbean.getNonHeapMemoryUsage().getUsed();
-        long usedNH = nonheapUsage2 - nonheapUsage;
-                
-        System.out.println("NON HEAP used=" + frameUsed + " then after frme=" + usedNH);
-        
-        long heapUsage3 = mbean.getHeapMemoryUsage().getUsed();
-        long avail3 = totalMemory - heapUsage3;
-        long used3 = avail - avail3;
-        
-        System.out.println("heap used 3 =" + used3);
-        */
-        
         System.out.println("heap used=" + used + " est=" + 
             heapEstimate);
+        System.out.println("non-heap Used used=" + nhUsed);
         
         assertTrue(Math.abs(used - heapEstimate) <= eps);
         
@@ -77,63 +93,5 @@ public class ObjectSpaceEstimatorTest extends TestCase {
             ObjectSpaceEstimator.estimateTLongObjectHashMap());
     
     }
-    
-    private long loadInMethod(final MemoryMXBean mbean,
-        final long nonheapUsage, final int nL, final int nI) throws InterruptedException {
-        
-        /*
-        Each frame contains:
-            Local variable array
-            Return value
-            Operand stack
-            function arguments
-            Reference to runtime constant pool for class of the current method
-
-        minimum reported non-heap from loading a method frame on 
-            64 bit platform is 32 Bytes?  or that is from 2 methods, that is
-            including the method invoking this.
-        
-        http://blog.jamesdbloom.com/images_2013_11_17_17_56/JVM_Internal_Architecture.png
-        
-        The memory is released after the method returns.
-        */
-     
-        runThreads(1000, 100, mbean, nonheapUsage);
-        
-        long nonheapUsage2 = mbean.getNonHeapMemoryUsage().getUsed();
-        long used = nonheapUsage2  - nonheapUsage;
-        
-        //the non-heap amount doesn't appear to scale with the number
-        //   of threads created.
-        //   appears to be staying under 256kB
-        
-        Thread.sleep(1000); 
-        
-        return used;
-    }
-
-    private void runThreads(int n, final int time, final MemoryMXBean mbean,
-        final long nonheapUsage) {
-
-        Thread[] rs = new Thread[n];
-        for (int i = 0; i < n; ++i) {
-            rs[i] = new Thread(
-                new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        //long nonheapUsage2 = mbean.getNonHeapMemoryUsage().getUsed();
-                        //long used = nonheapUsage2  - nonheapUsage;
-                        //System.out.println("   nh usage=" + used);
-                        Thread.sleep(time);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(ObjectSpaceEstimatorTest.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            });
-        }
-        for (int i = 0; i < n; ++i) {
-            rs[i].start();
-        }
-    }
+  
 }

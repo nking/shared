@@ -14,7 +14,8 @@ import java.util.List;
  * 
  * Options for other data-types will be added as needed.
  * 
- * NOTE: haven't considered whether jvm option  UseCompressedOops is used.
+ * NOTE: need to consider an option for estimates when
+ *    jvm option  UseCompressedOops is used and not used.
  * 
  * NOTE: suggested other tools for determinging object size are
  *    java's Instrumentation.getObjectSize()
@@ -113,7 +114,8 @@ public class ObjectSpaceEstimator {
     private final static int[] intSz  = word3264;
     private final static int[] floatSz = word3264;
     private final static int[] refSz = new int[]{4, 4, 8, 8};
-    private final static int[] arrayRefSz = new int[]{4, 4, 8, 8};//= new int[]{4, 4, 4, 4};
+    // the array refs for 64 bit being 4 bytes are due to default compressed ops?
+    private final static int[] arrayRefSz = new int[]{4, 4, 4, 4};
     private final static int[] returnAddressSz = new int[]{4, 4, 8, 8};
     private final static int[] longSz = new int[]{8, 8, 8, 16};
     private final static int[] doubleSz = new int[]{8, 8, 8, 16};
@@ -141,12 +143,31 @@ public class ObjectSpaceEstimator {
         }
     }
 
-    public static long getReferenceSize() {
+    public static long getObjectReferenceSize() {
+        int index;
+        long overhead;
         if (is32Bit) {
-            return 4;
+            index = 0;
+            overhead = 8;
         } else {
-            return 6;
+            index = 2;
+            overhead = 16;
         }
+        
+        return refSz[index];
+    }
+    
+    public static long getArrayReferenceSize() {
+        int index;
+        long overhead;
+        if (is32Bit) {
+            index = 0;
+            overhead = 8;
+        } else {
+            index = 2;
+            overhead = 16;
+        }
+        return arrayRefSz[index];
     }
     
     /**
@@ -219,7 +240,12 @@ public class ObjectSpaceEstimator {
         this.nReturnAddress = nReturnAddress;
     }
     
-    public void setStrings(int numberOfStrings, int maximumNumberOfLetters) {
+    /**
+     * 
+     * @param numberOfStrings
+     * @param maximumNumberOfLetters 
+     */
+    public void setNStrings(int numberOfStrings, int maximumNumberOfLetters) {
         nStrings = numberOfStrings;
         maxStringLength = maximumNumberOfLetters;
     }
@@ -486,7 +512,6 @@ public class ObjectSpaceEstimator {
         
         long total = arrayRefSz[idx];
         total += maxNumberOfLetters * charSz[idx];
-        total += 3*intSz[idx];
         
         long pad = total % getWordSize();
         
