@@ -227,11 +227,30 @@ public class ObjectSpaceEstimator {
     /**
      * A rough estimate of an instance of ArrayList without objects in it.
      * 
-     * @param numberOfObjects
      * @return 
      */
-    public static long estimateArrayList(int numberOfObjects) {
+    public static long estimateArrayList() {
         
+        int index;
+        long overhead;
+        if (is32Bit) {
+            index = 0;
+            overhead = 8;
+        } else {
+            index = 2;
+            overhead = 16;
+        }
+        long pad = getWordSize();
+        
+        long total = overhead;
+        
+        total += longSz[index];
+        total += 5 * intSz[index];
+        total += 3*arrayRefSz[index];
+        
+        return total;
+        
+        /*
         final int nLists = 10000;
         final int nObjects = 25;
          
@@ -281,16 +300,38 @@ public class ObjectSpaceEstimator {
         //    + diff);
         
         return diff;
+        */
     }
     
     /**
      * a rough estimate of an instance of TLongObjectHashMap without objects
      * in it.
-     * @param numberOfKeys
+    
      * @return 
      */
-    public static long estimateTLongObjectHashMap(int numberOfKeys) {
-     
+    public static long estimateTLongObjectHashMap() {
+    
+        int index;
+        long overhead;
+        if (is32Bit) {
+            index = 0;
+            overhead = 8;
+        } else {
+            index = 2;
+            overhead = 16;
+        }
+        long pad = getWordSize();
+        
+        long total = overhead;
+        
+        total += 4 * longSz[index];
+        total += booleanSz[index];
+        total += refSz[index];
+        total += 2*arrayRefSz[index];
+        
+        return total;
+        
+        /*
         final int nMaps = 10000;
         final int nObjects = 25;
          
@@ -323,9 +364,9 @@ public class ObjectSpaceEstimator {
         long avail2 = totalMemory - heapUsage2;
         long used2 = heapUsage2 - heapUsage;
     
-        System.out.format("%d maps with no objects size =%d\n", nMaps, used1);
+        //System.out.format("%d maps with no objects size =%d\n", nMaps, used1);
         
-        System.out.format("map with %d objects size =%d\n", nObjects, used2);
+        //System.out.format("map with %d objects size =%d\n", nObjects, used2);
         
         long nObjectsSize = 
             nObjects * ObjectSpaceEstimator.getReferenceSize();
@@ -341,6 +382,7 @@ public class ObjectSpaceEstimator {
         //    + diff);
         
         return diff;
+        */
     }
    
     /**

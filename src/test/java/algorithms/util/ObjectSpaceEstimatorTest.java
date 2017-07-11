@@ -1,11 +1,7 @@
 package algorithms.util;
 
-import gnu.trove.map.hash.TLongObjectHashMap;
-import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -74,6 +70,12 @@ public class ObjectSpaceEstimatorTest extends TestCase {
             heapEstimate);
         
         assertTrue(Math.abs(used - heapEstimate) <= eps);
+        
+        System.out.println("list size w/o items=" + 
+            ObjectSpaceEstimator.estimateArrayList() 
+            + " TLongObjectHashMap=" +
+            ObjectSpaceEstimator.estimateTLongObjectHashMap());
+    
     }
     
     private long loadInMethod(final MemoryMXBean mbean,
