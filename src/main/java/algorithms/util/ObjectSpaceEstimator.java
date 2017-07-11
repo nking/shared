@@ -241,6 +241,11 @@ public class ObjectSpaceEstimator {
     }
     
     /**
+     * NOTE: since strings are interned and only one instance exists for same
+     * string, should consider not setting this.
+     * 
+     * If only one string estimate is needed, consider using 
+     * estimateAStringSize()
      * 
      * @param numberOfStrings
      * @param maximumNumberOfLetters 
