@@ -187,12 +187,48 @@ public class RedBlackBSTLongInt2 {
         if (!keyColorMap.containsKey(x)) return false;
         return keyColorMap.get(x) == 0;//RED;
     }
+    private boolean isLeftRed(long x) {
+        if (!keyLeftMap.containsKey(x)) {
+            return false;
+        }
+        return isRed(keyLeftMap.get(x));
+    }
+    private boolean isRightRed(long x) {
+        if (!keyRightMap.containsKey(x)) {
+            return false;
+        }
+        return isRed(keyRightMap.get(x));
+    }
+    private boolean isLeftLeftRed(long x) {
+        if (!keyLeftMap.containsKey(x)) {
+            return false;
+        }
+        long left = keyLeftMap.get(x);
+        return isLeftRed(left);
+    }
+    private boolean isRightLeftRed(long x) {
+        if (!keyRightMap.containsKey(x)) {
+            return false;
+        }
+        long right = keyRightMap.get(x);
+        return isLeftRed(right);
+    }
 
     // number of node in subtree rooted at x; 0 if x is null
     private int size(long x) {
         if (!keySizeMap.containsKey(x)) return 0;
         return keySizeMap.get(x);
-    } 
+    }
+    private int sizeLeft(long x) {
+        if (!keySizeMap.containsKey(x)) return 0;
+        if (!keyLeftMap.containsKey(x)) return 0;
+        return keySizeMap.get(keyLeftMap.get(x));
+    }
+    private int sizeRight(long x) {
+        if (!keySizeMap.containsKey(x)) return 0;
+        if (!keyRightMap.containsKey(x)) return 0;
+        return keySizeMap.get(keyRightMap.get(x));
+    }
 
 
     /**
@@ -321,46 +357,17 @@ public class RedBlackBSTLongInt2 {
         }
 
         // fix-up any right-leaning links
-        //if (isRed(h.right) && !isRed(h.left)) {
-        if (keyRightMap.containsKey(h) && keyRightMap.get(h) == 0) {
-            if (!keyLeftMap.containsKey(h) || 
-                keyLeftMap.get(h) == 1) {
-                h = rotateLeft(h);
-            }
-        }
-        //if (isRed(h.left)  &&  isRed(h.left.left)) {
-        if (keyLeftMap.containsKey(h) && keyLeftMap.get(h) == 0) {
-            long leftKey = keyLeftMap.get(h);
-            if (keyLeftMap.containsKey(leftKey) && 
-                keyLeftMap.get(leftKey) == 0) {
-                h = rotateRight(h);
-            }
-        }
-        //if (isRed(h.left)  &&  isRed(h.right))  {
-        if (keyLeftMap.containsKey(h) && keyLeftMap.get(h) == 0) {
-            if (keyRightMap.containsKey(h) && 
-                keyRightMap.get(h) == 0) {
-                flipColors(h);
-            }
-        }
-        //h.size = size(h.left) + size(h.right) + 1;
-        int size = keyLeftMap.containsKey(h) ?
-            keySizeMap.get(keyLeftMap.get(h)) : 0;
-        size += keyRightMap.containsKey(h) ?
-            keySizeMap.get(keyRightMap.get(h)) : 0;
-        size++;
-        /*
-        if (isRed(h.right) && !isRed(h.left)) {
+        if (isRightRed(h) && !isLeftRed(h)) {
             h = rotateLeft(h);
         }
-        if (isRed(h.left)  &&  isRed(h.left.left)) {
+        if (isLeftRed(h)  &&  isLeftLeftRed(h)) {
             h = rotateRight(h);
         }
-        if (isRed(h.left)  &&  isRed(h.right))  {
+        if (isLeftRed(h)  &&  isRightRed(h))  {
             flipColors(h);
         }
-        h.size = size(h.left) + size(h.right) + 1;
-        */
+        int size = sizeLeft(h) + sizeRight(h) + 1;
+        keySizeMap.put(h, size);
         
         return h;
     }
@@ -396,6 +403,12 @@ public class RedBlackBSTLongInt2 {
         root = newKey;
     }
     
+    private void setRootToRedIfChildrenAreBlack() {
+        if (!isLeftRed(root) && !isRightRed(root)) {
+            keyColorMap.put(root, 0);
+        }
+    }
+    
     /**
      * Removes the smallest key and associated value from the symbol table.
      * @throws NoSuchElementException if the symbol table is empty
@@ -409,20 +422,7 @@ public class RedBlackBSTLongInt2 {
         //if (!isRed(root.left) && !isRed(root.right)) {
         //    root.color = RED;
         //}
-        if (keyLeftMap.containsKey(root)) {
-            long lft = keyLeftMap.get(root);
-            if ((keyValMap.containsKey(lft) && keyColorMap.get(lft) == 1) ||
-                !keyValMap.containsKey(lft)) {
-                if (keyRightMap.containsKey(root)) {
-                    long right = keyRightMap.get(root);
-                    if ((keyValMap.containsKey(right) && keyColorMap.get(right) == 1)
-                        || !keyValMap.containsKey(right)) {
-                        keyColorMap.put(root, 0);
-                    }
-                }
-            }
-            
-        }
+        setRootToRedIfChildrenAreBlack();
         
         long[] output = new long[2];
         deleteMin(root, output);
@@ -442,7 +442,7 @@ public class RedBlackBSTLongInt2 {
             //root.color = BLACK;
             keyColorMap.put(root, 1);
         }
-        // assert check();
+        assert(check());
     }
 
     // delete the key-value pair with the minimum key rooted at h
@@ -458,26 +458,22 @@ public class RedBlackBSTLongInt2 {
         //if (!isRed(h.left) && !isRed(h.left.left)) {
         //    h = moveRedLeft(h);
         //}
-        long left = keyLeftMap.get(h);
-        if (keyColorMap.get(left) == 1){
-            if ((keyLeftMap.containsKey(left) && 
-                keyColorMap.get(keyLeftMap.get(left)) == 1)
-                || !keyLeftMap.containsKey(left)) {
-                h = moveRedLeft(h);
-            }
+        if (!isLeftRed(h) && !isLeftLeftRed(h)) {
+            h = moveRedLeft(h);
         }
         
         //h.left = deleteMin(h.left);
+        
         if (!keyLeftMap.containsKey(h)) {
             //TODO: look in detail at modRedLeft.  this condition should not
             // occur?  so can be set to an assert
             output[0] = -1;
             return;
         }
-        left = keyLeftMap.get(h);
+        long left = keyLeftMap.get(h);
         deleteMin(left, output);
         if (output[0] == -1) {
-            keyLeftMap.remove(left);
+            keyLeftMap.remove(h);
             return;
         }
         keyLeftMap.put(h, output[1]);
@@ -495,13 +491,7 @@ public class RedBlackBSTLongInt2 {
         //if (!isRed(root.left) && !isRed(root.right)) {
         //    root.color = RED;
         //}
-        if (((keyLeftMap.containsKey(root) && keyColorMap.get(keyLeftMap.get(root)) == 1)
-            || !keyLeftMap.containsKey(root))
-            && ((keyRightMap.containsKey(root) && keyColorMap.get(keyRightMap.get(root)) == 1)
-            || !keyRightMap.containsKey(root))
-            ) {
-            keyColorMap.put(root, 0);
-        }
+        setRootToRedIfChildrenAreBlack();
 
         //root = deleteMax(root);
         
@@ -523,7 +513,7 @@ public class RedBlackBSTLongInt2 {
             //root.color = BLACK;
             keyColorMap.put(root, 1);
         }
-        // assert check();
+        assert(check());
     }
 
     // delete the key-value pair with the maximum key rooted at h
@@ -532,7 +522,7 @@ public class RedBlackBSTLongInt2 {
         //if (isRed(h.left)) {
         //    h = rotateRight(h);
         //}
-        if (keyLeftMap.containsKey(h) && keyColorMap.get(h) == 0) {
+        if (isLeftRed(h)) {
             h = rotateRight(h);
         }
         
@@ -548,17 +538,15 @@ public class RedBlackBSTLongInt2 {
         //if (!isRed(h.right) && !isRed(h.right.left)) {
         //    h = moveRedRight(h);
         //}
-        long right = keyRightMap.get(h);
-        if ((keyValMap.containsKey(right) && keyColorMap.get(right) == 1) ||
-            !keyValMap.containsKey(right)) {
-            if ((keyLeftMap.containsKey(right) && keyColorMap.get(keyLeftMap.get(right)) == 1) ||
-            !keyLeftMap.containsKey(right)) {
-                h = moveRedRight(h);
-            }
+        if (!isRightRed(h) && !isRightLeftRed(h)) {
+            h = moveRedRight(h);
         }
         
         //h.right = deleteMax(h.right);
-        deleteMax(right, output);
+        
+        assert(keyRightMap.containsKey(h));
+        
+        deleteMax(keyRightMap.get(h), output);
         if (output[0] == -1) {
             keyRightMap.remove(h);
             return;
@@ -575,46 +563,78 @@ public class RedBlackBSTLongInt2 {
      * @param  key the key
      */
     public void delete(long key) { 
+        
         if (!contains(key)) return;
 
         // if both children of root are black, set root to red
-        if (!isRed(root.left) && !isRed(root.right)) {
-            root.color = RED;
+        setRootToRedIfChildrenAreBlack();
+        
+        //root = delete(root, key);
+        
+        long[] output = new long[2];
+        delete(root, key, output);
+        
+        if (output[0] == -1) {
+            rootIsSet = false;
+            keyValMap.remove(root);
+            keyLeftMap.remove(root);
+            keyRightMap.remove(root);
+            keyColorMap.remove(root);
+            keySizeMap.remove(root);
+            root = -1;
+            return;
         }
-
-        root = delete(root, key);
+        reassignRoot(output[1]);
+        
         if (!isEmpty()) {
-            root.color = BLACK;
+            keyColorMap.put(root, 1);
         }
-        // assert check();
+        assert(check());
+        
     }
 
     // delete the key-value pair with the given key rooted at h
-    private Node delete(Node h, long key) { 
+    private void delete(long h, long key, long[] output) { 
         // assert get(h, key) != null;
+        assert(keyValMap.containsKey(h));
 
-        if (key < h.key)  {
-            if (!isRed(h.left) && !isRed(h.left.left))
+        output[0] = 0;
+        
+        if (key < h)  {
+            if (!isLeftRed(h) && !isLeftLeftRed(h)) {
                 h = moveRedLeft(h);
-            h.left = delete(h.left, key);
+            }
+            //h.left = delete(h.left, key);
+            if (keyLeftMap.containsKey(h)) {
+                delete(keyLeftMap.get(h), key, output);
+                if (output[0] == -1) {
+                    keyLeftMap.remove(h);
+                } else {
+                    keyLeftMap.put(h, output[1]);
+                }
+            }
         } else {
-            if (isRed(h.left))
+            if (isLeftRed(h))
                 h = rotateRight(h);
-            if (key == h.key && (h.right == null))
-                return null;
-            if (!isRed(h.right) && !isRed(h.right.left))
+            if (key == h && (!keyRightMap.containsKey(h))) {
+                output[0] = -1;
+                return;
+            }
+    //paused here        
+            if (!isRightRed(h) && !isRightLeftRed(h))
                 h = moveRedRight(h);
-            if (key == h.key) {
+            if (key == h) {
                 Node x = min(h.right);
                 h.key = x.key;
                 h.val = x.val;
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
-        //NOTE: deleteMin return -1 is NULL
                 h.right = deleteMin(h.right);
-            } else h.right = delete(h.right, key);
+            } else {
+                h.right = delete(h.right, key);
+            }
         }
-        return balance(h);
+        return balance(h);        
     }
 
    /***************************************************************************
