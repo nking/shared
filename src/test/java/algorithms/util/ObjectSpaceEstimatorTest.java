@@ -2,10 +2,6 @@ package algorithms.util;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import junit.framework.TestCase;
 
 /**
@@ -90,7 +86,10 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         System.out.println("list size w/o items=" + 
             ObjectSpaceEstimator.estimateArrayList() 
             + " TLongObjectHashMap=" +
-            ObjectSpaceEstimator.estimateTLongObjectHashMap());
+            ObjectSpaceEstimator.estimateTLongObjectHashMap()
+            + " estimateTLongLongHashMap=" +
+            ObjectSpaceEstimator.estimateTLongLongHashMap()
+        );
     
     }
   

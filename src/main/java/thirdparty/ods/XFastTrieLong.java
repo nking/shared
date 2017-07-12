@@ -512,7 +512,7 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * @return 
      */
     public static long estimateSizeOnHeap(int numberOfEntries,
-        long wNumberOfBits) {
+        int wNumberOfBits) {
        
         //long maxCw = (1L << wNumberOfBits) - 1;
         

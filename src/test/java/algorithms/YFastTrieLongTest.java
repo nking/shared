@@ -1,20 +1,10 @@
 package algorithms;
 
 import algorithms.misc.Misc0;
-import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
-import thirdparty.ods.*;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 
@@ -31,15 +21,15 @@ public class YFastTrieLongTest extends TestCase {
     
         System.out.println("testKeyOperations");
         
+        int n = 100;
+        
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1499675478087L;
+        //seed = 1499675478087L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        YFastTrieLong bt = new YFastTrieLong();
-        
-        int n = 100;
+        YFastTrieLong bt = new YFastTrieLong(8, 2*n);
         
         int count = 0;
         
@@ -53,6 +43,7 @@ public class YFastTrieLongTest extends TestCase {
             }
             nodes.add(i);
             bt.add(i);
+            //System.out.println("add " + i);
             assertEquals(i, bt.find(i));
             assertEquals(nodes.get(0), bt.minimum());
             assertEquals(i, bt.maximum());
@@ -66,6 +57,7 @@ public class YFastTrieLongTest extends TestCase {
             }
             nodes.add(i);
             bt.add(i);
+            //System.out.println("add " + i);
             assertEquals(i, bt.find(i));
             assertEquals(nodes.get(0), bt.minimum());
             count++;
@@ -74,6 +66,8 @@ public class YFastTrieLongTest extends TestCase {
         int n2 = bt.size();
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
+        
+        bt.debugPrint();
         
         for (int nIter = 0; nIter < 3; ++nIter){
             n2 = bt.size();
@@ -99,9 +93,7 @@ public class YFastTrieLongTest extends TestCase {
                 long foundIndex = bt.find(idx);
                 assertTrue(foundIndex > -1);
 
-                long v = bt.find(idx);
-                assertTrue(v != -1);
-                assertEquals(idx, v);
+                assertEquals(idx, foundIndex);
                 
                 long expected = nodes.get(i - 1);
                 //System.out.println("\n* " + idx + " expected prev=" + expected);

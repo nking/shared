@@ -7,6 +7,7 @@ import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.util.Arrays;
 import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt;
 import thirdparty.ods.Longizer;
 import thirdparty.ods.XFastTrieLong;
@@ -76,38 +77,29 @@ public class YFastTrieLong {
         the space complexity is reduced.
 -------------------------------
 YFastTrie
-
-   - w bits set by maximum expected value to be added.
-   - one XFastTrie to hold the representives (at most w in number)
-   - w red black trees to keep ordered points.
-     - because some of the items added may have more than
-       one with same key value, the values in the red black tree
-       will be linked lists.
-
-    NOTE: topics to consider for improvements:
-          the distribution of rb trees, that is their partitions,
-          could be improved dynamically.
-          For example, if maxC were value 127, but the majority
-          of nodes at some point in time were in bin 0 at values
-          near 4, one would prefer to divide that tree 
-          into more than one tree to speed up searches.
-          This begins to look like a good reason to
-          compare to multi-level-buckets.  The only implementation
-          I could find was the Andrew Goldberg MLB offered 
-          under a license that is freely available for non-commercial
-          use, else need to contact for permission... not wanting
-          to include mixed license restrictions for now...
-          (so I didn't download and read the code.  am reading
-          his 2 papers on the subject, but they depend upon other
-          papers too, so gathering all the specs for the MLB
-          algorithms is not complete...)
-          -- one possible work around without making dynamic
-          partitions in the YFastTrie would be to know or 
-          estimate the population of data ahead of time and 
-          then make separate YFastTrie's for manually partitioned 
-          data (changing zero-points, a.k.a. bias levels as needed
-          before and after use of more than one YFastTrie)
+   
+    add the notes below about the runtime complexities and memory usage here
+   
     */
+    
+    /**
+    <pre>
+    3 choices:
+     AUTOMATIC = code looks at memory available to heap and if there is 
+         enough, chooses the fast runtime model of operations O(log_2(w)).
+          This is the default.
+     FAST_RT = user has specified choice should be the fastest runtime 
+          model.  O(log_2(w))
+     SPACE_CONSERTVING = user has specified choice should be the smallest 
+          memory use model w/ runtimes that are O(log_2(N_entries/w)) which 
+          ends up being approx 
+          O(20) for nEntries=35e6 and O(12) for nEntries=35e3.
+    </pre>
+     */
+    public static enum BinSizeModel {
+        AUTOMATIC, FAST_RT, SPACE_CONSERTVING
+    }
+    private final BinSizeModel binSzModel;
     
     private int n = 0;
     
@@ -138,8 +130,13 @@ YFastTrie
     // hashkey= node/binSz;     treemap key=node, value=multiplicity
     private final TLongObjectMap<RedBlackBSTLongInt> rbs;
 
-    private boolean chooseByN = true;
-
+    /**
+     * constructor specifying the maximum number of bits of any future add or
+     * find, etc, and is by default choosing the model for the fast runtime
+     * which may be expensive in space requirements.
+     * 
+     * @param wBits 
+     */
     public YFastTrieLong(int wBits) {
         
         if (wBits < 63 && wBits > 1) {
@@ -150,40 +147,9 @@ YFastTrie
         }
         maxC = (1L << w) - 1;
         
-        /*
-        LG binsize = (int)Math.ceil((float)maxC/(float)w);
-        MID binsize = 10
-        
-        w,     binsz,     n,             rt
-        31,    69273666,  31,            26.   LG
-        31,    5.0,       429496729.6,   2.32  MID
-        
-        10,    102,       10,            6.67  LG
-        10,    4.0,       256.0,         2.0   MID
-        
-        aiming for a runtime of about O(10) or better without increasing n too
-        much.
-        
-        alternatively, could keep n as large as possible within good
-        performance range, hence the binsz will be small, hence the
-        runtime will be small.
-        
-        n            TreeMaps
-        n * binSz    objects in TreeMaps
-        
-        heapsize: 100's or more MB
-        */
-        
-        if (chooseByN) {
-            binSz = chooseBinSizeByN();
-        } else {
-            long tmpLg = (long)Math.ceil((double) maxC / (double) w);
-            if ((Math.log(tmpLg) / Math.log(2)) < 10) {
-                binSz = tmpLg;
-            } else {
-                binSz = 1024;
-            }
-        }
+        binSzModel = BinSizeModel.FAST_RT;
+                
+        binSz = w;
         
         nBins = (long)Math.ceil((double)maxC/(double)binSz);
     
@@ -203,22 +169,109 @@ YFastTrie
         xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
     }
     
+    /**
+     * 
+     * @param wBits
+     * @param numberOfEntries this number of entries to be inserted is used in
+     * memory estimates to decide the bin size model.
+     */
+    public YFastTrieLong(int wBits, int numberOfEntries) {
+        
+        if (wBits < 63 && wBits > 1) {
+            this.w = wBits;
+        } else {
+            throw new IllegalStateException("wBits "
+                + " shoulw be greater than 1 and less than 32");
+        }
+        maxC = (1L << w) - 1;
+        
+        binSzModel = BinSizeModel.AUTOMATIC;
+               
+        binSz = calculateBinSize(numberOfEntries, wBits, binSzModel);
+        
+        nBins = (long)Math.ceil((double)maxC/(double)binSz);
+    
+        System.out.println("nBins=" + nBins + "  rt of ops=" +
+            (Math.log(binSz)/Math.log(2)));
+        
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
+         
+        XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
+        Longizer<Long> it = new Longizer<Long>() {
+            @Override
+            public long longValue(Long x) {
+                return x;
+            }
+        };
+        
+        xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
+    }
+    
+    /**
+     * 
+     * @param wBits
+     * @param binSizeModel 
+        <pre>
+        3 choices:
+         AUTOMATIC = code looks at memory available to heap and if there is 
+             enough, chooses the fast runtime model of operations O(log_2(w)).
+              This is the default.
+         FAST_RT = user has specified choice should be the fastest runtime 
+              model.  O(log_2(w))
+         SPACE_CONSERTVING = user has specified choice should be the smallest 
+              memory use model w/ runtimes that are O(log_2(N_entries/w)) which 
+              ends up being approx 
+              O(20) for nEntries=35e6 and O(12) for nEntries=35e3.
+        </pre>
+     */
+    public YFastTrieLong(int numberOfEntries, int wBits, 
+        BinSizeModel binSizeModel) {
+        
+        if (wBits < 63 && wBits > 1) {
+            this.w = wBits;
+        } else {
+            throw new IllegalStateException("wBits "
+                + " shoulw be greater than 1 and less than 32");
+        }
+        maxC = (1L << w) - 1;
+        
+        this.binSzModel = binSizeModel;
+               
+        binSz = calculateBinSize(numberOfEntries, w, binSizeModel);
+        
+        nBins = (long)Math.ceil((double)maxC/(double)binSz);
+    
+        System.out.println("nBins=" + nBins + "  rt of ops=" +
+            (Math.log(binSz)/Math.log(2)));
+        
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
+         
+        XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
+        Longizer<Long> it = new Longizer<Long>() {
+            @Override
+            public long longValue(Long x) {
+                return x;
+            }
+        };
+        
+        xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
+    }
+    
+    /**
+     * constructor using the the maximum number of bits of 62
+     * and the default model for the fast runtime
+     * which may be expensive in space requirements.
+     * 
+     */
     public YFastTrieLong() {
         
         this.w = 62;
         
         maxC = (1L << w) - 1;
         
-        if (chooseByN) {
-            binSz = chooseBinSizeByN();
-        } else {
-            long tmpLg = (long) Math.ceil((double) maxC / (double) w);
-            if ((Math.log(tmpLg) / Math.log(2)) < 10) {
-                binSz = tmpLg;
-            } else {
-                binSz = 1024;
-            }
-        }
+        binSzModel = BinSizeModel.FAST_RT;
+                
+        binSz = w;
         
         nBins = (long)Math.ceil((double)maxC/(double)binSz);
         
@@ -238,6 +291,51 @@ YFastTrie
         xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
     }
     
+    /**
+     * 
+     * @param numberOfEntries
+     * @param binSizeModel 
+       <pre>
+        3 choices:
+         AUTOMATIC = code looks at memory available to heap and if there is 
+             enough, chooses the fast runtime model of operations O(log_2(w)).
+              This is the default.
+         FAST_RT = user has specified choice should be the fastest runtime 
+              model.  O(log_2(w))
+         SPACE_CONSERTVING = user has specified choice should be the smallest 
+              memory use model w/ runtimes that are O(log_2(N_entries/w)) which 
+              ends up being approx 
+              O(20) for nEntries=35e6 and O(12) for nEntries=35e3.
+        </pre>
+     */
+    public YFastTrieLong(int numberOfEntries, BinSizeModel binSizeModel) {
+        
+        this.w = 62;
+        
+        maxC = (1L << w) - 1;
+        
+        this.binSzModel = binSizeModel;
+                
+        binSz = calculateBinSize(numberOfEntries, w, binSizeModel);
+        
+        nBins = (long)Math.ceil((double)maxC/(double)binSz);
+        
+        System.out.println("nBins=" + nBins + "  rt of ops=" +
+            (Math.log(binSz)/Math.log(2)));
+        
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
+        
+        XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
+        Longizer<Long> it = new Longizer<Long>() {
+            @Override
+            public long longValue(Long x) {
+                return x;
+            }
+        };
+        
+        xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
+    }
+  
     protected RedBlackBSTLongInt getTreeMap(long index) {
         RedBlackBSTLongInt tree = rbs.get(index);
         if (tree == null) {
@@ -306,10 +404,6 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
      * 
      * @param node a number >= 0 and having bit length 
      * less than or equal to w.
@@ -349,11 +443,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
+     *  
      * @param node
      * @return 
      */
@@ -420,10 +510,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * 
      * 
      * @param node
      * @return 
@@ -453,10 +540,6 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
      * 
      * @param node
      * @return value preceding node, else -1 if there is not one
@@ -513,10 +596,6 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
      * 
      * @param node
      * @return 
@@ -569,7 +648,7 @@ YFastTrie
         if (output[0] != -1) {
             return output[1];
         }
-        
+                
         Long successorRepr = xft.successor(nodeKey);
         if (successorRepr == null) {
             return -1;
@@ -580,12 +659,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
      * 
-     * runtime complexity is O(log_2(w)) 
      * @return minimum, else -1 if empty
      */
     public long minimum() {
@@ -603,10 +677,6 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
      * 
      * @return maximum, else -1 if empty
      */
@@ -633,12 +703,6 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * TODO: calc runtime complexity again
      * 
      * @return minimum, else -1 if empty
      */
@@ -658,12 +722,6 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * TODO: calc runtime complexity again
      * 
      * @return maximum, else -1 if empty
      */
@@ -684,24 +742,15 @@ YFastTrie
     public int size() {
         return n;
     }
-    
-    private long chooseBinSizeByN() {
-        return chooseBinSizeByN(w);
-    }
 
-    private static long chooseBinSizeByN(long maxNumberOfBits) {
-
-        long maxNumber = (1L << maxNumberOfBits) - 1;
-        
-        long totalMemory = Runtime.getRuntime().totalMemory();
-        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
-        long heapUsage = mbean.getHeapMemoryUsage().getUsed();
-        long avail = totalMemory - heapUsage;
+    private static long calculateBinSize(int numberOfEntries, 
+        int maxNumberOfBits, BinSizeModel theBinSizeModel) {
 
         /*        
         avail = max memory to use
               = (xFt+xftReps holding at most nBins inserts each) 
                 + nBins * (nRBs trees) + nEntries
+        
              largest scaling component is nEntries nodes
         
         wanting small nBins, but with nEntries/nBins not too large nor too small
@@ -752,82 +801,75 @@ YFastTrie
         and if have enough memory, prefering the one with 
         better runtime unless a user setting requests smaller space use.        
         */
-        long n = avail/32;
         
-        // n = maxC/binsz
-        long bs = maxNumber/n;
+        if (theBinSizeModel.equals(BinSizeModel.FAST_RT)) {
+            
+            // binSize = w bits
+            return maxNumberOfBits;
+            
+        } else if (theBinSizeModel.equals(BinSizeModel.SPACE_CONSERTVING)) {
+            
+            // nBins = w bits
+            // binSize = number of entries / w
+            
+            return numberOfEntries/maxNumberOfBits;
+        }
         
-        double rt = Math.log(bs)/Math.log(2);
+        long maxNumber = (1L << maxNumberOfBits) - 1;
+
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
+        long heapUsage = mbean.getHeapMemoryUsage().getUsed();
+        long avail = totalMemory - heapUsage;
+
+        //double rt = Math.log(binSz)/Math.log(2);
         
-        if (rt < 10) {
-            if (bs > 10) {
-                //this is the number of items, that is capacity, of each map
-                return bs;
+        long[] est = estimateSizeOnHeap(numberOfEntries, 
+            maxNumberOfBits, BinSizeModel.FAST_RT);
+        
+        System.out.println("Memory size estimates for fastest: " + 
+            Arrays.toString(est) + " avail=" + avail);
+
+        long fastMemory = est[0];
+        
+        if (fastMemory < avail) {
+            return maxNumberOfBits;
+        } else if (est[1] < avail) {
+            long remaining = avail - est[1];
+            if (((double)remaining/(double)est[1]) > 0.25) {
+                return maxNumberOfBits;
             }
         }
         
-        // 2^10 = binSz/2 -->binSz = 2^11
-        //return 2048;
-        
-        // else, fall back to using the default for rt = O(10)
-        return (long)Math.ceil((double)maxNumber/(double)maxNumberOfBits);
-        
-        /*
-        LG binsize = (int)Math.ceil((float)maxC/(float)w);
-        MID binsize = 10
-        
-        w,     binsz,     n,             rt
-        31,    69273666,  31,            26.   LG
-        31,    5.0,       429496729.6,   2.32  MID
-        
-        10,    102,       10,            6.67  LG
-        10,    4.0,       256.0,         2.0   MID
-        
-        aiming for a runtime of about O(10) or better without increasing n too
-        much.
-        
-        alternatively, could keep n as large as possible within good
-        performance range, hence the binsz will be small, hence the
-        runtime will be small.
-        
-        n            TreeMaps
-        n * binSz    objects in TreeMaps
-        
-        heapsize: 100's or more MB
-        */
-        
+        return numberOfEntries/maxNumberOfBits;
     }
     
     protected long getBinSz() {
         return binSz;
     }
     
-    public static long estimateSizeOnHeap(int numberOfEntries) {
-        return estimateSizeOnHeap(numberOfEntries, 62);
-    }
-   
     /**
      * estimate the size that an instance of YFastTrieLong with
-     * n added entries would occupy in heap space in Bytes.
-     * 
-     * NOTE: assumes chooseByN==true, giving binSz=chooseBinSizeByN(...)
+     * n added entries, maxNumberOfBits, and 
+     * use binSzModel
+     * would occupy in heap space in Bytes.
      * 
      * NOTE: there are some varying components to estimating the memory that
      * depend upon the properties of the numbers inserted.
      * For example:
      * <pre>
      *     -- xft is an XFastTrie instantiated with maxNumberOfBits.
-     *        It will have at most, nBins number of entries, where nBins
-     *        is determined as a compromizing distribution of numberOfEntries
-     *        into nBins holding partitions of numberOfEntries.
+     *        It will have at most, 
+     *        * nBins number of entries, where nBins
+     *        is determined by the BinSizeModel.
      *        In addition to the number of inserted items (which is only one
      *        per bin of numberOfEntries), there will be some undetermined
      *        number of prefix nodes created in the process.
      *        A factor of 5 more is assumed here to over estimate the total 
-     *        number of trie nodes that includes the internal predix nodes.
+     *        number of trie nodes that includes the internal prefix nodes.
      *        -- THE LOGIC is still in progress to determine
      *           an upper and lower limit to estimate the number of populated 
-     *           nBins w/o knowing prperties of the numbers, such as whether 
+     *           nBins w/o knowing properties of the numbers, such as whether 
      *           they are sequential, or have large gaps, etc.
      *    -- xftReps is a hashMap with same number of inserts as xft,
      *       so has the same need for an upper and lower estimate.
@@ -835,19 +877,34 @@ YFastTrie
      * 
      * @param numberOfEntries amount of space for this object's instance
      * with n entries in Bytes on the heap.
+     * @param maxNumberOfBits all entries must have bit lengths .lte. this
+     * @param binSzModel must not be AUTOMATIC
      * 
-     * @return 
+     * @return array with 2 estimates, (1) estimate using all bins and a
+     * factor of 5 for creating trie prefix nodes,
+       (2) estimate from using 1/4 of the bins and a factor of 3 for creating
+       the trie prefix nodes.
      */
-    public static long estimateSizeOnHeap(int numberOfEntries, long
-        maxNumberOfBits) {
+    public static long[] estimateSizeOnHeap(int numberOfEntries, int
+        maxNumberOfBits, BinSizeModel binSzModel) {
+        
+        if (binSzModel.equals(BinSizeModel.AUTOMATIC)) {
+            throw new IllegalArgumentException("binSizeModel cannot be "
+                + " AUTOMATIC.  That decision is based upon sing this method");
+        }
     
         long ww = maxNumberOfBits;
         
         long maxNumber = (1L << ww) - 1;
         
-        long binSz = chooseBinSizeByN(ww);
+        long binSz;
+        if (binSzModel.equals(BinSizeModel.FAST_RT)) {
+            binSz = maxNumberOfBits;
+        } else {
+            binSz = numberOfEntries/maxNumberOfBits;
+        }
         
-        long nBins = (long)Math.ceil((double)maxNumber/(double)binSz);
+        int nBins = (int)Math.ceil((double)maxNumber/(double)binSz);
         
         long total = 0;
         
@@ -877,19 +934,75 @@ YFastTrie
         private final TLongLongMap xftReps = new TLongLongHashMap();
    
         // all inserts of this class are held in 
-        //    * w trees in list rbs.
+        //    * at most nBins number of trees which each 
+        //      hold at most binSz number of entries.
         // each list item is a sorted binary search tree of numbers in that bin.
-        //    the value is the tree holds the number of times that number is present.
+        //    the value in the tree holds multiplicity of the number.
         // each list index can be found by node/binSz
         // each sorted tree has 
         //    key = node (inserted number), w/ value=
-        //        the number of times that number is present.
+        //        the number of times that number is present (multiplicity).
         TLongObjectMap<RedBlackBSTLongInt> rbs;
         */
-        
-        throw new UnsupportedOperationException("not yet finished");
     
-        //return total;
+        // returning 2 estimates
+        // (1) estimate using all bins w/ factor 5 for tries
+        // (2) estimate from using 1/4 of the bins w/ factor 3 for tries
+                
+        // using factor of 5 for total w/ prefix nodes
+        long total2_1 = numberOfEntries * 5 *
+            XFastTrieNodeLong.estimateSizeOnHeap();
+        
+        // all nBins are filled w/ a repr
+        total2_1 += XFastTrieLong.estimateSizeOnHeap(nBins, maxNumberOfBits);
+        
+        long total2_2 = numberOfEntries * 3 *
+            XFastTrieNodeLong.estimateSizeOnHeap();
+        
+        // 1/4 of nBins are filled w/ a repr
+        total2_2 += XFastTrieLong.estimateSizeOnHeap(nBins/4, maxNumberOfBits);
+        
+        //TLongLongMap
+        total2_1 += ObjectSpaceEstimator.estimateTLongLongHashMap();
+        
+        //nBins number of repr entries in map
+        total2_1 += (2 * nBins * ObjectSpaceEstimator.estimateLongSize());
+        
+        
+        //TLongLongMap
+        total2_2 += ObjectSpaceEstimator.estimateTLongLongHashMap();
+        
+        //nBins/4 number of repr entries in map
+        total2_1 += ((nBins/2) * ObjectSpaceEstimator.estimateLongSize());
+        
+        // 1 TLongObjectMap<RedBlackBSTLongInt> rbs;
+        total2_1 += ObjectSpaceEstimator.estimateTLongObjectHashMap();
+        
+        total2_2 += ObjectSpaceEstimator.estimateTLongObjectHashMap();
+        
+        // nBins number of RedBlackBSTLongInt
+        long rbtree = RedBlackBSTLongInt.estimateSizeOnHeap(0);
+        
+        total2_1 += (nBins * rbtree);
+        
+        total2_2 += ((nBins/4) * rbtree);
+        
+        // nEntries number of long, int nodes
+        total2_1 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();
+        
+        total2_2 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();
+            
+        return new long[]{total2_1, total2_2};
     }
     
+    public void debugPrint() {
+        
+        long[] binIndexes = rbs.keys();
+        Arrays.sort(binIndexes);
+        for (long binIdx : binIndexes) {
+            System.out.println("binNumber=" + binIdx);
+            RedBlackBSTLongInt rbt = rbs.get(binIdx);
+            rbt.printPreOrderTraversal();
+        }
+    }
 }

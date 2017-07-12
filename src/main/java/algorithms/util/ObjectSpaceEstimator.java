@@ -335,13 +335,42 @@ public class ObjectSpaceEstimator {
     }
     
     /**
+     * a rough estimate of an instance of TLongLongHashMap without objects
+     * in it.
+     * 
+     * @return 
+     */
+    public static long estimateTLongLongHashMap() {
+        
+        int index;
+        long overhead;
+        if (is32Bit) {
+            index = 0;
+            overhead = 8;
+        } else {
+            index = 2;
+            overhead = 16;
+        }
+        long pad = getWordSize();
+        
+        long total = overhead;
+        
+        total += 4 * longSz[index];
+        total += booleanSz[index];
+        total += refSz[index];
+        total += 2*arrayRefSz[index];
+        
+        return total;
+        
+    }
+    
+    /**
      * a rough estimate of an instance of TLongObjectHashMap without objects
      * in it.
     
      * @return 
      */
     public static long estimateTLongObjectHashMap() {
-    
         int index;
         long overhead;
         if (is32Bit) {
