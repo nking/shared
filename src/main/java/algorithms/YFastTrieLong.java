@@ -827,6 +827,13 @@ YFastTrie
         
         System.out.println("Memory size estimates for fastest: " + 
             Arrays.toString(est) + " avail=" + avail);
+        
+        {//DEBUG printing
+            long[] est2 = estimateSizeOnHeap(numberOfEntries,
+                maxNumberOfBits, BinSizeModel.SPACE_CONSERTVING);
+            System.out.println("Memory size estimates for space conserving: "
+                + Arrays.toString(est2) + " avail=" + avail);
+        }
 
         long fastMemory = est[0];
         
@@ -945,8 +952,13 @@ YFastTrie
     
         // returning 2 estimates
         // (1) estimate using all bins w/ factor 5 for tries
-        // (2) estimate from using 1/4 of the bins w/ factor 3 for tries
-                
+        // (2) estimate from using nBinsSparse of the nBins w/ factor 3 for tries
+        
+        int nBinsSparse = nBins/10;
+        if (nBinsSparse < 1) {
+            nBinsSparse = 1;
+        }
+        
         // using factor of 5 for total w/ prefix nodes
         long total2_1 = numberOfEntries * 5 *
             XFastTrieNodeLong.estimateSizeOnHeap();
@@ -957,8 +969,9 @@ YFastTrie
         long total2_2 = numberOfEntries * 3 *
             XFastTrieNodeLong.estimateSizeOnHeap();
         
-        // 1/4 of nBins are filled w/ a repr
-        total2_2 += XFastTrieLong.estimateSizeOnHeap(nBins/4, maxNumberOfBits);
+        // nBinsSparse of nBins are filled w/ a repr
+        total2_2 += XFastTrieLong.estimateSizeOnHeap(nBinsSparse, maxNumberOfBits);
+        
         
         //TLongLongMap
         total2_1 += ObjectSpaceEstimator.estimateTLongLongHashMap();
@@ -971,19 +984,22 @@ YFastTrie
         total2_2 += ObjectSpaceEstimator.estimateTLongLongHashMap();
         
         //nBins/4 number of repr entries in map
-        total2_1 += ((nBins/2) * ObjectSpaceEstimator.estimateLongSize());
+        total2_2 += (2 * nBinsSparse * ObjectSpaceEstimator.estimateLongSize());
+        
         
         // 1 TLongObjectMap<RedBlackBSTLongInt> rbs;
         total2_1 += ObjectSpaceEstimator.estimateTLongObjectHashMap();
         
         total2_2 += ObjectSpaceEstimator.estimateTLongObjectHashMap();
         
+        
         // nBins number of RedBlackBSTLongInt
         long rbtree = RedBlackBSTLongInt.estimateSizeOnHeap(0);
         
         total2_1 += (nBins * rbtree);
         
-        total2_2 += ((nBins/4) * rbtree);
+        total2_2 += (nBinsSparse * rbtree);
+        
         
         // nEntries number of long, int nodes
         total2_1 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();
