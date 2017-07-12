@@ -1006,7 +1006,7 @@ YFastTrie
         
         total2_2 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();
             
-        return new long[]{total2_1, total2_2};
+        return new long[]{total2_1 + total, total2_2 + total};
     }
     
     public void debugPrint() {
