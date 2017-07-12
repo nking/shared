@@ -629,6 +629,10 @@ public class RedBlackBSTLongInt {
         }
         
         //System.out.println("    y=" + y.key + " q=" + key);
+        if (y != null && y.key >= key) {
+            return null;
+        }
+        
         return y;
     }
 
@@ -750,6 +754,11 @@ public class RedBlackBSTLongInt {
             if (yIdx < 0) break;
             y = stack.get(yIdx);
         }
+        
+        if (y != null && y.key <= key) {
+            return null;
+        }
+        
         return y;
     }
 
@@ -1084,6 +1093,10 @@ public class RedBlackBSTLongInt {
         }
          
         return array;
+    }
+    
+    public static long estimateNodeSizeOnHeap() {
+        return Node.estimateSizeOnHeap();
     }
     
     /**
