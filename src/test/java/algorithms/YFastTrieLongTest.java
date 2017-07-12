@@ -1,10 +1,8 @@
 package algorithms;
 
-import algorithms.YFastTrieLong.BinSizeModel;
 import algorithms.misc.Misc0;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -24,44 +22,37 @@ public class YFastTrieLongTest extends TestCase {
         
         long MB = 1024 * 1024;
         
-        BinSizeModel[] szs = new BinSizeModel[] {
-            BinSizeModel.FAST_RT,
-            BinSizeModel.SPACE_CONSERTVING
-        };
-        for (BinSizeModel model : szs) {
-         
-            System.out.println("size in MB, model=" + model);
-            
-            est = YFastTrieLong.estimateSizeOnHeap(
-                5000*7000, 62, model);
-            System.out.println("0 mem=" + est[0]/MB + ", " + est[1]/MB);
-            est = YFastTrieLong.estimateSizeOnHeap(
-                5000*7000, 26, model);
-            System.out.println("1 mem=" + est[0]/MB + ", " + est[1]/MB);
+        System.out.println("size in MB:");
 
-            est = YFastTrieLong.estimateSizeOnHeap(
-                Math.round(.1f*5000*7000), 62, model);
-            System.out.println("2 mem=" + est[0]/MB + ", " + est[1]/MB);
-            est = YFastTrieLong.estimateSizeOnHeap(
-                Math.round(.1f*5000*7000), 22, model);
-            System.out.println("3 mem=" + est[0]/MB + ", " + est[1]/MB);
+        est = YFastTrieLong.estimateSizeOnHeap(
+            5000*7000, 62);
+        System.out.println("0 mem=" + est[0]/MB + ", " + est[1]/MB);
+        est = YFastTrieLong.estimateSizeOnHeap(
+            5000*7000, 26);
+        System.out.println("1 mem=" + est[0]/MB + ", " + est[1]/MB);
+
+        est = YFastTrieLong.estimateSizeOnHeap(
+            Math.round(.1f*5000*7000), 62);
+        System.out.println("2 mem=" + est[0]/MB + ", " + est[1]/MB);
+        est = YFastTrieLong.estimateSizeOnHeap(
+            Math.round(.1f*5000*7000), 22);
+        System.out.println("3 mem=" + est[0]/MB + ", " + est[1]/MB);
 
 
-            est = YFastTrieLong.estimateSizeOnHeap(
-                500*700, 62, model);
-            System.out.println("4 mem=" + est[0]/MB + ", " + est[1]/MB);
-            est = YFastTrieLong.estimateSizeOnHeap(
-                500*700, 19, model);
-            System.out.println("5 mem=" + est[0]/MB + ", " + est[1]/MB);
+        est = YFastTrieLong.estimateSizeOnHeap(
+            500*700, 62);
+        System.out.println("4 mem=" + est[0]/MB + ", " + est[1]/MB);
+        est = YFastTrieLong.estimateSizeOnHeap(
+            500*700, 19);
+        System.out.println("5 mem=" + est[0]/MB + ", " + est[1]/MB);
 
-            est = YFastTrieLong.estimateSizeOnHeap(
-                Math.round(.1f*500*700), 62, model);
-            System.out.println("6 mem=" + est[0]/MB + ", " + est[1]/MB);
-            est = YFastTrieLong.estimateSizeOnHeap(
-                Math.round(.1f*500*700), 16, model);
-            System.out.println("7 mem=" + est[0]/MB + ", " + est[1]/MB);
-        }
-    
+        est = YFastTrieLong.estimateSizeOnHeap(
+            Math.round(.1f*500*700), 62);
+        System.out.println("6 mem=" + est[0]/MB + ", " + est[1]/MB);
+        est = YFastTrieLong.estimateSizeOnHeap(
+            Math.round(.1f*500*700), 16);
+        System.out.println("7 mem=" + est[0]/MB + ", " + est[1]/MB);
+
     }
 
     public void testKeyOperations0() throws Exception {
@@ -76,7 +67,7 @@ public class YFastTrieLongTest extends TestCase {
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        YFastTrieLong bt = new YFastTrieLong(8, 2*n);
+        YFastTrieLong bt = new YFastTrieLong(8);
         
         int count = 0;
         
