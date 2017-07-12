@@ -182,10 +182,7 @@ public class NearestNeighbor2DLong {
     
     protected long getInternalIndex(int col, int row) {
         long t = ((long)width * row) + col;
-        if (t > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("this version of NN2D requires "
-                + " that coordinate pixel indexes be < 31 bits");
-        }
+        
         return t;
     }
     
@@ -196,7 +193,7 @@ public class NearestNeighbor2DLong {
     
     protected int getCol(long internalIndex) {
         int row = (int)(internalIndex/width);
-        int col = (int)(internalIndex - (row * width));
+        int col = (int)(internalIndex - ((long)row * width));
         return col;
     }
     
