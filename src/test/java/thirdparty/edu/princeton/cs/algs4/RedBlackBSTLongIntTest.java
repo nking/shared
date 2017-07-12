@@ -1,15 +1,8 @@
 package thirdparty.edu.princeton.cs.algs4;
 
 import algorithms.misc.Misc0;
-import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TIntHashSet;
-import gnu.trove.set.hash.TLongHashSet;
-import java.security.SecureRandom;
 import java.util.Random;
 import junit.framework.TestCase;
 
@@ -100,7 +93,12 @@ public class RedBlackBSTLongIntTest extends TestCase {
                     assertEquals(expected, ceil);
                 }
             }
-
+            
+            bt.higher(nodes.get(nodes.size() - 1), kOutput);
+            assertTrue(kOutput[0] == -1);
+            bt.lower(nodes.get(0), kOutput);
+            assertTrue(kOutput[0] == -1);
+            
             for (int i = 1; i < n2; ++i) {
                 long idx = nodes.get(i);
                 long foundIndex = bt.contains(idx) ? idx : -1;
@@ -173,7 +171,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
             bt.deleteMin();
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
-        }        
+        }            
     }
     
 }
