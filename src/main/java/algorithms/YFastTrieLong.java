@@ -759,17 +759,17 @@ YFastTrie
         the maximum pixel index = width * height:
         
         if nBins = w:
-            nEntries        w  nBins   binsz,   runtime      space
+            nEntries        w  nBins   binsz,   runtime      space(MB)
            
-            5000*7000=35e6  62  62     564516     19       in progress
-            5000*7000=35e6  26  26   1346153      20 
-         .1*5000*7000=35e5  62  62     56451      16
-         .1*5000*7000=35e5  22  22     56451      18
+            5000*7000=35e6  62  62     564516     19       505405, 61507
+            5000*7000=35e6  26  26   1346153      20       13885, 9078
+         .1*5000*7000=35e5  62  62     56451      16       492908, 53336
+         .1*5000*7000=35e5  22  22     56451      18       1388, 907
         
-            500*700=35e4    62  62      5645      13
-            500*700=35e4    19  19     18421      14
-         .1*500*700=35e3    62  62       564      10
-         .1*500*700=35e3    16  16       564      12
+            500*700=35e4    62  62      5645      13       491658, 52519
+            500*700=35e4    19  19     18421      14       138, 90
+         .1*500*700=35e3    62  62       564      10       491533, 52437
+         .1*500*700=35e3    16  16       564      12       13, 9
         
         can see that can improve the runtime by decreasing the binSz at
         expense of increasing nBins (which leads to creating more items
@@ -783,17 +783,17 @@ YFastTrie
         The calculations above for the suggested yfasttrie model:
         
         if binsz = w:
-            nEntries        w  nBins   binsz,   runtime      space
+            nEntries        w  nBins   binsz,   runtime    space(MB)
            
-            5000*7000=35e6  62  564516  62       6       in progress
-            5000*7000=35e6  26  1346153 26       5   
-         .1*5000*7000=35e5  62  56451   62       6
-         .1*5000*7000=35e5  22  56451   22       5
+            5000*7000=35e6  62  564516  62       6       505405, 61507
+            5000*7000=35e6  26  1346153 26       5       14515, 9141
+         .1*5000*7000=35e5  62  56451   62       6       492908, 53336
+         .1*5000*7000=35e5  22  56451   22       5       1435, 912
         
-            500*700=35e4    62  5645    62       6   
-            500*700=35e4    19  18421   19       5    
-         .1*500*700=35e3    62  564     62       6    
-         .1*500*700=35e3    16  564     16       4    
+            500*700=35e4    62  5645    62       6       491658, 52519
+            500*700=35e4    19  18421   19       5       145, 91
+         .1*500*700=35e3    62  564     62       6       491533, 52437
+         .1*500*700=35e3    16  564     16       4       14, 9
 
         Recalculating the memory requirements for both models
         and if have enough memory, prefering the one with 
