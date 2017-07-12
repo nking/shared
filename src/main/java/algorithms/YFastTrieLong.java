@@ -30,11 +30,9 @@ import thirdparty.ods.XFastTrieNodeLong;
    The Y-Fast trie has the ordered associative array operations + successor and
    predecessor.
    
-   NOTE that the runtime complexities listed are not yet achieved.
-   The current operations depend upon settings to compromise between
-   number of secondary hashmaps and the number of objects within those, 
-   but the runtime should be 
-   constant runtime complexity usually .lte. O(10).
+   NOTE that the runtime complexities listed are achieved for one model of how
+   bin size is set, but if there is not enough memory on the system,
+   a slower runtime of O(log (number of items/log(M)) is used.
 
    Find(k): find the value associated with the given key.
        runtime complexity is O(log log(M))
