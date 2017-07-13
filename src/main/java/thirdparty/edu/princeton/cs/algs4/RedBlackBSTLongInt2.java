@@ -1454,22 +1454,22 @@ public class RedBlackBSTLongInt2 {
         if (max != null && x >= max.longValue()) {
             return false;
         }
-        return isBSTLeft(x, min, Long.valueOf(x)) 
-            && isBSTRight(x, Long.valueOf(x), max);
+        Long key = Long.valueOf(x);
+        return isBSTLeft(x, min, key) && isBSTRight(x, key, max);
     }
     private boolean isBSTLeft(long x, Long min, Long max) {
         if (!keyLeftMap.containsKey(x)) {
             return true;
         }
         long key = keyLeftMap.get(x);
-        return isBST(key, Long.valueOf(x), max);
+        return isBST(key, min, max);
     }
     private boolean isBSTRight(long x, Long min, Long max) {
         if (!keyRightMap.containsKey(x)) {
             return true;
         }
         long key = keyRightMap.get(x);
-        return isBST(key, Long.valueOf(x), max);
+        return isBST(key, min, max);
     }
 
     // are the size fields correct?
@@ -1502,7 +1502,7 @@ public class RedBlackBSTLongInt2 {
             long key = keys.get(i);
             int r = rank(key);
             long s = select(r);
-            System.out.println("i=" + i + " r=" + r + " s=" + s);
+            //System.out.println("i=" + i + " key=" + key + " r=" + r + " s=" + s);
             if (key != s) {
                 return false;
             }
