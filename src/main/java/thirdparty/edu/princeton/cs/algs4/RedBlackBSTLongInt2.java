@@ -269,11 +269,13 @@ public class RedBlackBSTLongInt2 {
      * @param val the value
      */
     public void put(long key, int val) {
+        System.out.println("put " + key + ":");
+        
         root = put(root, key, val);
         rootIsSet = true;
         keyColorMap.put(root, BLACK);
         
-        System.out.println("after put:");
+        System.out.println("after put " + key);
         printPreOrderTraversal();
         
         //root.color = BLACK;
@@ -704,6 +706,9 @@ public class RedBlackBSTLongInt2 {
     // make a right-leaning link lean to the left
     private long rotateLeft(long h) {
         
+        System.out.println("before rotateLeft:");
+        printPreOrderTraversal(1);
+        
         // assert (h != null) && isRed(h.right);
         assert(keyValMap.containsKey(h));
         assert(isRightRed(h));
@@ -730,7 +735,7 @@ public class RedBlackBSTLongInt2 {
         keySizeMap.put(h, size);
        
         System.out.println("after rotateLeft:");
-        printPreOrderTraversal();
+        printPreOrderTraversal(1);
         
         return x;
     }
@@ -1569,7 +1574,13 @@ public class RedBlackBSTLongInt2 {
      * root, left subtree, right subtree
      */
     public void printPreOrderTraversal() {
-        long[] nodes = getPreOrderTraversalIterative(root);
+        long[] nodes = getPreOrderTraversalIterative(root, 0);
+        for (long node : nodes) {
+            System.out.println("node=" + nodeToString(node));
+        }
+    }
+    private void printPreOrderTraversal(int addExtraToSize) {
+        long[] nodes = getPreOrderTraversalIterative(root, 1);
         for (long node : nodes) {
             System.out.println("node=" + nodeToString(node));
         }
@@ -1595,7 +1606,9 @@ public class RedBlackBSTLongInt2 {
             return new long[0];
         }
         
-        long[] array = new long[size()];
+        int sz = size();
+        
+        long[] array = new long[sz];
         int count = 0;
         
         Stack<Long> stack = new Stack<>();
@@ -1608,7 +1621,7 @@ public class RedBlackBSTLongInt2 {
                 node = keyLeftMap.containsKey(node.longValue()) ?
                     keyLeftMap.get(node.longValue()) : null;
             
-            } else {
+            } else if (count < sz) {
                 
                 node = stack.pop();
                 
@@ -1621,6 +1634,10 @@ public class RedBlackBSTLongInt2 {
                     keyRightMap.get(node.longValue()) : null;
             }
         }
+        if (count < sz) {
+            // can happen during debugging when insert is not complete yet
+            array = Arrays.copyOf(array, count);
+        }
         
         return array;
     }
@@ -1629,30 +1646,39 @@ public class RedBlackBSTLongInt2 {
      * visit each node using pattern: root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
      */
-    protected long[] getPreOrderTraversalIterative(Long node) {
+    protected long[] getPreOrderTraversalIterative(Long node, int addExtraToSize) {
        
+        //NOTE: added additional integer and conditions 
+        //   for size because may be printing tree
+        //   in the middle of a put where the node size is not yet updated.
+        // The count conditionals below are otherwise, not needed.
+        
         if (isEmpty()) {
             return new long[0];
         }
+                
+        int sz = size() + addExtraToSize;
         
-        int sz = size();
         long[] array = new long[sz];
         int count = 0;
         
         Stack<Long> stack = new Stack<>();
-        while (!stack.isEmpty() || node != null) {
+        
+        while (count < sz && (!stack.isEmpty() || node != null)) {
             if (node != null && count < sz) {
                 
                 array[count] = node;
                 count++;
                 //System.out.println(node);
                 
-                stack.push(node);
+                if (count < sz) {
+                    stack.push(node);
+                }
                 
                 node = keyLeftMap.containsKey(node.longValue()) ?
                     keyLeftMap.get(node.longValue()) : null;
             
-            } else {
+            } else if (count < sz) {
                 
                 node = stack.pop();
                 
@@ -1662,7 +1688,6 @@ public class RedBlackBSTLongInt2 {
         }
         
         if (count < sz) {
-            // can happen during debugging when insert is not complete yet
             array = Arrays.copyOf(array, count);
         }
         
@@ -1707,7 +1732,7 @@ public class RedBlackBSTLongInt2 {
             }
         }
         
-        while (!stack2.isEmpty()) {
+        while (!stack2.isEmpty() && count < sz) {
             
             node = stack2.pop();
             
@@ -1715,6 +1740,11 @@ public class RedBlackBSTLongInt2 {
             array[count] = node;
             count++;
             //System.out.println(node);
+        }
+        
+        if (count < sz) {
+            // can happen during debugging when insert is not complete yet
+            array = Arrays.copyOf(array, count);
         }
          
         return array;

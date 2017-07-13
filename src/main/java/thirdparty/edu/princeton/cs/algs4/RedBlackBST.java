@@ -207,9 +207,13 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         if (h == null) return new Node(key, val, RED, 1);
 
         int cmp = key.compareTo(h.key);
-        if      (cmp < 0) h.left  = put(h.left,  key, val); 
-        else if (cmp > 0) h.right = put(h.right, key, val); 
-        else              h.val   = val;
+        if (cmp < 0) {
+            h.left  = put(h.left,  key, val);
+        } else if (cmp > 0) {
+            h.right = put(h.right, key, val);
+        } else {
+            h.val   = val;
+        }
 
         // fix-up any right-leaning links
         if (isRed(h.right) && !isRed(h.left))      h = rotateLeft(h);

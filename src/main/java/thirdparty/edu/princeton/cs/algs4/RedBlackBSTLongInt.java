@@ -230,6 +230,7 @@ public class RedBlackBSTLongInt {
      * @param val the value
      */
     public void put(long key, int val) {
+        System.out.println("put " + key + ":");
         root = put(root, key, val);
         root.color = BLACK;
         
@@ -241,12 +242,24 @@ public class RedBlackBSTLongInt {
 
     // insert the key-value pair in the subtree rooted at h
     private Node put(Node h, long key, int val) { 
+        
+        System.out.println("before put key=" + key);
+        printPreOrderTraversal();
+        
         if (h == null) return new Node(key, val, RED, 1);
 
         int cmp = (key < h.key) ? -1 : (key > h.key) ? 1 : 0;
-        if      (cmp < 0) h.left  = put(h.left,  key, val); 
-        else if (cmp > 0) h.right = put(h.right, key, val); 
-        else              h.val   = val;
+        
+        System.out.println("within put key=" + key + " cmp=" + cmp);
+        
+        if (cmp < 0) {
+            h.left  = put(h.left,  key, val);
+        } else if (cmp > 0) {
+            h.right = put(h.right, key, val);
+        } else {
+            h.val   = val;
+        }
+        //NOTE: sizes are not updated yet
         
         // fix-up any right-leaning links
         if (isRed(h.right) && !isRed(h.left)) {
@@ -402,6 +415,10 @@ public class RedBlackBSTLongInt {
 
     // make a right-leaning link lean to the left
     private Node rotateLeft(Node h) {
+        
+        System.out.println("before rotateLeft:");
+        printPreOrderTraversal(1);
+        
         // assert (h != null) && isRed(h.right);
         Node x = h.right;
         h.right = x.left;
@@ -412,7 +429,7 @@ public class RedBlackBSTLongInt {
         h.size = size(h.left) + size(h.right) + 1;
         
         System.out.println("after rotateLeft:");
-        printPreOrderTraversal();
+        printPreOrderTraversal(1);
         
         return x;
     }
@@ -994,8 +1011,17 @@ public class RedBlackBSTLongInt {
      * root, left subtree, right subtree
      */
     public void printPreOrderTraversal() {
-        Node[] nodes = getPreOrderTraversalIterative(root);
+        Node[] nodes = getPreOrderTraversalIterative(root, 0);
         for (Node node : nodes) {
+            System.out.println("node=" + node.toString());
+        }
+    }
+    private void printPreOrderTraversal(int addExtraToSize) {
+        Node[] nodes = getPreOrderTraversalIterative(root, addExtraToSize);
+        for (Node node : nodes) {
+            if (node == null) {
+                continue;
+            }
             System.out.println("node=" + node.toString());
         }
     }
@@ -1019,8 +1045,10 @@ public class RedBlackBSTLongInt {
         if (isEmpty()) {
             return new Node[0];
         }
+        
+        int sz = size();
        
-        Node[] array = new Node[size()];
+        Node[] array = new Node[sz];
         int count = 0;
         
         Stack<Node> stack = new Stack<>();
@@ -1032,7 +1060,7 @@ public class RedBlackBSTLongInt {
                 
                 node = node.left;
             
-            } else {
+            } else if (count < sz) {
                 
                 node = stack.pop();
                 
@@ -1044,7 +1072,6 @@ public class RedBlackBSTLongInt {
                 node = node.right;
             }
         }
-        
         return array;
     }
     
@@ -1052,33 +1079,38 @@ public class RedBlackBSTLongInt {
      * visit each node using pattern: root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
      */
-    protected Node[] getPreOrderTraversalIterative(Node node) {
+    protected Node[] getPreOrderTraversalIterative(Node node, int addExtraToSize) {
        
+        //NOTE: added additional integer and conditions 
+        //   for size because may be printing tree
+        //   in the middle of a put where the node size is not yet updated.
+        // The count conditionals below are otherwise, not needed.
+        
         if (isEmpty()) {
             return new Node[0];
         }
-        
-        int sz = size();
+                
+        int sz = size() + addExtraToSize;
         
         Node[] array = new Node[sz];
         int count = 0;
         
         Stack<Node> stack = new Stack<>();
-        while (!stack.isEmpty() || node != null) {
+        
+        while (count < sz && (!stack.isEmpty() || node != null)) {
             if (node != null && count < sz) {
-                
+              
                 array[count] = node;
-                
-                System.out.println("count=" + count + "/" + (sz-1) 
-                    + " node=" + node.key);
                 
                 count++;
                 
-                stack.push(node);
+                if (count < sz) {
+                    stack.push(node);
+                }
                 
                 node = node.left;
             
-            } else {
+            } else if (count < sz) {
                 
                 node = stack.pop();
                 
@@ -1086,8 +1118,7 @@ public class RedBlackBSTLongInt {
             }
         }
         
-        if (count < sz) {
-            // can happen during debugging when insert is not complete yet
+        if (count < array.length) {
             array = Arrays.copyOf(array, count);
         }
         

@@ -22,7 +22,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        //seed = 1499675478087L;
+        seed = 1499916981151L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -94,6 +94,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                 //System.out.println(idx + "   next=" + next);
                 assertEquals(expected, next);
 
+ System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
+ 
                 if (next > (idx + 1)) {
                     // test ceiling of idx+1
                     bt.ceiling(idx + 1, kOutput);

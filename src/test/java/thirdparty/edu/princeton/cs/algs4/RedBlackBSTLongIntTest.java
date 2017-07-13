@@ -22,7 +22,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        //seed = 1499675478087L;
+        seed = 1499916981151L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -45,6 +45,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
             assertTrue(bt.contains(i));
             assertEquals(nodes.get(0), bt.min());
             assertEquals(i, bt.max());
+            assertEquals(nodes.size(), bt.size());
             count++;
         }
         for (int i = (n - 1); i >= (n/2); --i) {
@@ -57,6 +58,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
             bt.put(i, i);
             assertTrue(bt.contains(i));
             assertEquals(nodes.get(0), bt.min());
+            assertEquals(nodes.size(), bt.size());
             count++;
         }
         nodes.sort();
@@ -77,14 +79,17 @@ public class RedBlackBSTLongIntTest extends TestCase {
                 assertTrue(foundIndex > -1);
 
                 long expected = nodes.get(i + 1);
-                //System.out.println("\n* " + idx + " expected next=" + expected);
+                assertEquals(nodes.size(), bt.size());
+                System.out.println("\n* " + idx + " expected next=" + expected);
 
                 bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long next = kOutput[1];
-                //System.out.println(idx + "   next=" + next);
+                System.out.println(idx + "   next=" + next);
                 assertEquals(expected, next);
 
+   System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
+   
                 if (next > (idx + 1)) {
                     // test ceiling of idx+1
                     bt.ceiling(idx + 1, kOutput);
@@ -109,12 +114,12 @@ public class RedBlackBSTLongIntTest extends TestCase {
                 assertEquals(idx, vOutput[1]);
                 
                 long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
+                System.out.println("\n* " + idx + " expected prev=" + expected);
 
                 bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long prev = kOutput[1];
-                //System.out.println(idx + "   prev=" + prev);
+                System.out.println(idx + "   prev=" + prev);
                 assertEquals(expected, prev);
 
                 if (prev < (idx - 1)) {
