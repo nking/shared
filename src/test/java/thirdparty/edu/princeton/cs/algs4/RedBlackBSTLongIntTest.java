@@ -22,7 +22,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1499916981151L;
+        //seed = 1499931908167L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -80,15 +80,15 @@ public class RedBlackBSTLongIntTest extends TestCase {
 
                 long expected = nodes.get(i + 1);
                 assertEquals(nodes.size(), bt.size());
-                System.out.println("\n* " + idx + " expected next=" + expected);
+                //System.out.println("\n* " + idx + " expected next=" + expected);
 
                 bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long next = kOutput[1];
-                System.out.println(idx + "   next=" + next);
+                //System.out.println(idx + "   next=" + next);
                 assertEquals(expected, next);
 
-   System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
+   //System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
    
                 if (next > (idx + 1)) {
                     // test ceiling of idx+1
@@ -114,12 +114,12 @@ public class RedBlackBSTLongIntTest extends TestCase {
                 assertEquals(idx, vOutput[1]);
                 
                 long expected = nodes.get(i - 1);
-                System.out.println("\n* " + idx + " expected prev=" + expected);
+                //System.out.println("\n* " + idx + " expected prev=" + expected);
 
                 bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long prev = kOutput[1];
-                System.out.println(idx + "   prev=" + prev);
+                //System.out.println(idx + "   prev=" + prev);
                 assertEquals(expected, prev);
 
                 if (prev < (idx - 1)) {
@@ -137,6 +137,10 @@ public class RedBlackBSTLongIntTest extends TestCase {
                     int idx = rand.nextInt(nodes.size());
                     long v = nodes.get(idx);
                     assertTrue(bt.contains(v));
+                    
+                    //bt.printPreOrderTraversal();
+                    //System.out.println("delete " + v + " idx=" + idx);
+                    
                     bt.delete(v);
                     assertFalse(bt.contains(v));
                     nodes.removeAt(idx);

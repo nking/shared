@@ -48,6 +48,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
+/*
+note that a reduction in space, especically for large number of nodes,
+can be made by replacing nodes with associative arrays, but one would
+need to include a parent array also and additional logic to
+update the relationships where changes occur for a 
+key, left or right field.
+*/
+
 /**
  *  The {@code BST} class represents an ordered symbol table of generic
  *  key-value pairs.
@@ -238,13 +246,9 @@ public class RedBlackBSTLongInt {
      * @param val the value
      */
     public void put(long key, int val) {
-        System.out.println("put " + key + ":");
         root = put(root, key, val);
         root.color = BLACK;
-        
-        //System.out.println("after put " + key + ":");
-        //printPreOrderTraversal();
-        
+                
         // assert check();
     }
 
@@ -255,7 +259,7 @@ public class RedBlackBSTLongInt {
 
         int cmp = (key < h.key) ? -1 : (key > h.key) ? 1 : 0;
         
-        System.out.println("within put key=" + key + " cmp=" + cmp);
+        //System.out.println("within put key=" + key + " cmp=" + cmp);
         
         if (cmp < 0) {
             h.left  = put(h.left,  key, val);
@@ -360,7 +364,7 @@ public class RedBlackBSTLongInt {
      */
     public void delete(long key) { 
         
-        System.out.println("delete " + key);
+        //System.out.println("delete " + key);
         
         if (!contains(key)) return;
 
@@ -390,22 +394,14 @@ public class RedBlackBSTLongInt {
             if (!isRed(h.right) && !isRed(h.right.left)) {
                 h = moveRedRight(h);
             }
-            System.out.println("key=" + key + " h.key=" + h.key);
+            //System.out.println("key=" + key + " h.key=" + h.key);
             if (key == h.key) {
-                System.out.print("0) delete " + key 
-                    + " h=" + h);
                 Node x = min(h.right);
-                System.out.println("\n   x=" + x);
-                printPreOrderTraversal(1);
                 h.key = x.key;
                 h.val = x.val;
-                System.out.println("1) h.key->x.key  h=" + h);
-                printPreOrderTraversal(1);
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
                 h.right = deleteMin(h.right);
-                System.out.println("2) delete " + key);
-                printPreOrderTraversal(1);
             } else h.right = delete(h.right, key);
         }
         return balance(h);
@@ -426,18 +422,12 @@ public class RedBlackBSTLongInt {
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
         
-        //System.out.println("after rotateRight:");
-        //printPreOrderTraversal();
-        
         return x;
     }
 
     // make a right-leaning link lean to the left
     private Node rotateLeft(Node h) {
-        
-        //System.out.println("before rotateLeft:");
-        //printPreOrderTraversal(1);
-        
+                
         // assert (h != null) && isRed(h.right);
         Node x = h.right;
         h.right = x.left;
@@ -446,10 +436,7 @@ public class RedBlackBSTLongInt {
         x.left.color = RED;
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
-        
-        //System.out.println("after rotateLeft:");
-        //printPreOrderTraversal(1);
-        
+                
         return x;
     }
 
@@ -476,10 +463,7 @@ public class RedBlackBSTLongInt {
             h = rotateLeft(h);
             flipColors(h);
         }
-        
-        //System.out.println("after moveRedLeft:");
-        //printPreOrderTraversal();
-        
+                
         return h;
     }
 
@@ -493,10 +477,7 @@ public class RedBlackBSTLongInt {
             h = rotateRight(h);
             flipColors(h);
         }
-        
-        //System.out.println("after moveRedRight:");
-        //printPreOrderTraversal();
-        
+                
         return h;
     }
 
