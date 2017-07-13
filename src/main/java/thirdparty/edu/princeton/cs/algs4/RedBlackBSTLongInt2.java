@@ -380,15 +380,17 @@ public class RedBlackBSTLongInt2 {
         //}
         setRootToRedIfChildrenAreBlack();
         
+        //root = deleteMin(root);
         long[] output = new long[2];
         deleteMin(root, output);
-        //root = deleteMin(root);
+        
         if (output[0] == -1) {
             rootIsSet = false;
             deleteFromMaps(root);
             root = -1;
         } else {
-            reassignRoot(output[1]);
+            //reassignRoot(output[1]);
+            root = output[1];
         }
         if (!isEmpty()) {
             //root.color = BLACK;
@@ -455,7 +457,8 @@ public class RedBlackBSTLongInt2 {
             root = -1;
             return;
         }
-        reassignRoot(output[1]);
+        //reassignRoot(output[1]);
+        root = output[1];
         
         if (!isEmpty()) {
             //root.color = BLACK;
@@ -536,7 +539,8 @@ public class RedBlackBSTLongInt2 {
             root = -1;
             return;
         }
-        reassignRoot(output[1]);
+        //reassignRoot(output[1]);
+        root = output[1];
         
         if (!isEmpty()) {
             keyColorMap.put(root, 1);
@@ -557,6 +561,8 @@ public class RedBlackBSTLongInt2 {
                 h = moveRedLeft(h);
             }
             //h.left = delete(h.left, key);
+            //TODO: should be able to remove this conditon
+            assert(keyLeftMap.containsKey(h));
             if (keyLeftMap.containsKey(h)) {
                 delete(keyLeftMap.get(h), key, output);
                 if (output[0] == -1) {
@@ -576,6 +582,8 @@ public class RedBlackBSTLongInt2 {
             if (!isRightRed(h) && !isRightLeftRed(h))
                 h = moveRedRight(h);
             if (key == h) {
+                
+ //TODO: test this section
                 if (keyRightMap.containsKey(h)) {
                     
                     //Node x = min(h.right);
@@ -654,25 +662,26 @@ public class RedBlackBSTLongInt2 {
         assert(isLeftRed(h));
         
         /*
-        h.left = h.left.right;
-        h.left.right = h;
-        h.left.color = h.left.right.color
-        h.left.right.color = RED;
-        h.left.size = h.size;
+        Node x = h.left;
+        h.left = x.right;
+        x.right = h;
+        x.color = x.right.color;
+        x.right.color = RED;
+        x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
         */
         
         long x = keyLeftMap.get(h);
         
         //TODO: look at book diagrams and see if this is always true.
-        //  temporarily asserting empirically
+        //  temporarily asserting 
         assert(keyRightMap.containsKey(x));
         
         //h.left = x.right;
         keyLeftMap.put(h, keyRightMap.get(x));
         
         //x.right = h;
-        keyRightMap.put(h, h);
+        keyRightMap.put(x, h);
         
         //x.color = x.right.color;
         //x.right.color = RED;
@@ -690,8 +699,8 @@ public class RedBlackBSTLongInt2 {
 
     // make a right-leaning link lean to the left
     private long rotateLeft(long h) {
-        // assert (h != null) && isRed(h.right);
         
+        // assert (h != null) && isRed(h.right);
         assert(keyValMap.containsKey(h));
         assert(isRightRed(h));
         
