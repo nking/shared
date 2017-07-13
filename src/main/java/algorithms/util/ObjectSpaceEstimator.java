@@ -1,11 +1,5 @@
 package algorithms.util;
 
-import gnu.trove.map.hash.TLongObjectHashMap;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A class to estimate the amount of memory an object takes.
  * The user should know if it is to be on the heap or
@@ -532,6 +526,18 @@ public class ObjectSpaceEstimator {
         }
         
         return longSz[idx];
+    }
+    
+    public static long estimateIntSize() {
+        
+        int idx;
+        if (is32Bit) {
+            idx = 0;
+        } else {
+            idx = 2;
+        }
+        
+        return intSz[idx];
     }
 
     public static long estimateAStringSize(int maxNumberOfLetters) {

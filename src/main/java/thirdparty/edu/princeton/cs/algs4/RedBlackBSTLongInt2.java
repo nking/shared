@@ -46,11 +46,8 @@ import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.TLongLongMap;
-import gnu.trove.map.TLongByteMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -95,52 +92,6 @@ public class RedBlackBSTLongInt2 {
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
 
-    /*
-    private Node root;     // root of the BST
-    
-    // BST helper node data type
-    private static class Node {
-        // changing Key to long primitive saves factor of 3 on 32 bit platforms,
-        //    else factor of 2 on 64 bit platforms.
-        //    (long size on stack is 64 bits, or 128 bits, respectively)
-        //    Object Long is 16Bytes overhead + contents.
-        // changing value from Integer to int saves factor of 5 on 32 bit
-        //    platforms else 3 on 64 bit platforms
-        private long key;           // key
-        private int val;         // associated data
-        private Node left, right;  // links to left and right subtrees
-        private boolean color;     // color of parent link
-        private int size;          // subtree count
-
-        public Node(long key, int val, boolean color, int size) {
-            this.key = key;
-            this.val = val;
-            this.color = color;
-            this.size = size;
-        }
-        
-        public static long estimateSizeOnHeap() {
-            ObjectSpaceEstimator est = new ObjectSpaceEstimator();
-            est.setNBooleanFields(1);
-            est.setNLongFields(1);
-            est.setNIntFields(2);
-            est.setNObjRefsFields(2);
-            return est.estimateSizeOnHeap();
-        }
-        
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("key=").append(key);
-            sb.append(" val=").append(val);
-            sb.append(" color=").append(color);
-            sb.append(" size=").append(size);
-            return sb.toString();
-        }
-        
-        
-    }
-    */
     protected long root = -1;
     protected boolean rootIsSet = false;
 
@@ -173,10 +124,16 @@ public class RedBlackBSTLongInt2 {
     }
 
     private long addNewNode(long key, int val, boolean color, int size) {
-        keyValMap.put(key, val);
+        //TODO: consider adding assert that key doesn't exist
         int clr = color ? 0 : 1;
-        keyColorMap.put(key, clr);
+        return addNewNode(key, val, clr, size);
+    }
+    private long addNewNode(long key, int val, int color, int size) {
+        //TODO: consider adding assert that key doesn't exist
+        keyValMap.put(key, val);
+        keyColorMap.put(key, color);
         keySizeMap.put(key, size);
+        return key;
     }
     
    /***************************************************************************
@@ -429,11 +386,7 @@ public class RedBlackBSTLongInt2 {
         //root = deleteMin(root);
         if (output[0] == -1) {
             rootIsSet = false;
-            keyValMap.remove(root);
-            keyLeftMap.remove(root);
-            keyRightMap.remove(root);
-            keyColorMap.remove(root);
-            keySizeMap.remove(root);
+            deleteFromMaps(root);
             root = -1;
         } else {
             reassignRoot(output[1]);
@@ -499,11 +452,7 @@ public class RedBlackBSTLongInt2 {
         deleteMax(root, output);
         if (output[0] == -1) {
             rootIsSet = false;
-            keyValMap.remove(root);
-            keyLeftMap.remove(root);
-            keyRightMap.remove(root);
-            keyColorMap.remove(root);
-            keySizeMap.remove(root);
+            deleteFromMaps(root);
             root = -1;
             return;
         }
@@ -514,6 +463,14 @@ public class RedBlackBSTLongInt2 {
             keyColorMap.put(root, 1);
         }
         assert(check());
+    }
+    
+    private void deleteFromMaps(long key) {
+        keyValMap.remove(key);
+        keyLeftMap.remove(key);
+        keyRightMap.remove(key);
+        keyColorMap.remove(key);
+        keySizeMap.remove(key);
     }
 
     // delete the key-value pair with the maximum key rooted at h
@@ -576,11 +533,7 @@ public class RedBlackBSTLongInt2 {
         
         if (output[0] == -1) {
             rootIsSet = false;
-            keyValMap.remove(root);
-            keyLeftMap.remove(root);
-            keyRightMap.remove(root);
-            keyColorMap.remove(root);
-            keySizeMap.remove(root);
+            deleteFromMaps(root);
             root = -1;
             return;
         }
@@ -620,21 +573,75 @@ public class RedBlackBSTLongInt2 {
                 output[0] = -1;
                 return;
             }
-    //paused here        
+          
             if (!isRightRed(h) && !isRightLeftRed(h))
                 h = moveRedRight(h);
             if (key == h) {
-                Node x = min(h.right);
-                h.key = x.key;
-                h.val = x.val;
-                // h.val = get(h.right, min(h.right).key);
-                // h.key = min(h.right).key;
-                h.right = deleteMin(h.right);
+                if (keyRightMap.containsKey(h)) {
+                    
+                    //Node x = min(h.right);
+                    //h.key = x.key;
+                    //h.val = x.val;
+                    
+                    min(keyRightMap.get(h), output);
+                    assert(output[0] != -1);
+                    long minKey = output[1];
+                    int minKeyVal = keyValMap.get(minKey);
+                    
+                    // keyVal  h, hv  change all h's to x
+                    // keyL    h, hL
+                    // keyR    h, hR
+                    // keyC    h, hC
+                    // keyS    h, hS
+                    
+                    // keyVal  x, xv
+                    // keyL    x, xL
+                    // keyR    x, xR
+                    // keyC    x, xC
+                    // keyS    x, xS
+                    
+                    //h.key = x.key;
+                    //h.val = x.val;
+                    
+                    long hKey = h;
+                    boolean hHasLeft = keyLeftMap.containsKey(h);
+                    long hL = keyLeftMap.get(h);
+                    int hC = keyColorMap.get(h);
+                    int hS = keySizeMap.get(h);
+                    
+                    // letting the delete of h.right happen before re-assinging
+                    //  h key and val
+                    
+                    //h.right = deleteMin(h.right);
+                    deleteMin(keyRightMap.get(h), output);
+                    if (output[0] == -1) {
+                        deleteFromMaps(hKey);
+                        //TODO: decrement root size?                        
+                    } else {
+                        deleteFromMaps(hKey);
+                        //TODO: decrement root size?
+                        h = minKey;
+                        addNewNode(h, minKeyVal, hC, hS - 1);
+                        keyRightMap.put(h, output[1]);
+                        if (hHasLeft) {
+                            keyLeftMap.put(h, hL);
+                        }
+                    }
+                }
             } else {
-                h.right = delete(h.right, key);
+                //h.right = delete(h.right, key);
+                if (keyRightMap.containsKey(h)) {
+                    delete(keyRightMap.get(h), key, output);
+                    if (output[0] == -1) {
+                        keyRightMap.remove(h);
+                    } else {
+                        keyRightMap.put(h, output[1]);
+                    }
+                }
             }
         }
-        return balance(h);        
+        output[0] = 0;
+        output[1] = balance(h);        
     }
 
    /***************************************************************************
@@ -642,21 +649,69 @@ public class RedBlackBSTLongInt2 {
     ***************************************************************************/
 
     // make a left-leaning link lean to the right
-    private Node rotateRight(Node h) {
+    private long rotateRight(long h) {
         // assert (h != null) && isRed(h.left);
-        Node x = h.left;
-        h.left = x.right;
-        x.right = h;
-        x.color = x.right.color;
-        x.right.color = RED;
-        x.size = h.size;
+        assert(keyValMap.containsKey(h));
+        assert(isLeftRed(h));
+        
+        /*
+        h.left = h.left.right;
+        h.left.right = h;
+        h.left.color = h.left.right.color
+        h.left.right.color = RED;
+        h.left.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
+        */
+        
+        long x = keyLeftMap.get(h);
+        
+        //TODO: look at book diagrams and see if this is always true.
+        //  temporarily asserting empirically
+        assert(keyRightMap.containsKey(x));
+        
+        //h.left = x.right;
+        keyLeftMap.put(h, keyRightMap.get(x));
+        
+        //x.right = h;
+        keyRightMap.put(h, h);
+        
+        //x.color = x.right.color;
+        //x.right.color = RED;
+        //x.size = h.size;
+        keyColorMap.put(x, keyColorMap.get(keyRightMap.get(x)));
+        keyColorMap.put(keyRightMap.get(x), 0);
+        keySizeMap.put(x, keySizeMap.get(h));
+        
+        //h.size = size(h.left) + size(h.right) + 1;
+        int size = sizeLeft(h) + sizeRight(h) + 1;
+        keySizeMap.put(h, size);
+        
         return x;
     }
 
     // make a right-leaning link lean to the left
-    private Node rotateLeft(Node h) {
+    private long rotateLeft(long h) {
         // assert (h != null) && isRed(h.right);
+        
+        assert(keyValMap.containsKey(h));
+        assert(isRightRed(h));
+        
+        long x = keyRightMap.get(h);
+        
+        //TODO: look at book diagrams and see if this is always true.
+        //  temporarily asserting empirically
+        assert(keyLeftMap.containsKey(x));
+        
+        keyRightMap.put(h, keyLeftMap.get(x));
+        keyLeftMap.put(x, h);
+        keyColorMap.put(x, keyColorMap.get(keyLeftMap.get(x)));
+        keyColorMap.put(keyLeftMap.get(x), 0);
+        keySizeMap.put(x, keySizeMap.get(h));
+        
+        int size = sizeLeft(h) + sizeRight(h) + 1;
+        keySizeMap.put(h, size);
+        
+        /*
         Node x = h.right;
         h.right = x.left;
         x.left = h;
@@ -664,29 +719,48 @@ public class RedBlackBSTLongInt2 {
         x.left.color = RED;
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
+        */
+        
         return x;
     }
 
     // flip the colors of a node and its two children
-    private void flipColors(Node h) {
+    private void flipColors(long h) {
         // h must have opposite color of its two children
-        // assert (h != null) && (h.left != null) && (h.right != null);
-        // assert (!isRed(h) &&  isRed(h.left) &&  isRed(h.right))
-        //    || (isRed(h)  && !isRed(h.left) && !isRed(h.right));
+        assert(keyValMap.containsKey(h) && keyLeftMap.containsKey(h) 
+            && keyRightMap.containsKey(h));
+        assert(!isRed(h) &&  isLeftRed(h) &&  isRightRed(h))
+        || (isRed(h)  && !isLeftRed(h) && !isRightRed(h));
+        
+        /*
         h.color = !h.color;
         h.left.color = !h.left.color;
         h.right.color = !h.right.color;
+        */
+        int clr = keyColorMap.get(h);
+        clr ^= 1;
+        keyColorMap.put(h, clr);
+        
+        clr = keyColorMap.get(keyLeftMap.get(h));
+        clr ^= 1;
+        keyColorMap.put(keyLeftMap.get(h), clr);
+        
+        clr = keyColorMap.get(keyRightMap.get(h));
+        clr ^= 1;
+        keyColorMap.put(keyRightMap.get(h), clr);
     }
 
     // Assuming that h is red and both h.left and h.left.left
     // are black, make h.left or one of its children red.
-    private Node moveRedLeft(Node h) {
-        // assert (h != null);
-        // assert isRed(h) && !isRed(h.left) && !isRed(h.left.left);
+    private long moveRedLeft(long h) {
+        assert(keyValMap.containsKey(h));
+        assert(isRed(h) && !isLeftRed(h) && !isLeftLeftRed(h));
 
         flipColors(h);
-        if (isRed(h.right.left)) { 
-            h.right = rotateRight(h.right);
+        if (isRightLeftRed(h)) {
+            //h.right = rotateRight(h.right);
+            long rKey = rotateRight(keyRightMap.get(h));
+            keyRightMap.put(h, rKey);
             h = rotateLeft(h);
             flipColors(h);
         }
@@ -695,11 +769,11 @@ public class RedBlackBSTLongInt2 {
 
     // Assuming that h is red and both h.right and h.right.left
     // are black, make h.right or one of its children red.
-    private Node moveRedRight(Node h) {
-        // assert (h != null);
-        // assert isRed(h) && !isRed(h.right) && !isRed(h.right.left);
+    private long moveRedRight(long h) {
+        assert (keyValMap.containsKey(h));
+        assert(isRed(h) && !isRightRed(h) && !isRightLeftRed(h));
         flipColors(h);
-        if (isRed(h.left.left)) { 
+        if (isLeftLeftRed(h)) { 
             h = rotateRight(h);
             flipColors(h);
         }
@@ -707,20 +781,22 @@ public class RedBlackBSTLongInt2 {
     }
 
     // restore red-black tree invariant
-    private Node balance(Node h) {
-        // assert (h != null);
+    private long balance(long h) {
+        assert (keyValMap.containsKey(h));
 
-        if (isRed(h.right))   {
+        if (isRightRed(h))   {
             h = rotateLeft(h);
         }
-        if (isRed(h.left) && isRed(h.left.left)) {
+        if (isLeftRed(h) && isLeftLeftRed(h)) {
             h = rotateRight(h);
         }
-        if (isRed(h.left) && isRed(h.right))  {
+        if (isLeftRed(h) && isRightRed(h))  {
             flipColors(h);
         }
 
-        h.size = size(h.left) + size(h.right) + 1;
+        int size = sizeLeft(h) + sizeRight(h) + 1;
+        keySizeMap.put(h, size);
+        
         return h;
     }
 
@@ -736,9 +812,17 @@ public class RedBlackBSTLongInt2 {
     public int height() {
         return height(root);
     }
-    private int height(Node x) {
-        if (x == null) return -1;
-        return 1 + Math.max(height(x.left), height(x.right));
+    private int height(long x) {
+        if (!keyValMap.containsKey(x)) return -1;
+        return 1 + Math.max(heightLeft(x), heightRight(x));
+    }
+    private int heightLeft(long x) {
+        if (!keyLeftMap.containsKey(x)) return -1;
+        return height(keyLeftMap.get(x));
+    }
+    private int heightRight(long x) {
+        if (!keyRightMap.containsKey(x)) return -1;
+        return height(keyRightMap.get(x));
     }
 
    /***************************************************************************
@@ -747,40 +831,52 @@ public class RedBlackBSTLongInt2 {
 
     /**
      * Returns the smallest key in the symbol table.
-     * @return the smallest key in the symbol table
+     * @param output if output[0] == -1 no minimum was present,
+     * else output[1] holds the smallest key in the symbol table
      * @throws NoSuchElementException if the symbol table is empty
      */
-    public long min() {
+    public void min(long[] output) {
         if (isEmpty()) throw new NoSuchElementException("called min() with empty symbol table");
-        return min(root).key;
-    } 
+        output[0] = 0;
+        min(root, output);
+    }
 
     // the smallest key in subtree rooted at x; null if no such key
-    private Node min(Node x) { 
-        assert(x != null);
-        while (x.left != null) {
-            x = x.left;
+    private void min(long x, long[] output) { 
+        //assert(keyValMap.containsKey(x));
+        if (!keyValMap.containsKey(x)) {
+            output[0] = -1;
+            return;
         }
-        return x;
-    } 
+        while (keyLeftMap.containsKey(x)) {
+            x = keyLeftMap.get(x);
+        }
+        output[1] = x;
+    }
 
     /**
      * Returns the largest key in the symbol table.
-     * @return the largest key in the symbol table
+     * @param output if output[0] == -1 no minimum was present,
+     * else output[1] holds the largest key in the symbol table
      * @throws NoSuchElementException if the symbol table is empty
      */
-    public long max() {
+    public void max(long[] output) {
         if (isEmpty()) throw new NoSuchElementException("called max() with empty symbol table");
-        return max(root).key;
+        output[0] = 0;
+        max(root, output);
     } 
 
     // the largest key in the subtree rooted at x; null if no such key
-    private Node max(Node x) { 
-        assert(x != null);
-        while (x.right != null) {
-            x = x.right;
+    private void max(long x, long[] output) { 
+        //assert(keyValMap.containsKey(x));
+        if (!keyValMap.containsKey(x)) {
+            output[0] = -1;
+            return;
         }
-        return x; 
+        while (keyRightMap.containsKey(x)) {
+            x = keyRightMap.get(x);
+        }
+        output[1] = x;
     }
 
     /**
@@ -798,13 +894,7 @@ public class RedBlackBSTLongInt2 {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
-        Node x = floor(root, key);
-        if (x == null) {
-            output[0] = -1;
-        } else {
-            output[0] = 0;
-            output[1] = x.key;
-        }
+        floor(root, key, output);
     }    
 
     /**
@@ -822,32 +912,41 @@ public class RedBlackBSTLongInt2 {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
-        List<Node> stack = new ArrayList<Node>();
-        Node x = lower(root, key, stack);
-        if (x == null) {
-            output[0] = -1;
-        } else {
-            output[0] = 0;
-            output[1] = x.key;
-        }
+        TLongList stack = new TLongArrayList();
+        output[0] = 0;
+        lower(root, key, stack, output);
     }    
     
     // the largest key in the subtree rooted at x less than or equal to the given key
-    private Node floor(Node x, long key) {
-        if (x == null) return null;
-        int cmp = (key < x.key) ? -1 : (key > x.key) ? 1 : 0;
+    private void floor(long x, long key, long[] output) {
+        if (!keyValMap.containsKey(x)) {
+            output[0] = -1;
+            return;
+        }
+        output[0] = 0;
+        int cmp = (key < x) ? -1 : (key > x) ? 1 : 0;
         if (cmp == 0) {
-            return x;
+            output[1] = x;
+            return;
         }
         if (cmp < 0)  {
-            return floor(x.left, key);
+            if (keyLeftMap.containsKey(x)) {
+                floor(keyLeftMap.get(x), key, output);
+                return;
+            }
+            output[0] = -1;
+            return;
         }
-        Node t = floor(x.right, key);
-        if (t != null) {
-            return t;
-        } else {
-            return x;
+        if (keyRightMap.containsKey(x)) {
+            floor(keyRightMap.get(x), key, output);
+            if (output[0] == -1) {
+                output[0] = 0;
+                output[1] = x;
+            }
+            return;
         }
+        output[0] = 0;
+        output[1] = x;
     }
     
     /** the largest key in the subtree rooted at x less than the given key
@@ -861,54 +960,78 @@ public class RedBlackBSTLongInt2 {
      * @param stack
      * @return 
      */
-    private Node lower(Node x, long key, List<Node> stack) { 
+    private void lower(long x, long key, TLongList stack, long[] output) { 
         
         //binary search until overshoot
-        while (x != null && key != x.key) {
+        while (keyValMap.containsKey(x) && key != x) {
             stack.add(x);
-            //System.out.println("lower: x=" + x.key + " q=" + key);
-            if (key < x.key) {
-                x = x.left;
+            //System.out.println("lower: x=" + x + " q=" + key);
+            if (key < x) {
+                if (!keyLeftMap.containsKey(x)) {
+                    break;
+                }
+                x = keyLeftMap.get(x);
             } else {
-                //System.out.println("   x.key=" + x.key);
-                x = x.right;
+                //System.out.println("   x=" + x.key);
+                if (!keyRightMap.containsKey(x)) {
+                    break;
+                }
+                x = keyRightMap.get(x);
             }
         }
         
-        Node y = null;
+        long y = -1;
         int yIdx = -1;
+        boolean yIsSet = false;
         
-        if (x == null) {
+        if (!keyValMap.containsKey(x)) {
             if (stack.size() > 1) {
                 x = stack.get(stack.size() - 1);
                 yIdx = stack.size() - 2;
                 y = stack.get(yIdx);
+                yIsSet = true;
             } else if (stack.size() == 1) {
                 x = stack.get(stack.size() - 1);
             }
         } else if (!stack.isEmpty()) {
             yIdx = stack.size() - 1;
             y = stack.get(yIdx);
+            yIsSet = true;
         }
         
-        if (x.left != null) {
-            return max(x.left);
+        if (keyLeftMap.containsKey(x)) {
+            max(keyLeftMap.get(x), output);
+            return;
         }
       
-        while (y != null && x == y.left) {
+        //while (y != null && x == y.left) {
+        while (yIsSet && 
+            (
+            (keyLeftMap.containsKey(y) && keyValMap.containsKey(x) &&
+            keyLeftMap.get(y) == keyValMap.get(x)) 
+            || 
+            (!keyLeftMap.containsKey(y) && !keyValMap.containsKey(x))
+            )
+            ) {
+            
             //System.out.println("lower: y=" + y.key + " q=" + key);
             x = y;
             yIdx--;
             if (yIdx < 0) break;
             y = stack.get(yIdx);
+            yIsSet = true;
         }
         
         //System.out.println("    y=" + y.key + " q=" + key);
-        if (y != null && y.key >= key) {
-            return null;
+        if (yIsSet && y >= key) {
+            output[0] = -1;
+            return;
         }
-        
-        return y;
+        if (yIsSet) {
+            output[1] = y;
+        } else {
+            output[0] = -1;
+        }
     }
 
     /**
@@ -927,13 +1050,8 @@ public class RedBlackBSTLongInt2 {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
-        Node x = ceiling(root, key);
-        if (x == null) {
-            output[0] = -1;
-        } else   {
-            output[0] = 0;
-            output[1] = x.key;
-        }
+        output[0] = 0;
+        ceiling(root, key, output);
     }
 
     /**
@@ -952,26 +1070,49 @@ public class RedBlackBSTLongInt2 {
             output[0] = -1;
             throw new NoSuchElementException("called floor() with empty symbol table");
         }
-        List<Node> stack = new ArrayList<Node>();
-        Node x = higher(root, key, stack);
-        if (x == null) {
-            output[0] = -1;
-        } else   {
-            output[0] = 0;
-            output[1] = x.key;
-        }
+        TLongList stack = new TLongArrayList();
+        higher(root, key, stack, output);
     }
     
     // the smallest key in the subtree rooted at x greater than or equal to the given key
-    private Node ceiling(Node x, long key) {
+    private void ceiling(long x, long key, long[] output) {
+        
         //TODO: make this iterative
-        if (x == null) return null;
-        int cmp = key < x.key ? -1 : (key > x.key) ? 1 : 0; 
-        if (cmp == 0) return x;
-        if (cmp > 0)  return ceiling(x.right, key);
+        
+        if (keyValMap.containsKey(x)) {
+            output[0] = -1;
+            return;
+        }
+        output[0] = 0;
+        int cmp = key < x ? -1 : (key > x) ? 1 : 0; 
+        if (cmp == 0) {
+            output[1] = x;
+            return;
+        }
+        if (cmp > 0)  {
+            if (keyRightMap.containsKey(x)) {
+                ceiling(keyRightMap.get(x), key, output);
+            } else {
+                output[0] = -1;
+            }
+            return;
+        }
+        /*
         Node t = ceiling(x.left, key);
-        if (t != null) return t; 
-        else           return x;
+        if (t != null) {
+            return t;
+        } else {
+            return x;
+        }*/
+        if (keyLeftMap.containsKey(x)) {
+            ceiling(keyLeftMap.get(x), key, output);
+            if (output[0] == -1) {
+                output[0] = 0;
+                output[1] = x;
+            }
+        } else {
+            output[1] = x;
+        }
     }
     
     /** the smallest key in the subtree rooted at x greater than the given key.
@@ -983,58 +1124,84 @@ public class RedBlackBSTLongInt2 {
      * @param key
      * @return 
      */
-    private Node higher(Node x, long key, List<Node> stack) {  
-                        
+    private void higher(long x, long key, TLongList stack, long[] output) {  
+                
         /*
                     X
         left .lte.     right .gte.
         */
-        
         //binary search until overshoot
-        while (x != null && key != x.key) {
+        while (keyValMap.containsKey(x) && key != x) {
             stack.add(x);
-            //System.out.println("higher: x=" + x.key + " q=" + key);
-            if (key < x.key) {
-                x = x.left;
+            //System.out.println("lower: x=" + x + " q=" + key);
+            if (key < x) {
+                if (!keyLeftMap.containsKey(x)) {
+                    break;
+                }
+                x = keyLeftMap.get(x);
             } else {
-                //right is towards numbers larger than x.key
-                x = x.right;
+                //System.out.println("   x=" + x.key);
+                if (!keyRightMap.containsKey(x)) {
+                    break;
+                }
+                x = keyRightMap.get(x);
             }
         }
-        
-        Node y = null;
+
+        long y = -1;
         int yIdx = -1;
-        
-        if (x == null) {
+        boolean yIsSet = false;
+
+        if (!keyValMap.containsKey(x)) {
             if (stack.size() > 1) {
                 x = stack.get(stack.size() - 1);
                 yIdx = stack.size() - 2;
                 y = stack.get(yIdx);
+                yIsSet = true;
             } else if (stack.size() == 1) {
                 x = stack.get(stack.size() - 1);
             }
         } else if (!stack.isEmpty()) {
             yIdx = stack.size() - 1;
             y = stack.get(yIdx);
+            yIsSet = true;
         }
         
-        if (x.right != null) {
-            return min(x.right);
+        if (keyRightMap.containsKey(x)) {
+            output[0] = 0;
+            min(keyRightMap.get(x), output);
+            return;
         }
         
-        while (y != null && x == y.right) {
-            //System.out.println("higher: y=" + y.key + " q=" + key);
+        //while (y != null && x == y.right) {
+        while (yIsSet && 
+            (
+            (keyRightMap.containsKey(y) && keyValMap.containsKey(x) &&
+            keyRightMap.get(y) == keyValMap.get(x)) 
+            || 
+            (!keyRightMap.containsKey(y) && !keyValMap.containsKey(x))
+            )
+            ) {
+        
+            //System.out.println("higher: y=" + y + " q=" + key);
             x = y;
             yIdx--;
             if (yIdx < 0) break;
             y = stack.get(yIdx);
+            yIsSet = true;
         }
         
-        if (y != null && y.key <= key) {
-            return null;
+        if (yIsSet && y <= key) {
+            output[0] = -1;
+            return;
         }
         
-        return y;
+        if (yIsSet) {
+            output[1] = y;
+            return;
+        }
+        
+        output[0] = -1;
     }
 
     /**
@@ -1048,19 +1215,36 @@ public class RedBlackBSTLongInt2 {
         if (k < 0 || k >= size()) {
             throw new IllegalArgumentException("called select() with invalid argument: " + k);
         }
-        Node x = select(root, k);
-        return x.key;
+        long[] output = new long[2];
+        select(root, k, output);
+        if (output[0] == -1) {
+            return -1;
+        }
+        return output[1];
     }
 
     // the key of rank k in the subtree rooted at x
-    private Node select(Node x, int k) {
+    private void select(long x, int k, long[] output) {
+        
         //TODO: make this iterative
-        // assert x != null;
-        // assert k >= 0 && k < size(x);
-        int t = size(x.left); 
-        if      (t > k) return select(x.left,  k); 
-        else if (t < k) return select(x.right, k-t-1); 
-        else            return x; 
+        
+        assert(keyValMap.containsKey(x));
+        assert(k >= 0 && k < size(x));
+        
+        output[0] = 0;
+        
+        int t = sizeLeft(x); 
+        if (t > k) {
+            select(keyLeftMap.get(x),  k, output);
+        } else if (t < k) {
+            if (keyRightMap.containsKey(x)) {
+                select(keyRightMap.get(x), k-t-1, output);
+            } else {
+                output[0] = -1;
+            }
+        } else {
+            output[1] = x;
+        }
     } 
 
     /**
@@ -1070,17 +1254,41 @@ public class RedBlackBSTLongInt2 {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public int rank(long key) {
-        return rank(key, root);
+        int[] output = new int[2];
+        rank(key, root, output);
+        if (output[0] == -1) {
+            return 0;
+        }
+        return output[1];
     } 
 
     // number of keys less than key in the subtree rooted at x
-    private int rank(long key, Node x) {
+    private void rank(long key, long x, int[] output) {
+        
         //TODO: make this iterative
-        if (x == null) return 0; 
-        int cmp = key < x.key ? -1 : (key > x.key) ? 1 : 0;  
-        if      (cmp < 0) return rank(key, x.left); 
-        else if (cmp > 0) return 1 + size(x.left) + rank(key, x.right); 
-        else              return size(x.left); 
+        output[0] = 0;
+        
+        if (!keyValMap.containsKey(x)) {
+            output[1] = 0;
+            return;
+        } 
+        int cmp = key < x ? -1 : (key > x) ? 1 : 0;  
+        if (cmp < 0) {
+            if (keyLeftMap.containsKey(x)) {
+                rank(key, keyLeftMap.get(x), output);
+            } else {
+                output[1] = 0;
+            }
+            return;
+        } else if (cmp > 0) {
+            int sz = sizeLeft(x) + sizeRight(x) + 1;
+            output[1] = sz;
+            return;
+        } else {
+            int sz = sizeLeft(x);
+            output[1] = sz;
+            return;
+        } 
     } 
 
    /***************************************************************************
@@ -1094,8 +1302,19 @@ public class RedBlackBSTLongInt2 {
      * @return all keys in the symbol table as an {@code Iterable}
      */
     public TLongList keys() {
+        
         if (isEmpty()) return new TLongArrayList();
-        return keys(min(), max());
+        
+        long[] output = new long[2];
+        min(output);
+        assert(output[0] != -1);
+        long lo = output[1];
+        
+        max(output);
+        assert(output[0] != -1);
+        long hi = output[1];
+        
+        return keys(lo, hi);
     }
 
     /**
@@ -1119,14 +1338,28 @@ public class RedBlackBSTLongInt2 {
 
     // add the keys between lo and hi in the subtree rooted at x
     // to the queue
-    private void keys(Node x, TLongList queue, long lo, long hi) { 
+    private void keys(long x, TLongList queue, long lo, long hi) {
+        
         //TODO: make this iterative
-        if (x == null) return; 
-        int cmplo = lo < x.key ? -1 : (lo > x.key) ? 1 : 0;
-        int cmphi = hi < x.key ? -1 : (hi > x.key) ? 1 : 0; 
-        if (cmplo < 0) keys(x.left, queue, lo, hi); 
-        if (cmplo <= 0 && cmphi >= 0) queue.add(x.key); 
-        if (cmphi > 0) keys(x.right, queue, lo, hi); 
+        
+        if (!keyValMap.containsKey(x)) {
+            return;
+        } 
+        int cmplo = lo < x ? -1 : (lo > x) ? 1 : 0;
+        int cmphi = hi < x ? -1 : (hi > x) ? 1 : 0; 
+        if (cmplo < 0) {
+            if (keyLeftMap.containsKey(x)) {
+                keys(keyLeftMap.get(x), queue, lo, hi);
+            }
+        } 
+        if (cmplo <= 0 && cmphi >= 0) {
+            queue.add(x);
+        } 
+        if (cmphi > 0) {
+            if (keyRightMap.containsKey(x)) {
+                keys(keyRightMap.get(x), queue, lo, hi);
+            }
+        } 
     } 
 
     /**
@@ -1168,21 +1401,51 @@ public class RedBlackBSTLongInt2 {
     // is the tree rooted at x a BST with all keys strictly between min and max
     // (if min or max is null, treat as empty constraint)
     // Credit: Bob Dondero's elegant solution
-    private boolean isBST(Node x, Long min, Long max) {
-        if (x == null) return true;
-        if (min != null && x.key <= min) return false;
-        if (max != null && x.key >= max) return false;
-        return isBST(x.left, min, Long.valueOf(x.key)) 
-            && isBST(x.right, Long.valueOf(x.key), max);
-    } 
+    private boolean isBST(long x, Long min, Long max) {
+        if (!keyValMap.containsKey(x)) {
+            return true;
+        }
+        if (min != null && x <= min.longValue()) {
+            return false;
+        }
+        if (max != null && x >= max.longValue()) {
+            return false;
+        }
+        return isBSTLeft(x, min, Long.valueOf(x)) 
+            && isBSTRight(x, Long.valueOf(x), max);
+    }
+    private boolean isBSTLeft(long x, Long min, Long max) {
+        if (!keyLeftMap.containsKey(x)) {
+            return true;
+        }
+        long key = keyLeftMap.get(x);
+        return isBST(key, Long.valueOf(x), max);
+    }
+    private boolean isBSTRight(long x, Long min, Long max) {
+        if (!keyRightMap.containsKey(x)) {
+            return true;
+        }
+        long key = keyRightMap.get(x);
+        return isBST(key, Long.valueOf(x), max);
+    }
 
     // are the size fields correct?
     private boolean isSizeConsistent() { return isSizeConsistent(root); }
-    private boolean isSizeConsistent(Node x) {
-        if (x == null) return true;
-        if (x.size != size(x.left) + size(x.right) + 1) return false;
-        return isSizeConsistent(x.left) && isSizeConsistent(x.right);
-    } 
+    private boolean isSizeConsistent(long x) {
+        if (!keyValMap.containsKey(x)) return true;
+        if (keySizeMap.get(x) != sizeLeft(x) + sizeRight(x) + 1) return false;
+        return isSizeConsistentLeft(x) && isSizeConsistentRight(x);
+    }
+    private boolean isSizeConsistentLeft(long x) {
+        if (!keyLeftMap.containsKey(x)) return true;
+        long key = keyLeftMap.get(x);
+        return isSizeConsistent(key);
+    }
+    private boolean isSizeConsistentRight(long x) {
+        if (!keyRightMap.containsKey(x)) return true;
+        long key = keyRightMap.get(x);
+        return isSizeConsistent(key);
+    }
 
     // check that ranks are consistent
     private boolean isRankConsistent() {
@@ -1202,39 +1465,79 @@ public class RedBlackBSTLongInt2 {
     // Does the tree have no red right links, and at most one (left)
     // red links in a row on any path?
     private boolean is23() { return is23(root); }
-    private boolean is23(Node x) {
-        if (x == null) return true;
-        if (isRed(x.right)) return false;
-        if (x != root && isRed(x) && isRed(x.left))
+    private boolean is23(long x) {
+        if (!keyValMap.containsKey(x)) {
+            return true;
+        }
+        if (isRightRed(x)) return false;
+        if (x != root && isRed(x) && isLeftRed(x))
             return false;
-        return is23(x.left) && is23(x.right);
+        boolean tL;
+        if (!keyLeftMap.containsKey(x)) {
+            tL = true;
+        } else {
+            tL = is23(keyLeftMap.get(x));
+        }
+        boolean tR;
+        if (!keyRightMap.containsKey(x)) {
+            tR = true;
+        } else {
+            tR = is23(keyRightMap.get(x));
+        }
+        return tL && tR;
     } 
 
     // do all paths from root to leaf have same number of black edges?
     private boolean isBalanced() { 
+        if (!rootIsSet) {
+            return true;
+        }
         int black = 0;     // number of black links on path from root to min
-        Node x = root;
-        while (x != null) {
-            if (!isRed(x)) black++;
-            x = x.left;
+        long x = root;
+        while (keyValMap.containsKey(x)) {
+            if (!isRed(x)) {
+                black++;
+            }
+            if (!keyLeftMap.containsKey(x)) {
+                break;
+            }
+            x = keyLeftMap.get(x);
         }
         return isBalanced(root, black);
     }
 
     // does every path from the root to a leaf have the given number of black links?
-    private boolean isBalanced(Node x, int black) {
-        if (x == null) return black == 0;
-        if (!isRed(x)) black--;
-        return isBalanced(x.left, black) && isBalanced(x.right, black);
+    private boolean isBalanced(long x, int black) {
+        if (!keyValMap.containsKey(x)) {
+            return black == 0;
+        }
+        if (!isRed(x)) {
+            black--;
+        }
+        return isLeftBalanced(x, black) && isRightBalanced(x, black);
+    }
+    private boolean isLeftBalanced(long x, int black) {
+        if (!keyLeftMap.containsKey(x)) {
+            return black == 0;
+        }
+        long key = keyLeftMap.get(x);
+        return isBalanced(key, black);
+    } 
+    private boolean isRightBalanced(long x, int black) {
+        if (!keyRightMap.containsKey(x)) {
+            return black == 0;
+        }
+        long key = keyRightMap.get(x);
+        return isBalanced(key, black);
     } 
     
     /**
      * left subtree, root, right subtree
      */
     public void printInOrderTraversal() {
-        Node[] nodes = getInOrderTraversalIterative(root);
-        for (Node node : nodes) {
-            System.out.println("node=" + node.toString());
+        long[] nodes = getInOrderTraversalIterative(root);
+        for (long node : nodes) {
+            System.out.println("node=" + node);
         }
     }
     
@@ -1242,9 +1545,9 @@ public class RedBlackBSTLongInt2 {
      * root, left subtree, right subtree
      */
     public void printPreOrderTraversal() {
-        Node[] nodes = getPreOrderTraversalIterative(root);
-        for (Node node : nodes) {
-            System.out.println("node=" + node.toString());
+        long[] nodes = getPreOrderTraversalIterative(root);
+        for (long node : nodes) {
+            System.out.println("node=" + node);
         }
     }
     
@@ -1252,9 +1555,9 @@ public class RedBlackBSTLongInt2 {
      * left subtree, right subtree, root subtree
      */
     public void printPostOrderTraversal() {
-        Node[] nodes = getPostOrderTraversalIterative(root);
-        for (Node node : nodes) {
-            System.out.println("node=" + node.toString());
+        long[] nodes = getPostOrderTraversalIterative(root);
+        for (long node : nodes) {
+            System.out.println("node=" + node);
         }
     }
 
@@ -1262,19 +1565,20 @@ public class RedBlackBSTLongInt2 {
      * visit each node using pattern left subtree, root, right subtree
      * in an iterative manner rather than invoking the method recursively.
      */
-    protected Node[] getInOrderTraversalIterative(Node node) {
+    protected long[] getInOrderTraversalIterative(Long node) {
        
-        Node[] array = new Node[size()];
+        long[] array = new long[size()];
         int count = 0;
         
-        Stack<Node> stack = new Stack<>();
+        Stack<Long> stack = new Stack<>();
                
         while (!stack.isEmpty() || (node != null)) {
             if (node != null) {
                  
                 stack.push(node);
                 
-                node = node.left;
+                node = keyLeftMap.containsKey(node.longValue()) ?
+                    keyLeftMap.get(node.longValue()) : null;
             
             } else {
                 
@@ -1285,7 +1589,8 @@ public class RedBlackBSTLongInt2 {
                 
                 //System.out.println(node.key);
                 
-                node = node.right;
+                node = keyRightMap.containsKey(node.longValue()) ?
+                    keyRightMap.get(node.longValue()) : null;
             }
         }
         
@@ -1296,12 +1601,12 @@ public class RedBlackBSTLongInt2 {
      * visit each node using pattern: root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
      */
-    protected Node[] getPreOrderTraversalIterative(Node node) {
+    protected long[] getPreOrderTraversalIterative(Long node) {
        
-        Node[] array = new Node[size()];
+        long[] array = new long[size()];
         int count = 0;
         
-        Stack<Node> stack = new Stack<>();
+        Stack<Long> stack = new Stack<>();
         
         while (!stack.isEmpty() || (node != null)) {
             if (node != null) {
@@ -1312,13 +1617,15 @@ public class RedBlackBSTLongInt2 {
                 
                 stack.push(node);
                 
-                node = node.left;
+                node = keyLeftMap.containsKey(node.longValue()) ?
+                    keyLeftMap.get(node.longValue()) : null;
             
             } else {
                 
                 node = stack.pop();
                 
-                node = node.right;
+                node = keyRightMap.containsKey(node.longValue()) ?
+                    keyRightMap.get(node.longValue()) : null;
             }
         }
         
@@ -1329,17 +1636,17 @@ public class RedBlackBSTLongInt2 {
      * visit each node using pattern: left subtree, right subtree, root subtree
      * in an iterative manner rather than invoking the method recursively.
      */
-    protected Node[] getPostOrderTraversalIterative(Node node) {
+    protected long[] getPostOrderTraversalIterative(Long node) {
         
-        Node[] array = new Node[size()];
+        long[] array = new long[size()];
         int count = 0;
         
         if (node == null) {
             return array;
         }
         
-        Stack<Node> stack = new Stack<Node>();
-        Stack<Node> stack2 = new Stack<Node>();
+        Stack<Long> stack = new Stack<Long>();
+        Stack<Long> stack2 = new Stack<Long>();
         stack.push(node);
         
         while (!stack.isEmpty()) {
@@ -1348,13 +1655,13 @@ public class RedBlackBSTLongInt2 {
             
             stack2.push(node);
             
-            if (node.left != null) {
-                stack.push(node.left);
+            if (keyLeftMap.containsKey(node.longValue())) {
+                stack.push(keyLeftMap.get(node.longValue()));
             }
 
-            if (node.right != null) {
-                stack.push(node.right);
-            }            
+            if (keyRightMap.containsKey(node.longValue())) {
+                stack.push(keyRightMap.get(node.longValue()));
+            }
         }
         
         while (!stack2.isEmpty()) {
@@ -1369,11 +1676,7 @@ public class RedBlackBSTLongInt2 {
          
         return array;
     }
-    
-    public static long estimateNodeSizeOnHeap() {
-        return Node.estimateSizeOnHeap();
-    }
-    
+   
     /**
      * estimate the size that an instance of RedBlackBSTLongInt with
      * n entries would occupy in heap space in Bytes.
@@ -1386,15 +1689,24 @@ public class RedBlackBSTLongInt2 {
     public static long estimateSizeOnHeap(int numberOfEntries) {
         
         long total = 0;
-        
+       
         ObjectSpaceEstimator est = new ObjectSpaceEstimator();
-        est.setNBooleanFields(2);
-        est.setNObjRefsFields(1);
+        est.setNBooleanFields(3);
+        est.setNLongFields(1);
+        est.setNArrayRefsFields(1);
+        est.setNIntFields(2);
        
         total += est.estimateSizeOnHeap();
         
-        total += numberOfEntries * Node.estimateSizeOnHeap();
-    
+        // add the maps
+        total += 5 * ObjectSpaceEstimator.estimateTLongLongHashMap();
+        
+        // add the entries in the maps
+        // 7 longs, 3 ints
+        total += numberOfEntries * 
+            (7 * ObjectSpaceEstimator.estimateLongSize()
+            + 3 * ObjectSpaceEstimator.estimateIntSize());
+            
         return total;
     }
 }
