@@ -231,6 +231,10 @@ public class RedBlackBSTLongInt {
     public void put(long key, int val) {
         root = put(root, key, val);
         root.color = BLACK;
+        
+        System.out.println("after put:");
+        printPreOrderTraversal();
+        
         // assert check();
     }
 
@@ -242,11 +246,17 @@ public class RedBlackBSTLongInt {
         if      (cmp < 0) h.left  = put(h.left,  key, val); 
         else if (cmp > 0) h.right = put(h.right, key, val); 
         else              h.val   = val;
-
+        
         // fix-up any right-leaning links
-        if (isRed(h.right) && !isRed(h.left))      h = rotateLeft(h);
-        if (isRed(h.left)  &&  isRed(h.left.left)) h = rotateRight(h);
-        if (isRed(h.left)  &&  isRed(h.right))     flipColors(h);
+        if (isRed(h.right) && !isRed(h.left)) {
+            h = rotateLeft(h);
+        }
+        if (isRed(h.left)  &&  isRed(h.left.left)) {
+            h = rotateRight(h);
+        }
+        if (isRed(h.left)  &&  isRed(h.right)) {
+            flipColors(h);
+        }
         h.size = size(h.left) + size(h.right) + 1;
 
         return h;
@@ -382,6 +392,10 @@ public class RedBlackBSTLongInt {
         x.right.color = RED;
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
+        
+        System.out.println("after rotateRight:");
+        printPreOrderTraversal();
+        
         return x;
     }
 
@@ -395,6 +409,10 @@ public class RedBlackBSTLongInt {
         x.left.color = RED;
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
+        
+        System.out.println("after rotateLeft:");
+        printPreOrderTraversal();
+        
         return x;
     }
 
@@ -421,6 +439,10 @@ public class RedBlackBSTLongInt {
             h = rotateLeft(h);
             flipColors(h);
         }
+        
+        System.out.println("after moveRedLeft:");
+        printPreOrderTraversal();
+        
         return h;
     }
 
@@ -434,6 +456,10 @@ public class RedBlackBSTLongInt {
             h = rotateRight(h);
             flipColors(h);
         }
+        
+        System.out.println("after moveRedRight:");
+        printPreOrderTraversal();
+        
         return h;
     }
 
@@ -988,6 +1014,10 @@ public class RedBlackBSTLongInt {
      * in an iterative manner rather than invoking the method recursively.
      */
     protected Node[] getInOrderTraversalIterative(Node node) {
+        
+        if (isEmpty()) {
+            return new Node[0];
+        }
        
         Node[] array = new Node[size()];
         int count = 0;
@@ -1023,13 +1053,19 @@ public class RedBlackBSTLongInt {
      */
     protected Node[] getPreOrderTraversalIterative(Node node) {
        
-        Node[] array = new Node[size()];
+        if (isEmpty()) {
+            return new Node[0];
+        }
+        
+        int sz = size();
+        
+        Node[] array = new Node[sz];
         int count = 0;
         
         Stack<Node> stack = new Stack<>();
-        
-        while (!stack.isEmpty() || (node != null)) {
-            if (node != null) {
+        stack.add(node);
+        while (!stack.isEmpty()) {
+            if (node != null && count < sz) {
                 
                 array[count] = node;
                 count++;
@@ -1055,6 +1091,10 @@ public class RedBlackBSTLongInt {
      * in an iterative manner rather than invoking the method recursively.
      */
     protected Node[] getPostOrderTraversalIterative(Node node) {
+        
+        if (isEmpty()) {
+            return new Node[0];
+        }
         
         Node[] array = new Node[size()];
         int count = 0;

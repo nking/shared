@@ -89,8 +89,8 @@ import java.util.Stack;
 
 public class RedBlackBSTLongInt2 {
     
-    private static final boolean RED   = true;
-    private static final boolean BLACK = false;
+    private static final int RED   = 1;
+    private static final int BLACK = 0;
 
     protected long root = -1;
     protected boolean rootIsSet = false;
@@ -123,11 +123,6 @@ public class RedBlackBSTLongInt2 {
         keySizeMap = new TLongIntHashMap(capacity);
     }
 
-    private long addNewNode(long key, int val, boolean color, int size) {
-        //TODO: consider adding assert that key doesn't exist
-        int clr = color ? 0 : 1;
-        return addNewNode(key, val, clr, size);
-    }
     private long addNewNode(long key, int val, int color, int size) {
         //TODO: consider adding assert that key doesn't exist
         keyValMap.put(key, val);
@@ -142,7 +137,7 @@ public class RedBlackBSTLongInt2 {
     // is node x red; false if x is null ?
     private boolean isRed(long x) {
         if (!keyColorMap.containsKey(x)) return false;
-        return keyColorMap.get(x) == 0;//RED;
+        return keyColorMap.get(x) == RED;
     }
     private boolean isLeftRed(long x) {
         if (!keyLeftMap.containsKey(x)) {
@@ -275,7 +270,11 @@ public class RedBlackBSTLongInt2 {
     public void put(long key, int val) {
         root = put(root, key, val);
         rootIsSet = true;
-        keyColorMap.put(root, 1);
+        keyColorMap.put(root, BLACK);
+        
+        System.out.println("after put:");
+        printPreOrderTraversal();
+        
         //root.color = BLACK;
         // assert check();
     }
@@ -311,7 +310,7 @@ public class RedBlackBSTLongInt2 {
             //h.val   = val;
             keyValMap.put(h, val);
         }
-
+        
         // fix-up any right-leaning links
         if (isRightRed(h) && !isLeftRed(h)) {
             h = rotateLeft(h);
@@ -361,7 +360,7 @@ public class RedBlackBSTLongInt2 {
     
     private void setRootToRedIfChildrenAreBlack() {
         if (!isLeftRed(root) && !isRightRed(root)) {
-            keyColorMap.put(root, 0);
+            keyColorMap.put(root, RED);
         }
     }
     
@@ -394,7 +393,7 @@ public class RedBlackBSTLongInt2 {
         }
         if (!isEmpty()) {
             //root.color = BLACK;
-            keyColorMap.put(root, 1);
+            keyColorMap.put(root, BLACK);
         }
         assert(check());
     }
@@ -462,7 +461,7 @@ public class RedBlackBSTLongInt2 {
         
         if (!isEmpty()) {
             //root.color = BLACK;
-            keyColorMap.put(root, 1);
+            keyColorMap.put(root, BLACK);
         }
         assert(check());
     }
@@ -543,7 +542,7 @@ public class RedBlackBSTLongInt2 {
         root = output[1];
         
         if (!isEmpty()) {
-            keyColorMap.put(root, 1);
+            keyColorMap.put(root, BLACK);
         }
         assert(check());
         
@@ -584,6 +583,8 @@ public class RedBlackBSTLongInt2 {
             if (key == h) {
                 
  //TODO: test this section
+ System.out.println("section needing tests...");
+ 
                 if (keyRightMap.containsKey(h)) {
                     
                     //Node x = min(h.right);
@@ -673,26 +674,28 @@ public class RedBlackBSTLongInt2 {
         
         long x = keyLeftMap.get(h);
         
-        //TODO: look at book diagrams and see if this is always true.
-        //  temporarily asserting 
-        assert(keyRightMap.containsKey(x));
-        
-        //h.left = x.right;
-        keyLeftMap.put(h, keyRightMap.get(x));
-        
+        if (keyRightMap.containsKey(x)) {
+            //h.left = x.right;
+            keyLeftMap.put(h, keyRightMap.get(x));
+        } else {
+            keyLeftMap.remove(h);
+        }
         //x.right = h;
         keyRightMap.put(x, h);
-        
         //x.color = x.right.color;
         //x.right.color = RED;
         //x.size = h.size;
         keyColorMap.put(x, keyColorMap.get(keyRightMap.get(x)));
-        keyColorMap.put(keyRightMap.get(x), 0);
+        keyColorMap.put(keyRightMap.get(x), RED);
+        
         keySizeMap.put(x, keySizeMap.get(h));
         
         //h.size = size(h.left) + size(h.right) + 1;
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
+        
+        System.out.println("after rotateRight:");
+        printPreOrderTraversal();
         
         return x;
     }
@@ -704,30 +707,29 @@ public class RedBlackBSTLongInt2 {
         assert(keyValMap.containsKey(h));
         assert(isRightRed(h));
         
+        //Node x = h.right;
         long x = keyRightMap.get(h);
         
-        //TODO: look at book diagrams and see if this is always true.
-        //  temporarily asserting empirically
-        assert(keyLeftMap.containsKey(x));
-        
-        keyRightMap.put(h, keyLeftMap.get(x));
+        if (keyLeftMap.containsKey(x)) {
+            //h.right = x.left;
+            keyRightMap.put(h, keyLeftMap.get(x));
+        } else {
+            keyRightMap.remove(h);
+        }
+        //x.left = h;
         keyLeftMap.put(x, h);
-        keyColorMap.put(x, keyColorMap.get(keyLeftMap.get(x)));
-        keyColorMap.put(keyLeftMap.get(x), 0);
+        //x.color = x.left.color;
+        keyColorMap.put(x, keyColorMap.get(h));
+        //x.left.color = RED;
+        keyColorMap.put(h, RED);
+        
         keySizeMap.put(x, keySizeMap.get(h));
         
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
-        
-        /*
-        Node x = h.right;
-        h.right = x.left;
-        x.left = h;
-        x.color = x.left.color;
-        x.left.color = RED;
-        x.size = h.size;
-        h.size = size(h.left) + size(h.right) + 1;
-        */
+       
+        System.out.println("after rotateLeft:");
+        printPreOrderTraversal();
         
         return x;
     }
@@ -749,13 +751,17 @@ public class RedBlackBSTLongInt2 {
         clr ^= 1;
         keyColorMap.put(h, clr);
         
-        clr = keyColorMap.get(keyLeftMap.get(h));
-        clr ^= 1;
-        keyColorMap.put(keyLeftMap.get(h), clr);
+        if (keyLeftMap.containsKey(h)) {
+            clr = keyColorMap.get(keyLeftMap.get(h));
+            clr ^= 1;
+            keyColorMap.put(keyLeftMap.get(h), clr);
+        }
         
-        clr = keyColorMap.get(keyRightMap.get(h));
-        clr ^= 1;
-        keyColorMap.put(keyRightMap.get(h), clr);
+        if (keyRightMap.containsKey(h)) {
+            clr = keyColorMap.get(keyRightMap.get(h));
+            clr ^= 1;
+            keyColorMap.put(keyRightMap.get(h), clr);
+        }
     }
 
     // Assuming that h is red and both h.left and h.left.left
@@ -772,6 +778,10 @@ public class RedBlackBSTLongInt2 {
             h = rotateLeft(h);
             flipColors(h);
         }
+        
+        System.out.println("after moveRedLeft:");
+        printPreOrderTraversal();
+        
         return h;
     }
 
@@ -785,6 +795,10 @@ public class RedBlackBSTLongInt2 {
             h = rotateRight(h);
             flipColors(h);
         }
+        
+        System.out.println("after moveRedRight:");
+        printPreOrderTraversal();
+        
         return h;
     }
 
@@ -1546,7 +1560,7 @@ public class RedBlackBSTLongInt2 {
     public void printInOrderTraversal() {
         long[] nodes = getInOrderTraversalIterative(root);
         for (long node : nodes) {
-            System.out.println("node=" + node);
+            System.out.println("node=" + nodeToString(node));
         }
     }
     
@@ -1556,7 +1570,7 @@ public class RedBlackBSTLongInt2 {
     public void printPreOrderTraversal() {
         long[] nodes = getPreOrderTraversalIterative(root);
         for (long node : nodes) {
-            System.out.println("node=" + node);
+            System.out.println("node=" + nodeToString(node));
         }
     }
     
@@ -1566,7 +1580,7 @@ public class RedBlackBSTLongInt2 {
     public void printPostOrderTraversal() {
         long[] nodes = getPostOrderTraversalIterative(root);
         for (long node : nodes) {
-            System.out.println("node=" + node);
+            System.out.println("node=" + nodeToString(node));
         }
     }
 
@@ -1576,6 +1590,10 @@ public class RedBlackBSTLongInt2 {
      */
     protected long[] getInOrderTraversalIterative(Long node) {
        
+        if (isEmpty()) {
+            return new long[0];
+        }
+        
         long[] array = new long[size()];
         int count = 0;
         
@@ -1612,17 +1630,22 @@ public class RedBlackBSTLongInt2 {
      */
     protected long[] getPreOrderTraversalIterative(Long node) {
        
-        long[] array = new long[size()];
+        if (isEmpty()) {
+            return new long[0];
+        }
+        
+        int sz = size();
+        long[] array = new long[sz];
         int count = 0;
         
         Stack<Long> stack = new Stack<>();
-        
-        while (!stack.isEmpty() || (node != null)) {
-            if (node != null) {
+        stack.add(node);
+        while (!stack.isEmpty()) {
+            if (node != null && count < sz) {
                 
                 array[count] = node;
                 count++;
-                //System.out.println(node.key);
+                //System.out.println(node);
                 
                 stack.push(node);
                 
@@ -1646,8 +1669,14 @@ public class RedBlackBSTLongInt2 {
      * in an iterative manner rather than invoking the method recursively.
      */
     protected long[] getPostOrderTraversalIterative(Long node) {
+    
+        if (isEmpty()) {
+            return new long[0];
+        }
         
-        long[] array = new long[size()];
+        int sz = size();
+        
+        long[] array = new long[sz];
         int count = 0;
         
         if (node == null) {
@@ -1680,7 +1709,7 @@ public class RedBlackBSTLongInt2 {
             //process(node);
             array[count] = node;
             count++;
-            //System.out.println(node.key);
+            //System.out.println(node);
         }
          
         return array;
@@ -1717,5 +1746,15 @@ public class RedBlackBSTLongInt2 {
             + 3 * ObjectSpaceEstimator.estimateIntSize());
             
         return total;
+    }
+    
+    private String nodeToString(long key) {
+        assert(keyValMap.containsKey(key));
+        StringBuilder sb = new StringBuilder();
+        //node=key=0 val=0 color=false size=1
+        sb.append("key=").append(key).append(" val=").append(keyValMap.get(key));
+        sb.append(" color=").append(keyColorMap.get(key));
+        sb.append(" size=").append(keySizeMap.get(key));
+        return sb.toString();
     }
 }
