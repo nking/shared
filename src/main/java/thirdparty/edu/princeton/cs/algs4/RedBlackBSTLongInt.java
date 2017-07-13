@@ -128,6 +128,14 @@ public class RedBlackBSTLongInt {
             sb.append(" val=").append(val);
             sb.append(" color=").append(color);
             sb.append(" size=").append(size);
+            sb.append(" l=");
+            if (left != null) {
+                sb.append(left.key);
+            }
+            sb.append(" r=");
+            if (right != null) {
+                sb.append(right.key);
+            }
             return sb.toString();
         }
         
@@ -234,17 +242,14 @@ public class RedBlackBSTLongInt {
         root = put(root, key, val);
         root.color = BLACK;
         
-        System.out.println("after put " + key + ":");
-        printPreOrderTraversal();
+        //System.out.println("after put " + key + ":");
+        //printPreOrderTraversal();
         
         // assert check();
     }
 
     // insert the key-value pair in the subtree rooted at h
     private Node put(Node h, long key, int val) { 
-        
-        System.out.println("before put key=" + key);
-        printPreOrderTraversal();
         
         if (h == null) return new Node(key, val, RED, 1);
 
@@ -354,6 +359,9 @@ public class RedBlackBSTLongInt {
      * @param  key the key
      */
     public void delete(long key) { 
+        
+        System.out.println("delete " + key);
+        
         if (!contains(key)) return;
 
         // if both children of root are black, set root to red
@@ -370,23 +378,34 @@ public class RedBlackBSTLongInt {
         // assert get(h, key) != null;
 
         if (key < h.key)  {
-            if (!isRed(h.left) && !isRed(h.left.left))
+            if (!isRed(h.left) && !isRed(h.left.left)) {
                 h = moveRedLeft(h);
+            }
             h.left = delete(h.left, key);
         } else {
             if (isRed(h.left))
                 h = rotateRight(h);
             if (key == h.key && (h.right == null))
                 return null;
-            if (!isRed(h.right) && !isRed(h.right.left))
+            if (!isRed(h.right) && !isRed(h.right.left)) {
                 h = moveRedRight(h);
+            }
+            System.out.println("key=" + key + " h.key=" + h.key);
             if (key == h.key) {
+                System.out.print("0) delete " + key 
+                    + " h=" + h);
                 Node x = min(h.right);
+                System.out.println("\n   x=" + x);
+                printPreOrderTraversal(1);
                 h.key = x.key;
                 h.val = x.val;
+                System.out.println("1) h.key->x.key  h=" + h);
+                printPreOrderTraversal(1);
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
                 h.right = deleteMin(h.right);
+                System.out.println("2) delete " + key);
+                printPreOrderTraversal(1);
             } else h.right = delete(h.right, key);
         }
         return balance(h);
@@ -407,8 +426,8 @@ public class RedBlackBSTLongInt {
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
         
-        System.out.println("after rotateRight:");
-        printPreOrderTraversal();
+        //System.out.println("after rotateRight:");
+        //printPreOrderTraversal();
         
         return x;
     }
@@ -416,8 +435,8 @@ public class RedBlackBSTLongInt {
     // make a right-leaning link lean to the left
     private Node rotateLeft(Node h) {
         
-        System.out.println("before rotateLeft:");
-        printPreOrderTraversal(1);
+        //System.out.println("before rotateLeft:");
+        //printPreOrderTraversal(1);
         
         // assert (h != null) && isRed(h.right);
         Node x = h.right;
@@ -428,8 +447,8 @@ public class RedBlackBSTLongInt {
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
         
-        System.out.println("after rotateLeft:");
-        printPreOrderTraversal(1);
+        //System.out.println("after rotateLeft:");
+        //printPreOrderTraversal(1);
         
         return x;
     }
@@ -458,8 +477,8 @@ public class RedBlackBSTLongInt {
             flipColors(h);
         }
         
-        System.out.println("after moveRedLeft:");
-        printPreOrderTraversal();
+        //System.out.println("after moveRedLeft:");
+        //printPreOrderTraversal();
         
         return h;
     }
@@ -475,8 +494,8 @@ public class RedBlackBSTLongInt {
             flipColors(h);
         }
         
-        System.out.println("after moveRedRight:");
-        printPreOrderTraversal();
+        //System.out.println("after moveRedRight:");
+        //printPreOrderTraversal();
         
         return h;
     }
