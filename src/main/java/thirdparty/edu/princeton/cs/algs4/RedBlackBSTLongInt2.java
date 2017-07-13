@@ -273,8 +273,7 @@ public class RedBlackBSTLongInt2 {
      * @param val the value
      */
     public void put(long key, int val) {
-        long newKey = put(root, key, val);
-        reassignRoot(newKey);
+        root = put(root, key, val);
         rootIsSet = true;
         keyColorMap.put(root, 1);
         //root.color = BLACK;
@@ -288,7 +287,7 @@ public class RedBlackBSTLongInt2 {
         if (!keyValMap.containsKey(h)) {
             return addNewNode(key, val, RED, 1);
         }
-
+       
         int cmp = (key < h) ? -1 : (key > h) ? 1 : 0;
         if (cmp < 0) {
             if (keyLeftMap.containsKey(h)) {
@@ -325,7 +324,7 @@ public class RedBlackBSTLongInt2 {
         }
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
-        
+       
         return h;
     }
 
