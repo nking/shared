@@ -1311,15 +1311,24 @@ public class RedBlackBSTLongInt2 {
             } else {
                 output[1] = 0;
             }
-            return;
         } else if (cmp > 0) {
-            int sz = sizeLeft(x) + sizeRight(x) + 1;
+            //1 + size(x.left) + rank(key, x.right);
+            int sz;
+            if (keyRightMap.containsKey(x)) {
+                output[0] = 0;
+                rank(key, keyRightMap.get(x), output);
+                if (output[0] == -1) {
+                    sz = 1 + sizeLeft(x);
+                } else {
+                    sz = 1 + sizeLeft(x) + output[1];
+                }
+            } else {
+                sz = 1 + sizeLeft(x);
+            }
             output[1] = sz;
-            return;
         } else {
             int sz = sizeLeft(x);
             output[1] = sz;
-            return;
         } 
     } 
 
@@ -1484,12 +1493,17 @@ public class RedBlackBSTLongInt2 {
     // check that ranks are consistent
     private boolean isRankConsistent() {
         for (int i = 0; i < size(); i++) {
-            if (i != rank(select(i))) return false;
+            int r = rank(select(i));
+            //System.out.println("i=" + i + " r=" + r + " size=" + size());
+            if (i != r) return false;
         }
         TLongList keys = keys();
         for (int i = 0; i < keys.size(); ++i) {
             long key = keys.get(i);
-            if (key != select(rank(key))) {
+            int r = rank(key);
+            long s = select(r);
+            System.out.println("i=" + i + " r=" + r + " s=" + s);
+            if (key != s) {
                 return false;
             }
         }
@@ -1791,6 +1805,14 @@ public class RedBlackBSTLongInt2 {
         sb.append("key=").append(key).append(" val=").append(keyValMap.get(key));
         sb.append(" color=").append(keyColorMap.get(key));
         sb.append(" size=").append(keySizeMap.get(key));
+        sb.append(" l=");
+        if (keyLeftMap.containsKey(key)) {
+           sb.append(keyLeftMap.get(key));
+        }
+        sb.append(" r=");
+        if (keyRightMap.containsKey(key)) {
+           sb.append(keyRightMap.get(key));
+        }
         return sb.toString();
     }
 }
