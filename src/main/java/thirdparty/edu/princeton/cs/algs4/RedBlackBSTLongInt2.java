@@ -1036,6 +1036,7 @@ public class RedBlackBSTLongInt2 {
             return;
         }
         if (yIsSet) {
+            output[0] = 0;
             output[1] = y;
         } else {
             output[0] = -1;
@@ -1119,6 +1120,7 @@ public class RedBlackBSTLongInt2 {
                 output[1] = x;
             }
         } else {
+            output[0] = 0;
             output[1] = x;
         }
     }
@@ -1205,6 +1207,7 @@ public class RedBlackBSTLongInt2 {
         }
         
         if (yIsSet) {
+            output[0] = 0;
             output[1] = y;
             return;
         }
@@ -1339,8 +1342,10 @@ public class RedBlackBSTLongInt2 {
     public TLongList keys(long lo, long hi) {
 
         TLongList queue = new TLongArrayList();
-        // if (isEmpty() || lo.compareTo(hi) > 0) return queue;
+        if (isEmpty() || lo > hi) return queue;
+        
         keys(root, queue, lo, hi);
+        
         return queue;
     } 
 
@@ -1480,20 +1485,16 @@ public class RedBlackBSTLongInt2 {
         if (isRightRed(x)) return false;
         if (x != root && isRed(x) && isLeftRed(x))
             return false;
-        boolean tL;
-        if (!keyLeftMap.containsKey(x)) {
-            tL = true;
-        } else {
-            tL = is23(keyLeftMap.get(x));
-        }
-        boolean tR;
-        if (!keyRightMap.containsKey(x)) {
-            tR = true;
-        } else {
-            tR = is23(keyRightMap.get(x));
-        }
-        return tL && tR;
-    } 
+        return is23Left(x) && is23Right(x);
+    }
+    private boolean is23Left(long x) {
+        if (!keyLeftMap.containsKey(x)) return true;
+        return is23(keyLeftMap.get(x));
+    }
+    private boolean is23Right(long x) {
+        if (!keyRightMap.containsKey(x)) return true;
+        return is23(keyRightMap.get(x));
+    }
 
     // do all paths from root to leaf have same number of black edges?
     private boolean isBalanced() { 
