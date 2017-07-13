@@ -510,10 +510,11 @@ public class RedBlackBSTLongInt2 {
         deleteMax(keyRightMap.get(h), output);
         if (output[0] == -1) {
             keyRightMap.remove(h);
-            return;
+        } else {
+            keyRightMap.put(h, output[1]);
         }
-        keyRightMap.put(h, output[1]);
 
+        output[0] = 0;
         output[1] = balance(h);
     }
 
