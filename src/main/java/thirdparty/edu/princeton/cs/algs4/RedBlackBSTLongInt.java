@@ -43,6 +43,7 @@ import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
@@ -232,7 +233,7 @@ public class RedBlackBSTLongInt {
         root = put(root, key, val);
         root.color = BLACK;
         
-        System.out.println("after put:");
+        System.out.println("after put " + key + ":");
         printPreOrderTraversal();
         
         // assert check();
@@ -1063,13 +1064,15 @@ public class RedBlackBSTLongInt {
         int count = 0;
         
         Stack<Node> stack = new Stack<>();
-        stack.add(node);
-        while (!stack.isEmpty()) {
+        while (!stack.isEmpty() || node != null) {
             if (node != null && count < sz) {
                 
                 array[count] = node;
+                
+                System.out.println("count=" + count + "/" + (sz-1) 
+                    + " node=" + node.key);
+                
                 count++;
-                //System.out.println(node.key);
                 
                 stack.push(node);
                 
@@ -1081,6 +1084,11 @@ public class RedBlackBSTLongInt {
                 
                 node = node.right;
             }
+        }
+        
+        if (count < sz) {
+            // can happen during debugging when insert is not complete yet
+            array = Arrays.copyOf(array, count);
         }
         
         return array;

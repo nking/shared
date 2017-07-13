@@ -48,6 +48,7 @@ import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -1639,8 +1640,7 @@ public class RedBlackBSTLongInt2 {
         int count = 0;
         
         Stack<Long> stack = new Stack<>();
-        stack.add(node);
-        while (!stack.isEmpty()) {
+        while (!stack.isEmpty() || node != null) {
             if (node != null && count < sz) {
                 
                 array[count] = node;
@@ -1659,6 +1659,11 @@ public class RedBlackBSTLongInt2 {
                 node = keyRightMap.containsKey(node.longValue()) ?
                     keyRightMap.get(node.longValue()) : null;
             }
+        }
+        
+        if (count < sz) {
+            // can happen during debugging when insert is not complete yet
+            array = Arrays.copyOf(array, count);
         }
         
         return array;
