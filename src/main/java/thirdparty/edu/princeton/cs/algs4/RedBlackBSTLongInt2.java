@@ -1108,7 +1108,7 @@ public class RedBlackBSTLongInt2 {
         
         //TODO: make this iterative
         
-        if (keyValMap.containsKey(x)) {
+        if (!keyValMap.containsKey(x)) {
             output[0] = -1;
             return;
         }
