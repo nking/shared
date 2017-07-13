@@ -334,33 +334,6 @@ public class RedBlackBSTLongInt2 {
     *  Red-black tree deletion.
     ***************************************************************************/
 
-    private void reassignRoot(long newKey) {
-        // happens from a delete operation, so root should exist
-        assert(rootIsSet);
-        assert(keyValMap.containsKey(root));
-        
-        int val = keyValMap.remove(root);
-        keyValMap.put(newKey, val);
-        
-        if (keyLeftMap.containsKey(root)) {
-            long left = keyLeftMap.remove(root);
-            keyLeftMap.put(newKey, left);
-        }
-        
-        if (keyRightMap.containsKey(root)) {
-            long right = keyRightMap.remove(root);
-            keyRightMap.put(newKey, right);
-        }
-        
-        int clr = keyColorMap.remove(root);
-        keyColorMap.put(newKey, clr);
-        
-        int sz = keySizeMap.remove(root);
-        keySizeMap.put(newKey, sz);
-        
-        root = newKey;
-    }
-    
     private void setRootToRedIfChildrenAreBlack() {
         if (!isLeftRed(root) && !isRightRed(root)) {
             keyColorMap.put(root, RED);
@@ -374,6 +347,8 @@ public class RedBlackBSTLongInt2 {
     public void deleteMin() {
         if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
+        int sz0 = size();
+        
         assert(keyValMap.containsKey(root));
         
         // if both children of root are black, set root to red
@@ -384,14 +359,16 @@ public class RedBlackBSTLongInt2 {
         
         //root = deleteMin(root);
         long[] output = new long[2];
+        output[1] = -1;
         deleteMin(root, output);
+        
+        //System.out.println("deleteMin=" + Arrays.toString(output));
         
         if (output[0] == -1) {
             rootIsSet = false;
             deleteFromMaps(root);
             root = -1;
         } else {
-            //reassignRoot(output[1]);
             root = output[1];
         }
         if (!isEmpty()) {
@@ -399,6 +376,8 @@ public class RedBlackBSTLongInt2 {
             keyColorMap.put(root, BLACK);
         }
         assert(check());
+        
+        assert(sz0 == (size() + 1));
     }
 
     // delete the key-value pair with the minimum key rooted at h
@@ -410,7 +389,7 @@ public class RedBlackBSTLongInt2 {
         }
         
         output[0] = 0;
-
+        
         //if (!isRed(h.left) && !isRed(h.left.left)) {
         //    h = moveRedLeft(h);
         //}
@@ -430,9 +409,10 @@ public class RedBlackBSTLongInt2 {
         deleteMin(left, output);
         if (output[0] == -1) {
             keyLeftMap.remove(h);
-            return;
+            output[0] = 0;
+        } else {
+            keyLeftMap.put(h, output[1]);
         }
-        keyLeftMap.put(h, output[1]);
         output[1] = balance(h);
     }
 
@@ -459,7 +439,6 @@ public class RedBlackBSTLongInt2 {
             root = -1;
             return;
         }
-        //reassignRoot(output[1]);
         root = output[1];
         
         if (!isEmpty()) {
@@ -542,7 +521,6 @@ public class RedBlackBSTLongInt2 {
             root = -1;
             return;
         }
-        //reassignRoot(output[1]);
         root = output[1];
         
         if (!isEmpty()) {
@@ -707,9 +685,6 @@ public class RedBlackBSTLongInt2 {
     // make a right-leaning link lean to the left
     private long rotateLeft(long h) {
         
-        System.out.println("before rotateLeft:");
-        printPreOrderTraversal(1);
-        
         // assert (h != null) && isRed(h.right);
         assert(keyValMap.containsKey(h));
         assert(isRightRed(h));
@@ -734,10 +709,7 @@ public class RedBlackBSTLongInt2 {
         
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
-       
-        System.out.println("after rotateLeft:");
-        printPreOrderTraversal(1);
-        
+               
         return x;
     }
 
