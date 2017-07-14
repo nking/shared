@@ -389,11 +389,16 @@ public class RedBlackBSTLongInt2 {
             root = -1;
         } else {
             root = output[1];
+            keyParentMap.remove(root);
         }
         if (!isEmpty()) {
             //root.color = BLACK;
             keyColorMap.put(root, BLACK);
         }
+        
+        //System.out.format("AFTER deleteMin()\n");
+        //printPreOrderTraversal(1);
+        
         assert(check());
         
         assert(sz0 == (size() + 1));
@@ -456,17 +461,22 @@ public class RedBlackBSTLongInt2 {
         long[] output = new long[2];
         deleteMax(root, output);
         if (output[0] == -1) {
-            rootIsSet = false;
             deleteFromMaps(root);
+            rootIsSet = false;
             root = -1;
             return;
         }
         root = output[1];
+        keyParentMap.remove(root);
         
         if (!isEmpty()) {
             //root.color = BLACK;
             keyColorMap.put(root, BLACK);
         }
+        
+        //System.out.format("AFTER deleteMax()\n");
+        //printPreOrderTraversal(1);
+        
         assert(check());
     }
     
@@ -475,14 +485,14 @@ public class RedBlackBSTLongInt2 {
             p0--> key->left
                      ->right
         */
-        //PAUSED HERE
+        
         keyValMap.remove(key);
         if (keyLeftMap.containsKey(key)) {
-       //     handle parent link
+            //keyParentMap.remove(keyLeftMap.get(key));
             keyLeftMap.remove(key);
         }
         if (keyRightMap.containsKey(key)) {
-       //     handle parent link
+            //keyParentMap.remove(keyRightMap.get(key));
             keyRightMap.remove(key);
         }
         keyColorMap.remove(key);
@@ -569,6 +579,8 @@ public class RedBlackBSTLongInt2 {
         }
         root = output[1];
         
+        keyParentMap.remove(root);
+        
         if (!isEmpty()) {
             keyColorMap.put(root, BLACK);
         }
@@ -581,6 +593,9 @@ public class RedBlackBSTLongInt2 {
 
     // delete the key-value pair with the given key rooted at h
     private void delete(long h, long key, long[] output) { 
+        
+        System.out.format("delete(%d, %d)\n", h, key);
+        
         // assert get(h, key) != null;
         {//DEBUG
             int[] vOutput = new int[2];
@@ -601,8 +616,8 @@ public class RedBlackBSTLongInt2 {
             //h.left = delete(h.left, key);
             if (keyLeftMap.containsKey(h)) {
                 
-                System.out.println("   h.left = delete(h.left, key)" 
-                    + " h.left=" + keyLeftMap.get(h) + " key=" + key);
+                System.out.format("   h.left = delete(%d, %d)\n" ,
+                    keyLeftMap.get(h), key);
                  
                 delete(keyLeftMap.get(h), key, output);
                    
@@ -687,9 +702,9 @@ public class RedBlackBSTLongInt2 {
                     if (keyRightMap.containsKey(h)) {
                         
                         printPreOrderTraversal(1);
-                        System.out.print("  h.right = deleteMin(h.right)" 
-                            + " h.right=" + keyRightMap.get(h));
-                        
+                        System.out.format("   h.right = delete(%d, %d)\n" ,
+                            keyRightMap.get(h), key);
+                                                
                         
                         output[0] = 0;
                         deleteMin(keyRightMap.get(h), output);
@@ -716,8 +731,8 @@ public class RedBlackBSTLongInt2 {
                 if (keyRightMap.containsKey(h)) {
                     
                     printPreOrderTraversal(1);
-                    System.out.print("   h.right = delete(h.right, key)" 
-                        + " h.right=" + keyRightMap.get(h) + " key=" + key);
+                    System.out.format("   h.right = delete(%d, %d)\n" ,
+                        keyRightMap.get(h), key);
                    
                     
                     output[0] = 0;
@@ -743,10 +758,6 @@ public class RedBlackBSTLongInt2 {
         output[0] = 0;
         output[1] = balance(h);  
         
-        
-        System.out.println("   CHECK whether key=" + key + 
-            " has been deleted from " + h);
-        printPreOrderTraversal(1);
     }
 
    /***************************************************************************
@@ -1520,12 +1531,19 @@ public class RedBlackBSTLongInt2 {
     *  Check integrity of red-black tree data structure.
     ***************************************************************************/
     private boolean check() {
-        if (!isBST())            System.out.println("Not in symmetric order");
-        if (!isSizeConsistent()) System.out.println("Subtree counts not consistent");
-        if (!isRankConsistent()) System.out.println("Ranks not consistent");
-        if (!is23())             System.out.println("Not a 2-3 tree");
-        if (!isBalanced())       System.out.println("Not balanced");
-        return isBST() && isSizeConsistent() && isRankConsistent() && is23() && isBalanced();
+        boolean t1 = isParentChildConsistent();
+        boolean t2 = isBST();
+        boolean t3 = isSizeConsistent();
+        boolean t4 = isRankConsistent();
+        boolean t5 = is23();
+        boolean t6 = isBalanced();
+        if (!t1) System.out.println("Not consistent parent child relationships");
+        if (!t2) System.out.println("Not in symmetric order");
+        if (!t3) System.out.println("Subtree counts not consistent");
+        if (!t4) System.out.println("Ranks not consistent");
+        if (!t5) System.out.println("Not a 2-3 tree");
+        if (!t6) System.out.println("Not balanced");
+        return t1 && t2 && t3 && t4 && t5 && t6;
     }
 
     // does this binary tree satisfy symmetric order?
@@ -1927,5 +1945,49 @@ public class RedBlackBSTLongInt2 {
            sb.append(keyRightMap.get(key));
         }
         return sb.toString();
+    }
+
+    private boolean isParentChildConsistent() {
+        
+        if (!rootIsSet) {
+            if (keyValMap.isEmpty() && keyColorMap.isEmpty() && 
+                keyParentMap.isEmpty() && keyLeftMap.isEmpty() &&
+                keyRightMap.isEmpty() && keySizeMap.isEmpty()) {
+                System.err.println("maps not empty, but root is");
+                return true;
+            }
+            return false;
+        }
+        
+        //System.out.println("root=" + nodeToString(root));
+        
+        if (keyParentMap.containsKey(root)) {
+            System.err.println("root should not have parent key");
+            return false;
+        }
+        
+        long[] nodes = getPreOrderTraversalIterative(root, 0);
+        for (long key : nodes) {
+            if (keyLeftMap.containsKey(key)) {
+                long child = keyLeftMap.get(key);
+                if (keyParentMap.get(child) != key) {
+                    System.err.println("error in left child parent relationship");
+                    return false;
+                }
+            }
+            if (keyRightMap.containsKey(key)) {
+                long child = keyRightMap.get(key);
+                if (keyParentMap.get(child) != key) {
+                    System.err.println("error in right child parent relationship");
+                    return false;
+                }
+            }
+        }
+        if (nodes.length != size()) {
+            System.out.println("ERROR in nodes extraction");
+            return false;
+        }
+        
+        return true;
     }
 }
