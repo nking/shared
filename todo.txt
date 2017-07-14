@@ -1,15 +1,12 @@
--- for each class used by NN2Dlong,
-    need it to be able to report the
-    expected memory use by heap and 
-    largest temporary memory used by stack.
+-- for improving the current NearestNeighbor2DLong
+   could consider locality based hashing along y axis.
 
--- for NN2DLong caches, consider using WeakHashMap instead even though
-    it takes up more memory.
-         
+-- when begin to include more than 2 dimensions in clustering project,
+   consider adding the vantage point tree for nearest neighbor search
+   http://infolab.stanford.edu/~sergey/near.html
+   http://www.pnylab.com/pny/papers/vptree/vptree/
+   http://www.drmaciver.com/2011/12/4202/
+   https://github.com/smreed/Java-Vantage-Tree.git
+
 -- add unit tests where missing
--- has trove implemented a primitive based balanced binary tree?
-   if yes, YFastTrieLong could use them
-
--- consider porting the c judyarray to java:
-   http://judy.sourceforge.net/downloads/10minutes.htm
 
