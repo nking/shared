@@ -6,6 +6,48 @@ import junit.framework.TestCase;
 
 public class KDTreeTest extends TestCase {
 
+    public void testMemoryEstimates() {
+        long est;
+        
+        long MB = 1024 * 1024;
+        
+        System.out.println("mem is in MB:");
+        
+        int[] x = new int[]{
+              5000, 1024, 512, 256, 128, 64
+        };
+        int[] y = new int[]{
+              7000, 1024, 512, 256, 128, 64
+        };
+        
+        double rt;
+        for (int lenIdx = 0; lenIdx < x.length; ++lenIdx) {
+            
+            float f = 1.f;
+            
+            for (int i = 0; i < 2; ++i) {
+            
+                if (i == 1) {
+                    f = 0.1f;
+                }
+                
+                int w = (int)Math.round(Math.log(x[lenIdx] * y[lenIdx])/Math.log(2));
+                
+                int n = Math.round(f * x[lenIdx] * y[lenIdx]);
+                
+                est = KDTree.estimateSizeOnHeap(n);
+                
+                rt = Math.log(n)/Math.log(2);
+                
+                System.out.format(
+                    "width=%4d, height=%4d n=%10d mem=%10d  w=%2d  rt=%4d\n",
+                    x[lenIdx], y[lenIdx], n, est/MB, w, (int)Math.round(rt));
+                
+            }
+        }
+
+    }
+
 	public void test() {
 		int[] x = new int[] {5, 5, 9, 3, 4, 1, 7, 2};
     	int[] y = new int[] {5, 5, 6, 6, 9, 1, 9, 9};

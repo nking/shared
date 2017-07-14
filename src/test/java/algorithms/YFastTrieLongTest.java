@@ -22,36 +22,51 @@ public class YFastTrieLongTest extends TestCase {
         
         long MB = 1024 * 1024;
         
-        System.out.println("size in MB:");
-
-        est = YFastTrieLong.estimateSizeOnHeap(
-            5000*7000, 62);
-        System.out.println("0 mem=" + est[0]/MB + ", " + est[1]/MB);
-        est = YFastTrieLong.estimateSizeOnHeap(
-            5000*7000, 26);
-        System.out.println("1 mem=" + est[0]/MB + ", " + est[1]/MB);
-
-        est = YFastTrieLong.estimateSizeOnHeap(
-            Math.round(.1f*5000*7000), 62);
-        System.out.println("2 mem=" + est[0]/MB + ", " + est[1]/MB);
-        est = YFastTrieLong.estimateSizeOnHeap(
-            Math.round(.1f*5000*7000), 22);
-        System.out.println("3 mem=" + est[0]/MB + ", " + est[1]/MB);
-
-
-        est = YFastTrieLong.estimateSizeOnHeap(
-            500*700, 62);
-        System.out.println("4 mem=" + est[0]/MB + ", " + est[1]/MB);
-        est = YFastTrieLong.estimateSizeOnHeap(
-            500*700, 19);
-        System.out.println("5 mem=" + est[0]/MB + ", " + est[1]/MB);
-
-        est = YFastTrieLong.estimateSizeOnHeap(
-            Math.round(.1f*500*700), 62);
-        System.out.println("6 mem=" + est[0]/MB + ", " + est[1]/MB);
-        est = YFastTrieLong.estimateSizeOnHeap(
-            Math.round(.1f*500*700), 16);
-        System.out.println("7 mem=" + est[0]/MB + ", " + est[1]/MB);
+        System.out.println("mem is in MB:");
+        
+        int[] x = new int[]{
+              5000, 1024, 512, 256, 128, 64
+        };
+        int[] y = new int[]{
+              7000, 1024, 512, 256, 128, 64
+        };
+        
+        double rt;
+        for (int lenIdx = 0; lenIdx < x.length; ++lenIdx) {
+            
+            float f = 1.f;
+            
+            for (int i = 0; i < 2; ++i) {
+            
+                if (i == 1) {
+                    f = 0.1f;
+                }
+                
+                int w = 62;
+                
+                int n = Math.round(f * x[lenIdx] * y[lenIdx]);
+                
+                est = YFastTrieLong.estimateSizeOnHeap(n, w);
+                
+                rt = Math.log(w)/Math.log(2);
+                
+                System.out.format(
+                    "width=%4d, height=%4d n=%10d mem=%10d:%10d  w=%2d  rt=%3d\n",
+                    x[lenIdx], y[lenIdx], n, est[1]/MB, est[0]/MB,
+                    w, (int)Math.round(rt));
+            
+                w = (int)Math.round(Math.log(x[lenIdx] * y[lenIdx])/Math.log(2));
+                
+                est = YFastTrieLong.estimateSizeOnHeap(n, w);
+                
+                rt = Math.log(w)/Math.log(2);
+                
+                System.out.format(
+                    "width=%4d, height=%4d n=%10d mem=%10d:%10d  w=%2d  rt=%3d\n",
+                    x[lenIdx], y[lenIdx], n, est[1]/MB, est[0]/MB,
+                    w, (int)Math.round(rt));
+            }
+        }
 
     }
 

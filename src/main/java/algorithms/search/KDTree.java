@@ -35,8 +35,21 @@ import java.util.Arrays;
      and using The MIT License (MIT)
 
    then moved to this shared library project which has the same copyright
-
- * 
+<[re>
+   mem is in MB: 
+     width=5000, height=7000 n=  35000000 mem=      1869  w=25  rt=  25
+     width=5000, height=7000 n=   3500000 mem=       186  w=25  rt=  22
+     width=1024, height=1024 n=   1048576 mem=        56  w=20  rt=  20
+     width=1024, height=1024 n=    104858 mem=         5  w=20  rt=  17
+     width= 512, height= 512 n=    262144 mem=        14  w=18  rt=  18
+     width= 512, height= 512 n=     26214 mem=         1  w=18  rt=  15
+     width= 256, height= 256 n=     65536 mem=         3  w=16  rt=  16
+     width= 256, height= 256 n=      6554 mem=         0  w=16  rt=  13
+     width= 128, height= 128 n=     16384 mem=         0  w=14  rt=  14
+     width= 128, height= 128 n=      1638 mem=         0  w=14  rt=  11
+     width=  64, height=  64 n=      4096 mem=         0  w=12  rt=  12
+     width=  64, height=  64 n=       410 mem=         0  w=12  rt=   9
+  </pre>
  * @author nichole
  */
 public class KDTree {
