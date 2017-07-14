@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>XFastTrieLong.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.ods</a> &gt; <span class="el_source">XFastTrieLong.java</span></div><h1>XFastTrieLong.java</h1><pre class="source lang-java linenums">package thirdparty.ods;
+
+import algorithms.util.ObjectSpaceEstimator;
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayList;
+import java.util.List;
+
+/*
+The class is adapted from the open datastructures source code
+http://opendatastructures.org/ods-java.pdf
+
+&quot;The source code available there is released under a Creative Commons
+Attribution license, meaning that anyone is free to share: to copy, distribute
+and transmit the work; and to remix: to adapt the work, including
+the right to make commercial use of the work. The only condition on
+these rights is attribution: you must acknowledge that the derived work
+contains code and/or text from opendatastructures.org.
+https://github.com/patmorin/ods
+
+Edits were made to the code in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet, The MIT License (MIT)
+and then moved to this project
+
+*/
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">@SuppressWarnings(&quot;unchecked&quot;)</span>
+public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt; 
+	extends BinaryTrieLong&lt;S, T&gt; {
+
+	/**
+	 * The hash tables used to store prefixes
+	 */
+    protected final List&lt;TLongObjectHashMap&lt;S&gt;&gt; t;
+	
+	public XFastTrieLong(S sampleNode, Longizer&lt;T&gt; it)  {
+<span class="fc" id="L39">		super(sampleNode, it);</span>
+<span class="fc" id="L40">        t = new ArrayList&lt;TLongObjectHashMap&lt;S&gt;&gt;();</span>
+<span class="fc" id="L41">		S nil = (S)new XFastTrieNodeLong&lt;T&gt;();</span>
+<span class="fc" id="L42">		nil.prefix = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int i = 0; i &lt;= w; i++) {</span>
+<span class="fc" id="L44">            t.add(new TLongObjectHashMap&lt;S&gt;());</span>
+		}
+<span class="fc" id="L46">		t.get(0).put(0, r);</span>
+<span class="fc" id="L47">	}</span>
+    
+    public XFastTrieLong(S sampleNode, Longizer&lt;T&gt; it,
+        int smallerWordSize)  {
+<span class="fc" id="L51">		super(sampleNode, it, smallerWordSize);</span>
+<span class="fc" id="L52">        t = new ArrayList&lt;TLongObjectHashMap&lt;S&gt;&gt;();</span>
+<span class="fc" id="L53">		S nil = (S)new XFastTrieNodeLong&lt;T&gt;();</span>
+<span class="fc" id="L54">		nil.prefix = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int i = 0; i &lt;= w; i++) {</span>
+<span class="fc" id="L56">            t.add(new TLongObjectHashMap&lt;S&gt;());</span>
+		}
+<span class="fc" id="L58">		t.get(0).put(0, r);</span>
+<span class="fc" id="L59">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public XFastTrieLong(Longizer&lt;T&gt; it)  {
+<span class="nc" id="L63">		this((S)new XFastTrieNodeLong&lt;T&gt;(), it);</span>
+<span class="nc" id="L64">	}</span>
+	
+    /**
+     * runtime complexity is O(log_2(w)) + O(w-l)
+     * where w is the number of
+     * bits set in the constructor, else is 32
+     * and l is the prefix tree already filled leading
+     * up to the value x.
+     * @param x
+     * @return 
+     */
+	public boolean add(T x) {
+<span class="fc" id="L76">        final long ix = it.longValue(x);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (ix &gt; maxC) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;w=&quot; + w</span>
+               + &quot; so max value can add is &quot; + maxC
+               + &quot; . ix=&quot; + ix);
+        }
+<span class="fc" id="L82">        S u = r;</span>
+        S v;
+        int i;
+<span class="fc" id="L85">        int l = 0, h = w+1;</span>
+<span class="fc" id="L86">        long prefix = -1;</span>
+        // binary search over range w;  rt is &lt; O(lg_2(w))
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		while (h-l &gt; 1) {</span>
+<span class="fc" id="L89">			i = (l+h)/2;</span>
+<span class="fc" id="L90">			prefix = ix &gt;&gt;&gt; w-i;</span>
+            
+<span class="fc" id="L92">            v = t.get(i).get(prefix);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (v == null) {</span>
+<span class="fc" id="L94">				h = i;</span>
+			} else {
+<span class="fc" id="L96">				u = v;</span>
+<span class="fc" id="L97">				l = i;</span>
+			}
+		}
+        
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (l == w) return false; // already contains x - abort</span>
+       
+<span class="fc" id="L103">        int c = (int)((ix &gt;&gt;&gt; w-l-1) &amp; 1);</span>
+<span class="pc bpc" id="L104" title="5 of 6 branches missed.">        assert(c==0 || c==1);</span>
+        
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        S pred = (c == right) ? (S)u.jump : (S)u.jump.child[0];</span>
+<span class="fc" id="L107">		u.jump = null;  // u will have two children shortly</span>
+<span class="fc" id="L108">        i = l;</span>
+        // 2 - add path to ix. rt is O(w-l)
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (; i &lt; w; i++) {</span>
+<span class="fc" id="L111">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
+<span class="pc bpc" id="L112" title="5 of 6 branches missed.">            assert(c==0 || c==1);</span>
+<span class="fc" id="L113">			u.child[c] = newNode();</span>
+<span class="fc" id="L114">			u.child[c].parent = u;</span>
+<span class="fc" id="L115">			u = (S) u.child[c];</span>
+		}
+<span class="fc" id="L117">		u.x = x;</span>
+		// 3 - add u to linked list
+<span class="fc" id="L119">		u.child[prev] = pred;</span>
+<span class="fc" id="L120">		u.child[next] = pred.child[next];</span>
+<span class="fc" id="L121">		u.child[prev].child[next] = u;</span>
+<span class="fc" id="L122">		u.child[next].child[prev] = u;</span>
+		// 4 - walk back up, updating jump pointers
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">	    v = (u.parent != null) ? (S)u.parent : null;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		while (v != null) {</span>
+<span class="fc bfc" id="L126" title="All 4 branches covered.">			if ((v.child[left] == null </span>
+	        	&amp;&amp; (v.jump == null ||
+<span class="pc bpc" id="L128" title="1 of 8 branches missed.">                it.longValue(v.jump.x) &gt; ix))</span>
+			|| (v.child[right] == null 
+	    		&amp;&amp; (v.jump == null || 
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                (v.jump.x != null &amp;&amp; it.longValue(v.jump.x) &lt; ix))</span>
+                )) {
+<span class="fc" id="L133">				v.jump = u;</span>
+            }
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			v = (v.parent != null) ? (S)v.parent : null;</span>
+		}
+        
+<span class="fc" id="L138">		n++;</span>
+       
+<span class="fc" id="L140">        u = (S) r.child[(int)((ix &gt;&gt;&gt; w - 1) &amp; 1)];</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (i = 1; i &lt;= w; i++) {</span>
+<span class="fc" id="L142">            u.prefix = ix &gt;&gt;&gt; w - i;</span>
+<span class="fc" id="L143">            t.get(i).put(u.prefix, u);</span>
+<span class="fc" id="L144">            c = (int)((ix &gt;&gt;&gt; w - i - 1) &amp; 1);</span>
+<span class="pc bpc" id="L145" title="5 of 6 branches missed.">            assert(c==0 || c==1);</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">            u = (u.child[c] != null) ? (S) u.child[c] : null;</span>
+        }
+<span class="fc" id="L148">        return true;</span>
+	}
+	
+    /**
+     * runtime complexity is O(log_2(w)) + O(w-l)
+     * where w is the number of
+     * bits set in the constructor, else is 32
+     * and l is the prefix tree already filled leading
+     * up to the value x.
+     * 
+     * @param x
+     * @return 
+     */
+    @Override
+	public boolean remove(T x) {
+		// 1 - find leaf, u, containing x
+<span class="fc" id="L164">		int i = 0, c;</span>
+<span class="fc" id="L165">        long ix = it.longValue(x);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (ix &gt; maxC) {</span>
+<span class="nc" id="L167">            throw new IllegalArgumentException(&quot;w=&quot; + w</span>
+               + &quot; so max value can remove is &quot; + maxC);
+        }
+<span class="fc" id="L170">		S u = r;</span>
+        S v;
+<span class="fc" id="L172">        int l = 0, h = w+1;</span>
+<span class="fc" id="L173">        long prefix = -1;</span>
+        // binary search over range w
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		while (h-l &gt; 1) {</span>
+<span class="fc" id="L176">			i = (l+h)/2;</span>
+<span class="fc" id="L177">			prefix = ix &gt;&gt;&gt; w-i;</span>
+<span class="fc" id="L178">            v = t.get(i).get(prefix);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">			if (v == null) {</span>
+<span class="nc" id="L180">				h = i;</span>
+			} else {
+<span class="fc" id="L182">				u = v;</span>
+<span class="fc" id="L183">				l = i;</span>
+			}
+		}
+       
+		// 2 - remove u from linked list
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">		S pred = (u.child[prev] != null) ?</span>
+            (S)u.child[prev] : null;   // predecessor
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		S succ = (u.child[next] != null) ?</span>
+            (S)u.child[next] : null;   // successor
+<span class="fc" id="L192">		pred.child[next] = succ;</span>
+<span class="fc" id="L193">		succ.child[prev] = pred;</span>
+<span class="fc" id="L194">		u.child[next] = u.child[prev] = null;</span>
+<span class="fc" id="L195">		S w = u;</span>
+		// 3 - delete nodes on path to u
+<span class="pc bpc" id="L197" title="1 of 6 branches missed.">		while (w != r &amp;&amp; w.child[left] == null &amp;&amp; w.child[right] == null) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			if (w == w.parent.child[left]) {</span>
+<span class="fc" id="L199">				w.parent.child[left] = null;</span>
+            } else { // u == u.parent.child[right] 
+<span class="fc" id="L201">				w.parent.child[right] = null;</span>
+            }
+<span class="fc" id="L203">            prefix = w.prefix;</span>
+<span class="fc" id="L204">			t.get(i--).remove(w.prefix);</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">			w = (w.parent != null) ? (S)w.parent : null;</span>
+		}
+		// 4 - update jump pointers
+<span class="fc bfc" id="L208" title="All 2 branches covered.">		w.jump = (w.child[left] == null) ? succ : pred;</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">		w = (w.parent != null) ? (S)w.parent : null;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">		while (w != null) {</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			if (w.jump == u)</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">				w.jump = (w.child[left] == null) ? succ : pred;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			w = (w.parent != null) ? (S)w.parent : null;</span>
+		}
+<span class="fc" id="L215">		n--;</span>
+<span class="fc" id="L216">		return true;</span>
+	}
+
+    /**
+     * find node with key ix.
+     * runtime complexity is O(1)
+     * @param ix
+     * @return 
+     */
+	protected S findNode(long ix) {
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">        if (ix &gt; maxC) {</span>
+<span class="nc" id="L227">            throw new IllegalArgumentException(&quot;w=&quot; + w</span>
+               + &quot; so max value can search for is &quot; + maxC);
+        }
+<span class="fc" id="L230">		S q = t.get(w).get(ix);</span>
+<span class="fc" id="L231">        return q;</span>
+	}
+	
+    /**
+     * find node key, with key x.
+     * runtime complexity is O(1).
+     * @param x
+     * @return 
+     */
+	public T find(T x) {
+        
+<span class="fc" id="L242">        long ix = it.longValue(x);</span>
+<span class="fc" id="L243">		S q = findNode(ix);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (q == null) {</span>
+<span class="fc" id="L245">            return null;</span>
+        }
+        
+<span class="fc" id="L248">        return q.x;</span>
+    }
+    
+    /**
+	 * Find the key of the node that contains the successor of x.
+	 * runtime complexity is O(log_2(w)) where w is the number of
+     * bits set in the constructor, else is 32.
+     * @param x
+	 * @return The node before the node that contains x w.r.t. 
+     * nodes in the internal the linked list.
+	 */
+    @Override
+	public T successor(T x) {
+<span class="fc" id="L261">        S q = successorNode(x);</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        if (q != null) {</span>
+<span class="fc" id="L263">            return q.x;</span>
+        }
+<span class="nc" id="L265">        return null;</span>
+    }
+   
+	protected T successor(long ix) {
+<span class="fc" id="L269">        S q = successorNode(ix);</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">        if (q != null) {</span>
+<span class="fc" id="L271">            return q.x;</span>
+        }
+<span class="nc" id="L273">        return null;</span>
+    }
+    
+	protected S successorNode(T x) {
+<span class="fc" id="L277">        long ix = it.longValue(x);</span>
+<span class="fc" id="L278">        return successorNode(ix);</span>
+    }
+    
+	protected S successorNode(long ix) {
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">        if (ix &gt; maxC) {</span>
+<span class="nc" id="L283">            throw new IllegalArgumentException(&quot;w=&quot; + w</span>
+               + &quot; so max value can search for is &quot; + maxC);
+        }
+		// find lowest node that is an ancestor of ix
+<span class="fc" id="L287">		int l = 0, h = w+1;</span>
+<span class="fc" id="L288">		S v, u = r;</span>
+        long prefix;
+        // binary search over range w
+<span class="fc bfc" id="L291" title="All 2 branches covered.">		while (h-l &gt; 1) {</span>
+<span class="fc" id="L292">			int i = (l+h)/2;</span>
+<span class="fc" id="L293">			prefix = ix &gt;&gt;&gt; w-i;</span>
+<span class="fc" id="L294">            v = t.get(i).get(prefix);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">			if (v == null) {</span>
+<span class="fc" id="L296">				h = i;</span>
+			} else {
+<span class="fc" id="L298">				u = v;</span>
+<span class="fc" id="L299">				l = i;</span>
+			}
+<span class="fc" id="L301">		}</span>
+		BinaryTrieNode&lt;T&gt; successor;
+<span class="fc bfc" id="L303" title="All 2 branches covered.">		if (l == w) {</span>
+<span class="fc" id="L304">            successor = u.child[next];</span>
+        } else {
+<span class="fc" id="L306">		    int c = (int)((ix &gt;&gt;&gt; w-l-1) &amp; 1);</span>
+<span class="pc bpc" id="L307" title="5 of 6 branches missed.">            assert(c==0 || c==1);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">            successor = (c == 0) ? u.jump : u.jump.child[1];</span>
+        }
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">		return (successor != null) ? (S)successor : null;</span>
+	}
+    
+    /**
+	 * Find the key of the node that contains the predecessor of x.
+	 * runtime complexity is O(log_2(w)) where w is the number of
+     * bits set in the constructor, else is 32.
+     * @param x
+	 * @return The node before the node that contains x w.r.t. 
+     * nodes in the internal the linked list.
+	 */
+    @Override
+	public T predecessor(T x) {
+<span class="fc" id="L323">        S q = predecessorNode(x);</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">        if (q != null) {</span>
+            // root node will return null here too
+<span class="fc" id="L326">            return q.x;</span>
+        }
+<span class="nc" id="L328">        return null;</span>
+    }
+    
+	protected T predecessor(long ix) {
+<span class="fc" id="L332">        S q = predecessorNode(ix);</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        if (q != null) {</span>
+<span class="fc" id="L334">            return q.x;</span>
+        }
+<span class="fc" id="L336">        return null;</span>
+    }
+    
+	protected S predecessorNode(T x) {
+<span class="fc" id="L340">        long ix = it.longValue(x);</span>
+<span class="fc" id="L341">        return predecessorNode(ix);</span>
+    }
+    
+	protected S predecessorNode(long ix) {
+		
+<span class="pc bpc" id="L346" title="1 of 2 branches missed.">        if (ix &gt; maxC) {</span>
+<span class="nc" id="L347">            throw new IllegalArgumentException(&quot;w=&quot; + w</span>
+               + &quot; so max value can search for is &quot; + maxC);
+        }
+		// find lowest node that is an ancestor of ix
+<span class="fc" id="L351">		int l = 0, h = w+1;</span>
+<span class="fc" id="L352">		S v, u = r;</span>
+<span class="fc" id="L353">        long prefix = -1;</span>
+        // binary search over range w
+<span class="fc bfc" id="L355" title="All 2 branches covered.">		while (h-l &gt; 1) {</span>
+<span class="fc" id="L356">			int i = (l+h)/2;</span>
+<span class="fc" id="L357">			prefix = ix &gt;&gt;&gt; w-i;</span>
+<span class="fc" id="L358">            v = t.get(i).get(prefix);</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">			if (v == null) {</span>
+<span class="fc" id="L360">				h = i;</span>
+			} else {
+<span class="fc" id="L362">				u = v;</span>
+<span class="fc" id="L363">				l = i;</span>
+			}
+<span class="fc" id="L365">		}</span>
+        
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (l == w) {</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">            if (u.child[prev] == null) {</span>
+<span class="nc" id="L369">                return null;</span>
+            }
+<span class="fc bfc" id="L371" title="All 2 branches covered.">            if (u.child[prev].x == null) {</span>
+<span class="fc" id="L372">                return null;</span>
+            }
+<span class="fc" id="L374">            return (S)u.child[prev]; </span>
+        }
+                         
+<span class="fc" id="L377">        int c = (int)((ix &gt;&gt;&gt; w-l-1) &amp; 1);</span>
+        
+<span class="pc bpc" id="L379" title="1 of 4 branches missed.">        if (c == 1 &amp;&amp; u.jump != null) {</span>
+<span class="fc" id="L380">            return (S)u.jump;</span>
+        }
+                
+        XFastTrieNodeLong&lt;T&gt; pred;	
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        if (u.jump.child[0] == null) {</span>
+<span class="nc" id="L385">            pred = null;</span>
+        } else {
+<span class="fc" id="L387">            pred = (XFastTrieNodeLong&lt;T&gt;) u.jump.child[0];</span>
+        }
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">		return (pred != null) ? (S)pred : null;</span>
+	}
+
+	public void clear() {
+<span class="nc" id="L393">		super.clear();</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">		for (TLongObjectHashMap&lt;S&gt; m : t) </span>
+<span class="nc" id="L395">			m.clear();</span>
+<span class="nc" id="L396">	}</span>
+    
+    /**
+     * find the key of the minimum value node.
+     * runtime complexity is O(log_2(w)) where w is the number of
+     * bits set in the constructor, else is 32.
+     * @return 
+     */
+    @Override
+    public T minimum() {
+<span class="fc bfc" id="L406" title="All 2 branches covered.">        if (t.get(w).containsKey(0)) {</span>
+<span class="fc" id="L407">            return t.get(w).get(0).x;</span>
+        }
+<span class="fc" id="L409">        return successor(0);</span>
+    }
+    
+    /**
+     * find the key of the minimum value node.
+     * runtime complexity is O(log_2(w)) where w is the number of
+     * bits set in the constructor, else is 32.
+     * @return 
+     */
+    @Override
+    public T maximum() {
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">        if (t.get(w).containsKey(maxC)) {</span>
+<span class="nc" id="L421">            return t.get(w).get(maxC).x;</span>
+        }
+<span class="fc" id="L423">        return predecessor(maxC);</span>
+    }
+	
+    /**
+     * print out the dummy link keys then print the
+     * root tree in level traversal
+     */
+    void debugNodes() {
+<span class="fc" id="L431">        TIntSet dummyHashCodes = new TIntHashSet();</span>
+<span class="fc" id="L432">        S node = dummy;</span>
+        //System.out.println(&quot;dummy.hashCode=&quot; + dummy.hashCode());
+<span class="fc" id="L434">        System.out.print(&quot;\ndummy=&quot;);</span>
+        do {
+<span class="fc" id="L436">            int dhc = node.hashCode();</span>
+<span class="fc" id="L437">            System.out.print(node.x + &quot;, &quot;);</span>
+<span class="fc" id="L438">            dummyHashCodes.add(dhc);</span>
+<span class="fc" id="L439">            node = (S)node.child[1];</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">        } while (!node.equals(dummy));</span>
+        
+<span class="fc" id="L442">        System.out.println();</span>
+        
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">        if (r == null) {</span>
+<span class="nc" id="L445">            return;</span>
+        }
+        
+<span class="fc" id="L448">        int count = 0;</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">        for (int i = 1; i &lt;= w; ++i) {</span>
+<span class="fc" id="L450">            System.out.println(&quot;level=&quot; + i);</span>
+<span class="fc" id="L451">            TLongObjectHashMap&lt;S&gt; nodesMap = t.get(i);</span>
+           
+<span class="fc" id="L453">            TLongObjectIterator&lt;S&gt; iter = nodesMap.iterator();</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">            for (int ii = nodesMap.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L455">                iter.advance();</span>
+<span class="fc" id="L456">                S nodeL = iter.value();</span>
+<span class="fc" id="L457">                System.out.println(nodeL.toString2());</span>
+<span class="fc" id="L458">                count++;</span>
+<span class="fc" id="L459">            }</span>
+        }
+<span class="fc" id="L461">        System.out.println(&quot;nNodes=&quot; + count);</span>
+<span class="fc" id="L462">    }</span>
+   
+     /**
+     * NOTE: there are prefix entries in the trie, created as needed. total
+     * number of trie prefix nodes for sequential data is 2 * n + padding to
+     * next power of 2. The number of prefix nodes is due to the pattern of
+     * numbers, so not predictable, but a few tests show range of factor 2 to 5
+     * times the number of added nodes.
+     * A factor of 5 is used here.
+     * Also, the primitive long keys for the hash map are added here too.
+     */
+    public static long estimateSizeOfTriePrefixNodes(int numberOfEntries) {
+        
+<span class="fc" id="L475">        long factor = 5;</span>
+        
+<span class="fc" id="L477">        long nodeSz = XFastTrieNodeLong.estimateSizeOnHeap();</span>
+        
+<span class="fc" id="L479">        long total = factor * numberOfEntries * nodeSz;</span>
+        
+<span class="fc" id="L481">        total += factor * numberOfEntries * </span>
+<span class="fc" id="L482">            ObjectSpaceEstimator.estimateLongSize();</span>
+        
+<span class="fc" id="L484">        return total;</span>
+    }
+   
+    /**
+     * estimate the size of an instance of this class on the heap with
+     * n number of inserted entries.
+     * 
+     * Note, the default number of bits used is the maximum, 62, in
+     * constructing the trie.  If you know the numbers will be smaller,
+     * the method using w bits argument should be used instead.
+     * 
+     * NOTE, there are prefix entries in the trie, created as
+       needed and the separate method should be
+       used for those: estimateSizeOfTrieNodes()
+       
+     * @param numberOfEntries
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries) {
+<span class="nc" id="L503">        return estimateSizeOnHeap(numberOfEntries, 62);</span>
+    }
+   
+    /**
+     * estimate the size of an instance of this class on the heap with
+     * n number of inserted entries.
+       * 
+     * @param numberOfEntries
+     * @param wNumberOfBits
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries,
+        int wNumberOfBits) {
+       
+        //long maxCw = (1L &lt;&lt; wNumberOfBits) - 1;
+        
+        // includes the class and inserted nodes.
+        // the trie prefix nodes are not included
+<span class="fc" id="L521">        long total = BinaryTrieLong.estimateSizeOnHeap(numberOfEntries);</span>
+        
+        // subtract the BinaryTrieLongNodes and add nodes for this class
+<span class="fc" id="L524">        long subtrNodes =  </span>
+<span class="fc" id="L525">            BinaryTrieLong.estimateSizeOfTriePrefixNodes(numberOfEntries);</span>
+<span class="fc" id="L526">        long addNodes =  </span>
+<span class="fc" id="L527">            XFastTrieLong.estimateSizeOfTriePrefixNodes(numberOfEntries);</span>
+        
+<span class="fc" id="L529">        total -= subtrNodes;</span>
+<span class="fc" id="L530">        total += addNodes;</span>
+        
+        // List t:
+<span class="fc" id="L533">        total += ObjectSpaceEstimator.estimateArrayList();</span>
+        
+        // items in List t:
+<span class="fc" id="L536">        long hashMapSize = ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">        for (int i = 0; i &lt;= wNumberOfBits; i++) {</span>
+<span class="fc" id="L538">            total += hashMapSize;</span>
+            // TODO: add expected number of entries here per map.
+            // That is done in a separate method
+		}
+                
+<span class="fc" id="L543">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();        </span>
+<span class="fc" id="L544">        est.setNIntFields(6);</span>
+<span class="fc" id="L545">        est.setNObjRefsFields(4);</span>
+<span class="fc" id="L546">        est.setNLongFields(1);</span>
+       
+<span class="fc" id="L548">        total += est.estimateSizeOnHeap();</span>
+        
+<span class="fc" id="L550">        return total;</span>
+    }
+   
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

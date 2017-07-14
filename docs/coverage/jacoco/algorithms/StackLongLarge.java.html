@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>StackLongLarge.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">StackLongLarge.java</span></div><h1>StackLongLarge.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import java.util.Arrays;
+
+/**
+ * a stack with a single large primitive array internally
+ * that can expand dynamically, but will not contract.
+ * 
+ * This is intended for use when there are a large number of numbers to process
+ * and the linked list of objects in a standard stack consumes too much memory.
+ * (a java object is 16B overhead + content, so N*16Bytes is a rough approx
+ * and can be compared to the memory here which will be
+ * capacity * 4Bytes).
+ * 
+ * @author nichole
+ */
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">public class StackLongLarge {</span>
+    
+    // circular array
+<span class="fc" id="L20">    protected long[] a = null;</span>
+    
+<span class="fc" id="L22">    protected int idxLast = -1;</span>
+    
+<span class="fc" id="L24">    public StackLongLarge(int capacity) {</span>
+        
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        if (capacity &lt; 1) {</span>
+<span class="nc" id="L27">            throw new IllegalArgumentException(&quot;capacity must be &gt; 0&quot;);</span>
+        }
+        
+<span class="fc" id="L30">        a = new long[capacity];</span>
+<span class="fc" id="L31">    }</span>
+    
+    public void push(long value) {
+        
+<span class="fc" id="L35">        expandIfNeeded();</span>
+        
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (idxLast == -1) {</span>
+<span class="fc" id="L38">            idxLast = 0;</span>
+<span class="fc" id="L39">            a[idxLast] = value;</span>
+<span class="fc" id="L40">            return;</span>
+        }
+        
+<span class="fc" id="L43">        int idxNext = idxLast + 1;</span>
+<span class="pc bpc" id="L44" title="3 of 4 branches missed.">        assert(idxNext &lt; a.length);</span>
+<span class="fc" id="L45">        idxLast = idxNext;</span>
+<span class="fc" id="L46">        a[idxLast] = value;</span>
+<span class="fc" id="L47">    }</span>
+    
+    public long pop() {
+        
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (idxLast == -1) {</span>
+<span class="nc" id="L52">            throw new IllegalStateException(&quot;stack is empty&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (idxLast == 0) {</span>
+<span class="fc" id="L56">            idxLast = -1;</span>
+<span class="fc" id="L57">            return a[0];</span>
+        }
+
+<span class="fc" id="L60">        idxLast--;</span>
+<span class="fc" id="L61">        return a[idxLast + 1];        </span>
+    }
+    
+    public long peek() {
+        
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (idxLast == -1) {</span>
+<span class="nc" id="L67">            throw new IllegalStateException(&quot;stack is empty&quot;);</span>
+        }
+        
+<span class="fc" id="L70">        return a[idxLast];</span>
+    }
+    
+    public boolean isEmpty() {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        return (size() == 0);</span>
+    }
+    
+    public int size() {
+     
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (idxLast == -1) {</span>
+<span class="fc" id="L80">            return 0;</span>
+        }
+        
+<span class="fc" id="L83">        return idxLast + 1;</span>
+    }
+        
+    private void expandIfNeeded() {
+        
+<span class="fc" id="L88">        int sz = size();</span>
+        
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (sz != a.length) {</span>
+<span class="fc" id="L91">            return;</span>
+        }
+        
+<span class="pc bpc" id="L94" title="3 of 4 branches missed.">        assert(idxLast &gt; -1);</span>
+        
+        // expand by 10 percent?
+<span class="fc" id="L97">        int nAdd = (int)Math.ceil(sz * 0.1f);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (nAdd &lt; 16) {</span>
+<span class="nc" id="L99">            nAdd = 16;</span>
+        }
+                 
+<span class="fc" id="L102">        a = Arrays.copyOf(a, sz + nAdd);</span>
+<span class="fc" id="L103">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

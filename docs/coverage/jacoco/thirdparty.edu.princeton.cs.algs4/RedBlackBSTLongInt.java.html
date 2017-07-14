@@ -1,0 +1,1214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RedBlackBSTLongInt.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.edu.princeton.cs.algs4</a> &gt; <span class="el_source">RedBlackBSTLongInt.java</span></div><h1>RedBlackBSTLongInt.java</h1><pre class="source lang-java linenums">package thirdparty.edu.princeton.cs.algs4;
+
+/******************************************************************************
+   adapted from RedBlackBST.java 
+   from the 
+   book &quot;Algorithms&quot; by Sedgewick and Wayne
+   http://algs4.cs.princeton.edu/33balanced/RedBlackBST.java
+   copyright for authors Robert Sedgewick and Kevin Wayne
+   is GPLV3, http://algs4.cs.princeton.edu/faq/
+
+*     x.left.key .lte. x.key
+*     x.right.key .gte. x.key
+* 
+ *  Compilation:  javac RedBlackBST.java
+ *  Execution:    java RedBlackBST left-pipe input.txt
+ *  Dependencies: StdIn.java StdOut.java  
+ *  Data files:   http://algs4.cs.princeton.edu/33balanced/tinyST.txt  
+ *    
+ *  A symbol table implemented using a left-leaning red-black BST.
+ *  This is the 2-3 version.
+ *
+ *  Note: commented out assertions because DrJava now enables assertions
+ *        by default.
+ *
+ *  % more tinyST.txt
+ *  S E A R C H E X A M P L E
+ *  
+ *  % java RedBlackBST left-pipe tinyST.txt
+ *  A 8
+ *  C 4
+ *  E 12
+ *  H 5
+ *  L 11
+ *  M 9
+ *  P 10
+ *  R 3
+ *  S 0
+ *  X 7
+ *
+ ******************************************************************************/
+
+import algorithms.util.ObjectSpaceEstimator;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TLongArrayList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Stack;
+
+/*
+note that a reduction in space, especically for large number of nodes,
+can be made by replacing nodes with associative arrays, but one would
+need to include a parent array also and additional logic to
+update the relationships where changes occur for a 
+key, left or right field.
+*/
+
+/**
+ *  The {@code BST} class represents an ordered symbol table of generic
+ *  key-value pairs.
+ *  It supports the usual &lt;em&gt;put&lt;/em&gt;, &lt;em&gt;get&lt;/em&gt;, &lt;em&gt;contains&lt;/em&gt;,
+ *  &lt;em&gt;delete&lt;/em&gt;, &lt;em&gt;size&lt;/em&gt;, and &lt;em&gt;is-empty&lt;/em&gt; methods.
+ *  It also provides ordered methods for finding the &lt;em&gt;minimum&lt;/em&gt;,
+ *  &lt;em&gt;maximum&lt;/em&gt;, &lt;em&gt;floor&lt;/em&gt;, and &lt;em&gt;ceiling&lt;/em&gt;.
+ *  It also provides a &lt;em&gt;keys&lt;/em&gt; method for iterating over all of the keys.
+ *  A symbol table implements the &lt;em&gt;associative array&lt;/em&gt; abstraction:
+ *  when associating a value with a key that is already in the symbol table,
+ *  the convention is to replace the old value with the new value.
+ *  Unlike {@link java.util.Map}, this class uses the convention that
+ *  values cannot be {@code null}—setting the
+ *  value associated with a key to {@code null} is equivalent to deleting the key
+ *  from the symbol table.
+ *  &lt;p&gt;
+ *  This implementation uses a left-leaning red-black BST. It requires that
+ *  the key type implements the {@code Comparable} interface and calls the
+ *  {@code compareTo()} and method to compare two keys. It does not call either
+ *  {@code equals()} or {@code hashCode()}.
+ *  The &lt;em&gt;put&lt;/em&gt;, &lt;em&gt;contains&lt;/em&gt;, &lt;em&gt;remove&lt;/em&gt;, &lt;em&gt;minimum&lt;/em&gt;,
+ *  &lt;em&gt;maximum&lt;/em&gt;, &lt;em&gt;ceiling&lt;/em&gt;, and &lt;em&gt;floor&lt;/em&gt; operations each take
+ *  logarithmic time in the worst case, if the tree becomes unbalanced.
+ *  The &lt;em&gt;size&lt;/em&gt;, and &lt;em&gt;is-empty&lt;/em&gt; operations take constant time.
+ *  Construction takes constant time.
+ *  &lt;p&gt;
+ *  For additional documentation, see &lt;a href=&quot;http://algs4.cs.princeton.edu/33balanced&quot;&gt;Section 3.3&lt;/a&gt; of
+ *  &lt;i&gt;Algorithms, 4th Edition&lt;/i&gt; by Robert Sedgewick and Kevin Wayne.
+ *  For other implementations of the same API, see {@link ST}, {@link BinarySearchST},
+ *  {@link SequentialSearchST}, {@link BST},
+ *  {@link SeparateChainingHashST}, {@link LinearProbingHashST}, and {@link AVLTreeST}.
+ *
+ *  @author Robert Sedgewick
+ *  @author Kevin Wayne
+ */
+
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">public class RedBlackBSTLongInt {</span>
+    
+    private static final boolean RED   = true;
+    private static final boolean BLACK = false;
+
+    private Node root;     // root of the BST
+    
+    // BST helper node data type
+    private static class Node {
+        // changing Key to long primitive saves factor of 3 on 32 bit platforms,
+        //    else factor of 2 on 64 bit platforms.
+        //    (long size on stack is 64 bits, or 128 bits, respectively)
+        //    Object Long is 16Bytes overhead + contents.
+        // changing value from Integer to int saves factor of 5 on 32 bit
+        //    platforms else 3 on 64 bit platforms
+        private long key;           // key
+        private int val;         // associated data
+        private Node left, right;  // links to left and right subtrees
+        private boolean color;     // color of parent link
+        private int size;          // subtree count
+
+        public Node(long key, int val, boolean color, int size) {
+            this.key = key;
+            this.val = val;
+            this.color = color;
+            this.size = size;
+        }
+        
+        public static long estimateSizeOnHeap() {
+            ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+            est.setNBooleanFields(1);
+            est.setNLongFields(1);
+            est.setNIntFields(2);
+            est.setNObjRefsFields(2);
+            return est.estimateSizeOnHeap();
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;key=&quot;).append(key);
+            sb.append(&quot; val=&quot;).append(val);
+            sb.append(&quot; color=&quot;).append(color);
+            sb.append(&quot; size=&quot;).append(size);
+            sb.append(&quot; l=&quot;);
+            if (left != null) {
+                sb.append(left.key);
+            }
+            sb.append(&quot; r=&quot;);
+            if (right != null) {
+                sb.append(right.key);
+            }
+            return sb.toString();
+        }
+        
+        
+    }
+
+    /**
+     * Initializes an empty symbol table.
+     */
+<span class="fc" id="L156">    public RedBlackBSTLongInt() {</span>
+<span class="fc" id="L157">    }</span>
+
+   /***************************************************************************
+    *  Node helper methods.
+    ***************************************************************************/
+    // is node x red; false if x is null ?
+    private boolean isRed(Node x) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (x == null) return false;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        return x.color == RED;</span>
+    }
+
+    // number of node in subtree rooted at x; 0 if x is null
+    private int size(Node x) {
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (x == null) return 0;</span>
+<span class="fc" id="L171">        return x.size;</span>
+    } 
+
+
+    /**
+     * Returns the number of key-value pairs in this symbol table.
+     * @return the number of key-value pairs in this symbol table
+     */
+    public int size() {
+<span class="fc" id="L180">        return size(root);</span>
+    }
+
+   /**
+     * Is this symbol table empty?
+     * @return {@code true} if this symbol table is empty and {@code false} otherwise
+     */
+    public boolean isEmpty() {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        return root == null;</span>
+    }
+
+
+   /***************************************************************************
+    *  Standard BST search.
+    ***************************************************************************/
+
+    /**
+     * Returns the value associated with the given key.
+     * @param key the key
+     * @param output if output[0] == -1, then key was not present, else the
+     *    returned value is found in output[1]
+     */
+    public void get(long key, int[] output) {
+<span class="pc bpc" id="L203" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L204">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+        }
+<span class="fc" id="L206">        output[0] = 0;</span>
+<span class="fc" id="L207">        get(root, key, output);</span>
+<span class="fc" id="L208">    }</span>
+
+    // value associated with the given key in subtree rooted at x; null if no such key
+    private void get(Node x, long key, int[] output) {
+<span class="fc bfc" id="L212" title="All 2 branches covered.">        while (x != null) {</span>
+<span class="fc bfc" id="L213" title="All 4 branches covered.">            int cmp = key &lt; x.key ? -1 : (key &gt; x.key) ? 1 : 0; </span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">            if      (cmp &lt; 0) x = x.left;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            else if (cmp &gt; 0) x = x.right;</span>
+            else {
+<span class="fc" id="L217">                output[1] = x.val;</span>
+<span class="fc" id="L218">                return;</span>
+            }
+<span class="fc" id="L220">        }</span>
+<span class="fc" id="L221">        output[0] = -1;</span>
+<span class="fc" id="L222">    }</span>
+
+    /**
+     * Does this symbol table contain the given key?
+     * @param key the key
+     * @return {@code true} if this symbol table contains {@code key} and
+     *     {@code false} otherwise
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public boolean contains(long key) {
+<span class="fc" id="L232">        get(key, cache0);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        return (cache0[0] != -1);</span>
+    }
+<span class="fc" id="L235">    private int[] cache0 = new int[2];</span>
+
+   /***************************************************************************
+    *  Red-black tree insertion.
+    ***************************************************************************/
+
+    /**
+     * Inserts the specified key-value pair into the symbol table, overwriting the old 
+     * value with the new value if the symbol table already contains the specified key.
+     *
+     * @param key the key
+     * @param val the value
+     */
+    public void put(long key, int val) {
+<span class="fc" id="L249">        root = put(root, key, val);</span>
+<span class="fc" id="L250">        root.color = BLACK;</span>
+                
+        // assert check();
+<span class="fc" id="L253">    }</span>
+
+    // insert the key-value pair in the subtree rooted at h
+    private Node put(Node h, long key, int val) { 
+        
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (h == null) return new Node(key, val, RED, 1);</span>
+
+<span class="pc bpc" id="L260" title="1 of 4 branches missed.">        int cmp = (key &lt; h.key) ? -1 : (key &gt; h.key) ? 1 : 0;</span>
+        
+        //System.out.println(&quot;within put key=&quot; + key + &quot; cmp=&quot; + cmp);
+        
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        if (cmp &lt; 0) {</span>
+<span class="fc" id="L265">            h.left  = put(h.left,  key, val);</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        } else if (cmp &gt; 0) {</span>
+<span class="fc" id="L267">            h.right = put(h.right, key, val);</span>
+        } else {
+<span class="nc" id="L269">            h.val   = val;</span>
+        }
+        //NOTE: sizes are not updated yet
+        
+        // fix-up any right-leaning links
+<span class="fc bfc" id="L274" title="All 4 branches covered.">        if (isRed(h.right) &amp;&amp; !isRed(h.left)) {</span>
+<span class="fc" id="L275">            h = rotateLeft(h);</span>
+        }
+<span class="fc bfc" id="L277" title="All 4 branches covered.">        if (isRed(h.left)  &amp;&amp;  isRed(h.left.left)) {</span>
+<span class="fc" id="L278">            h = rotateRight(h);</span>
+        }
+<span class="fc bfc" id="L280" title="All 4 branches covered.">        if (isRed(h.left)  &amp;&amp;  isRed(h.right)) {</span>
+<span class="fc" id="L281">            flipColors(h);</span>
+        }
+<span class="fc" id="L283">        h.size = size(h.left) + size(h.right) + 1;</span>
+
+<span class="fc" id="L285">        return h;</span>
+    }
+
+   /***************************************************************************
+    *  Red-black tree deletion.
+    ***************************************************************************/
+
+    /**
+     * Removes the smallest key and associated value from the symbol table.
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public void deleteMin() {
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
+
+        // if both children of root are black, set root to red
+<span class="pc bpc" id="L300" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="fc" id="L301">            root.color = RED;</span>
+
+<span class="fc" id="L303">        root = deleteMin(root);</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
+        // assert check();
+<span class="fc" id="L306">    }</span>
+
+    // delete the key-value pair with the minimum key rooted at h
+    private Node deleteMin(Node h) { 
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        if (h.left == null)</span>
+<span class="fc" id="L311">            return null;</span>
+
+<span class="fc bfc" id="L313" title="All 4 branches covered.">        if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
+<span class="fc" id="L314">            h = moveRedLeft(h);</span>
+
+<span class="fc" id="L316">        h.left = deleteMin(h.left);</span>
+<span class="fc" id="L317">        return balance(h);</span>
+    }
+
+
+    /**
+     * Removes the largest key and associated value from the symbol table.
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public void deleteMax() {
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
+
+        // if both children of root are black, set root to red
+<span class="pc bpc" id="L329" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="fc" id="L330">            root.color = RED;</span>
+
+<span class="fc" id="L332">        root = deleteMax(root);</span>
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
+        // assert check();
+<span class="fc" id="L335">    }</span>
+
+    // delete the key-value pair with the maximum key rooted at h
+    private Node deleteMax(Node h) { 
+    
+        //TODO: make this iterative
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        if (isRed(h.left)) {</span>
+<span class="fc" id="L342">            h = rotateRight(h);</span>
+        }
+
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if (h.right == null) {</span>
+            // h is max key
+<span class="fc" id="L347">            return null;</span>
+        }
+
+<span class="fc bfc" id="L350" title="All 4 branches covered.">        if (!isRed(h.right) &amp;&amp; !isRed(h.right.left)) {</span>
+<span class="fc" id="L351">            h = moveRedRight(h);</span>
+        }
+
+<span class="fc" id="L354">        h.right = deleteMax(h.right);</span>
+
+<span class="fc" id="L356">        return balance(h);</span>
+    }
+
+    /**
+     * Removes the specified key and its associated value from this symbol table     
+     * (if the key is in this symbol table).    
+     *
+     * @param  key the key
+     */
+    public void delete(long key) { 
+        
+        //System.out.println(&quot;delete &quot; + key);
+        
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
+
+        // if both children of root are black, set root to red
+<span class="pc bpc" id="L372" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="fc" id="L373">            root.color = RED;</span>
+
+<span class="fc" id="L375">        root = delete(root, key);</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">        if (!isEmpty()) root.color = BLACK;</span>
+        // assert check();
+<span class="fc" id="L378">    }</span>
+
+    // delete the key-value pair with the given key rooted at h
+    private Node delete(Node h, long key) { 
+        // assert get(h, key) != null;
+
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        if (key &lt; h.key)  {</span>
+<span class="fc bfc" id="L385" title="All 4 branches covered.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left)) {</span>
+<span class="fc" id="L386">                h = moveRedLeft(h);</span>
+            }
+<span class="fc" id="L388">            h.left = delete(h.left, key);</span>
+        } else {
+<span class="fc bfc" id="L390" title="All 2 branches covered.">            if (isRed(h.left))</span>
+<span class="fc" id="L391">                h = rotateRight(h);</span>
+<span class="fc bfc" id="L392" title="All 4 branches covered.">            if (key == h.key &amp;&amp; (h.right == null))</span>
+<span class="fc" id="L393">                return null;</span>
+<span class="fc bfc" id="L394" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left)) {</span>
+<span class="fc" id="L395">                h = moveRedRight(h);</span>
+            }
+            //System.out.println(&quot;key=&quot; + key + &quot; h.key=&quot; + h.key);
+<span class="fc bfc" id="L398" title="All 2 branches covered.">            if (key == h.key) {</span>
+<span class="fc" id="L399">                Node x = min(h.right);</span>
+<span class="fc" id="L400">                h.key = x.key;</span>
+<span class="fc" id="L401">                h.val = x.val;</span>
+                // h.val = get(h.right, min(h.right).key);
+                // h.key = min(h.right).key;
+<span class="fc" id="L404">                h.right = deleteMin(h.right);</span>
+<span class="fc" id="L405">            } else h.right = delete(h.right, key);</span>
+        }
+<span class="fc" id="L407">        return balance(h);</span>
+    }
+
+   /***************************************************************************
+    *  Red-black tree helper functions.
+    ***************************************************************************/
+
+    // make a left-leaning link lean to the right
+    private Node rotateRight(Node h) {
+        // assert (h != null) &amp;&amp; isRed(h.left);
+<span class="fc" id="L417">        Node x = h.left;</span>
+<span class="fc" id="L418">        h.left = x.right;</span>
+<span class="fc" id="L419">        x.right = h;</span>
+<span class="fc" id="L420">        x.color = x.right.color;</span>
+<span class="fc" id="L421">        x.right.color = RED;</span>
+<span class="fc" id="L422">        x.size = h.size;</span>
+<span class="fc" id="L423">        h.size = size(h.left) + size(h.right) + 1;</span>
+        
+<span class="fc" id="L425">        return x;</span>
+    }
+
+    // make a right-leaning link lean to the left
+    private Node rotateLeft(Node h) {
+                
+        // assert (h != null) &amp;&amp; isRed(h.right);
+<span class="fc" id="L432">        Node x = h.right;</span>
+<span class="fc" id="L433">        h.right = x.left;</span>
+<span class="fc" id="L434">        x.left = h;</span>
+<span class="fc" id="L435">        x.color = x.left.color;</span>
+<span class="fc" id="L436">        x.left.color = RED;</span>
+<span class="fc" id="L437">        x.size = h.size;</span>
+<span class="fc" id="L438">        h.size = size(h.left) + size(h.right) + 1;</span>
+                
+<span class="fc" id="L440">        return x;</span>
+    }
+
+    // flip the colors of a node and its two children
+    private void flipColors(Node h) {
+        // h must have opposite color of its two children
+        // assert (h != null) &amp;&amp; (h.left != null) &amp;&amp; (h.right != null);
+        // assert (!isRed(h) &amp;&amp;  isRed(h.left) &amp;&amp;  isRed(h.right))
+        //    || (isRed(h)  &amp;&amp; !isRed(h.left) &amp;&amp; !isRed(h.right));
+<span class="fc bfc" id="L449" title="All 2 branches covered.">        h.color = !h.color;</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">        h.left.color = !h.left.color;</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">        h.right.color = !h.right.color;</span>
+<span class="fc" id="L452">    }</span>
+
+    // Assuming that h is red and both h.left and h.left.left
+    // are black, make h.left or one of its children red.
+    private Node moveRedLeft(Node h) {
+        // assert (h != null);
+        // assert isRed(h) &amp;&amp; !isRed(h.left) &amp;&amp; !isRed(h.left.left);
+
+<span class="fc" id="L460">        flipColors(h);</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">        if (isRed(h.right.left)) { </span>
+<span class="fc" id="L462">            h.right = rotateRight(h.right);</span>
+<span class="fc" id="L463">            h = rotateLeft(h);</span>
+<span class="fc" id="L464">            flipColors(h);</span>
+        }
+                
+<span class="fc" id="L467">        return h;</span>
+    }
+
+    // Assuming that h is red and both h.right and h.right.left
+    // are black, make h.right or one of its children red.
+    private Node moveRedRight(Node h) {
+        // assert (h != null);
+        // assert isRed(h) &amp;&amp; !isRed(h.right) &amp;&amp; !isRed(h.right.left);
+<span class="fc" id="L475">        flipColors(h);</span>
+<span class="pc bpc" id="L476" title="1 of 2 branches missed.">        if (isRed(h.left.left)) { </span>
+<span class="nc" id="L477">            h = rotateRight(h);</span>
+<span class="nc" id="L478">            flipColors(h);</span>
+        }
+                
+<span class="fc" id="L481">        return h;</span>
+    }
+
+    // restore red-black tree invariant
+    private Node balance(Node h) {
+        // assert (h != null);
+
+<span class="fc bfc" id="L488" title="All 2 branches covered.">        if (isRed(h.right))                      h = rotateLeft(h);</span>
+<span class="fc bfc" id="L489" title="All 4 branches covered.">        if (isRed(h.left) &amp;&amp; isRed(h.left.left)) h = rotateRight(h);</span>
+<span class="fc bfc" id="L490" title="All 4 branches covered.">        if (isRed(h.left) &amp;&amp; isRed(h.right))     flipColors(h);</span>
+
+<span class="fc" id="L492">        h.size = size(h.left) + size(h.right) + 1;</span>
+<span class="fc" id="L493">        return h;</span>
+    }
+
+
+   /***************************************************************************
+    *  Utility functions.
+    ***************************************************************************/
+
+    /**
+     * Returns the height of the BST (for debugging).
+     * @return the height of the BST (a 1-node tree has height 0)
+     */
+    public int height() {
+<span class="nc" id="L506">        return height(root);</span>
+    }
+    private int height(Node x) {
+<span class="nc bnc" id="L509" title="All 2 branches missed.">        if (x == null) return -1;</span>
+<span class="nc" id="L510">        return 1 + Math.max(height(x.left), height(x.right));</span>
+    }
+
+   /***************************************************************************
+    *  Ordered symbol table methods.
+    ***************************************************************************/
+
+    /**
+     * Returns the smallest key in the symbol table.
+     * @return the smallest key in the symbol table
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public long min() {
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;called min() with empty symbol table&quot;);</span>
+<span class="fc" id="L524">        return min(root).key;</span>
+    } 
+
+    // the smallest key in subtree rooted at x; null if no such key
+    private Node min(Node x) { 
+<span class="pc bpc" id="L529" title="3 of 4 branches missed.">        assert(x != null);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">        while (x.left != null) {</span>
+<span class="fc" id="L531">            x = x.left;</span>
+        }
+<span class="fc" id="L533">        return x;</span>
+    } 
+
+    /**
+     * Returns the largest key in the symbol table.
+     * @return the largest key in the symbol table
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public long max() {
+<span class="pc bpc" id="L542" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;called max() with empty symbol table&quot;);</span>
+<span class="fc" id="L543">        return max(root).key;</span>
+    } 
+
+    // the largest key in the subtree rooted at x; null if no such key
+    private Node max(Node x) { 
+<span class="pc bpc" id="L548" title="3 of 4 branches missed.">        assert(x != null);</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">        while (x.right != null) {</span>
+<span class="fc" id="L550">            x = x.right;</span>
+        }
+<span class="fc" id="L552">        return x; </span>
+    }
+
+    /**
+     * Returns the largest key in the symbol table less than or equal to {@code key}.
+     * @param key the key
+     * @param output if output[0] == -1, the key was not present, 
+     * else output[1] holds the largest key in the symbol table less than or equal to {@code key}
+     @throws NoSuchElementException if the tree is empty
+     */
+    public void floor(long key, long[] output) {
+<span class="pc bpc" id="L563" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L564">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+        }
+<span class="pc bpc" id="L566" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L567">            output[0] = -1;</span>
+<span class="nc" id="L568">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+        }
+<span class="fc" id="L570">        Node x = floor(root, key);</span>
+<span class="pc bpc" id="L571" title="1 of 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L572">            output[0] = -1;</span>
+        } else {
+<span class="fc" id="L574">            output[0] = 0;</span>
+<span class="fc" id="L575">            output[1] = x.key;</span>
+        }
+<span class="fc" id="L577">    }    </span>
+
+    /**
+     * Returns the largest key in the symbol table less than {@code key}.
+     * @param key the key
+     * @param output if output[0] == -1, the key was not present, 
+     * else output[1] holds the largest key in the symbol table less than or equal to {@code key}
+     @throws NoSuchElementException if the tree is empty
+     */
+    public void lower(long key, long[] output) {
+<span class="pc bpc" id="L587" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L588">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+        }
+<span class="pc bpc" id="L590" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L591">            output[0] = -1;</span>
+<span class="nc" id="L592">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+        }
+<span class="fc" id="L594">        List&lt;Node&gt; stack = new ArrayList&lt;Node&gt;();</span>
+<span class="fc" id="L595">        Node x = lower(root, key, stack);</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc" id="L597">            output[0] = -1;</span>
+        } else {
+<span class="fc" id="L599">            output[0] = 0;</span>
+<span class="fc" id="L600">            output[1] = x.key;</span>
+        }
+<span class="fc" id="L602">    }    </span>
+    
+    // the largest key in the subtree rooted at x less than or equal to the given key
+    private Node floor(Node x, long key) {
+<span class="fc bfc" id="L606" title="All 2 branches covered.">        if (x == null) return null;</span>
+<span class="pc bpc" id="L607" title="1 of 4 branches missed.">        int cmp = (key &lt; x.key) ? -1 : (key &gt; x.key) ? 1 : 0;</span>
+<span class="pc bpc" id="L608" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L609">            return x;</span>
+        }
+<span class="fc bfc" id="L611" title="All 2 branches covered.">        if (cmp &lt; 0)  {</span>
+<span class="fc" id="L612">            return floor(x.left, key);</span>
+        }
+<span class="fc" id="L614">        Node t = floor(x.right, key);</span>
+<span class="fc bfc" id="L615" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L616">            return t;</span>
+        } else {
+<span class="fc" id="L618">            return x;</span>
+        }
+    }
+    
+    /** the largest key in the subtree rooted at x less than the given key
+     * 
+     * The method is symmetric t the successor method called 
+     * higher, as suggested by Cormen et al. in
+     * the book &quot;Introduction to Algorithms&quot;.
+     * 
+     * @param x
+     * @param key
+     * @param stack
+     * @return 
+     */
+    private Node lower(Node x, long key, List&lt;Node&gt; stack) { 
+        
+        //binary search until overshoot
+<span class="fc bfc" id="L636" title="All 4 branches covered.">        while (x != null &amp;&amp; key != x.key) {</span>
+<span class="fc" id="L637">            stack.add(x);</span>
+            //System.out.println(&quot;lower: x=&quot; + x.key + &quot; q=&quot; + key);
+<span class="fc bfc" id="L639" title="All 2 branches covered.">            if (key &lt; x.key) {</span>
+<span class="fc" id="L640">                x = x.left;</span>
+            } else {
+                //System.out.println(&quot;   x.key=&quot; + x.key);
+<span class="fc" id="L643">                x = x.right;</span>
+            }
+        }
+        
+<span class="fc" id="L647">        Node y = null;</span>
+<span class="fc" id="L648">        int yIdx = -1;</span>
+        
+<span class="fc bfc" id="L650" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc bfc" id="L651" title="All 2 branches covered.">            if (stack.size() &gt; 1) {</span>
+<span class="fc" id="L652">                x = stack.get(stack.size() - 1);</span>
+<span class="fc" id="L653">                yIdx = stack.size() - 2;</span>
+<span class="fc" id="L654">                y = stack.get(yIdx);</span>
+<span class="pc bpc" id="L655" title="1 of 2 branches missed.">            } else if (stack.size() == 1) {</span>
+<span class="fc" id="L656">                x = stack.get(stack.size() - 1);</span>
+            }
+<span class="fc bfc" id="L658" title="All 2 branches covered.">        } else if (!stack.isEmpty()) {</span>
+<span class="fc" id="L659">            yIdx = stack.size() - 1;</span>
+<span class="fc" id="L660">            y = stack.get(yIdx);</span>
+        }
+        
+<span class="fc bfc" id="L663" title="All 2 branches covered.">        if (x.left != null) {</span>
+<span class="fc" id="L664">            return max(x.left);</span>
+        }
+      
+<span class="pc bpc" id="L667" title="1 of 4 branches missed.">        while (y != null &amp;&amp; x == y.left) {</span>
+            //System.out.println(&quot;lower: y=&quot; + y.key + &quot; q=&quot; + key);
+<span class="fc" id="L669">            x = y;</span>
+<span class="fc" id="L670">            yIdx--;</span>
+<span class="fc bfc" id="L671" title="All 2 branches covered.">            if (yIdx &lt; 0) break;</span>
+<span class="fc" id="L672">            y = stack.get(yIdx);</span>
+        }
+        
+<span class="pc bpc" id="L675" title="1 of 4 branches missed.">        if (x.key &lt; key &amp;&amp; x.key &gt; y.key) {</span>
+<span class="fc" id="L676">            return x;</span>
+        }
+        
+        //System.out.println(&quot;    y=&quot; + y.key + &quot; q=&quot; + key);
+<span class="pc bpc" id="L680" title="1 of 4 branches missed.">        if (y != null &amp;&amp; y.key &gt;= key) {</span>
+<span class="fc" id="L681">            return null;</span>
+        }
+        
+<span class="fc" id="L684">        return y;</span>
+    }
+
+    /**
+     * Returns the smallest key in the symbol table greater than or equal to {@code key}.
+     * @param key the key
+     * @param output if output[0] == -1, the key was not present, 
+     * else output[1] holds
+     * the smallest key in the symbol table greater than or equal to {@code key}
+     * @throws NoSuchElementException if the tree is empty
+     */
+    public void ceiling(long key, long[] output) {
+<span class="pc bpc" id="L696" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L697">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+        }
+<span class="pc bpc" id="L699" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L700">            output[0] = -1;</span>
+<span class="nc" id="L701">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+        }
+<span class="fc" id="L703">        Node x = ceiling(root, key);</span>
+<span class="pc bpc" id="L704" title="1 of 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L705">            output[0] = -1;</span>
+        } else   {
+<span class="fc" id="L707">            output[0] = 0;</span>
+<span class="fc" id="L708">            output[1] = x.key;</span>
+        }
+<span class="fc" id="L710">    }</span>
+
+    /**
+     * Returns the smallest key in the symbol table greater than {@code key}.
+     * @param key the key
+     * @param output if output[0] == -1, the key was not present, 
+     * else output[1] holds
+     * the smallest key in the symbol table greater than or equal to {@code key}
+     * @throws NoSuchElementException if the tree is empty
+     */
+    public void higher(long key, long[] output) {
+<span class="pc bpc" id="L721" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L722">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+        }
+<span class="pc bpc" id="L724" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L725">            output[0] = -1;</span>
+<span class="nc" id="L726">            throw new NoSuchElementException(</span>
+                &quot;called higher() with empty symbol table&quot;);
+        }
+<span class="fc" id="L729">        List&lt;Node&gt; stack = new ArrayList&lt;Node&gt;();</span>
+<span class="fc" id="L730">        Node x = higher(root, key, stack);</span>
+<span class="fc bfc" id="L731" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc" id="L732">            output[0] = -1;</span>
+        } else   {
+<span class="fc" id="L734">            output[0] = 0;</span>
+<span class="fc" id="L735">            output[1] = x.key;</span>
+        }
+<span class="fc" id="L737">    }</span>
+    
+    // the smallest key in the subtree rooted at x greater than or equal to the given key
+    private Node ceiling(Node x, long key) {
+        //TODO: make this iterative
+<span class="fc bfc" id="L742" title="All 2 branches covered.">        if (x == null) return null;</span>
+<span class="pc bpc" id="L743" title="1 of 4 branches missed.">        int cmp = key &lt; x.key ? -1 : (key &gt; x.key) ? 1 : 0; </span>
+<span class="pc bpc" id="L744" title="1 of 2 branches missed.">        if (cmp == 0) return x;</span>
+<span class="fc bfc" id="L745" title="All 2 branches covered.">        if (cmp &gt; 0)  return ceiling(x.right, key);</span>
+<span class="fc" id="L746">        Node t = ceiling(x.left, key);</span>
+<span class="fc bfc" id="L747" title="All 2 branches covered.">        if (t != null) return t; </span>
+<span class="fc" id="L748">        else           return x;</span>
+    }
+    
+    /** the smallest key in the subtree rooted at x greater than the given key.
+     * 
+     * NOTE: the method uses in part, a pattern adapted from the Cormen et al.
+     * book &quot;Introduction to Algorithms&quot; for their Red Black Tree.
+     * 
+     * @param x
+     * @param key
+     * @return 
+     */
+    private Node higher(Node x, long key, List&lt;Node&gt; stack) {  
+                        
+        /*
+                    X
+        left .lte.     right .gte.
+        */
+        
+        //binary search until overshoot
+<span class="fc bfc" id="L768" title="All 4 branches covered.">        while (x != null &amp;&amp; key != x.key) {</span>
+<span class="fc" id="L769">            stack.add(x);</span>
+            //System.out.println(&quot;higher: x=&quot; + x.key + &quot; q=&quot; + key);
+<span class="fc bfc" id="L771" title="All 2 branches covered.">            if (key &lt; x.key) {</span>
+<span class="fc" id="L772">                x = x.left;</span>
+            } else {
+                //right is towards numbers larger than x.key
+<span class="fc" id="L775">                x = x.right;</span>
+            }
+        }
+        
+<span class="fc" id="L779">        Node y = null;</span>
+<span class="fc" id="L780">        int yIdx = -1;</span>
+        
+<span class="fc bfc" id="L782" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc bfc" id="L783" title="All 2 branches covered.">            if (stack.size() &gt; 1) {</span>
+<span class="fc" id="L784">                x = stack.get(stack.size() - 1);</span>
+<span class="fc" id="L785">                yIdx = stack.size() - 2;</span>
+<span class="fc" id="L786">                y = stack.get(yIdx);</span>
+<span class="pc bpc" id="L787" title="1 of 2 branches missed.">            } else if (stack.size() == 1) {</span>
+<span class="fc" id="L788">                x = stack.get(stack.size() - 1);</span>
+            }
+<span class="fc bfc" id="L790" title="All 2 branches covered.">        } else if (!stack.isEmpty()) {</span>
+<span class="fc" id="L791">            yIdx = stack.size() - 1;</span>
+<span class="fc" id="L792">            y = stack.get(yIdx);</span>
+        }
+        
+<span class="fc bfc" id="L795" title="All 2 branches covered.">        if (x.right != null) {</span>
+<span class="fc" id="L796">            return min(x.right);</span>
+        }
+        
+<span class="fc bfc" id="L799" title="All 4 branches covered.">        while (y != null &amp;&amp; x == y.right) {</span>
+            //System.out.println(&quot;higher: y=&quot; + y.key + &quot; q=&quot; + key);
+<span class="fc" id="L801">            x = y;</span>
+<span class="fc" id="L802">            yIdx--;</span>
+<span class="fc bfc" id="L803" title="All 2 branches covered.">            if (yIdx &lt; 0) break;</span>
+<span class="fc" id="L804">            y = stack.get(yIdx);</span>
+        }
+        
+<span class="pc bpc" id="L807" title="1 of 4 branches missed.">        if (x.key &gt; key &amp;&amp; x.key &lt; y.key) {</span>
+<span class="fc" id="L808">            return x;</span>
+        }
+        
+<span class="fc bfc" id="L811" title="All 4 branches covered.">        if (y != null &amp;&amp; y.key &lt;= key) {</span>
+<span class="fc" id="L812">            return null;</span>
+        }
+        
+<span class="fc" id="L815">        return y;</span>
+    }
+
+    /**
+     * Return the kth smallest key in the symbol table.
+     * @param k the order statistic
+     * @return the {@code k}th smallest key in the symbol table
+     * @throws IllegalArgumentException unless {@code k} is between 0 and
+     *     &lt;em&gt;n&lt;/em&gt;–1
+     */
+    public long select(int k) {
+<span class="pc bpc" id="L826" title="2 of 4 branches missed.">        if (k &lt; 0 || k &gt;= size()) {</span>
+<span class="nc" id="L827">            throw new IllegalArgumentException(&quot;called select() with invalid argument: &quot; + k);</span>
+        }
+<span class="fc" id="L829">        Node x = select(root, k);</span>
+<span class="fc" id="L830">        return x.key;</span>
+    }
+
+    // the key of rank k in the subtree rooted at x
+    private Node select(Node x, int k) {
+        //TODO: make this iterative
+        // assert x != null;
+        // assert k &gt;= 0 &amp;&amp; k &lt; size(x);
+<span class="fc" id="L838">        int t = size(x.left); </span>
+<span class="fc bfc" id="L839" title="All 2 branches covered.">        if      (t &gt; k) return select(x.left,  k); </span>
+<span class="fc bfc" id="L840" title="All 2 branches covered.">        else if (t &lt; k) return select(x.right, k-t-1); </span>
+<span class="fc" id="L841">        else            return x; </span>
+    } 
+
+    /**
+     * Return the number of keys in the symbol table strictly less than {@code key}.
+     * @param key the key
+     * @return the number of keys in the symbol table strictly less than {@code key}
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public int rank(long key) {
+<span class="nc" id="L851">        return rank(key, root);</span>
+    } 
+
+    // number of keys less than key in the subtree rooted at x
+    private int rank(long key, Node x) {
+        //TODO: make this iterative
+<span class="nc bnc" id="L857" title="All 2 branches missed.">        if (x == null) return 0; </span>
+<span class="nc bnc" id="L858" title="All 4 branches missed.">        int cmp = key &lt; x.key ? -1 : (key &gt; x.key) ? 1 : 0;  </span>
+<span class="nc bnc" id="L859" title="All 2 branches missed.">        if      (cmp &lt; 0) return rank(key, x.left); </span>
+<span class="nc bnc" id="L860" title="All 2 branches missed.">        else if (cmp &gt; 0) return 1 + size(x.left) + rank(key, x.right); </span>
+<span class="nc" id="L861">        else              return size(x.left); </span>
+    } 
+
+   /***************************************************************************
+    *  Range count and range search.
+    ***************************************************************************/
+
+    /**
+     * Returns all keys in the symbol table as an {@code Iterable}.
+     * To iterate over all of the keys in the symbol table named {@code st},
+     * use the foreach notation: {@code for (Key key : st.keys())}.
+     * @return all keys in the symbol table as an {@code Iterable}
+     */
+    public TLongList keys() {
+<span class="nc bnc" id="L875" title="All 2 branches missed.">        if (isEmpty()) return new TLongArrayList();</span>
+<span class="nc" id="L876">        return keys(min(), max());</span>
+    }
+
+    /**
+     * Returns all keys in the symbol table in the given range,
+     * as an {@code Iterable}.
+     *
+     * @param  lo minimum endpoint
+     * @param  hi maximum endpoint
+     * @return all keys in the sybol table between {@code lo} 
+     *    (inclusive) and {@code hi} (inclusive) as an {@code Iterable}
+     * @throws IllegalArgumentException if either {@code lo} or {@code hi}
+     *    is {@code null}
+     */
+    public TLongList keys(long lo, long hi) {
+
+<span class="nc" id="L892">        TLongList queue = new TLongArrayList();</span>
+        // if (isEmpty() || lo.compareTo(hi) &gt; 0) return queue;
+<span class="nc" id="L894">        keys(root, queue, lo, hi);</span>
+<span class="nc" id="L895">        return queue;</span>
+    } 
+
+    // add the keys between lo and hi in the subtree rooted at x
+    // to the queue
+    private void keys(Node x, TLongList queue, long lo, long hi) { 
+        //TODO: make this iterative
+<span class="nc bnc" id="L902" title="All 2 branches missed.">        if (x == null) return; </span>
+<span class="nc bnc" id="L903" title="All 4 branches missed.">        int cmplo = lo &lt; x.key ? -1 : (lo &gt; x.key) ? 1 : 0;</span>
+<span class="nc bnc" id="L904" title="All 4 branches missed.">        int cmphi = hi &lt; x.key ? -1 : (hi &gt; x.key) ? 1 : 0; </span>
+<span class="nc bnc" id="L905" title="All 2 branches missed.">        if (cmplo &lt; 0) keys(x.left, queue, lo, hi); </span>
+<span class="nc bnc" id="L906" title="All 4 branches missed.">        if (cmplo &lt;= 0 &amp;&amp; cmphi &gt;= 0) queue.add(x.key); </span>
+<span class="nc bnc" id="L907" title="All 2 branches missed.">        if (cmphi &gt; 0) keys(x.right, queue, lo, hi); </span>
+<span class="nc" id="L908">    } </span>
+
+    /**
+     * Returns the number of keys in the symbol table in the given range.
+     *
+     * @param  lo minimum endpoint
+     * @param  hi maximum endpoint
+     * @return the number of keys in the sybol table between {@code lo} 
+     *    (inclusive) and {@code hi} (inclusive)
+     * @throws IllegalArgumentException if either {@code lo} or {@code hi}
+     *    is {@code null}
+     */
+    public int size(long lo, long hi) {
+
+<span class="nc bnc" id="L922" title="All 2 branches missed.">        if (lo &gt; hi) return 0;</span>
+<span class="nc bnc" id="L923" title="All 2 branches missed.">        if (contains(hi)) return rank(hi) - rank(lo) + 1;</span>
+<span class="nc" id="L924">        else              return rank(hi) - rank(lo);</span>
+    }
+
+
+   /***************************************************************************
+    *  Check integrity of red-black tree data structure.
+    ***************************************************************************/
+    private boolean check() {
+<span class="nc bnc" id="L932" title="All 2 branches missed.">        if (!isBST())            System.out.println(&quot;Not in symmetric order&quot;);</span>
+<span class="nc bnc" id="L933" title="All 2 branches missed.">        if (!isSizeConsistent()) System.out.println(&quot;Subtree counts not consistent&quot;);</span>
+<span class="nc bnc" id="L934" title="All 2 branches missed.">        if (!isRankConsistent()) System.out.println(&quot;Ranks not consistent&quot;);</span>
+<span class="nc bnc" id="L935" title="All 2 branches missed.">        if (!is23())             System.out.println(&quot;Not a 2-3 tree&quot;);</span>
+<span class="nc bnc" id="L936" title="All 2 branches missed.">        if (!isBalanced())       System.out.println(&quot;Not balanced&quot;);</span>
+<span class="nc bnc" id="L937" title="All 10 branches missed.">        return isBST() &amp;&amp; isSizeConsistent() &amp;&amp; isRankConsistent() &amp;&amp; is23() &amp;&amp; isBalanced();</span>
+    }
+
+    // does this binary tree satisfy symmetric order?
+    // Note: this test also ensures that data structure is a binary tree since order is strict
+    private boolean isBST() {
+<span class="nc" id="L943">        return isBST(root, null, null);</span>
+    }
+
+    // is the tree rooted at x a BST with all keys strictly between min and max
+    // (if min or max is null, treat as empty constraint)
+    // Credit: Bob Dondero's elegant solution
+    private boolean isBST(Node x, Long min, Long max) {
+<span class="nc bnc" id="L950" title="All 2 branches missed.">        if (x == null) return true;</span>
+<span class="nc bnc" id="L951" title="All 4 branches missed.">        if (min != null &amp;&amp; x.key &lt;= min) return false;</span>
+<span class="nc bnc" id="L952" title="All 4 branches missed.">        if (max != null &amp;&amp; x.key &gt;= max) return false;</span>
+<span class="nc bnc" id="L953" title="All 2 branches missed.">        return isBST(x.left, min, Long.valueOf(x.key)) </span>
+<span class="nc bnc" id="L954" title="All 2 branches missed.">            &amp;&amp; isBST(x.right, Long.valueOf(x.key), max);</span>
+    } 
+
+    // are the size fields correct?
+<span class="nc" id="L958">    private boolean isSizeConsistent() { return isSizeConsistent(root); }</span>
+    private boolean isSizeConsistent(Node x) {
+<span class="nc bnc" id="L960" title="All 2 branches missed.">        if (x == null) return true;</span>
+<span class="nc bnc" id="L961" title="All 2 branches missed.">        if (x.size != size(x.left) + size(x.right) + 1) return false;</span>
+<span class="nc bnc" id="L962" title="All 4 branches missed.">        return isSizeConsistent(x.left) &amp;&amp; isSizeConsistent(x.right);</span>
+    } 
+
+    // check that ranks are consistent
+    private boolean isRankConsistent() {
+<span class="nc bnc" id="L967" title="All 2 branches missed.">        for (int i = 0; i &lt; size(); i++) {</span>
+<span class="nc bnc" id="L968" title="All 2 branches missed.">            if (i != rank(select(i))) return false;</span>
+        }
+<span class="nc" id="L970">        TLongList keys = keys();</span>
+<span class="nc bnc" id="L971" title="All 2 branches missed.">        for (int i = 0; i &lt; keys.size(); ++i) {</span>
+<span class="nc" id="L972">            long key = keys.get(i);</span>
+<span class="nc bnc" id="L973" title="All 2 branches missed.">            if (key != select(rank(key))) {</span>
+<span class="nc" id="L974">                return false;</span>
+            }
+        }
+<span class="nc" id="L977">        return true;</span>
+    }
+
+    // Does the tree have no red right links, and at most one (left)
+    // red links in a row on any path?
+<span class="nc" id="L982">    private boolean is23() { return is23(root); }</span>
+    private boolean is23(Node x) {
+<span class="nc bnc" id="L984" title="All 2 branches missed.">        if (x == null) return true;</span>
+<span class="nc bnc" id="L985" title="All 2 branches missed.">        if (isRed(x.right)) return false;</span>
+<span class="nc bnc" id="L986" title="All 6 branches missed.">        if (x != root &amp;&amp; isRed(x) &amp;&amp; isRed(x.left))</span>
+<span class="nc" id="L987">            return false;</span>
+<span class="nc bnc" id="L988" title="All 4 branches missed.">        return is23(x.left) &amp;&amp; is23(x.right);</span>
+    } 
+
+    // do all paths from root to leaf have same number of black edges?
+    private boolean isBalanced() { 
+<span class="nc" id="L993">        int black = 0;     // number of black links on path from root to min</span>
+<span class="nc" id="L994">        Node x = root;</span>
+<span class="nc bnc" id="L995" title="All 2 branches missed.">        while (x != null) {</span>
+<span class="nc bnc" id="L996" title="All 2 branches missed.">            if (!isRed(x)) black++;</span>
+<span class="nc" id="L997">            x = x.left;</span>
+        }
+<span class="nc" id="L999">        return isBalanced(root, black);</span>
+    }
+
+    // does every path from the root to a leaf have the given number of black links?
+    private boolean isBalanced(Node x, int black) {
+<span class="nc bnc" id="L1004" title="All 4 branches missed.">        if (x == null) return black == 0;</span>
+<span class="nc bnc" id="L1005" title="All 2 branches missed.">        if (!isRed(x)) black--;</span>
+<span class="nc bnc" id="L1006" title="All 4 branches missed.">        return isBalanced(x.left, black) &amp;&amp; isBalanced(x.right, black);</span>
+    } 
+    
+    /**
+     * left subtree, root, right subtree
+     */
+    public void printInOrderTraversal() {
+<span class="nc" id="L1013">        Node[] nodes = getInOrderTraversalIterative(root);</span>
+<span class="nc bnc" id="L1014" title="All 2 branches missed.">        for (Node node : nodes) {</span>
+<span class="nc" id="L1015">            System.out.println(&quot;node=&quot; + node.toString());</span>
+        }
+<span class="nc" id="L1017">    }</span>
+    
+    /**
+     * root, left subtree, right subtree
+     */
+    public void printPreOrderTraversal() {
+<span class="fc" id="L1023">        Node[] nodes = getPreOrderTraversalIterative(root, 0);</span>
+<span class="fc bfc" id="L1024" title="All 2 branches covered.">        for (Node node : nodes) {</span>
+<span class="fc" id="L1025">            System.out.println(&quot;node=&quot; + node.toString());</span>
+        }
+<span class="fc" id="L1027">    }</span>
+    private void printPreOrderTraversal(int addExtraToSize) {
+<span class="nc" id="L1029">        Node[] nodes = getPreOrderTraversalIterative(root, addExtraToSize);</span>
+<span class="nc bnc" id="L1030" title="All 2 branches missed.">        for (Node node : nodes) {</span>
+<span class="nc bnc" id="L1031" title="All 2 branches missed.">            if (node == null) {</span>
+<span class="nc" id="L1032">                continue;</span>
+            }
+<span class="nc" id="L1034">            System.out.println(&quot;node=&quot; + node.toString());</span>
+        }
+<span class="nc" id="L1036">    }</span>
+    
+    /**
+     * left subtree, right subtree, root subtree
+     */
+    public void printPostOrderTraversal() {
+<span class="nc" id="L1042">        Node[] nodes = getPostOrderTraversalIterative(root);</span>
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">        for (Node node : nodes) {</span>
+<span class="nc" id="L1044">            System.out.println(&quot;node=&quot; + node.toString());</span>
+        }
+<span class="nc" id="L1046">    }</span>
+
+    /**
+     * visit each node using pattern left subtree, root, right subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected Node[] getInOrderTraversalIterative(Node node) {
+        
+<span class="nc bnc" id="L1054" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1055">            return new Node[0];</span>
+        }
+        
+<span class="nc" id="L1058">        int sz = size();</span>
+       
+<span class="nc" id="L1060">        Node[] array = new Node[sz];</span>
+<span class="nc" id="L1061">        int count = 0;</span>
+        
+<span class="nc" id="L1063">        Stack&lt;Node&gt; stack = new Stack&lt;&gt;();</span>
+               
+<span class="nc bnc" id="L1065" title="All 4 branches missed.">        while (!stack.isEmpty() || (node != null)) {</span>
+<span class="nc bnc" id="L1066" title="All 2 branches missed.">            if (node != null) {</span>
+                 
+<span class="nc" id="L1068">                stack.push(node);</span>
+                
+<span class="nc" id="L1070">                node = node.left;</span>
+            
+<span class="nc bnc" id="L1072" title="All 2 branches missed.">            } else if (count &lt; sz) {</span>
+                
+<span class="nc" id="L1074">                node = stack.pop();</span>
+                
+<span class="nc" id="L1076">                array[count] = node;</span>
+<span class="nc" id="L1077">                count++;</span>
+                
+                //System.out.println(node.key);
+                
+<span class="nc" id="L1081">                node = node.right;</span>
+            }
+        }
+<span class="nc" id="L1084">        return array;</span>
+    }
+    
+    /**
+     * visit each node using pattern: root, left subtree, right subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected Node[] getPreOrderTraversalIterative(Node node, int addExtraToSize) {
+       
+        //NOTE: added additional integer and conditions 
+        //   for size because may be printing tree
+        //   in the middle of a put where the node size is not yet updated.
+        // The count conditionals below are otherwise, not needed.
+        
+<span class="pc bpc" id="L1098" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1099">            return new Node[0];</span>
+        }
+                
+<span class="fc" id="L1102">        int sz = size() + addExtraToSize;</span>
+        
+<span class="fc" id="L1104">        Node[] array = new Node[sz];</span>
+<span class="fc" id="L1105">        int count = 0;</span>
+        
+<span class="fc" id="L1107">        Stack&lt;Node&gt; stack = new Stack&lt;&gt;();</span>
+        
+<span class="pc bpc" id="L1109" title="1 of 6 branches missed.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
+<span class="pc bpc" id="L1110" title="1 of 4 branches missed.">            if (node != null &amp;&amp; count &lt; sz) {</span>
+              
+<span class="fc" id="L1112">                array[count] = node;</span>
+                
+<span class="fc" id="L1114">                count++;</span>
+                
+<span class="fc bfc" id="L1116" title="All 2 branches covered.">                if (count &lt; sz) {</span>
+<span class="fc" id="L1117">                    stack.push(node);</span>
+                }
+                
+<span class="fc" id="L1120">                node = node.left;</span>
+            
+<span class="pc bpc" id="L1122" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
+                
+<span class="fc" id="L1124">                node = stack.pop();</span>
+                
+<span class="fc" id="L1126">                node = node.right;</span>
+            }
+        }
+        
+<span class="pc bpc" id="L1130" title="1 of 2 branches missed.">        if (count &lt; array.length) {</span>
+<span class="nc" id="L1131">            array = Arrays.copyOf(array, count);</span>
+        }
+        
+<span class="fc" id="L1134">        return array;</span>
+    }
+
+    /**
+     * visit each node using pattern: left subtree, right subtree, root subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected Node[] getPostOrderTraversalIterative(Node node) {
+        
+<span class="nc bnc" id="L1143" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1144">            return new Node[0];</span>
+        }
+        
+<span class="nc" id="L1147">        Node[] array = new Node[size()];</span>
+<span class="nc" id="L1148">        int count = 0;</span>
+        
+<span class="nc bnc" id="L1150" title="All 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L1151">            return array;</span>
+        }
+        
+<span class="nc" id="L1154">        Stack&lt;Node&gt; stack = new Stack&lt;Node&gt;();</span>
+<span class="nc" id="L1155">        Stack&lt;Node&gt; stack2 = new Stack&lt;Node&gt;();</span>
+<span class="nc" id="L1156">        stack.push(node);</span>
+        
+<span class="nc bnc" id="L1158" title="All 2 branches missed.">        while (!stack.isEmpty()) {</span>
+            
+<span class="nc" id="L1160">            node = stack.pop();</span>
+            
+<span class="nc" id="L1162">            stack2.push(node);</span>
+            
+<span class="nc bnc" id="L1164" title="All 2 branches missed.">            if (node.left != null) {</span>
+<span class="nc" id="L1165">                stack.push(node.left);</span>
+            }
+
+<span class="nc bnc" id="L1168" title="All 2 branches missed.">            if (node.right != null) {</span>
+<span class="nc" id="L1169">                stack.push(node.right);</span>
+            }            
+        }
+        
+<span class="nc bnc" id="L1173" title="All 2 branches missed.">        while (!stack2.isEmpty()) {</span>
+            
+<span class="nc" id="L1175">            node = stack2.pop();</span>
+            
+            //process(node);
+<span class="nc" id="L1178">            array[count] = node;</span>
+<span class="nc" id="L1179">            count++;</span>
+            //System.out.println(node.key);
+        }
+         
+<span class="nc" id="L1183">        return array;</span>
+    }
+    
+    public static long estimateNodeSizeOnHeap() {
+<span class="fc" id="L1187">        return Node.estimateSizeOnHeap();</span>
+    }
+    
+    /**
+     * estimate the size that an instance of RedBlackBSTLongInt with
+     * n entries would occupy in heap space in Bytes.
+     * 
+     * @param numberOfEntries amount of space for this object's instance
+     * with n entries in Bytes on the heap.
+     * 
+     * @return 
+     */
+    public static long estimateSizeOnHeap(int numberOfEntries) {
+        
+<span class="fc" id="L1201">        long total = 0;</span>
+        
+<span class="fc" id="L1203">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L1204">        est.setNBooleanFields(2);</span>
+<span class="fc" id="L1205">        est.setNObjRefsFields(1);</span>
+       
+<span class="fc" id="L1207">        total += est.estimateSizeOnHeap();</span>
+        
+<span class="fc" id="L1209">        total += numberOfEntries * Node.estimateSizeOnHeap();</span>
+    
+<span class="fc" id="L1211">        return total;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

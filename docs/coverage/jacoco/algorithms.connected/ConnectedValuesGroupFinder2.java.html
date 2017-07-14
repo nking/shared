@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ConnectedValuesGroupFinder2.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.connected</a> &gt; <span class="el_source">ConnectedValuesGroupFinder2.java</span></div><h1>ConnectedValuesGroupFinder2.java</h1><pre class="source lang-java linenums">package algorithms.connected;
+
+import algorithms.StackLongLarge;
+import algorithms.util.PixelHelper;
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongLongMap;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+/**
+ * This version is similar to ConnectedValuesGroupFinder.java
+ * except that uses smaller amount of space at the
+ * expense of a few more O(1) iterations when merging groups.
+ * 
+ * given a set of points, finds the connected among them and places them into
+ * groups. note that connected here means adjacent to one another and adjacent
+ * is defined by the default &quot;4 neighbor&quot; offsets, but can be overridden to use
+ * all 8 neighbors.
+ *
+ * The runtime complexity is essentially O(N_points).
+ *
+ * @author nichole
+ */
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder {</span>
+
+    // key = pixel index, value = key of pixNodes
+<span class="fc" id="L34">    private TLongLongMap pixKeyMap = new TLongLongHashMap();</span>
+    
+<span class="fc" id="L36">    private TLongObjectMap&lt;TLongSet&gt; keySetMap = new TLongObjectHashMap&lt;TLongSet&gt;();</span>
+    
+    /**
+     * uses the 4 neighbor region if true, else the 8-neighbor region
+     */
+<span class="fc" id="L41">    protected boolean use4Neighbors = true;</span>
+
+<span class="fc" id="L43">    protected int minimumNumberInCluster = 3;</span>
+
+<span class="fc" id="L45">    protected Logger log = Logger.getLogger(this.getClass().getName());</span>
+
+<span class="fc" id="L47">    protected boolean debug = false;</span>
+    
+<span class="fc" id="L49">    protected TIntSet excludeValues = null;</span>
+
+<span class="fc" id="L51">    public ConnectedValuesGroupFinder2() {</span>
+
+<span class="fc" id="L53">        this.log = Logger.getLogger(this.getClass().getName());</span>
+<span class="fc" id="L54">    }</span>
+
+    public void setDebug(boolean setDebugToTrue) {
+<span class="nc" id="L57">        this.debug = setDebugToTrue;</span>
+<span class="nc" id="L58">    }</span>
+
+    public void setMinimumNumberInCluster(int n) {
+<span class="fc" id="L61">        this.minimumNumberInCluster = n;</span>
+<span class="fc" id="L62">    }</span>
+
+    public void setToUse8Neighbors() {
+<span class="fc" id="L65">        use4Neighbors = false;</span>
+<span class="fc" id="L66">    }</span>
+    
+    public void setValuesToExclude(TIntSet values) {
+<span class="fc" id="L69">        this.excludeValues = values;</span>
+<span class="fc" id="L70">    }</span>
+
+    /**
+     * find the groups of connected points in pixIdxs where connected means is
+     * adjacent to another point in the group and having this pixelValue. The
+     * adjacency by default is using the 4 neighbor pattern search unless the
+     * user has set that to 8 neighbors. The runtime complexity is essentially
+     * O(pixIdxs.size()).
+     *
+     * @param data
+     */
+    public List&lt;TLongSet&gt; findGroups(int[][] data) {
+
+<span class="fc" id="L83">        findClustersIterative(data);</span>
+
+<span class="fc" id="L85">        List&lt;TLongSet&gt; groupList = prune();</span>
+        
+<span class="fc" id="L87">        return groupList;</span>
+    }
+
+    protected void findClustersIterative(int[][] data) {
+
+<span class="fc" id="L92">        int w = data.length;</span>
+<span class="fc" id="L93">        int h = data[0].length;</span>
+        
+        int[] dxs;
+        int[] dys;
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (use4Neighbors) {</span>
+<span class="fc" id="L98">            dxs = new int[]{-1,  0, 1, 0};</span>
+<span class="fc" id="L99">            dys = new int[]{ 0, -1, 0, 1};</span>
+        } else {
+            /*
+            for 8 neighbor, can use 4 offsets instead of 8 if visiting all pix
+            
+             2  *  *  *       (2,0) 1:2,1:1,2:1
+             1  *  *  +       (1,1) 0:1,0:0,1:0,2:0,2:1,2:2,1:2,0:2
+             0  *  *  *       (2,1) 1:1,1:0,2:0,3:0,3:1,3:2,2:2,1:2
+                0  1  2             X: 1:1,1:0,2:0, 1:2
+                                    use: +1,-1  +1,0  +1,+1  0:1
+             */
+<span class="fc" id="L110">            dxs = new int[]{1, 1, 1, 0};</span>
+<span class="fc" id="L111">            dys = new int[]{-1, 0, 1, 1};</span>
+        }
+
+<span class="fc" id="L114">        PixelHelper ph = new PixelHelper();</span>
+        
+<span class="fc" id="L116">        int n2 = w * h;</span>
+<span class="fc" id="L117">        n2 += (int)(Math.log(n2)/Math.log(2));</span>
+            
+<span class="fc" id="L119">        StackLongLarge stack = new StackLongLarge(n2);</span>
+        
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (int uX = 0; uX &lt; data.length; ++uX) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            for (int uY = 0; uY &lt; data[uX].length; ++uY) {</span>
+                
+<span class="fc" id="L124">                long uPixIdx = ph.toPixelIndex(uX, uY, w);</span>
+                
+<span class="fc" id="L126">                int uValue = data[uX][uY];</span>
+                
+<span class="fc bfc" id="L128" title="All 4 branches covered.">                if (excludeValues != null &amp;&amp; excludeValues.contains(uValue)) {</span>
+<span class="fc" id="L129">                    continue;</span>
+                }
+                
+<span class="fc" id="L132">                stack.push(uPixIdx);</span>
+            }
+        }
+        
+<span class="fc" id="L136">        TLongSet visited = new TLongHashSet();</span>
+<span class="fc" id="L137">        int[] xy = new int[2];</span>
+        
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
+            
+<span class="fc" id="L141">            long uIdx = stack.pop();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            if (visited.contains(uIdx)) {</span>
+<span class="fc" id="L143">                continue;</span>
+            }
+            
+<span class="fc" id="L146">            ph.toPixelCoords(uIdx, w, xy);</span>
+            
+<span class="fc" id="L148">            int uX = xy[0];</span>
+<span class="fc" id="L149">            int uY = xy[1];</span>
+<span class="fc" id="L150">            int uValue = data[uX][uY];</span>
+            
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            for (int k = 0; k &lt; dxs.length; ++k) {</span>
+
+<span class="fc" id="L154">                int vX = uX + dxs[k];</span>
+<span class="fc" id="L155">                int vY = uY + dys[k];</span>
+
+<span class="fc bfc" id="L157" title="All 8 branches covered.">                if (vX &lt; 0 || vY &lt; 0 || vX &gt;= w || vY &gt;= h) {</span>
+<span class="fc" id="L158">                    continue;</span>
+                }
+
+<span class="fc" id="L161">                int vValue = data[vX][vY];</span>
+
+<span class="fc bfc" id="L163" title="All 4 branches covered.">                if (excludeValues != null &amp;&amp; excludeValues.contains(vValue)) {</span>
+<span class="fc" id="L164">                    continue;</span>
+                }
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                if (uValue != vValue) {</span>
+<span class="fc" id="L168">                    continue;</span>
+                }
+
+<span class="fc" id="L171">                long vIdx = ph.toPixelIndex(vX, vY, w);</span>
+
+<span class="fc" id="L173">                processPair(uIdx, vIdx);</span>
+                
+<span class="fc bfc" id="L175" title="All 2 branches covered.">                if (!visited.contains(vIdx)) {</span>
+<span class="fc" id="L176">                    stack.push(vIdx);</span>
+                }
+            }
+            
+<span class="fc" id="L180">            visited.add(uIdx);</span>
+<span class="fc" id="L181">        }</span>
+<span class="fc" id="L182">    }</span>
+    
+    private long getKeyRecipr(long pixIdx) {
+        
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        if (!pixKeyMap.containsKey(pixIdx)) {</span>
+<span class="nc" id="L187">            return -1;</span>
+        }
+<span class="fc" id="L189">        long prevKey = pixIdx;</span>
+<span class="fc" id="L190">        long key = pixKeyMap.get(pixIdx);</span>
+        long tmp;
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        while (prevKey != key) {</span>
+<span class="fc" id="L193">            tmp = key;</span>
+<span class="fc" id="L194">            key = pixKeyMap.get(key);</span>
+<span class="fc" id="L195">            pixKeyMap.put(prevKey, key);</span>
+<span class="fc" id="L196">            prevKey = tmp;</span>
+        }
+        
+<span class="fc" id="L199">        return key;</span>
+    }
+
+    protected void processPair(long uPoint, long vPoint) {
+        
+<span class="fc bfc" id="L204" title="All 4 branches covered.">        if (pixKeyMap.containsKey(uPoint) &amp;&amp; pixKeyMap.containsKey(vPoint)) {</span>
+            // put all in u
+<span class="fc" id="L206">            long uKey = pixKeyMap.get(uPoint);</span>
+<span class="fc" id="L207">            long vKey = pixKeyMap.get(vPoint);</span>
+            
+            //System.out.println(&quot;*u=&quot; + uPoint + &quot; *v=&quot; + vPoint
+            //    + &quot; orig keys=&quot; + uKey + &quot; &quot; + vKey);
+            
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">            if (uKey == vKey) {</span>
+<span class="fc" id="L213">                return;</span>
+            }
+<span class="nc" id="L215">            uKey = getKeyRecipr(uPoint);</span>
+<span class="nc" id="L216">            vKey = getKeyRecipr(vPoint);</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            if (uKey == vKey) {</span>
+<span class="nc" id="L218">                return;</span>
+            }
+            //System.out.println(&quot;  rec keys=&quot; + uKey + &quot; &quot; + vKey);
+<span class="nc" id="L221">            TLongSet uSet = keySetMap.get(uKey);</span>
+<span class="nc" id="L222">            TLongSet vSet = keySetMap.remove(vKey);</span>
+<span class="nc" id="L223">            uSet.addAll(vSet);</span>
+<span class="nc" id="L224">            pixKeyMap.put(vPoint, uKey);</span>
+<span class="nc" id="L225">            pixKeyMap.put(vKey, uKey);</span>
+            
+            //System.out.println(&quot;  key=&gt;&quot; + uKey);
+            //System.out.println(&quot;  getKeyRecipr(uPoint)=&quot; + getKeyRecipr(uPoint));
+            //System.out.println(&quot;  getKeyRecipr(vPoint)=&quot; + getKeyRecipr(vPoint));
+            //System.out.println(&quot;  getKeyRecipr(uKey)=&quot; + getKeyRecipr(uKey));
+            //System.out.println(&quot;  getKeyRecipr(vKey)=&quot; + getKeyRecipr(vKey));
+            
+<span class="pc bfc" id="L233" title="All 2 branches covered.">        } else if (pixKeyMap.containsKey(uPoint)) {</span>
+<span class="fc" id="L234">            long uKey = getKeyRecipr(uPoint);</span>
+<span class="fc" id="L235">            TLongSet uSet = keySetMap.get(uKey);</span>
+<span class="fc" id="L236">            uSet.add(vPoint);</span>
+<span class="fc" id="L237">            pixKeyMap.put(vPoint, uKey);</span>
+            
+            //System.out.println(&quot;*u=&quot; + uPoint + &quot; v=&quot; + vPoint +
+            //    &quot; key=&quot; + uKey);
+            
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        } else if (pixKeyMap.containsKey(vPoint)) {</span>
+<span class="fc" id="L243">            long vKey = getKeyRecipr(vPoint);</span>
+<span class="fc" id="L244">            TLongSet vSet = keySetMap.get(vKey);</span>
+<span class="fc" id="L245">            vSet.add(uPoint);</span>
+<span class="fc" id="L246">            pixKeyMap.put(uPoint, vKey);</span>
+            
+            //System.out.println(&quot;u=&quot; + uPoint + &quot; *v=&quot; + vPoint +
+            //    &quot; key=&quot; + vKey);
+            
+<span class="fc" id="L251">        } else {</span>
+<span class="fc" id="L252">            TLongSet pixSet = new TLongHashSet();</span>
+<span class="fc" id="L253">            pixSet.add(uPoint);</span>
+<span class="fc" id="L254">            pixSet.add(vPoint);</span>
+<span class="fc" id="L255">            pixKeyMap.put(uPoint, uPoint);</span>
+<span class="fc" id="L256">            pixKeyMap.put(vPoint, uPoint);</span>
+<span class="fc" id="L257">            keySetMap.put(uPoint, pixSet);</span>
+            
+            //System.out.println(&quot;u=&quot; + uPoint + &quot; v=&quot; + vPoint +
+            //    &quot; key=&quot; + uPoint);
+        }
+<span class="pc bpc" id="L262" title="3 of 4 branches missed.">        assert(keySetMap.get(pixKeyMap.get(uPoint)) != null);</span>
+<span class="pc bpc" id="L263" title="3 of 4 branches missed.">        assert(keySetMap.get(pixKeyMap.get(vPoint)) != null);</span>
+    
+<span class="fc" id="L265">    }</span>
+
+    private List&lt;TLongSet&gt; prune() {
+
+        // remove from keySetMap, sets smaller than min limit
+        
+<span class="fc" id="L271">        List&lt;TLongSet&gt; groups = new ArrayList&lt;TLongSet&gt;();</span>
+            
+<span class="fc" id="L273">        TLongObjectIterator&lt;TLongSet&gt; iter = keySetMap.iterator();</span>
+        
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        for (int i = 0; i &lt; keySetMap.size(); ++i) {</span>
+
+<span class="fc" id="L277">            iter.advance();</span>
+            
+<span class="fc" id="L279">            TLongSet pixSet = iter.value();</span>
+            
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">            if (pixSet.size() &lt; minimumNumberInCluster) {</span>
+<span class="nc" id="L282">                continue;</span>
+            }
+
+<span class="fc" id="L285">            groups.add(pixSet);</span>
+        }
+        
+<span class="fc" id="L288">        keySetMap = null;</span>
+<span class="fc" id="L289">        pixKeyMap = null;</span>
+
+<span class="fc" id="L291">        log.finest(&quot;number of groups after prune=&quot; + groups.size());</span>
+        
+<span class="fc" id="L293">        return groups;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

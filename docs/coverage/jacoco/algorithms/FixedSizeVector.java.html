@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FixedSizeVector.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">FixedSizeVector.java</span></div><h1>FixedSizeVector.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
+/**
+ * a class to hold a fixed number of items of type T.  The latest capacity 
+ * number of items are what is present in the vector.
+ * 
+ *&lt;pre&gt;
+ * runtime complexity is:
+ *     O(1) for inserts, and gets
+ * Note that deletes are not allowed,
+ *    but could be implemented in O(N) runtime.
+ * 
+ * where N is the fixed capacity.
+ *
+ *&lt;/pre&gt;
+ * 
+ * @author nichole
+ * @param &lt;T&gt; class type to be held and sorted by this class.  It must implement
+ * Comparable.
+ */
+@SuppressWarnings({&quot;unchecked&quot;})
+public class FixedSizeVector&lt;T&gt; {
+
+<span class="fc" id="L27">    protected T[] a = null;</span>
+
+    protected final int capacity;
+
+    protected int n;
+
+    protected int lastIdx;
+
+<span class="fc" id="L35">    public FixedSizeVector(int fixedCapacity, Class&lt;T&gt; classTypeToHold) {</span>
+
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (fixedCapacity &lt; 1) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(</span>
+            &quot;fixedCapacity must be a positive non zero (arg was &quot;
+            + fixedCapacity + &quot;)&quot;);
+        }
+
+<span class="fc" id="L43">        capacity = fixedCapacity;</span>
+
+<span class="fc" id="L45">        n = 0;</span>
+
+<span class="fc" id="L47">        lastIdx = -1;</span>
+       
+<span class="fc" id="L49">        a = (T[]) Array.newInstance(classTypeToHold, capacity);</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * add value to the fixed size sorted list using (T).compareTo to order
+     * the items in the internal list.
+     *
+     * runtime complexity is O(log_2(capacity) + less than capacity).
+     *
+     * @param value
+     */
+    public void add(T value) {
+
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L63">            return;</span>
+        }
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (n &lt; capacity) {</span>
+<span class="fc" id="L67">            n++;</span>
+        }
+        
+<span class="fc" id="L70">        lastIdx++;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (lastIdx &gt;= capacity) {</span>
+<span class="fc" id="L72">            lastIdx = 0;</span>
+        }
+<span class="fc" id="L74">        a[lastIdx] = value;</span>
+<span class="fc" id="L75">    }</span>
+    
+    public T get(int itemIndex) {
+        
+<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        if (itemIndex &lt; 0 || itemIndex &gt;= capacity) {</span>
+<span class="nc" id="L80">            throw new IllegalArgumentException(&quot;itemIndex is out of bounds: &quot; +</span>
+                &quot; capacity=&quot; + capacity + &quot; itemIndex=&quot; + itemIndex);
+        }
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (n &lt; capacity) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (itemIndex &gt; lastIdx) {</span>
+<span class="nc" id="L85">                throw new IllegalArgumentException(&quot;itemIndex is out of bounds: &quot; +</span>
+                &quot; capacity=&quot; + capacity + &quot; and last set index=&quot; + lastIdx
+                + &quot; itemIndex=&quot; + itemIndex);
+            }
+<span class="nc" id="L89">            return a[itemIndex];</span>
+        }
+        
+        /*
+         0  1  2  3  
+        
+        c=4, last=1
+        get i=2   idx=last-(c-i-1)   1-1=0
+        
+        c=4, last=3
+        get i=2   idx=last-(c-i-1)   3-1=2
+        
+        c=4, last=1
+        get i=1   idx=last-(c-i-1)   1-2=-1 -&gt; +c=3
+        */
+        
+<span class="fc" id="L105">        int idx = lastIdx - (capacity - itemIndex - 1);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (idx &lt; 0) {</span>
+<span class="fc" id="L107">            idx += capacity;</span>
+        }
+        
+<span class="fc" id="L110">        return a[idx];</span>
+    }
+
+    /**
+     * get a copy of the internal array.
+     *
+     * runtime complexity is O(N)
+     *
+     * @return
+     */
+    T[] getArray() {
+
+<span class="fc" id="L122">        return Arrays.copyOf(a, n);</span>
+    }
+
+    /**
+     * return the number of items in the internal array.  if the array is not
+     * yet filled, the return will be less than the capacity, else will
+     * be the same as the capacity.
+     * @return
+     */
+    public int size() {
+<span class="fc" id="L132">        return n;</span>
+    }
+    
+    /**
+     * get the maximum size of the vector, given at instantiation.
+     * @return 
+     */
+    public int getFixedCapacity() {
+<span class="nc" id="L140">        return capacity;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

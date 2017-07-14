@@ -2,8 +2,7 @@
 
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
-import gnu.trove.set.TIntSet;
-import java.util.Arrays;
+import gnu.trove.set.TLongSet;
 import java.util.Set;
 
 /**
@@ -28,9 +27,9 @@ import java.util.Set;
 
  * @author nichole
  */
-<span class="fc" id="L31">public class DistanceTransform {</span>
+<span class="fc" id="L30">public class DistanceTransform {</span>
     
-<span class="fc" id="L33">    private static int inf = Integer.MAX_VALUE;</span>
+<span class="fc" id="L32">    private static int inf = Integer.MAX_VALUE;</span>
     
     /**
      * The square of Euclidean distances are computed for every zero pixel 
@@ -74,19 +73,19 @@ import java.util.Set;
      */
     public int[][] applyMeijsterEtAl(int[][] input) {
         
-<span class="fc" id="L77">        int width = input.length;</span>
-<span class="fc" id="L78">        int height = input[0].length;</span>
+<span class="fc" id="L76">        int width = input.length;</span>
+<span class="fc" id="L77">        int height = input[0].length;</span>
         
-<span class="fc" id="L80">        int[][] g = new int[width][height];</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
-<span class="fc" id="L82">            g[i] = new int[height];</span>
+<span class="fc" id="L79">        int[][] g = new int[width][height];</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L81">            g[i] = new int[height];</span>
         }
         
-<span class="fc" id="L85">        applyPhase1(input, g, width, height);</span>
+<span class="fc" id="L84">        applyPhase1(input, g, width, height);</span>
         
-<span class="fc" id="L87">        int[][] dt = applyPhase2(g, width, height);</span>
+<span class="fc" id="L86">        int[][] dt = applyPhase2(g, width, height);</span>
         
-<span class="fc" id="L89">        return dt;</span>
+<span class="fc" id="L88">        return dt;</span>
     }
     
     /**
@@ -133,16 +132,16 @@ import java.util.Set;
      */
     public int[][] applyMeijsterEtAl(Set&lt;PairInt&gt; points, final int width, final int height) {
         
-<span class="fc" id="L136">        int[][] g = new int[width][height];</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
-<span class="fc" id="L138">            g[i] = new int[height];</span>
+<span class="fc" id="L135">        int[][] g = new int[width][height];</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L137">            g[i] = new int[height];</span>
         }
         
-<span class="fc" id="L141">        applyPhase1(points, g, width, height);</span>
+<span class="fc" id="L140">        applyPhase1(points, g, width, height);</span>
         
-<span class="fc" id="L143">        int[][] dt = applyPhase2(g, width, height);</span>
+<span class="fc" id="L142">        int[][] dt = applyPhase2(g, width, height);</span>
         
-<span class="fc" id="L145">        return dt;</span>
+<span class="fc" id="L144">        return dt;</span>
     }
     
     /**
@@ -187,44 +186,44 @@ import java.util.Set;
      * @param height
      * @return 
      */
-    public int[][] applyMeijsterEtAl(TIntSet points, final int width, final int height) {
+    public int[][] applyMeijsterEtAl(TLongSet points, final int width, final int height) {
         
-<span class="fc" id="L192">        int[][] g = new int[width][height];</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
-<span class="fc" id="L194">            g[i] = new int[height];</span>
+<span class="fc" id="L191">        int[][] g = new int[width][height];</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L193">            g[i] = new int[height];</span>
         }
         
-<span class="fc" id="L197">        applyPhase1(points, g, width, height);</span>
+<span class="fc" id="L196">        applyPhase1(points, g, width, height);</span>
         
-<span class="fc" id="L199">        int[][] dt = applyPhase2(g, width, height);</span>
+<span class="fc" id="L198">        int[][] dt = applyPhase2(g, width, height);</span>
         
-<span class="fc" id="L201">        return dt;</span>
+<span class="fc" id="L200">        return dt;</span>
     }
 
     private void applyPhase1(int[][] input, int[][] g, final int width, 
         final int height) {
                
-<span class="fc bfc" id="L207" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
             
             // scan 1
-<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (input[x][0] &gt; 0) {</span>
-<span class="fc" id="L211">                g[x][0] = 0;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">            if (input[x][0] &gt; 0) {</span>
+<span class="fc" id="L210">                g[x][0] = 0;</span>
             } else {
-<span class="fc" id="L213">                g[x][0] = inf;</span>
+<span class="fc" id="L212">                g[x][0] = inf;</span>
             }
         
-<span class="fc bfc" id="L216" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">                if (input[x][y] &gt; 0) {</span>
-<span class="fc" id="L218">                    g[x][y] = 0;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">                if (input[x][y] &gt; 0) {</span>
+<span class="fc" id="L217">                    g[x][y] = 0;</span>
                 } else {
-<span class="fc bfc" id="L220" title="All 2 branches covered.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
                 }
             }
             
             // scan 2
-<span class="fc bfc" id="L225" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
-<span class="fc" id="L227">                    g[x][y] = g[x][y + 1] + 1;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="fc" id="L226">                    g[x][y] = g[x][y + 1] + 1;</span>
                 }
             }
         }
@@ -236,89 +235,89 @@ import java.util.Set;
                 System.out.println(Arrays.toString(g[i]));
             }
         }*/
-<span class="fc" id="L239">    }</span>
+<span class="fc" id="L238">    }</span>
     
     private void applyPhase1(Set&lt;PairInt&gt; points, int[][] g, final int width, 
         final int height) {
                
-<span class="fc bfc" id="L244" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
             
             // scan 1
-<span class="fc bfc" id="L247" title="All 2 branches covered.">            if (points.contains(new PairInt(x, 0))) {</span>
-<span class="fc" id="L248">                g[x][0] = 0;</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">            if (points.contains(new PairInt(x, 0))) {</span>
+<span class="fc" id="L247">                g[x][0] = 0;</span>
             } else {
-<span class="fc" id="L250">                g[x][0] = inf;</span>
+<span class="fc" id="L249">                g[x][0] = inf;</span>
             }
         
-<span class="fc bfc" id="L253" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">                if (points.contains(new PairInt(x, y))) {</span>
-<span class="fc" id="L255">                    g[x][y] = 0;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">                if (points.contains(new PairInt(x, y))) {</span>
+<span class="fc" id="L254">                    g[x][y] = 0;</span>
                 } else {
-<span class="fc bfc" id="L257" title="All 2 branches covered.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
                 }
             }
             
             // scan 2
-<span class="fc bfc" id="L262" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
-<span class="fc" id="L264">                    g[x][y] = g[x][y + 1] + 1;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="fc" id="L263">                    g[x][y] = g[x][y + 1] + 1;</span>
                 }
             }
         }
-<span class="fc" id="L268">    }</span>
+<span class="fc" id="L267">    }</span>
     
-    private void applyPhase1(TIntSet points, int[][] g, final int width, 
+    private void applyPhase1(TLongSet points, int[][] g, final int width, 
         final int height) {
         
-<span class="fc" id="L273">        PixelHelper ph = new PixelHelper();</span>
+<span class="fc" id="L272">        PixelHelper ph = new PixelHelper();</span>
         
-        int pixIdx0, pixIdx1;
+        long pixIdx0, pixIdx1;
         
-<span class="fc bfc" id="L277" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (int x = 0; x &lt; width; ++x) {</span>
             
-<span class="fc" id="L279">            pixIdx0 = ph.toPixelIndex(x, 0, width);</span>
+<span class="fc" id="L278">            pixIdx0 = ph.toPixelIndex(x, 0, width);</span>
             
             // scan 1
-<span class="pc bpc" id="L282" title="1 of 2 branches missed.">            if (points.contains(pixIdx0)) {</span>
-<span class="fc" id="L283">                g[x][0] = 0;</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">            if (points.contains(pixIdx0)) {</span>
+<span class="fc" id="L282">                g[x][0] = 0;</span>
             } else {
-<span class="nc" id="L285">                g[x][0] = inf;</span>
+<span class="nc" id="L284">                g[x][0] = inf;</span>
             }
         
-<span class="fc bfc" id="L288" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
-<span class="fc" id="L289">                pixIdx1 = ph.toPixelIndex(x, y, width);</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">                if (points.contains(pixIdx1)) {</span>
-<span class="fc" id="L291">                    g[x][y] = 0;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">            for (int y = 1; y &lt; height; ++y) {</span>
+<span class="fc" id="L288">                pixIdx1 = ph.toPixelIndex(x, y, width);</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">                if (points.contains(pixIdx1)) {</span>
+<span class="fc" id="L290">                    g[x][y] = 0;</span>
                 } else {
-<span class="pc bpc" id="L293" title="1 of 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">                    g[x][y] = (g[x][y - 1] == inf) ? inf : g[x][y - 1] + 1;</span>
                 }
             }
             
             // scan 2
-<span class="fc bfc" id="L298" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
-<span class="fc" id="L300">                    g[x][y] = g[x][y + 1] + 1;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">            for (int y = height - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">                if (g[x][y + 1] &lt; g[x][y]) {</span>
+<span class="fc" id="L299">                    g[x][y] = g[x][y + 1] + 1;</span>
                 }
             }
         }
-<span class="fc" id="L304">    }</span>
+<span class="fc" id="L303">    }</span>
     
     private int[][] applyPhase2(int[][] g, final int width, 
         final int height) {
                 
-<span class="fc" id="L309">        int[][] dt = new int[width][height];</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
-<span class="fc" id="L311">            dt[i] = new int[height];</span>
+<span class="fc" id="L308">        int[][] dt = new int[width][height];</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        for (int i = 0; i &lt; width; ++i) {</span>
+<span class="fc" id="L310">            dt[i] = new int[height];</span>
         }
                 
-<span class="fc" id="L314">        int[] s = new int[width + 1];</span>
-<span class="fc" id="L315">        int[] t = new int[width + 1];</span>
+<span class="fc" id="L313">        int[] s = new int[width + 1];</span>
+<span class="fc" id="L314">        int[] t = new int[width + 1];</span>
         
-<span class="fc bfc" id="L317" title="All 2 branches covered.">        for (int y = 0; y &lt; height; ++y) {</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        for (int y = 0; y &lt; height; ++y) {</span>
             
-<span class="fc" id="L319">            int q = 0;</span>
-<span class="fc" id="L320">            s[0] = 0;</span>
-<span class="fc" id="L321">            t[0] = 0;</span>
+<span class="fc" id="L318">            int q = 0;</span>
+<span class="fc" id="L319">            s[0] = 0;</span>
+<span class="fc" id="L320">            t[0] = 0;</span>
             
             /*
             avoids a comparison with the entire column by limiting the search
@@ -326,61 +325,61 @@ import java.util.Set;
             intersecting with the current row.
             */
             
-<span class="fc bfc" id="L329" title="All 2 branches covered.">            for (int u = 1; u &lt; width; ++u) {</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">            for (int u = 1; u &lt; width; ++u) {</span>
                 
                 // g(i) = G(i, y)
                 
-<span class="fc bfc" id="L333" title="All 4 branches covered.">                while ((q &gt;= 0) &amp;&amp; (f(t[q], s[q], g[s[q]][y]) &gt; f(t[q], u, g[u][y]))) {</span>
-<span class="fc" id="L334">                    q--;</span>
+<span class="fc bfc" id="L332" title="All 4 branches covered.">                while ((q &gt;= 0) &amp;&amp; (f(t[q], s[q], g[s[q]][y]) &gt; f(t[q], u, g[u][y]))) {</span>
+<span class="fc" id="L333">                    q--;</span>
                 }
-<span class="fc bfc" id="L336" title="All 2 branches covered.">                if (q &lt; 0) {</span>
-<span class="fc" id="L337">                    q = 0;</span>
-<span class="fc" id="L338">                    s[0] = u;</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">                if (q &lt; 0) {</span>
+<span class="fc" id="L336">                    q = 0;</span>
+<span class="fc" id="L337">                    s[0] = u;</span>
                 } else {
-<span class="fc" id="L340">                    int sep = sep(s[q], u, g[s[q]][y], g[u][y]);</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">                    if (sep &lt; inf) {</span>
-<span class="fc" id="L342">                        int w = 1 + sep;</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">                        if (w &lt; width) {</span>
-<span class="fc" id="L344">                            q++;</span>
-<span class="fc" id="L345">                            s[q] = u;</span>
-<span class="fc" id="L346">                            t[q] = w;</span>
+<span class="fc" id="L339">                    int sep = sep(s[q], u, g[s[q]][y], g[u][y]);</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">                    if (sep &lt; inf) {</span>
+<span class="fc" id="L341">                        int w = 1 + sep;</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">                        if (w &lt; width) {</span>
+<span class="fc" id="L343">                            q++;</span>
+<span class="fc" id="L344">                            s[q] = u;</span>
+<span class="fc" id="L345">                            t[q] = w;</span>
                         }
                     }
                 }
             }
-<span class="fc bfc" id="L351" title="All 2 branches covered.">            for (int u = (width - 1); u &gt; -1; --u) {</span>
-<span class="fc" id="L352">                dt[u][y] = f(u, s[q], g[s[q]][y]);</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">                if (u == t[q]) {</span>
-<span class="fc" id="L354">                    q--;</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            for (int u = (width - 1); u &gt; -1; --u) {</span>
+<span class="fc" id="L351">                dt[u][y] = f(u, s[q], g[s[q]][y]);</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">                if (u == t[q]) {</span>
+<span class="fc" id="L353">                    q--;</span>
                 }
             }
         }
         
-<span class="fc" id="L359">        return dt;</span>
+<span class="fc" id="L358">        return dt;</span>
     }
 
     private int f(int x, int i, int gi) {
                 
-<span class="fc" id="L364">        int xi = x - i;</span>
+<span class="fc" id="L363">        int xi = x - i;</span>
         
-<span class="pc bpc" id="L366" title="1 of 4 branches missed.">        if (gi == inf || x == inf) {</span>
-<span class="fc" id="L367">            return inf;</span>
+<span class="pc bpc" id="L365" title="1 of 4 branches missed.">        if (gi == inf || x == inf) {</span>
+<span class="fc" id="L366">            return inf;</span>
         }
         
-<span class="fc" id="L370">        int f = (xi * xi) + (gi * gi);</span>
+<span class="fc" id="L369">        int f = (xi * xi) + (gi * gi);</span>
         
-<span class="fc" id="L372">        return f;</span>
+<span class="fc" id="L371">        return f;</span>
     }
 
     private int sep(int i, int u, int gi, int gu) {
  
-<span class="pc bpc" id="L377" title="1 of 4 branches missed.">        if (gu == inf || u == inf) {</span>
-<span class="fc" id="L378">            return inf;</span>
+<span class="pc bpc" id="L376" title="1 of 4 branches missed.">        if (gu == inf || u == inf) {</span>
+<span class="fc" id="L377">            return inf;</span>
         }
         
-<span class="fc" id="L381">        int sep = ((u * u) - (i * i) + (gu * gu) - (gi * gi))/(2 * (u - i));</span>
+<span class="fc" id="L380">        int sep = ((u * u) - (i * i) + (gu * gu) - (gi * gi))/(2 * (u - i));</span>
         
-<span class="fc" id="L383">        return sep;</span>
+<span class="fc" id="L382">        return sep;</span>
     }
     
     /**
@@ -407,31 +406,31 @@ import java.util.Set;
      */
     public int[] applyMeijsterEtAl1D(int[] input) {
         
-<span class="fc" id="L410">        int[] g = new int[input.length];</span>
+<span class="fc" id="L409">        int[] g = new int[input.length];</span>
         
         // scan 1
-<span class="pc bpc" id="L413" title="1 of 2 branches missed.">        if (input[0] &gt; 0) {</span>
-<span class="fc" id="L414">            g[0] = 0;</span>
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">        if (input[0] &gt; 0) {</span>
+<span class="fc" id="L413">            g[0] = 0;</span>
         } else {
-<span class="nc" id="L416">            g[0] = inf;</span>
+<span class="nc" id="L415">            g[0] = inf;</span>
         }
 
-<span class="fc bfc" id="L419" title="All 2 branches covered.">        for (int y = 1; y &lt; input.length; ++y) {</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">            if (input[y] &gt; 0) {</span>
-<span class="fc" id="L421">                g[y] = 0;</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        for (int y = 1; y &lt; input.length; ++y) {</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">            if (input[y] &gt; 0) {</span>
+<span class="fc" id="L420">                g[y] = 0;</span>
             } else {
-<span class="pc bpc" id="L423" title="1 of 2 branches missed.">                g[y] = (g[y - 1] == inf) ? inf : g[y - 1] + 1;</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">                g[y] = (g[y - 1] == inf) ? inf : g[y - 1] + 1;</span>
             }
         }
 
         // scan 2
-<span class="fc bfc" id="L428" title="All 2 branches covered.">        for (int y = input.length - 2; y &gt; -1; --y) {</span>
-<span class="fc bfc" id="L429" title="All 2 branches covered.">            if (g[y + 1] &lt; g[y]) {</span>
-<span class="fc" id="L430">                g[y] = g[y + 1] + 1;</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">        for (int y = input.length - 2; y &gt; -1; --y) {</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">            if (g[y + 1] &lt; g[y]) {</span>
+<span class="fc" id="L429">                g[y] = g[y + 1] + 1;</span>
             }
         }
         
-<span class="fc" id="L434">        return g;</span>
+<span class="fc" id="L433">        return g;</span>
     }
     
 }
