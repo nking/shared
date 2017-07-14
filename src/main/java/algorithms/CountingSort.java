@@ -77,10 +77,10 @@ public class CountingSort {
         for (int i = (a.length - 1); i > -1; i--) {
             
             int aIdx = a[i];
-                        
-            int cfa = (int)c[aIdx];
-            b[cfa - 1] = aIdx;
+
             c[aIdx]--;
+            int cfa = (int)c[aIdx];
+            b[cfa] = aIdx;
         }
 
         return b;
@@ -142,10 +142,10 @@ public class CountingSort {
             
             int aIdx = a[i];
                         
-            int cfa = (int)c[aIdx];
-            aa[cfa - 1] = aIdx;
-            bb[cfa - 1] = b[i];
             c[aIdx]--;
+            int cfa = (int)c[aIdx];
+            aa[cfa] = aIdx;
+            bb[cfa] = b[i];
         }
 
         System.arraycopy(aa, 0, a, 0, a.length);
@@ -210,14 +210,13 @@ public class CountingSort {
             
             int aIdx = a[i];
                         
+            c[aIdx]--;
             int cfa = (int)c[aIdx];
             
-            int ii = n - (cfa - 1) - 1;
+            int ii = n - cfa  - 1;
             
             aa[ii] = aIdx;
             bb[ii] = b[i];
-            
-            c[aIdx]--;
         }
 
         System.arraycopy(aa, 0, a, 0, a.length);
@@ -268,10 +267,10 @@ public class CountingSort {
             
             int aIdx = a[i];
                         
-            int cfa = (int)c[aIdx];
-            aa[cfa - 1] = aIdx;
-            bb[cfa - 1] = b[i];
             c[aIdx]--;
+            int cfa = (int)c[aIdx];
+            aa[cfa] = aIdx;
+            bb[cfa] = b[i];
         }
 
         System.arraycopy(aa, 0, a, 0, a.length);
