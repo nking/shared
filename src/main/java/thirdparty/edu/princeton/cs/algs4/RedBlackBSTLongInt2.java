@@ -629,11 +629,7 @@ public class RedBlackBSTLongInt2 {
                 if (output[0] == -1) {
                     keyLeftMap.remove(h);
                 } else {
-                    if (keyParentMap.containsKey(output[1])) {
-                        System.out.format(
-                            "   *keyParentMap for left=%d? p=%d\n", 
-                            output[1], keyParentMap.get(output[1]));
-                    }
+                    keyParentMap.put(output[1], h);
                     keyLeftMap.put(h, output[1]);
                 }
             }
@@ -716,13 +712,10 @@ public class RedBlackBSTLongInt2 {
                             System.out.format("   %d.right = delete(%d, %d) => &d\n" ,
                                 h, keyRightMap.get(h), key, output[1]);
                         
-                            if (keyParentMap.containsKey(output[1])) {
-                                System.out.format(
-                                    "  **keyParentMap for min=%d? p=%d\n",
-                                    output[1], keyParentMap.get(output[1]));
-                            }
+                            keyParentMap.put(output[1], h);
                             
                             keyRightMap.put(h, output[1]);
+                            
                         } else {
                         
                             System.out.format("   %d.right = delete(%d, %d) = NULL\n" ,
@@ -752,11 +745,7 @@ public class RedBlackBSTLongInt2 {
                         System.out.format("   %d.right = delete(%d, %d) => %d\n",
                             h, keyRightMap.get(h), key, output[1]);
                         
-                        if (keyParentMap.containsKey(output[1])) {
-                            System.out.format(
-                                "***remove keyParentMap for right=%d? p=%d\n",
-                                output[1], keyParentMap.get(output[1]));
-                        }
+                        keyParentMap.put(output[1], h);
                         
                         keyRightMap.put(h, output[1]);
                     }
