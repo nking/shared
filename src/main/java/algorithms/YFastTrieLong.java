@@ -510,35 +510,26 @@ YFastTrie
         
         RedBlackBSTLongInt tree = getTreeMap(nodeIndex);
         
-        if (isAMinimum) {
+        if (tree.size() > 1) {
+            
             // if tree size > 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
-            
-            if (tree.size() > 1) {
-                long[] output = new long[2];
-                tree.higher(node, output);
+
+            long[] output = new long[2];
+            tree.higher(node, output);
+                
+            if (isAMinimum) {
                 assert(output[0] != -1);
                 return output[1];
             }
-            
-            Long successorRepr = xft.successor(nodeKey);
-            if (successorRepr == null) {
-                return -1;
+        
+            // else, the node is not a repr
+            //   if there is a tree successor to the node, that is the successor
+            //   else, the xft successor to nodeIndex is the successor
+        
+            if (output[0] != -1) {
+                return output[1];
             }
-            
-            // the successor representative is then the next value
-            return successorRepr;
-        }
-        
-        // else, the node is not a repr
-        //   if there is a tree successor to the node, that is the successor
-        //   else, the xft successor to nodeIndex is the successor
-                    
-        long[] output = new long[2];
-        tree.higher(node, output);
-        
-        if (output[0] != -1) {
-            return output[1];
         }
                 
         Long successorRepr = xft.successor(nodeKey);

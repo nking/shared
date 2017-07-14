@@ -1,12 +1,14 @@
 package algorithms.search;
 
 import algorithms.YFastTrieLong;
+import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -68,6 +70,8 @@ import java.util.logging.Logger;
 
    then moved to this shared library project which has the same copyright
 
+   TODO: consider for the y-axis, adding locality based hashing or similar
+ 
  * @author nichole
  */
 public class NearestNeighbor2DLong {
@@ -82,6 +86,10 @@ public class NearestNeighbor2DLong {
     
     private boolean useCache = true;
     
+    //TODO: consider replacing these with weak reference key hash maps.
+    //  even though the later take more space, they can evict keys no longer
+    //  used elsewhere.  the google guava library has several structures 
+    //  could use for a cache and there are a couple libraries such as cache 2k.
     private TLongLongMap pCache = new TLongLongHashMap();
     private TLongLongMap sCache = new TLongLongHashMap();
     
@@ -96,10 +104,10 @@ public class NearestNeighbor2DLong {
      *    those to be queries
      */
     public NearestNeighbor2DLong(Set<PairInt> points,
-        int maxX, int maxY) {
+        int imgWidth, int imgHeight) {
         
-        this.width = maxX + 1;
-        this.height = maxY + 1;
+        this.width = imgWidth;
+        this.height = imgHeight ;
                 
         maxIndex = width * height;
         
@@ -111,7 +119,7 @@ public class NearestNeighbor2DLong {
             
             int x = p.getX();
             int y = p.getY();
-            
+                        
             if (x > width || x < 0) {
                 throw new IllegalArgumentException(
                     "x cannot be larger than "
@@ -127,6 +135,8 @@ public class NearestNeighbor2DLong {
             
             long index = getInternalIndex(x, y);
             
+            //System.out.format("add %d  (%d, %d)\n", index, x, y);
+            
             xbt.add(index);
         }
     }
@@ -140,10 +150,11 @@ public class NearestNeighbor2DLong {
      * @param maxY maximum y value of any data point including
      *    those to be queries
      */
-    public NearestNeighbor2DLong(TLongSet pointIdxs, int imgWidth, int maxY) {
+    public NearestNeighbor2DLong(TLongSet pointIdxs, 
+        int imgWidth, int imgHeight) {
         
         this.width = imgWidth;
-        this.height = maxY + 1;
+        this.height = imgHeight;
                 
         maxIndex = width * height;
         
@@ -241,6 +252,11 @@ public class NearestNeighbor2DLong {
     public Set<PairInt> findClosestWithinTolerance(int x, int y,
         double tolerance) {
         
+        if (xbt.size() == 0) {
+            log.warning("xbt is empty");
+            return new HashSet<PairInt>();
+        }
+        
         if (x >= width || x < 0) {
             //throw new IllegalArgumentException(
             log.fine(
@@ -265,7 +281,7 @@ public class NearestNeighbor2DLong {
         
         long idx = getInternalIndex(x, y);
         
-        //System.out.println("find " + idx);
+        //System.out.format("find  %d  (=%d, %d)\n", idx, x, y);
         
         //O(1)
         long q = xbt.find(idx);
@@ -925,5 +941,25 @@ public class NearestNeighbor2DLong {
         
         return high;
     }
-    
+ 
+    public static long estimateSizeOnHeap(int numberOfPoints,
+        int maxBitLength) {
+         
+        long[] yTotals = YFastTrieLong.estimateSizeOnHeap(numberOfPoints, 
+            maxBitLength);
+        
+        System.out.println("yft estimates=" + Arrays.toString(yTotals));
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNObjRefsFields(4);
+        est.setNIntFields(2);
+        est.setNLongFields(1);
+        est.setNBooleanFields(1);
+        
+        long total = est.estimateSizeOnHeap();
+       
+        total += yTotals[1];
+                
+        return total;
+    }
 }

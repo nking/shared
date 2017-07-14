@@ -672,6 +672,10 @@ public class RedBlackBSTLongInt {
             y = stack.get(yIdx);
         }
         
+        if (x.key < key && x.key > y.key) {
+            return x;
+        }
+        
         //System.out.println("    y=" + y.key + " q=" + key);
         if (y != null && y.key >= key) {
             return null;
@@ -719,7 +723,8 @@ public class RedBlackBSTLongInt {
         }
         if (isEmpty()) {
             output[0] = -1;
-            throw new NoSuchElementException("called floor() with empty symbol table");
+            throw new NoSuchElementException(
+                "called higher() with empty symbol table");
         }
         List<Node> stack = new ArrayList<Node>();
         Node x = higher(root, key, stack);
@@ -797,6 +802,10 @@ public class RedBlackBSTLongInt {
             yIdx--;
             if (yIdx < 0) break;
             y = stack.get(yIdx);
+        }
+        
+        if (x.key > key && x.key < y.key) {
+            return x;
         }
         
         if (y != null && y.key <= key) {
