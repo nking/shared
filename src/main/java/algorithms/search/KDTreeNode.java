@@ -1,5 +1,7 @@
 package algorithms.search;
 
+import algorithms.util.ObjectSpaceEstimator;
+
 public class KDTreeNode {
 
 	KDTreeNode right = null;
@@ -45,4 +47,14 @@ public class KDTreeNode {
     public int getKey() {
         return key;
     }
+    
+    public static long estimateSizeOnHeap() {
+                
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNIntFields(4);
+        est.setNObjRefsFields(3);
+        
+        return est.estimateSizeOnHeap();
+    }
+    
 }

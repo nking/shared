@@ -1,6 +1,7 @@
 package algorithms.search;
 
 import algorithms.misc.MiscSorter;
+import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +29,13 @@ import java.util.Arrays;
  * queries are: O(log_2(N)) to O(sqrt(N) + k)?
  *              need to revisit code to estimate this...
  * 
+ * first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+
  * 
  * @author nichole
  */
@@ -325,4 +333,16 @@ public class KDTree {
 			return;
 		}
 	}
+    
+    public static long estimateSizeOnHeap(int numberOfPoints) {
+                
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNObjRefsFields(1);
+        
+        long total = est.estimateSizeOnHeap();
+        
+        total += numberOfPoints * KDTreeNode.estimateSizeOnHeap();
+        
+        return total;
+    }
 }
