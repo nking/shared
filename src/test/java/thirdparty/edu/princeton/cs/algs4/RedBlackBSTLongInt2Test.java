@@ -57,11 +57,6 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             count++;
         }
         
-        //DEBUGGING one method at a time
-        if (true) {
-            return;
-        }
-        
         for (int i = (n - 1); i >= (n/2); --i) {
             if (rand.nextBoolean()) {
                 int skip = rand.nextInt(5);
@@ -82,6 +77,10 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
         
+        //DEBUGGING one method at a time
+        if (true) {
+            return;
+        } 
         int[] vOutput = new int[2];
         
         for (int nIter = 0; nIter < 3; ++nIter){
