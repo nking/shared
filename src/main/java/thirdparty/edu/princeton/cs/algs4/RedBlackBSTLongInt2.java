@@ -289,7 +289,7 @@ public class RedBlackBSTLongInt2 {
         keyColorMap.put(root, BLACK);
         
         if (keyParentMap.containsKey(root)) {
-            keyParentMap.remove(key);
+            keyParentMap.remove(root);
         }
         
         //printPreOrderTraversal();
