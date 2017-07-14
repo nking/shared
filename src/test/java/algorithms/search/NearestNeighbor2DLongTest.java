@@ -24,8 +24,11 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
         // exercising the code for large range dense filling
         
+        //int w = 7000;
+        //int h = 5000;
+        //int bSz = 50;
         int w = 7000;
-        int h = 5000;
+        int h = 500;
         int bSz = 50;
         
         TLongSet pixIdxs = new TLongHashSet();
@@ -35,7 +38,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        //seed = 1499572125948L;
+        //seed = 1499996461259L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -78,7 +81,8 @@ public class NearestNeighbor2DLongTest extends TestCase {
         NearestNeighbor2DLong nn2d = new NearestNeighbor2DLong(pixIdxs, w, h);
         nn2d.doNotUseCache();
         
-        System.out.println("n in NN2D=" + pixIdxs.size() + " nQueries=" + n2);
+        System.out.println("n in NN2D=" + pixIdxs.size() 
+            + " nQueries=" + n2);
         
         for (long i = 0; i < n2; ++i) {
             xc = rand.nextInt(w);
@@ -92,7 +96,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
     }
     
-    public void est0() {
+    public void test0() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -112,39 +116,40 @@ public class NearestNeighbor2DLongTest extends TestCase {
         */
         
         int maxX = 11;
-        int maxY = 10;
+        int maxY = 9;
         int k = 5;
 
         points.remove(new PairInt(4, 4));
         
-        NearestNeighbor2DLong knn2D = new
+        NearestNeighbor2DLong nn2D = new
             NearestNeighbor2DLong(points, maxX, maxY);
         
         Set<PairInt> nearest;
         
-        nearest = knn2D.findClosest(2, 2);
+        nearest = nn2D.findClosest(2, 2);
         assertNotNull(nearest);
         assertTrue(nearest.iterator().next()
             .equals(new PairInt(2, 2)));
         
-        nearest = knn2D.findClosest(4, 4);
-        
-        assertEquals(4, nearest.size());
-        
+        nearest = nn2D.findClosest(4, 4);
+                
         Set<PairInt> expected = new HashSet<PairInt>();
         expected.add(new PairInt(4, 2));
         expected.add(new PairInt(4, 6));
         expected.add(new PairInt(2, 4));
         expected.add(new PairInt(6, 4));
     
+        assertEquals(expected.size(), nearest.size());
+        
         for (PairInt p2 : nearest) {
+            //System.out.println("p2=" + p2);
             assertTrue(expected.remove(p2));
         }
-       
+        
         assertEquals(0, expected.size());
         
         // -----------------------------------
-        nearest = knn2D.findClosest(4, 4, 2);
+        nearest = nn2D.findClosest(4, 4, 2);
         
         assertEquals(4, nearest.size());
         
@@ -163,9 +168,9 @@ public class NearestNeighbor2DLongTest extends TestCase {
         // -----------------------------------
         points.add(new PairInt(4, 4));
         
-        knn2D = new NearestNeighbor2DLong(points, maxX, maxY);
+        nn2D = new NearestNeighbor2DLong(points, maxX, maxY);
         
-        nearest = knn2D.findClosest(4, 4);
+        nearest = nn2D.findClosest(4, 4);
         
         assertEquals(1, nearest.size());
         
@@ -179,7 +184,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         assertEquals(0, expected.size());
     }
     
-    public void est0_wo_cache() {
+    public void test0_wo_cache() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -199,24 +204,24 @@ public class NearestNeighbor2DLongTest extends TestCase {
         */
         
         int maxX = 11;
-        int maxY = 10;
+        int maxY = 9;
         int k = 5;
 
         points.remove(new PairInt(4, 4));
         
-        NearestNeighbor2DLong knn2D = new
+        NearestNeighbor2DLong nn2D = new
             NearestNeighbor2DLong(points, maxX, maxY);
         
-        knn2D.doNotUseCache();
+        nn2D.doNotUseCache();
         
         Set<PairInt> nearest;
         
-        nearest = knn2D.findClosest(2, 2);
+        nearest = nn2D.findClosest(2, 2);
         assertNotNull(nearest);
         assertTrue(nearest.iterator().next()
             .equals(new PairInt(2, 2)));
         
-        nearest = knn2D.findClosest(4, 4);
+        nearest = nn2D.findClosest(4, 4);
         
         assertEquals(4, nearest.size());
         
@@ -233,7 +238,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         assertEquals(0, expected.size());
         
         // -----------------------------------
-        nearest = knn2D.findClosest(4, 4, 2);
+        nearest = nn2D.findClosest(4, 4, 2);
         
         assertEquals(4, nearest.size());
         
@@ -250,14 +255,14 @@ public class NearestNeighbor2DLongTest extends TestCase {
         assertEquals(0, expected.size());
         
         // -----------------------------------
-        nearest = knn2D.findClosest(4, 4, 1);
+        nearest = nn2D.findClosest(4, 4, 1);
         
         // -----------------------------------
         points.add(new PairInt(4, 4));
         
-        knn2D = new NearestNeighbor2DLong(points, maxX, maxY);
+        nn2D = new NearestNeighbor2DLong(points, maxX, maxY);
         
-        nearest = knn2D.findClosest(4, 4);
+        nearest = nn2D.findClosest(4, 4);
         
         assertEquals(1, nearest.size());
         
@@ -271,7 +276,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         assertEquals(0, expected.size());
     }
     
-    public void est1() {
+    public void test1() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -291,13 +296,13 @@ public class NearestNeighbor2DLongTest extends TestCase {
         */
         
         int maxX = 11;
-        int maxY = 10;
+        int maxY = 9;
         int k = 5;
         
-        NearestNeighbor2DLong knn2D = new
+        NearestNeighbor2DLong nn2D = new
             NearestNeighbor2DLong(points, maxX, maxY);
         
-        Set<PairInt> nearest = knn2D.findClosestWithinTolerance(
+        Set<PairInt> nearest = nn2D.findClosestWithinTolerance(
             4, 4, 2);
         
         assertEquals(5, nearest.size());
@@ -317,7 +322,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
     }
     
-    public void est1_pixelIdxs() {
+    public void test1_pixelIdxs() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -337,7 +342,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         */
         
         int maxX = 11;
-        int maxY = 10;
+        int maxY = 9;
         int k = 5;
         
         PixelHelper ph = new PixelHelper();
@@ -347,10 +352,10 @@ public class NearestNeighbor2DLongTest extends TestCase {
             pixelIdxs.add(pixIdx);
         }
         
-        NearestNeighbor2DLong knn2D = new
+        NearestNeighbor2DLong nn2D = new
             NearestNeighbor2DLong(pixelIdxs, maxX, maxY);
         
-        Set<PairInt> nearest = knn2D.findClosestWithinTolerance(
+        Set<PairInt> nearest = nn2D.findClosestWithinTolerance(
             4, 4, 2);
         
         assertEquals(5, nearest.size());
@@ -370,7 +375,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         
     }
     
-    public void est1_NE() {
+    public void test1_NE() {
         
         // simple 10 x 10 grid with gaps of 1
         Set<PairInt> points = getTestData();
@@ -390,7 +395,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         */
         
         int maxX = 11;
-        int maxY = 10;
+        int maxY = 9;
         int k = 5;
         
         PixelHelper ph = new PixelHelper();
@@ -400,10 +405,10 @@ public class NearestNeighbor2DLongTest extends TestCase {
             pixelIdxs.add(pixIdx);
         }
         
-        NearestNeighbor2DLong knn2D = new
+        NearestNeighbor2DLong nn2D = new
             NearestNeighbor2DLong(pixelIdxs, maxX, maxY);
         
-        Set<PairInt> nearest = knn2D.findClosestNotEqual(
+        Set<PairInt> nearest = nn2D.findClosestNotEqual(
             4, 4);
                 
         Set<PairInt> expected = new HashSet<PairInt>();
