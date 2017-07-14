@@ -36,9 +36,6 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
 	protected int w = 62;
     protected final long maxC;
     
-    // debug
-    protected long nNewNodes = 0;
-	
 	/**
 	* The root node
 	*/
@@ -72,7 +69,6 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
 	 * @return
 	 */
 	protected S newNode() {
-        nNewNodes++;
 		try {
             S u = (S)sampleNode.getClass().newInstance();
 			u.parent = u.child[0] = u.child[1] = null;
@@ -428,10 +424,6 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
 		return n;
 	}
     
-    public long getNumberOfNewNodes() {
-        return nNewNodes;
-    }
-	
 	public void clear() {
 		n = 0;
 		r.child[0] = r.child[1] = null;
