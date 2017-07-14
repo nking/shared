@@ -668,9 +668,9 @@ public class RedBlackBSTLongInt2 {
                     if (x != h) {
                     
                         System.out.println(
-                            "   x to get h fields.  x=" 
-                            + nodeToString(x)
-                            + " n=" + nodeToString(h)
+                            "   x to get h fields expect min. " + 
+                            "\n   x=" + nodeToString(x)
+                            + "\n   h=" + nodeToString(h)
                         );
                         
                         
@@ -681,20 +681,47 @@ public class RedBlackBSTLongInt2 {
                         keyColorMap.put(x, keyColorMap.get(h));
                         keySizeMap.put(x, keySizeMap.get(h));
                         if (keyLeftMap.containsKey(h)) {
-                            keyParentMap.put(keyLeftMap.get(h), x);
-                            keyLeftMap.put(x, keyLeftMap.get(h));
+                            long left = keyLeftMap.get(h);
+                            keyParentMap.put(left, x);
+                            if (left != x) {//TODO: revisit this
+                                keyLeftMap.put(x, left);
+                            }
+                            keyLeftMap.remove(h);
                         } else {
                             keyLeftMap.remove(x);
                         }
                         if (keyRightMap.containsKey(h)) {
-                            keyParentMap.put(keyRightMap.get(h), x);
-                            keyRightMap.put(x, keyRightMap.get(h));
+                            long right = keyRightMap.get(h);
+                            keyParentMap.put(right, x);
+                            if (right != x) { //TODO: revisit this
+                                keyRightMap.put(x, right);
+                            }
+                            keyRightMap.remove(h);
                         } else {
                             keyRightMap.remove(x);
                         }
+                        if (keyParentMap.containsKey(h)) {
+                            long hParent = keyParentMap.get(h);
+                            // hParent has a right or left child pointing to h
+                            // which needs to be changed to x
+                            if (keyLeftMap.containsKey(hParent) && 
+                                keyLeftMap.get(hParent) == h) {
+                                if (hParent != x) { //TODO revisit this
+                                    keyLeftMap.put(hParent, x);
+                                }
+                            } else {
+                                assert(keyRightMap.containsKey(hParent) &&
+                                    keyRightMap.get(hParent) == h);
+                                keyRightMap.put(hParent, x);
+                            }
+                            keyParentMap.put(x, hParent);
+                            keyParentMap.remove(h);
+                        }
+                        keyColorMap.remove(h);
+                        keySizeMap.remove(h);
+                        keyValMap.remove(h);
                         
-              //TODO: after editing h.parent link to point to x,
-              // can then use deleteFromMaps(h)
+                        System.out.println("   after x =" + nodeToString(x));
                         
                         h = x;                   
                     }
@@ -709,7 +736,8 @@ public class RedBlackBSTLongInt2 {
                         
                         if (output[0] != -1) {
                            
-                            System.out.format("   %d.right = delete(%d, %d) => &d\n" ,
+                            System.out.format(
+                                "   %d.right = delete(%d, %d) => %d\n" ,
                                 h, keyRightMap.get(h), key, output[1]);
                         
                             keyParentMap.put(output[1], h);
@@ -1932,7 +1960,12 @@ public class RedBlackBSTLongInt2 {
     }
     
     private String nodeToString(long key) {
-        assert(keyValMap.containsKey(key));
+        //assert(keyValMap.containsKey(key));
+        if (!keyValMap.containsKey(key)) {
+            System.out.println("ERROR: key not in maps");
+            return "";
+        }
+        
         StringBuilder sb = new StringBuilder();
         //node=key=0 val=0 color=false size=1
         sb.append("key=").append(key).append(" val=").append(keyValMap.get(key));
