@@ -279,7 +279,7 @@ public class RedBlackBSTLongInt2 {
      */
     public void put(long key, int val) {
         
-        //System.out.println("put " + key + ":");
+        System.out.println("put " + key + ":");
         
         //System.out.println("before put " + key);
         //printPreOrderTraversal();
@@ -292,8 +292,8 @@ public class RedBlackBSTLongInt2 {
             keyParentMap.remove(root);
         }
         
-        //printPreOrderTraversal();
-        //System.out.println("after put " + key + " root=" + root);
+        printPreOrderTraversal();
+        System.out.println("after put " + key + " root=" + root);
         
         assert(check());
     }
@@ -378,7 +378,6 @@ public class RedBlackBSTLongInt2 {
         
         //root = deleteMin(root);
         long[] output = new long[2];
-        output[1] = -1;
         deleteMin(root, output);
         
         //System.out.println("deleteMin=" + Arrays.toString(output));
@@ -407,6 +406,8 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the minimum key rooted at h
     private void deleteMin(long h, long[] output) { 
         
+        System.out.println("deleteMin " + nodeToString(h));
+        
         if (!keyValMap.containsKey(h) || !keyLeftMap.containsKey(h)) {
             output[0] = -1;
             return;
@@ -428,7 +429,7 @@ public class RedBlackBSTLongInt2 {
         }
         long left = keyLeftMap.get(h);
         long parent = keyParentMap.get(left);
-        assert(parent == h);
+        //assert(parent == h);
         
         output[0] = 0;
         deleteMin(left, output);
@@ -668,7 +669,7 @@ public class RedBlackBSTLongInt2 {
                     if (x != h) {
                     
                         System.out.println(
-                            "   x to get h fields expect min. " + 
+                            "   x to get h fields except val. " + 
                             "\n   x=" + nodeToString(x)
                             + "\n   h=" + nodeToString(h)
                         );
@@ -751,6 +752,9 @@ public class RedBlackBSTLongInt2 {
                         
                             keyRightMap.remove(h);
                         }
+                        
+                        System.out.println("   after deleteMin x =" + nodeToString(h));
+                        
                         printPreOrderTraversal(1);
                     }                 
                 }
@@ -797,7 +801,11 @@ public class RedBlackBSTLongInt2 {
     *  Red-black tree helper functions.
     ***************************************************************************/
 
-    // make a left-leaning link lean to the right
+    /**
+     * make a left-leaning link lean to the right.
+     Note that the parent link logic is from Cormen et al. "Introduction to
+     Algorithms".
+     */
     private long rotateRight(long h) {
         // assert (h != null) && isRed(h.left);
         assert(keyValMap.containsKey(h));
@@ -817,14 +825,31 @@ public class RedBlackBSTLongInt2 {
         
         if (keyRightMap.containsKey(x)) {
             //h.left = x.right;
-            keyLeftMap.put(h, keyRightMap.get(x));
-            keyParentMap.put(keyRightMap.get(x), h);
+            long xRight = keyRightMap.get(x);
+            keyLeftMap.put(h, xRight);
+            keyParentMap.put(xRight, h);
         } else {
             keyLeftMap.remove(h);
         }
+        if (keyParentMap.containsKey(h)) {
+            long hParent = keyParentMap.get(h);
+            // assign x as child of its new parent
+            if (keyLeftMap.containsKey(hParent) && keyLeftMap.get(hParent) ==
+                h) {
+                keyLeftMap.put(hParent, x);
+            } else {
+                keyRightMap.put(hParent, x);
+            }
+        } else {
+            keyParentMap.remove(x);
+            //root = x;
+        }
+System.out.println("  in RR after h.left h=" + nodeToString(h));
         //x.right = h;
         keyRightMap.put(x, h);
         keyParentMap.put(h, x);
+System.out.println("  in RR after h.right h=" + nodeToString(h));
+System.out.println("  in RR after h.right x=" + nodeToString(x));
         //x.color = x.right.color;
         //x.right.color = RED;
         //x.size = h.size;
@@ -837,13 +862,19 @@ public class RedBlackBSTLongInt2 {
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
         
+        System.out.println("  after RR: h=" + nodeToString(h));
+        
         //System.out.println("after rotateRight:");
         //printPreOrderTraversal();
         
         return x;
     }
 
-    // make a right-leaning link lean to the left
+    /**
+     make a right-leaning link lean to the left.
+     Note that the parent link logic is from Cormen et al. "Introduction to
+     Algorithms".
+     */
     private long rotateLeft(long h) {
         
         // assert (h != null) && isRed(h.right);
@@ -855,11 +886,27 @@ public class RedBlackBSTLongInt2 {
         
         if (keyLeftMap.containsKey(x)) {
             //h.right = x.left;
-            keyRightMap.put(h, keyLeftMap.get(x));
-            keyParentMap.put(keyLeftMap.get(x), h);
+            long left = keyLeftMap.get(x);
+            keyRightMap.put(h, left);
+            keyParentMap.put(left, h);
         } else {
             keyRightMap.remove(h);
         }
+       
+        if (keyParentMap.containsKey(h)) {
+            long hParent = keyParentMap.get(h);
+            keyParentMap.put(x, hParent);
+            if (keyLeftMap.containsKey(hParent) && keyLeftMap.get(hParent) ==
+                h) {
+                keyLeftMap.put(hParent, x);
+            } else {
+                keyRightMap.put(hParent, x);
+            }
+        } else {
+            keyParentMap.remove(x);
+            //root = h;
+        }
+                
         //x.left = h;
         keyLeftMap.put(x, h);
         keyParentMap.put(h, x);
@@ -873,6 +920,8 @@ public class RedBlackBSTLongInt2 {
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
                
+        System.out.println("  after RL: h=" + nodeToString(h));
+        
         return x;
     }
 
@@ -912,15 +961,19 @@ public class RedBlackBSTLongInt2 {
         assert(keyValMap.containsKey(h));
         assert(isRed(h) && !isLeftRed(h) && !isLeftLeftRed(h));
 
+        System.out.println("moveRedLeft " + nodeToString(h));
+        
         flipColors(h);
         if (isRightLeftRed(h)) {
-            //h.right = rotateRight(h.right);
+            //h.right = rotateRight(h.right); 
             long rKey = rotateRight(keyRightMap.get(h));
             keyRightMap.put(h, rKey);
             keyParentMap.put(rKey, h);
             h = rotateLeft(h);
             flipColors(h);
         }
+       
+        System.out.println("after moveRedLeft " + nodeToString(h));
         
         //System.out.println("after moveRedLeft:");
         //printPreOrderTraversal();
@@ -939,7 +992,7 @@ public class RedBlackBSTLongInt2 {
             flipColors(h);
         }
         
-        //System.out.println("after moveRedRight:");
+        System.out.println("after moveRedRight h=" + nodeToString(h));
         //printPreOrderTraversal();
         
         return h;
@@ -947,6 +1000,8 @@ public class RedBlackBSTLongInt2 {
 
     // restore red-black tree invariant
     private long balance(long h) {
+        
+        System.out.println("balance " + nodeToString(h));
         
         assert (keyValMap.containsKey(h));
 
@@ -1962,7 +2017,9 @@ public class RedBlackBSTLongInt2 {
     private String nodeToString(long key) {
         //assert(keyValMap.containsKey(key));
         if (!keyValMap.containsKey(key)) {
-            System.out.println("ERROR: key not in maps");
+            // this can happen in the middle of a method, for example,
+            // when root has been removed and new is not yet assigned
+            System.out.println("ERROR: key " + key + " not in maps");
             return "";
         }
         
