@@ -16,13 +16,183 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         super(testName);
     }
     
-    public void testKeyOperations00() throws Exception {
+    public void estPutAndRotate() {
+        
+        int n = 5;
+        RedBlackBSTLongInt2 bt = new RedBlackBSTLongInt2();
+                
+        TLongList nodes = new TLongArrayList(2*n);
+        
+        long[] kOutput = new long[2];
+        
+        for (int i = 0; i < n; ++i) {
+            nodes.add(i);
+            bt.put(i, i);
+            assertTrue(bt.rootIsSet);
+            assertTrue(bt.contains(i));
+        }
+        
+        /*
+         *                      3
+         *           root.left       root.right
+         *               1                4
+         *     left.left   left.right
+         *         0           2
+         * 
+                  node=key=3 val=3 color=0 size=5 p= l=1 r=4
+        [junit]   node=key=1 val=1 color=1 size=3 p=3 l=0 r=2
+        [junit]   node=key=0 val=0 color=0 size=1 p=1 l= r=
+        [junit]   node=key=2 val=2 color=0 size=1 p=1 l= r=
+        [junit]   node=key=4 val=4 color=0 size=1 p=3 l= r=
+        
+        For a right rotate, left of it has to be red
+        
+                     RIGHT ROTATE(3)
+        
+                               1
+                         0           3
+                                   2   4
+        node=key=1 val=1 color=0 size=5 p= l=0 r=3
+        node=key=0 val=0 color=0 size=1 p=1 l= r=
+        node=key=3 val=3 color=1 size=3 p=1 l=2 r=4
+        node=key=2 val=2 color=0 size=1 p=3 l= r=
+        node=key=4 val=4 color=0 size=1 p=3 l= r=
+        
+        For a left rotate, right of it has to be red
+        
+                     LEFT ROTATE(1)
+         
+                               3
+                         1          4
+                      0    2 
+        
+         node=key=3 val=3 color=0 size=5 p= l=1 r=4
+         node=key=1 val=1 color=1 size=3 p=3 l=0 r=2
+         node=key=0 val=0 color=0 size=1 p=1 l= r=
+         node=key=2 val=2 color=0 size=1 p=1 l= r=
+         node=key=4 val=4 color=0 size=1 p=3 l= r=
+        */
+        
+        //bt.printPreOrderTraversal();
+        
+        //System.out.println("ROTATE-RIGHT(3)");
+        
+        long key = bt.rotateRight(3);
+        
+        bt.root = key;
+        
+        //System.out.println("return key=" + key);
+        
+        //bt.printPreOrderTraversal();
+        
+        long[] treeNodes = bt.getPreOrderTraversalIterative(bt.root, 0);
+        
+        for (long node : treeNodes) {
+            int c = (int)node;
+            assertEquals(c, bt.keyValMap.get(node));
+            switch(c) {
+                case 0:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertEquals(1, bt.keyParentMap.get(node));
+                    assertEquals(1, bt.keySizeMap.get(node));
+                    assertFalse(bt.keyLeftMap.containsKey(node));
+                    assertFalse(bt.keyRightMap.containsKey(node));
+                    break;
+                case 1:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertFalse(bt.keyParentMap.containsKey(node));
+                    assertEquals(5, bt.keySizeMap.get(node));
+                    assertEquals(0, bt.keyLeftMap.get(node));
+                    assertEquals(3, bt.keyRightMap.get(node));
+                    break;
+                case 2:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertEquals(3, bt.keyParentMap.get(node));
+                    assertEquals(1, bt.keySizeMap.get(node));
+                    assertFalse(bt.keyLeftMap.containsKey(node));
+                    assertFalse(bt.keyRightMap.containsKey(node));
+                    break;
+                case 3:
+                    assertEquals(1, bt.keyColorMap.get(node));
+                    assertEquals(1, bt.keyParentMap.get(node));
+                    assertEquals(3, bt.keySizeMap.get(node));
+                    assertEquals(2, bt.keyLeftMap.get(node));
+                    assertEquals(4, bt.keyRightMap.get(node));
+                    break;
+                case 4:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertEquals(3, bt.keyParentMap.get(node));
+                    assertEquals(1, bt.keySizeMap.get(node));
+                    assertFalse(bt.keyLeftMap.containsKey(node));
+                    assertFalse(bt.keyRightMap.containsKey(node));
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        key = bt.rotateLeft(1);
+        
+        bt.root = key;
+        
+        //System.out.println("return key=" + key);
+        
+        //bt.printPreOrderTraversal();
+        
+        treeNodes = bt.getPreOrderTraversalIterative(bt.root, 0);
+        
+        for (long node : treeNodes) {
+            int c = (int)node;
+            assertEquals(c, bt.keyValMap.get(node));
+            switch(c) {
+                case 0:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertEquals(1, bt.keyParentMap.get(node));
+                    assertEquals(1, bt.keySizeMap.get(node));
+                    assertFalse(bt.keyLeftMap.containsKey(node));
+                    assertFalse(bt.keyRightMap.containsKey(node));
+                    break;
+                case 1:
+                    assertEquals(1, bt.keyColorMap.get(node));
+                    assertEquals(3, bt.keyParentMap.get(node));
+                    assertEquals(3, bt.keySizeMap.get(node));
+                    assertEquals(0, bt.keyLeftMap.get(node));
+                    assertEquals(2, bt.keyRightMap.get(node));
+                    break;
+                case 2:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertEquals(1, bt.keyParentMap.get(node));
+                    assertEquals(1, bt.keySizeMap.get(node));
+                    assertFalse(bt.keyLeftMap.containsKey(node));
+                    assertFalse(bt.keyRightMap.containsKey(node));
+                    break;
+                case 3:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertFalse(bt.keyParentMap.containsKey(node));
+                    assertEquals(5, bt.keySizeMap.get(node));
+                    assertEquals(1, bt.keyLeftMap.get(node));
+                    assertEquals(4, bt.keyRightMap.get(node));
+                    break;
+                case 4:
+                    assertEquals(0, bt.keyColorMap.get(node));
+                    assertEquals(3, bt.keyParentMap.get(node));
+                    assertEquals(1, bt.keySizeMap.get(node));
+                    assertFalse(bt.keyLeftMap.containsKey(node));
+                    assertFalse(bt.keyRightMap.containsKey(node));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    public void estKeyOperations00() throws Exception {
     
         System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1499931908167L;
+        //seed = 1499931908167L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -76,7 +246,6 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         int n2 = bt.size();
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
-        
         
         int[] vOutput = new int[2];
         
@@ -110,7 +279,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                     assertEquals(expected, ceil);
                 }
             }
-            
+          
+     
             bt.higher(nodes.get(nodes.size() - 1), kOutput);
             assertTrue(kOutput[0] == -1);
             bt.lower(nodes.get(0), kOutput);
@@ -144,7 +314,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                     assertEquals(expected, floor);
                 }
             }
-           
+        
             n2 = nodes.size();
             nodes.sort();
            
@@ -152,8 +322,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                   
             assertEquals(nodes.size(), bt.size());
             
-            System.out.println("before deleteMin bt.size=" + bt.size());
-            
+            System.out.println("before deleteMax bt.size=" + bt.size());
             
             long max = nodes.get(nodes.size() - 1);
             assertTrue(bt.contains(max));
@@ -180,16 +349,17 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
             assertEquals(nodes.size(), bt.size());
+            
         }            
     }
     
-    public void estKeyOperations0() throws Exception {
+    public void testKeyOperations0() throws Exception {
     
         System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1499931908167L;
+        seed = 1500070815033L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -267,7 +437,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
 
                 assertTrue(bt.rootIsSet);
                 
- System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
+//System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
  
                 if (next > (idx + 1)) {
                     // test ceiling of idx+1
@@ -328,20 +498,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                     assertFalse(bt.contains(v));
                     nodes.removeAt(idx);
                     assertEquals(nodes.size(), bt.size());
-                    
-         
-        //DEBUGGING one method at a time
-        if (true) {
-            return;
-        } 
-        
                 }
-        
-        //DEBUGGING one method at a time
-        if (true) {
-            return;
-        }          
-                
+           
             } else {
                 //randomly add some nodes
                 for (int i = 0; i < n2/4; ++i) {

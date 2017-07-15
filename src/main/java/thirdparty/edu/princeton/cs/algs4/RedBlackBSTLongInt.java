@@ -147,6 +147,26 @@ public class RedBlackBSTLongInt {
             return sb.toString();
         }
         
+        public String toString(Node p) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("key=").append(key);
+            sb.append(" val=").append(val);
+            sb.append(" color=").append(color);
+            sb.append(" size=").append(size);
+            sb.append(" p=");
+            if (p != null) {
+                sb.append(p.key);
+            }
+            sb.append(" l=");
+            if (left != null) {
+                sb.append(left.key);
+            }
+            sb.append(" r=");
+            if (right != null) {
+                sb.append(right.key);
+            }
+            return sb.toString();
+        }
         
     }
 
@@ -246,14 +266,23 @@ public class RedBlackBSTLongInt {
      * @param val the value
      */
     public void put(long key, int val) {
+        
+        System.out.println("put " + key);
+        
         root = put(root, key, val);
         root.color = BLACK;
+        
+        printPreOrderTraversal();
+        System.out.println("after put " + key + " root=" 
+            + root.toString(findParent(root)));
                 
         // assert check();
     }
 
     // insert the key-value pair in the subtree rooted at h
     private Node put(Node h, long key, int val) { 
+        
+        System.out.println("put h=" + h + " key=" + key);
         
         if (h == null) return new Node(key, val, RED, 1);
 
@@ -282,6 +311,10 @@ public class RedBlackBSTLongInt {
         }
         h.size = size(h.left) + size(h.right) + 1;
 
+        printPreOrderTraversal();
+        System.out.println("after put h=" + h + " key=" + key + " root=" 
+            + root.toString(findParent(root)));
+        
         return h;
     }
 
@@ -307,6 +340,9 @@ public class RedBlackBSTLongInt {
 
     // delete the key-value pair with the minimum key rooted at h
     private Node deleteMin(Node h) { 
+        
+        System.out.println("deleteMin(" + h.toString() + ")");
+        
         if (h.left == null)
             return null;
 
@@ -314,6 +350,7 @@ public class RedBlackBSTLongInt {
             h = moveRedLeft(h);
 
         h.left = deleteMin(h.left);
+        
         return balance(h);
     }
 
@@ -325,6 +362,9 @@ public class RedBlackBSTLongInt {
     public void deleteMax() {
         if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
+        System.out.println("deleteMax.  root=" + root);
+        printPreOrderTraversal();
+        
         // if both children of root are black, set root to red
         if (!isRed(root.left) && !isRed(root.right))
             root.color = RED;
@@ -364,7 +404,7 @@ public class RedBlackBSTLongInt {
      */
     public void delete(long key) { 
         
-        //System.out.println("delete " + key);
+        System.out.println("delete " + key);
         
         if (!contains(key)) return;
 
@@ -375,6 +415,8 @@ public class RedBlackBSTLongInt {
         root = delete(root, key);
         if (!isEmpty()) root.color = BLACK;
         // assert check();
+        
+        System.out.println("after delete " + key + " root=" + root);
     }
 
     // delete the key-value pair with the given key rooted at h
@@ -387,23 +429,43 @@ public class RedBlackBSTLongInt {
             }
             h.left = delete(h.left, key);
         } else {
-            if (isRed(h.left))
+            if (isRed(h.left)) {
                 h = rotateRight(h);
-            if (key == h.key && (h.right == null))
+            }
+            if (key == h.key && (h.right == null)) {
                 return null;
+            }
             if (!isRed(h.right) && !isRed(h.right.left)) {
                 h = moveRedRight(h);
             }
             //System.out.println("key=" + key + " h.key=" + h.key);
             if (key == h.key) {
+                
                 Node x = min(h.right);
+                
+                System.out.println(
+                    "   x to get h fields except val. " + 
+                    "\n   x=" + x.toString(findParent(x))
+                    + "\n   h=" + h.toString(findParent(h))
+                );
+                
                 h.key = x.key;
                 h.val = x.val;
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
+                
+                System.out.println("   after x =" + h.toString(findParent(h)));
+                
                 h.right = deleteMin(h.right);
-            } else h.right = delete(h.right, key);
+                
+                System.out.println("   after deleteMin x =" + 
+                    h.toString(findParent(h)));
+              
+            } else {
+                h.right = delete(h.right, key);
+            }
         }
+        
         return balance(h);
     }
 
@@ -415,12 +477,21 @@ public class RedBlackBSTLongInt {
     private Node rotateRight(Node h) {
         // assert (h != null) && isRed(h.left);
         Node x = h.left;
+        
+System.out.println("  before RR h=" + h.toString(findParent(h)));
+System.out.println("  before RR x=" + x.toString(findParent(x)));
+
         h.left = x.right;
+        System.out.println("  in RR after h.left h=" + h.toString(findParent(h)));
         x.right = h;
+        System.out.println("  in RR after x.right h=" + h.toString(findParent(h)));
+        System.out.println("  in RR after x.right x=" + x.toString(findParent(x)));
         x.color = x.right.color;
         x.right.color = RED;
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
+    
+        System.out.println("  after RR: h=" + h.toString(findParent(h)));
         
         return x;
     }
@@ -430,13 +501,20 @@ public class RedBlackBSTLongInt {
                 
         // assert (h != null) && isRed(h.right);
         Node x = h.right;
+System.out.println("  before RL h=" + h.toString(findParent(h)));
+System.out.println("  before RL x=" + x.toString(findParent(x)));        
         h.right = x.left;
+  System.out.println("  in RL after h.right h=" + h.toString(findParent(h)));      
         x.left = h;
+  System.out.println("  in RL after x.left h=" + h.toString(findParent(h)));
+System.out.println("  in RL after x.left x=" + x.toString(findParent(x)));     
         x.color = x.left.color;
         x.left.color = RED;
         x.size = h.size;
         h.size = size(h.left) + size(h.right) + 1;
-                
+           
+        System.out.println("  after RL: h=" + h.toString(findParent(h)));
+        
         return x;
     }
 
@@ -457,12 +535,16 @@ public class RedBlackBSTLongInt {
         // assert (h != null);
         // assert isRed(h) && !isRed(h.left) && !isRed(h.left.left);
 
+        System.out.println("moveRedLeft(" + h.toString(findParent(h)) + ")");
+        
         flipColors(h);
         if (isRed(h.right.left)) { 
             h.right = rotateRight(h.right);
             h = rotateLeft(h);
             flipColors(h);
         }
+        
+        System.out.println("after moveRedLeft(" + h.toString(findParent(h)) + ")");
                 
         return h;
     }
@@ -472,11 +554,16 @@ public class RedBlackBSTLongInt {
     private Node moveRedRight(Node h) {
         // assert (h != null);
         // assert isRed(h) && !isRed(h.right) && !isRed(h.right.left);
+        
+        System.out.println("moveRedRight(" + h.toString(findParent(h)) + ")");
+        
         flipColors(h);
         if (isRed(h.left.left)) { 
             h = rotateRight(h);
             flipColors(h);
         }
+
+        System.out.println("after moveRedRight(" + h.toString(findParent(h)) + ")");
                 
         return h;
     }
@@ -485,11 +572,22 @@ public class RedBlackBSTLongInt {
     private Node balance(Node h) {
         // assert (h != null);
 
-        if (isRed(h.right))                      h = rotateLeft(h);
-        if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
-        if (isRed(h.left) && isRed(h.right))     flipColors(h);
+        System.out.println("balance " + h.toString(findParent(h)));
+        
+        if (isRed(h.right))   {
+            h = rotateLeft(h);
+        }
+        if (isRed(h.left) && isRed(h.left.left)) {
+            h = rotateRight(h);
+        }
+        if (isRed(h.left) && isRed(h.right))  {
+            flipColors(h);
+        }
 
         h.size = size(h.left) + size(h.right) + 1;
+        
+        System.out.println("after balance " + h.toString(findParent(h)));
+        
         return h;
     }
 
@@ -1022,7 +1120,8 @@ public class RedBlackBSTLongInt {
     public void printPreOrderTraversal() {
         Node[] nodes = getPreOrderTraversalIterative(root, 0);
         for (Node node : nodes) {
-            System.out.println("node=" + node.toString());
+            Node p = findParent(node, nodes);
+            System.out.println("node=" + node.toString(p));
         }
     }
     private void printPreOrderTraversal(int addExtraToSize) {
@@ -1031,8 +1130,33 @@ public class RedBlackBSTLongInt {
             if (node == null) {
                 continue;
             }
-            System.out.println("node=" + node.toString());
+            Node p = findParent(node, nodes);
+            System.out.println("node=" + node.toString(p));
         }
+    }
+    
+    private Node findParent(Node h) {
+        Node[] nodes = getPreOrderTraversalIterative(root, 1);
+        return findParent(h, nodes);
+    }
+    private Node findParent(Node h, Node[] nodes) {
+        if (root != null) {
+            // when in the middle of a method, the root is sometimes
+            // not yet set
+            System.out.println("root="  + root);
+        }
+        for (Node node : nodes) {
+            if (node == null) {
+                continue;
+            }
+            if (node.left != null && node.left.key == h.key) {
+                return node;
+            }
+            if (node.right != null && node.right.key == h.key) {
+                return node;
+            }
+        }
+        return null;
     }
     
     /**

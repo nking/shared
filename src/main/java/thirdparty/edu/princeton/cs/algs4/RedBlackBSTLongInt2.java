@@ -52,6 +52,7 @@ import gnu.trove.map.hash.TLongLongHashMap;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Stack;
+import javax.swing.text.Keymap;
 
 /**
  * NOTE: this implementation of the long-int Red Black tree uses the least
@@ -302,7 +303,9 @@ public class RedBlackBSTLongInt2 {
     //private Node put(Node h, long key, int val) {
     private long put(long h, long key, int val) {
         
-        if (!keyValMap.containsKey(h)) {
+        System.out.println("put h=" + h + " key=" + key);
+        
+        if (!rootIsSet || !keyValMap.containsKey(h)) {
             return addNewNode(key, val, RED, 1);
         }
        
@@ -369,6 +372,9 @@ public class RedBlackBSTLongInt2 {
     public void deleteMin() {
         if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
+        System.out.println("deleteMin.  root=" +root);
+        printPreOrderTraversal();
+        
         int sz0 = size();
         
         assert(keyValMap.containsKey(root));
@@ -418,6 +424,7 @@ public class RedBlackBSTLongInt2 {
         
         
         if (!isLeftRed(h) && !isLeftLeftRed(h)) {
+            //TODO: fix error in here if any:
             h = moveRedLeft(h);
         }
         
@@ -454,6 +461,9 @@ public class RedBlackBSTLongInt2 {
     public void deleteMax() {
         if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
+        System.out.println("deleteMax.  root=" +root);
+        printPreOrderTraversal();
+        
         // if both children of root are black, set root to red
         setRootToRedIfChildrenAreBlack();
 
@@ -598,6 +608,8 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the given key rooted at h
     private void delete(long h, long key, long[] output) { 
         
+        //TODO: fix errors in here and in methods it uses
+        
         System.out.format("delete(%d, %d)\n", h, key);
         
         // assert get(h, key) != null;
@@ -610,22 +622,25 @@ public class RedBlackBSTLongInt2 {
         output[0] = 0;
         
         if (key < h)  {
+            /*
+            if (!isRed(h.left) && !isRed(h.left.left)) {
+                h = moveRedLeft(h);
+            }
+            h.left = delete(h.left, key);
+            */
             
             if (!isLeftRed(h) && !isLeftLeftRed(h)) {
                 h = moveRedLeft(h);
-                
                 System.out.format("after %d = moveRedLeft(h)\n", h);
                 printPreOrderTraversal(1);
             }
             
-            //h.left = delete(h.left, key);
             if (keyLeftMap.containsKey(h)) {
                 
                 System.out.format("   %d.left = delete(%d, %d)\n" ,
                     h, keyLeftMap.get(h), key);
                  
                 delete(keyLeftMap.get(h), key, output);
-                   
                 
                 if (output[0] == -1) {
                     keyLeftMap.remove(h);
@@ -639,13 +654,17 @@ public class RedBlackBSTLongInt2 {
             
             if (isLeftRed(h)) {
                 h = rotateRight(h);
+                System.out.println("after RR h=" + h);
+                printPreOrderTraversal2(h);
             }
             if (key == h && !keyRightMap.containsKey(h)) {
                 output[0] = -1;
                 return;
-            }
+            }  
             if (!isRightRed(h) && !isRightLeftRed(h)) {
                 h = moveRedRight(h);
+                System.out.println("after mRR h=" + h);
+                printPreOrderTraversal2(h);
             }
             
             System.out.format("after %d= rotate and or move right\n", h);
@@ -655,7 +674,8 @@ public class RedBlackBSTLongInt2 {
             if (key == h) {
                 
                 if (keyRightMap.containsKey(h)) {
-                    
+                   
+                  
                     //Node x = min(h.right);
                     //h.key = x.key;
                     //h.val = x.val;
@@ -679,37 +699,13 @@ public class RedBlackBSTLongInt2 {
                         //h.key = x.key;
                         //h.val = x.val;
                         
-                        keyColorMap.put(x, keyColorMap.get(h));
-                        keySizeMap.put(x, keySizeMap.get(h));
-                        if (keyLeftMap.containsKey(h)) {
-                            long left = keyLeftMap.get(h);
-                            keyParentMap.put(left, x);
-                            if (left != x) {//TODO: revisit this
-                                keyLeftMap.put(x, left);
-                            }
-                            keyLeftMap.remove(h);
-                        } else {
-                            keyLeftMap.remove(x);
-                        }
-                        if (keyRightMap.containsKey(h)) {
-                            long right = keyRightMap.get(h);
-                            keyParentMap.put(right, x);
-                            if (right != x) { //TODO: revisit this
-                                keyRightMap.put(x, right);
-                            }
-                            keyRightMap.remove(h);
-                        } else {
-                            keyRightMap.remove(x);
-                        }
                         if (keyParentMap.containsKey(h)) {
                             long hParent = keyParentMap.get(h);
                             // hParent has a right or left child pointing to h
                             // which needs to be changed to x
                             if (keyLeftMap.containsKey(hParent) && 
                                 keyLeftMap.get(hParent) == h) {
-                                if (hParent != x) { //TODO revisit this
-                                    keyLeftMap.put(hParent, x);
-                                }
+                                keyLeftMap.put(hParent, x);
                             } else {
                                 assert(keyRightMap.containsKey(hParent) &&
                                     keyRightMap.get(hParent) == h);
@@ -718,6 +714,25 @@ public class RedBlackBSTLongInt2 {
                             keyParentMap.put(x, hParent);
                             keyParentMap.remove(h);
                         }
+                        keyColorMap.put(x, keyColorMap.get(h));
+                        keySizeMap.put(x, keySizeMap.get(h));
+                        if (keyLeftMap.containsKey(h)) {
+                            long left = keyLeftMap.get(h);
+                            keyParentMap.put(left, x);
+                            keyLeftMap.put(x, left);
+                            keyLeftMap.remove(h);
+                        } else {
+                            keyLeftMap.remove(x);
+                        }
+                        if (keyRightMap.containsKey(h)) {
+                            long right = keyRightMap.get(h);
+                            keyParentMap.put(right, x);
+                            keyRightMap.put(x, right);
+                            keyRightMap.remove(h);
+                        } else {
+                            keyRightMap.remove(x);
+                        }
+                        
                         keyColorMap.remove(h);
                         keySizeMap.remove(h);
                         keyValMap.remove(h);
@@ -726,37 +741,51 @@ public class RedBlackBSTLongInt2 {
                         
                         h = x;                   
                     }
-                    
-                    //h.right = deleteMin(h.right);
-                    if (keyRightMap.containsKey(h)) {
-                        
-                        output[0] = 0;
-                        deleteMin(keyRightMap.get(h), output);
-                                        
-                        System.out.println("  min=" + Arrays.toString(output));
-                        
-                        if (output[0] != -1) {
-                           
-                            System.out.format(
-                                "   %d.right = delete(%d, %d) => %d\n" ,
-                                h, keyRightMap.get(h), key, output[1]);
-                        
-                            keyParentMap.put(output[1], h);
-                            
-                            keyRightMap.put(h, output[1]);
-                            
-                        } else {
-                        
-                            System.out.format("   %d.right = delete(%d, %d) = NULL\n" ,
-                                h, keyRightMap.get(h), key);
-                        
-                            keyRightMap.remove(h);
-                        }
-                        
-                        System.out.println("   after deleteMin x =" + nodeToString(h));
-                        
-                        printPreOrderTraversal(1);
-                    }                 
+                }
+                
+              /*
+                ERROR in here
+                [junit] deleteMin key=94 val=94 color=0 size=6 p=91 l=92 r=98
+                [junit] deleteMin key=92 val=92 color=1 size=3 p=94 l=91 r=93
+                [junit] deleteMin key=91 val=91 color=1 size=11 p=53 l=63 r=94
+                [junit] moveRedLeft key=91 val=91 color=1 size=11 p=53 l=63 r=94
+                ...
+                [junit]   node=key=94 val=94 color=1 size=6 p=91 l=92 r=98
+                [junit]   node=key=92 val=92 color=1 size=3 p=94 l=91 r=93
+                [junit]   node=key=91 val=91 color=0 size=11 p=53 l=63 r=94
+                */
+                
+                //h.right = deleteMin(h.right);
+                if (keyRightMap.containsKey(h)) {
+
+                    System.out.println("before deleteMin " + keyRightMap.get(h));
+                    printPreOrderTraversal2(keyRightMap.get(h));
+
+                    output[0] = 0;
+                    deleteMin(keyRightMap.get(h), output);
+
+                    System.out.println("  min=" + Arrays.toString(output));
+
+                    if (output[0] != -1) {
+
+                        System.out.format(
+                            "   %d.right = delete(%d, %d) => %d\n",
+                            h, keyRightMap.get(h), key, output[1]);
+
+                        keyParentMap.put(output[1], h);
+                        keyRightMap.put(h, output[1]);
+
+                    } else {
+
+                        System.out.format("   %d.right = delete(%d, %d) = NULL\n",
+                            h, keyRightMap.get(h), key);
+
+                        keyRightMap.remove(h);
+                    }
+
+                    System.out.println("   after deleteMin x =" + nodeToString(h));
+
+                    printPreOrderTraversal(1);
                 }
             } else {
                 //h.right = delete(h.right, key);
@@ -766,19 +795,13 @@ public class RedBlackBSTLongInt2 {
                     delete(keyRightMap.get(h), key, output);
                     
                     if (output[0] == -1) {
-
                         System.out.format("   %d.right = delete(%d, %d) => NULL\n",
                             h, keyRightMap.get(h), key);
-
                         keyRightMap.remove(h);
-                        
                     } else {                    
-                        
                         System.out.format("   %d.right = delete(%d, %d) => %d\n",
                             h, keyRightMap.get(h), key, output[1]);
-                        
                         keyParentMap.put(output[1], h);
-                        
                         keyRightMap.put(h, output[1]);
                     }
                     printPreOrderTraversal(1);
@@ -806,7 +829,8 @@ public class RedBlackBSTLongInt2 {
      Note that the parent link logic is from Cormen et al. "Introduction to
      Algorithms".
      */
-    private long rotateRight(long h) {
+    protected long rotateRight(long h) {
+                
         // assert (h != null) && isRed(h.left);
         assert(keyValMap.containsKey(h));
         assert(isLeftRed(h));
@@ -822,34 +846,58 @@ public class RedBlackBSTLongInt2 {
         */
         
         long x = keyLeftMap.get(h);
+
+        //System.out.println("  before RR h=" + nodeToString(h));
+        //System.out.println("  before RR x=" + nodeToString(x));
         
         if (keyRightMap.containsKey(x)) {
+            //System.out.println("--0");
             //h.left = x.right;
             long xRight = keyRightMap.get(x);
+            if (h == xRight) {
+                System.out.println("RR xRight==h==" + h);
+                printPreOrderTraversal(1);
+            }
             keyLeftMap.put(h, xRight);
             keyParentMap.put(xRight, h);
         } else {
+            //System.out.println("--1");
             keyLeftMap.remove(h);
         }
         if (keyParentMap.containsKey(h)) {
+            //System.out.println("--2");
             long hParent = keyParentMap.get(h);
             // assign x as child of its new parent
+            if (hParent == x) {
+                System.out.println("RR x==hParent==" + x);
+            }
+            keyParentMap.put(x, hParent);
             if (keyLeftMap.containsKey(hParent) && keyLeftMap.get(hParent) ==
                 h) {
+                //System.out.println("--3");
                 keyLeftMap.put(hParent, x);
             } else {
+                //System.out.println("--4");
                 keyRightMap.put(hParent, x);
             }
         } else {
+            //System.out.println("--5");
             keyParentMap.remove(x);
             //root = x;
         }
-System.out.println("  in RR after h.left h=" + nodeToString(h));
+        
+        //System.out.println("  in RR after h.left h=" + nodeToString(h));
+        
         //x.right = h;
+        if (h == x) {
+            System.out.println("RR x==h==" + h);
+        }
         keyRightMap.put(x, h);
         keyParentMap.put(h, x);
-System.out.println("  in RR after h.right h=" + nodeToString(h));
-System.out.println("  in RR after h.right x=" + nodeToString(x));
+        
+        //System.out.println("  in RR after x.right h=" + nodeToString(h));
+        //System.out.println("  in RR after x.right x=" + nodeToString(x));
+        
         //x.color = x.right.color;
         //x.right.color = RED;
         //x.size = h.size;
@@ -862,7 +910,7 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
         
-        System.out.println("  after RR: h=" + nodeToString(h));
+        //System.out.println("  after RR: h=" + nodeToString(h));
         
         //System.out.println("after rotateRight:");
         //printPreOrderTraversal();
@@ -875,7 +923,9 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
      Note that the parent link logic is from Cormen et al. "Introduction to
      Algorithms".
      */
-    private long rotateLeft(long h) {
+    protected long rotateLeft(long h) {
+        
+        System.out.println("*RL h=" + h);
         
         // assert (h != null) && isRed(h.right);
         assert(keyValMap.containsKey(h));
@@ -884,32 +934,59 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         //Node x = h.right;
         long x = keyRightMap.get(h);
         
+        //System.out.println("  before RL h=" + nodeToString(h));
+        //System.out.println("  before RL x=" + nodeToString(x));
+
+        //h.right = x.left;
         if (keyLeftMap.containsKey(x)) {
-            //h.right = x.left;
+            //System.out.println("---0");
             long left = keyLeftMap.get(x);
+            
             keyRightMap.put(h, left);
-            keyParentMap.put(left, h);
+            //if (h != left) {
+                keyParentMap.put(left, h);
+            //}
+            if (h == left) {
+                System.out.println("RL h==left==" + h);
+            }
+            
         } else {
+            //System.out.println("---1");
             keyRightMap.remove(h);
         }
        
+        //System.out.println("  in RL after h.right h=" + nodeToString(h));
+        
         if (keyParentMap.containsKey(h)) {
+            //System.out.println("---2");
             long hParent = keyParentMap.get(h);
+            if (hParent == x) {
+                System.out.println("RL h.parent==x==" + x);
+            }
             keyParentMap.put(x, hParent);
             if (keyLeftMap.containsKey(hParent) && keyLeftMap.get(hParent) ==
                 h) {
+                //System.out.println("---3");
                 keyLeftMap.put(hParent, x);
             } else {
+                //System.out.println("---4");
                 keyRightMap.put(hParent, x);
             }
         } else {
+            //System.out.println("---5");
             keyParentMap.remove(x);
-            //root = h;
         }
                 
         //x.left = h;
+        if (h == x) {
+            System.out.println("RL x==h==" + h);
+        }
         keyLeftMap.put(x, h);
         keyParentMap.put(h, x);
+        
+        //System.out.println("  in RL after x.left h=" + nodeToString(h));
+        //System.out.println("  in RL after x.left x=" + nodeToString(x));
+
         //x.color = x.left.color;
         keyColorMap.put(x, keyColorMap.get(h));
         //x.left.color = RED;
@@ -920,7 +997,7 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         int size = sizeLeft(h) + sizeRight(h) + 1;
         keySizeMap.put(h, size);
                
-        System.out.println("  after RL: h=" + nodeToString(h));
+        //System.out.println("  after RL: h=" + nodeToString(h));
         
         return x;
     }
@@ -965,17 +1042,27 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         
         flipColors(h);
         if (isRightLeftRed(h)) {
+            
+            System.out.println("in moveRedLeft before RR " + nodeToString(h));
+            printPreOrderTraversal2(h);
+            
             //h.right = rotateRight(h.right); 
             long rKey = rotateRight(keyRightMap.get(h));
+            
             keyRightMap.put(h, rKey);
             keyParentMap.put(rKey, h);
+            
+            System.out.println("in moveRedLeft before RL " + nodeToString(h));
+            System.out.println("   and h.right=" + nodeToString(keyRightMap.get(h)));
+            printPreOrderTraversal2(h);
+            
             h = rotateLeft(h);
+            
             flipColors(h);
         }
        
         System.out.println("after moveRedLeft " + nodeToString(h));
         
-        //System.out.println("after moveRedLeft:");
         //printPreOrderTraversal();
         
         return h;
@@ -986,6 +1073,7 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
     private long moveRedRight(long h) {
         assert (keyValMap.containsKey(h));
         assert(isRed(h) && !isRightRed(h) && !isRightLeftRed(h));
+        
         flipColors(h);
         if (isLeftLeftRed(h)) { 
             h = rotateRight(h);
@@ -1717,9 +1805,12 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         if (!keyValMap.containsKey(x)) {
             return true;
         }
-        if (isRightRed(x)) return false;
-        if (x != root && isRed(x) && isLeftRed(x))
+        if (isRightRed(x)) {
             return false;
+        }
+        if (x != root && isRed(x) && isLeftRed(x)) {
+            return false;
+        }
         return is23Left(x) && is23Right(x);
     }
     private boolean is23Left(long x) {
@@ -1798,8 +1889,19 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         if (rootIsSet) {
             System.out.print(root);
         }
-        System.out.println("");
-        long[] nodes = getPreOrderTraversalIterative(root, 0);
+        System.out.println(" size=" + size());
+        long[] nodes = getPreOrderTraversalIterative(root, 1);
+        for (long node : nodes) {
+            System.out.println("  node=" + nodeToString(node));
+        }
+    }
+    public void printPreOrderTraversal2(long topNode) {
+        System.out.print("root=");
+        if (rootIsSet) {
+            System.out.print(root);
+        }
+        System.out.println(" size=" + size());
+        long[] nodes = getPreOrderTraversalIterative(topNode, 1);
         for (long node : nodes) {
             System.out.println("  node=" + nodeToString(node));
         }
@@ -1888,7 +1990,7 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
             return new long[0];
         }
                 
-        int sz = size() + addExtraToSize;
+        int sz = size(node) + addExtraToSize;
         
         long[] array = new long[sz];
         int count = 0;
@@ -2101,4 +2203,69 @@ System.out.println("  in RR after h.right x=" + nodeToString(x));
         
         return passed;
     }
+    
+     private boolean containsLeft(long key) {
+        return keyLeftMap.containsKey(key);
+    }
+    private boolean containsRight(long key) {
+        return keyRightMap.containsKey(key);
+    }
+    private boolean containsLeftLeft(long key) {
+        if (containsLeft(key)) {
+            return containsLeft(keyLeftMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsLeftRight(long key) {
+        if (containsLeft(key)) {
+            return containsRight(keyLeftMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsLeftLeftLeft(long key) {
+        if (containsLeft(key)) {
+            return containsLeftLeft(keyLeftMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsLeftLeftRight(long key) {
+        if (containsLeft(key)) {
+            return containsLeftRight(keyLeftMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsParent(long key) {
+        return keyParentMap.containsKey(key);
+    }
+    private boolean containsParentLeft(long key) {
+        if (containsParent(key)) {
+            return containsLeft(keyParentMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsParentRight(long key) {
+        if (containsParent(key)) {
+            return containsRight(keyParentMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsParentParent(long key) {
+        if (containsParent(key)) {
+            return containsParent(keyParentMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsParentParentLeft(long key) {
+        if (containsParent(key)) {
+            return containsParentLeft(keyParentMap.get(key));
+        }
+        return false;
+    }
+    private boolean containsParentParentRight(long key) {
+        if (containsParent(key)) {
+            return containsParentRight(keyParentMap.get(key));
+        }
+        return false;
+    }
+    
 }
