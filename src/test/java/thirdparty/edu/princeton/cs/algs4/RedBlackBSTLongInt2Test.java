@@ -16,7 +16,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         super(testName);
     }
     
-    public void estPutAndRotate() {
+    public void testPutAndRotate() {
         
         int n = 5;
         RedBlackBSTLongInt2 bt = new RedBlackBSTLongInt2();
@@ -31,6 +31,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             assertTrue(bt.rootIsSet);
             assertTrue(bt.contains(i));
         }
+        bt.printSmallTree(bt.root, n-1);
         
         /*
          *                      3
@@ -72,7 +73,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
          node=key=2 val=2 color=0 size=1 p=1 l= r=
          node=key=4 val=4 color=0 size=1 p=3 l= r=
         */
-        
+                
         //bt.printPreOrderTraversal();
         
         //System.out.println("ROTATE-RIGHT(3)");
@@ -80,6 +81,9 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         long key = bt.rotateRight(3);
         
         bt.root = key;
+        
+        System.out.println("ROTATE-RIGHT");
+        bt.printSmallTree(bt.root, n-1);
         
         //System.out.println("return key=" + key);
         
@@ -135,6 +139,9 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         bt.root = key;
         
+        System.out.println("ROTATE-LEFT");
+        bt.printSmallTree(bt.root, n-1);
+        
         //System.out.println("return key=" + key);
         
         //bt.printPreOrderTraversal();
@@ -184,9 +191,22 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                     break;
             }
         }
+        
+        // test flip nodes
+        bt.flipColors(1);
+        assertEquals(0, bt.keyColorMap.get(1));
+        assertEquals(1, bt.keyColorMap.get(0));
+        assertEquals(1, bt.keyColorMap.get(2));
+        
+        bt.flipColors(1);
+        assertEquals(1, bt.keyColorMap.get(1));
+        assertEquals(0, bt.keyColorMap.get(0));
+        assertEquals(0, bt.keyColorMap.get(2));
+    
+        
     }
     
-    public void estKeyOperations00() throws Exception {
+    public void testKeyOperations00() throws Exception {
     
         System.out.println("testKeyOperations");
         
@@ -322,15 +342,15 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                   
             assertEquals(nodes.size(), bt.size());
             
-            System.out.println("before deleteMax bt.size=" + bt.size());
+            //System.out.println("before deleteMax bt.size=" + bt.size());
             
             long max = nodes.get(nodes.size() - 1);
             assertTrue(bt.contains(max));
             assertTrue(bt.rootIsSet);
-            System.out.println("will delete max=" + max + " from this tree:");
+            //System.out.println("will delete max=" + max + " from this tree:");
             //bt.printPreOrderTraversal();
             bt.deleteMax();
-            System.out.println("after deleteMax bt.size=" + bt.size());
+            //System.out.println("after deleteMax bt.size=" + bt.size());
             assertTrue(bt.rootIsSet);
             //System.out.println(" after delete:");
             //bt.printPreOrderTraversal();
@@ -339,13 +359,13 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             assertEquals(nodes.size(), bt.size());
             
             long min = nodes.get(0);
-            System.out.println("deleting min=" + min + 
-                "  bt.rootIsSet=" + bt.rootIsSet + " bt.size=" + bt.size());
+            //System.out.println("deleting min=" + min + 
+            //    "  bt.rootIsSet=" + bt.rootIsSet + " bt.size=" + bt.size());
             assertTrue(bt.rootIsSet);
             boolean contains = bt.contains(min);
             assertTrue(contains);
             bt.deleteMin();
-            System.out.println("after deleteMin bt.size=" + bt.size());
+            //System.out.println("after deleteMin bt.size=" + bt.size());
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
             assertEquals(nodes.size(), bt.size());
@@ -491,7 +511,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                     assertTrue(bt.contains(v));
                     
                     //bt.printPreOrderTraversal();
-                    System.out.println("delete " + v + " idx=" + idx);
+                    //System.out.println("delete " + v + " idx=" + idx);
                     
                     bt.delete(v);
                     assertTrue(bt.rootIsSet);
@@ -522,15 +542,15 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                   
             assertEquals(nodes.size(), bt.size());
             
-            System.out.println("before deleteMin bt.size=" + bt.size());
+            //System.out.println("before deleteMin bt.size=" + bt.size());
             
             long max = nodes.get(nodes.size() - 1);
             assertTrue(bt.contains(max));
             assertTrue(bt.rootIsSet);
-            System.out.println("will delete max=" + max + " from this tree:");
+            //System.out.println("will delete max=" + max + " from this tree:");
             //bt.printPreOrderTraversal();
             bt.deleteMax();
-            System.out.println("after deleteMax bt.size=" + bt.size());
+            //System.out.println("after deleteMax bt.size=" + bt.size());
             assertTrue(bt.rootIsSet);
             //System.out.println(" after delete:");
             //bt.printPreOrderTraversal();
@@ -539,13 +559,13 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             assertEquals(nodes.size(), bt.size());
 
             long min = nodes.get(0);
-            System.out.println("deleting min=" + min + 
-                "  bt.rootIsSet=" + bt.rootIsSet + " bt.size=" + bt.size());
+            //System.out.println("deleting min=" + min + 
+            //    "  bt.rootIsSet=" + bt.rootIsSet + " bt.size=" + bt.size());
             assertTrue(bt.rootIsSet);
             boolean contains = bt.contains(min);
             assertTrue(contains);
             bt.deleteMin();
-            System.out.println("after deleteMin bt.size=" + bt.size());
+            //System.out.println("after deleteMin bt.size=" + bt.size());
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
             assertEquals(nodes.size(), bt.size());

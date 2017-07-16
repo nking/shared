@@ -279,7 +279,7 @@ public class RedBlackBSTLongInt2 {
      */
     public void put(long key, int val) {
         
-        System.out.println("put " + key + ":");
+        //System.out.println("put " + key + ":");
         
         //System.out.println("before put " + key);
         //printPreOrderTraversal();
@@ -292,8 +292,8 @@ public class RedBlackBSTLongInt2 {
             keyParentMap.remove(root);
         }
         
-        printPreOrderTraversal();
-        System.out.println("after put " + key + " root=" + root);
+        //printPreOrderTraversal();
+        //System.out.println("after put " + key + " root=" + root);
         
         assert(check());
     }
@@ -302,7 +302,7 @@ public class RedBlackBSTLongInt2 {
     //private Node put(Node h, long key, int val) {
     private long put(long h, long key, int val) {
         
-        System.out.println("put h=" + h + " key=" + key);
+        //System.out.println("put h=" + h + " key=" + key);
         
         if (!rootIsSet || !keyValMap.containsKey(h)) {
             return addNewNode(key, val, RED, 1);
@@ -371,8 +371,8 @@ public class RedBlackBSTLongInt2 {
     public void deleteMin() {
         if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
-        System.out.println("deleteMin.  root=" +root);
-        printPreOrderTraversal();
+        //System.out.println("deleteMin.  root=" +root);
+        //printPreOrderTraversal();
         
         int sz0 = size();
         
@@ -411,7 +411,7 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the minimum key rooted at h
     private void deleteMin(long h, long[] output) { 
         
-        System.out.println("deleteMin " + nodeToString(h));
+        //System.out.println("deleteMin " + nodeToString(h));
         
         if (!keyValMap.containsKey(h) || !keyLeftMap.containsKey(h)) {
             output[0] = -1;
@@ -460,8 +460,8 @@ public class RedBlackBSTLongInt2 {
     public void deleteMax() {
         if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
-        System.out.println("deleteMax.  root=" +root);
-        printPreOrderTraversal();
+        //System.out.println("deleteMax.  root=" +root);
+        //printPreOrderTraversal();
         
         // if both children of root are black, set root to red
         setRootToRedIfChildrenAreBlack();
@@ -516,25 +516,16 @@ public class RedBlackBSTLongInt2 {
         //System.out.format("BEFORE deleteMax(%d)\n", h);
         //printPreOrderTraversal(1);
         
-        //if (isRed(h.left)) {
-        //    h = rotateRight(h);
-        //}
         if (isLeftRed(h)) {
             h = rotateRight(h);
         }
-        
-        //if (h.right == null) {
-        //    // h is max key
-        //    return null;
-        //}
+      
         if (!keyRightMap.containsKey(h)) {
+            // h is max key
             output[0] = -1;
             return;
         }
 
-        //if (!isRed(h.right) && !isRed(h.right.left)) {
-        //    h = moveRedRight(h);
-        //}
         if (!isRightRed(h) && !isRightLeftRed(h)) {
             h = moveRedRight(h);
         }
@@ -570,8 +561,8 @@ public class RedBlackBSTLongInt2 {
         
         int sz0 = size();
         
-        System.out.println("\nbefore delete " + key + " root=" + root);
-        printPreOrderTraversal();
+        //System.out.println("\nbefore delete " + key + " root=" + root);
+        //printPreOrderTraversal();
         
         if (!contains(key)) return;
 
@@ -596,8 +587,8 @@ public class RedBlackBSTLongInt2 {
             keyColorMap.put(root, BLACK);
         }
         
-        printPreOrderTraversal();
-        System.out.println("after delete " + key + " root=" + root);
+        //printPreOrderTraversal();
+        //System.out.println("after delete " + key + " root=" + root);
         
         assert(check());
         
@@ -607,7 +598,7 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the given key rooted at h
     private void delete(long h, long key, long[] output) { 
         
-        System.out.format("delete(%d, %d)\n", h, key);
+        //System.out.format("delete(%d, %d)\n", h, key);
         
         // assert get(h, key) != null;
         {//DEBUG
@@ -646,12 +637,13 @@ public class RedBlackBSTLongInt2 {
                 min(keyRightMap.get(h), output);
                 assert(output[0] != -1);
                 long x = output[1];
-            
+       
+                /*
                 System.out.println(
                     "   x to get h fields except val. " + 
                     "\n   x=" + nodeToString(x)
                     + "\n   h=" + nodeToString(h)
-                );
+                );*/
                 
                 //NOTE: extra logic is needed here 
                 //      when converting to assoc arrays because
@@ -693,14 +685,13 @@ public class RedBlackBSTLongInt2 {
                 // if x == min of h.right, then follow the original order
                 min(hRight, output);
                 
-                System.out.println("minOut="
-                    + Arrays.toString(output));
+                //System.out.println("minOut="
+                //    + Arrays.toString(output));
 
-                if (output[0] != -1 && output[1] == x &&
-                    x == hRight) {
+                if (output[0] != -1 && output[1] == x && x == hRight) {
                
                     output[0] = 0;
-                    System.out.println("--0");
+                    //System.out.println("--0");
                     setHFromX(x, h, output, xVal, hClr, hLeftExists, hLeft, 
                         hRightExists, hRight, hParentExists, hParent);
                     
@@ -711,18 +702,18 @@ public class RedBlackBSTLongInt2 {
                     //h.right = deleteMin(h.right);
                     deleteMinFromRightAssignRight(h, h, key, output);
 
-                    System.out.println("deleteMinOut="
-                        + Arrays.toString(output));
+                    //System.out.println("deleteMinOut="
+                    //    + Arrays.toString(output));
 
                 } else {
                     
-                    System.out.println("--1");
+                    //System.out.println("--1");
                     output[0] = 0;
                     //h.right = deleteMin(h.right);
                     deleteMinFromRightAssignRight(h, h, key, output);
 
-                    System.out.println("deleteMinOut="
-                        + Arrays.toString(output));
+                    //System.out.println("deleteMinOut="
+                    //    + Arrays.toString(output));
 
                     setHFromX(x, h, output, xVal, hClr, hLeftExists, hLeft, 
                         hRightExists, hRight, hParentExists, hParent);
@@ -777,10 +768,7 @@ public class RedBlackBSTLongInt2 {
             //System.out.println("--0");
             //h.left = x.right;
             long xRight = keyRightMap.get(x);
-            if (h == xRight) {
-                System.out.println("RR xRight==h==" + h);
-                printPreOrderTraversal(1);
-            }
+            
             keyLeftMap.put(h, xRight);
             keyParentMap.put(xRight, h);
         } else {
@@ -791,9 +779,7 @@ public class RedBlackBSTLongInt2 {
             //System.out.println("--2");
             long hParent = keyParentMap.get(h);
             // assign x as child of its new parent
-            if (hParent == x) {
-                System.out.println("RR x==hParent==" + x);
-            }
+            
             keyParentMap.put(x, hParent);
             if (keyLeftMap.containsKey(hParent) && keyLeftMap.get(hParent) ==
                 h) {
@@ -812,9 +798,6 @@ public class RedBlackBSTLongInt2 {
         //System.out.println("  in RR after h.left h=" + nodeToString(h));
         
         //x.right = h;
-        if (h == x) {
-            System.out.println("RR x==h==" + h);
-        }
         keyRightMap.put(x, h);
         keyParentMap.put(h, x);
         
@@ -848,7 +831,7 @@ public class RedBlackBSTLongInt2 {
      */
     protected long rotateLeft(long h) {
         
-        System.out.println("*RL h=" + h);
+        //System.out.println("*RL h=" + h);
         
         // assert (h != null) && isRed(h.right);
         assert(keyValMap.containsKey(h));
@@ -867,9 +850,6 @@ public class RedBlackBSTLongInt2 {
             
             keyRightMap.put(h, left);
             keyParentMap.put(left, h);
-            if (h == left) {
-                System.out.println("RL h==left==" + h);
-            }
             
         } else {
             //System.out.println("---1");
@@ -881,9 +861,6 @@ public class RedBlackBSTLongInt2 {
         if (keyParentMap.containsKey(h)) {
             //System.out.println("---2");
             long hParent = keyParentMap.get(h);
-            if (hParent == x) {
-                System.out.println("RL h.parent==x==" + x);
-            }
             keyParentMap.put(x, hParent);
             if (keyLeftMap.containsKey(hParent) && keyLeftMap.get(hParent) ==
                 h) {
@@ -899,9 +876,6 @@ public class RedBlackBSTLongInt2 {
         }
                 
         //x.left = h;
-        if (h == x) {
-            System.out.println("RL x==h==" + h);
-        }
         keyLeftMap.put(x, h);
         keyParentMap.put(h, x);
         
@@ -955,7 +929,7 @@ public class RedBlackBSTLongInt2 {
         assert(keyValMap.containsKey(h));
         assert(isRed(h) && !isLeftRed(h) && !isLeftLeftRed(h));
 
-        System.out.println("moveRedLeft " + nodeToString(h));
+        //System.out.println("moveRedLeft " + nodeToString(h));
         
         flipColors(h);
         if (isRightLeftRed(h)) {
@@ -981,7 +955,7 @@ public class RedBlackBSTLongInt2 {
             flipColors(h);
         }
         
-        System.out.println("after moveRedRight h=" + nodeToString(h));
+        //System.out.println("after moveRedRight h=" + nodeToString(h));
         //printPreOrderTraversal();
         
         return h;
@@ -990,7 +964,7 @@ public class RedBlackBSTLongInt2 {
     // restore red-black tree invariant
     private long balance(long h) {
         
-        System.out.println("balance " + nodeToString(h));
+        //System.out.println("balance " + nodeToString(h));
         
         assert (keyValMap.containsKey(h));
 
