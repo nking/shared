@@ -16,20 +16,19 @@ public class RedBlackBSTLongIntTest extends TestCase {
         super(testName);
     }
     
-    public void estKeyOperations00() throws Exception {
+    public void testKeyOperations00() throws Exception {
     
         System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1499931908167L;
+        //seed = 1499931908167L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
         RedBlackBSTLongInt bt = new RedBlackBSTLongInt();
         
-        //int n = 100;
-        int n = 40;
+        int n = 100;
         
         int count = 0;
         
@@ -157,11 +156,11 @@ public class RedBlackBSTLongIntTest extends TestCase {
     
     public void testKeyOperations0() throws Exception {
     
-        System.out.println("testKeyOperations");
+        //System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1500070815033L;
+        //seed = 1500070815033L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -285,7 +284,8 @@ public class RedBlackBSTLongIntTest extends TestCase {
                     nodes.removeAt(idx);
                     assertEquals(nodes.size(), bt.size());
                     
-                    bt.printPreOrderTraversal();
+                    //bt.printPreOrderTraversal();
+                    //System.out.println("AFTER delete " + v + " idx=" + idx);
                 }
                 
             } else {
@@ -319,6 +319,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
 
             long min = nodes.get(0);
             assertTrue(bt.contains(min));
+            //System.out.println("will delete min=" + min);
             bt.deleteMin();
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
