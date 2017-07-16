@@ -49,10 +49,10 @@ import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Stack;
-import javax.swing.text.Keymap;
 
 /**
  * NOTE: this implementation of the long-int Red Black tree uses the least
@@ -86,7 +86,8 @@ import javax.swing.text.Keymap;
  *  The <em>size</em>, and <em>is-empty</em> operations take constant time.
  *  Construction takes constant time.
  *  <p>
- *  For additional documentation, see <a href="http://algs4.cs.princeton.edu/33balanced">Section 3.3</a> of
+ *  For additional documentation, see 
+ * <a href="http://algs4.cs.princeton.edu/33balanced">Section 3.3</a> of
  *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
  *  For other implementations of the same API, see {@link ST}, {@link BinarySearchST},
  *  {@link SequentialSearchST}, {@link BST},
@@ -193,7 +194,6 @@ public class RedBlackBSTLongInt2 {
         return keySizeMap.get(keyRightMap.get(x));
     }
 
-
     /**
      * Returns the number of key-value pairs in this symbol table.
      * @return the number of key-value pairs in this symbol table
@@ -209,7 +209,6 @@ public class RedBlackBSTLongInt2 {
     public boolean isEmpty() {
         return !rootIsSet;
     }
-
 
    /***************************************************************************
     *  Standard BST search.
@@ -706,12 +705,13 @@ public class RedBlackBSTLongInt2 {
                             if (keyLeftMap.containsKey(hParent) && 
                                 keyLeftMap.get(hParent) == h) {
                                 keyLeftMap.put(hParent, x);
-                            } else {
-                                assert(keyRightMap.containsKey(hParent) &&
-                                    keyRightMap.get(hParent) == h);
+                                keyParentMap.put(x, hParent);
+                            } else if (keyRightMap.containsKey(hParent) &&
+                                keyRightMap.get(hParent) == h) {
                                 keyRightMap.put(hParent, x);
+                                keyParentMap.put(x, hParent);
                             }
-                            keyParentMap.put(x, hParent);
+                            
                             keyParentMap.remove(h);
                         }
                         keyColorMap.put(x, keyColorMap.get(h));
@@ -943,9 +943,7 @@ public class RedBlackBSTLongInt2 {
             long left = keyLeftMap.get(x);
             
             keyRightMap.put(h, left);
-            //if (h != left) {
-                keyParentMap.put(left, h);
-            //}
+            keyParentMap.put(left, h);
             if (h == left) {
                 System.out.println("RL h==left==" + h);
             }
@@ -1760,7 +1758,6 @@ public class RedBlackBSTLongInt2 {
         return isBST(key, min, max);
     }
 
-    // are the size fields correct?
     private boolean isSizeConsistent() { return isSizeConsistent(root); }
     private boolean isSizeConsistent(long x) {
         if (!keyValMap.containsKey(x)) return true;
@@ -2204,7 +2201,124 @@ public class RedBlackBSTLongInt2 {
         return passed;
     }
     
-     private boolean containsLeft(long key) {
+    /**
+     Print node and its left and right subtrees, but note that one can
+     only print if the height and maxValue of the numbers fit into a line 
+     limited to 100 characters.
+     Each node takes w=log10(maxValue)+1 characters + 1 space.
+     The number of characters of the bottom leaves should be.lt. 100 total.
+         (w+1) * (1 left-shift (h-1)) .lt. 100.
+      
+     The restriction is to make it easy to read an ascii tree on a text terminal. 
+     
+     Example use: for maxValue=99, the number of base-10 digits is 2, so
+     the maximum height printable by this method would be a tree 
+     with 6 levels (results in leaf level using .lte.  100 characters).
+     
+     <pre>
+                1              indent = 10 
+          2           2        indent = 4    spacing=9 = 2*h - 1 = (h-level)*h - 1
+       3     3     3     3     indent = 1    spacing=3 = h - 1   = (h-level)*h - 1
+      4  4  4  4  4  4  4  4   w=2, h=4
+                               indent=spacing/2
+     </pre>
+     
+     @param node
+     @param maxValue
+     */
+    public void printSmallTree(long node, long maxValue) {
+       
+        int w = (int)Math.ceil(Math.log(maxValue)/Math.log(10));
+        
+        int n = keySizeMap.get(node);
+        int h = (int)Math.ceil(Math.log(n + 1)/Math.log(2));
+        
+        int baselineLength = (w + 1) * (1 << (h-1));
+        
+        if (baselineLength > 100) {
+            throw new IllegalArgumentException("the number of characters needed"
+                + " for the leaves is > 100");
+        }
+        
+        ArrayDeque<Long> levelQ = new ArrayDeque();
+        ArrayDeque<Long> nextLevelQ = new ArrayDeque<Long>();
+        levelQ.add(node);
+        int level = 0;
+        while (!levelQ.isEmpty() || !nextLevelQ.isEmpty()) {
+            level++;
+            if (level > h) {
+                break;
+            }
+            int spacing = (level > 1) ? 
+               (baselineLength)/((1 << (level - 1)) - 1) : 
+               2*baselineLength;
+            
+            int indent = spacing/2;
+            //System.out.println("spacing=" + spacing + " indent=" + indent);
+            int prevPos = -1;
+            StringBuilder sb0 = new StringBuilder(baselineLength);
+            StringBuilder sb1 = new StringBuilder(baselineLength);
+            while (!levelQ.isEmpty()) {
+                long z = levelQ.pop();
+                
+                int nSpaces;
+                if (level == 1) {
+                    nSpaces = indent;
+                } else if (prevPos == -1) {
+                    nSpaces = indent;
+                } else {
+                    nSpaces = w+1 + spacing;
+                }
+                addSpaces(nSpaces, sb0);
+                addSpaces(nSpaces, sb1);
+                prevPos += nSpaces;
+                if (z == Long.MIN_VALUE) {
+                    addSpaces(w + 1, sb0);
+                    addSpaces(w + 1, sb1);
+                    // add 2 empty placeholders
+                    nextLevelQ.add(Long.MIN_VALUE);
+                    nextLevelQ.add(Long.MIN_VALUE);
+                    continue;                    
+                }
+                if (!keyValMap.containsKey(z)) {
+                    continue;
+                }
+                int clr = keyColorMap.get(z);
+                String keyC = Long.toString(z);
+                String clrC = Integer.toString(clr);
+            
+                sb0.append(keyC);
+                sb1.append(clrC);
+                addSpaces(1, sb0);
+                addSpaces(w + 1 - clrC.length(), sb1);
+                
+                if (keyLeftMap.containsKey(z)) {
+                    nextLevelQ.add(keyLeftMap.get(z));
+                } else {
+                    nextLevelQ.add(Long.MIN_VALUE);
+                }
+                if (keyRightMap.containsKey(z)) {
+                    nextLevelQ.add(keyRightMap.get(z));
+                } else {
+                    nextLevelQ.add(Long.MIN_VALUE);
+                }
+            }
+            System.out.println(sb0.toString());
+            System.out.println(sb1.toString());
+            System.out.println("");
+            assert(levelQ.isEmpty());
+            levelQ.addAll(nextLevelQ);
+            nextLevelQ.clear();
+        }
+        
+    } 
+    private void addSpaces(int nSpaces, StringBuilder sb) {
+        for (int i = 0; i < nSpaces; ++i) {
+            sb.append(" ");
+        }
+    }
+    
+    private boolean containsLeft(long key) {
         return keyLeftMap.containsKey(key);
     }
     private boolean containsRight(long key) {
