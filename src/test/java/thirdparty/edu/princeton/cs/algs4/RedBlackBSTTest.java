@@ -10,149 +10,10 @@ import junit.framework.TestCase;
  *
  * @author nichole
  */
-public class RedBlackBSTLongIntTest extends TestCase {
+public class RedBlackBSTTest extends TestCase {
     
-    public RedBlackBSTLongIntTest(String testName) {
+    public RedBlackBSTTest(String testName) {
         super(testName);
-    }
-    
-    public void estKeyOperations00() throws Exception {
-    
-        System.out.println("testKeyOperations");
-        
-        Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
-        seed = 1499931908167L;
-        System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
-        
-        RedBlackBSTLongInt bt = new RedBlackBSTLongInt();
-        
-        //int n = 100;
-        int n = 40;
-        
-        int count = 0;
-        
-        TLongList nodes = new TLongArrayList(2*n);
-        
-        for (int i = 0; i < n/2; ++i) {
-            if (rand.nextBoolean()) {
-                int skip = rand.nextInt(5);
-                i += skip;
-                continue;
-            }
-            nodes.add(i);
-            bt.put(i, i);
-            assertTrue(bt.contains(i));
-            assertEquals(nodes.get(0), bt.min());
-            assertEquals(i, bt.max());
-            assertEquals(nodes.size(), bt.size());
-            count++;
-        }
-        for (int i = (n - 1); i >= (n/2); --i) {
-            if (rand.nextBoolean()) {
-                int skip = rand.nextInt(5);
-                i -= skip;
-                continue;
-            }
-            nodes.add(i);
-            bt.put(i, i);
-            assertTrue(bt.contains(i));
-            assertEquals(nodes.get(0), bt.min());
-            assertEquals(nodes.size(), bt.size());
-            count++;
-        }
-        nodes.sort();
-        int n2 = bt.size();
-        assertEquals(count, n2);
-        assertEquals(count, nodes.size());
-        
-        long[] kOutput = new long[2];
-        int[] vOutput = new int[2];
-        
-        for (int nIter = 0; nIter < 3; ++nIter){
-            n2 = bt.size();
-            assertEquals(n2, nodes.size());
-
-            for (int i = 0; i < n2 - 1; ++i) {
-                long idx = nodes.get(i);
-                long foundIndex = bt.contains(idx) ? idx : -1;
-                assertTrue(foundIndex > -1);
-
-                long expected = nodes.get(i + 1);
-                assertEquals(nodes.size(), bt.size());
-                //System.out.println("\n* " + idx + " expected next=" + expected);
-
-                bt.higher(idx, kOutput);
-                assertTrue(kOutput[0] != -1);
-                long next = kOutput[1];
-                //System.out.println(idx + "   next=" + next);
-                assertEquals(expected, next);
-
-   //System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
-   
-                if (next > (idx + 1)) {
-                    // test ceiling of idx+1
-                    bt.ceiling(idx + 1, kOutput);
-                    assertTrue(kOutput[0] != -1);
-                    long ceil = kOutput[1];
-                    assertEquals(expected, ceil);
-                }
-            }
-            
-            bt.higher(nodes.get(nodes.size() - 1), kOutput);
-            assertTrue(kOutput[0] == -1);
-            bt.lower(nodes.get(0), kOutput);
-            assertTrue(kOutput[0] == -1);
-            
-            for (int i = 1; i < n2; ++i) {
-                long idx = nodes.get(i);
-                long foundIndex = bt.contains(idx) ? idx : -1;
-                assertTrue(foundIndex > -1);
-
-                bt.get(idx, vOutput);
-                assertTrue(vOutput[0] != -1);
-                assertEquals(idx, vOutput[1]);
-                
-                long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
-
-                bt.lower(idx, kOutput);
-                assertTrue(kOutput[0] != -1);
-                long prev = kOutput[1];
-                //System.out.println(idx + "   prev=" + prev);
-                assertEquals(expected, prev);
-
-                if (prev < (idx - 1)) {
-                    // test floor of idx-1
-                    bt.floor(idx - 1, kOutput);
-                    assertTrue(kOutput[0] != -1);
-                    long floor = kOutput[1];
-                    assertEquals(expected, floor);
-                }
-            }
-        
-            n2 = nodes.size();
-            nodes.sort();
-           
-            assertEquals(nodes.get(nodes.size()/2), bt.select(nodes.size()/2));            
-                    
-            long max = nodes.get(nodes.size() - 1);
-            assertTrue(bt.contains(max));
-            //System.out.println("will delete max=" + max + " from this tree:");
-            //bt.printPreOrderTraversal();
-            bt.deleteMax();
-            //System.out.println(" after delete:");
-            //bt.printPreOrderTraversal();
-            assertFalse(bt.contains(max));
-            nodes.removeAt(nodes.size() - 1);
-
-            long min = nodes.get(0);
-            assertTrue(bt.contains(min));
-            bt.deleteMin();
-            assertFalse(bt.contains(min));
-            nodes.removeAt(0);
-        }     
     }
     
     public void testKeyOperations0() throws Exception {
@@ -161,11 +22,11 @@ public class RedBlackBSTLongIntTest extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1500070815033L;
+        //seed = 1500070815033L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        RedBlackBSTLongInt bt = new RedBlackBSTLongInt();
+        RedBlackBST<Long, Integer> bt = new RedBlackBST<Long, Integer>();
         
         int n = 100;
         
@@ -173,30 +34,30 @@ public class RedBlackBSTLongIntTest extends TestCase {
         
         TLongList nodes = new TLongArrayList(2*n);
         
-        for (int i = 0; i < n/2; ++i) {
+        for (long i = 0; i < n/2; ++i) {
             if (rand.nextBoolean()) {
                 int skip = rand.nextInt(5);
                 i += skip;
                 continue;
             }
             nodes.add(i);
-            bt.put(i, i);
+            bt.put(i, (int)i);
             assertTrue(bt.contains(i));
-            assertEquals(nodes.get(0), bt.min());
-            assertEquals(i, bt.max());
+            assertEquals(nodes.get(0), bt.min().longValue());
+            assertEquals(i, bt.max().longValue());
             assertEquals(nodes.size(), bt.size());
             count++;
         }
-        for (int i = (n - 1); i >= (n/2); --i) {
+        for (long i = (n - 1); i >= (n/2); --i) {
             if (rand.nextBoolean()) {
                 int skip = rand.nextInt(5);
                 i -= skip;
                 continue;
             }
             nodes.add(i);
-            bt.put(i, i);
+            bt.put(i, (int)i);
             assertTrue(bt.contains(i));
-            assertEquals(nodes.get(0), bt.min());
+            assertEquals(nodes.get(0), bt.min().longValue());
             assertEquals(nodes.size(), bt.size());
             count++;
         }
@@ -204,9 +65,6 @@ public class RedBlackBSTLongIntTest extends TestCase {
         int n2 = bt.size();
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
-        
-        long[] kOutput = new long[2];
-        int[] vOutput = new int[2];
         
         for (int nIter = 0; nIter < 3; ++nIter){
             n2 = bt.size();
@@ -217,59 +75,12 @@ public class RedBlackBSTLongIntTest extends TestCase {
                 long foundIndex = bt.contains(idx) ? idx : -1;
                 assertTrue(foundIndex > -1);
 
-                long expected = nodes.get(i + 1);
                 assertEquals(nodes.size(), bt.size());
                 //System.out.println("\n* " + idx + " expected next=" + expected);
 
-                bt.higher(idx, kOutput);
-                assertTrue(kOutput[0] != -1);
-                long next = kOutput[1];
-                //System.out.println(idx + "   next=" + next);
-                assertEquals(expected, next);
-
-   //System.out.println("nIter=" + nIter + " i=" + i + " idx=" + idx);
-   
-                if (next > (idx + 1)) {
-                    // test ceiling of idx+1
-                    bt.ceiling(idx + 1, kOutput);
-                    assertTrue(kOutput[0] != -1);
-                    long ceil = kOutput[1];
-                    assertEquals(expected, ceil);
-                }
             }
             
-            bt.higher(nodes.get(nodes.size() - 1), kOutput);
-            assertTrue(kOutput[0] == -1);
-            bt.lower(nodes.get(0), kOutput);
-            assertTrue(kOutput[0] == -1);
             
-            for (int i = 1; i < n2; ++i) {
-                long idx = nodes.get(i);
-                long foundIndex = bt.contains(idx) ? idx : -1;
-                assertTrue(foundIndex > -1);
-
-                bt.get(idx, vOutput);
-                assertTrue(vOutput[0] != -1);
-                assertEquals(idx, vOutput[1]);
-                
-                long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
-
-                bt.lower(idx, kOutput);
-                assertTrue(kOutput[0] != -1);
-                long prev = kOutput[1];
-                //System.out.println(idx + "   prev=" + prev);
-                assertEquals(expected, prev);
-
-                if (prev < (idx - 1)) {
-                    // test floor of idx-1
-                    bt.floor(idx - 1, kOutput);
-                    assertTrue(kOutput[0] != -1);
-                    long floor = kOutput[1];
-                    assertEquals(expected, floor);
-                }
-            }
-        
             if ((nIter & 1) == 1) {
                 //randomly remove some nodes
                 for (int i = 0; i < n2/4; ++i) {
@@ -285,7 +96,8 @@ public class RedBlackBSTLongIntTest extends TestCase {
                     nodes.removeAt(idx);
                     assertEquals(nodes.size(), bt.size());
                     
-                    bt.printPreOrderTraversal();
+                    //bt.printPreOrderTraversal();
+                    //System.out.println("AFTER delete " + v + " idx=" + idx);
                 }
                 
             } else {
@@ -295,9 +107,9 @@ public class RedBlackBSTLongIntTest extends TestCase {
                     // the nodes contains is linear search, so could use a temp
                     // set if this test gets large one day
                     if (!nodes.contains(idx)) {
-                        bt.put(idx, idx);
+                        bt.put((long)idx, idx);
                         nodes.add(idx);
-                        assertTrue(bt.contains(idx));
+                        assertTrue(bt.contains((long)idx));
                     }
                 }
             }
@@ -305,7 +117,8 @@ public class RedBlackBSTLongIntTest extends TestCase {
             n2 = nodes.size();
             nodes.sort();
            
-            assertEquals(nodes.get(nodes.size()/2), bt.select(nodes.size()/2));            
+            assertEquals(nodes.get(nodes.size()/2), 
+                bt.select(nodes.size()/2).longValue());            
                     
             long max = nodes.get(nodes.size() - 1);
             assertTrue(bt.contains(max));
@@ -319,6 +132,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
 
             long min = nodes.get(0);
             assertTrue(bt.contains(min));
+            //System.out.println("will delete min=" + min);
             bt.deleteMin();
             assertFalse(bt.contains(min));
             nodes.removeAt(0);

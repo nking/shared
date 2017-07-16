@@ -36,7 +36,11 @@ package thirdparty.edu.princeton.cs.algs4;
  ******************************************************************************/
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,21 +85,60 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
 
-    private Node root;     // root of the BST
+    private RBNode root;     // root of the BST
 
     // BST helper node data type
-    private class Node {
+    private class RBNode {
         private Key key;           // key
         private Value val;         // associated data
-        private Node left, right;  // links to left and right subtrees
+        private RBNode left, right;  // links to left and right subtrees
         private boolean color;     // color of parent link
         private int size;          // subtree count
 
-        public Node(Key key, Value val, boolean color, int size) {
+        public RBNode(Key key, Value val, boolean color, int size) {
             this.key = key;
             this.val = val;
             this.color = color;
             this.size = size;
+        }
+        
+         @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("key=").append(key);
+            sb.append(" val=").append(val);
+            sb.append(" color=").append(color);
+            sb.append(" size=").append(size);
+            sb.append(" l=");
+            if (left != null) {
+                sb.append(left.key);
+            }
+            sb.append(" r=");
+            if (right != null) {
+                sb.append(right.key);
+            }
+            return sb.toString();
+        }
+        
+        public String toString(RBNode p) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("key=").append(key);
+            sb.append(" val=").append(val);
+            sb.append(" color=").append(color);
+            sb.append(" size=").append(size);
+            sb.append(" p=");
+            if (p != null) {
+                sb.append(p.key);
+            }
+            sb.append(" l=");
+            if (left != null) {
+                sb.append(left.key);
+            }
+            sb.append(" r=");
+            if (right != null) {
+                sb.append(right.key);
+            }
+            return sb.toString();
         }
     }
 
@@ -106,16 +149,16 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
    /***************************************************************************
-    *  Node helper methods.
+    *  RBNode helper methods.
     ***************************************************************************/
     // is node x red; false if x is null ?
-    private boolean isRed(Node x) {
+    private boolean isRed(RBNode x) {
         if (x == null) return false;
         return x.color == RED;
     }
 
     // number of node in subtree rooted at x; 0 if x is null
-    private int size(Node x) {
+    private int size(RBNode x) {
         if (x == null) return 0;
         return x.size;
     } 
@@ -155,7 +198,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // value associated with the given key in subtree rooted at x; null if no such key
-    private Value get(Node x, Key key) {
+    private Value get(RBNode x, Key key) {
         while (x != null) {
             int cmp = key.compareTo(x.key);
             if      (cmp < 0) x = x.left;
@@ -203,8 +246,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // insert the key-value pair in the subtree rooted at h
-    private Node put(Node h, Key key, Value val) { 
-        if (h == null) return new Node(key, val, RED, 1);
+    private RBNode put(RBNode h, Key key, Value val) { 
+        if (h == null) return new RBNode(key, val, RED, 1);
 
         int cmp = key.compareTo(h.key);
         if (cmp < 0) {
@@ -245,7 +288,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // delete the key-value pair with the minimum key rooted at h
-    private Node deleteMin(Node h) { 
+    private RBNode deleteMin(RBNode h) { 
         if (h.left == null)
             return null;
 
@@ -274,7 +317,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // delete the key-value pair with the maximum key rooted at h
-    private Node deleteMax(Node h) { 
+    private RBNode deleteMax(RBNode h) { 
         if (isRed(h.left))
             h = rotateRight(h);
 
@@ -307,10 +350,11 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         root = delete(root, key);
         if (!isEmpty()) root.color = BLACK;
         // assert check();
+        
     }
 
     // delete the key-value pair with the given key rooted at h
-    private Node delete(Node h, Key key) { 
+    private RBNode delete(RBNode h, Key key) { 
         // assert get(h, key) != null;
 
         if (key.compareTo(h.key) < 0)  {
@@ -326,9 +370,11 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             if (!isRed(h.right) && !isRed(h.right.left))
                 h = moveRedRight(h);
             if (key.compareTo(h.key) == 0) {
-                Node x = min(h.right);
+                RBNode x = min(h.right);
+                
                 h.key = x.key;
                 h.val = x.val;
+                
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
                 h.right = deleteMin(h.right);
@@ -343,9 +389,9 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     ***************************************************************************/
 
     // make a left-leaning link lean to the right
-    private Node rotateRight(Node h) {
+    private RBNode rotateRight(RBNode h) {
         // assert (h != null) && isRed(h.left);
-        Node x = h.left;
+        RBNode x = h.left;
         h.left = x.right;
         x.right = h;
         x.color = x.right.color;
@@ -356,9 +402,9 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // make a right-leaning link lean to the left
-    private Node rotateLeft(Node h) {
+    private RBNode rotateLeft(RBNode h) {
         // assert (h != null) && isRed(h.right);
-        Node x = h.right;
+        RBNode x = h.right;
         h.right = x.left;
         x.left = h;
         x.color = x.left.color;
@@ -369,7 +415,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // flip the colors of a node and its two children
-    private void flipColors(Node h) {
+    private void flipColors(RBNode h) {
         // h must have opposite color of its two children
         // assert (h != null) && (h.left != null) && (h.right != null);
         // assert (!isRed(h) &&  isRed(h.left) &&  isRed(h.right))
@@ -381,7 +427,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     // Assuming that h is red and both h.left and h.left.left
     // are black, make h.left or one of its children red.
-    private Node moveRedLeft(Node h) {
+    private RBNode moveRedLeft(RBNode h) {
         // assert (h != null);
         // assert isRed(h) && !isRed(h.left) && !isRed(h.left.left);
 
@@ -396,7 +442,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     // Assuming that h is red and both h.right and h.right.left
     // are black, make h.right or one of its children red.
-    private Node moveRedRight(Node h) {
+    private RBNode moveRedRight(RBNode h) {
         // assert (h != null);
         // assert isRed(h) && !isRed(h.right) && !isRed(h.right.left);
         flipColors(h);
@@ -408,7 +454,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // restore red-black tree invariant
-    private Node balance(Node h) {
+    private RBNode balance(RBNode h) {
         // assert (h != null);
 
         if (isRed(h.right))                      h = rotateLeft(h);
@@ -431,7 +477,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     public int height() {
         return height(root);
     }
-    private int height(Node x) {
+    private int height(RBNode x) {
         if (x == null) return -1;
         return 1 + Math.max(height(x.left), height(x.right));
     }
@@ -451,7 +497,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     } 
 
     // the smallest key in subtree rooted at x; null if no such key
-    private Node min(Node x) { 
+    private RBNode min(RBNode x) { 
         // assert x != null;
         if (x.left == null) return x; 
         else                return min(x.left); 
@@ -468,7 +514,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     } 
 
     // the largest key in the subtree rooted at x; null if no such key
-    private Node max(Node x) { 
+    private RBNode max(RBNode x) { 
         // assert x != null;
         if (x.right == null) return x; 
         else                 return max(x.right); 
@@ -485,18 +531,18 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     public Key floor(Key key) {
         if (key == null) throw new IllegalArgumentException("argument to floor() is null");
         if (isEmpty()) throw new NoSuchElementException("called floor() with empty symbol table");
-        Node x = floor(root, key);
+        RBNode x = floor(root, key);
         if (x == null) return null;
         else           return x.key;
     }    
 
     // the largest key in the subtree rooted at x less than or equal to the given key
-    private Node floor(Node x, Key key) {
+    private RBNode floor(RBNode x, Key key) {
         if (x == null) return null;
         int cmp = key.compareTo(x.key);
         if (cmp == 0) return x;
         if (cmp < 0)  return floor(x.left, key);
-        Node t = floor(x.right, key);
+        RBNode t = floor(x.right, key);
         if (t != null) return t; 
         else           return x;
     }
@@ -511,18 +557,18 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     public Key ceiling(Key key) {
         if (key == null) throw new IllegalArgumentException("argument to ceiling() is null");
         if (isEmpty()) throw new NoSuchElementException("called ceiling() with empty symbol table");
-        Node x = ceiling(root, key);
+        RBNode x = ceiling(root, key);
         if (x == null) return null;
         else           return x.key;  
     }
 
     // the smallest key in the subtree rooted at x greater than or equal to the given key
-    private Node ceiling(Node x, Key key) {  
+    private RBNode ceiling(RBNode x, Key key) {  
         if (x == null) return null;
         int cmp = key.compareTo(x.key);
         if (cmp == 0) return x;
         if (cmp > 0)  return ceiling(x.right, key);
-        Node t = ceiling(x.left, key);
+        RBNode t = ceiling(x.left, key);
         if (t != null) return t; 
         else           return x;
     }
@@ -538,12 +584,12 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         if (k < 0 || k >= size()) {
             throw new IllegalArgumentException("called select() with invalid argument: " + k);
         }
-        Node x = select(root, k);
+        RBNode x = select(root, k);
         return x.key;
     }
 
     // the key of rank k in the subtree rooted at x
-    private Node select(Node x, int k) {
+    private RBNode select(RBNode x, int k) {
         // assert x != null;
         // assert k >= 0 && k < size(x);
         int t = size(x.left); 
@@ -564,7 +610,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     } 
 
     // number of keys less than key in the subtree rooted at x
-    private int rank(Key key, Node x) {
+    private int rank(Key key, RBNode x) {
         if (x == null) return 0; 
         int cmp = key.compareTo(x.key); 
         if      (cmp < 0) return rank(key, x.left); 
@@ -610,7 +656,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     // add the keys between lo and hi in the subtree rooted at x
     // to the queue
-    private void keys(Node x, Queue<Key> queue, Key lo, Key hi) { 
+    private void keys(RBNode x, Queue<Key> queue, Key lo, Key hi) { 
         if (x == null) return; 
         int cmplo = lo.compareTo(x.key); 
         int cmphi = hi.compareTo(x.key); 
@@ -660,7 +706,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     // is the tree rooted at x a BST with all keys strictly between min and max
     // (if min or max is null, treat as empty constraint)
     // Credit: Bob Dondero's elegant solution
-    private boolean isBST(Node x, Key min, Key max) {
+    private boolean isBST(RBNode x, Key min, Key max) {
         if (x == null) return true;
         if (min != null && x.key.compareTo(min) <= 0) return false;
         if (max != null && x.key.compareTo(max) >= 0) return false;
@@ -669,7 +715,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
     // are the size fields correct?
     private boolean isSizeConsistent() { return isSizeConsistent(root); }
-    private boolean isSizeConsistent(Node x) {
+    private boolean isSizeConsistent(RBNode x) {
         if (x == null) return true;
         if (x.size != size(x.left) + size(x.right) + 1) return false;
         return isSizeConsistent(x.left) && isSizeConsistent(x.right);
@@ -687,7 +733,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     // Does the tree have no red right links, and at most one (left)
     // red links in a row on any path?
     private boolean is23() { return is23(root); }
-    private boolean is23(Node x) {
+    private boolean is23(RBNode x) {
         if (x == null) return true;
         if (isRed(x.right)) return false;
         if (x != root && isRed(x) && isRed(x.left))
@@ -698,7 +744,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     // do all paths from root to leaf have same number of black edges?
     private boolean isBalanced() { 
         int black = 0;     // number of black links on path from root to min
-        Node x = root;
+        RBNode x = root;
         while (x != null) {
             if (!isRed(x)) black++;
             x = x.left;
@@ -707,7 +753,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     // does every path from the root to a leaf have the given number of black links?
-    private boolean isBalanced(Node x, int black) {
+    private boolean isBalanced(RBNode x, int black) {
         if (x == null) return black == 0;
         if (!isRed(x)) black--;
         return isBalanced(x.left, black) && isBalanced(x.right, black);
@@ -737,4 +783,206 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             Logger.getLogger(RedBlackBST.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    /**
+     * left subtree, root, right subtree
+     */
+    public void printInOrderTraversal() {
+        List<RBNode> nodes = getInOrderTraversalIterative(root);
+        for (RBNode node : nodes) {
+            System.out.println("node=" + node.toString());
+        }
+    }
+    
+    /**
+     * root, left subtree, right subtree
+     */
+    public void printPreOrderTraversal() {
+        List<RBNode> nodes = getPreOrderTraversalIterative(root, 0);
+        for (RBNode node : nodes) {
+            RBNode p = findParent(node, nodes);
+            System.out.println("node=" + node.toString(p));
+        }
+    }
+    public void printPreOrderTraversal2(RBNode topNode) {
+        List<RBNode> nodes = getPreOrderTraversalIterative(topNode, 0);
+        for (RBNode node : nodes) {
+            RBNode p = findParent(node, nodes);
+            System.out.println("node=" + node.toString(p));
+        }
+    }
+    private void printPreOrderTraversal(int addExtraToSize) {
+        List<RBNode> nodes = getPreOrderTraversalIterative(root, addExtraToSize);
+        for (RBNode node : nodes) {
+            if (node == null) {
+                continue;
+            }
+            RBNode p = findParent(node, nodes);
+            System.out.println("node=" + node.toString(p));
+        }
+    }
+    
+    private RBNode findParent(RBNode h) {
+        List<RBNode> nodes = getPreOrderTraversalIterative(root, 1);
+        return findParent(h, nodes);
+    }
+    private RBNode findParent(RBNode h, List<RBNode> nodes) {
+        for (RBNode node : nodes) {
+            if (node == null) {
+                continue;
+            }
+            if (node.left != null && node.left.key == h.key) {
+                return node;
+            }
+            if (node.right != null && node.right.key == h.key) {
+                return node;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * left subtree, right subtree, root subtree
+     */
+    public void printPostOrderTraversal() {
+        List<RBNode> nodes = getPostOrderTraversalIterative(root);
+        for (RBNode node : nodes) {
+            System.out.println("node=" + node.toString());
+        }
+    }
+
+    /**
+     * visit each node using pattern left subtree, root, right subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected List<RBNode> getInOrderTraversalIterative(RBNode node) {
+       
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        
+        int sz = size();
+       
+        List<RBNode> array = new ArrayList<RBNode>();;
+        int count = 0;
+        
+        Stack<RBNode> stack = new Stack<>();
+               
+        while (!stack.isEmpty() || (node != null)) {
+            if (node != null) {
+                 
+                stack.push(node);
+                
+                node = node.left;
+            
+            } else if (count < sz) {
+                
+                node = stack.pop();
+                
+                array.add(node);
+                count++;
+                
+                //System.out.println(node.key);
+                
+                node = node.right;
+            }
+        }
+        return array;
+    }
+    
+    /**
+     * visit each node using pattern: root, left subtree, right subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected List<RBNode> getPreOrderTraversalIterative(RBNode node, int addExtraToSize) {
+       
+        //NOTE: added additional integer and conditions 
+        //   for size because may be printing tree
+        //   in the middle of a put where the node size is not yet updated.
+        // The count conditionals below are otherwise, not needed.
+        
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+                
+        int sz = size() + addExtraToSize;
+        
+        List<RBNode> array = new ArrayList<RBNode>();
+        int count = 0;
+        
+        Stack<RBNode> stack = new Stack<>();
+        
+        while (count < sz && (!stack.isEmpty() || node != null)) {
+            if (node != null && count < sz) {
+              
+                array.add(node);
+                
+                count++;
+                
+                if (count < sz) {
+                    stack.push(node);
+                }
+                
+                node = node.left;
+            
+            } else if (count < sz) {
+                
+                node = stack.pop();
+                
+                node = node.right;
+            }
+        }
+        
+        return array;
+    }
+
+    /**
+     * visit each node using pattern: left subtree, right subtree, root subtree
+     * in an iterative manner rather than invoking the method recursively.
+     */
+    protected List<RBNode> getPostOrderTraversalIterative(RBNode node) {
+        
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        
+        List<RBNode> array = new ArrayList<RBNode>();
+        int count = 0;
+        
+        if (node == null) {
+            return array;
+        }
+        
+        Stack<RBNode> stack = new Stack<>();
+        Stack<RBNode> stack2 = new Stack<>();
+        stack.push(node);
+        
+        while (!stack.isEmpty()) {
+            
+            node = stack.pop();
+            
+            stack2.push(node);
+            
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+
+            if (node.right != null) {
+                stack.push(node.right);
+            }            
+        }
+        
+        while (!stack2.isEmpty()) {
+            
+            node = stack2.pop();
+            
+            //process(node);
+            array.add(node);
+            count++;
+            //System.out.println(node.key);
+        }
+         
+        return array;
+    }
+    
 }
