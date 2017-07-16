@@ -2222,7 +2222,6 @@ public class RedBlackBSTLongInt2 {
       4  4  4  4  4  4  4  4   w=2, h=4
                                indent=spacing/2
      </pre>
-     
      @param node
      @param maxValue
      */
@@ -2233,8 +2232,10 @@ public class RedBlackBSTLongInt2 {
         int n = keySizeMap.get(node);
         int h = (int)Math.ceil(Math.log(n + 1)/Math.log(2));
         
-        int baselineLength = (w + 1) * (1 << (h-1));
+        //System.out.println("w=" + w + " n=" + n + " h=" + h);
         
+        int baselineLength = (w + 1) * (1 << (h - 1));
+       
         if (baselineLength > 100) {
             throw new IllegalArgumentException("the number of characters needed"
                 + " for the leaves is > 100");
@@ -2244,30 +2245,39 @@ public class RedBlackBSTLongInt2 {
         ArrayDeque<Long> nextLevelQ = new ArrayDeque<Long>();
         levelQ.add(node);
         int level = 0;
+        int hw = (w+1)/2;
+        int indent = (baselineLength - (w+1))/2;
         while (!levelQ.isEmpty() || !nextLevelQ.isEmpty()) {
             level++;
             if (level > h) {
                 break;
             }
-            int spacing = (level > 1) ? 
-               (baselineLength)/((1 << (level - 1)) - 1) : 
-               2*baselineLength;
-            
-            int indent = spacing/2;
-            //System.out.println("spacing=" + spacing + " indent=" + indent);
+            if (level > 1) {
+                indent /= 2;
+                if (indent - hw > 1) {
+                    indent -= hw;
+                }
+            }
+            int nn = 1 << (level - 1);
+            int nodeSpace = (w+1) * nn;
+            int spacing = baselineLength - nodeSpace - 2*indent;
+            if ((nn - 1) > 0) {
+                spacing /= (nn-1);
+            }
+            //System.out.println("spacing=" + spacing + " indent=" + indent
+            //    + " bl=" + baselineLength + " ns=" + nodeSpace);
             int prevPos = -1;
             StringBuilder sb0 = new StringBuilder(baselineLength);
             StringBuilder sb1 = new StringBuilder(baselineLength);
             while (!levelQ.isEmpty()) {
                 long z = levelQ.pop();
-                
                 int nSpaces;
                 if (level == 1) {
                     nSpaces = indent;
                 } else if (prevPos == -1) {
                     nSpaces = indent;
                 } else {
-                    nSpaces = w+1 + spacing;
+                    nSpaces = spacing;
                 }
                 addSpaces(nSpaces, sb0);
                 addSpaces(nSpaces, sb1);
