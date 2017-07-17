@@ -212,7 +212,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        //seed = 1499931908167L;
+        //seed = 1500232861625L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -273,18 +273,20 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             n2 = bt.size();
             assertEquals(n2, nodes.size());
 
+            bt.printPreOrderTraversal();
+            
             for (int i = 0; i < n2 - 1; ++i) {
                 long idx = nodes.get(i);
                 long foundIndex = bt.contains(idx) ? idx : -1;
                 assertTrue(foundIndex > -1);
 
                 long expected = nodes.get(i + 1);
-                //System.out.println("\n* " + idx + " expected next=" + expected);
+                System.out.println("\n* " + idx + " expected next=" + expected);
 
                 bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long next = kOutput[1];
-                //System.out.println(idx + "   next=" + next);
+                System.out.println(idx + "   next=" + next);
                 assertEquals(expected, next);
 
                 assertTrue(bt.rootIsSet);
@@ -379,7 +381,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        seed = 1500070815033L;
+        //seed = 1500269991378L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -403,10 +405,12 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             bt.put(i, i);
             assertTrue(bt.rootIsSet);
             assertTrue(bt.contains(i));
+            System.out.println("assert min");
             bt.min(kOutput);
             assertTrue(kOutput[0] != -1);
             assertEquals(nodes.get(0), kOutput[1]);
             
+            System.out.println("assert max");
             bt.max(kOutput);
             assertTrue(kOutput[0] != -1);
             assertEquals(i, kOutput[1]);
@@ -424,6 +428,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             bt.put(i, i);
             assertTrue(bt.rootIsSet);
             assertTrue(bt.contains(i));
+            System.out.println("assert min");
             bt.min(kOutput);
             assertTrue(kOutput[0] != -1);
             assertEquals(nodes.get(0), kOutput[1]);
@@ -447,12 +452,12 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                 assertTrue(foundIndex > -1);
 
                 long expected = nodes.get(i + 1);
-                //System.out.println("\n* " + idx + " expected next=" + expected);
+                System.out.println("\n* " + idx + " expected next=" + expected);
 
                 bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long next = kOutput[1];
-                //System.out.println(idx + "   next=" + next);
+                System.out.println(idx + "   next=" + next);
                 assertEquals(expected, next);
 
                 assertTrue(bt.rootIsSet);
@@ -461,6 +466,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
  
                 if (next > (idx + 1)) {
                     // test ceiling of idx+1
+                    System.out.println("assert ceiling");
                     bt.ceiling(idx + 1, kOutput);
                     assertTrue(kOutput[0] != -1);
                     long ceil = kOutput[1];
@@ -468,8 +474,10 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                 }
             }
             
+            System.out.println("assert higher");
             bt.higher(nodes.get(nodes.size() - 1), kOutput);
             assertTrue(kOutput[0] == -1);
+            System.out.println("assert lower");
             bt.lower(nodes.get(0), kOutput);
             assertTrue(kOutput[0] == -1);
             
@@ -478,6 +486,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                 long foundIndex = bt.contains(idx) ? idx : -1;
                 assertTrue(foundIndex > -1);
 
+                System.out.println("assert get");
                 bt.get(idx, vOutput);
                 assertTrue(vOutput[0] != -1);
                 assertEquals(idx, vOutput[1]);
@@ -485,16 +494,17 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                 assertTrue(bt.rootIsSet);
                 
                 long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
+                System.out.println("\n* " + idx + " expected prev=" + expected);
 
                 bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
                 long prev = kOutput[1];
-                //System.out.println(idx + "   prev=" + prev);
+                System.out.println(idx + "   prev=" + prev);
                 assertEquals(expected, prev);
 
                 if (prev < (idx - 1)) {
                     // test floor of idx-1
+                    System.out.println("assert floor");
                     bt.floor(idx - 1, kOutput);
                     assertTrue(kOutput[0] != -1);
                     long floor = kOutput[1];
@@ -511,7 +521,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                     assertTrue(bt.contains(v));
                     
                     //bt.printPreOrderTraversal();
-                    //System.out.println("delete " + v + " idx=" + idx);
+                    System.out.println("delete " + v + " idx=" + idx);
                     
                     bt.delete(v);
                     assertTrue(bt.rootIsSet);
@@ -542,7 +552,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                   
             assertEquals(nodes.size(), bt.size());
             
-            //System.out.println("before deleteMin bt.size=" + bt.size());
+            System.out.println("before deleteMax bt.size=" + bt.size());
             
             long max = nodes.get(nodes.size() - 1);
             assertTrue(bt.contains(max));
@@ -559,8 +569,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             assertEquals(nodes.size(), bt.size());
 
             long min = nodes.get(0);
-            //System.out.println("deleting min=" + min + 
-            //    "  bt.rootIsSet=" + bt.rootIsSet + " bt.size=" + bt.size());
+            System.out.println("deleting min=" + min + 
+                "  bt.rootIsSet=" + bt.rootIsSet + " bt.size=" + bt.size());
             assertTrue(bt.rootIsSet);
             boolean contains = bt.contains(min);
             assertTrue(contains);
