@@ -30,14 +30,13 @@
 package algorithms.util;
 
 import gnu.trove.map.TLongLongMap;
-import gnu.trove.function.TLongFunction;
 import gnu.trove.procedure.*;
 import gnu.trove.set.*;
 import gnu.trove.iterator.*;
-import gnu.trove.iterator.hash.*;
 import gnu.trove.impl.hash.*;
 import gnu.trove.impl.HashFunctions;
 import gnu.trove.*;
+import gnu.trove.set.hash.TLongHashSet;
 
 import java.io.*;
 import java.util.*;
@@ -211,6 +210,26 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
                 values3[i], values4[i], values5[i]);
         }
     }
+    
+    /**
+     * from THash, a fast ceiling 
+     * @param v
+     * @return 
+     */
+    protected static long fastCeil( double v ) {
+        long possible_result = ( long ) v;
+        if ( v - possible_result > 0 ) possible_result++;
+        return possible_result;
+    }
+
+    /* precondition: v > 0 */
+    protected static int saturatedCast(long v) {
+        int r = (int) (v & 0x7fffffff); // removing sign bit
+        if (r != v) {
+            return Integer.MAX_VALUE;
+        }
+        return r;
+    }
 
     /**
      * Creates a new <code>TLongLongHashMap</code> instance containing
@@ -235,7 +254,8 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
             Arrays.fill( _set, this.no_entry_key );
         }
                 
-        setUp( saturatedCast( fastCeil( DEFAULT_CAPACITY / (double) _loadFactor ) ) );
+        setUp( saturatedCast( 
+            fastCeil( DEFAULT_CAPACITY / (double) _loadFactor ) ) );
          
         Arrays.fill( _values0, this.noLinkValue );
         Arrays.fill( _values1, this.noLinkValue );
@@ -577,40 +597,58 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         return true;
     }
 
-
     /** {@inheritDoc} */
-    public void putAll( Map<? extends Long, ? extends Long> map ) {
+    public void putAll( TLong_LongLongLongIntIntIntHashMap map ) {
         ensureCapacity( map.size() );
-        // could optimize this for cases when map instanceof THashMap
-        for ( Map.Entry<? extends Long, ? extends Long> entry : map.entrySet() ) {
-            this.put( entry.getKey().longValue(), entry.getValue().longValue() );
-        }
-    }
-    
-
-    /** {@inheritDoc} */
-    public void putAll( TLongLongMap map ) {
-        ensureCapacity( map.size() );
-        TLongLongIterator iter = map.iterator();
+        TLong_LongLongLongIntIntIntHashIterator iter 
+            = map.iterator();
         while ( iter.hasNext() ) {
             iter.advance();
-            this.put( iter.key(), iter.value() );
+            this.put( iter.key(), 
+                iter.value0(), iter.value1(), iter.value2(),
+                iter.value3(), iter.value4(), iter.value5());
         }
     }
 
 
     /** {@inheritDoc} */
-    public long get( long key ) {
+    public long getValue0( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value : _values[index];
+        return index < 0 ? noLinkValue : _values0[index];
+    }
+    public long getValue1( long key ) {
+        int index = index( key );
+        return index < 0 ? noLinkValue : _values1[index];
+    }
+    public long getValue2( long key ) {
+        int index = index( key );
+        return index < 0 ? noLinkValue : _values2[index];
+    }
+    public int getValue3( long key ) {
+        int index = index( key );
+        return index < 0 ? no_entry_value_int : _values3[index];
+    }
+    public int getValue4( long key ) {
+        int index = index( key );
+        return index < 0 ? no_entry_value_int : _values4[index];
+    }
+    public int getValue5( long key ) {
+        int index = index( key );
+        return index < 0 ? no_entry_value_int : _values5[index];
     }
 
 
     /** {@inheritDoc} */
     public void clear() {
         super.clear();
+        int n = _values0.length;
         Arrays.fill( _set, 0, _set.length, no_entry_key );
-        Arrays.fill( _values, 0, _values.length, no_entry_value );
+        Arrays.fill( _values0, 0, n, noLinkValue );
+        Arrays.fill( _values1, 0, n, noLinkValue );
+        Arrays.fill( _values2, 0, n, noLinkValue );
+        Arrays.fill( _values3, 0, n, no_entry_value_int );
+        Arrays.fill( _values4, 0, n, no_entry_value_int );
+        Arrays.fill( _values5, 0, n, no_entry_value_int );
         Arrays.fill( _states, 0, _states.length, FREE );
     }
 
@@ -621,28 +659,54 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     }
 
 
-    /** {@inheritDoc} */
-    public long remove( long key ) {
+    /** remove the entry for key and return true if succeeded, else false if
+     * entry with key was not in map.
+     * @param key
+     * @return 
+     */
+    public boolean remove( long key ) {
         long prev = no_entry_value;
         int index = index( key );
         if ( index >= 0 ) {
-            prev = _values[index];
+            prev = _values3[index];
             removeAt( index );    // clear key,state; adjust size
+            return true;
         }
-        return prev;
+        return false;
     }
 
 
     /** {@inheritDoc} */
     protected void removeAt( int index ) {
-        _values[index] = no_entry_value;
+        _values0[index] = noLinkValue;
+        _values1[index] = noLinkValue;
+        _values2[index] = noLinkValue;
+        _values3[index] = no_entry_value_int;
+        _values4[index] = no_entry_value_int;
+        _values5[index] = no_entry_value_int;
         super.removeAt( index );  // clear key, state; adjust size
     }
 
 
     /** {@inheritDoc} */
     public TLongSet keySet() {
-        return new TKeyView();
+        
+        TLongSet keys = new TLongHashSet();
+        
+        if (size() == 0) {
+            return keys;
+        }
+        
+        long[] k = _set;
+        byte[] states = _states;
+
+        for (int i = k.length, j = 0; i-- > 0;) {
+            if (states[i] == FULL) {
+                keys.add(k[i]);
+            }
+        }
+        
+        return keys;
     }
 
 
@@ -685,52 +749,6 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         return array;
     }
 
-
-    /** {@inheritDoc} */
-    public TLongCollection valueCollection() {
-        return new TValueView();
-    }
-
-
-    /** {@inheritDoc} */
-    public long[] values() {
-        long[] vals = new long[size()];
-        if ( vals.length == 0 ) {
-            return vals;        // nothing to copy
-        }
-        long[] v = _values;
-        byte[] states = _states;
-
-        for ( int i = v.length, j = 0; i-- > 0; ) {
-          if ( states[i] == FULL ) {
-            vals[j++] = v[i];
-          }
-        }
-        return vals;
-    }
-
-
-    /** {@inheritDoc} */
-    public long[] values( long[] array ) {
-        int size = size();
-        if ( size == 0 ) {
-            return array;       // nothing to copy
-        }
-        if ( array.length < size ) {
-            array = new long[size];
-        }
-
-        long[] v = _values;
-        byte[] states = _states;
-
-        for ( int i = v.length, j = 0; i-- > 0; ) {
-          if ( states[i] == FULL ) {
-            array[j++] = v[i];
-          }
-        }
-        return array;
-    }
-
     /** {@inheritDoc} */
     public boolean containsKey( long key ) {
         return contains( key );
@@ -761,676 +779,19 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         return (index >= 0);
     }
 
-    /** {@inheritDoc} */
-    public TLongLongIterator iterator() {
-        return new TLongLongHashIterator( this );
+    public TLong_LongLongLongIntIntIntHashIterator iterator() {
+        return new TLong_LongLongLongIntIntIntHashIterator(this );
     }
 
-
-    /** {@inheritDoc} */
-    public boolean forEachKey( TLongProcedure procedure ) {
-        return forEach( procedure );
-    }
-
-
-    /** {@inheritDoc} */
-    public boolean forEachValue( TLongProcedure procedure ) {
-        byte[] states = _states;
-        long[] values = _values;
-        for ( int i = values.length; i-- > 0; ) {
-            if ( states[i] == FULL && ! procedure.execute( values[i] ) ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    /** {@inheritDoc} */
-    public boolean forEachEntry( TLongLongProcedure procedure ) {
-        byte[] states = _states;
-        long[] keys = _set;
-        long[] values = _values;
-        for ( int i = keys.length; i-- > 0; ) {
-            if ( states[i] == FULL && ! procedure.execute( keys[i], values[i] ) ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    /** {@inheritDoc} */
-    public void transformValues( TLongFunction function ) {
-        byte[] states = _states;
-        long[] values = _values;
-        for ( int i = values.length; i-- > 0; ) {
-            if ( states[i] == FULL ) {
-                values[i] = function.execute( values[i] );
-            }
-        }
-    }
-
-
-    /** {@inheritDoc} */
-    public boolean retainEntries( TLongLongProcedure procedure ) {
-        boolean modified = false;
-        byte[] states = _states;
-        long[] keys = _set;
-        long[] values = _values;
-
-
-        // Temporarily disable compaction. This is a fix for bug #1738760
-        tempDisableAutoCompaction();
-        try {
-            for ( int i = keys.length; i-- > 0; ) {
-                if ( states[i] == FULL && ! procedure.execute( keys[i], values[i] ) ) {
-                    removeAt( i );
-                    modified = true;
-                }
-            }
-        } finally {
-            reenableAutoCompaction( true );
-        }
-
-        return modified;
-    }
-
-
-    /** {@inheritDoc} */
-    public boolean increment( long key ) {
-        return adjustValue( key, ( long ) 1 );
-    }
-
-
-    /** {@inheritDoc} */
-    public boolean adjustValue( long key, long amount ) {
-        int index = index( key );
-        if (index < 0) {
-            return false;
-        } else {
-            _values[index] += amount;
-            return true;
-        }
-    }
-
-
-    /** {@inheritDoc} */
-    public long adjustOrPutValue( long key, long adjust_amount, long put_amount ) {
-        int index = insertKey( key );
-        final boolean isNewMapping;
-        final long newValue;
-        if ( index < 0 ) {
-            index = -index -1;
-            newValue = ( _values[index] += adjust_amount );
-            isNewMapping = false;
-        } else {
-            newValue = ( _values[index] = put_amount );
-            isNewMapping = true;
-        }
-
-        byte previousState = _states[index];
-
-        if ( isNewMapping ) {
-            postInsertHook(consumeFreeSlot);
-        }
-
-        return newValue;
-    }
-
-
-    /** a view onto the keys of the map. */
-    protected class TKeyView implements TLongSet {
-
-        /** {@inheritDoc} */
-        public TLongIterator iterator() {
-            return new TLongLongKeyHashIterator( TLong_LongLongLongIntIntIntHashMap.this );
-        }
-
-
-        /** {@inheritDoc} */
-        public long getNoEntryValue() {
-            return no_entry_key;
-        }
-
-
-        /** {@inheritDoc} */
-        public int size() {
-            return _size;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean isEmpty() {
-            return 0 == _size;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean contains( long entry ) {
-            return TLong_LongLongLongIntIntIntHashMap.this.contains( entry );
-        }
-
-
-        /** {@inheritDoc} */
-        public long[] toArray() {
-            return TLong_LongLongLongIntIntIntHashMap.this.keys();
-        }
-
-
-        /** {@inheritDoc} */
-        public long[] toArray( long[] dest ) {
-            return TLong_LongLongLongIntIntIntHashMap.this.keys( dest );
-        }
-
-
-        /**
-         * Unsupported when operating upon a Key Set view of a TLongLongMap
-         * <p/>
-         * {@inheritDoc}
-         */
-        public boolean add( long entry ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean remove( long entry ) {
-            return no_entry_value != TLong_LongLongLongIntIntIntHashMap.this.remove( entry );
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean containsAll( Collection<?> collection ) {
-            for ( Object element : collection ) {
-                if ( element instanceof Long ) {
-                    long ele = ( ( Long ) element ).longValue();
-                    if ( ! TLong_LongLongLongIntIntIntHashMap.this.containsKey( ele ) ) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean containsAll( TLongCollection collection ) {
-            TLongIterator iter = collection.iterator();
-            while ( iter.hasNext() ) {
-                if ( ! TLong_LongLongLongIntIntIntHashMap.this.containsKey( iter.next() ) ) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean containsAll( long[] array ) {
-            for ( long element : array ) {
-                if ( ! TLong_LongLongLongIntIntIntHashMap.this.contains( element ) ) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        /**
-         * Unsupported when operating upon a Key Set view of a TLongLongMap
-         * <p/>
-         * {@inheritDoc}
-         */
-        public boolean addAll( Collection<? extends Long> collection ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /**
-         * Unsupported when operating upon a Key Set view of a TLongLongMap
-         * <p/>
-         * {@inheritDoc}
-         */
-        public boolean addAll( TLongCollection collection ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /**
-         * Unsupported when operating upon a Key Set view of a TLongLongMap
-         * <p/>
-         * {@inheritDoc}
-         */
-        public boolean addAll( long[] array ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({"SuspiciousMethodCalls"})
-        public boolean retainAll( Collection<?> collection ) {
-            boolean modified = false;
-            TLongIterator iter = iterator();
-            while ( iter.hasNext() ) {
-                if ( ! collection.contains( Long.valueOf ( iter.next() ) ) ) {
-                    iter.remove();
-                    modified = true;
-                }
-            }
-            return modified;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean retainAll( TLongCollection collection ) {
-            if ( this == collection ) {
-                return false;
-            }
-            boolean modified = false;
-            TLongIterator iter = iterator();
-            while ( iter.hasNext() ) {
-                if ( ! collection.contains( iter.next() ) ) {
-                    iter.remove();
-                    modified = true;
-                }
-            }
-            return modified;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean retainAll( long[] array ) {
-            boolean changed = false;
-            Arrays.sort( array );
-            long[] set = _set;
-            byte[] states = _states;
-
-            for ( int i = set.length; i-- > 0; ) {
-                if ( states[i] == FULL && ( Arrays.binarySearch( array, set[i] ) < 0) ) {
-                    removeAt( i );
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean removeAll( Collection<?> collection ) {
-            boolean changed = false;
-            for ( Object element : collection ) {
-                if ( element instanceof Long ) {
-                    long c = ( ( Long ) element ).longValue();
-                    if ( remove( c ) ) {
-                        changed = true;
-                    }
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean removeAll( TLongCollection collection ) {
-            if ( this == collection ) {
-                clear();
-                return true;
-            }
-            boolean changed = false;
-            TLongIterator iter = collection.iterator();
-            while ( iter.hasNext() ) {
-                long element = iter.next();
-                if ( remove( element ) ) {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean removeAll( long[] array ) {
-            boolean changed = false;
-            for ( int i = array.length; i-- > 0; ) {
-                if ( remove( array[i] ) ) {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public void clear() {
-            TLong_LongLongLongIntIntIntHashMap.this.clear();
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean forEach( TLongProcedure procedure ) {
-            return TLong_LongLongLongIntIntIntHashMap.this.forEachKey( procedure );
-        }
-
-
-        @Override
-        public boolean equals( Object other ) {
-            if (! (other instanceof TLongSet)) {
-                return false;
-            }
-            final TLongSet that = ( TLongSet ) other;
-            if ( that.size() != this.size() ) {
-                return false;
-            }
-            for ( int i = _states.length; i-- > 0; ) {
-                if ( _states[i] == FULL ) {
-                    if ( ! that.contains( _set[i] ) ) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-
-        @Override
-        public int hashCode() {
-            int hashcode = 0;
-            for ( int i = _states.length; i-- > 0; ) {
-                if ( _states[i] == FULL ) {
-                    hashcode += HashFunctions.hash( _set[i] );
-                }
-            }
-            return hashcode;
-        }
-
-
-        @Override
-        public String toString() {
-            final StringBuilder buf = new StringBuilder( "{" );
-            forEachKey( new TLongProcedure() {
-                private boolean first = true;
-
-
-                public boolean execute( long key ) {
-                    if ( first ) {
-                        first = false;
-                    } else {
-                        buf.append( ", " );
-                    }
-
-                    buf.append( key );
-                    return true;
-                }
-            } );
-            buf.append( "}" );
-            return buf.toString();
-        }
-    }
-
-
-    /** a view onto the values of the map. */
-    protected class TValueView implements TLongCollection {
-
-        /** {@inheritDoc} */
-        public TLongIterator iterator() {
-            return new TLongLongValueHashIterator( TLong_LongLongLongIntIntIntHashMap.this );
-        }
-
-
-        /** {@inheritDoc} */
-        public long getNoEntryValue() {
-            return no_entry_value;
-        }
-
-
-        /** {@inheritDoc} */
-        public int size() {
-            return _size;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean isEmpty() {
-            return 0 == _size;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean contains( long entry ) {
-            return TLong_LongLongLongIntIntIntHashMap.this.containsValue( entry );
-        }
-
-
-        /** {@inheritDoc} */
-        public long[] toArray() {
-            return TLong_LongLongLongIntIntIntHashMap.this.values();
-        }
-
-
-        /** {@inheritDoc} */
-        public long[] toArray( long[] dest ) {
-            return TLong_LongLongLongIntIntIntHashMap.this.values( dest );
-        }
-
-
-
-        public boolean add( long entry ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean remove( long entry ) {
-            long[] values = _values;
-            byte[] states = _states;
-
-            for ( int i = values.length; i-- > 0; ) {
-                if ( ( states[i] != FREE && states[i] != REMOVED ) && entry == values[i] ) {
-                    removeAt( i );
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /** {@inheritDoc} */
-        public boolean containsAll( Collection<?> collection ) {
-            for ( Object element : collection ) {
-                if ( element instanceof Long ) {
-                    long ele = ( ( Long ) element ).longValue();
-                    if ( ! TLong_LongLongLongIntIntIntHashMap.this.containsValue( ele ) ) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean containsAll( TLongCollection collection ) {
-            TLongIterator iter = collection.iterator();
-            while ( iter.hasNext() ) {
-                if ( ! TLong_LongLongLongIntIntIntHashMap.this.containsValue( iter.next() ) ) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean containsAll( long[] array ) {
-            for ( long element : array ) {
-                if ( ! TLong_LongLongLongIntIntIntHashMap.this.containsValue( element ) ) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean addAll( Collection<? extends Long> collection ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean addAll( TLongCollection collection ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean addAll( long[] array ) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({"SuspiciousMethodCalls"})
-        public boolean retainAll( Collection<?> collection ) {
-            boolean modified = false;
-            TLongIterator iter = iterator();
-            while ( iter.hasNext() ) {
-                if ( ! collection.contains( Long.valueOf ( iter.next() ) ) ) {
-                    iter.remove();
-                    modified = true;
-                }
-            }
-            return modified;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean retainAll( TLongCollection collection ) {
-            if ( this == collection ) {
-                return false;
-            }
-            boolean modified = false;
-            TLongIterator iter = iterator();
-            while ( iter.hasNext() ) {
-                if ( ! collection.contains( iter.next() ) ) {
-                    iter.remove();
-                    modified = true;
-                }
-            }
-            return modified;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean retainAll( long[] array ) {
-            boolean changed = false;
-            Arrays.sort( array );
-            long[] values = _values;
-            byte[] states = _states;
-
-            for ( int i = values.length; i-- > 0; ) {
-                if ( states[i] == FULL && ( Arrays.binarySearch( array, values[i] ) < 0) ) {
-                    removeAt( i );
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean removeAll( Collection<?> collection ) {
-            boolean changed = false;
-            for ( Object element : collection ) {
-                if ( element instanceof Long ) {
-                    long c = ( ( Long ) element ).longValue();
-                    if ( remove( c ) ) {
-                        changed = true;
-                    }
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean removeAll( TLongCollection collection ) {
-            if ( this == collection ) {
-                clear();
-                return true;
-            }
-            boolean changed = false;
-            TLongIterator iter = collection.iterator();
-            while ( iter.hasNext() ) {
-                long element = iter.next();
-                if ( remove( element ) ) {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean removeAll( long[] array ) {
-            boolean changed = false;
-            for ( int i = array.length; i-- > 0; ) {
-                if ( remove( array[i] ) ) {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-
-        /** {@inheritDoc} */
-        public void clear() {
-            TLong_LongLongLongIntIntIntHashMap.this.clear();
-        }
-
-
-        /** {@inheritDoc} */
-        public boolean forEach( TLongProcedure procedure ) {
-            return TLong_LongLongLongIntIntIntHashMap.this.forEachValue( procedure );
-        }
-
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            final StringBuilder buf = new StringBuilder( "{" );
-            forEachValue( new TLongProcedure() {
-                private boolean first = true;
-
-                public boolean execute( long value ) {
-                    if ( first ) {
-                        first = false;
-                    } else {
-                        buf.append( ", " );
-                    }
-
-                    buf.append( value );
-                    return true;
-                }
-            } );
-            buf.append( "}" );
-            return buf.toString();
-        }
-    }
-
-
-    class TLongLongKeyHashIterator extends THashPrimitiveIterator implements TLongIterator {
+    class TLong_LongLongLongIntIntIntHashKeyIterator 
+        extends THashPrimitiveIterator implements TLongIterator {
 
         /**
          * Creates an iterator over the specified map
          *
          * @param hash the <tt>TPrimitiveHash</tt> we will be iterating over.
          */
-        TLongLongKeyHashIterator( TPrimitiveHash hash ) {
+        TLong_LongLongLongIntIntIntHashKeyIterator( TPrimitiveHash hash ) {
             super( hash );
         }
 
@@ -1459,53 +820,16 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         }
     }
 
-
-   
-    class TLongLongValueHashIterator extends THashPrimitiveIterator implements TLongIterator {
-
-        /**
-         * Creates an iterator over the specified map
-         *
-         * @param hash the <tt>TPrimitiveHash</tt> we will be iterating over.
-         */
-        TLongLongValueHashIterator( TPrimitiveHash hash ) {
-            super( hash );
-        }
-
-        /** {@inheritDoc} */
-        public long next() {
-            moveToNextIndex();
-            return _values[_index];
-        }
-
-        /** @{inheritDoc} */
-        public void remove() {
-            if ( _expectedSize != _hash.size() ) {
-                throw new ConcurrentModificationException();
-            }
-
-            // Disable auto compaction during the remove. This is a workaround for bug 1642768.
-            try {
-                _hash.tempDisableAutoCompaction();
-                TLong_LongLongLongIntIntIntHashMap.this.removeAt( _index );
-            }
-            finally {
-                _hash.reenableAutoCompaction( false );
-            }
-
-            _expectedSize--;
-        }
-    }
-
-
-    class TLongLongHashIterator extends THashPrimitiveIterator implements TLongLongIterator {
+    class TLong_LongLongLongIntIntIntHashIterator 
+        extends THashPrimitiveIterator {
 
         /**
          * Creates an iterator over the specified map
          *
          * @param map the <tt>TLongLongHashMap</tt> we will be iterating over.
          */
-        TLongLongHashIterator( TLong_LongLongLongIntIntIntHashMap map ) {
+        TLong_LongLongLongIntIntIntHashIterator( 
+            TLong_LongLongLongIntIntIntHashMap map ) {
             super( map );
         }
 
@@ -1520,14 +844,55 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         }
 
         /** {@inheritDoc} */
-        public long value() {
-            return _values[_index];
+        public long value0() {
+            return _values0[_index];
+        }
+        public long value1() {
+            return _values1[_index];
+        }
+        public long value2() {
+            return _values2[_index];
+        }
+        public int value3() {
+            return _values3[_index];
+        }
+        public int value4() {
+            return _values4[_index];
+        }
+        public int value5() {
+            return _values5[_index];
         }
 
         /** {@inheritDoc} */
-        public long setValue( long val ) {
-            long old = value();
-            _values[_index] = val;
+        public long setValue0( long val ) {
+            long old = value0();
+            _values0[_index] = val;
+            return old;
+        }
+        public long setValue1( long val ) {
+            long old = value1();
+            _values1[_index] = val;
+            return old;
+        }
+        public long setValue2( long val ) {
+            long old = value2();
+            _values2[_index] = val;
+            return old;
+        }
+        
+        public int setValue3( int val ) {
+            int old = value3();
+            _values3[_index] = val;
+            return old;
+        }
+        public int setValue4( int val ) {
+            int old = value4();
+            _values4[_index] = val;
+            return old;
+        }
+        public int setValue5( int val ) {
+            int old = value5();
+            _values5[_index] = val;
             return old;
         }
 
@@ -1549,7 +914,9 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     }
 
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * NOTE: this uses just the key and value3 for equals operation.
+     */
     @Override
     public boolean equals( Object other ) {
         if ( ! ( other instanceof TLongLongMap ) ) {
@@ -1559,18 +926,18 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         if ( that.size() != this.size() ) {
             return false;
         }
-        long[] values = _values;
+        int[] values3 = _values3;
         byte[] states = _states;
         long this_no_entry_value = getNoEntryValue();
         long that_no_entry_value = that.getNoEntryValue();
-        for ( int i = values.length; i-- > 0; ) {
+        for ( int i = values3.length; i-- > 0; ) {
             if ( states[i] == FULL ) {
                 long key = _set[i];
 
                 if ( !that.containsKey( key ) ) return false;
 
                 long that_value = that.get( key );
-                long this_value = values[i];
+                long this_value = values3[i];
                 if ((this_value != that_value)
                     && ( (this_value != this_no_entry_value)
                     || (that_value != that_no_entry_value))
@@ -1584,15 +951,17 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     }
 
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * NOTE: this uses the key and values3 for hash code and no other fields.
+     */
     @Override
     public int hashCode() {
         int hashcode = 0;
         byte[] states = _states;
-        for ( int i = _values.length; i-- > 0; ) {
+        for ( int i = _values0.length; i-- > 0; ) {
             if ( states[i] == FULL ) {
                 hashcode += HashFunctions.hash( _set[i] ) ^
-                            HashFunctions.hash( _values[i] );
+                            HashFunctions.hash( _values3[i] );
             }
         }
         return hashcode;
@@ -1602,19 +971,27 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder( "{" );
-        forEachEntry( new TLongLongProcedure() {
-            private boolean first = true;
-            public boolean execute( long key, long value ) {
-                if ( first ) first = false;
-                else buf.append( ", " );
 
+        final StringBuilder buf = new StringBuilder( "{" );
+        
+        int[] values3 = _values3;
+        byte[] states = _states;
+        for ( int i = values3.length; i-- > 0; ) {
+            if ( states[i] == FULL ) {
+                if (buf.length() > 0) {
+                    buf.append( ", " );
+                }
+                long key = _set[i];
                 buf.append(key);
                 buf.append("=");
-                buf.append(value);
-                return true;
+                buf.append(_values0[i]);
+                buf.append(_values1[i]);
+                buf.append(_values2[i]);
+                buf.append(_values3[i]);
+                buf.append(_values4[i]);
+                buf.append(_values5[i]);
             }
-        });
+        }
         buf.append( "}" );
         return buf.toString();
     }
@@ -1635,7 +1012,12 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     	for ( int i = _states.length; i-- > 0; ) {
             if ( _states[i] == FULL ) {
                 out.writeLong( _set[i] );
-                out.writeLong( _values[i] );
+                out.writeLong( _values0[i] );
+                out.writeLong( _values1[i] );
+                out.writeLong( _values2[i] );
+                out.writeInt( _values3[i] );
+                out.writeInt( _values4[i] );
+                out.writeInt( _values5[i] );
             }
         }
     }
@@ -1656,8 +1038,13 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     	// ENTRIES
         while (size-- > 0) {
             long key = in.readLong();
-            long val = in.readLong();
-            put(key, val);
+            long val0 = in.readLong();
+            long val1 = in.readLong();
+            long val2 = in.readLong();
+            int val3 = in.readInt();
+            int val4 = in.readInt();
+            int val5 = in.readInt();
+            put(key, val0, val1, val2, val3, val4, val5);
         }
     }
 } // TLongLongHashMap
