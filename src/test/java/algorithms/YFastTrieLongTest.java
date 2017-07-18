@@ -72,7 +72,7 @@ public class YFastTrieLongTest extends TestCase {
 
     public void testKeyOperations0() throws Exception {
     
-        System.out.println("testKeyOperations");
+        //System.out.println("testKeyOperations");
         
         int n = 100;
         
@@ -120,7 +120,7 @@ public class YFastTrieLongTest extends TestCase {
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
         
-        bt.debugPrint();
+        //bt.debugPrint();
         
         for (int nIter = 0; nIter < 3; ++nIter){
             n2 = bt.size();
@@ -132,11 +132,11 @@ public class YFastTrieLongTest extends TestCase {
                 assertTrue(foundIndex > -1);
 
                 long expected = nodes.get(i + 1);
-                System.out.println("\n* " + idx + " expected next=" + expected);
+                //System.out.println("\n* " + idx + " expected next=" + expected);
 
                 long next = bt.successor(idx);
                 assertTrue(next != -1);
-                System.out.println(idx + "   next=" + next);
+                //System.out.println(idx + "   next=" + next);
                 assertEquals(expected, next);
 
             }
@@ -149,11 +149,11 @@ public class YFastTrieLongTest extends TestCase {
                 assertEquals(idx, foundIndex);
                 
                 long expected = nodes.get(i - 1);
-                System.out.println("\n* " + idx + " expected prev=" + expected);
+                //System.out.println("\n* " + idx + " expected prev=" + expected);
 
                 long prev = bt.predecessor(idx);
                 assertTrue(prev != -1);
-                System.out.println(idx + "   prev=" + prev);
+                //System.out.println(idx + "   prev=" + prev);
                 
                 assertEquals(expected, prev);
 
