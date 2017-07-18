@@ -399,7 +399,7 @@ public class RedBlackBSTLongInt2 {
             deleteFromMaps(root);
             root = -1;
         } else {
-            System.out.println("in deleteMin: assigning root=" + output[1]);
+            //System.out.println("in deleteMin: assigning root=" + output[1]);
             root = output[1];
             keyParentMap.remove(root);
         }
@@ -465,8 +465,8 @@ public class RedBlackBSTLongInt2 {
             keyLeftMap.remove(h);
             output[0] = 0;
         } else {
-            System.out.println(" deleteMin return is " + output[1] 
-               + " h.left gets assigned it");
+            //System.out.println(" deleteMin return is " + output[1] 
+            //   + " h.left gets assigned it");
             keyParentMap.put(output[1], h);
             keyLeftMap.put(h, output[1]);
         }
@@ -585,8 +585,8 @@ public class RedBlackBSTLongInt2 {
         
         int sz0 = size();
         
-        System.out.println("\nbefore delete " + key + " root=" + root);
-        printPreOrderTraversal();
+        //System.out.println("\nbefore delete " + key + " root=" + root);
+        //printPreOrderTraversal();
         
         if (!contains(key)) return;
 
@@ -611,8 +611,8 @@ public class RedBlackBSTLongInt2 {
             keyColorMap.put(root, BLACK);
         }
         
-        printPreOrderTraversal();
-        System.out.println("after delete " + key + " root=" + root);
+        //printPreOrderTraversal();
+        //System.out.println("after delete " + key + " root=" + root);
         
         assert(check());
         
@@ -622,7 +622,7 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the given key rooted at h
     private void delete(long h, long key, long[] output) { 
         
-        System.out.format("delete(%d, %d)\n", h, key);
+        //System.out.format("delete(%d, %d)\n", h, key);
         
         assert(keyValMap.containsKey(key));
         assert(keyValMap.containsKey(h));
@@ -698,7 +698,7 @@ public class RedBlackBSTLongInt2 {
                 long[] output3 = new long[3];
                 deleteMin(keyRightMap.get(h), output3);
                         
-                System.out.println("deleteMin=" + Arrays.toString(output3));
+                //System.out.println("deleteMin=" + Arrays.toString(output3));
         
                 int hClr = keyColorMap.get(h);
                 boolean hLeftExists = keyLeftMap.containsKey(h);
@@ -713,11 +713,11 @@ public class RedBlackBSTLongInt2 {
                 
                 long x = output3[2];
                
-                System.out.println(
-                    "   x to get h fields except val. " + 
-                    "\n   x=" + nodeToString(x)
-                    + "\n   h=" + hDBG
-                );
+                //System.out.println(
+                //    "   x to get h fields except val. " + 
+                //    "\n   x=" + nodeToString(x)
+                //    + "\n   h=" + hDBG
+                //);
                
                 assert(x != h);
                 
@@ -762,7 +762,7 @@ public class RedBlackBSTLongInt2 {
                     
                 h = x;
                 
-                System.out.println("  merged=" + nodeToString(h));
+                //System.out.println("  merged=" + nodeToString(h));
                 
                 output[0] = 0;
                  
@@ -830,7 +830,7 @@ public class RedBlackBSTLongInt2 {
      */
     protected long rotateRight(long h) {
         
-        System.out.println("  *RR " + h);
+        //System.out.println("  *RR " + h);
         
         // assert (h != null) && isRed(h.left);
         assert(keyValMap.containsKey(h));
@@ -918,7 +918,7 @@ public class RedBlackBSTLongInt2 {
      */
     protected long rotateLeft(long h) {
         
-        System.out.println("  *RL h=" + h);
+        //System.out.println("  *RL h=" + h);
         
         // assert (h != null) && isRed(h.right);
         assert(keyValMap.containsKey(h));
@@ -1233,7 +1233,7 @@ public class RedBlackBSTLongInt2 {
      * @return 
      */
     private void lower(long x, long key, TLongList stack, long[] output) { 
-        
+       
         //binary search until overshoot
         while (keyValMap.containsKey(x) && key != x) {
             stack.add(x);
@@ -1400,7 +1400,7 @@ public class RedBlackBSTLongInt2 {
     private void higher(long x, long key, long[] output) {  
         
         //System.out.println("x=" + x + " key=" + key);
-                
+        
         /*
                     X
         left .lte.     right .gte.
@@ -1425,28 +1425,32 @@ public class RedBlackBSTLongInt2 {
             }
         }
         
+        // right node has larger key
         if (keyRightMap.containsKey(x)) {
             output[0] = 0;
             min(keyRightMap.get(x), output);
             //System.out.println("min=" + Arrays.toString(output));
             return;
         }
-        Long y = null;
+        boolean yIsSet = false;
+        long y = -1;
         if (keyParentMap.containsKey(x)) {
             y = keyParentMap.get(x);
+            yIsSet = true;
             //System.out.println("y=" + y);
         }
-        while (y != null && keyRightMap.containsKey(y) &&
+        while (yIsSet && keyRightMap.containsKey(y) &&
             x == keyRightMap.get(y)) {
             //System.out.println("y=" + y);
             x = y;
             if (keyParentMap.containsKey(x)) {
                 y = keyParentMap.get(x);
             } else {
-                y = null;
+                yIsSet = false;
+                y = -1;
             }
         }
-        if (y == null) {
+        if (!yIsSet) {
             output[0] = -1;
         } else {
             //System.out.println("y=" + y);
