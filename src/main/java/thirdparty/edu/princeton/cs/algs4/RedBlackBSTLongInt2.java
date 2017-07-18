@@ -1263,7 +1263,7 @@ public class RedBlackBSTLongInt2 {
      * the smallest key in the symbol table greater than or equal to {@code key}
      * @throws NoSuchElementException if the tree is empty
      */
-    public void higher(long key, long[] output) {
+    public void higher(long key, final long[] output) {
         if (output == null || output.length != 2) {
             throw new IllegalArgumentException("output must be length 2");
         }
@@ -1325,9 +1325,9 @@ public class RedBlackBSTLongInt2 {
      * @param key
      * @return 
      */
-    private void higher(long x, long key, long[] output) {  
+    private void higher(long x, long key, final long[] output) {  
         
-        //System.out.println("x=" + x + " key=" + key);
+        //System.out.println("higher: x=" + x + " key=" + key);
         
         /*
                     X
@@ -1336,6 +1336,7 @@ public class RedBlackBSTLongInt2 {
         
         while (nodeMap.containsKey(x)) {
             int cmp = key < x ? -1 : (key > x) ? 1 : 0; 
+            //System.out.println("higher: x=" + x + " cmp=" + cmp);
             if (cmp < 0) {
                 if (nodeMap.leftIsSet(x)) {
                     x = nodeMap.getLeft(x);
@@ -1352,7 +1353,7 @@ public class RedBlackBSTLongInt2 {
                 break;
             }
         }
-        
+                
         // right node has larger key
         if (nodeMap.rightIsSet(x)) {
             output[0] = 0;
@@ -1369,7 +1370,7 @@ public class RedBlackBSTLongInt2 {
         }
         while (yIsSet && nodeMap.rightIsSet(y) &&
             x == nodeMap.getRight(y)) {
-            //System.out.println("y=" + y);
+            //System.out.println("y=" + y + " setting x=" + x + " to y");
             x = y;
             if (nodeMap.parentIsSet(x)) {
                 y = nodeMap.getParent(x);
@@ -1378,12 +1379,21 @@ public class RedBlackBSTLongInt2 {
                 y = -1;
             }
         }
-        if (!yIsSet) {
-            output[0] = -1;
-        } else {
-            //System.out.println("y=" + y);
+        if (x > key && yIsSet && y > key) {
+            output[0] = 0;
+            if (x < y) {
+                output[1] = x;
+            } else {
+                output[1] = y;
+            }
+        } else if (x > key) {
+            output[0] = 0;
+            output[1] = x;
+        } else if (yIsSet && y > key) {
             output[0] = 0;
             output[1] = y;
+        } else {
+            output[0] = -1;
         }
     }
 
