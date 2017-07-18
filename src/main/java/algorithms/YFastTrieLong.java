@@ -6,7 +6,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.Arrays;
-import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt;
+import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt2;
 import thirdparty.ods.Longizer;
 import thirdparty.ods.XFastTrieLong;
 import thirdparty.ods.XFastTrieNodeLong;
@@ -178,7 +178,7 @@ YFastTrie
     // each sorted tree has
     //    key = node (inserted number), w/ value=
     //        the number of times that number is present (multiplicity).
-    private final TLongObjectMap<RedBlackBSTLongInt> rbs;
+    private final TLongObjectMap<RedBlackBSTLongInt2> rbs;
 
     /**
      * constructor specifying the maximum number of bits of any future add or
@@ -204,7 +204,7 @@ YFastTrie
         System.out.println("nBins=" + nBins + "  rt of ops=" +
             (Math.log(binSz)/Math.log(2)));
         
-        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt2>();
          
         XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
         Longizer<Long> it = new Longizer<Long>() {
@@ -236,7 +236,7 @@ YFastTrie
         System.out.println("nBins=" + nBins + "  rt of ops=" +
             (Math.log(binSz)/Math.log(2)));
         
-        rbs = new TLongObjectHashMap<RedBlackBSTLongInt>();
+        rbs = new TLongObjectHashMap<RedBlackBSTLongInt2>();
         
         XFastTrieNodeLong<Long> clsNode = new XFastTrieNodeLong<Long>();
         Longizer<Long> it = new Longizer<Long>() {
@@ -249,10 +249,10 @@ YFastTrie
         xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
     }
     
-    protected RedBlackBSTLongInt getTreeMap(long index) {
-        RedBlackBSTLongInt tree = rbs.get(index);
+    protected RedBlackBSTLongInt2 getTreeMap(long index) {
+        RedBlackBSTLongInt2 tree = rbs.get(index);
         if (tree == null) {
-            tree = new RedBlackBSTLongInt();
+            tree = new RedBlackBSTLongInt2();
             rbs.put(index, tree);
         }
         return tree;
@@ -265,7 +265,7 @@ YFastTrie
      */
     private void addToRBTree(long node, long index) {
         
-        RedBlackBSTLongInt tree = getTreeMap(index);
+        RedBlackBSTLongInt2 tree = getTreeMap(index);
         
         assert(tree != null);
                 
@@ -290,7 +290,7 @@ YFastTrie
      */
     private boolean deleteFromRBTree(long node, long index) {
                 
-        RedBlackBSTLongInt tree = getTreeMap(index);
+        RedBlackBSTLongInt2 tree = getTreeMap(index);
         
         assert(tree != null);
         
@@ -395,7 +395,7 @@ YFastTrie
             return false;
         }
         
-        RedBlackBSTLongInt tree = getTreeMap(index);
+        RedBlackBSTLongInt2 tree = getTreeMap(index);
       
         long existingRepr = xftReps.get(index);
       
@@ -424,7 +424,12 @@ YFastTrie
                 xftReps.remove(index);
             
                 // O(log_2(N/w))
-                long minKey = tree.min();
+                long[] kOutput = new long[2];
+                tree.min(kOutput);
+                
+                // tree is not empty
+                assert(kOutput[0] != -1);
+                long minKey = kOutput[1];
                 xft.add(minKey);
                 xftReps.put(index, minKey); 
             }            
@@ -456,7 +461,7 @@ YFastTrie
                 
         long index = node/binSz;
                 
-        RedBlackBSTLongInt tree = getTreeMap(index);
+        RedBlackBSTLongInt2 tree = getTreeMap(index);
         
         int[] output = new int[2];
         tree.get(node, output);
@@ -499,10 +504,11 @@ YFastTrie
            the node's map if its size is larger > 1
         */
         
-        RedBlackBSTLongInt tree = getTreeMap(nodeIndex);
+        RedBlackBSTLongInt2 tree = getTreeMap(nodeIndex);
         
         if (!isAMinimum && (tree.size() > 1)) {
             long[] output = new long[2];
+            //tree.printPreOrderTraversal();
             tree.lower(node, output);
             if (output[0] != -1) {
                 return output[1];
@@ -525,7 +531,12 @@ YFastTrie
             return -1;
         }
         
-        long lastKey = tree.max();
+        long[] kOutput = new long[2];
+        tree.max(kOutput);
+        
+        // tree is not empty
+        assert(kOutput[0] != -1);
+        long lastKey = kOutput[1];
         
         return lastKey;
     }
@@ -558,7 +569,7 @@ YFastTrie
         
         boolean isAMinimum = xft.find(nodeKey) != null;
         
-        RedBlackBSTLongInt tree = getTreeMap(nodeIndex);
+        RedBlackBSTLongInt2 tree = getTreeMap(nodeIndex);
         
         if (tree.size() > 1) {
             
@@ -636,12 +647,17 @@ YFastTrie
         
         long index = maxRepr.longValue()/binSz;
         
-        RedBlackBSTLongInt tree = getTreeMap(index);
+        RedBlackBSTLongInt2 tree = getTreeMap(index);
         
         assert(tree != null);
         assert(!tree.isEmpty());
         
-        long lastKey = tree.max();
+        long[] kOutput = new long[2];
+        tree.max(kOutput);
+        
+        assert(kOutput[0] != -1);
+        
+        long lastKey = kOutput[1];
                 
         return lastKey;
     }
@@ -789,7 +805,7 @@ YFastTrie
         // each sorted tree has 
         //    key = node (inserted number), w/ value=
         //        the number of times that number is present (multiplicity).
-        TLongObjectMap<RedBlackBSTLongInt> rbs;
+        TLongObjectMap<RedBlackBSTLongInt2> rbs;
         */
     
         // returning 2 estimates
@@ -836,7 +852,10 @@ YFastTrie
         
         
         // nBins number of RedBlackBSTLongInt
-        long rbtree = RedBlackBSTLongInt.estimateSizeOnHeap(0);
+        long rbtree = RedBlackBSTLongInt2.estimateSizeOnHeap(0);
+        
+        long rbtreeNodes = RedBlackBSTLongInt2.estimateSizeOnHeap(numberOfEntries) -
+            rbtree;
         
         total2_1 += (nBins * rbtree);
         
@@ -844,10 +863,11 @@ YFastTrie
         
         
         // nEntries number of long, int nodes
-        total2_1 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();
         
-        total2_2 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();
-            
+        total2_1 += rbtreeNodes;
+        
+        total2_2 += rbtreeNodes;
+           
         return new long[]{total2_1 + total, total2_2 + total};
     }
     
@@ -860,7 +880,7 @@ YFastTrie
         Arrays.sort(binIndexes);
         for (long binIdx : binIndexes) {
             System.out.println("binNumber=" + binIdx);
-            RedBlackBSTLongInt rbt = rbs.get(binIdx);
+            RedBlackBSTLongInt2 rbt = rbs.get(binIdx);
             rbt.printPreOrderTraversal();
         }
     }
