@@ -93,42 +93,42 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         for (long node : treeNodes) {
             int c = (int)node;
-            assertEquals(c, bt.keyValMap.get(node));
+            assertEquals(c, bt.nodeMap.getNodeValue(node));
             switch(c) {
                 case 0:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertEquals(1, bt.keyParentMap.get(node));
-                    assertEquals(1, bt.keySizeMap.get(node));
-                    assertFalse(bt.keyLeftMap.containsKey(node));
-                    assertFalse(bt.keyRightMap.containsKey(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertEquals(1, bt.nodeMap.getParent(node));
+                    assertEquals(1, bt.nodeMap.getNodeSize(node));
+                    assertFalse(bt.nodeMap.leftIsSet(node));
+                    assertFalse(bt.nodeMap.rightIsSet(node));
                     break;
                 case 1:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertFalse(bt.keyParentMap.containsKey(node));
-                    assertEquals(5, bt.keySizeMap.get(node));
-                    assertEquals(0, bt.keyLeftMap.get(node));
-                    assertEquals(3, bt.keyRightMap.get(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertFalse(bt.nodeMap.parentIsSet(node));
+                    assertEquals(5, bt.nodeMap.getNodeSize(node));
+                    assertEquals(0, bt.nodeMap.getLeft(node));
+                    assertEquals(3, bt.nodeMap.getRight(node));
                     break;
                 case 2:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertEquals(3, bt.keyParentMap.get(node));
-                    assertEquals(1, bt.keySizeMap.get(node));
-                    assertFalse(bt.keyLeftMap.containsKey(node));
-                    assertFalse(bt.keyRightMap.containsKey(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertEquals(3, bt.nodeMap.getParent(node));
+                    assertEquals(1, bt.nodeMap.getNodeSize(node));
+                    assertFalse(bt.nodeMap.leftIsSet(node));
+                    assertFalse(bt.nodeMap.rightIsSet(node));
                     break;
                 case 3:
-                    assertEquals(1, bt.keyColorMap.get(node));
-                    assertEquals(1, bt.keyParentMap.get(node));
-                    assertEquals(3, bt.keySizeMap.get(node));
-                    assertEquals(2, bt.keyLeftMap.get(node));
-                    assertEquals(4, bt.keyRightMap.get(node));
+                    assertEquals(1, bt.nodeMap.getNodeColor(node));
+                    assertEquals(1, bt.nodeMap.getParent(node));
+                    assertEquals(3, bt.nodeMap.getNodeSize(node));
+                    assertEquals(2, bt.nodeMap.getLeft(node));
+                    assertEquals(4, bt.nodeMap.getRight(node));
                     break;
                 case 4:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertEquals(3, bt.keyParentMap.get(node));
-                    assertEquals(1, bt.keySizeMap.get(node));
-                    assertFalse(bt.keyLeftMap.containsKey(node));
-                    assertFalse(bt.keyRightMap.containsKey(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertEquals(3, bt.nodeMap.getParent(node));
+                    assertEquals(1, bt.nodeMap.getNodeSize(node));
+                    assertFalse(bt.nodeMap.leftIsSet(node));
+                    assertFalse(bt.nodeMap.rightIsSet(node));
                     break;
                 default:
                     break;
@@ -150,42 +150,42 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         for (long node : treeNodes) {
             int c = (int)node;
-            assertEquals(c, bt.keyValMap.get(node));
+            assertEquals(c, bt.nodeMap.getNodeValue(node));
             switch(c) {
                 case 0:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertEquals(1, bt.keyParentMap.get(node));
-                    assertEquals(1, bt.keySizeMap.get(node));
-                    assertFalse(bt.keyLeftMap.containsKey(node));
-                    assertFalse(bt.keyRightMap.containsKey(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertEquals(1, bt.nodeMap.getParent(node));
+                    assertEquals(1, bt.nodeMap.getNodeSize(node));
+                    assertFalse(bt.nodeMap.leftIsSet(node));
+                    assertFalse(bt.nodeMap.rightIsSet(node));
                     break;
                 case 1:
-                    assertEquals(1, bt.keyColorMap.get(node));
-                    assertEquals(3, bt.keyParentMap.get(node));
-                    assertEquals(3, bt.keySizeMap.get(node));
-                    assertEquals(0, bt.keyLeftMap.get(node));
-                    assertEquals(2, bt.keyRightMap.get(node));
+                    assertEquals(1, bt.nodeMap.getNodeColor(node));
+                    assertEquals(3, bt.nodeMap.getParent(node));
+                    assertEquals(3, bt.nodeMap.getNodeSize(node));
+                    assertEquals(0, bt.nodeMap.getLeft(node));
+                    assertEquals(2, bt.nodeMap.getRight(node));
                     break;
                 case 2:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertEquals(1, bt.keyParentMap.get(node));
-                    assertEquals(1, bt.keySizeMap.get(node));
-                    assertFalse(bt.keyLeftMap.containsKey(node));
-                    assertFalse(bt.keyRightMap.containsKey(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertEquals(1, bt.nodeMap.getParent(node));
+                    assertEquals(1, bt.nodeMap.getNodeSize(node));
+                    assertFalse(bt.nodeMap.leftIsSet(node));
+                    assertFalse(bt.nodeMap.rightIsSet(node));
                     break;
                 case 3:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertFalse(bt.keyParentMap.containsKey(node));
-                    assertEquals(5, bt.keySizeMap.get(node));
-                    assertEquals(1, bt.keyLeftMap.get(node));
-                    assertEquals(4, bt.keyRightMap.get(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertFalse(bt.nodeMap.parentIsSet(node));
+                    assertEquals(5, bt.nodeMap.getNodeSize(node));
+                    assertEquals(1, bt.nodeMap.getLeft(node));
+                    assertEquals(4, bt.nodeMap.getRight(node));
                     break;
                 case 4:
-                    assertEquals(0, bt.keyColorMap.get(node));
-                    assertEquals(3, bt.keyParentMap.get(node));
-                    assertEquals(1, bt.keySizeMap.get(node));
-                    assertFalse(bt.keyLeftMap.containsKey(node));
-                    assertFalse(bt.keyRightMap.containsKey(node));
+                    assertEquals(0, bt.nodeMap.getNodeColor(node));
+                    assertEquals(3, bt.nodeMap.getParent(node));
+                    assertEquals(1, bt.nodeMap.getNodeSize(node));
+                    assertFalse(bt.nodeMap.leftIsSet(node));
+                    assertFalse(bt.nodeMap.rightIsSet(node));
                     break;
                 default:
                     break;
@@ -194,14 +194,14 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         // test flip nodes
         bt.flipColors(1);
-        assertEquals(0, bt.keyColorMap.get(1));
-        assertEquals(1, bt.keyColorMap.get(0));
-        assertEquals(1, bt.keyColorMap.get(2));
+        assertEquals(0, bt.nodeMap.getNodeColor(1));
+        assertEquals(1, bt.nodeMap.getNodeColor(0));
+        assertEquals(1, bt.nodeMap.getNodeColor(2));
         
         bt.flipColors(1);
-        assertEquals(1, bt.keyColorMap.get(1));
-        assertEquals(0, bt.keyColorMap.get(0));
-        assertEquals(0, bt.keyColorMap.get(2));
+        assertEquals(1, bt.nodeMap.getNodeColor(1));
+        assertEquals(0, bt.nodeMap.getNodeColor(0));
+        assertEquals(0, bt.nodeMap.getNodeColor(2));
     
         
     }
@@ -212,7 +212,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.currentTimeMillis();
-        //seed = 1500232861625L;
+        seed = 1500232861625L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -305,6 +305,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
      
             bt.higher(nodes.get(nodes.size() - 1), kOutput);
             assertTrue(kOutput[0] == -1);
+            bt.printPreOrderTraversal();
+            System.out.println("lower(" + nodes.get(0) + ")");
             bt.lower(nodes.get(0), kOutput);
             assertTrue(kOutput[0] == -1);
             
@@ -320,7 +322,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
                 assertTrue(bt.rootIsSet);
                 
                 long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
+                System.out.println("\n* " + idx + " expected prev=" + expected);
 
                 bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
