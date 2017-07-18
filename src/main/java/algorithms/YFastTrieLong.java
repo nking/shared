@@ -58,30 +58,29 @@ import thirdparty.ods.XFastTrieNodeLong;
    <pre>
     binsz = w
     mem is in MB:
-     width=5000, height=7000 n=  35000000 mem=     61507:    505405  w=62  rt=  6
-     width=5000, height=7000 n=  35000000 mem=      9111:     14213  w=25  rt=  5
-     width=5000, height=7000 n=   3500000 mem=     53336:    492908  w=62  rt=  6 
-     width=5000, height=7000 n=   3500000 mem=       940:      1716  w=25  rt=  5 
-     width=1024, height=1024 n=   1048576 mem=     52700:    491936  w=62  rt=  6 
-     width=1024, height=1024 n=   1048576 mem=       273:       428  w=20  rt=  4 
-     width=1024, height=1024 n=    104858 mem=     52456:    491561  w=62  rt=  6 
-     width=1024, height=1024 n=    104858 mem=        28:        54  w=20  rt=  4 
-     width= 512, height= 512 n=    262144 mem=     52496:    491624  w=62  rt=  6 
-     width= 512, height= 512 n=    262144 mem=        68:       107  w=18  rt=  4 
-     width= 512, height= 512 n=     26214 mem=     52435:    491530  w=62  rt=  6 
-     width= 512, height= 512 n=     26214 mem=         7:        13  w=18  rt=  4 
-     width= 256, height= 256 n=     65536 mem=     52445:    491546  w=62  rt=  6 
-     width= 256, height= 256 n=     65536 mem=        17:        27  w=16  rt=  4 
-     width= 256, height= 256 n=      6554 mem=     52430:    491522  w=62  rt=  6 
-     width= 256, height= 256 n=      6554 mem=         1:         3  w=16  rt=  4 
-     width= 128, height= 128 n=     16384 mem=     52433:    491526  w=62  rt=  6 
-     width= 128, height= 128 n=     16384 mem=         4:         6  w=14  rt=  4 
-     width= 128, height= 128 n=      1638 mem=     52429:    491520  w=62  rt=  6 
-     width= 128, height= 128 n=      1638 mem=         0:         0  w=14  rt=  4 
-     width=  64, height=  64 n=      4096 mem=     52429:    491521  w=62  rt=  6 
+     width=5000, height=7000 n=  35000000 mem=     87321:    767148  w=62  rt=  6
+     width=5000, height=7000 n=  35000000 mem=      8727:     13976  w=25  rt=  5
+     width=5000, height=7000 n=   3500000 mem=     79511:    755012  w=62  rt=  6
+     width=5000, height=7000 n=   3500000 mem=       916:      1840  w=25  rt=  5
+     width=1024, height=1024 n=   1048576 mem=     78903:    754068  w=62  rt=  6
+     width=1024, height=1024 n=   1048576 mem=       261:       423  w=20  rt=  4
+     width=1024, height=1024 n=    104858 mem=     78669:    753704  w=62  rt=  6
+     width=1024, height=1024 n=    104858 mem=        27:        59  w=20  rt=  4
+     width= 512, height= 512 n=    262144 mem=     78708:    753765  w=62  rt=  6
+     width= 512, height= 512 n=    262144 mem=        65:       106  w=18  rt=  4
+     width= 512, height= 512 n=     26214 mem=     78649:    753674  w=62  rt=  6
+     width= 512, height= 512 n=     26214 mem=         7:        15  w=18  rt=  4
+     width= 256, height= 256 n=     65536 mem=     78659:    753689  w=62  rt=  6
+     width= 256, height= 256 n=     65536 mem=        16:        26  w=16  rt=  4
+     width= 256, height= 256 n=      6554 mem=     78644:    753666  w=62  rt=  6
+     width= 256, height= 256 n=      6554 mem=         1:         4  w=16  rt=  4
+     width= 128, height= 128 n=     16384 mem=     78647:    753670  w=62  rt=  6
+     width= 128, height= 128 n=     16384 mem=         4:         6  w=14  rt=  4
+     width= 128, height= 128 n=      1638 mem=     78643:    753664  w=62  rt=  6
+     width= 128, height= 128 n=      1638 mem=         0:         1  w=14  rt=  4
+     width=  64, height=  64 n=      4096 mem=     78644:    753665  w=62  rt=  6
      width=  64, height=  64 n=      4096 mem=         1:         1  w=12  rt=  4
-     width=  64, height=  64 n=      4096 mem=         1:         1  w=12  rt=  4 
-     width=  64, height=  64 n=       410 mem=     52428:    491520  w=62  rt=  6
+     width=  64, height=  64 n=       410 mem=     78643:    753664  w=62  rt=  6
      width=  64, height=  64 n=       410 mem=         0:         0  w=12  rt=  4
      
      Note that the memory usage could be reduced by about a factor of 4
