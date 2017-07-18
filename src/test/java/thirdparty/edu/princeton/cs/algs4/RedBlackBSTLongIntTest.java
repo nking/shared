@@ -155,7 +155,12 @@ public class RedBlackBSTLongIntTest extends TestCase {
             nodes.removeAt(0);
             
             bt.check();
-        }     
+        }
+        
+        bt.printInOrderTraversal();
+        bt.printPostOrderTraversal();
+        bt.printPreOrderTraversal();
+        
     }
     
     public void testKeyOperations0() throws Exception {

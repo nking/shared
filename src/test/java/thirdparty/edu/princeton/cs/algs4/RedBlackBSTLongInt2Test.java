@@ -378,6 +378,11 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             
             bt.check();
         }            
+        
+        bt.printInOrderTraversal();
+        bt.printPostOrderTraversal();
+        bt.printPreOrderTraversal();
+        
     }
     
     public void testKeyOperations0() throws Exception {

@@ -140,7 +140,12 @@ public class RedBlackBSTTest extends TestCase {
             nodes.removeAt(0);
             
             bt.check();
-        }            
+        }
+        
+        bt.printInOrderTraversal();
+        bt.printPostOrderTraversal();
+        bt.printPreOrderTraversal();
+       
     }
     
 }
