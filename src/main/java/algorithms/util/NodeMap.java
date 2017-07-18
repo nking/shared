@@ -2,7 +2,8 @@
 // This is an extension of and edits to TLongLongHashMap from the trove4j library
 // downloaded from https://bitbucket.org/trove4j/trove/overview
 // 
-//   extended to add arrays to hold more values for the same key.
+//   extended to add arrays to hold more values for the same key, specifically
+     for nodes having parent, left, right, value, color and size.
 // 
 // The original copyright is:
 // Copyright (c) 2001, Eric D. Friedman All Rights Reserved.
@@ -48,48 +49,36 @@ import java.util.*;
  * set.
  * 
  * The key is the unique key for an entry.
- *    value0 is LONG.MIN_VALUE when not used.
- *    value1 is LONG.MIN_VALUE when not used.
- *    value2 is LONG.MIN_VALUE when not used.
- *    value3, as soon as the entry exists, always has a used value.
- *    value4, as soon as the entry exists, always has a used value.
- *    value5, as soon as the entry exists, always has a used value.
+ *    parent is LONG.MIN_VALUE when not used.
+ *    left is LONG.MIN_VALUE when not used.
+ *    right is LONG.MIN_VALUE when not used.
+ *    value, as soon as the entry exists, always has a used value.
+ *    color, as soon as the entry exists, always has a used value.
+ *    size, as soon as the entry exists, always has a used value.
  *
- * The fields were built to hold:
- *    value0 is parent key
- *    value1 is left node
- *    value2 is right node
- *    value3 is node value
- *    value4 is color
- *    value5 is size of subtree at key
- * 
- * Note that value3 is treated as the standard value for the map in terms of
- * using key and value3 in equals and hashmap.
- * 
+ * Note that equals and hashcode use key and value only.
  * 
  */
-public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements 
+public class NodeMap extends TLongIntHash implements 
     Externalizable {
     
-    static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 12325L;
 
     /** the values of the map */
-    protected transient long[] _values0;
-    protected transient long[] _values1;
-    protected transient long[] _values2;
-    protected transient int[] _values3;
-    protected transient int[] _values4;
-    protected transient int[] _values5;
+    protected transient long[] _parents;
+    protected transient long[] _lefts;
+    protected transient long[] _rights;
+    protected transient int[] _values;
+    protected transient int[] _colors;
+    protected transient int[] _sizes;
     
     protected final long noLinkValue = Long.MIN_VALUE;
-
-    protected int no_entry_value = 0;
 
     /**
      * Creates a new <code>TLongLongHashMap</code> instance with the default
      * capacity and load factor.
      */
-    public TLong_LongLongLongIntIntIntHashMap() {
+    public NodeMap() {
         super();
         no_entry_key = 0;
     }
@@ -102,7 +91,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      *
      * @param initialCapacity an <code>int</code> value
      */
-    public TLong_LongLongLongIntIntIntHashMap( int initialCapacity ) {
+    public NodeMap( int initialCapacity ) {
         super( initialCapacity );
         no_entry_key = 0;
     }
@@ -116,7 +105,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      * @param initialCapacity an <code>int</code> value
      * @param loadFactor a <code>float</code> value
      */
-    public TLong_LongLongLongIntIntIntHashMap( int initialCapacity, float loadFactor ) {
+    public NodeMap( int initialCapacity, float loadFactor ) {
         super( initialCapacity, loadFactor );
         no_entry_key = 0;
     }
@@ -136,8 +125,8 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      * @param noEntryValue a <code>int</code> value that represents
      *                   <tt>null</tt> for the Value set.
      */
-    public TLong_LongLongLongIntIntIntHashMap( int initialCapacity, float loadFactor,
-        long noEntryKey, int noEntryValue, int noEntryValueInt ) {
+    public NodeMap( int initialCapacity, float loadFactor,
+        long noEntryKey, int noEntryValue) {
         super( initialCapacity, loadFactor, noEntryKey, noEntryValue);
         no_entry_key = 0;
     }
@@ -149,57 +138,57 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      *      *
      * @param keys a <tt>long</tt> array containing the keys for the matching values.
      *  
-     * @param values0 is <tt>long</tt> array containing the first entry of values.
+     * @param parents is <tt>long</tt> array containing the first entry of values.
      *     <em>For trees using this class</em>, this is the <em>parent</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param values1 is <tt>long</tt> array containing the second entry of values.
+       @param lefts is <tt>long</tt> array containing the second entry of values.
      *     <em>For trees using this class</em>, this is the <em>left</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param values2 is <tt>long</tt> array containing the third entry of values.
+       @param rights is <tt>long</tt> array containing the third entry of values.
      *     <em>For trees using this class</em>, this is the <em>right</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param values3 is <tt>int</tt> array containing the fourth entry of values.
+       @param values is <tt>int</tt> array containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>standard value</em> field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param values4 is <tt>int</tt> array containing the fourth entry of values.
+       @param colors is <tt>int</tt> array containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>color</em> value field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param values5 <tt>int</tt> array containing the fourth entry of values.
+       @param sizes <tt>int</tt> array containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>size</em> value field
            holding the size of the subtree of this node.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
      */
-    public TLong_LongLongLongIntIntIntHashMap( long[] keys, 
-        long[] values0, long[] values1, long[] values2, 
-        int[] values3, int[] values4, int[] values5) {
+    public NodeMap( long[] keys, 
+        long[] parents, long[] lefts, long[] rights, 
+        int[] values, int[] colors, int[] sizes) {
         
-        super( Math.max( keys.length, values0.length ) );
+        super(Math.max(keys.length, parents.length ) );
         
         no_entry_key = 0;
         
-        if (keys.length != values0.length ||
-            keys.length != values1.length ||
-            keys.length != values2.length ||
-            keys.length != values3.length ||
-            keys.length != values4.length ||
-            keys.length != values5.length) {
+        if (keys.length != parents.length ||
+            keys.length != lefts.length ||
+            keys.length != rights.length ||
+            keys.length != values.length ||
+            keys.length != colors.length ||
+            keys.length != sizes.length) {
             throw new IllegalArgumentException("all arrays must be same length");
         }
 
-        int size = Math.min( keys.length, values0.length );
+        int size = Math.min(keys.length, parents.length );
         for ( int i = 0; i < size; i++ ) {
-            this.put( keys[i], 
-                values0[i], values1[i], values2[i],
-                values3[i], values4[i], values5[i]);
+            this.put(keys[i], 
+                parents[i], lefts[i], rights[i],
+                values[i], colors[i], sizes[i]);
         }
     }
     
@@ -229,13 +218,13 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      *
      * @param map a <tt>TLongLongMap</tt> that will be duplicated.
      */
-    public TLong_LongLongLongIntIntIntHashMap( 
-        TLong_LongLongLongIntIntIntHashMap map ) {
+    public NodeMap( 
+        NodeMap map ) {
         
         super( map.size() );
         
-        TLong_LongLongLongIntIntIntHashMap hashmap 
-            = ( TLong_LongLongLongIntIntIntHashMap ) map;
+        NodeMap hashmap 
+            = ( NodeMap ) map;
         this._loadFactor = Math.abs( hashmap._loadFactor );
         this.no_entry_key = hashmap.no_entry_key;
         this.no_entry_value = hashmap.no_entry_value;
@@ -248,12 +237,12 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         setUp( saturatedCast( 
             fastCeil( DEFAULT_CAPACITY / (double) _loadFactor ) ) );
          
-        Arrays.fill( _values0, this.noLinkValue );
-        Arrays.fill( _values1, this.noLinkValue );
-        Arrays.fill( _values2, this.noLinkValue );
-        Arrays.fill( _values3, this.no_entry_value );
-        Arrays.fill( _values4, this.no_entry_value );
-        Arrays.fill( _values5, this.no_entry_value );
+        Arrays.fill(_parents, this.noLinkValue );
+        Arrays.fill(_lefts, this.noLinkValue );
+        Arrays.fill(_rights, this.noLinkValue );
+        Arrays.fill(_values, this.no_entry_value );
+        Arrays.fill(_colors, this.no_entry_value );
+        Arrays.fill(_sizes, this.no_entry_value );
        
         putAll( map );
     }
@@ -270,12 +259,12 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         int capacity;
 
         capacity = super.setUp( initialCapacity );
-        _values0 = new long[capacity];
-        _values1 = new long[capacity];
-        _values2 = new long[capacity];
-        _values3 = new int[capacity];
-        _values4 = new int[capacity];
-        _values5 = new int[capacity];
+        _parents = new long[capacity];
+        _lefts = new long[capacity];
+        _rights = new long[capacity];
+        _values = new int[capacity];
+        _colors = new int[capacity];
+        _sizes = new int[capacity];
         return capacity;
     }
 
@@ -291,33 +280,33 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         int oldCapacity = _set.length;
         
         long oldKeys[] = _set;
-        long oldVals0[] = _values0;
-        long oldVals1[] = _values1;
-        long oldVals2[] = _values2;
-        int oldVals3[] = _values3;
-        int oldVals4[] = _values4;
-        int oldVals5[] = _values5;
+        long oldVals0[] = _parents;
+        long oldVals1[] = _lefts;
+        long oldVals2[] = _rights;
+        int oldVals3[] = _values;
+        int oldVals4[] = _colors;
+        int oldVals5[] = _sizes;
         byte oldStates[] = _states;
 
         _set = new long[newCapacity];
-        _values0 = new long[newCapacity];
-        _values1 = new long[newCapacity];
-        _values2 = new long[newCapacity];
-        _values3 = new int[newCapacity];
-        _values4 = new int[newCapacity];
-        _values5 = new int[newCapacity];
+        _parents = new long[newCapacity];
+        _lefts = new long[newCapacity];
+        _rights = new long[newCapacity];
+        _values = new int[newCapacity];
+        _colors = new int[newCapacity];
+        _sizes = new int[newCapacity];
         _states = new byte[newCapacity];
 
         for ( int i = oldCapacity; i-- > 0; ) {
             if( oldStates[i] == FULL ) {
                 long o = oldKeys[i];
                 int index = insertKey( o );
-                _values0[index] = oldVals0[i];
-                _values1[index] = oldVals1[i];
-                _values2[index] = oldVals2[i];
-                _values3[index] = oldVals3[i];
-                _values4[index] = oldVals4[i];
-                _values5[index] = oldVals5[i];
+                _parents[index] = oldVals0[i];
+                _lefts[index] = oldVals1[i];
+                _rights[index] = oldVals2[i];
+                _values[index] = oldVals3[i];
+                _colors[index] = oldVals4[i];
+                _sizes[index] = oldVals5[i];
             }
         }
     }
@@ -327,39 +316,39 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      * 
      * @param key a <tt>long</tt> containing the key for the associated values.
      *  
-     * @param value0 is <tt>long</tt> containing the first entry of values.
+     * @param parent is <tt>long</tt> containing the first entry of values.
      *     <em>For trees using this class</em>, this is the <em>parent</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param value1 is <tt>long</tt> containing the second entry of values.
+       @param left is <tt>long</tt> containing the second entry of values.
      *     <em>For trees using this class</em>, this is the <em>left</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param value2 is <tt>long</tt> containing the third entry of values.
+       @param right is <tt>long</tt> containing the third entry of values.
      *     <em>For trees using this class</em>, this is the <em>right</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param value3 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeValue is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>standard value</em> field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value4 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeColor is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>color</em> value field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value5 <tt>int</tt> containing the fourth entry of values.
+       @param nodeSize <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>size</em> value field
            holding the size of the subtree of this node.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
      */
-    public void put( long key, long value0, long value1, long value2,
-        int value3, int value4, int value5) {
+    public void put( long key, long parent, long left, long right,
+        int nodeValue, int nodeColor, int nodeSize) {
         int index = insertKey( key );
-        doPut( key, value0, value1, value2, value3, value4, value5, index );
+        doPut(key, parent, left, right, nodeValue, nodeColor, nodeSize, index );
     }
     
     /**
@@ -368,27 +357,27 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      * 
      * @param key a <tt>long</tt> containing the key for the associated values.
      *  
-       @param value3 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeValue is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>standard value</em> field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value4 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeColor is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>color</em> value field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value5 <tt>int</tt> containing the fourth entry of values.
+       @param nodeSize <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>size</em> value field
            holding the size of the subtree of this node.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields. 
      */
-    public void put( long key, int value3, int value4, int value5) {
+    public void put( long key, int nodeValue, int nodeColor, int nodeSize) {
         int index = insertKey( key );
-        doPut( key, noLinkValue, noLinkValue, noLinkValue, value3, value4, 
-            value5, index );
+        doPut(key, noLinkValue, noLinkValue, noLinkValue, nodeValue, nodeColor, 
+            nodeSize, index );
     }
 
     /** insert into map if there is not already an existing key.
@@ -396,41 +385,41 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      * else true for successful insert.
      * @param key a <tt>long</tt> containing the key for the associated values.
      *  
-     * @param value0 is <tt>long</tt> containing the first entry of values.
+     * @param parent is <tt>long</tt> containing the first entry of values.
      *     <em>For trees using this class</em>, this is the <em>parent</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param value1 is <tt>long</tt> containing the second entry of values.
+       @param left is <tt>long</tt> containing the second entry of values.
      *     <em>For trees using this class</em>, this is the <em>left</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param value2 is <tt>long</tt> containing the third entry of values.
+       @param right is <tt>long</tt> containing the third entry of values.
      *     <em>For trees using this class</em>, this is the <em>right</em> field.
      *     Note that the backing array has a LONG.MIN_VALUE when the key has
            no parent.
-       @param value3 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeValue is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>standard value</em> field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value4 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeColor is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>color</em> value field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value5 <tt>int</tt> containing the fourth entry of values.
+       @param nodeSize <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>size</em> value field
            holding the size of the subtree of this node.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
      */
-    public boolean putIfAbsent( long key, long value0, long value1, long value2,
-        int value3, int value4, int value5 ) {
+    public boolean putIfAbsent( long key, long parent, long left, long right,
+        int nodeValue, int nodeColor, int nodeSize ) {
         int index = insertKey( key );
         if (index < 0)
             return false;
-        doPut( key, value0, value1, value2, value3, value4, value5, index );
+        doPut(key, parent, left, right, nodeValue, nodeColor, nodeSize, index );
         return true;
     }
     
@@ -443,45 +432,45 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
      * 
      * @param key a <tt>long</tt> containing the key for the associated values.
      *  
-       @param value3 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeValue is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>standard value</em> field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value4 is <tt>int</tt> containing the fourth entry of values.
+       @param nodeColor is <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>color</em> value field.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields.
-       @param value5 <tt>int</tt> containing the fourth entry of values.
+       @param nodeSize <tt>int</tt> containing the fourth entry of values.
      *     <em>For trees using this class</em>, this is the <em>size</em> value field
            holding the size of the subtree of this node.
      *     Note that the backing array should always have a valid value for this
            field, that is, if containsKey(key) is true, this value will be fetched
            and not checked for a null entry like the long fields. 
      */
-    public boolean putIfAbsent( long key, int value3, int value4, int value5 ) {
+    public boolean putIfAbsent( long key, int nodeValue, int nodeColor, int nodeSize ) {
         int index = insertKey( key );
         if (index < 0)
             return false;
-        doPut( key, noLinkValue, noLinkValue, noLinkValue, value3, value4, value5, index );
+        doPut(key, noLinkValue, noLinkValue, noLinkValue, nodeValue, nodeColor, nodeSize, index );
         return true;
     }
 
-    private void doPut( long key, long value0, long value1, long value2,
-        int value3, int value4, int value5, int index ) {
+    private void doPut( long key, long parent, long left, long right,
+        int value, int nodeColor, int nodeSize, int index ) {
         
         boolean isNewMapping = true;
         if ( index < 0 ) {
             index = -index -1;
             isNewMapping = false;
         }
-        _values0[index] = value0;
-        _values1[index] = value1;
-        _values2[index] = value2;
-        _values3[index] = value3;
-        _values4[index] = value4;
-        _values5[index] = value5;
+        _parents[index] = parent;
+        _lefts[index] = left;
+        _rights[index] = right;
+        _values[index] = value;
+        _colors[index] = nodeColor;
+        _sizes[index] = nodeSize;
 
         if (isNewMapping) {
             // a method in THash to expand and rehash if needed
@@ -490,13 +479,12 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
     }
     
     /**
-     * update value0 if if doesn't exist, else return false because there is
+     * unset parent if it exists, else return false because there is
      * not an entry already for the given key.
      * @param key
-     * @param value0
      * @return 
      */
-    public boolean updateValue0( long key, long value0 ) {
+    public boolean unsetParent( long key) {
         //for existing entries, index returned by insertKey is negative
         int index = insertKey( key );
         if (index >= 0)
@@ -504,128 +492,197 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         if ( index < 0 ) {
             index = -index -1;
         }
-        _values0[index] = value0;
+        _parents[index] = noLinkValue;
         return true;
     }
     /**
-     * update value1 if if doesn't exist, else return false because there is
+     * unset left if it exists, else return false because there is
      * not an entry already for the given key.
      * @param key
-     * @param value1
      * @return 
      */
-    public boolean updateValue1( long key, long value1 ) {
+    public boolean unsetLeft( long key) {
         //for existing entries, index is positive
         int index = index( key );
         if (index < 0) {
             return false;
         }
-        _values1[index] = value1;
+        _lefts[index] = noLinkValue;
         return true;
     }
     /**
-     * update value2 if if doesn't exist, else return false because there is
+     * unset right if it exists, else return false because there is
      * not an entry already for the given key.
      * @param key
-     * @param value2
      * @return 
      */
-    public boolean updateValue2( long key, long value2 ) {
+    public boolean unsetRight( long key ) {
         //for existing entries, index is positive
         int index = index( key );
         if (index < 0) {
             return false;
         }
-        _values2[index] = value2;
+        _rights[index] = noLinkValue;
+        return true;
+    }
+    
+    /**
+     * update parent if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param parent
+     * @return 
+     */
+    public boolean updateParent( long key, long parent ) {
+        //for existing entries, index returned by insertKey is negative
+        int index = insertKey( key );
+        if (index >= 0)
+            return false;
+        if ( index < 0 ) {
+            index = -index -1;
+        }
+        _parents[index] = parent;
         return true;
     }
     /**
-     * update value3 if if doesn't exist, else return false because there is
+     * update left if if doesn't exist, else return false because there is
      * not an entry already for the given key.
      * @param key
-     * @param value3
+     * @param left
      * @return 
      */
-    public boolean updateValue3( long key, int value3 ) {
+    public boolean updateLeft( long key, long left ) {
         //for existing entries, index is positive
         int index = index( key );
         if (index < 0) {
             return false;
         }
-        _values3[index] = value3;
+        _lefts[index] = left;
         return true;
     }
     /**
-     * update value4 if if doesn't exist, else return false because there is
+     * update right if if doesn't exist, else return false because there is
      * not an entry already for the given key.
      * @param key
-     * @param value4
+     * @param right
      * @return 
      */
-    public boolean updateValue4( long key, int value4 ) {
+    public boolean updateRight( long key, long right ) {
         //for existing entries, index is positive
         int index = index( key );
         if (index < 0) {
             return false;
         }
-        _values4[index] = value4;
+        _rights[index] = right;
         return true;
     }
     /**
-     * update value5 if if doesn't exist, else return false because there is
+     * update nodeValue if if doesn't exist, else return false because there is
      * not an entry already for the given key.
      * @param key
-     * @param value5
+     * @param nodeValue
      * @return 
      */
-    public boolean updateValue5( long key, int value5 ) {
+    public boolean updateNodeValue( long key, int nodeValue ) {
         //for existing entries, index is positive
         int index = index( key );
         if (index < 0) {
             return false;
         }
-        _values5[index] = value5;
+        _values[index] = nodeValue;
+        return true;
+    }
+    /**
+     * update nodeColor if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param nodeColor
+     * @return 
+     */
+    public boolean updateNodeColor( long key, int nodeColor ) {
+        //for existing entries, index is positive
+        int index = index( key );
+        if (index < 0) {
+            return false;
+        }
+        _colors[index] = nodeColor;
+        return true;
+    }
+    /**
+     * update nodeSize if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param nodeSize the size of the subtree underneath and including the node
+     * @return 
+     */
+    public boolean updateNodeSize( long key, int nodeSize ) {
+        //for existing entries, index is positive
+        int index = index( key );
+        if (index < 0) {
+            return false;
+        }
+        _sizes[index] = nodeSize;
         return true;
     }
 
     /** {@inheritDoc} */
-    public void putAll( TLong_LongLongLongIntIntIntHashMap map ) {
+    public void putAll( NodeMap map ) {
         ensureCapacity( map.size() );
         TLong_LongLongLongIntIntIntHashIterator iter 
             = map.iterator();
         while ( iter.hasNext() ) {
             iter.advance();
             this.put( iter.key(), 
-                iter.value0(), iter.value1(), iter.value2(),
-                iter.value3(), iter.value4(), iter.value5());
+                iter.parent(), iter.left(), iter.right(),
+                iter.nodeValue(), iter.nodeColor(), iter.nodeSize());
         }
     }
 
-
+    public boolean parentIsSet(long key) {
+        int index = index(key);
+        if (index < 0 || _parents[index] == noLinkValue) {
+            return false;
+        }
+        return true;
+    }
+    public boolean leftIsSet(long key) {
+        int index = index(key);
+        if (index < 0 || _lefts[index] == noLinkValue) {
+            return false;
+        }
+        return true;
+    }
+    public boolean rightIsSet(long key) {
+        int index = index(key);
+        if (index < 0 || _rights[index] == noLinkValue) {
+            return false;
+        }
+        return true;
+    }
     /** {@inheritDoc} */
-    public long getValue0( long key ) {
+    public long getParent( long key ) {
         int index = index( key );
-        return index < 0 ? noLinkValue : _values0[index];
+        return index < 0 ? noLinkValue : _parents[index];
     }
-    public long getValue1( long key ) {
+    public long getLeft( long key ) {
         int index = index( key );
-        return index < 0 ? noLinkValue : _values1[index];
+        return index < 0 ? noLinkValue : _lefts[index];
     }
-    public long getValue2( long key ) {
+    public long getRight( long key ) {
         int index = index( key );
-        return index < 0 ? noLinkValue : _values2[index];
+        return index < 0 ? noLinkValue : _rights[index];
     }
-    public int getValue3( long key ) {
+    public int getNodeValue( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value : _values3[index];
+        return index < 0 ? no_entry_value : _values[index];
     }
-    public int getValue4( long key ) {
+    public int getNodeColor( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value : _values4[index];
+        return index < 0 ? no_entry_value : _colors[index];
     }
-    public int getValue5( long key ) {
+    public int getNodeSize( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value : _values5[index];
+        return index < 0 ? no_entry_value : _sizes[index];
     }
 
 
@@ -633,14 +690,14 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
     @Override
     public void clear() {
         super.clear();
-        int n = _values0.length;
+        int n = _parents.length;
         Arrays.fill( _set, 0, _set.length, no_entry_key );
-        Arrays.fill( _values0, 0, n, noLinkValue );
-        Arrays.fill( _values1, 0, n, noLinkValue );
-        Arrays.fill( _values2, 0, n, noLinkValue );
-        Arrays.fill( _values3, 0, n, no_entry_value );
-        Arrays.fill( _values4, 0, n, no_entry_value );
-        Arrays.fill( _values5, 0, n, no_entry_value );
+        Arrays.fill(_parents, 0, n, noLinkValue );
+        Arrays.fill(_lefts, 0, n, noLinkValue );
+        Arrays.fill(_rights, 0, n, noLinkValue );
+        Arrays.fill(_values, 0, n, no_entry_value );
+        Arrays.fill(_colors, 0, n, no_entry_value );
+        Arrays.fill(_sizes, 0, n, no_entry_value );
         Arrays.fill( _states, 0, _states.length, FREE );
     }
 
@@ -668,12 +725,12 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
 
     /** {@inheritDoc} */
     protected void removeAt( int index ) {
-        _values0[index] = noLinkValue;
-        _values1[index] = noLinkValue;
-        _values2[index] = noLinkValue;
-        _values3[index] = no_entry_value;
-        _values4[index] = no_entry_value;
-        _values5[index] = no_entry_value;
+        _parents[index] = noLinkValue;
+        _lefts[index] = noLinkValue;
+        _rights[index] = noLinkValue;
+        _values[index] = no_entry_value;
+        _colors[index] = no_entry_value;
+        _sizes[index] = no_entry_value;
         super.removeAt( index );  // clear key, state; adjust size
     }
 
@@ -749,35 +806,9 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         return super.contains(val); 
     }
     
-
     /** {@inheritDoc} */
     public boolean containsKey( long key ) {
         return contains( key );
-    }
-
-    public boolean containsValue0( long key) {
-        int index = index( key );
-        return (index >= 0);
-    }
-    public boolean containsValue1( long key) {
-        int index = index( key );
-        return (index >= 0);
-    }
-    public boolean containsValue2( long key) {
-        int index = index( key );
-        return (index >= 0);
-    }
-    public boolean containsValue3( long key) {
-        int index = index( key );
-        return (index >= 0);
-    }
-    public boolean containsValue4( long key) {
-        int index = index( key );
-        return (index >= 0);
-    }
-    public boolean containsValue5( long key) {
-        int index = index( key );
-        return (index >= 0);
     }
 
     public TLong_LongLongLongIntIntIntHashIterator iterator() {
@@ -811,7 +842,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
             // Disable auto compaction during the remove. This is a workaround for bug 1642768.
             try {
                 _hash.tempDisableAutoCompaction();
-                TLong_LongLongLongIntIntIntHashMap.this.removeAt( _index );
+                NodeMap.this.removeAt( _index );
             }
             finally {
                 _hash.reenableAutoCompaction( false );
@@ -830,7 +861,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
          * @param map the <tt>TLongLongHashMap</tt> we will be iterating over.
          */
         TLong_LongLongLongIntIntIntHashIterator( 
-            TLong_LongLongLongIntIntIntHashMap map ) {
+            NodeMap map ) {
             super( map );
         }
 
@@ -845,55 +876,55 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         }
 
         /** {@inheritDoc} */
-        public long value0() {
-            return _values0[_index];
+        public long parent() {
+            return _parents[_index];
         }
-        public long value1() {
-            return _values1[_index];
+        public long left() {
+            return _lefts[_index];
         }
-        public long value2() {
-            return _values2[_index];
+        public long right() {
+            return _rights[_index];
         }
-        public int value3() {
-            return _values3[_index];
+        public int nodeValue() {
+            return _values[_index];
         }
-        public int value4() {
-            return _values4[_index];
+        public int nodeColor() {
+            return _colors[_index];
         }
-        public int value5() {
-            return _values5[_index];
+        public int nodeSize() {
+            return _sizes[_index];
         }
 
         /** {@inheritDoc} */
-        public long setValue0( long val ) {
-            long old = value0();
-            _values0[_index] = val;
+        public long setParent( long val ) {
+            long old = parent();
+            _parents[_index] = val;
             return old;
         }
-        public long setValue1( long val ) {
-            long old = value1();
-            _values1[_index] = val;
+        public long setLeft( long val ) {
+            long old = left();
+            _lefts[_index] = val;
             return old;
         }
-        public long setValue2( long val ) {
-            long old = value2();
-            _values2[_index] = val;
+        public long setRight( long val ) {
+            long old = right();
+            _rights[_index] = val;
             return old;
         }
         
-        public int setValue3( int val ) {
-            int old = value3();
-            _values3[_index] = val;
+        public int setValue( int val ) {
+            int old = nodeValue();
+            _values[_index] = val;
             return old;
         }
-        public int setValue4( int val ) {
-            int old = value4();
-            _values4[_index] = val;
+        public int setNodeColor( int val ) {
+            int old = nodeColor();
+            _colors[_index] = val;
             return old;
         }
-        public int setValue5( int val ) {
-            int old = value5();
-            _values5[_index] = val;
+        public int setNodeSize( int val ) {
+            int old = nodeSize();
+            _sizes[_index] = val;
             return old;
         }
 
@@ -905,7 +936,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
             // Disable auto compaction during the remove. This is a workaround for bug 1642768.
             try {
                 _hash.tempDisableAutoCompaction();
-                TLong_LongLongLongIntIntIntHashMap.this.removeAt( _index );
+                NodeMap.this.removeAt( _index );
             }
             finally {
                 _hash.reenableAutoCompaction( false );
@@ -927,7 +958,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
         if ( that.size() != this.size() ) {
             return false;
         }
-        int[] values3 = _values3;
+        int[] values3 = _values;
         byte[] states = _states;
         long this_no_entry_value = getNoEntryValue();
         long that_no_entry_value = that.getNoEntryValue();
@@ -959,15 +990,14 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
     public int hashCode() {
         int hashcode = 0;
         byte[] states = _states;
-        for ( int i = _values0.length; i-- > 0; ) {
+        for ( int i = _parents.length; i-- > 0; ) {
             if ( states[i] == FULL ) {
                 hashcode += HashFunctions.hash( _set[i] ) ^
-                            HashFunctions.hash( _values3[i] );
+                            HashFunctions.hash(_values[i] );
             }
         }
         return hashcode;
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -975,7 +1005,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
 
         final StringBuilder buf = new StringBuilder( "{" );
         
-        int[] values3 = _values3;
+        int[] values3 = _values;
         byte[] states = _states;
         for ( int i = values3.length; i-- > 0; ) {
             if ( states[i] == FULL ) {
@@ -985,18 +1015,17 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
                 long key = _set[i];
                 buf.append(key);
                 buf.append("=");
-                buf.append(_values0[i]);
-                buf.append(_values1[i]);
-                buf.append(_values2[i]);
-                buf.append(_values3[i]);
-                buf.append(_values4[i]);
-                buf.append(_values5[i]);
+                buf.append(_parents[i]);
+                buf.append(_lefts[i]);
+                buf.append(_rights[i]);
+                buf.append(_values[i]);
+                buf.append(_colors[i]);
+                buf.append(_sizes[i]);
             }
         }
         buf.append( "}" );
         return buf.toString();
     }
-
 
     /** {@inheritDoc} */
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -1013,12 +1042,12 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
     	for ( int i = _states.length; i-- > 0; ) {
             if ( _states[i] == FULL ) {
                 out.writeLong( _set[i] );
-                out.writeLong( _values0[i] );
-                out.writeLong( _values1[i] );
-                out.writeLong( _values2[i] );
-                out.writeInt( _values3[i] );
-                out.writeInt( _values4[i] );
-                out.writeInt( _values5[i] );
+                out.writeLong(_parents[i] );
+                out.writeLong(_lefts[i] );
+                out.writeLong(_rights[i] );
+                out.writeInt(_values[i] );
+                out.writeInt(_colors[i] );
+                out.writeInt(_sizes[i] );
             }
         }
     }
@@ -1048,4 +1077,39 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements
             put(key, val0, val1, val2, val3, val4, val5);
         }
     }
-} // TLongLongHashMap
+    
+     public static long estimateSizeOnHeap(int numberOfEntries) {
+        
+        /*
+        super class:
+           long serialVersionUID = 1L;
+           long[] _set;
+           long no_entry_key;
+           int no_entry_value;
+           boolean consumeFreeSlot;
+         this class:
+           long serialVersionUID = 12325L;
+           long[] _parents;
+           long[] _lefts;
+           long[] _rights;
+           int[] _values;
+           int[] _colors;
+           int[] _sizes;
+           long noLinkValue = Long.MIN_VALUE;
+        */
+        
+        ObjectSpaceEstimator est0 = new ObjectSpaceEstimator();
+        est0.setNLongFields(2 + numberOfEntries);
+        est0.setNIntFields(1);
+        est0.setNArrayRefsFields(1);
+        est0.setNBooleanFields(1);
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNLongFields(2 + 3*numberOfEntries);
+        est.setNIntFields(1 + 3*numberOfEntries);
+        est.setNArrayRefsFields(6);
+        
+        return est0.estimateSizeOnHeap() + est.estimateSizeOnHeap();
+        
+     }
+} 

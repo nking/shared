@@ -12,9 +12,9 @@ import junit.framework.TestCase;
  *
  * @author nichole
  */
-public class TLong_LongLongLongIntIntIntHashMapTest extends TestCase {
+public class NodeMapTest extends TestCase {
     
-    public TLong_LongLongLongIntIntIntHashMapTest(String testName) {
+    public NodeMapTest(String testName) {
         super(testName);
     }
     
@@ -27,8 +27,7 @@ public class TLong_LongLongLongIntIntIntHashMapTest extends TestCase {
         
         int n = 100;
         
-        TLong_LongLongLongIntIntIntHashMap map 
-            = new TLong_LongLongLongIntIntIntHashMap();
+        NodeMap map = new NodeMap();
     
         TLongList keys = new TLongArrayList();
         TLongList v0s = new TLongArrayList();
@@ -73,21 +72,21 @@ public class TLong_LongLongLongIntIntIntHashMapTest extends TestCase {
                     val0 = Long.MIN_VALUE;
                     val1 = Long.MAX_VALUE;
                     val2 = Long.MIN_VALUE;
-                    map.updateValue0(key, val0);
-                    map.updateValue1(key, val1);
-                    map.updateValue2(key, val2);
+                    map.updateParent(key, val0);
+                    map.updateLeft(key, val1);
+                    map.updateRight(key, val2);
                 }
                 
             }
             
             assertTrue(map.contains(key));
             assertTrue(map.containsKey(key));
-            assertEquals(val0, map.getValue0(key));
-            assertEquals(val1, map.getValue1(key));
-            assertEquals(val2, map.getValue2(key));
-            assertEquals(val3, map.getValue3(key));
-            assertEquals(val4, map.getValue4(key));
-            assertEquals(val5, map.getValue5(key));
+            assertEquals(val0, map.getParent(key));
+            assertEquals(val1, map.getLeft(key));
+            assertEquals(val2, map.getRight(key));
+            assertEquals(val3, map.getNodeValue(key));
+            assertEquals(val4, map.getNodeColor(key));
+            assertEquals(val5, map.getNodeSize(key));
             
             keys.add(key);
             v0s.add(val0);
