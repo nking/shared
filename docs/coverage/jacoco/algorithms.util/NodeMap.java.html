@@ -1,0 +1,1116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NodeMap.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.util</a> &gt; <span class="el_source">NodeMap.java</span></div><h1>NodeMap.java</h1><pre class="source lang-java linenums">/**
+// This is an extension of and edits to TLongLongHashMap from the trove4j library
+// downloaded from https://bitbucket.org/trove4j/trove/overview
+// 
+//   extended to add arrays to hold more values for the same key, specifically
+     for nodes having parent, left, right, value, color and size.
+// 
+// The original copyright is:
+// Copyright (c) 2001, Eric D. Friedman All Rights Reserved.
+// Copyright (c) 2009, Rob Eden All Rights Reserved.
+// Copyright (c) 2009, Jeff Randall All Rights Reserved.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+// @author Eric D. Friedman
+// @author Rob Eden
+// @author Jeff Randall
+// @version $Id: _K__V_HashMap.template,v 1.1.2.16 2010/03/02 04:09:50 robeden Exp $
+*/
+package algorithms.util;
+
+import gnu.trove.map.TLongLongMap;
+import gnu.trove.set.*;
+import gnu.trove.iterator.*;
+import gnu.trove.impl.hash.*;
+import gnu.trove.impl.HashFunctions;
+import gnu.trove.set.hash.TLongHashSet;
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * An open addressed Map implementation for long keys and 
+ *    long, long, long, int, int, int values.
+ * 
+ * Note that the structure was built specifically to hold fields for a tree node,
+ * so there are special rules used to help define that a value has not been
+ * set.
+ * 
+ * The key is the unique key for an entry.
+ *    parent is LONG.MIN_VALUE when not used.
+ *    left is LONG.MIN_VALUE when not used.
+ *    right is LONG.MIN_VALUE when not used.
+ *    value, as soon as the entry exists, always has a used value.
+ *    color, as soon as the entry exists, always has a used value.
+ *    size, as soon as the entry exists, always has a used value.
+ *
+ * Note that equals and hashcode use key and value only.
+ * 
+ */
+public class NodeMap extends TLongIntHash implements 
+    Externalizable {
+    
+    static final long serialVersionUID = 12325L;
+
+    /** the values of the map */
+    protected transient long[] _parents;
+    protected transient long[] _lefts;
+    protected transient long[] _rights;
+    protected transient int[] _values;
+    protected transient int[] _colors;
+    protected transient int[] _sizes;
+    
+<span class="pc" id="L75">    protected final long noLinkValue = Long.MIN_VALUE;</span>
+
+    /**
+     * Creates a new &lt;code&gt;TLongLongHashMap&lt;/code&gt; instance with the default
+     * capacity and load factor.
+     */
+    public NodeMap() {
+<span class="fc" id="L82">        super();</span>
+<span class="fc" id="L83">        no_entry_key = 0;</span>
+<span class="fc" id="L84">    }</span>
+
+
+    /**
+     * Creates a new &lt;code&gt;TLongLongHashMap&lt;/code&gt; instance with a prime
+     * capacity equal to or greater than &lt;tt&gt;initialCapacity&lt;/tt&gt; and
+     * with the default load factor.
+     *
+     * @param initialCapacity an &lt;code&gt;int&lt;/code&gt; value
+     */
+    public NodeMap( int initialCapacity ) {
+<span class="nc" id="L95">        super( initialCapacity );</span>
+<span class="nc" id="L96">        no_entry_key = 0;</span>
+<span class="nc" id="L97">    }</span>
+
+
+    /**
+     * Creates a new &lt;code&gt;TLongLongHashMap&lt;/code&gt; instance with a prime
+     * capacity equal to or greater than &lt;tt&gt;initialCapacity&lt;/tt&gt; and
+     * with the specified load factor.
+     *
+     * @param initialCapacity an &lt;code&gt;int&lt;/code&gt; value
+     * @param loadFactor a &lt;code&gt;float&lt;/code&gt; value
+     */
+    public NodeMap( int initialCapacity, float loadFactor ) {
+<span class="nc" id="L109">        super( initialCapacity, loadFactor );</span>
+<span class="nc" id="L110">        no_entry_key = 0;</span>
+<span class="nc" id="L111">    }</span>
+
+
+    /**
+     * Creates a new &lt;code&gt;TLongLongHashMap&lt;/code&gt; instance with a prime
+     * capacity equal to or greater than &lt;tt&gt;initialCapacity&lt;/tt&gt; and
+     * with the specified load factor.
+     * 
+     * Note that the &quot;no link value&quot; is fixed to Long.MIN_VALUE.
+     *
+     * @param initialCapacity an &lt;code&gt;int&lt;/code&gt; value
+     * @param loadFactor a &lt;code&gt;float&lt;/code&gt; value
+     * @param noEntryKey a &lt;code&gt;long&lt;/code&gt; value that represents
+     *                   &lt;tt&gt;null&lt;/tt&gt; for the Key set.
+     * @param noEntryValue a &lt;code&gt;int&lt;/code&gt; value that represents
+     *                   &lt;tt&gt;null&lt;/tt&gt; for the Value set.
+     */
+    public NodeMap( int initialCapacity, float loadFactor,
+        long noEntryKey, int noEntryValue) {
+<span class="nc" id="L130">        super( initialCapacity, loadFactor, noEntryKey, noEntryValue);</span>
+<span class="nc" id="L131">        no_entry_key = 0;</span>
+<span class="nc" id="L132">    }</span>
+
+
+    /**
+     * Creates a new &lt;code&gt;TLongLongHashMap&lt;/code&gt; instance containing
+     * all of the entries in the map passed in.
+     *      *
+     * @param keys a &lt;tt&gt;long&lt;/tt&gt; array containing the keys for the matching values.
+     *  
+     * @param parents is &lt;tt&gt;long&lt;/tt&gt; array containing the first entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;parent&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param lefts is &lt;tt&gt;long&lt;/tt&gt; array containing the second entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;left&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param rights is &lt;tt&gt;long&lt;/tt&gt; array containing the third entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;right&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param values is &lt;tt&gt;int&lt;/tt&gt; array containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;standard value&lt;/em&gt; field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param colors is &lt;tt&gt;int&lt;/tt&gt; array containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;color&lt;/em&gt; value field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param sizes &lt;tt&gt;int&lt;/tt&gt; array containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;size&lt;/em&gt; value field
+           holding the size of the subtree of this node.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+     */
+    public NodeMap( long[] keys, 
+        long[] parents, long[] lefts, long[] rights, 
+        int[] values, int[] colors, int[] sizes) {
+        
+<span class="nc" id="L174">        super(Math.max(keys.length, parents.length ) );</span>
+        
+<span class="nc" id="L176">        no_entry_key = 0;</span>
+        
+<span class="nc bnc" id="L178" title="All 12 branches missed.">        if (keys.length != parents.length ||</span>
+            keys.length != lefts.length ||
+            keys.length != rights.length ||
+            keys.length != values.length ||
+            keys.length != colors.length ||
+            keys.length != sizes.length) {
+<span class="nc" id="L184">            throw new IllegalArgumentException(&quot;all arrays must be same length&quot;);</span>
+        }
+
+<span class="nc" id="L187">        int size = Math.min(keys.length, parents.length );</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        for ( int i = 0; i &lt; size; i++ ) {</span>
+<span class="nc" id="L189">            this.put(keys[i], </span>
+                parents[i], lefts[i], rights[i],
+                values[i], colors[i], sizes[i]);
+        }
+<span class="nc" id="L193">    }</span>
+    
+    /**
+     * from THash, a fast ceiling 
+     * @param v
+     * @return 
+     */
+    protected static long fastCeil( double v ) {
+<span class="nc" id="L201">        long possible_result = ( long ) v;</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        if ( v - possible_result &gt; 0 ) possible_result++;</span>
+<span class="nc" id="L203">        return possible_result;</span>
+    }
+
+    /* precondition: v &gt; 0 */
+    protected static int saturatedCast(long v) {
+<span class="nc" id="L208">        int r = (int) (v &amp; 0x7fffffff); // removing sign bit</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (r != v) {</span>
+<span class="nc" id="L210">            return Integer.MAX_VALUE;</span>
+        }
+<span class="nc" id="L212">        return r;</span>
+    }
+
+    /**
+     * Creates a new &lt;code&gt;TLongLongHashMap&lt;/code&gt; instance containing
+     * all of the entries in the map passed in.
+     *
+     * @param map a &lt;tt&gt;TLongLongMap&lt;/tt&gt; that will be duplicated.
+     */
+    public NodeMap( 
+        NodeMap map ) {
+        
+<span class="nc" id="L224">        super( map.size() );</span>
+        
+<span class="nc" id="L226">        NodeMap hashmap </span>
+            = ( NodeMap ) map;
+<span class="nc" id="L228">        this._loadFactor = Math.abs( hashmap._loadFactor );</span>
+<span class="nc" id="L229">        this.no_entry_key = hashmap.no_entry_key;</span>
+<span class="nc" id="L230">        this.no_entry_value = hashmap.no_entry_value;</span>
+        
+        //noinspection RedundantCast
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if ( this.no_entry_key != ( long ) 0 ) {</span>
+<span class="nc" id="L234">            Arrays.fill( _set, this.no_entry_key );</span>
+        }
+                
+<span class="nc" id="L237">        setUp( saturatedCast( </span>
+<span class="nc" id="L238">            fastCeil( DEFAULT_CAPACITY / (double) _loadFactor ) ) );</span>
+         
+<span class="nc" id="L240">        Arrays.fill(_parents, this.noLinkValue );</span>
+<span class="nc" id="L241">        Arrays.fill(_lefts, this.noLinkValue );</span>
+<span class="nc" id="L242">        Arrays.fill(_rights, this.noLinkValue );</span>
+<span class="nc" id="L243">        Arrays.fill(_values, this.no_entry_value );</span>
+<span class="nc" id="L244">        Arrays.fill(_colors, this.no_entry_value );</span>
+<span class="nc" id="L245">        Arrays.fill(_sizes, this.no_entry_value );</span>
+       
+<span class="nc" id="L247">        putAll( map );</span>
+<span class="nc" id="L248">    }</span>
+
+
+    /**
+     * initializes the hashtable to a prime capacity which is at least
+     * &lt;tt&gt;initialCapacity + 1&lt;/tt&gt;.
+     *
+     * @param initialCapacity an &lt;code&gt;int&lt;/code&gt; value
+     * @return the actual capacity chosen
+     */
+    protected int setUp( int initialCapacity ) {
+        int capacity;
+
+<span class="fc" id="L261">        capacity = super.setUp( initialCapacity );</span>
+<span class="fc" id="L262">        _parents = new long[capacity];</span>
+<span class="fc" id="L263">        _lefts = new long[capacity];</span>
+<span class="fc" id="L264">        _rights = new long[capacity];</span>
+<span class="fc" id="L265">        _values = new int[capacity];</span>
+<span class="fc" id="L266">        _colors = new int[capacity];</span>
+<span class="fc" id="L267">        _sizes = new int[capacity];</span>
+<span class="fc" id="L268">        return capacity;</span>
+    }
+
+
+    /**
+     * rehashes the map to the new capacity.
+     *
+     * @param newCapacity an &lt;code&gt;int&lt;/code&gt; value
+     */
+     /** {@inheritDoc} */
+    protected void rehash( int newCapacity ) {
+        
+<span class="fc" id="L280">        int oldCapacity = _set.length;</span>
+        
+<span class="fc" id="L282">        long oldKeys[] = _set;</span>
+<span class="fc" id="L283">        long oldVals0[] = _parents;</span>
+<span class="fc" id="L284">        long oldVals1[] = _lefts;</span>
+<span class="fc" id="L285">        long oldVals2[] = _rights;</span>
+<span class="fc" id="L286">        int oldVals3[] = _values;</span>
+<span class="fc" id="L287">        int oldVals4[] = _colors;</span>
+<span class="fc" id="L288">        int oldVals5[] = _sizes;</span>
+<span class="fc" id="L289">        byte oldStates[] = _states;</span>
+
+<span class="fc" id="L291">        _set = new long[newCapacity];</span>
+<span class="fc" id="L292">        _parents = new long[newCapacity];</span>
+<span class="fc" id="L293">        _lefts = new long[newCapacity];</span>
+<span class="fc" id="L294">        _rights = new long[newCapacity];</span>
+<span class="fc" id="L295">        _values = new int[newCapacity];</span>
+<span class="fc" id="L296">        _colors = new int[newCapacity];</span>
+<span class="fc" id="L297">        _sizes = new int[newCapacity];</span>
+<span class="fc" id="L298">        _states = new byte[newCapacity];</span>
+
+<span class="fc bfc" id="L300" title="All 2 branches covered.">        for ( int i = oldCapacity; i-- &gt; 0; ) {</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">            if( oldStates[i] == FULL ) {</span>
+<span class="fc" id="L302">                long o = oldKeys[i];</span>
+<span class="fc" id="L303">                int index = insertKey( o );</span>
+<span class="fc" id="L304">                _parents[index] = oldVals0[i];</span>
+<span class="fc" id="L305">                _lefts[index] = oldVals1[i];</span>
+<span class="fc" id="L306">                _rights[index] = oldVals2[i];</span>
+<span class="fc" id="L307">                _values[index] = oldVals3[i];</span>
+<span class="fc" id="L308">                _colors[index] = oldVals4[i];</span>
+<span class="fc" id="L309">                _sizes[index] = oldVals5[i];</span>
+<span class="fc" id="L310">            }</span>
+        }
+<span class="fc" id="L312">    }</span>
+
+    /**
+     * insert key and values.
+     * 
+     * @param key a &lt;tt&gt;long&lt;/tt&gt; containing the key for the associated values.
+     *  
+     * @param parent is &lt;tt&gt;long&lt;/tt&gt; containing the first entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;parent&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param left is &lt;tt&gt;long&lt;/tt&gt; containing the second entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;left&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param right is &lt;tt&gt;long&lt;/tt&gt; containing the third entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;right&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param nodeValue is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;standard value&lt;/em&gt; field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeColor is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;color&lt;/em&gt; value field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeSize &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;size&lt;/em&gt; value field
+           holding the size of the subtree of this node.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+     */
+    public void put( long key, long parent, long left, long right,
+        int nodeValue, int nodeColor, int nodeSize) {
+<span class="fc" id="L350">        int index = insertKey( key );</span>
+<span class="fc" id="L351">        doPut(key, parent, left, right, nodeValue, nodeColor, nodeSize, index );</span>
+<span class="fc" id="L352">    }</span>
+    
+    /**
+     insert key and values.  Note that the missing value0, value1, and value2
+     are inserted with the sentinel for long null values, Long.MIN_VALUE.
+     * 
+     * @param key a &lt;tt&gt;long&lt;/tt&gt; containing the key for the associated values.
+     *  
+       @param nodeValue is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;standard value&lt;/em&gt; field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeColor is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;color&lt;/em&gt; value field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeSize &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;size&lt;/em&gt; value field
+           holding the size of the subtree of this node.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields. 
+     */
+    public void put( long key, int nodeValue, int nodeColor, int nodeSize) {
+<span class="fc" id="L378">        int index = insertKey( key );</span>
+<span class="fc" id="L379">        doPut(key, noLinkValue, noLinkValue, noLinkValue, nodeValue, nodeColor, </span>
+            nodeSize, index );
+<span class="fc" id="L381">    }</span>
+
+    /** insert into map if there is not already an existing key.
+     * Note that if there is an existing key, false is returned,
+     * else true for successful insert.
+     * @param key a &lt;tt&gt;long&lt;/tt&gt; containing the key for the associated values.
+     *  
+     * @param parent is &lt;tt&gt;long&lt;/tt&gt; containing the first entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;parent&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param left is &lt;tt&gt;long&lt;/tt&gt; containing the second entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;left&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param right is &lt;tt&gt;long&lt;/tt&gt; containing the third entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;right&lt;/em&gt; field.
+     *     Note that the backing array has a LONG.MIN_VALUE when the key has
+           no parent.
+       @param nodeValue is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;standard value&lt;/em&gt; field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeColor is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;color&lt;/em&gt; value field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeSize &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;size&lt;/em&gt; value field
+           holding the size of the subtree of this node.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+     */
+    public boolean putIfAbsent( long key, long parent, long left, long right,
+        int nodeValue, int nodeColor, int nodeSize ) {
+<span class="fc" id="L419">        int index = insertKey( key );</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">        if (index &lt; 0)</span>
+<span class="nc" id="L421">            return false;</span>
+<span class="fc" id="L422">        doPut(key, parent, left, right, nodeValue, nodeColor, nodeSize, index );</span>
+<span class="fc" id="L423">        return true;</span>
+    }
+    
+    /** insert into map if there is not already an existing key.
+     * Note that if there is an existing key, false is returned,
+     * else true for successful insert.
+     * 
+     * Note that the missing value0, value1, and value2
+     are inserted with the sentinel for long null values, Long.MIN_VALUE.
+     * 
+     * @param key a &lt;tt&gt;long&lt;/tt&gt; containing the key for the associated values.
+     *  
+       @param nodeValue is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;standard value&lt;/em&gt; field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeColor is &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;color&lt;/em&gt; value field.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields.
+       @param nodeSize &lt;tt&gt;int&lt;/tt&gt; containing the fourth entry of values.
+     *     &lt;em&gt;For trees using this class&lt;/em&gt;, this is the &lt;em&gt;size&lt;/em&gt; value field
+           holding the size of the subtree of this node.
+     *     Note that the backing array should always have a valid value for this
+           field, that is, if containsKey(key) is true, this value will be fetched
+           and not checked for a null entry like the long fields. 
+     */
+    public boolean putIfAbsent( long key, int nodeValue, int nodeColor, int nodeSize ) {
+<span class="fc" id="L453">        int index = insertKey( key );</span>
+<span class="pc bpc" id="L454" title="1 of 2 branches missed.">        if (index &lt; 0)</span>
+<span class="fc" id="L455">            return false;</span>
+<span class="nc" id="L456">        doPut(key, noLinkValue, noLinkValue, noLinkValue, nodeValue, nodeColor, nodeSize, index );</span>
+<span class="nc" id="L457">        return true;</span>
+    }
+
+    private void doPut( long key, long parent, long left, long right,
+        int value, int nodeColor, int nodeSize, int index ) {
+        
+<span class="fc" id="L463">        boolean isNewMapping = true;</span>
+<span class="pc bpc" id="L464" title="1 of 2 branches missed.">        if ( index &lt; 0 ) {</span>
+<span class="nc" id="L465">            index = -index -1;</span>
+<span class="nc" id="L466">            isNewMapping = false;</span>
+        }
+<span class="fc" id="L468">        _parents[index] = parent;</span>
+<span class="fc" id="L469">        _lefts[index] = left;</span>
+<span class="fc" id="L470">        _rights[index] = right;</span>
+<span class="fc" id="L471">        _values[index] = value;</span>
+<span class="fc" id="L472">        _colors[index] = nodeColor;</span>
+<span class="fc" id="L473">        _sizes[index] = nodeSize;</span>
+
+<span class="pc bpc" id="L475" title="1 of 2 branches missed.">        if (isNewMapping) {</span>
+            // a method in THash to expand and rehash if needed
+<span class="fc" id="L477">            postInsertHook( consumeFreeSlot );</span>
+        }
+<span class="fc" id="L479">    }</span>
+    
+    /**
+     * unset parent if it exists, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @return 
+     */
+    public boolean unsetParent( long key) {
+        //for existing entries, index returned by insertKey is negative
+<span class="fc" id="L489">        int index = insertKey( key );</span>
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (index &gt;= 0)</span>
+<span class="nc" id="L491">            return false;</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">        if ( index &lt; 0 ) {</span>
+<span class="fc" id="L493">            index = -index -1;</span>
+        }
+<span class="fc" id="L495">        _parents[index] = noLinkValue;</span>
+<span class="fc" id="L496">        return true;</span>
+    }
+    /**
+     * unset left if it exists, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @return 
+     */
+    public boolean unsetLeft( long key) {
+        //for existing entries, index is positive
+<span class="fc" id="L506">        int index = index( key );</span>
+<span class="pc bpc" id="L507" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L508">            return false;</span>
+        }
+<span class="fc" id="L510">        _lefts[index] = noLinkValue;</span>
+<span class="fc" id="L511">        return true;</span>
+    }
+    /**
+     * unset right if it exists, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @return 
+     */
+    public boolean unsetRight( long key ) {
+        //for existing entries, index is positive
+<span class="fc" id="L521">        int index = index( key );</span>
+<span class="pc bpc" id="L522" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L523">            return false;</span>
+        }
+<span class="fc" id="L525">        _rights[index] = noLinkValue;</span>
+<span class="fc" id="L526">        return true;</span>
+    }
+    
+    /**
+     * update parent if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param parent
+     * @return 
+     */
+    public boolean updateParent( long key, long parent ) {
+        //for existing entries, index returned by insertKey is negative
+<span class="fc" id="L538">        int index = insertKey( key );</span>
+<span class="pc bpc" id="L539" title="1 of 2 branches missed.">        if (index &gt;= 0)</span>
+<span class="nc" id="L540">            return false;</span>
+<span class="pc bpc" id="L541" title="1 of 2 branches missed.">        if ( index &lt; 0 ) {</span>
+<span class="fc" id="L542">            index = -index -1;</span>
+        }
+<span class="fc" id="L544">        _parents[index] = parent;</span>
+<span class="fc" id="L545">        return true;</span>
+    }
+    /**
+     * update left if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param left
+     * @return 
+     */
+    public boolean updateLeft( long key, long left ) {
+        //for existing entries, index is positive
+<span class="fc" id="L556">        int index = index( key );</span>
+<span class="pc bpc" id="L557" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L558">            return false;</span>
+        }
+<span class="fc" id="L560">        _lefts[index] = left;</span>
+<span class="fc" id="L561">        return true;</span>
+    }
+    /**
+     * update right if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param right
+     * @return 
+     */
+    public boolean updateRight( long key, long right ) {
+        //for existing entries, index is positive
+<span class="fc" id="L572">        int index = index( key );</span>
+<span class="pc bpc" id="L573" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L574">            return false;</span>
+        }
+<span class="fc" id="L576">        _rights[index] = right;</span>
+<span class="fc" id="L577">        return true;</span>
+    }
+    /**
+     * update nodeValue if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param nodeValue
+     * @return 
+     */
+    public boolean updateNodeValue( long key, int nodeValue ) {
+        //for existing entries, index is positive
+<span class="nc" id="L588">        int index = index( key );</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L590">            return false;</span>
+        }
+<span class="nc" id="L592">        _values[index] = nodeValue;</span>
+<span class="nc" id="L593">        return true;</span>
+    }
+    /**
+     * update nodeColor if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param nodeColor
+     * @return 
+     */
+    public boolean updateNodeColor( long key, int nodeColor ) {
+        //for existing entries, index is positive
+<span class="fc" id="L604">        int index = index( key );</span>
+<span class="pc bpc" id="L605" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L606">            return false;</span>
+        }
+<span class="fc" id="L608">        _colors[index] = nodeColor;</span>
+<span class="fc" id="L609">        return true;</span>
+    }
+    /**
+     * update nodeSize if if doesn't exist, else return false because there is
+     * not an entry already for the given key.
+     * @param key
+     * @param nodeSize the size of the subtree underneath and including the node
+     * @return 
+     */
+    public boolean updateNodeSize( long key, int nodeSize ) {
+        //for existing entries, index is positive
+<span class="fc" id="L620">        int index = index( key );</span>
+<span class="pc bpc" id="L621" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L622">            return false;</span>
+        }
+<span class="fc" id="L624">        _sizes[index] = nodeSize;</span>
+<span class="fc" id="L625">        return true;</span>
+    }
+
+    /** {@inheritDoc} */
+    public void putAll( NodeMap map ) {
+<span class="nc" id="L630">        ensureCapacity( map.size() );</span>
+<span class="nc" id="L631">        TLong_LongLongLongIntIntIntHashIterator iter </span>
+<span class="nc" id="L632">            = map.iterator();</span>
+<span class="nc bnc" id="L633" title="All 2 branches missed.">        while ( iter.hasNext() ) {</span>
+<span class="nc" id="L634">            iter.advance();</span>
+<span class="nc" id="L635">            this.put( iter.key(), </span>
+<span class="nc" id="L636">                iter.parent(), iter.left(), iter.right(),</span>
+<span class="nc" id="L637">                iter.nodeValue(), iter.nodeColor(), iter.nodeSize());</span>
+        }
+<span class="nc" id="L639">    }</span>
+
+    public boolean parentIsSet(long key) {
+<span class="fc" id="L642">        int index = index(key);</span>
+<span class="pc bpc" id="L643" title="1 of 4 branches missed.">        if (index &lt; 0 || _parents[index] == noLinkValue) {</span>
+<span class="fc" id="L644">            return false;</span>
+        }
+<span class="fc" id="L646">        return true;</span>
+    }
+    public boolean leftIsSet(long key) {
+<span class="fc" id="L649">        int index = index(key);</span>
+<span class="pc bpc" id="L650" title="1 of 4 branches missed.">        if (index &lt; 0 || _lefts[index] == noLinkValue) {</span>
+<span class="fc" id="L651">            return false;</span>
+        }
+<span class="fc" id="L653">        return true;</span>
+    }
+    public boolean rightIsSet(long key) {
+<span class="fc" id="L656">        int index = index(key);</span>
+<span class="pc bpc" id="L657" title="1 of 4 branches missed.">        if (index &lt; 0 || _rights[index] == noLinkValue) {</span>
+<span class="fc" id="L658">            return false;</span>
+        }
+<span class="fc" id="L660">        return true;</span>
+    }
+    /** {@inheritDoc} */
+    public long getParent( long key ) {
+<span class="fc" id="L664">        int index = index( key );</span>
+<span class="pc bpc" id="L665" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _parents[index];</span>
+    }
+    public long getLeft( long key ) {
+<span class="fc" id="L668">        int index = index( key );</span>
+<span class="pc bpc" id="L669" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _lefts[index];</span>
+    }
+    public long getRight( long key ) {
+<span class="fc" id="L672">        int index = index( key );</span>
+<span class="pc bpc" id="L673" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _rights[index];</span>
+    }
+    public int getNodeValue( long key ) {
+<span class="fc" id="L676">        int index = index( key );</span>
+<span class="pc bpc" id="L677" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _values[index];</span>
+    }
+    public int getNodeColor( long key ) {
+<span class="fc" id="L680">        int index = index( key );</span>
+<span class="pc bpc" id="L681" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _colors[index];</span>
+    }
+    public int getNodeSize( long key ) {
+<span class="fc" id="L684">        int index = index( key );</span>
+<span class="pc bpc" id="L685" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _sizes[index];</span>
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void clear() {
+<span class="nc" id="L692">        super.clear();</span>
+<span class="nc" id="L693">        int n = _parents.length;</span>
+<span class="nc" id="L694">        Arrays.fill( _set, 0, _set.length, no_entry_key );</span>
+<span class="nc" id="L695">        Arrays.fill(_parents, 0, n, noLinkValue );</span>
+<span class="nc" id="L696">        Arrays.fill(_lefts, 0, n, noLinkValue );</span>
+<span class="nc" id="L697">        Arrays.fill(_rights, 0, n, noLinkValue );</span>
+<span class="nc" id="L698">        Arrays.fill(_values, 0, n, no_entry_value );</span>
+<span class="nc" id="L699">        Arrays.fill(_colors, 0, n, no_entry_value );</span>
+<span class="nc" id="L700">        Arrays.fill(_sizes, 0, n, no_entry_value );</span>
+<span class="nc" id="L701">        Arrays.fill( _states, 0, _states.length, FREE );</span>
+<span class="nc" id="L702">    }</span>
+
+
+    /** {@inheritDoc} */
+    public boolean isEmpty() {
+<span class="nc bnc" id="L707" title="All 2 branches missed.">        return 0 == _size;</span>
+    }
+
+
+    /** remove the entry for key and return true if succeeded, else false if
+     * entry with key was not in map.
+     * @param key
+     * @return 
+     */
+    public boolean remove( long key ) {
+<span class="fc" id="L717">        int index = index( key );</span>
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">        if ( index &gt;= 0 ) {</span>
+<span class="fc" id="L719">            removeAt( index );    // clear key,state; adjust size</span>
+<span class="fc" id="L720">            return true;</span>
+        }
+<span class="nc" id="L722">        return false;</span>
+    }
+
+
+    /** {@inheritDoc} */
+    protected void removeAt( int index ) {
+<span class="fc" id="L728">        _parents[index] = noLinkValue;</span>
+<span class="fc" id="L729">        _lefts[index] = noLinkValue;</span>
+<span class="fc" id="L730">        _rights[index] = noLinkValue;</span>
+<span class="fc" id="L731">        _values[index] = no_entry_value;</span>
+<span class="fc" id="L732">        _colors[index] = no_entry_value;</span>
+<span class="fc" id="L733">        _sizes[index] = no_entry_value;</span>
+<span class="fc" id="L734">        super.removeAt( index );  // clear key, state; adjust size</span>
+<span class="fc" id="L735">    }</span>
+
+
+    /** {@inheritDoc} */
+    public TLongSet keySet() {
+        
+<span class="nc" id="L741">        TLongSet keys = new TLongHashSet();</span>
+        
+<span class="nc bnc" id="L743" title="All 2 branches missed.">        if (size() == 0) {</span>
+<span class="nc" id="L744">            return keys;</span>
+        }
+        
+<span class="nc" id="L747">        long[] k = _set;</span>
+<span class="nc" id="L748">        byte[] states = _states;</span>
+
+<span class="nc bnc" id="L750" title="All 2 branches missed.">        for (int i = k.length, j = 0; i-- &gt; 0;) {</span>
+<span class="nc bnc" id="L751" title="All 2 branches missed.">            if (states[i] == FULL) {</span>
+<span class="nc" id="L752">                keys.add(k[i]);</span>
+            }
+        }
+        
+<span class="nc" id="L756">        return keys;</span>
+    }
+
+
+    /** {@inheritDoc} */
+    public long[] keys() {
+<span class="nc" id="L762">        long[] keys = new long[size()];</span>
+<span class="nc bnc" id="L763" title="All 2 branches missed.">        if ( keys.length == 0 ) {</span>
+<span class="nc" id="L764">            return keys;        // nothing to copy</span>
+        }
+<span class="nc" id="L766">        long[] k = _set;</span>
+<span class="nc" id="L767">        byte[] states = _states;</span>
+
+<span class="nc bnc" id="L769" title="All 2 branches missed.">        for ( int i = k.length, j = 0; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L770" title="All 2 branches missed.">          if ( states[i] == FULL ) {</span>
+<span class="nc" id="L771">            keys[j++] = k[i];</span>
+          }
+        }
+<span class="nc" id="L774">        return keys;</span>
+    }
+
+
+    /** {@inheritDoc} */
+    public long[] keys( long[] array ) {
+<span class="nc" id="L780">        int size = size();</span>
+<span class="nc bnc" id="L781" title="All 2 branches missed.">        if ( size == 0 ) {</span>
+<span class="nc" id="L782">            return array;       // nothing to copy</span>
+        }
+<span class="nc bnc" id="L784" title="All 2 branches missed.">        if ( array.length &lt; size ) {</span>
+<span class="nc" id="L785">            array = new long[size];</span>
+        }
+
+<span class="nc" id="L788">        long[] keys = _set;</span>
+<span class="nc" id="L789">        byte[] states = _states;</span>
+
+<span class="nc bnc" id="L791" title="All 2 branches missed.">        for ( int i = keys.length, j = 0; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L792" title="All 2 branches missed.">          if ( states[i] == FULL ) {</span>
+<span class="nc" id="L793">            array[j++] = keys[i];</span>
+          }
+        }
+<span class="nc" id="L796">        return array;</span>
+    }
+
+    /**
+     * same as contains key
+     * @param val
+     * @return 
+     */
+    @Override
+    public boolean contains(long val) {
+<span class="fc" id="L806">        return super.contains(val); </span>
+    }
+    
+    /** {@inheritDoc} */
+    public boolean containsKey( long key ) {
+<span class="fc" id="L811">        return contains( key );</span>
+    }
+
+    public TLong_LongLongLongIntIntIntHashIterator iterator() {
+<span class="nc" id="L815">        return new TLong_LongLongLongIntIntIntHashIterator(this );</span>
+    }
+
+    class TLong_LongLongLongIntIntIntHashKeyIterator 
+        extends THashPrimitiveIterator implements TLongIterator {
+
+        /**
+         * Creates an iterator over the specified map
+         *
+         * @param hash the &lt;tt&gt;TPrimitiveHash&lt;/tt&gt; we will be iterating over.
+         */
+        TLong_LongLongLongIntIntIntHashKeyIterator( TPrimitiveHash hash ) {
+            super( hash );
+        }
+
+        /** {@inheritDoc} */
+        public long next() {
+            moveToNextIndex();
+            return _set[_index];
+        }
+
+        /** @{inheritDoc} */
+        public void remove() {
+            if ( _expectedSize != _hash.size() ) {
+                throw new ConcurrentModificationException();
+            }
+
+            // Disable auto compaction during the remove. This is a workaround for bug 1642768.
+            try {
+                _hash.tempDisableAutoCompaction();
+                NodeMap.this.removeAt( _index );
+            }
+            finally {
+                _hash.reenableAutoCompaction( false );
+            }
+
+            _expectedSize--;
+        }
+    }
+
+    class TLong_LongLongLongIntIntIntHashIterator 
+        extends THashPrimitiveIterator {
+
+        /**
+         * Creates an iterator over the specified map
+         *
+         * @param map the &lt;tt&gt;TLongLongHashMap&lt;/tt&gt; we will be iterating over.
+         */
+        TLong_LongLongLongIntIntIntHashIterator( 
+            NodeMap map ) {
+            super( map );
+        }
+
+        /** {@inheritDoc} */
+        public void advance() {
+            moveToNextIndex();
+        }
+
+        /** {@inheritDoc} */
+        public long key() {
+            return _set[_index];
+        }
+
+        /** {@inheritDoc} */
+        public long parent() {
+            return _parents[_index];
+        }
+        public long left() {
+            return _lefts[_index];
+        }
+        public long right() {
+            return _rights[_index];
+        }
+        public int nodeValue() {
+            return _values[_index];
+        }
+        public int nodeColor() {
+            return _colors[_index];
+        }
+        public int nodeSize() {
+            return _sizes[_index];
+        }
+
+        /** {@inheritDoc} */
+        public long setParent( long val ) {
+            long old = parent();
+            _parents[_index] = val;
+            return old;
+        }
+        public long setLeft( long val ) {
+            long old = left();
+            _lefts[_index] = val;
+            return old;
+        }
+        public long setRight( long val ) {
+            long old = right();
+            _rights[_index] = val;
+            return old;
+        }
+        
+        public int setValue( int val ) {
+            int old = nodeValue();
+            _values[_index] = val;
+            return old;
+        }
+        public int setNodeColor( int val ) {
+            int old = nodeColor();
+            _colors[_index] = val;
+            return old;
+        }
+        public int setNodeSize( int val ) {
+            int old = nodeSize();
+            _sizes[_index] = val;
+            return old;
+        }
+
+        /** @{inheritDoc} */
+        public void remove() {
+            if ( _expectedSize != _hash.size() ) {
+                throw new ConcurrentModificationException();
+            }
+            // Disable auto compaction during the remove. This is a workaround for bug 1642768.
+            try {
+                _hash.tempDisableAutoCompaction();
+                NodeMap.this.removeAt( _index );
+            }
+            finally {
+                _hash.reenableAutoCompaction( false );
+            }
+            _expectedSize--;
+        }
+    }
+
+
+    /** {@inheritDoc}
+     * NOTE: this uses just the key and value3 for equals operation.
+     */
+    @Override
+    public boolean equals( Object other ) {
+<span class="nc bnc" id="L954" title="All 2 branches missed.">        if ( ! ( other instanceof TLongLongMap ) ) {</span>
+<span class="nc" id="L955">            return false;</span>
+        }
+<span class="nc" id="L957">        TLongLongMap that = ( TLongLongMap ) other;</span>
+<span class="nc bnc" id="L958" title="All 2 branches missed.">        if ( that.size() != this.size() ) {</span>
+<span class="nc" id="L959">            return false;</span>
+        }
+<span class="nc" id="L961">        int[] values3 = _values;</span>
+<span class="nc" id="L962">        byte[] states = _states;</span>
+<span class="nc" id="L963">        long this_no_entry_value = getNoEntryValue();</span>
+<span class="nc" id="L964">        long that_no_entry_value = that.getNoEntryValue();</span>
+<span class="nc bnc" id="L965" title="All 2 branches missed.">        for ( int i = values3.length; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L966" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
+<span class="nc" id="L967">                long key = _set[i];</span>
+
+<span class="nc bnc" id="L969" title="All 2 branches missed.">                if ( !that.containsKey( key ) ) return false;</span>
+
+<span class="nc" id="L971">                long that_value = that.get( key );</span>
+<span class="nc" id="L972">                long this_value = values3[i];</span>
+<span class="nc bnc" id="L973" title="All 6 branches missed.">                if ((this_value != that_value)</span>
+                    &amp;&amp; ( (this_value != this_no_entry_value)
+                    || (that_value != that_no_entry_value))
+                    ) {
+
+<span class="nc" id="L978">                    return false;</span>
+                }
+<span class="nc" id="L980">            }</span>
+        }
+<span class="nc" id="L982">        return true;</span>
+    }
+
+
+    /** {@inheritDoc} 
+     * NOTE: this uses the key and values3 for hash code and no other fields.
+     */
+    @Override
+    public int hashCode() {
+<span class="nc" id="L991">        int hashcode = 0;</span>
+<span class="nc" id="L992">        byte[] states = _states;</span>
+<span class="nc bnc" id="L993" title="All 2 branches missed.">        for ( int i = _parents.length; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L994" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
+<span class="nc" id="L995">                hashcode += HashFunctions.hash( _set[i] ) ^</span>
+<span class="nc" id="L996">                            HashFunctions.hash(_values[i] );</span>
+            }
+        }
+<span class="nc" id="L999">        return hashcode;</span>
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+
+<span class="nc" id="L1006">        final StringBuilder buf = new StringBuilder( &quot;{&quot; );</span>
+        
+<span class="nc" id="L1008">        int[] values3 = _values;</span>
+<span class="nc" id="L1009">        byte[] states = _states;</span>
+<span class="nc bnc" id="L1010" title="All 2 branches missed.">        for ( int i = values3.length; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L1011" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
+<span class="nc bnc" id="L1012" title="All 2 branches missed.">                if (buf.length() &gt; 0) {</span>
+<span class="nc" id="L1013">                    buf.append( &quot;, &quot; );</span>
+                }
+<span class="nc" id="L1015">                long key = _set[i];</span>
+<span class="nc" id="L1016">                buf.append(key);</span>
+<span class="nc" id="L1017">                buf.append(&quot;=&quot;);</span>
+<span class="nc" id="L1018">                buf.append(_parents[i]);</span>
+<span class="nc" id="L1019">                buf.append(_lefts[i]);</span>
+<span class="nc" id="L1020">                buf.append(_rights[i]);</span>
+<span class="nc" id="L1021">                buf.append(_values[i]);</span>
+<span class="nc" id="L1022">                buf.append(_colors[i]);</span>
+<span class="nc" id="L1023">                buf.append(_sizes[i]);</span>
+<span class="nc" id="L1024">            }</span>
+        }
+<span class="nc" id="L1026">        buf.append( &quot;}&quot; );</span>
+<span class="nc" id="L1027">        return buf.toString();</span>
+    }
+
+    /** {@inheritDoc} */
+    public void writeExternal(ObjectOutput out) throws IOException {
+        // VERSION
+<span class="nc" id="L1033">    	out.writeByte( 0 );</span>
+
+        // SUPER
+<span class="nc" id="L1036">    	super.writeExternal( out );</span>
+
+    	// NUMBER OF ENTRIES
+<span class="nc" id="L1039">    	out.writeInt( _size );</span>
+
+    	// ENTRIES
+<span class="nc bnc" id="L1042" title="All 2 branches missed.">    	for ( int i = _states.length; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">            if ( _states[i] == FULL ) {</span>
+<span class="nc" id="L1044">                out.writeLong( _set[i] );</span>
+<span class="nc" id="L1045">                out.writeLong(_parents[i] );</span>
+<span class="nc" id="L1046">                out.writeLong(_lefts[i] );</span>
+<span class="nc" id="L1047">                out.writeLong(_rights[i] );</span>
+<span class="nc" id="L1048">                out.writeInt(_values[i] );</span>
+<span class="nc" id="L1049">                out.writeInt(_colors[i] );</span>
+<span class="nc" id="L1050">                out.writeInt(_sizes[i] );</span>
+            }
+        }
+<span class="nc" id="L1053">    }</span>
+
+
+    /** {@inheritDoc} */
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        // VERSION
+<span class="nc" id="L1059">    	in.readByte();</span>
+
+        // SUPER
+<span class="nc" id="L1062">    	super.readExternal( in );</span>
+
+    	// NUMBER OF ENTRIES
+<span class="nc" id="L1065">    	int size = in.readInt();</span>
+<span class="nc" id="L1066">    	setUp( size );</span>
+
+    	// ENTRIES
+<span class="nc bnc" id="L1069" title="All 2 branches missed.">        while (size-- &gt; 0) {</span>
+<span class="nc" id="L1070">            long key = in.readLong();</span>
+<span class="nc" id="L1071">            long val0 = in.readLong();</span>
+<span class="nc" id="L1072">            long val1 = in.readLong();</span>
+<span class="nc" id="L1073">            long val2 = in.readLong();</span>
+<span class="nc" id="L1074">            int val3 = in.readInt();</span>
+<span class="nc" id="L1075">            int val4 = in.readInt();</span>
+<span class="nc" id="L1076">            int val5 = in.readInt();</span>
+<span class="nc" id="L1077">            put(key, val0, val1, val2, val3, val4, val5);</span>
+<span class="nc" id="L1078">        }</span>
+<span class="nc" id="L1079">    }</span>
+    
+     public static long estimateSizeOnHeap(int numberOfEntries) {
+        
+        /*
+        super class:
+           long serialVersionUID = 1L;
+           long[] _set;
+           long no_entry_key;
+           int no_entry_value;
+           boolean consumeFreeSlot;
+         this class:
+           long serialVersionUID = 12325L;
+           long[] _parents;
+           long[] _lefts;
+           long[] _rights;
+           int[] _values;
+           int[] _colors;
+           int[] _sizes;
+           long noLinkValue = Long.MIN_VALUE;
+        */
+        
+<span class="fc" id="L1101">        ObjectSpaceEstimator est0 = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L1102">        est0.setNLongFields(2 + numberOfEntries);</span>
+<span class="fc" id="L1103">        est0.setNIntFields(1);</span>
+<span class="fc" id="L1104">        est0.setNArrayRefsFields(1);</span>
+<span class="fc" id="L1105">        est0.setNBooleanFields(1);</span>
+        
+<span class="fc" id="L1107">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L1108">        est.setNLongFields(2 + 3*numberOfEntries);</span>
+<span class="fc" id="L1109">        est.setNIntFields(1 + 3*numberOfEntries);</span>
+<span class="fc" id="L1110">        est.setNArrayRefsFields(6);</span>
+        
+<span class="fc" id="L1112">        return est0.estimateSizeOnHeap() + est.estimateSizeOnHeap();</span>
+        
+     }
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

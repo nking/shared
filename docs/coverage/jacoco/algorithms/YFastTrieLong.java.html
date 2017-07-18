@@ -6,7 +6,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.Arrays;
-import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt;
+import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt2;
 import thirdparty.ods.Longizer;
 import thirdparty.ods.XFastTrieLong;
 import thirdparty.ods.XFastTrieNodeLong;
@@ -55,9 +55,45 @@ import thirdparty.ods.XFastTrieNodeLong;
 
    then moved to this shared library project which has the same copyright
 
+   &lt;pre&gt;
+    binsz = w
+    mem is in MB:
+     width=5000, height=7000 n=  35000000 mem=     87321:    767148  w=62  rt=  6
+     width=5000, height=7000 n=  35000000 mem=      8727:     13976  w=25  rt=  5
+     width=5000, height=7000 n=   3500000 mem=     79511:    755012  w=62  rt=  6
+     width=5000, height=7000 n=   3500000 mem=       916:      1840  w=25  rt=  5
+     width=1024, height=1024 n=   1048576 mem=     78903:    754068  w=62  rt=  6
+     width=1024, height=1024 n=   1048576 mem=       261:       423  w=20  rt=  4
+     width=1024, height=1024 n=    104858 mem=     78669:    753704  w=62  rt=  6
+     width=1024, height=1024 n=    104858 mem=        27:        59  w=20  rt=  4
+     width= 512, height= 512 n=    262144 mem=     78708:    753765  w=62  rt=  6
+     width= 512, height= 512 n=    262144 mem=        65:       106  w=18  rt=  4
+     width= 512, height= 512 n=     26214 mem=     78649:    753674  w=62  rt=  6
+     width= 512, height= 512 n=     26214 mem=         7:        15  w=18  rt=  4
+     width= 256, height= 256 n=     65536 mem=     78659:    753689  w=62  rt=  6
+     width= 256, height= 256 n=     65536 mem=        16:        26  w=16  rt=  4
+     width= 256, height= 256 n=      6554 mem=     78644:    753666  w=62  rt=  6
+     width= 256, height= 256 n=      6554 mem=         1:         4  w=16  rt=  4
+     width= 128, height= 128 n=     16384 mem=     78647:    753670  w=62  rt=  6
+     width= 128, height= 128 n=     16384 mem=         4:         6  w=14  rt=  4
+     width= 128, height= 128 n=      1638 mem=     78643:    753664  w=62  rt=  6
+     width= 128, height= 128 n=      1638 mem=         0:         1  w=14  rt=  4
+     width=  64, height=  64 n=      4096 mem=     78644:    753665  w=62  rt=  6
+     width=  64, height=  64 n=      4096 mem=         1:         1  w=12  rt=  4
+     width=  64, height=  64 n=       410 mem=     78643:    753664  w=62  rt=  6
+     width=  64, height=  64 n=       410 mem=         0:         0  w=12  rt=  4
+     
+     Note that the memory usage could be reduced by about a factor of 4
+     (though need to recalculate that - might be closer to 3) by making a
+     version of the red black tree which uses primitive associative arrays 
+     (the Trove4j hashmaps) instead of linked object nodes as is currently present.  
+     The change requires a parent array to be
+     added for the missing object pointers and additional logic to set those
+     relationships.   This is in progress...
+     &lt;/pre&gt;
  * @author nichole
  */
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">public class YFastTrieLong {</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">public class YFastTrieLong {</span>
 
     /*    
     designing from browsing a few different lecture notes
@@ -79,22 +115,35 @@ YFastTrie
     The calculations above for the suggested yfasttrie model:
 
     binsz = w
-
-        nEntries        w  nBins   binsz,   runtime    space(MB)
-
-        5000*7000=35e6  62  564516  62       6       505405, 61507
-        5000*7000=35e6  26  1346153 26       5       14515, 9141
-     .1*5000*7000=35e5  62  56451   62       6       492908, 53336
-     .1*5000*7000=35e5  22  56451   22       5       1435, 912
-
-        500*700=35e4    62  5645    62       6       491658, 52519
-        500*700=35e4    19  18421   19       5       145, 91
-     .1*500*700=35e3    62  564     62       6       491533, 52437
-     .1*500*700=35e3    16  564     16       4       14, 9
-   
+    mem is in MB:
+     width=5000, height=7000 n=  35000000 mem=     61507:    505405  w=62  rt=  6
+     width=5000, height=7000 n=  35000000 mem=      9111:     14213  w=25  rt=  5
+     width=5000, height=7000 n=   3500000 mem=     53336:    492908  w=62  rt=  6 
+     width=5000, height=7000 n=   3500000 mem=       940:      1716  w=25  rt=  5 
+     width=1024, height=1024 n=   1048576 mem=     52700:    491936  w=62  rt=  6 
+     width=1024, height=1024 n=   1048576 mem=       273:       428  w=20  rt=  4 
+     width=1024, height=1024 n=    104858 mem=     52456:    491561  w=62  rt=  6 
+     width=1024, height=1024 n=    104858 mem=        28:        54  w=20  rt=  4 
+     width= 512, height= 512 n=    262144 mem=     52496:    491624  w=62  rt=  6 
+     width= 512, height= 512 n=    262144 mem=        68:       107  w=18  rt=  4 
+     width= 512, height= 512 n=     26214 mem=     52435:    491530  w=62  rt=  6 
+     width= 512, height= 512 n=     26214 mem=         7:        13  w=18  rt=  4 
+     width= 256, height= 256 n=     65536 mem=     52445:    491546  w=62  rt=  6 
+     width= 256, height= 256 n=     65536 mem=        17:        27  w=16  rt=  4 
+     width= 256, height= 256 n=      6554 mem=     52430:    491522  w=62  rt=  6 
+     width= 256, height= 256 n=      6554 mem=         1:         3  w=16  rt=  4 
+     width= 128, height= 128 n=     16384 mem=     52433:    491526  w=62  rt=  6 
+     width= 128, height= 128 n=     16384 mem=         4:         6  w=14  rt=  4 
+     width= 128, height= 128 n=      1638 mem=     52429:    491520  w=62  rt=  6 
+     width= 128, height= 128 n=      1638 mem=         0:         0  w=14  rt=  4 
+     width=  64, height=  64 n=      4096 mem=     52429:    491521  w=62  rt=  6 
+     width=  64, height=  64 n=      4096 mem=         1:         1  w=12  rt=  4
+     width=  64, height=  64 n=      4096 mem=         1:         1  w=12  rt=  4 
+     width=  64, height=  64 n=       410 mem=     52428:    491520  w=62  rt=  6
+     width=  64, height=  64 n=       410 mem=         0:         0  w=12  rt=  4
     */
     
-<span class="pc" id="L97">    private int n = 0;</span>
+<span class="pc" id="L146">    private int n = 0;</span>
     
     private final int w;
     
@@ -117,7 +166,7 @@ YFastTrie
     // key = bin index (which is node/binSz), value = repr value.
     // each repr value is the minimum stored in the bin.
     // * the max number of map entries will be nBins.
-<span class="pc" id="L120">    private final TLongLongMap xftReps = new TLongLongHashMap();</span>
+<span class="pc" id="L169">    private final TLongLongMap xftReps = new TLongLongHashMap();</span>
     
     // all inserts of this class are held in
     //    * at most nBins number of trees which each
@@ -128,7 +177,7 @@ YFastTrie
     // each sorted tree has
     //    key = node (inserted number), w/ value=
     //        the number of times that number is present (multiplicity).
-    private final TLongObjectMap&lt;RedBlackBSTLongInt&gt; rbs;
+    private final TLongObjectMap&lt;RedBlackBSTLongInt2&gt; rbs;
 
     /**
      * constructor specifying the maximum number of bits of any future add or
@@ -137,35 +186,35 @@ YFastTrie
      * 
      * @param wBits 
      */
-<span class="fc" id="L140">    public YFastTrieLong(int wBits) {</span>
+<span class="fc" id="L189">    public YFastTrieLong(int wBits) {</span>
         
-<span class="pc bpc" id="L142" title="2 of 4 branches missed.">        if (wBits &lt; 63 &amp;&amp; wBits &gt; 1) {</span>
-<span class="fc" id="L143">            this.w = wBits;</span>
+<span class="pc bpc" id="L191" title="2 of 4 branches missed.">        if (wBits &lt; 63 &amp;&amp; wBits &gt; 1) {</span>
+<span class="fc" id="L192">            this.w = wBits;</span>
         } else {
-<span class="nc" id="L145">            throw new IllegalStateException(&quot;wBits &quot;</span>
+<span class="nc" id="L194">            throw new IllegalStateException(&quot;wBits &quot;</span>
                 + &quot; shoulw be greater than 1 and less than 32&quot;);
         }
-<span class="fc" id="L148">        maxC = (1L &lt;&lt; w) - 1;</span>
+<span class="fc" id="L197">        maxC = (1L &lt;&lt; w) - 1;</span>
                         
-<span class="fc" id="L150">        binSz = w;</span>
+<span class="fc" id="L199">        binSz = w;</span>
         
-<span class="fc" id="L152">        nBins = (long)Math.ceil((double)maxC/(double)binSz);</span>
+<span class="fc" id="L201">        nBins = (long)Math.ceil((double)maxC/(double)binSz);</span>
     
-<span class="fc" id="L154">        System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +</span>
-<span class="fc" id="L155">            (Math.log(binSz)/Math.log(2)));</span>
+        //System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +
+        //    (Math.log(binSz)/Math.log(2)));
         
-<span class="fc" id="L157">        rbs = new TLongObjectHashMap&lt;RedBlackBSTLongInt&gt;();</span>
+<span class="fc" id="L206">        rbs = new TLongObjectHashMap&lt;RedBlackBSTLongInt2&gt;();</span>
          
-<span class="fc" id="L159">        XFastTrieNodeLong&lt;Long&gt; clsNode = new XFastTrieNodeLong&lt;Long&gt;();</span>
-<span class="fc" id="L160">        Longizer&lt;Long&gt; it = new Longizer&lt;Long&gt;() {</span>
+<span class="fc" id="L208">        XFastTrieNodeLong&lt;Long&gt; clsNode = new XFastTrieNodeLong&lt;Long&gt;();</span>
+<span class="fc" id="L209">        Longizer&lt;Long&gt; it = new Longizer&lt;Long&gt;() {</span>
             @Override
             public long longValue(Long x) {
                 return x;
             }
         };
         
-<span class="fc" id="L167">        xft = new XFastTrieLong&lt;XFastTrieNodeLong&lt;Long&gt;, Long&gt;(clsNode, it, w);</span>
-<span class="fc" id="L168">    }</span>
+<span class="fc" id="L216">        xft = new XFastTrieLong&lt;XFastTrieNodeLong&lt;Long&gt;, Long&gt;(clsNode, it, w);</span>
+<span class="fc" id="L217">    }</span>
    
     /**
      * constructor using the the maximum number of bits of 62
@@ -173,39 +222,39 @@ YFastTrie
      * which may be expensive in space requirements.
      * 
      */
-<span class="nc" id="L176">    public YFastTrieLong() {</span>
+<span class="nc" id="L225">    public YFastTrieLong() {</span>
         
-<span class="nc" id="L178">        this.w = 62;</span>
+<span class="nc" id="L227">        this.w = 62;</span>
         
-<span class="nc" id="L180">        maxC = (1L &lt;&lt; w) - 1;</span>
+<span class="nc" id="L229">        maxC = (1L &lt;&lt; w) - 1;</span>
                         
-<span class="nc" id="L182">        binSz = w;</span>
+<span class="nc" id="L231">        binSz = w;</span>
         
-<span class="nc" id="L184">        nBins = (long)Math.ceil((double)maxC/(double)binSz);</span>
+<span class="nc" id="L233">        nBins = (long)Math.ceil((double)maxC/(double)binSz);</span>
         
-<span class="nc" id="L186">        System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +</span>
-<span class="nc" id="L187">            (Math.log(binSz)/Math.log(2)));</span>
+        //System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +
+        //    (Math.log(binSz)/Math.log(2)));
         
-<span class="nc" id="L189">        rbs = new TLongObjectHashMap&lt;RedBlackBSTLongInt&gt;();</span>
+<span class="nc" id="L238">        rbs = new TLongObjectHashMap&lt;RedBlackBSTLongInt2&gt;();</span>
         
-<span class="nc" id="L191">        XFastTrieNodeLong&lt;Long&gt; clsNode = new XFastTrieNodeLong&lt;Long&gt;();</span>
-<span class="nc" id="L192">        Longizer&lt;Long&gt; it = new Longizer&lt;Long&gt;() {</span>
+<span class="nc" id="L240">        XFastTrieNodeLong&lt;Long&gt; clsNode = new XFastTrieNodeLong&lt;Long&gt;();</span>
+<span class="nc" id="L241">        Longizer&lt;Long&gt; it = new Longizer&lt;Long&gt;() {</span>
             @Override
             public long longValue(Long x) {
                 return x;
             }
         };
         
-<span class="nc" id="L199">        xft = new XFastTrieLong&lt;XFastTrieNodeLong&lt;Long&gt;, Long&gt;(clsNode, it, w);</span>
-<span class="nc" id="L200">    }</span>
+<span class="nc" id="L248">        xft = new XFastTrieLong&lt;XFastTrieNodeLong&lt;Long&gt;, Long&gt;(clsNode, it, w);</span>
+<span class="nc" id="L249">    }</span>
     
-    protected RedBlackBSTLongInt getTreeMap(long index) {
-<span class="fc" id="L203">        RedBlackBSTLongInt tree = rbs.get(index);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (tree == null) {</span>
-<span class="fc" id="L205">            tree = new RedBlackBSTLongInt();</span>
-<span class="fc" id="L206">            rbs.put(index, tree);</span>
+    protected RedBlackBSTLongInt2 getTreeMap(long index) {
+<span class="fc" id="L252">        RedBlackBSTLongInt2 tree = rbs.get(index);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        if (tree == null) {</span>
+<span class="fc" id="L254">            tree = new RedBlackBSTLongInt2();</span>
+<span class="fc" id="L255">            rbs.put(index, tree);</span>
         }
-<span class="fc" id="L208">        return tree;</span>
+<span class="fc" id="L257">        return tree;</span>
     }
 
     /**
@@ -215,23 +264,23 @@ YFastTrie
      */
     private void addToRBTree(long node, long index) {
         
-<span class="fc" id="L218">        RedBlackBSTLongInt tree = getTreeMap(index);</span>
+<span class="fc" id="L267">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L220" title="3 of 4 branches missed.">        assert(tree != null);</span>
+<span class="pc bpc" id="L269" title="3 of 4 branches missed.">        assert(tree != null);</span>
                 
-<span class="fc" id="L222">        int[] output = new int[2];</span>
+<span class="fc" id="L271">        int[] output = new int[2];</span>
         
-<span class="fc" id="L224">        tree.get(node, output);</span>
+<span class="fc" id="L273">        tree.get(node, output);</span>
     
         int multiplicity;
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
-<span class="fc" id="L228">            multiplicity = 1;</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
+<span class="fc" id="L277">            multiplicity = 1;</span>
         } else {
-<span class="nc" id="L230">            multiplicity = 1 + output[1];</span>
+<span class="nc" id="L279">            multiplicity = 1 + output[1];</span>
         }
         
-<span class="fc" id="L233">        tree.put(node, multiplicity);        </span>
-<span class="fc" id="L234">    }</span>
+<span class="fc" id="L282">        tree.put(node, multiplicity);        </span>
+<span class="fc" id="L283">    }</span>
     
     /**
      * 
@@ -240,30 +289,30 @@ YFastTrie
      */
     private boolean deleteFromRBTree(long node, long index) {
                 
-<span class="fc" id="L243">        RedBlackBSTLongInt tree = getTreeMap(index);</span>
+<span class="fc" id="L292">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L245" title="3 of 4 branches missed.">        assert(tree != null);</span>
+<span class="pc bpc" id="L294" title="3 of 4 branches missed.">        assert(tree != null);</span>
         
-<span class="fc" id="L247">        int[] output = new int[2];</span>
+<span class="fc" id="L296">        int[] output = new int[2];</span>
         
-<span class="fc" id="L249">        tree.get(node, output);</span>
+<span class="fc" id="L298">        tree.get(node, output);</span>
     
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
-<span class="nc" id="L252">            return false;</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
+<span class="nc" id="L301">            return false;</span>
         }
         
-<span class="fc" id="L255">        int multiplicity = output[1];</span>
-<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (multiplicity &gt; 0) {</span>
-<span class="fc" id="L257">            multiplicity = output[1] - 1;</span>
-<span class="pc bpc" id="L258" title="1 of 2 branches missed.">            if (multiplicity &gt; 0) {</span>
-<span class="nc" id="L259">                tree.put(node, multiplicity);</span>
+<span class="fc" id="L304">        int multiplicity = output[1];</span>
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">        if (multiplicity &gt; 0) {</span>
+<span class="fc" id="L306">            multiplicity = output[1] - 1;</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">            if (multiplicity &gt; 0) {</span>
+<span class="nc" id="L308">                tree.put(node, multiplicity);</span>
             }
         }
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        if (multiplicity == 0) {</span>
-<span class="fc" id="L263">            tree.delete(node);</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">        if (multiplicity == 0) {</span>
+<span class="fc" id="L312">            tree.delete(node);</span>
         }
         
-<span class="fc" id="L266">        return true;</span>
+<span class="fc" id="L315">        return true;</span>
     }
     
     /**
@@ -280,35 +329,35 @@ YFastTrie
      */
     public boolean add(long node) {
 
-<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L284">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L332" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L333">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L287">            throw new IllegalArgumentException(&quot;node.key must &quot;</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L336">            throw new IllegalArgumentException(&quot;node.key must &quot;</span>
                 + &quot;be less than &quot; + maxC + &quot; node=&quot; + node);
         }
         
-<span class="fc" id="L291">        long index = node/binSz;</span>
+<span class="fc" id="L340">        long index = node/binSz;</span>
         
-<span class="fc" id="L293">        long existingRepr = xftReps.get(index);</span>
+<span class="fc" id="L342">        long existingRepr = xftReps.get(index);</span>
                 
-<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (!xftReps.containsKey(index)) {</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">        if (!xftReps.containsKey(index)) {</span>
             // insert is O(log_2(w)) + O(l-w)
-<span class="fc" id="L297">            xft.add(Long.valueOf(node));</span>
-<span class="fc" id="L298">            xftReps.put(index, node);</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">        } else if (node &lt; existingRepr) {</span>
+<span class="fc" id="L346">            xft.add(Long.valueOf(node));</span>
+<span class="fc" id="L347">            xftReps.put(index, node);</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">        } else if (node &lt; existingRepr) {</span>
             // delete is O(log_2(w)) + O(l-w)
             // insert is O(log_2(w)) + O(l-w)
-<span class="fc" id="L302">            xft.remove(Long.valueOf(existingRepr));</span>
-<span class="fc" id="L303">            xft.add(Long.valueOf(node));</span>
-<span class="fc" id="L304">            xftReps.put(index, node);</span>
+<span class="fc" id="L351">            xft.remove(Long.valueOf(existingRepr));</span>
+<span class="fc" id="L352">            xft.add(Long.valueOf(node));</span>
+<span class="fc" id="L353">            xftReps.put(index, node);</span>
         }
                 
-<span class="fc" id="L307">        addToRBTree(node, index);</span>
+<span class="fc" id="L356">        addToRBTree(node, index);</span>
         
-<span class="fc" id="L309">        n++;</span>
+<span class="fc" id="L358">        n++;</span>
         
-<span class="fc" id="L311">        return true;</span>
+<span class="fc" id="L360">        return true;</span>
     }
 
     /**
@@ -325,64 +374,69 @@ YFastTrie
      */
     public boolean remove(long node) {
         
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L329">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L378">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L331" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L332">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L381">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
         
-<span class="fc" id="L336">        long index = node/binSz;</span>
+<span class="fc" id="L385">        long index = node/binSz;</span>
                 
-<span class="fc" id="L338">        boolean removed = deleteFromRBTree(node, index);</span>
+<span class="fc" id="L387">        boolean removed = deleteFromRBTree(node, index);</span>
                 
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">        if (!removed) {</span>
-<span class="nc" id="L341">            return false;</span>
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">        if (!removed) {</span>
+<span class="nc" id="L390">            return false;</span>
         }
         
-<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if (!xftReps.containsKey(index)) {</span>
-<span class="nc" id="L345">            return false;</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">        if (!xftReps.containsKey(index)) {</span>
+<span class="nc" id="L394">            return false;</span>
         }
         
-<span class="fc" id="L348">        RedBlackBSTLongInt tree = getTreeMap(index);</span>
+<span class="fc" id="L397">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
       
-<span class="fc" id="L350">        long existingRepr = xftReps.get(index);</span>
+<span class="fc" id="L399">        long existingRepr = xftReps.get(index);</span>
       
-<span class="fc bfc" id="L352" title="All 2 branches covered.">        if (tree.isEmpty()) {</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">        if (tree.isEmpty()) {</span>
             // just deleted the last item so remove from rbs
             // delete is O(log_2(w)) + O(w-l)
-<span class="pc bpc" id="L355" title="1 of 2 branches missed.">            if (xftReps.containsKey(index)) {</span>
-<span class="fc" id="L356">                xft.remove(Long.valueOf(existingRepr));</span>
-<span class="fc" id="L357">                xftReps.remove(index);</span>
+<span class="pc bpc" id="L404" title="1 of 2 branches missed.">            if (xftReps.containsKey(index)) {</span>
+<span class="fc" id="L405">                xft.remove(Long.valueOf(existingRepr));</span>
+<span class="fc" id="L406">                xftReps.remove(index);</span>
             }
-<span class="fc bfc" id="L359" title="All 2 branches covered.">        } else if (node == existingRepr) {</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">        } else if (node == existingRepr) {</span>
             
             //existingRepr is maintained as the minimum in the bin,
             //   so if a node w/ this value is removed and the multiplicity
             //      was 1, need to assign a new repr
             
-<span class="fc" id="L365">            int[] output = new int[2];</span>
-<span class="fc" id="L366">            tree.get(node, output);</span>
+<span class="fc" id="L414">            int[] output = new int[2];</span>
+<span class="fc" id="L415">            tree.get(node, output);</span>
             
-<span class="fc" id="L368">            int multiplicity = output[1];</span>
+<span class="fc" id="L417">            int multiplicity = output[1];</span>
     
-<span class="pc bpc" id="L370" title="1 of 2 branches missed.">            if (output[0] == -1) {</span>
+<span class="pc bpc" id="L419" title="1 of 2 branches missed.">            if (output[0] == -1) {</span>
                 // remove the current repr and assign a new one
                 // delete is O(log_2(w)) + O(w-l)
-<span class="fc" id="L373">                xft.remove(Long.valueOf(existingRepr));</span>
-<span class="fc" id="L374">                xftReps.remove(index);</span>
+<span class="fc" id="L422">                xft.remove(Long.valueOf(existingRepr));</span>
+<span class="fc" id="L423">                xftReps.remove(index);</span>
             
                 // O(log_2(N/w))
-<span class="fc" id="L377">                long minKey = tree.min();</span>
-<span class="fc" id="L378">                xft.add(minKey);</span>
-<span class="fc" id="L379">                xftReps.put(index, minKey); </span>
+<span class="fc" id="L426">                long[] kOutput = new long[2];</span>
+<span class="fc" id="L427">                tree.min(kOutput);</span>
+                
+                // tree is not empty
+<span class="pc bpc" id="L430" title="3 of 4 branches missed.">                assert(kOutput[0] != -1);</span>
+<span class="fc" id="L431">                long minKey = kOutput[1];</span>
+<span class="fc" id="L432">                xft.add(minKey);</span>
+<span class="fc" id="L433">                xftReps.put(index, minKey); </span>
             }            
         }
         
-<span class="fc" id="L383">        n--;</span>
+<span class="fc" id="L437">        n--;</span>
         
-<span class="fc" id="L385">        return true;</span>
+<span class="fc" id="L439">        return true;</span>
     }
 
     /**
@@ -396,26 +450,26 @@ YFastTrie
      */
     public long find(long node) {
                 
-<span class="pc bpc" id="L399" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L400">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L453" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L454">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L402" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L403">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L456" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L457">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC + &quot;. node=&quot; + node);
         }
                 
-<span class="fc" id="L407">        long index = node/binSz;</span>
+<span class="fc" id="L461">        long index = node/binSz;</span>
                 
-<span class="fc" id="L409">        RedBlackBSTLongInt tree = getTreeMap(index);</span>
+<span class="fc" id="L463">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="fc" id="L411">        int[] output = new int[2];</span>
-<span class="fc" id="L412">        tree.get(node, output);</span>
+<span class="fc" id="L465">        int[] output = new int[2];</span>
+<span class="fc" id="L466">        tree.get(node, output);</span>
         
-<span class="fc bfc" id="L414" title="All 2 branches covered.">        if (output[0] == -1) {</span>
-<span class="fc" id="L415">            return -1;</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">        if (output[0] == -1) {</span>
+<span class="fc" id="L469">            return -1;</span>
         }
         
-<span class="fc" id="L418">        return node;</span>
+<span class="fc" id="L472">        return node;</span>
     }
 
     /**
@@ -431,53 +485,59 @@ YFastTrie
      */
     public long predecessor(long node) {
     
-<span class="pc bpc" id="L434" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L435">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L488" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L489">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L437" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L438">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L491" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L492">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
                 
-<span class="fc" id="L442">        long nodeIndex = node/binSz;</span>
+<span class="fc" id="L496">        long nodeIndex = node/binSz;</span>
         
         // the repr is stored in xft and it is always the minium for the bin
-<span class="fc bfc" id="L445" title="All 2 branches covered.">        boolean isAMinimum = xft.find(Long.valueOf(node)) != null;</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">        boolean isAMinimum = xft.find(Long.valueOf(node)) != null;</span>
         
         /*
         if the node is not a minima, the answer is in
            the node's map if its size is larger &gt; 1
         */
         
-<span class="fc" id="L452">        RedBlackBSTLongInt tree = getTreeMap(nodeIndex);</span>
+<span class="fc" id="L506">        RedBlackBSTLongInt2 tree = getTreeMap(nodeIndex);</span>
         
-<span class="fc bfc" id="L454" title="All 4 branches covered.">        if (!isAMinimum &amp;&amp; (tree.size() &gt; 1)) {</span>
-<span class="fc" id="L455">            long[] output = new long[2];</span>
-<span class="fc" id="L456">            tree.lower(node, output);</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">            if (output[0] != -1) {</span>
-<span class="fc" id="L458">                return output[1];</span>
+<span class="fc bfc" id="L508" title="All 4 branches covered.">        if (!isAMinimum &amp;&amp; (tree.size() &gt; 1)) {</span>
+<span class="fc" id="L509">            long[] output = new long[2];</span>
+            //tree.printPreOrderTraversal();
+<span class="fc" id="L511">            tree.lower(node, output);</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">            if (output[0] != -1) {</span>
+<span class="fc" id="L513">                return output[1];</span>
             }
         }
        
         // else, predeccessor is in the closest bin &lt; nodeIndex that has
         //    items in it.
                 
-<span class="fc" id="L465">        Long prev = xft.predecessor(Long.valueOf(node));</span>
-<span class="fc bfc" id="L466" title="All 2 branches covered.">        if (prev == null) {</span>
-<span class="fc" id="L467">            return -1;</span>
+<span class="fc" id="L520">        Long prev = xft.predecessor(Long.valueOf(node));</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        if (prev == null) {</span>
+<span class="fc" id="L522">            return -1;</span>
         }
         
-<span class="fc" id="L470">        long prev0Index = prev.longValue()/binSz;</span>
+<span class="fc" id="L525">        long prev0Index = prev.longValue()/binSz;</span>
             
-<span class="fc" id="L472">        tree = getTreeMap(prev0Index);</span>
+<span class="fc" id="L527">        tree = getTreeMap(prev0Index);</span>
         
-<span class="pc bpc" id="L474" title="1 of 2 branches missed.">        if (tree.isEmpty()) {</span>
-<span class="nc" id="L475">            return -1;</span>
+<span class="pc bpc" id="L529" title="1 of 2 branches missed.">        if (tree.isEmpty()) {</span>
+<span class="nc" id="L530">            return -1;</span>
         }
         
-<span class="fc" id="L478">        long lastKey = tree.max();</span>
+<span class="fc" id="L533">        long[] kOutput = new long[2];</span>
+<span class="fc" id="L534">        tree.max(kOutput);</span>
         
-<span class="fc" id="L480">        return lastKey;</span>
+        // tree is not empty
+<span class="pc bpc" id="L537" title="3 of 4 branches missed.">        assert(kOutput[0] != -1);</span>
+<span class="fc" id="L538">        long lastKey = kOutput[1];</span>
+        
+<span class="fc" id="L540">        return lastKey;</span>
     }
     
     /**
@@ -494,51 +554,51 @@ YFastTrie
      */
     public long successor(long node) {
                 
-<span class="pc bpc" id="L497" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L498">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L557" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L558">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L500" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L501">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L560" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L561">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
         
-<span class="fc" id="L505">        Long nodeKey = Long.valueOf(node);</span>
+<span class="fc" id="L565">        Long nodeKey = Long.valueOf(node);</span>
         
-<span class="fc" id="L507">        long nodeIndex = node/binSz;</span>
+<span class="fc" id="L567">        long nodeIndex = node/binSz;</span>
         
-<span class="fc bfc" id="L509" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
+<span class="fc bfc" id="L569" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
         
-<span class="fc" id="L511">        RedBlackBSTLongInt tree = getTreeMap(nodeIndex);</span>
+<span class="fc" id="L571">        RedBlackBSTLongInt2 tree = getTreeMap(nodeIndex);</span>
         
-<span class="fc bfc" id="L513" title="All 2 branches covered.">        if (tree.size() &gt; 1) {</span>
+<span class="fc bfc" id="L573" title="All 2 branches covered.">        if (tree.size() &gt; 1) {</span>
             
             // if tree size &gt; 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
 
-<span class="fc" id="L518">            long[] output = new long[2];</span>
-<span class="fc" id="L519">            tree.higher(node, output);</span>
+<span class="fc" id="L578">            final long[] output = new long[2];</span>
+<span class="fc" id="L579">            tree.higher(node, output);</span>
                 
-<span class="fc bfc" id="L521" title="All 2 branches covered.">            if (isAMinimum) {</span>
-<span class="pc bpc" id="L522" title="3 of 4 branches missed.">                assert(output[0] != -1);</span>
-<span class="fc" id="L523">                return output[1];</span>
+<span class="fc bfc" id="L581" title="All 2 branches covered.">            if (isAMinimum) {</span>
+<span class="pc bpc" id="L582" title="3 of 4 branches missed.">                assert(output[0] != -1);</span>
+<span class="fc" id="L583">                return output[1];</span>
             }
         
             // else, the node is not a repr
             //   if there is a tree successor to the node, that is the successor
             //   else, the xft successor to nodeIndex is the successor
         
-<span class="fc bfc" id="L530" title="All 2 branches covered.">            if (output[0] != -1) {</span>
-<span class="fc" id="L531">                return output[1];</span>
+<span class="fc bfc" id="L590" title="All 2 branches covered.">            if (output[0] != -1) {</span>
+<span class="fc" id="L591">                return output[1];</span>
             }
         }
                 
-<span class="fc" id="L535">        Long successorRepr = xft.successor(nodeKey);</span>
-<span class="fc bfc" id="L536" title="All 2 branches covered.">        if (successorRepr == null) {</span>
-<span class="fc" id="L537">            return -1;</span>
+<span class="fc" id="L595">        Long successorRepr = xft.successor(nodeKey);</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">        if (successorRepr == null) {</span>
+<span class="fc" id="L597">            return -1;</span>
         }
 
         // the successor representative is then the next value
-<span class="fc" id="L541">        return successorRepr;</span>
+<span class="fc" id="L601">        return successorRepr;</span>
     }
 
     /**
@@ -553,16 +613,16 @@ YFastTrie
      */
     public long minimum() {
         
-<span class="pc bpc" id="L556" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
-<span class="nc" id="L557">            return -1;</span>
+<span class="pc bpc" id="L616" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
+<span class="nc" id="L617">            return -1;</span>
         }
         
-<span class="fc" id="L560">        Long repr = xft.minimum();</span>
+<span class="fc" id="L620">        Long repr = xft.minimum();</span>
         
         // cannot be null if size &gt; 0
-<span class="pc bpc" id="L563" title="3 of 4 branches missed.">        assert(repr != null);</span>
+<span class="pc bpc" id="L623" title="3 of 4 branches missed.">        assert(repr != null);</span>
        
-<span class="fc" id="L565">        return repr.longValue();</span>
+<span class="fc" id="L625">        return repr.longValue();</span>
     }
 
     /**
@@ -576,24 +636,29 @@ YFastTrie
      */
     public long maximum() {
         
-<span class="pc bpc" id="L579" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
-<span class="nc" id="L580">            return -1;</span>
+<span class="pc bpc" id="L639" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
+<span class="nc" id="L640">            return -1;</span>
         }
         
-<span class="fc" id="L583">        Long maxRepr = xft.maximum();</span>
+<span class="fc" id="L643">        Long maxRepr = xft.maximum();</span>
         
-<span class="pc bpc" id="L585" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
+<span class="pc bpc" id="L645" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
         
-<span class="fc" id="L587">        long index = maxRepr.longValue()/binSz;</span>
+<span class="fc" id="L647">        long index = maxRepr.longValue()/binSz;</span>
         
-<span class="fc" id="L589">        RedBlackBSTLongInt tree = getTreeMap(index);</span>
+<span class="fc" id="L649">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L591" title="3 of 4 branches missed.">        assert(tree != null);</span>
-<span class="pc bpc" id="L592" title="3 of 4 branches missed.">        assert(!tree.isEmpty());</span>
+<span class="pc bpc" id="L651" title="3 of 4 branches missed.">        assert(tree != null);</span>
+<span class="pc bpc" id="L652" title="3 of 4 branches missed.">        assert(!tree.isEmpty());</span>
         
-<span class="fc" id="L594">        long lastKey = tree.max();</span>
+<span class="fc" id="L654">        long[] kOutput = new long[2];</span>
+<span class="fc" id="L655">        tree.max(kOutput);</span>
+        
+<span class="pc bpc" id="L657" title="3 of 4 branches missed.">        assert(kOutput[0] != -1);</span>
+        
+<span class="fc" id="L659">        long lastKey = kOutput[1];</span>
                 
-<span class="fc" id="L596">        return lastKey;</span>
+<span class="fc" id="L661">        return lastKey;</span>
     }
     
     /**
@@ -609,16 +674,16 @@ YFastTrie
     public long extractMinimum() {
         
         //O(log_2(w))
-<span class="fc" id="L612">        long min = minimum();</span>
+<span class="fc" id="L677">        long min = minimum();</span>
 
-<span class="pc bpc" id="L614" title="1 of 2 branches missed.">        if (min == -1) {</span>
-<span class="nc bnc" id="L615" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
-<span class="nc" id="L616">            return -1;</span>
+<span class="pc bpc" id="L679" title="1 of 2 branches missed.">        if (min == -1) {</span>
+<span class="nc bnc" id="L680" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc" id="L681">            return -1;</span>
         }
                 
-<span class="fc" id="L619">        remove(min);</span>
+<span class="fc" id="L684">        remove(min);</span>
         
-<span class="fc" id="L621">        return min;</span>
+<span class="fc" id="L686">        return min;</span>
     }
     
     /**
@@ -632,16 +697,16 @@ YFastTrie
      */
     public long extractMaximum() {
         
-<span class="fc" id="L635">        long max = maximum();</span>
+<span class="fc" id="L700">        long max = maximum();</span>
 
-<span class="pc bpc" id="L637" title="1 of 2 branches missed.">        if (max == -1) {</span>
-<span class="nc bnc" id="L638" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
-<span class="nc" id="L639">            return -1;</span>
+<span class="pc bpc" id="L702" title="1 of 2 branches missed.">        if (max == -1) {</span>
+<span class="nc bnc" id="L703" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc" id="L704">            return -1;</span>
         }
                 
-<span class="fc" id="L642">        remove(max);</span>
+<span class="fc" id="L707">        remove(max);</span>
         
-<span class="fc" id="L644">        return max;</span>
+<span class="fc" id="L709">        return max;</span>
     }
     
     /**
@@ -649,11 +714,11 @@ YFastTrie
      * @return 
      */
     public int size() {
-<span class="fc" id="L652">        return n;</span>
+<span class="fc" id="L717">        return n;</span>
     }
 
     protected long getBinSz() {
-<span class="nc" id="L656">        return binSz;</span>
+<span class="nc" id="L721">        return binSz;</span>
     }
     
     /**
@@ -695,24 +760,24 @@ YFastTrie
     public static long[] estimateSizeOnHeap(int numberOfEntries, int
         maxNumberOfBits) {
         
-<span class="fc" id="L698">        long ww = maxNumberOfBits;</span>
+<span class="fc" id="L763">        long ww = maxNumberOfBits;</span>
         
-<span class="fc" id="L700">        long maxNumber = (1L &lt;&lt; ww) - 1;</span>
+<span class="fc" id="L765">        long maxNumber = (1L &lt;&lt; ww) - 1;</span>
         
-<span class="fc" id="L702">        long binSz = maxNumberOfBits;</span>
+<span class="fc" id="L767">        long binSz = maxNumberOfBits;</span>
         
-<span class="fc" id="L704">        int nBins = (int)Math.ceil((double)maxNumber/(double)binSz);</span>
+<span class="fc" id="L769">        int nBins = (int)Math.ceil((double)maxNumber/(double)binSz);</span>
         
-<span class="fc" id="L706">        long total = 0;</span>
+<span class="fc" id="L771">        long total = 0;</span>
         
-<span class="fc" id="L708">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L709">        est.setNIntFields(2);</span>
-<span class="fc" id="L710">        est.setNLongFields(3);</span>
-<span class="fc" id="L711">        est.setNBooleanFields(1);</span>
+<span class="fc" id="L773">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L774">        est.setNIntFields(2);</span>
+<span class="fc" id="L775">        est.setNLongFields(3);</span>
+<span class="fc" id="L776">        est.setNBooleanFields(1);</span>
         //objects: xft, xftReps, rbs
-<span class="fc" id="L713">        est.setNObjRefsFields(3);</span>
+<span class="fc" id="L778">        est.setNObjRefsFields(3);</span>
        
-<span class="fc" id="L715">        total += est.estimateSizeOnHeap();</span>
+<span class="fc" id="L780">        total += est.estimateSizeOnHeap();</span>
        
         // --------- include contents of the objects --------------
         
@@ -739,66 +804,70 @@ YFastTrie
         // each sorted tree has 
         //    key = node (inserted number), w/ value=
         //        the number of times that number is present (multiplicity).
-        TLongObjectMap&lt;RedBlackBSTLongInt&gt; rbs;
+        TLongObjectMap&lt;RedBlackBSTLongInt2&gt; rbs;
         */
     
         // returning 2 estimates
         // (1) estimate using all bins w/ factor 5 for tries
         // (2) estimate from using nBinsSparse of the nBins w/ factor 3 for tries
         
-<span class="fc" id="L749">        int nBinsSparse = nBins/10;</span>
-<span class="pc bpc" id="L750" title="1 of 2 branches missed.">        if (nBinsSparse &lt; 1) {</span>
-<span class="nc" id="L751">            nBinsSparse = 1;</span>
+<span class="fc" id="L814">        int nBinsSparse = nBins/10;</span>
+<span class="pc bpc" id="L815" title="1 of 2 branches missed.">        if (nBinsSparse &lt; 1) {</span>
+<span class="nc" id="L816">            nBinsSparse = 1;</span>
         }
         
         // using factor of 5 for total w/ prefix nodes
-<span class="fc" id="L755">        long total2_1 = numberOfEntries * 5 *</span>
-<span class="fc" id="L756">            XFastTrieNodeLong.estimateSizeOnHeap();</span>
+<span class="fc" id="L820">        long total2_1 = numberOfEntries * 5 *</span>
+<span class="fc" id="L821">            XFastTrieNodeLong.estimateSizeOnHeap();</span>
         
         // all nBins are filled w/ a repr
-<span class="fc" id="L759">        total2_1 += XFastTrieLong.estimateSizeOnHeap(nBins, maxNumberOfBits);</span>
+<span class="fc" id="L824">        total2_1 += XFastTrieLong.estimateSizeOnHeap(nBins, maxNumberOfBits);</span>
         
-<span class="fc" id="L761">        long total2_2 = numberOfEntries * 3 *</span>
-<span class="fc" id="L762">            XFastTrieNodeLong.estimateSizeOnHeap();</span>
+<span class="fc" id="L826">        long total2_2 = numberOfEntries * 3 *</span>
+<span class="fc" id="L827">            XFastTrieNodeLong.estimateSizeOnHeap();</span>
         
         // nBinsSparse of nBins are filled w/ a repr
-<span class="fc" id="L765">        total2_2 += XFastTrieLong.estimateSizeOnHeap(nBinsSparse, maxNumberOfBits);</span>
+<span class="fc" id="L830">        total2_2 += XFastTrieLong.estimateSizeOnHeap(nBinsSparse, maxNumberOfBits);</span>
         
         
         //TLongLongMap
-<span class="fc" id="L769">        total2_1 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
+<span class="fc" id="L834">        total2_1 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
         
         //nBins number of repr entries in map
-<span class="fc" id="L772">        total2_1 += (2 * nBins * ObjectSpaceEstimator.estimateLongSize());</span>
+<span class="fc" id="L837">        total2_1 += (2 * nBins * ObjectSpaceEstimator.estimateLongSize());</span>
         
         
         //TLongLongMap
-<span class="fc" id="L776">        total2_2 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
+<span class="fc" id="L841">        total2_2 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
         
         //nBins/4 number of repr entries in map
-<span class="fc" id="L779">        total2_2 += (2 * nBinsSparse * ObjectSpaceEstimator.estimateLongSize());</span>
+<span class="fc" id="L844">        total2_2 += (2 * nBinsSparse * ObjectSpaceEstimator.estimateLongSize());</span>
         
         
         // 1 TLongObjectMap&lt;RedBlackBSTLongInt&gt; rbs;
-<span class="fc" id="L783">        total2_1 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
+<span class="fc" id="L848">        total2_1 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
         
-<span class="fc" id="L785">        total2_2 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
+<span class="fc" id="L850">        total2_2 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
         
         
         // nBins number of RedBlackBSTLongInt
-<span class="fc" id="L789">        long rbtree = RedBlackBSTLongInt.estimateSizeOnHeap(0);</span>
+<span class="fc" id="L854">        long rbtree = RedBlackBSTLongInt2.estimateSizeOnHeap(0);</span>
         
-<span class="fc" id="L791">        total2_1 += (nBins * rbtree);</span>
+<span class="fc" id="L856">        long rbtreeNodes = RedBlackBSTLongInt2.estimateSizeOnHeap(numberOfEntries) -</span>
+            rbtree;
         
-<span class="fc" id="L793">        total2_2 += (nBinsSparse * rbtree);</span>
+<span class="fc" id="L859">        total2_1 += (nBins * rbtree);</span>
+        
+<span class="fc" id="L861">        total2_2 += (nBinsSparse * rbtree);</span>
         
         
         // nEntries number of long, int nodes
-<span class="fc" id="L797">        total2_1 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();</span>
         
-<span class="fc" id="L799">        total2_2 += numberOfEntries * RedBlackBSTLongInt.estimateNodeSizeOnHeap();</span>
-            
-<span class="fc" id="L801">        return new long[]{total2_1 + total, total2_2 + total};</span>
+<span class="fc" id="L866">        total2_1 += rbtreeNodes;</span>
+        
+<span class="fc" id="L868">        total2_2 += rbtreeNodes;</span>
+           
+<span class="fc" id="L870">        return new long[]{total2_1 + total, total2_2 + total};</span>
     }
     
     /**
@@ -806,13 +875,13 @@ YFastTrie
      */
     public void debugPrint() {
         
-<span class="fc" id="L809">        long[] binIndexes = rbs.keys();</span>
-<span class="fc" id="L810">        Arrays.sort(binIndexes);</span>
-<span class="fc bfc" id="L811" title="All 2 branches covered.">        for (long binIdx : binIndexes) {</span>
-<span class="fc" id="L812">            System.out.println(&quot;binNumber=&quot; + binIdx);</span>
-<span class="fc" id="L813">            RedBlackBSTLongInt rbt = rbs.get(binIdx);</span>
-<span class="fc" id="L814">            rbt.printPreOrderTraversal();</span>
+<span class="nc" id="L878">        long[] binIndexes = rbs.keys();</span>
+<span class="nc" id="L879">        Arrays.sort(binIndexes);</span>
+<span class="nc bnc" id="L880" title="All 2 branches missed.">        for (long binIdx : binIndexes) {</span>
+<span class="nc" id="L881">            System.out.println(&quot;binNumber=&quot; + binIdx);</span>
+<span class="nc" id="L882">            RedBlackBSTLongInt2 rbt = rbs.get(binIdx);</span>
+<span class="nc" id="L883">            rbt.printPreOrderTraversal();</span>
         }
-<span class="fc" id="L816">    }</span>
+<span class="nc" id="L885">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
