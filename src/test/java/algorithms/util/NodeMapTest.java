@@ -5,6 +5,8 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.TLongSet;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -269,6 +271,37 @@ public class NodeMapTest extends TestCase {
                 bin.close();
             }
         }
+        
+        long[] keys1 = map.keys();
+        assertNotNull(keys1);
+        assertEquals(map.size(), keys1.length);
+        
+        TLongSet keySet2 = map2.keySet();
+        for (int i = 0; i < keys1.length; ++i) {
+            assertTrue(keySet2.contains(keys1[i]));
+        }
+        
+        keys1 = map.keys(new long[map.size()]);
+        assertNotNull(keys1);
+        assertEquals(map.size(), keys1.length);
+        for (int i = 0; i < keys1.length; ++i) {
+            assertTrue(keySet2.contains(keys1[i]));
+        }
+        
+        assertNotNull(map.toString());
+        
+        long missingKey = rng.nextLong();
+        while (keySet2.contains(missingKey)) {
+            missingKey = rng.nextLong();
+        }
+        
+        assertTrue(map.putIfAbsent(missingKey, 1, 1, 1));
+        
+        map2 = new NodeMap(map.size());
+                        
+        map2.putAll(map);
+        
+        assertTrue(map.equals(map2));
     }
     
     private void populateData(Random rng, int n,
