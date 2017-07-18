@@ -338,6 +338,7 @@
                     <fileset dir="${src.out.dir}">
                         <include name="**/*.class" />
                         <exclude name="**/*$*.class" />
+                        <exclude name="**/*Plotter*.class" />
                         <exclude name="**/thirdparty/ca/uol/aig/fftpack/*.class" />
                     </fileset>
                 </classfiles>
