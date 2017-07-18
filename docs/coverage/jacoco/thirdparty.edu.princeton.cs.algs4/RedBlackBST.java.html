@@ -324,7 +324,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="fc bfc" id="L324" title="All 2 branches covered.">        if (h.right == null)</span>
 <span class="fc" id="L325">            return null;</span>
 
-<span class="fc bfc" id="L327" title="All 4 branches covered.">        if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
+<span class="pc bpc" id="L327" title="1 of 4 branches missed.">        if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L328">            h = moveRedRight(h);</span>
 
 <span class="fc" id="L330">        h.right = deleteMax(h.right);</span>
@@ -344,8 +344,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L347" title="3 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
-<span class="nc" id="L348">            root.color = RED;</span>
+<span class="pc bpc" id="L347" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="fc" id="L348">            root.color = RED;</span>
 
 <span class="fc" id="L350">        root = delete(root, key);</span>
 <span class="pc bpc" id="L351" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
@@ -358,27 +358,27 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         // assert get(h, key) != null;
 
 <span class="fc bfc" id="L360" title="All 2 branches covered.">        if (key.compareTo(h.key) &lt; 0)  {</span>
-<span class="pc bpc" id="L361" title="3 of 4 branches missed.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
-<span class="nc" id="L362">                h = moveRedLeft(h);</span>
+<span class="fc bfc" id="L361" title="All 4 branches covered.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
+<span class="fc" id="L362">                h = moveRedLeft(h);</span>
 <span class="fc" id="L363">            h.left = delete(h.left, key);</span>
         }
         else {
 <span class="fc bfc" id="L366" title="All 2 branches covered.">            if (isRed(h.left))</span>
 <span class="fc" id="L367">                h = rotateRight(h);</span>
-<span class="fc bfc" id="L368" title="All 4 branches covered.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
+<span class="pc bpc" id="L368" title="1 of 4 branches missed.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
 <span class="fc" id="L369">                return null;</span>
 <span class="fc bfc" id="L370" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L371">                h = moveRedRight(h);</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">            if (key.compareTo(h.key) == 0) {</span>
-<span class="fc" id="L373">                RBNode x = min(h.right);</span>
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">            if (key.compareTo(h.key) == 0) {</span>
+<span class="nc" id="L373">                RBNode x = min(h.right);</span>
                 
-<span class="fc" id="L375">                h.key = x.key;</span>
-<span class="fc" id="L376">                h.val = x.val;</span>
+<span class="nc" id="L375">                h.key = x.key;</span>
+<span class="nc" id="L376">                h.val = x.val;</span>
                 
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
-<span class="fc" id="L380">                h.right = deleteMin(h.right);</span>
-<span class="fc" id="L381">            }</span>
+<span class="nc" id="L380">                h.right = deleteMin(h.right);</span>
+<span class="nc" id="L381">            }</span>
 <span class="fc" id="L382">            else h.right = delete(h.right, key);</span>
         }
 <span class="fc" id="L384">        return balance(h);</span>
@@ -605,17 +605,17 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public int rank(Key key) {
-<span class="nc bnc" id="L608" title="All 2 branches missed.">        if (key == null) throw new IllegalArgumentException(&quot;argument to rank() is null&quot;);</span>
-<span class="nc" id="L609">        return rank(key, root);</span>
+<span class="pc bpc" id="L608" title="1 of 2 branches missed.">        if (key == null) throw new IllegalArgumentException(&quot;argument to rank() is null&quot;);</span>
+<span class="fc" id="L609">        return rank(key, root);</span>
     } 
 
     // number of keys less than key in the subtree rooted at x
     private int rank(Key key, RBNode x) {
-<span class="nc bnc" id="L614" title="All 2 branches missed.">        if (x == null) return 0; </span>
-<span class="nc" id="L615">        int cmp = key.compareTo(x.key); </span>
-<span class="nc bnc" id="L616" title="All 2 branches missed.">        if      (cmp &lt; 0) return rank(key, x.left); </span>
-<span class="nc bnc" id="L617" title="All 2 branches missed.">        else if (cmp &gt; 0) return 1 + size(x.left) + rank(key, x.right); </span>
-<span class="nc" id="L618">        else              return size(x.left); </span>
+<span class="pc bpc" id="L614" title="1 of 2 branches missed.">        if (x == null) return 0; </span>
+<span class="fc" id="L615">        int cmp = key.compareTo(x.key); </span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">        if      (cmp &lt; 0) return rank(key, x.left); </span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">        else if (cmp &gt; 0) return 1 + size(x.left) + rank(key, x.right); </span>
+<span class="fc" id="L618">        else              return size(x.left); </span>
     } 
 
    /***************************************************************************
@@ -629,8 +629,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
      * @return all keys in the symbol table as an {@code Iterable}
      */
     public Iterable&lt;Key&gt; keys() {
-<span class="nc bnc" id="L632" title="All 2 branches missed.">        if (isEmpty()) return new Queue&lt;Key&gt;();</span>
-<span class="nc" id="L633">        return keys(min(), max());</span>
+<span class="pc bpc" id="L632" title="1 of 2 branches missed.">        if (isEmpty()) return new Queue&lt;Key&gt;();</span>
+<span class="fc" id="L633">        return keys(min(), max());</span>
     }
 
     /**
@@ -645,25 +645,25 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
      *    is {@code null}
      */
     public Iterable&lt;Key&gt; keys(Key lo, Key hi) {
-<span class="nc bnc" id="L648" title="All 2 branches missed.">        if (lo == null) throw new IllegalArgumentException(&quot;first argument to keys() is null&quot;);</span>
-<span class="nc bnc" id="L649" title="All 2 branches missed.">        if (hi == null) throw new IllegalArgumentException(&quot;second argument to keys() is null&quot;);</span>
+<span class="pc bpc" id="L648" title="1 of 2 branches missed.">        if (lo == null) throw new IllegalArgumentException(&quot;first argument to keys() is null&quot;);</span>
+<span class="pc bpc" id="L649" title="1 of 2 branches missed.">        if (hi == null) throw new IllegalArgumentException(&quot;second argument to keys() is null&quot;);</span>
 
-<span class="nc" id="L651">        Queue&lt;Key&gt; queue = new Queue&lt;Key&gt;();</span>
+<span class="fc" id="L651">        Queue&lt;Key&gt; queue = new Queue&lt;Key&gt;();</span>
         // if (isEmpty() || lo.compareTo(hi) &gt; 0) return queue;
-<span class="nc" id="L653">        keys(root, queue, lo, hi);</span>
-<span class="nc" id="L654">        return queue;</span>
+<span class="fc" id="L653">        keys(root, queue, lo, hi);</span>
+<span class="fc" id="L654">        return queue;</span>
     } 
 
     // add the keys between lo and hi in the subtree rooted at x
     // to the queue
     private void keys(RBNode x, Queue&lt;Key&gt; queue, Key lo, Key hi) { 
-<span class="nc bnc" id="L660" title="All 2 branches missed.">        if (x == null) return; </span>
-<span class="nc" id="L661">        int cmplo = lo.compareTo(x.key); </span>
-<span class="nc" id="L662">        int cmphi = hi.compareTo(x.key); </span>
-<span class="nc bnc" id="L663" title="All 2 branches missed.">        if (cmplo &lt; 0) keys(x.left, queue, lo, hi); </span>
-<span class="nc bnc" id="L664" title="All 4 branches missed.">        if (cmplo &lt;= 0 &amp;&amp; cmphi &gt;= 0) queue.enqueue(x.key); </span>
-<span class="nc bnc" id="L665" title="All 2 branches missed.">        if (cmphi &gt; 0) keys(x.right, queue, lo, hi); </span>
-<span class="nc" id="L666">    } </span>
+<span class="fc bfc" id="L660" title="All 2 branches covered.">        if (x == null) return; </span>
+<span class="fc" id="L661">        int cmplo = lo.compareTo(x.key); </span>
+<span class="fc" id="L662">        int cmphi = hi.compareTo(x.key); </span>
+<span class="fc bfc" id="L663" title="All 2 branches covered.">        if (cmplo &lt; 0) keys(x.left, queue, lo, hi); </span>
+<span class="pc bpc" id="L664" title="2 of 4 branches missed.">        if (cmplo &lt;= 0 &amp;&amp; cmphi &gt;= 0) queue.enqueue(x.key); </span>
+<span class="fc bfc" id="L665" title="All 2 branches covered.">        if (cmphi &gt; 0) keys(x.right, queue, lo, hi); </span>
+<span class="fc" id="L666">    } </span>
 
     /**
      * Returns the number of keys in the symbol table in the given range.
@@ -688,75 +688,75 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
    /***************************************************************************
     *  Check integrity of red-black tree data structure.
     ***************************************************************************/
-    private boolean check() {
-<span class="nc bnc" id="L692" title="All 2 branches missed.">        if (!isBST())            System.out.println(&quot;Not in symmetric order&quot;);</span>
-<span class="nc bnc" id="L693" title="All 2 branches missed.">        if (!isSizeConsistent()) System.out.println(&quot;Subtree counts not consistent&quot;);</span>
-<span class="nc bnc" id="L694" title="All 2 branches missed.">        if (!isRankConsistent()) System.out.println(&quot;Ranks not consistent&quot;);</span>
-<span class="nc bnc" id="L695" title="All 2 branches missed.">        if (!is23())             System.out.println(&quot;Not a 2-3 tree&quot;);</span>
-<span class="nc bnc" id="L696" title="All 2 branches missed.">        if (!isBalanced())       System.out.println(&quot;Not balanced&quot;);</span>
-<span class="nc bnc" id="L697" title="All 10 branches missed.">        return isBST() &amp;&amp; isSizeConsistent() &amp;&amp; isRankConsistent() &amp;&amp; is23() &amp;&amp; isBalanced();</span>
+    protected boolean check() {
+<span class="pc bpc" id="L692" title="1 of 2 branches missed.">        if (!isBST())            System.out.println(&quot;Not in symmetric order&quot;);</span>
+<span class="pc bpc" id="L693" title="1 of 2 branches missed.">        if (!isSizeConsistent()) System.out.println(&quot;Subtree counts not consistent&quot;);</span>
+<span class="pc bpc" id="L694" title="1 of 2 branches missed.">        if (!isRankConsistent()) System.out.println(&quot;Ranks not consistent&quot;);</span>
+<span class="pc bpc" id="L695" title="1 of 2 branches missed.">        if (!is23())             System.out.println(&quot;Not a 2-3 tree&quot;);</span>
+<span class="pc bpc" id="L696" title="1 of 2 branches missed.">        if (!isBalanced())       System.out.println(&quot;Not balanced&quot;);</span>
+<span class="pc bpc" id="L697" title="5 of 10 branches missed.">        return isBST() &amp;&amp; isSizeConsistent() &amp;&amp; isRankConsistent() &amp;&amp; is23() &amp;&amp; isBalanced();</span>
     }
 
     // does this binary tree satisfy symmetric order?
     // Note: this test also ensures that data structure is a binary tree since order is strict
     private boolean isBST() {
-<span class="nc" id="L703">        return isBST(root, null, null);</span>
+<span class="fc" id="L703">        return isBST(root, null, null);</span>
     }
 
     // is the tree rooted at x a BST with all keys strictly between min and max
     // (if min or max is null, treat as empty constraint)
     // Credit: Bob Dondero's elegant solution
     private boolean isBST(RBNode x, Key min, Key max) {
-<span class="nc bnc" id="L710" title="All 2 branches missed.">        if (x == null) return true;</span>
-<span class="nc bnc" id="L711" title="All 4 branches missed.">        if (min != null &amp;&amp; x.key.compareTo(min) &lt;= 0) return false;</span>
-<span class="nc bnc" id="L712" title="All 4 branches missed.">        if (max != null &amp;&amp; x.key.compareTo(max) &gt;= 0) return false;</span>
-<span class="nc bnc" id="L713" title="All 4 branches missed.">        return isBST(x.left, min, x.key) &amp;&amp; isBST(x.right, x.key, max);</span>
+<span class="fc bfc" id="L710" title="All 2 branches covered.">        if (x == null) return true;</span>
+<span class="pc bpc" id="L711" title="1 of 4 branches missed.">        if (min != null &amp;&amp; x.key.compareTo(min) &lt;= 0) return false;</span>
+<span class="pc bpc" id="L712" title="1 of 4 branches missed.">        if (max != null &amp;&amp; x.key.compareTo(max) &gt;= 0) return false;</span>
+<span class="pc bpc" id="L713" title="2 of 4 branches missed.">        return isBST(x.left, min, x.key) &amp;&amp; isBST(x.right, x.key, max);</span>
     } 
 
     // are the size fields correct?
-<span class="nc" id="L717">    private boolean isSizeConsistent() { return isSizeConsistent(root); }</span>
+<span class="fc" id="L717">    private boolean isSizeConsistent() { return isSizeConsistent(root); }</span>
     private boolean isSizeConsistent(RBNode x) {
-<span class="nc bnc" id="L719" title="All 2 branches missed.">        if (x == null) return true;</span>
-<span class="nc bnc" id="L720" title="All 2 branches missed.">        if (x.size != size(x.left) + size(x.right) + 1) return false;</span>
-<span class="nc bnc" id="L721" title="All 4 branches missed.">        return isSizeConsistent(x.left) &amp;&amp; isSizeConsistent(x.right);</span>
+<span class="fc bfc" id="L719" title="All 2 branches covered.">        if (x == null) return true;</span>
+<span class="pc bpc" id="L720" title="1 of 2 branches missed.">        if (x.size != size(x.left) + size(x.right) + 1) return false;</span>
+<span class="pc bpc" id="L721" title="2 of 4 branches missed.">        return isSizeConsistent(x.left) &amp;&amp; isSizeConsistent(x.right);</span>
     } 
 
     // check that ranks are consistent
     private boolean isRankConsistent() {
-<span class="nc bnc" id="L726" title="All 2 branches missed.">        for (int i = 0; i &lt; size(); i++)</span>
-<span class="nc bnc" id="L727" title="All 2 branches missed.">            if (i != rank(select(i))) return false;</span>
-<span class="nc bnc" id="L728" title="All 2 branches missed.">        for (Key key : keys())</span>
-<span class="nc bnc" id="L729" title="All 2 branches missed.">            if (key.compareTo(select(rank(key))) != 0) return false;</span>
-<span class="nc" id="L730">        return true;</span>
+<span class="fc bfc" id="L726" title="All 2 branches covered.">        for (int i = 0; i &lt; size(); i++)</span>
+<span class="pc bpc" id="L727" title="1 of 2 branches missed.">            if (i != rank(select(i))) return false;</span>
+<span class="fc bfc" id="L728" title="All 2 branches covered.">        for (Key key : keys())</span>
+<span class="pc bpc" id="L729" title="1 of 2 branches missed.">            if (key.compareTo(select(rank(key))) != 0) return false;</span>
+<span class="fc" id="L730">        return true;</span>
     }
 
     // Does the tree have no red right links, and at most one (left)
     // red links in a row on any path?
-<span class="nc" id="L735">    private boolean is23() { return is23(root); }</span>
+<span class="fc" id="L735">    private boolean is23() { return is23(root); }</span>
     private boolean is23(RBNode x) {
-<span class="nc bnc" id="L737" title="All 2 branches missed.">        if (x == null) return true;</span>
-<span class="nc bnc" id="L738" title="All 2 branches missed.">        if (isRed(x.right)) return false;</span>
-<span class="nc bnc" id="L739" title="All 6 branches missed.">        if (x != root &amp;&amp; isRed(x) &amp;&amp; isRed(x.left))</span>
+<span class="fc bfc" id="L737" title="All 2 branches covered.">        if (x == null) return true;</span>
+<span class="pc bpc" id="L738" title="1 of 2 branches missed.">        if (isRed(x.right)) return false;</span>
+<span class="pc bpc" id="L739" title="1 of 6 branches missed.">        if (x != root &amp;&amp; isRed(x) &amp;&amp; isRed(x.left))</span>
 <span class="nc" id="L740">            return false;</span>
-<span class="nc bnc" id="L741" title="All 4 branches missed.">        return is23(x.left) &amp;&amp; is23(x.right);</span>
+<span class="pc bpc" id="L741" title="2 of 4 branches missed.">        return is23(x.left) &amp;&amp; is23(x.right);</span>
     } 
 
     // do all paths from root to leaf have same number of black edges?
     private boolean isBalanced() { 
-<span class="nc" id="L746">        int black = 0;     // number of black links on path from root to min</span>
-<span class="nc" id="L747">        RBNode x = root;</span>
-<span class="nc bnc" id="L748" title="All 2 branches missed.">        while (x != null) {</span>
-<span class="nc bnc" id="L749" title="All 2 branches missed.">            if (!isRed(x)) black++;</span>
-<span class="nc" id="L750">            x = x.left;</span>
+<span class="fc" id="L746">        int black = 0;     // number of black links on path from root to min</span>
+<span class="fc" id="L747">        RBNode x = root;</span>
+<span class="fc bfc" id="L748" title="All 2 branches covered.">        while (x != null) {</span>
+<span class="fc bfc" id="L749" title="All 2 branches covered.">            if (!isRed(x)) black++;</span>
+<span class="fc" id="L750">            x = x.left;</span>
         }
-<span class="nc" id="L752">        return isBalanced(root, black);</span>
+<span class="fc" id="L752">        return isBalanced(root, black);</span>
     }
 
     // does every path from the root to a leaf have the given number of black links?
     private boolean isBalanced(RBNode x, int black) {
-<span class="nc bnc" id="L757" title="All 4 branches missed.">        if (x == null) return black == 0;</span>
-<span class="nc bnc" id="L758" title="All 2 branches missed.">        if (!isRed(x)) black--;</span>
-<span class="nc bnc" id="L759" title="All 4 branches missed.">        return isBalanced(x.left, black) &amp;&amp; isBalanced(x.right, black);</span>
+<span class="pc bpc" id="L757" title="1 of 4 branches missed.">        if (x == null) return black == 0;</span>
+<span class="fc bfc" id="L758" title="All 2 branches covered.">        if (!isRed(x)) black--;</span>
+<span class="pc bpc" id="L759" title="2 of 4 branches missed.">        return isBalanced(x.left, black) &amp;&amp; isBalanced(x.right, black);</span>
     } 
 
 
@@ -788,22 +788,22 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
      * left subtree, root, right subtree
      */
     public void printInOrderTraversal() {
-<span class="nc" id="L791">        List&lt;RBNode&gt; nodes = getInOrderTraversalIterative(root);</span>
-<span class="nc bnc" id="L792" title="All 2 branches missed.">        for (RBNode node : nodes) {</span>
-<span class="nc" id="L793">            System.out.println(&quot;node=&quot; + node.toString());</span>
-<span class="nc" id="L794">        }</span>
-<span class="nc" id="L795">    }</span>
+<span class="fc" id="L791">        List&lt;RBNode&gt; nodes = getInOrderTraversalIterative(root);</span>
+<span class="fc bfc" id="L792" title="All 2 branches covered.">        for (RBNode node : nodes) {</span>
+<span class="fc" id="L793">            System.out.println(&quot;node=&quot; + node.toString());</span>
+<span class="fc" id="L794">        }</span>
+<span class="fc" id="L795">    }</span>
     
     /**
      * root, left subtree, right subtree
      */
     public void printPreOrderTraversal() {
-<span class="nc" id="L801">        List&lt;RBNode&gt; nodes = getPreOrderTraversalIterative(root, 0);</span>
-<span class="nc bnc" id="L802" title="All 2 branches missed.">        for (RBNode node : nodes) {</span>
-<span class="nc" id="L803">            RBNode p = findParent(node, nodes);</span>
-<span class="nc" id="L804">            System.out.println(&quot;node=&quot; + node.toString(p));</span>
-<span class="nc" id="L805">        }</span>
-<span class="nc" id="L806">    }</span>
+<span class="fc" id="L801">        List&lt;RBNode&gt; nodes = getPreOrderTraversalIterative(root, 0);</span>
+<span class="fc bfc" id="L802" title="All 2 branches covered.">        for (RBNode node : nodes) {</span>
+<span class="fc" id="L803">            RBNode p = findParent(node, nodes);</span>
+<span class="fc" id="L804">            System.out.println(&quot;node=&quot; + node.toString(p));</span>
+<span class="fc" id="L805">        }</span>
+<span class="fc" id="L806">    }</span>
     public void printPreOrderTraversal2(RBNode topNode) {
 <span class="nc" id="L808">        List&lt;RBNode&gt; nodes = getPreOrderTraversalIterative(topNode, 0);</span>
 <span class="nc bnc" id="L809" title="All 2 branches missed.">        for (RBNode node : nodes) {</span>
@@ -827,29 +827,29 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="nc" id="L827">        return findParent(h, nodes);</span>
     }
     private RBNode findParent(RBNode h, List&lt;RBNode&gt; nodes) {
-<span class="nc bnc" id="L830" title="All 2 branches missed.">        for (RBNode node : nodes) {</span>
-<span class="nc bnc" id="L831" title="All 2 branches missed.">            if (node == null) {</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">        for (RBNode node : nodes) {</span>
+<span class="pc bpc" id="L831" title="1 of 2 branches missed.">            if (node == null) {</span>
 <span class="nc" id="L832">                continue;</span>
             }
-<span class="nc bnc" id="L834" title="All 4 branches missed.">            if (node.left != null &amp;&amp; node.left.key == h.key) {</span>
-<span class="nc" id="L835">                return node;</span>
+<span class="fc bfc" id="L834" title="All 4 branches covered.">            if (node.left != null &amp;&amp; node.left.key == h.key) {</span>
+<span class="fc" id="L835">                return node;</span>
             }
-<span class="nc bnc" id="L837" title="All 4 branches missed.">            if (node.right != null &amp;&amp; node.right.key == h.key) {</span>
-<span class="nc" id="L838">                return node;</span>
+<span class="fc bfc" id="L837" title="All 4 branches covered.">            if (node.right != null &amp;&amp; node.right.key == h.key) {</span>
+<span class="fc" id="L838">                return node;</span>
             }
-<span class="nc" id="L840">        }</span>
-<span class="nc" id="L841">        return null;</span>
+<span class="fc" id="L840">        }</span>
+<span class="fc" id="L841">        return null;</span>
     }
     
     /**
      * left subtree, right subtree, root subtree
      */
     public void printPostOrderTraversal() {
-<span class="nc" id="L848">        List&lt;RBNode&gt; nodes = getPostOrderTraversalIterative(root);</span>
-<span class="nc bnc" id="L849" title="All 2 branches missed.">        for (RBNode node : nodes) {</span>
-<span class="nc" id="L850">            System.out.println(&quot;node=&quot; + node.toString());</span>
-<span class="nc" id="L851">        }</span>
-<span class="nc" id="L852">    }</span>
+<span class="fc" id="L848">        List&lt;RBNode&gt; nodes = getPostOrderTraversalIterative(root);</span>
+<span class="fc bfc" id="L849" title="All 2 branches covered.">        for (RBNode node : nodes) {</span>
+<span class="fc" id="L850">            System.out.println(&quot;node=&quot; + node.toString());</span>
+<span class="fc" id="L851">        }</span>
+<span class="fc" id="L852">    }</span>
 
     /**
      * visit each node using pattern left subtree, root, right subtree
@@ -857,37 +857,37 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
      */
     protected List&lt;RBNode&gt; getInOrderTraversalIterative(RBNode node) {
        
-<span class="nc bnc" id="L860" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="pc bpc" id="L860" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
 <span class="nc" id="L861">            return new ArrayList&lt;RBNode&gt;();</span>
         }
         
-<span class="nc" id="L864">        int sz = size();</span>
+<span class="fc" id="L864">        int sz = size();</span>
        
-<span class="nc" id="L866">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();;</span>
-<span class="nc" id="L867">        int count = 0;</span>
+<span class="fc" id="L866">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();;</span>
+<span class="fc" id="L867">        int count = 0;</span>
         
-<span class="nc" id="L869">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L869">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
                
-<span class="nc bnc" id="L871" title="All 4 branches missed.">        while (!stack.isEmpty() || (node != null)) {</span>
-<span class="nc bnc" id="L872" title="All 2 branches missed.">            if (node != null) {</span>
+<span class="fc bfc" id="L871" title="All 4 branches covered.">        while (!stack.isEmpty() || (node != null)) {</span>
+<span class="fc bfc" id="L872" title="All 2 branches covered.">            if (node != null) {</span>
                  
-<span class="nc" id="L874">                stack.push(node);</span>
+<span class="fc" id="L874">                stack.push(node);</span>
                 
-<span class="nc" id="L876">                node = node.left;</span>
+<span class="fc" id="L876">                node = node.left;</span>
             
-<span class="nc bnc" id="L878" title="All 2 branches missed.">            } else if (count &lt; sz) {</span>
+<span class="pc bpc" id="L878" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
                 
-<span class="nc" id="L880">                node = stack.pop();</span>
+<span class="fc" id="L880">                node = stack.pop();</span>
                 
-<span class="nc" id="L882">                array.add(node);</span>
-<span class="nc" id="L883">                count++;</span>
+<span class="fc" id="L882">                array.add(node);</span>
+<span class="fc" id="L883">                count++;</span>
                 
                 //System.out.println(node.key);
                 
-<span class="nc" id="L887">                node = node.right;</span>
+<span class="fc" id="L887">                node = node.right;</span>
             }
         }
-<span class="nc" id="L890">        return array;</span>
+<span class="fc" id="L890">        return array;</span>
     }
     
     /**
@@ -901,39 +901,39 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         //   in the middle of a put where the node size is not yet updated.
         // The count conditionals below are otherwise, not needed.
         
-<span class="nc bnc" id="L904" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="pc bpc" id="L904" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
 <span class="nc" id="L905">            return new ArrayList&lt;RBNode&gt;();</span>
         }
                 
-<span class="nc" id="L908">        int sz = size() + addExtraToSize;</span>
+<span class="fc" id="L908">        int sz = size() + addExtraToSize;</span>
         
-<span class="nc" id="L910">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
-<span class="nc" id="L911">        int count = 0;</span>
+<span class="fc" id="L910">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
+<span class="fc" id="L911">        int count = 0;</span>
         
-<span class="nc" id="L913">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L913">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
         
-<span class="nc bnc" id="L915" title="All 6 branches missed.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
-<span class="nc bnc" id="L916" title="All 4 branches missed.">            if (node != null &amp;&amp; count &lt; sz) {</span>
+<span class="pc bpc" id="L915" title="1 of 6 branches missed.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
+<span class="pc bpc" id="L916" title="1 of 4 branches missed.">            if (node != null &amp;&amp; count &lt; sz) {</span>
               
-<span class="nc" id="L918">                array.add(node);</span>
+<span class="fc" id="L918">                array.add(node);</span>
                 
-<span class="nc" id="L920">                count++;</span>
+<span class="fc" id="L920">                count++;</span>
                 
-<span class="nc bnc" id="L922" title="All 2 branches missed.">                if (count &lt; sz) {</span>
-<span class="nc" id="L923">                    stack.push(node);</span>
+<span class="fc bfc" id="L922" title="All 2 branches covered.">                if (count &lt; sz) {</span>
+<span class="fc" id="L923">                    stack.push(node);</span>
                 }
                 
-<span class="nc" id="L926">                node = node.left;</span>
+<span class="fc" id="L926">                node = node.left;</span>
             
-<span class="nc bnc" id="L928" title="All 2 branches missed.">            } else if (count &lt; sz) {</span>
+<span class="pc bpc" id="L928" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
                 
-<span class="nc" id="L930">                node = stack.pop();</span>
+<span class="fc" id="L930">                node = stack.pop();</span>
                 
-<span class="nc" id="L932">                node = node.right;</span>
+<span class="fc" id="L932">                node = node.right;</span>
             }
         }
         
-<span class="nc" id="L936">        return array;</span>
+<span class="fc" id="L936">        return array;</span>
     }
 
     /**
@@ -942,47 +942,47 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
      */
     protected List&lt;RBNode&gt; getPostOrderTraversalIterative(RBNode node) {
         
-<span class="nc bnc" id="L945" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="pc bpc" id="L945" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
 <span class="nc" id="L946">            return new ArrayList&lt;RBNode&gt;();</span>
         }
         
-<span class="nc" id="L949">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
-<span class="nc" id="L950">        int count = 0;</span>
+<span class="fc" id="L949">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
+<span class="fc" id="L950">        int count = 0;</span>
         
-<span class="nc bnc" id="L952" title="All 2 branches missed.">        if (node == null) {</span>
+<span class="pc bpc" id="L952" title="1 of 2 branches missed.">        if (node == null) {</span>
 <span class="nc" id="L953">            return array;</span>
         }
         
-<span class="nc" id="L956">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
-<span class="nc" id="L957">        Stack&lt;RBNode&gt; stack2 = new Stack&lt;&gt;();</span>
-<span class="nc" id="L958">        stack.push(node);</span>
+<span class="fc" id="L956">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L957">        Stack&lt;RBNode&gt; stack2 = new Stack&lt;&gt;();</span>
+<span class="fc" id="L958">        stack.push(node);</span>
         
-<span class="nc bnc" id="L960" title="All 2 branches missed.">        while (!stack.isEmpty()) {</span>
+<span class="fc bfc" id="L960" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
             
-<span class="nc" id="L962">            node = stack.pop();</span>
+<span class="fc" id="L962">            node = stack.pop();</span>
             
-<span class="nc" id="L964">            stack2.push(node);</span>
+<span class="fc" id="L964">            stack2.push(node);</span>
             
-<span class="nc bnc" id="L966" title="All 2 branches missed.">            if (node.left != null) {</span>
-<span class="nc" id="L967">                stack.push(node.left);</span>
+<span class="fc bfc" id="L966" title="All 2 branches covered.">            if (node.left != null) {</span>
+<span class="fc" id="L967">                stack.push(node.left);</span>
             }
 
-<span class="nc bnc" id="L970" title="All 2 branches missed.">            if (node.right != null) {</span>
-<span class="nc" id="L971">                stack.push(node.right);</span>
+<span class="fc bfc" id="L970" title="All 2 branches covered.">            if (node.right != null) {</span>
+<span class="fc" id="L971">                stack.push(node.right);</span>
             }            
         }
         
-<span class="nc bnc" id="L975" title="All 2 branches missed.">        while (!stack2.isEmpty()) {</span>
+<span class="fc bfc" id="L975" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
             
-<span class="nc" id="L977">            node = stack2.pop();</span>
+<span class="fc" id="L977">            node = stack2.pop();</span>
             
             //process(node);
-<span class="nc" id="L980">            array.add(node);</span>
-<span class="nc" id="L981">            count++;</span>
+<span class="fc" id="L980">            array.add(node);</span>
+<span class="fc" id="L981">            count++;</span>
             //System.out.println(node.key);
         }
          
-<span class="nc" id="L985">        return array;</span>
+<span class="fc" id="L985">        return array;</span>
     }
     
 }

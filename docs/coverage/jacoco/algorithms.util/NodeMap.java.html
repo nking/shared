@@ -92,9 +92,9 @@ public class NodeMap extends TLongIntHash implements
      * @param initialCapacity an &lt;code&gt;int&lt;/code&gt; value
      */
     public NodeMap( int initialCapacity ) {
-<span class="nc" id="L95">        super( initialCapacity );</span>
-<span class="nc" id="L96">        no_entry_key = 0;</span>
-<span class="nc" id="L97">    }</span>
+<span class="fc" id="L95">        super( initialCapacity );</span>
+<span class="fc" id="L96">        no_entry_key = 0;</span>
+<span class="fc" id="L97">    }</span>
 
 
     /**
@@ -171,11 +171,11 @@ public class NodeMap extends TLongIntHash implements
         long[] parents, long[] lefts, long[] rights, 
         int[] values, int[] colors, int[] sizes) {
         
-<span class="nc" id="L174">        super(Math.max(keys.length, parents.length ) );</span>
+<span class="fc" id="L174">        super(Math.max(keys.length, parents.length ) );</span>
         
-<span class="nc" id="L176">        no_entry_key = 0;</span>
+<span class="fc" id="L176">        no_entry_key = 0;</span>
         
-<span class="nc bnc" id="L178" title="All 12 branches missed.">        if (keys.length != parents.length ||</span>
+<span class="pc bpc" id="L178" title="6 of 12 branches missed.">        if (keys.length != parents.length ||</span>
             keys.length != lefts.length ||
             keys.length != rights.length ||
             keys.length != values.length ||
@@ -184,13 +184,13 @@ public class NodeMap extends TLongIntHash implements
 <span class="nc" id="L184">            throw new IllegalArgumentException(&quot;all arrays must be same length&quot;);</span>
         }
 
-<span class="nc" id="L187">        int size = Math.min(keys.length, parents.length );</span>
-<span class="nc bnc" id="L188" title="All 2 branches missed.">        for ( int i = 0; i &lt; size; i++ ) {</span>
-<span class="nc" id="L189">            this.put(keys[i], </span>
+<span class="fc" id="L187">        int size = Math.min(keys.length, parents.length );</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        for ( int i = 0; i &lt; size; i++ ) {</span>
+<span class="fc" id="L189">            this.put(keys[i], </span>
                 parents[i], lefts[i], rights[i],
                 values[i], colors[i], sizes[i]);
         }
-<span class="nc" id="L193">    }</span>
+<span class="fc" id="L193">    }</span>
     
     /**
      * from THash, a fast ceiling 
@@ -198,18 +198,18 @@ public class NodeMap extends TLongIntHash implements
      * @return 
      */
     protected static long fastCeil( double v ) {
-<span class="nc" id="L201">        long possible_result = ( long ) v;</span>
-<span class="nc bnc" id="L202" title="All 2 branches missed.">        if ( v - possible_result &gt; 0 ) possible_result++;</span>
-<span class="nc" id="L203">        return possible_result;</span>
+<span class="fc" id="L201">        long possible_result = ( long ) v;</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if ( v - possible_result &gt; 0 ) possible_result++;</span>
+<span class="fc" id="L203">        return possible_result;</span>
     }
 
     /* precondition: v &gt; 0 */
     protected static int saturatedCast(long v) {
-<span class="nc" id="L208">        int r = (int) (v &amp; 0x7fffffff); // removing sign bit</span>
-<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (r != v) {</span>
+<span class="fc" id="L208">        int r = (int) (v &amp; 0x7fffffff); // removing sign bit</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (r != v) {</span>
 <span class="nc" id="L210">            return Integer.MAX_VALUE;</span>
         }
-<span class="nc" id="L212">        return r;</span>
+<span class="fc" id="L212">        return r;</span>
     }
 
     /**
@@ -221,31 +221,31 @@ public class NodeMap extends TLongIntHash implements
     public NodeMap( 
         NodeMap map ) {
         
-<span class="nc" id="L224">        super( map.size() );</span>
+<span class="fc" id="L224">        super( map.size() );</span>
         
-<span class="nc" id="L226">        NodeMap hashmap </span>
+<span class="fc" id="L226">        NodeMap hashmap </span>
             = ( NodeMap ) map;
-<span class="nc" id="L228">        this._loadFactor = Math.abs( hashmap._loadFactor );</span>
-<span class="nc" id="L229">        this.no_entry_key = hashmap.no_entry_key;</span>
-<span class="nc" id="L230">        this.no_entry_value = hashmap.no_entry_value;</span>
+<span class="fc" id="L228">        this._loadFactor = Math.abs( hashmap._loadFactor );</span>
+<span class="fc" id="L229">        this.no_entry_key = hashmap.no_entry_key;</span>
+<span class="fc" id="L230">        this.no_entry_value = hashmap.no_entry_value;</span>
         
         //noinspection RedundantCast
-<span class="nc bnc" id="L233" title="All 2 branches missed.">        if ( this.no_entry_key != ( long ) 0 ) {</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if ( this.no_entry_key != ( long ) 0 ) {</span>
 <span class="nc" id="L234">            Arrays.fill( _set, this.no_entry_key );</span>
         }
                 
-<span class="nc" id="L237">        setUp( saturatedCast( </span>
-<span class="nc" id="L238">            fastCeil( DEFAULT_CAPACITY / (double) _loadFactor ) ) );</span>
+<span class="fc" id="L237">        setUp( saturatedCast( </span>
+<span class="fc" id="L238">            fastCeil( DEFAULT_CAPACITY / (double) _loadFactor ) ) );</span>
          
-<span class="nc" id="L240">        Arrays.fill(_parents, this.noLinkValue );</span>
-<span class="nc" id="L241">        Arrays.fill(_lefts, this.noLinkValue );</span>
-<span class="nc" id="L242">        Arrays.fill(_rights, this.noLinkValue );</span>
-<span class="nc" id="L243">        Arrays.fill(_values, this.no_entry_value );</span>
-<span class="nc" id="L244">        Arrays.fill(_colors, this.no_entry_value );</span>
-<span class="nc" id="L245">        Arrays.fill(_sizes, this.no_entry_value );</span>
+<span class="fc" id="L240">        Arrays.fill(_parents, this.noLinkValue );</span>
+<span class="fc" id="L241">        Arrays.fill(_lefts, this.noLinkValue );</span>
+<span class="fc" id="L242">        Arrays.fill(_rights, this.noLinkValue );</span>
+<span class="fc" id="L243">        Arrays.fill(_values, this.no_entry_value );</span>
+<span class="fc" id="L244">        Arrays.fill(_colors, this.no_entry_value );</span>
+<span class="fc" id="L245">        Arrays.fill(_sizes, this.no_entry_value );</span>
        
-<span class="nc" id="L247">        putAll( map );</span>
-<span class="nc" id="L248">    }</span>
+<span class="fc" id="L247">        putAll( map );</span>
+<span class="fc" id="L248">    }</span>
 
 
     /**
@@ -451,19 +451,19 @@ public class NodeMap extends TLongIntHash implements
      */
     public boolean putIfAbsent( long key, int nodeValue, int nodeColor, int nodeSize ) {
 <span class="fc" id="L453">        int index = insertKey( key );</span>
-<span class="pc bpc" id="L454" title="1 of 2 branches missed.">        if (index &lt; 0)</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">        if (index &lt; 0)</span>
 <span class="fc" id="L455">            return false;</span>
-<span class="nc" id="L456">        doPut(key, noLinkValue, noLinkValue, noLinkValue, nodeValue, nodeColor, nodeSize, index );</span>
-<span class="nc" id="L457">        return true;</span>
+<span class="fc" id="L456">        doPut(key, noLinkValue, noLinkValue, noLinkValue, nodeValue, nodeColor, nodeSize, index );</span>
+<span class="fc" id="L457">        return true;</span>
     }
 
     private void doPut( long key, long parent, long left, long right,
         int value, int nodeColor, int nodeSize, int index ) {
         
 <span class="fc" id="L463">        boolean isNewMapping = true;</span>
-<span class="pc bpc" id="L464" title="1 of 2 branches missed.">        if ( index &lt; 0 ) {</span>
-<span class="nc" id="L465">            index = -index -1;</span>
-<span class="nc" id="L466">            isNewMapping = false;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">        if ( index &lt; 0 ) {</span>
+<span class="fc" id="L465">            index = -index -1;</span>
+<span class="fc" id="L466">            isNewMapping = false;</span>
         }
 <span class="fc" id="L468">        _parents[index] = parent;</span>
 <span class="fc" id="L469">        _lefts[index] = left;</span>
@@ -472,7 +472,7 @@ public class NodeMap extends TLongIntHash implements
 <span class="fc" id="L472">        _colors[index] = nodeColor;</span>
 <span class="fc" id="L473">        _sizes[index] = nodeSize;</span>
 
-<span class="pc bpc" id="L475" title="1 of 2 branches missed.">        if (isNewMapping) {</span>
+<span class="fc bfc" id="L475" title="All 2 branches covered.">        if (isNewMapping) {</span>
             // a method in THash to expand and rehash if needed
 <span class="fc" id="L477">            postInsertHook( consumeFreeSlot );</span>
         }
@@ -585,12 +585,12 @@ public class NodeMap extends TLongIntHash implements
      */
     public boolean updateNodeValue( long key, int nodeValue ) {
         //for existing entries, index is positive
-<span class="nc" id="L588">        int index = index( key );</span>
-<span class="nc bnc" id="L589" title="All 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="fc" id="L588">        int index = index( key );</span>
+<span class="pc bpc" id="L589" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
 <span class="nc" id="L590">            return false;</span>
         }
-<span class="nc" id="L592">        _values[index] = nodeValue;</span>
-<span class="nc" id="L593">        return true;</span>
+<span class="fc" id="L592">        _values[index] = nodeValue;</span>
+<span class="fc" id="L593">        return true;</span>
     }
     /**
      * update nodeColor if if doesn't exist, else return false because there is
@@ -624,87 +624,86 @@ public class NodeMap extends TLongIntHash implements
 <span class="fc" id="L624">        _sizes[index] = nodeSize;</span>
 <span class="fc" id="L625">        return true;</span>
     }
-
     /** {@inheritDoc} */
     public void putAll( NodeMap map ) {
-<span class="nc" id="L630">        ensureCapacity( map.size() );</span>
-<span class="nc" id="L631">        TLong_LongLongLongIntIntIntHashIterator iter </span>
-<span class="nc" id="L632">            = map.iterator();</span>
-<span class="nc bnc" id="L633" title="All 2 branches missed.">        while ( iter.hasNext() ) {</span>
-<span class="nc" id="L634">            iter.advance();</span>
-<span class="nc" id="L635">            this.put( iter.key(), </span>
-<span class="nc" id="L636">                iter.parent(), iter.left(), iter.right(),</span>
-<span class="nc" id="L637">                iter.nodeValue(), iter.nodeColor(), iter.nodeSize());</span>
+<span class="fc" id="L629">        ensureCapacity( map.size() );</span>
+<span class="fc" id="L630">        TLong_LongLongLongIntIntIntHashIterator iter </span>
+<span class="fc" id="L631">            = map.iterator();</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">        while ( iter.hasNext() ) {</span>
+<span class="fc" id="L633">            iter.advance();</span>
+<span class="fc" id="L634">            this.put( iter.key(), </span>
+<span class="fc" id="L635">                iter.parent(), iter.left(), iter.right(),</span>
+<span class="fc" id="L636">                iter.nodeValue(), iter.nodeColor(), iter.nodeSize());</span>
         }
-<span class="nc" id="L639">    }</span>
+<span class="fc" id="L638">    }</span>
 
     public boolean parentIsSet(long key) {
-<span class="fc" id="L642">        int index = index(key);</span>
-<span class="pc bpc" id="L643" title="1 of 4 branches missed.">        if (index &lt; 0 || _parents[index] == noLinkValue) {</span>
-<span class="fc" id="L644">            return false;</span>
+<span class="fc" id="L641">        int index = index(key);</span>
+<span class="pc bpc" id="L642" title="1 of 4 branches missed.">        if (index &lt; 0 || _parents[index] == noLinkValue) {</span>
+<span class="fc" id="L643">            return false;</span>
         }
-<span class="fc" id="L646">        return true;</span>
+<span class="fc" id="L645">        return true;</span>
     }
     public boolean leftIsSet(long key) {
-<span class="fc" id="L649">        int index = index(key);</span>
-<span class="pc bpc" id="L650" title="1 of 4 branches missed.">        if (index &lt; 0 || _lefts[index] == noLinkValue) {</span>
-<span class="fc" id="L651">            return false;</span>
+<span class="fc" id="L648">        int index = index(key);</span>
+<span class="pc bpc" id="L649" title="1 of 4 branches missed.">        if (index &lt; 0 || _lefts[index] == noLinkValue) {</span>
+<span class="fc" id="L650">            return false;</span>
         }
-<span class="fc" id="L653">        return true;</span>
+<span class="fc" id="L652">        return true;</span>
     }
     public boolean rightIsSet(long key) {
-<span class="fc" id="L656">        int index = index(key);</span>
-<span class="pc bpc" id="L657" title="1 of 4 branches missed.">        if (index &lt; 0 || _rights[index] == noLinkValue) {</span>
-<span class="fc" id="L658">            return false;</span>
+<span class="fc" id="L655">        int index = index(key);</span>
+<span class="pc bpc" id="L656" title="1 of 4 branches missed.">        if (index &lt; 0 || _rights[index] == noLinkValue) {</span>
+<span class="fc" id="L657">            return false;</span>
         }
-<span class="fc" id="L660">        return true;</span>
+<span class="fc" id="L659">        return true;</span>
     }
     /** {@inheritDoc} */
     public long getParent( long key ) {
-<span class="fc" id="L664">        int index = index( key );</span>
-<span class="pc bpc" id="L665" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _parents[index];</span>
+<span class="fc" id="L663">        int index = index( key );</span>
+<span class="pc bpc" id="L664" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _parents[index];</span>
     }
     public long getLeft( long key ) {
-<span class="fc" id="L668">        int index = index( key );</span>
-<span class="pc bpc" id="L669" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _lefts[index];</span>
+<span class="fc" id="L667">        int index = index( key );</span>
+<span class="pc bpc" id="L668" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _lefts[index];</span>
     }
     public long getRight( long key ) {
-<span class="fc" id="L672">        int index = index( key );</span>
-<span class="pc bpc" id="L673" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _rights[index];</span>
+<span class="fc" id="L671">        int index = index( key );</span>
+<span class="pc bpc" id="L672" title="1 of 2 branches missed.">        return index &lt; 0 ? noLinkValue : _rights[index];</span>
     }
     public int getNodeValue( long key ) {
-<span class="fc" id="L676">        int index = index( key );</span>
-<span class="pc bpc" id="L677" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _values[index];</span>
+<span class="fc" id="L675">        int index = index( key );</span>
+<span class="pc bpc" id="L676" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _values[index];</span>
     }
     public int getNodeColor( long key ) {
-<span class="fc" id="L680">        int index = index( key );</span>
-<span class="pc bpc" id="L681" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _colors[index];</span>
+<span class="fc" id="L679">        int index = index( key );</span>
+<span class="pc bpc" id="L680" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _colors[index];</span>
     }
     public int getNodeSize( long key ) {
-<span class="fc" id="L684">        int index = index( key );</span>
-<span class="pc bpc" id="L685" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _sizes[index];</span>
+<span class="fc" id="L683">        int index = index( key );</span>
+<span class="pc bpc" id="L684" title="1 of 2 branches missed.">        return index &lt; 0 ? no_entry_value : _sizes[index];</span>
     }
 
 
     /** {@inheritDoc} */
     @Override
     public void clear() {
-<span class="nc" id="L692">        super.clear();</span>
-<span class="nc" id="L693">        int n = _parents.length;</span>
-<span class="nc" id="L694">        Arrays.fill( _set, 0, _set.length, no_entry_key );</span>
-<span class="nc" id="L695">        Arrays.fill(_parents, 0, n, noLinkValue );</span>
-<span class="nc" id="L696">        Arrays.fill(_lefts, 0, n, noLinkValue );</span>
-<span class="nc" id="L697">        Arrays.fill(_rights, 0, n, noLinkValue );</span>
-<span class="nc" id="L698">        Arrays.fill(_values, 0, n, no_entry_value );</span>
-<span class="nc" id="L699">        Arrays.fill(_colors, 0, n, no_entry_value );</span>
-<span class="nc" id="L700">        Arrays.fill(_sizes, 0, n, no_entry_value );</span>
-<span class="nc" id="L701">        Arrays.fill( _states, 0, _states.length, FREE );</span>
-<span class="nc" id="L702">    }</span>
+<span class="fc" id="L691">        super.clear();</span>
+<span class="fc" id="L692">        int n = _parents.length;</span>
+<span class="fc" id="L693">        Arrays.fill( _set, 0, _set.length, no_entry_key );</span>
+<span class="fc" id="L694">        Arrays.fill(_parents, 0, n, noLinkValue );</span>
+<span class="fc" id="L695">        Arrays.fill(_lefts, 0, n, noLinkValue );</span>
+<span class="fc" id="L696">        Arrays.fill(_rights, 0, n, noLinkValue );</span>
+<span class="fc" id="L697">        Arrays.fill(_values, 0, n, no_entry_value );</span>
+<span class="fc" id="L698">        Arrays.fill(_colors, 0, n, no_entry_value );</span>
+<span class="fc" id="L699">        Arrays.fill(_sizes, 0, n, no_entry_value );</span>
+<span class="fc" id="L700">        Arrays.fill( _states, 0, _states.length, FREE );</span>
+<span class="fc" id="L701">    }</span>
 
 
     /** {@inheritDoc} */
     public boolean isEmpty() {
-<span class="nc bnc" id="L707" title="All 2 branches missed.">        return 0 == _size;</span>
+<span class="pc bpc" id="L706" title="1 of 2 branches missed.">        return 0 == _size;</span>
     }
 
 
@@ -714,86 +713,86 @@ public class NodeMap extends TLongIntHash implements
      * @return 
      */
     public boolean remove( long key ) {
-<span class="fc" id="L717">        int index = index( key );</span>
-<span class="pc bpc" id="L718" title="1 of 2 branches missed.">        if ( index &gt;= 0 ) {</span>
-<span class="fc" id="L719">            removeAt( index );    // clear key,state; adjust size</span>
-<span class="fc" id="L720">            return true;</span>
+<span class="fc" id="L716">        int index = index( key );</span>
+<span class="pc bpc" id="L717" title="1 of 2 branches missed.">        if ( index &gt;= 0 ) {</span>
+<span class="fc" id="L718">            removeAt( index );    // clear key,state; adjust size</span>
+<span class="fc" id="L719">            return true;</span>
         }
-<span class="nc" id="L722">        return false;</span>
+<span class="nc" id="L721">        return false;</span>
     }
 
 
     /** {@inheritDoc} */
     protected void removeAt( int index ) {
-<span class="fc" id="L728">        _parents[index] = noLinkValue;</span>
-<span class="fc" id="L729">        _lefts[index] = noLinkValue;</span>
-<span class="fc" id="L730">        _rights[index] = noLinkValue;</span>
-<span class="fc" id="L731">        _values[index] = no_entry_value;</span>
-<span class="fc" id="L732">        _colors[index] = no_entry_value;</span>
-<span class="fc" id="L733">        _sizes[index] = no_entry_value;</span>
-<span class="fc" id="L734">        super.removeAt( index );  // clear key, state; adjust size</span>
-<span class="fc" id="L735">    }</span>
+<span class="fc" id="L727">        _parents[index] = noLinkValue;</span>
+<span class="fc" id="L728">        _lefts[index] = noLinkValue;</span>
+<span class="fc" id="L729">        _rights[index] = noLinkValue;</span>
+<span class="fc" id="L730">        _values[index] = no_entry_value;</span>
+<span class="fc" id="L731">        _colors[index] = no_entry_value;</span>
+<span class="fc" id="L732">        _sizes[index] = no_entry_value;</span>
+<span class="fc" id="L733">        super.removeAt( index );  // clear key, state; adjust size</span>
+<span class="fc" id="L734">    }</span>
 
 
     /** {@inheritDoc} */
     public TLongSet keySet() {
         
-<span class="nc" id="L741">        TLongSet keys = new TLongHashSet();</span>
+<span class="fc" id="L740">        TLongSet keys = new TLongHashSet();</span>
         
-<span class="nc bnc" id="L743" title="All 2 branches missed.">        if (size() == 0) {</span>
-<span class="nc" id="L744">            return keys;</span>
+<span class="pc bpc" id="L742" title="1 of 2 branches missed.">        if (size() == 0) {</span>
+<span class="nc" id="L743">            return keys;</span>
         }
         
-<span class="nc" id="L747">        long[] k = _set;</span>
-<span class="nc" id="L748">        byte[] states = _states;</span>
+<span class="fc" id="L746">        long[] k = _set;</span>
+<span class="fc" id="L747">        byte[] states = _states;</span>
 
-<span class="nc bnc" id="L750" title="All 2 branches missed.">        for (int i = k.length, j = 0; i-- &gt; 0;) {</span>
-<span class="nc bnc" id="L751" title="All 2 branches missed.">            if (states[i] == FULL) {</span>
-<span class="nc" id="L752">                keys.add(k[i]);</span>
+<span class="fc bfc" id="L749" title="All 2 branches covered.">        for (int i = k.length, j = 0; i-- &gt; 0;) {</span>
+<span class="fc bfc" id="L750" title="All 2 branches covered.">            if (states[i] == FULL) {</span>
+<span class="fc" id="L751">                keys.add(k[i]);</span>
             }
         }
         
-<span class="nc" id="L756">        return keys;</span>
+<span class="fc" id="L755">        return keys;</span>
     }
 
 
     /** {@inheritDoc} */
     public long[] keys() {
-<span class="nc" id="L762">        long[] keys = new long[size()];</span>
-<span class="nc bnc" id="L763" title="All 2 branches missed.">        if ( keys.length == 0 ) {</span>
-<span class="nc" id="L764">            return keys;        // nothing to copy</span>
+<span class="fc" id="L761">        long[] keys = new long[size()];</span>
+<span class="pc bpc" id="L762" title="1 of 2 branches missed.">        if ( keys.length == 0 ) {</span>
+<span class="nc" id="L763">            return keys;        // nothing to copy</span>
         }
-<span class="nc" id="L766">        long[] k = _set;</span>
-<span class="nc" id="L767">        byte[] states = _states;</span>
+<span class="fc" id="L765">        long[] k = _set;</span>
+<span class="fc" id="L766">        byte[] states = _states;</span>
 
-<span class="nc bnc" id="L769" title="All 2 branches missed.">        for ( int i = k.length, j = 0; i-- &gt; 0; ) {</span>
-<span class="nc bnc" id="L770" title="All 2 branches missed.">          if ( states[i] == FULL ) {</span>
-<span class="nc" id="L771">            keys[j++] = k[i];</span>
+<span class="fc bfc" id="L768" title="All 2 branches covered.">        for ( int i = k.length, j = 0; i-- &gt; 0; ) {</span>
+<span class="fc bfc" id="L769" title="All 2 branches covered.">          if ( states[i] == FULL ) {</span>
+<span class="fc" id="L770">            keys[j++] = k[i];</span>
           }
         }
-<span class="nc" id="L774">        return keys;</span>
+<span class="fc" id="L773">        return keys;</span>
     }
 
 
     /** {@inheritDoc} */
     public long[] keys( long[] array ) {
-<span class="nc" id="L780">        int size = size();</span>
-<span class="nc bnc" id="L781" title="All 2 branches missed.">        if ( size == 0 ) {</span>
-<span class="nc" id="L782">            return array;       // nothing to copy</span>
+<span class="fc" id="L779">        int size = size();</span>
+<span class="pc bpc" id="L780" title="1 of 2 branches missed.">        if ( size == 0 ) {</span>
+<span class="nc" id="L781">            return array;       // nothing to copy</span>
         }
-<span class="nc bnc" id="L784" title="All 2 branches missed.">        if ( array.length &lt; size ) {</span>
-<span class="nc" id="L785">            array = new long[size];</span>
+<span class="pc bpc" id="L783" title="1 of 2 branches missed.">        if ( array.length &lt; size ) {</span>
+<span class="nc" id="L784">            array = new long[size];</span>
         }
 
-<span class="nc" id="L788">        long[] keys = _set;</span>
-<span class="nc" id="L789">        byte[] states = _states;</span>
+<span class="fc" id="L787">        long[] keys = _set;</span>
+<span class="fc" id="L788">        byte[] states = _states;</span>
 
-<span class="nc bnc" id="L791" title="All 2 branches missed.">        for ( int i = keys.length, j = 0; i-- &gt; 0; ) {</span>
-<span class="nc bnc" id="L792" title="All 2 branches missed.">          if ( states[i] == FULL ) {</span>
-<span class="nc" id="L793">            array[j++] = keys[i];</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">        for ( int i = keys.length, j = 0; i-- &gt; 0; ) {</span>
+<span class="fc bfc" id="L791" title="All 2 branches covered.">          if ( states[i] == FULL ) {</span>
+<span class="fc" id="L792">            array[j++] = keys[i];</span>
           }
         }
-<span class="nc" id="L796">        return array;</span>
+<span class="fc" id="L795">        return array;</span>
     }
 
     /**
@@ -803,16 +802,16 @@ public class NodeMap extends TLongIntHash implements
      */
     @Override
     public boolean contains(long val) {
-<span class="fc" id="L806">        return super.contains(val); </span>
+<span class="fc" id="L805">        return super.contains(val); </span>
     }
     
     /** {@inheritDoc} */
     public boolean containsKey( long key ) {
-<span class="fc" id="L811">        return contains( key );</span>
+<span class="fc" id="L810">        return contains( key );</span>
     }
 
     public TLong_LongLongLongIntIntIntHashIterator iterator() {
-<span class="nc" id="L815">        return new TLong_LongLongLongIntIntIntHashIterator(this );</span>
+<span class="fc" id="L814">        return new TLong_LongLongLongIntIntIntHashIterator(this );</span>
     }
 
     class TLong_LongLongLongIntIntIntHashKeyIterator 
@@ -951,35 +950,52 @@ public class NodeMap extends TLongIntHash implements
      */
     @Override
     public boolean equals( Object other ) {
-<span class="nc bnc" id="L954" title="All 2 branches missed.">        if ( ! ( other instanceof TLongLongMap ) ) {</span>
-<span class="nc" id="L955">            return false;</span>
+<span class="pc bpc" id="L953" title="1 of 2 branches missed.">        if ( ! ( other instanceof NodeMap ) ) {</span>
+<span class="nc" id="L954">            return false;</span>
         }
-<span class="nc" id="L957">        TLongLongMap that = ( TLongLongMap ) other;</span>
-<span class="nc bnc" id="L958" title="All 2 branches missed.">        if ( that.size() != this.size() ) {</span>
-<span class="nc" id="L959">            return false;</span>
+<span class="fc" id="L956">        NodeMap that = ( NodeMap ) other;</span>
+        
+        //System.out.println(&quot;in equals.  sizes=&quot; + 
+        //    that.size() + &quot;, &quot; + this.size());
+        
+<span class="pc bpc" id="L961" title="1 of 2 branches missed.">        if ( that.size() != this.size() ) {</span>
+<span class="nc" id="L962">            return false;</span>
         }
-<span class="nc" id="L961">        int[] values3 = _values;</span>
-<span class="nc" id="L962">        byte[] states = _states;</span>
-<span class="nc" id="L963">        long this_no_entry_value = getNoEntryValue();</span>
-<span class="nc" id="L964">        long that_no_entry_value = that.getNoEntryValue();</span>
-<span class="nc bnc" id="L965" title="All 2 branches missed.">        for ( int i = values3.length; i-- &gt; 0; ) {</span>
-<span class="nc bnc" id="L966" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
-<span class="nc" id="L967">                long key = _set[i];</span>
+<span class="fc" id="L964">        int[] values3 = _values;</span>
+<span class="fc" id="L965">        byte[] states = _states;</span>
+      
+<span class="fc" id="L967">        long this_no_entry_value = getNoEntryValue();</span>
+<span class="fc" id="L968">        long that_no_entry_value = that.getNoEntryValue();</span>
+        
+        //System.out.println(&quot;this_no_entry_value=&quot; + this_no_entry_value);
+        //System.out.println(&quot;that_no_entry_value=&quot; + that_no_entry_value);
+        
+<span class="fc bfc" id="L973" title="All 2 branches covered.">        for ( int i = values3.length; i-- &gt; 0; ) {</span>
+<span class="fc bfc" id="L974" title="All 2 branches covered.">            if ( states[i] == FULL ) {</span>
+<span class="fc" id="L975">                long key = _set[i];</span>
 
-<span class="nc bnc" id="L969" title="All 2 branches missed.">                if ( !that.containsKey( key ) ) return false;</span>
+                //System.out.println(&quot;that.containsKey( key )=&quot;
+                //    + that.containsKey(key));
+                
+<span class="pc bpc" id="L980" title="1 of 2 branches missed.">                if ( !that.containsKey( key ) ) {</span>
+<span class="nc" id="L981">                    return false;</span>
+                }
 
-<span class="nc" id="L971">                long that_value = that.get( key );</span>
-<span class="nc" id="L972">                long this_value = values3[i];</span>
-<span class="nc bnc" id="L973" title="All 6 branches missed.">                if ((this_value != that_value)</span>
-                    &amp;&amp; ( (this_value != this_no_entry_value)
+<span class="fc" id="L984">                long that_value = that.getNodeValue(key);</span>
+<span class="fc" id="L985">                long this_value = values3[i];</span>
+                
+                //System.out.println(&quot;values=&quot; + that_value + &quot;, &quot; + this_value);
+                
+<span class="pc bpc" id="L989" title="5 of 6 branches missed.">                if (</span>
+                    (this_value != that_value) &amp;&amp; ( (this_value != this_no_entry_value)
                     || (that_value != that_no_entry_value))
                     ) {
 
-<span class="nc" id="L978">                    return false;</span>
+<span class="nc" id="L994">                    return false;</span>
                 }
-<span class="nc" id="L980">            }</span>
+<span class="fc" id="L996">            }</span>
         }
-<span class="nc" id="L982">        return true;</span>
+<span class="fc" id="L998">        return true;</span>
     }
 
 
@@ -988,95 +1004,106 @@ public class NodeMap extends TLongIntHash implements
      */
     @Override
     public int hashCode() {
-<span class="nc" id="L991">        int hashcode = 0;</span>
-<span class="nc" id="L992">        byte[] states = _states;</span>
-<span class="nc bnc" id="L993" title="All 2 branches missed.">        for ( int i = _parents.length; i-- &gt; 0; ) {</span>
-<span class="nc bnc" id="L994" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
-<span class="nc" id="L995">                hashcode += HashFunctions.hash( _set[i] ) ^</span>
-<span class="nc" id="L996">                            HashFunctions.hash(_values[i] );</span>
+<span class="nc" id="L1007">        int hashcode = 0;</span>
+<span class="nc" id="L1008">        byte[] states = _states;</span>
+<span class="nc bnc" id="L1009" title="All 2 branches missed.">        for ( int i = _parents.length; i-- &gt; 0; ) {</span>
+<span class="nc bnc" id="L1010" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
+<span class="nc" id="L1011">                hashcode += HashFunctions.hash( _set[i] ) ^</span>
+<span class="nc" id="L1012">                            HashFunctions.hash(_values[i] );</span>
             }
         }
-<span class="nc" id="L999">        return hashcode;</span>
+<span class="nc" id="L1015">        return hashcode;</span>
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
 
-<span class="nc" id="L1006">        final StringBuilder buf = new StringBuilder( &quot;{&quot; );</span>
+<span class="fc" id="L1022">        final StringBuilder buf = new StringBuilder( &quot;{&quot; );</span>
         
-<span class="nc" id="L1008">        int[] values3 = _values;</span>
-<span class="nc" id="L1009">        byte[] states = _states;</span>
-<span class="nc bnc" id="L1010" title="All 2 branches missed.">        for ( int i = values3.length; i-- &gt; 0; ) {</span>
-<span class="nc bnc" id="L1011" title="All 2 branches missed.">            if ( states[i] == FULL ) {</span>
-<span class="nc bnc" id="L1012" title="All 2 branches missed.">                if (buf.length() &gt; 0) {</span>
-<span class="nc" id="L1013">                    buf.append( &quot;, &quot; );</span>
+<span class="fc" id="L1024">        int[] values3 = _values;</span>
+<span class="fc" id="L1025">        byte[] states = _states;</span>
+<span class="fc bfc" id="L1026" title="All 2 branches covered.">        for ( int i = values3.length; i-- &gt; 0; ) {</span>
+<span class="fc bfc" id="L1027" title="All 2 branches covered.">            if ( states[i] == FULL ) {</span>
+<span class="pc bpc" id="L1028" title="1 of 2 branches missed.">                if (buf.length() &gt; 0) {</span>
+<span class="fc" id="L1029">                    buf.append( &quot;, &quot; );</span>
                 }
-<span class="nc" id="L1015">                long key = _set[i];</span>
-<span class="nc" id="L1016">                buf.append(key);</span>
-<span class="nc" id="L1017">                buf.append(&quot;=&quot;);</span>
-<span class="nc" id="L1018">                buf.append(_parents[i]);</span>
-<span class="nc" id="L1019">                buf.append(_lefts[i]);</span>
-<span class="nc" id="L1020">                buf.append(_rights[i]);</span>
-<span class="nc" id="L1021">                buf.append(_values[i]);</span>
-<span class="nc" id="L1022">                buf.append(_colors[i]);</span>
-<span class="nc" id="L1023">                buf.append(_sizes[i]);</span>
-<span class="nc" id="L1024">            }</span>
+<span class="fc" id="L1031">                long key = _set[i];</span>
+<span class="fc" id="L1032">                buf.append(key);</span>
+<span class="fc" id="L1033">                buf.append(&quot;=&quot;);</span>
+<span class="fc" id="L1034">                buf.append(_parents[i]);</span>
+<span class="fc" id="L1035">                buf.append(_lefts[i]);</span>
+<span class="fc" id="L1036">                buf.append(_rights[i]);</span>
+<span class="fc" id="L1037">                buf.append(_values[i]);</span>
+<span class="fc" id="L1038">                buf.append(_colors[i]);</span>
+<span class="fc" id="L1039">                buf.append(_sizes[i]);</span>
+<span class="fc" id="L1040">            }</span>
         }
-<span class="nc" id="L1026">        buf.append( &quot;}&quot; );</span>
-<span class="nc" id="L1027">        return buf.toString();</span>
+<span class="fc" id="L1042">        buf.append( &quot;}&quot; );</span>
+<span class="fc" id="L1043">        return buf.toString();</span>
     }
 
     /** {@inheritDoc} */
     public void writeExternal(ObjectOutput out) throws IOException {
         // VERSION
-<span class="nc" id="L1033">    	out.writeByte( 0 );</span>
+<span class="fc" id="L1049">    	out.writeByte( 0 );</span>
 
         // SUPER
-<span class="nc" id="L1036">    	super.writeExternal( out );</span>
+<span class="fc" id="L1052">    	super.writeExternal( out );</span>
 
     	// NUMBER OF ENTRIES
-<span class="nc" id="L1039">    	out.writeInt( _size );</span>
+<span class="fc" id="L1055">    	out.writeInt( _size );</span>
 
     	// ENTRIES
-<span class="nc bnc" id="L1042" title="All 2 branches missed.">    	for ( int i = _states.length; i-- &gt; 0; ) {</span>
-<span class="nc bnc" id="L1043" title="All 2 branches missed.">            if ( _states[i] == FULL ) {</span>
-<span class="nc" id="L1044">                out.writeLong( _set[i] );</span>
-<span class="nc" id="L1045">                out.writeLong(_parents[i] );</span>
-<span class="nc" id="L1046">                out.writeLong(_lefts[i] );</span>
-<span class="nc" id="L1047">                out.writeLong(_rights[i] );</span>
-<span class="nc" id="L1048">                out.writeInt(_values[i] );</span>
-<span class="nc" id="L1049">                out.writeInt(_colors[i] );</span>
-<span class="nc" id="L1050">                out.writeInt(_sizes[i] );</span>
+<span class="fc bfc" id="L1058" title="All 2 branches covered.">    	for ( int i = _states.length; i-- &gt; 0; ) {</span>
+<span class="fc bfc" id="L1059" title="All 2 branches covered.">            if ( _states[i] == FULL ) {</span>
+<span class="fc" id="L1060">                out.writeLong( _set[i] );</span>
+<span class="fc" id="L1061">                out.writeLong(_parents[i] );</span>
+<span class="fc" id="L1062">                out.writeLong(_lefts[i] );</span>
+<span class="fc" id="L1063">                out.writeLong(_rights[i] );</span>
+<span class="fc" id="L1064">                out.writeInt(_values[i] );</span>
+<span class="fc" id="L1065">                out.writeInt(_colors[i] );</span>
+<span class="fc" id="L1066">                out.writeInt(_sizes[i] );</span>
             }
         }
-<span class="nc" id="L1053">    }</span>
+        
+<span class="fc" id="L1070">        out.flush();</span>
+    
+        //System.out.println(&quot;write map.  size=&quot; + size());
+<span class="fc" id="L1073">    }</span>
 
 
     /** {@inheritDoc} */
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        
         // VERSION
-<span class="nc" id="L1059">    	in.readByte();</span>
+<span class="fc" id="L1080">    	in.readByte();</span>
 
         // SUPER
-<span class="nc" id="L1062">    	super.readExternal( in );</span>
+<span class="fc" id="L1083">    	super.readExternal( in );</span>
 
     	// NUMBER OF ENTRIES
-<span class="nc" id="L1065">    	int size = in.readInt();</span>
-<span class="nc" id="L1066">    	setUp( size );</span>
-
+<span class="fc" id="L1086">    	int size = in.readInt();</span>
+        
+        //System.out.println(&quot;read size var=&quot; + size);
+    	
+<span class="fc" id="L1090">        setUp( size );</span>
+        
     	// ENTRIES
-<span class="nc bnc" id="L1069" title="All 2 branches missed.">        while (size-- &gt; 0) {</span>
-<span class="nc" id="L1070">            long key = in.readLong();</span>
-<span class="nc" id="L1071">            long val0 = in.readLong();</span>
-<span class="nc" id="L1072">            long val1 = in.readLong();</span>
-<span class="nc" id="L1073">            long val2 = in.readLong();</span>
-<span class="nc" id="L1074">            int val3 = in.readInt();</span>
-<span class="nc" id="L1075">            int val4 = in.readInt();</span>
-<span class="nc" id="L1076">            int val5 = in.readInt();</span>
-<span class="nc" id="L1077">            put(key, val0, val1, val2, val3, val4, val5);</span>
-<span class="nc" id="L1078">        }</span>
-<span class="nc" id="L1079">    }</span>
+<span class="fc bfc" id="L1093" title="All 2 branches covered.">        for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc" id="L1094">            long key = in.readLong();</span>
+<span class="fc" id="L1095">            long val0 = in.readLong();</span>
+<span class="fc" id="L1096">            long val1 = in.readLong();</span>
+<span class="fc" id="L1097">            long val2 = in.readLong();</span>
+<span class="fc" id="L1098">            int val3 = in.readInt();</span>
+<span class="fc" id="L1099">            int val4 = in.readInt();</span>
+<span class="fc" id="L1100">            int val5 = in.readInt();</span>
+            
+<span class="fc" id="L1102">            put(key, val0, val1, val2, val3, val4, val5);</span>
+        }
+        
+        //System.out.println(&quot;read in map.  size=&quot; + size);
+<span class="fc" id="L1106">    }</span>
     
      public static long estimateSizeOnHeap(int numberOfEntries) {
         
@@ -1098,18 +1125,18 @@ public class NodeMap extends TLongIntHash implements
            long noLinkValue = Long.MIN_VALUE;
         */
         
-<span class="fc" id="L1101">        ObjectSpaceEstimator est0 = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L1102">        est0.setNLongFields(2 + numberOfEntries);</span>
-<span class="fc" id="L1103">        est0.setNIntFields(1);</span>
-<span class="fc" id="L1104">        est0.setNArrayRefsFields(1);</span>
-<span class="fc" id="L1105">        est0.setNBooleanFields(1);</span>
+<span class="fc" id="L1128">        ObjectSpaceEstimator est0 = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L1129">        est0.setNLongFields(2 + numberOfEntries);</span>
+<span class="fc" id="L1130">        est0.setNIntFields(1);</span>
+<span class="fc" id="L1131">        est0.setNArrayRefsFields(1);</span>
+<span class="fc" id="L1132">        est0.setNBooleanFields(1);</span>
         
-<span class="fc" id="L1107">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L1108">        est.setNLongFields(2 + 3*numberOfEntries);</span>
-<span class="fc" id="L1109">        est.setNIntFields(1 + 3*numberOfEntries);</span>
-<span class="fc" id="L1110">        est.setNArrayRefsFields(6);</span>
+<span class="fc" id="L1134">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L1135">        est.setNLongFields(2 + 3*numberOfEntries);</span>
+<span class="fc" id="L1136">        est.setNIntFields(1 + 3*numberOfEntries);</span>
+<span class="fc" id="L1137">        est.setNArrayRefsFields(6);</span>
         
-<span class="fc" id="L1112">        return est0.estimateSizeOnHeap() + est.estimateSizeOnHeap();</span>
+<span class="fc" id="L1139">        return est0.estimateSizeOnHeap() + est.estimateSizeOnHeap();</span>
         
      }
 } 
