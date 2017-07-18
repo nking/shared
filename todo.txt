@@ -1,12 +1,3 @@
--- as soon as RedBlackBSTLongInt2 is debugged,
-   replace the maps with an extension of the trove long long
-   hash map, but for key long, and values long, int, long, long, int, int
-    reducing the number of long keys from 6 to 1
-
--- put the latest primitive red black tree 
-   into the yfast trie long and update its rt and memory 
-   commnts.
-
 -- for improving the current NearestNeighbor2DLong
    could consider locality based hashing along y axis.
 
