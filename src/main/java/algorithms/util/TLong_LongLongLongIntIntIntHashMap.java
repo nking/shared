@@ -30,12 +30,10 @@
 package algorithms.util;
 
 import gnu.trove.map.TLongLongMap;
-import gnu.trove.procedure.*;
 import gnu.trove.set.*;
 import gnu.trove.iterator.*;
 import gnu.trove.impl.hash.*;
 import gnu.trove.impl.HashFunctions;
-import gnu.trove.*;
 import gnu.trove.set.hash.TLongHashSet;
 
 import java.io.*;
@@ -65,8 +63,12 @@ import java.util.*;
  *    value4 is color
  *    value5 is size of subtree at key
  * 
+ * Note that value3 is treated as the standard value for the map in terms of
+ * using key and value3 in equals and hashmap.
+ * 
+ * 
  */
-public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements 
+public class TLong_LongLongLongIntIntIntHashMap extends TLongIntHash implements 
     Externalizable {
     
     static final long serialVersionUID = 1L;
@@ -81,7 +83,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     
     protected final long noLinkValue = Long.MIN_VALUE;
 
-    protected final int no_entry_value_int;
+    protected int no_entry_value = 0;
 
     /**
      * Creates a new <code>TLongLongHashMap</code> instance with the default
@@ -89,9 +91,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
      */
     public TLong_LongLongLongIntIntIntHashMap() {
         super();
-        no_entry_value_int = 0;
         no_entry_key = 0;
-        no_entry_value = noLinkValue;
     }
 
 
@@ -104,9 +104,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
      */
     public TLong_LongLongLongIntIntIntHashMap( int initialCapacity ) {
         super( initialCapacity );
-        no_entry_value_int = 0;
         no_entry_key = 0;
-        no_entry_value = noLinkValue;
     }
 
 
@@ -120,9 +118,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
      */
     public TLong_LongLongLongIntIntIntHashMap( int initialCapacity, float loadFactor ) {
         super( initialCapacity, loadFactor );
-        no_entry_value_int = 0;
         no_entry_key = 0;
-        no_entry_value = noLinkValue;
     }
 
 
@@ -137,15 +133,13 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
      * @param loadFactor a <code>float</code> value
      * @param noEntryKey a <code>long</code> value that represents
      *                   <tt>null</tt> for the Key set.
-     * @param noEntryValue a <code>long</code> value that represents
+     * @param noEntryValue a <code>int</code> value that represents
      *                   <tt>null</tt> for the Value set.
      */
     public TLong_LongLongLongIntIntIntHashMap( int initialCapacity, float loadFactor,
-        long noEntryKey, long noEntryValue, int noEntryValueInt ) {
-        super( initialCapacity, loadFactor, noEntryKey, Long.MIN_VALUE);
-        no_entry_value_int = noEntryValueInt;
+        long noEntryKey, int noEntryValue, int noEntryValueInt ) {
+        super( initialCapacity, loadFactor, noEntryKey, noEntryValue);
         no_entry_key = 0;
-        no_entry_value = noLinkValue;
     }
 
 
@@ -190,9 +184,7 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         
         super( Math.max( keys.length, values0.length ) );
         
-        no_entry_value_int = 0;
         no_entry_key = 0;
-        no_entry_value = noLinkValue;
         
         if (keys.length != values0.length ||
             keys.length != values1.length ||
@@ -247,7 +239,6 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         this._loadFactor = Math.abs( hashmap._loadFactor );
         this.no_entry_key = hashmap.no_entry_key;
         this.no_entry_value = hashmap.no_entry_value;
-        this.no_entry_value_int = hashmap.no_entry_value_int;
         
         //noinspection RedundantCast
         if ( this.no_entry_key != ( long ) 0 ) {
@@ -260,9 +251,9 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         Arrays.fill( _values0, this.noLinkValue );
         Arrays.fill( _values1, this.noLinkValue );
         Arrays.fill( _values2, this.noLinkValue );
-        Arrays.fill( _values3, this.no_entry_value_int );
-        Arrays.fill( _values4, this.no_entry_value_int );
-        Arrays.fill( _values5, this.no_entry_value_int );
+        Arrays.fill( _values3, this.no_entry_value );
+        Arrays.fill( _values4, this.no_entry_value );
+        Arrays.fill( _values5, this.no_entry_value );
        
         putAll( map );
     }
@@ -626,19 +617,20 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
     }
     public int getValue3( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value_int : _values3[index];
+        return index < 0 ? no_entry_value : _values3[index];
     }
     public int getValue4( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value_int : _values4[index];
+        return index < 0 ? no_entry_value : _values4[index];
     }
     public int getValue5( long key ) {
         int index = index( key );
-        return index < 0 ? no_entry_value_int : _values5[index];
+        return index < 0 ? no_entry_value : _values5[index];
     }
 
 
     /** {@inheritDoc} */
+    @Override
     public void clear() {
         super.clear();
         int n = _values0.length;
@@ -646,9 +638,9 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         Arrays.fill( _values0, 0, n, noLinkValue );
         Arrays.fill( _values1, 0, n, noLinkValue );
         Arrays.fill( _values2, 0, n, noLinkValue );
-        Arrays.fill( _values3, 0, n, no_entry_value_int );
-        Arrays.fill( _values4, 0, n, no_entry_value_int );
-        Arrays.fill( _values5, 0, n, no_entry_value_int );
+        Arrays.fill( _values3, 0, n, no_entry_value );
+        Arrays.fill( _values4, 0, n, no_entry_value );
+        Arrays.fill( _values5, 0, n, no_entry_value );
         Arrays.fill( _states, 0, _states.length, FREE );
     }
 
@@ -665,10 +657,8 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
      * @return 
      */
     public boolean remove( long key ) {
-        long prev = no_entry_value;
         int index = index( key );
         if ( index >= 0 ) {
-            prev = _values3[index];
             removeAt( index );    // clear key,state; adjust size
             return true;
         }
@@ -681,9 +671,9 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         _values0[index] = noLinkValue;
         _values1[index] = noLinkValue;
         _values2[index] = noLinkValue;
-        _values3[index] = no_entry_value_int;
-        _values4[index] = no_entry_value_int;
-        _values5[index] = no_entry_value_int;
+        _values3[index] = no_entry_value;
+        _values4[index] = no_entry_value;
+        _values5[index] = no_entry_value;
         super.removeAt( index );  // clear key, state; adjust size
     }
 
@@ -748,6 +738,17 @@ public class TLong_LongLongLongIntIntIntHashMap extends TLongLongHash implements
         }
         return array;
     }
+
+    /**
+     * same as contains key
+     * @param val
+     * @return 
+     */
+    @Override
+    public boolean contains(long val) {
+        return super.contains(val); 
+    }
+    
 
     /** {@inheritDoc} */
     public boolean containsKey( long key ) {
