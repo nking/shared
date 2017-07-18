@@ -624,7 +624,6 @@ public class NodeMap extends TLongIntHash implements
         _sizes[index] = nodeSize;
         return true;
     }
-
     /** {@inheritDoc} */
     public void putAll( NodeMap map ) {
         ensureCapacity( map.size() );
@@ -951,27 +950,44 @@ public class NodeMap extends TLongIntHash implements
      */
     @Override
     public boolean equals( Object other ) {
-        if ( ! ( other instanceof TLongLongMap ) ) {
+        if ( ! ( other instanceof NodeMap ) ) {
             return false;
         }
-        TLongLongMap that = ( TLongLongMap ) other;
+        NodeMap that = ( NodeMap ) other;
+        
+        //System.out.println("in equals.  sizes=" + 
+        //    that.size() + ", " + this.size());
+        
         if ( that.size() != this.size() ) {
             return false;
         }
         int[] values3 = _values;
         byte[] states = _states;
+      
         long this_no_entry_value = getNoEntryValue();
         long that_no_entry_value = that.getNoEntryValue();
+        
+        //System.out.println("this_no_entry_value=" + this_no_entry_value);
+        //System.out.println("that_no_entry_value=" + that_no_entry_value);
+        
         for ( int i = values3.length; i-- > 0; ) {
             if ( states[i] == FULL ) {
                 long key = _set[i];
 
-                if ( !that.containsKey( key ) ) return false;
+                //System.out.println("that.containsKey( key )="
+                //    + that.containsKey(key));
+                
+                if ( !that.containsKey( key ) ) {
+                    return false;
+                }
 
-                long that_value = that.get( key );
+                long that_value = that.getNodeValue(key);
                 long this_value = values3[i];
-                if ((this_value != that_value)
-                    && ( (this_value != this_no_entry_value)
+                
+                //System.out.println("values=" + that_value + ", " + this_value);
+                
+                if (
+                    (this_value != that_value) && ( (this_value != this_no_entry_value)
                     || (that_value != that_no_entry_value))
                     ) {
 
@@ -1050,11 +1066,16 @@ public class NodeMap extends TLongIntHash implements
                 out.writeInt(_sizes[i] );
             }
         }
+        
+        out.flush();
+    
+        //System.out.println("write map.  size=" + size());
     }
 
 
     /** {@inheritDoc} */
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        
         // VERSION
     	in.readByte();
 
@@ -1063,10 +1084,13 @@ public class NodeMap extends TLongIntHash implements
 
     	// NUMBER OF ENTRIES
     	int size = in.readInt();
-    	setUp( size );
-
+        
+        //System.out.println("read size var=" + size);
+    	
+        setUp( size );
+        
     	// ENTRIES
-        while (size-- > 0) {
+        for (int i = 0; i < size; ++i) {
             long key = in.readLong();
             long val0 = in.readLong();
             long val1 = in.readLong();
@@ -1074,8 +1098,11 @@ public class NodeMap extends TLongIntHash implements
             int val3 = in.readInt();
             int val4 = in.readInt();
             int val5 = in.readInt();
+            
             put(key, val0, val1, val2, val3, val4, val5);
         }
+        
+        //System.out.println("read in map.  size=" + size);
     }
     
      public static long estimateSizeOnHeap(int numberOfEntries) {
