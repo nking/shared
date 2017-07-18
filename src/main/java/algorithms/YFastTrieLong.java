@@ -575,7 +575,7 @@ YFastTrie
             // if tree size > 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
 
-            long[] output = new long[2];
+            final long[] output = new long[2];
             tree.higher(node, output);
                 
             if (isAMinimum) {
