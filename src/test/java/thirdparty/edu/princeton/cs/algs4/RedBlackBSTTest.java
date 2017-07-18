@@ -66,6 +66,8 @@ public class RedBlackBSTTest extends TestCase {
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
         
+        bt.check();
+        
         for (int nIter = 0; nIter < 3; ++nIter){
             n2 = bt.size();
             assertEquals(n2, nodes.size());
@@ -136,6 +138,8 @@ public class RedBlackBSTTest extends TestCase {
             bt.deleteMin();
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
+            
+            bt.check();
         }            
     }
     

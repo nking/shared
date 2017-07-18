@@ -1587,7 +1587,7 @@ public class RedBlackBSTLongInt2 {
    /***************************************************************************
     *  Check integrity of red-black tree data structure.
     ***************************************************************************/
-    private boolean check() {
+    protected boolean check() {
         boolean t1 = isParentChildConsistent();
         boolean t2 = isBST();
         boolean t3 = isSizeConsistent();

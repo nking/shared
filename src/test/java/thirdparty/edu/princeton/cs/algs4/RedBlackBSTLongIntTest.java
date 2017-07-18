@@ -66,6 +66,8 @@ public class RedBlackBSTLongIntTest extends TestCase {
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
         
+        bt.check();
+        
         long[] kOutput = new long[2];
         int[] vOutput = new int[2];
         
@@ -151,6 +153,8 @@ public class RedBlackBSTLongIntTest extends TestCase {
             bt.deleteMin();
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
+            
+            bt.check();
         }     
     }
     
@@ -305,6 +309,8 @@ public class RedBlackBSTLongIntTest extends TestCase {
             n2 = nodes.size();
             nodes.sort();
            
+            bt.check();
+            
             assertEquals(nodes.get(nodes.size()/2), bt.select(nodes.size()/2));            
                     
             long max = nodes.get(nodes.size() - 1);

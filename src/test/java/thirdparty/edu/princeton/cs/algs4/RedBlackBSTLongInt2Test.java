@@ -247,6 +247,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             count++;
         }
         
+        bt.check();
+        
         for (int i = (n - 1); i >= (n/2); --i) {
             if (rand.nextBoolean()) {
                 int skip = rand.nextInt(5);
@@ -374,6 +376,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             nodes.removeAt(0);
             assertEquals(nodes.size(), bt.size());
             
+            bt.check();
         }            
     }
     
@@ -441,6 +444,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         assertEquals(count, n2);
         assertEquals(count, nodes.size());
         
+        bt.check();
         
         int[] vOutput = new int[2];
         
@@ -581,6 +585,8 @@ public class RedBlackBSTLongInt2Test extends TestCase {
             assertFalse(bt.contains(min));
             nodes.removeAt(0);
             assertEquals(nodes.size(), bt.size());
+        
+            bt.check();
         }            
     }
     
