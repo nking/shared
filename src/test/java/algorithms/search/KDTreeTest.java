@@ -1,5 +1,8 @@
 package algorithms.search;
 
+import algorithms.util.PixelHelper;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
@@ -258,6 +261,30 @@ public class KDTreeTest extends TestCase {
     	int[] y = new int[] {5, 5, 6,  6,  9,  1,  9,  9};
     	
         KDTree kdTree = new KDTree(x, y);
+    	
+        kdTree.printTree();
+        
+        KDTreeNode node = kdTree.findNearestNeighbor(12, 7);
+    	assertNotNull(node);
+    	assertEquals(13, node.x);
+    	assertEquals(6, node.y);
+	}
+    
+    public void test3_2() {
+        
+        int width = 35;
+        int height = 10;
+		int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
+    	int[] y = new int[] {5, 5, 6,  6,  9,  1,  9,  9};
+    	
+        PixelHelper ph = new PixelHelper();
+        TLongSet pixIdxs = new TLongHashSet();
+        for (int i = 0; i < x.length; ++i) {
+            long pixIdx = ph.toPixelIndex(x[i], y[i], width);
+            pixIdxs.add(pixIdx);
+        }
+        
+        KDTree kdTree = new KDTree(pixIdxs, width, height);
     	
         kdTree.printTree();
         

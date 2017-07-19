@@ -3,6 +3,10 @@ package algorithms.search;
 import algorithms.misc.MiscSorter;
 import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
+import algorithms.util.PixelHelper;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.set.TLongSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Arrays;
@@ -81,6 +85,38 @@ public class KDTree {
         this.root = buildTree(0, x, y, 0, lastUsableIndex);
     }
 
+    public KDTree(TLongSet pixIdxs, int width, int height) {
+		
+		if (pixIdxs == null || pixIdxs.size() < 2) {
+			throw new IllegalArgumentException(
+                "pixIdxs cannot be null or less than 2 in size");
+		}
+        
+        PixelHelper ph = new PixelHelper();
+        int n = pixIdxs.size();
+        int[] x = new int[n];
+        int[] y = new int[n];
+        int[] xy = new int[2];
+        TLongIterator iter = pixIdxs.iterator();
+        int count = 0;
+        while (iter.hasNext()) {
+            ph.toPixelCoords(iter.next(), width, xy);
+            x[count] = xy[0];
+            y[count] = xy[1];
+            count++;
+        }
+        pixIdxs = null;
+	    
+		int lastUsableIndex = reduceToUniqueWithMoveUp(x, y);
+
+        if (lastUsableIndex < (x.length - 1)) {
+            x = Arrays.copyOf(x, lastUsableIndex + 1);
+            y = Arrays.copyOf(y, lastUsableIndex + 1);
+        }
+
+        this.root = buildTree(0, x, y, 0, lastUsableIndex);
+    }
+    
 	public KDTreeNode getRoot() {
 		return root;
 	}
