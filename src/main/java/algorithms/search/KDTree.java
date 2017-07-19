@@ -4,7 +4,6 @@ import algorithms.misc.MiscSorter;
 import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
-import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TLongSet;
 import java.util.HashSet;
@@ -275,13 +274,24 @@ public class KDTree {
         KDTreeNode[] best = new KDTreeNode[1];
         double[] bestDist = new double[]{Double.MAX_VALUE};
 
-        nearestNeighborSearch(root, x, y, 0, best, bestDist);
+        nearestNeighborSearch(root, x, y, 0, best, bestDist, false);
+        
+        return best[0];
+    }
+    
+    public KDTreeNode findNearestNeighborNotEquals(int x, int y) {
+
+        KDTreeNode[] best = new KDTreeNode[1];
+        double[] bestDist = new double[]{Double.MAX_VALUE};
+
+        nearestNeighborSearch(root, x, y, 0, best, bestDist, true);
         
         return best[0];
     }
 	
 	protected KDTreeNode nearestNeighborSearch(KDTreeNode tree, int leftValue, 
-        int rightValue, int depth, KDTreeNode[] best, double[] bestDist) {
+        int rightValue, int depth, KDTreeNode[] best, double[] bestDist,
+        boolean excludeEquals) {
 
         if (tree.nChildren == 0 ) {
 			return tree;
@@ -315,17 +325,27 @@ public class KDTree {
         diffMedValSq *= diffMedValSq;
 	
         KDTreeNode retVal1 = nearestNeighborSearch(
-            subTree1, leftValue, rightValue, depth + 1, best, bestDist);
+            subTree1, leftValue, rightValue, depth + 1, best, bestDist, 
+            excludeEquals);
 		
         double dist1 = Double.MAX_VALUE;
         if (retVal1 != null) {
             dist1 = distanceSq(retVal1, leftValue, rightValue);
-            if (dist1 < bestDist[0]) {
-                bestDist[0] = dist1;
-                best[0] = retVal1;
-                if (dist1 == 0) {
-                    // this is the point
-                    return retVal1;
+            if (excludeEquals) {
+                if (dist1 > 0) {
+                    if (dist1 < bestDist[0]) {
+                        bestDist[0] = dist1;
+                        best[0] = retVal1;
+                    }
+                }
+            } else {
+                if (dist1 < bestDist[0]) {
+                    bestDist[0] = dist1;
+                    best[0] = retVal1;
+                    if (dist1 == 0) {
+                        // this is the point
+                        return retVal1;
+                    }
                 }
             }
         }
@@ -338,18 +358,28 @@ public class KDTree {
 		if ((2*diffMedValSq) < dist1) {
             
 			KDTreeNode retVal2 = nearestNeighborSearch(
-                subTree2, leftValue, rightValue, depth + 1, best, bestDist);
+                subTree2, leftValue, rightValue, depth + 1, best, bestDist,
+                excludeEquals);
             
             double dist2 = Double.MAX_VALUE;
+            
             if (retVal2 != null) {
                 dist2 = distanceSq(retVal2, leftValue, rightValue);
-                // TODO: consider a tolerance
-                if (dist2 < bestDist[0]) {
-                    bestDist[0] = dist2;
-                    best[0] = retVal2;
-                    if (dist2 == 0) {
-                        // this is the point
-                        return retVal2;
+                if (excludeEquals) {
+                    if (dist2 > 0) {
+                        if (dist2 < bestDist[0]) {
+                            bestDist[0] = dist2;
+                            best[0] = retVal2;
+                        }
+                    }
+                } else {
+                    if (dist2 < bestDist[0]) {
+                        bestDist[0] = dist2;
+                        best[0] = retVal2;
+                        if (dist2 == 0) {
+                            // this is the point
+                            return retVal2;
+                        }
                     }
                 }
             }

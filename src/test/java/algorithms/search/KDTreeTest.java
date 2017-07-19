@@ -1,8 +1,11 @@
 package algorithms.search;
 
+import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import java.util.HashSet;
+import java.util.Set;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
@@ -292,6 +295,34 @@ public class KDTreeTest extends TestCase {
     	assertNotNull(node);
     	assertEquals(13, node.x);
     	assertEquals(6, node.y);
+	}
+    
+    public void testNN_ne() {
+        
+		int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
+    	int[] y = new int[] {5, 5, 6,  6,  9,  1,  9,  9};
+    	
+        KDTree kdTree = new KDTree(x, y);
+    	
+        kdTree.printTree();
+        
+        KDTreeNode node = kdTree.findNearestNeighbor(12, 7);
+    	assertNotNull(node);
+    	assertEquals(13, node.x);
+    	assertEquals(6, node.y);
+        
+        node = kdTree.findNearestNeighborNotEquals(13, 6);
+        // 9, 6 or 14, 9
+    	assertNotNull(node);
+        PairInt found = new PairInt(node.x, node.y);
+        
+    	Set<PairInt> expected = new HashSet<PairInt>();
+        expected.add(new PairInt(9, 6));
+        expected.add(new PairInt(14, 9));
+        
+        assertTrue(expected.remove(found));
+    	assertEquals(1, expected.size());
+        
 	}
     
     /**
