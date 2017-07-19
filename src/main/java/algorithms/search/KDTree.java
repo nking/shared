@@ -302,25 +302,21 @@ public class KDTree {
 		float diffMedValSq;
 		
 		KDTreeNode subTree1, subTree2;
+        int partition;
 
         if ((depth & 1) == 0) {
-            diffMedValSq = medianValue - leftValue;
-            if (leftValue <= medianValue) {
-                subTree1 = tree.left;
-                subTree2 = tree.right;
-            } else {
-                subTree1 = tree.right;
-                subTree2 = tree.left;
-            }
+            partition = leftValue;
         } else {
-            diffMedValSq = medianValue - rightValue;
-            if (rightValue <= medianValue) {
-                subTree1 = tree.left;
-                subTree2 = tree.right;
-            } else {
-                subTree1 = tree.right;
-                subTree2 = tree.left;
-            }
+            partition = rightValue;
+        }
+        
+        diffMedValSq = medianValue - partition;
+        if (partition <= medianValue) {
+            subTree1 = tree.left;
+            subTree2 = tree.right;
+        } else {
+            subTree1 = tree.right;
+            subTree2 = tree.left;
         }
         diffMedValSq *= diffMedValSq;
 	
