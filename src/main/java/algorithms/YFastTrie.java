@@ -136,7 +136,8 @@ YFastTrie
             this.w = wBits;
         } else {
             throw new IllegalStateException("wBits "
-                + " shoulw be greater than 1 and less than 32");
+                + " should be greater than 1 and less than 32"
+                + " wBits=" + wBits);
         }
         maxC = (1 << w) - 1;
         
