@@ -98,9 +98,9 @@ public class NearestNeighbor2DLong {
     /**
      * 
      * @param points non-negative coordinates
-     * @param maxX maximum x value of any data point including
+     * @param imgWidth maximum x value of any data point + 1 including
      *    those to be queries
-     * @param maxY maximum y value of any data point including
+     * @param imgHeight maximum y value of any data point + 1 including
      *    those to be queries
      */
     public NearestNeighbor2DLong(Set<PairInt> points,
@@ -109,7 +109,7 @@ public class NearestNeighbor2DLong {
         this.width = imgWidth;
         this.height = imgHeight ;
                 
-        maxIndex = width * height;
+        maxIndex = (long)width * height;
         
         int maxW = 1 + (int)Math.ceil(Math.log(maxIndex)/Math.log(2));
         
@@ -145,9 +145,9 @@ public class NearestNeighbor2DLong {
      * 
      * @param pointIdxs pixel indexes formed from relationship
      *   pixIdx = (row * width) + col
-     * @param imgWidth maximum x value of any data point including
+     * @param imgWidth maximum x value of any data point  + 1including
      *    those to be queries
-     * @param maxY maximum y value of any data point including
+     * @param imgHeight maximum y value of any data point  + 1including
      *    those to be queries
      */
     public NearestNeighbor2DLong(TLongSet pointIdxs, 
@@ -156,7 +156,7 @@ public class NearestNeighbor2DLong {
         this.width = imgWidth;
         this.height = imgHeight;
                 
-        maxIndex = width * height;
+        maxIndex = (long)width * height;
         
         int maxW = 1 + (int)Math.ceil(Math.log(maxIndex)/Math.log(2));
         
@@ -948,7 +948,7 @@ public class NearestNeighbor2DLong {
         long[] yTotals = YFastTrieLong.estimateSizeOnHeap(numberOfPoints, 
             maxBitLength);
         
-        System.out.println("yft estimates=" + Arrays.toString(yTotals));
+        //System.out.println("yft estimates=" + Arrays.toString(yTotals));
         
         ObjectSpaceEstimator est = new ObjectSpaceEstimator();
         est.setNObjRefsFields(4);
