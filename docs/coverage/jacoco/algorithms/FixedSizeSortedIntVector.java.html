@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FixedSizeSortedIntVector.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">FixedSizeSortedIntVector.java</span></div><h1>FixedSizeSortedIntVector.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import java.util.Arrays;
+
+/**
+ * a class to hold a fixed number of items of type int which are kept in a sorted
+ * stated.
+ *&lt;pre&gt;
+ * runtime complexity is:
+ *     O(N * (lg_2(k) + smaller than k))
+ * where k is the fixed capacity and N is the number of times add is used
+ * (each insert is roughly log_2(k)).
+ *
+ * worse case runtime complexity is O(N * (k + lg_2(k)))
+ * best case runtime complexity is O(N * (1 + lg_2(k)))
+ *&lt;/pre&gt;
+ * 
+ * 
+   first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+   and license.
+   * 
+ * @author nichole
+ */
+public class FixedSizeSortedIntVector {
+
+<span class="fc" id="L31">    protected int[] a = null;</span>
+
+    protected final int size;
+
+    protected int n;
+
+    protected int availSlot;
+
+<span class="fc" id="L39">    public FixedSizeSortedIntVector(int fixedCapacity) {</span>
+
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (fixedCapacity &lt; 1) {</span>
+<span class="nc" id="L42">            throw new IllegalArgumentException(</span>
+            &quot;fixedCapacity must be a positive non zero (arg was &quot;
+            + fixedCapacity + &quot;)&quot;);
+        }
+
+<span class="fc" id="L47">        size = fixedCapacity;</span>
+
+<span class="fc" id="L49">        n = 0;</span>
+
+<span class="fc" id="L51">        availSlot = -1;</span>
+
+<span class="fc" id="L53">        a = new int[size];</span>
+
+<span class="fc" id="L55">    }</span>
+    
+    public int getCapacity() {
+<span class="nc" id="L58">        return size;</span>
+    }
+
+    /**
+     * add value to the fixed size sorted list (sorted by increasing value).
+     *
+     * runtime complexity is O(log_2(capacity) + less than capacity).
+     *
+     * @param value
+     * @return true if added, else false
+     */
+    public boolean add(int value) {
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (n &lt; size) {</span>
+
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if (availSlot == -1) {</span>
+<span class="fc" id="L74">                availSlot = n;</span>
+            }
+
+<span class="fc" id="L77">            insertIntoOpenSlot(value);</span>
+
+        } else {
+
+<span class="fc" id="L81">            int compareIdx = n - 1;</span>
+
+<span class="pc bpc" id="L83" title="3 of 4 branches missed.">            if ((n == 1) &amp;&amp; (size == 1)) {</span>
+<span class="nc" id="L84">                compareIdx = 0;</span>
+            }
+
+<span class="fc bfc" id="L87" title="All 4 branches covered.">            int comp = (value &lt; a[compareIdx]) ? -1 :</span>
+                ((value &gt;a[compareIdx]) ? 1 : 0);
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (comp != -1) {</span>
+<span class="fc" id="L91">                return false;</span>
+            }
+
+            // free up the last slot
+<span class="fc" id="L95">            availSlot = compareIdx;</span>
+
+<span class="fc" id="L97">            n--;</span>
+
+            // insert value into array at position found by binarySearch
+<span class="fc" id="L100">            insertIntoOpenSlot(value);</span>
+
+        }
+
+<span class="fc" id="L104">        return true;</span>
+    }
+    
+    public int findIndexFor(int value) {
+<span class="fc" id="L108">        int idx = Arrays.binarySearch(a, 0, n, value);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (idx &lt; 0) {</span>
+            //(-(insertion point) - 1)
+<span class="nc" id="L111">            idx *= -1;</span>
+<span class="nc" id="L112">            idx--;</span>
+        } else {
+            // in case there are more than one of same value, search prev
+<span class="pc bpc" id="L115" title="2 of 4 branches missed.">            while ((idx - 1) &gt; -1 &amp;&amp; a[idx - 1] == value) {</span>
+<span class="nc" id="L116">                idx--;</span>
+            }
+        }
+<span class="fc" id="L119">        return idx;</span>
+    }
+
+    /**
+     * Insert the value into the list while maintaining the sorted state
+     * of the list.
+     * @param value
+     */
+    private void insertIntoOpenSlot(int value) {
+
+<span class="fc" id="L129">        int insIdx = Arrays.binarySearch(a, 0, n, value);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (insIdx &lt; 0) {</span>
+<span class="fc" id="L131">            insIdx *= -1;</span>
+<span class="fc" id="L132">            insIdx--;</span>
+        }
+
+<span class="pc bpc" id="L135" title="4 of 6 branches missed.">        if ((availSlot &gt; -1) &amp;&amp; (insIdx &gt; availSlot) &amp;&amp; (a[availSlot] == value)) {</span>
+            // this depends upon logic of previous remove setting availSlot
+            // to next value.
+<span class="nc" id="L138">            boolean b = true;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            for (int i = insIdx; i &gt; availSlot; --i) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                if (a[i] != value) {</span>
+<span class="nc" id="L141">                    b = false;</span>
+<span class="nc" id="L142">                    break;</span>
+                }
+            }
+
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            if (b) {</span>
+
+                // no need to set value again
+<span class="nc" id="L149">                n++;</span>
+
+<span class="nc" id="L151">                availSlot = -1;</span>
+
+<span class="nc" id="L153">                return;</span>
+            }
+        }
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (insIdx == availSlot) {</span>
+
+<span class="fc" id="L159">            a[availSlot] = value;</span>
+
+<span class="pc bpc" id="L161" title="3 of 4 branches missed.">        } else if ((insIdx == (a.length - 1)) &amp;&amp; (availSlot == (insIdx - 1))) {</span>
+
+<span class="nc" id="L163">            a[insIdx] = value;</span>
+
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        } else if (insIdx &lt; availSlot) {</span>
+
+            // move all items from insIdx to availSlot down by 1
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            for (int i = (availSlot - 1); i &gt;= insIdx; i--) {</span>
+<span class="fc" id="L169">                a[i + 1] = a[i];</span>
+            }
+
+<span class="fc" id="L172">            a[insIdx] = value;</span>
+
+        } else {
+
+<span class="nc" id="L176">            int end = insIdx - 1;</span>
+
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if (availSlot &gt; -1) {</span>
+<span class="nc bnc" id="L179" title="All 6 branches missed.">                while ((a[insIdx] == value) &amp;&amp; ((end + 1) &lt;= n) &amp;&amp; (a[end + 1] == value)) {</span>
+<span class="nc" id="L180">                    end++;</span>
+                }
+            }
+
+            // move items up from availSlot +1 to insIdx - 1
+            // then insert value into insIdx - 1
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            for (int i = availSlot; i &lt; end; i++) {</span>
+<span class="nc" id="L187">                a[i] = a[i + 1];</span>
+            }
+
+<span class="nc" id="L190">            a[insIdx] = value;</span>
+        }
+
+<span class="fc" id="L193">        n++;</span>
+
+<span class="fc" id="L195">        availSlot = -1;</span>
+<span class="fc" id="L196">    }</span>
+
+    /**
+     * get the internal array for the sorted list.  note this is not a copy in
+     * order to keep the use small, so do not edit it and continue to use
+     * the add method.
+     *
+     * runtime complexity is O(1)
+     *
+     * @return
+     */
+    public int[] getArray() {
+
+<span class="fc" id="L209">        return a;</span>
+    }
+
+    /**
+     * get the internal array for the sorted list.  note this is not a copy in
+     * order to keep the use small, so do not edit it and continue to use
+     * the add method.
+     *
+     * runtime complexity is O(1)
+     *
+     * @param index
+     * @return
+     */
+    public int getValue(int index) {
+
+<span class="pc bpc" id="L224" title="2 of 4 branches missed.">        if ((index &lt; 0) || (index &gt; (a.length - 1))) {</span>
+<span class="nc" id="L225">            throw new IllegalArgumentException(&quot;index is out of bounds&quot;);</span>
+        }
+
+<span class="fc" id="L228">        return a[index];</span>
+    }
+
+    /**
+     * return the number of items in the internal array.  if the array is not
+     * yet filled, the return will be less than the capacity, else will
+     * be the same as the capacity.
+     * @return
+     */
+    public int getNumberOfItems() {
+<span class="fc" id="L238">        return n;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L243">        return Arrays.toString(a);</span>
+    }
+
+    /**
+     * Split this into a new instance containing all elements less than or
+     * equal to x and leave all elements greater than x in this instance
+     * runtime complexity is binary search + copy = O(n) where n is the
+     * number of items in this instance.
+     * @param x
+     * @return
+     */
+    public FixedSizeSortedIntVector split(int x) {
+
+<span class="fc" id="L256">        int idx = findIndexFor(x);</span>
+
+        // copy: 0 : 1dx-1;  keep: idx : n-1
+<span class="fc" id="L259">        FixedSizeSortedIntVector vecL = new FixedSizeSortedIntVector(size);</span>
+<span class="fc" id="L260">        int[] aL = vecL.getArray();</span>
+
+        // copy 0:idx-1 to aL
+<span class="fc" id="L263">        System.arraycopy(a, 0, aL, 0, idx);</span>
+<span class="fc" id="L264">        vecL.n = (idx + 1);</span>
+<span class="fc" id="L265">        vecL.availSlot = vecL.n;</span>
+
+        // move idx:n-1 up to 0 
+<span class="fc" id="L268">        System.arraycopy(a, idx, a, 0, n - idx);</span>
+<span class="fc" id="L269">        n = n - idx;</span>
+<span class="fc" id="L270">        availSlot = n;</span>
+        
+<span class="fc" id="L272">        return vecL;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

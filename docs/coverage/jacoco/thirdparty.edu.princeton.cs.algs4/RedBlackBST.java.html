@@ -324,7 +324,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="fc bfc" id="L324" title="All 2 branches covered.">        if (h.right == null)</span>
 <span class="fc" id="L325">            return null;</span>
 
-<span class="pc bpc" id="L327" title="1 of 4 branches missed.">        if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
+<span class="fc bfc" id="L327" title="All 4 branches covered.">        if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L328">            h = moveRedRight(h);</span>
 
 <span class="fc" id="L330">        h.right = deleteMax(h.right);</span>
@@ -344,8 +344,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L347" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
-<span class="fc" id="L348">            root.color = RED;</span>
+<span class="pc bpc" id="L347" title="3 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="nc" id="L348">            root.color = RED;</span>
 
 <span class="fc" id="L350">        root = delete(root, key);</span>
 <span class="pc bpc" id="L351" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
@@ -365,20 +365,20 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         else {
 <span class="fc bfc" id="L366" title="All 2 branches covered.">            if (isRed(h.left))</span>
 <span class="fc" id="L367">                h = rotateRight(h);</span>
-<span class="pc bpc" id="L368" title="1 of 4 branches missed.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
+<span class="fc bfc" id="L368" title="All 4 branches covered.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
 <span class="fc" id="L369">                return null;</span>
 <span class="fc bfc" id="L370" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L371">                h = moveRedRight(h);</span>
-<span class="pc bpc" id="L372" title="1 of 2 branches missed.">            if (key.compareTo(h.key) == 0) {</span>
-<span class="nc" id="L373">                RBNode x = min(h.right);</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">            if (key.compareTo(h.key) == 0) {</span>
+<span class="fc" id="L373">                RBNode x = min(h.right);</span>
                 
-<span class="nc" id="L375">                h.key = x.key;</span>
-<span class="nc" id="L376">                h.val = x.val;</span>
+<span class="fc" id="L375">                h.key = x.key;</span>
+<span class="fc" id="L376">                h.val = x.val;</span>
                 
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
-<span class="nc" id="L380">                h.right = deleteMin(h.right);</span>
-<span class="nc" id="L381">            }</span>
+<span class="fc" id="L380">                h.right = deleteMin(h.right);</span>
+<span class="fc" id="L381">            }</span>
 <span class="fc" id="L382">            else h.right = delete(h.right, key);</span>
         }
 <span class="fc" id="L384">        return balance(h);</span>

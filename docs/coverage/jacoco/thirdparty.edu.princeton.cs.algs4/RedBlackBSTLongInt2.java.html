@@ -693,12 +693,12 @@ import java.util.Stack;
                 // finish deleting x if not already
 <span class="pc bpc" id="L694" title="1 of 2 branches missed.">                if (nodeMap.parentIsSet(x)) {</span>
 <span class="fc" id="L695">                    long minParent = nodeMap.getParent(x);</span>
-<span class="fc bfc" id="L696" title="All 2 branches covered.">                    if (nodeMap.leftIsSet(minParent)</span>
-<span class="pc bpc" id="L697" title="1 of 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
+<span class="pc bpc" id="L696" title="1 of 2 branches missed.">                    if (nodeMap.leftIsSet(minParent)</span>
+<span class="nc bnc" id="L697" title="All 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
 <span class="nc" id="L698">                        nodeMap.unsetLeft(minParent);</span>
-<span class="fc bfc" id="L699" title="All 2 branches covered.">                    } else if (nodeMap.rightIsSet(minParent)</span>
-<span class="pc bpc" id="L700" title="1 of 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
-<span class="fc" id="L701">                        nodeMap.unsetRight(minParent);</span>
+<span class="pc bpc" id="L699" title="1 of 2 branches missed.">                    } else if (nodeMap.rightIsSet(minParent)</span>
+<span class="nc bnc" id="L700" title="All 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
+<span class="nc" id="L701">                        nodeMap.unsetRight(minParent);</span>
                     }
 <span class="fc" id="L703">                    nodeMap.unsetParent(x);</span>
                 }
@@ -706,8 +706,8 @@ import java.util.Stack;
 <span class="fc" id="L706">                    nodeMap.remove(x);</span>
                 }
                 
-<span class="pc bpc" id="L709" title="1 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
-<span class="fc" id="L710">                    hRightExists = false;</span>
+<span class="pc bpc" id="L709" title="2 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
+<span class="nc" id="L710">                    hRightExists = false;</span>
                 }
                 
 <span class="pc bpc" id="L713" title="1 of 2 branches missed.">                if (xParentExists) {</span>
@@ -2262,8 +2262,8 @@ import java.util.Stack;
 <span class="pc bpc" id="L2262" title="1 of 2 branches missed.">        if (hParentExists) {</span>
 <span class="fc" id="L2263">            nodeMap.updateParent(x, hParent);</span>
 <span class="pc bpc" id="L2264" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(hParent) </span>
-<span class="fc bfc" id="L2265" title="All 2 branches covered.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
-<span class="fc" id="L2266">                nodeMap.updateLeft(hParent, x);</span>
+<span class="pc bpc" id="L2265" title="1 of 2 branches missed.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
+<span class="nc" id="L2266">                nodeMap.updateLeft(hParent, x);</span>
             } else {
 <span class="pc bpc" id="L2268" title="3 of 4 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
 <span class="nc bnc" id="L2269" title="All 2 branches missed.">                    &amp;&amp; nodeMap.getRight(hParent) == h);</span>
@@ -2273,19 +2273,19 @@ import java.util.Stack;
             //h is root
         }
         
-<span class="fc bfc" id="L2276" title="All 2 branches covered.">        if (hLeftExists) {</span>
+<span class="pc bpc" id="L2276" title="1 of 2 branches missed.">        if (hLeftExists) {</span>
 <span class="fc" id="L2277">            nodeMap.updateParent(hLeft, x);</span>
 <span class="fc" id="L2278">            nodeMap.updateLeft(x, hLeft);</span>
         }
-<span class="fc bfc" id="L2280" title="All 2 branches covered.">        if (hRightExists) {</span>
+<span class="pc bpc" id="L2280" title="1 of 2 branches missed.">        if (hRightExists) {</span>
 <span class="fc" id="L2281">            nodeMap.updateParent(hRight, x);</span>
 <span class="fc" id="L2282">            nodeMap.updateRight(x, hRight);</span>
         }
         
 <span class="fc" id="L2285">        nodeMap.remove(h); </span>
         
-<span class="fc bfc" id="L2287" title="All 2 branches covered.">        if (h == root) {</span>
-<span class="fc" id="L2288">            root = x;</span>
+<span class="pc bpc" id="L2287" title="1 of 2 branches missed.">        if (h == root) {</span>
+<span class="nc" id="L2288">            root = x;</span>
         }
 <span class="fc" id="L2290">    }</span>
     

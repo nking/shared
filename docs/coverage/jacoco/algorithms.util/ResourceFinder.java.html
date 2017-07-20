@@ -183,18 +183,18 @@ import java.util.logging.Logger;
             }
 <span class="nc" id="L184">            return filePath;</span>
 
-<span class="nc" id="L186">        } catch (IOException e) {</span>
+<span class="fc" id="L186">        } catch (IOException e) {</span>
 
-<span class="nc" id="L188">            String dirPath = </span>
-<span class="nc" id="L189">                findDirectory(new String[]{&quot;src&quot;, &quot;test&quot;}, &quot;resources&quot;);</span>
+<span class="fc" id="L188">            String dirPath = </span>
+<span class="fc" id="L189">                findDirectory(new String[]{&quot;src&quot;, &quot;test&quot;}, &quot;resources&quot;);</span>
             
-<span class="nc" id="L191">            String filePath = dirPath + sep + fileName;</span>
+<span class="fc" id="L191">            String filePath = dirPath + sep + fileName;</span>
 
-<span class="nc" id="L193">            File f = new File(filePath);</span>
-<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (!f.exists()) {</span>
+<span class="fc" id="L193">            File f = new File(filePath);</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">            if (!f.exists()) {</span>
 <span class="nc" id="L195">                throw new IOException(&quot;could not find file at &quot; + filePath);</span>
             }
-<span class="nc" id="L197">            return filePath;</span>
+<span class="fc" id="L197">            return filePath;</span>
         }
     }
 
@@ -264,8 +264,8 @@ import java.util.logging.Logger;
 <span class="fc" id="L264">        BufferedWriter writer = null;</span>
         try {
 <span class="fc" id="L266">            File file = new File(filePath);</span>
-<span class="pc bpc" id="L267" title="1 of 2 branches missed.">            if (file.exists()) {</span>
-<span class="nc" id="L268">                file.delete();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">            if (file.exists()) {</span>
+<span class="fc" id="L268">                file.delete();</span>
             }
 <span class="fc" id="L270">            file.createNewFile();</span>
 

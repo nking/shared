@@ -519,10 +519,10 @@ key, left or right field.
         // assert isRed(h) &amp;&amp; !isRed(h.left) &amp;&amp; !isRed(h.left.left);
 
 <span class="fc" id="L521">        flipColors(h);</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">        if (isRed(h.right.left)) { </span>
-<span class="fc" id="L523">            h.right = rotateRight(h.right);</span>
-<span class="fc" id="L524">            h = rotateLeft(h);</span>
-<span class="fc" id="L525">            flipColors(h);</span>
+<span class="pc bpc" id="L522" title="1 of 2 branches missed.">        if (isRed(h.right.left)) { </span>
+<span class="nc" id="L523">            h.right = rotateRight(h.right);</span>
+<span class="nc" id="L524">            h = rotateLeft(h);</span>
+<span class="nc" id="L525">            flipColors(h);</span>
         }
             
 <span class="fc" id="L528">        return h;</span>
