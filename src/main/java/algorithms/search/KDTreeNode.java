@@ -8,7 +8,7 @@ public class KDTreeNode {
 	KDTreeNode left = null;
 	KDTreeNode parent = null;
 	
-    public static int sentinel = Integer.MIN_VALUE;
+    public static final int sentinel = Integer.MIN_VALUE;
 	int x = sentinel;
 	int y = sentinel;
 	int key = sentinel; // median value
