@@ -8,11 +8,16 @@ public class KDTreeNode {
 	KDTreeNode left = null;
 	KDTreeNode parent = null;
 	
-	int x = -1;
-	int y = -1;
-	int key = -1; // median value
+    public static int sentinel = Integer.MIN_VALUE;
+	int x = sentinel;
+	int y = sentinel;
+	int key = sentinel; // median value
 	int nChildren = 0;
 
+    public boolean xyAreSet() {
+        return (x != sentinel && y != sentinel);
+    }
+    
     /**
      * @return the x
      */

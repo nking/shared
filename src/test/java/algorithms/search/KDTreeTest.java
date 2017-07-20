@@ -54,23 +54,23 @@ public class KDTreeTest extends TestCase {
 
     }
 
-	public void test() {
-		int[] x = new int[] {5, 5, 9, 3, 4, 1, 7, 2};
+    public void test() {
+	int[] x = new int[] {5, 5, 9, 3, 4, 1, 7, 2};
     	int[] y = new int[] {5, 5, 6, 6, 9, 1, 9, 9};
     	
     	int lastUsableIndex = KDTree.reduceToUniqueWithMoveUp(x, y);
     	
-		assertTrue(lastUsableIndex == 6);
+	assertTrue(lastUsableIndex == 6);
 		
-		int[] expectedx = new int[] {5, 9, 3, 4, 1, 7, 2};
+	int[] expectedx = new int[] {5, 9, 3, 4, 1, 7, 2};
     	int[] expectedy = new int[] {5, 6, 6, 9, 1, 9, 9};
     	
     	for (int i = 0; i < expectedx.length; i++) {
-    		assertTrue(expectedx[i] == x[i]);
-    		assertTrue(expectedy[i] == y[i]);
+            assertTrue(expectedx[i] == x[i]);
+            assertTrue(expectedy[i] == y[i]);
     	}
-		
-	}
+    }
+
     public void testTree1() {        
     	
     	int[] x = new int[] {6, 5, 9, 3, 4, 1, 7, 2};
@@ -260,7 +260,7 @@ public class KDTreeTest extends TestCase {
     	
     public void test3() {
         
-		int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
+	int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
     	int[] y = new int[] {5, 5, 6,  6,  9,  1,  9,  9};
     	
         KDTree kdTree = new KDTree(x, y);
@@ -271,13 +271,13 @@ public class KDTreeTest extends TestCase {
     	assertNotNull(node);
     	assertEquals(13, node.x);
     	assertEquals(6, node.y);
-	}
+    }
     
     public void test3_2() {
         
         int width = 35;
         int height = 10;
-		int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
+	int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
     	int[] y = new int[] {5, 5, 6,  6,  9,  1,  9,  9};
     	
         PixelHelper ph = new PixelHelper();
@@ -295,11 +295,15 @@ public class KDTreeTest extends TestCase {
     	assertNotNull(node);
     	assertEquals(13, node.x);
     	assertEquals(6, node.y);
-	}
+        assertTrue(node.xyAreSet());
+
+        node = new KDTreeNode();
+        assertFalse(node.xyAreSet());
+    }
     
     public void testNN_ne() {
         
-		int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
+	int[] x = new int[] {5, 5, 9, 13, 14, 21, 27, 32};
     	int[] y = new int[] {5, 5, 6,  6,  9,  1,  9,  9};
     	
         KDTree kdTree = new KDTree(x, y);
@@ -323,7 +327,7 @@ public class KDTreeTest extends TestCase {
         assertTrue(expected.remove(found));
     	assertEquals(1, expected.size());
         
-	}
+    }
     
     /**
      * Test suite
