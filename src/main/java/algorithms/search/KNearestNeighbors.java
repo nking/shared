@@ -3,7 +3,10 @@ package algorithms.search;
 import thirdparty.voronoi.VoronoiFortunesSweep;
 import algorithms.FixedSizeSortedVector;
 import algorithms.util.PairFloat;
+import algorithms.util.PixelHelper;
 import algorithms.util.PolygonAndPointPlotter;
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.set.TLongSet;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -64,6 +67,10 @@ public class KNearestNeighbors {
         init(x, y);
     }
     
+    public KNearestNeighbors(TLongSet pixIdxs, int width, int height) {
+        init(pixIdxs, width, height);
+    }
+    
     private void init(int[] x, int[] y) {
         
         if (x == null || x.length == 0 || y == null
@@ -84,6 +91,28 @@ public class KNearestNeighbors {
         }
         
         init(x2, y2);
+    }
+    
+    private void init(TLongSet pixIdxs, int width, int height) {
+        
+        PixelHelper ph = new PixelHelper();
+        
+        int[] xy = new int[2];
+        
+        float[] x = new float[pixIdxs.size()];
+        float[] y = new float[x.length];
+        TLongIterator iter = pixIdxs.iterator();
+        int i = 0;
+        while (iter.hasNext()) {
+            long pixIdx = iter.next();
+            ph.toPixelCoords(pixIdx, width, xy);
+            x[i] = xy[0];
+            y[i] = xy[1];
+            ++i;
+        }
+        assert(i == x.length);
+        
+        init(x, y);
     }
     
     private void init(float[] x, float[] y) {
