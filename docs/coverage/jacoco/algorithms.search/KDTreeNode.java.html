@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>KDTreeNode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.search</a> &gt; <span class="el_source">KDTreeNode.java</span></div><h1>KDTreeNode.java</h1><pre class="source lang-java linenums">package algorithms.search;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDTreeNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.search</a> &gt; <span class="el_source">KDTreeNode.java</span></div><h1>KDTreeNode.java</h1><pre class="source lang-java linenums">package algorithms.search;
 
 import algorithms.util.ObjectSpaceEstimator;
 
@@ -8,54 +8,59 @@ import algorithms.util.ObjectSpaceEstimator;
 <span class="fc" id="L8">	KDTreeNode left = null;</span>
 <span class="fc" id="L9">	KDTreeNode parent = null;</span>
 	
-<span class="fc" id="L11">	int x = -1;</span>
-<span class="fc" id="L12">	int y = -1;</span>
-<span class="fc" id="L13">	int key = -1; // median value</span>
-<span class="fc" id="L14">	int nChildren = 0;</span>
+    public static final int sentinel = Integer.MIN_VALUE;
+<span class="fc" id="L12">	int x = sentinel;</span>
+<span class="fc" id="L13">	int y = sentinel;</span>
+<span class="fc" id="L14">	int key = sentinel; // median value</span>
+<span class="fc" id="L15">	int nChildren = 0;</span>
 
+    public boolean xyAreSet() {
+<span class="pc bpc" id="L18" title="1 of 4 branches missed.">        return (x != sentinel &amp;&amp; y != sentinel);</span>
+    }
+    
     /**
      * @return the x
      */
     public int getX() {
-<span class="fc" id="L20">        return x;</span>
+<span class="fc" id="L25">        return x;</span>
     }
     
     /**
      * @param theX
      */
     public void setX(int theX) {
-<span class="nc" id="L27">        x = theX;</span>
-<span class="nc" id="L28">    }</span>
+<span class="nc" id="L32">        x = theX;</span>
+<span class="nc" id="L33">    }</span>
 
     /**
      * @return the y
      */
     public int getY() {
-<span class="fc" id="L34">        return y;</span>
+<span class="fc" id="L39">        return y;</span>
     }
     
     /**
      * @param theY
      */
     public void setY(int theY) {
-<span class="nc" id="L41">        y = theY;</span>
-<span class="nc" id="L42">    }</span>
+<span class="nc" id="L46">        y = theY;</span>
+<span class="nc" id="L47">    }</span>
 
     /**
      * @return the key
      */
     public int getKey() {
-<span class="fc" id="L48">        return key;</span>
+<span class="fc" id="L53">        return key;</span>
     }
     
     public static long estimateSizeOnHeap() {
                 
-<span class="fc" id="L53">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L54">        est.setNIntFields(4);</span>
-<span class="fc" id="L55">        est.setNObjRefsFields(3);</span>
+<span class="fc" id="L58">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L59">        est.setNIntFields(4);</span>
+<span class="fc" id="L60">        est.setNObjRefsFields(3);</span>
         
-<span class="fc" id="L57">        return est.estimateSizeOnHeap();</span>
+<span class="fc" id="L62">        return est.estimateSizeOnHeap();</span>
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
