@@ -115,6 +115,9 @@ public class MinMaxPeakFinder {
         if (minMaxIdxs.length == 0) {
             return new int[0];
         } else if (minMaxIdxs.length == 1) {
+            if (minMaxIdxs[0] < 0) {
+                return new int[0];
+            }
             return minMaxIdxs;
         } 
         
