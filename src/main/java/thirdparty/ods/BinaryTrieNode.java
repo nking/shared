@@ -53,7 +53,6 @@ public class BinaryTrieNode<T> {
         return sb.toString();
     }
 
-     
     public static long estimateSizeOnHeap() {
         
         ObjectSpaceEstimator est = new ObjectSpaceEstimator();

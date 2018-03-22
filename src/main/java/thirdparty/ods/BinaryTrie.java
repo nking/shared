@@ -18,6 +18,7 @@ Edits were made to the code in project
 and then moved to this project
 
 */
+import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayDeque;
@@ -476,5 +477,32 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
             q0.addAll(q1);
             q1.clear();
         }        
+    }
+    
+    public static long estimateSizeOnHeap(int numberOfNodes) {
+        
+	// int prev = 0;
+	// int next = 1;
+	// int left = 0;
+	// int right = 1;
+	// int w = 30;
+        // int maxC;
+        // int n;
+	// S r;
+	// S dummy;
+	// Integerizer<T> it;
+        // S sampleNode;
+	// S newNode
+        
+        ObjectSpaceEstimator est = new ObjectSpaceEstimator();
+        est.setNIntFields(7);
+        est.setNObjRefsFields(5);
+        
+        long heapSize = est.estimateSizeOnHeap();
+        long nodeSize = BinaryTrieNode.estimateSizeOnHeap();
+        
+        long total = (heapSize + (numberOfNodes * nodeSize));
+    
+        return total;
     }
 }

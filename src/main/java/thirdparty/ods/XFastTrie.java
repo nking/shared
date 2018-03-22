@@ -1,5 +1,6 @@
 package thirdparty.ods;
 
+import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
@@ -452,4 +453,18 @@ public class XFastTrie<S extends XFastTrieNode<T>, T>
         }
     }
     
+    public static long estimateSizeOnHeap(int numberOfNodes) {
+        
+        long node = BinaryTrieNode.estimateSizeOnHeap();
+        node += ObjectSpaceEstimator.estimateIntSize();
+        node += ObjectSpaceEstimator.getArrayReferenceSize();
+        node += ObjectSpaceEstimator.getObjectOverhead();
+        
+        long heapSize = BinaryTrie.estimateSizeOnHeap(numberOfNodes);
+        heapSize += ObjectSpaceEstimator.getObjectOverhead();
+        
+        long total = heapSize + (numberOfNodes * node);
+        
+        return total;
+    }
 }

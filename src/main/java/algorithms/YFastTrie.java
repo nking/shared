@@ -5,17 +5,11 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import thirdparty.edu.princeton.cs.algs4.RedBlackBSTLongInt2;
 import thirdparty.ods.Integerizer;
 import thirdparty.ods.XFastTrie;
-import thirdparty.ods.XFastTrieLong;
 import thirdparty.ods.XFastTrieNode;
-import thirdparty.ods.XFastTrieNodeLong;
 
 /** 
  * 
@@ -710,16 +704,16 @@ YFastTrie
         
         // using factor of 5 for total w/ prefix nodes
         long total2_1 = numberOfEntries * 5 *
-            XFastTrieNodeLong.estimateSizeOnHeap();
+            XFastTrieNode.estimateSizeOnHeap();
         
         // all nBins are filled w/ a repr
-        total2_1 += XFastTrieLong.estimateSizeOnHeap(nBins, maxNumberOfBits);
+        total2_1 += XFastTrie.estimateSizeOnHeap(numberOfEntries);
         
         long total2_2 = numberOfEntries * 3 *
-            XFastTrieNodeLong.estimateSizeOnHeap();
+            XFastTrieNode.estimateSizeOnHeap();
         
         // nBinsSparse of nBins are filled w/ a repr
-        total2_2 += XFastTrieLong.estimateSizeOnHeap(nBinsSparse, maxNumberOfBits);
+        total2_2 += XFastTrie.estimateSizeOnHeap(numberOfEntries);
         
         
         //TLongLongMap
