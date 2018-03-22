@@ -68,8 +68,9 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
      * find the groups of connected points in pixIdxs where connected means is
      * adjacent to another point in the group and having this pixelValue. The
      * adjacency by default is using the 4 neighbor pattern search unless the
-     * user has set that to 8 neighbors. The runtime complexity is essentially
-     * O(pixIdxs.size()).
+     * user has set that to 8 neighbors. 
+     * 
+     * The runtime complexity is essentially O(pixIdxs.size()).
      *
      * @param data
      */

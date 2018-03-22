@@ -12,8 +12,7 @@ public class MedianTransform1D {
     
     /**
      * pyramidal median transform (faster than multiscalePyramidalMedianTransform
-     * but reconstruction from coefficients is not exact, so prefer
-     * multiscalePyramidalMedianTransform(...) if exact is needed);
+     * but reconstruction from coefficients is not exact;
      * following pseudocode in http://www.multiresolution.com/svbook.pdf
      * "Handbook of Astronomical Data Analysis" by
      * Jean-Luc Starck and Fionn Murtagh, pg 121.

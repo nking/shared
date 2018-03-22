@@ -70,6 +70,9 @@ public class CountingSort {
             c[i] = c[i] + c[i - 1];
         }
         
+        //System.out.println("a=" + Arrays.toString(a));
+        //System.out.println("c=" + Arrays.toString(c));
+        
         int[] b = new int[a.length];
                 
         // use the order imposed by c to write the values of a into b.  c holds
@@ -81,8 +84,11 @@ public class CountingSort {
             c[aIdx]--;
             int cfa = (int)c[aIdx];
             b[cfa] = aIdx;
+        
+            //System.out.println("  " + i + ")" + " c=" + Arrays.toString(c));
+            //System.out.println("  " + i + ")" + " b=" + Arrays.toString(b));
         }
-
+        
         return b;
     }
     

@@ -11,17 +11,17 @@ import java.util.List;
 public class ATrousWaveletTransform1D {
    
     /**
-     * The a trous algorithm is a fast implementation of a wavelet transform 
-     * with no downsampling.   It is non-orthogonal, semi-linear runtime
-     * complexity, is invariant under translation, and the transform is 
-     * isotropic.
-     * Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
+      The a trous algorithm is a fast implementation of a wavelet transform 
+       with no downsampling.   It is non-orthogonal, semi-linear runtime
+       complexity, is invariant under translation, and the transform is 
+       isotropic.
+       Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
        The scaling function used is the lower resolution choice, the triangle
-       * function.
-       * <pre>
-       * The method uses recursive convolution operations, including previous
-       * result to make next.
-       * </pre>
+       function.
+       <pre>
+       The method uses recursive convolution operations, including previous
+       result to make next.
+       </pre>
      * @param input
      * @param outputTransformed
      * @param outputCoeff 

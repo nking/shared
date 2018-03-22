@@ -70,7 +70,7 @@ public class DisjointSet2Helper {
             for (DisjointSet2Node<T> node : update) {
                 node.setParent(parent);
             }
-  
+ 
         }
         
         return x.getParent();

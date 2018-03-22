@@ -18,21 +18,6 @@ package thirdparty.edu.princeton.cs.algs4;
  *  Note: commented out assertions because DrJava now enables assertions
  *        by default.
  *
- *  % more tinyST.txt
- *  S E A R C H E X A M P L E
- *  
- *  % java RedBlackBST left-pipe tinyST.txt
- *  A 8
- *  C 4
- *  E 12
- *  H 5
- *  L 11
- *  M 9
- *  P 10
- *  R 3
- *  S 0
- *  X 7
- *
  ******************************************************************************/
 
 import java.io.IOException;
@@ -852,9 +837,9 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     /**
-     * visit each node using pattern left subtree, root, right subtree
-     * in an iterative manner rather than invoking the method recursively.
-     */
+    visit each node using pattern left subtree, root, right subtree
+    in an iterative manner rather than invoking the method recursively.
+    */
     protected List<RBNode> getInOrderTraversalIterative(RBNode node) {
        
         if (isEmpty()) {
@@ -913,7 +898,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         Stack<RBNode> stack = new Stack<>();
         
         while (count < sz && (!stack.isEmpty() || node != null)) {
-            if (node != null && count < sz) {
+            if (node != null) {
               
                 array.add(node);
                 
@@ -925,7 +910,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
                 
                 node = node.left;
             
-            } else if (count < sz) {
+            } else {
                 
                 node = stack.pop();
                 

@@ -10,6 +10,17 @@ import java.util.List;
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
+ * 
+ * from https://en.wikipedia.org/wiki/Quadtree
+ * A quadtree is a tree data structure in which each internal node has exactly 
+ * four children. Quadtrees are the two-dimensional analog of octrees and 
+ * are most often used to partition a two-dimensional space by recursively 
+ * subdividing it into four quadrants or regions. The data associated with a 
+ * leaf cell varies by application, but the leaf cell represents a "unit of 
+ * interesting spatial information".
+ * 
+ *     public void insert(T x, T y, Value value)
+ *     public List<Value> query2D(Interval2D<T> rect)
  */
 public class QuadTree<T extends Comparable<T>, Value>  {
     

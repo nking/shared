@@ -334,10 +334,11 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
     }
     
     /**
-	 * Find the key of the node that contains the successor of x.
-	 * runtime complexity is O(w)
+     * Find the key of the node that contains the successor of x.
+     * runtime complexity is O(w)
      * where w is the number of
      * bits set in the constructor, else is 32.
+     * 
      * @param x
 	 * @return The key of the node before the node that contains x w.r.t. 
      * nodes in the internal the linked list.

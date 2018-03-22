@@ -9,37 +9,9 @@ adapted from http://algs4.cs.princeton.edu/92search/
  *  Execution:    java RangeSearch left-pipe words.txt
  *  
  *  Range search implemented using a randomized BST.
- *  
- *  % java RangeSearch left-pipe words.txt
- *  height:          33
- *  size:            20068
- *  min key:         a
- *  max key:         zygote
- *  integrity check: true
+ 
+ 
  *
- * [kevin, kfg]
- *  key
- *  keyboard
- *  keyed
- *  keyhole
- *  keynote
- *  keypunch
- *  keys
- *  keystone
- *  keyword
- *
- *  [paste, pasty]
- *  paste
- *  pasteboard
- *  pastel
- *  pasteup
- *  pastiche
- *  pastime
- *  pastor
- *  pastoral
- *  pastry
- *  pasture
- *  pasty
  
  ******************************************************************************/
 
@@ -78,13 +50,25 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     public boolean contains(Key key) {
         return (get(key) != null);
     }
-
-    // return value associated with the given key
-    // if no such value, return null
+    
+    /**
+     * runtime complexity at worst is O(lg2(N)).
+     * 
+     * @param key
+     * @return value associated with the given key
+               if no such value, return null
+    */
     public Value get(Key key) {
         return get(root, key);
     }
 
+    /**
+     * runtime complexity at worst is O(lg2(N)).
+     * 
+     * @param x
+     * @param key
+     * @return 
+     */
     private Value get(RangeSearchNode<Key, Value> x, Key key) {
         if (x == null) return null;
         int cmp = key.compareTo(x.key);
@@ -103,6 +87,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * before the overwrite by val.  If null is returned
      * from this method, then the insert succeeded,
      * that is, there were no collisions.
+     * 
+     * runtime complexity at worst is O(lg2(N)).
      * 
      * @param key
      * @param val
@@ -127,8 +113,11 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     
     /**
      * put key in map, and if compareVal is greater than or equal to the
-     * replaced value, re-insert the replaced value and return false, rlse
+     * replaced value, re-insert the replaced value and return false, else
      * the insert succeeded and returns true.
+     * 
+     * runtime complexity at worst is O(lg2(N)).
+     * 
      * @param <Value2>
      * @param key
      * @param val
@@ -148,7 +137,20 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         //System.out.println("<==root=" + root);
     }
     
-    // make new node the root with uniform probability
+    /**
+     * make new node the root with uniform probability.
+     * 
+     * runtime complexity at worst is O(lg2(N)).
+     *
+     * @param <Value2>
+     * @param x
+     * @param key
+     * @param val
+     * @param compareVal
+     * @param replaced
+     * @param inserted
+     * @return 
+     */
     @SuppressWarnings({"unchecked"})
     private <Value2 extends Comparable<Value>> 
         RangeSearchNode<Key, Value> 
@@ -189,10 +191,22 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         return x;
     }
     
-    // make new node the root with uniform probability
+    /**
+     * make new node the root with uniform probability.
+     * 
+     * runtime complexity at worst is O(lg2(N)).
+     * 
+     * @param x
+     * @param key
+     * @param val
+     * @param replaced
+     * @return 
+     */
     private RangeSearchNode<Key, Value> put(RangeSearchNode<Key, Value> x, 
         Key key, Value val, Object[] replaced) {
+    
         if (x == null) return new RangeSearchNode<Key, Value>(key, val);
+        
         int cmp = key.compareTo(x.key);
         if (cmp == 0) {
             replaced[0] = x.val;
@@ -245,6 +259,15 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         return x;
     }
     
+    /**
+     * runtime complexity at most is O(lg2(N)).
+     * 
+     * @param x
+     * @param key
+     * @param val
+     * @param replaced
+     * @return 
+     */
     private RangeSearchNode<Key, Value> putRoot(
         RangeSearchNode<Key, Value> x, Key key, Value val,
         Object[] replaced) {
@@ -267,12 +290,16 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
 
    /***************************************************************************
     *  deletion
+    
+    * runtime complexity worse case is O(lg2(N)).
     ***************************************************************************/
     private RangeSearchNode<Key, Value> joinLR(RangeSearchNode<Key, Value> a, 
         RangeSearchNode<Key, Value> b) { 
+   
         if (a == null) return b;
         if (b == null) return a;
 
+        // O(1), but statement requires use of random algorithm.
         if (StdRandom.bernoulli((double) size(a) / (size(a) + size(b))))  {
             a.right = joinLR(a.right, b);
             fix(a);
@@ -284,6 +311,13 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         }
     }
 
+    /**
+     * runtime complexity at worst is O(lg2(N)).
+     * 
+     * @param x
+     * @param key
+     * @return 
+     */
     private RangeSearchNode<Key, Value> remove(RangeSearchNode<Key, Value> x, Key key) {
         if (x == null) return null; 
         int cmp = key.compareTo(x.key);
@@ -294,30 +328,59 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         return x;
     }
 
-    // remove and return value associated with given key; if no such key, return null
+    /**
+     * runtime complexity at worse is O(lg2(N)).
+     * 
+     * remove and return value associated with given key; if no such key, 
+     * return null
+     * 
+     * @param key
+     * @return 
+     */
     public Value remove(Key key) {
         Value val = get(key);
         root = remove(root, key);
         return val;
     }
 
-
-
-
    /***************************************************************************
     *  Range searching
     ***************************************************************************/
 
-    // return all keys in given interval
+    /**
+     * return all keys in given interval
+     * 
+     * runtime complexity is O(1) to O(lg2(N)).
+     *
+     * @param min
+     * @param max
+     * @return 
+     */
     public Iterable<Key> range(Key min, Key max) {
         return range(new Interval<Key>(min, max));
     }
+    /**
+     * return all keys in given interval
+     * 
+     * runtime complexity is O(1) to O(lg2(N)).
+     * 
+     * @param interval
+     * @return 
+     */
     public Iterable<Key> range(Interval<Key> interval) { 
         Queue<Key> list = new Queue<Key>();
         range(root, interval, list);
         return list;
     }
 
+    /**
+     * 
+     * runtime complexity is O(1) to O(lg2(N)).
+     * 
+     * @param x
+     * @param interval
+     * @param list 
+     */
     private void range(RangeSearchNode<Key, Value> x, Interval<Key> interval, 
         Queue<Key> list) {
         if (x == null) return;
@@ -326,13 +389,15 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         if (!less(interval.max(), x.key))  range(x.right, interval, list);
     }
 
-
-
-   /***************************************************************************
+    /***************************************************************************
     *  Utility functions
     ***************************************************************************/
-
-    // return the smallest key
+    /**
+     *
+     * runtime complexity is O(1)
+     * 
+     * @return the smallest key
+     */
     public Key min() {
         Key key = null;
         for (RangeSearchNode<Key, Value> x = root; x != null; x = x.left)
@@ -340,7 +405,12 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         return key;
     }
     
-    // return the largest key
+    /**
+     *
+     * runtime complexity is O(1)
+     * 
+     * @return the largest key
+     */
     public Key max() {
         Key key = null;
         for (RangeSearchNode<Key, Value> x = root; x != null; x = x.right)
@@ -348,19 +418,26 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
         return key;
     }
 
-
    /***************************************************************************
     *  useful binary tree functions
-    ***************************************************************************/
-
-    // return number of nodes in subtree rooted at x
+    ***************************************************************************/ 
+    /**
+     * runtime complexity is O(1)
+     * 
+     * @return number of nodes in subtree rooted at x
+     */
     public int size() { return size(root); }
     private int size(RangeSearchNode<Key, Value> x) { 
         if (x == null) return 0;
         else           return x.N;
     }
 
-    // height of tree (empty tree height = 0)
+    /**
+     * height of tree (empty tree height = 0)
+     * 
+     * runtime complexity is O(lg_2(N))
+     * @return 
+     */
     public int height() { return height(root); }
     private int height(RangeSearchNode<Key, Value> x) {
         if (x == null) return 0;
@@ -372,30 +449,59 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     *  helper BST functions
     ***************************************************************************/
 
-    // fix subtree count field
+    /**
+     * fix subtree count field.
+     * 
+     * runtime complexity O(1)
+     * @param x 
+     */
     private void fix(RangeSearchNode<Key, Value> x) {
         if (x == null) return;                 // check needed for remove
         x.N = 1 + size(x.left) + size(x.right);
     }
 
-    // right rotate
-    private RangeSearchNode<Key, Value> rotR(
-        RangeSearchNode<Key, Value> h) {
+    /**
+     * right rotate
+     * 
+     * runtime complexity O(1)
+     * @param h
+     * @return 
+     */
+    private RangeSearchNode<Key, Value> rotR(RangeSearchNode<Key, Value> h) {
         RangeSearchNode<Key, Value> x = h.left;
         h.left = x.right;
         x.right = h;
         fix(h);
         fix(x);
         return x;
+        /*      X                       H
+                0                      10
+             1     2               11     12
+        
+            
+                 11                     
+             1        10  
+                    2  `12
+        */
     }
 
-    // left rotate
+    /**
+     * left rotate
+     * 
+     * runtime complexity is O(1).
+     * 
+     * @param h
+     * @return 
+     */
     private RangeSearchNode<Key, Value> rotL(RangeSearchNode<Key, Value> h) {
+        
         RangeSearchNode<Key, Value> x = h.right;
         h.right = x.left;
         x.left = h;
+        
         fix(h);
         fix(x);
+        
         return x;
     }
 
@@ -419,6 +525,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     private boolean isBST() { return isBST(root, min(), max()); }
 
     // are all the values in the BST rooted at x between min and max, and recursively?
+    //  runtime complexity worse case is O(lg_2(N))
     private boolean isBST(RangeSearchNode<Key, Value> x, Key min, Key max) {
         if (x == null) return true;
         if (less(x.key, min) || less(max, x.key)) return false;

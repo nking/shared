@@ -19,9 +19,10 @@ import java.util.Comparator;
 /**
  *  The <tt>Interval1D</tt> class represents a one-dimensional interval.
  *  The interval is <em>closed</em>&mdash;it contains both endpoints.
- *  Intervals are immutable: their values cannot be changed after they are created.
- *  The class <code>Interval1D</code> includes methods for checking whether
- *  an interval contains a point and determining whether two intervals intersect.
+ *  Intervals are immutable: their values cannot be changed after they are 
+ *  created.  The class <code>Interval1D</code> includes methods for checking 
+ *  whether an interval contains a point and determining whether two intervals 
+ *  intersect.
  *  <p>
  *  For additional documentation, 
  *  see <a href="http://algs4.cs.princeton.edu/12oop">Section 1.2</a> of 
@@ -35,7 +36,7 @@ public class Interval1D {
     /**
      * Compares two intervals by min endpoint.
      */
-    public static final Comparator<Interval1D> MIN_ENDPOINT_ORDER  = new MinEndpointComparator();
+    public static final Comparator<Interval1D> MIN_ENDPOINT_ORDER = new MinEndpointComparator();
 
     /**
      * Compares two intervals by max endpoint.
@@ -68,8 +69,8 @@ public class Interval1D {
             throw new IllegalArgumentException("Endpoints cannot be NaN");
 
         // convert -0.0 to +0.0
-        if (min == 0.0) min = 0.0;
-        if (max == 0.0) max = 0.0;
+        if (min == -0.0) min = 0.0;
+        if (max == -0.0) max = 0.0;
 
         if (min <= max) {
             this.min = min;

@@ -85,8 +85,8 @@ import java.util.LinkedList;
  */
 public class VoronoiFortunesSweep {
     
-    private static int LE = 0;
-    private static int RE = 1;
+    private static final int LE = 0;
+    private static final int RE = 1;
 
     private HalfEdge ELleftend = null;
     private HalfEdge ELrightend = null;
@@ -123,9 +123,8 @@ public class VoronoiFortunesSweep {
         return allEdges;
     }
     
-    public boolean generateVoronoi(
-        float[] xValues, float[] yValues, float minX, float maxX, 
-        float minY, float maxY, float minDist) {
+    public boolean generateVoronoi(float[] xValues, float[] yValues, float minX, 
+        float maxX, float minY, float maxY, float minDist) {
         
         if (xValues.length != yValues.length) {
             throw new IllegalArgumentException(
@@ -534,9 +533,9 @@ public class VoronoiFortunesSweep {
         if (siteIdx < nSites) {
             s = sites[siteIdx];
             siteIdx += 1;
-            return (s);
+            return s;
         } else {
-            return (null);
+            return null;
         }
     }
 

@@ -38,7 +38,7 @@ import java.util.Arrays;
      and using The MIT License (MIT)
 
    then moved to this shared library project which has the same copyright
-<[re>
+<pre>
    mem is in MB: 
      width=5000, height=7000 n=  35000000 mem=      1869  w=25  rt=  25
      width=5000, height=7000 n=   3500000 mem=       186  w=25  rt=  22
