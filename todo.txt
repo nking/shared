@@ -1,3 +1,5 @@
+-- consider implementing a 3D voronoi
+
 -- for improving the current NearestNeighbor2DLong
    could consider locality based hashing along y axis.
 
@@ -10,3 +12,12 @@
 
 -- add unit tests where missing
 
+-- consider importing some of code stored elsewhere, like the linear programming simplex
+     method and tests in minCostFlow
+
+-- consider moving to this project, the notes and code related to feature hashing
+   in progress.
+   -- related is adding compression to the bit vectors in VeryLongBitString.
+      -- consider adding RoaringBitmap java implementation
+      -- consider adding simple fast lite compression in bitmap encoding and decoding notes
+   -- "Handling Massive N-Gram Datasets"
