@@ -25,9 +25,9 @@ public class StatsInSlidingWindow {
      * calculate a running maximum of a window of size xWindow, yWindow.
      * 
      * runtime complexity is
-     *     n_rows * ((xWindow * yWindow) + ((n_cols)*lg2(xWindow * yWindow)))
-     * so is roughly O(n_pixels * lg2(window area)) where n_pixels = n_rows * n_cols
-     *
+     * yWindow * O(xWindow * yWindow) + (n_pixels * lg2(xWindow * yWindow))
+     *     so for small windows and large N, is roughly O(n_pixels * lg2(window area))
+     * 
      * NOTE: should only be used by a single thread.
      * 
      * NOTE: the border points outside of the window retain their 

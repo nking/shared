@@ -33,6 +33,9 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 	protected static final int left = 0;
 	protected static final int right = 1;
 	
+        /**
+         * w is trie word size
+         */
 	protected int w = 30;
     protected final int maxC;
 	

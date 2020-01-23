@@ -11,7 +11,7 @@ import java.util.List;
 public class ATrousWaveletTransform1D {
    
     /**
-      The a trous algorithm is a fast implementation of a wavelet transform 
+      The a-trous algorithm is a fast implementation of a wavelet transform 
        with no downsampling.   It is non-orthogonal, semi-linear runtime
        complexity, is invariant under translation, and the transform is 
        isotropic.
@@ -166,7 +166,7 @@ public class ATrousWaveletTransform1D {
        Not sure, but I think that is what the authors implemented.
         
        Given to this method are the center pixel index for the A Trous window
-       and the offsets as dx and dy chosen from the universe U of 8 neigbhor
+       and the offsets as dx and dy chosen from the universe U of 8 neighbor
        offsets.
         
        For each pixel in the window, will determine its intensity difference 

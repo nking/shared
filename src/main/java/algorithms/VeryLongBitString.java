@@ -27,9 +27,9 @@ public final class VeryLongBitString {
     
     protected final long nBits;
     
-    protected static final long itemBitLength = 64L;
+    protected static final long ITEM_BIT_LENGTH = 64L;
     
-    protected static final long nMaxBits = Integer.MAX_VALUE * itemBitLength;
+    protected static final long N_MAX_BITS = Integer.MAX_VALUE * ITEM_BIT_LENGTH;
     
     protected final long capacityBits;
     
@@ -37,15 +37,15 @@ public final class VeryLongBitString {
    
     public VeryLongBitString(long nBits) {
         
-        if (nBits > nMaxBits) {
-            throw new IllegalArgumentException("cannot hold more than " + nMaxBits + " bits");
+        if (nBits > N_MAX_BITS) {
+            throw new IllegalArgumentException("cannot hold more than " + N_MAX_BITS + " bits");
         }
         
         int nElements = getRowNumber(nBits) + 1;
         
         bitstring = new long[nElements];
         
-        capacityBits = nElements * itemBitLength;
+        capacityBits = nElements * ITEM_BIT_LENGTH;
         
         this.nBits = nBits;
     }
@@ -53,13 +53,13 @@ public final class VeryLongBitString {
     protected VeryLongBitString(long[] bitstrings, long nBits, long 
         nSetBits) {
         
-        if (nBits > nMaxBits) {
-            throw new IllegalArgumentException("cannot hold more than " + nMaxBits + " bits");
+        if (nBits > N_MAX_BITS) {
+            throw new IllegalArgumentException("cannot hold more than " + N_MAX_BITS + " bits");
         }
         
         bitstring = Arrays.copyOf(bitstrings, bitstrings.length);
         
-        capacityBits = bitstring.length * itemBitLength;
+        capacityBits = bitstring.length * ITEM_BIT_LENGTH;
         
         this.nBits = nBits;
         
@@ -158,7 +158,7 @@ public final class VeryLongBitString {
          
     protected int getRowNumber(long n) {
         
-        int nthElement = (int)(n/itemBitLength);
+        int nthElement = (int)(n/ITEM_BIT_LENGTH);
         
         return nthElement;
     }
@@ -175,9 +175,9 @@ public final class VeryLongBitString {
      */
     int getBitIdx(long nthBit, int arrayIdx) {
         
-        int bitIdx = (int)(nthBit - (arrayIdx * itemBitLength));
+        int bitIdx = (int)(nthBit - (arrayIdx * ITEM_BIT_LENGTH));
         
-        if ((bitIdx < 0) || (bitIdx > (itemBitLength - 1))) {
+        if ((bitIdx < 0) || (bitIdx > (ITEM_BIT_LENGTH - 1))) {
             return -1;
         }
         
@@ -390,7 +390,7 @@ public final class VeryLongBitString {
 
     /**
      * return the number of bits different betweeen the bitstring
-     * otherBS and this and return that number.
+     * otherBS and this and return that count.
      * Note that otherBS must have the same number of bits.
      * @param otherBS
      * @return 
@@ -558,7 +558,7 @@ public final class VeryLongBitString {
         int bitIdx = getBitIdx(nthBit, idx);
         
         // nthBit is last item on idx array, increment idx
-        if (nthBit == (((idx + 1) * itemBitLength) - 1)) {
+        if (nthBit == (((idx + 1) * ITEM_BIT_LENGTH) - 1)) {
             idx++;
         }
         
@@ -581,7 +581,7 @@ public final class VeryLongBitString {
                 
                 // bn is bit position within row i
                 
-                return (int)((i * itemBitLength) + bn);                  
+                return (int)((i * ITEM_BIT_LENGTH) + bn);                  
             }
         }
         
@@ -607,7 +607,7 @@ public final class VeryLongBitString {
                 
                 // bn is bit position within row i
                 
-                int bitIdx = (int)((i * itemBitLength) + bn);
+                int bitIdx = (int)((i * ITEM_BIT_LENGTH) + bn);
                 
                 return bitIdx;
             }
@@ -633,7 +633,7 @@ public final class VeryLongBitString {
                 
                 // bn is bit position within row i
                 
-                int bitIdx = (int)((i * itemBitLength) + bn);
+                int bitIdx = (int)((i * ITEM_BIT_LENGTH) + bn);
                 
                 return bitIdx;
             }

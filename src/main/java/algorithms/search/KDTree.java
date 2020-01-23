@@ -121,7 +121,7 @@ public class KDTree {
 	}
 	
 	/**
-	 * remove unique values by moving up items underneath them.  returns
+	 * remove non-unique values by moving up items underneath them.  returns
 	 * the last index which should be used in the modified arrays given as arguments.
 	 * @param x
 	 * @param y

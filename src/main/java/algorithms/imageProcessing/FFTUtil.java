@@ -13,6 +13,9 @@ import thirdparty.ca.uol.aig.fftpack.ComplexDoubleFFT;
      and using The MIT License (MIT)
    then moved here to share with other projects.
 
+   NOTE: consider adding Sparse FFT:
+     http://groups.csail.mit.edu/netmit/sFFT/
+
  * @author nichole
  */
 public class FFTUtil {

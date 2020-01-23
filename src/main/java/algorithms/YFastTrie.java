@@ -19,8 +19,8 @@ import thirdparty.ods.XFastTrieNode;
  * a y-fast trie is a data structure for storing 
  * integers from a bounded domain. It supports exact and predecessor 
  * or successor queries in time O(log log M), using O(n) space, 
- * where n is the number of stored values and M is the maximum 
- * value in the domain. 
+ * where n is the number of stored values and M is the number of bits
+ * of the maximum value in the domain. 
  * The structure was proposed by Dan Willard in 1982[1] to decrease 
  * the O(n log M) space used by an x-fast trie.
    
@@ -62,7 +62,7 @@ public class YFastTrie {
     /*    
     designing from browsing a few different lecture notes
     online. the yfast trie uses same w and maxC as
-    the XFastTrie where maxC is the maximumvalue that the
+    the XFastTrie where maxC is the maximum value that the
     trie will hold and w is the number of bits needed to
     represent maxC.
       - creates w red black trees to hold inserted heap nodes.
@@ -84,7 +84,7 @@ YFastTrie
        will be linked lists.
     */
     
-    private int n = 0;
+    protected int n = 0;
     
     private final int w;
     
