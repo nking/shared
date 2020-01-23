@@ -107,6 +107,31 @@ public class DisjointSet2Helper {
     }
     
     /**
+      assigns to x and y the same parent from both of their parents, choosing
+      the y as the parent.
+          
+       Runtime complexity is O(1).
+       
+     * @param x
+     * @param y
+     * @return the root found to be the one with equal number of nodes or more nodes
+     */
+    private <T> DisjointSet2Node<T> linkChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
+        
+        if (x.equals(y)) {
+            return x;
+        }
+        
+        DisjointSet2Node<T> parent = y;
+        x.setParent(parent);
+        if (x.getRank() == y.getRank()) {
+            parent.setRank(parent.getRank() + 1);
+        }
+        
+        return parent;
+    }
+    
+    /**
      * append the shorter list onto the end of the longer list.
      * The amortized runtime complexity is O(1) due to the path compression
      * in findSet.
@@ -124,6 +149,28 @@ public class DisjointSet2Helper {
         y = findSet(y);
         
         DisjointSet2Node<T> parent = link(x, y);
+
+        return parent;
+    }
+    
+    /**
+     * Compress the paths in x and y and set the parent to be y.
+\     * The amortized runtime complexity is O(1) due to the path compression
+     * in findSet.
+     * The method is also known as "union-find" because it uses findSet 
+     * as the first steps before link.
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public <T> DisjointSet2Node<T> unionChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
+        
+        x = findSet(x);
+        
+        y = findSet(y);
+        
+        DisjointSet2Node<T> parent = linkChooseY(x, y);
 
         return parent;
     }

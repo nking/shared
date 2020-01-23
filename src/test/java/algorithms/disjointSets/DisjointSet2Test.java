@@ -5,6 +5,11 @@ import junit.framework.TestCase;
 public class DisjointSet2Test extends TestCase {
 
     public void test0() throws Exception {
+        a1(false);
+        a1(true);
+    }
+    
+    private void a1(boolean useUnionChooseY) {
         
         DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();
         
@@ -31,12 +36,21 @@ public class DisjointSet2Test extends TestCase {
         assertTrue(x2Tree.getParent().equals(x2));
         assertTrue(x2Tree.getRank() == 0);
         
-        xTree = disjointSetHelper.union(xTree, x2Tree);
-        // when the ranks are equal, the 1st becomes parent
-        assertTrue(x.getParent().equals(x));
-        assertTrue(x2.getParent().equals(x));
-        assertTrue(xTree.getParent().equals(x));
-        assertTrue(xTree.getRank() == 1);
+        if (useUnionChooseY) {
+            xTree = disjointSetHelper.unionChooseY(x2Tree, xTree);
+            // when the ranks are equal, the 1st becomes parent,normally, but fixing the parent instead
+            assertTrue(x.getParent().equals(x));
+            assertTrue(x2.getParent().equals(x));
+            assertTrue(xTree.getParent().equals(x));
+            assertTrue(xTree.getRank() == 1);
+        } else {
+            xTree = disjointSetHelper.union(xTree, x2Tree);
+            // when the ranks are equal, the 1st becomes parent
+            assertTrue(x.getParent().equals(x));
+            assertTrue(x2.getParent().equals(x));
+            assertTrue(xTree.getParent().equals(x));
+            assertTrue(xTree.getRank() == 1);
+        }
 
         
         DisjointSet2Node<String> x3 = new DisjointSet2Node<String>();
@@ -51,29 +65,49 @@ public class DisjointSet2Test extends TestCase {
         
         assertFalse(xTree.getParent().equals(x3Tree.getParent()));
         
-        xTree = disjointSetHelper.union(xTree, x3Tree);
-        assertTrue(x.getParent().equals(x));
-        assertTrue(x2.getParent().equals(x));
-        assertTrue(x3.getParent().equals(x));
-        assertTrue(xTree.getParent().equals(x));
-        // the rank doesn't increase unless they have equal ranks
-        assertTrue(xTree.getRank() == 1);
-        assertTrue(disjointSetHelper.findSet(x3).equals(x));
-        
+        if (useUnionChooseY) {
+            // when the ranks are equal, the 1st becomes parent,normally, but fixing the parent instead
+            xTree = disjointSetHelper.unionChooseY(x3Tree, xTree);
+            assertTrue(x.getParent().equals(x));
+            assertTrue(x2.getParent().equals(x));
+            assertTrue(x3.getParent().equals(x));
+            assertTrue(xTree.getParent().equals(x));
+            // the rank doesn't increase unless they have equal ranks
+            assertTrue(xTree.getRank() == 1);
+            assertTrue(disjointSetHelper.findSet(x3).equals(x));
+        } else {
+            xTree = disjointSetHelper.union(xTree, x3Tree);
+            assertTrue(x.getParent().equals(x));
+            assertTrue(x2.getParent().equals(x));
+            assertTrue(x3.getParent().equals(x));
+            assertTrue(xTree.getParent().equals(x));
+            // the rank doesn't increase unless they have equal ranks
+            assertTrue(xTree.getRank() == 1);
+            assertTrue(disjointSetHelper.findSet(x3).equals(x));
+        }
         
         DisjointSet2Node<String> x4 = new DisjointSet2Node<String>();
         x4.setMember(new String("e"));
         
         DisjointSet2Node<String> x4Tree = disjointSetHelper.makeSet(x4);
         
-         xTree = disjointSetHelper.union(xTree, x4Tree);
-        assertTrue(x.getParent().equals(x));
-        assertTrue(x2.getParent().equals(x));
-        assertTrue(x3.getParent().equals(x));
-        assertTrue(x4.getParent().equals(x));
-        assertTrue(xTree.getParent().equals(x));
-        assertTrue(xTree.getRank() == 1);
-    
+        if (useUnionChooseY) {
+            xTree = disjointSetHelper.unionChooseY(x4Tree, xTree);
+            assertTrue(x.getParent().equals(x));
+            assertTrue(x2.getParent().equals(x));
+            assertTrue(x3.getParent().equals(x));
+            assertTrue(x4.getParent().equals(x));
+            assertTrue(xTree.getParent().equals(x));
+            assertTrue(xTree.getRank() == 1);
+        } else {
+            xTree = disjointSetHelper.union(xTree, x4Tree);
+            assertTrue(x.getParent().equals(x));
+            assertTrue(x2.getParent().equals(x));
+            assertTrue(x3.getParent().equals(x));
+            assertTrue(x4.getParent().equals(x));
+            assertTrue(xTree.getParent().equals(x));
+            assertTrue(xTree.getRank() == 1);
+        }
         assertEquals("h", x2.getMember());
         assertEquals("h data", x2.getObject());
         
@@ -84,5 +118,4 @@ public class DisjointSet2Test extends TestCase {
         assertNotNull(traversal);
         
     }
-    
 }
