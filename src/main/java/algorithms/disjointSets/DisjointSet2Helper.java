@@ -119,7 +119,7 @@ public class DisjointSet2Helper {
     private <T> DisjointSet2Node<T> linkChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
         if (x.equals(y)) {
-            return x;
+            return y;
         }
         
         DisjointSet2Node<T> parent = y;
