@@ -1,0 +1,211 @@
+package algorithms.matrix;
+
+import algorithms.matrix.LinearEquations.LU;
+import algorithms.matrix.LinearEquations.LUP;
+import java.util.Arrays;
+import junit.framework.TestCase;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrices;
+import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.NotConvergedException;
+
+public class LinearEquationsTest extends TestCase { 
+    public LinearEquationsTest(String testName) {
+        super(testName);
+    }
+
+    public void testLUPSolveX() {
+
+         /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+         double[][] a = new double[3][3];
+         a[0] = new double[]{1, 2, 0};
+         a[1] = new double[]{3, 4, 4};
+         a[2] = new double[]{5, 6, 3};
+
+         double[] b = new double[]{3, 7, 8};
+
+         double[][] ell = new double[3][3];
+         ell[0] = new double[]{1, 0, 0};
+         ell[1] = new double[]{0.2, 1, 0};
+         ell[2] = new double[]{0.6, 0.5, 1};
+
+         double[][] u = new double[3][3];
+         u[0] = new double[]{5,  6,  3};
+         u[1] = new double[]{0, 0.8, -0.6};
+         u[2] = new double[]{0,  0, 2.5};
+
+         int[] p = new int[]{2, 0, 1};
+
+         double eps = 0.01;
+         
+         // verify that P*A = L*U
+         double[][] permutation = new double[3][3];
+         permutation[0] = new double[3];
+         permutation[1] = new double[3];
+         permutation[2] = new double[3];
+         permutation[0][p[0]] = 1;
+         permutation[1][p[1]] = 1;
+         permutation[2][p[2]] = 1;
+         double[][] pa = Misc.multiply(permutation, a);
+         double[][] lu = Misc.multiply(ell, u);
+         for (int i = 0; i < pa.length; ++i) {
+             for (int j = 0; j < pa[i].length; ++j) {
+                 double t1 = pa[i][j];
+                 double t2 = lu[i][j];
+                 double diff = Math.abs(t1 - t2);
+                 assertTrue(diff < eps);
+             }
+         }
+         
+         double[] y = new double[]{8, 1.4, 1.5};
+
+         // assert L*y = permutation * b
+         double[] ly = Misc.multiply(ell, y);
+         double[] pb = Misc.multiply(permutation, b);
+         for (int i = 0; i < pb.length; ++i) {
+             double t1 = ly[i];
+             double t2 = pb[i];
+             double diff = Math.abs(t1 - t2);
+             assertTrue(diff < eps);
+         }
+         
+         double[] expectedX = new double[]{-1.4, 2.2, 0.6};
+         
+         // assert U*x = y
+         double[] ux = Misc.multiply(u, expectedX);
+         for (int i = 0; i < ux.length; ++i) {
+             double t1 = ux[i];
+             double t2 = y[i];
+             double diff = Math.abs(t1 - t2);
+             assertTrue(diff < eps);
+         }
+         
+         double[] resultX = LinearEquations.LUPSolve(ell, u, p, b);
+         
+         for (int i = 0; i < resultX.length; ++i) {
+             double t1 = resultX[i];
+             double t2 = expectedX[i];
+             double diff = Math.abs(t1 - t2);
+             assertTrue(diff < eps);
+         }
+    }
+    
+    public void testLUDecompositionOfA() {
+
+         /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+         
+         double[][] a = new double[4][];
+         a[0] = new double[]{2, 3, 1, 5};
+         a[1] = new double[]{6, 13, 5, 19};
+         a[2] = new double[]{2, 19, 10, 23};
+         a[3] = new double[]{4, 10, 11, 31};
+         
+         double[][] ell = new double[4][];
+         ell[0] = new double[]{1, 0, 0, 0,};
+         ell[1] = new double[]{3, 1, 0, 0};
+         ell[2] = new double[]{1, 4, 1, 0};
+         ell[3] = new double[]{2, 1, 7, 1};
+         
+         double[][] u = new double[4][];
+         u[0] = new double[]{2, 3, 1, 5};
+         u[1] = new double[]{0, 4, 2, 4};
+         u[2] = new double[]{0, 0, 1, 2};
+         u[3] = new double[]{0, 0, 0, 3};
+         
+         LU lu = LinearEquations.LUDecomposition(a);
+         
+         assertNotNull(lu);
+         assertEquals(lu.ell.length, a.length);
+         assertEquals(lu.ell[0].length, a[0].length);
+         assertEquals(lu.u.length, a.length);
+         assertEquals(lu.u[0].length, a[0].length);
+         
+         for (int i = 0; i < a.length; ++i) {
+             assertTrue(Arrays.equals(lu.ell[i], ell[i]));
+             assertTrue(Arrays.equals(lu.u[i], u[i]));
+         }
+    }
+    
+    public void testLUPDecompositionOfA() {
+
+         /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+         
+         double[][] a = new double[4][];
+         a[0] = new double[]{2, 0, 2, 0.6};
+         a[1] = new double[]{3, 3, 4, -2};
+         a[2] = new double[]{5, 5, 4, 2};
+         a[3] = new double[]{-1, -2, 3.4, -1};
+         
+         double[][] ell = new double[4][];
+         ell[0] = new double[]{1, 0, 0, 0,};
+         ell[1] = new double[]{0.4, 1, 0, 0};
+         ell[2] = new double[]{-0.2, 0.5, 1, 0};
+         ell[3] = new double[]{0.6, 0, 0.4, 1};
+         
+         double[][] u = new double[4][];
+         u[0] = new double[]{5, 5, 4, 2};
+         u[1] = new double[]{0, -2, 0.4, -0.2};
+         u[2] = new double[]{0, 0, 4, -0.5};
+         u[3] = new double[]{0, 0, 0, -3};
+         
+         int[] p = new int[]{2, 0, 3, 1};
+         
+         LUP lup = LinearEquations.LUPDecomposition(a);
+         
+         assertNotNull(lup);
+         assertEquals(lup.ell.length, a.length);
+         assertEquals(lup.ell[0].length, a[0].length);
+         assertEquals(lup.u.length, a.length);
+         assertEquals(lup.u[0].length, a[0].length);
+         
+         double eps = 1e-7;
+         double t1, t2;
+         for (int i = 0; i < a.length; ++i) {
+             for (int j = 0; j < a[i].length; ++j) {
+                 t1 = lup.ell[i][j];
+                 t2 = ell[i][j];
+                 assertTrue(Math.abs(t1 - t2) < eps);
+                 t1 = lup.u[i][j];
+                 t2 = u[i][j];
+                 assertTrue(Math.abs(t1 - t2) < eps);
+             }
+         }
+         assertTrue(Arrays.equals(lup.p, p));
+    }
+    
+    public void testLeastSquares() throws Exception {
+        
+        double[][] xy = new double[5][2];
+        xy[0][0] = -1; xy[0][1] = 2;
+        xy[1][0] =  1; xy[1][1] = 1;
+        xy[2][0] =  2; xy[2][1] = 1;
+        xy[3][0] =  3; xy[3][1] = 0;
+        xy[4][0] =  5; xy[4][1] = 3;
+        
+        int polyOrder = 2;
+        
+        double eps = 0.01;
+        
+        boolean solveForFullRank = true;
+        
+        //double[][] tMatrix = Misc.calculateNormalizationMatrix2X3(xy);
+        //xy = Misc.multiply(xy, tMatrix);
+        
+        double[] c = LinearEquations.leastSquares(xy, polyOrder, solveForFullRank);
+        
+        System.out.println(Arrays.toString(c));
+        // if used normalization, c[0] should be divided by the scale tMatrix[0][0]
+        
+        double[] expected = new double[]{1.2, -0.757, 0.214};
+        
+        assertEquals(expected.length, c.length);
+        
+        for (int i = 0; i < expected.length; ++i) {
+            double t1 = c[i];
+            double t2 = expected[i];
+            double diff = Math.abs(t1 - t2);
+            assertTrue(diff < eps);
+        }
+    }
+
+}

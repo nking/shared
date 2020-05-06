@@ -107,7 +107,7 @@ public class DisjointSet2Node<T> {
                 sb.append(parent.toString());
             }
         }
-        sb.append(";] ");
+        sb.append("] ");
         
         return sb.toString();
     }
