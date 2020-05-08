@@ -4,9 +4,6 @@ import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import java.util.Arrays;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrices;
-import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.NotConvergedException;
 
 public class LinearEquationsTest extends TestCase { 
@@ -345,71 +342,4 @@ public class LinearEquationsTest extends TestCase {
         System.out.flush();
     }
     
-    public void testL1AndPositiveXY() throws NotConvergedException {
-        
-        /*
-        for x,y being all non-negative numbers
-        and a goal of geometric median from L1, 
-            that is the abs value of differences and not the 
-            L2 euclidean distances,
-        should be able to use xMedian = pseudo-inverse of A * x, column 0; and
-        yMedian = pseudo-inverse of A * y, column 1;
-            where A is xy.
-        
-        not the fastest way to calculate each 1-D median!
-        */
-        
-        System.out.println("\ntestTemp");
-        // from Strang's Introduction to Linear Algebra
-        //    example 1, chap 4.3
-        
-        /*
-        double[][] xy = new double[3][2];
-        xy[0][0] = 0; xy[0][1] = 6;
-        xy[1][0] =  1; xy[1][1] = 0;
-        xy[2][0] =  2; xy[2][1] = 0;
-        // geometric median using L1 =(1,0) , using euclidean L2=(1,0)
-        */
-        /*
-        double[][] xy = new double[3][2];
-        xy[0][0] =  0; xy[0][1] = 0;
-        xy[1][0] =  0; xy[1][1] = 0;
-        xy[2][0] =  0; xy[1][1] = 12;
-        // geometric median using L1 = (0,0), using euclidean L2= (0,0)
-        */
-        
-        double[][] xy = new double[5][2];
-        xy[0][0] = -1; xy[0][1] = 2;
-        xy[1][0] =  1; xy[1][1] = 1;
-        xy[2][0] =  2; xy[2][1] = 1;
-        xy[3][0] =  3; xy[3][1] = 0;
-        xy[4][0] =  5; xy[4][1] = 3;
-        // geometric median using L1 = (1,2), using euclidean L2= (2,1)
-        
-        int nRows = xy.length;
-        
-        // B.T.W. can see that geometric median is (1, 0)
-           
-        // create matrix A
-        double[][] a = new double[nRows][];
-        double[] x = new double[nRows];
-        double[] y = new double[nRows];
-        for (int i = 0; i < nRows; ++i) {
-            a[i] = new double[2];
-            x[i] = xy[i][0];
-            y[i] = xy[i][1];
-            a[i][0] = x[i];
-            a[i][1] = y[i];
-        }
-        
-        // uses SVD:
-        double[][] aPInv = Misc.pseudoinverse(a);
-        
-        double[] cx = Misc.multiply(aPInv, x);
-        double[] cy = Misc.multiply(aPInv, y);
-        
-        System.out.println("** cx=" + Arrays.toString(cx) +
-                "\n    cy=" + Arrays.toString(cy));
-        System.out.flush();
-    }
 }
