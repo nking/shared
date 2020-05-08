@@ -175,6 +175,8 @@ public class LinearEquationsTest extends TestCase {
     
     public void testLeastSquares() throws Exception {
         
+        System.out.println("\ntestLeastSquares()");
+        
         double[][] xy = new double[5][2];
         xy[0][0] = -1; xy[0][1] = 2;
         xy[1][0] =  1; xy[1][1] = 1;
@@ -191,7 +193,7 @@ public class LinearEquationsTest extends TestCase {
         //double[][] tMatrix = Misc.calculateNormalizationMatrix2X3(xy);
         //xy = Misc.multiply(xy, tMatrix);
         
-        double[] c = LinearEquations.leastSquares(xy, polyOrder, solveForFullRank);
+        double[] c = LinearEquations.leastSquaresPolynomial(xy, polyOrder, solveForFullRank);
         
         System.out.println(Arrays.toString(c));
         // if used normalization, c[0] should be divided by the scale tMatrix[0][0]
@@ -206,6 +208,206 @@ public class LinearEquationsTest extends TestCase {
             double diff = Math.abs(t1 - t2);
             assertTrue(diff < eps);
         }
+        
+        printLeastSquaresVariations(xy, solveForFullRank);
     }
 
+    public void testLeastSquares3() throws Exception {
+        System.out.println("\ntestLeastSquares3()");
+         
+        //(0, 0), (0, 0), (0, 12)
+        double[][] xy = new double[3][2];
+        xy[0][0] =  0; xy[0][1] = 0;
+        xy[1][0] =  0; xy[1][1] = 0;
+        xy[2][0] =  0; xy[1][1] = 12;
+        
+        boolean solveForFullRank = false;
+        
+        printLeastSquaresVariations(xy, solveForFullRank);
+    }
+
+    public void testLeastSquares4() throws Exception {
+        System.out.println("\ntestLeastSquares4()");
+        
+        // from Strang's Introduction to Linear Algebra
+        //    example 1, chap 4.3
+        
+        double[][] xy = new double[3][2];
+        xy[0][0] = 0; xy[0][1] = 6;
+        xy[1][0] =  1; xy[1][1] = 0;
+        xy[2][0] =  2; xy[2][1] = 0;
+        
+        // B.T.W. can see that geometric median is (1, 0)
+        
+        int polyOrder = 1;
+        
+        double eps = 1e-17;
+        
+        // solves using pseudo-inverse = (inverse(A^T*A) * A^T)
+        boolean solveForFullRank = true;
+        
+        //double[][] tMatrix = Misc.calculateNormalizationMatrix2X3(xy);
+        //xy = Misc.multiply(xy, tMatrix);
+        
+        double[] c = LinearEquations.leastSquaresPolynomial(xy, polyOrder, solveForFullRank);
+        
+        // if used normalization, c[0] should be divided by the scale tMatrix[0][0]
+              
+        /*
+        c0 + c1*x0 - err0 = y0
+        c0 + c1*x1 - err1 = y1
+        c0 + c1*x2 - err2 = y2
+        A*X - Y = err
+        */
+       
+        double[] expected = new double[]{5, -3};
+        
+        assertEquals(expected.length, c.length);
+        
+        for (int i = 0; i < expected.length; ++i) {
+            double t1 = c[i];
+            double t2 = expected[i];
+            double diff = Math.abs(t1 - t2);
+            assertTrue(diff < eps);
+        }
+         
+        printLeastSquaresVariations(xy, solveForFullRank);
+    }
+    
+    private void printLeastSquaresVariations(double[][] xy, boolean solveForFullRank) throws NotConvergedException {
+        
+        System.out.printf("(x,y)=");
+        for (int i = 0; i < xy.length; ++i) {
+            System.out.printf(" (%.2f,%.2f)", xy[i][0], xy[i][1]);
+        }
+        System.out.printf("\n");
+        
+        int[] polyOrders = new int[]{0, 1, 2};
+        
+        for (int polyOrder : polyOrders) {
+        
+            double[] c = LinearEquations.leastSquaresPolynomial(xy, polyOrder, solveForFullRank);
+        
+            // if used standard unit normalization, c[0] should be divided by the scale tMatrix[0][0]
+            // create matrix A
+            double[][] a = new double[xy.length][];
+            double x;
+            for (int i = 0; i < xy.length; ++i) {
+                a[i] = new double[polyOrder + 1];
+                a[i][0] = 1;
+            }
+            double[] y = new double[xy.length];
+            for (int i = 0; i < xy.length; ++i) {
+                x = xy[i][0];
+                y[i] = xy[i][1];
+                for (int k = 0; k < polyOrder; ++k) {
+                    a[i][k + 1] = x * a[i][k];
+                }
+            }
+            double[] ac = Misc.multiply(a, c);
+            double[] err = Misc.subtract(ac, y);
+        
+            System.out.printf("polyOrder=%d  c=%s  \n    err=%s\n", polyOrder,
+                    Arrays.toString(c), Arrays.toString(err));
+        }
+        
+        double[][] yx = new double[xy.length][];
+        for (int i = 0; i < xy.length; ++i) {
+            yx[i] = new double[]{xy[i][1], xy[i][0]};
+        }
+
+        for (int polyOrder : polyOrders) {
+
+            double[] c = LinearEquations.leastSquaresPolynomial(yx, polyOrder, solveForFullRank);
+
+            double[][] a = new double[xy.length][];
+            for (int i = 0; i < xy.length; ++i) {
+                a[i] = new double[polyOrder + 1];
+                a[i][0] = 1;
+            }
+            double[] y_yx = new double[xy.length];
+            double x_yx;
+            for (int i = 0; i < xy.length; ++i) {
+                x_yx = xy[i][1];
+                y_yx[i] = xy[i][0];
+                for (int k = 0; k < polyOrder; ++k) {
+                    a[i][k + 1] = x_yx * a[i][k];
+                }
+            }
+            double[] ac = Misc.multiply(a, c);
+            double[] err = Misc.subtract(ac, y_yx);
+
+            System.out.printf("polyOrder=%d  c_yx=%s  \n    err=%s\n", polyOrder,
+                    Arrays.toString(c), Arrays.toString(err));
+
+        }
+        
+        System.out.flush();
+    }
+    
+    public void testL1AndPositiveXY() throws NotConvergedException {
+        
+        /*
+        for x,y being all non-negative numbers
+        and a goal of geometric median from L1, 
+            that is the abs value of differences and not the 
+            L2 euclidean distances,
+        should be able to use xMedian = pseudo-inverse of A * x, column 0; and
+        yMedian = pseudo-inverse of A * y, column 1;
+            where A is xy.
+        */
+        
+        System.out.println("\ntestTemp");
+        // from Strang's Introduction to Linear Algebra
+        //    example 1, chap 4.3
+        
+        /*
+        double[][] xy = new double[3][2];
+        xy[0][0] = 0; xy[0][1] = 6;
+        xy[1][0] =  1; xy[1][1] = 0;
+        xy[2][0] =  2; xy[2][1] = 0;
+        // geometric median using L1 =(1,0) , using euclidean L2=(1,0)
+        */
+        /*
+        double[][] xy = new double[3][2];
+        xy[0][0] =  0; xy[0][1] = 0;
+        xy[1][0] =  0; xy[1][1] = 0;
+        xy[2][0] =  0; xy[1][1] = 12;
+        // geometric median using L1 = (0,0), using euclidean L2= (0,0)
+        */
+        
+        double[][] xy = new double[5][2];
+        xy[0][0] = -1; xy[0][1] = 2;
+        xy[1][0] =  1; xy[1][1] = 1;
+        xy[2][0] =  2; xy[2][1] = 1;
+        xy[3][0] =  3; xy[3][1] = 0;
+        xy[4][0] =  5; xy[4][1] = 3;
+        // geometric median using L1 = (1,2), using euclidean L2= (2,1)
+        
+        int nRows = xy.length;
+        
+        // B.T.W. can see that geometric median is (1, 0)
+           
+        // create matrix A
+        double[][] a = new double[nRows][];
+        double[] x = new double[nRows];
+        double[] y = new double[nRows];
+        for (int i = 0; i < nRows; ++i) {
+            a[i] = new double[2];
+            x[i] = xy[i][0];
+            y[i] = xy[i][1];
+            a[i][0] = x[i];
+            a[i][1] = y[i];
+        }
+        
+        // uses SVD:
+        double[][] aPInv = Misc.pseudoinverse(a);
+        
+        double[] cx = Misc.multiply(aPInv, x);
+        double[] cy = Misc.multiply(aPInv, y);
+        
+        System.out.println("** cx=" + Arrays.toString(cx) +
+                "\n    cy=" + Arrays.toString(cy));
+        System.out.flush();
+    }
 }

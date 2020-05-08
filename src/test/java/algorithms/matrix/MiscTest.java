@@ -1,5 +1,6 @@
 package algorithms.matrix;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
@@ -221,5 +222,17 @@ public class MiscTest extends TestCase {
         assertTrue(m[1][0] == 2340);
         assertTrue(m[0][1] == 0);
         assertTrue(m[1][1] == 1000);
+    }
+    
+    public void testSubtract() throws Exception {
+
+        double[] a = new double[]{100, 100, 100, 100};
+        double[] b = new double[]{1, 2, 3, 4};
+
+        double[] expected = new double[]{99, 98, 97, 96};
+
+        double[] c = Misc.subtract(a, b);
+
+        assertTrue(Arrays.equals(expected, c));
     }
 }

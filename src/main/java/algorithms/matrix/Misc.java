@@ -231,6 +231,37 @@ public class Misc {
         }
     }
     
+    public static double[] subtract(double[] m, double[] n) {
+
+        int len = m.length;
+
+        double[] c = new double[len];
+
+        subtract(m, n, c);
+
+        return c;
+    }
+    
+    public static void subtract(double[] m, double[] n,
+        double[] output) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        if (m.length != n.length) {
+            throw new IllegalArgumentException("m and n must be same length");
+        }
+
+        int len = m.length;
+
+        for (int i = 0; i < len; i++) {
+            output[i] = m[i] - n[i];
+        }
+    }
+    
     public static float[][] transpose(float[][] m) {
 
         if (m == null || m.length == 0) {
@@ -434,7 +465,7 @@ public class Misc {
         int m = a.length;
         int n = a[0].length;
         
-        // limit for a number to be significant above 0
+        // limit for a number to be significant above 0 (precision of computer)
         double eps = 1e-16;
         
         //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T

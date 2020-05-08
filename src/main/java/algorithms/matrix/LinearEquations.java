@@ -215,11 +215,15 @@ public class LinearEquations {
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
+     * @param solveForFullRank set to 'False' to use the SVD for a pseudoinverse.
+     * set to 'True' when AX=b has no solution.  when 'True', the algorithm
+     * uses (inverse(A^T*A) * A^T) for the pseudo-inverse.
      * @return coefficients c where y_i = summation(c_i*x^i) + error
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
-    public static double[] leastSquares(double[][] xy, int polyOrder, boolean
+    public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder, boolean
         solveForFullRank) throws NotConvergedException {
-        return _leastSquares(xy, polyOrder, solveForFullRank);
+        return _leastSquaresPolynomial(xy, polyOrder, solveForFullRank);
     }
     
     /**
@@ -238,8 +242,8 @@ public class LinearEquations {
      * number of rows.
      * @return coefficients c where y_i = summation(c_i*x^i) + error
      */
-    public static double[] leastSquares(double[][] xy, int polyOrder) throws NotConvergedException {
-        return _leastSquares(xy, polyOrder, false);
+    public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder) throws NotConvergedException {
+        return _leastSquaresPolynomial(xy, polyOrder, false);
     }
     
     /**
@@ -256,9 +260,12 @@ public class LinearEquations {
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
+     * @param solveFullRank set to 'False' to use the SVD for a pseudoinverse.
+     * set to 'True' when AX=b has no solution.  when 'True', the algorithm
+     * uses (inverse(A^T*A) * A^T) for the pseudo-inverse.
      * @return coefficients c where y_i = summation(c_i*x^i) + error
      */
-    public static double[] _leastSquares(double[][] xy, int polyOrder,
+    public static double[] _leastSquaresPolynomial(double[][] xy, int polyOrder,
         boolean solveFullRank) throws NotConvergedException {
         
         if (polyOrder < 0) {
