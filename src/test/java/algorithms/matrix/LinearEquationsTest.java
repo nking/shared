@@ -355,6 +355,8 @@ public class LinearEquationsTest extends TestCase {
         should be able to use xMedian = pseudo-inverse of A * x, column 0; and
         yMedian = pseudo-inverse of A * y, column 1;
             where A is xy.
+        
+        not the fastest way to calculate each 1-D median!
         */
         
         System.out.println("\ntestTemp");
