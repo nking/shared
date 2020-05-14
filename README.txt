@@ -45,4 +45,4 @@ Dependencies
 ------------
 If you build the jar file to use as an API
 NOTE that it depends upon lib/trove4j-3.0.3.jar
-
+lib/netlib-java-all-1.1.2.jar and lib/mtj-1.0.4.jar

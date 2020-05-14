@@ -1,20 +1,26 @@
 package algorithms.matrix;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
+import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
     
 /**
  *
  * @author nichole
  */
-public class MiscTest extends TestCase {
+public class MatrixUtilTest extends TestCase {
     
     private Logger log = Logger.getLogger(this.getClass().getName());
     
-    public MiscTest() {
+    public MatrixUtilTest() {
     }
     
     public void testMultiply() throws Exception {
@@ -26,7 +32,7 @@ public class MiscTest extends TestCase {
 
         double[] b = new double[]{4, 3};
 
-        double[] m = Misc.multiply(a, b);
+        double[] m = MatrixUtil.multiply(a, b);
 
         assertTrue( m[0] ==  10 );
         assertTrue( m[1] ==  17 );
@@ -63,7 +69,7 @@ public class MiscTest extends TestCase {
         9  9 6
         */
         
-        double[][] d = Misc.multiply(a, c);
+        double[][] d = MatrixUtil.multiply(a, c);
 
         assertTrue(d[0][0] == 6);
         assertTrue(d[0][1] == 6);
@@ -117,14 +123,14 @@ public class MiscTest extends TestCase {
         expected[1] = new float[]{101, 201};
         expected[2] = new float[]{1, 1};
 
-        float[][] cc = Misc.transpose(bb);
+        float[][] cc = MatrixUtil.transpose(bb);
                 for (int i = 0; i < cc.length; i++) {
             for (int j = 0; j < cc[i].length; j++) {
                 assertTrue(expected[i][j] == cc[i][j]);
             }
         }
 
-        float[][] dd = Misc.transpose(cc);
+        float[][] dd = MatrixUtil.transpose(cc);
 
         for (int i = 0; i < dd.length; i++) {
             for (int j = 0; j < dd[i].length; j++) {
@@ -147,7 +153,7 @@ public class MiscTest extends TestCase {
         expected[0] = new double[]{0.2, 0.1};
         expected[1] = new double[]{0.2, 0.1};
         
-        double[][] inv = Misc.pseudoinverse(a);
+        double[][] inv = MatrixUtil.pseudoinverse(a);
         
         for (int i = 0; i < a[0].length; i++) {
             for (int j = 0; j < a.length; j++) {
@@ -177,11 +183,11 @@ public class MiscTest extends TestCase {
         expected[2] = new double[]{0.06, -0.036, -0.048, -0.036, 0.06};
         
         //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
-        double[][] inv = Misc.pseudoinverse2(a);
+        double[][] inv = MatrixUtil.pseudoinverse2(a);
         
         double[] y = new double[]{2, 1, 1, 0, 3};
         
-        double[] c = Misc.multiply(inv, y);
+        double[] c = MatrixUtil.multiply(inv, y);
         
         for (int i = 0; i < a[0].length; i++) {
             for (int j = 0; j < a.length; j++) {
@@ -197,7 +203,7 @@ public class MiscTest extends TestCase {
         a[2] = new double[]{1, 2, 4};
         a[3] = new double[]{1, 3, 9};
         a[4] = new double[]{1, 5, 25};
-        double[][] inv2 = Misc.pseudoinverse(a);
+        double[][] inv2 = MatrixUtil.pseudoinverse(a);
                 
     }
     
@@ -212,7 +218,7 @@ public class MiscTest extends TestCase {
         m2[1] = new double[]{3, 0};
         m2[2] = new double[]{4, 0};
                 
-        double[][] m = Misc.multiply(m1, m2);
+        double[][] m = MatrixUtil.multiply(m1, m2);
 
         assertTrue(m.length == 2);
         assertTrue(m[0].length == 2);
@@ -231,8 +237,78 @@ public class MiscTest extends TestCase {
 
         double[] expected = new double[]{99, 98, 97, 96};
 
-        double[] c = Misc.subtract(a, b);
+        double[] c = MatrixUtil.subtract(a, b);
 
         assertTrue(Arrays.equals(expected, c));
     }
+    
+    public void testDot() throws Exception {
+       
+        double[][] m1 = new double[2][3];
+        m1[0] = new double[]{0, 1, 0};
+        m1[1] = new double[]{1000, 100, 10};
+        
+        double[][] m2 = new double[3][2];
+        m2[0] = new double[]{2, 1};
+        m2[1] = new double[]{3, 0};
+        m2[2] = new double[]{4, 0};
+         
+        /*
+        0     1     0     2  1
+        1000  100  10     3  0
+                          4  0
+        
+        0*2    + 1*3   + 0*0     0*1    +  1*0   +  0*0
+        1000*2 + 100*3 + 10*4    1000*1 +  100*0 + 10*0
+        */
+       
+        double[][] m = MatrixUtil.dot(new DenseMatrix(m1), 
+            new DenseMatrix(m2));
+        
+        assertTrue(m.length == 2);
+        assertTrue(m[0].length == 2);
+        assertTrue(m[1].length == 2);
+        
+        assertTrue(m[0][0] == 3);
+        assertTrue(m[1][0] == 2340);
+        assertTrue(m[0][1] == 0);
+        assertTrue(m[1][1] == 1000);
+    }
+    
+    public void testAdd() throws Exception {
+
+        double[] a = new double[]{1, 2, 3, 4};
+        double[] b = new double[]{100, 100, 100, 100};
+
+        double[] expected = new double[]{101, 102, 103, 104};
+        
+        double[] c = MatrixUtil.add(a, b);
+        
+        assertTrue(Arrays.equals(expected, c));
+    }
+    
+    public void testAdd2() throws Exception {
+
+        float[] a = new float[]{1, 2, 3, 4};
+        float[] b = new float[]{100, 100, 100, 100};
+
+        float[] expected = new float[]{101, 102, 103, 104};
+        
+        float[] c = MatrixUtil.add(a, b);
+        
+        assertTrue(Arrays.equals(expected, c));
+    }
+    
+    public void testAdd3() throws Exception {
+
+        int[] a = new int[]{1, 2, 3, 4};
+        int add = -1;
+        
+        int[] expected = new int[]{0, 1, 2, 3};
+        
+        MatrixUtil.add(a, add);
+        
+        assertTrue(Arrays.equals(expected, a));
+    }
+  
 }

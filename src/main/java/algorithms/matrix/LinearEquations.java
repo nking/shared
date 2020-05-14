@@ -294,9 +294,9 @@ public class LinearEquations {
         
         double[][] aPInv;
         if (solveFullRank) {
-            aPInv = Misc.pseudoinverse2(a);
+            aPInv = MatrixUtil.pseudoinverse2(a);
         } else {
-            aPInv = Misc.pseudoinverse(a);
+            aPInv = MatrixUtil.pseudoinverse(a);
         }
         
         double[] y = new double[nRows];
@@ -304,7 +304,7 @@ public class LinearEquations {
             y[i] = xy[i][1];
         }
         
-        double[] c = Misc.multiply(aPInv, y);
+        double[] c = MatrixUtil.multiply(aPInv, y);
         
         return c;
     }

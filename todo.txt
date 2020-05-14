@@ -21,3 +21,5 @@
       -- consider adding RoaringBitmap java implementation
       -- consider adding simple fast lite compression in bitmap encoding and decoding notes
    -- "Handling Massive N-Gram Datasets"
+
+-- clean up the multiply and dot operations in MatrixUtil

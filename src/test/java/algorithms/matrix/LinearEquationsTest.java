@@ -43,8 +43,8 @@ public class LinearEquationsTest extends TestCase {
          permutation[0][p[0]] = 1;
          permutation[1][p[1]] = 1;
          permutation[2][p[2]] = 1;
-         double[][] pa = Misc.multiply(permutation, a);
-         double[][] lu = Misc.multiply(ell, u);
+         double[][] pa = MatrixUtil.multiply(permutation, a);
+         double[][] lu = MatrixUtil.multiply(ell, u);
          for (int i = 0; i < pa.length; ++i) {
              for (int j = 0; j < pa[i].length; ++j) {
                  double t1 = pa[i][j];
@@ -57,8 +57,8 @@ public class LinearEquationsTest extends TestCase {
          double[] y = new double[]{8, 1.4, 1.5};
 
          // assert L*y = permutation * b
-         double[] ly = Misc.multiply(ell, y);
-         double[] pb = Misc.multiply(permutation, b);
+         double[] ly = MatrixUtil.multiply(ell, y);
+         double[] pb = MatrixUtil.multiply(permutation, b);
          for (int i = 0; i < pb.length; ++i) {
              double t1 = ly[i];
              double t2 = pb[i];
@@ -69,7 +69,7 @@ public class LinearEquationsTest extends TestCase {
          double[] expectedX = new double[]{-1.4, 2.2, 0.6};
          
          // assert U*x = y
-         double[] ux = Misc.multiply(u, expectedX);
+         double[] ux = MatrixUtil.multiply(u, expectedX);
          for (int i = 0; i < ux.length; ++i) {
              double t1 = ux[i];
              double t2 = y[i];
@@ -187,8 +187,8 @@ public class LinearEquationsTest extends TestCase {
         
         boolean solveForFullRank = true;
         
-        //double[][] tMatrix = Misc.calculateNormalizationMatrix2X3(xy);
-        //xy = Misc.multiply(xy, tMatrix);
+        //double[][] tMatrix = MatrixUtil.calculateNormalizationMatrix2X3(xy);
+        //xy = MatrixUtil.multiply(xy, tMatrix);
         
         double[] c = LinearEquations.leastSquaresPolynomial(xy, polyOrder, solveForFullRank);
         
@@ -243,8 +243,8 @@ public class LinearEquationsTest extends TestCase {
         // solves using pseudo-inverse = (inverse(A^T*A) * A^T)
         boolean solveForFullRank = true;
         
-        //double[][] tMatrix = Misc.calculateNormalizationMatrix2X3(xy);
-        //xy = Misc.multiply(xy, tMatrix);
+        //double[][] tMatrix = MatrixUtil.calculateNormalizationMatrix2X3(xy);
+        //xy = MatrixUtil.multiply(xy, tMatrix);
         
         double[] c = LinearEquations.leastSquaresPolynomial(xy, polyOrder, solveForFullRank);
         
@@ -301,8 +301,8 @@ public class LinearEquationsTest extends TestCase {
                     a[i][k + 1] = x * a[i][k];
                 }
             }
-            double[] ac = Misc.multiply(a, c);
-            double[] err = Misc.subtract(ac, y);
+            double[] ac = MatrixUtil.multiply(a, c);
+            double[] err = MatrixUtil.subtract(ac, y);
         
             System.out.printf("polyOrder=%d  c=%s  \n    err=%s\n", polyOrder,
                     Arrays.toString(c), Arrays.toString(err));
@@ -331,8 +331,8 @@ public class LinearEquationsTest extends TestCase {
                     a[i][k + 1] = x_yx * a[i][k];
                 }
             }
-            double[] ac = Misc.multiply(a, c);
-            double[] err = Misc.subtract(ac, y_yx);
+            double[] ac = MatrixUtil.multiply(a, c);
+            double[] err = MatrixUtil.subtract(ac, y_yx);
 
             System.out.printf("polyOrder=%d  c_yx=%s  \n    err=%s\n", polyOrder,
                     Arrays.toString(c), Arrays.toString(err));
