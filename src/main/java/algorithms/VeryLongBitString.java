@@ -547,6 +547,11 @@ public final class VeryLongBitString {
         return out;
     }
 
+    /**
+     * 
+     * @param nthBit
+     * @return index for next highest bit set, else -1 if there is none.
+     */
     public int nextHighestBitSet(int nthBit) {
         
         if (nthBit > nBits) {
