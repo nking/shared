@@ -13,7 +13,10 @@ import java.util.Arrays;
  * computational operations. The geometric median is a rotation and translation
  * invariant estimator that achieves the optimal breakdown point of 0.5, i.e. it
  * is a good estimator even when up to half of the input data is arbitrarily
- * corrupted. (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
+ * corrupted. 
+ * 
+ * (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
+ * and "Numerical Algorithms" by Solomon https://people.csail.mit.edu/jsolomon/share/book/numerical_book.pdf
  *
  * given observed data points obs = (x_i, y_i,
  * ...) want to solve for X=(x_geo_median, y_geo_median, ...). X = arg min of ||
@@ -23,8 +26,8 @@ import java.util.Arrays;
  * The weighted geometric median is known as the Weber problem.
  *
  * <pre>
- * f = summation_i=1_n( w_i * || X - obs_i || )/n
- * where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
+ *   f = summation_i=1_n( w_i * || X - obs_i || )/n
+ *      where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
  * </pre>
  *
  *  -- iteratively re-weighted least squares (IRLS)
