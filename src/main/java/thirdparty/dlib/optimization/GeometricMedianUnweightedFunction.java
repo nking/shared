@@ -24,16 +24,11 @@ import java.util.Arrays;
     sum of the differences where _2 is notation for using L2 (euclidean) distances.
     
       <pre>
-      f = summation_i=1_n( || X - obs_i || )/n
-              where || X - obs_i ||_2 is ( (x-a)^2 + (y-b)^2 + (z-c)^2 + ... )^(1/2)
-     
-         example evaluations for f and the derivative w.r.t. each dimension:
-           for nDimensions = 2:
-           f = summation_i=1_n( || X - obs_i || )/n
-               where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
-           df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-1/2) * (-2*(X_0-obs_i_0))
-                   = (-1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
-           df/dX_1 = (-1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)     
+      f = summation_i=1_n( || X - obs_i || )/n     
+               where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
+      df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(-1/2) * (-2*(X_0-obs_i_0))
+              = (-1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
+      df/dX_1 = (-1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)     
       </pre>
       
       slow to converge?  has spatial points where algorithm may not progress?

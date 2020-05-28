@@ -11,7 +11,13 @@ public class Helper {
    
     public static class FunctionPoly implements IFunction {
 
+        /**
+         * coordinates of points in x-dimension
+         */
         final double[] xp;
+        /**
+         * coordinates of points in y-dimension
+         */
         final double[] yp;
         
         public FunctionPoly(double[] xData, double[] yData) {
@@ -23,6 +29,12 @@ public class Helper {
             this.yp = Arrays.copyOf(yData, yData.length);
         }
         
+        /**
+         * 
+         * @param coeffs input and output array holding the polynomial coefficients
+         * before and after this function.
+         * @return 
+         */
         @Override
         public double f(double[] coeffs) {
                 

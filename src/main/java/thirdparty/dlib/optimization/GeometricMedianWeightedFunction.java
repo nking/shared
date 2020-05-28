@@ -15,7 +15,7 @@ import java.util.Arrays;
  * is a good estimator even when up to half of the input data is arbitrarily
  * corrupted. (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
  *
- * It's the Fermat-Weber problem. given observed data points obs = (x_i, y_i,
+ * given observed data points obs = (x_i, y_i,
  * ...) want to solve for X=(x_geo_median, y_geo_median, ...). X = arg min of ||
  * X-obs ||_2, that is, the X which minimizes the sum of the differences where
  * _2 is notation for using L2 (euclidean) distances.
@@ -27,14 +27,44 @@ import java.util.Arrays;
  * where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
  * </pre>
  *
- * IRLS, can use the Weiszfeld algorithm for geometric median: Two steps: (1)
- * w_i = 1/[max(|| X - obs_i ||_2, delta)] (2) X =
- * (summation_i=1_n(w_i*obs_i))/(summation_i=1_n(w_i)) where (2) is derived from
- * setting the deriv to zero for: X = minimum X in (summation_i=1_n(w_i*(obs_i -
- * X)^2)) And a strategy for optimization: fix X{y} and minimize f with respect
- * to X{x}, fix X{x} and minimize f with respect to X{y}, and repeat: for i ← 1,
- * 2, . . . X{y}_i+1 = min_(X{y}) f(X{x}_i+1, X{y}) . Optimize X{y} with X{x}
- * fixed X{x}_i+1 = min_(X{x}) f(X, X{y}_i) . Optimize X{x} with X{y} fixed
+ *  -- iteratively re-weighted least squares (IRLS)
+        given observed points Z_I=(x_i, y_i)
+        and wanting to solve for X=(x_median, y_median)
+        let weight w_i = 1/( || X-z_i || )
+        note that the geometric median usually uses equal weights w_i=1/n
+
+        the cost function to minimize C_w(X) = summation_i=1_n( w_i*|| X-z_i ||^2 )
+        set deriv to zero
+        then iterated updates of estimates of X in time steps t:
+           X_(t+1) = summation_i=1_n( w_t*z_i ) / summation_i=1_n( w_t^2 )
+
+        for L1 version given by Ostresh:
+           X_(t+1) = X_t - alpha*summation_i=1_n( w_t*z_i / || X-z_i || ) /
+                       summation_i=1_n( w_t / || X-z_i || )
+
+        the gradient of the Riemannian sum-of-distances function is given by
+           grad( f(X) ) = -summation_i=1_n( w_i*Log(X_i) / (X-z_i))
+
+           using a steepest descent iteration with step size alpha:
+               X_(t+1) = Exp_(X_t)( alpha * v_t)
+           where
+               v_t = summation_i=1_n( w_i*Log(X_i) / (X-z_i)) /
+                       summation_i=1_n( w_i / (X-z_i))
+           authors found alpha=1 leads to convergence
+
+      *IRLS, can use the Weiszfeld algorithm for geometric median:
+         Two steps:
+           (1) w_i = 1/[max(|| X-z_i ||_2, delta)]
+           (2) X = (summation_i=1_n(w_i*z_i))/(summation_i=1_n(w_i))
+                       where (2) is derived from setting the deriv to zero for:
+                                 X = minimum X in (summation_i=1_n(w_i*(z_i-X_i)^2))
+         And a strategy for optimization:
+            fix X{y} and minimize f with respect to X{x},
+            fix X{x} and minimize f with respect to X{y},
+            and repeat:
+              for i ← 1, 2, . . .
+                 X{y}_i+1 = min_(X{y}) f(X{x}_i+1, X{y}) . Optimize X{y} with X{x} fixed
+                 X{x}_i+1 = min_(X{x}) f(X, X{y}_i) . Optimize X{x} with X{y} fixed
  *
  * TODO: consider including observational errors. Those would affect the
  * starting point estimate and the weights.
