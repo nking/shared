@@ -24,6 +24,16 @@ import java.util.Arrays;
  */
 public class LBFGSOptimization {
   
+    /**
+     * 
+     * @param searchStrategy an object that defines a search strategy
+     * @param stopStrategy an object that defines a stop strategy
+     * @param f function returning a double
+     * @param x coefficients used by f and der
+     * @param minF stop_strategy decides that an acceptable 
+     * point has been found or f(#x) less than min_f
+     * @return the return value from optimized run of function f.
+     */
     public double findMin(LBFGSSearchStrategy searchStrategy,
         ObjectiveDeltaStopStrategy stopStrategy, 
         IFunction f,

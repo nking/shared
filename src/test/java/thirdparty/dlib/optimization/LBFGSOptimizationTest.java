@@ -403,19 +403,21 @@ public class LBFGSOptimizationTest extends TestCase {
             double a = u - 1;
             double b = v - 2;
   
+            /*
             double sign0 = u - 1;
-            if (sign0 >= 0) {
+            if (sign0 >= 0.) {
                 sign0 = 1;
             } else {
                 sign0 = -1;
             }
             
             double sign1 = v - 2;
-            if (sign1 >= 0) {
+            if (sign1 >= 0.) {
                 sign1 = 1;
             } else {
                 sign1 = -1;
             }
+            */
             
             double m = Math.abs(a) + Math.abs(b);
         
@@ -440,14 +442,14 @@ public class LBFGSOptimizationTest extends TestCase {
             double b = v - 2;
   
             double sign0 = u - 1;
-            if (sign0 >= 0) {
+            if (sign0 >= 0.) {
                 sign0 = 1;
             } else {
                 sign0 = -1;
             }
             
             double sign1 = v - 2;
-            if (sign1 >= 0) {
+            if (sign1 >= 0.) {
                 sign1 = 1;
             } else {
                 sign1 = -1;

@@ -18,9 +18,25 @@ import java.util.LinkedList;
  * 
  * (add license here)
  * 
+    WHAT THIS OBJECT REPRESENTS
+        This object represents a strategy for determining which direction
+        a line search should be carried out along.  This particular object
+        is an implementation of the L-BFGS quasi-newton method for determining 
+        this direction.
+
+        This method uses an amount of memory that is linear in the number
+        of variables to be optimized.  This makes it an excellent method 
+        to use when an optimization problem has a large number of variables.
+
  */
 public class LBFGSSearchStrategy {
     
+    /**
+     * L-BFGS works by remembering a certain number of position and gradient 
+                  pairs.  It uses this remembered information to compute search directions.
+                  The max_size argument determines how many of these pairs will be remembered.
+                  Typically, using between 3 and 30 pairs performs well for many problems.
+     */
     private int maxSize;
     private boolean beenUsed = false;
    
@@ -50,6 +66,13 @@ public class LBFGSSearchStrategy {
          header as needed.
     */
     
+    /**
+     * 
+     * @param maxSize L-BFGS works by remembering a certain number of position and gradient 
+                  pairs.  It uses this remembered information to compute search directions.
+                  The max_size argument determines how many of these pairs will be remembered.
+                  Typically, using between 3 and 30 pairs performs well for many problems.
+     */
     public LBFGSSearchStrategy(int maxSize) {
         if (maxSize < 1) {
             throw new IllegalArgumentException("maxSize has to be > 0");
@@ -60,8 +83,20 @@ public class LBFGSSearchStrategy {
         data = new LinkedList<DataHelper>();
     }
     
+    /**
+     * for use of Wolfe conditions to constrain step length during line search.
+     * Wolfe conditions are valuable in Newton methods, while Goldstein
+     * conditions are valuable in  quasi-Newton methods.
+     * @return 
+     */
     public double get_wolfe_rho() { return 0.01; }
 
+    /**
+     * for use of Wolfe conditions to constrain step length during line search.
+     * Wolfe conditions are valuable in Newton methods, while Goldstein
+     * conditions are valuable in  quasi-Newton methods.
+     * @return 
+     */
     public double get_wolfe_sigma() { return 0.9; }
 
     public long get_max_line_search_iterations() { return 100; }

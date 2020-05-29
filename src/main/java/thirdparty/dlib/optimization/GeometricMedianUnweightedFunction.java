@@ -114,7 +114,7 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
             dist = Math.sqrt(dist);
             sum += dist;
         }
-        sum /= (double)nData;
+        //sum /= (double)nData;
         
         return sum;
     }
@@ -132,7 +132,6 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
                = (-1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
        df/dX_1 = (-1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
        ...
-       
        </pre>
      
       @param geoMedian coordinates of current estimate of geometric median
@@ -170,12 +169,13 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         for (i = 0; i < nData; ++i) {
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
+                System.out.printf("  X_%d(%6.3f) - obs_%d(%6.3f)=%6.3f\n", d, geoMedian[d], j, obs[j], geoMedian[d] - obs[j]);
                 dfDX[d] += (geoMedian[d] - obs[j]);
             }
         }
         
         for (d = 0; d < nDimensions; ++d) {
-            dfDX[d] /= (-nData * ssd);
+            dfDX[d] /= (nData * ssd);
         }
         
         return dfDX;
