@@ -39,6 +39,7 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
  
     final int nDimensions;
     final double[] obs;
+    final double fds = 1e3*eps;
 
     /**
      * class holding the objective and derivative of the geometric-median for use
@@ -143,6 +144,10 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         if (geoMedian.length != nDimensions) {
             throw new IllegalArgumentException("geoMedian length should equal nDimensions");
         }
+        
+        if (true) {
+        //    return finiteDifference(geoMedian);
+        }
 
         double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
 
@@ -169,16 +174,52 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         for (i = 0; i < nData; ++i) {
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
-                System.out.printf("  X_%d(%6.3f) - obs_%d(%6.3f)=%6.3f\n", d, geoMedian[d], j, obs[j], geoMedian[d] - obs[j]);
+                
+                //System.out.printf("  X_%d(%6.3f) - obs_%d(%6.3f)=%6.3f\n", d, geoMedian[d], j, obs[j], geoMedian[d] - obs[j]);
+                
                 dfDX[d] += (geoMedian[d] - obs[j]);
             }
         }
         
         for (d = 0; d < nDimensions; ++d) {
-            dfDX[d] /= (nData * ssd);
+            //dfDX[d] /= (nData * ssd);
         }
         
         return dfDX;
+    }
+    
+ /**
+    adapted from dlib optimization.h
+    Copyright (C) 2008  Davis E. King (davis@dlib.net)
+    License: Boost Software License   See LICENSE.txt for the full license.
+    */
+    private double[] finiteDifference(double[] coeffs) {
+
+        //System.out.println("a1  x.size=" + coeffs.length);
+
+        int n = coeffs.length;
+
+        double[] der = new double[n];
+        double[] e = Arrays.copyOf(coeffs, n);
+
+        for (int i = 0; i < n; ++i) {
+            final double old_val = e[i];
+            e[i] += fds;
+            final double delta_plus = f(e);
+            e[i] = old_val - fds;
+            final double delta_minus = f(e);
+
+            // finite difference:  this is the approx jacobian
+            der[i] = (delta_plus - delta_minus)/(2.*fds); 
+
+            //NOTE: newton's method would continue with:
+            // x_(i+1) = x_i - (delta_plus/der(i))
+
+            // and finally restore the old value of this element
+            e[i] = old_val;
+        }
+
+        return der;
     }
 
     protected int getNDimensions() {

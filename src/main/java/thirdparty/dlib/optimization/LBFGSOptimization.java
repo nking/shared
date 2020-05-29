@@ -45,6 +45,17 @@ public class LBFGSOptimization {
         double fValue = f.f(x);
         double[] g = f.der(x);
 
+        StringBuilder sbf = new StringBuilder("*fValue=[");
+        StringBuilder sbg = new StringBuilder("g=[");
+        for (int i=0;i<x.length;i++) {
+            sbf.append(String.format("%.3e, ", x[i]));
+            sbg.append(String.format("%.3e, ", g[i]));
+        }
+        sbf.append("]");
+        sbg.append("]");
+        System.out.println(sbf.toString());
+        System.out.println(sbg.toString());
+        
         if (!Double.isFinite(fValue)) {
             throw new IllegalStateException(
                 "The objective function generated non-finite outputs");
@@ -60,7 +71,10 @@ public class LBFGSOptimization {
         
         while (stopStrategy.shouldContinueSearch(x, fValue, g) &&
             fValue > minF) {
-        
+
+System.out.println("*fValue=" + fValue + " x=" + Arrays.toString(x) 
+    + " g=" + Arrays.toString(g));
+            
             s = searchStrategy.get_next_direction(x, fValue, g);
             s = Arrays.copyOf(s, s.length);
             

@@ -55,7 +55,7 @@ import java.util.Arrays;
  */
 public abstract class AbstractGeometricMedianFunction implements IFunction {
         
-    protected double eps = 1e-17;
+    public static double eps = 1e-17;
     
     protected abstract int getNDimensions();
     

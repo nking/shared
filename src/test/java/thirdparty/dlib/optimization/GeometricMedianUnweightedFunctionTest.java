@@ -44,16 +44,17 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
         GeometricMedianUnweightedFunction f 
             = new GeometricMedianUnweightedFunction(data, nDimensions);
         
+        // gets stuck around centroid
         double[] init = 
-            new double[]{0, 0};
+            //new double[]{0, 0};
             //new double[]{0, 12};
-            //f.calculateCentroid();
+            f.calculateCentroid();
         
         double[] expected = new double[]{0, 0};
         
         LBFGSSearchStrategy searchStrategy = new LBFGSSearchStrategy(5);
         ObjectiveDeltaStopStrategy stopStrategy 
-            = new ObjectiveDeltaStopStrategy(1.e-5, 100);
+            = new ObjectiveDeltaStopStrategy(AbstractGeometricMedianFunction.eps, 100);
         
         double acceptableMinF = -12;
         
