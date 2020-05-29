@@ -46,9 +46,9 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
         
         // gets stuck around centroid
         double[] init = 
-            //new double[]{0, 0};
+            new double[]{0, 0};
             //new double[]{0, 12};
-            f.calculateCentroid();
+            //f.calculateCentroid();
         
         double[] expected = new double[]{0, 0};
         

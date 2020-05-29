@@ -31,8 +31,13 @@ import java.util.Arrays;
       df/dX_1 = (-1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)     
       </pre>
       
-      slow to converge?  has spatial points where algorithm may not progress?
-     
+      Caveat is that the algorithm can fail within a stop strategy tolerance of
+      the centroid because the derivative becomes 0.
+      
+      Either the algorithm has to be alert for that and adapt to it (by checking
+      for centroid and testing points around it outside of the tolerance, presumably),
+      OR you should use the weighted geometric-median.
+      
  * @author nichole
  */
 public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFunction {
@@ -170,25 +175,24 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         //df/dX_0 = (-1./n) * (X_0 - obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
         double[] dfDX = new double[nDimensions];
         
+        // NOTE: can see that the unweighted algorithm will not make progress when
+        //    the current geometric-median estimate is the centroid.
         int j, d;
         for (i = 0; i < nData; ++i) {
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
-                
-                //System.out.printf("  X_%d(%6.3f) - obs_%d(%6.3f)=%6.3f\n", d, geoMedian[d], j, obs[j], geoMedian[d] - obs[j]);
-                
                 dfDX[d] += (geoMedian[d] - obs[j]);
             }
         }
         
-        for (d = 0; d < nDimensions; ++d) {
-            //dfDX[d] /= (nData * ssd);
-        }
+        /*for (d = 0; d < nDimensions; ++d) {
+            dfDX[d] /= (nData * ssd);
+        }*/
         
         return dfDX;
     }
     
- /**
+    /**
     adapted from dlib optimization.h
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.

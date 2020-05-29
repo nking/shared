@@ -45,17 +45,6 @@ public class LBFGSOptimization {
         double fValue = f.f(x);
         double[] g = f.der(x);
 
-        StringBuilder sbf = new StringBuilder("*fValue=[");
-        StringBuilder sbg = new StringBuilder("g=[");
-        for (int i=0;i<x.length;i++) {
-            sbf.append(String.format("%.3e, ", x[i]));
-            sbg.append(String.format("%.3e, ", g[i]));
-        }
-        sbf.append("]");
-        sbg.append("]");
-        System.out.println(sbf.toString());
-        System.out.println(sbg.toString());
-        
         if (!Double.isFinite(fValue)) {
             throw new IllegalStateException(
                 "The objective function generated non-finite outputs");
@@ -72,8 +61,8 @@ public class LBFGSOptimization {
         while (stopStrategy.shouldContinueSearch(x, fValue, g) &&
             fValue > minF) {
 
-System.out.println("*fValue=" + fValue + " x=" + Arrays.toString(x) 
-    + " g=" + Arrays.toString(g));
+System.out.println("*fValue=" + AbstractGeometricMedianFunction.toString(x));
+System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
             
             s = searchStrategy.get_next_direction(x, fValue, g);
             s = Arrays.copyOf(s, s.length);
@@ -91,12 +80,13 @@ System.out.println("*fValue=" + fValue + " x=" + Arrays.toString(x)
                 searchStrategy.get_wolfe_sigma(), 
                 minF, 100);
 
+            System.out.println("   alpha=" + alpha + " s=" + AbstractGeometricMedianFunction.toString(s));
             
             // Take the search step indicated by the above line search
             //x += alpha*s;
             for (int i = 0; i < s.length; ++i) {
                 x[i] += (alpha * s[i]);
-            }
+            }            
              
             //NLK: adding this for stop criteria
             fValue = f.f(x);
