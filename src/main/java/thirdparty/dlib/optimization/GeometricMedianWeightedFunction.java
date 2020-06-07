@@ -57,10 +57,10 @@ import java.util.Arrays;
 
       *IRLS, can use the Weiszfeld algorithm for geometric median:
          Two steps:
-           (1) w_i = 1/[max(|| X-z_i ||_2, delta)]
-           (2) X = (summation_i=1_n(w_i*z_i))/(summation_i=1_n(w_i))
+           (1) w_i = 1/[max(|| X-obs_i ||_2, delta)]
+           (2) X = (summation_i=1_n(w_i*obs_i))/(summation_i=1_n(w_i))
                        where (2) is derived from setting the deriv to zero for:
-                                 X = minimum X in (summation_i=1_n(w_i*(z_i-X_i)^2))
+                                 X = minimum X in (summation_i=1_n(w_i*(obs_i-X_i)^2))
          And a strategy for optimization:
             fix X{y} and minimize f with respect to X{x},
             fix X{x} and minimize f with respect to X{y},
@@ -68,7 +68,10 @@ import java.util.Arrays;
               for i ← 1, 2, . . .
                  X{y}_i+1 = min_(X{y}) f(X{x}_i+1, X{y}) . Optimize X{y} with X{x} fixed
                  X{x}_i+1 = min_(X{x}) f(X, X{y}_i) . Optimize X{x} with X{y} fixed
- *
+
+*  NOTE that the initial point for the algorithm should be within bounds of the 
+      data.
+      
  * TODO: consider including observational errors. Those would affect the
  * starting point estimate and the weights.
  *
@@ -76,10 +79,45 @@ import java.util.Arrays;
  */
 public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunction {
 
+    /**
+     * the number of dimensions present in the observations.  e.g. 2 for x and y axes.
+     */
     final int nDimensions;
+    
+    /**
+     * the observations from all dimensions in format of
+     * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
+     * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
+     *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
+     */
     final double[] obs;
+    
+    /**
+     * a rough number that isn't properly normalized for use in the finiteDifference
+     * method.
+     */
+    final double fDEps = 1e-3;//1e3*eps;
+    
+    /**
+    the weights of each point summed in quadrature over dimension.
+    * array length is obs.length/nDimensions
+     */
     final double[] w;
-
+   
+    /**
+     * geomedian[dimension] - obs_dimension_point.
+     * has length obs.length.
+     */
+    final double[] diffs;
+    
+    /**
+     * a rough number used to avoid divide by zero
+     * method.
+     */
+    final double fds = 1e3*eps;
+    
+    final double invfds = 1./fds;
+    
     /**
      *
      * @param observations the observations from all dimensions in format of
@@ -89,14 +127,12 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      * @param numberOfDimensions the number of data dimensions present in
      * observations array.
      */
-    public GeometricMedianWeightedFunction(double[] observations, int numberOfDimensions,
-        double[] weights) {
+    public GeometricMedianWeightedFunction(double[] observations, int numberOfDimensions) {
         if (numberOfDimensions < 1) {
             throw new IllegalArgumentException("numberOfDimensions must be > 0");
         }
         this.nDimensions = numberOfDimensions;
         this.obs = Arrays.copyOf(observations, observations.length);
-        this.w = Arrays.copyOf(weights, weights.length);
         
         int n = obs.length;
 
@@ -109,12 +145,12 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
                     + "numberOfDimensions");
         }
         
-        if (weights.length != obs.length) {
-            throw new IllegalArgumentException("weights.length must == obs.length");
-        }
+        int nData = (int) (obs.length / nDimensions);
+        this.w = new double[nData];
         
+        this.diffs = new double[obs.length];
     }
-
+    
     /**
      * given observed data points obs = (x_i, y_i, ...) want to solve for
      * X=(x_geo_median, y_geo_median, ...), that is X = arg min of || X-obs
@@ -125,8 +161,7 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      * cost function to 0.
      * <pre>
      * The weighted cost function is:
-     *    C_w(X) = min_X in summation_i=1_n( w_i*|| X - obs_i || )
-     *
+     *    C_w(X) = min_X in summation_i=1_n( w_i*|| X-z_i ||^2 )
      *
      * The weight is
      *    w_i = 1/( || X - obs_i || ), and adding eps to denom to avoid divide by 0..
@@ -150,28 +185,94 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
         if (geoMedian.length != nDimensions) {
             throw new IllegalArgumentException("geoMedian length should equal nDimensions");
         }
+        
+        int nData = (int) (obs.length / nDimensions);
 
-        double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
-
-        throw new UnsupportedOperationException("not yet implemented");
+        calculateDifferences(geoMedian, diffs);
+        
+        Arrays.fill(w, 0.);
+        
+        int i, j, d;
+        double ds, ds0;
+        double fSum = 0;
+        //w_i = 1/[max(|| X-z_i ||_2, delta)]
+        for (i = 0; i < nData; ++i) {
+            ds = 0;
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;        
+                ds += diffs[j]*diffs[j];                
+            }
+            ds0 = ds;
+            ds = Math.sqrt(ds);
+            w[i] = 1./(ds + eps);
+            fSum += (w[i] * ds0);
+        }         
+                
+        return fSum;
     }
-
+    
     /**
      *
+     * <pre>
+       f = summation_i=1_n( w_i * || X - obs_i || )/n
+           where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       df/dX_0 = w_i * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       df/dX_1 = w_i * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       ...
+       
+       </pre>
      * @param geoMedian coordinates of current estimate of geometric median
      * @return evaluation of the derivative
      */
     @Override
     public double[] der(double[] geoMedian) {
 
-        throw new UnsupportedOperationException("not yet implemented");
+        if (true) {
+            return finiteDifference(geoMedian);
+        }
+        
+        int nData = (int) (obs.length / nDimensions);
+        
+        int i, j, d;
+        
+        
+        double[] deltaWeiszfeldUpdate = new double[geoMedian.length];
+        
+        // a hack to deltaX with assumption of small steps, by
+        //    calculating the updated geometric-median and subtracting that
+        //    from the geometric-median given to the method.
+        
+        // update the geometric median X = (summation_i=1_n(w_i*z_i))/(summation_i=1_n(w_i))
+        double wSum = 0;
+        for (i = 0; i < w.length; ++i) {
+            wSum += w[i];
+        }
+        
+        assert(wSum <= (1 + fDEps));
+        
+        double[] geoMedian1 = new double[geoMedian.length];
+        for (d = 0; d < nDimensions; ++d) {
+            for (i = 0; i < nData; ++i) {                
+                j = i * nDimensions + d;        
+                geoMedian1[d] += (w[i] * obs[j]);
+            }
+            geoMedian1[d] /= wSum;
+            
+            deltaWeiszfeldUpdate[d] = geoMedian1[d] - geoMedian[d];
+        }
+
+        return deltaWeiszfeldUpdate;      
     }
 
-    protected int getNDimensions() {
+    public int getNDimensions() {
         return nDimensions;
     }
 
-    protected double[] getObs() {
+    public double[] getObs() {
         return obs;
+    }
+    
+    public double getFDEps() {
+        return fDEps;
     }
 }

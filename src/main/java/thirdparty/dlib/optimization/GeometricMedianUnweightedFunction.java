@@ -26,9 +26,9 @@ import java.util.Arrays;
       <pre>
       f = summation_i=1_n( || X - obs_i || )/n     
                where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
-      df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(-1/2) * (-2*(X_0-obs_i_0))
-              = (-1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
-      df/dX_1 = (-1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)     
+      df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(-1/2) * (2*(X_0-obs_i_0))
+              = (1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
+      df/dX_1 = (1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)     
       </pre>
       
       Caveat is that the algorithm can fail within a stop strategy tolerance of
@@ -38,13 +38,31 @@ import java.util.Arrays;
       for centroid and testing points around it outside of the tolerance, presumably),
       OR you should use the weighted geometric-median.
       
+      NOTE that the initial point for the algorithm should be within bounds of the 
+      data.
+      
  * @author nichole
  */
 public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFunction {
  
+    /**
+     * the number of dimensions present in the observations.  e.g. 2 for x and y axes.
+     */
     final int nDimensions;
+    
+    /**
+     * the observations from all dimensions in format of
+     * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
+     * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
+     *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
+     */
     final double[] obs;
-    final double fds = 1e3*eps;
+    
+    /**
+     * a rough number that isn't properly normalized for use in the finiteDifference
+     * method.
+     */
+    final double fDEps = 1e3*eps;
 
     /**
      * class holding the objective and derivative of the geometric-median for use
@@ -102,27 +120,7 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
             throw new IllegalArgumentException("geoMedian length should equal nDimensions");
         }
 
-        //double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
-
-        double[] diffs = calculateDifferences(geoMedian);
-        
-        int nData = (int) (obs.length / nDimensions);
-        
-        int i, j, d;
-        double dist;
-        double sum = 0;
-        for (i = 0; i < nData; ++i) {
-            dist = 0;
-            for (d = 0; d < nDimensions; ++d) {
-                j = i * nDimensions + d;
-                dist += (diffs[j] * diffs[j]);
-            }
-            dist = Math.sqrt(dist);
-            sum += dist;
-        }
-        //sum /= (double)nData;
-        
-        return sum;
+        return evaluateGeoMedian(geoMedian);
     }
 
     /**
@@ -134,10 +132,11 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
        <pre>
        f = summation_i=1_n( || X - obs_i || )/n
            where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
-       df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(-1/2) * (-2*(X_0-obs_i_0))
-               = (-1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
-       df/dX_1 = (-1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(-1/2) * (2*(X_0-obs_i_0))
+               = (1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       df/dX_1 = (1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
        ...
+       
        </pre>
      
       @param geoMedian coordinates of current estimate of geometric median
@@ -150,11 +149,11 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
             throw new IllegalArgumentException("geoMedian length should equal nDimensions");
         }
         
-        if (true) {
-        //    return finiteDifference(geoMedian);
+        if (false) {
+            return finiteDifference(geoMedian);
         }
 
-        double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
+        //double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
 
         double[] diffs = calculateDifferences(geoMedian);
         double[] ssdPerPoint = calculateSSDPerPoint(diffs);
@@ -163,74 +162,65 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         
         assert(ssdPerPoint.length == nData);
         
-        double ssd = 0;
+        double s = 0;
         int i;
         for (i = 0; i < ssdPerPoint.length; ++i) {
-            ssd += ssdPerPoint[i];
+            s += Math.sqrt(ssdPerPoint[i]);
         }
         
         // to avoid divide by 0:
-        ssd += eps;
+        s += eps;
         
-        //df/dX_0 = (-1./n) * (X_0 - obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
+        //df/dX_0 = (1./n) * (X_0 - obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
         double[] dfDX = new double[nDimensions];
         
         // NOTE: can see that the unweighted algorithm will not make progress when
         //    the current geometric-median estimate is the centroid.
         int j, d;
         for (i = 0; i < nData; ++i) {
+            
+            // skip a point if it is the same as the median
+            boolean skip = true;
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;
+                if (Math.abs(geoMedian[d] - obs[j]) > eps) {
+                    skip = false; 
+                    break;
+                }
+            }
+            if (skip) {
+                continue;
+            }
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
                 dfDX[d] += (geoMedian[d] - obs[j]);
             }
         }
         
-        /*for (d = 0; d < nDimensions; ++d) {
-            dfDX[d] /= (nData * ssd);
-        }*/
+        for (d = 0; d < nDimensions; ++d) {
+        //    dfDX[d] /= (nData * s);
+        }
         
         return dfDX;
     }
     
-    /**
-    adapted from dlib optimization.h
-    Copyright (C) 2008  Davis E. King (davis@dlib.net)
-    License: Boost Software License   See LICENSE.txt for the full license.
+    /*
+    df/dX_0 = (1./n) * (X_0 - obs_i_0) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-1/2)
+    
+    d/dx of df/dX_0 = (1./n)*( (-1/2)* ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) ) ) * 2 * (X_0-obs_i_0)
+        = (-1/n)*(X_0-obs_i_0)/ ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) ) )
+    
     */
-    private double[] finiteDifference(double[] coeffs) {
-
-        //System.out.println("a1  x.size=" + coeffs.length);
-
-        int n = coeffs.length;
-
-        double[] der = new double[n];
-        double[] e = Arrays.copyOf(coeffs, n);
-
-        for (int i = 0; i < n; ++i) {
-            final double old_val = e[i];
-            e[i] += fds;
-            final double delta_plus = f(e);
-            e[i] = old_val - fds;
-            final double delta_minus = f(e);
-
-            // finite difference:  this is the approx jacobian
-            der[i] = (delta_plus - delta_minus)/(2.*fds); 
-
-            //NOTE: newton's method would continue with:
-            // x_(i+1) = x_i - (delta_plus/der(i))
-
-            // and finally restore the old value of this element
-            e[i] = old_val;
-        }
-
-        return der;
-    }
-
-    protected int getNDimensions() {
+    
+    public int getNDimensions() {
         return nDimensions;
     }
     
-    protected double[] getObs() {
+    public double[] getObs() {
         return obs;
+    }
+    
+    public double getFDEps() {
+        return fDEps;
     }
 }

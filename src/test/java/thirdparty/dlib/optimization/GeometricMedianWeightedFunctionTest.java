@@ -8,14 +8,13 @@ import junit.framework.TestCase;
  *
  * @author nichole
  */
-public class GeometricMedianUnweightedFunctionTest extends TestCase {
+public class GeometricMedianWeightedFunctionTest extends TestCase {
     
-    public GeometricMedianUnweightedFunctionTest(String testName) {
+    public GeometricMedianWeightedFunctionTest(String testName) {
         super(testName);
     }
     
-    public void test0() {
-        
+    public void est0() {
         
         System.out.println("test0");
         
@@ -34,9 +33,9 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
         expected[2] = new double[]{3, 3};
         double expectedDist = Math.sqrt(8);
         
-        GeometricMedianUnweightedFunction f 
-            = new GeometricMedianUnweightedFunction(data, nDimensions);
-        
+        GeometricMedianWeightedFunction f 
+            = new GeometricMedianWeightedFunction(data, nDimensions);
+         
         for (int ii = 0; ii < 3; ++ii) {
             switch(ii) {
                 case 0:
@@ -96,7 +95,7 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
         
     }
     
-    public void est1() {
+    public void test1() {
         
         System.out.println("test1");
         
@@ -110,10 +109,10 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
                 
         double[] init;
         double[] expected = new double[]{0, 0};
-        GeometricMedianUnweightedFunction f 
-            = new GeometricMedianUnweightedFunction(data, nDimensions);
+        GeometricMedianWeightedFunction f 
+            = new GeometricMedianWeightedFunction(data, nDimensions);
         
-        for (int ii = 0; ii < 2; ++ii) {
+        for (int ii = 0; ii < 3; ++ii) {
             switch(ii) {
                 case 0:
                     init = new double[]{0, 0};            
