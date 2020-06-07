@@ -920,4 +920,71 @@ public class MiscMath0 {
         
         return y;
     }
+    
+    /**
+     * calculates the mean of the data per dimension and returns it as a point 
+     * in all dimensions.
+     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
+     * @param nDimensions the number of dimensions of a point
+     * @return an array holding the mean per dimension, e.g. point_0_0,
+     * point_0_1, point_0_2...point_0_{nDimensions-1}]
+     */
+    public static double[] mean(double[] data, int nDimensions) {
+        
+        if ((data.length % nDimensions) != 0) {
+            throw new IllegalArgumentException("data.length must be a multiple of nDimensions");
+        }
+        int nData = data.length/nDimensions;
+        
+        double[] c = new double[nDimensions];
+        int i, j, d;
+        for (i = 0; i < nData; ++i) {
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;
+                c[d] += data[j];
+            }
+        }
+        for (d = 0; d < nDimensions; ++d) {
+            c[d] /= (double) nData;
+        }
+        return c;
+    }
+    
+    /**
+     * calculates the centroid per dimension and standard deviation per dimension
+     * of the data and returns them in a double array of size [2][nDimensions] 
+     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
+     * @param nDimensions the number of dimensions of a point
+     * @return the standard deviation of the data in each dimension.  return format
+     * is a double array of size [2][nDimensions] 
+     */
+    public static double[][] standardDeviation(double[] data, int nDimensions) {
+        
+        if ((data.length % nDimensions) != 0) {
+            throw new IllegalArgumentException("data.length must be a multiple of nDimensions");
+        }
+        int nData = data.length/nDimensions;
+        
+        double[] c = mean(data, nDimensions);
+        double[][] out = new double[2][];
+        out[0] = c;
+        out[1] = new double[nDimensions];
+        
+        int i, j, d;
+        double diff;
+        for (i = 0; i < nData; ++i) {
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;
+                diff = data[j] - out[0][d];
+                out[1][d] += (diff*diff);
+            }
+        }
+        for (d = 0; d < nDimensions; ++d) {
+            out[1][d] = Math.sqrt(out[1][d]/(nData - 1.0f)); 
+        }
+        
+        return out;
+    }
 }

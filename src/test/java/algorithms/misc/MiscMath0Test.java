@@ -424,4 +424,124 @@ public class MiscMath0Test extends TestCase {
         
         assertTrue(Arrays.equals(b, expected));
     }
+    
+    public void testMean() {
+        
+        double[] data;
+        int nDimensions;
+        double[] expected, c;
+        double tol = 0.001;
+        int nc;
+        
+        //(1, 1), (3, 3)                           --> (2,2)        
+        nDimensions = 2;
+        data = new double[]{1, 1,  3, 3};
+        expected = new double[]{2, 2};
+        
+        c = MiscMath0.mean(data, nDimensions);
+        assertEquals(expected.length, c.length);
+        nc = 0;
+        for (int i = 0; i < c.length; ++i) {
+            if (Math.abs(expected[i] - c[i]) < tol) {
+                nc++;
+            }
+        }
+        assertEquals(expected.length, nc);
+        
+        //(0, 0), (0, 0), (0, 12)    
+        nDimensions = 2;
+        data = new double[]{0, 0, 0, 0, 0, 12};
+        expected = new double[]{0, 4};
+        
+        c = MiscMath0.mean(data, nDimensions);
+        assertEquals(expected.length, c.length);
+        nc = 0;
+        for (int i = 0; i < c.length; ++i) {
+            if (Math.abs(expected[i] - c[i]) < tol) {
+                nc++;
+            }
+        }
+        assertEquals(expected.length, nc);
+        
+        //(-20, 48), (-20, -48), (20, 0), (59, 0)
+        nDimensions = 2;
+        data = new double[]{-20, 48, -20, -48, 20, 0, 59, 0};
+        expected = new double[]{9.75, 0};
+        
+        c = MiscMath0.mean(data, nDimensions);
+        assertEquals(expected.length, c.length);
+        nc = 0;
+        for (int i = 0; i < c.length; ++i) {
+            if (Math.abs(expected[i] - c[i]) < tol) {
+                nc++;
+            }
+        }
+        assertEquals(expected.length, nc);
+    }
+    
+    public void testStandardDeviation() {
+        
+        double[] data;
+        int nDimensions;
+        double[][] expected, c;
+        expected = new double[2][2];
+        double tol = 0.001;
+        int nc;
+        
+        //(1, 1), (3, 3)                           --> (2,2)        
+        nDimensions = 2;
+        data = new double[]{1, 1,  3, 3};
+        expected[0] = new double[]{2, 2};
+        expected[1] = new double[]{1.414, 1.414};
+        
+        c = MiscMath0.standardDeviation(data, nDimensions);
+        assertEquals(expected.length, c.length);
+        assertEquals(expected[0].length, c[0].length);
+        assertEquals(expected[1].length, c[1].length);
+        nc = 0;
+        for (int i = 0; i < c.length; ++i) {
+            for (int j = 0; j < c[i].length; ++j) {
+                if (Math.abs(expected[i][j] - c[i][j]) < tol) {
+                    nc++;
+                }
+            }
+        }
+        assertEquals(expected.length*expected[0].length, nc);
+        
+        //(0, 0), (0, 0), (0, 12)    
+        nDimensions = 2;
+        data = new double[]{0, 0, 0, 0, 0, 12};
+        expected[0] = new double[]{0, 4};
+        expected[1] = new double[]{0, 6.928};    
+        
+        c = MiscMath0.standardDeviation(data, nDimensions);
+        assertEquals(expected.length, c.length);
+        nc = 0;
+        for (int i = 0; i < c.length; ++i) {
+            for (int j = 0; j < c[i].length; ++j) {
+                if (Math.abs(expected[i][j] - c[i][j]) < tol) {
+                    nc++;
+                }
+            }
+        }
+        assertEquals(expected.length*expected[0].length, nc);
+        
+        //(-20, 48), (-20, -48), (20, 0), (59, 0)
+        nDimensions = 2;
+        data = new double[]{-20, 48, -20, -48, 20, 0, 59, 0};
+        expected[0] = new double[]{9.75, 0};
+        expected[1] = new double[]{37.863, 39.192};
+                
+        c = MiscMath0.standardDeviation(data, nDimensions);
+        assertEquals(expected.length, c.length);
+        nc = 0;
+        for (int i = 0; i < c.length; ++i) {
+            for (int j = 0; j < c[i].length; ++j) {
+                if (Math.abs(expected[i][j] - c[i][j]) < tol) {
+                    nc++;
+                }
+            }
+        }
+        assertEquals(expected.length*expected[0].length, nc);
+    }
 }

@@ -1,5 +1,6 @@
 package thirdparty.dlib.optimization;
 
+import algorithms.misc.MiscMath0;
 import algorithms.util.IFunction;
 import java.util.Arrays;
 
@@ -78,22 +79,9 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
         final int nDimensions = getNDimensions();
         final double[] obs = getObs();
 
-        double[] sum = new double[nDimensions];
+        double[] c = MiscMath0.mean(obs, nDimensions);
 
-        int nData = (int) (obs.length / nDimensions);
-
-        int i, j, d;
-        for (i = 0; i < nData; ++i) {
-            for (d = 0; d < nDimensions; ++d) {
-                j = i * nDimensions + d;
-                sum[d] += obs[j];
-            }
-        }
-        for (d = 0; d < nDimensions; ++d) {
-            sum[d] /= (double) nData;
-        }
-
-        return sum;
+        return c;
     }
 
     /**
