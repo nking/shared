@@ -49,7 +49,6 @@ public class Standardization {
         int nData = data.length/nDimensions;
         
         int i, j, d;
-        double diff;
         for (i = 0; i < nData; ++i) {
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
@@ -89,8 +88,8 @@ public class Standardization {
      * unnormalized data per dimension.
      * @return an array holding the de-normalized data in format similar to data array.
      */
-    public static double[] standardUnitDenormalization(double[] data, 
-        int nDimensions, double[] mean, double[] standardDeviation) {
+    public static double[] standardUnitDenormalization(final double[] data, 
+        final int nDimensions, final double[] mean, final double[] standardDeviation) {
         
         if (mean.length != nDimensions) {
             throw new IllegalArgumentException("mean.length must equal nDimensions");
