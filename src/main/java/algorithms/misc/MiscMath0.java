@@ -952,7 +952,7 @@ public class MiscMath0 {
     }
     
     /**
-     * calculates the centroid per dimension and standard deviation per dimension
+     * calculates the mean per dimension and standard deviation per dimension
      * of the data and returns them in a double array of size [2][nDimensions] 
      * @param data nDimensional data points in format [ point_0 in all dimensions,
      *   point_1 in all dimensions, ... point_{n-1} in all dimensions[

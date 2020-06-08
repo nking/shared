@@ -1,5 +1,6 @@
 package algorithms.optimization;
 
+import algorithms.misc.MiscMath0;
 import java.util.Arrays;
 import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
 
@@ -8,35 +9,52 @@ import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
  * @author nichole
  */
 public class GeometricMedian {
- 
+   
     /**
      * use first derivative to find minimum sum of function defining geometric-median.
-     * newton's method has been altered to use back-tracking to previous solution
-     * if function evaluation becomes larger, then proceeds forward again
-     * with a smaller step.
+     * newton's method has been altered to use back-tracking with a deceasing step size.
      * 
+     * NOTE: if nDimensions == nDataPoints, the init is replaced with the centroid.
+     * euclidean centroid.
      * @param function
      * @param init
      * @return 
      */
-    public double newtonsMethodAltered(AbstractGeometricMedianFunction function,
+    public double newtonsMethod2(AbstractGeometricMedianFunction function,
         double[] init) {
         
-        //TODO: for nPoints==nDimensions, is the centroid always a g.m.?
+        int nDimensions = function.getNDimensions();
+        int nData = function.getNData();
+        
+        // assuming for now, that this is true:
+        if (nData == nDimensions) {
+            init = function.calculateCentroid();
+        }
+        
+        //NOTE: if observed data given to function has been standardized,
+        //   then it is "zero centered", that is, has a mean of 0.
+        //   The derivative of the geometric-median will be 0 for points
+        //   equal to the centroid whether standardized or not.  
+        //   The centroid is a true geometric-median for
+        //   some data, but for those that it is not, alternative methods of
+        //   estimating the gradient at that point are needed.
+        //   ... added logic to try finite difference if the derivatives are
+        //   zero.
         
         //Newton's:
         //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
         
-        //Newton's with a factor to decrease step size:
+        //Newton's with a factor (alpha) to decrease step size:
         //x_{t+1} = x_{t} - alpha*(f(x_{t}) / f'(x_{t}))
         
         double alpha = 1.0;
         double alphaFactor = 0.2;//0.33;
         
         // iterate until derivative is 0 or essentially no change of estimate
-        int nDimensions = function.getNDimensions();
-        int nData = function.getNData();
-        double fds = 0.001;//TODO set this as a fraction of the data ranges
+        
+        //TODO set this as a fraction of the data ranges if data is not standardized
+        double fds = 0.001;
+        
         double eps = 1.e-17;
         
         if (init.length != nDimensions) {
@@ -50,6 +68,8 @@ public class GeometricMedian {
         double[] fDerEval = function.der(geoMedian1);
         double[] fEval2 = function.evaluateGeoMedianPerDimension(geoMedian1);
         double[] prevFEval2;
+        boolean usedFiniteDifference;
+        double[] fd;
         
         int i, j, d, cg;
         double r2;
@@ -60,6 +80,27 @@ public class GeometricMedian {
             prevFEval = fEval;
             prevFEval2 = Arrays.copyOf(fEval2, fEval2.length);
             prevGeoMedian1 = Arrays.copyOf(geoMedian1, geoMedian1.length);
+            
+            // re-calculate any values of fDerEval that are 0, using finite difference:
+            usedFiniteDifference = false;
+            System.out.printf("[gm=(%s)  der=(%s)]\n",
+                AbstractGeometricMedianFunction.toString(geoMedian1),
+                AbstractGeometricMedianFunction.toString(fDerEval));
+            System.out.flush();
+            for (i = 0; i < nDimensions; ++i) {
+                if (Math.abs(fDerEval[i]) < eps) {
+                    // TODO: create a per-dimension method for finite difference and use it here as alt
+                    fd = function.finiteDifference(geoMedian1);
+                    System.arraycopy(fd, 0, fDerEval, 0, nDimensions);
+                    usedFiniteDifference = true;
+                    break;
+                }
+            }
+            if (usedFiniteDifference) {
+                System.out.printf("  [finite difference=(%s)]\n",
+                    AbstractGeometricMedianFunction.toString(fDerEval));
+                System.out.flush();
+            }
             
             for (i = 0; i < nDimensions; ++i) {
                 //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})

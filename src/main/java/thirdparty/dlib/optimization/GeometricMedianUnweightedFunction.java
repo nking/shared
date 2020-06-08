@@ -156,6 +156,7 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         //double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
 
         double[] diffs = calculateDifferences(geoMedian);
+        
         double[] ssdPerPoint = calculateSSDPerPoint(diffs);
         
         int nData = (int) (obs.length / nDimensions);
@@ -171,26 +172,13 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         // to avoid divide by 0:
         s += eps;
         
-        //df/dX_0 = (1./n) * (X_0 - obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
+        //df/dX_0 = (1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
         double[] dfDX = new double[nDimensions];
         
         // NOTE: can see that the unweighted algorithm will not make progress when
         //    the current geometric-median estimate is the centroid.
         int j, d;
-        for (i = 0; i < nData; ++i) {
-            
-            // skip a point if it is the same as the median
-            boolean skip = true;
-            for (d = 0; d < nDimensions; ++d) {
-                j = i * nDimensions + d;
-                if (Math.abs(geoMedian[d] - obs[j]) > eps) {
-                    skip = false; 
-                    break;
-                }
-            }
-            if (skip) {
-                continue;
-            }
+        for (i = 0; i < nData; ++i) {            
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
                 dfDX[d] += (geoMedian[d] - obs[j]);
@@ -198,19 +186,11 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         }
         
         for (d = 0; d < nDimensions; ++d) {
-        //    dfDX[d] /= (nData * s);
+            dfDX[d] /= (nData * s);
         }
         
         return dfDX;
     }
-    
-    /*
-    df/dX_0 = (1./n) * (X_0 - obs_i_0) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-1/2)
-    
-    d/dx of df/dX_0 = (1./n)*( (-1/2)* ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) ) ) * 2 * (X_0-obs_i_0)
-        = (-1/n)*(X_0-obs_i_0)/ ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) ) )
-    
-    */
     
     public int getNDimensions() {
         return nDimensions;

@@ -69,7 +69,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     }
     
     /**
-     * calculate centroid of data for each dimension. the centroid can be used
+     * calculate centroid of data. the centroid can be used
      * as a possible starting point for the search.
      *
      * @return an array of the centroids of the observations for each dimension
@@ -248,7 +248,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
     */
-    double[] finiteDifference(double[] coeffs) {
+    public double[] finiteDifference(double[] coeffs) {
 
         //System.out.println("a1  x.size=" + coeffs.length);
 
