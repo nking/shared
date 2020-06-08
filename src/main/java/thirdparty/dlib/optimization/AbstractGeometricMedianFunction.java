@@ -279,6 +279,42 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
 
         return der;
     }
+    
+    /**
+    perform finite difference on a single dimension.
+    adapted from dlib optimization.h
+    Copyright (C) 2008  Davis E. King (davis@dlib.net)
+    License: Boost Software License   See LICENSE.txt for the full license.
+    */
+    public double finiteDifference(double[] coeffs, int dimensionNumber) {
+
+        //System.out.println("a1  x.size=" + coeffs.length);
+
+        int n = coeffs.length;
+        
+        //T0DO: set this be a fraction of the diagonal of the bounds of obs
+        final double fds = 0.001;//getFDEps();
+
+        double[] e = Arrays.copyOf(coeffs, n);
+
+        int i = dimensionNumber;
+        final double old_val = e[i];
+        e[i] += fds;
+        final double delta_plus = f(e);
+        e[i] = old_val - fds;
+        final double delta_minus = f(e);
+
+        // finite difference:  this is the approx jacobian
+        double der = (delta_plus - delta_minus)/(2.*fds); 
+
+        //NOTE: newton's method would continue with:
+        // x_(i+1) = x_i - (delta_plus/der(i))
+
+        // and finally restore the old value of this element
+        e[i] = old_val;
+
+        return der;
+    }
 
     public static String toString(double[] a) {
         StringBuilder sb = new StringBuilder("[");
