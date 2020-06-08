@@ -26,6 +26,10 @@ public class GeometricMedian {
         int nDimensions = function.getNDimensions();
         int nData = function.getNData();
         
+        if (init.length != nDimensions) {
+            throw new IllegalArgumentException("init.length must equal nDimensions");
+        }
+        
         // assuming for now, that this is true:
         if (nData == nDimensions) {
             double[] cen = function.calculateCentroid();
@@ -85,13 +89,12 @@ public class GeometricMedian {
             // re-calculate any values of fDerEval that are 0, using finite difference:
             usedFiniteDifference = false;
             System.out.printf("[gm=(%s)  der=(%s)]\n",
-                AbstractGeometricMedianFunction.toString(geoMedian1),
+                AbstractGeometricMedianFunction.toString(prevGeoMedian1),
                 AbstractGeometricMedianFunction.toString(fDerEval));
             System.out.flush();
             for (i = 0; i < nDimensions; ++i) {
                 if (Math.abs(fDerEval[i]) < eps) {
-                    // TODO: create a per-dimension method for finite difference and use it here as alt
-                    fd = function.finiteDifference(geoMedian1);
+                    fd = function.finiteDifference(prevGeoMedian1);
                     System.arraycopy(fd, 0, fDerEval, 0, nDimensions);
                     usedFiniteDifference = true;
                     break;
@@ -101,6 +104,18 @@ public class GeometricMedian {
                 System.out.printf("  [finite difference=(%s)]\n",
                     AbstractGeometricMedianFunction.toString(fDerEval));
                 System.out.flush();
+                
+                // stopping strategy
+                cg = 0;
+                for (i = 0; i < nDimensions; ++i) {
+                    if (Math.abs(fDerEval[i]) <= fds) {
+                        cg++;
+                    }
+                }
+                if (cg == nDimensions) {
+                    System.arraycopy(prevGeoMedian1, 0, init, 0, init.length);
+                    return prevFEval;
+                }
             }
             
             for (i = 0; i < nDimensions; ++i) {
