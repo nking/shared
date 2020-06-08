@@ -16,7 +16,7 @@ public class GeometricMedianTest extends TestCase {
         super(testName);
     }
     
-    public void est0() {
+    public void test0() {
         
         System.out.println("test0");
         
@@ -25,60 +25,81 @@ public class GeometricMedianTest extends TestCase {
      -- Input: (1, 1), (3, 3)
         Output: Geometric Median = (2, 2) with minimum distance = 2.82843
         */
-        double[] data = new double[]{1, 1, 3, 3};
+        /*
+        standardized: Mean = new double[]{2, 2};   -1 -1  1 1
+        standardized: StDev = new double[]{1.414, 1.414};
+        standardized: new double[]{-0.707, -0.707, 0.707, 0.707};
+        */
+        
+        double[] data0 = new double[]{1, 1, 3, 3};
         int nDimensions = 2;
+        double expectedDist = Math.sqrt(8);  // in standaridized=2
+        
+        double tol = 0.01;
                 
         double[] init;
-        double[][] expected = new double[4][2];
-        expected[0] = new double[]{1, 1};
-        expected[1] = new double[]{2, 2};
-        expected[2] = new double[]{3, 3};
-        expected[3] = new double[]{1.707106781, 1.707106781};
-        double expectedDist = Math.sqrt(8);
+        // the geometric-median in original data frames:
+        double[] expected = new double[]{2, 2};
+        // the geometric-median in standardized coordinate frames:
+        double[] standardizedExpected = new double[]{0., 0};
         
+        double[] standardizedMean = new double[nDimensions];
+        double[] standardizedStDev = new double[nDimensions];
+        double[] data = Standardization.standardUnitNormalization(data0, 
+            nDimensions, standardizedMean, standardizedStDev);
+        
+        GeometricMedianUnweightedFunction f0 
+            = new GeometricMedianUnweightedFunction(data0, nDimensions);
         GeometricMedianUnweightedFunction f 
             = new GeometricMedianUnweightedFunction(data, nDimensions);
         GeometricMedian gm = new GeometricMedian();
         
-        for (int ii = 0; ii < 4; ++ii) {
+        for (int ii = 0; ii < 3; ++ii) {
             switch(ii) {
                 case 0:
-                    init = new double[]{1, 1};            
+                    init = new double[]{0, 0};            
                     break;
                 case 1:
-                    init = new double[]{1, 3};
-                    break;
-                case 2:
-                    init = new double[]{3, 3};
+                    //init = new double[]{0, 12};
+                    init = new double[]{0, 1.1547};
                     break;
                 default:
                     init = f.calculateCentroid();;
                     break;
             }
             
-            System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%s), (%s), (%s), (%s)\n",
+            System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
                 init[0], init[1], 
-                AbstractGeometricMedianFunction.toString(expected[0]),
-                AbstractGeometricMedianFunction.toString(expected[1]),
-                AbstractGeometricMedianFunction.toString(expected[2]),
-                AbstractGeometricMedianFunction.toString(expected[3])
-            );
-           
+                standardizedExpected[0], standardizedExpected[1]);
+                //expected[0], expected[1]);
+            
             double min = gm.newtonsMethod2(f, init);
 
-            System.out.println("min=" + min + " \n   coeffs=" +
+            System.out.println("in standardized units: min=" + min + " \n   coeffs=" +
                 Arrays.toString(init));
             System.out.flush();
             
-            // fails for some
-            assertTrue(Math.abs(min - expectedDist) < 0.001);
-
+            // de-normalize the geometric-median "init" and recalculate min
+            //    in the natural coordinates:
+            init = Standardization.standardUnitDenormalization(init, nDimensions, 
+                standardizedMean, standardizedStDev);
+        
+            min = f0.f(init);
             
+            System.out.println("in data units: min=" + min + " \n   coeffs=" +
+                Arrays.toString(init));
+            System.out.flush();
+            
+            assertTrue(Math.abs(min - expectedDist) <= tol);
+
+            for (int i = 0; i < init.length; ++i) {
+                assertTrue(Math.abs(init[i] - expected[i]) < tol);
+            }
         }
         
     }
     
-    public void test1() {
+    public void est1() {
         
         System.out.println("test1");
         
