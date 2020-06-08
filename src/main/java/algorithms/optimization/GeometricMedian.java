@@ -28,7 +28,8 @@ public class GeometricMedian {
         
         // assuming for now, that this is true:
         if (nData == nDimensions) {
-            init = function.calculateCentroid();
+            double[] cen = function.calculateCentroid();
+            System.arraycopy(cen, 0, init, 0, nDimensions);
         }
         
         //NOTE: if observed data given to function has been standardized,
