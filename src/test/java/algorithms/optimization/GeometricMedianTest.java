@@ -202,9 +202,9 @@ public class GeometricMedianTest extends TestCase {
         // the geometric-median in original data frames:
         double[] expected = new double[]{20., 0};
         // the geometric-median in standardized coordinate frames:
-        double[] standardizedExpected = new double[]{0.271, 0};
+        double[] standardizedExpected = new double[]{0.2707, 0};
         
-        double expectedDist = 163.964; // in standardized = 
+        double expectedDist = 163.964; // in standardized ~ 4.265
         
         double tol = 0.01;
         
@@ -220,7 +220,7 @@ public class GeometricMedianTest extends TestCase {
             = new GeometricMedianUnweightedFunction(data, nDimensions);
         GeometricMedian gm = new GeometricMedian();
                 
-        for (int ii = 0; ii < 3; ++ii) {
+        for (int ii = 3; ii < 4; ++ii) {
             switch(ii) {
                 case 0:
                     //init = new double[]{44, 0};
@@ -233,6 +233,10 @@ public class GeometricMedianTest extends TestCase {
                 case 2:
                     //init = new double[]{0, 0}; 
                     init = new double[]{-0.258, 0.};
+                    break;
+                case 3:
+                    //init = new double[]{20, 0};
+                    init = new double[]{0.2707, 0.};
                     break;
                 default:
                     // (9.75, 0)
@@ -250,6 +254,9 @@ public class GeometricMedianTest extends TestCase {
             System.out.println("in standardized units: min=" + min + " \n   coeffs=" +
                 Arrays.toString(init));
             System.out.flush();
+            
+            boolean b = gm.verify(f, init, tol);
+            assertTrue(b);
             
             // de-normalize the geometric-median "init" and recalculate min
             //    in the natural coordinates:

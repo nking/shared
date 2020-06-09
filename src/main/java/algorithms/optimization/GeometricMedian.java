@@ -12,10 +12,33 @@ public class GeometricMedian {
    
     /**
      * use first derivative to find minimum sum of function defining geometric-median.
-     * newton's method has been altered to use back-tracking with a deceasing step size.
+     * Newton's method has been altered to use back-tracking with a deceasing step size.
+     * The first derivative of the geometric-median is not zero so can use
+     * first order Householder methods, but cannot use 2nd order Householder methods
+     * because the 2nd derivative is 0.
+     * <pre>
+       example for nDimensions = 2:
+       f = summation_i=1_n( || X - obs_i || )/n
+           where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
+       df/dX_0 = d/dx( (1/n)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) ))
+               = (1/n)*(1/2)*2*(X_0-obs_i_0)*(1)
+                  / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+               = (1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+       df/dX_1 = (1./n)*(X_1-obs_i_1) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+
+       d/dX_0 of df/dX_0 = (1./n) * (1) * (-1/2)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) )
+                           *2*(X_0-obs_i_0)*(1)
+                         = (-1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) )
+       d/dX_1 of df/dX_0 = 0
+         ...
+
+     * </pre>
      * 
      * NOTE: if nDimensions == nDataPoints, the init is replaced with the centroid.
      * euclidean centroid.
+     * 
+     * NOTE, algorithm currently may fail to minimize if arrives at demand points.
+     * 
      * @param function
      * @param init
      * @return 
@@ -88,12 +111,14 @@ public class GeometricMedian {
             
             // re-calculate any values of fDerEval that are 0, using finite difference:
             usedFiniteDifference = false;
-            System.out.printf("[gm=(%s)  der=(%s)]\n",
+            System.out.printf("[gm=(%s)  f=%.3e der=(%s)]\n",
                 AbstractGeometricMedianFunction.toString(prevGeoMedian1),
+                prevFEval,
                 AbstractGeometricMedianFunction.toString(fDerEval));
             System.out.flush();
             for (i = 0; i < nDimensions; ++i) {
                 if (Math.abs(fDerEval[i]) < eps) {
+                    // finite difference, secant method, broyden's method:
                     fd = function.finiteDifference(prevGeoMedian1);
                     System.arraycopy(fd, 0, fDerEval, 0, nDimensions);
                     usedFiniteDifference = true;
@@ -172,4 +197,31 @@ public class GeometricMedian {
         }
     }
     
+    /**
+     * if init is a root of the function, and error is errorTolerance or smaller,
+       then the function derivative evaluated at the root plus and at the root minus
+       the error will have opposing signs.
+     * @param function
+     * @param init
+     * @return 
+     */
+    public boolean verify(AbstractGeometricMedianFunction function,
+        double[] init, double errorTolerance) {
+        
+        double d = errorTolerance;
+        double[] minus = Arrays.copyOf(init, init.length);
+        double[] plus = Arrays.copyOf(init, init.length);
+        for (int i = 0; i < minus.length; ++i) {
+            minus[i] -= d;
+            plus[i] += d;
+        }
+        double[] fMinus = function.der(minus);
+        double[] fPlus = function.der(plus);
+        for (int i = 0; i < minus.length; ++i) {
+            if ((fMinus[i] < 0 && fPlus[i] > 0) || (fMinus[i] > 0 && fPlus[i] < 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
