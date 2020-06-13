@@ -253,12 +253,17 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      * 
      * @param isMedian
      * @param geoMedian
+     * @param checks output array of size 2 holding the conditions to check after the algorithm
+     * has completed.  checks[0 = (T(X)==X); checks[1]=(X.lte.eta(X))
      * @return 
      */
-    public double vardiZhang(int[] isMedian, double[] geoMedian) {
+    public double vardiZhang(int[] isMedian, double[] geoMedian, boolean[] checks) {
         
         if (geoMedian.length != nDimensions) {
             throw new IllegalArgumentException("geoMedian length should equal nDimensions");
+        }
+        if (checks.length != 2) {
+            throw new IllegalArgumentException("checks.length must == 2");
         }
         
         int nData = (obs.length / nDimensions);
@@ -358,6 +363,9 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
         }
         // is rX <= etaX?
         boolean c2 = (rX <= etaX);
+        
+        checks[0] = c1;
+        checks[1] = c2;
         
         System.arraycopy(t, 0, geoMedian, 0, geoMedian.length);
         

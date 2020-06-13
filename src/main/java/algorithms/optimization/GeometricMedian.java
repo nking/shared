@@ -266,13 +266,56 @@ public class GeometricMedian {
     public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
         double[] geoMedian) {
         
-        double f0 = newtonsMethod2(function, geoMedian);
+        double fds0 = 1.e-4;
+        double fds = 1.e-3;
         
+        boolean[] checks = new boolean[2];
+        int checkTol = 0;
+        double f0;
+        double f1 = Double.MAX_VALUE;
         int[] isMedian = new int[function.getNData()];
-        function.isMedian(geoMedian, isMedian);
+        double[] prevGeoMedian = new double[geoMedian.length];
+        int nIter = 0;
+        int nIterMax = 100;
+        while (nIter < nIterMax) {
+            
+            f0 = newtonsMethod2(function, geoMedian);
+
+            System.out.printf("%d) newton's f=%.3e gm=%s\n", nIter, f0, 
+                AbstractGeometricMedianFunction.toString(geoMedian));
+            
+            function.isMedian(geoMedian, isMedian);
+
+            System.arraycopy(geoMedian, 0, prevGeoMedian, 0, geoMedian.length);
+            
+            f1 = function.vardiZhang(isMedian, geoMedian, checks);
         
-        double f1 = function.vardiZhang(isMedian, geoMedian);
-        
+            System.out.printf("  vz f=%.3e gm=%s checks=%s\n", f1, 
+                AbstractGeometricMedianFunction.toString(geoMedian),
+                Arrays.toString(checks));
+            System.out.flush();
+            
+            // stopping criteria:
+            if (checks[0] && checks[1]) {
+                break;
+            }
+            
+            // stopping criteria:
+            if (Math.abs(f1 - f0) < fds0) {
+                for (checkTol = 0; checkTol < geoMedian.length; ++checkTol) {
+                    if (Math.abs(prevGeoMedian[checkTol] - geoMedian[checkTol])
+                        > fds) {
+                        break;
+                    }
+                }
+                if (checkTol == geoMedian.length) {
+                    break;
+                }
+            }
+            
+            nIter++;
+        }
+
         return f1;
     }
 

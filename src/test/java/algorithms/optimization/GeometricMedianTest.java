@@ -101,8 +101,9 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.println("in data units: min=" + min + " \n   coeffs=" +
-                    Arrays.toString(init));
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s", 
+                    min, Arrays.toString(init), expectedDist,
+                    AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
 
                 assertTrue(Math.abs(min - expectedDist) <= tol);
@@ -199,8 +200,9 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.println("in data units: min=" + min + " \n   coeffs=" +
-                    Arrays.toString(init));
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s", 
+                    min, Arrays.toString(init), expectedDist,
+                    AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
 
                 assertTrue(Math.abs(min - expectedDist) <= tol);
@@ -320,8 +322,9 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.println("in data units: min=" + min + " \n   coeffs=" +
-                    Arrays.toString(init));
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s", 
+                    min, Arrays.toString(init), expectedDist,
+                    AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
 
                 assertTrue(Math.abs(min - expectedDist) <= tol);
