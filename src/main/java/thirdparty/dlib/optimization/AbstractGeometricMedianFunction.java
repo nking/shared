@@ -94,7 +94,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     }
 
     /**
-     * calculate the difference of each observation by dimension with the
+     * calculate the geoMedian - obs_i of each observation by dimension with the
      * geometric median by dimension.  The resulting array is ordered in the
      * same manner as the instance observations, that is
      * the observations from all dimensions in format of
@@ -336,4 +336,35 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
         sb.append("]");
         return sb.toString();
     }
+    
+    /**
+     * 
+     * @param geoMedian
+     * @param isMedian output array holding values of 0 when obs_i does not
+     * equal the geoMedian, else has value 0.    should be initialized to be
+     * same length as obs.
+     */
+    public void isMedian(double[] geoMedian, int[] isMedian) {
+        
+        double[] obs = getObs();
+        
+        int nDimensions = geoMedian.length;
+        int nData = (obs.length / nDimensions);
+        if (isMedian.length != nData) {
+            throw new IllegalArgumentException("isMedian must have length nData");
+        }
+        
+        int i, j, d;
+        for (i = 0; i < nData; ++i) {
+            isMedian[i] = 1;
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;
+                if (Math.abs(geoMedian[d] - obs[j]) > 1.e-17) {
+                   isMedian[i] = 0;
+                   break;
+                }
+            }
+        }
+    }
+    
 }

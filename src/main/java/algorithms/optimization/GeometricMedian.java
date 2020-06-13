@@ -1,11 +1,25 @@
 package algorithms.optimization;
 
-import algorithms.misc.MiscMath0;
 import java.util.Arrays;
 import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
+import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 
 /**
- *
+ * the geometric median:
+   a.k.a. spatial median.
+   the weighted version is a.k.a. L1-median (though it uses the euclidean distance)
+   and the multivariate L1 -median (L1 -MM).
+   
+   definition: the point which minimizes the sum of the euclidean distance of that
+     point to all other points in the set.
+     the sum is a convex function (i.e. local search will work).
+     Unfortunately, no algorithms are closed form, that is no algorithms have a
+     finite number of computational operations.
+     The geometric median is a rotation and translation invariant estimator that
+     achieves the optimal breakdown point of 0.5, i.e. it is a good estimator
+     even when up to half of the input data is arbitrarily corrupted.
+     (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
+ * 
  * @author nichole
  */
 public class GeometricMedian {
@@ -29,13 +43,19 @@ public class GeometricMedian {
        d/dX_0 of df/dX_0 = (1./n) * (1) * (-1/2)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) )
                            *2*(X_0-obs_i_0)*(1)
                          = (-1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) )
-       d/dX_1 of df/dX_0 = 0
+       
+       Hessian d/dX of d/dX where p is nDimensions and I is the identity matrix of size pxp:
+                            ( (    I_p      )   ( (X - obs_i)*(X - obs_i)^T )
+           = summation_i=1_n( (-------------) - ( --------------------------)
+                            ( (||X - obs_i||)   (      ||X - obs_i||^3      )
          ...
 
      * </pre>
      * 
-     * NOTE: if nDimensions == nDataPoints, the init is replaced with the centroid.
-     * euclidean centroid.
+     * NOTE: if nDimensions == nDataPoints, the init is replaced with the
+     * euclidean centroid.  These are "colinear" cases extended to more than
+     * 2 dimensions.  There are many solutions for these cases, but the 
+     * euclidean centroid is chosen here.
      * 
      * NOTE, algorithm currently may fail to minimize if arrives at demand points.
      * 
@@ -108,7 +128,7 @@ public class GeometricMedian {
             prevFEval = fEval;
             prevFEval2 = Arrays.copyOf(fEval2, fEval2.length);
             prevGeoMedian1 = Arrays.copyOf(geoMedian1, geoMedian1.length);
-            
+                        
             // re-calculate any values of fDerEval that are 0, using finite difference:
             usedFiniteDifference = false;
             System.out.printf("[gm=(%s)  f=%.3e der=(%s)]\n",
@@ -116,6 +136,7 @@ public class GeometricMedian {
                 prevFEval,
                 AbstractGeometricMedianFunction.toString(fDerEval));
             System.out.flush();
+           
             for (i = 0; i < nDimensions; ++i) {
                 if (Math.abs(fDerEval[i]) < eps) {
                     // finite difference, secant method, broyden's method:
@@ -145,7 +166,11 @@ public class GeometricMedian {
             
             for (i = 0; i < nDimensions; ++i) {
                 //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
-                r2 = alpha * (fEval2[i]/(double)nData) / (fDerEval[i] + eps);
+                if (Math.abs(fEval2[i]) < eps) {
+                    r2 = 0;
+                } else {
+                    r2 = alpha * (fEval2[i]/(double)nData) / (fDerEval[i] + eps);
+                }
                 geoMedian1[i] -= r2;
             }
             
@@ -224,4 +249,32 @@ public class GeometricMedian {
         }
         return false;
     }
+    
+    /**
+     * run newtonsMethod2 to completion and use Vardi Zhang (2000) algorithm
+     * to update argmin X if it's a point in obs.
+     *
+     * Vardi & Zhang 2000:
+     * "The multivariate L1-median and associated data depth",
+       Yehuda Vardi and Cun-Hui Zhang
+     *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf
+     * 
+     * @param function
+     * @param geoMedian
+     * @return 
+     */
+    public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
+        double[] geoMedian) {
+        
+        double f0 = newtonsMethod2(function, geoMedian);
+        
+        int[] isMedian = new int[function.getNData()];
+        function.isMedian(geoMedian, isMedian);
+        
+        double f1 = function.vardiZhang(isMedian, geoMedian);
+        
+        return f1;
+    }
+
+    
 }

@@ -6,40 +6,48 @@ import java.util.Arrays;
  * objective function implementations for use with search algorithms using IFunction
  * as input for the geometric-median.
  * 
-   calculating the geometric median:
-   definition: the point which minimizes the sum of the euclidean distance of that 
+   a.k.a. spatial median.
+   the weighted version is a.k.a. L1-median (though it uses the euclidean distance)
+   and the multivariate L1 -median (L1 -MM).
+   
+   definition: the point which minimizes the sum of the euclidean distance of that
      point to all other points in the set.
      the sum is a convex function (i.e. local search will work).
      Unfortunately, no algorithms are closed form, that is no algorithms have a
      finite number of computational operations.
-     The geometric median is a rotation and translation invariant estimator that 
+     The geometric median is a rotation and translation invariant estimator that
      achieves the optimal breakdown point of 0.5, i.e. it is a good estimator
      even when up to half of the input data is arbitrarily corrupted.
      (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
-    
-    It's the Fermat-Weber problem.
-    given observed data points obs = (x_i, y_i, ...)
-    want to solve for X=(x_geo_median, y_geo_median, ...).
-    X = arg min of summation over all points ( || X-obs ||_2 ), that is, the X which minimizes the
-    sum of the differences where _2 is notation for using L2 (euclidean) distances.
-    
+     
       <pre>
       f = summation_i=1_n( || X - obs_i || )/n     
                where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
       df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(-1/2) * (2*(X_0-obs_i_0))
               = (1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
-      df/dX_1 = (1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)     
+      df/dX_1 = (1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)  
+      
+       d/dX_0 of df/dX_0 = (1./n) * (1) * (-1/2)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) )
+                           *2*(X_0-obs_i_0)*(1)
+                         = (-1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) )
+       d/dX_1 of df/dX_0 = 0
+       Hessian d/dX of d/dX where p is nDimensions and I is the identity matrix of size pxp:
+                                ( (    I_p      )   ( (X - obs_i)*(X - obs_i)^T )
+               = summation_i=1_n( (-------------) - ( --------------------------)
+                                ( (||X - obs_i||)   (      ||X - obs_i||^3      )
       </pre>
       
+      * NOTE: consider using Standardization normalization  on
+      the data before using this class then use Standardization de-normalization
+      on the resulting geometric-median afterwards and run the evaluation on that
+      result.
+  
       Caveat is that the algorithm can fail within a stop strategy tolerance of
       the centroid because the derivative becomes 0.
       
       Either the algorithm has to be alert for that and adapt to it (by checking
       for centroid and testing points around it outside of the tolerance, presumably),
       OR you should use the weighted geometric-median.
-      
-      NOTE that the initial point for the algorithm should be within bounds of the 
-      data.
       
  * @author nichole
  */
