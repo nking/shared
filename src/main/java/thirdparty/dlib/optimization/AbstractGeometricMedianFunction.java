@@ -328,7 +328,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     public static String toString(double[] a) {
         StringBuilder sb = new StringBuilder("[");
         for (int i=0;i<a.length;i++) {
-            sb.append(String.format("%.3e", a[i]));
+            sb.append(String.format("%.7e", a[i]));
             if (i < a.length - 1) {
                 sb.append(", ");
             }
