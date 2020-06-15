@@ -2,6 +2,7 @@ package algorithms.optimization;
 
 import java.util.Arrays;
 import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
+import thirdparty.dlib.optimization.GeometricMedianUnweightedFunction;
 import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 
 /**
@@ -19,6 +20,11 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
      achieves the optimal breakdown point of 0.5, i.e. it is a good estimator
      even when up to half of the input data is arbitrarily corrupted.
      (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
+ * 
+ * https://feb.kuleuven.be/public/u0017833/PDF-FILES/l1medianR2.pdf
+ * NOTE: the Vardi-Zhang 2000 update method with the author's implemented non-linear
+ * optimization, appears to have a runtime of O(N log_2 N)
+ * 
  * 
  * @author nichole
  */
@@ -71,6 +77,18 @@ public class GeometricMedian {
         
         if (init.length != nDimensions) {
             throw new IllegalArgumentException("init.length must equal nDimensions");
+        }
+        
+        //TODO: handle this condition for unweighted spatial median quickly, 
+        // no iteration needed:
+        // "If more than n/2 observations are concentrated in one point, say y, 
+        // the solution of the L1-median is y"
+        if (function instanceof GeometricMedianUnweightedFunction) {
+            double[] pt = occursAsMoreThanHalf(function);
+            if (pt != null) {
+                System.arraycopy(pt, 0, init, 0, init.length);
+                return function.f(init);
+            }
         }
         
         // assuming for now, that this is true:
@@ -163,6 +181,15 @@ public class GeometricMedian {
                     return prevFEval;
                 }
             }
+            
+            // first derivative is used here, but not the hessian.
+            // could use the hessian to refine the data step size.
+            // hessian: d^2f(x)/dx_i dx_j
+            //    x_{t+1} = x_{t} - (1/H(x_{t})) * f'(x_{t})
+            //       with alpha as a line search step size again.
+            // NOTE that if the equation were not convex, could get additional
+            //    information about the point where gradient becomes 0 using
+            //    the hessian (pt being min, max, or saddle point)
             
             for (i = 0; i < nDimensions; ++i) {
                 //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
@@ -327,6 +354,27 @@ public class GeometricMedian {
         }
 
         return f1;
+    }
+
+    private double[] occursAsMoreThanHalf(AbstractGeometricMedianFunction function) {
+        double[] obs = function.getObs();
+        int nDimensions = function.getNDimensions();
+        int nData = function.getNData();
+        
+        // store points and frequency
+        // TODO: create a data structure like PaiInt to hold a double array
+        //   with edited equals for a tolerance of equality
+        //   (presumably 1e-17) and a hashcode to return same hash for
+        //   similar entries truncated to tolerance.
+        int i, j, d;
+        double a, b;
+        for (i = 0; i < nData; ++i) {
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;
+                
+            }
+        }
+        throw new UnsupportedOperationException("not currently implemented");
     }
 
     
