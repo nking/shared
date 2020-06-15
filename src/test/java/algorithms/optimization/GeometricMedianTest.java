@@ -255,6 +255,8 @@ public class GeometricMedianTest extends TestCase {
         for (int type = 1; type < 2; ++type) {
         
             if (type == 0) {
+                // fails for unweighted when derivative becomes 0 and point is
+                //   not the minimum, but is a "demand point"
                 f0 = new GeometricMedianUnweightedFunction(data0, nDimensions);
                 f = new GeometricMedianUnweightedFunction(data, nDimensions);
             } else {
@@ -295,8 +297,8 @@ public class GeometricMedianTest extends TestCase {
                         break;
                 }
 
-                System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
-                    init[0], init[1], 
+                System.out.printf("\n%d) begin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
+                    type, init[0], init[1], 
                     standardizedExpected[0], standardizedExpected[1]);
                     //expected[0], expected[1]);
 
@@ -327,11 +329,12 @@ public class GeometricMedianTest extends TestCase {
                     AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
 
-                assertTrue(Math.abs(min - expectedDist) <= tol);
+                assertTrue(Math.abs(min - expectedDist) <= tol * expectedDist);
 
                 for (int i = 0; i < init.length; ++i) {
                     double diff = Math.abs(init[i] - expected[i]);
-                    assertTrue(diff < tol);
+                    double tol2 = 0.03 * Math.abs(standardizedStDev[i]);
+                    assertTrue(diff <= tol2);
                 }
             }
         }
@@ -340,6 +343,8 @@ public class GeometricMedianTest extends TestCase {
     public void test3() {
         
         System.out.println("test3");
+        
+        // testing the weighted with multiplicities that are > 1
         
         /*
         from "Noniterative Solution of Some Fermat-Weber Location Problems"
@@ -372,92 +377,80 @@ public class GeometricMedianTest extends TestCase {
         double[] data = Standardization.standardUnitNormalization(data0, 
             nDimensions, standardizedMean, standardizedStDev);
         
-        AbstractGeometricMedianFunction f0, f;
-        
-        for (int type = 1; type < 2; ++type) {
-        
-            if (type == 0) {
-                f0 = new GeometricMedianUnweightedFunction(data0, nDimensions);
-                f = new GeometricMedianUnweightedFunction(data, nDimensions);
-            } else {
-                double[] eta = new double[]{13., 13., 5., 5.};
-                f0 = new GeometricMedianWeightedFunction(data0, nDimensions, eta);
-                f = new GeometricMedianWeightedFunction(data, nDimensions, eta);
+        GeometricMedianWeightedFunction f0, f;
+
+        double[] eta = new double[]{13., 13., 5., 5.};
+        f0 = new GeometricMedianWeightedFunction(data0, nDimensions, eta);
+        f = new GeometricMedianWeightedFunction(data, nDimensions, eta);
+
+        GeometricMedian gm = new GeometricMedian();
+
+        for (int ii = 0; ii < 6; ++ii) {
+            switch (ii) {
+                case 0:
+                    //init = new double[]{0, 0};
+                    init = new double[]{-0.2575, 0};
+                    break;
+                case 1:
+                    //init = new double[]{44, 0};
+                    init = new double[]{0.905, 0};
+                    break;
+                case 2:
+                    //init = new double[]{3, 45};
+                    init = new double[]{-0.178, 1.148};
+                    break;
+                case 3:
+                    //init = new double[]{0, 0}; 
+                    init = new double[]{-0.258, 0.};
+                    break;
+                case 4:
+                    //init = new double[]{20, 0};
+                    init = new double[]{0.2707, 0.};
+                    break;
+                default:
+                    // (9.75, 0)
+                    init = f.calculateCentroid();
+                    ;
+                    break;
             }
-            
-            GeometricMedian gm = new GeometricMedian();
 
-            for (int ii = 0; ii < 6; ++ii) {
-                switch(ii) {
-                    case 0:
-                        //init = new double[]{0, 0};
-                        init = new double[]{-0.2575, 0};
-                        break;
-                    case 1:
-                        //init = new double[]{44, 0};
-                        init = new double[]{0.905, 0};
-                        break;
-                    case 2:
-                        //init = new double[]{3, 45};
-                        init = new double[]{-0.178, 1.148};
-                        break;
-                    case 3:
-                        //init = new double[]{0, 0}; 
-                        init = new double[]{-0.258, 0.};
-                        break;
-                    case 4:
-                        //init = new double[]{20, 0};
-                        init = new double[]{0.2707, 0.};
-                        break;
-                    default:
-                        // (9.75, 0)
-                        init = f.calculateCentroid();;
-                        break;
-                }
-
-                System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
-                    init[0], init[1], 
+            System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
+                    init[0], init[1],
                     standardizedExpected[0], standardizedExpected[1]);
-                    //expected[0], expected[1]);
+            //expected[0], expected[1]);
 
-                double min;
-                if (type == 0) {
-                    min = gm.newtonsMethod2(f, init);
-                } else {
-                    min = gm.newtonsThenVardiZhang(
-                        (GeometricMedianWeightedFunction)f, init);
-                }
+            double min = gm.newtonsThenVardiZhang(f, init);
 
-                System.out.println("in standardized units: min=" + min + " \n   coeffs=" +
-                    Arrays.toString(init));
-                System.out.flush();
+            System.out.println("in standardized units: min=" + min + " \n   coeffs="
+                    + Arrays.toString(init));
+            System.out.flush();
 
-                boolean b = gm.verify(f, init, tol);
-                assertTrue(b);
+            boolean b = gm.verify(f, init, tol);
+            assertTrue(b);
 
-                // de-normalize the geometric-median "init" and recalculate min
-                //    in the natural coordinates:
-                init = Standardization.standardUnitDenormalization(init, nDimensions, 
+            // de-normalize the geometric-median "init" and recalculate min
+            //    in the natural coordinates:
+            init = Standardization.standardUnitDenormalization(init, nDimensions,
                     standardizedMean, standardizedStDev);
 
-                min = f0.f(init);
+            min = f0.f(init);
 
-                System.out.printf("in data units: min=%.5e   coeffs=%s  expected=%.5e,   %s\n", 
+            System.out.printf("in data units: min=%.5e   coeffs=%s  expected=%.5e,   %s\n",
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
-                System.out.flush();
+            System.out.flush();
 
-                assertTrue(Math.abs(min - expectedDist) <= tol*expectedDist);
+            assertTrue(Math.abs(min - expectedDist) <= tol * expectedDist);
 
-                // standardizedExpected = new double[]{-0.257509, 0};
-                //expectedDist = 1747.0; // in standardized = 45.118504
-                for (int i = 0; i < init.length; ++i) {
-                    double diff = Math.abs(init[i] - expected[i]);
-                    //NOTE: increased the tolerance to 1% of the mean of the demand points.
-                    double tol2 = 0.03*Math.abs(standardizedStDev[i]);
-                    assertTrue(diff <= tol2);
-                }
+            // standardizedExpected = new double[]{-0.257509, 0};
+            //expectedDist = 1747.0; // in standardized = 45.118504
+            for (int i = 0; i < init.length; ++i) {
+                double diff = Math.abs(init[i] - expected[i]);
+                //NOTE: increased the tolerance to 1% of the mean of the demand points.
+                double tol2 = 0.03 * Math.abs(standardizedStDev[i]);
+                assertTrue(diff <= tol2);
             }
         }
+
     }
 }

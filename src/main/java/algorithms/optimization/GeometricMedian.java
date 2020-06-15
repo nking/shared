@@ -83,13 +83,13 @@ public class GeometricMedian {
         // no iteration needed:
         // "If more than n/2 observations are concentrated in one point, say y, 
         // the solution of the L1-median is y"
-        if (function instanceof GeometricMedianUnweightedFunction) {
+        /*if (function instanceof GeometricMedianUnweightedFunction) {
             double[] pt = occursAsMoreThanHalf(function);
             if (pt != null) {
                 System.arraycopy(pt, 0, init, 0, init.length);
                 return function.f(init);
             }
-        }
+        }*/
         
         // assuming for now, that this is true:
         if (nData == nDimensions) {
