@@ -1,8 +1,14 @@
 package algorithms.optimization;
 
+import algorithms.matrix.MatrixUtil;
+import algorithms.misc.Standardization;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
 import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
-import thirdparty.dlib.optimization.GeometricMedianUnweightedFunction;
 import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 
 /**
@@ -187,9 +193,13 @@ public class GeometricMedian {
             // hessian: d^2f(x)/dx_i dx_j
             //    x_{t+1} = x_{t} - (1/H(x_{t})) * f'(x_{t})
             //       with alpha as a line search step size again.
-            // NOTE that if the equation were not convex, could get additional
+            // NOTE that if the equation were not convex, would also pursue additional
             //    information about the point where gradient becomes 0 using
-            //    the hessian (pt being min, max, or saddle point)
+            //    the hessian (pt being min, max, or saddle point).
+            // critical point:
+            //     min for hessian positive definite (all the eigenvalues are positive)
+            //     max for hessian negative definit
+            //     saddle for hessian indefinite
             
             for (i = 0; i < nDimensions; ++i) {
                 //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
@@ -377,5 +387,188 @@ public class GeometricMedian {
         throw new UnsupportedOperationException("not currently implemented");
     }
 
+    /**
+    linear least squares and linear least squares minimization.
     
+    NOTE: for now, method internally uses unit standard normalization and
+    then de-normalizes the results.
+    
+    <pre> 
+    F(M) = Summation_over_i( || obs_i - M || )
+        goal: find M which minimizes F(M)
+    example with n=2 dimensions and objective 
+          
+    This assignment of A and x and b isn't correct yet.     
+        
+    (obs_0_0 - M_0)^2 + (obs_0_1 - M_1)^2 = small residual
+    (obs_1_0 - M_0)^2 + (obs_1_1 - M_1)^2 = small residual
+    (obs_2_0 - M_0)^2 + (obs_2_1 - M_1)^2 = small residual
+    (obs_3_0 - M_0)^2 + (obs_3_1 - M_1)^2 = small residual
+    ...
+    obs_0_0*obs_0_0 - 2*obs_0_0*M_0 + M_0*M_0
+     + obs_0_1*obs_0_1 - 2*obs_0_1*M_1 + M_1*M_1 = small residual
+    
+               [ A as obs items] * [                   ]
+                                   [  x as median items]
+                                   [                   ]
+                                   
+    [obs_0_0*obs_0_0  -2*obs_0_0  1  obs_0_1*obs_0_1  -2*obs_0  1   [ 1
+                                                                      M_0
+                                                                      M_0*M_0
+                                                                      1
+                                                                      M_1
+                                                                      M_1*M_1
+    
+    Full Rank (includes OVER-DETERMINED, m .gt. n):
+        A * x = b
+        A is mxn
+        x is m length
+        b is n length
+           has no exact solutions.
+           minimize the error b - A*x to find x.
+           set deriv to 0.
+    
+        x = (A^T A)^−1 A^T b where (A^T A)^−1 A^T (a m×n matrix) is the pseudo-inverse
+    
+    Rank Deficient (includes UNDER-DETERMINED, n .lt. m):
+        A * x = b
+        A is mxn
+        x is m length
+        b is n length
+           has infinitely many solutions.
+           columns of A are independent.
+           find smallest by minimizing x subject
+           to constraint b = A*x.
+           adding a lagrange multiplier then set deriv to 0.
+    
+        x = A^T*(A A^T)^−1 * b where (A^T A)^−1 A^T (a m×n matrix) is the pseudo-inverse
+            where A^T*(A A^T)^−1 (a m×n matrix) is the pseudo-inverse
+    
+        the pseudo-inverse is calculated from the SVD:
+            
+        A = U*S*V^T from SVD  
+            U is mxn orthonormal columns
+            S is nxn with non-negative singular values.  rank is number of non-zero entries
+            V is  nxn
+        x_LS = summation_over_rank((u_i^T * b / s_i) * v_i)
+    
+        note, the pseudo-inverse was V*R*U^T where R is 1/diagonal of S
+    
+    
+    RANK==NDATA
+        r == m  and  r == n  square an invertible   A*x=b   has 1 soln
+        columns of A are independent.
+        use Full-Rank solution, but if I is invertible, can use the inverse of A instead.
+    </pre>
+    @param init input variable holding coordinates of current estimate of
+    geometric median.
+    @return evaluation of the objective, summation_i=1_n(||geoMedian - obs_i||^2)/n
+    */
+    private double leastSquares(AbstractGeometricMedianFunction function,
+        double[] init) {
+    
+        int nDimensions = function.getNDimensions();
+        
+        if (nDimensions != 2) {
+            throw new UnsupportedOperationException("not yet implemented for "
+                + "nDimensions > 2");
+        }
+        
+        int nData = function.getNData();
+        
+        double[] geoMedian = Arrays.copyOf(init, init.length);
+                
+        // standard unit normalization:
+        double[] standardizedMean = new double[nDimensions];
+        double[] standardizedStDev = new double[nDimensions];
+        double[] normObs = Standardization.standardUnitNormalization(function.getObs(), 
+            nDimensions, standardizedMean, standardizedStDev);
+
+        
+        double[][] a = new double[nData][6];
+        int i, j, d;
+        double obs;
+        for (i = 0; i < nData; ++i) {
+            a[i] = new double[6];
+            for (d = 0; d < nDimensions; ++d) {
+                j = i * nDimensions + d;
+                obs = normObs[j];
+                a[i][d*3] = obs*obs;
+                a[i][d*3 + 1] = -2.*obs;
+                a[i][d*3 + 2] = 1.;
+            }
+        }
+        
+        double[] xLS2 = new double[6];
+        
+        try {
+           
+            // 1  M[0]  M[0]M[0]  1  M[1]  M[1]M[1]
+            
+            DenseMatrix aMatrix = new DenseMatrix(a);
+            SVD svd = SVD.factorize(aMatrix);
+            // s is an array of size min(m,n)
+            double[] s = svd.getS();
+            int rank = 0;
+            for (double sv : s) {
+                if (sv > 1e-17) {
+                    rank++;
+                }
+            }
+            DenseMatrix vTM = svd.getVt();
+            double[][] vT = MatrixUtil.convertToRowMajor(vTM);
+            double[][] v = MatrixUtil.transpose(vT);
+            DenseMatrix uM = svd.getU();
+            double[][] uT = MatrixUtil.convertToRowMajor(uM);
+            /*
+            U is mxn orthonormal columns
+            S is nxn with non-negative singular values.  rank is number of non-zero entries
+            V is  nxn
+            */
+            double[][] b2 = new double[2][6];
+            for (int ii = 0; ii < b2.length; ++ii) {
+                b2[ii] = new double[6];
+                Arrays.fill(b2[ii], 1.);
+            }
+            double[][] sInverse2 = new double[2][2];
+            for (int ii = 0; ii < sInverse2.length; ++ii) {
+                sInverse2[ii] = new double[2];
+                double sI = s[ii];
+                if (sI > 1e-17) {
+                    sInverse2[ii][ii] = 1./sI;
+                }
+            }
+            double[][] r = MatrixUtil.multiply(uT, sInverse2);//2x2
+            r = MatrixUtil.multiply(r, b2); // 2x6
+            r = MatrixUtil.multiply(r, v); //2x6
+            //x_LS = summation_over_rank((u_i^T * b / s_i) * v_i)
+            // U^T is 2X2.  S is 2.  V is 6X6   b has to be 2X6
+            // x is [1  M_0  M_0*M_0  1  m_1  M_1*M_1] 
+            for (int ii = 0; ii < rank; ++ii) {
+                for (int jj = 0; jj < 6; ++jj) {
+                    xLS2[jj] += r[ii][jj];
+                }
+                System.out.printf("r=%s\n", Arrays.toString(r[ii]));
+            }
+            System.out.printf("xLS2=%s\n", Arrays.toString(xLS2));
+           
+        } catch (NotConvergedException ex) {
+            Logger.getLogger(GeometricMedian.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.flush();
+        // extract g.m. from xLS
+        
+        if (true) {
+            throw new UnsupportedOperationException("unfinished");
+        }
+        
+        // de-normalize:        
+        geoMedian = Standardization.standardUnitDenormalization(geoMedian, nDimensions, 
+            standardizedMean, standardizedStDev);
+        double min = function.f(geoMedian);
+        
+        System.arraycopy(geoMedian, 0, init, 0, init.length);
+        
+        return min;
+    }
 }

@@ -24,7 +24,7 @@ public class LinearEquations {
      LUP decomposition is more numerically stable than x = A^-1*b.
          can find L, U, and P such that P*A=L*U
      where L is a lower triangular matrix, U is an upper triangular matrix,
-     and P is a permuation matrix.
+     and P is a permutation matrix.
      (a permutation matrix is all 0's excepting a single 1 in each column, uniquely.
      multiplying a vector by a permutation rearranges the members of the vector.)
      Uses forward substitution then back substitution.
@@ -294,9 +294,16 @@ public class LinearEquations {
         
         double[][] aPInv;
         if (solveFullRank) {
-            aPInv = MatrixUtil.pseudoinverse2(a);
+            //AX=b has no solution
+            //uses (inverse(A^T*A) * A^T in pseudo-inverse
+            aPInv = MatrixUtil.pseudoinverseFullRank(a);
         } else {
-            aPInv = MatrixUtil.pseudoinverse(a);
+            // uses SVD of a in pseudo-inverse
+            // Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
+            //inverse of A.
+            // method is valid for  rows .lte. rank,
+            // but for rows .gt. rank, the null-space needs to be solved instead.
+            aPInv = MatrixUtil.pseudoinverseRankDeficient(a);
         }
         
         double[] y = new double[nRows];

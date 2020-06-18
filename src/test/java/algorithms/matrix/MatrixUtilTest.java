@@ -153,7 +153,7 @@ public class MatrixUtilTest extends TestCase {
         expected[0] = new double[]{0.2, 0.1};
         expected[1] = new double[]{0.2, 0.1};
         
-        double[][] inv = MatrixUtil.pseudoinverse(a);
+        double[][] inv = MatrixUtil.pseudoinverseRankDeficient(a);
         
         for (int i = 0; i < a[0].length; i++) {
             for (int j = 0; j < a.length; j++) {
@@ -183,7 +183,7 @@ public class MatrixUtilTest extends TestCase {
         expected[2] = new double[]{0.06, -0.036, -0.048, -0.036, 0.06};
         
         //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
-        double[][] inv = MatrixUtil.pseudoinverse2(a);
+        double[][] inv = MatrixUtil.pseudoinverseFullRank(a);
         
         double[] y = new double[]{2, 1, 1, 0, 3};
         
@@ -203,7 +203,7 @@ public class MatrixUtilTest extends TestCase {
         a[2] = new double[]{1, 2, 4};
         a[3] = new double[]{1, 3, 9};
         a[4] = new double[]{1, 5, 25};
-        double[][] inv2 = MatrixUtil.pseudoinverse(a);
+        double[][] inv2 = MatrixUtil.pseudoinverseRankDeficient(a);
                 
     }
     

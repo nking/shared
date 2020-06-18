@@ -853,23 +853,21 @@ public class MatrixUtil {
     }
     
     /**
-     * calculate the pseudo-inverse of matrix a, using the SVD of a.
+     * calculate the pseudo-inverse of matrix a, using the SVD of a,
+     * specifically, V*R*U^T where R is 1/diagonal of S.
      * Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
      * inverse of A.
-     * Note also that this method returns valid answer for rows .lte. rank,
-     * but for rows .gt. rank, the null-space needs to be solved, 
-     * which is not done here.
-     * (For an example on solving the null-space, that is AX=0, see
-     * the class algorithms.imageProcessing.transform.EpipolarTransformer and
-     * method calculateEpipolarProjectionFor7Points in
-     * project curvature-scale-space-corners-and-transformations.
-     * That method follows the 7-point algorithm in R. Hartley and A. Zisserman, 
-     * "Multiple View Geometry in Computer Vision"
+     * 
+     * Following Gilbert Strang's "Introduction to Linear Algebra".
+     * 
+     * TODO: read "ALTERNATIVE METHODS OF CALCULATION OF THE PSEUDO INVERSE
+       OF A NON FULL-RANK MATRIX" by M. A. Murray-Lasso, 2008
+       http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
      * @param a
      * @return
      * @throws NotConvergedException 
      */
-    public static double[][] pseudoinverse(double[][] a) throws NotConvergedException {
+    public static double[][] pseudoinverseRankDeficient(double[][] a) throws NotConvergedException {
         int m = a.length;
         int n = a[0].length;
         
@@ -878,32 +876,17 @@ public class MatrixUtil {
         
         // from Gilbert Strang's "Introduction to Linear Algebra":
         // uses SVD:
-        //   A is m X n and n >= m
         //
         //   A_inverse = V * pseudoinverse(S) * U^T
         //        where pseudoinverse(S) is simply an empty matrix with the diagonal
         //        being the reciprocal of each singular value
-        //      NOTE: compare number of ops w/ this facoring:
+        //      NOTE: compare number of ops w/ this factoring:
         //          V * (pseudoinverse(S) * U^T)
         //   A_inverse is n X m
         //
         //   V is n X n
         //   pseudoinverse(S) is n X m
         //   U^T is m X m
-        
-        //NOTE: for the case of n > m or, knowing the rank r and n > r,
-        //    there is null-space to solve for (AX = 0).
-        //    a solution for a specific case of m=7 and n=9 is present in
-        //    the computer vision algorithm for the 7-point solution in
-        //    the book of Hartley & Zisserman.
-        //    An implementation of that is in this code's sibling project
-        //    called curvature-scale-space-corners-and-transformations in
-        //    the class algorithms.imageProcessing.transform.EpipolarTransformer
-        
-        boolean transpose = (n > m);
-        if (transpose) {
-            a = MatrixUtil.transpose(a);
-        }
         
         DenseMatrix aMatrix = new DenseMatrix(a);
         SVD svd = SVD.factorize(aMatrix);
@@ -912,16 +895,23 @@ public class MatrixUtil {
         
         // s is an array of size min(m,n)
         double[] s = svd.getS();
+        int rank = 0;
+        for (double sv : s) {
+            if (sv > eps) {
+                rank++;
+            }
+        }
         DenseMatrix vTM = svd.getVt();
         double[][] vT = MatrixUtil.convertToRowMajor(vTM);
         double[][] v = MatrixUtil.transpose(vT);
         DenseMatrix uM = svd.getU();
         double[][] uT = MatrixUtil.convertToRowMajor(uM);
         
-        //   A_inverse is n X m
-        //   V is n X n
-        //   pseudoinverse(S) is n X m
-        //   U^T is m X m
+        /*
+        U is mxn orthonormal columns
+        S is nxn with non-negative singular values.  rank is number of non-zero entries
+        V is  nxn
+        */
         assert(v.length == n);
         assert(v[0].length == n);
         assert(uT.length == m);
@@ -938,19 +928,16 @@ public class MatrixUtil {
                 sInverse[i][i] = 1./sI;
             }
         }
-        
-        //   A_inverse is n X m
-        //   V is n X n
-        //   pseudoinverse(S) is n X m
-        //   U^T is m X m
+        /*
+        U is mxn orthonormal columns
+        S is nxn with non-negative singular values.  rank is number of non-zero entries
+        V is  nxn
+        pseudoinverse(S) is nxm
+        */
         
         //A_inverse = V * pseudoinverse(S) * U^T
         double[][] inv = MatrixUtil.multiply(v, sInverse);
         inv = MatrixUtil.multiply(inv, uT);
-        
-        if (transpose) {
-            inv = MatrixUtil.transpose(inv);
-        }
         
         return inv;
     }
@@ -964,15 +951,10 @@ public class MatrixUtil {
      * m x n.  a is a full-rank matrix.
      * a is a non-singular matrix(i.e. has exactly one solution). 
      * 
-     * NOTE: for a non-full-rank matrix, should implement this:
-     * "ALTERNATIVE METHODS OF CALCULATION OF THE PSEUDO INVERSE
-       OF A NON FULL-RANK MATRIX" by M. A. Murray-Lasso, 2008
-       http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
-     
      * @return
      * @throws NotConvergedException 
      */
-    public static double[][] pseudoinverse2(double[][] a) throws NotConvergedException {
+    public static double[][] pseudoinverseFullRank(double[][] a) throws NotConvergedException {
         int m = a.length;
         int n = a[0].length;
         
