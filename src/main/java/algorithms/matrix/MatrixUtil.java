@@ -946,6 +946,8 @@ public class MatrixUtil {
      * calculate the pseudo-inverse of matrix a (dimensions mxn) which is a full
      * rank matrix, i.e. rank = m, using LUP decomposition
      * (inverse(A^T*A) * A^T).
+     * NOTE that (A^T*A) has to be invertible, that is, the reduced echelon form
+     * of A has linearly independent columns (rank==n).
      * following pseudocode from Cormen et al. Introduction to Algorithms.
      * @param a two dimensional array in row major format with dimensions
      * m x n.  a is a full-rank matrix.
@@ -965,6 +967,13 @@ public class MatrixUtil {
         double[][] aT = MatrixUtil.transpose(a);
         double[][] aTA = MatrixUtil.multiply(aT, a);
         DenseMatrix aTAM = new DenseMatrix(aTA);
+        
+        //NOTE that (A^T*A) has to be invertible, that is, the reduced echelon form
+        // of A has linearly independent columns (no free variables, only pivots.
+        // which also means rank==n).
+        //
+        // could invert (A^T*A) using the cofactor matrix/determinant
+        //   or a convenience method from MTJ Matrix.solve
         
         DenseMatrix I = Matrices.identity(aTA[0].length);
         DenseMatrix identity = I.copy();
