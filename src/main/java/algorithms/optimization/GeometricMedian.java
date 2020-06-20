@@ -398,28 +398,8 @@ public class GeometricMedian {
         goal: find M which minimizes F(M)
     example with n=2 dimensions and objective 
           
-    This assignment of A and x and b isn't correct yet.     
-        
-    (obs_0_0 - M_0)^2 + (obs_0_1 - M_1)^2 = small residual
-    (obs_1_0 - M_0)^2 + (obs_1_1 - M_1)^2 = small residual
-    (obs_2_0 - M_0)^2 + (obs_2_1 - M_1)^2 = small residual
-    (obs_3_0 - M_0)^2 + (obs_3_1 - M_1)^2 = small residual
-    ...
-    obs_0_0*obs_0_0 - 2*obs_0_0*M_0 + M_0*M_0
-     + obs_0_1*obs_0_1 - 2*obs_0_1*M_1 + M_1*M_1 = small residual
     
-               [ A as obs items] * [                   ]
-                                   [  x as median items]
-                                   [                   ]
-                                   
-    [obs_0_0*obs_0_0  -2*obs_0_0  1  obs_0_1*obs_0_1  -2*obs_0  1   [ 1
-                                                                      M_0
-                                                                      M_0*M_0
-                                                                      1
-                                                                      M_1
-                                                                      M_1*M_1
-    
-    Full Rank (includes OVER-DETERMINED, m .gt. n):
+    Full Rank (includes OVER-DETERMINED, m .gt. n, rank==n):
         A * x = b
         A is mxn
         x is m length
@@ -484,91 +464,87 @@ public class GeometricMedian {
         double[] normObs = Standardization.standardUnitNormalization(function.getObs(), 
             nDimensions, standardizedMean, standardizedStDev);
 
+        /*
+        following Strang, Linear Algebra for the full rank case.
+        can solve in many ways.
         
-        double[][] a = new double[nData][6];
-        int i, j, d;
-        double obs;
-        for (i = 0; i < nData; ++i) {
-            a[i] = new double[6];
-            for (d = 0; d < nDimensions; ++d) {
-                j = i * nDimensions + d;
-                obs = normObs[j];
-                a[i][d*3] = obs*obs;
-                a[i][d*3 + 1] = -2.*obs;
-                a[i][d*3 + 2] = 1.;
-            }
-        }
+        Example for unweighted geometric median:
+           Input: (-20, 48), (-20, -48), (20, 0), (59, 0)
+           Geometric Median = (20,0) with minimum distance = 163.964
         
-        double[] xLS2 = new double[6];
+        By Algebra:
+        =============
+            ||A*x-b||^2 isn't solvable, but using the projection is:
+               ||A*x-p||^2 + ||e||^2 where e is small
         
-        try {
-           
-            // 1  M[0]  M[0]M[0]  1  M[1]  M[1]M[1]
-            
-            DenseMatrix aMatrix = new DenseMatrix(a);
-            SVD svd = SVD.factorize(aMatrix);
-            // s is an array of size min(m,n)
-            double[] s = svd.getS();
-            int rank = 0;
-            for (double sv : s) {
-                if (sv > 1e-17) {
-                    rank++;
-                }
-            }
-            DenseMatrix vTM = svd.getVt();
-            double[][] vT = MatrixUtil.convertToRowMajor(vTM);
-            double[][] v = MatrixUtil.transpose(vT);
-            DenseMatrix uM = svd.getU();
-            double[][] uT = MatrixUtil.convertToRowMajor(uM);
-            /*
-            U is mxn orthonormal columns
-            S is nxn with non-negative singular values.  rank is number of non-zero entries
-            V is  nxn
-            */
-            double[][] b2 = new double[2][6];
-            for (int ii = 0; ii < b2.length; ++ii) {
-                b2[ii] = new double[6];
-                Arrays.fill(b2[ii], 1.);
-            }
-            double[][] sInverse2 = new double[2][2];
-            for (int ii = 0; ii < sInverse2.length; ++ii) {
-                sInverse2[ii] = new double[2];
-                double sI = s[ii];
-                if (sI > 1e-17) {
-                    sInverse2[ii][ii] = 1./sI;
-                }
-            }
-            double[][] r = MatrixUtil.multiply(uT, sInverse2);//2x2
-            r = MatrixUtil.multiply(r, b2); // 2x6
-            r = MatrixUtil.multiply(r, v); //2x6
-            //x_LS = summation_over_rank((u_i^T * b / s_i) * v_i)
-            // U^T is 2X2.  S is 2.  V is 6X6   b has to be 2X6
-            // x is [1  M_0  M_0*M_0  1  m_1  M_1*M_1] 
-            for (int ii = 0; ii < rank; ++ii) {
-                for (int jj = 0; jj < 6; ++jj) {
-                    xLS2[jj] += r[ii][jj];
-                }
-                System.out.printf("r=%s\n", Arrays.toString(r[ii]));
-            }
-            System.out.printf("xLS2=%s\n", Arrays.toString(xLS2));
-           
-        } catch (NotConvergedException ex) {
-            Logger.getLogger(GeometricMedian.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.flush();
-        // extract g.m. from xLS
+        let A = point matrix
+        -20   48
+        -20  -48
+         20    0
+         59    0
         
-        if (true) {
-            throw new UnsupportedOperationException("unfinished");
-        }
+        b would have to be a vector of the calculated distance of each point from
+          the current geometric-median.
         
-        // de-normalize:        
-        geoMedian = Standardization.standardUnitDenormalization(geoMedian, nDimensions, 
-            standardizedMean, standardizedStDev);
-        double min = function.f(geoMedian);
+        solving for x
         
-        System.arraycopy(geoMedian, 0, init, 0, init.length);
+        presumably, one could use x as a factor on a property of the points
+        to update the current geometric-median.
         
-        return min;
+        let a = point matrix    calculated b=
+        -20   48             66.06814663663572
+        -20  -48             61.554853586049575
+         20    0             3.605551275463989
+         59    0             37.12142238654117
+        
+        a^T*a =
+      -20  -20  20  59 ]  * [ -20   48 =[ -20*-20-20*-20+20*20+59*59  -20*48-20*-48+0+0 ] = [4681 0   ]
+       48  -48   0   0 ]    [ -20  -48  [  48*-20-48*-20*0+0+0        48*48-48*-48+0+0      [-960 4608]
+                            [  20    0
+                            [  59    0
+
+      a^T*b =
+      -20  -20  20  59 ]  * [66.068  = [-20*66.068 + -20*61.555 + 20*3.606 + 59.*37.121 = [-290.26
+       48  -48   0   0 ]    [61.555    [ 48*66.068 + -48*61.555 +  0*3.606 +  0.*37.121   [216.624
+                            [3.606
+                            [37.121
+
+       a^T*a*x = a^T*b
+      ( x = (a^T/(a^T*a)) * b )
+      pseudoinverse(a^T*a) =  4608  960         -290.26  = [-0.0523
+                              0     4681         216.624    0.0470
+                              --------------
+                              4681*4608 + 0
+
+                 ? -0.0523*x_mean = -0.509925
+                    0.0470*y_mean = 0   <--- can never use the found x to update when the mean is 0
+                    standard deviation would presumably be better:
+                    stdev = (37.9726, 39.3446)
+                    update of median_0 = -0.0523*37.973 = -1.99
+                    update of median_1 = 0.0470*39.345   = 1.85
+        
+        
+        ==============
+        By Calculus
+        ==============
+        df/dx_0 =  2*(-20*x_0 + 48*x_1 - 66.068)*(-20) + 2*(-20*x_0 - 48*x_1 - 61.555)*(-20) + 2*(20*x_0 - 3.606)*(20) +2*(59*x_0 - 37.121)*(59)
+           = x_0*(9362.0) + x_1*(0) + 580.402
+           = x_0*(9362.0) + 580.402 = 0  x_0==> -0.061
+        
+        df/dx_1 =  2*(-20*x_0 + 48*x_1 - 66.068)*(48) + 2*(-20*x_0 - 48*x_1 - 61.555)*(-48)
+           =  x_0*(2.*-20*48 + 2.*-20*-48) +x_1*(2.*48.*48 + 2.*-48*-48) + 2.48.*-66.068 + 2.*-61.555*-48.
+           =  x_0*(0) +x_1*(9216) -433.248
+           =  x_1*(9216) -433.248 = 0 ==> x_1 = 0.047
+        
+        so the values of x_0 and x_1 would give same suggested updates of median.
+        
+        Then another iteration would be needed, and the cycle repeated until
+        stopping conditions were met.
+        
+        */
+        
+        
+        throw new UnsupportedOperationException("unfinished");
+        
     }
 }
