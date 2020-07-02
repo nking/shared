@@ -38,7 +38,7 @@ public class GeometricMedian {
    
     /**
      * use first derivative to find minimum sum of function defining geometric-median.
-     * Newton's method has been altered to use back-tracking with a deceasing step size.
+     * Gauss-Newton's method has been altered to use back-tracking with a deceasing step size.
      * The first derivative of the geometric-median is not zero so can use
      * first order Householder methods, but cannot use 2nd order Householder methods
      * because the 2nd derivative is 0.
@@ -70,6 +70,8 @@ public class GeometricMedian {
      * euclidean centroid is chosen here.
      * 
      * NOTE, algorithm currently may fail to minimize if arrives at demand points.
+     * One should use instead, the method newtonsThenVardiZhang which checks for 
+     * that and updates the solution if needed.
      * 
      * @param function
      * @param init
@@ -113,10 +115,10 @@ public class GeometricMedian {
         //   ... added logic to try finite difference if the derivatives are
         //   zero.
         
-        //Newton's:
+        //Gauss-Newton's:
         //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
         
-        //Newton's with a factor (alpha) to decrease step size:
+        //Gauss-Newton's with a factor (alpha) to decrease step size:
         //x_{t+1} = x_{t} - alpha*(f(x_{t}) / f'(x_{t}))
         
         double alpha = 1.0;
@@ -386,12 +388,78 @@ public class GeometricMedian {
         }
         throw new UnsupportedOperationException("not currently implemented");
     }
-
-    /**
-    linear least squares and linear least squares minimization.
     
-    NOTE: for now, method internally uses unit standard normalization and
-    then de-normalizes the results.
+    /**
+     * The Levenberg-Marquardt method is similar to the Gauss-Newton method, but adds
+     * a term for invertibility and L1 regularization to 
+     * f' as the denominator of the update.
+     * The added term is λ_t*I_nxn.  
+     * It's a damping parameter, for the iteration function that can be changed 
+     based on the result in each step.
+     When λ → 0 , the added term vanishes and the technique reverts to Newton’s 
+     method.   
+     When λ becomes large, the scheme becomes the gradient descent method. 
+     This improves the robustness of the algorithm when the initial values are 
+     far from the final minimum.
+     
+     Marquardt suggested starting with a small value for λ. 
+     If the results of the previous step improves the objective function, 
+     x_{t+1} is incremented by the update and the the value of λ is decreased 
+     (say by a factor of 2) and the method continues. 
+     If the method (unfortunately) increases the objective function, the step 
+     is discarded and λ is increased.
+     
+     Marquardt also replaced the identity matrix I with the diagonal matrix 
+     consisting of the elements of (DF(x_{t}))^T*(DF(x_{t})) to create
+     varied step sizes with direction (small gradient gets larger step).
+     
+     Improved Levenberg-Marquardt by Jia borrows some ideas from the simulated 
+     annealing method (SA).   It interprets slow cooling as a slow decrease in 
+     the probability of accepting worse solutions as it explores the solution 
+     space.
+     
+     The ILM is provided a method that optimizer has a chance to get out of the 
+     local minimum, but there is no guarantee that the global minimum can be 
+     reached at the end.
+     
+       <pre>
+       Gauss-Newton:
+           x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
+        
+           let F(x_{t}) = stacks of f(x_{t})_i into a column vector,
+           and DF is the jacobian of F
+            
+           x_{t+1} = x_{t} - ( (DF(x_{t}))^T*(DF(x_{t})) )^-1 * (DF(x_{t}))^T*F(x_{t})
+           
+      Levenberg-Marquardt:
+           x_{t+1} = x_{t} - ( (DF(x_{t}))^T*(DF(x_{t})) + lambda_t*I_nxn )^-1 * (DF(x_{t}))^T*F(x_{t})
+           
+      Improved Levenberg-Marquard (ILM)t
+           see pg 199 og Jia thesis (can start at pg 208-ish, update is on pg 220).
+           
+     </pre>
+     
+        material is from the book "Numerical Algorithms" by Justin Solomon,
+        and from publications of
+        "Fitting a Parametric Model to a Cloud of Points Via Optimization Methods"
+        by Pengcheng Jia
+        https://surface.syr.edu/cgi/viewcontent.cgi?article=1673&context=etd
+        
+     * @param function
+     * @param init
+     * @return 
+     */
+    /*public double levenbergMarquardt(AbstractGeometricMedianFunction function,
+        double[] init) {
+        
+    }*/
+
+   /*
+    NOTE: this method can only be used on 2 dimensional data.  
+    NOTE: unit standardization is performed internally and de-normalization
+    if needed, so no need to pre-process the data for that.
+    
+    an iterative linear least squares.
     
     <pre> 
     F(M) = Summation_over_i( || obs_i - M || )
@@ -444,27 +512,10 @@ public class GeometricMedian {
     geometric median.
     @return evaluation of the objective, summation_i=1_n(||geoMedian - obs_i||^2)/n
     */
-    private double leastSquares(AbstractGeometricMedianFunction function,
-        double[] init) {
+    //private double leastSquares(AbstractGeometricMedianFunction function,
+    //    double[] init) throws NotConvergedException {
     
-        int nDimensions = function.getNDimensions();
-        
-        if (nDimensions != 2) {
-            throw new UnsupportedOperationException("not yet implemented for "
-                + "nDimensions > 2");
-        }
-        
-        int nData = function.getNData();
-        
-        double[] geoMedian = Arrays.copyOf(init, init.length);
-                
-        // standard unit normalization:
-        double[] standardizedMean = new double[nDimensions];
-        double[] standardizedStDev = new double[nDimensions];
-        double[] normObs = Standardization.standardUnitNormalization(function.getObs(), 
-            nDimensions, standardizedMean, standardizedStDev);
-
-        /*
+        /*        
         following Strang, Linear Algebra for the full rank case.
         can solve in many ways.
         
@@ -541,10 +592,7 @@ public class GeometricMedian {
         Then another iteration would be needed, and the cycle repeated until
         stopping conditions were met.
         
-        */
+        */        
         
-        
-        throw new UnsupportedOperationException("unfinished");
-        
-    }
+    //}
 }

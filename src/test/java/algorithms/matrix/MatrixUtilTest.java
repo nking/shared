@@ -311,4 +311,26 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(Arrays.equals(expected, a));
     }
   
+    public void testDeterminant() {
+
+        /**
+         | 1  -5  2 |
+         | 7   3  4 |
+         | 2   1  5 |
+
+                  | 3 4 |         | 7 4 |         | 7 3 |
+           =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 + 135 + 2 = 148
+
+         */
+
+        double[][] m = new double[3][3];
+        m[0] = new double[]{1, -5, 2};
+        m[1] = new double[]{7, 3, 4};
+        m[2] = new double[]{2, 1, 5};
+
+        double det = MatrixUtil.determinant(m);
+
+        assertEquals(148., det);
+
+    }
 }

@@ -1,5 +1,7 @@
 package algorithms.matrix;
 
+import algorithms.matrix.LinearEquations.LUP;
+import static algorithms.matrix.LinearEquations.LUPDecomposition;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -988,6 +990,67 @@ public class MatrixUtil {
     }
     
     /**
+      from Strang "Introduction to Linear Algebra":
+      <pre>
+       an inverse matrix may or may not exist.  
+       (1) has to be a square matrix.
+           A^-1 x A = I, where I is the identity matrix.
+       (2) an inverse matrix has n pivots remaining after elimination,
+                where pivot is the leftmost non-zero variable.
+       (3) after elimination, next test for possible invertibility is 
+             that the determinant is not zero
+
+       if A is invertible, then A * x = b can be solved as x = A^-1 * b
+       and (A * B)^-1 = B^-1 * A^-1
+      </pre>
+     NOTE: because this uses decomposition, each application using it should decide whether
+     * to perform the exterior operations at same time to avoid recomputing
+     * any matrices.
+     * @param a
+     * @return true if is invertible
+     */
+    public static boolean isInvertible(double[][] a) {
+        
+        int m = a.length;
+        int n = a[0].length;
+        if (m != n) {
+            throw new IllegalArgumentException("a is not a squae matrix");
+        }
+        
+        //rank:
+        // -- could use PackCholesky followed by check for positive definiteness
+        // -- could use LUP decomposition andcount the L diagonal 1's
+        // -- could use SVD and count the unique singular values in D
+        LUP lup = LinearEquations.LUPDecomposition(a);
+        
+        int rank = 0;
+        for (int i = 0; i < lup.ell.length; ++i) {
+            if (Math.abs(lup.ell[i][i] - 1.0) < 1.e-7) {
+                rank++;
+            }
+        }
+        if (rank != n) {
+            return false;
+        }
+        
+        // determinant (-1)^n * det(U) where det(U) is product of diagonal
+        double det = 1;
+        for (int i = 0; i < lup.ell.length; ++i) {
+            det *= lup.u[i][i];
+        }
+        if ((n % 2) != 0) {
+            det *= -1;
+        }
+        
+        if (Math.abs(det) > 1e-17) {
+            // determinant is not zero, so is invertible
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * given data points xy, want to create a matrix usable to transform
      * the data points by scaling and translation so that:
         a) points are translated so that their centroid is at the origin.
@@ -1061,4 +1124,100 @@ public class MatrixUtil {
         return m;
     }
     
+      /**
+     * using cofactors and minors of the matrix, return the determinant.
+     * in practice one can use any row as the primary set of cofactors or
+     * any column.  this method may be optimized in the future, but for now,
+     * uses the first column as the cofactors.
+     *
+     * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11
+        + 135 + 2 = 148
+     *         | 2   1  5 |
+     */
+    public static double determinant(Matrix m) {
+
+        double[][] a = no.uib.cipr.matrix.Matrices.getArray(m);
+
+        return determinant(a);
+    }
+    
+    /**
+     * using cofactors and minors of the matrix, return the determinant.
+     * in practice one can use any row as the primary set of cofactors or
+     * any column.  this method may be optimized in the future, but for now,
+     * uses the first column as the cofactors.
+     *
+     * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 
+        + 135 + 2 = 148
+     *         | 2   1  5 |
+     */
+    public static double determinant(double[][] m) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (m.length != m[0].length) {
+            throw new IllegalArgumentException("m must be a square");
+        }
+        if (m.length == 1) {
+            return m[0][0];
+        } else if (m.length == 2) {
+            double s = ( m[0][0]*m[1][1] ) - ( m[0][1]*m[1][0] );
+            return s;
+        } else {
+            double s = 0.0;
+            // use 1st row as cofactors and minors
+            for (int i = 0; i < m.length; i++) {
+
+                double[][] n = copyExcept(m, i, 0);
+                
+                double tmp = m[i][0] * determinant(n);
+                                
+                if ((i & 1) == 0) {
+                    s +=  tmp;
+                } else {
+                    s -=  tmp;
+                }
+            }
+            return s;
+        }
+    }
+    
+    /**
+     * create copy of matrix m except row and col
+     * @param m
+     * @param i
+     * @param i0
+     * @return
+     */
+    private static double[][] copyExcept(double[][] m, int col, int row) {
+
+        double[][] n = new double[m.length - 1][m.length - 1];
+
+        int nr = 0;
+        int nc = 0;
+
+        for (int mCol = 0; mCol < m.length; mCol++) {
+            if (mCol == col) {
+                continue;
+            }
+
+            n[nc] = new double[m.length - 1];
+            
+            nr = 0;
+            for (int mRow = 0; mRow < m[0].length; mRow++) {
+                if (mRow == row) {
+                    continue;
+                }
+
+                n[nc][nr] = m[mCol][mRow];
+                nr++;
+            }
+            nc++;
+        }
+
+        return n;
+    }
 }

@@ -66,7 +66,7 @@ import java.util.logging.Logger;
 public class ElasticNet {
 
     //have removed precompute logic to simplify the code for a "toy" version.
-    // NOTE that a post suggets that the resulting gram version of
+    // NOTE that a post suggests that the resulting gram version of
     //  coordinate descent was slower to update in any case.
 
     private final double eps;
