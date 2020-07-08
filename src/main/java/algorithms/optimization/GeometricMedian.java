@@ -31,7 +31,12 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
  * NOTE: the Vardi-Zhang 2000 update method with the author's implemented non-linear
  * optimization, appears to have a runtime of O(N log_2 N)
  * 
- * 
+ * NOTE: that there is research on handling sparse matrices in other applications
+ * such as bundle adjustment where a sparse version of Levenberg-Marquardt is used.
+ * see papers by  Lourakis and Argyros, etc.
+ * http://users.ics.forth.gr/~lourakis/sba/PRCV_colloq.pdf
+ * https://www.researchgate.net/profile/Antonis_Argyros/publication/221111908_Is_Levenberg-Marquardt_the_Most_Efficient_Optimization_Algorithm_for_Implementing_Bundle_Adjustment/links/00b7d51c7d377ba56e000000/Is-Levenberg-Marquardt-the-Most-Efficient-Optimization-Algorithm-for-Implementing-Bundle-Adjustment.pdf
+ 
  * @author nichole
  */
 public class GeometricMedian {
