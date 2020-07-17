@@ -333,4 +333,5 @@ public class MatrixUtilTest extends TestCase {
         assertEquals(148., det);
 
     }
+   
 }
