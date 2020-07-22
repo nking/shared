@@ -404,6 +404,7 @@ public class Distance {
     
     /**
      * checks the sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
+     * "A fast algorithm for computing distance correlation" by Chaudhuri and Hu, 2018
      * @param x
      * @param y
      * @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
