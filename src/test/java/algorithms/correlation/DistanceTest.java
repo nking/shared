@@ -1,8 +1,11 @@
 package algorithms.correlation;
 
+import algorithms.correlation.Distance.DCov;
 import algorithms.matrix.*;
+import algorithms.misc.Misc0;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
@@ -92,8 +95,8 @@ public class DistanceTest extends TestCase {
         int nIter = 1000;
         
         Random rand = Misc0.getSecureRandom();
-        //long seed = System.currentTimeMillis();
-        long seed = 1595442111027L;
+        long seed = System.currentTimeMillis();
+        //long seed = 1595442111027L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
@@ -125,5 +128,39 @@ public class DistanceTest extends TestCase {
                 }
             }
         }        
+    }
+    
+    public void estCovariance() {
+        
+        //double[][] _sortCheck(double[] x, double[] y)
+        
+        double eps = 1.e-17;
+        
+        //                        0  1  2  3  4  5  6  7
+        double[] x = new double[]{3, 5, 7, 3, 8, 4, 6, 7};
+        double[] y = new double[]{1, 5, 3, 2, 4, 6, 7, 5};
+        
+        //                         3  0  5  1  6  7  2  4
+        double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
+        double[] eY = new double[]{2, 1, 6, 5, 7, 5, 3, 4};
+        
+        DCov dcov = Distance.covariance(x, y);
+        double diff;
+        /*for (int i = 0; i < x.length; ++i) {
+            diff = Math.abs(sorted[0][i] - eX[i]);
+            assertTrue(diff < eps);
+            diff = Math.abs(sorted[1][i] - eY[i]);
+            assertTrue(diff < eps);
+        }
+        
+        x = new double[]{2, 1., 1.1, 3, 1.1};
+        y = new double[]{3, 1., 2.1, 4, 1.1};
+        sorted = Distance._sortCheck(x, y);
+        for (int i = 0; i < x.length; ++i) {
+            diff = Math.abs(sorted[0][i] - eX[i]);
+            assertTrue(diff < eps);
+            diff = Math.abs(sorted[1][i] - eY[i]);
+            assertTrue(diff < eps);
+        }*/
     }
 }

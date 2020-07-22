@@ -39,10 +39,8 @@ public class Distance {
      * @param y
      * @return 
      */
-    private static double[][] covariance(double[] x, double[] y) {
-        
-  //not finished with index changes or unit tests
-          
+    public static DCov covariance(double[] x, double[] y) {
+                  
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
         }
@@ -77,11 +75,10 @@ public class Distance {
         //%to sorted y using merge−sort.
         
         //%Weight vectors
-        //v = [ x y x . ∗ y ] ;
-        //nw = s i z e ( v , 2 ) ;
+        //v = [ x y x .∗ y ];
+        //nw = size( v, 2 );
         
-        //   [ x y x . ∗ y ] is building a matrix with
-        //     column 0 = x, column 1 = y, column 2 = x.*y
+        //   [ x y x .∗ y ] is column 0 = x, column 1 = y, column 2 = x.*y
         //   matlab .* is multiplying same element positions by one another
         
         int nw = 3;
@@ -182,27 +179,30 @@ public class Distance {
               st1 = j;
               //e1 = Math.min(st1 + i - 1, n);
               e1 = Math.min(st1 + i, n - 1);
-              st2 = j + 1;
+              st2 = j + i;
               //e2 = Math.min(st2 + i - 1, n);
               e2 = Math.min(st2 + i, n - 1);              
-              while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
-                 k = k + 1;
+              //while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
+              while (( st1 < e1 ) && ( st2 < e2 ) ) {
+                 k++;
                  idx1 = idx_r[st1];
                  idx2 = idx_r[st2];
                  if (y[idx1] >= y[idx2]) {                 
                     idx[k][idx_s] = idx1;
-                    st1 = st1 + 1;
+                    st1++;
                  } else {
                     idx[k][idx_s] = idx2;
-                    st2 = st2 + 1;
-                    iv1[idx2] += e1 - st1 + 1;
+                    st2++;
+                    //iv1[idx2] += e1 - st1 + 1;
+                    iv1[idx2] += e1 - st1;
                     iv2[idx2] += (csumv[e1+1][0] - csumv[st1][0]);
                     iv3[idx2] += (csumv[e1+1][1] - csumv[st1][1]);
                     iv4[idx2] += (csumv[e1+1][2] - csumv[st1][2]);
                  } // end if-else
               } // end while
-              if (st1 <= e1) {
-                  kf = k + e1 - st1 + 1;
+              if (st1 < e1) {
+                  //kf = k + e1 - st1 + 1;
+                  kf = k + e1 - st1;
                   // note: idx is int[n][2];  idx_r is int[n]
                   //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
                   int c = st1;
@@ -212,8 +212,9 @@ public class Distance {
                       c++;
                   }
                   k = kf;
-              } else if (st2 <= e2) {
-                  kf = k + e2 - st2 + 1;
+              } else if (st2 < e2) {
+                  //kf = k + e2 - st2 + 1;
+                  kf = k + e2 - st2;
                   //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
                   int c = st2;
                   for (z = k; z < kf; ++z) {
@@ -241,6 +242,11 @@ public class Distance {
            }
         }
         
+System.out.println("iv1=" + Arrays.toString(iv1)); 
+System.out.println("iv2=" + Arrays.toString(iv2)); 
+System.out.println("iv3=" + Arrays.toString(iv3)); 
+System.out.println("iv4=" + Arrays.toString(iv4)); 
+        
        //% d is the Frobenius inner product of the distance matrices
        //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
        //   vector .' * is outer product:  nX1 * 1Xn = nxn
@@ -250,7 +256,7 @@ public class Distance {
        assert(my.length == 1);
        for (z = 0; z < n; ++z) {
            for (zz = 0; zz < n; ++zz) {
-               covterm[z][zz] = n *( (x[z] - mx[0]) * (y[zz] - my[0]) );
+               covterm[z][zz] = n * ( (x[z] - mx[0]) * (y[zz] - my[0]) );
            }
        }
 
@@ -295,25 +301,30 @@ public class Distance {
        Arrays.fill(b_y, 0);
        Arrays.fill(b_y, r);
 
-       //b_y( idx( n : −1: 1, r ) ) = (−(n −2 ): 2: n ) .’ .∗ ySorted + ( s − 2∗ s i );
+       //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
        c = 0;
        double cc = -(n-2.);
+System.out.printf("cc=%d", cc);    
        for (z = n-1; z >=0; z--) {
            b_y[ idx[z][r] ] += (cc * ySorted[c]) + (s - (2.*si[c]));
            c++;
            cc += 2;
        }
+System.out.printf("to %d\n", cc); 
+System.out.printf("  z=%d to %d\n", (n-1), z);
+
+System.out.printf("b_y=%s\n", Arrays.toString(b_y));
 
        //%covsq equals V^2_n(x, y) the square of the distance covariance
        //%between x and y
        double nsq = (double)(n*n);
-       double ncb = (double)(nsq *n);
+       double ncb = (double)(nsq*n);
        double nq = (double)(ncb*n);
        //term1 = d / nsq;
        //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
        //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
        //covsq = ( term1 + term3 ) − term2;
-       double[][] term1 = new double[d.length][];
+       double[][] term1 = new double[n][];
        double[][] term2 = new double[n][n];
        double term3A = 0;
        double term3B = 0;
@@ -334,10 +345,26 @@ public class Distance {
                covsq[z][zz] = (term1[z][zz] + term3) - term2[z][zz];
            }
        }
+       
+       // for debugging only:
+       System.out.println("d=");
+       for (z = 0; z < n; ++z) {
+           for (zz = 0; zz < n; ++zz) {
+               System.out.printf("  %.3f", d[z][zz]);
+           }
+           System.out.printf("\n");
+       }
+       
+       DCov dcov = new DCov();
+       dcov.covsq = covsq;
+       dcov.d = d;
+       dcov.indexes = indexes;
+       dcov.sortedX = x;
+       dcov.sortedX = y;
            
-       return covsq;
-    }      
-    
+       return dcov;
+    }
+      
         /*
          matlab code from 
          "A fast algorithm for computing distance correlation" by Chaudhuri and Hu, 2018
@@ -401,6 +428,118 @@ public class Distance {
            term3 = sum( a_x ) ∗ sum( b_y ) / nq;
            covsq = ( term1 + term3 ) − term2;
         */  
+    
+    /**
+     * checks the sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
+     * "A fast algorithm for computing distance correlation" by Chaudhuri and Hu, 2018
+     * @param x
+     * @param y
+     * @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
+     */
+    static double[][] __sortCheck(double[] x, double[] y) {
+        
+        if (x.length != y.length) {
+            throw new IllegalArgumentException("length of x must equal length of y");
+        }
+        
+        int n = x.length;
+        
+        x = Arrays.copyOf(x, x.length);
+        y = Arrays.copyOf(y, y.length);
+        
+        // x and y sorted:
+        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);
+         
+        int nw = 3;
+        
+        double[][] v = new double[n][nw];
+        v[0] = Arrays.copyOf(x, n);
+        v[1] = Arrays.copyOf(y, n);
+        v[2] = Arrays.copyOf(x, n);
+        for (int row = 0; row < n; ++row) {
+            v[2][row] *= y[row];
+        }
+        
+        //% The columns of idx are buffers to store sort indices and output buffer
+        //%of merge-sort
+        //%we alternate between them and avoid uneccessary copying
+        int[][] idx = new int[n][2];
+        for (int i = 0; i < n; ++i) {
+            idx[i] = new int[2];
+            idx[i][0] = i+1;
+        }
+        
+        //NOTE: in matlab, the .' is transpose without conjugation
+        //NOTE: in matlab, the .* is multiplying same element positions by one another
+        //NOTE: in matlab, vector .' * vector is the outer product
+        
+        int i, j, k, kf, st1, st2, e1, e2, idx1, idx2, gap, z, zz;
+        int[] idx_r = new int[n];
+                                
+        //% The merge sort loop .
+        i = 1;
+        int r = 1; 
+        // s = 2 in matlab code, was repurposed use of var s which was an integer type due to integer array x's cumulative sum.
+        int idx_s = 2;
+        while (i < n) {
+           gap = 2*i; 
+           k = 0;
+           
+           //idx_r = idx(:, r);
+           for (z = 0; z < idx.length; ++z) {
+               idx_r[z] = idx[z][r-1];
+           }
+           
+           for (j = 1; j <= n; j+=gap) {
+              st1 = j; 
+              e1 = Math.min(st1 + i - 1, n);
+              st2 = j + i; 
+              e2 = Math.min(st2 + i - 1, n);
+              while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
+                 k++;
+                 idx1 = idx_r[st1-1];
+                 idx2 = idx_r[st2-1];
+                 if (y[idx1-1] >= y[idx2-1]) {                 
+                    idx[k-1][idx_s-1] = idx1;
+                    st1++;
+                 } else {
+                    idx[k-1][idx_s-1] = idx2;
+                    st2++;
+                 } // end if-else
+              } // end while
+              if (st1 <= e1) {
+                  kf = k + e1 - st1 + 1;
+                  // note: idx is int[n][2];  idx_r is int[n]
+                  //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
+                  int c = st1;
+                  for (z = (k+1); z <= kf; ++z) {
+                      idx[z-1][idx_s-1] = idx_r[c-1];
+                      c++;
+                  }
+                  k = kf;
+              } else if (st2 <= e2) {
+                  kf = k + e2 - st2 + 1;
+                  //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
+                  int c = st2;
+                  for (z = k+1; z <= kf; ++z) {
+                      idx[z-1][idx_s-1] = idx_r[c-1];
+                      c++;
+                  }
+                  k = kf;
+              }
+           } // end for j=
+           
+           i = gap;
+           r = 3 - r; 
+           idx_s = 3 - idx_s;  //2;  3-2=1 // 3-1=2
+           
+        }
+        
+        double[][] sorted = new double[2][x.length];
+        sorted[0] = x;
+        sorted[1] = y;
+        return sorted;
+    }
     
     /**
      * checks the sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
@@ -473,23 +612,28 @@ public class Distance {
               st1 = j; 
               //e1 = Math.min(st1 + i - 1, n);
               e1 = Math.min(st1 + i, n - 1);
-              st2 = j + 1; 
+              st2 = j + i; 
               //e2 = Math.min(st2 + i - 1, n);
               e2 = Math.min(st2 + i, n - 1);              
-              while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
-                 k = k + 1;
+              //while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
+              while (( st1 < e1 ) && ( st2 < e2 ) ) {
+                 k++;
                  idx1 = idx_r[st1];
                  idx2 = idx_r[st2];
+//System.out.printf("n=%d i=%d j=%d k=%d idx_s=%d, st1=%d\n", n, i, j, k, idx_s, st1);
+//System.out.flush();
                  if (y[idx1] >= y[idx2]) {                 
                     idx[k][idx_s] = idx1;
-                    st1 = st1 + 1;
+                    st1++;
                  } else {
                     idx[k][idx_s] = idx2;
-                    st2 = st2 + 1;
+                    st2++;
                  } // end if-else
               } // end while
-              if (st1 <= e1) {
-                  kf = k + e1 - st1 + 1;
+              //if (st1 <= e1) {
+              if (st1 < e1) {
+                  //kf = k + e1 - st1 + 1;
+                  kf = k + e1 - st1;
                   // note: idx is int[n][2];  idx_r is int[n]
                   //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
                   int c = st1;
@@ -499,8 +643,10 @@ public class Distance {
                       c++;
                   }
                   k = kf;
-              } else if (st2 <= e2) {
-                  kf = k + e2 - st2 + 1;
+              //} else if (st2 <= e2) {
+              } else if (st2 < e2) {
+                  //kf = k + e2 - st2 + 1;
+                  kf = k + e2 - st2;
                   //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
                   int c = st2;
                   for (z = k; z < kf; ++z) {
@@ -533,4 +679,13 @@ public class Distance {
         sorted[1] = y;
         return sorted;
     }
+    
+    public static class DCov {
+        double[][] covsq;
+        double[][] d;
+        int[] indexes;
+        double[] sortedX;
+        double[] sortedY;
+    }
+  
 }
