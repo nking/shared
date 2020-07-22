@@ -24,7 +24,7 @@ public class DistanceTest extends TestCase {
     public DistanceTest() {
     }
     
-    public void testSort() {
+    public void estSort() {
         
         //double[][] _sortCheck(double[] x, double[] y)
         
@@ -54,5 +54,76 @@ public class DistanceTest extends TestCase {
             diff = Math.abs(sorted[1][i] - eY[i]);
             assertTrue(diff < eps);
         }
+    }
+    
+    public void estSort2() {
+        
+        //double[][] _sortCheck(double[] x, double[] y)
+        
+        double eps = 1.e-17;
+        
+        //                        0  1  2  3  4  5  6  7
+        double[] x = new double[]{3, 5, 7, 3, 8, 4, 6, 7};
+        double[] y = new double[]{1, 5, 3, 2, 4, 6, 7, 5};
+        
+        //                         0  3  5  1  6  2  7  4
+        double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
+        double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
+        
+        double[][] sorted = Distance._sortCheck(x, y);
+        //System.out.println("sortedX=" + Arrays.toString(sorted[0]));
+        //System.out.println("sortedY=" + Arrays.toString(sorted[1]));
+        
+        double diff;
+        for (int i = 0; i < x.length; ++i) {
+            diff = Math.abs(sorted[0][i] - eX[i]);
+            assertTrue(diff < eps);
+            diff = Math.abs(sorted[1][i] - eY[i]);
+            assertTrue(diff < eps);
+        }
+        
+    }
+    
+    public void testSort3() {
+                
+        double eps = 1.e-17;
+        
+        int n = 1200;
+        int nIter = 1000;
+        
+        Random rand = Misc0.getSecureRandom();
+        //long seed = System.currentTimeMillis();
+        long seed = 1595442111027L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        double[] x = new double[n];
+        double[] y = new double[n];
+        
+        for (int i = 0; i < nIter; ++i) {
+            for (int j = 0; j < n; ++j) {
+                y[j] = rand.nextDouble();
+                if (j > 0 && ((j&1)==0) && rand.nextBoolean()) {
+                    // occassionally, duplicate x's with presumably different y's
+                    x[j] = x[j - 1];
+                } else {
+                    x[j] = rand.nextDouble();
+                }
+            }
+            
+            double[][] sorted = Distance._sortCheck(x, y);
+            //System.out.println("sortedX=" + Arrays.toString(sorted[0]));
+            //System.out.println("sortedY=" + Arrays.toString(sorted[1]));
+
+            double diff;
+            for (int ii = 1; ii < x.length; ++ii) {
+                diff = Math.abs(sorted[0][ii] - sorted[0][ii-1]);
+                if (diff < eps) {
+                    assertTrue(sorted[1][ii] >= sorted[1][ii-1]);
+                } else {
+                    assertTrue(sorted[0][ii] >= sorted[0][ii-1]);
+                }
+            }
+        }        
     }
 }
