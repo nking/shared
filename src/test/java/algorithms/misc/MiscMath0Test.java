@@ -544,4 +544,24 @@ public class MiscMath0Test extends TestCase {
         }
         assertEquals(expected.length*expected[0].length, nc);
     }
+    
+    public static void testCumulativeSum() {
+        
+        double[] a = new double[]{2.1, 3.2, 9, 12.1};
+        
+        double[] eS = new double[]{2.1, 5.3, 14.3, 26.4};
+        
+        double[] s = MiscMath0.cumulativeSum(a);
+        
+        assertEquals(eS.length, s.length);
+        
+        double eps = 1.e-17;
+        
+        double diff;
+        for (int i = 0; i < a.length; ++i) {
+            diff = eS[i] - s[i];
+            assertTrue(diff < eps);
+        }
+        
+    }
 }

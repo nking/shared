@@ -349,4 +349,37 @@ public class MiscSorterTest extends TestCase {
         assertTrue(Arrays.equals(eb, b));
         
     }
+    
+    public static void testMergeBy1stArgThen2nd() {
+        
+        int i = 0;
+        double eps = 1.e-17;
+        double dx, dy;
+        
+        double[] x = new double[]{4,   5,   4,   1,   2, 8};
+        double[] y = new double[]{3.1, 1.1, 3, 1.1, 1.0, 1.1};
+        int[] indexes = new int[x.length];
+        for (i = 0; i < x.length; ++i) {
+            indexes[i] = i;
+        }
+        
+        double[] eX = new double[]{1,     2,  4,   4,   5,   8};
+        double[] eY = new double[]{1.1, 1.0,  3, 3.1, 1.1, 1.1};
+        int[] eIndexes = new int[]{3, 4, 2, 0, 1, 5};
+                
+        int[] sortedIndexes = MiscSorter.mergeBy1stArgThen2nd(x, y);
+        
+        assertEquals(eIndexes.length, sortedIndexes.length);
+                
+        for (i = 0; i < indexes.length; ++i) {
+            assertEquals(eIndexes[i], sortedIndexes[i]);
+            assertEquals(eIndexes[i], indexes[ eIndexes[i] ] );
+            
+            dx = Math.abs(eX[i] - x[i]);
+            dy = Math.abs(eY[i] - y[i]);
+            
+            assertTrue(dx < eps);
+            assertTrue(dy < eps);
+        }
+    }
 }

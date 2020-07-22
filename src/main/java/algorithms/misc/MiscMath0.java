@@ -987,4 +987,56 @@ public class MiscMath0 {
         
         return out;
     }
+    
+    public static double[] cumulativeSum(double[] a) {
+        
+        double[] s = Arrays.copyOf(a, a.length);
+        
+        for (int i = 1; i < a.length; ++i) {
+            s[i] += s[i - 1];
+        }
+        
+        return s;
+    }
+    
+    public static double[][] cumulativeSumMatlabPort(double[][] a) {
+        if (a.length > 1) {
+            return cumulativeSumAlongColumns(a);
+        } else if (a[0].length > 1) {
+            return cumulativeSumAlongRows(a);
+        }
+        throw new IllegalArgumentException("a must have at least one dimension of size > 1");
+    }
+    
+    public static double[][] cumulativeSumAlongColumns(double[][] a) {
+        
+        double[][] s = new double[a.length][a[0].length];
+        for (int i = 0; i < a.length; ++i) {
+            s[i] = Arrays.copyOf(a[i], a[i].length);
+        }
+        
+        for (int row = 1; row < a.length; ++row) {
+            for (int col = 0; col < a[0].length; ++col) {
+               s[row][col] += s[row - 1][col];
+            }
+        }
+        
+        return s;
+    }
+    
+    public static double[][] cumulativeSumAlongRows(double[][] a) {
+        
+        double[][] s = new double[a.length][a[0].length];
+        for (int i = 0; i < a.length; ++i) {
+            s[i] = Arrays.copyOf(a[i], a[i].length);
+        }
+        
+        for (int row = 0; row < a.length; ++row) {
+            for (int col = 1; col < a[0].length; ++col) {
+               s[row][col] += s[row][col - 1];
+            }
+        }
+        
+        return s;
+    }
 }

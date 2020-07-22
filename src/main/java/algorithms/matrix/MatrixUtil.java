@@ -1221,4 +1221,23 @@ public class MatrixUtil {
         return n;
     }
    
+    /**
+     * the outer product of vectors v1 and v2 as the
+     * transpose of v1 times v2.
+     * @param v1
+     * @param v2
+     * @return the outer product of v1 and v2 as double array of 
+     * size v1.length X v2.length.
+     */
+    public static double[][] vTv(double[] v1, double[] v2) {
+        int n = v1.length;
+        int m = v2.length;
+        double[][] out = new double[n][m];
+        for (int row = 0; row < n; ++row) {
+            for (int col = 0; col < m; ++col) {
+                out[row][col] = v1[row] * v2[col];
+            }
+        }
+        return out;
+    }
 }

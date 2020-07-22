@@ -15,6 +15,31 @@ package algorithms.misc;
 public class MiscSorter {
     
     /**
+     * use merge sort to sort a1 and a2 by a1 in ascending order, breaking ties 
+     * by a2 and return the indexes of the original indexes 
+     * (i.e. 0 through a1.length-1) in the sorted order.
+     * 
+     * @param a1
+     * @param a2
+     * @return indexes 
+     */
+    public static int[] mergeBy1stArgThen2nd(double[] a1, double[] a2) {
+        
+        if (a1.length != a2.length) {
+            throw new IllegalArgumentException("a1 and a2 must be same length");
+        }
+        
+        int[] indexes = new int[a1.length];
+        for (int i = 0; i < indexes.length; ++i) {
+            indexes[i] = i;
+        }
+        
+        sortBy1stArgThen2nd(a1, a2, indexes, 0, a1.length - 1);
+        
+        return indexes;
+    }
+    
+    /**
      * use quicksort to sort a by ascending values and
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
@@ -727,6 +752,28 @@ public class MiscSorter {
     
     /**
      * @param a1 array of points to be sorted
+     * @param a2 array of points to apply a1 sorting to also and break ties in a1
+     * @param indexes array of original indexes of a1 and a2, progressively sorted
+     * by same swaps.
+     * @param idxLo starting index of sorting of a1, inclusive
+     * @param idxHi stopping index of sorting of a1, inclusive
+     */
+    private static void sortBy1stArgThen2nd(double[] a1, double[] a2, int[] indexes, int idxLo,
+        int idxHi) {
+
+        int indexMid = -1;
+        
+        if (idxLo < idxHi) {
+
+            indexMid = (idxLo + idxHi) >> 1;
+            sortBy1stArgThen2nd(a1, a2, indexes, idxLo, indexMid);
+            sortBy1stArgThen2nd(a1, a2, indexes, indexMid + 1, idxHi);
+            mergeBy1stArgThen2nd(a1, a2, indexes, idxLo, indexMid, idxHi);
+        }
+    }
+    
+    /**
+     * @param a1 array of points to be sorted
      * @param a2 array of points to apply a1 sorting to also
      * @param idxLo starting index of sorting of a1, inclusive
      * @param idxHi stopping index of sorting of a1, inclusive
@@ -801,5 +848,70 @@ public class MiscSorter {
         }
     }
  
+    private static void mergeBy1stArgThen2nd(double[] a1, double[] a2, 
+        int[] indexes, int idxLo, int idxMid, int idxHi) {
+
+        int nLeft = idxMid - idxLo + 1;
+        int nRight = idxHi - idxMid;
+
+        double[] a2Left = new double[nLeft + 1];
+        double[] a1Left = new double[nLeft + 1];
+
+        double[] a2Right = new double[nRight + 1];
+        double[] a1Right = new double[nRight + 1];
+        
+        int[] indexesLeft = new int[nLeft + 1];
+        int[] indexesRight = new int[nRight + 1];
+
+        System.arraycopy(a1, idxLo, a1Left, 0, nLeft);
+        System.arraycopy(a2, idxLo, a2Left, 0, nLeft);
+
+        System.arraycopy(a1, idxMid + 1, a1Right, 0, nRight);
+        System.arraycopy(a2, idxMid + 1, a2Right, 0, nRight);
+        
+        System.arraycopy(indexes, idxLo, indexesLeft, 0, nLeft);
+        System.arraycopy(indexes, idxMid + 1, indexesRight, 0, nRight);
+
+        double sentinel = Double.POSITIVE_INFINITY;
+        a2Left[nLeft] = sentinel;
+        a1Left[nLeft] = sentinel;
+        a2Right[nRight] = sentinel;
+        a1Right[nRight] = sentinel;
+
+        int leftPos = 0;
+        int rightPos = 0;
+
+        for (int k = idxLo; k <= idxHi; k++) {
+            double l = a1Left[leftPos];
+            double r = a1Right[rightPos];
+
+            if (l == r) {
+                double lx = a2Left[leftPos];
+                double rx = a2Right[rightPos];
+
+                if (lx <= rx) {
+                    a2[k] = a2Left[leftPos];
+                    a1[k] = a1Left[leftPos];
+                    indexes[k] = indexesLeft[leftPos];
+                    leftPos++;
+                } else {
+                    a2[k] = a2Right[rightPos];
+                    a1[k] = a1Right[rightPos];
+                    indexes[k] = indexesRight[rightPos];
+                    rightPos++;
+                }
+            } else if (l < r) {
+                a2[k] = a2Left[leftPos];
+                a1[k] = a1Left[leftPos];
+                indexes[k] = indexesLeft[leftPos];
+                leftPos++;
+            } else {
+                a2[k] = a2Right[rightPos];
+                a1[k] = a1Right[rightPos];
+                indexes[k] = indexesRight[rightPos];
+                rightPos++;
+            }
+        }
+    }
                
 }
