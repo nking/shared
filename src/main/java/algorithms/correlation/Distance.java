@@ -550,96 +550,95 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
      * @return 
      */
     public static DCov _bruteForceCovariance(double[] x, double[] y) {
-                  
+
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
         }
-        
+
         int n = x.length;
-        
+
         x = Arrays.copyOf(x, x.length);
         y = Arrays.copyOf(y, y.length);
-        
+
         int[][] idx = new int[2][n];
         idx[0] = new int[n];
         idx[1] = new int[n];
         for (int i = 0; i < n; ++i) {
-            idx[0][i] = i+1;
+            idx[0][i] = i + 1;
         }
-        
+
         int[] idx_r = new int[n];
-        
-        double[] csumT = new double[n+1];
+
+        double[] csumT = new double[n + 1];
         double[] d = new double[n];
-        
+
         int gap, k, kf, z, j, st1, e1, st2, e2, idx1, idx2;
         int i = 1;
         int r = 1;
         int idx_s = 2;
         while (i < n) {
-           gap = 2*i; 
-           k = 0;
-           
-           System.arraycopy(idx[r-1], 0, idx_r, 0, n);
-      
-           //csumT = cusum(y[idx r]); 
-           //csumT = (0, csumT );
-           csumT[0] = 0;
-           for (z = 0; z < n; ++z) {
-               csumT[z + 1] = x[ idx_r[z] -1];
-           }
-           for (z = 2; z <= n; ++z) {
-               csumT[z] += csumT[z-1];
-           }
-           
-           j = 1;
-        
-           while (j < n) {
-               
-              st1 = j;
-              e1 = Math.min(st1 + i - 1, n);
-              st2 = j + i;
-              e2 = Math.min(st2 + i - 1, n);
-              while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
-                 k++;
-                 idx1 = idx_r[st1-1];
-                 idx2 = idx_r[st2-1];
-                 if (x[idx1-1] >= x[idx2-1]) {                 
-                    idx[idx_s-1][k-1] = idx1;
-                    st1++;
-                 } else {
-                    idx[idx_s-1][k-1] = idx2;
-                    st2++;
+            gap = 2 * i;
+            k = 0;
 
-                    d[idx2-1] += (csumT[e1 + 1 -1] - csumT[st1 -1]);
-                 } // end if-else
-              } // end while
-              if (st1 <= e1) {
-                  kf = k + e1 - st1 + 1;
-                  int c = st1;
-                  for (z = (k+1); z <= kf; ++z) {
-                      idx[idx_s-1][z-1] = idx_r[c-1];
-                      c++;
-                  }
-                  k = kf;
-              } else if (st2 <= e2) {
-                  kf = k + e2 - st2 + 1;
-                  int c = st2;
-                  for (z = (k+1); z <= kf; ++z) {
-                      idx[idx_s-1][z-1] = idx_r[c-1];
-                      c++;
-                  }
-                  k = kf;
-              }
-              j += gap;
-                            
-           } // end while j
-                      
-           i = gap;
-           r = 3 - r; 
-           idx_s = 3 - idx_s;
-       } // end while i
-  
+            System.arraycopy(idx[r - 1], 0, idx_r, 0, n);
+
+            //csumT = cusum(y[idx r]); 
+            //csumT = (0, csumT );
+            csumT[0] = 0;
+            for (z = 0; z < n; ++z) {
+                csumT[z + 1] = y[idx_r[z] - 1];
+            }
+            for (z = 2; z <= n; ++z) {
+                csumT[z] += csumT[z - 1];
+            }
+
+            j = 1;
+
+            while (j < n) {
+
+                st1 = j;
+                e1 = Math.min(st1 + i - 1, n);
+                st2 = j + i;
+                e2 = Math.min(st2 + i - 1, n);
+                while ((st1 <= e1) && (st2 <= e2)) {
+                    k++;
+                    idx1 = idx_r[st1 - 1];
+                    idx2 = idx_r[st2 - 1];
+                    if (x[idx1 - 1] >= x[idx2 - 1]) {
+                        idx[idx_s - 1][k - 1] = idx1;
+                        st1++;
+                    } else {
+                        idx[idx_s - 1][k - 1] = idx2;
+                        st2++;
+                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]);
+                    } // end if-else
+                } // end while
+                if (st1 <= e1) {
+                    kf = k + e1 - st1 + 1;
+                    int c = st1;
+                    for (z = (k + 1); z <= kf; ++z) {
+                        idx[idx_s - 1][z - 1] = idx_r[c - 1];
+                        c++;
+                    }
+                    k = kf;
+                } else if (st2 <= e2) {
+                    kf = k + e2 - st2 + 1;
+                    int c = st2;
+                    for (z = (k + 1); z <= kf; ++z) {
+                        idx[idx_s - 1][z - 1] = idx_r[c - 1];
+                        c++;
+                    }
+                    k = kf;
+                }
+                j += gap;
+
+            } // end while j
+
+            i = gap;
+            r = 3 - r;
+            idx_s = 3 - idx_s;
+        } // end while i
+
         double[] sortedX = new double[n];
         double[] sortedY = new double[n];
         int[] indexes = new int[n];
@@ -650,18 +649,13 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
             sortedY[z] = y[indexes[z]];
             sortedD[z] = d[indexes[z]];
         }
-        
-        System.out.printf("sortedX=%s\n", Arrays.toString(sortedX));
-        System.out.printf("sortedY=%s\n", Arrays.toString(sortedY));
-        System.out.printf("indexes=%s\n", Arrays.toString(indexes));
-        System.out.printf("sortedD=%s\n", Arrays.toString(sortedD));
 
-       DCov dcov = new DCov();
-       dcov.d2 = sortedD;
-       dcov.indexes = indexes;
-       dcov.sortedX = sortedX;
-       dcov.sortedY = sortedY;
-       
-       return dcov;
+        DCov dcov = new DCov();
+        dcov.d2 = sortedD;
+        dcov.indexes = indexes;
+        dcov.sortedX = sortedX;
+        dcov.sortedY = sortedY;
+
+        return dcov;
     }
 }

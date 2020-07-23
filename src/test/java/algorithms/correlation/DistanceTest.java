@@ -187,7 +187,7 @@ public class DistanceTest extends TestCase {
             diff = Math.abs(dcov.sortedY[i] - eY[i]);
             assertTrue(diff < eps);
             diff = Math.abs(dcov.d2[i] - eD[i]);
-           // assertTrue(diff < eps);
+            assertTrue(diff < eps);
         }
         
     }
