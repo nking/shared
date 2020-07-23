@@ -87,7 +87,7 @@ public class DistanceTest extends TestCase {
         
     }
     
-    public void testSort3() {
+    public void estSort3() {
                 
         double eps = 1.e-17;
         
@@ -140,12 +140,12 @@ public class DistanceTest extends TestCase {
         double[] x = new double[]{3, 5, 7, 3, 8, 4, 6, 7};
         double[] y = new double[]{1, 5, 3, 2, 4, 6, 7, 5};
         
-        //                         3  0  5  1  6  7  2  4
+        //                         0  3  5  1  6  2  7  4
         double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
-        double[] eY = new double[]{2, 1, 6, 5, 7, 5, 3, 4};
+        double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
         DCov dcov = Distance.covariance(x, y);
-        double diff;
+        double diff = 0;
         /*for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(sorted[0][i] - eX[i]);
             assertTrue(diff < eps);
@@ -162,5 +162,33 @@ public class DistanceTest extends TestCase {
             diff = Math.abs(sorted[1][i] - eY[i]);
             assertTrue(diff < eps);
         }*/
+    }
+    
+    public void testBruteForceCovariance() {
+        
+        //double[][] _sortCheck(double[] x, double[] y)
+        
+        double eps = 1.e-17;
+        
+        //                        0  1  2  3  4  5  6  7
+        double[] x = new double[]{3, 5, 7, 3, 8, 4, 6, 7};
+        double[] y = new double[]{1, 5, 3, 2, 4, 6, 7, 5};
+        
+        //                         0  3  5  1  6  2  7  4
+        double[] eX = new double[]{8, 7, 7, 6, 5, 4, 3, 3};
+        double[] eY = new double[]{4.0, 3.0, 5.0, 7.0, 5.0, 6.0, 1.0, 2.0};
+        double[] eD = new double[]{11, 6, 21, 14, 1, 3, 0, 0};
+        
+        DCov dcov = Distance._bruteForceCovariance(x, y);
+        double diff = 0;
+        for (int i = 0; i < x.length; ++i) {
+            diff = Math.abs(dcov.sortedX[i] - eX[i]);
+            assertTrue(diff < eps);
+            diff = Math.abs(dcov.sortedY[i] - eY[i]);
+            assertTrue(diff < eps);
+            diff = Math.abs(dcov.d2[i] - eD[i]);
+           // assertTrue(diff < eps);
+        }
+        
     }
 }
