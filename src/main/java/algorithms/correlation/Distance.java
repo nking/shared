@@ -5,12 +5,25 @@ import algorithms.misc.MiscSorter;
 import java.util.Arrays;
 
 /**
- *
- * implementation of Chaudhuri & Hu 2019.
+ * calculates the distance covariance between univariate vectors x and y as
+     "a weighted  distance between the joint characteristic function and 
+     the product of marginal distributions.
+    
+     * The method covariance() is a port of the Matlab code from
+     * "A fast algorithm for computing distance correlation"
+     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+     * 
+     * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
+     * the same as the number in y
  * 
  * TODO: consider implementing Brownian Distance Covariance.
  * TODO: add notes for Hilbert-Schmidt independence measure (HSIC) - Lasso.
- * 
+ * NOTE: can use this within feature screening: 
+     Li, R., Zhong, W., and Zhu, L. (2012). 
+     Feature screening via distance correlation learning. 
+     Journal of the American Statistical Association, 107(499):1129–1139
+
  * @author nichole
  */
 public class Distance {
@@ -35,11 +48,11 @@ public class Distance {
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
      * 
-     * @param x
-     * @param y
+     * @param x sample of univariate observations
+     * @param y second sample of univariate observations
      * @return 
      */
-    public static DCov covariance(double[] x, double[] y) {
+    public static DCov univariateCovariance(double[] x, double[] y) {
                   
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -146,7 +159,6 @@ public class Distance {
            k = 0;
            
            //idx_r = idx(:, r);
-           //NOTE: it looks like idx_r will never contain a 0 as that is out-of-bounds index for array v
            for (z = 0; z < idx.length; ++z) {
                idx_r[z] = idx[z][r-1];
            }
@@ -521,8 +533,34 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
         int[] indexes;
         double[] sortedX;
         double[] sortedY;
+        double[] dcov;
         
-        double[] d2;
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (indexes != null) {
+                sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
+            }
+            if (sortedX != null) {
+                sb.append("sortedX=").append(Arrays.toString(sortedX)).append("\n");
+            }
+            if (sortedY != null) {
+                sb.append("sortedY=").append(Arrays.toString(sortedY)).append("\n");
+            }
+            if (dcov != null) {
+                sb.append("dcov=").append(Arrays.toString(dcov)).append("\n");
+            }
+            if (d != null) {
+                sb.append("d=");
+                for (int i = 0; i < d.length; ++i) {
+                    sb.append("  ").append(Arrays.toString(d[i])).append("\n");
+                }
+            }
+            if (covsq != null) {
+                sb.append("covsq=").append(Arrays.toString(covsq)).append("\n");
+            }
+            return sb.toString();
+        }
     }
   
     /**
@@ -545,11 +583,15 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
      * 
+     * TODO: for use of same ordering on more than 1 pair of univariate samples,
+     * presumably need to overload this method to include sort order indexes
+     * as an argument.
+     * 
      * @param x
      * @param y
      * @return 
      */
-    public static DCov _bruteForceCovariance(double[] x, double[] y) {
+    public static DCov bruteForceUnivariateCovariance(double[] x, double[] y) {
 
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -651,7 +693,7 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
         }
 
         DCov dcov = new DCov();
-        dcov.d2 = sortedD;
+        dcov.dcov = sortedD;
         dcov.indexes = indexes;
         dcov.sortedX = sortedX;
         dcov.sortedY = sortedY;

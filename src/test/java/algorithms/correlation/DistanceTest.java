@@ -144,7 +144,7 @@ public class DistanceTest extends TestCase {
         double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
         double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
-        DCov dcov = Distance.covariance(x, y);
+        DCov dcov = Distance.univariateCovariance(x, y);
         double diff = 0;
         /*for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(sorted[0][i] - eX[i]);
@@ -179,16 +179,41 @@ public class DistanceTest extends TestCase {
         double[] eY = new double[]{4.0, 3.0, 5.0, 7.0, 5.0, 6.0, 1.0, 2.0};
         double[] eD = new double[]{11, 6, 21, 14, 1, 3, 0, 0};
         
-        DCov dcov = Distance._bruteForceCovariance(x, y);
+        DCov dcov = Distance.bruteForceUnivariateCovariance(x, y);
         double diff = 0;
         for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(dcov.sortedX[i] - eX[i]);
             assertTrue(diff < eps);
             diff = Math.abs(dcov.sortedY[i] - eY[i]);
             assertTrue(diff < eps);
-            diff = Math.abs(dcov.d2[i] - eD[i]);
+            diff = Math.abs(dcov.dcov[i] - eD[i]);
             assertTrue(diff < eps);
         }
         
+        System.out.printf("\nbrute force univariate dist\n");
+        System.out.println("XY:" + dcov.toString());
+        
+        double[][] a = new double[x.length][2];
+        for (int i = 0; i < x.length; ++i) {
+            a[i] = new double[]{dcov.sortedX[i], dcov.sortedY[i]};
+        }
+        
+        {
+            DCov dcov2 = Distance.bruteForceUnivariateCovariance(x, x);
+            System.out.println("XX:" + dcov2.toString());
+            dcov2 = Distance.bruteForceUnivariateCovariance(y, y);
+            System.out.println("YY:" + dcov2.toString());
+        }
+        
+        a = new double[x.length][1];
+        double[][] b = new double[x.length][1];
+        for (int i = 0; i < x.length; ++i) {
+            a[i] = new double[]{dcov.sortedX[i]};
+            b[i] = new double[]{dcov.sortedY[i]};
+        }
+        
+        double c2 = BruteForceDistance.correlation1(a, b);
+        System.out.printf("bf dist. correlation = %11.3e\n", c2);
+        System.out.flush();
     }
 }
