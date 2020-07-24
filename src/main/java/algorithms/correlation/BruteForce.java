@@ -1,7 +1,13 @@
 package algorithms.correlation;
 
+import algorithms.matrix.MatrixUtil;
+import java.util.Arrays;
+
 /**
- *
+ * implemented from 
+        
+ * useful for Mahalanobis distance among many things.
+ * 
  * @author nichole
  */
 public class BruteForce {
@@ -11,24 +17,18 @@ public class BruteForce {
         /*
        can implement as pairs in the matrix:
            aCov= covariance(a)
-           covXY = covariance(x,y) result in aCov.
-           covXX  = covariance(x,x) result in aCov.
-           covXX  = covariance(y,y) result in aCov.
-       if abs(covXX * covYY)<1e-10
-           cor = 0;
-       else
-           cor = sign(covXY) * sqrt( abs(covXY) / sqrt(covXX * covYY) );
-       end
-        
-        also, exploration of correlation:
-        https://numbersandcode.com/some-interesting-observations-with-distance-correlation-coefficients
-        
+           covXY = covariance(x,y) result is in aCov.
+           covXX  = covariance(x,x) result is in aCov.
+           covXX  = covariance(y,y) result is in aCov.
+       
+           
+       
          */
         throw new UnsupportedOperationException("not yet implemented");
     }
     
     /**
-     * calculate the covariance matrix for a
+     * calculate the covariance matrix for a using a brute force method
      * @param a
      * @return 
      */
@@ -57,6 +57,18 @@ public class BruteForce {
             }
         }
         
+        System.out.printf("bf stand. means=%s\n", Arrays.toString(mean));
+        
+        System.out.flush();
+        System.out.printf("bf stand. diffs=\n");
+        for ( i = 0; i < diffs.length; ++i) {
+            for ( j = 0; j < diffs[i].length; ++j) {
+                System.out.printf("%11.3e  ", diffs[i][j]);
+            }
+            System.out.printf("\n");
+        }
+        System.out.flush();
+        
         double[][] cov = new double[nCols][];
         for (i = 0; i < nCols; ++i) {
             cov[i] = new double[nCols];
@@ -78,7 +90,16 @@ public class BruteForce {
             }
         }
         
+        System.out.printf("bf stand. cov=\n");
+        for ( i = 0; i < cov.length; ++i) {
+            for ( j = 0; j < cov[i].length; ++j) {
+                System.out.printf("%11.3e  ", cov[i][j]);
+            }
+            System.out.printf("\n");
+        }
+        System.out.flush();
+        
         return cov;
     }
-    
+   
 }
