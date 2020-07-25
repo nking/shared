@@ -89,7 +89,7 @@ public class Distance {
         //%to sorted y using merge−sort.
         
         //%Weight vectors
-        //v = [ x y x .∗ y ];
+        //v = [ x y x.∗y ];
         //nw = size( v, 2 );
         
         //   [ x y x .∗ y ] is column 0 = x, column 1 = y, column 2 = x.*y
@@ -98,11 +98,10 @@ public class Distance {
         int nw = 3;
         
         double[][] v = new double[n][nw];
-        v[0] = Arrays.copyOf(x, n);
-        v[1] = Arrays.copyOf(y, n);
-        v[2] = Arrays.copyOf(x, n);
         for (int row = 0; row < n; ++row) {
-            v[2][row] *= y[row];
+            v[row][0] = x[row];
+            v[row][1] = y[row];
+            v[row][2] = x[row]*y[row];
         }
         
         //% The columns of idx are buffers to store sort indices and output buffer
@@ -197,7 +196,7 @@ public class Distance {
                  } else {
                     idx[k-1][idx_s-1] = idx2;
                     st2++;
-                    iv1[idx2-1] += e1 - st1 + 1;
+                    iv1[idx2-1] += (e1 - st1 + 1);
                     iv2[idx2-1] += (csumv[e1+1-1][0] - csumv[st1-1][0]);
                     iv3[idx2-1] += (csumv[e1+1-1][1] - csumv[st1-1][1]);
                     iv4[idx2-1] += (csumv[e1+1-1][2] - csumv[st1-1][2]);
@@ -217,7 +216,7 @@ public class Distance {
                   kf = k + e2 - st2 + 1;
                   //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
                   int c = st2;
-                  for (z = k+1; z <= kf; ++z) {
+                  for (z = (k+1); z <= kf; ++z) {
                       idx[z-1][idx_s-1] = idx_r[c-1];
                       c++;
                   }
@@ -227,7 +226,7 @@ public class Distance {
            
            i = gap;
            r = 3 - r; 
-           idx_s = 3 - idx_s;  //2;  3-2=1 // 3-1=2
+           idx_s = 3 - idx_s;
         }
         
 System.out.println("iv1=" + Arrays.toString(iv1)); 
