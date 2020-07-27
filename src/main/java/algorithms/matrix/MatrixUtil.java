@@ -571,6 +571,17 @@ public class MatrixUtil {
         return m;
     }
     
+    /**
+     * calculate the product of vectors a and b as a*b^T.
+     * @param a
+     * @param b
+     * @return outer product in double array of size [a.length][b.length])
+     */
+    public static double[][] outerProduct(double[] a, double[] b) {
+        
+        return vTv(a, b);
+    }
+    
     
     public static TDoubleArrayList subtract(TDoubleArrayList a, TDoubleArrayList b) {
         int sz0 = a.size();
@@ -1310,9 +1321,11 @@ public class MatrixUtil {
      * @param a
      * @param tolerance iterations are stopped when the current multiplication vector
      * difference from previous is smaller than tolerance for each item.
+     * @param x an initialized vector of size a.length that will be filled by
+     * this method to hold the vector used to calculate eig = x^T * a * x
      * @return 
      */
-    public static double powerMethod(double[][] a, double tolerance) {
+    public static double powerMethod(double[][] a, double tolerance, double[] x) {
         int nR = a.length;
         double[] v = new double[nR];
         double[] z;
@@ -1355,7 +1368,72 @@ public class MatrixUtil {
             //    eig, Arrays.toString(v), Arrays.toString(z));
             nIter++;
         }
+        System.arraycopy(v, 0, x, 0, v.length);
         return eig;
     }
     
+     /**
+     * determine the largest eigenvalue using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method is implemented from pseudocode in Golub and van Loan 
+     * "Matrix Computations".
+     * NOTE that the number of necessary iterations is dependent upon
+     * how close the largest and second largest eigenvalues are and that ratio
+     * tends to be near "1" for large matrices and in that case, the power
+     * method isn't the right method (consider QR or SVD).
+     * @param a
+     * @param tolerance iterations are stopped when the current multiplication vector
+     * difference from previous is smaller than tolerance for each item.
+     * @return 
+     */
+    public static double powerMethod(double[][] a, double tolerance) {
+        double[] x = new double[a.length];
+        return powerMethod(a, tolerance, x);
+    }
+    
+    /**
+     * determine the eigenvalue pairs using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method follows "Mining of Massive Datasets" by Leskovec, Rajaraman,
+     * and Ullman.  http://www.mmds.org/
+     * @param a
+     * @param tolerance iterations are stopped when the current multiplication vector
+     * difference from previous is smaller than tolerance for each item.
+     * @return an array of a.length eigenvectors
+     */
+    public static double[] powerMethodEigenPairs(double[][] a, double tolerance) {
+        
+        double[] x = new double[a.length];
+        double eig;
+        double[] eigs = new double[a.length];
+        double[][] x2, a2;
+        
+        for (int nr = 0; nr < a.length; ++nr) {
+            
+            eigs[nr] = powerMethod(a, tolerance, x);
+            
+            x2 = vTv(x, x);
+            a2 = copy(a);
+            for (int i = 0; i < a2.length; ++i) {
+                for (int j = 0; j < a2[i].length; ++j) {
+                    a2[i][j] -= (eigs[nr] * x2[i][j]);
+                }
+            }
+            a = a2;
+            
+            System.out.printf("eig[%d]=%.5f x=%s\n", nr, eigs[nr], Arrays.toString(x));
+            System.out.println("  a2=\n");
+            for (int i = 0; i < a2.length; ++i) {
+                System.out.printf("  %s\n", Arrays.toString(a2[i]));
+            }
+        }
+                
+        return eigs;
+    }
 }

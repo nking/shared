@@ -360,4 +360,28 @@ public class MatrixUtilTest extends TestCase {
         System.out.printf("===> eig=%.10f diff=%.10f\n", eig, diff);        
         assertTrue(diff < tol);
     }
+    
+    public static void testPowerMethod2() {
+        
+        // unit test from Strang "Linear Algebra"
+        double[][] a = new double[2][2];
+        a[0] = new double[]{3, 2};
+        a[1] = new double[]{2, 6};
+        
+        double eEig1 = 7.0;
+        double eEig2 = 2.0;
+                
+        double tol = 1.e-2;
+        
+        double[] eigs = MatrixUtil.powerMethodEigenPairs(a, 1.e-3);
+        
+        double diff = Math.abs(eigs[0] - eEig1);
+        
+        assertTrue(diff < tol);
+        
+        diff = Math.abs(eigs[1] - eEig2);
+        
+        assertTrue(diff < tol);
+        
+    }
 }
