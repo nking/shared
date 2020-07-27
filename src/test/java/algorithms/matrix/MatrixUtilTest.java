@@ -354,5 +354,10 @@ public class MatrixUtilTest extends TestCase {
         System.out.printf("==> eig=%.10f diff=%.10f\n", eig, diff);
         
         assertTrue(diff < tol);
+        
+        eig = MatrixUtil.powerMethod(a, 1.e-3);
+        diff = Math.abs(eig - eEig);
+        System.out.printf("===> eig=%.10f diff=%.10f\n", eig, diff);        
+        assertTrue(diff < tol);
     }
 }
