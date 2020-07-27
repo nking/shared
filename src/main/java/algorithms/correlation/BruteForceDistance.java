@@ -187,11 +187,11 @@ public class BruteForceDistance {
             }
         }
         
-        double invN2 = 1./((double)n*n);
+        double invN = 1./((double)n-1.);
         
-        double dCov = invN2 * sXY;
-        double dVarX = invN2 * sXX;
-        double dVarY = invN2 * sYY;
+        double dCov = invN * sXY;
+        double dVarX = invN * sXX;
+        double dVarY = invN * sYY;
                 
         //emp. dist. correlation = sqrt(  sXY /(sqrt(sXX*sYY) )
         double cor = (dVarX > 0 && dVarY > 0) ? dCov/Math.sqrt(dVarX * dVarY) : 0.;
