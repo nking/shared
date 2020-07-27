@@ -2,8 +2,11 @@ package algorithms.matrix;
 
 import algorithms.matrix.LinearEquations.LUP;
 import static algorithms.matrix.LinearEquations.LUPDecomposition;
+import algorithms.misc.Misc0;
 import gnu.trove.list.array.TDoubleArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import no.uib.cipr.matrix.DenseMatrix;
@@ -1240,4 +1243,56 @@ public class MatrixUtil {
         }
         return out;
     }
+    
+    /**
+     * determine the largest eigenvalue using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method is implemented from pseudocode in Golub and van Loan 
+     * "Matrix Computations".
+     * NOTE that the number of necessary iterations is dependent upon
+     * how close the largest and second largest eigenvalues are and that ratio
+     * tends to be near "1" for large matrices and in that case, the power
+     * method isn't the right method (consider QR or SVD).
+     * @param a
+     * @param nIterations
+     * @return 
+     */
+    public static double powerMethod(double[][] a, int nIterations) {
+        int nR = a.length;
+        double[] v = new double[nR];
+        double[] z;
+        double norm;
+        double eig = 0;
+        int row;
+        
+        Random rand = Misc0.getSecureRandom();
+        long seed = System.currentTimeMillis();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        //avoid orthogonal first guess at v using randomization.
+        for (row = 0; row < nR; ++row) {
+            v[row] = rand.nextDouble();
+        }
+            
+        for (int i = 0; i < nIterations; ++i) {
+            
+            z = MatrixUtil.multiply(a, v);
+            norm = 0;
+            for (row = 0; row < nR; ++row) {
+                norm += (z[row]*z[row]);
+            }
+            norm = Math.sqrt(norm);
+            eig = norm;
+            for (row = 0; row < nR; ++row) {
+                v[row] = z[row] / eig;
+            }
+            //System.out.printf("eig=%.3f\n  v=%s\n  z=%s\n", eig, Arrays.toString(v),
+            //    Arrays.toString(z));
+        }
+        return eig;
+    }
+    
 }

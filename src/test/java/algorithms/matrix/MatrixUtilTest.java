@@ -334,4 +334,25 @@ public class MatrixUtilTest extends TestCase {
 
     }
    
+    public static void testPowerMethod() {
+        
+        // unit test from Strang "Linear Algebra"
+        double[][] a = new double[2][2];
+        a[0] = new double[]{0.9, 0.3};
+        a[1] = new double[]{0.1, 0.7};
+        
+        double eEig = 1.0;
+        
+        double tol = 1.e-2;
+        
+        int nIter = 10;
+        
+        double eig = MatrixUtil.powerMethod(a, nIter);
+        
+        double diff = Math.abs(eig - eEig);
+        
+        System.out.printf("==> eig=%.10f diff=%.10f\n", eig, diff);
+        
+        assertTrue(diff < tol);
+    }
 }
