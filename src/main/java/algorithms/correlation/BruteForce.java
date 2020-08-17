@@ -30,8 +30,9 @@ public class BruteForce {
     
     /**
      * calculate the covariance matrix for a using a brute force method
-     * @param a
-     * @return 
+     * @param a an mxn matrix of data with the dimensions being columns
+     * and the datum number being rows.
+     * @return the covariance matrix as a double array of size [a[0].length][a[0].length]
      */
     public static double[][] covariance(double[][] a) {
         

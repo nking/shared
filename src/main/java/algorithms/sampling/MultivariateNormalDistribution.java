@@ -6,10 +6,8 @@ import java.security.SecureRandom;
 import no.uib.cipr.matrix.DenseCholesky;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.LowerSPDDenseMatrix;
-import no.uib.cipr.matrix.LowerTriangDenseMatrix;
 import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 
 /**
  * sample from a multivariate normal distribution N(m⃗ ,K) following
@@ -25,6 +23,7 @@ public class MultivariateNormalDistribution {
      * the generated unit standard normal distribution.
      * @param m vector of means for multivariate distribution.
      * @param k double array of covariance matrix for multivariate distribution.
+     * must be a symmetric positive definite matrix.
      * @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
@@ -119,6 +118,7 @@ public class MultivariateNormalDistribution {
      * matrices k.
      * @param m vector of means for multivariate distribution.
      * @param k double array of covariance matrix for multivariate distribution.
+     * must be a symmetric positive definite matrix.
      * @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
@@ -188,7 +188,6 @@ public class MultivariateNormalDistribution {
             k[i][i] += 0.0001;
         }
         
-        DenseCholesky chol = DenseCholesky.factorize(new DenseMatrix(k));
         DenseCholesky c = new DenseCholesky(n, false);
         LowerSPDDenseMatrix lt = new LowerSPDDenseMatrix(new DenseMatrix(k));
         c.factor(lt);

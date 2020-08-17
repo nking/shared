@@ -924,8 +924,8 @@ public class MatrixUtil {
         double[][] uT = MatrixUtil.convertToRowMajor(uM);
         
         /*
-        U is mxn orthonormal columns
-        S is nxn with non-negative singular values.  rank is number of non-zero entries
+        U is mxm orthonormal columns
+        S is mxn with non-negative singular values.  rank is number of non-zero entries
         V is  nxn
         */
         assert(v.length == n);
@@ -1456,7 +1456,7 @@ public class MatrixUtil {
     }
     
     /**
-     * calculate the square root of symmetric matrix A using SVD.
+     * calculate the square root of symmetric positive definite matrix A using SVD.
      * 
      * <pre>
      *    [U, S, V] = svd(A)
@@ -1550,8 +1550,9 @@ public class MatrixUtil {
     }
     
     /*
-     * NOTE: this method is a very rough look at symmetry.  matrix echelon row reduction
-     * should be performed and isn't present yet.
+     * NOTE: this method is a very rough look at symmetry.  
+       matrix echelon row reduction should be performed 
+       (a may have 0's) and isn't present yet.
      * @param a
      * @return 
     public static boolean isSymmetric(double[][] a) {
@@ -1575,6 +1576,27 @@ public class MatrixUtil {
         return true;
     }
     */
+    
+    public static boolean isPositiveSymmetric(double[][] a) {
+        if (!isSquare(a)) {
+            return false;
+        }
+                        
+        double tol = 1e-3;
+        int n = a.length;
+        int i, j;
+        for (i = 0; i < n; ++i) {
+            for (j = i; j < n; ++j) {
+                if (Math.abs(a[i][j]) < 1e-17 || Math.abs(a[j][i]) < 1e-17) {
+                    return false;
+                }
+                if (Math.abs(a[i][j] - a[j][i]) > tol) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     
     /**
      * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive

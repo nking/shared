@@ -20,13 +20,15 @@ public class MultivariateNormalDistributionTest extends TestCase {
     public MultivariateNormalDistributionTest(String testName) {
         super(testName);
     }
+    
+    // TODO: add positive definite test matrices from NIST:
+    //    https://math.nist.gov/cgi-bin/matrix-query
 
     public void testSampleFrom() throws NotConvergedException, NoSuchAlgorithmException {
         
         // unit test from 
         // https://jamesmccaffrey.wordpress.com/2017/11/03/example-of-calculating-a-covariance-matrix/
 
-        // NOTE: this is possibly an ill-conditioned matrix:
         double[][] a = new double[5][3];
         a[0] = new double[]{64.0,   580.0, 29.0};
         a[1] = new double[]{66.0,   570.0, 33.0};
