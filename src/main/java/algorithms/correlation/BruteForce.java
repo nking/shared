@@ -22,7 +22,8 @@ public class BruteForce {
            covXX  = covariance(y,y) result is in aCov.
        
            
-       
+        see:
+           https://blogs.sas.com/content/iml/2010/12/10/converting-between-correlation-and-covariance-matrices.html
          */
         throw new UnsupportedOperationException("not yet implemented");
     }
@@ -57,7 +58,7 @@ public class BruteForce {
             }
         }
         
-        System.out.printf("bf stand. means=%s\n", Arrays.toString(mean));
+        /*System.out.printf("bf stand. means=%s\n", Arrays.toString(mean));
         
         System.out.flush();
         System.out.printf("bf stand. diffs=\n");
@@ -68,6 +69,7 @@ public class BruteForce {
             System.out.printf("\n");
         }
         System.out.flush();
+        */
         
         double[][] cov = new double[nCols][];
         for (i = 0; i < nCols; ++i) {
@@ -90,7 +92,7 @@ public class BruteForce {
             }
         }
         
-        System.out.printf("bf stand. cov=\n");
+        /*System.out.printf("bf stand. cov=\n");
         for ( i = 0; i < cov.length; ++i) {
             for ( j = 0; j < cov[i].length; ++j) {
                 System.out.printf("%11.3e  ", cov[i][j]);
@@ -98,6 +100,7 @@ public class BruteForce {
             System.out.printf("\n");
         }
         System.out.flush();
+        */
         
         return cov;
     }

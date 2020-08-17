@@ -1,17 +1,7 @@
 package algorithms.correlation;
 
-import algorithms.matrix.*;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.logging.Logger;
-import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
-import no.uib.cipr.matrix.MatrixEntry;
-import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
-import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
     
 /**
  *

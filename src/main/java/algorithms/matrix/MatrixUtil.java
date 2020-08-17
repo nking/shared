@@ -1125,7 +1125,7 @@ public class MatrixUtil {
         return c;
     }
 
-      public static double[][] copy(double[][] a) {
+    public static double[][] copy(double[][] a) {
         
         double[][] m = new double[a.length][];
         
@@ -1133,6 +1133,21 @@ public class MatrixUtil {
             int n0 = a[i].length;
             m[i] = new double[n0];
             System.arraycopy(a[i], 0, m[i], 0, n0);
+        }
+        
+        return m;
+    }
+    
+    public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
+        
+        int nr2 = row1 - row0 + 1;
+        int nc2 = col1 - col0 + 1;
+        
+        double[][] m = new double[nr2][];
+        int i, j;
+        for (i = 0; i < nr2; ++i) {
+            m[i] = new double[nc2];
+            System.arraycopy(a[row0 + i], col0, m[i], 0, nc2);
         }
         
         return m;
@@ -1272,6 +1287,9 @@ public class MatrixUtil {
      * @return 
      */
     public static double powerMethod(double[][] a, int nIterations) {
+
+        // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
+
         int nR = a.length;
         double[] v = new double[nR];
         double[] z;
@@ -1280,7 +1298,7 @@ public class MatrixUtil {
         int row;
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         //avoid orthogonal first guess at v using randomization.
@@ -1334,7 +1352,7 @@ public class MatrixUtil {
         int row, stop;
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         //avoid orthogonal first guess at v using randomization.
@@ -1435,5 +1453,232 @@ public class MatrixUtil {
         }
                 
         return eigs;
+    }
+    
+    /**
+     * calculate the square root of symmetric matrix A using SVD.
+     * 
+     * <pre>
+     *    [U, S, V] = svd(A)
+     *    J = V * S^(1/2) * V^T is a symmetric n×n matrix, such that square root of A = JJ.
+     *    J is non-negative definite.
+     * </pre>
+     * from Gilbert Strang's SVD in machine learning.
+     * @param a a square symmetric non-negative definite matrix
+     * @return the square root of matrix a
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[][] squareRoot(double[][] a) throws NotConvergedException {
+        
+        if (!MatrixUtil.isPositiveDefinite(a)) {
+            throw new IllegalArgumentException("a must be a non-negative definite matrix");
+        }
+        
+        int m = a.length;
+        int n = a[0].length;
+        
+        // limit for a number to be significant above 0
+        double eps = 1e-16;
+        
+        DenseMatrix aMatrix = new DenseMatrix(a);
+        SVD svd = SVD.factorize(aMatrix);
+                
+        // s is an array of size min(m,n)
+        double[] s = svd.getS();
+        int rank = 0;
+        for (double sv : s) {
+            if (sv > eps) {
+                rank++;
+            }
+        }
+        // the number of distinct non-zero eigenvalues is rank.
+        // there are 2^(rank) square roots
+        
+        /*
+        S has singular values along the diagonal and those are the square roots 
+        of positive eigenvalues of A.  the number of them is == the rank of A.
+        NOTE the singular values are the eigenvalues of A*A^T of A^T*A.
+        
+        S = [ sqrt(λ_1)     0        ...
+            [     0      sqrt(λ_2)   ...
+        
+        */
+                
+        /*
+        U is mxm orthonormal columns
+        S is nxn with non-negative singular values.  rank is number of non-zero entries
+        V is  mxn
+        
+            [nxn] * [nxn] * [nxn]
+        J = V * S^(1/2) * V^T  is [nxn]
+        */       
+                 
+        /*
+          a00  a01   s00  0 
+          a10  a11     0  s11
+          a20  a21
+        
+        a_r0_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r0_c1 * s_r1_c1
+        a_r1_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r1_c1 * s_r1_c1
+        a_r2_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r2_c1 * s_r1_c1
+        =
+        a_r0_c0 * s[0]    a_r0_c1 * s[1]
+        a_r1_c0 * s[0]    a_r1_c1 * s[1]
+        a_r2_c0 * s[0]    a_r2_c1 * s[1]
+        */
+        DenseMatrix vT = (DenseMatrix) svd.getVt();
+        
+        double[][] _vT = Matrices.getArray(vT);
+        double[][] _v = MatrixUtil.transpose(_vT);
+                    
+        int col, row, d;
+        double[][] j = new double[n][];
+        for (row = 0; row < n; ++row) {
+            j[row] = new double[n];
+            for (col = 0; col < n; col++) {
+                if (s[col] > eps) {
+                    j[row][col] = _v[row][col] * Math.sqrt(s[col]);
+                }
+            }
+        }
+        j = MatrixUtil.multiply(j, _vT);
+        return j;
+    }
+    
+    public static boolean isSquare(double[][] a) {
+        return (a.length == a[0].length);
+    }
+    
+    /*
+     * NOTE: this method is a very rough look at symmetry.  matrix echelon row reduction
+     * should be performed and isn't present yet.
+     * @param a
+     * @return 
+    public static boolean isSymmetric(double[][] a) {
+        if (!isSquare(a)) {
+            return false;
+        }
+                
+        // need reduced echelon form then can compare entries
+        
+        double tol = 1e-3;
+        double r;
+        int n = a.length;
+        int i, j;
+        for (i = 0; i < n; ++i) {
+            for (j = 0; j < n; ++j) {
+                if (Math.abs(a[i][j] - a[j][i]) > tol) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    */
+    
+    /**
+     * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive
+     * 
+     * @param a
+     * @return 
+     */
+    public static boolean isPositiveDefinite(double[][] a) {
+        if (!isSquare(a)) {
+            return false;
+        }
+        /*
+        from Strang "Linear Algebra":
+        
+        matrix A is positive definite for every non-zero vector x if x^T*A*x > 0 
+        
+        when a symmetric 2x2 matrix has 1 of these 4, it has all 4:
+            1) both eigenvectors are positive
+            2) the 1x1 and 2x2 ... determinants are positive a>0 and a*c-b^2>0
+            3) the pivots are positive a>0 and a*c-b^2>0
+            4) the function x^T*A*x is positive except at (0.0)
+
+        */
+        // using rule that left upward rooted determinants > 0
+        int n = a.length;
+        double[][] sa;
+        double det;
+        for (int i = 0; i < n; ++i) {
+            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);
+            det = MatrixUtil.determinant(sa);
+            if (det < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+        /*
+         * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+         *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 + 135 + 2 =
+ 148
+         *         | 2   1  5 |
+         *
+         *          3 4     7  4    7  3
+         *          1 5     2  5    2  1
+         * 
+         *         -5 2     1  2    1 -5
+         *          1 5     2  5    2  1
+         *
+         *         -5 2     1  2    1 -5
+         *          3 4     7  4    7  3
+    */
+    public static double[][] createCofactor(double[][] m) {
+
+        int ncols = m.length;
+        int nrows = m[0].length;
+
+        double[][] cofactor = new double[ncols][nrows];
+
+        for (int i = 0; i < ncols; i++) {
+            
+            cofactor[i] = new double[nrows];
+
+            boolean si = ((i & 1) == 1); // sign is -
+
+            for (int j = 0; j < nrows; j++) {
+
+                boolean sj = ((j & 1) == 1); // sign is -
+
+                double[][] n = copyExcept(m, i, j);
+
+                double cfctr = determinant(n);
+
+                if (si ^ sj) { // XOR if either is 1 but not both
+                    cfctr = -1*cfctr;
+                }
+
+                cofactor[i][j] = cfctr;
+            }
+         }
+        return cofactor;
+    }
+    
+        /**
+     * find the equation for which A * A^(-1) = the identity matrix
+     *
+     *             1
+     * A^(-1) =  ------ C^(T)  where C_ij = cofactor of a_ij
+     *            det A
+     *
+     * @param m
+     * @return
+     */
+    public static double[][] inverse(double[][] m) {
+
+        // create cofactor of matrix:
+        double[][] cofactor = createCofactor(m);
+
+        double[][] cofactorTransposed = transpose(cofactor);
+
+        double det = determinant(m);
+
+        multiply(cofactorTransposed, 1./det);
+
+        return cofactorTransposed;
     }
 }

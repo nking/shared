@@ -77,7 +77,7 @@ public final class StdRandom {
     // static initializer
     static {
         // this is how the seed was set in Java 1.4
-        seed = System.currentTimeMillis();
+        seed = System.nanoTime();
         random = new Random(seed);
     }
 

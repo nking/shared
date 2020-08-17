@@ -232,7 +232,7 @@ public class StandardizationTest extends TestCase {
 
     public void test2() {
         SecureRandom sr = new SecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("test2: seed=" + seed);
         sr.setSeed(seed);
         

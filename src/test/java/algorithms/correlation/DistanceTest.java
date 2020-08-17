@@ -95,7 +95,7 @@ public class DistanceTest extends TestCase {
         int nIter = 1000;
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //long seed = 1595442111027L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);

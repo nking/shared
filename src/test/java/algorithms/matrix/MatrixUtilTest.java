@@ -384,4 +384,99 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(diff < tol);
         
     }
+    
+    public static void testSquareRoot() throws NotConvergedException {
+        
+        double[][] a = new double[2][2];
+        a[0] = new double[]{33, 24};
+        a[1] = new double[]{48, 57};
+        //5, 2    4, 7
+        double[][] j = MatrixUtil.squareRoot(a);
+        assertEquals(2, j.length);
+        double[][] jj = MatrixUtil.multiply(j, j);
+        assertEquals(2, jj.length);
+    }
+    
+    public static void testCopySubmatrix() {
+        
+        double eps = 1e-17;
+        
+        double[][] a = new double[3][3];
+        a[0] = new double[]{0, 1, 2};
+        a[1] = new double[]{3, 4, 5};
+        a[2] = new double[]{6, 7, 8};
+        
+        int row0, row1, col0, col1;
+        int nre, nce, i, j;
+        double[][] c;
+        double diff;
+        
+        row0=0; row1=0; nre=1;
+        col0=0; col1=0; nce=1;        
+        c = MatrixUtil.copySubMatrix(a, row0, row1, col0, col1);
+        assertEquals(nre, c.length);
+        assertEquals(nce, c[0].length);
+        for (i = 0; i < nre; ++i) {
+            for (j = 0; j < nce; ++j) {
+                diff = Math.abs(a[row0 + i][col0 + j] - c[i][j]);
+                assertTrue(diff <= eps);
+            }
+        }
+        
+        row0=1; row1=2; nre=2;
+        col0=0; col1=2; nce=3;        
+        c = MatrixUtil.copySubMatrix(a, row0, row1, col0, col1);
+        assertEquals(nre, c.length);
+        assertEquals(nce, c[0].length);
+        for (i = 0; i < nre; ++i) {
+            for (j = 0; j < nce; ++j) {
+                diff = Math.abs(a[row0 + i][col0 + j] - c[i][j]);
+                assertTrue(diff <= eps);
+            }
+        }
+        
+    }
+    
+     public void testInverse() throws Exception {
+        /**
+         * e.g.    | 1  0  -1 |
+         *         |-2  1   0 |
+         *         | 1 -1   2 |
+         * 
+         * det = 1
+         * 
+         * cofactor = 
+         *            | (2)   -(-4)   (2-1) |
+         *            | 1(-1)  (2+1) -(-1)  |
+         *            |  1    -(0-2)    1   |
+         * 
+         *  cofactor^T = | 2  1  1 |
+         *               | 4  3  2 |
+         *               | 1  1  1 |
+         * 
+         *   inv = (1/det) * cofactor^T
+         */
+        System.out.println("testInverse");
+
+        double[][] m = new double[3][3];
+        m[0] = new double[]{1, -2, 1};
+        m[1] = new double[]{0, 1, -1};
+        m[2] = new double[]{-1, 0, 2};
+        
+        double[][] result = MatrixUtil.inverse(m);
+
+        double[][] e = new double[3][3];
+        e[0] = new double[]{2, 4, 1};
+        e[1] = new double[]{1, 3, 1};
+        e[2] = new double[]{1, 2, 1};
+
+        assertTrue(result.length == e.length);
+        assertTrue(result[0].length == e[0].length);
+        
+        for (int i = 0; i < e.length; i++) {
+            double[] a = result[i];
+            double[] b = e[i];
+            assertTrue(Arrays.equals(a, b));
+        }
+    }
 }
