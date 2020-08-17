@@ -335,7 +335,7 @@ public class ElasticNetTest extends TestCase {
         int nTargets = 1;
         
         Random rng = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         if (debug) {
         System.out.println("SEED=" + seed);
         }

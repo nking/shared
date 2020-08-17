@@ -80,7 +80,8 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
                 searchStrategy.get_wolfe_sigma(), 
                 minF, 100);
 
-            System.out.println("   alpha=" + alpha + " s=" + AbstractGeometricMedianFunction.toString(s));
+            System.out.println("   alpha=" + alpha + " s=" + 
+                AbstractGeometricMedianFunction.toString(s));
             
             // Take the search step indicated by the above line search
             //x += alpha*s;
@@ -105,6 +106,8 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
                 }
             }
         }
+        
+        System.out.println("number of iterations = " + count);
 
         return fValue;
     }

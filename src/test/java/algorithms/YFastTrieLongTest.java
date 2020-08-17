@@ -77,7 +77,7 @@ public class YFastTrieLongTest extends TestCase {
         int n = 100;
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1500230008845L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);

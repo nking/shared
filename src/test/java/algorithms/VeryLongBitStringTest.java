@@ -161,7 +161,7 @@ public class VeryLongBitStringTest extends TestCase {
     public void testSetBit2() throws Exception {
         
         System.out.println("testSetBit2");
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("seed=" + seed);
         Random rand = new Random(seed);
         
@@ -263,7 +263,7 @@ public class VeryLongBitStringTest extends TestCase {
         
         System.out.println("testCopy");
         
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("seed=" + seed);
         Random rand = new Random(seed);
         
@@ -305,7 +305,7 @@ public class VeryLongBitStringTest extends TestCase {
         
         System.out.println("testResetTo");
         
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("seed=" + seed);
         Random rand = new Random(seed);
         
@@ -345,7 +345,7 @@ public class VeryLongBitStringTest extends TestCase {
     public void testEquals() throws Exception {
         
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("SEED=" + seed);
         sr.setSeed(seed);
                 

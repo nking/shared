@@ -211,7 +211,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         //System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         seed = 1500232861625L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
@@ -390,7 +390,7 @@ public class RedBlackBSTLongInt2Test extends TestCase {
         //System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1500269991378L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);

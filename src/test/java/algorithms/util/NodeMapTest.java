@@ -31,7 +31,7 @@ public class NodeMapTest extends TestCase {
     public void test0() {
         
         Random rng = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("SEED=" + seed);
         rng.setSeed(seed);
         
@@ -121,7 +121,7 @@ public class NodeMapTest extends TestCase {
     public void test1() throws IOException {
         
         Random rng = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("SEED=" + seed);
         rng.setSeed(seed);
         

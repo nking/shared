@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * and uses a liberal AT&T license.
  * Then 2 ports to java.  
  * https://sourceforge.net/projects/simplevoronoi/postdownload?source=dlp
- * All have liberal licenses listed here.
+ * All have liberal licenses listed here:
  
  * The author of this software is Steven Fortune.  Copyright (c) 1994 by AT&T
  * Bell Laboratories.

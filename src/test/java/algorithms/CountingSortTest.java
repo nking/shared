@@ -70,7 +70,7 @@ public class CountingSortTest extends TestCase {
         List<Integer> list = new ArrayList<Integer>();
         
         SecureRandom sr = new SecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         sr.setSeed(seed);
         
         int n = 46340*2;

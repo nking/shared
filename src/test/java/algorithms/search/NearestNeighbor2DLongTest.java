@@ -37,7 +37,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
         //    squares that have random gaps added
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1499996461259L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);

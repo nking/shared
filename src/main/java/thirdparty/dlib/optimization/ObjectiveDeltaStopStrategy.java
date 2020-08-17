@@ -49,7 +49,8 @@ public class ObjectiveDeltaStopStrategy {
             }
 
             // check if the function change was too small
-            if (Math.abs(fValue - prevFunctValue) < minDelta) {
+            double diff = Math.abs(fValue - prevFunctValue);
+            if (diff < minDelta) {
                 return false;
             }
         }

@@ -40,7 +40,7 @@ public class ConnectedValuesGroupFinder2Test extends TestCase {
         //randomly draw multiples of bSz in x and y and draw 
         //    increasing value squares.
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1499572125948L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);

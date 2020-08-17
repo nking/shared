@@ -159,6 +159,8 @@ public class KNearestNeighbors {
         voronoi.generateVoronoi(x, y, xmin, xmax, ymin, ymax,
             minDist);
         
+        // TODO: consider a LinkedHashSet here as it is ordered, but the
+        // "contains method is O(1).
         LinkedList<GraphEdge> edges = voronoi.getAllEdges();
         
         Site[] sites = voronoi.getSites();

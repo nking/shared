@@ -181,7 +181,7 @@ public class BinaryTrieLongTest extends TestCase {
         Set<Integer> rm = new HashSet<Integer>();
         
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1465940667831L;
         sr.setSeed(seed);
         System.out.println("SEED=" + seed);

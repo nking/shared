@@ -28,7 +28,7 @@ public class XFastTrieLongTest extends TestCase {
         System.out.println("testKeyOperations");
         
         Random rand = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1499675478087L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
@@ -396,7 +396,7 @@ public class XFastTrieLongTest extends TestCase {
         Set<Integer> rm = new HashSet<Integer>();
         
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1465940667831L;
         sr.setSeed(seed);
         System.out.println("SEED=" + seed);

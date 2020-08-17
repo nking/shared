@@ -403,7 +403,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     public StopCondition stopConditions = new StopCondition(); 
 
     int N;
-    long seed = System.currentTimeMillis();
+    long seed = System.nanoTime();
     Random rand = new Random(seed); // Note: it also Serializable
 
     final MyMath math = new MyMath();
@@ -2286,7 +2286,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             warning("setting seed has no effect at this point");
         else {
         	if (seed <= 0) 
-        		seed = System.currentTimeMillis();
+        		seed = System.nanoTime();
             this.seed = seed;
             rand.setSeed(seed);
         }

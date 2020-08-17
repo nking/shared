@@ -338,7 +338,7 @@ public class YFastTrieTest extends TestCase {
         Set<Integer> rm = new HashSet<Integer>();
         
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1465940667831L;
         sr.setSeed(seed);
         System.out.println("SEED=" + seed);
@@ -462,7 +462,7 @@ public class YFastTrieTest extends TestCase {
         System.out.println("test_random_large");
         
         Random rng = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         //seed = 1498089496315L;
         rng.setSeed(seed);
         System.out.println("test_random_large SEED=" + seed);

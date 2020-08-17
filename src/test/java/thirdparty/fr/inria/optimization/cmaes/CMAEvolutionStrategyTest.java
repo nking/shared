@@ -586,7 +586,7 @@ public class CMAEvolutionStrategyTest extends TestCase {
         */
         
         Random rng = Misc0.getSecureRandom();
-        long seed = System.currentTimeMillis();
+        long seed = System.nanoTime();
         System.out.println("SEED=" + seed);
         rng.setSeed(seed);
         
