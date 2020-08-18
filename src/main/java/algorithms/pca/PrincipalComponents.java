@@ -3,6 +3,7 @@ package algorithms.pca;
 import algorithms.correlation.BruteForce;
 import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
+import java.util.Arrays;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
@@ -64,6 +65,9 @@ public class PrincipalComponents {
         
         double[] s = svd.getS();
         
+        System.out.println("eigenvalues of cov = " + Arrays.toString(s));
+        System.out.flush();
+        
         int rank = 0;
         for (int i = 0; i < s.length; ++i) {
             if (Math.abs(s[i]) > 1e-17) {
@@ -79,6 +83,9 @@ public class PrincipalComponents {
         DenseMatrix u = svd.getU();
         assert(nDimensions == u.numRows());
         assert(nDimensions == u.numColumns());
+        
+        System.out.println("U of SVD(cov) = " + u.toString());
+        System.out.flush();
                         
         double[][] pc = new double[nDimensions][nComponents];
         for (int row = 0; row < u.numRows(); ++row) {
@@ -95,22 +102,19 @@ public class PrincipalComponents {
         for (int i = 0; i < nComponents; ++i) {
             stats.s[i] = s[i];
         }
-        
-        stats.fractionVariance = new TIntDoubleHashMap(nComponents);
-        
+                
         double total = 0;
         for (int j = 0; j < nComponents; ++j) {
             total += stats.s[j];
         }
         double sum = 0;
         int p;
-        double q;
-        for (int j = n; j >= (nComponents+1); j--) {
+        for (int j = (nComponents+1); j <= nDimensions; ++j) {
             p = j - 1;
-            sum += stats.s[p];
-            q = (total - sum)/total;
-            stats.fractionVariance.put(j, q);
+            sum += s[p];
         }
+        stats.ssdP = sum;
+        stats.fractionVariance = (total - sum)/total;
         
         return stats;
     }
@@ -150,6 +154,22 @@ public class PrincipalComponents {
         
         // find the 'a' which minimizes ||⃗x − (m⃗_s + U _p * a)||^2
         
+        /*
+        ||⃗x − (m⃗_s + U _p * a)||^2 
+            where m⃗_s, U _p, and 'a' are k dimensional vectors
+            and x is a matrix of size [n][dimensions possibly larger than k]
+
+        f = (x_{i:n, 0} − (m⃗_0 + U_p_0 * a_0))^2
+             + (x_{i:n, 1} − (m⃗_1 + U_p_1 * a_1))^2
+             + ... up to dimension of principal components
+
+        df/da_0 = 2 * U_p_0 * (x_{i:n, 0} − (m⃗_0 + U_p_0 * a_0))
+        df/da_1 = 2 * U_p_1 * (x_{i:n, 1} − (m⃗_1 + U_p_1 * a_1))
+
+        set df/da_0 = 0 ==> x_{i:n, 0} = (m⃗_0 + U_p_0 * a_0)
+                            a_0 = (x_{i:n, 0} - m⃗_0) / U_p_0
+        */
+            
         throw new UnsupportedOperationException("not yet implemented");
         
     }
@@ -172,7 +192,7 @@ public class PrincipalComponents {
         
         /**
          * the fraction of the total variance Q_p (where p is the dimension
-         * number):
+         * number, that is, nComponents):
          * <pre>
          *    Q_p = (SSD_0 − SSD_p)/SSD_0
          * 
@@ -180,12 +200,16 @@ public class PrincipalComponents {
          *       where s_j is from the diagonal matrix S of the SVD
          *          of the covariance of x.
          * </pre>
-         * key = dimension (a.k.a. principal component in order), value = Q_p.
          */
-        TIntDoubleMap fractionVariance;
+        double fractionVariance;
         
         /**
-         * the first nComponents singluar values from the diagonal matrix of
+         * Minimum residual variance
+         */
+        double ssdP;
+        
+        /**
+         * the first nComponents singular values from the diagonal matrix of
          * the SVD of covariance of x;
          */
         double[] s;
