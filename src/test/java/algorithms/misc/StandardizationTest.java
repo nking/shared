@@ -1,5 +1,6 @@
 package algorithms.misc;
 
+import algorithms.matrix.MatrixUtil;
 import java.security.SecureRandom;
 import junit.framework.TestCase;
 
@@ -246,8 +247,8 @@ public class StandardizationTest extends TestCase {
         int i, it, nc0, nc1, nc;
         
         for (it = 0; it < nIter; ++it) {
-            nData = sr.nextInt(1024);
-            nDimensions = sr.nextInt(nData / 4);
+            nData = sr.nextInt(1023) + 1;
+            nDimensions = sr.nextInt(nData / 4) + 1;
 
             data = new double[nData * nDimensions];
             outputM = new double[nDimensions];
@@ -301,6 +302,78 @@ public class StandardizationTest extends TestCase {
                 }
             }
             assertEquals(data.length, nc);
+        }
+    }
+    
+    public void test3() {
+        SecureRandom sr = new SecureRandom();
+        long seed = System.nanoTime();
+        System.out.println("test3: seed=" + seed);
+        sr.setSeed(seed);
+        
+        int nIter = 10;
+        double tol = 0.001;
+        
+        int nData, nDimensions;
+        double[] outputM, outputStDev, dSt;
+        double[] mean2, stDev2;
+        double[][] data, st;
+        int i, j, it, nc0, nc1, nc;
+        
+        for (it = 0; it < nIter; ++it) {
+            nData = sr.nextInt(1023) + 1;
+            nDimensions = sr.nextInt(nData / 4) + 1;
+
+            data = new double[nData][nDimensions];
+            outputM = new double[nDimensions];
+            outputStDev = new double[nDimensions];
+            
+            for (i = 0; i < data.length; ++i) {
+                data[i] = new double[nDimensions];
+                for (j = 0; j < data[i].length; ++j) {
+                    data[i][j] = sr.nextDouble();
+                    if (sr.nextBoolean()) {
+                        data[i][j] *= -1.;
+                    }
+                    data[i][j] *= sr.nextInt();
+                }
+            }
+            
+            st = Standardization.standardUnitNormalization(data, 
+                outputM, outputStDev);
+            
+            assertEquals(st.length, data.length);
+            
+            mean2 = MatrixUtil.mean(st);
+            stDev2 = MatrixUtil.standardDeviation(st);
+            assertEquals(nDimensions, mean2.length);
+            assertEquals(nDimensions, stDev2.length);
+            nc0 = 0;
+            nc = 0;
+            for (i = 0; i < nDimensions; ++i) {
+                if (Math.abs(mean2[i] - 0.) < tol) {
+                    nc0++;
+                }
+                if ((Math.abs(stDev2[i] - 1.) < tol) || (Math.abs(stDev2[i] - 0.) < tol)) {
+                    nc++;
+                }
+            }
+            assertEquals(nDimensions, nc0);
+            assertEquals(nDimensions, nc);
+
+            /*
+            dSt = Standardization.standardUnitDenormalization(st, nDimensions,
+                    outputM, outputStDev);
+
+            assertEquals(data.length, dSt.length);
+            nc = 0;
+            for (i = 0; i < data.length; ++i) {
+                if ((Math.abs(dSt[i] - data[i]) < tol)) {
+                    nc++;
+                }
+            }
+            assertEquals(data.length, nc);
+            */
         }
     }
     

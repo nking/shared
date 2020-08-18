@@ -479,4 +479,32 @@ public class MatrixUtilTest extends TestCase {
             assertTrue(Arrays.equals(a, b));
         }
     }
+     
+     public void testMean() {
+         
+         double[][] a = new double[3][2];
+         a[0] = new double[]{10, 100};
+         a[1] = new double[]{9, 110};
+         a[2] = new double[]{11, 90};
+         
+         double[] expected = new double[]{10, 100};
+         double[] mean = MatrixUtil.mean(a);
+         
+         assertEquals(expected.length, mean.length);
+         
+         double diff;
+         double tol = 1.e-17;
+         for (int i = 0; i < expected.length; ++i) {
+             diff = expected[i] - mean[i];
+             assertTrue(Math.abs(diff) < tol);
+         }
+         
+         double[] expectedStDev = new double[]{1.0, Math.sqrt(200./2.)};
+         double[] stdev = MatrixUtil.standardDeviation(a);
+         for (int i = 0; i < expected.length; ++i) {
+             diff = expectedStDev[i] - stdev[i];
+             assertTrue(Math.abs(diff) < tol);
+         }
+     
+     }
 }

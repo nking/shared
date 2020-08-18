@@ -1,6 +1,7 @@
 
 package algorithms.misc;
 
+import algorithms.matrix.MatrixUtil;
 import java.util.Arrays;
 
 /**
@@ -110,6 +111,74 @@ public class Standardization {
                     out[j] *= standardDeviation[d];
                 }
                 out[j] += mean[d];
+            }
+        }
+        
+        return out;
+    }
+    
+     /**
+     * performs "standard unit normalization" on the points, that is,
+     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * for each dimension.
+     * the input data must have format [nSamples][nVariables], e.g.
+     * data[0] = [10, 100, 1000];
+     * data[1] = [9,  101, 999];
+     *   for nSamples=2 and nVariables = 3;
+     * 
+     * @param data the input data must have format [nSamples][nVariables], e.g.
+     * data[0] = [10, 100, 1000];
+     * data[1] = [9,  101, 999];
+     *   for nSamples=2 and nVariables = 3;
+     * @param outputMean the mean of the input data per variable (a.k.a. dimension)
+     * @param outputStandardDeviation the standard deviation of the mean subtracted
+     * data per dimension.
+     * @return an array holding (data - mean)/stdev
+     */
+    public static double[][] standardUnitNormalization(double[][] data, 
+        double[] outputMean, double[] outputStandardDeviation) {
+        
+        int nSamples = data.length;
+        int nVars = data[0].length;
+        
+        if (outputMean.length != nVars) {
+            throw new IllegalArgumentException("outputMean.length must equal data[0].length");
+        }
+        if (outputStandardDeviation.length != nVars) {
+            throw new IllegalArgumentException("outputStandardDeviation.length must equal data[0].length");
+        }
+        
+        // subtract the mean from the data,
+        // then calculate the standard deviation and divide the data by it.
+        double[][] out = MatrixUtil.copy(data);
+        
+        double[] c = MatrixUtil.mean(out);
+        System.arraycopy(c, 0, outputMean, 0, c.length);
+                
+        int i, d;
+        for (i = 0; i < out.length; ++i) {
+            for (d = 0; d < out[i].length; ++d) {
+                out[i][d] -= c[d];
+            }
+        }
+        
+        Arrays.fill(outputStandardDeviation, 0);
+                
+        for (i = 0; i < nSamples; ++i) {
+            for (d = 0; d < nVars; ++d) {
+                //mean has already been subtracted:
+                outputStandardDeviation[d] += (out[i][d]*out[i][d]);
+            }
+        }
+        for (d = 0; d < nVars; ++d) {
+            outputStandardDeviation[d] = Math.sqrt(outputStandardDeviation[d]/(nSamples - 1.0)); 
+        }
+        
+        for (i = 0; i < nSamples; ++i) {
+            for (d = 0; d < nVars; ++d) {
+                if (outputStandardDeviation[d] > 0.) {
+                    out[i][d] /= outputStandardDeviation[d];
+                }
             }
         }
         

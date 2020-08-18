@@ -41,15 +41,7 @@ public class BruteForce {
         
         int i, j;
         
-        double[] mean = new double[nCols];
-        double sum;
-        for (i = 0; i < nCols; ++i) {
-            sum = 0;
-            for (j = 0; j < nRows; ++j) {
-                sum += (a[j][i]);
-            }
-            mean[i] = sum/(double)nRows;
-        }
+        double[] mean = MatrixUtil.mean(a);
         
         double[][] diffs = new double[nRows][];
         for (i = 0; i < nRows; ++i) {
@@ -77,6 +69,7 @@ public class BruteForce {
             cov[i] = new double[nCols];
         }
      
+        double sum;
         int ii;
         for (i = 0; i < nRows; ++i) {
             for (j = i; j < nCols; ++j) {
@@ -100,8 +93,7 @@ public class BruteForce {
             }
             System.out.printf("\n");
         }
-        System.out.flush();
-        */
+        System.out.flush();*/    
         
         return cov;
     }

@@ -1703,4 +1703,62 @@ public class MatrixUtil {
 
         return cofactorTransposed;
     }
+    
+    /**
+     * given a as vectors of data of nSamples of nVariables, return the
+     * mean of each of the variables. 
+     * note that the format must be a[nSamples][nVariables],
+     * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
+     * and nVariables = 3;
+     * @param a
+     * @return 
+     */
+    public static double[] mean(double[][] a) {
+        int nSamples = a.length;
+        int nVariables = a[0].length;
+        
+        int i, j;
+        double[] mean = new double[nVariables];
+        double sum;
+        for (j = 0; j < nVariables; ++j) {
+            sum = 0;
+            for (i = 0; i < nSamples; ++i) {
+                sum += (a[i][j]);
+            }
+            mean[j] = sum/(double)nSamples;
+        }
+        return mean;
+    }
+    
+    /**
+     * given a as vectors of data of nSamples of nVariables, return the
+     * mean of each of the variables. 
+     * note that the format must be a[nSamples][nVariables],
+     * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
+     * and nVariables = 3;
+     * @param a
+     * @return 
+     */
+    public static double[] standardDeviation(double[][] a) {
+        int nSamples = a.length;
+        int nVars = a[0].length;
+        
+        double[] c = mean(a);
+        
+        double[] out = new double[nVars];
+        int i, d;
+        double diff;
+        for (i = 0; i < nSamples; ++i) {
+            for (d = 0; d < nVars; ++d) {
+                diff = a[i][d] - c[d];
+                out[d] += (diff*diff);
+            }
+        }
+        for (d = 0; d < nVars; ++d) {
+            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); 
+        }
+        
+        return out;
+    }
+    
 }
