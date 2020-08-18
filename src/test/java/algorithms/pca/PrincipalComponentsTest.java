@@ -1,5 +1,6 @@
 package algorithms.pca;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.pca.PrincipalComponents.PCAStats;
 import algorithms.util.ResourceFinder;
 import java.io.BufferedReader;
@@ -26,6 +27,24 @@ public class PrincipalComponentsTest extends TestCase {
         // https://online.stat.psu.edu/stat505/book/export/html/670
         
         double[][] x = readPlaces();
+        
+        int i, j;
+        
+        double[] mean = MatrixUtil.mean(x);
+        
+        // center the data:
+        for (i = 0; i < x.length; ++i) {
+            for (j = 0; j < x[i].length; ++j) {
+                x[i][j] -= mean[j];
+            }
+        }
+        
+        System.out.println("mean x=");
+        for (i = 0; i < mean.length; ++i) {
+            System.out.printf("%11.3e  ", mean[i]);
+        }
+        System.out.println();
+        System.out.flush();
         
         /*
         Step 1: Examine the eigenvalues to determine how many principal 

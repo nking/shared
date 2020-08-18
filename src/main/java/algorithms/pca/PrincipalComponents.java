@@ -1,10 +1,12 @@
 package algorithms.pca;
 
 import algorithms.correlation.BruteForce;
+import algorithms.matrix.MatrixUtil;
 import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import java.util.Arrays;
 import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
 
@@ -18,6 +20,14 @@ public class PrincipalComponents {
     
     /**
      * 
+     * note: consider subtracting the variable mean from each column if
+     * a is not already standardized.
+     * 
+     * ...
+     * following Strang's SVD
+     * also useful is:
+     * https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
+     * 
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k]
      * @param nComponents the number of principal components to return.
@@ -26,7 +36,7 @@ public class PrincipalComponents {
      * less than nComponents, then only that amount is returned;
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
-        
+                
         int n = x.length;
         int nDimensions = x[0].length;
         
@@ -60,13 +70,24 @@ public class PrincipalComponents {
         double[][] cov = BruteForce.covariance(x);
         assert(nDimensions == cov.length);
         assert(nDimensions == cov[0].length);
+                
+        //NOTE: we know that cov is symmetric positive definite, so there are
+        //   many operations special to it one could explorefor diagonalization
         
         SVD svd = SVD.factorize(new DenseMatrix(cov));
+        // U is mxm
+        // S is mxn
+        // V is nxn
         
+        // singular values are square roots of the eigenvalues:
         double[] s = svd.getS();
         
-        System.out.println("eigenvalues of cov = " + Arrays.toString(s));
-        System.out.flush();
+        //eigenvalue_i = lambda_i = (s_i^2)/(n-1)
+        double[] eV = Arrays.copyOf(s, s.length);
+        for (int i = 0; i < s.length; ++i) {
+            eV[i] *= eV[i];
+            eV[i] /= ((double)n - 1.);
+        }
         
         int rank = 0;
         for (int i = 0; i < s.length; ++i) {
@@ -79,24 +100,36 @@ public class PrincipalComponents {
             nComponents = rank;
         }
         
-        // the first nComponents COLUMNS of u are the principal axes
+        // COLUMNS of u are the principal axes, a.k.a. principal directions
+        // size is nDimensions x nDimensions
         DenseMatrix u = svd.getU();
         assert(nDimensions == u.numRows());
         assert(nDimensions == u.numColumns());
         
-        System.out.println("U of SVD(cov) = " + u.toString());
-        System.out.flush();
-                        
-        double[][] pc = new double[nDimensions][nComponents];
+        // extract the nComponents columns of U as the principal axes
+        //  [nDimensions][nComponents]
+        double[][] pa = new double[u.numRows()][nComponents];                                
         for (int row = 0; row < u.numRows(); ++row) {
+            pa[row] = new double[nComponents];
             for (int col = 0; col < nComponents; ++col) {
-                pc[row][col] = u.get(col, row);
+                pa[row][col] = u.get(row, col);
+            }
+        }
+                
+        // principal components are the projections of the principal axes on U
+        //   the "1 sigma" lengths are:
+        double[][] projections = new double[pa.length][pa[0].length];
+        for (int row = 0; row < pa.length; ++row) {
+            projections[row] = Arrays.copyOf(pa[row], pa[row].length);
+            for (int col = 0; col < pa[row].length; ++col) {
+                // note, if wanted "3 sigma" instead, use factor 3*s[col] here:
+                projections[row][col] *= s[col];
             }
         }
         
         PCAStats stats = new PCAStats();
         stats.nComponents = nComponents;
-        stats.principalDirections = pc;
+        stats.principalDirections = pa;
         
         stats.s = new double[nComponents];
         for (int i = 0; i < nComponents; ++i) {
@@ -104,9 +137,19 @@ public class PrincipalComponents {
         }
                 
         double total = 0;
-        for (int j = 0; j < nComponents; ++j) {
-            total += stats.s[j];
+        for (int j = 0; j < s.length; ++j) {
+            total += s[j];
         }
+        double[] fracs = new double[s.length];
+        for (int j = 0; j < s.length; ++j) {
+            fracs[j] = s[j]/total;
+        }
+        double[] c = Arrays.copyOf(fracs, fracs.length);
+        for (int j = 1; j < x[0].length; ++j) {
+            c[j] += c[j-1];
+        }
+        stats.cumulativeProportion = c;
+        
         double sum = 0;
         int p;
         for (int j = (nComponents+1); j <= nDimensions; ++j) {
@@ -115,6 +158,52 @@ public class PrincipalComponents {
         }
         stats.ssdP = sum;
         stats.fractionVariance = (total - sum)/total;
+        
+        
+        System.out.println("singular values of SVD(cov) = sqrts of eigenvalues of cov = ");
+        for (int i = 0; i < s.length; ++i) {
+            System.out.printf("%11.3e  ", s[i]);
+        }
+        System.out.println();
+        System.out.println("eigenvalues of cov = ");
+        for (int i = 0; i < eV.length; ++i) {
+            System.out.printf("%11.3e  ", eV[i]);
+        }
+        System.out.println();
+        System.out.println("U of SVD(cov) = ");
+        for (int i = 0; i < u.numRows(); ++i) {
+            for (int j = 0; j < u.numColumns(); ++j) {
+                System.out.printf("%11.3e  ", u.get(i, j));
+            }
+            System.out.printf("\n");
+        }
+        System.out.println("eigenvalue fractions of total = ");
+        for (int i = 0; i < fracs.length; ++i) {
+            System.out.printf("%11.3e  ", fracs[i]);
+        }
+        System.out.println();
+        System.out.println("eigenvalue cumulativeProportion= ");
+        for (int i = 0; i < stats.cumulativeProportion.length; ++i) {
+            System.out.printf("%11.3e  ", stats.cumulativeProportion[i]);
+        }
+        System.out.println();
+        
+        System.out.println("principal directions= ");
+        for (int i = 0; i < stats.principalDirections.length; ++i) {
+            for (int j = 0; j < stats.principalDirections[i].length; ++j) {
+                System.out.printf("%11.3e  ", stats.principalDirections[i][j]);
+            }
+            System.out.printf("\n");
+        }
+        System.out.println("principal projections= ");
+        for (int i = 0; i < projections.length; ++i) {
+            for (int j = 0; j < projections[i].length; ++j) {
+                System.out.printf("%11.3e  ", projections[i][j]);
+            }
+            System.out.printf("\n");
+        }
+        
+        System.out.flush();
         
         return stats;
     }
@@ -141,16 +230,6 @@ public class PrincipalComponents {
         int nDimensions = x[0].length;
         
         int i, j;
-        
-        double[] mean = new double[nDimensions];
-        double sum;
-        for (i = 0; i < nDimensions; ++i) {
-            sum = 0;
-            for (j = 0; j < n; ++j) {
-                sum += (x[j][i]);
-            }
-            mean[i] = sum/(double)n;
-        }
         
         // find the 'a' which minimizes ||⃗x − (m⃗_s + U _p * a)||^2
         
@@ -187,6 +266,7 @@ public class PrincipalComponents {
         /**
          * the first nComponents principal directions of x (the bases that
          * minimize the variance).
+         * The first row is the first principal axis, etc.
          */
         double[][] principalDirections;
         
@@ -202,6 +282,12 @@ public class PrincipalComponents {
          * </pre>
          */
         double fractionVariance;
+        
+        /**
+         * the cumulative addition of 
+         *     (sum_of_eigeneigenvalues - eigenvalue_i)/um_of_eigeneigenvalues
+         */
+        double[] cumulativeProportion;
         
         /**
          * Minimum residual variance
