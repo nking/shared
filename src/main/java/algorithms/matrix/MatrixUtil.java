@@ -170,6 +170,21 @@ public class MatrixUtil {
         }
     }
     
+    /*
+    public static double[][] fastMultiply(double[][] m, double[][] n) {
+        
+        consider using Native BLAS from the included Netlib package
+        BLAS.getInstance().dgemm.
+        
+        Can see example in this repository's related proejct called
+        https://github.com/nking/curvature-scale-space-corners-and-transformations.git
+        in the test class tests//algorithms/NetlibTest.java
+        
+        or in MTJ source code
+        https://github.com/fommil/matrix-toolkits-java/blob/master/src/main/java/no/uib/cipr/matrix/DenseMatrix.java#L299
+        
+    }*/
+    
     /**
      * multiply matrix m by matrix n
      * @param m tow dimensional array in ro major format

@@ -70,9 +70,9 @@ public class PrincipalComponents {
         double[][] cov = BruteForce.covariance(x);
         assert(nDimensions == cov.length);
         assert(nDimensions == cov[0].length);
-                
+                        
         //NOTE: we know that cov is symmetric positive definite, so there are
-        //   many operations special to it one could explorefor diagonalization
+        //   many operations special to it one could explore for diagonalization
         
         SVD svd = SVD.factorize(new DenseMatrix(cov));
         // U is mxm
@@ -285,7 +285,7 @@ public class PrincipalComponents {
         
         /**
          * the cumulative addition of 
-         *     (sum_of_eigeneigenvalues - eigenvalue_i)/um_of_eigeneigenvalues
+         *     (sum_of_eigenvalues - eigenvalue_i)/sum_of_eigeneigenvalues
          */
         double[] cumulativeProportion;
         
