@@ -19,17 +19,20 @@ import no.uib.cipr.matrix.SVD;
 public class PrincipalComponents {
     
     /**
-     * 
-     * note: consider subtracting the variable mean from each column if
-     * a is not already standardized.
-     * 
+     * NOTE: should standardize the data before using this method,
+     * <pre>
+     *      double[] mean = new double[data[0].length];
+            double[] stDev = new double[data[0].length];
+     * e.g. double[][] x = Standardization.standardUnitNormalization(data, mean, stDev);
+     * </pre>
      * ...
      * following Strang's SVD
-     * also useful is:
+     * also useful:
      * https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
-     * 
+     * and https://online.stat.psu.edu/stat505/book/export/html/670
      * @param x is a 2-dimensional array of k vectors of length n in format
-     *    double[n][k]
+     *    double[n][k].  n is the number of samples, and k is the number of
+     * variables, a.k.a. dimensions.
      * @param nComponents the number of principal components to return.
      * @return a few statistics of the SVD of the covariance of A, up to the
      * nComponents dimension.  Note that if the rank of the SVD(cov(A)) is
@@ -45,7 +48,12 @@ public class PrincipalComponents {
                 + " nComponents principal components were requested.");
         }
         
+        double eps = 1.e-15;
+                
         /*
+        NOTE that the Strang approach does not assume the data has been
+        standardized to mean 0 and unit variance.
+        
         minimal residual variance basis:
            basis direction b.
            samples are vectors x_j where j = 0 to k
@@ -82,16 +90,9 @@ public class PrincipalComponents {
         // singular values are square roots of the eigenvalues:
         double[] s = svd.getS();
         
-        //eigenvalue_i = lambda_i = (s_i^2)/(n-1)
-        double[] eV = Arrays.copyOf(s, s.length);
-        for (int i = 0; i < s.length; ++i) {
-            eV[i] *= eV[i];
-            eV[i] /= ((double)n - 1.);
-        }
-        
         int rank = 0;
         for (int i = 0; i < s.length; ++i) {
-            if (Math.abs(s[i]) > 1e-17) {
+            if (Math.abs(s[i]) > eps) {
                 rank++;
             }
         }
@@ -100,14 +101,21 @@ public class PrincipalComponents {
             nComponents = rank;
         }
         
+        //eigenvalue_i = lambda_i = (s_i^2)/(n-1)
+        double[] eV = Arrays.copyOf(s, rank);
+        for (int i = 0; i < eV.length; ++i) {
+            eV[i] *= eV[i];
+            eV[i] /= ((double)n - 1.);
+        }
+        
         // COLUMNS of u are the principal axes, a.k.a. principal directions
         // size is nDimensions x nDimensions
         DenseMatrix u = svd.getU();
         assert(nDimensions == u.numRows());
         assert(nDimensions == u.numColumns());
         
-        // extract the nComponents columns of U as the principal axes
-        //  [nDimensions][nComponents]
+        // extract the nComponents columns of U as the principal axes, a.k.a. 
+        //  principal directions.  array format: [nDimensions][nComponents]
         double[][] pa = new double[u.numRows()][nComponents];                                
         for (int row = 0; row < u.numRows(); ++row) {
             pa[row] = new double[nComponents];
@@ -115,7 +123,16 @@ public class PrincipalComponents {
                 pa[row][col] = u.get(row, col);
             }
         }
-                
+        
+        // NOTE: the principal scores is a vector Y_1 of length n:
+        //     first principal score Y_1 = 
+        //         sum of (first principal direction for each variable dot x[*][variable] )
+        //  The magnitudes of the principal direction coefficients give the 
+        //  contributions of each variable to that component. 
+        //  Because the data have been standardized, they do not depend on the 
+        //  variances of the corresponding variables.      
+        
+        
         // principal components are the projections of the principal axes on U
         //   the "1 sigma" lengths are:
         double[][] projections = new double[pa.length][pa[0].length];
@@ -137,15 +154,15 @@ public class PrincipalComponents {
         }
                 
         double total = 0;
-        for (int j = 0; j < s.length; ++j) {
+        for (int j = 0; j < rank; ++j) {
             total += s[j];
         }
-        double[] fracs = new double[s.length];
-        for (int j = 0; j < s.length; ++j) {
+        double[] fracs = new double[rank];
+        for (int j = 0; j < rank; ++j) {
             fracs[j] = s[j]/total;
         }
         double[] c = Arrays.copyOf(fracs, fracs.length);
-        for (int j = 1; j < x[0].length; ++j) {
+        for (int j = 1; j < c.length; ++j) {
             c[j] += c[j-1];
         }
         stats.cumulativeProportion = c;
@@ -159,9 +176,8 @@ public class PrincipalComponents {
         stats.ssdP = sum;
         stats.fractionVariance = (total - sum)/total;
         
-        
         System.out.println("singular values of SVD(cov) = sqrts of eigenvalues of cov = ");
-        for (int i = 0; i < s.length; ++i) {
+        for (int i = 0; i < rank; ++i) {
             System.out.printf("%11.3e  ", s[i]);
         }
         System.out.println();
@@ -218,37 +234,66 @@ public class PrincipalComponents {
      *            a_0 = arg min_{a} ||⃗x − (m⃗_s + U _p * a)||^2
      * </pre>
      * @param x a 2-dimensional array of k vectors of length n in format
-     *    double[n][k]
-     * @param principalDirections the principal components derived from
+     *    double[n][k] which is double[nSamples][nDimensions]
+     * @param p the principal directions derived from
      * SVD of the covariance of the training data.
      * format is [nDimensions][nComponents]
      * @return 
      */
-    public static double[][] reconstruct(double[][] x, double[][] principalDirections) {
+    public static double[][] reconstruct(double[][] x, double[][] p) {
         
         int n = x.length;
         int nDimensions = x[0].length;
         
+        if (nDimensions != p.length) {
+            throw new IllegalArgumentException("the number of columns in x"
+               +" must equal the number of rows of p");
+        }
+        
         int i, j;
         
-        // find the 'a' which minimizes ||⃗x − (m⃗_s + U _p * a)||^2
+        // find the 'a' which minimizes ||⃗x − (m⃗_s + p * a)||^2
         
         /*
-        ||⃗x − (m⃗_s + U _p * a)||^2 
-            where m⃗_s, U _p, and 'a' are k dimensional vectors
+        
+        need to correct the arguments and dimensions here...
+        
+        ||⃗x − (m⃗_s + p * a)||^2 
+            where m⃗_s, p, and 'a' are k dimensional vectors
             and x is a matrix of size [n][dimensions possibly larger than k]
-
-        f = (x_{i:n, 0} − (m⃗_0 + U_p_0 * a_0))^2
-             + (x_{i:n, 1} − (m⃗_1 + U_p_1 * a_1))^2
+            where 
+                  x is nSamples x nDimensions
+                  m_s is 1 x nDimensions
+        
+                  p is nDimensions x nComponents
+                  a is nComponents x 1
+                  --> p*a is nDimensions x 1 with given arguments, so need
+                      (p*a)^T which is 1 x nDimensions
+        
+            instead start w/ let x = x^T
+                  x is nDimensions x nSamples 
+                  m_s is nDimensions x 1
+                  p is nDimensions x nComponents
+                  a is nComponents x 1
+                  --> p*a is nDimensions x 1
+                
+        f = (x_{0, i:n} − (m⃗_0 + p_0 * a_0))^2
+             + (x_{1, i:n} − (m⃗_1 + p_1 * a_1))^2
              + ... up to dimension of principal components
 
-        df/da_0 = 2 * U_p_0 * (x_{i:n, 0} − (m⃗_0 + U_p_0 * a_0))
-        df/da_1 = 2 * U_p_1 * (x_{i:n, 1} − (m⃗_1 + U_p_1 * a_1))
+        df/da_0 = 2 * p_0 * (x_{0, i:n} − (m⃗_0 + p_0 * a_0))
+        df/da_1 = 2 * p_1 * (x_{1, i:n} − (m⃗_1 + p_1 * a_1))
 
-        set df/da_0 = 0 ==> x_{i:n, 0} = (m⃗_0 + U_p_0 * a_0)
-                            a_0 = (x_{i:n, 0} - m⃗_0) / U_p_0
-        */
+        set df/da_0 = 0 ==> x_{0, i:n} = (m⃗_0 + p_0 * a_0) <== reorg p and a 
+                            
+        
+        a_0 = (x_{0, i:n} - m⃗_0) * pseudoInverse(p_0)
             
+        
+        reconstruction: ⃗r(⃗a ) = m⃗ + p ⃗a = m + (p * (x-m) * pseudoInv(p)) )
+                              
+        */
+       
         throw new UnsupportedOperationException("not yet implemented");
         
     }
@@ -263,10 +308,14 @@ public class PrincipalComponents {
 . 
          */
         int nComponents;
+        
         /**
          * the first nComponents principal directions of x (the bases that
          * minimize the variance).
          * The first row is the first principal axis, etc.
+         * To reduce the dimensions of the same data this was derived from,
+         * can multiply the dataset by the principalDirections:
+         * data[nSamples][nVariables] * pd[nVariables][nComponents]
          */
         double[][] principalDirections;
         
