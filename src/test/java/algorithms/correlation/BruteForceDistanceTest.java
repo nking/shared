@@ -1,5 +1,6 @@
 package algorithms.correlation;
 
+import algorithms.matrix.MatrixUtil;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
     
@@ -25,7 +26,7 @@ public class BruteForceDistanceTest extends TestCase {
         y = {0,1, 0,-1};
         results = DistCorr(x, y);
         dCov=0.25
-        dCor=0.4472136
+        dCor=0.4472136 
         dVarX=0.55917
         dVarY=0.55917
         */
@@ -34,11 +35,14 @@ public class BruteForceDistanceTest extends TestCase {
         double dCor, eDCor;
         int i, j;
         
-        a = new double[4][1];
-        b = new double[4][1];
-        a[0] = new double[]{1}; a[1] = new double[]{0}; a[2] = new double[]{-1};a[3] = new double[]{0};
-        b[0] = new double[]{0}; b[1] = new double[]{1}; b[2] = new double[]{0};b[3] = new double[]{-1};
+        a = new double[1][4];
+        b = new double[1][4];
+        a[0] = new double[]{1,0,-1, 0};
+        b[0] = new double[]{0,1, 0,-1};
         
+        a = MatrixUtil.transpose(a);
+        b = MatrixUtil.transpose(b);
+                
         dCor = BruteForceDistance.correlation1(a, b);
 
         System.out.println("dCor=" + dCor);

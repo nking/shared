@@ -12,20 +12,44 @@ import java.util.Arrays;
  */
 public class BruteForce {
     
+    /**
+     * calculate the correlation matrix for a using a brute force method
+     * @param a an mxn matrix of data with the dimensions being columns
+     * and the datum number being rows.
+     * <pre>
+     * e.g.  a[0] = new double[]{10, 100, 1000}
+     *       a[1] = new double[]{ 9, 110, 900}
+     * </pre>
+     * @return the correlation matrix as a double array of size [a[0].length][a[0].length]
+     */
     public static double[][] correlation(double[][] a) {
         
-        /*
-       can implement as pairs in the matrix:
-           aCov= covariance(a)
-           covXY = covariance(x,y) result is in aCov.
-           covXX  = covariance(x,x) result is in aCov.
-           covXX  = covariance(y,y) result is in aCov.
-       
-           
-        see:
-           https://blogs.sas.com/content/iml/2010/12/10/converting-between-correlation-and-covariance-matrices.html
-         */
-        throw new UnsupportedOperationException("not yet implemented");
+        double eps= 1.e-15;
+        
+        // cor_i_j = cov_i_j / (sqrt(var_i)*sqrt(var_j))
+        
+        double[][] cov = covariance(a);
+        
+        double[][] cor = new double[cov.length][cov[0].length];
+        int i, j;
+        for (i = 0; i < cov.length; ++i) {
+            cor[i] = new double[cov[i].length];
+        }
+        double si, sj;
+        for (i = 0; i < cor.length; ++i) {
+            si = (cov[i][i] > eps) ? Math.sqrt(cov[i][i]) : 0;
+            for (j = i; j < cor[i].length; ++j) {
+                sj = (cov[j][j] > eps) ? Math.sqrt(cov[j][j]) : 0;
+                if (si > eps && sj > eps) {
+                    cor[i][j] = cov[i][j]/(si*sj);
+                    if (i != j) {
+                        cor[j][i] = cor[i][j];
+                    }
+                }
+            }
+        }
+        
+        return cor;
     }
     
     /**

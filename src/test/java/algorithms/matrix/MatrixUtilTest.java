@@ -273,6 +273,16 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(m[1][0] == 2340);
         assertTrue(m[0][1] == 0);
         assertTrue(m[1][1] == 1000);
+        
+        double[] x = new double[]{1, 2, 3, 4, 5};
+        double[] y = new double[]{5, 4, 3, 2, 1};
+        double expected = 5*1 + 4*2+ 3*3 + 2*4 + 1*5;
+        double dot = MatrixUtil.dot(x, y);
+        assertTrue(Math.abs(expected - dot) < 1.e-15);
+        
+        int[] xInt = new int[]{1, 2, 3, 4, 5};
+        dot = MatrixUtil.dot(xInt, y);
+        assertTrue(Math.abs(expected - dot) < 1.e-15);
     }
     
     public void testAdd() throws Exception {

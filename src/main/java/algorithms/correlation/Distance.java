@@ -1,5 +1,6 @@
 package algorithms.correlation;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
 import java.util.Arrays;
@@ -48,11 +49,13 @@ public class Distance {
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
      * 
-     * @param x sample of univariate observations
-     * @param y second sample of univariate observations
+     * runtime is  O(n*log_2(n)).
+     * 
+     * @param x sample of univariate observations of a variable
+     * @param y second sample of univariate observations (can be of another variable)
      * @return 
      */
-    public static DCov univariateCovariance(double[] x, double[] y) {
+    public static DCov univariateCovariance2(double[] x, double[] y) {
                   
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -115,6 +118,7 @@ public class Distance {
         
         //% iv1, iv2, iv3, iv4 are used to store sum of weights
         //% On output, for 1 ≤ j ≤ n
+        // [n][1]
         int[] iv1 = new int[n];
         int[] iv2 = new int[n];
         int[] iv3 = new int[n];
@@ -134,21 +138,7 @@ public class Distance {
         }
         csumv[n] = new double[nw];
         double[][] tempcs;
-        
-        double[][] covterm = new double[n][n];
-        double[][] c1 = new double[n][n];
-        double c2;
-        double[][] c3 = new double[n][n];
-        double[][] c4 = new double[n][n];
-        double[][] d = new double[n][n];
-        for (i = 0; i < n; ++i){
-            covterm[i] = new double[n];
-            c1[i] = new double[n];
-            c3[i] = new double[n];
-            c4[i] = new double[n];
-            d[i] = new double[n];
-        } 
-                               
+                         
         //% The merge sort loop .
         i = 1;
         int r = 1; 
@@ -162,9 +152,9 @@ public class Distance {
                idx_r[z] = idx[z][r-1];
            }
            
-           // csumv = [ zeros(1, nw); cumsum( v(idx_r, :) ) ] ;
+           // csumv = [ zeros(1, nw); 
+           // cumsum( v(idx_r, :) ) ] ;
            
-           // csumv = [ zeros(1, nw); cumsum( v(idx_r, :) ) ] ;
            // dimensions: row0:  nw columns
            //             n rows of nw columns
            for (z = 0; z < n; ++z) {
@@ -172,6 +162,7 @@ public class Distance {
                    tempv[z][zz] = v[ idx_r[z] -1][zz];
                }
            }
+           //[n][nw]
            tempcs = MiscMath0.cumulativeSumAlongColumns(tempv);
            Arrays.fill(csumv[0], 0);
            for (z = 0; z < n; ++z) {
@@ -229,46 +220,40 @@ public class Distance {
            idx_s = 3 - idx_s;
         }
         
-System.out.println("iv1=" + Arrays.toString(iv1)); 
-System.out.println("iv2=" + Arrays.toString(iv2)); 
-System.out.println("iv3=" + Arrays.toString(iv3)); 
-System.out.println("iv4=" + Arrays.toString(iv4)); 
-        
        //% d is the Frobenius inner product of the distance matrices
        //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
-       //   vector .' * is outer product:  nX1 * 1Xn = nxn
+       //              [1][n] * [n][1] = [1][1]
        double[] mx = MiscMath0.mean(x, 1);
        assert(mx.length == 1);
        double[] my = MiscMath0.mean(y, 1);
        assert(my.length == 1);
+       double[] xz = Arrays.copyOf(x, x.length);
+       double[] yz = Arrays.copyOf(y, y.length);
        for (z = 0; z < n; ++z) {
-           for (zz = 0; zz < n; ++zz) {
-               covterm[z][zz] = n * ( (x[z] - mx[0]) * (y[zz] - my[0]) );
-           }
+           xz[z] -= mx[0];
+           yz[z] -= my[0];
        }
+       double covterm = n * MatrixUtil.dot(xz, yz);
 
-       //NOTE v is double[n][nw];
+       //v is double[n][nw];
        //c1 = iv1 .’ ∗ v (:, 3 );
        //c2 = sum( iv4 );
        //c3 = iv2 .’ ∗ y;
        //c4 = iv3 .’ ∗ x;
-       c2 = 0;
+       
+       double[] v3 = new double[n];
+       double c2 = 0;
        for (z = 0; z < n; ++z) {
+           v3[z] = v[z][2];
            c2 += iv4[z];
-           for (zz = 0; zz < n; ++zz) {
-               c1[z][zz] = iv1[z] * v[zz][2];
-               c3[z][zz] = iv2[z] * y[zz];
-               c4[z][zz] = iv3[z] * x[zz];
-           }
        }
+       
+       double c1 = MatrixUtil.dot(iv1, v3);
+       double c3 = MatrixUtil.dot(iv2, y);
+       double c4 = MatrixUtil.dot(iv3, x);
+       
        // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
-       // c1, c3, c4, covterm are nxn
-       // c2 is 1x1
-       for (z = 0; z < n; ++z) {
-           for (zz = 0; zz < n; ++zz) {
-               d[z][zz] = (4.*((c1[z][zz] + c2) - (c3[z][zz] + c4[z][zz]))) - 2.*covterm[z][zz];
-           }
-       }
+       double d = (4.*( (c1 + c2) - (c3 + c4))) - 2.*covterm;
        
        double[] ySorted = new double[n];
 
@@ -290,14 +275,13 @@ System.out.println("iv4=" + Arrays.toString(iv4));
        //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
        c = 0;
        double cc = -(n-2.);
-System.out.printf("cc=%.4f", cc);    
        for (z = n; z >=1; z--) {
            b_y[ idx[z-1][r-1] -1] = (cc * ySorted[c]) + (s - (2.*si[c]));
            c++;
            cc += 2;
        }
-System.out.printf("to %.4f\n", cc); 
 
+System.out.printf("a_x=%s\n", Arrays.toString(a_x));
 System.out.printf("b_y=%s\n", Arrays.toString(b_y));
 
        //%covsq equals V^2_n(x, y) the square of the distance covariance
@@ -309,46 +293,56 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
        //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
        //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
        //covsq = ( term1 + term3 ) − term2;
-       double[][] term1 = new double[n][];
-       double[][] term2 = new double[n][n];
+       double term1 = d / nsq;
+       double term2 = (2./ncb) * (MatrixUtil.dot(a_x, b_y));
        double term3A = 0;
        double term3B = 0;
        for (z = 0; z < n; ++z) {
-           term1[z] = Arrays.copyOf(d[z], n);
-           term2[z] = new double[n];
            term3A += a_x[z];
            term3B += b_y[z];
-           for (zz = 0; zz < n; ++zz) {
-               term1[z][zz] /= nsq;
-               term2[z][zz] = (2./ncb) * (a_x[z] * b_y[zz]);
-           }
        }
        double term3 = (term3A * term3B) / nq;
-       double[][] covsq = new double[n][n];
-       for (z = 0; z < n; ++z) {
-           for (zz = 0; zz < n; ++zz) {
-               covsq[z][zz] = (term1[z][zz] + term3) - term2[z][zz];
-           }
-       }
-       
+       double covsq =  (term1 + term3) - term2;
+           
        // for debugging only:
-       System.out.println("d=");
-       for (z = 0; z < n; ++z) {
-           for (zz = 0; zz < n; ++zz) {
-               System.out.printf("  %.3f", d[z][zz]);
-           }
-           System.out.printf("\n");
-       }
+       System.out.printf("d= %.3f\n", d);
        
        DCov dcov = new DCov();
        dcov.covsq = covsq;
        dcov.d = d;
        dcov.indexes = indexes;
        dcov.sortedX = x;
-       dcov.sortedX = y;
+       dcov.sortedY = y;
            
        return dcov;
     }
+    
+    /**
+     * calculate the covariance matrix for a using the fast algorithm of
+     * <pre>
+     * "A fast algorithm for computing distance correlation"
+     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+     * </pre>
+     * @param a an mxn matrix of data with a sample of a variable per row.
+     * <pre>
+     * e.g.  row 0 holds a sample of variable x, row 1 holds a sample of variable y, 
+     * etc. so that the array format is [nVariables][nSample]
+     *      a[0] = new double[]{x_0, x_1, x_2, ... x_n}
+     *      a[1] = new double[]{y_0, y_1, y_2, ... y_n}
+     *      ...
+     * </pre>
+     * @return the covariance matrix as a double array of size [a.length][a.length]
+     */
+    /*public static double[][] multivariateCovariance(double[][] a) {
+    
+        from paper:
+            "For multivariate random variables,
+            random projection approach can be adopted (Huang and Huo, 2017), which
+            depends on calculation of distance covariance for univariate variables."  
+
+        throw new UnsupportedOperationException("implementation is not yet finished.");
+    }*/
       
         /*
          matlab code from 
@@ -527,8 +521,8 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
     }
     
     public static class DCov {
-        double[][] covsq;
-        double[][] d;
+        double covsq;
+        double d;
         int[] indexes;
         double[] sortedX;
         double[] sortedY;
@@ -549,15 +543,9 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
             if (dcov != null) {
                 sb.append("dcov=").append(Arrays.toString(dcov)).append("\n");
             }
-            if (d != null) {
-                sb.append("d=");
-                for (int i = 0; i < d.length; ++i) {
-                    sb.append("  ").append(Arrays.toString(d[i])).append("\n");
-                }
-            }
-            if (covsq != null) {
-                sb.append("covsq=").append(Arrays.toString(covsq)).append("\n");
-            }
+            sb.append("d=").append(d).append("\n");
+            sb.append("covsq=").append(covsq).append("\n");
+            
             return sb.toString();
         }
     }
@@ -575,22 +563,18 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
      * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * 
-     * Runtime is O(n^2) where n is the number of points in x which is
+     * Runtime is O(n*log_2(n)) where n is the number of points in x which is
      * the same as the number in y.
      * 
      * NOTE: redundant points are possible in the rankings as "ties" are handled
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
      * 
-     * TODO: for use of same ordering on more than 1 pair of univariate samples,
-     * presumably need to overload this method to include sort order indexes
-     * as an argument.
-     * 
      * @param x
      * @param y
      * @return 
      */
-    public static DCov bruteForceUnivariateCovariance(double[] x, double[] y) {
+    public static DCov univariateCovariance(double[] x, double[] y) {
 
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");

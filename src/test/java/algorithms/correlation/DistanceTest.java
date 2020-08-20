@@ -1,20 +1,12 @@
 package algorithms.correlation;
 
 import algorithms.correlation.Distance.DCov;
-import algorithms.matrix.*;
 import algorithms.misc.Misc0;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
-import no.uib.cipr.matrix.MatrixEntry;
-import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
-import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
     
 /**
  *
@@ -27,7 +19,7 @@ public class DistanceTest extends TestCase {
     public DistanceTest() {
     }
     
-    public void estSort() {
+    public void testSort() {
         
         //double[][] _sortCheck(double[] x, double[] y)
         
@@ -59,7 +51,7 @@ public class DistanceTest extends TestCase {
         }
     }
     
-    public void estSort2() {
+    public void testSort2() {
         
         //double[][] _sortCheck(double[] x, double[] y)
         
@@ -87,7 +79,7 @@ public class DistanceTest extends TestCase {
         
     }
     
-    public void estSort3() {
+    public void testSort3() {
                 
         double eps = 1.e-17;
         
@@ -130,7 +122,7 @@ public class DistanceTest extends TestCase {
         }        
     }
     
-    public void estCovariance() {
+    public void testCovariance() {
         
         //double[][] _sortCheck(double[] x, double[] y)
         
@@ -144,7 +136,8 @@ public class DistanceTest extends TestCase {
         double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
         double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
-        DCov dcov = Distance.univariateCovariance(x, y);
+        DCov dcov = Distance.univariateCovariance2(x, y);
+        System.out.println("univariateCovariance2\n: " + dcov.toString());
         double diff = 0;
         /*for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(sorted[0][i] - eX[i]);
@@ -179,7 +172,7 @@ public class DistanceTest extends TestCase {
         double[] eY = new double[]{4.0, 3.0, 5.0, 7.0, 5.0, 6.0, 1.0, 2.0};
         double[] eD = new double[]{11, 6, 21, 14, 1, 3, 0, 0};
         
-        DCov dcov = Distance.bruteForceUnivariateCovariance(x, y);
+        DCov dcov = Distance.univariateCovariance(x, y);
         double diff = 0;
         for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(dcov.sortedX[i] - eX[i]);
@@ -190,7 +183,7 @@ public class DistanceTest extends TestCase {
             assertTrue(diff < eps);
         }
         
-        System.out.printf("\nbrute force univariate dist\n");
+        System.out.printf("\nunivariateCovariance:\n");
         System.out.println("XY:" + dcov.toString());
         
         double[][] a = new double[x.length][2];
@@ -199,9 +192,9 @@ public class DistanceTest extends TestCase {
         }
         
         {
-            DCov dcov2 = Distance.bruteForceUnivariateCovariance(x, x);
+            DCov dcov2 = Distance.univariateCovariance(x, x);
             System.out.println("XX:" + dcov2.toString());
-            dcov2 = Distance.bruteForceUnivariateCovariance(y, y);
+            dcov2 = Distance.univariateCovariance(y, y);
             System.out.println("YY:" + dcov2.toString());
         }
         

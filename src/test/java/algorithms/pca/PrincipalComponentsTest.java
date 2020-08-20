@@ -1,6 +1,7 @@
 package algorithms.pca;
 
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.Standardization;
 import algorithms.pca.PrincipalComponents.PCAStats;
 import algorithms.util.ResourceFinder;
 import java.io.BufferedReader;
@@ -30,14 +31,12 @@ public class PrincipalComponentsTest extends TestCase {
         
         int i, j;
         
-        double[] mean = MatrixUtil.mean(x);
+        //NOTE: to match the results of the psu tutorial, follow section
+        //    Example 11-3: Place Rated (after Standardization)
         
-        // center the data:
-        for (i = 0; i < x.length; ++i) {
-            for (j = 0; j < x[i].length; ++j) {
-                x[i][j] -= mean[j];
-            }
-        }
+        double[] mean = new double[x[0].length];
+        double[] stDev = new double[x[0].length];
+        x = Standardization.standardUnitNormalization(x, mean, stDev);
         
         System.out.println("mean x=");
         for (i = 0; i < mean.length; ++i) {
@@ -54,19 +53,18 @@ public class PrincipalComponentsTest extends TestCase {
         principal components.
 
             Component	Eigenvalue	Proportion	Cumulative
-            1	0.3775	0.7227	0.7227
-            2	0.0511	0.0977	0.8204
-            3	0.0279	0.0535	0.8739
-            4	0.0230	0.0440	0.9178
-            5	0.0168	0.0321	0.9500
-            6	0.0120	0.0229	0.9728
-            7	0.0085	0.0162	0.9890
-            8	0.0039	0.0075	0.9966
-            9	0.0018	0.0034	1.0000
-            Total	0.5225	 	 
-            If you take all of these eigenvalues and add them up, then you get the total variance of 0.5223.
-
-            The proportion of variation explained by each eigenvalue is given in the third column. For example, 0.3775 divided by the 0.5223 equals 0.7227, or, about 72% of the variation is explained by this first eigenvalue. The cumulative percentage explained is obtained by adding the successive proportions of variation explained to obtain the running total. For instance, 0.7227 plus 0.0977 equals 0.8204, and so forth. Therefore, about 82% of the variation is explained by the first two eigenvalues together.
+                1	3.2978	0.3664	0.3664
+                2	1.2136	0.1348	0.5013
+                3	1.1055	0.1228	0.6241
+                4	0.9073	0.1008	0.7249
+                5	0.8606	0.0956	0.8205
+                6	0.5622	0.0625	0.8830
+                7	0.4838	0.0538	0.9368
+                8	0.3181	0.0353	0.9721
+                9	0.2511	0.0279	1.0000	
+            The first principal component explains about 37% of the variation. 
+            Furthermore, the first four principal components explain 72%, while 
+            the first five principal components explain 82% of the variation.         
         */
         
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 3);
@@ -111,6 +109,9 @@ public class PrincipalComponentsTest extends TestCase {
             do {
                 line = line.trim();
                 //521  6200  237  923 4031 2757   996 1405 7633   1
+                //521  6200  237  923 4031 2757   996 1405 7633   1
+                //575  8138 1656  886 4883 2438  5564 2632 4350   2
+                //468  7339  618  970 2531 2560   237  859 5250   3
                 m = p.matcher(line);
                 if (m.matches()) {
                     for (int c = 1; c <= 9; ++c) {

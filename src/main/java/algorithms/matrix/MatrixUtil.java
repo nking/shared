@@ -498,6 +498,20 @@ public class MatrixUtil {
         return sum;
     }
     
+    public static double dot(int[] a, double[] b) {
+
+        if (a.length != b.length) {
+            throw new IllegalArgumentException("a.length must == b.length");
+        }
+        
+        double sum = 0;
+        for (int i = 0; i < a.length; ++i) {
+            sum += (a[i] * b[i]);
+        }
+
+        return sum;
+    }
+    
     public static double[][] dot(DenseMatrix m1, DenseMatrix m2) {
         
         if (m1 == null) {
@@ -903,7 +917,7 @@ public class MatrixUtil {
         int n = a[0].length;
         
         // limit for a number to be significant above 0
-        double eps = 1e-16;
+        double eps = 1e-15;
         
         // from Gilbert Strang's "Introduction to Linear Algebra":
         // uses SVD:
@@ -1071,7 +1085,7 @@ public class MatrixUtil {
             det *= -1;
         }
         
-        if (Math.abs(det) > 1e-17) {
+        if (Math.abs(det) > 1e-15) {
             // determinant is not zero, so is invertible
             return true;
         }
