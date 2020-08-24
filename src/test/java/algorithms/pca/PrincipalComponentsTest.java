@@ -69,6 +69,110 @@ public class PrincipalComponentsTest extends TestCase {
         
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 3);
         
+        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
+        b = MatrixUtil.multiply(b, stats.vTP);
+        System.out.println("b = x * pr.dir * v^T_p=");
+        for (i = 0; i < b.length; ++i) {
+            for (j = 0; j < b[i].length; ++j) {
+                System.out.printf("%11.3e  ", b[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        double[][] xMinusB = MatrixUtil.copy(x);
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                //xMinusB[i][j] -= mean[j];
+                xMinusB[i][j] -= b[i][0];
+            }
+        }
+        System.out.println("x:");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", x[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        System.out.println("x - (m + B*a):");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", xMinusB[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+    }
+    
+    public void testPCA2() throws Exception {
+        
+        double[][] x = new double[4][2];
+        x[0] = new double[]{1, 2};
+        x[1] = new double[]{2, 1};
+        x[2] = new double[]{3, 4};
+        x[3] = new double[]{4, 3};
+        
+        int i, j;
+        
+        double[] mean = MatrixUtil.mean(x);
+        System.out.println("mean x=");
+        for (i = 0; i < mean.length; ++i) {
+            System.out.printf("%11.3e  ", mean[i]);
+        }
+        System.out.println();
+        System.out.flush();
+        
+        /*double[] mean = new double[x[0].length];
+        double[] stDev = new double[x[0].length];
+        x = Standardization.standardUnitNormalization(x, mean, stDev);
+        
+        System.out.println("mean x=");
+        for (i = 0; i < mean.length; ++i) {
+            System.out.printf("%11.3e  ", mean[i]);
+        }
+        System.out.println();
+        System.out.flush();
+        */
+        
+        double n = x.length;
+        
+        PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
+                
+        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
+        b = MatrixUtil.multiply(b, stats.vTP);
+        System.out.println("b = x * pr.dir * v^T_p=");
+        for (i = 0; i < b.length; ++i) {
+            for (j = 0; j < b[i].length; ++j) {
+                System.out.printf("%11.3e  ", b[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        double[][] xMinusB = MatrixUtil.copy(x);
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                //xMinusB[i][j] -= mean[j];
+                xMinusB[i][j] -= b[i][0];
+            }
+        }
+        System.out.println("x:");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", x[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        System.out.println("x - (m + B*a):");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", xMinusB[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
     }
     
     /**

@@ -1317,6 +1317,10 @@ public class MatrixUtil {
      */
     public static double powerMethod(double[][] a, int nIterations) {
 
+        if (!isPositiveDefinite(a)) {
+            throw new IllegalArgumentException("a must be positive definite");
+        }
+        
         // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
 
         int nR = a.length;
