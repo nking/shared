@@ -18,17 +18,26 @@ import no.uib.cipr.matrix.SVD;
 public class PrincipalComponents {
     
     /**
+     * calculate the principal components of the unit standardized data x
+     * using SVD.
      * NOTE: should standardize the data before using this method,
      * <pre>
      *      double[] mean = new double[data[0].length];
             double[] stDev = new double[data[0].length];
      * e.g. double[][] x = Standardization.standardUnitNormalization(data, mean, stDev);
      * </pre>
-     * ...
-     * following Strang's SVD in http://www.cs.toronto.edu/~jepson/csc420/
+     * 
+     * from http://www.cs.toronto.edu/~jepson/csc420/
+     * combined with the book by Strang "Introduction to Linear Algebra" 
+     * and the book by Leskovec, Rajaraman, and Ullman "Mining of Massive Datasets".
      * also useful:
      * https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
      * and https://online.stat.psu.edu/stat505/book/export/html/670
+     * 
+     * NOTE: SVD has the drawbacks that a singular vector specifies a linear
+       combination of all input columns or rows, and there is a
+       a Lack of sparsity in the U, V, and s matrices.
+       See CUR decomposition method in contrast.
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
@@ -193,14 +202,14 @@ public class PrincipalComponents {
         System.out.println("U of SVD(cov) = ");
         for (int i = 0; i < u.numRows(); ++i) {
             for (int j = 0; j < u.numColumns(); ++j) {
-                System.out.printf("%11.3e  ", u.get(i, j));
+                System.out.printf("%12.5e  ", u.get(i, j));
             }
             System.out.printf("\n");
         }
         System.out.println("V_p of SVD(cov) = ");
         for (int i = 0; i < v.length; ++i) {
             for (int j = 0; j < v[i].length; ++j) {
-                System.out.printf("%11.3e  ", v[i][j]);
+                System.out.printf("%12.5e  ", v[i][j]);
             }
             System.out.printf("\n");
         }
@@ -219,7 +228,7 @@ public class PrincipalComponents {
         System.out.println("principal directions= ");
         for (int i = 0; i < stats.principalDirections.length; ++i) {
             for (int j = 0; j < stats.principalDirections[i].length; ++j) {
-                System.out.printf("%11.3e  ", stats.principalDirections[i][j]);
+                System.out.printf("%12.5e  ", stats.principalDirections[i][j]);
             }
             System.out.printf("\n");
         }
@@ -249,46 +258,23 @@ public class PrincipalComponents {
      *            a_0 = arg min_{a} ||⃗x − (m⃗_s + U _p * a)||^2
      * </pre>
      * @param x a 2-dimensional array of k vectors of length n in format
-     *    double[n][k] which is double[nSamples][nDimensions]
-     * @param p the principal directions derived from
+     *    double[n][k] which is double[nSamples][nDimensions] for which to apply
+     *    the principal axes transformation on.
+     * @param stats the statistics of the principal axes derived from
      * SVD of the covariance of the training data.
-     * format is [nDimensions][nComponents]
      * @return 
      */
-    public static double[][] reconstruct(double[][] x, double[][] p) {
-        
-        int n = x.length;
-        int nDimensions = x[0].length;
-        
-        if (nDimensions != p.length) {
-            throw new IllegalArgumentException("the number of columns in x"
-               +" must equal the number of rows of p");
-        }
-        
-        int i, j;
+    public static double[][] reconstruct(double[][] x, PCAStats stats) {
         
         /* find the 'a' which minimizes ||⃗x − (m⃗_s + p * a)||^2
-        
-                
-        f = (x_{0, i:n} − (m⃗_0 + p_0 * a_0))^2
-             + (x_{1, i:n} − (m⃗_1 + p_1 * a_1))^2
-             + ... up to dimension of principal components
-
-        df/da_0 = 2 * p_0 * (x_{0, i:n} − (m⃗_0 + p_0 * a_0))
-        df/da_1 = 2 * p_1 * (x_{1, i:n} − (m⃗_1 + p_1 * a_1))
-
-        set df/da_0 = 0 ==> x_{0, i:n} = (m⃗_0 + p_0 * a_0) <== reorg p and a 
-                            
-        
-        a_0 = (x_{0, i:n} - m⃗_0) * pseudoInverse(p_0)
-            
-        
-        reconstruction: ⃗r(⃗a ) = m⃗ + p ⃗a = m + (p * (x-m) * pseudoInv(p)) )
-                              
+        ⃗
+        then the reconstruction is r(⃗a ) = m⃗ + U ⃗a 
         */
        
-        throw new UnsupportedOperationException("not yet implemented");
+        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
+        b = MatrixUtil.multiply(b, stats.vTP);
         
+        return b;
     }
     
     public static class PCAStats {

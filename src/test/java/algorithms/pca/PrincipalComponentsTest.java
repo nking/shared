@@ -22,7 +22,7 @@ public class PrincipalComponentsTest extends TestCase {
         super(testName);
     }
     
-    public void estPCA() throws Exception {
+    public void testPCA() throws Exception {
         
         // from:
         // https://online.stat.psu.edu/stat505/book/export/html/670
@@ -95,7 +95,7 @@ public class PrincipalComponentsTest extends TestCase {
             System.out.println();
         }
         System.out.flush();
-        System.out.println("x - (m + B*a):");
+        System.out.println("(x - (m + B*a))^2:");
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
                 System.out.printf("%11.3e  ", xMinusB[i][j]);
@@ -105,7 +105,7 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.flush();
     }
     
-    public void estPCA2() throws Exception {
+    public void testPCA2() throws Exception {
         
         double[][] x = new double[4][2];
         x[0] = new double[]{1, 2};
@@ -168,7 +168,7 @@ public class PrincipalComponentsTest extends TestCase {
             System.out.println();
         }
         System.out.flush();
-        System.out.println("x - (m + B*a):");
+        System.out.println("(x - (m + B*a))^2:");
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
                 System.out.printf("%11.3e  ", xMinusB[i][j]);
@@ -180,11 +180,11 @@ public class PrincipalComponentsTest extends TestCase {
     
     public void testReconstruction() throws Exception {
         
-        double d2r = Math.PI/180;
+        double d2r = Math.PI/180.;
         double angle, dx, dy;
         double[][] x = new double[4][2];
        
-        angle = -35;//-45;
+        angle = -30;//-45;
         double x1=3./Math.sqrt(2); double y1=1./Math.sqrt(2);
         dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
         dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
@@ -216,6 +216,15 @@ public class PrincipalComponentsTest extends TestCase {
         
         int i, j;
         
+        System.out.println("x0:");
+        for (i = 0; i < x.length; ++i) {
+            for (j = 0; j < x[i].length; ++j) {
+                System.out.printf("%11.3e  ", x[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
         double[] mean = new double[x[0].length];
         double[] stDev = new double[x[0].length];
         x = Standardization.standardUnitNormalization(x, mean, stDev);
@@ -223,6 +232,11 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.println("mean x=");
         for (i = 0; i < mean.length; ++i) {
             System.out.printf("%11.3e  ", mean[i]);
+        }
+        System.out.println();
+        System.out.println("stdev x=");
+        for (i = 0; i < stDev.length; ++i) {
+            System.out.printf("%11.3e  ", stDev[i]);
         }
         System.out.println();
         System.out.flush();
@@ -260,7 +274,7 @@ public class PrincipalComponentsTest extends TestCase {
             System.out.println();
         }
         System.out.flush();
-        System.out.println("x - (m + B*a):");
+        System.out.println("(x - (m + B*a))^2:");
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
                 System.out.printf("%11.3e  ", xMinusB[i][j]);
@@ -270,22 +284,75 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.flush();
         
         // =====================
-        /*System.out.println("=== new points in same reference frame ===");
-        cx = 2.5; 
-        cy = 2.5; 
-        x[0] = new double[]{cx - Math.cos(angle*d2r)*r, cy - Math.sin(angle*d2r)*r};
-        x[1] = new double[]{cx - Math.cos((angle+180)*d2r)*r, cy - Math.sin((angle+180)*d2r)*r};
-        cx = 4.5; 
-        cy = 4.5; 
-        x[2] = new double[]{cx - Math.cos(angle*d2r)*r, cy - Math.sin(angle*d2r)*r};
-        x[3] = new double[]{cx - Math.cos((angle+180)*d2r)*r, cy - Math.sin((angle+180)*d2r)*r};
+        System.out.println("=== new points in same reference frame ===");
+        
+        angle = -30;//-45;
+        x1=10./Math.sqrt(2); y1=1./Math.sqrt(2);
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        xt1 = dx;
+        yt1 = dy;
+        
+        x1=10./Math.sqrt(2); y1=-1./Math.sqrt(2);
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        xt2 = dx;
+        yt2 = dy;
+        
+        x1=15./Math.sqrt(2); y1=1./Math.sqrt(2);
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        xt3 = dx;
+        yt3 = dy;
+        
+        x1=15./Math.sqrt(2); y1=-1./Math.sqrt(2);
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        xt4 = dx;
+        yt4 = dy;
+        
+        x[0] = new double[]{xt1, yt1};
+        x[1] = new double[]{xt2, yt2};
+        x[2] = new double[]{xt3, yt3};
+        x[3] = new double[]{xt4, yt4};
+        
+        System.out.println("*x0:");
+        for (i = 0; i < x.length; ++i) {
+            for (j = 0; j < x[i].length; ++j) {
+                System.out.printf("%11.3e  ", x[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        mean = new double[x[0].length];
+        stDev = new double[x[0].length];
+        x = Standardization.standardUnitNormalization(x, mean, stDev);
         
         b = MatrixUtil.multiply(x, stats.principalDirections);
         b = MatrixUtil.multiply(b, stats.vTP);
-        System.out.println("b = x * pr.dir * v^T_p=");
+        
+        double[][] bReconstruction = PrincipalComponents.reconstruct(x, stats);
+        for (i = 0; i < bReconstruction.length; ++i) {
+            for (j = 0; j < bReconstruction[i].length; ++j) {
+                bReconstruction[i][j] *= stDev[j];
+                bReconstruction[i][j] += mean[j];
+            }
+        }
+        
+        System.out.println("*b = x * pr.dir * v^T_p=");
         for (i = 0; i < b.length; ++i) {
             for (j = 0; j < b[i].length; ++j) {
                 System.out.printf("%11.3e  ", b[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        System.out.println("*B =");
+        for (i = 0; i < bReconstruction.length; ++i) {
+            for (j = 0; j < bReconstruction[i].length; ++j) {
+                System.out.printf("%11.3e  ", bReconstruction[i][j]);
             }
             System.out.println();
         }
@@ -298,7 +365,7 @@ public class PrincipalComponentsTest extends TestCase {
                 xMinusB[i][j] -= b[i][0];
             }
         }
-        System.out.println("x:");
+        System.out.println("*x:");
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
                 System.out.printf("%11.3e  ", x[i][j]);
@@ -306,7 +373,7 @@ public class PrincipalComponentsTest extends TestCase {
             System.out.println();
         }
         System.out.flush();
-        System.out.println("x - (m + B*a):");
+        System.out.println("*(x - (m + B*a))^2:");
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
                 System.out.printf("%11.3e  ", xMinusB[i][j]);
@@ -314,7 +381,7 @@ public class PrincipalComponentsTest extends TestCase {
             System.out.println();
         }
         System.out.flush();
-        */
+        
     }
     
     /**
