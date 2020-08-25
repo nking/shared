@@ -38,6 +38,7 @@ public class PrincipalComponents {
        combination of all input columns or rows, and there is a
        a Lack of sparsity in the U, V, and s matrices.
        See CUR decomposition method in contrast.
+       http://www.mmds.org/mmds/v2.1/ch11-dimred.pdf
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
