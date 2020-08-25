@@ -22,7 +22,7 @@ public class PrincipalComponentsTest extends TestCase {
         super(testName);
     }
     
-    public void testPCA() throws Exception {
+    public void estPCA() throws Exception {
         
         // from:
         // https://online.stat.psu.edu/stat505/book/export/html/670
@@ -105,7 +105,7 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.flush();
     }
     
-    public void testPCA2() throws Exception {
+    public void estPCA2() throws Exception {
         
         double[][] x = new double[4][2];
         x[0] = new double[]{1, 2};
@@ -137,6 +137,9 @@ public class PrincipalComponentsTest extends TestCase {
         
         double n = x.length;
         
+        // U is 2x2,  U_p is 2x1
+        // V is 2x2, V_P is 2x1, V^T_p is 1x2
+        // x is nx2
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
                 
         double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
@@ -173,6 +176,145 @@ public class PrincipalComponentsTest extends TestCase {
             System.out.println();
         }
         System.out.flush();
+    }
+    
+    public void testReconstruction() throws Exception {
+        
+        double d2r = Math.PI/180;
+        double angle, dx, dy;
+        double[][] x = new double[4][2];
+       
+        angle = -35;//-45;
+        double x1=3./Math.sqrt(2); double y1=1./Math.sqrt(2);
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        double xt1 = dx;
+        double yt1 = dy;
+        
+        y1*=-1.;
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        double xt2 = dx;
+        double yt2 = dy;
+        
+        x1=7./Math.sqrt(2); y1*=-1.;
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        double xt3 = dx;
+        double yt3 = dy;
+        
+        y1*=-1.;
+        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
+        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
+        double xt4 = dx;
+        double yt4 = dy;
+       
+        x[0] = new double[]{xt1, yt1};
+        x[1] = new double[]{xt2, yt2};
+        x[2] = new double[]{xt3, yt3};
+        x[3] = new double[]{xt4, yt4};
+        
+        int i, j;
+        
+        double[] mean = new double[x[0].length];
+        double[] stDev = new double[x[0].length];
+        x = Standardization.standardUnitNormalization(x, mean, stDev);
+        
+        System.out.println("mean x=");
+        for (i = 0; i < mean.length; ++i) {
+            System.out.printf("%11.3e  ", mean[i]);
+        }
+        System.out.println();
+        System.out.flush();
+        
+        double n = x.length;
+        
+        // U is 2x2,  U_p is 2x1
+        // V is 2x2, V_P is 2x1, V^T_p is 1x2
+        // x is nx2
+        PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
+                
+        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
+        b = MatrixUtil.multiply(b, stats.vTP);
+        System.out.println("b = x * pr.dir * v^T_p=");
+        for (i = 0; i < b.length; ++i) {
+            for (j = 0; j < b[i].length; ++j) {
+                System.out.printf("%11.3e  ", b[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        double[][] xMinusB = MatrixUtil.copy(x);
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                //xMinusB[i][j] -= mean[j];
+                xMinusB[i][j] -= b[i][0];
+            }
+        }
+        System.out.println("x:");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", x[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        System.out.println("x - (m + B*a):");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", xMinusB[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        // =====================
+        /*System.out.println("=== new points in same reference frame ===");
+        cx = 2.5; 
+        cy = 2.5; 
+        x[0] = new double[]{cx - Math.cos(angle*d2r)*r, cy - Math.sin(angle*d2r)*r};
+        x[1] = new double[]{cx - Math.cos((angle+180)*d2r)*r, cy - Math.sin((angle+180)*d2r)*r};
+        cx = 4.5; 
+        cy = 4.5; 
+        x[2] = new double[]{cx - Math.cos(angle*d2r)*r, cy - Math.sin(angle*d2r)*r};
+        x[3] = new double[]{cx - Math.cos((angle+180)*d2r)*r, cy - Math.sin((angle+180)*d2r)*r};
+        
+        b = MatrixUtil.multiply(x, stats.principalDirections);
+        b = MatrixUtil.multiply(b, stats.vTP);
+        System.out.println("b = x * pr.dir * v^T_p=");
+        for (i = 0; i < b.length; ++i) {
+            for (j = 0; j < b[i].length; ++j) {
+                System.out.printf("%11.3e  ", b[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        
+        xMinusB = MatrixUtil.copy(x);
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                //xMinusB[i][j] -= mean[j];
+                xMinusB[i][j] -= b[i][0];
+            }
+        }
+        System.out.println("x:");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", x[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        System.out.println("x - (m + B*a):");
+        for (i = 0; i < xMinusB.length; ++i) {
+            for (j = 0; j < xMinusB[i].length; ++j) {
+                System.out.printf("%11.3e  ", xMinusB[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.flush();
+        */
     }
     
     /**
