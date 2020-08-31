@@ -1,6 +1,11 @@
 package algorithms.matrix;
 
 import algorithms.imageProcessing.SummedAreaTable0;
+import algorithms.misc.CDFRandomSelect;
+import algorithms.misc.Misc0;
+import algorithms.misc.MiscMath0;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * a CUR Decomposition is an approximation to the SVD, but the result is that 
@@ -101,30 +106,49 @@ public class CURDecomposition {
         throw new UnsupportedOperationException("implementation is not yet finished.");        
     }
     
-    public static CDFs _calculateCDFs(double[][] a, double k) {
+    public static CDFs _calculateCDFs(double[][] a, int k) {
      
-        // copy a, square each item, create a summed area table from that.
-        // create column sums as a vector and normalize it (= discrete pdf for col)
-        // create row sums as a vector and normalize it (= discrete pdf for row)
-        // create data structure with fast nearest neighbor queries to hold
-        //    the CDFs (made from PDFs).
-        //    -- a balanced binary search tree is already made and has query
-        //       O(lg(N_CDF)) so will likely use this.
-        //    -- alternatively, could consider a data structure with constant 
-        //       time queries for a simgle dimension ANN and manhattan distance.
-        // randomly select k cols and k rows, using the CDF data structures to
-        //    find the indexes of the columns or rows, given the random probability
-        //    [0, 1].
+        PDFs pdfs = _calculatePDFs(a);
         
-        throw new UnsupportedOperationException("implementation is not yet finished.");
+        double[] rowCDF = MiscMath0.cumulativeSum(pdfs.rowPDF);
+        
+        double[] colCDF = MiscMath0.cumulativeSum(pdfs.colPDF);
+        
+        int[] k0, k1;
+        
+        boolean useBinarySearch = true;
+        
+        Random rand = Misc0.getSecureRandom();
+        long seed = System.nanoTime();
+        System.out.println("seed=" + seed);
+        System.out.flush();
+        rand.setSeed(seed);
+
+        if (useBinarySearch) {
+            k0 = CDFRandomSelect.chooseKFromBinarySearch(rowCDF, k, rand);
+            k1 = CDFRandomSelect.chooseKFromBinarySearch(colCDF, k, rand);
+        } else {
+            // transform CDFs to integers
+            k0 = CDFRandomSelect.chooseKFromIntegerTransformAndTrie(rowCDF, k, rand);
+            k1 = CDFRandomSelect.chooseKFromIntegerTransformAndTrie(colCDF, k, rand);
+        }
+
+        CDFs cds = new CDFs();
+        cds.rowsSelected = k0;
+        cds.colsSelected = k1;
+        cds.rowCDF = rowCDF;
+        cds.colCDF = colCDF;
+        cds.pdfs = pdfs;
+
+        return cds;
     }
     
     /**
-     * calculate the col and row pdfs from a.
+     * calculate the col and row Frobenius norm discrete probabilities from a.
      * runtime is O(N) where N = mxn.
      * @param a an mxn matrix.
      * @return  the column and row PDFs of matrix a where a row PDF is the
-     * frobenius norm of the column divided by the frobenius norm of the
+     * Frobenius norm of the column divided by the Frobenius norm of the
      * matrix, and the row PDF is similar but calculated for rows instead of
      * columns.
      */
@@ -191,7 +215,7 @@ public class CURDecomposition {
 
         return pdfs;        
     }
-    
+
     public static class CUR {
         double[] c;
         double[] u;
@@ -207,8 +231,8 @@ public class CURDecomposition {
     }
     
     public static class CDFs {
-        double[] colsSelected;
-        double[] rowsSelected;
+        int[] colsSelected;
+        int[] rowsSelected;
         PDFs pdfs;
         double[] colCDF;
         double[] rowCDF;
