@@ -1,5 +1,6 @@
 package algorithms.matrix;
 
+import algorithms.imageProcessing.SummedAreaTable0;
 import javax.naming.OperationNotSupportedException;
 
 /**
@@ -92,7 +93,7 @@ public class CURDecomposition {
     
     public static CDFs _calculateCDFs(double[][] a, double k) {
      
-        // copy a, square each item, create a summedarea table from that.
+        // copy a, square each item, create a summed area table from that.
         // create column sums as a vector and normalize it (= discrete pdf for col)
         // create row sums as a vector and normalize it (= discrete pdf for row)
         // create data structure with fast nearest neighbor queries to hold
@@ -108,6 +109,70 @@ public class CURDecomposition {
         throw new UnsupportedOperationException("implementation is not yet finished.");
     }
     
+    public static PDFs _calculatePDFs(double[][] a) {
+     
+        // copy a, square each item, create a summed area table from that.
+        // create column sums as a vector and normalize it (= discrete pdf for col)
+        // create row sums as a vector and normalize it (= discrete pdf for row)
+        
+        a = MatrixUtil.copy(a);
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                a[i][j] *= a[i][j];
+            }
+        }
+        
+        SummedAreaTable0 sat0 = new SummedAreaTable0();
+        double[][] s = sat0.createAbsoluteSummedAreaTable(a);
+        
+        double fN = s[s.length-1][s[0].length-1];
+        
+        double[] r = new double[s.length];
+        double[] c = new double[s[0].length];
+        
+        /*
+        imgS 
+        startX - coordinate for x start of window 
+        stopX - coordinate for x stop of window 
+        startY - coordinate for y start of window 
+        stopY - coordinate for y stop of window 
+        output - one dimensional array of size 2 in which the sum of the window 
+             will be returned and the number of pixels in the window. 
+             double[]{sum, nPixels}
+        */
+        double[] sumAndN = new double[2];
+        
+        int startCol = 0;
+        int stopCol = s[0].length - 1;
+        // create row vectors:
+        for (i = 0; i < s.length; ++i) {
+            
+            // s[x:x][y:y]
+            sat0.extractWindowFromSummedAreaTable(s, i, i, startCol, stopCol,
+                sumAndN);
+            
+            r[i] = sumAndN[0]/fN;
+        }
+        
+        int startRow = 0;
+        int stopRow = s.length - 1;
+        // create col vectors:
+        for (j = 0; j < s[0].length; ++j) {
+            
+            sat0.extractWindowFromSummedAreaTable(s, startRow, stopRow, j, j, 
+                sumAndN);
+            
+            c[j] = sumAndN[0]/fN;
+        }
+        
+        PDFs pdfs = new PDFs();
+        pdfs.colPDF = c;
+        pdfs.rowPDF = r;
+
+        return pdfs;        
+    }
+    
     public static class CUR {
         double[] c;
         double[] u;
@@ -117,11 +182,15 @@ public class CURDecomposition {
         double[] _rowsSelected;
     }
     
+    public static class PDFs {
+        double[] colPDF;
+        double[] rowPDF;
+    }
+    
     public static class CDFs {
         double[] colsSelected;
         double[] rowsSelected;
-        double[] colPDF;
-        double[] rowPDF;
+        PDFs pdfs;
         double[] colCDF;
         double[] rowCDF;
     }

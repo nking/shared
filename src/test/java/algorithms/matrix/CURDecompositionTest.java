@@ -1,5 +1,6 @@
 package algorithms.matrix;
 
+import algorithms.matrix.CURDecomposition.PDFs;
 import junit.framework.TestCase;
 
 /**
@@ -29,8 +30,21 @@ public class CURDecompositionTest extends TestCase {
         
         double k = 2;
         
+        double[] expectedRPDF = new double[]{0.012, 0.111, 0.198, 0.309, 0.132, 0.206, 0.033};
+        double[] expectedCPDF = new double[]{0.21, 0.21, 0.21, 0.185, 0.185};
         
+        PDFs pdfs = CURDecomposition._calculatePDFs(a);
         
+        double tol= 0.01;
+        double diff;
+        for (int i = 0; i < a.length; ++i) {
+            diff = expectedRPDF[i] - pdfs.rowPDF[i];
+            assertTrue(Math.abs(diff) < tol);
+        }
         
+        for (int i = 0; i < a[0].length; ++i) {
+            diff = expectedCPDF[i] - pdfs.colPDF[i];
+            assertTrue(Math.abs(diff) < tol);
+        }
     }
 }
