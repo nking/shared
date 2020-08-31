@@ -1,7 +1,6 @@
 package algorithms.matrix;
 
 import algorithms.imageProcessing.SummedAreaTable0;
-import javax.naming.OperationNotSupportedException;
 
 /**
  * a CUR Decomposition is an approximation to the SVD, but the result is that 
@@ -32,13 +31,14 @@ public class CURDecomposition {
     public static CUR calculateDecomposition(double[][] a, double k) {
 
         /*
-        *Note this is a randomized algorithm, same column can be sampled more than once and that corrections for such redundancies are made at end of algorithm.
-  M: a mxn matrix
-  r: Pick a target number of “concepts” to be used in the decomposition.
-  CUR-decomposition of M
-    C is mxr matrix composed of a randomly chosen set of r columns of M.
-    R is rxn matrix composed of a randomly chosen set of r rows of M.
-    U is rxr matrix constructed from C and R as follows:
+        *Note this is a randomized algorithm, same column can be sampled more than once and that 
+         corrections for such redundancies are made at end of algorithm.
+          M: a mxn matrix
+          r: Pick a target number of “concepts” to be used in the decomposition.
+          CUR-decomposition of M
+            C is mxr matrix composed of a randomly chosen set of r columns of M.
+            R is rxn matrix composed of a randomly chosen set of r rows of M.
+            U is rxr matrix constructed from C and R as follows:
        1. Let W be the r×r matrix that is the intersection of the chosen
           columns of C and the chosen rows of R.
           That is, the element in row i and column j of W
@@ -59,9 +59,14 @@ public class CURDecomposition {
               -- the data structure used to store the CDFs have a fast nearest neighbor query for
                  manhattan distance, one-dimension.
                  * a balanced binary search tree has an O(lg(N_CDF)) query
+                 * could provide an overloaded method for N_CDF > 32767 
+                    that uses YFastTrie, but would have to convert the CDFs real values
+                    to integers of a competetively small range such as 32767 for the trie and
+                    the same for the conversion of the random number [0,1].
                  * a faster query time may exist for a hash structure like an LSH?
                    or any other constant time query for Nearest Neighbor or Approx Nearest Neighbor?
-              -- the lecture slides from the data mining book suggest an algorithm they call ColumnSelect which has a runtime of O(k *lg(k) / eps^2 )
+              -- the lecture slides from the data mining book suggest an algorithm they call 
+                 ColumnSelect which has a runtime of O(k *lg(k) / eps^2 )
 
         2. Compute the SVD of W; say W = XΣY^T.
         3. Compute Σ+, the Moore-Penrose pseudoinverse of the diagonal matrix Σ.
@@ -74,7 +79,9 @@ public class CURDecomposition {
         Having selected each of the columns of M, we scale each column by dividing
         its elements by the square root of the expected number of times this column
         would be picked. That is, we divide the elements of the jth column of M, if it
-        is selected, by sqrt(r*q_j) . The scaled column of M becomes a column of C (NOTE: the operation is not retained in M, that is, when row operations begin, they operate on the same M from Fig 11.12, and not on an M altered by column selection.)
+        is selected, by sqrt(r*q_j) . The scaled column of M becomes a column of C (NOTE: the operation 
+        is not retained in M, that is, when row operations begin, they operate on the same M from 
+        Fig 11.12, and not on an M altered by column selection.)
             Rows of M are selected for R in the analogous way. For each row of R we
         select from the rows of M, choosing row i with probability p_i.  scale each chosen row by dividing
         by sqrt(r*p_i) if it is the ith row of M that was chosen.
@@ -82,11 +89,14 @@ public class CURDecomposition {
         *Construct U:
         
         *Handle Duplicate columns or rows:
-        One can combine k rows of R that are each the same row of the matrix M into a single row of R, thus leaving R with fewer rows. 
+        One can combine k rows of R that are each the same row of the matrix M into a single row of R, 
+        thus leaving R with fewer rows. 
         Likewise, k columns of C that each come from the same column of M can be combined into one column of C. 
-        However, for either rows or columns, the remaining combined vector should have each of its elements multiplied by sqrt(k). 
-        When we merge some rows and/or columns, it is possible that R has fewer rows than C has columns, or vice versa. As a consequence, W will not be a square matrix, however, the pseudoinverse still works though there will be entries with 0 in the diagonal.
-
+        However, for either rows or columns, the remaining combined vector should have each of its elements 
+        multiplied by sqrt(k). 
+        When we merge some rows and/or columns, it is possible that R has fewer rows than C has columns, 
+        or vice versa. As a consequence, W will not be a square matrix, however, the pseudoinverse still 
+        works though there will be entries with 0 in the diagonal.
         */
         throw new UnsupportedOperationException("implementation is not yet finished.");        
     }
@@ -109,6 +119,15 @@ public class CURDecomposition {
         throw new UnsupportedOperationException("implementation is not yet finished.");
     }
     
+    /**
+     * calculate the col and row pdfs from a.
+     * runtime is O(N) where N = mxn.
+     * @param a an mxn matrix.
+     * @return  the column and row PDFs of matrix a where a row PDF is the
+     * frobenius norm of the column divided by the frobenius norm of the
+     * matrix, and the row PDF is similar but calculated for rows instead of
+     * columns.
+     */
     public static PDFs _calculatePDFs(double[][] a) {
      
         // copy a, square each item, create a summed area table from that.
