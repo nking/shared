@@ -14,7 +14,8 @@ public class CDFRandomSelect {
      * using binary search to find the nearest cumulative probability in the cdf,
      * k times, returning the indexes.
      * 
-     ** @param cdf cumulative distribution function
+     ** @param cdf cumulative distribution function.  NOTE that the values should
+     * be normalized such that the last item is 1.
      * @param k number of random selects
      * @param rand random number generator
      * @return indexes from randomly selected cdf distribution values
@@ -28,7 +29,8 @@ public class CDFRandomSelect {
      * using binary search to find the nearest cumulative probability in the cdf,
      * k times, returning the indexes.
      * 
-     * @param cdf cumulative distribution function
+     * @param cdf cumulative distribution function.  NOTE that the values should
+     * be normalized such that the last item is 1.
      * @param k number of random selects
      * @param rand random number generator
      * @param tolerance tolerance for equality of doubles
@@ -46,7 +48,19 @@ public class CDFRandomSelect {
         return selected;
     }
  
-    private static int binarySearchForNearest(double[] cdf, final double srch, 
+    /**
+     * find the nearest value to srch in the array cdf using binary search.
+     * 
+     * The runtime is O(lg_2(cdf.length)).
+     * 
+     * @param cdf cumulative distribution function.  NOTE that the values should
+     * be normalized such that the last item is 1.
+     * @param srch number to search for nearest value of in cdf.
+     * @param tol tolerance for the comparison to equals in comparisons of doubles.
+     * @return index in the cdf distribution whose array value is nearest to
+     * srch.
+     */
+    public static int binarySearchForNearest(double[] cdf, final double srch, 
         final double tol) {
         
         int n = cdf.length;

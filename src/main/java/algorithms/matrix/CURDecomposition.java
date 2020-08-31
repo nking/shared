@@ -114,6 +114,17 @@ public class CURDecomposition {
         
         double[] colCDF = MiscMath0.cumulativeSum(pdfs.colPDF);
         
+        // normalize so that the last bin is "1".
+        double norm = rowCDF[rowCDF.length - 1];
+        for (int i = 0; i < rowCDF.length; ++i) {
+            rowCDF[i] /= norm;
+        }
+        
+        norm = colCDF[colCDF.length - 1];
+        for (int i = 0; i < colCDF.length; ++i) {
+            colCDF[i] /= norm;
+        }
+        
         int[] k0, k1;
         
         boolean useBinarySearch = true;
