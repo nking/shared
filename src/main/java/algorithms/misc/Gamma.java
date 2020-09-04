@@ -34,6 +34,9 @@ package algorithms.misc;
      
     helpful non-open source code:
     https://introcs.cs.princeton.edu/java/91float/Gamma.java.html
+    * 
+    The gamma distribution follows wikipedia:
+    https://en.wikipedia.org/wiki/Gamma_distribution
  */
 public class Gamma {
     
@@ -440,4 +443,67 @@ public class Gamma {
             r =  x*(Math.log(x)-one);
         return r;
     }
+    
+    /**
+     * NOT YET TESTED
+     *  &lt; &#915; &gt;
+     * the gamma distribution is a two-parameter family of continuous 
+     * probability distributions. The exponential distribution, Erlang 
+     * distribution, and chi-squared distribution are special cases of 
+     * the gamma distribution. 
+     * There are three different parameterizations in common use:
+       <pre>
+        1) With a shape parameter k and a scale parameter θ.
+        2) With a shape parameter α = k and an inverse scale parameter β = 1/θ, 
+           called a rate parameter.
+        3) With a shape parameter k and a mean parameter μ = kθ = α/β.
+     * following https://en.wikipedia.org/wiki/Gamma_distribution
+     * 
+     * @param x
+     * @param shape
+     * @param scale
+     * @return 
+     */
+    public static double gammaScaleDistributionPDF(double x, double shape, double scale) {
+        double numer = Math.pow(x, shape - 1.) * Math.exp(-x/scale);
+        double denom = Math.pow(scale, shape) * Gamma.lanczosGamma9(shape);
+        return numer/denom;
+    }
+    
+    /**
+     * NOT YET TESTED
+     * &lt; &#915; &gt;
+     * the gamma distribution is a two-parameter family of continuous 
+     * probability distributions. The exponential distribution, Erlang 
+     * distribution, and chi-squared distribution are special cases of 
+     * the gamma distribution. 
+     * There are three different parameterizations in common use:
+       <pre>
+        1) With a shape parameter k and a scale parameter θ.
+        2) With a shape parameter α = k and an inverse scale parameter β = 1/θ, 
+           called a rate parameter.
+        3) With a shape parameter k and a mean parameter μ = kθ = α/β.
+     * following https://en.wikipedia.org/wiki/Gamma_distribution
+     * 
+     * @param x
+     * @param shape
+     * @param rate
+     * @return 
+     */
+    public static double gammaRateDistributionPDF(double x, double shape, double rate) {
+        double numer = Math.pow(rate, shape) * Math.pow(x, shape - 1.) * Math.exp(-x * rate);
+        double denom = Gamma.lanczosGamma9(shape);
+        return numer/denom;
+    }
+ 
+    /**
+     * for CDF, need incomplete gamma function.
+     * GAM(A,X)=INTEGRAL FROM T=X TO T=INFINITY OF EXP(-T)*T**(A-1).
+     * SEE netlib's toms/542
+     * 
+     * can see example of how to access the netlib functions in
+    a related project in thisproject's github repository called
+        https://github.com/nking/curvature-scale-space-corners-and-transformations.git
+        in the test class tests//algorithms/NetlibTest.java
+     */
 }
