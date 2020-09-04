@@ -201,7 +201,7 @@ public class ChiSquaredCriticalValues {
         is less than the tabled value.
      */
     public static double[][] lowerTail = new double[100][];
-    static {
+    static {                      //Z_10, Z_05, Z_025, Z_01, Z_001;
         lowerTail[0] = new double[]{.016, .004, .001, .000, .000};
         lowerTail[1] = new double[]{.211, .103, .051, .020, .002};
         lowerTail[2] = new double[]{.584, .352, .216, .115, .024};
@@ -346,9 +346,11 @@ public class ChiSquaredCriticalValues {
      * @param degreesOfFreedom
      * @return 
      */
-    public static double approxUpperTailPValueLin(double chisqStat, int degreesOfFreedom) {
+    public static double approxPValueLin(double chisqStat, int degreesOfFreedom) {
+        if (degreesOfFreedom < 1) {
+            throw new IllegalArgumentException("degreesOfFreedom must larger than 0");
+        }
         double p;
-        double chisq0;
         double a1 = -0.9911;
         double b1 = 0.8055;
         double a2 = -0.6763;
@@ -364,16 +366,12 @@ public class ChiSquaredCriticalValues {
         } else {
             p = 0.5 * Math.exp(b2 * z + a2 * z * z);
         }
-        chisq0 = chisqStat;
         
-        // check answer with EQN 2:
-        chisqStat = approxUpperTailChiSqStatLin(p, degreesOfFreedom);
-
-        System.out.printf("Lin: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f, chisq=%12.4f\n",
-            chisq0, degreesOfFreedom, p, (1 - p), chisqStat);
+        System.out.printf("Lin: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f\n",
+            chisqStat, degreesOfFreedom, p, (1 - p));
         System.out.flush();
         
-        return p;
+        return 1. - p;
     }
     
     /**
@@ -388,6 +386,9 @@ public class ChiSquaredCriticalValues {
      * @return 
      */
     public static double approxUpperTailChiSqStatLin(double p, int degreesOfFreedom) {
+        if (degreesOfFreedom < 1) {
+            throw new IllegalArgumentException("degreesOfFreedom must larger than 0");
+        }
         double chisqStat;
         double a1 = -0.9911;
         double b1 = 0.8055;
