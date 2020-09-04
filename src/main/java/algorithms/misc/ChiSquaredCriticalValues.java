@@ -355,8 +355,7 @@ public class ChiSquaredCriticalValues {
         double b1 = 0.8055;
         double a2 = -0.6763;
         double b2 = -1.2451;
-        double c1, c2;
-        //given a chisq_{n,p}, calc an approx p':
+        
         //EQN (1):
 
         double z = Math.sqrt(chisqStat) - Math.sqrt(degreesOfFreedom);
@@ -381,11 +380,11 @@ public class ChiSquaredCriticalValues {
         it's inverse"  1988, Lin, J.T., The Statistician 37, 3-5
         https://www.jstor.org/stable/2348373?seq=1#metadata_info_tab_contents
         
-     * @param p
+     * @param p the p-value OR (1-p)
      * @param degreesOfFreedom
      * @return 
      */
-    public static double approxUpperTailChiSqStatLin(double p, int degreesOfFreedom) {
+    public static double approxChiSqStatLin(double p, int degreesOfFreedom) {
         if (degreesOfFreedom < 1) {
             throw new IllegalArgumentException("degreesOfFreedom must larger than 0");
         }
@@ -407,8 +406,8 @@ public class ChiSquaredCriticalValues {
         }
         chisqStat = Math.pow(z + Math.sqrt(degreesOfFreedom), 2.);
 
-        System.out.printf("Lin: df=%d, p=%9.4f, 1-p=%9.4f, => chisq=%12.4f\n",
-            degreesOfFreedom, p, (1 - p), chisqStat);
+        System.out.printf("Lin: df=%d, p=%9.4f => chisq=%12.4f\n",
+            degreesOfFreedom, p, chisqStat);
         System.out.flush();
         
         return chisqStat;

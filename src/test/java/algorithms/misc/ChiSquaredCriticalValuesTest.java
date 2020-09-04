@@ -14,7 +14,7 @@ public class ChiSquaredCriticalValuesTest extends TestCase {
     
     public void testLin() {
         
-        double p;
+        double p, diff, chiSquared2;
         int dOF;
         
         double[] x2 = new double[]{2.706, 3.841, 5.024, 6.635, 10.828};
@@ -25,6 +25,14 @@ public class ChiSquaredCriticalValuesTest extends TestCase {
         for (double chiSquared : x2) {  
             p = ChiSquaredCriticalValues.approxPValueLin(chiSquared, dOF);
             System.out.println("  expected 1-p=" + ep[c] + " => " + p);
+            diff = Math.abs(p - ep[c]);
+            assertTrue(diff < 0.08);
+            
+            chiSquared2 = ChiSquaredCriticalValues.approxChiSqStatLin(1.-p, dOF);
+            System.out.println("  expected x^2=" + chiSquared + " => " + chiSquared2);
+            diff = Math.abs(chiSquared - chiSquared2);
+            assertTrue(diff < 0.002);
+            
             c++;
         }
         
@@ -34,6 +42,14 @@ public class ChiSquaredCriticalValuesTest extends TestCase {
         for (double chiSquared : x2) {  
             p = ChiSquaredCriticalValues.approxPValueLin(chiSquared, dOF);
             System.out.println("  expected 1-p=" + ep[c] + " => " + p);
+            diff = Math.abs(p - ep[c]);
+            assertTrue(diff < 0.02);
+            
+            chiSquared2 = ChiSquaredCriticalValues.approxChiSqStatLin(1.-p, dOF);
+            System.out.println("  expected x^2=" + chiSquared + " => " + chiSquared2);
+            diff = Math.abs(chiSquared - chiSquared2);
+            assertTrue(diff < 0.002);
+            
             c++;
         }
         
@@ -43,6 +59,14 @@ public class ChiSquaredCriticalValuesTest extends TestCase {
         for (double chiSquared : x2) {  
             p = ChiSquaredCriticalValues.approxPValueLin(chiSquared, dOF);
             System.out.println("  expected 1-p=" + ep[c] + " => " + p);
+            diff = Math.abs(p - ep[c]);
+            assertTrue(diff < 0.01);
+            
+            chiSquared2 = ChiSquaredCriticalValues.approxChiSqStatLin(1.-p, dOF);
+            System.out.println("  expected x^2=" + chiSquared + " => " + chiSquared2);
+            diff = Math.abs(chiSquared - chiSquared2);
+            assertTrue(diff < 0.002);
+            
             c++;
         }
         
@@ -55,6 +79,14 @@ public class ChiSquaredCriticalValuesTest extends TestCase {
         for (double chiSquared : x2) {  
             p = ChiSquaredCriticalValues.approxPValueLin(chiSquared, dOF);
             System.out.println("  expected p=" + ep[c] + " => " + p);
+            diff = Math.abs(p - ep[c]);
+            assertTrue(diff < 0.02);
+            
+            chiSquared2 = ChiSquaredCriticalValues.approxChiSqStatLin(1.-p, dOF);
+            System.out.println("  expected x^2=" + chiSquared + " => " + chiSquared2);
+            diff = Math.abs(chiSquared - chiSquared2);
+            assertTrue(diff < 0.002);
+            
             c++;
         }
         
@@ -66,6 +98,14 @@ public class ChiSquaredCriticalValuesTest extends TestCase {
         for (double chiSquared : x2) {  
             p = ChiSquaredCriticalValues.approxPValueLin(chiSquared, dOF);
             System.out.println("  expected p=" + ep[c] + " =>" + p);
+            diff = Math.abs(p - ep[c]);
+            assertTrue(diff < 0.01);
+            
+            chiSquared2 = ChiSquaredCriticalValues.approxChiSqStatLin(1.-p, dOF);
+            System.out.println("  expected x^2=" + chiSquared + " => " + chiSquared2);
+            diff = Math.abs(chiSquared - chiSquared2);
+            assertTrue(diff < 0.002);
+            
             c++;
         }
     }
