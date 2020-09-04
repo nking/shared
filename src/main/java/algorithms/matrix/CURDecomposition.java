@@ -53,6 +53,8 @@ public class CURDecomposition {
           NOTE: the choosing of random columns and rows has to be biased by
             importance of the row or column, and that is gauged by
             a column based frobenius norm and a row based frobenius norm
+            (==> calculating Marginal probability mass function of the
+            2x2 contingency table)
           Algorithm design notes:
             - can create matrix colRowF in O(N) by copying M, squaring each item,
                 then creating a summed area table from that.
