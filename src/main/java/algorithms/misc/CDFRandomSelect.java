@@ -25,6 +25,21 @@ public class CDFRandomSelect {
     }
     
     /**
+     * choose k indexes from the cdf by randomly drawing each time from rand[0,1] and
+     * using binary search to find the nearest cumulative probability in the cdf,
+     * then returning the index as the step that the random value truly belongs to),
+     * 
+     ** @param cdf cumulative distribution function.  NOTE that the values should
+     * be normalized such that the last item is 1.
+     * @param k number of random selects
+     * @param rand random number generator
+     * @return indexes from randomly selected cdf distribution values
+     */
+    public static int[] chooseKFromBinarySearchFloor(double[] cdf, int k, Random rand) {
+        return chooseKFromBinarySearchFloor(cdf, k, rand, 1.e-15);
+    }
+    
+    /**
      * choose k indexes from the cdf by randomly drawing from rand[0,1] and
      * using binary search to find the nearest cumulative probability in the cdf,
      * k times, returning the indexes.
@@ -43,6 +58,35 @@ public class CDFRandomSelect {
         
         for (int i = 0; i < k; ++i) {
             selected[i] = binarySearchForNearest(cdf, rand.nextDouble(), tolerance);
+        }
+        
+        return selected;
+    }
+    
+    /**
+     * choose k indexes from the cdf by randomly drawing from rand[0,1] and
+     * using binary search to find the nearest cumulative probability in the cdf,
+     * k times, returning the indexes.
+     * 
+     * @param cdf cumulative distribution function.  NOTE that the values should
+     * be normalized such that the last item is 1.
+     * @param k number of random selects
+     * @param rand random number generator
+     * @param tolerance tolerance for equality of doubles
+     * @return indexes from randomly selected cdf distribution values
+     */
+    public static int[] chooseKFromBinarySearchFloor(double[] cdf, int k, Random rand,
+        double tolerance) {
+        
+        int[] selected = new int[k];
+        double a;
+        
+        for (int i = 0; i < k; ++i) {
+            a = rand.nextDouble();
+            selected[i] = binarySearchForNearest(cdf, a, tolerance);
+            if (a > cdf[selected[i]] && selected[i] > 0) {
+                selected[i]--;
+            }
         }
         
         return selected;
