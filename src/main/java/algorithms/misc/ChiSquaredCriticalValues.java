@@ -5,7 +5,8 @@ methods for the critical values of the chi-squared distribution to look up
 the chi-squared statistic test or limiting probability (=p-value)
 for the degrees of freedom.
 
-Methods are given from NIST
+Methods and 2 chi-sqaured inverse survivial function tables
+are given from NIST
 https://www.itl.nist.gov/div898/handbook/eda/section3/eda3674.htm
 
 and 1988, Lin, J.T., The Statistician 37, 3-5
