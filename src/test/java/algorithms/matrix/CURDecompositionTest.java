@@ -66,6 +66,8 @@ public class CURDecompositionTest extends TestCase {
         expectedC = MatrixUtil.transpose(expectedC);
         
         // test row select 5 and 3:
+        //a[3] = new double[]{5, 5, 5, 0, 0};
+        //a[5] = new double[]{0, 0, 0, 5, 5};
         //   [ 0 0 0 7.79 7.79] and [6.36 6.36 6.36 0 0 ]
         cdfs.rowsSelected = new int[]{5, 3};
         double[][] expectedR = new double[2][a[0].length];
@@ -109,6 +111,9 @@ public class CURDecompositionTest extends TestCase {
                 assertTrue(Math.abs(diff) < tol);
             }
         }
+        
+        //NOTE: for some reason, the authors multiply all of matrix R by sqrt(2)
+        //  in Figure 11.13.
         
         double[][] expectedCUR = new double[7][5];
         expectedCUR[0] = new double[]{0.3929077125588594, 0.3929077125588594,
