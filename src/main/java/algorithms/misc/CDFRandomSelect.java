@@ -27,7 +27,7 @@ public class CDFRandomSelect {
     /**
      * choose k indexes from the cdf by randomly drawing each time from rand[0,1] and
      * using binary search to find the nearest cumulative probability in the cdf,
-     * then returning the index as the step that the random value truly belongs to),
+     * then returning the index as the step that the random value truly belongs to).
      * 
      ** @param cdf cumulative distribution function.  NOTE that the values should
      * be normalized such that the last item is 1.
@@ -64,9 +64,9 @@ public class CDFRandomSelect {
     }
     
     /**
-     * choose k indexes from the cdf by randomly drawing from rand[0,1] and
+     * choose k indexes from the cdf by randomly drawing each time from rand[0,1] and
      * using binary search to find the nearest cumulative probability in the cdf,
-     * k times, returning the indexes.
+     * then returning the index as the step that the random value truly belongs to).
      * 
      * @param cdf cumulative distribution function.  NOTE that the values should
      * be normalized such that the last item is 1.
@@ -175,6 +175,9 @@ public class CDFRandomSelect {
      * (depends upon: largest value to store in trie, how filled the trie is,
      * and whether the transformation to integers preserves enough significant 
      * digits for the distribution and for random numbers).
+     * 
+     * NOTE: this method is considered for cases such as CURDecomposition
+     * performed on a matrix with a very large number of parameters.
      * 
      * @param cdf cumulative distribution function
      * @param k number of random selects

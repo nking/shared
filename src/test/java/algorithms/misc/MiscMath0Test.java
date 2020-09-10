@@ -2,8 +2,11 @@ package algorithms.misc;
 
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
+import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.logging.Logger;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -563,5 +566,32 @@ public class MiscMath0Test extends TestCase {
             assertTrue(diff < eps);
         }
         
+    }
+    
+    public void testFrequencyMap() {
+        
+        int[] a = new int[]{ 3, 4, 2, 1, 3, 9, 23, 2, 3};
+        
+        TIntIntMap expected = new TIntIntHashMap();
+        expected.put(3, 3);
+        expected.put(4, 1);
+        expected.put(2, 2);
+        expected.put(1, 1);
+        expected.put(9, 1);
+        expected.put(23, 1);
+        
+        TIntIntMap f = MiscMath0.makeFrequencyMap(a);
+        
+        assertEquals(expected.size(), f.size());
+        
+        int key, c, i;
+        TIntIntIterator iter = expected.iterator();
+        for (i = 0; i < expected.size(); ++i) {
+            iter.advance();
+            key = iter.key();
+            c = iter.value();
+            assertTrue(f.containsKey(key));
+            assertEquals(c, f.get(key));
+        }
     }
 }

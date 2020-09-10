@@ -11,6 +11,8 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.Arrays;
 
 /**
@@ -1038,5 +1040,19 @@ public class MiscMath0 {
         }
         
         return s;
+    }
+
+    public static TIntIntMap makeFrequencyMap(int[] a) {
+        TIntIntMap f = new TIntIntHashMap();
+        int c;
+        for (int key : a) {
+            if (f.containsKey(key)) {
+                c = f.get(key) + 1;
+            } else {
+                c = 1;
+            }
+            f.put(key, c);
+        }
+        return f;
     }
 }

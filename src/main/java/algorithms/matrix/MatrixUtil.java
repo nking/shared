@@ -210,7 +210,8 @@ public class MatrixUtil {
         
         if (mcols != nrows) {
             throw new IllegalArgumentException(
-                "the number of columns in m must equal the number of rows in n");
+                "the number of columns in m (=" + mcols + ") "
+                + " must equal the number of rows in n (=" + nrows + ")");
         }
         
         /*
@@ -990,9 +991,15 @@ public class MatrixUtil {
     /**
      * calculate the pseudo-inverse of matrix a (dimensions mxn) which is a full
      * rank matrix, i.e. rank = m, using LUP decomposition
-     * (inverse(A^T*A) * A^T).
-     * NOTE that (A^T*A) has to be invertible, that is, the reduced echelon form
-     * of A has linearly independent columns (rank==n).
+     * <pre>
+       for case m .lt. n: 
+           should calculate A† = A^T * (A * A^T)^(−1)
+        
+        for case n .lt. m: 
+           should calculate A† = (A^T * A)^(−1) * A^T
+     </pre>
+     * NOTE that (A^T*A) (or (A * A^T)) has to be invertible, that is, 
+     * the reduced echelon form of A has linearly independent columns (rank==n).
      * following pseudocode from Cormen et al. Introduction to Algorithms.
      * @param a two dimensional array in row major format with dimensions
      * m x n.  a is a full-rank matrix.
@@ -1004,6 +1011,15 @@ public class MatrixUtil {
     public static double[][] pseudoinverseFullRank(double[][] a) throws NotConvergedException {
         int m = a.length;
         int n = a[0].length;
+        
+        /*
+        NOTE: 
+        for case m < n: 
+           should calculate A† = A^T * (A * A^T)^(−1)
+        
+        for case n < m: 
+           should calculate A† = (A^T * A)^(−1) * A^T
+        */
         
         // limit for a number to be significant above 0 (precision of computer)
         double eps = 1e-16;

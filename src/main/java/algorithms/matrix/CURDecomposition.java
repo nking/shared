@@ -4,24 +4,31 @@ import algorithms.imageProcessing.SummedAreaTable0;
 import algorithms.misc.CDFRandomSelect;
 import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
+import gnu.trove.map.TIntIntMap;
 import java.util.Arrays;
 import java.util.Random;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrices;
+import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
 
 /**
- * a CUR Decomposition is an approximation to the SVD, but the result is that 
+ * a CUR-Decomposition is an approximation to the SVD, but the result is that 
  * all large matrices of the decomposition are sparse in contrast to the same
  * in SVD.
  * 
- * This class implements CUR decomposition following the book "Mining of Massive 
+ * This class implements CUR-decomposition following the book "Mining of Massive 
  * Datasets" by Jure Leskovec, Anand Rajaraman, Jeff Ullman.
+ * http://www.mmds.org/
  * 
+ * Runtime is O(m*n) Drineas et al.
+ * (https://www.pnas.org/content/pnas/106/3/697.full.pdf)
  * 
- * NOTE: in contrast to SVD and CUR, consider implementing in future:
+ * NOTE: consider implementing in future:
    http://www.cs.cmu.edu/~christos/PUBLICATIONS/sdm07-lsm.pdf
    "Less is More: Compact Matrix Decomposition for Large Sparse Graphs"
    2007, Sun, Xie, Zhang, and Faloutsos
    Proceedings of the 2007 SIAM International Conference on Data Mining
-
    ...the Compact Matrix Decomposition (CMD), to compute sparse low rank 
    * approximations. CMD dramatically reduces both the computation cost and 
    * the space requirements over existing decomposition methods (SVD, CUR). 
@@ -33,84 +40,44 @@ import java.util.Random;
  */
 public class CURDecomposition {
     
-    public static CUR calculateDecomposition(double[][] a, double k) {
+    /**
+     * a CUR-Decomposition is an approximation to the SVD, but the result is that 
+     * all large matrices of the decomposition are sparse in contrast to the same
+     * in SVD.
+     * 
+     *  Runtime is O(m*n) Drineas et al.
+     * @param a is an mxn matrix.
+     * @param k
+     * @return 
+     */
+    public static CUR calculateDecomposition(double[][] a, int k) throws NotConvergedException {
 
-        /*
-        *Note this is a randomized algorithm, same column can be sampled more than once and that 
-         corrections for such redundancies are made at end of algorithm.
-          M: a mxn matrix
-          r: Pick a target number of “concepts” to be used in the decomposition.
-          CUR-decomposition of M
-            C is mxr matrix composed of a randomly chosen set of r columns of M.
-            R is rxn matrix composed of a randomly chosen set of r rows of M.
-            U is rxr matrix constructed from C and R as follows:
-       1. Let W be the r×r matrix that is the intersection of the chosen
-          columns of C and the chosen rows of R.
-          That is, the element in row i and column j of W
-          is the element of M whose
-            column is the jth column of C and whose row is the ith row of R.
-
-          NOTE: the choosing of random columns and rows has to be biased by
-            importance of the row or column, and that is gauged by
-            a column based frobenius norm and a row based frobenius norm
-            (==> calculating Marginal probability mass function of the
-            2x2 contingency table)
-          Algorithm design notes:
-            - can create matrix colRowF in O(N) by copying M, squaring each item,
-                then creating a summed area table from that.
-                any rectangle extracted from the summed area table only takes 4 steps.
-            - then can create the probability vectors for columns and rows from the colRowF
-            - then can create cdfs for those 2 vectors, normalized to peak at sum (last bin) = 1.
-            - then the random selection of [0,1] is chosen and one must find that as a
-              probability in a bin of the col or row probability CDF vector (and hence the col or row from that).
-              -- the data structure used to store the CDFs have a fast nearest neighbor query for
-                 manhattan distance, one-dimension.
-                 * a balanced binary search tree has an O(lg(N_CDF)) query
-                 * could provide an overloaded method for N_CDF > 32767 
-                    that uses YFastTrie, but would have to convert the CDFs real values
-                    to integers of a competetively small range such as 32767 for the trie and
-                    the same for the conversion of the random number [0,1].
-                 * a faster query time may exist for a hash structure like an LSH?
-                   or any other constant time query for Nearest Neighbor or Approx Nearest Neighbor?
-              -- the lecture slides from the data mining book suggest an algorithm they call 
-                 ColumnSelect which has a runtime of O(k *lg(k) / eps^2 )
-
-        2. Compute the SVD of W; say W = XΣY^T.
-        3. Compute Σ+, the Moore-Penrose pseudoinverse of the diagonal matrix Σ.
-           That is, if the ith diagonal element of Σ is σ 6= 0, then replace it by
-           1/σ. But if the ith element is 0, leave it as 0.
-        4. Let U = Y (Σ+)^2 X^T
-
-         *Constructing C and R:
-           select r columns for the matrix C randomly from the columns of M, with probability q_j
-        Having selected each of the columns of M, we scale each column by dividing
-        its elements by the square root of the expected number of times this column
-        would be picked. That is, we divide the elements of the jth column of M, if it
-        is selected, by sqrt(r*q_j) . The scaled column of M becomes a column of C (NOTE: the operation 
-        is not retained in M, that is, when row operations begin, they operate on the same M from 
-        Fig 11.12, and not on an M altered by column selection.)
-            Rows of M are selected for R in the analogous way. For each row of R we
-        select from the rows of M, choosing row i with probability p_i.  scale each chosen row by dividing
-        by sqrt(r*p_i) if it is the ith row of M that was chosen.
-
-        *Construct U:
+        CDFs cdfs = _calculateCDFs(a, k);
         
-        *Handle Duplicate columns or rows:
-        One can combine k rows of R that are each the same row of the matrix M into a single row of R, 
-        thus leaving R with fewer rows. 
-        Likewise, k columns of C that each come from the same column of M can be combined into one column of C. 
-        However, for either rows or columns, the remaining combined vector should have each of its elements 
-        multiplied by sqrt(k). 
-        When we merge some rows and/or columns, it is possible that R has fewer rows than C has columns, 
-        or vice versa. As a consequence, W will not be a square matrix, however, the pseudoinverse still 
-        works though there will be entries with 0 in the diagonal.
-        */
-        throw new UnsupportedOperationException("implementation is not yet finished.");        
+        SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);
+        
+        SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pdfs.colPDF);
+        c.r = MatrixUtil.transpose(c.r);
+        
+        double[][] u = _calculateU(a, r.indexesUnique, c.indexesUnique);
+        
+        CUR cur = new CUR();
+        cur._rowsSelected = r.indexesUnique;
+        cur._colsSelected = c.indexesUnique;
+        cur.c = c.r;
+        cur.r = r.r;
+        cur.u = u;
+        cur.result = MatrixUtil.multiply(cur.c, cur.u);
+        cur.result = MatrixUtil.multiply(cur.result, cur.r);
+        
+        return cur;        
     }
     
-    public static CDFs _calculateCDFs(double[][] a, int k) {
+    static CDFs _calculateCDFs(double[][] a, int k) {
      
         PDFs pdfs = _calculatePDFs(a);
+        
+        // randomly select k columns and k rows
         
         double[] rowCDF = MiscMath0.cumulativeSum(pdfs.rowPDF);
         
@@ -126,10 +93,26 @@ public class CURDecomposition {
         for (int i = 0; i < colCDF.length; ++i) {
             colCDF[i] /= norm;
         }
-        
+                        
         int[] k0, k1;
         
         boolean useBinarySearch = true;
+        
+        /*
+        In the future, may implement more methods than binary search in
+        CDFRandomSelect.
+        
+        (1) could provide an overloaded method for N_CDF > 32767 
+            that uses YFastTrie, but would have to convert the CDFs real values
+            to integers of a competetively small range such as 32767 for the 
+            trie and the same for the conversion of the random number [0,1].
+        (2) a faster query time may exist for a hash structure like an LSH?
+           or any other constant time query for Nearest Neighbor or 
+           Approx Nearest Neighbor?
+        (3) the lecture slides from http://www.mmds.org
+            suggest an algorithm they call ColumnSelect which has a runtime of
+            O(k *lg(k) / eps^2 )
+        */
         
         Random rand = Misc0.getSecureRandom();
         long seed = System.nanoTime();
@@ -157,7 +140,9 @@ public class CURDecomposition {
     }
     
     /**
-     * calculate the col and row Frobenius norm discrete probabilities from a.
+     * calculate the col and row Frobenius norm discrete probabilities from a
+     * (a.k.a. calculating Marginal probability mass function of the
+            2x2 contingency table).
      * runtime is O(N) where N = mxn.
      * @param a an mxn matrix.
      * @return  the column and row PDFs of matrix a where a row PDF is the
@@ -165,7 +150,7 @@ public class CURDecomposition {
      * matrix, and the row PDF is similar but calculated for rows instead of
      * columns.
      */
-    public static PDFs _calculatePDFs(double[][] a) {
+    static PDFs _calculatePDFs(double[][] a) {
      
         // copy a, square each item, create a summed area table from that.
         // create column sums as a vector and normalize it (= discrete pdf for col)
@@ -229,13 +214,151 @@ public class CURDecomposition {
         return pdfs;        
     }
 
+    /**
+      calculate R: 
+      R is an k x n matrix composed of a randomly chosen set of k rows of M.
+      each row of R gets normalized by sqrt( k * rowPDF_{selected_row}).
+      if a row of A is present more than once in the selection, it is 
+      included only the first time and that included column is then multiplied
+      by the square root of the number of duplicates.
+      @param a the m x n matrix, of m samples of n variates or parameters.
+      @param selectedRowIdxs a vector of indexes of rows of matrix a, which have
+      been randomly selected from the row marginal probabilities.
+      @param rowPDF the row marginal probabilities.
+      @return matrix of selected rows from A normalized and an array of the
+      unique selected indexes (corrections for duplicated indexes are performed
+      in this method).
+     */
+    static SelectedFromA _calculateR(double[][] a, int[] selectedRowIdxs, 
+        double[] rowPDF) {
+        
+        if (a.length != rowPDF.length) {
+            throw new IllegalArgumentException("a.length must equal rowPDF.length");
+        }
+        
+        // make frequency map of selected indexes and remove the key after a
+        //   column is visited (to help correct for multiplicity).
+        TIntIntMap freq = MiscMath0.makeFrequencyMap(selectedRowIdxs);
+        
+        int kCorr = freq.size();
+        
+        int k = selectedRowIdxs.length;
+        int m = a.length;
+        int n = a[0].length;
+        
+        int i, j, d, ii;
+        int rIdx = 0;
+        double factor;
+        
+        SelectedFromA sa = new SelectedFromA();
+        sa.r = new double[kCorr][n];
+        sa.indexesUnique = new int[kCorr];
+        
+        for (i = 0; i < selectedRowIdxs.length; ++i) {
+            
+            j = selectedRowIdxs[i];
+            assert(j >= 0 && j < m);
+            
+            if (!freq.containsKey(j)) {
+                continue;
+            }
+            
+            d = freq.get(j);
+            
+            factor = 1./Math.sqrt(k * rowPDF[j]);
+            
+            if (d > 1) {
+                factor *= Math.sqrt(d);
+            }
+            
+            //extract row j from a and multiply each item by factor
+            //and store it as c[cIdx][*];
+            sa.r[rIdx] = Arrays.copyOf(a[j], a[j].length);
+            for (ii = 0; ii < sa.r[rIdx].length; ++ii) {
+                sa.r[rIdx][ii] *= factor;
+            }
+            
+            sa.indexesUnique[rIdx] = j;
+            
+            freq.remove(j);
+                    
+            rIdx++;
+        }
+        
+        return sa;
+    }
+
+    static double[][] _calculateU(double[][] a, int[] selectedRIdxs, 
+        int[] selectedCIdxs) throws NotConvergedException {
+        
+        int nr = selectedRIdxs.length;
+        int nc = selectedCIdxs.length;
+        
+        int i, j, ar, ac;
+        double[][] w = new double[nr][nc];
+        for (i = 0; i < nr; ++i) {
+            w[i] = new double[nc];
+            ar = selectedRIdxs[i];
+            for (j = 0; j < nc; ++j) {
+                ac = selectedCIdxs[j];
+                w[i][j] = a[ar][ac];
+            }
+        }
+        
+        SVD svd = SVD.factorize(new DenseMatrix(w));
+        DenseMatrix X = svd.getU();
+        DenseMatrix YT = svd.getVt();
+        double[] s = svd.getS();
+        
+        double eps = 1.e-15;
+        
+        int rank = 0;
+        for (i = 0; i < s.length; ++i) {
+            if (Math.abs(s[i]) > eps) {
+                rank++;
+            }
+        }
+        
+        if (rank == 0) {
+            throw new IllegalArgumentException("factorization cannot continue as"
+            + " the number of selected indexes is too small");
+        }
+        
+        // this will be transposed
+        double[][] sInvSq = new double[nr][nc];
+        for (i = 0; i < nr; ++i) {
+            sInvSq[i] = new double[nc];
+            if (s[i] > eps) {
+                sInvSq[i][i] = 1./(s[i]*s[i]);
+            }
+        }
+        sInvSq = MatrixUtil.transpose(sInvSq);
+        
+        // X is nr x nr
+        // S is nr x nc ==> (Σ+)^2 = nc x nr
+        // Y is nc x nc
+        
+        //U = Y * (Σ+)^2 * X^T
+        //    [  nc x nr ] * [nr x nr] 
+        //  = [nc][nr]
+                
+        double[][] y = Matrices.getArray(YT);
+        y = MatrixUtil.transpose(y);
+        double[][] xt = Matrices.getArray(X);
+        xt = MatrixUtil.transpose(xt);
+        double[][] u = MatrixUtil.multiply(y, sInvSq);
+        u = MatrixUtil.multiply(u, xt);
+        
+       return u;
+    }
+    
     public static class CUR {
-        double[] c;
-        double[] u;
-        double[] r;
-        double[] result;
-        double[] _colsSelected;
-        double[] _rowsSelected;
+        double[][] c;
+        double[][] u;
+        double[][] r;
+        double[][] result;
+        int[] _colsSelected;
+        int[] _rowsSelected;
     }
     
     public static class PDFs {
@@ -249,5 +372,10 @@ public class CURDecomposition {
         PDFs pdfs;
         double[] colCDF;
         double[] rowCDF;
+    }
+    
+     public static class SelectedFromA {
+        int[] indexesUnique;
+        double[][] r;
     }
 }
