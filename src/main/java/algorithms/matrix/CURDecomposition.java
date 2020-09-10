@@ -46,6 +46,13 @@ public class CURDecomposition {
      * in SVD.
      * 
      *  Runtime is O(m*n) Drineas et al.
+     * 
+     * NOTE: could improve the speed and space used for very large matrices
+     * by using FlexCompColMatrix and FlexCompRowMatrix for C, U, R, and 
+     * result matrices.
+     * Also, for very large matrices, consider implementing in CDFRandomSelect.java
+     * the integer transformation and storage in YFAstTrie.
+     * 
      * @param a is an mxn matrix.
      * @param k
      * @return 
@@ -53,7 +60,7 @@ public class CURDecomposition {
     public static CUR calculateDecomposition(double[][] a, int k) throws NotConvergedException {
 
         CDFs cdfs = _calculateCDFs(a, k);
-        
+                
         SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);
         
         SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pdfs.colPDF);
@@ -103,7 +110,7 @@ public class CURDecomposition {
         CDFRandomSelect.
         
         (1) could provide an overloaded method for N_CDF > 32767 
-            that uses YFastTrie, but would have to convert the CDFs real values
+            that uses a YFastTrie, but would have to convert the CDF's real values
             to integers of a competetively small range such as 32767 for the 
             trie and the same for the conversion of the random number [0,1].
         (2) a faster query time may exist for a hash structure like an LSH?
@@ -374,7 +381,7 @@ public class CURDecomposition {
         double[] rowCDF;
     }
     
-     public static class SelectedFromA {
+    public static class SelectedFromA {
         int[] indexesUnique;
         double[][] r;
     }

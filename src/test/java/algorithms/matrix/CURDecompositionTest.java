@@ -172,6 +172,7 @@ public class CURDecompositionTest extends TestCase {
                 
                 //TODO: check that ||CUR-A||_frob_norm <= (1+eps)*||A-A_k||_frob_norm
                 //   with probability 98%
+                
             } catch (Throwable ex) {
                 Logger.getLogger(CURDecompositionTest.class.getName())
                     .log(Level.SEVERE, null, ex);
