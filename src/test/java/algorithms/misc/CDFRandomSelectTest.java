@@ -134,6 +134,17 @@ public class CDFRandomSelectTest extends TestCase {
             statSq += (diff/eUniform);
         }
         
+        /*
+        goodness of fit tests:
+            the test only rejects the assumed distribution when there is 
+                definite evidence that the distribution is incorrect.
+            in hypothesis testing, 
+                type I error = rejecting a true null hypothesis
+                type II error = accepting a false null hypothesis.
+            The power of a goodness-of-fit is the probability that the test
+                will rcjecL the null hypothesis.
+        */
+        
         double pVal = ChiSquaredCriticalValues.approxPValueLin(statSq, dOF);
         double chiSqStat3 = ChiSquaredCriticalValues.approxChiSqStatLin(
             1./nBins, dOF);
