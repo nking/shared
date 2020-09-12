@@ -148,8 +148,7 @@ public class CURDecomposition {
     
     /**
      * calculate the col and row Frobenius norm discrete probabilities from a
-     * (a.k.a. calculating Marginal probability mass function of the
-            2x2 contingency table).
+     * (a.k.a. calculating Marginal probability mass function of the contingency table).
      * runtime is O(N) where N = mxn.
      * @param a an mxn matrix.
      * @return  the column and row PDFs of matrix a where a row PDF is the

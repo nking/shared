@@ -15,6 +15,24 @@ package algorithms.misc;
 public class MiscSorter {
     
     /**
+     * use merge sort to sort a1 in decreasing value order and return the 
+     * indexes of the original a1 indexes in the sorted order.
+     * 
+     * @param a1
+     * @return indexes 
+     */
+    public static int[] mergeSortDecreasing(double[] a1) {
+        int[] indexes = new int[a1.length];
+        for (int i = 0; i < indexes.length; ++i) {
+            indexes[i] = i;
+        }
+     
+        sortBy1stArgDecr(a1, indexes, 0, a1.length - 1);
+        
+        return indexes;
+    }
+    
+    /**
      * use merge sort to sort a1 and a2 by a1 in ascending order, breaking ties 
      * by a2 and return the indexes of the original indexes 
      * (i.e. 0 through a1.length-1) in the sorted order.
@@ -909,6 +927,74 @@ public class MiscSorter {
                 a2[k] = a2Right[rightPos];
                 a1[k] = a1Right[rightPos];
                 indexes[k] = indexesRight[rightPos];
+                rightPos++;
+            }
+        }
+    }
+
+    /**
+     * use mergesort to sort by decreasing value a1 and apply 
+       same changes to a2.
+     * runtime is O(N * log_2(N))
+     *
+     * @param a1 array of points to be sorted
+     * @param a2 array of points to apply a1 sorting to also
+     * @param idxLo
+     * @param idxHi 
+     */
+    private static void sortBy1stArgDecr(double[] a1, int[] a2, int idxLo, 
+        int idxHi) {
+        
+        if (idxLo < idxHi) {
+
+            int indexMid = (idxLo + idxHi) >> 1;
+            
+            sortBy1stArgDecr(a1, a2, idxLo, indexMid);
+            
+            sortBy1stArgDecr(a1, a2, indexMid + 1, idxHi);
+            
+            mergeBy1stArgDecr(a1, a2, idxLo, indexMid, idxHi);
+        }
+    }
+
+    private static void mergeBy1stArgDecr(double[] a1, int[] a2, 
+        int idxLo, int idxMid, int idxHi) {
+
+        int nLeft = idxMid - idxLo + 1;
+        int nRight = idxHi - idxMid;
+
+        int[] a2Left = new int[nLeft + 1];
+        double[] a1Left = new double[nLeft + 1];
+
+        int[] a2Right = new int[nRight + 1];
+        double[] a1Right = new double[nRight + 1];
+
+        System.arraycopy(a1, idxLo, a1Left, 0, nLeft);
+        System.arraycopy(a2, idxLo, a2Left, 0, nLeft);
+        
+        System.arraycopy(a1, idxMid + 1, a1Right, 0, nRight);
+        System.arraycopy(a2, idxMid + 1, a2Right, 0, nRight);
+        
+        int sentinel = Integer.MIN_VALUE;
+        double sentinel1 = Double.NEGATIVE_INFINITY;
+        a2Left[nLeft] = sentinel;
+        a1Left[nLeft] = sentinel1;
+        a2Right[nRight] = sentinel;
+        a1Right[nRight] = sentinel1;
+        
+        int leftPos = 0;
+        int rightPos = 0;
+
+        for (int k = idxLo; k <= idxHi; k++) {
+            double l = a1Left[leftPos];
+            double r = a1Right[rightPos];
+            if (l >= r) {
+                a2[k] = a2Left[leftPos];
+                a1[k] = a1Left[leftPos];
+                leftPos++;
+            } else {
+                a2[k] = a2Right[rightPos];
+                a1[k] = a1Right[rightPos];
                 rightPos++;
             }
         }
