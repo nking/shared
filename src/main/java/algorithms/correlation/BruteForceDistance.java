@@ -149,7 +149,7 @@ public class BruteForceDistance {
        (iii) If R_n(X, Y) = 1, then there exist a vector a, a nonzero real number
              b and an orthogonal matrix C such that Y = a + bXC.
      */
-    public static double correlation1(double[][] X, double[][] Y) {
+    public static DCOV correlation1(double[][] X, double[][] Y) {
         
         int n = X.length;
         if (Y.length != n) {
@@ -219,6 +219,19 @@ public class BruteForceDistance {
             log.log(Level.INFO, sb.toString());
         }
         
-        return cor;
+        DCOV dc = new DCOV();
+        dc.cor = cor;
+        dc.dCov = dCov;
+        dc.dVarX = dVarX;
+        dc.dVarY = dVarY;
+        
+        return dc;
+    }
+    
+    public static class DCOV {
+        double dCov;
+        double dVarX;
+        double dVarY;                
+        double cor;
     }
 }

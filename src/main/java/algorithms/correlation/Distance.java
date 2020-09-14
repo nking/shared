@@ -20,6 +20,7 @@ import java.util.Arrays;
  * 
  * TODO: consider implementing Brownian Distance Covariance.
  * TODO: add notes for Hilbert-Schmidt independence measure (HSIC) - Lasso.
+ 
  * NOTE: can use this within feature screening: 
      Li, R., Zhong, W., and Zhu, L. (2012). 
      Feature screening via distance correlation learning. 
@@ -55,7 +56,7 @@ public class Distance {
      * @param y second sample of univariate observations (can be of another variable)
      * @return 
      */
-    public static DCov univariateCovariance2(double[] x, double[] y) {
+    public static DCov fastDcov(double[] x, double[] y) {
                   
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -66,6 +67,10 @@ public class Distance {
         x = Arrays.copyOf(x, x.length);
         y = Arrays.copyOf(y, y.length);
         
+        //"the algorithm essentially consists of two sorting steps. 
+        //    First we sort X and calculate ai· for i = 1,...,n. 
+        //    Then we sort Y and calculate D and all bi· for i = 1,...,n."
+                
         // x and y sorted:
         int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);
         
@@ -85,13 +90,12 @@ public class Distance {
         for (int i = 1; i <= n; ++i) {
             a_x[i-1] = ((2.*i - n) * x[i-1]) + (s - 2.*si[i-1]);
         }
-        double[] b_y = new double[n];
         
         //%Compute Frobenius inner product between the
         //%distance matrices while finding indexes corresponding
         //%to sorted y using merge−sort.
         
-        //%Weight vectors
+        //%Weight vectors for building the 1st term in Eqn (9)
         //v = [ x y x.∗y ];
         //nw = size( v, 2 );
         
@@ -221,6 +225,7 @@ public class Distance {
         }
         
        //% d is the Frobenius inner product of the distance matrices
+       // The second term of Eqn (9):
        //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
        //              [1][n] * [n][1] = [1][1]
        double[] mx = MiscMath0.mean(x, 1);
@@ -233,9 +238,9 @@ public class Distance {
            xz[z] -= mx[0];
            yz[z] -= my[0];
        }
-       double covterm = n * MatrixUtil.dot(xz, yz);
-
-       //v is double[n][nw];
+       double covtermXY = n * MatrixUtil.dot(xz, yz);
+       
+       //v is double[n][nw]; v = [ x y x.∗y ];
        //c1 = iv1 .’ ∗ v (:, 3 );
        //c2 = sum( iv4 );
        //c3 = iv2 .’ ∗ y;
@@ -253,42 +258,19 @@ public class Distance {
        double c4 = MatrixUtil.dot(iv3, x);
        
        // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
-       double d = (4.*( (c1 + c2) - (c3 + c4))) - 2.*covterm;
+       double d = (4.*( (c1 + c2) - (c3 + c4))) - 2.*covtermXY;
        
-       double[] ySorted = new double[n];
-
-       //% b_y is the vector of row sums of distance matrix of y
-       // ySorted = y ( idx( n : −1: 1, r ) );
-       int c = 0;
-       for (z = n; z >=1; z--) {
-           ySorted[c] = y[ idx[z-1][r-1] -1];
-           c++;
-       }
-
-       //si = cumsum( ySorted );
-       si = MiscMath0.cumulativeSum(ySorted);
-       s = si[n-1];
-
-       //b_y = zeros( n , 1 );
-       Arrays.fill(b_y, 0);
-
-       //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
-       c = 0;
-       double cc = -(n-2.);
-       for (z = n; z >=1; z--) {
-           b_y[ idx[z-1][r-1] -1] = (cc * ySorted[c]) + (s - (2.*si[c]));
-           c++;
-           cc += 2;
-       }
-
-System.out.printf("a_x=%s\n", Arrays.toString(a_x));
-System.out.printf("b_y=%s\n", Arrays.toString(b_y));
+       double[] b_y = _calcB(y, idx, n, r);
+      
+//System.out.printf("a_x=%s\n", Arrays.toString(a_x));
+//System.out.printf("b_y=%s\n", Arrays.toString(b_y));
 
        //%covsq equals V^2_n(x, y) the square of the distance covariance
        //%between x and y
        double nsq = (double)(n*n);
-       double ncb = (double)(nsq*n);
-       double nq = (double)(ncb*n);
+       double ncb = nsq*(double)(n);
+       double nq = ncb*(double)(n);
+       //Eqn (3):
        //term1 = d / nsq;
        //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
        //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
@@ -304,16 +286,13 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
        double term3 = (term3A * term3B) / nq;
        double covsq =  (term1 + term3) - term2;
            
-       // for debugging only:
-       System.out.printf("d= %.3f\n", d);
-       
        DCov dcov = new DCov();
        dcov.covsq = covsq;
        dcov.d = d;
        dcov.indexes = indexes;
        dcov.sortedX = x;
        dcov.sortedY = y;
-           
+       
        return dcov;
     }
     
@@ -519,37 +498,39 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
         sorted[1] = y;
         return sorted;
     }
-    
-    public static class DCov {
-        double covsq;
-        double d;
-        int[] indexes;
-        double[] sortedX;
-        double[] sortedY;
-        double[] dcov;
+
+    private static double[] _calcB(double[] y, int[][] idx, int n, int r) {
         
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            if (indexes != null) {
-                sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
-            }
-            if (sortedX != null) {
-                sb.append("sortedX=").append(Arrays.toString(sortedX)).append("\n");
-            }
-            if (sortedY != null) {
-                sb.append("sortedY=").append(Arrays.toString(sortedY)).append("\n");
-            }
-            if (dcov != null) {
-                sb.append("dcov=").append(Arrays.toString(dcov)).append("\n");
-            }
-            sb.append("d=").append(d).append("\n");
-            sb.append("covsq=").append(covsq).append("\n");
-            
-            return sb.toString();
-        }
+       double[] ySorted = new double[n];
+
+       //% b_y is the vector of row sums of distance matrix of y
+       // ySorted = y ( idx( n : −1: 1, r ) );
+       int c = 0;
+       int z;
+       for (z = n; z >=1; z--) {
+           ySorted[c] = y[ idx[z-1][r-1] -1];
+           c++;
+       }
+       
+       //si = cumsum( ySorted );
+       double[] si = MiscMath0.cumulativeSum(ySorted);
+       double s = si[n-1];
+
+       //b_y = zeros( n , 1 );
+       double[] b_y = new double[n];
+
+       //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
+       c = 0;
+       double cc = -(n-2.);
+       for (z = n; z >=1; z--) {
+           b_y[ idx[z-1][r-1] -1] = (cc * ySorted[c]) + (s - (2.*si[c]));
+           c++;
+           cc += 2;
+       }
+
+       return b_y;
     }
-  
+    
     /**
      * calculates the distance covariance between univariate vectors x and y as
      * "a weighted  distance between the joint characteristic function and 
@@ -570,11 +551,15 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
      * 
+     * NOTE: that this method follows Algorithm 1 in the paper which stops at
+     * the intermediate steps to show the merge steps clearly.
+     * The complete algorithm is present as fastDcov.
+     * 
      * @param x
      * @param y
      * @return 
      */
-    public static DCov univariateCovariance(double[] x, double[] y) {
+    public static DCov _univariateCovariance(double[] x, double[] y) {
 
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -635,7 +620,8 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
                     } else {
                         idx[idx_s - 1][k - 1] = idx2;
                         st2++;
-                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]);
+                        // similar to iv3 in method univariateCovariance2):
+                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]); 
                     } // end if-else
                 } // end while
                 if (st1 <= e1) {
@@ -682,5 +668,99 @@ System.out.printf("b_y=%s\n", Arrays.toString(b_y));
         dcov.sortedY = sortedY;
 
         return dcov;
+    }
+    
+    /**
+     * calculates the distance covariance between univariate vectors x and y as
+     * "a weighted  distance between the joint characteristic function and 
+     * the product of marginal distributions; 
+     * it is 0 if and only if two random vectors  and  are independent. 
+     * This measure can detect the presence of a dependence structure when the 
+     * sample size is large enough."
+     * 
+     * This algorithm is an implementation/port of the Matlab code from
+     * "A fast algorithm for computing distance correlation"
+     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+     * 
+     * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
+     * the same as the number in y.
+     * 
+     * NOTE: redundant points are possible in the rankings as "ties" are handled
+     * in the algorithm.  This is one advantage over the similar
+     * algorithm of Huo and Szekely (2016).
+     * 
+     * runtime is  O(n*log_2(n)).
+     * 
+     * @param x sample of univariate observations of a variable
+     * @param y second sample of univariate observations (can be of another variable)
+     * @return 
+     */
+    public static DCor fastDcor(double[] x, double[] y) {
+        DCor dcor = new DCor();
+        double tol = 1e-15;
+        dcor.covXXSq = fastDcov(x, x);
+        if (dcor.covXXSq.covsq < tol) {
+            return dcor;
+        }
+        dcor.covYYSq = fastDcov(y, y);
+        if (dcor.covYYSq.covsq < tol) {
+            return dcor;
+        }
+        dcor.covXYSq = fastDcov(x, y);
+        dcor.corSq = dcor.covXYSq.covsq/Math.sqrt(dcor.covXXSq.covsq * dcor.covYYSq.covsq);
+        return dcor;
+    }
+  
+    public static class DCov {
+        double covsq;
+        double d;
+        int[] indexes;
+        double[] sortedX;
+        double[] sortedY;
+        double[] dcov;
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (indexes != null) {
+                sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
+            }
+            if (sortedX != null) {
+                sb.append("sortedX=").append(Arrays.toString(sortedX)).append("\n");
+            }
+            if (sortedY != null) {
+                sb.append("sortedY=").append(Arrays.toString(sortedY)).append("\n");
+            }
+            if (dcov != null) {
+                sb.append("dcov=").append(Arrays.toString(dcov)).append("\n");
+            }
+            sb.append("d=").append(d).append("\n");
+            sb.append("covsq=").append(covsq).append("\n");
+            
+            return sb.toString();
+        }
+    }
+  
+    public static class DCor {
+        DCov covXYSq;
+        DCov covXXSq;
+        DCov covYYSq;
+        double corSq;
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("corSq=").append(corSq).append("\n");
+            if (covXYSq != null) {
+                sb.append("covXYSq: ").append(covXYSq.toString());
+            }
+            if (covXXSq != null) {
+                sb.append("covXXSq: ").append(covXXSq.toString());
+            }
+            if (covYYSq != null) {
+                sb.append("covYYSq: ").append(covYYSq.toString());
+            }            
+            return sb.toString();
+        }
     }
 }
