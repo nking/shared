@@ -1512,9 +1512,9 @@ public class MatrixUtil {
      *    J = V * S^(1/2) * V^T is a symmetric n×n matrix, such that square root of A = JJ.
      *    J is non-negative definite.
      * </pre>
-     * from Gilbert Strang's SVD in machine learning.
-     * @param a a square symmetric non-negative definite matrix
-     * @return the square root of matrix a
+     * from Allan Jepson's lecture on Gilbert Strang's SVD in machine learning
+     * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
+     * @param a a square symmetric non-negative definite matrix.
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
@@ -1526,14 +1526,27 @@ public class MatrixUtil {
         int m = a.length;
         int n = a[0].length;
         
+        if (m < n) {
+            a = MatrixUtil.transpose(a);
+            m = a.length;
+            n = a[0].length;
+        }
+        
         // limit for a number to be significant above 0
         double eps = 1e-16;
         
         DenseMatrix aMatrix = new DenseMatrix(a);
-        SVD svd = SVD.factorize(aMatrix);
-                
-        // s is an array of size min(m,n)
+        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn
+        
+        // s is an array of size min(m,n)  which is nxn here
         double[] s = svd.getS();
+        
+        double[][] sMatrix = new double[n][n];
+        for (int i = 0; i < n; ++i) {
+            sMatrix[i] = new double[n];
+            sMatrix[i][i] = s[i];
+        }
+        
         int rank = 0;
         for (double sv : s) {
             if (sv > eps) {
@@ -1576,20 +1589,11 @@ public class MatrixUtil {
         a_r2_c0 * s[0]    a_r2_c1 * s[1]
         */
         DenseMatrix vT = (DenseMatrix) svd.getVt();
+        DenseMatrix u = (DenseMatrix) svd.getU();
         
         double[][] _vT = Matrices.getArray(vT);
-        double[][] _v = MatrixUtil.transpose(_vT);
-                    
-        int col, row, d;
-        double[][] j = new double[n][];
-        for (row = 0; row < n; ++row) {
-            j[row] = new double[n];
-            for (col = 0; col < n; col++) {
-                if (s[col] > eps) {
-                    j[row][col] = _v[row][col] * Math.sqrt(s[col]);
-                }
-            }
-        }
+      
+        double[][] j = MatrixUtil.multiply(Matrices.getArray(u), sMatrix);
         j = MatrixUtil.multiply(j, _vT);
         return j;
     }
