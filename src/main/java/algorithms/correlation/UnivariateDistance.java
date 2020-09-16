@@ -14,6 +14,7 @@ import java.util.Arrays;
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
+     * https://arxiv.org/pdf/1810.11332.pdf
      * 
      * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
      * the same as the number in y
@@ -28,7 +29,7 @@ import java.util.Arrays;
 
  * @author nichole
  */
-public class Distance {
+public class UnivariateDistance {
     
     /**
      * calculates the distance covariance between univariate vectors x and y as
@@ -265,11 +266,16 @@ public class Distance {
 //System.out.printf("a_x=%s\n", Arrays.toString(a_x));
 //System.out.printf("b_y=%s\n", Arrays.toString(b_y));
 
+       //NOTE: minor edits to nsq, ncb, and nq following equation 2.5 of
+       // “A Statistically And Numerically Efficient Independence Test Based On 
+       // Random Projections And Distance Covariance”, 
+       // 2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+       
        //%covsq equals V^2_n(x, y) the square of the distance covariance
        //%between x and y
-       double nsq = (double)(n*n);
-       double ncb = nsq*(double)(n);
-       double nq = ncb*(double)(n);
+       double nsq = n*(n-3.);//(double)(n*n);
+       double ncb = nsq*(n-2.);//nsq*(double)(n);
+       double nq = ncb*(n-1.);//ncb*(double)(n);
        //Eqn (3):
        //term1 = d / nsq;
        //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;

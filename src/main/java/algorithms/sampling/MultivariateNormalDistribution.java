@@ -58,30 +58,14 @@ public class MultivariateNormalDistribution {
         (K is square, symmetric, and positive definite)
 
         1)  generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
-            normal distribution with mean=0 and covariance=1
-                           1             ( -(x - mu)^2 )
-             f = ------------------ * exp( ----------- )
-                 sigma * sqrt(2*pi)      (    2o~^2    )
-        
-                           1             ( -(x)^2 )
-             f = ------------------ * exp( ------ )
-                     1 * sqrt(2*pi)      (   2    )
+            normal distribution with mean=0 and variance=1
 
         2)  Compute the matrix square root of K
         3)  Then d = sqrt(K) * u generates a fair sample from N(0,K).
         4)  Then⃗ x= m⃗ + d, is a fair sample from N(m⃗,K)
         
         */
-        double norm = Math.pow(2.*Math.PI, -0.5);
-        double t;
-        
-        double[] u = new double[n];
-        
-        // u range is 0.24197 thru 0.39894
-        for (i = 0; i < n; ++i) {
-            t = rand.nextDouble();
-            u[i] = norm * Math.exp(-t*t/2.);
-        }
+        double[] u = Gaussian.randomSampleOfUnitStandard(rand, n);
         //System.out.println("u="+Arrays.toString(u));
         
         double[][] ksq = MatrixUtil.squareRoot(k);
@@ -171,17 +155,9 @@ public class MultivariateNormalDistribution {
         
         NOTE: can use in place of L, the inverse of the upper triangular matrix
         from the Cholesky decomposition.
-        */
-        double norm = Math.pow(2.*Math.PI, -0.5);
-        double t;
+        */        
+        double[] u = Gaussian.randomSampleOfUnitStandard(rand, n);
         
-        double[] u = new double[n];
-        
-        // u range is 0.24197 thru 0.39894
-        for (i = 0; i < n; ++i) {
-            t = rand.nextDouble();
-            u[i] = norm * Math.exp(-t*t/2.);
-        }
         //System.out.println("u="+Arrays.toString(u));
         
         for (i = 0; i < n; ++i) {

@@ -1,8 +1,8 @@
 package algorithms.correlation;
 
 import algorithms.correlation.BruteForceDistance.DCOV;
-import algorithms.correlation.Distance.DCor;
-import algorithms.correlation.Distance.DCov;
+import algorithms.correlation.UnivariateDistance.DCor;
+import algorithms.correlation.UnivariateDistance.DCov;
 import algorithms.misc.Misc0;
 import java.util.Arrays;
 import java.util.Random;
@@ -33,7 +33,7 @@ public class DistanceTest extends TestCase {
         double[] eX = Arrays.copyOf(x, x.length);
         double[] eY = Arrays.copyOf(y, y.length);
         
-        double[][] sorted = Distance._sortCheck(x, y);
+        double[][] sorted = UnivariateDistance._sortCheck(x, y);
         double diff;
         for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(sorted[0][i] - eX[i]);
@@ -44,7 +44,7 @@ public class DistanceTest extends TestCase {
         
         x = new double[]{2, 1., 1.1, 3, 1.1};
         y = new double[]{3, 1., 2.1, 4, 1.1};
-        sorted = Distance._sortCheck(x, y);
+        sorted = UnivariateDistance._sortCheck(x, y);
         for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(sorted[0][i] - eX[i]);
             assertTrue(diff < eps);
@@ -67,7 +67,7 @@ public class DistanceTest extends TestCase {
         double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
         double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
-        double[][] sorted = Distance._sortCheck(x, y);
+        double[][] sorted = UnivariateDistance._sortCheck(x, y);
         //System.out.println("sortedX=" + Arrays.toString(sorted[0]));
         //System.out.println("sortedY=" + Arrays.toString(sorted[1]));
         
@@ -108,7 +108,7 @@ public class DistanceTest extends TestCase {
                 }
             }
             
-            double[][] sorted = Distance._sortCheck(x, y);
+            double[][] sorted = UnivariateDistance._sortCheck(x, y);
             //System.out.println("sortedX=" + Arrays.toString(sorted[0]));
             //System.out.println("sortedY=" + Arrays.toString(sorted[1]));
 
@@ -138,7 +138,7 @@ public class DistanceTest extends TestCase {
         double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
         double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
-        DCor dCor2 = Distance.fastDcor(x, y);
+        DCor dCor2 = UnivariateDistance.fastDcor(x, y);
         System.out.println("fastDcor(X,Y)\n: " + dCor2.toString());
         
         double diff = 0;
@@ -151,7 +151,7 @@ public class DistanceTest extends TestCase {
         
         x = new double[]{2, 1., 1.1, 3, 1.1};
         y = new double[]{3, 1., 2.1, 4, 1.1};
-        sorted = Distance._sortCheck(x, y);
+        sorted = UnivariateDistance._sortCheck(x, y);
         for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(sorted[0][i] - eX[i]);
             assertTrue(diff < eps);
@@ -175,7 +175,7 @@ public class DistanceTest extends TestCase {
         double[] eY = new double[]{4.0, 3.0, 5.0, 7.0, 5.0, 6.0, 1.0, 2.0};
         double[] eD = new double[]{11, 6, 21, 14, 1, 3, 0, 0};
         
-        DCov dcov = Distance._univariateCovariance(x, y);
+        DCov dcov = UnivariateDistance._univariateCovariance(x, y);
         double diff = 0;
         for (int i = 0; i < x.length; ++i) {
             diff = Math.abs(dcov.sortedX[i] - eX[i]);
@@ -195,9 +195,9 @@ public class DistanceTest extends TestCase {
         }
         
         {
-            DCov dcov2 = Distance._univariateCovariance(x, x);
+            DCov dcov2 = UnivariateDistance._univariateCovariance(x, x);
             System.out.println("XX:" + dcov2.toString());
-            dcov2 = Distance._univariateCovariance(y, y);
+            dcov2 = UnivariateDistance._univariateCovariance(y, y);
             System.out.println("YY:" + dcov2.toString());
         }
         
