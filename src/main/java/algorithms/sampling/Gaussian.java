@@ -56,7 +56,7 @@ public class Gaussian {
         // u range is -3.1 to +3.1
         for (i = 0; i < n; ++i) {
             t = rand.nextDouble();
-            u[i] = CDFStandardNormal.approxShort(t);
+            u[i] = CDFStandardNormal.approxInverseShort(t);
         }
         
         return u;

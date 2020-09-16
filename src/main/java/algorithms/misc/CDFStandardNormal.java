@@ -53,7 +53,7 @@ public class CDFStandardNormal {
      * @param p probability
      * @return the variate, quantile, x.  the range is approximately -3.1 to +3.1.
     */
-    public static double approxShort(double p) {
+    public static double approxInverseShort(double p) {
         double z = (p >= 0.5) ? ((1.-p)/p) : (p/(1.-p));
         double x = -5.531 * (Math.pow(z, 0.1193) - 1.);
         if (p <0.5) {

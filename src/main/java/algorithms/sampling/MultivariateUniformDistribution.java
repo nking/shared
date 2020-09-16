@@ -8,6 +8,6 @@ package algorithms.sampling;
 public class MultivariateUniformDistribution {
     
     public static double[] generateSample(int nDimensions) {
-        
+        throw new UnsupportedOperationException("not implemented yet");
     }
 }

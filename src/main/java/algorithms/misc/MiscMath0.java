@@ -564,6 +564,31 @@ public class MiscMath0 {
         double stdDevX = Math.sqrt(sumX/(length - 1.0f));
         
         return new double[]{avgX, stdDevX};
+    }
+    
+    /**
+     * given an array of points, return the average and standard deviation from
+     * the average
+     * @param x
+     * @return 
+     */
+    public static double[] getAvgAndStDev(double[] x) {
+        
+        double sumX = 0;
+        for (int i = 0; i < x.length; i++) {
+            sumX += x[i];
+        }
+        
+        double avgX = (double)sumX/(double)x.length;
+        
+        sumX = 0;
+        for (int i = 0; i < x.length; i++) {
+            double diffX = x[i] - avgX;
+            sumX += (diffX * diffX);
+        }
+        double stdDevX = Math.sqrt(sumX/(x.length - 1.0));
+        
+        return new double[]{avgX, stdDevX};
     }    
 
     public static PairIntArray get20NeighborOffsets() {
