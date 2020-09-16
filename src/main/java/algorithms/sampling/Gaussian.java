@@ -41,7 +41,7 @@ public class Gaussian {
                            1             ( -(x)^2 )
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
-          using the CDF of the standard normal.
+          using the inverse CDF of the standard normal.
      * @param rand
      * @param n
      * @return 
@@ -53,7 +53,7 @@ public class Gaussian {
         double[] u = new double[n];
         
         int i;
-        // u range is -3.1 to +3.1
+        // u range is approximately -3.1 to +3.1
         for (i = 0; i < n; ++i) {
             t = rand.nextDouble();
             u[i] = CDFStandardNormal.approxInverseShort(t);

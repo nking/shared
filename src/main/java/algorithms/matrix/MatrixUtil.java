@@ -1544,7 +1544,7 @@ public class MatrixUtil {
         double[][] sMatrix = new double[n][n];
         for (int i = 0; i < n; ++i) {
             sMatrix[i] = new double[n];
-            sMatrix[i][i] = s[i];
+            sMatrix[i][i] = Math.sqrt(s[i]);
         }
         
         int rank = 0;
@@ -1593,8 +1593,9 @@ public class MatrixUtil {
         
         double[][] _vT = Matrices.getArray(vT);
       
-        double[][] j = MatrixUtil.multiply(Matrices.getArray(u), sMatrix);
+        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);
         j = MatrixUtil.multiply(j, _vT);
+        
         return j;
     }
     

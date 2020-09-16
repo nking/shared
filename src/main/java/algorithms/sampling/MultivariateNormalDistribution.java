@@ -1,5 +1,6 @@
 package algorithms.sampling;
 
+import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -74,16 +75,42 @@ public class MultivariateNormalDistribution {
         
         {
             // check
-            double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(ksq), 
-                ksq);
-            System.out.printf("cov check of ksq=\n");
+            System.out.printf("check k=\n");
+            for ( i = 0; i < k.length; ++i) {
+                for ( j = 0; j < k[i].length; ++j) {
+                    System.out.printf("%11.3e  ", k[i][j]);
+                }
+                System.out.printf("\n");
+            }
+            System.out.printf("check ksq=\n");
             for ( i = 0; i < ksq.length; ++i) {
                 for ( j = 0; j < ksq[i].length; ++j) {
                     System.out.printf("%11.3e  ", ksq[i][j]);
                 }
                 System.out.printf("\n");
             }
-            System.out.flush();
+            double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(ksq), 
+                ksq);
+            System.out.printf("check cov(ksq^T*ksq)=\n");
+            for ( i = 0; i < cov.length; ++i) {
+                for ( j = 0; j < cov[i].length; ++j) {
+                    System.out.printf("%11.3e  ", cov[i][j]);
+                }
+                System.out.printf("\n");
+            }
+            
+            System.out.printf("u=\n");
+            for ( i = 0; i < u.length; ++i) {
+                System.out.printf("%11.3e  ", u[i]);
+            }
+            System.out.printf("\n");
+            System.out.printf("d=\n");
+            for ( i = 0; i < d.length; ++i) {
+                System.out.printf("%11.3e  ", d[i]);
+            }
+            System.out.printf("\n");
+            
+            System.out.flush();            
         }
         
         double[] x = new double[n];
