@@ -72,8 +72,15 @@ public class UnivariateNormalDistribution {
      */
     public static double[] randomSampleOf(double mean, double sigma,
         SecureRandom rand, int n) {
+                
+        double[] u = randomSampleOfUnitStandard(rand, n);
+               
+        int i;
+        for (i = 0; i < n; ++i) {
+            u[i] *= sigma;
+            u[i] += mean;
+        }
         
-        throw new UnsupportedOperationException("not yet implemented");
-        
+        return u;
     }
 }

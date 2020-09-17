@@ -27,8 +27,8 @@ public class UnivariateNormalDistributionTest extends TestCase {
         
         double mean = 123.;
         double sigma = 23.45;
-        int n = 100000;
-        double h = 0.1;
+        int n = 1000;
+        double h = 0.5;
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
@@ -43,62 +43,64 @@ public class UnivariateNormalDistributionTest extends TestCase {
         double[] u = UnivariateNormalDistribution.randomSampleOf(mean, sigma,
             rand, n);
         
-        // histogram from -3.1 to +3.1 in X of N(0,1) is 50.3 to 195.7
+        double[] avgAndStDev = MiscMath0.getAvgAndStDev(u);
+        
+        // 68% in [-1, 1], 95% in [-2, 2], 99.7% within [-3, 3]
+        // [-2, 2] ==> [123 - 2*23.45, 123 + 2*23.45] = 
         //    
         //    with bin size = h
-        HistogramHolder fh = Histogram.createSimpleHistogram(u, h, 100., 150);
+        HistogramHolder fh = Histogram.createSimpleHistogram(u, h, 76, 170);
         
         // create CDF from it
         int[] fhSum = MiscMath0.cumulativeSum(fh.getYHist());
         double[] cdf = new double[fhSum.length];
         for (int i = 0; i < fhSum.length; ++i) {
-            cdf[i] = (double)fhSum[i]/fhSum[fhSum.length - 1];
+            cdf[i] = (double)fhSum[i]/(double)fhSum[fhSum.length - 1];
         }
+        
+        double[] expectedCDF = generateGaussianCDF(fh.getXHist(), mean, sigma);
         
         // largest difference w/ expected gaussian(mean, sigma)
         double ksStat = Double.NEGATIVE_INFINITY;
         double diff, y;
         for (int i = 0; i < fhSum.length; ++i) {
-            y = gaussianCDF(fh.getXHist()[i], mean, sigma);
+            y = expectedCDF[i];
             diff = Math.abs(cdf[i] - y);
             if (diff > ksStat) {
                 ksStat = diff;
             }
         }
         
+        //H0:  the data are normally distributed
+        //Ha:  the data are not normally distributed
+        //    reject H0 if ksstat > crit.
+        
         // 95% level, ks statistic critical value = 1.36/sqrt(n)
         // if ksStat < crit, do not reject null hypothesis (which is that
         //    the generated samples come from a gaussian distribution of mean, sigma.
         double crit = 1.36/Math.sqrt(n);
         
-        boolean t = ksStat < crit;
+        assert(ksStat < crit);   
     }
-    
-    private double gaussianCDF(double x, double mean, double sigma) {
-        // from wikipedia:
-        // for gaussian, CDF for given x, mean, sigma
-        //    = (0.5) * (1 + erf( (x-mean)/(sigma*sqrt(2)) ) )
-        double a = Math.abs((x - mean)/(sigma*Math.sqrt(2.)));
+
+    private double[] generateGaussianCDF(float[] xHist, double mean, double sigma) {
+
+        double inv2 = -(1./(sigma*sigma*2.));
+        double inv1 = (1./(sigma*Math.sqrt(2.*Math.PI)));
         
-        double cdf = 0.5 * (1. + erf(a));
-      
+        float x;
+        double[] y = new double[xHist.length];
+        for (int i = 0; i < y.length; ++i) {
+            x = xHist[i];
+            y[i] = inv1*(Math.exp(inv2*(x - mean)*(x - mean)));
+        }
+        
+        double[] ySum = MiscMath0.cumulativeSum(y);
+        double[] cdf = new double[ySum.length];
+        for (int i = 0; i < ySum.length; ++i) {
+            cdf[i] = ySum[i]/ySum[ySum.length - 1];
+        }
         return cdf;
-    }
-    
-    private double erf(double x) {
-        
-        // from wikipedia
-        //     an Abramowitz and Stegun algorithm:
-        double a1 = 0.278393;   double a2 = 0.230389;
-        double a3 = 0.000972; double a4 = 0.078108;
-        
-        double xsq = x * x;
-        double xcb = xsq * x;
-        double xq = xcb * x;
-        
-        double denom = 1. + a1*x + a2*xsq + a3*xcb + a4*xq;
-                
-        return 1./denom;
     }
     
 }
