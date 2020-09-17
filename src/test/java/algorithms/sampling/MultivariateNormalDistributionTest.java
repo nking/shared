@@ -50,11 +50,7 @@ public class MultivariateNormalDistributionTest extends TestCase {
             Math.sqrt(11.5), Math.sqrt(1250), Math.sqrt(110)
         };
         
-        double diff, chk;
-        int i, j;
-        for (i = 0; i < x.length; ++i) {
-        }
-        
+        int i;
         // create k vectors of x
         int k = 5;
         double[][] x2 = new double[k][x.length];

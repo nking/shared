@@ -34,7 +34,7 @@ public class CDFStandardNormalTest extends TestCase {
         
         double[] meanAndStDev = MiscMath0.getAvgAndStDev(g);
         assertTrue(Math.abs(meanAndStDev[0] - expectedMean) < tol);
-         assertTrue(Math.abs(meanAndStDev[1] - expectedSigma) < tol);
+        assertTrue(Math.abs(meanAndStDev[1] - expectedSigma) < tol);
         
     }
 }

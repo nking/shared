@@ -8,7 +8,7 @@ import java.security.SecureRandom;
  *
  * @author nichole
  */
-public class Gaussian {
+public class UnivariateNormalDistribution {
     
     /**
      * generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
@@ -47,7 +47,6 @@ public class Gaussian {
      * @return 
      */
     public static double[] randomSampleOfUnitStandard(SecureRandom rand, int n) {
-        double norm = Math.pow(2.*Math.PI, -0.5);
         double t;
         
         double[] u = new double[n];
@@ -60,5 +59,21 @@ public class Gaussian {
         }
         
         return u;
+    }
+    
+    /**
+     * return a random sample of size n f a gaussian distribution that has 
+     * the given mean and sigma.
+     * @param mean the location parameter of the gaussian.  it's the mean.
+     * @param sigma the shape parameter of the gaussian.  it's the standard deviation.
+     * @param rand
+     * @param n
+     * @return 
+     */
+    public static double[] randomSampleOf(double mean, double sigma,
+        SecureRandom rand, int n) {
+        
+        throw new UnsupportedOperationException("not yet implemented");
+        
     }
 }

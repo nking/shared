@@ -6,7 +6,9 @@ import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TDoubleIntMap;
 import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TDoubleIntHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 import java.util.Arrays;
@@ -101,7 +103,7 @@ public class Histogram {
             }
         }
     }
-
+    
     public static void createHistogram(float[] a, int nBins,
         float aMin, float aMax, float[] xHist, int[] yHist) {
 
@@ -145,7 +147,7 @@ public class Histogram {
         
         return createSimpleHistogram(nBins, v, ve);
     }
-     
+   
     public static HistogramHolder createSimpleHistogram(float[] values, 
         float[] valueErrors) {
 
@@ -162,7 +164,46 @@ public class Histogram {
         
         return createSimpleHistogram(nBins, values, valueErrors);
     }
-    
+     
+    /**
+     * WARNING:this is an incomplete method that is lossy too.
+     * 
+     * @param a
+     * @param binSize
+     * @param aMin
+     * @param aMax
+     * @return 
+     */
+    public static HistogramHolder createSimpleHistogram(double[] a, 
+        double binSize, double aMin, double aMax) {
+        if (a == null) {
+            throw new IllegalArgumentException(
+            "a cannot be null and must be the same length");
+        }
+        
+        int nBins = (int)Math.ceil(((aMax - aMin))/binSize);
+        if (nBins < 0) {
+            nBins *= -1;
+        }
+        
+        float[] afloat = new float[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            afloat[i] = (float)a[i];
+        }
+        
+        float[] xHist = new float[nBins];
+        int[] yHist = new int[nBins];
+        
+        Histogram.createHistogram(afloat, nBins, (float)aMin, (float)aMax, 
+            xHist, yHist, (float)binSize);
+        
+        HistogramHolder histogram = new HistogramHolder();
+        histogram.setXHist(xHist);
+        histogram.setYHist(yHist);
+        
+        return histogram;
+    }
+      
     public static HistogramHolder createSimpleHistogram(int nBins, 
         float[] values, float[] valueErrors) {
 

@@ -1,6 +1,5 @@
 package algorithms.sampling;
 
-import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -66,14 +65,14 @@ public class MultivariateNormalDistribution {
         4)  Then⃗ x= m⃗ + d, is a fair sample from N(m⃗,K)
         
         */
-        double[] u = Gaussian.randomSampleOfUnitStandard(rand, n);
+        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);
         //System.out.println("u="+Arrays.toString(u));
         
         double[][] ksq = MatrixUtil.squareRoot(k);
         double[] d = MatrixUtil.multiply(ksq, u);
         assert(d.length == m.length);
         
-        {
+        /*{
             // check
             System.out.printf("check k=\n");
             for ( i = 0; i < k.length; ++i) {
@@ -112,6 +111,7 @@ public class MultivariateNormalDistribution {
             
             System.out.flush();            
         }
+        */
         
         double[] x = new double[n];
         for (i = 0; i < n; ++i) {
@@ -183,7 +183,7 @@ public class MultivariateNormalDistribution {
         NOTE: can use in place of L, the inverse of the upper triangular matrix
         from the Cholesky decomposition.
         */        
-        double[] u = Gaussian.randomSampleOfUnitStandard(rand, n);
+        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);
         
         //System.out.println("u="+Arrays.toString(u));
         

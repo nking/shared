@@ -1026,6 +1026,17 @@ public class MiscMath0 {
         return s;
     }
     
+    public static int[] cumulativeSum(int[] a) {
+        
+        int[] s = Arrays.copyOf(a, a.length);
+        
+        for (int i = 1; i < a.length; ++i) {
+            s[i] += s[i - 1];
+        }
+        
+        return s;
+    }
+    
     public static double[][] cumulativeSumMatlabPort(double[][] a) {
         if (a.length > 1) {
             return cumulativeSumAlongColumns(a);
