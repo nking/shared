@@ -75,7 +75,15 @@ public class UnivariateNormalDistributionTest extends TestCase {
         //Ha:  the data are not normally distributed
         //    reject H0 if ksstat > crit.
         
-        // 95% level, ks statistic critical value = 1.36/sqrt(n)
+        // for N>35, can use  Smirnov (1948)
+        //     which is summarized in https://blogs.sas.com/content/iml/2019/05/20/critical-values-kolmogorov-test.html
+        // 
+        // For 95% level, ks statistic critical value = 1.36/sqrt(n)
+        //     99% level, ks statistic critical value = 1.63/sqrt(n)
+        //     90% level, ks statistic critical value = 1.22/sqrt(n)
+        //     85% level, ks statistic critical value = 1.14/sqrt(n)
+        //     80% level, ks statistic critical value = 1.07/sqrt(n)
+        
         // if ksStat < crit, do not reject null hypothesis (which is that
         //    the generated samples come from a gaussian distribution of mean, sigma.
         double crit = 1.36/Math.sqrt(n);

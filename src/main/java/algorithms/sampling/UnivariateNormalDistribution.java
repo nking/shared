@@ -62,7 +62,7 @@ public class UnivariateNormalDistribution {
     }
     
     /**
-     * return a random sample of size n f a gaussian distribution that has 
+     * return a random sample of size n of a gaussian distribution that has 
      * the given mean and sigma.
      * @param mean the location parameter of the gaussian.  it's the mean.
      * @param sigma the shape parameter of the gaussian.  it's the standard deviation.
