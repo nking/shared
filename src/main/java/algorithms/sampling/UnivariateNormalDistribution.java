@@ -12,7 +12,7 @@ public class UnivariateNormalDistribution {
     
     /**
      * generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
-            normal distribution with mean=0 and covariance=1
+            normal distribution with mean=0 and variance=1
                            1             ( -(x - mu)^2 )
              f = ------------------ * exp( ----------- )
                  sigma * sqrt(2*pi)      (    2o~^2    )
@@ -20,6 +20,7 @@ public class UnivariateNormalDistribution {
                            1             ( -(x)^2 )
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
+         using the inverse CDF of the standard normal.
      * @return 
      */
     public static double[] randomSampleOfUnitStandard(int n) throws NoSuchAlgorithmException {
