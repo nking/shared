@@ -442,4 +442,63 @@ public class MiscSorterTest extends TestCase {
             }
         }
     }
+    
+    public void testMergeSortIncr() {
+        
+        double[] a1 = new double[]{10, 8, 9, 7, 6, 4, 5, 3, 2, 0, 1};
+                                 //0   1  2  3  4  5  6  7  8  9  10
+        int[] expectedI = new int[]{9, 10, 8, 7, 5, 6, 4, 3, 1, 2, 0};
+        
+        double[] expectedA = new double[]{0, 1,2,3,4,5,6, 7, 8,9, 10};
+    
+        int[] indexes = MiscSorter.mergeSortIncreasing(a1);
+     
+        double tol = 1.e-15;
+        
+        assertEquals(a1.length, indexes.length);
+        
+        double diff;
+        for (int i = 0; i < expectedA.length; ++i) {
+            diff = Math.abs(expectedA[i] - a1[i]);
+            assertTrue(diff < tol);
+            assertEquals(expectedI[i], indexes[i]);
+        }
+    }
+    
+    public void testMergeSortIncr2() {
+        
+        SecureRandom sr = new SecureRandom();
+        long seed = System.nanoTime();
+        System.out.println("testMergeSortIncr2: seed=" + seed);
+        sr.setSeed(seed);
+        
+        double tol = 1.e-15;
+        double diff;
+        int idx;
+        
+        int nTests = 100;
+        
+        for (int ii = 0; ii < nTests; ++ii) {
+            
+            int n = sr.nextInt(100) + 5;
+            double[] a1 = new double[n];
+            for (int jj = 0; jj < n; ++jj) {
+                a1[jj] = sr.nextDouble();
+            }
+            double[] orig = Arrays.copyOf(a1, a1.length);
+            
+            int[] indexes = MiscSorter.mergeSortIncreasing(a1);
+
+            assertEquals(n, indexes.length);
+
+            double prev = Double.NEGATIVE_INFINITY;
+            for (int i = 0; i < n; ++i) {
+                assertTrue(a1[i] >= prev);
+                idx = indexes[i];
+                diff = Math.abs(a1[i] - orig[idx]);
+                assertTrue(diff < tol);
+                prev = a1[i];
+            }
+        }
+    }
 }

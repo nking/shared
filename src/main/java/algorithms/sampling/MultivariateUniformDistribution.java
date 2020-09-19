@@ -40,7 +40,7 @@ public class MultivariateUniformDistribution {
     public static double[] generateUnitStandardOnNSphere(int d) 
         throws NoSuchAlgorithmException {
         
-         SecureRandom rand = SecureRandom.getInstanceStrong();
+        SecureRandom rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
