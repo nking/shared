@@ -5,6 +5,7 @@ import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
 import algorithms.misc.Standardization;
 import algorithms.optimization.GeometricMedian;
+import algorithms.util.FormatArray;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -35,37 +36,50 @@ public class MultivariateUniformDistributionTest extends TestCase {
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
+        int nTests = 1;
         int nDimensions = 5;
+        int nSamples = 10;
         boolean onSphere = true;
         
-        // a quick look at some of the stats:
-        
-        double[] u = MultivariateUniformDistribution.generateUnitStandard(
-            nDimensions, rand, onSphere);
-        
-        double[] w = new double[u.length];
-        Arrays.fill(w, 1.0);
-        
-        double[] avgAndStDev = MiscMath0.getAvgAndStDev(u);
-        
-        GeometricMedian gm = new GeometricMedian();
-        
-        GeometricMedianWeightedFunction f = new GeometricMedianWeightedFunction(
-            u, 1, w);
-        double[] init = new double[]{0};
-        double minSum = gm.newtonsThenVardiZhang(f, init);
-        double gc = init[0];
-        
-        double[] diff = new double[u.length];
-        for (int i = 0; i < u.length; ++i) {
-            diff[i] = Math.abs(u[i] - gc);
-        }
-        
-        int[] oIdx = MiscSorter.mergeSortIncreasing(diff);
-        
-        double[] avgAndStDevFromGM = MiscMath0.getAvgAndStDev(diff);
-        
-        int z = 0;
+        double[][] v = new double[nSamples][nDimensions];
+        double[] vl = new double[nSamples*nDimensions];
+            
+        for (int ii = 0; ii < nTests; ++ii) {
+
+            for (int i = 0; i < nSamples; ++i) {
+                // a quick look at some of the stats:
+                v[i] = MultivariateUniformDistribution.generateUnitStandard(
+                    nDimensions, rand, onSphere);
+                double[] avgAndStDev = MiscMath0.getAvgAndStDev(v[i]);
+                System.out.println("\nv[" + i + "]=" + FormatArray.toString(v[i], "%11.3f"));
+                System.out.println("   mean, stDev=" + FormatArray.toString(avgAndStDev, "%11.3f"));
+                System.arraycopy(v[i], 0, vl, i*nDimensions, nDimensions);
+            }
+            double[] avgAndStDev = MiscMath0.getAvgAndStDev(vl);
+            System.out.println("all: mean, stDev=" + FormatArray.toString(avgAndStDev, "%11.3f"));
+
+            double[] w = new double[nDimensions];
+            Arrays.fill(w, 1.0);
+            double[] init = new double[nDimensions];
+
+            GeometricMedian gm = new GeometricMedian();
+            GeometricMedianWeightedFunction f = new GeometricMedianWeightedFunction(
+                vl, nDimensions, w);
+            
+            double minSum = gm.newtonsThenVardiZhang(f, init);
+
+            double[] diff = f.calculateDifferences(init);
+
+            int[] oIdx = MiscSorter.mergeSortIncreasing(diff);
+
+            double[] avgAndStDevFromGM = MiscMath0.getAvgAndStDev(diff);
+
+            System.out.println("g.m.=" + FormatArray.toString(init, "%11.3f"));
+            System.out.printf("mean diff = %11.3f, stdev diff = %11.3f, minSum=%11.3f\n",
+                    avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
+          
+
+            int z = 0;
         /*
         "Multivariate tests of uniformity"
         2015, Yang & Modarres, DOI 10.1007/s00362-015-0715-x
@@ -86,6 +100,8 @@ public class MultivariateUniformDistributionTest extends TestCase {
         //  Ripley's K function
         
         // Kuiper test for the hypothesis of uniformity?
+        
+        }
     }
     
 }

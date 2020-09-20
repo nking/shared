@@ -114,7 +114,7 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      * @param numberOfDimensions the number of data dimensions present in
      * observations array.
      * @param multiplicities factor per point given by user, acting as a 
-     * multiplicity of each point essentially.
+     * multiplicity of each point essentially.  it's a weight vector.
        <pre>
      * the weight w_i as defined by m_i/d_i
      * </pre>
@@ -139,9 +139,9 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
                 + "numberOfDimensions");
         }
         
-        if (multiplicities.length != nData) {
+        if (multiplicities.length != nDimensions) {
             throw new IllegalArgumentException("multiplicities.length must "
-                + "equal observations.length/init.length");
+                + "equal nDimensions");
         }
         
         this.eta = Arrays.copyOf(multiplicities, nData);

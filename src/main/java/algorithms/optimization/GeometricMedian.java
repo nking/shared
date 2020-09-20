@@ -79,8 +79,10 @@ public class GeometricMedian {
      * that and updates the solution if needed.
      * 
      * @param function
-     * @param init
-     * @return 
+     *  @param init input output variable holding the estimates for the
+     * geometric median in all dimensions.
+     * @return the minimum of the sum of the squared sum of thedifferences of
+     * the observed points from the geometric median.
      */
     public double newtonsMethod2(AbstractGeometricMedianFunction function,
         double[] init) {
@@ -162,11 +164,11 @@ public class GeometricMedian {
                         
             // re-calculate any values of fDerEval that are 0, using finite difference:
             usedFiniteDifference = false;
-            System.out.printf("[gm=(%s)  f=%.3e der=(%s)]\n",
+           /* System.out.printf("[gm=(%s)  f=%.3e der=(%s)]\n",
                 AbstractGeometricMedianFunction.toString(prevGeoMedian1),
                 prevFEval,
                 AbstractGeometricMedianFunction.toString(fDerEval));
-            System.out.flush();
+            System.out.flush();*/
            
             for (i = 0; i < nDimensions; ++i) {
                 if (Math.abs(fDerEval[i]) < eps) {
@@ -178,9 +180,9 @@ public class GeometricMedian {
                 }
             }
             if (usedFiniteDifference) {
-                System.out.printf("  [finite difference=(%s)]\n",
+                /*System.out.printf("  [finite difference=(%s)]\n",
                     AbstractGeometricMedianFunction.toString(fDerEval));
-                System.out.flush();
+                System.out.flush();*/
                 
                 // stopping strategy
                 cg = 0;
@@ -222,13 +224,13 @@ public class GeometricMedian {
             fDerEval = function.der(geoMedian1);
             fEval2 = function.evaluateGeoMedianPerDimension(geoMedian1);
             
-            System.out.printf("f=%.3e  der=%s\n  => gm=(%s)\n  prevf=%.3e %s\n  prevgm=(%s)\n",
+            /*System.out.printf("f=%.3e  der=%s\n  => gm=(%s)\n  prevf=%.3e %s\n  prevgm=(%s)\n",
                 fEval, AbstractGeometricMedianFunction.toString(fDerEval),
                 AbstractGeometricMedianFunction.toString(geoMedian1),
                 prevFEval, AbstractGeometricMedianFunction.toString(prevFEval2),
                 AbstractGeometricMedianFunction.toString(prevGeoMedian1)
                 );
-            System.out.flush();
+            System.out.flush();*/
             
             // backtrack and reduce step size.
             //  following description of backtracking in Newton's method from
@@ -304,8 +306,10 @@ public class GeometricMedian {
      *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf
      * 
      * @param function
-     * @param geoMedian
-     * @return 
+     * @param geoMedian input output variable holding the estimates for the
+     * geometric median in all dimensions.
+     * @return the minimum of the sum of the squared sum of thedifferences of
+     * the observed points from the geometric median.
      */
     public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
         double[] geoMedian) {
@@ -326,8 +330,8 @@ public class GeometricMedian {
             
             f0 = newtonsMethod2(function, geoMedian);
 
-            System.out.printf("%d) newton's f=%.7e gm=%s\n", nIter, f0, 
-                AbstractGeometricMedianFunction.toString(geoMedian));
+            //System.out.printf("%d) newton's f=%.7e gm=%s\n", nIter, f0, 
+            //    AbstractGeometricMedianFunction.toString(geoMedian));
             
             function.isMedian(geoMedian, isMedian);
 
@@ -344,10 +348,10 @@ public class GeometricMedian {
                 break;
             }
             
-            System.out.printf("  vz f=%.7e gm=%s checks=%s\n", f1, 
+            /*System.out.printf("  vz f=%.7e gm=%s checks=%s\n", f1, 
                 AbstractGeometricMedianFunction.toString(geoMedian),
                 Arrays.toString(checks));
-            System.out.flush();
+            System.out.flush();*/
             
             // stopping criteria:
             if (checks[0] && checks[1]) {
