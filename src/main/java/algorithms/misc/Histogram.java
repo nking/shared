@@ -200,6 +200,7 @@ public class Histogram {
         HistogramHolder histogram = new HistogramHolder();
         histogram.setXHist(xHist);
         histogram.setYHist(yHist);
+        histogram.setYHistFloat(yHist);
         
         return histogram;
     }

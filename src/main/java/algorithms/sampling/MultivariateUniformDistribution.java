@@ -2,6 +2,7 @@ package algorithms.sampling;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 /**
  * create random vectors uniformly distributed on or within unit standard n-dimensional
@@ -154,19 +155,29 @@ public class MultivariateUniformDistribution {
         // note: Voelker et al. 2017 demonstrate with a python library called Nengo
         //     that is freely available, but also proprietary.
        
-        // generate d dimensions individ random standard normal N(0,1)  
-        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);
-        /*double[] u = new double[d];
+        double[] u = new double[d];
+        
+        boolean useUniform = true;
+        
+        if (useUniform) {
         for (int i = 0; i < d; ++i) {
             u[i] = rand.nextDouble();
-        }*/
+        }
+        } else {
+            // generate d dimensions individ random standard normal N(0,1)  
+            u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);
+        }
         
         // then normalization of each is the sqrt(sum of squares of all)
         double norm = 0;
-        for (double v : u) {
-            norm += (v*v);
+        if (useUniform) {
+            norm = 1.;
+        } else {
+            for (double v : u) {
+                norm += (v*v);
+            }
+            norm = 1./Math.sqrt(norm);
         }
-        norm = 1./Math.sqrt(norm);
         
         if (!onSurface) {
             // to avoid bunching at the center of hypersphere

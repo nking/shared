@@ -719,12 +719,16 @@ public class UnivariateDistance {
     }
   
     public static class DCov {
-        double covsq;
-        double d;
+        public double covsq;
+        public double d;
         int[] indexes;
         double[] sortedX;
         double[] sortedY;
         double[] dcov;
+        
+        public double[] getDCov() {
+            return dcov;
+        }
         
         @Override
         public String toString() {
@@ -749,10 +753,10 @@ public class UnivariateDistance {
     }
   
     public static class DCor {
-        DCov covXYSq;
-        DCov covXXSq;
-        DCov covYYSq;
-        double corSq;
+        public DCov covXYSq;
+        public DCov covXXSq;
+        public DCov covYYSq;
+        public double corSq;
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

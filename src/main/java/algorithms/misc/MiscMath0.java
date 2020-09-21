@@ -261,6 +261,16 @@ public class MiscMath0 {
         }
         return min;
     }
+    
+    public static double findMin(double[] a) {
+        double min = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < a.length; i++) {
+            if ((a[i] < min) && !Double.isInfinite(a[i]) && !Double.isNaN(a[i])) {
+                min = a[i];
+            }
+        }
+        return min;
+    }
 
     public static int findMin(int[] a) {
         int min = Integer.MAX_VALUE;
@@ -342,6 +352,16 @@ public class MiscMath0 {
      */
     public static float findMax(float[] a) {
         float max = Float.NEGATIVE_INFINITY;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] > max) {
+                max = a[i];
+            }
+        }
+        return max;
+    }
+    
+    public static double findMax(double[] a) {
+        double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
             if (a[i] > max) {
                 max = a[i];

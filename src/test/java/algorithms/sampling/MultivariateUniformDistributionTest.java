@@ -1,11 +1,17 @@
 package algorithms.sampling;
 
 import algorithms.correlation.DistanceTest;
+import algorithms.correlation.UnivariateDistance;
+import static algorithms.correlation.UnivariateDistance._univariateCovariance;
+import algorithms.misc.Frequency;
+import algorithms.misc.Histogram;
+import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
 import algorithms.misc.Standardization;
 import algorithms.optimization.GeometricMedian;
 import algorithms.util.FormatArray;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -24,7 +30,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
         super(testName);
     }
     
-    public void test0() throws NoSuchAlgorithmException {
+    public void test0() throws NoSuchAlgorithmException, IOException {
         
         System.out.println("test0");
         
@@ -38,8 +44,8 @@ public class MultivariateUniformDistributionTest extends TestCase {
         
         int nTests = 1;
         int nDimensions = 5;
-        int nSamples = 10;
-        boolean onSphere = true;
+        int nSamples = 1000;
+        boolean onSurface = true;
         
         double[][] v = new double[nSamples][nDimensions];
         double[] vl = new double[nSamples*nDimensions];
@@ -48,8 +54,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
 
             for (int i = 0; i < nSamples; ++i) {
                 // a quick look at some of the stats:
-                v[i] = MultivariateUniformDistribution.generateUnitStandard(
-                    nDimensions, rand, onSphere);
+                v[i] = MultivariateUniformDistribution.generateUnitStandard(nDimensions, rand, onSurface);
                 double[] avgAndStDev = MiscMath0.getAvgAndStDev(v[i]);
                 System.out.println("\nv[" + i + "]=" + FormatArray.toString(v[i], "%11.3f"));
                 System.out.println("   mean, stDev=" + FormatArray.toString(avgAndStDev, "%11.3f"));
@@ -73,12 +78,37 @@ public class MultivariateUniformDistributionTest extends TestCase {
             int[] oIdx = MiscSorter.mergeSortIncreasing(diff);
 
             double[] avgAndStDevFromGM = MiscMath0.getAvgAndStDev(diff);
+            
+            HistogramHolder h = Histogram.createSimpleHistogram(vl, 0.1, -1.1, 1.1);
+            String str = h.plotHistogram("onSphere=" + onSurface, "hist");
+            h = Histogram.createSimpleHistogram(diff, 0.1, -1.1, 1.1);
+            str = h.plotHistogram("diff,onSphere=" + onSurface, "diff_hist");
 
+            
             System.out.println("g.m.=" + FormatArray.toString(init, "%11.3f"));
             System.out.printf("mean diff = %11.3f, stdev diff = %11.3f, minSum=%11.3f\n",
-                    avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
+                avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
           
-
+            double min, max, binSz;
+            double[] ww = new double[vl.length];
+            Arrays.fill(ww, 0.5);
+            UnivariateDistance.DCov dcov;
+            UnivariateDistance.DCor dcor;
+            
+            dcor = UnivariateDistance.fastDcor(
+                Arrays.copyOf(vl, vl.length/2),
+                Arrays.copyOfRange(vl, vl.length/2, vl.length));
+            System.out.println("correlation within points=" + Math.sqrt(dcor.corSq));
+            
+            dcov = UnivariateDistance._univariateCovariance(
+                Arrays.copyOf(vl, vl.length/2),
+                Arrays.copyOfRange(vl, vl.length/2, vl.length));
+            min = MiscMath0.findMin(dcov.getDCov());
+            max = MiscMath0.findMax(dcov.getDCov());
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.getDCov(), binSz, min, max);
+            str = h.plotHistogram("XX dist,onSphere=" + onSurface, "dist_hist");
+            
             int z = 0;
         /*
         "Multivariate tests of uniformity"

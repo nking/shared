@@ -316,6 +316,16 @@ public class HistogramHolder {
     public void setYHistFloat(float[] yHistFloat) {
         this.yHistFloat = yHistFloat;
     }
+    
+    /**
+     * @param yHistInt the yHistFloat to set
+     */
+    public void setYHistFloat(int[] yHistInt) {
+        this.yHistFloat = new float[yHistInt.length];
+        for (int i = 0; i < yHistInt.length; ++i) {
+            yHistFloat[i] = yHistInt[i];
+        }
+    }
 
     /**
      * @param yErrors the yErrors to set
