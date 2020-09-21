@@ -157,9 +157,9 @@ public class MultivariateUniformDistribution {
        
         double[] u = new double[d];
         
-        boolean useUniform = true;
+        boolean useGaussian = true;
         
-        if (useUniform) {
+        if (!useGaussian) {
         for (int i = 0; i < d; ++i) {
             u[i] = rand.nextDouble();
         }
@@ -170,7 +170,7 @@ public class MultivariateUniformDistribution {
         
         // then normalization of each is the sqrt(sum of squares of all)
         double norm = 0;
-        if (useUniform) {
+        if (!useGaussian) {
             norm = 1.;
         } else {
             for (double v : u) {
