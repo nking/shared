@@ -103,11 +103,11 @@ public class MultivariateUniformDistributionTest extends TestCase {
             dcov = UnivariateDistance._univariateCovariance(
                 Arrays.copyOf(vl, vl.length/2),
                 Arrays.copyOfRange(vl, vl.length/2, vl.length));
-            min = MiscMath0.findMin(dcov.getDCov());
-            max = MiscMath0.findMax(dcov.getDCov());
+            min = MiscMath0.findMin(dcov.yDotDot);
+            max = MiscMath0.findMax(dcov.yDotDot);
             binSz = (max - min)/20.;
-            h = Histogram.createSimpleHistogram(dcov.getDCov(), binSz, min, max);
-            str = h.plotHistogram("XX dist,onSphere=" + onSurface, "dist_hist");
+            h = Histogram.createSimpleHistogram(dcov.yDotDot, binSz, min, max);
+            str = h.plotHistogram("YY cumulated dist,onSphere=" + onSurface, "dist_hist");
             
             int z = 0;
         /*

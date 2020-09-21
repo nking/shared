@@ -626,7 +626,9 @@ public class UnivariateDistance {
                     } else {
                         idx[idx_s - 1][k - 1] = idx2;
                         st2++;
-                        // similar to iv3 in method univariateCovariance2):
+                        // d[] here is similar to iv3 in method fastDCov
+                        //   which is the paper's Appendix Matlab code.
+                        // iv3(j) = summation_{i<j,y_i<y_j}( y_i )
                         d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]); 
                     } // end if-else
                 } // end while
@@ -668,7 +670,7 @@ public class UnivariateDistance {
         }
 
         DCov dcov = new DCov();
-        dcov.dcov = sortedD;
+        dcov.yDotDot = sortedD;
         dcov.indexes = indexes;
         dcov.sortedX = sortedX;
         dcov.sortedY = sortedY;
@@ -724,11 +726,14 @@ public class UnivariateDistance {
         int[] indexes;
         double[] sortedX;
         double[] sortedY;
-        double[] dcov;
         
-        public double[] getDCov() {
-            return dcov;
-        }
+        /**
+         * this is b.. of eqn (2) of the paper.
+         * b_.. = summation_{i:1,n}( b_i )
+         * where b_i = summation_{j:1,n}( b_i_j )
+         * where b_i_j = |y_i - y_j|_q
+         */
+        public double[] yDotDot;
         
         @Override
         public String toString() {
@@ -742,8 +747,8 @@ public class UnivariateDistance {
             if (sortedY != null) {
                 sb.append("sortedY=").append(Arrays.toString(sortedY)).append("\n");
             }
-            if (dcov != null) {
-                sb.append("dcov=").append(Arrays.toString(dcov)).append("\n");
+            if (yDotDot != null) {
+                sb.append("dcov=").append(Arrays.toString(yDotDot)).append("\n");
             }
             sb.append("d=").append(d).append("\n");
             sb.append("covsq=").append(covsq).append("\n");
