@@ -3,6 +3,7 @@ package algorithms.correlation;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
+import algorithms.util.FormatArray;
 import java.util.Arrays;
 
 /**
@@ -43,6 +44,7 @@ public class UnivariateDistance {
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
+     * https://arxiv.org/pdf/1810.11332.pdf
      * 
      * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
      * the same as the number in y.
@@ -64,7 +66,7 @@ public class UnivariateDistance {
         }
         
         int n = x.length;
-        
+    
         x = Arrays.copyOf(x, x.length);
         y = Arrays.copyOf(y, y.length);
         
@@ -124,10 +126,14 @@ public class UnivariateDistance {
         //% iv1, iv2, iv3, iv4 are used to store sum of weights
         //% On output, for 1 ≤ j ≤ n
         // [n][1]
-        int[] iv1 = new int[n];
-        int[] iv2 = new int[n];
-        int[] iv3 = new int[n];
-        int[] iv4 = new int[n];
+        // iv1(j) = summation_{i<j,y_i<y_j}( 1 )
+        // iv2(j) = summation_{i<j,y_i<y_j}( x_i )
+        // iv3(j) = summation_{i<j,y_i<y_j}( y_i )
+        // iv4(j) = summation_{i<j,y_i<y_j}( x_i * y_i )
+        double[] iv1 = new double[n];
+        double[] iv2 = new double[n];
+        double[] iv3 = new double[n];
+        double[] iv4 = new double[n];
         
         //NOTE: in matlab, the .' is transpose without conjugation
         //NOTE: in matlab, the .* is multiplying same element positions by one another
@@ -283,22 +289,28 @@ public class UnivariateDistance {
        //covsq = ( term1 + term3 ) − term2;
        double term1 = d / nsq;
        double term2 = (2./ncb) * (MatrixUtil.dot(a_x, b_y));
-       double term3A = 0;
-       double term3B = 0;
+       double a_dot_dot = 0;
+       double b_dot_dot = 0;
        for (z = 0; z < n; ++z) {
-           term3A += a_x[z];
-           term3B += b_y[z];
+           a_dot_dot += a_x[z];
+           b_dot_dot += b_y[z];
        }
-       double term3 = (term3A * term3B) / nq;
+       
+       double term3 = (a_dot_dot * b_dot_dot) / nq;
        double covsq =  (term1 + term3) - term2;
-           
+       
        DCov dcov = new DCov();
        dcov.covsq = covsq;
        dcov.d = d;
        dcov.indexes = indexes;
        dcov.sortedX = x;
        dcov.sortedY = y;
-       
+       dcov.aDotDot = a_dot_dot;
+       dcov.bDotDot = b_dot_dot;
+       dcov.ai = a_x;
+       dcov.bi = b_y;
+       dcov.iv3 = iv3;
+               
        return dcov;
     }
     
@@ -394,7 +406,7 @@ public class UnivariateDistance {
         */  
     
     /**
-     * checks the sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
+     * checks the descending sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
      * "A fast algorithm for computing distance correlation" by Chaudhuri and Hu, 2018
      * @param x
      * @param y
@@ -549,6 +561,7 @@ public class UnivariateDistance {
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
+     * https://arxiv.org/pdf/1810.11332.pdf
      * 
      * Runtime is O(n*log_2(n)) where n is the number of points in x which is
      * the same as the number in y.
@@ -588,6 +601,7 @@ public class UnivariateDistance {
         double[] csumT = new double[n + 1];
         double[] d = new double[n];
 
+        //the merge sort is descending order
         int gap, k, kf, z, j, st1, e1, st2, e2, idx1, idx2;
         int i = 1;
         int r = 1;
@@ -670,7 +684,7 @@ public class UnivariateDistance {
         }
 
         DCov dcov = new DCov();
-        dcov.yDotDot = sortedD;
+        dcov.iv3 = sortedD;
         dcov.indexes = indexes;
         dcov.sortedX = sortedX;
         dcov.sortedY = sortedY;
@@ -709,10 +723,14 @@ public class UnivariateDistance {
         double tol = 1e-15;
         dcor.covXXSq = fastDcov(x, x);
         if (dcor.covXXSq.covsq < tol) {
+            dcor.corSq = 0;
+            System.out.println("cov(XX) is 0, so correlation is 0");
             return dcor;
         }
         dcor.covYYSq = fastDcov(y, y);
         if (dcor.covYYSq.covsq < tol) {
+            dcor.corSq = 0;
+            System.out.println("cov(YY) is 0, so correlation is 0");
             return dcor;
         }
         dcor.covXYSq = fastDcov(x, y);
@@ -728,31 +746,66 @@ public class UnivariateDistance {
         double[] sortedY;
         
         /**
+         * this is a.. of eqn (2) of the paper.
+         * a_.. = summation_{i:1,n}( a_i )
+         * where a_i = summation_{j:1,n}( a_i_j )
+         * where a_i_j = |x_i - x_j|_p
+         */
+        public double aDotDot;
+        
+        /**
+         * this is a_i of eqn (2) of the paper.
+         * where a_i = summation_{j:1,n}( a_i_j )
+         * where a_i_j = |x_i - x_j|_p
+         */
+        public double[] ai;
+        
+        /**
          * this is b.. of eqn (2) of the paper.
          * b_.. = summation_{i:1,n}( b_i )
          * where b_i = summation_{j:1,n}( b_i_j )
          * where b_i_j = |y_i - y_j|_q
          */
-        public double[] yDotDot;
+        public double bDotDot;
         
+        /**
+         * this is b_i of eqn (2) of the paper.
+         * where b_i = summation_{j:1,n}( b_i_j )
+         * where b_i_j = |y_i - y_j|_q
+         */
+        public double[] bi;
+        
+        /**
+        iv3(j) = summation_{i<j,y_i<y_j}( y_i )
+        */
+        public double[] iv3;
+                
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
+            sb.append("d=").append(d).append("\n");
+            sb.append("covsq=").append(covsq).append("\n");
             if (indexes != null) {
                 sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
             }
             if (sortedX != null) {
-                sb.append("sortedX=").append(Arrays.toString(sortedX)).append("\n");
+                sb.append("sortedX=").append(FormatArray.toString(sortedX, "%11.3f")).append("\n");
             }
             if (sortedY != null) {
-                sb.append("sortedY=").append(Arrays.toString(sortedY)).append("\n");
+                sb.append("sortedY=").append(FormatArray.toString(sortedY, "%11.3f")).append("\n");
             }
-            if (yDotDot != null) {
-                sb.append("dcov=").append(Arrays.toString(yDotDot)).append("\n");
+            if (ai != null) {
+                sb.append("ai=").append(FormatArray.toString(ai, "%11.3f")).append("\n");
+                sb.append("a..=").append(aDotDot).append("\n");
             }
-            sb.append("d=").append(d).append("\n");
-            sb.append("covsq=").append(covsq).append("\n");
-            
+            if (bi != null) {
+                sb.append("bi=").append(FormatArray.toString(bi, "%11.3f")).append("\n");
+                sb.append("b..=").append(bDotDot).append("\n");
+            }
+            if (iv3 != null) {
+                sb.append("iv3=").append(Arrays.toString(iv3)).append("\n");
+            }
+                        
             return sb.toString();
         }
     }
@@ -768,12 +821,15 @@ public class UnivariateDistance {
             sb.append("corSq=").append(corSq).append("\n");
             if (covXYSq != null) {
                 sb.append("covXYSq: ").append(covXYSq.toString());
+                sb.append("\n");
             }
             if (covXXSq != null) {
                 sb.append("covXXSq: ").append(covXXSq.toString());
+                sb.append("\n");
             }
             if (covYYSq != null) {
                 sb.append("covYYSq: ").append(covYYSq.toString());
+                sb.append("\n");
             }            
             return sb.toString();
         }

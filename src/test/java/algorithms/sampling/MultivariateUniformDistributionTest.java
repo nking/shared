@@ -1,14 +1,10 @@
 package algorithms.sampling;
 
-import algorithms.correlation.DistanceTest;
 import algorithms.correlation.UnivariateDistance;
-import static algorithms.correlation.UnivariateDistance._univariateCovariance;
-import algorithms.misc.Frequency;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
-import algorithms.misc.Standardization;
 import algorithms.optimization.GeometricMedian;
 import algorithms.util.FormatArray;
 import java.io.IOException;
@@ -16,8 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import junit.framework.TestCase;
-import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
-import thirdparty.dlib.optimization.GeometricMedianUnweightedFunction;
 import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 
 /**
@@ -44,7 +38,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
         
         int nTests = 1;
         int nDimensions = 5;
-        int nSamples = 1000;
+        int nSamples = 100;
         boolean onSurface = true;
         
         double[][] v = new double[nSamples][nDimensions];
@@ -100,13 +94,13 @@ public class MultivariateUniformDistributionTest extends TestCase {
                 Arrays.copyOfRange(vl, vl.length/2, vl.length));
             System.out.println("correlation within points=" + Math.sqrt(dcor.corSq));
             
-            dcov = UnivariateDistance._univariateCovariance(
+            dcov = UnivariateDistance.fastDcov(
                 Arrays.copyOf(vl, vl.length/2),
                 Arrays.copyOfRange(vl, vl.length/2, vl.length));
-            min = MiscMath0.findMin(dcov.yDotDot);
-            max = MiscMath0.findMax(dcov.yDotDot);
+            min = MiscMath0.findMin(dcov.bi);
+            max = MiscMath0.findMax(dcov.bi);
             binSz = (max - min)/20.;
-            h = Histogram.createSimpleHistogram(dcov.yDotDot, binSz, min, max);
+            h = Histogram.createSimpleHistogram(dcov.bi, binSz, min, max);
             str = h.plotHistogram("YY cumulated dist,onSphere=" + onSurface, "dist_hist");
             
             int z = 0;
