@@ -138,8 +138,11 @@ public class DistanceTest extends TestCase {
         double[] eX = new double[]{3, 3, 4, 5, 6, 7, 7, 8};
         double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
+        //DCov dCov = UnivariateDistance.fastDcov(x, y);
+        //System.out.println("\nfastDcov(X,Y):\n " + dCov.toString());
+        
         DCor dCor2 = UnivariateDistance.fastDcor(x, y);
-        System.out.println("fastDcor(X,Y)\n: " + dCor2.toString());
+        System.out.println("\nfastDcor(X,Y):\n " + dCor2.toString());
         
         double diff = 0;
         /*for (int i = 0; i < x.length; ++i) {
@@ -210,14 +213,7 @@ public class DistanceTest extends TestCase {
         }
         
         DCOV dc2 = BruteForceDistance.correlation1(a, b);
-        StringBuilder sb = new StringBuilder();
-            sb.append("bf dist. correlation:\n ");
-            sb.append("  dVarX=").append(dc2.dVarX).append("\n");
-            sb.append("  dVarY=").append(dc2.dVarY).append("\n");
-            sb.append("  dCovXY=").append(dc2.dCov).append("\n");
-            sb.append("  dCor=").append(dc2.cor).append("\n");
-        System.out.println(sb.toString());
-        
+        System.out.println("bf dist. correlation:\n " + dc2.toString());
         System.out.flush();
     }
 }

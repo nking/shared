@@ -189,12 +189,12 @@ public class BruteForceDistance {
         
         double invN = 1./((double)n-1.);
         
-        double dCov = invN * sXY;
-        double dVarX = invN * sXX;
-        double dVarY = invN * sYY;
+        double dCovSq = sXY;
+        double dVarXSq = sXX;
+        double dVarYSq = sYY;
                 
         //emp. dist. correlation =  sXY /(sqrt(sXX*sYY) )
-        double cor = (dVarX > 0 && dVarY > 0) ? dCov/Math.sqrt(dVarX * dVarY) : 0.;
+        double corSq = (dVarXSq > 0 && dVarYSq > 0) ? dCovSq/Math.sqrt(dVarXSq * dVarYSq) : 0.;
         
         /*
         to test indepence:
@@ -212,26 +212,35 @@ public class BruteForceDistance {
         if (log.isLoggable(LEVEL)) {
             StringBuilder sb = new StringBuilder();
             sb.append("n=").append(n).append("\n");
-            sb.append("dVarX=").append(dVarX).append("\n");
-            sb.append("dVarY=").append(dVarY).append("\n");
-            sb.append("dCovXY=").append(dCov).append("\n");
-            sb.append("dCor=").append(cor).append("\n");
+            sb.append("dVarXSq=").append(dVarXSq).append("\n");
+            sb.append("dVarYSq=").append(dVarYSq).append("\n");
+            sb.append("dCovXYSq=").append(dCovSq).append("\n");
+            sb.append("dCorSq=").append(corSq).append("\n");
             log.log(Level.INFO, sb.toString());
         }
         
         DCOV dc = new DCOV();
-        dc.cor = cor;
-        dc.dCov = dCov;
-        dc.dVarX = dVarX;
-        dc.dVarY = dVarY;
+        dc.corSq = corSq;
+        dc.dCovSq = dCovSq;
+        dc.dVarXSq = dVarXSq;
+        dc.dVarYSq = dVarYSq;
         
         return dc;
     }
     
     public static class DCOV {
-        double dCov;
-        double dVarX;
-        double dVarY;                
-        double cor;
+        double dCovSq;
+        double dVarXSq;
+        double dVarYSq;                
+        double corSq;
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("corSq=").append(corSq).append("\n");
+            sb.append("dCovSq: ").append(dCovSq).append("\n");
+            sb.append("dVarXSq: ").append(dVarXSq).append("\n");
+            sb.append("dVarYSq: ").append(dVarYSq).append("\n");
+            return sb.toString();
+        }
     }
 }

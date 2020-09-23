@@ -60,69 +60,77 @@ public class UnivariateDistance {
      * @return 
      */
     public static DCov fastDcov(double[] x, double[] y) {
-                  
+
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
         }
-        
+
         int n = x.length;
-    
+
         x = Arrays.copyOf(x, x.length);
         y = Arrays.copyOf(y, y.length);
         
+        /*
+        System.out.printf("X=%s\n", FormatArray.toString(x, "%.3f"));
+        System.out.printf("Y=%s\n", FormatArray.toString(y, "%.3f"));
+        */
+
         //"the algorithm essentially consists of two sorting steps. 
         //    First we sort X and calculate ai· for i = 1,...,n. 
         //    Then we sort Y and calculate D and all bi· for i = 1,...,n."
-                
         // x and y sorted:
         int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);
         
+        /*
+        System.out.printf("sortedX=%s\n", FormatArray.toString(x, "%.3f"));
+        System.out.printf("sortedY=%s\n", FormatArray.toString(y, "%.3f"));
+        System.out.printf("indexes=%s\n", Arrays.toString(indexes));
+        System.out.println("//v = [ x  y  x.∗y ];  [n][3]");
+        System.out.println("//csumv is cumulative sum of v along columns; [n + 1][3]");
+        */
+
         double[] si = MiscMath0.cumulativeSum(x);
-        assert(si.length == n);
-        
+        assert (si.length == n);
+
         double s = si[n - 1];
-        
+
         //NOTE: in matlab, the .' is transpose without conjugation
         //NOTE: in matlab, the .* is multiplying same element positions by one another
         //NOTE: in matlab, vector .' * vector is the outer product
-        
         //%a_x is the vector of row sums of distance matrix of x
         //a_x = (−(n −2 ): 2: n ) . ’ . ∗ x + ( s − 2∗ s i ) ;
         //    a_i= (2*i − n)*x_i + (s_n − 2*s_i).
         double[] a_x = new double[n];
         for (int i = 1; i <= n; ++i) {
-            a_x[i-1] = ((2.*i - n) * x[i-1]) + (s - 2.*si[i-1]);
+            a_x[i - 1] = ((2. * i - n) * x[i - 1]) + (s - 2. * si[i - 1]);
         }
-        
+
         //%Compute Frobenius inner product between the
         //%distance matrices while finding indexes corresponding
         //%to sorted y using merge−sort.
-        
         //%Weight vectors for building the 1st term in Eqn (9)
-        //v = [ x y x.∗y ];
+        //v = [ x y x.∗y ];  [n][3]
         //nw = size( v, 2 );
-        
         //   [ x y x .∗ y ] is column 0 = x, column 1 = y, column 2 = x.*y
         //   matlab .* is multiplying same element positions by one another
-        
         int nw = 3;
-        
+
         double[][] v = new double[n][nw];
         for (int row = 0; row < n; ++row) {
             v[row][0] = x[row];
             v[row][1] = y[row];
-            v[row][2] = x[row]*y[row];
+            v[row][2] = x[row] * y[row];
         }
-        
+
         //% The columns of idx are buffers to store sort indices and output buffer
         //%of merge-sort
         //%we alternate between them and avoid uneccessary copying
         int[][] idx = new int[n][2];
         for (int i = 0; i < n; ++i) {
             idx[i] = new int[2];
-            idx[i][0] = i+1;
+            idx[i][0] = i + 1;
         }
-        
+
         //% iv1, iv2, iv3, iv4 are used to store sum of weights
         //% On output, for 1 ≤ j ≤ n
         // [n][1]
@@ -134,184 +142,232 @@ public class UnivariateDistance {
         double[] iv2 = new double[n];
         double[] iv3 = new double[n];
         double[] iv4 = new double[n];
-        
+
         //NOTE: in matlab, the .' is transpose without conjugation
         //NOTE: in matlab, the .* is multiplying same element positions by one another
         //NOTE: in matlab, vector .' * vector is the outer product
-        
         int i, j, k, kf, st1, st2, e1, e2, idx1, idx2, gap, z, zz;
         int[] idx_r = new int[n];
-        double[][] csumv = new double[n+1][nw];
+        double[][] csumv = new double[n + 1][nw];
         double[][] tempv = new double[n][nw];
-        for (i = 0; i < n; ++i){
+        for (i = 0; i < n; ++i) {
             tempv[i] = new double[nw];
             csumv[i] = new double[nw];
         }
         csumv[n] = new double[nw];
         double[][] tempcs;
-                         
+
         //% The merge sort loop .
         i = 1;
-        int r = 1; 
+        int r = 1;
         int idx_s = 2;
         while (i < n) {
-           gap = 2*i; 
-           k = 0;
-           
-           //idx_r = idx(:, r);
-           for (z = 0; z < idx.length; ++z) {
-               idx_r[z] = idx[z][r-1];
-           }
-           
-           // csumv = [ zeros(1, nw); 
-           // cumsum( v(idx_r, :) ) ] ;
-           
-           // dimensions: row0:  nw columns
-           //             n rows of nw columns
-           for (z = 0; z < n; ++z) {
-               for (zz = 0; zz < nw; ++zz) {
-                   tempv[z][zz] = v[ idx_r[z] -1][zz];
-               }
-           }
-           //[n][nw]
-           tempcs = MiscMath0.cumulativeSumAlongColumns(tempv);
-           Arrays.fill(csumv[0], 0);
-           for (z = 0; z < n; ++z) {
-               for (zz = 0; zz < nw; ++zz) {
-                   csumv[z + 1][zz] = tempcs[z][zz];
-               }
-           }
-           
-           //for j = 1:gap:n;
-           for (j = 1; j <= n; j+=gap) {
-              st1 = j;
-              e1 = Math.min(st1 + i - 1, n);
-              st2 = j + i;
-              e2 = Math.min(st2 + i - 1, n);
-              while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
-                 k++;
-                 idx1 = idx_r[st1-1];
-                 idx2 = idx_r[st2-1];
-                 if (y[idx1-1] >= y[idx2-1]) {                 
-                    idx[k-1][idx_s-1] = idx1;
-                    st1++;
-                 } else {
-                    idx[k-1][idx_s-1] = idx2;
-                    st2++;
-                    iv1[idx2-1] += (e1 - st1 + 1);
-                    iv2[idx2-1] += (csumv[e1+1-1][0] - csumv[st1-1][0]);
-                    iv3[idx2-1] += (csumv[e1+1-1][1] - csumv[st1-1][1]);
-                    iv4[idx2-1] += (csumv[e1+1-1][2] - csumv[st1-1][2]);
-                 } // end if-else
-              } // end while
-              if (st1 <= e1) {
-                  kf = k + e1 - st1 + 1;
-                  // note: idx is int[n][2];  idx_r is int[n]
-                  //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
-                  int c = st1;
-                  for (z = (k+1); z <= kf; ++z) {
-                      idx[z-1][idx_s-1] = idx_r[c-1];
-                      c++;
-                  }
-                  k = kf;
-              } else if (st2 <= e2) {
-                  kf = k + e2 - st2 + 1;
-                  //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
-                  int c = st2;
-                  for (z = (k+1); z <= kf; ++z) {
-                      idx[z-1][idx_s-1] = idx_r[c-1];
-                      c++;
-                  }
-                  k = kf;
-              }
-           } // end for j=
-           
-           i = gap;
-           r = 3 - r; 
-           idx_s = 3 - idx_s;
-        }
-        
-       //% d is the Frobenius inner product of the distance matrices
-       // The second term of Eqn (9):
-       //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
-       //              [1][n] * [n][1] = [1][1]
-       double[] mx = MiscMath0.mean(x, 1);
-       assert(mx.length == 1);
-       double[] my = MiscMath0.mean(y, 1);
-       assert(my.length == 1);
-       double[] xz = Arrays.copyOf(x, x.length);
-       double[] yz = Arrays.copyOf(y, y.length);
-       for (z = 0; z < n; ++z) {
-           xz[z] -= mx[0];
-           yz[z] -= my[0];
-       }
-       double covtermXY = n * MatrixUtil.dot(xz, yz);
-       
-       //v is double[n][nw]; v = [ x y x.∗y ];
-       //c1 = iv1 .’ ∗ v (:, 3 );
-       //c2 = sum( iv4 );
-       //c3 = iv2 .’ ∗ y;
-       //c4 = iv3 .’ ∗ x;
-       
-       double[] v3 = new double[n];
-       double c2 = 0;
-       for (z = 0; z < n; ++z) {
-           v3[z] = v[z][2];
-           c2 += iv4[z];
-       }
-       
-       double c1 = MatrixUtil.dot(iv1, v3);
-       double c3 = MatrixUtil.dot(iv2, y);
-       double c4 = MatrixUtil.dot(iv3, x);
-       
-       // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
-       double d = (4.*( (c1 + c2) - (c3 + c4))) - 2.*covtermXY;
-       
-       double[] b_y = _calcB(y, idx, n, r);
-      
-//System.out.printf("a_x=%s\n", Arrays.toString(a_x));
-//System.out.printf("b_y=%s\n", Arrays.toString(b_y));
+            gap = 2 * i;
+            k = 0;
 
-       //NOTE: minor edits to nsq, ncb, and nq following equation 2.5 of
-       // “A Statistically And Numerically Efficient Independence Test Based On 
-       // Random Projections And Distance Covariance”, 
-       // 2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
-       
-       //%covsq equals V^2_n(x, y) the square of the distance covariance
-       //%between x and y
-       double nsq = n*(n-3.);//(double)(n*n);
-       double ncb = nsq*(n-2.);//nsq*(double)(n);
-       double nq = ncb*(n-1.);//ncb*(double)(n);
-       //Eqn (3):
-       //term1 = d / nsq;
-       //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
-       //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
-       //covsq = ( term1 + term3 ) − term2;
-       double term1 = d / nsq;
-       double term2 = (2./ncb) * (MatrixUtil.dot(a_x, b_y));
-       double a_dot_dot = 0;
-       double b_dot_dot = 0;
-       for (z = 0; z < n; ++z) {
-           a_dot_dot += a_x[z];
-           b_dot_dot += b_y[z];
-       }
-       
-       double term3 = (a_dot_dot * b_dot_dot) / nq;
-       double covsq =  (term1 + term3) - term2;
-       
-       DCov dcov = new DCov();
-       dcov.covsq = covsq;
-       dcov.d = d;
-       dcov.indexes = indexes;
-       dcov.sortedX = x;
-       dcov.sortedY = y;
-       dcov.aDotDot = a_dot_dot;
-       dcov.bDotDot = b_dot_dot;
-       dcov.ai = a_x;
-       dcov.bi = b_y;
-       dcov.iv3 = iv3;
-               
-       return dcov;
+            //idx_r = idx(:, r);
+            for (z = 0; z < idx.length; ++z) {
+                idx_r[z] = idx[z][r - 1];
+            }
+
+            // csumv = [ zeros(1, nw); 
+            // cumsum( v(idx_r, :) ) ] ;
+            // dimensions: row0:  nw columns
+            //             n rows of nw columns
+            //tempv [n][nw];
+            for (z = 0; z < n; ++z) {
+                for (zz = 0; zz < nw; ++zz) {
+                    tempv[z][zz] = v[idx_r[z] - 1][zz];
+                }
+            }
+            //cumulative sum along columns: tempcs [1][nw]
+            tempcs = MiscMath0.cumulativeSumAlongColumns(tempv);
+            //csumv [n+1][nw];
+            Arrays.fill(csumv[0], 0);
+            for (z = 0; z < n; ++z) {
+                for (zz = 0; zz < nw; ++zz) {
+                    csumv[z + 1][zz] = tempcs[z][zz];
+                }
+            }
+
+            /*
+            System.out.printf("\ni=%d, r=%d, gap=%d, idx_s=%d\n", i, r, gap, idx_s);
+            System.out.printf("  idx[0]=%s\n", Arrays.toString(idx[0]));
+            System.out.printf("  idx[1]=%s\n", Arrays.toString(idx[1]));
+            System.out.printf("  iv1=%s\n", FormatArray.toString(iv1, "%.3f"));
+            System.out.printf("  iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
+            System.out.printf("  iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
+            System.out.printf("  iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
+            for (z = 0; z < n + 1; ++z) {
+                System.out.printf("  csumv[%d]=%s\n", z, FormatArray.toString(csumv[z], "%.3f"));
+            }
+            */
+
+            //for j = 1:gap:n;
+            for (j = 1; j <= n; j += gap) {
+                st1 = j;
+                e1 = Math.min(st1 + i - 1, n);
+                st2 = j + i;
+                e2 = Math.min(st2 + i - 1, n);
+
+                /*
+                System.out.printf("\n**j=%d, st1=%d, e1=%d, st2=%d, e2=%d\n",
+                        j, st1, e1, st2, e2);
+                */
+
+                while ((st1 <= e1) && (st2 <= e2)) {
+                    k++;
+                    idx1 = idx_r[st1 - 1];
+                    idx2 = idx_r[st2 - 1];
+
+                    /*
+                    System.out.printf("\n****k=%d, idx1=%d, idx2=%d, st1=%d, e1=%d, st2=%d, e2=%d\n",
+                            k, idx1, idx2, st1, e1, st2, e2);
+                    System.out.printf("    idx[0]=%s\n", Arrays.toString(idx[0]));
+                    System.out.printf("    idx[1]=%s\n", Arrays.toString(idx[1]));
+                    System.out.printf("    iv1=%s\n", FormatArray.toString(iv1, "%.3f"));
+                    System.out.printf("    iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
+                    System.out.printf("    iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
+                    System.out.printf("    iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
+                    System.out.printf("    (y[%d] >= y[%d]) = %b\n", idx1 - 1, idx2 - 1, (y[idx1 - 1] >= y[idx2 - 1]));
+                    */
+
+                    if (y[idx1 - 1] >= y[idx2 - 1]) {
+                        //System.out.printf("    *idx[%d][%d] = %d\n", k - 1, idx_s - 1, idx1);
+                        idx[k - 1][idx_s - 1] = idx1;
+                        st1++;
+                    } else {
+                        //System.out.printf("    *idx[%d][%d] =%d,  INCR iv1:iv4\n", k - 1, idx_s - 1, idx2);
+                        idx[k - 1][idx_s - 1] = idx2;
+                        st2++;
+                        iv1[idx2 - 1] += (e1 - st1 + 1);
+                        iv2[idx2 - 1] += (csumv[e1 + 1 - 1][0] - csumv[st1 - 1][0]);
+                        iv3[idx2 - 1] += (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]);
+                        iv4[idx2 - 1] += (csumv[e1 + 1 - 1][2] - csumv[st1 - 1][2]);
+                    } // end if-else
+
+                    //System.out.printf("    (st1 <= e1) = %b, (st2 <= e2) = %b\n",
+                    //        (st1 <= e1), (st2 <= e2));
+
+                } // end while (( st1 <= e1 ) && ( st2 <= e2 ) )
+
+                if (st1 <= e1) {
+                    kf = k + e1 - st1 + 1;
+                    // note: idx is int[n][2];  idx_r is int[n]
+                    //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
+                    int c = st1;
+                    for (z = (k + 1); z <= kf; ++z) {
+                        idx[z - 1][idx_s - 1] = idx_r[c - 1];
+
+                        //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, \n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
+
+                        c++;
+                    }
+                    k = kf;
+                } else if (st2 <= e2) {
+                    kf = k + e2 - st2 + 1;
+                    //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
+                    int c = st2;
+                    for (z = (k + 1); z <= kf; ++z) {
+                        idx[z - 1][idx_s - 1] = idx_r[c - 1];
+
+                        //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, \n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
+
+                        c++;
+                    }
+                    k = kf;
+                }
+
+            } // end for j=
+
+            i = gap;
+            r = 3 - r;
+            idx_s = 3 - idx_s;
+        }
+
+        //% d is the Frobenius inner product of the distance matrices
+        // The second term of Eqn (9):
+        //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
+        //              [1][n] * [n][1] = [1][1]
+        double[] mx = MiscMath0.mean(x, 1);
+        assert (mx.length == 1);
+        double[] my = MiscMath0.mean(y, 1);
+        assert (my.length == 1);
+        double[] xz = Arrays.copyOf(x, x.length);
+        double[] yz = Arrays.copyOf(y, y.length);
+        for (z = 0; z < n; ++z) {
+            xz[z] -= mx[0];
+            yz[z] -= my[0];
+        }
+        double covtermXY = n * MatrixUtil.dot(xz, yz);
+
+        //v is double[n][nw]; v = [ x y x.∗y ];
+        //c1 = iv1 .’ ∗ v (:, 3 );
+        //c2 = sum( iv4 );
+        //c3 = iv2 .’ ∗ y;
+        //c4 = iv3 .’ ∗ x;
+        double[] v3 = new double[n];
+        double c2 = 0;
+        for (z = 0; z < n; ++z) {
+            v3[z] = v[z][2];
+            c2 += iv4[z];
+        }
+
+        double c1 = MatrixUtil.dot(iv1, v3);
+        double c3 = MatrixUtil.dot(iv2, y);
+        double c4 = MatrixUtil.dot(iv3, x);
+
+        // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
+        final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;
+
+        double[] b_y = _calcB(y, idx, n, r);
+
+        //NOTE: minor edits to nsq, ncb, and nq following equation 2.5 of
+        // “A Statistically And Numerically Efficient Independence Test Based On 
+        // Random Projections And Distance Covariance”, 
+        // 2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+        //%covsq equals V^2_n(x, y) the square of the distance covariance
+        //%between x and y
+        double nsq = n * (n - 3.);//(double)(n*n);
+        double ncb = nsq * (n - 2.);//nsq*(double)(n);
+        double nq = ncb * (n - 1.);//ncb*(double)(n);
+        //Eqn (3):
+        //term1 = d / nsq;
+        //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
+        //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
+        //covsq = ( term1 + term3 ) − term2;
+        double term1 = d / nsq;
+        double term2 = (2. / ncb) * (MatrixUtil.dot(a_x, b_y));
+        double a_dot_dot = 0;
+        double b_dot_dot = 0;
+        for (z = 0; z < n; ++z) {
+            a_dot_dot += a_x[z];
+            b_dot_dot += b_y[z];
+        }
+
+        double term3 = (a_dot_dot * b_dot_dot) / nq;
+        double covsq = (term1 + term3) - term2;
+        
+        /*       
+        System.out.printf("iv1=%s\n", FormatArray.toString(iv1, "%.3f"));
+        System.out.printf("iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
+        System.out.printf("iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
+        System.out.printf("iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
+        */
+                    
+        DCov dcov = new DCov();
+        dcov.covsq = covsq;
+        dcov.d = d;
+        dcov.indexes = indexes;
+        dcov.sortedX = x;
+        dcov.sortedY = y;
+        dcov.aDotDot = a_dot_dot;
+        dcov.bDotDot = b_dot_dot;
+        dcov.ai = a_x;
+        dcov.bi = b_y;
+        dcov.iv3 = iv3;
+
+        return dcov;
     }
     
     /**
@@ -518,65 +574,80 @@ public class UnivariateDistance {
     }
 
     private static double[] _calcB(double[] y, int[][] idx, int n, int r) {
-        
-       double[] ySorted = new double[n];
 
-       //% b_y is the vector of row sums of distance matrix of y
-       // ySorted = y ( idx( n : −1: 1, r ) );
-       int c = 0;
-       int z;
-       for (z = n; z >=1; z--) {
-           ySorted[c] = y[ idx[z-1][r-1] -1];
-           c++;
-       }
-       
-       //si = cumsum( ySorted );
-       double[] si = MiscMath0.cumulativeSum(ySorted);
-       double s = si[n-1];
+        /*
+        System.out.printf("\n\n*_calcB\n");
+        System.out.printf("idx[0]=%s\n", Arrays.toString(idx[0]));
+        System.out.printf("idx[1]=%s\n", Arrays.toString(idx[1]));
+        */
+                    
+        double[] ySorted = new double[n];
 
-       //b_y = zeros( n , 1 );
-       double[] b_y = new double[n];
+        //% b_y is the vector of row sums of distance matrix of y
+        // ySorted = y ( idx( n : −1: 1, r ) );
+        int c = 0;
+        int z;
 
-       //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
-       c = 0;
-       double cc = -(n-2.);
-       for (z = n; z >=1; z--) {
-           b_y[ idx[z-1][r-1] -1] = (cc * ySorted[c]) + (s - (2.*si[c]));
-           c++;
-           cc += 2;
-       }
+        for (z = n; z >= 1; z--) {
+            ySorted[c] = y[idx[z - 1][r - 1] - 1];
+            //System.out.printf("ySorted[%d]=y[idx[%d][%d]-1]=y[%d]=%.3f\n",
+            //        c, z - 1, r - 1, idx[z - 1][r - 1] - 1, y[idx[z - 1][r - 1] - 1]);
+            c++;
+        }
 
-       return b_y;
+        //si = cumsum( ySorted );
+        double[] si = MiscMath0.cumulativeSum(ySorted);
+        double s = si[n - 1];
+
+        //b_y = zeros( n , 1 );
+        double[] b_y = new double[n];
+
+        //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
+        c = 0;
+        double cc = -(n - 2.);
+        for (z = n; z >= 1; z--) {
+            b_y[idx[z - 1][r - 1] - 1] = (cc * ySorted[c]) + (s - (2. * si[c]));
+
+            /*
+            System.out.printf("(s - (2.*si[%d])) = (%.3f - (2. * %.3f)) = %.3f\n",
+                    c, s, si[c], (s - (2. * si[c])));
+            System.out.printf("b_y[idx[%d][%d]-1] => b_y[%d] = (%.0f * ySorted[%d]) + (s - (2.*si[%d]) = %.3f\n",
+                    z - 1, r - 1, idx[z - 1][r - 1] - 1, cc, c, c, (cc * ySorted[c]) + (s - (2. * si[c])));
+            */
+
+            c++;
+            cc += 2;
+        }
+
+        return b_y;
     }
-    
+
     /**
      * calculates the distance covariance between univariate vectors x and y as
-     * "a weighted  distance between the joint characteristic function and 
-     * the product of marginal distributions; 
-     * it is 0 if and only if two random vectors  and  are independent. 
-     * This measure can detect the presence of a dependence structure when the 
-     * sample size is large enough."
-     * 
-     * This algorithm is an implementation/port of the Matlab code from
-     * "A fast algorithm for computing distance correlation"
-     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
-     * Volume 135, July 2019, Pages 15-24.
-     * https://arxiv.org/pdf/1810.11332.pdf
-     * 
+     * "a weighted distance between the joint characteristic function and the
+     * product of marginal distributions; it is 0 if and only if two random
+     * vectors and are independent. This measure can detect the presence of a
+     * dependence structure when the sample size is large enough."
+     *
+     * This algorithm is an implementation/port of the Matlab code from "A fast
+     * algorithm for computing distance correlation" 2019 Chaudhuri & Hu,
+     * Computational Statistics And Data Analysis, Volume 135, July 2019, Pages
+     * 15-24. https://arxiv.org/pdf/1810.11332.pdf
+     *
      * Runtime is O(n*log_2(n)) where n is the number of points in x which is
      * the same as the number in y.
-     * 
+     *
      * NOTE: redundant points are possible in the rankings as "ties" are handled
-     * in the algorithm.  This is one advantage over the similar
-     * algorithm of Huo and Szekely (2016).
-     * 
+     * in the algorithm. This is one advantage over the similar algorithm of Huo
+     * and Szekely (2016).
+     *
      * NOTE: that this method follows Algorithm 1 in the paper which stops at
-     * the intermediate steps to show the merge steps clearly.
-     * The complete algorithm is present as fastDcov.
-     * 
+     * the intermediate steps to show the merge steps clearly. The complete
+     * algorithm is present as fastDcov.
+     *
      * @param x
      * @param y
-     * @return 
+     * @return
      */
     public static DCov _univariateCovariance(double[] x, double[] y) {
 
@@ -643,7 +714,7 @@ public class UnivariateDistance {
                         // d[] here is similar to iv3 in method fastDCov
                         //   which is the paper's Appendix Matlab code.
                         // iv3(j) = summation_{i<j,y_i<y_j}( y_i )
-                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]); 
+                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]);
                     } // end if-else
                 } // end while
                 if (st1 <= e1) {
@@ -691,7 +762,7 @@ public class UnivariateDistance {
 
         return dcov;
     }
-    
+
     /**
      * calculates the distance covariance between univariate vectors x and y as
      * "a weighted  distance between the joint characteristic function and 
@@ -789,17 +860,17 @@ public class UnivariateDistance {
                 sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
             }
             if (sortedX != null) {
-                sb.append("sortedX=").append(FormatArray.toString(sortedX, "%11.3f")).append("\n");
+                sb.append("sortedX=").append(FormatArray.toString(sortedX, "%.3f")).append("\n");
             }
             if (sortedY != null) {
-                sb.append("sortedY=").append(FormatArray.toString(sortedY, "%11.3f")).append("\n");
+                sb.append("sortedY=").append(FormatArray.toString(sortedY, "%.3f")).append("\n");
             }
             if (ai != null) {
-                sb.append("ai=").append(FormatArray.toString(ai, "%11.3f")).append("\n");
+                sb.append("ai=").append(FormatArray.toString(ai, "%.3f")).append("\n");
                 sb.append("a..=").append(aDotDot).append("\n");
             }
             if (bi != null) {
-                sb.append("bi=").append(FormatArray.toString(bi, "%11.3f")).append("\n");
+                sb.append("bi=").append(FormatArray.toString(bi, "%.3f")).append("\n");
                 sb.append("b..=").append(bDotDot).append("\n");
             }
             if (iv3 != null) {

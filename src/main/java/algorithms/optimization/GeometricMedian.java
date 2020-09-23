@@ -297,8 +297,8 @@ public class GeometricMedian {
     }
     
     /**
-     * run newtonsMethod2 to completion and use Vardi Zhang (2000) algorithm
-     * to update argmin X if it's a point in obs.
+     * this methods uses newtonsMethod2 to completion and then uses the 
+     * Vardi Zhang (2000) algorithm to update argmin X if it's a point in obs.
      *
      * Vardi & Zhang 2000:
      * "The multivariate L1-median and associated data depth",
@@ -308,7 +308,7 @@ public class GeometricMedian {
      * @param function
      * @param geoMedian input output variable holding the estimates for the
      * geometric median in all dimensions.
-     * @return the minimum of the sum of the squared sum of thedifferences of
+     * @return the minimum of the sum of the squared sum of the differences of
      * the observed points from the geometric median.
      */
     public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
@@ -343,6 +343,8 @@ public class GeometricMedian {
             diffF = f1 - f0;
             if (!(diffF <= 0.) ) {
                 // NOTE: if this happens, I may have a bug in vardiZhang
+                System.err.println("check for an error in impl of method " +
+                    function.getClass().getSimpleName() + ".vardiZhang");
                 f1 = f0;
                 System.arraycopy(prevGeoMedian, 0, geoMedian, 0, geoMedian.length);
                 break;

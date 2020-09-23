@@ -47,7 +47,7 @@ public class BruteForceDistanceTest extends TestCase {
                 
         dc = BruteForceDistance.correlation1(a, b);
 
-        System.out.println("dCor=" + dc.cor);
+        System.out.println("dCor:" + dc.toString());
         
     }
     
@@ -58,7 +58,7 @@ public class BruteForceDistanceTest extends TestCase {
         // unit tests from https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
         /*
 
-x = do(-1, 1, 0.1)`; 
+x = do(-1, 1, 0, 1)`; 
 y = x##2; 
 dcor=0.4913789
         
@@ -75,7 +75,7 @@ dcor=0.4913789
         
         dc = BruteForceDistance.correlation1(a, b);
 
-        System.out.println("dCor=" + dc.cor);
+        System.out.println("dCor:" + dc.toString());
         
     }
 }
