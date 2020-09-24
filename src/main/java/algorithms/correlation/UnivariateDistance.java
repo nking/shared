@@ -57,7 +57,7 @@ public class UnivariateDistance {
      * 
      * @param x sample of univariate observations of a variable
      * @param y second sample of univariate observations (can be of another variable)
-     * @return 
+     * @return covariance of X and Y and intermediate data.  
      */
     public static DCov fastDcov(double[] x, double[] y) {
 
@@ -353,6 +353,19 @@ public class UnivariateDistance {
         System.out.printf("iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
         System.out.printf("iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
         System.out.printf("iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
+        */
+        
+        /*
+        TODO: add test here:
+        
+        Distance Based Independence Tests in Secion 2.3 of paper
+        "A Statistically and Numerically Efficient Independence Test Based On
+        Random Projections and Distance Covariance"
+        2017, Huang and Hu
+        
+        (n * covsq / term3) > (InverseNormalCDF(1 - (alpha_s/2))^2
+             where alpha_s is .gt. 0 and .lt. 0.215
+             e.g. alpha_s = 0.05        
         */
                     
         DCov dcov = new DCov();
@@ -787,7 +800,9 @@ public class UnivariateDistance {
      * 
      * @param x sample of univariate observations of a variable
      * @param y second sample of univariate observations (can be of another variable)
-     * @return 
+     * @return the distance correlation of X and Y.  also returns intermediate data.
+     * NOTE that the distance correlation is exactly zero if and only if two 
+     * random variables are independent.
      */
     public static DCor fastDcor(double[] x, double[] y) {
         DCor dcor = new DCor();

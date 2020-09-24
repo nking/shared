@@ -142,7 +142,7 @@ public class BruteForceDistance {
      * nRows for Y, though the number of dimensions, that is nCols can be different.
      * @param Y data in double array format with number of rows n being same as
      * nRows for X, though the number of dimensions, that is nCols can be different.
-     * @return distance correlation.
+     * @return returns distance correlation and intermediate data.
      * (i) If E(|X|p + |Y|q) .lt. infinity, then 0 .lte. R .lte. 1, 
      *     and R(X, Y ) = 0 if and only if X and Y are independent.
        (ii) 0 .lte. R_n .lte. 1.
