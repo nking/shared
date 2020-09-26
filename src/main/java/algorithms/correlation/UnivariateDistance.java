@@ -378,7 +378,10 @@ public class UnivariateDistance {
         dcov.bDotDot = b_dot_dot;
         dcov.ai = a_x;
         dcov.bi = b_y;
+        dcov.iv1 = iv1;
+        dcov.iv2 = iv2;
         dcov.iv3 = iv3;
+        dcov.iv4 = iv4;
 
         return dcov;
     }
@@ -862,9 +865,24 @@ public class UnivariateDistance {
         public double[] bi;
         
         /**
+        iv1(j) = summation_{i<j,y_i<y_j}( 1 )
+        */
+        public double[] iv1;
+        
+        /**
+        iv2(j) = summation_{i<j,y_i<y_j}( x_i )
+        */
+        public double[] iv2;
+        
+        /**
         iv3(j) = summation_{i<j,y_i<y_j}( y_i )
         */
         public double[] iv3;
+        
+        /**
+        iv4(j) = summation_{i<j,y_i<y_j}( x_i * y_i )
+        */
+        public double[] iv4;
                 
         @Override
         public String toString() {
@@ -888,8 +906,31 @@ public class UnivariateDistance {
                 sb.append("bi=").append(FormatArray.toString(bi, "%.3f")).append("\n");
                 sb.append("b..=").append(bDotDot).append("\n");
             }
+            if (iv1 != null) {
+                sb.append("iv1=").append(Arrays.toString(iv1)).append("\n");
+            }
+            if (iv2 != null) {
+                sb.append("iv2=").append(Arrays.toString(iv2)).append("\n");
+            }
             if (iv3 != null) {
                 sb.append("iv3=").append(Arrays.toString(iv3)).append("\n");
+            }
+            if (iv4 != null) {
+                sb.append("iv4=").append(Arrays.toString(iv4)).append("\n");
+            }
+                        
+            return sb.toString();
+        }
+        
+        public String toString2() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("d=").append(d).append("\n");
+            sb.append("covsq=").append(covsq).append("\n");
+            if (ai != null) {
+                sb.append("a..=").append(aDotDot).append("\n");
+            }
+            if (bi != null) {
+                sb.append("b..=").append(bDotDot).append("\n");
             }
                         
             return sb.toString();

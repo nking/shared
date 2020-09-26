@@ -587,6 +587,21 @@ public class MiscMath0 {
     }
     
     /**
+     * calculate the median and the interquartile range
+     * @param x
+     * @return 
+     */
+    public static double[] calcMedianAndIQR(double[] x) {
+        x = Arrays.copyOf(x, x.length);
+        MiscSorter.mergeSortIncreasing(x);
+        double[] r = new double[2];
+        int n = x.length;
+        r[0] = x[n/2];
+        r[1] = (x[3*n/4] - x[n/2]);
+        return r;
+    }
+    
+    /**
      * given an array of points, return the average and standard deviation from
      * the average
      * @param x

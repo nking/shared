@@ -181,7 +181,7 @@ public class HistogramHolder {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
 
         plotter.addPlot(
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
         return plotter.writeFile(outputFileNumber);
@@ -206,7 +206,7 @@ public class HistogramHolder {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
 
         plotter.addPlot(
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
         return plotter.writeFile(outputFileSuffix);
@@ -228,7 +228,7 @@ public class HistogramHolder {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
 
         plotter.addPlot(
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
         return plotter.writeFile(outputFileSuffix);
@@ -255,7 +255,7 @@ public class HistogramHolder {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
 
         plotter.addPlot(
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yLogH, xh, yLogH, label);
 
         return plotter.writeFile(outputFileSuffix);

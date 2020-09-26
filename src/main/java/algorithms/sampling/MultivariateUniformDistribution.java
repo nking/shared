@@ -57,6 +57,39 @@ public class MultivariateUniformDistribution {
      </pre>
      * Muller / Marsaglia (‘Normalized Gaussians’).
      * @param d number of dimensions.
+     * @param rand
+     * @return vector of size d
+     * @throws NoSuchAlgorithmException 
+     */
+    public static double[] generateUnitStandardOnNSphere(int d, SecureRandom rand) 
+        throws NoSuchAlgorithmException {
+        
+        return _generateUnitStandard(d+1, rand, true);
+    }
+    
+    /**
+     * generate random uniform points on an n-dimensional unit standard hyper-sphere.
+     * NOTE: the result is one sample of all dimensions.
+     <pre>
+     paper containing references:
+     "Efficiently sampling vectors and coordinates from the n-sphere and n-ball"
+    Aaron R. Voelker, Jan Gosmann, Terrence C. Stewart Centre for Theoretical Neuroscience – Technical Report
+    January 4, 2017
+     https://www.researchgate.net/profile/Aaron_Voelker/publication/312056739_Efficiently_sampling_vectors_and_coordinates_from_the_n-sphere_and_n-ball/links/586d3e1208ae6eb871bce1d6/Efficiently-sampling-vectors-and-coordinates-from-the-n-sphere-and-n-ball.pdf
+     </pre>
+     <pre>
+     from http://extremelearning.com.au/how-to-generate-uniformly-random-points-on-n-spheres-and-n-balls/
+     for both the n-sphere and the n-ball, the n signifies how many degrees 
+     of freedom it has:
+       A unit n-dimensional sphere is defined such that:
+          S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+       A unit n-dimensional ball is defined such that:
+          B^n = {x is member of the real set of dimension n : |x|.lte.1}
+       So the perimeter of a circle is a 1-sphere, 
+          and the interior of the circle (a disk) is a 2-ball.
+     </pre>
+     * Muller / Marsaglia (‘Normalized Gaussians’).
+     * @param d number of dimensions.
      * @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
@@ -69,6 +102,38 @@ public class MultivariateUniformDistribution {
         rand.setSeed(seed);
         
         return _generateUnitStandard(d+1, rand, true);
+    }
+    
+    /**
+     * generate random uniform points in an n-dimensional unit standard ball.
+     * NOTE: the result is one sample of all dimensions.
+     <pre>
+     paper containing references:
+     "Efficiently sampling vectors and coordinates from the n-sphere and n-ball"
+    Aaron R. Voelker, Jan Gosmann, Terrence C. Stewart Centre for Theoretical Neuroscience – Technical Report
+    January 4, 2017
+     https://www.researchgate.net/profile/Aaron_Voelker/publication/312056739_Efficiently_sampling_vectors_and_coordinates_from_the_n-sphere_and_n-ball/links/586d3e1208ae6eb871bce1d6/Efficiently-sampling-vectors-and-coordinates-from-the-n-sphere-and-n-ball.pdf
+     </pre>
+     <pre>
+     from http://extremelearning.com.au/how-to-generate-uniformly-random-points-on-n-spheres-and-n-balls/
+     for both the n-sphere and the n-ball, the n signifies how many degrees 
+     of freedom it has:
+       A unit n-dimensional sphere is defined such that:
+          S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+       A unit n-dimensional ball is defined such that:
+          B^n = {x is member of the real set of dimension n : |x|.lte.1}
+       So the perimeter of a circle is a 1-sphere, 
+          and the interior of the circle (a disk) is a 2-ball.
+     </pre>
+     * Muller / Marsaglia (‘Normalized Gaussians’).
+     * @param d number of dimensions.
+     * @return vector of size d
+     * @throws NoSuchAlgorithmException 
+     */
+    public static double[] generateUnitStandardInNBall(int d, SecureRandom rand) 
+        throws NoSuchAlgorithmException {
+        
+        return _generateUnitStandard(d, rand, false);
     }
     
     /**
