@@ -34,6 +34,98 @@ public class MultivariateUniformDistribution {
             </pre>
     */
     
+    /*
+    https://en.wikipedia.org/wiki/N-sphere#Volume_and_surface_area
+    In general, the volume of the n-ball in n-dimensional Euclidean space, and 
+    the surface area of the n-sphere in (n + 1)-dimensional Euclidean space, 
+    of radius R, are proportional to the nth power of the radius, R (with 
+    different constants of proportionality that vary with n). 
+    
+    let R = radius.
+    the volume of the n-ball:
+        V_n(R) = V_n*R^n
+        for unit-radius: V_n = V_n(1)
+    the surface area of the n-sphere
+        S_n(R) = S_n*R^n 
+        for unit-radius: S_n = S_n(1)
+    
+    Hausdorff measure is an outer measure, it is the number of points in a set.
+    
+    n general, the volume, in n-dimensional Euclidean space, of the unit n-ball, 
+    is given by:
+        V_n = (pi^(n/2))/(gamma(0.5*n + 1) = (pi^(n/2))/((n/2)!)
+    
+        S_{n-1} = (2*pi^(n/2))/(gamma(0.5*n)
+    
+    S_{n+1} = 2*pi*V_n
+    
+    coordinate system in an n-dimensional Euclidean space have 
+        a radial coordinate r, 
+        and n − 1 angular coordinates φ1, φ2, ... φn−1, 
+            where the angles φ1, φ2, ... φn−2 range over [0,π] radians 
+            (or over [0,180] degrees) 
+            and φn−1 ranges over [0,2π) radians (or over [0,360) degrees). 
+        If xi are the Cartesian coordinates, then we may compute 
+        x1, ... xn from r, φ1, ... φn−1 with:
+            x_1 = r*cos(φ1)
+            x_2 = r*sin(φ1)*cos(φ2)
+            x_3 = r*sin(φ1)*cos(φ2)
+            ...
+            x_{n-1} = r*sin(φ1)...sin(φ_{n-2})*cos(φ_{n-1})
+            x_{n}   = r*sin(φ1)...sin(φ_{n-2})*sin(φ_{n-1})
+    
+        r = sqrt( x_{n}^2 + x_{n-1}^2 + ... x_{2}^2 + x_{1}^2 )
+    
+        φ1 = arccot( (x_1)^2 / sqrt( x_{n}^2 + x_{n-1}^2 + ... x_{2}^2 ))
+           = arccos( (x_1)^2 / sqrt( x_{n}^2 + x_{n-1}^2 + ... x_{2}^2 + x_{1}^2 ))
+    
+        φ2 = arccot( (x_2)^2 / sqrt( x_{n}^2 + x_{n-1}^2 + ... x_{3}^2 ))
+           = arccos( (x_2)^2 / sqrt( x_{n}^2 + x_{n-1}^2 + ... x_{3}^2 + x_{2}^2 ))
+        ...
+        φ_{n-2} = arccot( (x_{n-2})^2 / sqrt( x_{n}^2 + x_{n-1}^2))
+                = arccos( (x_{n-2})^2 / sqrt( (x_{n}^2 + x_{n-1}^2 + x_{n-2}^2 ))
+        φ_{n-1} = 2*arccot( (x_{n-1}^2 + sqrt( x_{n}^2 + x_{n-1}^2)) / x_n )
+                = for x_n >= 0 : arccos( (x_{n-1})^2 / sqrt( (x_{n}^2 + x_{n-1}^2 ))
+                = for x_n < 0 : 2*pi - arccos( (x_{n-1})^2 / sqrt( (x_{n}^2 + x_{n-1}^2 ))
+    
+       For the above, if there is a range where x_{k+1}, ... xn are zero 
+          and there is a x_k != 0, then φk = 0 when x_k>0 and φk = pi when x_k>0.
+    
+       For special cases where the inverse transform is not unique; 
+          φk for any k will be ambiguous whenever all of xk, xk+1, ... xn are zero; 
+          in this case φk may be chosen to be zero.
+    
+       If ever need orthogonal:
+          Polyspherical coordinates...points in Rn may be expressed by taking 
+          the ray starting at the origin and passing through z ∈ Real^{n − 1}, 
+           rotating it towards the first basis vector by θ, and traveling a 
+           distance r along the ray. (Repeating this decomposition eventually 
+           leads to the standard spherical coordinate system.)
+          ... The possible polyspherical coordinate systems correspond to 
+          binary trees with n leaves. Each non-leaf node in the tree corresponds 
+          to a splitting and determines an angular coordinate. For instance, 
+          the root of the tree represents Real^n, and its immediate children 
+          represent the first splitting into Real^p and Real^q.  
+          Leaf nodes correspond to Cartesian coordinates for S^{n−1}.
+          ...
+          special orthogonal group: A splitting Real^n = Real^p × Real^q 
+              determines a subgroup (subgroup p times subgroup q is in subgroup n).
+              There are special factors relating the VOLUME measure on Real^n 
+              and the AREA measure on S^{n − 1} as products. 
+              There is one factor for each angle, and the factor is determined 
+              by the tree.
+              If p == 1 and q > 1, the factor has a denominator that is 
+              uses the beta function 0.5*Beta(p/2, q/2).
+              can invet it to get theta which is defined in terms of
+              polyspherical coordinates.
+          see https://en.wikipedia.org/wiki/N-sphere#Polyspherical_coordinates
+    */
+    
+    /*
+    interpoint spacings:
+    
+    */
+    
     /**
      * generate random uniform points on an n-dimensional unit standard hyper-sphere.
      * NOTE: the result is one sample of all dimensions.
@@ -242,28 +334,15 @@ public class MultivariateUniformDistribution {
         //     comments at end of this file.
        
         double[] u = new double[d];
-        
-        boolean useGaussian = true;
-        
-        if (!useGaussian) {
-        for (int i = 0; i < d; ++i) {
-            u[i] = rand.nextDouble();
-        }
-        } else {
-            // generate d dimensions individ random standard normal N(0,1)  
-            u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);
-        }
+                
+        u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);
         
         // then normalization of each is the sqrt(sum of squares of all)
         double norm = 0;
-        if (!useGaussian) {
-            norm = 1.;
-        } else {
-            for (double v : u) {
-                norm += (v*v);
-            }
-            norm = 1./Math.sqrt(norm);
+        for (double v : u) {
+            norm += (v * v);
         }
+        norm = 1./Math.sqrt(norm);
         
         if (!onSurface) {
             // to avoid bunching at the center of hypersphere
