@@ -85,7 +85,15 @@ public class Gamma {
         1.50563273514931155834e-7
     };
     private static final double SQRT2PI_E7 = 0.0022857491179850424; //sqrt(2*pi)/e**7
+    /**
+     * 
+     * @param x min allowed value is -1.719e2, max allowed value is 1.716e2
+     * @return 
+     */
     public static final double lanczosGamma9(double x) {
+        if (x < -1.719e2 || x >1.716e2) {
+            throw new IllegalArgumentException("x must be between -171 and + 171 inclusive.");
+        }
         x--;// NOTE:  this is to match python's math.gamma output
         
         if (x <= -1) return Double.NaN;

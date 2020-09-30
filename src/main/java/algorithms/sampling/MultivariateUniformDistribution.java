@@ -116,9 +116,11 @@ public class MultivariateUniformDistribution {
               by the tree.
               If p == 1 and q > 1, the factor has a denominator that is 
               uses the beta function 0.5*Beta(p/2, q/2).
-              can invet it to get theta which is defined in terms of
+              can invert it to get theta which is defined in terms of
               polyspherical coordinates.
           see https://en.wikipedia.org/wiki/N-sphere#Polyspherical_coordinates
+    
+    
     */
     
     /*
@@ -150,13 +152,15 @@ public class MultivariateUniformDistribution {
      * Muller / Marsaglia (‘Normalized Gaussians’).
      * @param d number of dimensions.
      * @param rand
-     * @return vector of size d
+     * @return vector p of size d defined as uniform points on a space S^d or S^d+1 
+     * by a stochastic process in which all p_i ∈ S have equal probability
+     * P_i = c to be generated.
      * @throws NoSuchAlgorithmException 
      */
-    public static double[] generateUnitStandardOnNSphere(int d, SecureRandom rand) 
+    public static double[] generateOnUnitStandardNSphere(int d, SecureRandom rand) 
         throws NoSuchAlgorithmException {
         
-        return _generateUnitStandard(d+1, rand, true);
+        return _generateUnitStandardNSphere(d+1, rand, true);
     }
     
     /**
@@ -185,7 +189,7 @@ public class MultivariateUniformDistribution {
      * @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
-    public static double[] generateUnitStandardOnNSphere(int d) 
+    public static double[] generateOnUnitStandardNSphere(int d) 
         throws NoSuchAlgorithmException {
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -193,7 +197,7 @@ public class MultivariateUniformDistribution {
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        return _generateUnitStandard(d+1, rand, true);
+        return _generateUnitStandardNSphere(d+1, rand, true);
     }
     
     /**
@@ -222,10 +226,10 @@ public class MultivariateUniformDistribution {
      * @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
-    public static double[] generateUnitStandardInNBall(int d, SecureRandom rand) 
+    public static double[] generateInUnitStandardNBall(int d, SecureRandom rand) 
         throws NoSuchAlgorithmException {
         
-        return _generateUnitStandard(d, rand, false);
+        return _generateUnitStandardNSphere(d, rand, false);
     }
     
     /**
@@ -254,7 +258,7 @@ public class MultivariateUniformDistribution {
      * @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
-    public static double[] generateUnitStandardInNBall(int d) 
+    public static double[] generateInUnitStandardNBall(int d) 
         throws NoSuchAlgorithmException {
         
          SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -262,7 +266,7 @@ public class MultivariateUniformDistribution {
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        return _generateUnitStandard(d, rand, false);
+        return _generateUnitStandardNSphere(d, rand, false);
     }
     
     /**
@@ -301,7 +305,7 @@ public class MultivariateUniformDistribution {
      * of length d.
      * @throws NoSuchAlgorithmException 
      */
-    public static double[] _generateUnitStandard(int d, SecureRandom rand, boolean onSurface) 
+    public static double[] _generateUnitStandardNSphere(int d, SecureRandom rand, boolean onSurface) 
         throws NoSuchAlgorithmException {
         
         /*
