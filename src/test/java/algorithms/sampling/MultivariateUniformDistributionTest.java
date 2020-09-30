@@ -181,6 +181,12 @@ public class MultivariateUniformDistributionTest extends TestCase {
         // Kuiper test for the hypothesis of uniformity?
         
         /*
+        Using chords looks like it should be more and more accurate at higher
+        number of dimensions, just at fitting a curve with a spline of more
+        points is.
+        Section IV of the paper below looks like it is describing the 
+            multivariant distance covariance and individual pairs of 
+            univariate distance covariance.
         Measuring spatial uniformity with the hypersphere chord length distribution
            2020, Panagiotis Sidiropoulos
         https://arxiv.org/pdf/2004.05692.pdf
