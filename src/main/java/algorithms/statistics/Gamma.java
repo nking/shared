@@ -1,4 +1,4 @@
-package algorithms.misc;
+package algorithms.statistics;
 
 /**
  * Calculates the gamma function using the Lancos approximation.

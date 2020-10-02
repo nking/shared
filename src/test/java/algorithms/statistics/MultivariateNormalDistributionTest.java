@@ -1,4 +1,4 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
 import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;

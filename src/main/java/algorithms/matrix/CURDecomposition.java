@@ -1,7 +1,7 @@
 package algorithms.matrix;
 
 import algorithms.imageProcessing.SummedAreaTable0;
-import algorithms.misc.CDFRandomSelect;
+import algorithms.statistics.CDFRandomSelect;
 import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
 import gnu.trove.map.TIntIntMap;

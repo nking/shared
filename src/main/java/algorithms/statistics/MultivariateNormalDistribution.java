@@ -1,4 +1,4 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;

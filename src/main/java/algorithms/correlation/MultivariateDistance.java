@@ -1,6 +1,6 @@
 package algorithms.correlation;
 
-import algorithms.misc.Gamma;
+import algorithms.statistics.Gamma;
 
 /**
  *

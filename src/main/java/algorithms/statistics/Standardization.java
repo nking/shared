@@ -1,7 +1,8 @@
 
-package algorithms.misc;
+package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
 import java.util.Arrays;
 
 /**

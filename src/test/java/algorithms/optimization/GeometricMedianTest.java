@@ -1,6 +1,6 @@
 package algorithms.optimization;
 
-import algorithms.misc.Standardization;
+import algorithms.statistics.Standardization;
 import thirdparty.dlib.optimization.*;
 import java.util.Arrays;
 import static junit.framework.Assert.assertTrue;

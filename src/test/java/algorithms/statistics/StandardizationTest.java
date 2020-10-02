@@ -1,6 +1,7 @@
-package algorithms.misc;
+package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
 import java.security.SecureRandom;
 import junit.framework.TestCase;
 

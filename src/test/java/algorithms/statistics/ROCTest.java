@@ -1,6 +1,6 @@
-package algorithms.misc;
+package algorithms.statistics;
 
-import algorithms.misc.ROC.ROCResults;
+import algorithms.statistics.ROC.ROCResults;
 import algorithms.util.PairFloatArray;
 import junit.framework.TestCase;
 

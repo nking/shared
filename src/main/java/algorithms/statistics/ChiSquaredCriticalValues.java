@@ -1,4 +1,4 @@
-package algorithms.misc;
+package algorithms.statistics;
 
 /*
 methods for the critical values of the chi-squared distribution to look up

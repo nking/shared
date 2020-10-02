@@ -1,5 +1,7 @@
-package algorithms.misc;
+package algorithms.statistics;
 
+import algorithms.misc.Misc0;
+import algorithms.misc.MiscMath0;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.Random;

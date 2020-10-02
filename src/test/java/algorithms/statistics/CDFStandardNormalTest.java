@@ -1,5 +1,7 @@
-package algorithms.misc;
+package algorithms.statistics;
 
+import algorithms.misc.Misc0;
+import algorithms.misc.MiscMath0;
 import java.util.Random;
 import junit.framework.TestCase;
 

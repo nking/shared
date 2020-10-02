@@ -1,4 +1,4 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;

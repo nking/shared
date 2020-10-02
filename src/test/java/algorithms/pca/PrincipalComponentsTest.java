@@ -1,7 +1,7 @@
 package algorithms.pca;
 
 import algorithms.matrix.MatrixUtil;
-import algorithms.misc.Standardization;
+import algorithms.statistics.Standardization;
 import algorithms.pca.PrincipalComponents.PCAStats;
 import algorithms.util.ResourceFinder;
 import java.io.BufferedReader;

@@ -1,4 +1,4 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
 import algorithms.correlation.UnivariateDistance;
 import algorithms.matrix.MatrixUtil;
@@ -156,63 +156,8 @@ public class MultivariateUniformDistributionTest extends TestCase {
             h = Histogram.createSimpleHistogram(dcov.iv4, binSz, min, max);
             str = h.plotHistogram("[iv4=cumulative X*Y],onSphere=" + onSurface, "dist_hist_iv4");
             
-            int z = 0;
-            
-            
-        /*
-        "Multivariate tests of uniformity"
-        2015, Yang & Modarres, DOI 10.1007/s00362-015-0715-x
-        
-        They compare to unit hyper-cube S = [0, 1]^d support.
-        */
-        
-        
-        // see https://www.researchgate.net/publication/283875292_Multivariate_tests_of_uniformity
-        
-        //M^2, Q3, L_MST
-        // (MS2) Multivariate Hegazy–Green tests using spherical (MS2)
-        // (ML2) lens  
-        // (MT2) random Tukey depth functions, 
-        // (LMST) total MST weight , 
-        // and interpoint distances of uniforms (Q1, Q2, and Q3),
-        
-        //  Ripley's K function
-        
-        // Kuiper test for the hypothesis of uniformity?
-        
-        /*
-        Using chords looks like it should be more and more accurate at higher
-        number of dimensions, just at fitting a curve with a spline of more
-        points is.
-        Section IV of the paper below looks like it is describing the 
-            multivariant distance covariance and individual pairs of 
-            univariate distance covariance.
-        Measuring spatial uniformity with the hypersphere chord length distribution
-           2020, Panagiotis Sidiropoulos
-        https://arxiv.org/pdf/2004.05692.pdf
-        arXiv:2004.05692v1 [cs.CG] 12 Apr 2020
-            a pointset defined on a space S is uniform if and only if it is the output of 
-            a stochastic process in which the limit set of generated points includes 
-            an equal number of all p_i ∈ S. 
-        In the above statement, the phrase ”limit set of generated points” 
-        refers to a set that contains infinitely more points than S. 
-        The novelty of this definition is that it is based on the absolute 
-        frequency of the generated points and not the probability as the 
-        classical uniformity distribution. 
-        The two are obviously equivalent because the limit at infinity of the 
-        absolute frequency is the probability.
-           The main gain is that the new definition implies a connection of 
-        the uniformity distribution with the chords connecting points of S. 
-        More specifically, since the limit uniform set includes an equal 
-        number of all points, the limit distribution of point distances 
-    ||p_i − p_j ||, p_i , p_j ∈ S is the distribution of the chord lengths 
-    of S. If ||.|| is the metric of S then its chord length distribution 
-        can be examined and formalised, thus modelling the distribution 
-        that uniform point distances follow. Subsequently, the similarity of 
-        pointset distance distributions with the theoretic chord length 
-        distribution can be used to qualitatively and quantitatively assess 
-        uniformity.
-        */
+      
+     
         }
     }
     

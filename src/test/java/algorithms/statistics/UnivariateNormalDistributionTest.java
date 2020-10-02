@@ -1,4 +1,4 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;

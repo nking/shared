@@ -1,6 +1,5 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
-import algorithms.misc.CDFStandardNormal;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 

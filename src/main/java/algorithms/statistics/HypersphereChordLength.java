@@ -1,6 +1,5 @@
-package algorithms.sampling;
+package algorithms.statistics;
 
-import algorithms.misc.Gamma;
 import thirdparty.smile.math.special.Beta;
 
 /**
@@ -224,10 +223,11 @@ public class HypersphereChordLength {
                and
            g_N is intra-distance distribution of the input point distribution 
                using models above from (1), (2), or (3).
+           x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
     
-    Initially, uniform pointsets of size M′ (M′ ≪ M) are generated on the 
-    N-sphere and L1 values are sorted, before acquiring the α%-largest L1 value
-    and finally extrapolating for pointsets of size M. 
+    Initially, uniform pointsets of size M′ (where M′ is much smaller than M) 
+    are generated on the N-sphere and L1 values are sorted, before acquiring 
+    the α%-largest L1 value and finally extrapolating for pointsets of size M. 
     This value is the threshold with which the input distance distribution 
     L1(g) is compared to determine whether it is uniform or not.
     
@@ -243,4 +243,6 @@ public class HypersphereChordLength {
           than L1(g) then S can be declared as non-uniform with confidence 
           (100 − α)%.
     */
+    
+    
 }
