@@ -2,6 +2,10 @@ package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TIntArrayList;
 import junit.framework.TestCase;
 
 /**
@@ -148,6 +152,59 @@ public class HypersphereChordLengthTest extends TestCase {
                     assertTrue(cdf[0] < 0.0002 && cdf[0] > 0.);
                 }
             }
+        }
+    }
+    
+    public void testFindAlpha() {
+        
+        // quick look at finding critical values using the CDF.
+        // no inverse function, so "trial-and-error".
+        //    For r = 1.  n = [2:10:+1,15:50:+5,60:100:+10]
+        //       find d's where alpha=0.95
+        
+        double r = 1;
+        TIntList ns = new TIntArrayList();
+        
+        int i, j;
+        double tol = 1e-2;
+        
+        for (i = 2; i < 10; ++i) {
+            ns.add(i);
+        }
+        for (i = 10; i < 50; i+=5) {
+            ns.add(i);
+        }
+        for (i = 50; i <= 100; i+=10) {
+            ns.add(i);
+        }
+        
+        // array to hold the chord lengths where alpha~0.95 in CDF
+        TDoubleList da = new TDoubleArrayList();
+        
+        double[] ds = new double[]{ 1.5*r, 1.75*r,
+            1.76*r, 1.77*r, 1.78*r, 1.79*r, 
+            1.80*r, 1.81*r, 1.82*r, 1.83*r, 1.84*r, 1.85*r, 1.86*r, 1.87*r, 1.88*r, 1.89*r,
+            1.90*r, 1.91*r, 1.92*r, 1.93*r, 1.94*r, 1.95*r, 1.96*r, 1.97*r, 1.98*r, 1.99*r,
+            2.0*r};
+        
+        int n, idx;
+        double[] cdf;
+        
+        for (j = 0; j < ns.size(); ++j) {
+            
+            n = ns.get(j);
+            
+            // binary search between d=1.5*r and d=2*R for n <= 100
+            cdf = HypersphereChordLength.cdf(ds, r, n);
+            System.out.println(FormatArray.toString(cdf, "%.9f"));
+            
+            idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);
+
+            da.add(ds[idx]);
+        }
+        
+        for (j = 0; j < ns.size(); ++j) {
+            System.out.printf("n=%d d(1-alpha=0.095)~%.2f\n", ns.get(j), da.get(j));
         }
     }
 }
