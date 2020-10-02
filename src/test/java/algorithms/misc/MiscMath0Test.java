@@ -272,8 +272,16 @@ public class MiscMath0Test extends TestCase {
         TIntList input = new TIntArrayList(a);
         
         int maxIdx = MiscMath0.findYMaxIndex(input);
-        
         assertEquals(5, maxIdx);
+        
+        double[] a1 = new double[]{1,5,7,2,4,8,3};
+        maxIdx = MiscMath0.findYMaxIndex(a1);
+        assertEquals(5, maxIdx);
+        
+        float[] a2 = new float[]{1,5,7,2,4,8,3};
+        maxIdx = MiscMath0.findYMaxIndex(a2);
+        assertEquals(5, maxIdx);
+        
     }
     
     public void testIsAPowerOf2() throws Exception {

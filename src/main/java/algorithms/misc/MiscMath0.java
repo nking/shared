@@ -205,6 +205,27 @@ public class MiscMath0 {
         }
         return index;
     }
+    
+    /**
+     * find max but ignore values such as infinity, and NAN
+     * @param a
+     * @return
+     */
+    public static int findYMaxIndex(double[] a) {
+        if (a == null || a.length == 0) {
+            return -1;
+        }
+        double max = Double.NEGATIVE_INFINITY;
+        int index = 0;
+        for (int i = 0; i < a.length; i++) {
+            if ((a[i] > max) && !Double.isInfinite(a[i]) && !Double.isNaN(a[i]) 
+                ) {
+                max = a[i];
+                index = i;
+            }
+        }
+        return index;
+    }
 
     public static int findYMaxIndex(int[] a) {
         if (a == null || a.length == 0) {
