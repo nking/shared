@@ -371,11 +371,11 @@ public class MultivariateUniformDistribution {
      * uniform n-sphere or n-ball using a 
      * uniform hypercube centered at 0 and rejects 
      * those points whose distance from the origin is larger than '1'.
-     * This rejection prevents the effect of larger number of points generated 
+     * This rejection prevents the effect of a larger number of points generated 
      * along larger paths of projection to the surface of the cube.
-     * After rejection, if the parameter onSurface=true, the points are 
+     * After the rejection filter, if the parameter onSurface=true, the points are 
      * normalized so that the coordinates lie on the surface of the n-sphere,
-     * else, the points are not normalized and remain within the n-ball.
+     * else, the points are not normalized and they remain within the n-ball.
      *    NOTE:
      * The method is provided for testing n-sphere and n-ball distributions. It shouldn't be
      * used for high order dimensions because the percentage of points rejected

@@ -44,8 +44,8 @@ public class MultivariateUniformDistributionTest extends TestCase {
         System.out.println("test0");
                 
         int nTests = 1;
-        int nDimensions = 3;
-        int nSamples = 100;
+        int nDimensions = 2;
+        int nSamples = 250;
         boolean onSurface = true;
         
         double[][] v = new double[nSamples][nDimensions];
@@ -165,8 +165,34 @@ public class MultivariateUniformDistributionTest extends TestCase {
             h = Histogram.createSimpleHistogram(dcov.iv4, binSz, min, max);
             str = h.plotHistogram("[iv4=cumulative X*Y],onSphere=" + onSurface, "dist_hist_iv4");
             
-      
-     
+            
+            PolygonAndPointPlotter plotter;
+            float yMin = -1.2f;
+            float yMax = 1.2f;
+            float xMin = -1.2f;
+            float xMax = 1.2f;
+
+            float[] col1 = new float[nSamples];
+            float[] col2 = new float[nSamples];
+            double[] col1d = new double[nSamples];
+            double[] col2d = new double[nSamples];
+            double[] allX = new double[nSamples * nDimensions];
+
+            // rewrite into col1 and col2
+            for (int j = 0; j < nSamples; ++j) {
+                col1[j] = (float) v[j][0];
+                col2[j] = (float) v[j][1];
+                col1d[j] = v[j][0];
+                col2d[j] = v[j][1];
+                allX[j*2] = v[j][0];
+                allX[j*2 + 1] = v[j][1];
+            }
+            
+            plotter = new PolygonAndPointPlotter();
+            plotter.addPlot(
+                xMin, xMax, yMin, yMax, col1, col2, null, null, "d=2, onSurface=" + onSurface
+            );
+            plotter.writeFile("onSurface_" + onSurface);
         }
     }
     
@@ -178,7 +204,9 @@ public class MultivariateUniformDistributionTest extends TestCase {
         
         int d = 2;
         int n = 250;
-        boolean[] onSurface = new boolean[]{true, false};
+        boolean[] onSurface;
+        onSurface = new boolean[]{true, false};
+        onSurface = new boolean[]{true};
         double[][] x;
         
         PolygonAndPointPlotter plotter;
@@ -189,6 +217,9 @@ public class MultivariateUniformDistributionTest extends TestCase {
         
         float[] col1 = new float[n];
         float[] col2 = new float[n];
+        double[] col1d = new double[n];
+        double[] col2d = new double[n];
+        double[] allX = new double[n*d];
     
         int i, j, k;
         double dist;
@@ -215,13 +246,104 @@ public class MultivariateUniformDistributionTest extends TestCase {
             for (j = 0; j < n; ++j) {
                 col1[j] = (float) x[j][0];
                 col2[j] = (float) x[j][1];
+                col1d[j] = x[j][0];
+                col2d[j] = x[j][1];
+                allX[j*2] = x[j][0];
+                allX[j*2 + 1] = x[j][1];
             }
             
             plotter = new PolygonAndPointPlotter();
             plotter.addPlot(
                 xMin, xMax, yMin, yMax, col1, col2, null, null, "d=2, onSurface=" + onSurface[i]
             );
-            plotter.writeFile("d_2_onSurface_" + onSurface[i]);
+            plotter.writeFile("onSurface_" + onSurface[i] + "_rej2");
+            
+            //====
+            UnivariateDistance.DCor dcor = UnivariateDistance.fastDcor(col1d, col2d);
+            System.out.println("correlation within points=" + Math.sqrt(dcor.corSq));
+            
+            UnivariateDistance.DCov dcov;
+            double min, max, binSz;
+            HistogramHolder h;
+            String str;
+            
+            dcov = UnivariateDistance.fastDcov(col1d, col2d);
+            System.out.println("rej2: cov:" + dcov.toString2());
+            min = MiscMath0.findMin(dcov.ai);
+            max = MiscMath0.findMax(dcov.ai);
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.ai, binSz, min, max);
+            str = h.plotHistogram("rej2: [sum_i(sum_j(xi - xj))],onSphere=" + onSurface[i], "dist_hist_1_rej2");
+            
+            min = MiscMath0.findMin(dcov.bi);
+            max = MiscMath0.findMax(dcov.bi);
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.bi, binSz, min, max);
+            str = h.plotHistogram("rej2: sum_i(sum_j(yi - yj))],onSphere=" + onSurface[i], "dist_hist_2_rej2");
+            
+            min = MiscMath0.findMin(dcov.iv1);
+            max = MiscMath0.findMax(dcov.iv1);
+            double[] avgAndStDev2 = MiscMath0.getAvgAndStDev(dcov.iv1);
+            double[] qs = MiscMath0.calcMedianAndIQR(dcov.iv1);
+            //min = qs[0] - 1.5*qs[1];
+            //max = qs[0] + 1.5*qs[1];
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.iv1, binSz, min, max);
+            str = h.plotHistogram("rej2: [iv1=cumulative 1],onSphere=" + onSurface[i], "dist_hist_iv1_rej2");
+            
+            min = MiscMath0.findMin(dcov.iv2);
+            max = MiscMath0.findMax(dcov.iv2);
+            qs = MiscMath0.calcMedianAndIQR(dcov.iv2);
+            //min = qs[0] - 1.5*qs[1];
+            //max = qs[0] + 1.5*qs[1];
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.iv2, binSz, min, max);
+            str = h.plotHistogram("rej2: [iv2=cumulative X],onSphere=" + onSurface[i], "dist_hist_iv2_rej2");
+            
+            min = MiscMath0.findMin(dcov.iv3);
+            max = MiscMath0.findMax(dcov.iv3);
+            qs = MiscMath0.calcMedianAndIQR(dcov.iv3);
+            //min = qs[0] - 1.5*qs[1];
+            //max = qs[0] + 1.5*qs[1];
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.iv3, binSz, min, max);
+            str = h.plotHistogram("rej2: [iv3=cumulative Y],onSphere=" + onSurface[i], "dist_hist_iv3_rej2");
+            
+            min = MiscMath0.findMin(dcov.iv4);
+            max = MiscMath0.findMax(dcov.iv4);
+            qs = MiscMath0.calcMedianAndIQR(dcov.iv4);
+            //min = qs[0] - 1.5*qs[1];
+            //max = qs[0] + 1.5*qs[1];
+            binSz = (max - min)/20.;
+            h = Histogram.createSimpleHistogram(dcov.iv4, binSz, min, max);
+            str = h.plotHistogram("rej2: [iv4=cumulative X*Y],onSphere=" + onSurface[i], "dist_hist_iv4_rej2");
+            
+            // ====
+            double[] w = new double[d];
+            Arrays.fill(w, 1.0);
+            double[] init = new double[d];
+
+            GeometricMedian gm = new GeometricMedian();
+            GeometricMedianWeightedFunction f = new GeometricMedianWeightedFunction(
+                allX, d, w);
+            
+            double minSum = gm.newtonsThenVardiZhang(f, init);
+
+            double[] diff = f.calculateDifferences(init);
+
+            int[] oIdx = MiscSorter.mergeSortIncreasing(diff);
+
+            double[] avgAndStDevFromGM = MiscMath0.getAvgAndStDev(diff);
+            
+            h = Histogram.createSimpleHistogram(allX, 0.1, -3.5, 3.5);
+            str = h.plotHistogram("rej2: [X] onSphere=" + onSurface[i], "hist_rej2");
+            h = Histogram.createSimpleHistogram(diff, 0.1, -3.5, 3.5);
+            str = h.plotHistogram("rej2: [X-g.m.] onSphere=" + onSurface[i], "diff_hist_rej2");
+
+            
+            System.out.println("rej2: g.m.=" + FormatArray.toString(init, "%.3f"));
+            System.out.printf("rej2: mean diff = %.3f, stdev diff = %.3f, minSum=%.3f\n",
+                avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
         }
          
     }
