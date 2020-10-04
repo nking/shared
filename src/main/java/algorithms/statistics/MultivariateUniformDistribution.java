@@ -366,5 +366,74 @@ public class MultivariateUniformDistribution {
         return u;
     }
  
+    /**
+     * The method generates an array of vectors of points for the 
+     * uniform n-sphere or n-ball using a 
+     * uniform hypercube centered at 0 and rejects 
+     * those points whose distance from the origin is larger than '1'.
+     * This rejection prevents the effect of larger number of points generated 
+     * along larger paths of projection to the surface of the cube.
+     * After rejection, if the parameter onSurface=true, the points are 
+     * normalized so that the coordinates lie on the surface of the n-sphere,
+     * else, the points are not normalized and remain within the n-ball.
+     *    NOTE:
+     * The method is provided for testing n-sphere and n-ball distributions. It shouldn't be
+     * used for high order dimensions because the percentage of points rejected
+     * for being larger than a distance of '1' from the origin becomes larger
+     * and that increases the number of iterations.
+     * @param d number of dimensions of the n-sphere or n-ball
+     * @param n number of points to generate (where 1 point has d-dimension real number components)
+     * @param rand
+     * @param onSurface
+     * @return an array of length n, of d-dimension vectors of points randomly
+     * generated on a uniform n-sphere if onSurface=true, else uniformly randomly 
+     * generated points within an n-ball.
+     * @throws NoSuchAlgorithmException 
+     */
+    public static double[][] generateUnitStandardNSphereWithRejection(
+        final int d, final int n, SecureRandom rand, boolean onSurface) 
+        throws NoSuchAlgorithmException {
+        
+        if (d > 5) {
+            System.err.println("this method should not be used for higher order dimensions "
+                + " because the number of iteations needed increases due to increased number of rejected "
+                    + " random throws ");
+        }
+        
+        double[][] s = new double[n][d];
+        
+        double distSq, dist;
+        int i, j;
+        for (i = 0; i < n; ++i) {
+            s[i] = new double[d];
+        }        
+        i = 0;
+        while (i < n) {
+            for (j = 0; j < d; ++j) {
+                s[i][j] = -1. + 2.*rand.nextDouble();
+            }
+            distSq = distSquaredFromOrigin(s[i]);
+            if (distSq > 1.) {
+                continue;
+            }
+            if (onSurface) {
+                dist = Math.sqrt(distSq);
+                for (j = 0; j < d; ++j) {
+                    s[i][j] /= dist;
+                }
+            }
+            ++i;
+        }
+        return s;
+    }
+    
+    public static double distSquaredFromOrigin(double[] a) {
+        double sum = 0;
+        for (double b : a) {
+            sum += b*b;
+        }
+        return sum;
+    }
+    
    
 }

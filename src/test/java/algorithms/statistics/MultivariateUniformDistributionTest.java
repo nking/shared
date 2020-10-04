@@ -8,6 +8,7 @@ import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
 import algorithms.optimization.GeometricMedian;
 import algorithms.util.FormatArray;
+import algorithms.util.PolygonAndPointPlotter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -25,15 +26,23 @@ public class MultivariateUniformDistributionTest extends TestCase {
         super(testName);
     }
     
-    public void test0() throws NoSuchAlgorithmException, IOException {
+    private SecureRandom rand = null;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp(); 
         
-        System.out.println("test0");
-        
-        SecureRandom rand = SecureRandom.getInstanceStrong();
+        rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
+    }
+    
+    
+    public void test0() throws NoSuchAlgorithmException, IOException {
         
+        System.out.println("test0");
+                
         int nTests = 1;
         int nDimensions = 3;
         int nSamples = 100;
@@ -161,4 +170,59 @@ public class MultivariateUniformDistributionTest extends TestCase {
         }
     }
     
+    public void testRejectionMethod() throws NoSuchAlgorithmException, IOException {
+        
+        System.out.println("testRejectionMethod");
+        
+        double tol = 0.001;
+        
+        int d = 2;
+        int n = 250;
+        boolean[] onSurface = new boolean[]{true, false};
+        double[][] x;
+        
+        PolygonAndPointPlotter plotter;
+        float yMin = -1.2f;
+        float yMax = 1.2f;
+        float xMin = -1.2f;
+        float xMax = 1.2f;
+        
+        float[] col1 = new float[n];
+        float[] col2 = new float[n];
+    
+        int i, j, k;
+        double dist;
+        for (i = 0; i < onSurface.length; ++i) {
+            x = MultivariateUniformDistribution.generateUnitStandardNSphereWithRejection(
+                d, n, rand, onSurface[i]);
+            
+            assertEquals(n, x.length);
+            assertEquals(d, x[0].length);
+            for (j = 0; j < n; ++j) {
+                for (k = 0; k < d; ++k) {
+                    assertTrue(x[j][k] <= 1.0);
+                }
+                dist = MultivariateUniformDistribution.distSquaredFromOrigin(x[j]);
+                dist = Math.sqrt(dist);
+                if (onSurface[i]) {
+                    assertTrue(Math.abs(dist - 1.) < tol);
+                } else {
+                    assertTrue(dist <= (1. + tol));
+                }
+            }
+            
+            // rewrite into col1 and col2
+            for (j = 0; j < n; ++j) {
+                col1[j] = (float) x[j][0];
+                col2[j] = (float) x[j][1];
+            }
+            
+            plotter = new PolygonAndPointPlotter();
+            plotter.addPlot(
+                xMin, xMax, yMin, yMax, col1, col2, null, null, "d=2, onSurface=" + onSurface[i]
+            );
+            plotter.writeFile("d_2_onSurface_" + onSurface[i]);
+        }
+         
+    }
 }

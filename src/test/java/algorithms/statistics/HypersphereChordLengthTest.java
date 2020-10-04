@@ -73,6 +73,7 @@ public class HypersphereChordLengthTest extends TestCase {
         double tol = 1e-2;
         
         int[] ns = new int[]{2, 3, 4, 5, 6};
+        ns = new int[]{3};
         
         for (int j = 0; j < rs.length; ++j) {
             r = rs[j];
@@ -80,7 +81,7 @@ public class HypersphereChordLengthTest extends TestCase {
                 1.25*r, 1.5*r, 1.75*r, 2.0*r};
             for (int i = 0; i < ns.length; ++i) {
                 pdf = HypersphereChordLength.pdf(ds, r, ns[i]);
-                //System.out.println(FormatArray.toString(pdf, "%.3f"));
+                System.out.println("pdf: " + FormatArray.toString(pdf, "%.3f"));
                 
                 if (i == 1) {
                     diff = Math.abs(pdf[3] - 0.5);
@@ -198,7 +199,14 @@ public class HypersphereChordLengthTest extends TestCase {
             cdf = HypersphereChordLength.cdf(ds, r, n);
             System.out.println(FormatArray.toString(cdf, "%.9f"));
             
+            // Type I error rejects a null hypothesis that is actually true.
+            // Type II error accepts a null hypothesis that is actually false.
+            
+            // alpha=0.05 (probability of Type I error)
+            // confidence level or a confidence coefficient, (1 - α)100% = 95%
             idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);
+            // confidence interval is interval in x capturing 95% of area 
+            //     under curve, e.g. mu +- 2*sigma/sqrt(n)
 
             da.add(ds[idx]);
         }
