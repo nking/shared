@@ -57,11 +57,11 @@ public class MultivariateUniformDistributionTest extends TestCase {
             for (int i = 0; i < nSamples; ++i) {
                 // a quick look at some of the stats:
                 if (onSurface) {
-                v[i] = MultivariateUniformDistribution.generateOnUnitStandardNSphere(
-                    nDimensions, rand);
+                    v[i] = MultivariateUniformDistribution.generateOnUnitStandardNSphere(
+                        nDimensions, rand);
                 } else {
                     v[i] = MultivariateUniformDistribution.generateInUnitStandardNBall(
-                    nDimensions, rand);
+                        nDimensions, rand);
                 }
                 double[] avgAndStDev = MiscMath0.getAvgAndStDev(v[i]);
                 System.out.println("\nv[" + i + "]=" + FormatArray.toString(v[i], "%.3f"));
@@ -71,12 +71,20 @@ public class MultivariateUniformDistributionTest extends TestCase {
             }
             vT = MatrixUtil.transpose(v);
             
+            float[] col1 = new float[nSamples];
+            float[] col2 = new float[nSamples];
+
+            // rewrite into col1 and col2
+            for (int j = 0; j < nSamples; ++j) {
+                col1[j] = (float) v[j][0];
+                col2[j] = (float) v[j][1];
+            }            
+            
             for (int i = 0; i < nDimensions; ++i) {
                 double[] avgAndStDev = MiscMath0.getAvgAndStDev(vT[i]);
                 System.out.printf("dimension[%d]: mean,stDev=%s\n", i, FormatArray.toString(avgAndStDev, "%.3f"));
             }
             
-
             double[] w = new double[nDimensions];
             Arrays.fill(w, 1.0);
             double[] init = new double[nDimensions];
@@ -172,22 +180,6 @@ public class MultivariateUniformDistributionTest extends TestCase {
             float xMin = -1.2f;
             float xMax = 1.2f;
 
-            float[] col1 = new float[nSamples];
-            float[] col2 = new float[nSamples];
-            double[] col1d = new double[nSamples];
-            double[] col2d = new double[nSamples];
-            double[] allX = new double[nSamples * nDimensions];
-
-            // rewrite into col1 and col2
-            for (int j = 0; j < nSamples; ++j) {
-                col1[j] = (float) v[j][0];
-                col2[j] = (float) v[j][1];
-                col1d[j] = v[j][0];
-                col2d[j] = v[j][1];
-                allX[j*2] = v[j][0];
-                allX[j*2 + 1] = v[j][1];
-            }
-            
             plotter = new PolygonAndPointPlotter();
             plotter.addPlot(
                 xMin, xMax, yMin, yMax, col1, col2, null, null, "d=2, onSurface=" + onSurface
@@ -220,7 +212,8 @@ public class MultivariateUniformDistributionTest extends TestCase {
         double[] col1d = new double[n];
         double[] col2d = new double[n];
         double[] allX = new double[n*d];
-    
+        double[][] xT;
+        
         int i, j, k;
         double dist;
         for (i = 0; i < onSurface.length; ++i) {
@@ -242,6 +235,8 @@ public class MultivariateUniformDistributionTest extends TestCase {
                 }
             }
             
+            xT = MatrixUtil.transpose(x);
+            
             // rewrite into col1 and col2
             for (j = 0; j < n; ++j) {
                 col1[j] = (float) x[j][0];
@@ -259,7 +254,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
             plotter.writeFile("onSurface_" + onSurface[i] + "_rej2");
             
             //====
-            UnivariateDistance.DCor dcor = UnivariateDistance.fastDcor(col1d, col2d);
+            UnivariateDistance.DCor dcor = UnivariateDistance.fastDcor(xT[0], xT[1]);
             System.out.println("correlation within points=" + Math.sqrt(dcor.corSq));
             
             UnivariateDistance.DCov dcov;

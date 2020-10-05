@@ -144,6 +144,7 @@ public class MultivariateUniformDistribution {
      of freedom it has:
        A unit n-dimensional sphere is defined such that:
           S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+          (note: using dimension n instead.)
        A unit n-dimensional ball is defined such that:
           B^n = {x is member of the real set of dimension n : |x|.lte.1}
        So the perimeter of a circle is a 1-sphere, 
@@ -152,7 +153,7 @@ public class MultivariateUniformDistribution {
      * Muller / Marsaglia (‘Normalized Gaussians’).
      * @param d number of dimensions.
      * @param rand
-     * @return vector p of size d defined as uniform points on a space S^d or S^d+1 
+     * @return vector p of size d defined as uniform points on a space S^d
      * by a stochastic process in which all p_i ∈ S have equal probability
      * P_i = c to be generated.
      * @throws NoSuchAlgorithmException 
@@ -160,7 +161,10 @@ public class MultivariateUniformDistribution {
     public static double[] generateOnUnitStandardNSphere(int d, SecureRandom rand) 
         throws NoSuchAlgorithmException {
         
-        return _generateUnitStandardNSphere(d+1, rand, true);
+        return _generateUnitStandardNSphere(d, rand, true);
+        //double[] v = _generateUnitStandardNSphere(d+1, rand, true);
+        
+        //return Arrays.copyOf(v, v.length - 1);
     }
     
     /**
@@ -179,6 +183,7 @@ public class MultivariateUniformDistribution {
      of freedom it has:
        A unit n-dimensional sphere is defined such that:
           S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+          * (note: using dimension n instead).
        A unit n-dimensional ball is defined such that:
           B^n = {x is member of the real set of dimension n : |x|.lte.1}
        So the perimeter of a circle is a 1-sphere, 
@@ -197,7 +202,7 @@ public class MultivariateUniformDistribution {
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        return _generateUnitStandardNSphere(d+1, rand, true);
+        return generateOnUnitStandardNSphere(d, rand);
     }
     
     /**
@@ -216,6 +221,7 @@ public class MultivariateUniformDistribution {
      of freedom it has:
        A unit n-dimensional sphere is defined such that:
           S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+          * (note: using dimension n instead).
        A unit n-dimensional ball is defined such that:
           B^n = {x is member of the real set of dimension n : |x|.lte.1}
        So the perimeter of a circle is a 1-sphere, 
@@ -248,6 +254,7 @@ public class MultivariateUniformDistribution {
      of freedom it has:
        A unit n-dimensional sphere is defined such that:
           S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+          * (note: using dimension n instead).
        A unit n-dimensional ball is defined such that:
           B^n = {x is member of the real set of dimension n : |x|.lte.1}
        So the perimeter of a circle is a 1-sphere, 
@@ -289,6 +296,7 @@ public class MultivariateUniformDistribution {
      of freedom it has:
        A unit n-dimensional sphere is defined such that:
           S^n = {x is member of the real set of dimension (n+1) : |x|=1}
+          (note: using dimension n instead).
        A unit n-dimensional ball is defined such that:
           B^n = {x is member of the real set of dimension n : |x|.lte.1}
        So the perimeter of a circle is a 1-sphere, 
@@ -301,8 +309,7 @@ public class MultivariateUniformDistribution {
      * unit hyper-sphere that and assumes that d has already been incremented to d+1,
      * else when false the method generates points within the unit hyper-sphere
      * that is within the d-ball.
-     * @return vector of length d-1 if onSurface is true, else returns a vector
-     * of length d.
+     * @return vector of length d normalized by squart root of sum of squares.
      * @throws NoSuchAlgorithmException 
      */
     public static double[] _generateUnitStandardNSphere(int d, SecureRandom rand, boolean onSurface) 
@@ -358,13 +365,129 @@ public class MultivariateUniformDistribution {
         for (int i = 0; i < u.length; ++i) {
             u[i] *= norm;
         }
-        
-        if (onSurface) {
-            return Arrays.copyOf(u, u.length - 1);
-        }
-                
+              
         return u;
     }
+    
+    // TODO: if needed, add method to Uniformly sampling coordinates from the n-sphere
+    //  from Section 2.3 of Voelker, Gosman, Stewart 2017
+    // To sample coordinates from the unit n-sphere (i.e., uniform points from 
+    //  the sphere projected onto an arbitrary unit vector) we could simply 
+    //  modify §2.1 to return only a single element 
+    //  (which is _generateUnitStandard with onSurface = true
+    
+    /*
+    on subject of Uniformly sampling coordinates from the n-sphere
+    
+    
+    https://github.com/nengo/nengo-extras/issues/34
+    by user https://github.com/tcstewar
+    
+    sqrt(1-betaincinv((d+1)/2, 1/2, x+1))
+    (where x is the original intercept, uniformly distributed between -1 and 1, and d is the dimensionality)
+    
+    def transform(self, x):
+        sign = 1
+        if x > 0:
+            x = -x
+            sign = -1
+        return sign * np.sqrt(1-scipy.special.betaincinv((self.dimensions+1)/2.0, 0.5, x+1))
+    
+    def sample(self, n, d=None, rng=np.random):
+        // where self.base=nengo.dists.Uniform(-1, 1)
+        s = self.base.sample(n=n, d=d, rng=rng)
+        for i in range(len(s)):
+            s[i] = self.transform(s[i])
+        return s
+    
+    -------------
+Nengo is made available under a proprietary license that permits using, copying, 
+    sharing, and making derivative works from Nengo and its source code for any 
+    non-commercial purpose, as long as the above copyright notice and this 
+    permission notice are included in all copies or substantial portions of 
+    the software.
+If you would like to use Nengo commercially, licenses can be purchased 
+    from Applied Brain Research. Please contact info@appliedbrainresearch.com 
+    for more information.
+    
+These are details from Nengo issue above and source code below:
+    
+    nengo.dists.CosineSimilarity(dist.dimensions + 2).ppf(np.linspace(0, 1, n))
+    
+    looking at
+    https://github.com/nengo/nengo/blob/master/nengo/dists.py
+    and numpydocs
+    
+    numpy.linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0)[source]
+        Return evenly spaced numbers over a specified interval.
+        Returns num evenly spaced samples, calculated over the interval [start, stop].
+        The endpoint of the interval can optionally be excluded.
+    
+    => base/parent class SqrtBeta receives dist.dimensions + 2
+       which assigns m=1=subdimensions, and n=(dist.dimensions + 2-m)=dimensions
+    => CosineSimilarity.ppf receives
+       the results from linspace: n numbers between 0 and 1
+       (where n is not the same variable as SqrtBeta local n, presumably).
+       --> y = n numbers from 0 to 1.
+       --> x = super().ppf(abs(y * 2 - 1))
+           states that SqrtBeta.ppf receives y*2 - 1
+           SqrtBeta local y is Cumulative probabilities in [0, 1].
+           sb.y is y*2 - 1 in sb.ppf
+           sq_x = betaincinv(self.m / 2.0, self.n / 2.0, sb.y)
+           return np.sqrt(sq_x) which is Evaluation points ``x`` in [0, 1] such that ``P(X <= x) = y``.
+              
+    cython_special.betaincinv?
+    
+    class CosineSimilarity(SubvectorLength):
+    def ppf(self, y):
+        x = super(CosineSimilarity, self).ppf(abs(y*2 - 1))
+        return np.where(y > 0.5, x, -x)
+    def ppf(self, y):
+        x = super().ppf(abs(y * 2 - 1))
+        return np.where(y > 0.5, x, -x)
+    
+    
+    class SubvectorLength(SqrtBeta):
+    """Distribution of the length of a subvectors of a unit vector.
+    Parameters
+    ----------
+    dimensions : int
+        Dimensionality of the complete unit vector.
+    subdimensions : int, optional
+        Dimensionality of the subvector.
+    """
+    def __init__(self, dimensions, subdimensions=1):
+        super().__init__(dimensions - subdimensions, subdimensions)
+    @property
+    def dimensions(self):
+        return self.n + self.m
+    @property
+    def subdimensions(self):
+        return self.m
+
+    
+    class SqrtBeta(Distribution):
+    def ppf(self, y):
+        """Percent point function (inverse cumulative distribution).
+        .. note:: Requires SciPy.
+        Parameters
+        ----------
+        y : array_like
+            Cumulative probabilities in [0, 1].
+        Returns
+        -------
+        ppf : array_like
+            Evaluation points ``x`` in [0, 1] such that ``P(X <= x) = y``.
+        """
+        from scipy.special import betaincinv  # pylint: disable=import-outside-toplevel
+
+        sq_x = betaincinv(self.m / 2.0, self.n / 2.0, y)
+        return np.sqrt(sq_x)
+    
+    x would be 
+    
+    */
+    
  
     /**
      * The method generates an array of vectors of points for the 
