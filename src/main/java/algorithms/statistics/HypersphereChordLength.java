@@ -1,5 +1,7 @@
 package algorithms.statistics;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import thirdparty.smile.math.special.Beta;
 
 /**
@@ -21,7 +23,7 @@ public class HypersphereChordLength {
      * @param d pairwise euclidean distances
      * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
      * @param n the number of dimensions of the hypersphere
-     * @return 
+     * @return vector of the probabilities
      */
     public static double[] pdf(double[] d, double r, int n) {
         
@@ -184,7 +186,8 @@ public class HypersphereChordLength {
         return (r*r)*(2. - ((term1*term4)/(term3*term2)));
     }
     
-    /*
+    /**
+    <pre>
     IV. HYPERSPHERE CHORD LENGTH DISTRIBUTION AS A UNIFORMITY MEASURE
        As already mentioned, some of the most interesting properties of the 
     hypersphere chord length distribution arise from the fact that this is the 
@@ -219,10 +222,10 @@ public class HypersphereChordLength {
     
         L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
 
-           where f_N(x) is hypersphere chord length distribution, the pdf.
+           where f_N(x) is hypersphere chord length distribution == the pdf,
                and
            g_N is intra-distance distribution of the input point distribution 
-               using models above from (1), (2), or (3).
+               using model (2) above.
            x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
     
     Initially, uniform pointsets of size M′ (where M′ is much smaller than M) 
@@ -242,7 +245,53 @@ public class HypersphereChordLength {
           them (as well as for S). If the α%-largest L1 value of Q is smaller 
           than L1(g) then S can be declared as non-uniform with confidence 
           (100 − α)%.
+    </pre>
+     * @param x data points in format [nSamples][nDimensions] that are to be
+     * tested as uniformly distributed on an nDimensions hypersphere
+     * (note, there may be some confusion in definitions as the literature using 
+     * von Mises–Fisher distributions for the hypersphere have a multiplier
+     * that includes a dimension that is then multiplied by an n-sphere of dimension n-1).
+     * @param m the number of points to choose from x.length in calculating L1
+     * @return the calculated L1 statistic from eqn (26) of the paper.
     */
+    public double calcL1UniformityStatistic(double[][] x, int m) throws NoSuchAlgorithmException {
+        
+        if (m > x.length) {
+            throw new IllegalArgumentException("m must be less tna x.length");
+        }
+        
+        // g_N:
+        // -- from the n-sphere points to be tested, choose m of the points.
+        // -- the M(M − 1)/2 point pairs will be constructed 
+        //    and each distance is the euclidean distance 
+        //    ||pi − pj||,i,j = 1,2,...,M,i ̸= j.
+        // looks like after the pairwise distances are calculated, they 
+        //    need to be ordered (from 0 to 2*r with r=1)
+        //    before used in the L_1(g) calculation.
+        
+        // f_N(x)
+        //   x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
+        //double[] pdf(double[] d, double r, int n)
+        
+        //L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
+        
+        int n = x.length;
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        int[] mr = new int[m];
+        int i;
+        for (i = 0; i < m; ++i) {
+            mr[i] = rand.nextInt(i);
+        }
+        
+        // subset chooser
+        //Distances.calcEuclideanSquared
+        throw new UnsupportedOperationException("not yet finished");
+    }
     
     
 }

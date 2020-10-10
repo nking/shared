@@ -17,6 +17,10 @@ import java.util.Arrays;
  falling in any subinterval is directly proportional to the length of the 
  subinterval.
  
+ note, there may be some confusion in definitions as the literature using 
+ von Mises–Fisher distributions for the hypersphere have a multiplier
+ that includes a dimension that is then multiplied by an n-sphere of dimension n-1.
+ 
  * @author nichole
  */
 public class MultivariateUniformDistribution {
@@ -166,7 +170,7 @@ public class MultivariateUniformDistribution {
         
         //return Arrays.copyOf(v, v.length - 1);
     }
-    
+
     /**
      * generate random uniform points on an n-dimensional unit standard hyper-sphere.
      * NOTE: the result is one sample of all dimensions.
@@ -368,13 +372,6 @@ public class MultivariateUniformDistribution {
               
         return u;
     }
-    
-    // TODO: if needed, add method to Uniformly sampling coordinates from the n-sphere
-    //  from Section 2.3 of Voelker, Gosman, Stewart 2017
-    // To sample coordinates from the unit n-sphere (i.e., uniform points from 
-    //  the sphere projected onto an arbitrary unit vector) we could simply 
-    //  modify §2.1 to return only a single element 
-    //  (which is _generateUnitStandard with onSurface = true
     
     /*
     on subject of Uniformly sampling coordinates from the n-sphere

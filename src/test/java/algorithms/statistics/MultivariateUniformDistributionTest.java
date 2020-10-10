@@ -342,4 +342,77 @@ public class MultivariateUniformDistributionTest extends TestCase {
         }
          
     }
+    
+    /**
+     * using the Rayleigh Test from the paper
+     * "An Overview of Uniformity Tests on the Hypersphere"
+     *  Garcia-Portugues and Verdebout, 2018, arXiv:1804.00286.
+     * 
+     * @throws NoSuchAlgorithmException
+     * @throws IOException 
+     */
+    public void testRejectionMethodUnitCircleRayleighTest() throws NoSuchAlgorithmException, IOException {
+          
+        //The asymptotic distribution of Rn under H0 is a χ2, a chi-squared
+        //distribution with 2 degrees of freedom.
+        //
+        //Rn = (2/n) * [
+        //         (summation_{i=1_to_n}(cos(theta_i))^2 
+        //         + (summation_{i=1_to_n}(sin(theta_i))^2 
+        //     ];
+        // --> looks like cos(theta_i) is x_i in the unit circle and
+        //        sin(theta_i) is y_i in the unit circle
+        //
+        
+        int d = 2;
+        int n = 250;
+        boolean[] onSurface = new boolean[] {false, true};
+        
+        for (boolean onS : onSurface) {
+            
+            double[][] x = MultivariateUniformDistribution
+                .generateUnitStandardNSphereWithRejection(d, n, rand, onS);
+
+            int i;
+            double sum1 = 0;
+            double sum2 = 0;
+            for (i = 0; i < n; ++i) {
+                sum1 += x[i][0];
+                sum2 += x[i][1];
+            }
+            double rn = (2./n) * (sum1*sum1 + sum2*sum2);
+
+            /*
+            https://www.itl.nist.gov/div898/handbook/eda/section3/eda3674.htm
+
+            chisq stat for deg of freedom=2
+
+            For an upper-tail one-sided test, find the column corresponding to 
+                1-α in the table containing upper-tail critical 
+                 and reject the null hypothesis if the test statistic is 
+                 greater than the tabled value.
+            For a lower-tail one-sided test, find the column corresponding to α 
+                in the lower-tail critical values table and reject the null 
+                hypothesis if the computed test statistic is less than the 
+                tabled value.
+
+            Upper-tail critical values of chi-square distribution with ν degrees of freedom
+                            Probability less than the critical value
+               ν           0.90      0.95     0.975      0.99     0.999
+
+               1          2.706     3.841     5.024     6.635    10.828
+           ==> 2          4.605     5.991     7.378     9.210    13.816
+
+            Lower-tail critical values of chi-square distribution with ν degrees of freedom
+                    Probability less than the critical value
+               ν           0.10     0.05     0.025      0.01     0.001
+
+               1.          .016      .004      .001      .000      .000
+           ==> 2.          .211      .103      .051      .020      .002
+
+            */
+            assertTrue(rn < 5.991);
+        }
+        
+    }
 }

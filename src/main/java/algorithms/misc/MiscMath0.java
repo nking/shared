@@ -13,6 +13,10 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Arrays;
 
 /**
@@ -807,6 +811,21 @@ public class MiscMath0 {
     }
     
     /**
+     * determine the number of bits, that is the msb position + 1.
+     * Note that a value of 0 returns a bit length of 1.
+     * @param v
+     * @return 
+     */
+    public static int numberOfBits(long v) {
+        if (v < 0) {
+            v *= -1;
+        } else if (v == 0) {
+            return 1;
+        }
+        return 64 -  Long.numberOfLeadingZeros(v);
+    }
+    
+    /**
      * 
      * @param v
      * @return 
@@ -1146,5 +1165,177 @@ public class MiscMath0 {
             f.put(key, c);
         }
         return f;
+    }
+    
+     /**
+     * compute n!/k!(n-k)!.  Note that if n or k are larger than 12,
+     * computeNDivKTimesNMinusKBigIntegerExact is used and in that case,
+     * if the result is larger than Long.MAX_VALUE an exception is thrown.
+     *
+     * @param n
+     * @param k
+     * @return
+     * @throws ArithmeticException thrown when result is out of range of type long
+     */
+    public static long computeNDivKTimesNMinusKExact(int n, int k) {
+
+        if (n == k) {
+            return 1;
+        }
+        
+        if (k > 12 || n > 12) {
+            BigInteger result = computeNDivKTimesNMinusKBigIntegerExact(n, k);
+            if (result.bitLength() > 63) {
+                throw new ArithmeticException("the result will not fit in a long");
+            }
+            return result.longValue();
+        }
+
+        double result = 1;
+        for (int i = n; i > (n-k); i--) {
+            result *= i;
+        }
+        double divisor = factorial(k);
+        
+        result = result/divisor;
+        
+        return Math.round(result);
+    }
+    
+     /**
+     * compute n!/(n-k)!... needed for large numbers
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public static long computeNDivNMinusK(int n, int k) {
+
+        if (n == k) {
+            return 1;
+        }
+
+        long result = 1;
+        for (int i = n; i > (n-k); i--) {
+            result *= i;
+        }
+        return result;
+    }
+    
+    /**
+     * compute n!/k!(n-k)!
+     * @param n
+     * @param k
+     * @return 
+     * @throws ArithmeticException thrown when result is out of range of type long
+     */
+    protected static BigInteger computeNDivKTimesNMinusKBigIntegerExact(int n, int k) {
+        
+        if (n == k) {
+            return BigInteger.ONE;
+        }
+        
+        BigDecimal num = BigDecimal.ONE;
+        for (int i = n; i > (n - k); --i) {
+            BigDecimal m = new BigDecimal(Integer.toString(i));
+            num = num.multiply(m);
+        }
+        
+        BigDecimal divisor = BigDecimal.ONE;
+        for (int i = 2; i <= k; i++) {
+            BigDecimal m = new BigDecimal(Integer.toString(i));
+            divisor = divisor.multiply(m);
+        }
+                
+        num = num.divide(divisor, RoundingMode.UP);
+        
+        num = num.round(MathContext.DECIMAL64);
+        
+        return num.toBigInteger();
+    }
+    
+    /**
+     * compute n!
+     *
+     * @param n
+     * @return
+     */
+    public static long factorial(int n) {
+
+        if (n < 3) {
+            return n;
+        }
+        
+        if (n > 12) {
+            throw new IllegalArgumentException("use factorialBigInteger instead");
+        }
+
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+    
+    /**
+     * write value to a byte array in big endian, that is LSB in highest order bit
+     * (MSB is in lowest memory address).
+     * these are signed values stored as twos complement and can be input
+     * to BigInteger's constructor.
+     * @param value
+     * @return 
+     */
+    public static byte[] writeToBigEndianBytes(long value) {
+    
+        long nBits = numberOfBits(value);
+        
+        int nBytes = (int) Math.ceil((float)nBits/(float)4);
+        
+        //System.out.println("nBits=" + nBits + " value=" + value + " nBytes=" + nBytes);
+        
+        byte[] bytes = new byte[nBytes];
+
+        for (int i = 0; i < nBytes; i++) {
+            long shift = i * 8;
+            long a = (value >> shift);
+            byte b = (byte)a;
+            bytes[nBytes - i - 1] = b;
+        }
+
+        return bytes;
+    }
+    
+        
+    public int sign(int v) {
+        return v >>> 31;
+    }
+    
+    static int[] MultiplyDeBruijnBitPosition = new int[]{
+        0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+        8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+    };
+    /**
+     * determine the number of bits without branching and using only an int
+     * @param v
+     * @return 
+     */
+    public static int numberOfBitsWOB(int v) {
+        //from http://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
+        // then edited for negative numbers and signed int
+        int sign = v >>> 31;
+        // + sign=0 -->  0
+        // - sign=1 --> -1
+        v = v + sign * (-2) * v;
+        v |= v >> 1;
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+        int idx = (v * 0x07C4ACDD) >> 27;
+        sign = idx >>> 31;
+        //System.out.println("    v=" + v + " sign=" + sign);
+        idx += sign*32;
+        int r = MultiplyDeBruijnBitPosition[idx];
+        return r + 1;
     }
 }
