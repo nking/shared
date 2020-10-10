@@ -16,7 +16,7 @@ public class GeometricMedianTest extends TestCase {
         super(testName);
     }
     
-    public void test0() {
+    public void est0() {
         
         System.out.println("test0");
         
@@ -34,6 +34,7 @@ public class GeometricMedianTest extends TestCase {
         double[] data0 = new double[]{1, 1, 3, 3};
         int nDimensions = 2;
         double expectedDist = Math.sqrt(8);  // in standaridized=2
+        double expectedDistStandardized = 2.;
         
         double tol = 0.01;
                 
@@ -57,7 +58,8 @@ public class GeometricMedianTest extends TestCase {
                 f = new GeometricMedianUnweightedFunction(data, nDimensions);
             } else {
                 // consider using 1/n.
-                double[] eta = new double[]{1., 1.};
+                double[] eta = new double[data0.length/nDimensions];
+                Arrays.fill(eta, 1.);
                 f0 = new GeometricMedianWeightedFunction(data0, nDimensions, eta);
                 f = new GeometricMedianWeightedFunction(data, nDimensions, eta);
             }
@@ -77,10 +79,9 @@ public class GeometricMedianTest extends TestCase {
                         break;
                 }
 
-                System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
-                    init[0], init[1], 
+                System.out.printf("\ntype=%d, ii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)\n",
+                    type, ii, init[0], init[1], 
                     standardizedExpected[0], standardizedExpected[1]);
-                    //expected[0], expected[1]);
 
                 double min;
                 if (type == 0) {
@@ -90,8 +91,8 @@ public class GeometricMedianTest extends TestCase {
                         (GeometricMedianWeightedFunction)f, init);
                 }
 
-                System.out.println("in standardized units: min=" + min + " \n   coeffs=" +
-                    Arrays.toString(init));
+                System.out.printf("in standardized units: min=%.4e \n   coeffs=%s\n   expectedMin==%.4e\n",
+                    min, Arrays.toString(init), expectedDistStandardized);
                 System.out.flush();
 
                 // de-normalize the geometric-median "init" and recalculate min
@@ -101,7 +102,7 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s", 
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n   expected=%.4e,   %s\n", 
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
@@ -117,7 +118,7 @@ public class GeometricMedianTest extends TestCase {
         
     }
     
-    public void test1() {
+    public void est1() {
         
         System.out.println("test1");
         
@@ -134,6 +135,7 @@ public class GeometricMedianTest extends TestCase {
         double[] data0 = new double[]{0, 0,  0, 0,  0, 12};
         int nDimensions = 2;
         double expectedDist = 12;
+        double expectedDistStandardized = 1.7321;
         
         double tol = 0.01;
                 
@@ -156,7 +158,8 @@ public class GeometricMedianTest extends TestCase {
                 f = new GeometricMedianUnweightedFunction(data, nDimensions);
             } else {
                 // consider using 1/n.
-                double[] eta = new double[]{1., 1., 1.};
+                double[] eta = new double[data0.length/nDimensions];
+                Arrays.fill(eta, 1.0);
                 f0 = new GeometricMedianWeightedFunction(data0, nDimensions, eta);
                 f = new GeometricMedianWeightedFunction(data, nDimensions, eta);
             }
@@ -176,10 +179,9 @@ public class GeometricMedianTest extends TestCase {
                         break;
                 }
 
-                System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
-                    init[0], init[1], 
+                System.out.printf("\ntype=%d, ii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)\n",
+                    type, ii, init[0], init[1], 
                     standardizedExpected[0], standardizedExpected[1]);
-                    //expected[0], expected[1]);
 
                 double min;
                 if (type == 0) {
@@ -189,8 +191,8 @@ public class GeometricMedianTest extends TestCase {
                         (GeometricMedianWeightedFunction)f, init);
                 }
 
-                System.out.println("in standardized units: min=" + min + " \n   coeffs=" +
-                    Arrays.toString(init));
+                System.out.printf("in standardized units: min=%.4e \n   coeffs=%s\n   expectedMin==%.4e\n",
+                    min, Arrays.toString(init), expectedDistStandardized);
                 System.out.flush();
 
                 // de-normalize the geometric-median "init" and recalculate min
@@ -200,7 +202,7 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s", 
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s\n", 
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
@@ -215,7 +217,7 @@ public class GeometricMedianTest extends TestCase {
         }
     }
     
-    public void test2() {
+    public void est2() {
         
         System.out.println("test2");
         
@@ -261,7 +263,8 @@ public class GeometricMedianTest extends TestCase {
                 f = new GeometricMedianUnweightedFunction(data, nDimensions);
             } else {
                 // consider using 1/n instead of 1.
-                double[] eta = new double[]{1., 1., 1., 1.};
+                double[] eta = new double[data0.length/nDimensions];
+                Arrays.fill(eta, 1.0);
                 //double[] eta = new double[]{13., 13., 5., 5.};
                 f0 = new GeometricMedianWeightedFunction(data0, nDimensions, eta);
                 f = new GeometricMedianWeightedFunction(data, nDimensions, eta);
@@ -368,8 +371,10 @@ public class GeometricMedianTest extends TestCase {
         double[] standardizedExpected = new double[]{-0.257509, 0}; // weights not applied to standardization
         
         double expectedDist = 1747.0; // in standardized = 45.118504
+        double expectedDistStandardized = 45.118504;
         
-        double tol = 0.01;
+        
+        double tol = 0.1;
         
         double[] standardizedMean = new double[nDimensions];
         double[] standardizedStDev = new double[nDimensions];
@@ -414,17 +419,17 @@ public class GeometricMedianTest extends TestCase {
                     break;
             }
 
-            System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
-                    init[0], init[1],
+            System.out.printf("\nii=%d) begin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
+                    ii, init[0], init[1],
                     standardizedExpected[0], standardizedExpected[1]);
             //expected[0], expected[1]);
 
             double min = gm.newtonsThenVardiZhang(f, init);
 
-            System.out.println("in standardized units: min=" + min + " \n   coeffs="
-                    + Arrays.toString(init));
+            System.out.printf("in standardized units: min=%.4e \n   coeffs=%s\n   expectedMin==%.4e\n",
+                min, Arrays.toString(init), expectedDistStandardized);
             System.out.flush();
-
+                
             boolean b = gm.verify(f, init, tol);
             assertTrue(b);
 
@@ -446,9 +451,8 @@ public class GeometricMedianTest extends TestCase {
             //expectedDist = 1747.0; // in standardized = 45.118504
             for (int i = 0; i < init.length; ++i) {
                 double diff = Math.abs(init[i] - expected[i]);
-                //NOTE: increased the tolerance to 1% of the mean of the demand points.
-                double tol2 = 0.03 * Math.abs(standardizedStDev[i]);
-                assertTrue(diff <= tol2);
+                System.out.printf("diff=%.4e\n", diff);
+                assertTrue(diff <= tol);
             }
         }
 

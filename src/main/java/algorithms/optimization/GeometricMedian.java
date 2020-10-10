@@ -25,7 +25,23 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
      The geometric median is a rotation and translation invariant estimator that
      achieves the optimal breakdown point of 0.5, i.e. it is a good estimator
      even when up to half of the input data is arbitrarily corrupted.
-     (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
+     https://dl.acm.org/doi/pdf/10.1145/2897518.2897647
+     
+     From  https://www.pnas.org/content/pnas/97/4/1423.full.pdf
+     "...the problem of minimizing the weighted sum of the
+    Euclidean distances from m points, in Real space of dimension d (R^d). 
+    In industrial applications, this is known as the optimal location problem 
+    of Weber (2). In statistics, the solution of this optimization problem
+    is the spatial median or L1-MM, considered by Brown (3) and
+    Small (4). As noted by Kuhn (5), the problem goes back to
+    Fermat in the early seventeenth century and was generalized
+    to the current form by Simpson in his Doctrine and Application of Fluxions (6). 
+    In the nineteenth century, Steiner made
+    significant contributions to this problem and its extensions (cf.
+    Courant and Robbins; ref. 7). Thus, the problem is known as
+    the Fermat–Weber location problem and also as the Euclidean–
+    Steiner problem."
+     
  * 
  * https://feb.kuleuven.be/public/u0017833/PDF-FILES/l1medianR2.pdf
  * NOTE: the Vardi-Zhang 2000 update method with the author's implemented non-linear
@@ -164,11 +180,11 @@ public class GeometricMedian {
                         
             // re-calculate any values of fDerEval that are 0, using finite difference:
             usedFiniteDifference = false;
-           /* System.out.printf("[gm=(%s)  f=%.3e der=(%s)]\n",
+           System.out.printf("[gm=(%s)  f=%.3e der=(%s)]\n",
                 AbstractGeometricMedianFunction.toString(prevGeoMedian1),
                 prevFEval,
                 AbstractGeometricMedianFunction.toString(fDerEval));
-            System.out.flush();*/
+            System.out.flush();
            
             for (i = 0; i < nDimensions; ++i) {
                 if (Math.abs(fDerEval[i]) < eps) {
@@ -180,9 +196,9 @@ public class GeometricMedian {
                 }
             }
             if (usedFiniteDifference) {
-                /*System.out.printf("  [finite difference=(%s)]\n",
+                System.out.printf("  [finite difference=(%s)]\n",
                     AbstractGeometricMedianFunction.toString(fDerEval));
-                System.out.flush();*/
+                System.out.flush();
                 
                 // stopping strategy
                 cg = 0;
@@ -224,13 +240,13 @@ public class GeometricMedian {
             fDerEval = function.der(geoMedian1);
             fEval2 = function.evaluateGeoMedianPerDimension(geoMedian1);
             
-            /*System.out.printf("f=%.3e  der=%s\n  => gm=(%s)\n  prevf=%.3e %s\n  prevgm=(%s)\n",
+            System.out.printf("f=%.3e  der=%s\n  => gm=(%s)\n  prevf=%.3e %s\n  prevgm=(%s)\n",
                 fEval, AbstractGeometricMedianFunction.toString(fDerEval),
                 AbstractGeometricMedianFunction.toString(geoMedian1),
                 prevFEval, AbstractGeometricMedianFunction.toString(prevFEval2),
                 AbstractGeometricMedianFunction.toString(prevGeoMedian1)
                 );
-            System.out.flush();*/
+            System.out.flush();
             
             // backtrack and reduce step size.
             //  following description of backtracking in Newton's method from
@@ -330,8 +346,8 @@ public class GeometricMedian {
             
             f0 = newtonsMethod2(function, geoMedian);
 
-            //System.out.printf("%d) newton's f=%.7e gm=%s\n", nIter, f0, 
-            //    AbstractGeometricMedianFunction.toString(geoMedian));
+            System.out.printf("%d) newton's f=%.7e gm=%s\n", nIter, f0, 
+                AbstractGeometricMedianFunction.toString(geoMedian));
             
             function.isMedian(geoMedian, isMedian);
 
@@ -350,10 +366,10 @@ public class GeometricMedian {
                 break;
             }
             
-            /*System.out.printf("  vz f=%.7e gm=%s checks=%s\n", f1, 
+            System.out.printf("  vz f=%.7e gm=%s checks=%s\n", f1, 
                 AbstractGeometricMedianFunction.toString(geoMedian),
                 Arrays.toString(checks));
-            System.out.flush();*/
+            System.out.flush();
             
             // stopping criteria:
             if (checks[0] && checks[1]) {

@@ -139,9 +139,9 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
                 + "numberOfDimensions");
         }
         
-        if (multiplicities.length != nDimensions) {
+        if (multiplicities.length != nData) {
             throw new IllegalArgumentException("multiplicities.length must "
-                + "equal nDimensions");
+                + "equal nData");
         }
         
         this.eta = Arrays.copyOf(multiplicities, nData);
@@ -251,8 +251,10 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      * </pre>
      * 
      * 
-     * @param isMedian
-     * @param geoMedian
+     * @param isMedian array of length super.getNData() indicating whether an 
+     * observation is equal to the given geomedian in all dimensions.
+     * @param geoMedian array of length getNDimensions() holding the estimate
+     * of the geometric median.
      * @param checks output array of size 2 holding the conditions to check after the algorithm
      * has completed.  checks[0 = (T(X)==X); checks[1]=(X.lte.eta(X))
      * @return 
@@ -291,85 +293,82 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
                X=M iff T(X)=X iff r(X)<=eta(X) is performed.
         */
                      
-        //geoMedian - obs_i
+        //geoMedian - obs_i for each dimension for each point
         double[] diffs = calculateDifferences(geoMedian);
         assert(diffs.length == obs.length);
         
+        // length is nData.  sum of squared diffeences
         double[] ssdPerPoint = calculateSSDPerPoint(diffs);        
         assert(ssdPerPoint.length == nData);
         
         int i, j, d;
-        
-
-        int medianIsAPoint = 0;
-        double etaX = 0;
+        double s;
+        double[] t1Numer = new double[nDimensions];
+        double[] t1Denom = new double[nDimensions];
+        double[] etaMu = new double[nData];
+        double[] rMu = new double[nDimensions];
         for (i = 0; i < nData; ++i) {
             if (isMedian[i] == 1) {
-                etaX = eta[i];
-                medianIsAPoint = 1;
-            }
-        }
-        
-        // R̃(X) = summation_over_obs_except_X( eta_i*(obs_i-X)/||obs_i-X|| )
-        //      = 
-        // T̃(X) = summation_over_obs_except_X( eta_i*(obs_i)/||obs_i-X|| )
-        //        / summation_over_obs_except_X( eta_i/||obs_i-X|| )
-        
-        double[] tTilde = new double[nDimensions];
-        double[] rTilde = new double[nDimensions];
-        double tSum = 0;
-        double eDivSSD;
-        for (i = 0; i < nData; ++i) {
-            if (isMedian[i] == 1) {
+                etaMu[i] = 1;
                 continue;
             }
-            eDivSSD = eta[i]/Math.sqrt(ssdPerPoint[i]);
-            tSum += eDivSSD;
+            s = Math.sqrt(ssdPerPoint[i]);
+            if (s < 1.e-17) {
+                continue;
+            }
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
-                rTilde[d] += (-diffs[j])*eDivSSD;
-                tTilde[d] += eDivSSD*obs[j];
+                t1Numer[d] += (obs[j]/s);
+                t1Denom[d] += (1./s);
+                rMu[d] += (diffs[j]/s);
             }
         }
-        //r(X) = ||R̃(X)||
-        double rX = 0;
+        
+        double rSum = 0;
         for (d = 0; d < nDimensions; ++d) {
-            tTilde[d] /= tSum;
-            rX += (rTilde[d]*rTilde[d]);
+            rSum += (rMu[d]*rMu[d]);
         }
-        rX = Math.sqrt(rX);
-
-        //T(X) = (1-(eta(X)/r(X))) * T̃(X) + X*math.min(1, (eta(X)/r(X)))
-        //     where 0/0 = 0 in the computation of eta(X)/r(X)
-        double[] t = new double[nDimensions];
-        double eDivR;
+        rSum = Math.sqrt(rSum);
+        
+        double[] gamma = new double[nDimensions];
+        double[] t1 = new double[nDimensions];
         for (d = 0; d < nDimensions; ++d) {
-            if (medianIsAPoint == 0) {
-                t[d] = tTilde[d];
-                assert(Math.abs(etaX) < 1.e-17);
-                continue;
+            if (rSum > 1.e-17) {
+               gamma[d] = Math.min(1., (etaMu[d]/rSum));
             }
-            eDivR = etaX/rX;
-            t[d] = (1. - eDivR)*tTilde[d] + geoMedian[d]*Math.min(1., eDivR);
+            t1[d] = t1Numer[d]/t1Denom[d];
+        }
+        
+        double[] geoMedian2 = new double[nDimensions];
+        for (d = 0; d < nDimensions; ++d) {
+            //geoMedian2[d] = ((1. - gamma[d])*t1[d]) + (gamma[d]*geoMedian[d]);
+            geoMedian2[d] = ((1. - (etaMu[d]/rSum))*t1[d]) + (gamma[d]*geoMedian[d]);
         }
         
         // does T(X) == geoMedian?
         boolean c1 = true;
         for (d = 0; d < nDimensions; ++d) {
-            if (Math.abs(t[d] - geoMedian[d]) > eps) {
+            if (Math.abs(geoMedian2[d] - geoMedian[d]) > eps) {
                 c1 = false;
                 break;
             }
         }
-        // is rX <= etaX?
-        boolean c2 = (rX <= etaX);
         
+        // rSqSum <= etaMu[i]
+        boolean c2 = true;
+        for (d = 0; d < nDimensions; ++d) {
+            if (rSum <= (etaMu[d] + eps)) {
+                c2 = false;
+                break;
+            }
+        }
+                
         checks[0] = c1;
         checks[1] = c2;
+                
+        System.arraycopy(geoMedian2, 0, geoMedian, 0, geoMedian.length);
         
-        System.arraycopy(t, 0, geoMedian, 0, geoMedian.length);
-        
-        return f(t);
+        return f(geoMedian);
     }
 
     @Override

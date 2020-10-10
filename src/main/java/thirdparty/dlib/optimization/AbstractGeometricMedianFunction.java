@@ -224,7 +224,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     }
     
     /**
-     * calculate the sum of square differences for each point.
+     * calculate the sum of squared differences for each point.
      * Note: the result is length nData, not obs.length or 1.
      * @param diffs the differences between each point and the current
      * geometric-median coordinates.
@@ -356,10 +356,11 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
         
         int i, j, d;
         for (i = 0; i < nData; ++i) {
+            // assume it is the same, until find otherwise
             isMedian[i] = 1;
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
-                if (Math.abs(geoMedian[d] - obs[j]) > 1.e-17) {
+                if (Math.abs(geoMedian[d] - obs[j]) > 1.e-15) {
                    isMedian[i] = 0;
                    break;
                 }
