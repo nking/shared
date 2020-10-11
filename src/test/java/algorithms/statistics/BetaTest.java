@@ -41,6 +41,6 @@ public class BetaTest extends TestCase {
         
         a = 1; b = 170;
         r = Beta.beta(a, b);
-        assertTrue(Math.abs(r - 2.0) < tol);
+        assertTrue(Math.abs(r - 0.00703) < 0.01);
     }
 }

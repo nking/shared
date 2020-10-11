@@ -85,7 +85,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
                 System.out.printf("dimension[%d]: mean,stDev=%s\n", i, FormatArray.toString(avgAndStDev, "%.3f"));
             }
             
-            double[] w = new double[nDimensions];
+            double[] w = new double[nSamples];
             Arrays.fill(w, 1.0);
             double[] init = new double[nDimensions];
 
@@ -112,8 +112,6 @@ public class MultivariateUniformDistributionTest extends TestCase {
                 avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
           
             double min, max, binSz;
-            double[] ww = new double[vl.length];
-            Arrays.fill(ww, 0.5);
             UnivariateDistance.DCov dcov;
             UnivariateDistance.DCor dcor;
             
@@ -314,7 +312,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
             str = h.plotHistogram("rej2: [iv4=cumulative X*Y],onSphere=" + onSurface[i], "dist_hist_iv4_rej2");
             
             // ====
-            double[] w = new double[d];
+            double[] w = new double[n];
             Arrays.fill(w, 1.0);
             double[] init = new double[d];
 
