@@ -1,7 +1,15 @@
 package algorithms.statistics;
 
+import algorithms.SubsetChooser;
+import algorithms.misc.Distances;
+import algorithms.misc.MiscMath0;
+import algorithms.util.PairInt;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.Set;
 import thirdparty.smile.math.special.Beta;
 
 /**
@@ -274,23 +282,53 @@ public class HypersphereChordLength {
         //double[] pdf(double[] d, double r, int n)
         
         //L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
+
+        double[] d = chooseMCalcPairwiseDistances(m, x);    
         
-        int n = x.length;
+        throw new UnsupportedOperationException("not yet finished");
+    }
+
+    static double[] chooseMCalcPairwiseDistances(int m, double[][] x) throws NoSuchAlgorithmException {
         
+        if (m > x.length) {
+            throw new IllegalArgumentException("m cannot be larger than x.length");
+        }
+                
         SecureRandom rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
+        TIntSet s = new TIntHashSet();
         int[] mr = new int[m];
         int i;
+        int rd;
         for (i = 0; i < m; ++i) {
-            mr[i] = rand.nextInt(i);
+            rd = rand.nextInt(x.length);
+            while (s.contains(rd)) {
+                rd = rand.nextInt(x.length);
+            }
+            mr[i] = rd;
+            s.add(mr[i]);
+        }
+                
+        int np = (int) MiscMath0.computeNDivKTimesNMinusKExact(m, 2);
+        
+        double[] d = new double[np];
+                
+        SubsetChooser chooser = new SubsetChooser(m, 2);
+        
+        int[] selectedIndexes = new int[2];
+        
+        int c = 0;
+        while (chooser.getNextSubset(selectedIndexes) != -1) {
+            int idx0 = mr[selectedIndexes[0]];
+            int idx1 = mr[selectedIndexes[1]];
+            d[c] = Math.sqrt(Distances.calcEuclideanSquared(x[idx0], x[idx1]));
+            c++;
         }
         
-        // subset chooser
-        //Distances.calcEuclideanSquared
-        throw new UnsupportedOperationException("not yet finished");
+        return d;
     }
     
     

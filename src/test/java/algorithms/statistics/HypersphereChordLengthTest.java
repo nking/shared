@@ -6,6 +6,9 @@ import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.TDoubleSet;
+import gnu.trove.set.hash.TDoubleHashSet;
+import java.security.NoSuchAlgorithmException;
 import junit.framework.TestCase;
 
 /**
@@ -214,5 +217,42 @@ public class HypersphereChordLengthTest extends TestCase {
         for (j = 0; j < ns.size(); ++j) {
             System.out.printf("n=%d d(1-alpha=0.095)~%.2f\n", ns.get(j), da.get(j));
         }
+    }
+    
+    public void testChooseMCalcPairwiseDistances() throws NoSuchAlgorithmException {
+        int nPoints = 3;
+        int nDimensions = 2;
+        
+        double[][] x = new double[nPoints][nDimensions];
+        x[0] = new double[]{0.5, 0};
+        x[1] = new double[]{1, 0.5};
+        x[2] = new double[]{0.5, 1.0};
+        
+        double[] expectedD = new double[3];
+        expectedD[0] = Math.sqrt(0.5);
+        expectedD[1] = 1;
+        expectedD[2] = Math.sqrt(0.5);
+        
+        TDoubleSet expectedDSet = new TDoubleHashSet();
+        for (int i = 0; i < expectedD.length; ++i) {
+            expectedDSet.add(expectedD[i]);
+        }
+        
+        double[] d = HypersphereChordLength.chooseMCalcPairwiseDistances(nPoints, x);
+        
+        assertEquals(3, d.length);
+        double tol = 1.e-5;
+        double diff;
+        for (int i = 0; i < d.length; ++i) {
+            for (int j = 0; j < expectedD.length; ++j) {
+                diff = Math.abs(d[i] - expectedD[j]);
+                if (diff < tol) {
+                    expectedDSet.remove(expectedD[j]);
+                    break;
+                }
+            }
+        }
+        assertEquals(0, expectedDSet.size());
+        
     }
 }
