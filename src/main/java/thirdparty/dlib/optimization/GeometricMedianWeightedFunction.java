@@ -311,7 +311,7 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
             if (isMedian[i] == 1) {
                 //etaMu[i] = 1;
                 etaMu[i] = this.eta[i];
-                //continue;
+                continue;
             }
             s = Math.sqrt(ssdPerPoint[i]);
             if (s < 1.e-17) {
