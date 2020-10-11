@@ -309,8 +309,9 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
         double[] rMu = new double[nDimensions];
         for (i = 0; i < nData; ++i) {
             if (isMedian[i] == 1) {
-                etaMu[i] = 1;
-                continue;
+                //etaMu[i] = 1;
+                etaMu[i] = this.eta[i];
+                //continue;
             }
             s = Math.sqrt(ssdPerPoint[i]);
             if (s < 1.e-17) {
@@ -318,9 +319,9 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
             }
             for (d = 0; d < nDimensions; ++d) {
                 j = i * nDimensions + d;
-                t1Numer[d] += (obs[j]/s);
-                t1Denom[d] += (1./s);
-                rMu[d] += (diffs[j]/s);
+                t1Numer[d] += (this.eta[i]*obs[j]/s);
+                t1Denom[d] += (this.eta[i]/s);
+                rMu[d] += (this.eta[i]*diffs[j]/s);
             }
         }
         
@@ -367,7 +368,7 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
         checks[1] = c2;
                 
         System.arraycopy(geoMedian2, 0, geoMedian, 0, geoMedian.length);
-        
+       
         return f(geoMedian);
     }
 

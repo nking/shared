@@ -16,7 +16,7 @@ public class GeometricMedianTest extends TestCase {
         super(testName);
     }
     
-    public void est0() {
+    public void test0() {
         
         System.out.println("test0");
         
@@ -118,7 +118,7 @@ public class GeometricMedianTest extends TestCase {
         
     }
     
-    public void est1() {
+    public void test1() {
         
         System.out.println("test1");
         
@@ -217,7 +217,7 @@ public class GeometricMedianTest extends TestCase {
         }
     }
     
-    public void est2() {
+    public void test2() {
         
         System.out.println("test2");
         
@@ -343,7 +343,7 @@ public class GeometricMedianTest extends TestCase {
         }
     }
     
-    public void test3() {
+    public void est3() {
         
         System.out.println("test3");
         
@@ -359,7 +359,9 @@ public class GeometricMedianTest extends TestCase {
         /*
         standardized: Mean = new double[]{9.75, 0}; 
         standardized: StDev = new double[]{37.8626905189, 39.192};
-        standardized: new double[]{-0.7857, 1.225, -0.786, -1.225, 0.271, 0, 1.301, 0};
+        standardized: new double[]{
+        //   -0.7857339,1.2247397428, -0.7857339,-1.2247397428, 
+        //       0.2707150458545328,0, 1.30075278,0};
         */
         double[] data0 = new double[]{-20, 48, -20, -48, 20, 0, 59, 0}; //
         int nDimensions = 2;
@@ -368,17 +370,22 @@ public class GeometricMedianTest extends TestCase {
         // the geometric-median in original data frames:
         double[] expected = new double[]{0., 0};
         // the geometric-median in standardized coordinate frames:
-        double[] standardizedExpected = new double[]{-0.257509, 0}; // weights not applied to standardization
+        double[] standardizedExpected = new double[]{-0.25750943, 0}; // weights not applied to standardization
         
-        double expectedDist = 1747.0; // in standardized = 45.118504
-        double expectedDistStandardized = 45.118504;
+        double expectedDist = 1747.014152324044;
+        double expectedDistStandardized = 45.11109783739542; // weighted
         
+        /* ==== found this soln which is close, but not better ====
+        expectedDistStandardized = 45.10843371253345;
+        expectedDist = 1747.0935;
+        expected = new double[]{-0.6609909, 0};
+        standardizedExpected = new double[]{-0.2749670125987123, 0};*/
         
         double tol = 0.1;
         
         double[] standardizedMean = new double[nDimensions];
         double[] standardizedStDev = new double[nDimensions];
-        //-0.7857, 1.225, -0.786, -1.225, 0.271, 0, 1.301, 
+      
         double[] data = Standardization.standardUnitNormalization(data0, 
             nDimensions, standardizedMean, standardizedStDev);
         
@@ -419,7 +426,7 @@ public class GeometricMedianTest extends TestCase {
                     break;
             }
 
-            System.out.printf("\nii=%d) begin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
+            System.out.printf("\nii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)\n",
                     ii, init[0], init[1],
                     standardizedExpected[0], standardizedExpected[1]);
             //expected[0], expected[1]);
