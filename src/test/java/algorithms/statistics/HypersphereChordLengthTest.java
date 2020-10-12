@@ -1,6 +1,7 @@
 package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
+import static algorithms.statistics.HypersphereChordLength.chooseMCalcPairwiseDistances;
 import algorithms.util.FormatArray;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TIntList;
@@ -9,6 +10,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import junit.framework.TestCase;
 
 /**
@@ -222,6 +224,7 @@ public class HypersphereChordLengthTest extends TestCase {
     public void testChooseMCalcPairwiseDistances() throws NoSuchAlgorithmException {
         int nPoints = 3;
         int nDimensions = 2;
+        int m = 3;
         
         double[][] x = new double[nPoints][nDimensions];
         x[0] = new double[]{0.5, 0};
@@ -238,7 +241,9 @@ public class HypersphereChordLengthTest extends TestCase {
             expectedDSet.add(expectedD[i]);
         }
         
-        double[] d = HypersphereChordLength.chooseMCalcPairwiseDistances(nPoints, x);
+        int[] xMIdx = HypersphereChordLength.chooseM(m, x.length);
+
+        double[] d = HypersphereChordLength.chooseMCalcPairwiseDistances(x, xMIdx);
         
         assertEquals(3, d.length);
         double tol = 1.e-5;
@@ -255,4 +260,30 @@ public class HypersphereChordLengthTest extends TestCase {
         assertEquals(0, expectedDSet.size());
         
     }
+    
+    public void testCalcL1UniformityStatistic() throws NoSuchAlgorithmException {
+        
+        double d, diff;
+        int r = 1;
+        double[] ds, pdf;
+        double tol = 1e-2;
+        
+        int ns = 4;
+        int nPoints = 250;
+        boolean onSurfae = true;
+        int m = 100; 
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        double[][] x = MultivariateUniformDistribution
+            .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurfae);
+        
+        double l1Sum = HypersphereChordLength.calcL1UniformityStatistic(x, m);
+        
+        System.out.printf("l1Sum = %.4e\n", l1Sum);
+    }
+    
 }

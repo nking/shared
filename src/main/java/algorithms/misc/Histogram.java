@@ -288,6 +288,77 @@ public class Histogram {
         return histogram;
     }
 
+    public static HistogramHolder createSimpleHistogram(float binWidth, 
+        float[] values) {
+
+        if (values == null) {
+            throw new IllegalArgumentException(
+                "values and valueErrors cannot be null and must be the same length");
+        }
+        float[] minMax = MiscMath0.getMinMax(values);
+        float xmax = MiscMath0.roundUpByLargestPower((float)minMax[1]);
+        float xmin = MiscMath0.roundDownByLargestPower((float)minMax[0]);
+        // xmax > 1 and xmin is between 0 and 1, round xmin down
+        if ((xmax > 1) && (xmin > 0) && (xmin < 1.0)) {
+            xmin = 0;
+        }
+        
+        int nBins = (int)Math.ceil(((xmax - xmin))/binWidth);
+        if (nBins < 0) {
+            nBins *= -1;
+        }
+
+        float[] xHist = new float[nBins];
+        int[] yHist = new int[nBins];
+        
+        Histogram.createHistogram(values, nBins, xmin, xmax, xHist, 
+            yHist, binWidth);
+
+        float[] yHistFloat = new float[yHist.length];
+        for (int i = 0; i < yHist.length; i++) {
+            yHistFloat[i] = (float) yHist[i];
+        }
+
+        HistogramHolder histogram = new HistogramHolder();
+        histogram.setXHist(xHist);
+        histogram.setYHist(yHist);
+        histogram.setYHistFloat(yHistFloat);
+        
+        return histogram;
+    }
+    
+    public static HistogramHolder createSimpleHistogram(float binWidth, 
+        float[] values, float min, float max) {
+
+        if (values == null) {
+            throw new IllegalArgumentException(
+                "values and valueErrors cannot be null and must be the same length");
+        }
+        
+        int nBins = (int)Math.ceil(((max - min))/binWidth);
+        if (nBins < 0) {
+            nBins *= -1;
+        }
+
+        float[] xHist = new float[nBins];
+        int[] yHist = new int[nBins];
+        
+        Histogram.createHistogram(values, nBins, min, max, xHist, 
+            yHist, binWidth);
+
+        float[] yHistFloat = new float[yHist.length];
+        for (int i = 0; i < yHist.length; i++) {
+            yHistFloat[i] = (float) yHist[i];
+        }
+
+        HistogramHolder histogram = new HistogramHolder();
+        histogram.setXHist(xHist);
+        histogram.setYHist(yHist);
+        histogram.setYHistFloat(yHistFloat);
+        
+        return histogram;
+    }
+
     
     public static HistogramHolder createSimpleHistogram(float minX, float maxX,
         float binWidth, 
@@ -628,6 +699,73 @@ public class Histogram {
         return hist;
     }
     
+    /**
+     * binWidth = 2*IQR * n^(−1/3)
+     * @param values
+     * @return 
+     */
+    public static HistogramHolder calculateFreedmanDiaconisHistogram(
+        double[] values) {
+        
+        // binWidth = 2*IQR * n^(−1/3)
+        double[] medianAndIQR = MiscMath0.calcMedianAndIQR(values);
+        
+        float binWidth = (float)(2.*medianAndIQR[1]*Math.pow(values.length, -1./3.));
+        
+        float[] vf = new float[values.length];
+        for (int i = 0; i < vf.length; ++i) {
+            vf[i] = (float)values[i];
+        }
+       
+        return createSimpleHistogram(binWidth, vf);
+    }
+    
+    /**
+     * warning: casts all to float
+     * binWidth = 3.49 * stDev * n^(−1/3)
+     * @param values
+     * @return 
+     */
+    public static HistogramHolder calculateScottsHistogram(
+        double[] values, double min, double max) {
+        
+        // binWidth = 3.49 * stDev * n^(−1/3)
+        double[] avgAndStDev = MiscMath0.getAvgAndStDev(values);
+        
+        float binWidth = (float)(3.39 * avgAndStDev[1] * Math.pow(values.length, -1./3.));
+        
+        float[] vf = new float[values.length];
+        for (int i = 0; i < vf.length; ++i) {
+            vf[i] = (float)values[i];
+        }
+        
+        return createSimpleHistogram(binWidth, vf, (float)min, (float)max);
+    }
+    
+    public static HistogramHolder calculateScottsHistogram(
+        double[] values) {
+        
+        // binWidth = 3.49 * stDev * n^(−1/3)
+        double[] avgAndStDev = MiscMath0.getAvgAndStDev(values);
+        
+        float binWidth = (float)(3.39 * avgAndStDev[1] * Math.pow(values.length, -1./3.));
+        
+        float[] vf = new float[values.length];
+        for (int i = 0; i < vf.length; ++i) {
+            vf[i] = (float)values[i];
+        }
+        
+        return createSimpleHistogram(binWidth, vf);
+    }
+    
+    /**
+     * nBins = log_2(n) + 1:
+     * @param xMin
+     * @param xMax
+     * @param values
+     * @param valueErrors
+     * @return 
+     */
     public static HistogramHolder calculateSturgesHistogram(
         final float xMin, final float xMax,
         float[] values, float[] valueErrors) {
@@ -640,14 +778,17 @@ public class Histogram {
         }
 
         /*
+        nBins = log_2(n) + 1:  note log2(x) = Math.log(x)/Math.log(2.)
+        ----------------------
+        
         log_2(values.length) + 1 = (xMax - xMin)/binWidth
         
         ==> binWidth = (xMax - xMin) / (log_2(values.length) + 1)
         */
         
-        float binWidth = (float) ((xMax - xMin)/(Math.log(values.length) + 1));
+        float binWidth = (float) ((xMax - xMin)/((Math.log(values.length)/Math.log(2.)) + 1));
         
-        int nBins = (int)(Math.log(values.length) + 1);
+        int nBins = (int)((Math.log(values.length)/Math.log(2.)) + 1);
         
         float[] xHist = new float[nBins];
         int[] yHist = new int[nBins];

@@ -1304,7 +1304,34 @@ public class MiscMath0 {
 
         return bytes;
     }
+
+    public static double[] getMinMax(double[] d) {
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+        for (double a : d) {
+            if (a < min) {
+                min = a;
+            }
+            if (a > max) {
+                max = a;
+            }
+        }
+        return new double[]{min, max};
+    }
     
+    public static float[] getMinMax(float[] d) {
+        float min = Float.POSITIVE_INFINITY;
+        float max = Float.NEGATIVE_INFINITY;
+        for (float a : d) {
+            if (a < min) {
+                min = a;
+            }
+            if (a > max) {
+                max = a;
+            }
+        }
+        return new float[]{min, max};
+    }
         
     public int sign(int v) {
         return v >>> 31;
