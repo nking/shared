@@ -1,8 +1,11 @@
 package algorithms.statistics;
 
 import algorithms.SubsetChooser;
+import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Distances;
+import algorithms.misc.Histogram;
 import algorithms.misc.MiscMath0;
+import algorithms.misc.MiscSorter;
 import algorithms.util.PairInt;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -281,9 +284,39 @@ public class HypersphereChordLength {
         //   x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
         //double[] pdf(double[] d, double r, int n)
         
+        /*
+        L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
+
+           where f_N(x) is hypersphere chord length distribution == the pdf,
+               and
+           g_N is intra-distance distribution of the input point distribution 
+               using model (2) above.
+           x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
+        */
         //L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
 
-        double[] d = chooseMCalcPairwiseDistances(m, x);    
+        double[] d1 = chooseMCalcPairwiseDistances(m, x);
+        
+        int[] indexes1 = MiscSorter.mergeSortIncreasing(d1);
+        
+        double[] d2 = calculateDistancesFromOrigin(x);
+        
+        int[] indexes2 = MiscSorter.mergeSortIncreasing(d2);
+        
+        double[] p2 = pdf(d2, 1, x[0].length);
+        
+        // the details needed to create the integral seem to be these:
+        //
+        // calculate p1 for each item in d2:
+        //   -- create a histogram from d1 and normalize it so that the
+        //      histogram counts sum to 1
+        //   -- the normalized count for the bin holding each item of d2
+        //      is the value of g_N(x) to be subtracted from the corresponding item in p2
+        
+        // add methods to histogram code for
+        //   Freedman-Diaconis’s Rule (2*(IQR)*n^(−1/3)), 
+        //    and Scott's Rule (3.49* sigma * n^(−1/3))
+        // 
         
         throw new UnsupportedOperationException("not yet finished");
     }
@@ -326,6 +359,33 @@ public class HypersphereChordLength {
             int idx1 = mr[selectedIndexes[1]];
             d[c] = Math.sqrt(Distances.calcEuclideanSquared(x[idx0], x[idx1]));
             c++;
+        }
+        
+        return d;
+    }
+
+    /**
+     * calculate the distance of each point from the origin.
+     * assumes points are already w.r.t origin as they are being tested for
+     * uniformity on the unit sphere
+     * @param x points on the unit sphere
+     * @return 
+     */
+    private double[] calculateDistancesFromOrigin(double[][] x) {
+                
+        int n = x.length;
+        int nd = x[0].length;
+
+        // 
+        double[] d = new double[n];
+        double s;   
+        int i, j;
+        for (i = 0; i < n; ++i) {
+            s = 0;
+            for (j = 0; j < nd; ++j) {
+                s += (x[i][j]*x[i][j]);
+            }
+            d[i] = Math.sqrt(s);
         }
         
         return d;
