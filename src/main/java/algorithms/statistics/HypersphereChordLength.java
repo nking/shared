@@ -14,6 +14,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -202,6 +203,10 @@ public class HypersphereChordLength {
         return (r*r)*(2. - ((term1*term4)/(term3*term2)));
     }
     
+    public static enum POINT_DISTRIBUTION_TYPE {
+        INTRA_DISTANCE_2, POINT_DISTANCE_3
+    }
+    
     /**
     <pre>
     IV. HYPERSPHERE CHORD LENGTH DISTRIBUTION AS A UNIFORMITY MEASURE
@@ -268,13 +273,80 @@ public class HypersphereChordLength {
      * von Mises–Fisher distributions for the hypersphere have a multiplier
      * that includes a dimension that is then multiplied by an n-sphere of dimension n-1).
      * @param m the number of points to choose from x.length in calculating L1
+     * @param type type of distance distribution to create internally using 
+     * methods outlined about form Section IV. of 2020 Sidiropoulos.
+     * @param rand
      * @return the calculated L1 statistic from eqn (26) of the paper.
     */
-    public static double calcL1UniformityStatistic(double[][] x, int m) throws NoSuchAlgorithmException {
+    public static double calcL1UniformityStatistic(double[][] x, int m,
+        POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
         
         if (m > x.length) {
             throw new IllegalArgumentException("m must be less tna x.length");
         }
+        
+        double[] d1 = createOrderedDistanceDistribution(x, m, type, rand);
+        
+        double l1Sum = calcL1UniformityStatistic(d1, x[0].length);
+        
+        return l1Sum;
+    }
+    
+    static double[] createOrderedDistanceDistribution(double[][] x, int m,
+        POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
+        
+        if (m > x.length) {
+            throw new IllegalArgumentException("m must be less tna x.length");
+        }
+        
+        double[] d1;
+
+        if (type == null || type.equals(POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2)) {
+
+            int[] xMIdx = chooseM(m, x.length, rand);
+
+            d1 = calcPairwiseDistances(x, xMIdx);
+            
+        } else {
+            // uses POINT_DISTRIBUTION_TYPE.POINT_DISTANCE_3
+            //    resulting length of d is
+            
+            int[] xMIdx = chooseM(m + 1, x.length, rand);
+            
+            int pt1Idx = xMIdx[m];
+            xMIdx = Arrays.copyOfRange(xMIdx, 0, m);
+
+            d1 = calcPairwiseDistances(x, xMIdx, pt1Idx);
+            
+            assert(d1.length == xMIdx.length);
+        }
+        
+        int[] indexes1 = MiscSorter.mergeSortIncreasing(d1);
+        
+        return d1;
+    }
+    
+    /**
+    calculate the uniformity measure based upon the point distances
+    (presumable measured by methods (2) or (3) of Sective IV. of the 
+    2020 Sidiropoulos paper.
+    <pre>
+    to quantify the ”uniformity” of an input point distribution on a N-sphere, 
+    the L1 distance is used.  
+        
+        L_1(g) = integral_{x=0_to_2} ( | g_N(x) - f_N(x)| * dx )
+
+           where f_N(x) is hypersphere chord length distribution == the pdf,
+               and
+           g_N is intra-distance distribution of the input point distribution 
+               using model (2) above.
+           x is the chord length d, so the integration is from d=0 to d=2 (presumably 2*r with r=1).
+    </pre>
+     * @param d array of point distances, sorted by non-decreasing order.
+     * @param nDimensions
+     * @return the calculated L1 statistic from eqn (26) of the paper.
+    */
+    public static double calcL1UniformityStatistic(double[] d, int nDimensions) {
         
         // g_N:
         // -- from the n-sphere points to be tested, choose m of the points.
@@ -300,32 +372,14 @@ public class HypersphereChordLength {
         */
         //L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
         
-        int[] xMIdx = chooseM(m, x.length);
-
-        double[] d1 = chooseMCalcPairwiseDistances(x, xMIdx);
+        double[] p2 = pdf(d, 1, nDimensions);
         
-        int[] indexes1 = MiscSorter.mergeSortIncreasing(d1);
-        
-        //double[] d2 = calculateDistancesFromOrigin(x, xMIdx);
-        
-        //int[] indexes2 = MiscSorter.mergeSortIncreasing(d2);
-        
-        double[] p2 = pdf(d1, 1, x[0].length);
-        
-        // the details needed to create the integral seem to be these:
-        //
-        // calculate p1 for each item in d2 by:
-        //   -- create a histogram from d1 and normalize it so that the
-        //      histogram counts sum to 1
-        //   -- the normalized count for the bin holding each item of d2
-        //      is the value of g_N(x) to be subtracted from the corresponding item in p2
-     
-        double[] minMaxD1 = MiscMath0.getMinMax(d1);
+        double[] minMaxD1 = MiscMath0.getMinMax(d);
         //double[] minMaxD2 = MiscMath0.getMinMax(d2);
         double minD = minMaxD1[0];
         double maxD = minMaxD1[1];
      
-        HistogramHolder h1 = Histogram.calculateScottsHistogram(d1);
+        HistogramHolder h1 = Histogram.calculateScottsHistogram(d);
         float[] p1 = h1.getYHistFloat();
         float[] p1x = h1.getXHist();
         float[] minMaxP1 = MiscMath0.getMinMax(p1);
@@ -335,9 +389,12 @@ public class HypersphereChordLength {
         }
         
         try {
-            String str = h1.plotHistogram("p1", "p1_hist");
             PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
-            plotter.addPlot(d1, p2, null, null, "p2");
+            plotter.addPlot(p1x, p1, p1x, p1, "p1");
+            String str = plotter.writeFile("p1_hist");
+            
+            plotter = new PolygonAndPointPlotter();
+            plotter.addPlot(d, p2, null, null, "p2");
             String str2 = plotter.writeFile("p2_hist");
         } catch (IOException ex) {
             Logger.getLogger(HypersphereChordLength.class.getName()).log(Level.SEVERE, null, ex);
@@ -348,17 +405,17 @@ public class HypersphereChordLength {
         float p1Max = p1x[p1x.length - 1] + (binWidth1/2.f);
         
         double l1Sum = 0;
-        double d;
+        double dist;
         double diff;
         int bin1;
-        for (int i = 0; i < d1.length; ++i) {
-            d = d1[i];
+        for (int i = 0; i < d.length; ++i) {
+            dist = d[i];
             
-            if (d < 0 || d > 2) {
+            if (dist < 0 || dist > 2) {
                 int z = 0;
             }
             
-            bin1 = (int) ((d - p1Min)/binWidth1);
+            bin1 = (int) ((dist - p1Min)/binWidth1);
             if ((bin1 < 0) || (bin1 >= p1x.length)) {
                 throw new IllegalStateException("bin1 is outside of bounds of histogram");
             }
@@ -400,16 +457,11 @@ public class HypersphereChordLength {
      * randomly choose m numbers from 0 to n-1, inclusive.
      * @param m
      * @param n
+     * @param rand
      * @return
-     * @throws NoSuchAlgorithmException 
      */
-    static int[] chooseM(int m, int n) throws NoSuchAlgorithmException {
-                        
-        SecureRandom rand = SecureRandom.getInstanceStrong();
-        long seed = System.nanoTime();
-        //System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
-        
+    static int[] chooseM(int m, int n, SecureRandom rand) {
+             
         TIntSet s = new TIntHashSet();
         int[] mr = new int[m];
         int i;
@@ -425,7 +477,7 @@ public class HypersphereChordLength {
         return mr;
     }
 
-    static double[] chooseMCalcPairwiseDistances(double[][] x, int[] idx) throws NoSuchAlgorithmException {
+    static double[] calcPairwiseDistances(double[][] x, int[] idx) {
         
         if (idx.length > x.length) {
             throw new IllegalArgumentException("m cannot be larger than x.length");
@@ -447,6 +499,23 @@ public class HypersphereChordLength {
             int idx1 = idx[selectedIndexes[1]];
             d[c] = Math.sqrt(Distances.calcEuclideanSquared(x[idx0], x[idx1]));
             c++;
+        }
+        
+        return d;
+    }
+    
+    static double[] calcPairwiseDistances(double[][] x, int[] idx, int p0Idx) {
+        
+        if (idx.length > x.length) {
+            throw new IllegalArgumentException("m cannot be larger than x.length");
+        }
+        
+        int m = idx.length;
+                
+        double[] d = new double[idx.length];
+               
+        for (int i = 0; i < idx.length; ++i) {
+            d[i] = Math.sqrt(Distances.calcEuclideanSquared(x[p0Idx], x[idx[i]]));
         }
         
         return d;

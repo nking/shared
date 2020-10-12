@@ -1,7 +1,6 @@
 package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
-import static algorithms.statistics.HypersphereChordLength.chooseMCalcPairwiseDistances;
 import algorithms.util.FormatArray;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TIntList;
@@ -226,6 +225,11 @@ public class HypersphereChordLengthTest extends TestCase {
         int nDimensions = 2;
         int m = 3;
         
+         SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
         double[][] x = new double[nPoints][nDimensions];
         x[0] = new double[]{0.5, 0};
         x[1] = new double[]{1, 0.5};
@@ -241,9 +245,9 @@ public class HypersphereChordLengthTest extends TestCase {
             expectedDSet.add(expectedD[i]);
         }
         
-        int[] xMIdx = HypersphereChordLength.chooseM(m, x.length);
+        int[] xMIdx = HypersphereChordLength.chooseM(m, x.length, rand);
 
-        double[] d = HypersphereChordLength.chooseMCalcPairwiseDistances(x, xMIdx);
+        double[] d = HypersphereChordLength.calcPairwiseDistances(x, xMIdx);
         
         assertEquals(3, d.length);
         double tol = 1.e-5;
@@ -281,7 +285,8 @@ public class HypersphereChordLengthTest extends TestCase {
         double[][] x = MultivariateUniformDistribution
             .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurfae);
         
-        double l1Sum = HypersphereChordLength.calcL1UniformityStatistic(x, m);
+        double l1Sum = HypersphereChordLength.calcL1UniformityStatistic(x, m, 
+            HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
         
         System.out.printf("l1Sum = %.4e\n", l1Sum);
     }

@@ -8,9 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.jar.JarEntry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * writes an html file using the d3.js library.
@@ -417,7 +414,7 @@ public class PolygonAndPointPlotter {
         
         addPlot(xx, yy, null, null, xp, yp, plotLabel);
     }
-
+    
     protected StringBuffer getTemplateHtmlPlot() throws FileNotFoundException, IOException {
         return getTemplateHtmlPlot("plot_points_and_polygon.html");
     }
