@@ -212,6 +212,13 @@ public class HypersphereChordLength {
         double l1MaxSphere;
         double l1MaxX;
         boolean isConsistentWithNonUniform;
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("isConsistentWithNonUniform=").append(isConsistentWithNonUniform);
+            sb.append(String.format("\n1-alpha=%.5f \nL1(sphere)=%.4f \nL1(X)=%.4f", 
+                oneMinusAlpha, l1MaxSphere, l1MaxX));
+            return sb.toString();
+        }
     }
     
     /**
@@ -221,9 +228,14 @@ public class HypersphereChordLength {
     <pre>
     see notes belowx in method comments for calcL1UniformityStatistic
     </pre>
+    * TODO: determine the number of iterations, q, in some manner.
     */
     public static NonUniformityStats calcConfidenceOfNonUniformity(double[][] x, int m,
         POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
+        
+        if (true) {
+            throw new UnsupportedOperationException("not ready for use");
+        }
         
         if (m > x.length) {
             throw new IllegalArgumentException("m must be less tna x.length");
@@ -270,7 +282,7 @@ public class HypersphereChordLength {
         } else {
             stats.isConsistentWithNonUniform = false;
         }
-        
+                
         return stats;
     }
     

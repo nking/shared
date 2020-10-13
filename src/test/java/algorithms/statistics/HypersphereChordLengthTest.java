@@ -292,7 +292,7 @@ public class HypersphereChordLengthTest extends TestCase {
         System.out.printf("l1Sum = %.4e\n", l1Sum);
     }
     
-    public void testCalcConfidenceOfNonUniformity() throws NoSuchAlgorithmException {
+    public void estCalcConfidenceOfNonUniformity() throws NoSuchAlgorithmException {
         
         double d, diff;
         int r = 1;
@@ -314,6 +314,8 @@ public class HypersphereChordLengthTest extends TestCase {
         
         NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
             HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
+        
+        System.out.println("stats=" + stats.toString());
         
         assertFalse(stats.isConsistentWithNonUniform);
     }
