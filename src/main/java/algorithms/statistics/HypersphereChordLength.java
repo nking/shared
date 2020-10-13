@@ -207,6 +207,73 @@ public class HypersphereChordLength {
         INTRA_DISTANCE_2, POINT_DISTANCE_3
     }
     
+    public static class NonUniformityStats {
+        double oneMinusAlpha;
+        double l1MaxSphere;
+        double l1MaxX;
+        boolean isConsistentWithNonUniform;
+    }
+    
+    /**
+    test to identify non-uniform spatial distribution, assessing 
+    whether the points span the hypersphere 
+    in a way that is compatible with the uniform distribution.
+    <pre>
+    see notes belowx in method comments for calcL1UniformityStatistic
+    </pre>
+    */
+    public static NonUniformityStats calcConfidenceOfNonUniformity(double[][] x, int m,
+        POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
+        
+        if (m > x.length) {
+            throw new IllegalArgumentException("m must be less tna x.length");
+        }
+        
+        int nDimensions = x[0].length;
+        int nSamples = x.length;
+        
+        // number of L1 statistics
+        int q = 100;
+        
+        double[] l1Sphere = new double[q];
+        double[] l1X = new double[q];
+        double[][] s;
+        
+        for (int i = 0; i < q; ++i) {
+            
+            l1X[i] = calcL1UniformityStatistic(x, m, type, rand);
+            
+            s = MultivariateUniformDistribution
+                .generateUnitStandardNSphereWithRejection(nDimensions, nSamples, rand, true);
+            
+            l1Sphere[i] = calcL1UniformityStatistic(s, m, type, rand);
+        }
+        
+        double[] minMaxSphere = MiscMath0.getMinMax(l1Sphere);
+        
+        double[] minMaxX = MiscMath0.getMinMax(l1X);
+        
+        //1-alpha for sphere
+        double aS = ChiSquaredCriticalValues.approxPValueLin(
+            minMaxSphere[1], nDimensions);
+        //1-alpha for x
+        double aX = ChiSquaredCriticalValues.approxPValueLin(
+            minMaxX[1], nDimensions);
+        
+        // see Section IV, page 9:
+        NonUniformityStats stats = new NonUniformityStats();
+        stats.l1MaxSphere = minMaxSphere[1];
+        stats.l1MaxX = minMaxX[1];
+        stats.oneMinusAlpha = aS;
+        if (stats.l1MaxSphere > stats.l1MaxX) {
+            stats.isConsistentWithNonUniform = true;
+        } else {
+            stats.isConsistentWithNonUniform = false;
+        }
+        
+        return stats;
+    }
+    
     /**
     <pre>
     IV. HYPERSPHERE CHORD LENGTH DISTRIBUTION AS A UNIFORMITY MEASURE
@@ -388,7 +455,7 @@ public class HypersphereChordLength {
             p1[i] *= p1Norm;
         }
         
-        try {
+        /*try {
             PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
             plotter.addPlot(p1x, p1, p1x, p1, "p1");
             String str = plotter.writeFile("p1_hist");
@@ -398,7 +465,7 @@ public class HypersphereChordLength {
             String str2 = plotter.writeFile("p2_hist");
         } catch (IOException ex) {
             Logger.getLogger(HypersphereChordLength.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
         
         float binWidth1 = p1x[1] - p1x[0];
         float p1Min = p1x[0] - (binWidth1/2.f);

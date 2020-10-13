@@ -160,10 +160,8 @@ public class MultivariateUniformDistribution {
      * @return vector p of size d defined as uniform points on a space S^d
      * by a stochastic process in which all p_i ∈ S have equal probability
      * P_i = c to be generated.
-     * @throws NoSuchAlgorithmException 
      */
-    public static double[] generateOnUnitStandardNSphere(int d, SecureRandom rand) 
-        throws NoSuchAlgorithmException {
+    public static double[] generateOnUnitStandardNSphere(int d, SecureRandom rand) {
         
         return _generateUnitStandardNSphere(d, rand, true);
         //double[] v = _generateUnitStandardNSphere(d+1, rand, true);
@@ -234,10 +232,8 @@ public class MultivariateUniformDistribution {
      * Muller / Marsaglia (‘Normalized Gaussians’).
      * @param d number of dimensions.
      * @return vector of size d
-     * @throws NoSuchAlgorithmException 
      */
-    public static double[] generateInUnitStandardNBall(int d, SecureRandom rand) 
-        throws NoSuchAlgorithmException {
+    public static double[] generateInUnitStandardNBall(int d, SecureRandom rand) {
         
         return _generateUnitStandardNSphere(d, rand, false);
     }
@@ -314,10 +310,9 @@ public class MultivariateUniformDistribution {
      * else when false the method generates points within the unit hyper-sphere
      * that is within the d-ball.
      * @return vector of length d normalized by squart root of sum of squares.
-     * @throws NoSuchAlgorithmException 
      */
     public static double[] _generateUnitStandardNSphere(int d, SecureRandom rand, boolean onSurface) 
-        throws NoSuchAlgorithmException {
+        {
         
         /*
         From 2010 Harman and Lacko:
@@ -508,11 +503,9 @@ These are details from Nengo issue above and source code below:
      * @return an array of length n, of d-dimension vectors of points randomly
      * generated on a uniform n-sphere if onSurface=true, else uniformly randomly 
      * generated points within an n-ball.
-     * @throws NoSuchAlgorithmException 
      */
     public static double[][] generateUnitStandardNSphereWithRejection(
-        final int d, final int n, SecureRandom rand, boolean onSurface) 
-        throws NoSuchAlgorithmException {
+        final int d, final int n, SecureRandom rand, boolean onSurface) {
         
         if (d > 5) {
             System.err.println("this method should not be used for higher order dimensions "

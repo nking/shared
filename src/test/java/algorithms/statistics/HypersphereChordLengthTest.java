@@ -1,6 +1,7 @@
 package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
+import algorithms.statistics.HypersphereChordLength.NonUniformityStats;
 import algorithms.util.FormatArray;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TIntList;
@@ -272,9 +273,9 @@ public class HypersphereChordLengthTest extends TestCase {
         double[] ds, pdf;
         double tol = 1e-2;
         
-        int ns = 4;
+        int ns = 5;
         int nPoints = 250;
-        boolean onSurfae = true;
+        boolean onSurface = true;
         int m = 100; 
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -283,12 +284,38 @@ public class HypersphereChordLengthTest extends TestCase {
         rand.setSeed(seed);
         
         double[][] x = MultivariateUniformDistribution
-            .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurfae);
+            .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurface);
         
         double l1Sum = HypersphereChordLength.calcL1UniformityStatistic(x, m, 
             HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
         
         System.out.printf("l1Sum = %.4e\n", l1Sum);
+    }
+    
+    public void testCalcConfidenceOfNonUniformity() throws NoSuchAlgorithmException {
+        
+        double d, diff;
+        int r = 1;
+        double[] ds, pdf;
+        double tol = 1e-2;
+        
+        int ns = 7;
+        int nPoints = 250;
+        boolean onSurface = true;
+        int m = 100; 
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        double[][] x = MultivariateUniformDistribution
+            .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurface);
+        
+        NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
+            HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
+        
+        assertFalse(stats.isConsistentWithNonUniform);
     }
     
 }
