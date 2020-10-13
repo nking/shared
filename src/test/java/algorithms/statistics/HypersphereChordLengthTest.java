@@ -1,5 +1,6 @@
 package algorithms.statistics;
 
+import algorithms.misc.Distances;
 import algorithms.misc.MiscMath0;
 import algorithms.statistics.HypersphereChordLength.NonUniformityStats;
 import algorithms.util.FormatArray;
@@ -8,9 +9,12 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TDoubleSet;
+import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TDoubleHashSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import junit.framework.TestCase;
 
 /**
@@ -168,7 +172,6 @@ public class HypersphereChordLengthTest extends TestCase {
         //    For r = 1.  n = [2:10:+1,15:50:+5,60:100:+10]
         //       find d's where alpha=0.95
         
-        double r = 1;
         TIntList ns = new TIntArrayList();
         
         int i, j;
@@ -180,40 +183,26 @@ public class HypersphereChordLengthTest extends TestCase {
         for (i = 10; i < 50; i+=5) {
             ns.add(i);
         }
-        for (i = 50; i <= 100; i+=10) {
+        for (i = 50; i < 100; i+=10) {
+            ns.add(i);
+        }
+        for (i = 100; i <= 1000; i+=100) {
+            ns.add(i);
+        }
+        for (i = 1000; i <= 5000; i+=500) {
             ns.add(i);
         }
         
         // array to hold the chord lengths where alpha~0.95 in CDF
         TDoubleList da = new TDoubleArrayList();
         
-        double[] ds = new double[]{ 1.5*r, 1.75*r,
-            1.76*r, 1.77*r, 1.78*r, 1.79*r, 
-            1.80*r, 1.81*r, 1.82*r, 1.83*r, 1.84*r, 1.85*r, 1.86*r, 1.87*r, 1.88*r, 1.89*r,
-            1.90*r, 1.91*r, 1.92*r, 1.93*r, 1.94*r, 1.95*r, 1.96*r, 1.97*r, 1.98*r, 1.99*r,
-            2.0*r};
-        
-        int n, idx;
-        double[] cdf;
+        int n;
         
         for (j = 0; j < ns.size(); ++j) {
             
             n = ns.get(j);
-            
-            // binary search between d=1.5*r and d=2*R for n <= 100
-            cdf = HypersphereChordLength.cdf(ds, r, n);
-            System.out.println(FormatArray.toString(cdf, "%.9f"));
-            
-            // Type I error rejects a null hypothesis that is actually true.
-            // Type II error accepts a null hypothesis that is actually false.
-            
-            // alpha=0.05 (probability of Type I error)
-            // confidence level or a confidence coefficient, (1 - α)100% = 95%
-            idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);
-            // confidence interval is interval in x capturing 95% of area 
-            //     under curve, e.g. mu +- 2*sigma/sqrt(n)
 
-            da.add(ds[idx]);
+            da.add(HypersphereChordLength.findCVForAlpha95Percent(n));
         }
         
         for (j = 0; j < ns.size(); ++j) {
@@ -292,32 +281,118 @@ public class HypersphereChordLengthTest extends TestCase {
         System.out.printf("l1Sum = %.4e\n", l1Sum);
     }
     
-    public void estCalcConfidenceOfNonUniformity() throws NoSuchAlgorithmException {
+    public void testCalcConfidenceOfNonUniformity_same() throws NoSuchAlgorithmException {
         
-        double d, diff;
-        int r = 1;
-        double[] ds, pdf;
-        double tol = 1e-2;
+        System.out.println("testCalcConfidenceOfNonUniformity_same");
+
+        int nTests = 10;
         
         int ns = 7;
         int nPoints = 250;
         boolean onSurface = true;
-        int m = 100; 
+        int m = 50;//100; 
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
-        double[][] x = MultivariateUniformDistribution
-            .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurface);
+        for (int ii = 0; ii < nTests; ++ii) {
         
-        NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
-            HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
-        
-        System.out.println("stats=" + stats.toString());
-        
-        assertFalse(stats.isConsistentWithNonUniform);
+            double[][] x = MultivariateUniformDistribution
+                .generateUnitStandardNSphereWithRejection(ns, nPoints, rand, onSurface);
+
+            NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
+                HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
+
+            System.out.println("stats=" + stats.toString() + "\n");
+
+            assertFalse(stats.isConsistentWithNonUniform);
+        }
     }
+    
+    public void testCalcConfidenceOfNonUniformity_different() throws NoSuchAlgorithmException {
+        
+        System.out.println("testCalcConfidenceOfNonUniformity_different");
+                
+        int nTests = 10;
+        
+        int ns = 7;
+        int nPoints = 250;//400;//250;
+        boolean onSurface = true;
+        int m = 50;//100; 
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        for (int ii = 0; ii < nTests; ++ii) {
+        
+            double[][] x = makeNonUniform(ns, nPoints, rand, onSurface);
+
+            NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
+                HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
+
+            //System.out.println("stats=" + stats.toString() + "\n");
+
+            assertTrue(stats.isConsistentWithNonUniform);
+        }
+    }
+
+    /*
+    double[] u = new double[d];
+                
+        u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);
+        
+        // then normalization of each is the sqrt(sum of squares of all)
+        double norm = 0;
+        for (double v : u) {
+            norm += (v * v);
+        }
+        norm = 1./Math.sqrt(norm);
+        
+        if (!onSurface) {
+            // to avoid bunching at the center of hypersphere
+            double b = Math.pow(rand.nextDouble(), 1./d);
+        
+            norm *= b;
+        }
+        
+        for (int i = 0; i < u.length; ++i) {
+            u[i] *= norm;
+        }
+    */
+
+    private double[][] makeNonUniform(int nDimensions, int nPoints, SecureRandom rand, boolean onSurface) {
+        
+        double[][] x = new double[nPoints][nDimensions];
+        
+        for (int i0 = 0; i0 < nPoints; ++i0) {
+            x[i0] = new double[nDimensions];
+            
+            // distributed on a hypercube and projected to a hypersphere will have
+            //   a density larger where corners were projected to the hypersphere
+            double norm = 0;
+            for (int j0 = 0; j0 < nDimensions; ++j0) {
+                x[i0][j0] = rand.nextDouble();
+                norm += (x[i0][j0] * x[i0][j0]);
+            }
+            norm = 1./Math.sqrt(norm);
+
+            if (!onSurface) {
+                // to avoid bunching at the center of hypersphere
+                double b = Math.pow(rand.nextDouble(), 1./nDimensions);
+                norm *= b;
+            }
+
+            for (int j0 = 0; j0 < nDimensions; ++j0) {
+                x[i0][j0] *= norm;
+            }
+        }
+        
+        return x;
+    }
+    
     
 }

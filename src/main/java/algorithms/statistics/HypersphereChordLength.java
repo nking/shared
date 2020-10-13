@@ -7,8 +7,13 @@ import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
+import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import algorithms.util.PolygonAndPointPlotter;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.io.IOException;
@@ -209,14 +214,15 @@ public class HypersphereChordLength {
     
     public static class NonUniformityStats {
         double oneMinusAlpha;
+        double oneMinusAlphaCritVal;
         double l1MaxSphere;
         double l1MaxX;
         boolean isConsistentWithNonUniform;
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("isConsistentWithNonUniform=").append(isConsistentWithNonUniform);
-            sb.append(String.format("\n1-alpha=%.5f \nL1(sphere)=%.4f \nL1(X)=%.4f", 
-                oneMinusAlpha, l1MaxSphere, l1MaxX));
+            sb.append(String.format("\n1-alpha=%.5f, crit. val.=%.4e \nL1(sphere)=%.4f \nL1(X)=%.4f", 
+                oneMinusAlpha, oneMinusAlphaCritVal, l1MaxSphere, l1MaxX));
             return sb.toString();
         }
     }
@@ -228,17 +234,14 @@ public class HypersphereChordLength {
     <pre>
     see notes belowx in method comments for calcL1UniformityStatistic
     </pre>
-    * TODO: determine the number of iterations, q, in some manner.
+    * TODO: determine the number of iterations to calculate L1's in some manner.
+    * It's currently set to a value of 100 internally.
     */
     public static NonUniformityStats calcConfidenceOfNonUniformity(double[][] x, int m,
         POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
         
-        if (true) {
-            throw new UnsupportedOperationException("not ready for use");
-        }
-        
         if (m > x.length) {
-            throw new IllegalArgumentException("m must be less tna x.length");
+            throw new IllegalArgumentException("m must be less than x.length");
         }
         
         int nDimensions = x[0].length;
@@ -262,27 +265,53 @@ public class HypersphereChordLength {
         }
         
         double[] minMaxSphere = MiscMath0.getMinMax(l1Sphere);
-        
-        double[] minMaxX = MiscMath0.getMinMax(l1X);
+        double[] minMaxX = MiscMath0.getMinMax(l1X);        
+        double[] avgAndStDevX = MiscMath0.getAvgAndStDev(l1X);
+        double[] avgAndStDevSphere = MiscMath0.getAvgAndStDev(l1Sphere);
         
         //1-alpha for sphere
-        double aS = ChiSquaredCriticalValues.approxPValueLin(
-            minMaxSphere[1], nDimensions);
-        //1-alpha for x
-        double aX = ChiSquaredCriticalValues.approxPValueLin(
-            minMaxX[1], nDimensions);
+        double alphaCV = findCVForAlpha95Percent(nDimensions);
         
-        // see Section IV, page 9:
+        System.out.printf("c.v. for 1-alpha=%.4e\n", alphaCV);
+        System.out.printf("S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e\n", 
+            minMaxSphere[0], minMaxSphere[1],
+            avgAndStDevSphere[0], avgAndStDevSphere[1]);
+        System.out.printf("X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e\n", 
+            minMaxX[0], minMaxX[1],
+            avgAndStDevX[0], avgAndStDevX[1]);
+        
+        // Type I error rejects a null hypothesis that is actually true.
+        // Type II error accepts a null hypothesis that is actually false.
+
+        // alpha=0.05 (probability of Type I error)
+        // confidence level or a confidence coefficient, (1 - α)100% = 95%
+        // confidence interval is interval in x capturing 95% of area 
+        //     under curve, e.g. mu +- 2*sigma/sqrt(n)
+        
         NonUniformityStats stats = new NonUniformityStats();
         stats.l1MaxSphere = minMaxSphere[1];
         stats.l1MaxX = minMaxX[1];
-        stats.oneMinusAlpha = aS;
-        if (stats.l1MaxSphere > stats.l1MaxX) {
+        stats.oneMinusAlpha = 0.95;
+        stats.oneMinusAlphaCritVal = alphaCV;
+        
+        //TODO: follow up on this:
+        
+        // see Section IV, page 9:
+        //If the α%-largest L1 value of Q is smaller than L1(g) then S can be 
+        //  declared as non-uniform with confidence (100 − α)%.
+        /*if (stats.l1MaxSphere > stats.l1MaxX) {
+            stats.isConsistentWithNonUniform = true;
+        } else {
+            stats.isConsistentWithNonUniform = false;
+        }*/
+        //  min stats.l1MaxX minL1 > (stats.l1MaxSphere avgL1 + c*StDevSphereL1)
+        //       implies not the same distributions
+        if (minMaxX[0] > (avgAndStDevSphere[0] + alphaCV*avgAndStDevSphere[1])) {
             stats.isConsistentWithNonUniform = true;
         } else {
             stats.isConsistentWithNonUniform = false;
         }
-                
+        
         return stats;
     }
     
@@ -628,5 +657,92 @@ public class HypersphereChordLength {
         return d;
     }
     
-    
+    /**
+     * a rough critical value for which alpha is 95% for a unit
+     * radius nDimension hypersphere.
+     * @param nDimensions the number of dimensions of the hypersphere
+     * @return  rough critical value for 95% quantile 
+     */
+    public static double findCVForAlpha95Percent(int nDimensions) {
+        
+        // quick look at finding critical values using the CDF.
+        // no inverse function, so "trial-and-error".
+        //    For r = 1.  n = [2:10:+1,15:50:+5,60:100:+10]
+        //       find d's where alpha=0.95
+        
+        double r = 1;
+        
+        TDoubleList dList = new TDoubleArrayList();
+        if (nDimensions < 2) {
+            //fine resolution between 1.9 and 2.0
+            for (double k = 1.99; k <= 2.0; k+=0.001) {
+                dList.add(k);
+            }
+        } else if (nDimensions < 5) {
+            //fine resolution between 1.9 and 2.0
+            for (double k = 1.8; k <= 2.0; k+=0.005) {
+                dList.add(k);
+            }
+        } else if (nDimensions < 8) {
+            //fine resolution between 1.76 and 1.88
+            for (double k = 1.76; k <= 1.88; k+=0.01) {
+                dList.add(k);
+            }
+        } else if (nDimensions <= 10) {
+            //fine resolution between 1.76 and 1.88
+            for (double k = 1.74; k <= 1.88; k+=0.01) {
+                dList.add(k);
+            }
+        }  else if (nDimensions < 100) {
+            //fine resolution between 1.5 and ?
+            for (double k = 1.5; k <= 1.75; k+=0.01) {
+                dList.add(k);
+            }
+        } else if (nDimensions < 800) {
+            //fine resolution between 1.5 and ?
+            for (double k = 1.45; k <= 1.6; k+=0.005) {
+                dList.add(k);
+            }
+        } else if (nDimensions <= 1000) {
+            //fine resolution between 1.5 and ?
+            for (double k = 1.45; k <= 1.455; k+=0.001) {
+                dList.add(k);
+            }
+        } else if (nDimensions <= 2000) {
+            //fine resolution between 1.5 and ?
+            for (double k = 1.44; k <= 1.456; k+=0.001) {
+                dList.add(k);
+            }
+        } else if (nDimensions <= 3050) {
+            //fine resolution between 1.5 and ?
+            for (double k = 1.435; k <= 1.45; k+=0.001) {
+                dList.add(k);
+            }
+        } else if (nDimensions <= 5000) {
+            //fine resolution between 1.5 and ?
+            for (double k = 1.42; k <= 1.45; k+=0.001) {
+                dList.add(k);
+            }
+        }
+        double[] ds = dList.toArray();
+        
+        int n, idx;
+        double[] cdf;
+        double tol = 1e-2;
+        
+        // binary search between d=1.5*r and d=2*R for n <= 100
+        cdf = HypersphereChordLength.cdf(ds, r, nDimensions);
+        //System.out.println(FormatArray.toString(cdf, "%.9f"));
+
+        // Type I error rejects a null hypothesis that is actually true.
+        // Type II error accepts a null hypothesis that is actually false.
+
+        // alpha=0.05 (probability of Type I error)
+        // confidence level or a confidence coefficient, (1 - α)100% = 95%
+        idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);
+        // confidence interval is interval in x capturing 95% of area 
+        //     under curve, e.g. N(0,1): mu +- 1.96*sigma/sqrt(n)
+        
+        return ds[idx];
+    }
 }

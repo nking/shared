@@ -107,6 +107,14 @@ public class CDFRandomSelect {
     public static int binarySearchForNearest(double[] cdf, final double srch, 
         final double tol) {
         
+        if (cdf == null || cdf.length == 0) {
+            throw new IllegalArgumentException("cdf cannot be null or length 0");
+        }
+        
+        if (tol < 0) {
+            throw new IllegalArgumentException("tolerane cannot be negative");
+        }
+        
         int n = cdf.length;
            
         int lowIdx = 0;
@@ -116,7 +124,7 @@ public class CDFRandomSelect {
         double v;
         int comp;
         
-        while (lowIdx != highIdx) {
+        while (lowIdx != highIdx && highIdx > lowIdx) {
 
             midIdx = (highIdx + lowIdx) >> 1;
             
