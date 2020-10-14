@@ -8,7 +8,6 @@ import algorithms.statistics.Gamma;
 import algorithms.statistics.MultivariateUniformDistribution;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 /**
  *
@@ -53,7 +52,6 @@ public class MultivariateDistance {
         
         double[] u, v, xu, yv;
         DCov dcov;
-        double t;
         double meanT = 0;
         for (int i = 0; i < k; ++i) {
             u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);
@@ -65,10 +63,9 @@ public class MultivariateDistance {
             
             dcov = UnivariateDistance.fastDcov(xu, yv);
             
-            t = CpCq * dcov.covsq;
-            meanT += t;
+            meanT += dcov.covsq;
         }
-        meanT /= (double)k;
+        meanT *= CpCq/(double)k;
         
         return meanT;
     }
@@ -76,7 +73,15 @@ public class MultivariateDistance {
     /**
      * test for independence of x and y using permutations of y and the efficient
      * dCov as a statistic.
-     * 
+     <pre>
+      following the algorithm
+      “A Statistically And Numerically Efficient Independence Test Based On 
+      Random Projections And Distance Covariance”, 
+      2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+     </pre>
+     <pre>
+     runtime complexity is 
+     </pre>
      * @param x
      * @param y
      * @param k the number of random projections for each test statistic.
@@ -100,10 +105,6 @@ public class MultivariateDistance {
         
         int i, j;
         
-        int[] yIdx = new int[q];
-        for (i = 0; i < q; ++i) {
-            yIdx[i] = i;
-        }
         double[][] y2;
         
         double t = efficientDCov(x, y, k);
@@ -136,7 +137,15 @@ public class MultivariateDistance {
     /**
      * test for independence of x and y using threshold of an approximate 
      * asymptotic distribution
-     * 
+     <pre>
+      following the algorithm
+      “A Statistically And Numerically Efficient Independence Test Based On 
+      Random Projections And Distance Covariance”, 
+      2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+     </pre>
+     <pre>
+     runtime complexity is 
+     </pre>
      * @param x
      * @param y
      * @param k the number of random projections for each test statistic.
@@ -244,6 +253,10 @@ public class MultivariateDistance {
         double t = efficientDCov(x, y, k);
         
         //Reject H0 if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
+        
+        // for the gamma function, need to use the
+        //    inverse CDF for gamma(alphaT, betaT)
+        //      and find the value 1-alpha to find the statistic.
         
         throw new UnsupportedOperationException("not yet implemented");
     }
