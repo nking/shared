@@ -1,6 +1,10 @@
 package algorithms.correlation;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.Gamma;
+import algorithms.statistics.MultivariateUniformDistribution;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  *
@@ -29,10 +33,27 @@ public class MultivariateDistance {
      * rows are the samples.
      * @return 
      */
-    public static double efficientDCov(double[][] x, double[][] y, double k) {
+    public static double efficientDCov(double[][] x, double[][] y, double k) throws NoSuchAlgorithmException {
         // number of columns in X is p
         // number of columns in Y is q.
-        //
+        int p = x[0].length;
+        int q = y[0].length;
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        double[] u, v, xu, yv;
+        for (int i = 0; i < k; ++i) {
+            u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);
+            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);
+            
+            // x * u^T = nX1
+            xu = MatrixUtil.multiply(x, u);
+            yv = MatrixUtil.multiply(y, v);
+        }
+        
         throw new UnsupportedOperationException("not implemented yet");
     }
     

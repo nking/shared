@@ -94,7 +94,7 @@ public class ROC {
      Pattern Recognition Letters 27, 61–874
        https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf
     */
-    public static double multiClassAUCHandTill2001() {
+    //public static double multiClassAUCHandTill2001() {
         /*
         Hand and Till (2001) derive a multi-class generalization of the AUC 
         that is insensitive to class distribution and error costs.  
@@ -115,8 +115,8 @@ public class ROC {
             AUC_total= (1/(nClasses*(nClasses-1)) 
                          * summation_{ci,cj}( AUC(ci, cj) )
         */
-        throw new UnsupportedOperationException("not implemented, but could be upon need");
-    }
+    //    throw new UnsupportedOperationException("not implemented, but could be upon need");
+    //}
     
     private static double trapezoidalArea(double x1, double x2, double y1, 
         double y2) {

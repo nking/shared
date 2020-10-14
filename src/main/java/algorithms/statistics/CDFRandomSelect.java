@@ -192,8 +192,8 @@ public class CDFRandomSelect {
      * @param rand random number generator
      * @return indexes from randomly selected cdf distribution values
      */
-    public static int[] chooseKFromIntegerTransformAndTrie(double[] cdf, int k, Random rand) {       
+    /*public static int[] chooseKFromIntegerTransformAndTrie(double[] cdf, int k, Random rand) {       
         throw new UnsupportedOperationException("Not implemented yet."); 
-    }
+    }*/
 
 }

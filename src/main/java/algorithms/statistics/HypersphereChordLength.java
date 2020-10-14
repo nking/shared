@@ -1,29 +1,17 @@
 package algorithms.statistics;
 
 import algorithms.SubsetChooser;
-import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Distances;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import algorithms.misc.MiscSorter;
-import algorithms.util.FormatArray;
-import algorithms.util.PairInt;
-import algorithms.util.PolygonAndPointPlotter;
 import gnu.trove.list.TDoubleList;
-import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import thirdparty.smile.math.special.Beta;
 
 /**
@@ -269,7 +257,7 @@ public class HypersphereChordLength {
         double[] avgAndStDevX = MiscMath0.getAvgAndStDev(l1X);
         double[] avgAndStDevSphere = MiscMath0.getAvgAndStDev(l1Sphere);
         
-        //1-alpha for sphere
+        //1-alpha for hypersphere chord distribution
         double alphaCV = findCVForAlpha95Percent(nDimensions);
         
         System.out.printf("c.v. for 1-alpha=%.4e\n", alphaCV);

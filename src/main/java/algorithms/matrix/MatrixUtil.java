@@ -27,7 +27,7 @@ public class MatrixUtil {
      * multiply matrix m by vector n
      * @param m two dimensional array in row major format
      * @param n one dimensional array
-     * @return the multiplication of matrix m by n
+     * @return vector of length m.length
      */
     public static double[] multiply(double[][] m, double[] n) {
 
