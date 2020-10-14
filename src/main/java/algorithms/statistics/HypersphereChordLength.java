@@ -268,8 +268,8 @@ public class HypersphereChordLength {
             minMaxX[0], minMaxX[1],
             avgAndStDevX[0], avgAndStDevX[1]);
         
-        // Type I error rejects a null hypothesis that is actually true.
-        // Type II error accepts a null hypothesis that is actually false.
+        // Type I error rejects a null hypothesis as false when it is actually true.
+        // Type II error accepts a null hypothesis as true when it is actually false.
 
         // alpha=0.05 (probability of Type I error)
         // confidence level or a confidence coefficient, (1 - α)100% = 95%

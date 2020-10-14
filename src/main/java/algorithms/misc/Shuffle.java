@@ -16,6 +16,11 @@ public class Shuffle {
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
+        fisherYates(a, rand);
+    }
+    
+    public static void fisherYates(double[] a, SecureRandom rand) {
+        
         int n = a.length;
         int j;
         double swap;
@@ -27,4 +32,5 @@ public class Shuffle {
             a[j] = swap;
         }
     }
+    
 }
