@@ -127,14 +127,14 @@ public class CURDecomposition {
         System.out.flush();
         rand.setSeed(seed);
 
-        if (useBinarySearch) {
+        //if (useBinarySearch) {
             k0 = CDFRandomSelect.chooseKFromBinarySearch(rowCDF, k, rand);
             k1 = CDFRandomSelect.chooseKFromBinarySearch(colCDF, k, rand);
-        } else {
+        /*} else {
             // transform CDFs to integers
             k0 = CDFRandomSelect.chooseKFromIntegerTransformAndTrie(rowCDF, k, rand);
             k1 = CDFRandomSelect.chooseKFromIntegerTransformAndTrie(colCDF, k, rand);
-        }
+        }*/
 
         CDFs cds = new CDFs();
         cds.rowsSelected = k0;
