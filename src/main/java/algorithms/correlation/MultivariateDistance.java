@@ -5,6 +5,7 @@ import algorithms.correlation.UnivariateDistance.DCov;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Shuffle;
 import algorithms.statistics.Gamma;
+import algorithms.statistics.GammaCDF;
 import algorithms.statistics.MultivariateUniformDistribution;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -257,6 +258,8 @@ public class MultivariateDistance {
         // for the gamma function, need to use the
         //    inverse CDF for gamma(alphaT, betaT)
         //      and find the value 1-alpha to find the statistic.
+        
+        double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
         throw new UnsupportedOperationException("not yet implemented");
     }
