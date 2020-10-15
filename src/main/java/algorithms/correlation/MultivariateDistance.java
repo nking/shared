@@ -255,10 +255,6 @@ public class MultivariateDistance {
         
         //Reject H0 if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
         
-        // for the gamma function, need to use the
-        //    inverse CDF for gamma(alphaT, betaT)
-        //      and find the value 1-alpha to find the statistic.
-        
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
         throw new UnsupportedOperationException("not yet implemented");

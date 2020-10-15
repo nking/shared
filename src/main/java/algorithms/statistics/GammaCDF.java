@@ -7,18 +7,31 @@ package algorithms.statistics;
 public class GammaCDF {
     
     public static double cdf(double x, double shape, double scale) {
+     
+        // from https://www.mathworks.com/help/stats/gamcdf.html
         
-        double numer = 
-            thirdparty.smile.math.special.Gamma.regularizedIncompleteGamma(shape, x/scale);
+        double a = shape;
+        double b = scale;
         
-        double denom = thirdparty.smile.math.special.Gamma.gamma(shape);
+        if (x < 0) {
+            throw new IllegalArgumentException("x cannot be a negative number");
+        }
+        if (a <= 0) {
+            throw new IllegalArgumentException("a must be a positive number");
+        }
+        if (b <= 0) {
+            throw new IllegalArgumentException("b must be a positive number");
+        }
         
-        return numer/denom;
+        return thirdparty.smile.math.special.Gamma.regularizedIncompleteGamma(a, x/b);
     }
     
     public static double inverseCdf(double shape, double scale, double alpha) {
         // TODO: will use cdf within iteration such as Newton's method
-        //   to find p = cdf(x, shape, scale) which is close to alpha
+        //   to find when p = cdf(x, shape, scale) is approx alpha
+        
+        // the parameters to use to produce maximum "x" seems to be when shape=x
+        
         throw new UnsupportedOperationException("not yet implemented");
     }
 }
