@@ -123,6 +123,8 @@ public class Gamma {
 
     /**
      * Regularized Incomplete Gamma Function
+     * is the lower incomplete gamma function of arguments (s, x) divided by the 
+     * gamma function of argument (s).
      * P(s,x) = <i><big>&#8747;</big><sub><small>0</small></sub><sup><small>x</small></sup> e<sup>-t</sup> t<sup>(s-1)</sup> dt</i>
      */
     public static double regularizedIncompleteGamma(double s, double x) {

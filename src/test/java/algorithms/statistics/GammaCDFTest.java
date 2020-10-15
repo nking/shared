@@ -14,9 +14,6 @@ public class GammaCDFTest extends TestCase {
     
     public void testCDF() {
         
-        //a, b, x
-        double shape, scale, x;
-        
         double tol=1.e-4;
         
         // example values from https://www.mathworks.com/help/stats/gamcdf.html
@@ -34,5 +31,20 @@ public class GammaCDFTest extends TestCase {
             //    a[i]*b[i], a[i], b[i], p);
             assertTrue(diff < tol);
         }
+    }
+    
+    public void testInverseCDF() {
+        
+        double shape = 2;
+        double scale = 2;
+        
+        double alpha = 0.999;
+        double expectedX = 18.55;
+        
+        double x = GammaCDF.inverseCdf(shape, scale, alpha);
+        
+        double tol = 1.e-1;
+        assertTrue(Math.abs(x - expectedX) < tol);
+        
     }
 }
