@@ -161,7 +161,6 @@ public class CDFRandomSelect {
         if ((midIdx + 1) < n) {
             if (Math.abs(cdf[midIdx + 1] - srch) < diff) {
                 minIdx = midIdx + 1;
-                diff = Math.abs(cdf[midIdx] - srch);
             }
         }
         if ((midIdx - 1) >= 0) {
