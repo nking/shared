@@ -1,5 +1,6 @@
 package algorithms.correlation;
 
+import algorithms.matrix.MatrixUtil;
 import java.security.SecureRandom;
 import junit.framework.TestCase;
 
@@ -132,7 +133,7 @@ public class MultivariateDistanceTest extends TestCase {
           for the wrong reason, etc.
     */
 
-    public void test1() {
+    public void est1_independent() {
         
         // x, y independent
         
@@ -184,6 +185,86 @@ public class MultivariateDistanceTest extends TestCase {
         }
         
         assertTrue(Math.abs(dcov[nSamples.length - 1]) < tolCov);
+        
+    }
+    
+    public void test2_dependent() {
+        
+        // x, y dependent
+        
+        /*
+        EXAMPLE 5.2 (fig 2)
+    test dependence only in the first 2 variables:
+        same X as above.
+    Y: y0=x0^2, y1=x1^2, then for remaining entries draw U(0,1)^2 
+        (estimator converges to 0 as sample size n grows in the independent case; and 
+         converges to some nonzero number as the number of the Monte Carlo 
+         iterations K grows in the dependent case)
+        */
+        
+        double tolCov = 1.e-3;
+        
+        double alpha = 0.05;
+        int p = 10;
+        int q = 10;
+        
+        int k = 50; // for independent X and Y
+        
+        int[] nSamples = new int[]{100, 500, 1000, 5000
+            //, 10000
+        };
+        
+        double[][] x, y, x2, y2;
+        
+        int nIter = 1;//400;
+        
+        double[] dcov = new double[nSamples.length];
+        boolean indep1, indep2;
+        
+        int n = 0;
+        for (int nSample : nSamples) {
+            x = createWithinUnitHypercube(p, nSample);
+            y = createWithinUnitHypercube(q, nSample);
+            for (int i = 0; i < y.length; ++i) {
+                for (int j = 0; j < 2; ++j) {
+                    y[i][j] = x[i][j];
+                }
+            }
+            for (int i = 0; i < y.length; ++i) {
+                for (int j = 0; j < y[i].length; ++j) {
+                    y[i][j] *= y[i][j];
+                }
+            }
+            System.out.printf("nSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
+                nSample, k, nIter, alpha);
+            System.out.flush();
+            
+            dcov[n] = MultivariateDistance.efficientDCov(x, y, k, rand);
+            //estimator should converge to 0 for all k
+            System.out.printf("cov=%.4e\n", dcov[n]);
+            System.out.flush();
+            
+            x2 = MatrixUtil.copySubMatrix(x, 0, x.length-1, 0, 1);
+            y2 = MatrixUtil.copySubMatrix(y, 0, y.length-1, 0, 1);
+            indep1 = MultivariateDistance.areIndependent1(x2, y2, k, nIter, alpha, rand);
+            indep2 = MultivariateDistance.areIndependent2(x2, y2, k, alpha, rand);
+            
+            System.out.printf("  [*, 0:1] indep=(%b, %b)\n", indep1, indep2);
+            System.out.flush();
+            
+            indep1 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
+            indep2 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
+            
+            System.out.printf("  [*,*] indep=(%b, %b)\n", indep1, indep2);
+            System.out.flush();
+
+            //assertTrue(indep1);
+            //assertTrue(indep2);
+            
+            ++n;
+        }
+        
+        //assertTrue(Math.abs(dcov[nSamples.length - 1]) < tolCov);
         
     }
 

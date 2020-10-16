@@ -1183,6 +1183,15 @@ public class MatrixUtil {
         return m;
     }
     
+    /**
+     * 
+     * @param a
+     * @param row0 beginning index, inclusive
+     * @param row1 end index, exclusive
+     * @param col0 beginning index, inclusive
+     * @param col1 end index, exclusive
+     * @return 
+     */
     public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
         
         int nr2 = row1 - row0 + 1;
