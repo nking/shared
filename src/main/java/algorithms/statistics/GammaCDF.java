@@ -24,6 +24,23 @@ public class GammaCDF {
     }
     
     public static double inverseCdf(double shape, double scale, double alpha) {
+     
+        if (alpha < 0 || alpha > 1) {
+            throw new IllegalArgumentException("alpha must be [0, 1]");
+        }
+        if (shape <= 0) {
+            throw new IllegalArgumentException("shape must be a positive number");
+        }
+        if (scale <= 0) {
+            throw new IllegalArgumentException("scale must be a positive number");
+        }
+        
+        if (shape > 1000) {
+            throw new IllegalArgumentException("currently using an artificial maximum allowed value of 1000 for shape");
+        }
+        if (scale > 1000) {
+            throw new IllegalArgumentException("currently using an artificial maximum allowed value of 1000 for scale");
+        }
         
         double mean = shape * scale;
         double variance = mean * scale;

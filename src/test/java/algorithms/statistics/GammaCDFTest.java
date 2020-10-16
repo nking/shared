@@ -1,5 +1,7 @@
 package algorithms.statistics;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import junit.framework.TestCase;
 
 /**
@@ -44,11 +46,10 @@ public class GammaCDFTest extends TestCase {
         double tol = 1.e-1;
         double x;
         
-        /*
         x = GammaCDF.inverseCdf(shape, scale, alpha);
         
         assertTrue(Math.abs(x - expectedX) < tol);
-        */
+        
         //------
         alpha = 0.1;
         expectedX = 1.063;
@@ -56,5 +57,40 @@ public class GammaCDFTest extends TestCase {
         x = GammaCDF.inverseCdf(shape, scale, alpha);
         
         assertTrue(Math.abs(x - expectedX) < tol);
+    }
+    
+    public void testInverseCDF1() throws NoSuchAlgorithmException {
+        
+        int nTests = 100;
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        seed = 1318454033349663L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        double shape, scale, alpha, x, p;
+        double tolX = 1.e-1;
+        double tolP = 1.e-4;
+        
+        double alphaMin = 0.001;
+        double alphaRange = 1. - 2.*alphaMin;
+        
+        for (int i = 0; i < nTests; ++i) {
+            
+            alpha = alphaMin + alphaRange * rand.nextDouble();            
+            shape = tolX + rand.nextInt(1000) * rand.nextDouble();
+            scale = tolX + rand.nextInt(1000) * rand.nextDouble();
+            
+            System.out.printf("alpha=%.4e, scale=%.4e, shape=%.4e\n",
+                alpha, scale, shape);
+            
+            x = GammaCDF.inverseCdf(shape, scale, alpha);
+            
+            p = GammaCDF.cdf(x, shape, scale);
+            
+            assertTrue(Math.abs(alpha - p) < tolP);
+        }
+        
     }
 }
