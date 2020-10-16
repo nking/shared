@@ -25,12 +25,19 @@ public class MultivariateDistance {
       “A Statistically And Numerically Efficient Independence Test Based On 
       Random Projections And Distance Covariance”, 
       2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+      https://arxiv.org/pdf/1701.06054.pdf
      </pre>
      <pre>
-     runtime complexity is O(k*n*log_2(n))
+     runtime complexity is O(n * K * log_2(n))
+     (more specifically: O(n * K * (log_2(n) + p + q)))
      where k is the number of random projections and n is the sample size.
-     memory requirement is O(max{n, k}).
+     memory requirement is O(max{n, K}).
      </pre>
+     NOTE: there is related material from the paper
+     by Huang and Huo, that is in the thesis of Huang:
+     "Some computationally efficient methods in statistics and their 
+     applications in parameter estimation and hypotheses testing"
+     https://smartech.gatech.edu/bitstream/handle/1853/60120/HUANG-DISSERTATION-2017.pdf
      * @param x multivariate variable where the columns are the variates and 
      * rows are the samples.
      * @param y multivariate variable where columns are the variates and 
@@ -254,10 +261,17 @@ public class MultivariateDistance {
         double t = efficientDCov(x, y, k);
         
         //Reject H0 if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
-        
+                
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
-        throw new UnsupportedOperationException("not yet implemented");
+        System.out.printf("n*t + s2*s3=%.4e  gamma.inverseCDF(%.3e, %.3e, %.3e)=%.3e",
+            (n*t) + (s2*s3), alphaT, betaT, 1.-alpha, g);
+        System.out.flush();
+        
+        if ((n*t + s2*s3) > g) {
+            return false;
+        }
+        return true;        
     }
     
     public static double _calcC(double a) {
