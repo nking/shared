@@ -49,8 +49,8 @@ public class GammaCDF {
         final double variance = mean * scale;
         
        
-        final int nMaxIter = 100;
-        final double tolP = 1.1e-3;
+        final int nMaxIter = 1000;
+        final double tolP = 1.e-3;
         final double tolX = 1.e-3;
         
         double xLow = 0;

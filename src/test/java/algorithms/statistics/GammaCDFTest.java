@@ -35,7 +35,7 @@ public class GammaCDFTest extends TestCase {
         }
     }
     
-    public void testInverseCDF() {
+    public void testInverseCDF0() {
         
         double shape = 2;
         double scale = 2;
@@ -43,12 +43,14 @@ public class GammaCDFTest extends TestCase {
         double alpha = 0.999;
         double expectedX = 17.6;
         
-        double tol = 1.e-1;
-        double x;
+        double tol = 1.e-3;
+        double x, p;
         
         x = GammaCDF.inverseCdf(shape, scale, alpha);
         
-        assertTrue(Math.abs(x - expectedX) < tol);
+        assertTrue(x >= (expectedX - tol));
+        p = GammaCDF.cdf(x, shape, scale);
+        assertTrue(Math.abs(alpha - p) < tol);
         
         //------
         alpha = 0.1;
@@ -56,7 +58,9 @@ public class GammaCDFTest extends TestCase {
         
         x = GammaCDF.inverseCdf(shape, scale, alpha);
         
-        assertTrue(Math.abs(x - expectedX) < tol);
+        assertTrue(Math.abs(x - expectedX) < 0.1);
+        p = GammaCDF.cdf(x, shape, scale);
+        assertTrue(Math.abs(alpha - p) < tol);
     }
     
     public void testInverseCDF1() throws NoSuchAlgorithmException {
@@ -65,7 +69,7 @@ public class GammaCDFTest extends TestCase {
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
-        seed = 1318454033349663L;
+        //seed = 1318454033349663L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
