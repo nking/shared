@@ -1,13 +1,6 @@
 package algorithms.optimization;
 
-import algorithms.matrix.MatrixUtil;
-import algorithms.statistics.Standardization;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.SVD;
 import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
 import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 
@@ -137,6 +130,9 @@ public class GeometricMedian {
         //   estimating the gradient at that point are needed.
         //   ... added logic to try finite difference if the derivatives are
         //   zero.
+        
+        //TODO: rewrite this search one day using more rigorous methods for
+        //    implementation of finite difference within newtons
         
         //Gauss-Newton's:
         //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})

@@ -263,7 +263,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
 
         int n = coeffs.length;
         
-        //TDO: set this be a fraction of the diagonal of the bounds of obs
+        //TODO: set this be a fraction of the diagonal of the bounds of obs
         final double fds = 0.001;//getFDEps();
 
         double[] der = new double[n];
