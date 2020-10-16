@@ -25,8 +25,8 @@ public class GammaCDF {
     
     public static double inverseCdf(double shape, double scale, double alpha) {
      
-        if (alpha < 0 || alpha > 1) {
-            throw new IllegalArgumentException("alpha must be [0, 1]");
+        if (alpha < 0 || alpha > 0.999) {
+            throw new IllegalArgumentException("alpha must be [0, 1] and has an artificial upper limit here of 0.999 for search");
         }
         if (shape <= 0) {
             throw new IllegalArgumentException("shape must be a positive number");
@@ -42,74 +42,80 @@ public class GammaCDF {
             throw new IllegalArgumentException("currently using an artificial maximum allowed value of 1000 for scale");
         }
         
-        double mean = shape * scale;
-        double variance = mean * scale;
+        // use binary search
+    
+        final double mean = shape * scale;
+        // variance = shape * scale*scale
+        final double variance = mean * scale;
         
-        // so range of "x" is appprox 0 to mean + 3*variance
-        
-        //Gauss-Newton's:
-        //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
-        
-        //Gauss-Newton's with a factor (alpha) to decrease step size:
-        //x_{t+1} = x_{t} - alpha*(f(x_{t}) / f'(x_{t}))
-        
+       
         final int nMaxIter = 100;
-        final double tol = 1.e-4;
+        final double tolP = 1.1e-3;
+        final double tolX = 1.e-3;
         
-        //double xLow = 0;
-        //double xHigh = mean + 3.*variance;                
-        double x = mean;
-        // TODO: x = (alpha > 0.5) ? (xLow + xHigh)/2 : mean;
+        double xLow = 0;
+        double xHigh = mean + 3.2*variance;                
+        double x = (xLow + xHigh)/2;
         
-        double delta = x/4.;
+        // may need to change how this is estimated.
+        double delta = Math.min(xHigh - x, x - xLow);
+        delta /= 2;
         
         double diffP = Double.POSITIVE_INFINITY;
         
-        double p, pm, pp;
-        double t1, t2;
-        
-        // approximated as finite difference
-        double deriv;
+        double p0, pm, pp;
         
         int nIter = 0;
-        while (diffP > tol && nIter < nMaxIter) {
+        while (nIter < nMaxIter && xHigh > xLow) {
             
-            p = cdf(x, shape, scale);
+            x = (xLow + xHigh)/2;
             
-            diffP = Math.abs(alpha - p);
+            delta = Math.min(xHigh - x, x - xLow);
+            delta /= 2;
             
+            p0 = cdf(x, shape, scale);
+            diffP = p0 - alpha;
+            if (Math.abs(diffP) < tolP) {
+                return x;
+            }
+                        
             System.out.printf("%d) alpha=%.4f p=%.4f diff=%.4f   x=%.4f delta=%.4f\n", 
-                nIter, alpha, p, diffP, x, delta);
+                nIter, alpha, p0, diffP, x, delta);
             System.out.flush();
             
-            // finite difference:
-            final double old_val = x;
-            x += delta;
-            pp = cdf(x, shape, scale);
-            x = old_val - delta;
-            pm = cdf(x, shape, scale);
-            
-    //TODO: fix error here:
-    
-            //newton's method step = f(x_{t}) / f'(x_{t}) where f'(x_{t} =  (pp - pm)/(2*delta)
-            deriv = (pp - pm)/(2*delta);
-            
-            t1 = ((alpha - p)/deriv);
-            
-            x = old_val + t1;
-            
-            t2 = Math.abs(old_val - x)/2;
-            
-            delta = Math.min(Math.abs(t1), t2);
-            
-            if ((x - delta) < 0) {
-                delta = x/2.;
+            if (diffP > 0) {
+                if (Math.abs(xHigh - x) < tolX) {
+                    xHigh -= delta;
+                } else {
+                    xHigh = x;
+                }
+            } else if (diffP < 0) {
+                if (Math.abs(xLow - x) < tolX) {
+                    xLow += delta;
+                } else {
+                    xLow = x;
+                }
             }
-                   
+            
             nIter++;
         }
+        double minX = x;
+        p0 = cdf(x, shape, scale);
+        diffP = p0 - alpha;
+        delta = Math.min(xHigh - x, x - xLow);
+        delta /= 2;
         
-        return x;
+        if ((x + delta) < xHigh) {
+            if (Math.abs(cdf(x + delta, shape, scale) - alpha) < diffP) {
+                minX = x + delta;
+            }
+        }
+        if ((x - delta) >= 0) {
+            if ( Math.abs(cdf(x - delta, shape, scale) - alpha) < diffP) {
+                minX = x - delta;
+            }
+        }
+        
+        return minX;
     }
-    
 }
