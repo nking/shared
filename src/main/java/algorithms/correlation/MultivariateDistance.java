@@ -33,8 +33,8 @@ public class MultivariateDistance {
      where k is the number of random projections and n is the sample size.
      memory requirement is O(max{n, K}).
      </pre>
-     NOTE: there is related material from the paper
-     by Huang and Huo, that is in the thesis of Huang:
+     NOTE: there is material from the paper by Huang and Huo, and more that is 
+     related to it that is in the thesis of Huang:
      "Some computationally efficient methods in statistics and their 
      applications in parameter estimation and hypotheses testing"
      https://smartech.gatech.edu/bitstream/handle/1853/60120/HUANG-DISSERTATION-2017.pdf
@@ -46,15 +46,54 @@ public class MultivariateDistance {
      * @return 
      */
     public static double efficientDCov(double[][] x, double[][] y, int k) throws NoSuchAlgorithmException {
-        // number of columns in X is p
-        // number of columns in Y is q.
-        int p = x[0].length;
-        int q = y[0].length;
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
+        return efficientDCov(x, y, k, rand);
+    }
+    
+    /**
+     * calculate the distance covariance using the average of 
+     * fast univariate distance covariances of random projections.
+     * 
+     <pre>
+      following the algorithm
+      “A Statistically And Numerically Efficient Independence Test Based On 
+      Random Projections And Distance Covariance”, 
+      2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+      https://arxiv.org/pdf/1701.06054.pdf
+     </pre>
+     <pre>
+     runtime complexity is O(n * K * log_2(n))
+     (more specifically: O(n * K * (log_2(n) + p + q)))
+     where k is the number of random projections and n is the sample size.
+     memory requirement is O(max{n, K}).
+     </pre>
+     NOTE: there is material from the paper by Huang and Huo, and more that is 
+     related to it that is in the thesis of Huang:
+     "Some computationally efficient methods in statistics and their 
+     applications in parameter estimation and hypotheses testing"
+     https://smartech.gatech.edu/bitstream/handle/1853/60120/HUANG-DISSERTATION-2017.pdf
+     * @param x multivariate variable where the columns are the variates and 
+     * rows are the samples.
+     * @param y multivariate variable where columns are the variates and 
+     * rows are the samples.
+     * @param k the number of random projections
+     * @param rand instance of secure random number generator
+     * @return 
+     */
+    public static double efficientDCov(double[][] x, double[][] y, int k,
+        SecureRandom rand) {
+        
+        if (k < 1) {
+            throw new IllegalArgumentException("k must be a positive number grater than 0");
+        }
+        // number of columns in X is p
+        // number of columns in Y is q.
+        int p = x[0].length;
+        int q = y[0].length;
         
         double CpCq = _calcCapitalC(p) * _calcCapitalC(q);
         
@@ -108,6 +147,34 @@ public class MultivariateDistance {
         //System.out.println("SEED=" + seed);
         rand.setSeed(seed);
         
+        return areIndependent1(x, y, k, nIterations, alpha, rand);
+    }
+    
+    /**
+     * test for independence of x and y using permutations of y and the efficient
+     * dCov as a statistic.
+     <pre>
+      following the algorithm
+      “A Statistically And Numerically Efficient Independence Test Based On 
+      Random Projections And Distance Covariance”, 
+      2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+     </pre>
+     <pre>
+     runtime complexity is 
+     </pre>
+     * @param x
+     * @param y
+     * @param k the number of random projections for each test statistic.
+     * @param nIterations the number of iterations for statistic calculations
+     * (note that each iteration constructs a new permutation of y, so this
+     * step has runtime complexity O(y.length * y[0].length)
+     * @param alpha significance level for testing null hypothesis
+     * @param rand
+     * @return
+     */
+    public static boolean areIndependent1(double[][] x, double[][] y, 
+        int k, int nIterations, double alpha, SecureRandom rand) {
+           
         int p = x.length;
         int q = y.length;
         
@@ -115,7 +182,7 @@ public class MultivariateDistance {
         
         double[][] y2;
         
-        double t = efficientDCov(x, y, k);
+        double t = efficientDCov(x, y, k, rand);
         
         double s = 0;
         
@@ -130,7 +197,7 @@ public class MultivariateDistance {
             }
             y2 = MatrixUtil.transpose(y2);
             
-            t2[i] = efficientDCov(x, y2, k);
+            t2[i] = efficientDCov(x, y2, k, rand);
             
             if (t > t2[i]) {
                 s++;
@@ -164,6 +231,36 @@ public class MultivariateDistance {
     public static boolean areIndependent2(double[][] x, double[][] y, 
         int k, double alpha) throws NoSuchAlgorithmException {
         
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        return areIndependent2(x, y, k, alpha, rand);
+    }
+    
+    /**
+     * test for independence of x and y using threshold of an approximate 
+     * asymptotic distribution
+     <pre>
+      following the algorithm
+      “A Statistically And Numerically Efficient Independence Test Based On 
+      Random Projections And Distance Covariance”, 
+      2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+     </pre>
+     <pre>
+     runtime complexity is 
+     </pre>
+     * @param x
+     * @param y
+     * @param k the number of random projections for each test statistic.
+     * @param alpha significance level for testing null hypothesis
+     * @param rand
+     * @return
+     */
+    public static boolean areIndependent2(double[][] x, double[][] y, 
+        int k, double alpha, SecureRandom rand) {
+        
         if (x.length != y.length) {
             throw new IllegalArgumentException("x.lenght must equal y.length");
         }
@@ -174,11 +271,6 @@ public class MultivariateDistance {
         int q = y[0].length;
         
         int n = x.length;
-        
-        SecureRandom rand = SecureRandom.getInstanceStrong();
-        long seed = System.nanoTime();
-        //System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
         
         double Cp = _calcCapitalC(p);
         double Cq = _calcCapitalC(q);   
@@ -258,13 +350,13 @@ public class MultivariateDistance {
         double betaT = numer / denom;        
         double alphaT = numer * betaT;
         
-        double t = efficientDCov(x, y, k);
+        double t = efficientDCov(x, y, k, rand);
         
         //Reject H0 if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
                 
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
-        System.out.printf("n*t + s2*s3=%.4e  gamma.inverseCDF(%.3e, %.3e, %.3e)=%.3e",
+        System.out.printf("n*t + s2*s3=%.4e  gamma.inverseCDF(%.3e, %.3e, %.3e)=%.3e\n",
             (n*t) + (s2*s3), alphaT, betaT, 1.-alpha, g);
         System.out.flush();
         
