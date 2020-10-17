@@ -216,7 +216,7 @@ public class MultivariateDistanceTest extends TestCase {
         
         double[][] x, y, x2, y2;
         
-        int nIter = 1;//400;
+        int nIter = 400;
         
         double[] dcov = new double[nSamples.length];
         boolean indep1, indep2;

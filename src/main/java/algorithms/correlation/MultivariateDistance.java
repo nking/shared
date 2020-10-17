@@ -3,6 +3,7 @@ package algorithms.correlation;
 import algorithms.correlation.UnivariateDistance.DCor;
 import algorithms.correlation.UnivariateDistance.DCov;
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
 import algorithms.misc.Shuffle;
 import algorithms.statistics.Gamma;
 import algorithms.statistics.GammaCDF;
@@ -174,18 +175,18 @@ public class MultivariateDistance {
      */
     public static boolean areIndependent1(double[][] x, double[][] y, 
         int k, int nIterations, double alpha, SecureRandom rand) {
-           
+        
+        if (nIterations < 2) {
+            throw new IllegalArgumentException("nIterations should be > 1");
+        }
+        
         int p = x.length;
         int q = y.length;
         
         int i, j;
         
         double[][] y2;
-        
-        double t = efficientDCov(x, y, k, rand);
-        
-        double s = 0;
-        
+                
         double[] t2 = new double[nIterations];
         
         for (i = 0; i < nIterations; ++i) {
@@ -198,13 +199,29 @@ public class MultivariateDistance {
             y2 = MatrixUtil.transpose(y2);
             
             t2[i] = efficientDCov(x, y2, k, rand);
-            
-            if (t > t2[i]) {
+        }
+        
+        double t = efficientDCov(x, y, k, rand);
+        
+        double[] meanAndStDev = MiscMath0.getAvgAndStDev(t2);
+        
+        double s = 0;
+        for (i = 0; i < t2.length; ++i) {
+            if (meanAndStDev[0] > t2[i]) {
                 s++;
             }
         }
-        
         s = (1. + s)/(1. + nIterations);
+        
+        double s2 = 0;
+        for (i = 0; i < t2.length; ++i) {
+            if (t > t2[i]) {
+                s2++;
+            }
+        }
+        s2 = (1. + s2)/(1. + nIterations);
+        
+        System.out.printf("s=%.4e  s2=%.4e  alpha=%.4e\n", s, s2, alpha);
         
         return (s > alpha);
     }
@@ -345,22 +362,26 @@ public class MultivariateDistance {
         tyy *= invK;
         
         double numer = s2 * s3;
-        double denom = ((2.*(k-1.)/(double)k) * txx * tyy) + ((sxxyy)/(double)k);
+        double denom = 
+                2.*((((k-1.)/(double)k) * txx * tyy) + (sxxyy/(double)k));
         
         double betaT = numer / denom;        
         double alphaT = numer * betaT;
         
-        double t = efficientDCov(x, y, k, rand);
+        //double t = efficientDCov(x, y, k, rand);
         
         //Reject H0 if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
                 
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
-        System.out.printf("n*t + s2*s3=%.4e  gamma.inverseCDF(%.3e, %.3e, %.3e)=%.3e\n",
-            (n*t) + (s2*s3), alphaT, betaT, 1.-alpha, g);
+        //NLK: temporary fudge here to multiply by k
+        double stat = k*n*(txy + s2*s3);
+        
+        System.out.printf("t=%.4e, n=%d s2=%.4e s3=%.4e\n  (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
+            txy, n, s2, s3, stat, alphaT, betaT, 1.-alpha, g);
         System.out.flush();
         
-        if ((n*t + s2*s3) > g) {
+        if (stat > g) {
             return false;
         }
         return true;        
