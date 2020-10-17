@@ -133,7 +133,7 @@ public class MultivariateDistanceTest extends TestCase {
           for the wrong reason, etc.
     */
 
-    public void est1_independent() {
+    public void test1_independent() {
         
         // x, y independent
         
@@ -145,16 +145,21 @@ public class MultivariateDistanceTest extends TestCase {
         
         int k = 50; // for independent X and Y
         
-        int[] nSamples = new int[]{100, 500, 1000, 5000
+        int[] nSamples = new int[]{
+            100, 500, 1000, 
+            5000
             //, 10000
         };
         
         double[][] x, y;
         
-        int nIter = 1;//400;
+        int nIter = 10;//400;
         
         double[] dcov = new double[nSamples.length];
         boolean indep1, indep2;
+        
+        int n1True = 0;
+        int n2True = 0;
         
         int n = 0;
         for (int nSample : nSamples) {
@@ -165,7 +170,7 @@ public class MultivariateDistanceTest extends TestCase {
                     y[i][j] *= y[i][j];
                 }
             }
-            System.out.printf("nSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
+            System.out.printf("\nnSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
                 nSample, k, nIter, alpha);
             System.out.flush();
             
@@ -178,12 +183,19 @@ public class MultivariateDistanceTest extends TestCase {
             System.out.printf("cov=%.4e indep=(%b, %b)\n", dcov[n], indep1, indep2);
             System.out.flush();
 
-            assertTrue(indep1);
-            assertTrue(indep2);
+            if (indep1) {
+                n1True++;
+            }
+            if (indep2) {
+                n2True++;
+            }
             
             ++n;
         }
         
+        System.out.printf("n1True=%d n2True=%d\n", n1True, n2True);
+        System.out.flush();
+            
         assertTrue(Math.abs(dcov[nSamples.length - 1]) < tolCov);
         
     }
@@ -210,16 +222,22 @@ public class MultivariateDistanceTest extends TestCase {
         
         int k = 50; // for independent X and Y
         
-        int[] nSamples = new int[]{100, 500, 1000, 5000
+        int[] nSamples = new int[]{
+            100, 500, 1000, 
+            5000
             //, 10000
         };
         
         double[][] x, y, x2, y2;
         
-        int nIter = 400;
+        int nIter = 10;//400;
         
         double[] dcov = new double[nSamples.length];
-        boolean indep1, indep2;
+        boolean indep1, indep2, indep3, indep4;
+        int n1False = 0;
+        int n2False = 0;
+        int n3False = 0;
+        int n4False = 0;
         
         int n = 0;
         for (int nSample : nSamples) {
@@ -235,7 +253,7 @@ public class MultivariateDistanceTest extends TestCase {
                     y[i][j] *= y[i][j];
                 }
             }
-            System.out.printf("nSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
+            System.out.printf("\nnSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
                 nSample, k, nIter, alpha);
             System.out.flush();
             
@@ -248,22 +266,39 @@ public class MultivariateDistanceTest extends TestCase {
             y2 = MatrixUtil.copySubMatrix(y, 0, y.length-1, 0, 1);
             indep1 = MultivariateDistance.areIndependent1(x2, y2, k, nIter, alpha, rand);
             indep2 = MultivariateDistance.areIndependent2(x2, y2, k, alpha, rand);
-            
+                        
             System.out.printf("  [*, 0:1] indep=(%b, %b)\n", indep1, indep2);
             System.out.flush();
             
-            indep1 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
-            indep2 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
+            indep3 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
+            indep4 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
             
-            System.out.printf("  [*,*] indep=(%b, %b)\n", indep1, indep2);
+            System.out.printf("  [*,*] indep=(%b, %b)\n", indep3, indep4);
             System.out.flush();
 
-            //assertTrue(indep1);
-            //assertTrue(indep2);
+            if (!indep1) {
+                n1False++;
+            }
+            if (!indep2) {
+                n2False++;
+            }
+            if (!indep3) {
+                n3False++;
+            }
+            if (!indep4) {
+                n4False++;
+            }
+            //assertFalse(indep1);
+            //assertFalse(indep2);  // test has less power when the dependence is of low dimension
             
             ++n;
         }
         
+        System.out.printf("n1False=%d  n2False=%d  n3False=%d  n4False=%d\n", 
+            n1False, n2False, n3False, n4False);
+        System.out.flush();
+        
+        System.out.println("dcov=" + dcov[nSamples.length - 1]);
         //assertTrue(Math.abs(dcov[nSamples.length - 1]) < tolCov);
         
     }

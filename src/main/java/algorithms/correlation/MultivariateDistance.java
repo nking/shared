@@ -171,7 +171,8 @@ public class MultivariateDistance {
      * step has runtime complexity O(y.length * y[0].length)
      * @param alpha significance level for testing null hypothesis
      * @param rand
-     * @return
+     * @return if true, x and y are consistent with independent, else if false
+     * x and y are not consistent with independent.
      */
     public static boolean areIndependent1(double[][] x, double[][] y, 
         int k, int nIterations, double alpha, SecureRandom rand) {
@@ -186,8 +187,10 @@ public class MultivariateDistance {
         int i, j;
         
         double[][] y2;
-                
-        double[] t2 = new double[nIterations];
+
+        double t = efficientDCov(x, y, k, rand);
+        double t2;
+        double s = 0;
         
         for (i = 0; i < nIterations; ++i) {
             
@@ -198,32 +201,21 @@ public class MultivariateDistance {
             }
             y2 = MatrixUtil.transpose(y2);
             
-            t2[i] = efficientDCov(x, y2, k, rand);
-        }
-        
-        double t = efficientDCov(x, y, k, rand);
-        
-        double[] meanAndStDev = MiscMath0.getAvgAndStDev(t2);
-        
-        double s = 0;
-        for (i = 0; i < t2.length; ++i) {
-            if (meanAndStDev[0] > t2[i]) {
+            t2 = efficientDCov(x, y2, k, rand);
+            
+            // t2 should have cov ~ 0
+            // if dependent, t > 0
+            System.out.printf("   t=%.4e, t2=%.4e\n", t, t2);
+            if (t > t2) {
                 s++;
             }
         }
+        
         s = (1. + s)/(1. + nIterations);
         
-        double s2 = 0;
-        for (i = 0; i < t2.length; ++i) {
-            if (t > t2[i]) {
-                s2++;
-            }
-        }
-        s2 = (1. + s2)/(1. + nIterations);
-        
-        System.out.printf("s=%.4e  s2=%.4e  alpha=%.4e\n", s, s2, alpha);
-        
-        return (s > alpha);
+        System.out.printf("t=%.4e, s=%.4e,  1.-alpha=%.4e\n", t, s, 1.-alpha);
+        System.out.flush();
+        return (s < (1.-alpha));
     }
         
     /**
@@ -374,11 +366,10 @@ public class MultivariateDistance {
                 
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
-        //NLK: temporary fudge here to multiply by k
-        double stat = k*n*(txy + s2*s3);
+        double stat = n*(txy + s2*s3);
         
-        System.out.printf("t=%.4e, n=%d s2=%.4e s3=%.4e\n  (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
-            txy, n, s2, s3, stat, alphaT, betaT, 1.-alpha, g);
+        System.out.printf("Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n  (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
+            Cp, Cq, txy, n, k, s2, s3, stat, alphaT, betaT, 1.-alpha, g);
         System.out.flush();
         
         if (stat > g) {
