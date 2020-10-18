@@ -220,6 +220,7 @@ public class MultivariateDistance {
     }
         
     /**
+     * NOT READY FOR USE.
      * test for independence of x and y using threshold of an approximate 
      * asymptotic distribution
      <pre>
@@ -229,7 +230,8 @@ public class MultivariateDistance {
       2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
      </pre>
      <pre>
-     runtime complexity is 
+      The authors note that this assymptotic dependence test has less power for 
+      low dimensional dependency in high dimensional data.
      </pre>
      * @param x.  x.length must be >= 20
      * @param y.  x.length must be >= 20
@@ -250,7 +252,7 @@ public class MultivariateDistance {
     }
     
     /**
-     * NOTE READY FOR USE
+     * NOTE READY FOR USE.
      * 
      * test for independence of x and y using threshold of an approximate 
      * asymptotic distribution
@@ -261,7 +263,8 @@ public class MultivariateDistance {
       2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
      </pre>
      <pre>
-     runtime complexity is 
+      The authors note that this assymptotic dependence test has less power for 
+      low dimensional dependency in high dimensional data.
      </pre>
      * @param x.  x.length must be >= 20
      * @param y.  x.length must be >= 20
