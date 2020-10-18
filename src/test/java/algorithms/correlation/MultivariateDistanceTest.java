@@ -313,4 +313,14 @@ public class MultivariateDistanceTest extends TestCase {
         return a;
     }
 
+    /*
+    other test distributions from Shen and Vogelstein:
+    
+    Spiral(X,Y):letZ∼N(0,5),ε∼N(0,1),
+            X = Z cos(πZ),
+            Y = Z sin(πZ) + 0.4ε.
+    Independent (X, Y ): let Z ∼ N (0, 1), W ∼ N (0, 1), Z′ ∼ Bernoulli(0.5), W ′ ∼ Bernoulli(0.5),
+            X = Z/3 + 2Z′ − 1, Y =W/3+2W′−1.
+    
+    */
 }

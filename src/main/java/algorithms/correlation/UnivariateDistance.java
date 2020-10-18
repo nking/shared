@@ -33,7 +33,7 @@ import java.util.Arrays;
 public class UnivariateDistance {
     
     /**
-     * calculates the distance covariance between univariate vectors x and y as
+     * calculates the unbiased distance covariance between univariate vectors x and y as
      * "a weighted  distance between the joint characteristic function and 
      * the product of marginal distributions; 
      * it is 0 if and only if two random vectors  and  are independent. 
@@ -45,6 +45,13 @@ public class UnivariateDistance {
      * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * https://arxiv.org/pdf/1810.11332.pdf
+     * 
+     * The small corrections to make the covariance unbiased are from 
+     * equation 2.5 of “A Statistically And Numerically Efficient Independence 
+       Test Based On Random Projections And Distance Covariance”, 
+       2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+       See also Appendix C of Shen and Vogelstein, 
+       "The Chi-Square Test of Distance Correlation"
      * 
      * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
      * the same as the number in y.
@@ -322,10 +329,14 @@ public class UnivariateDistance {
 
         double[] b_y = _calcB(y, idx, n, r);
 
-        //NOTE: minor edits to nsq, ncb, and nq following equation 2.5 of
+        //NOTE: minor edits to nsq, ncb, and nq to make the covariance
+        // unbiased following equation 2.5 of
         // “A Statistically And Numerically Efficient Independence Test Based On 
         // Random Projections And Distance Covariance”, 
         // 2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+        //  See also Appendix C of Shen and ogelstein, 
+        //  "The Chi-Square Test of Distance Correlation"
+        
         //%covsq equals V^2_n(x, y) the square of the distance covariance
         //%between x and y
         double nsq = n * (n - 3.);//(double)(n*n);
@@ -813,16 +824,21 @@ public class UnivariateDistance {
         dcor.covXXSq = fastDcov(x, x);
         if (dcor.covXXSq.covsq < tol) {
             dcor.corSq = 0;
-            System.out.println("cov(XX) is 0, so correlation is 0");
+            System.err.println("cov(XX) is 0, so correlation is 0");
             return dcor;
         }
         dcor.covYYSq = fastDcov(y, y);
         if (dcor.covYYSq.covsq < tol) {
             dcor.corSq = 0;
-            System.out.println("cov(YY) is 0, so correlation is 0");
+            System.err.println("cov(YY) is 0, so correlation is 0");
             return dcor;
         }
         dcor.covXYSq = fastDcov(x, y);
+        if (dcor.covXYSq.covsq < tol) {
+            dcor.corSq = 0;
+            System.err.println("cov(XY) is 0, so correlation is 0");
+            return dcor;
+        }
         dcor.corSq = dcor.covXYSq.covsq/Math.sqrt(dcor.covXXSq.covsq * dcor.covYYSq.covsq);
         return dcor;
     }

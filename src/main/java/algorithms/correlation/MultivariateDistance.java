@@ -231,8 +231,8 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x
-     * @param y
+     * @param x.  x.length must be >= 20
+     * @param y.  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param alpha significance level for testing null hypothesis
      * @return
@@ -250,6 +250,8 @@ public class MultivariateDistance {
     }
     
     /**
+     * NOTE READY FOR USE
+     * 
      * test for independence of x and y using threshold of an approximate 
      * asymptotic distribution
      <pre>
@@ -261,8 +263,8 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x
-     * @param y
+     * @param x.  x.length must be >= 20
+     * @param y.  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param alpha significance level for testing null hypothesis
      * @param rand
@@ -305,6 +307,8 @@ public class MultivariateDistance {
         double txx = 0;
         double tyy = 0;
         
+        double dcorsq = 0;
+        
         for (i = 0; i < k; ++i) {
             u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);
             v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);
@@ -314,6 +318,7 @@ public class MultivariateDistance {
             yv = MatrixUtil.multiply(y, v);
             
             dcor = UnivariateDistance.fastDcor(xu, yv);
+            dcorsq += dcor.corSq;
             
             uPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);
             vPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);
@@ -354,26 +359,47 @@ public class MultivariateDistance {
         txx *= invK;
         tyy *= invK;
         
-        double numer = s2 * s3;
-        double denom = 
-                2.*((((k-1.)/(double)k) * txx * tyy) + (sxxyy/(double)k));
+        System.out.printf("   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e\n", 
+            k, txy, sxxyy, s2, s3, txx, tyy);
         
+        double numer = s2 * s3;
+        double denom = ((k-1.)/(double)k) * txx * tyy;
+        denom += sxxyy/(double)k;
+        denom *= 2.;
+        
+  // temporary fudge that may be introducing a Type III error.  alphaT seems too large, so exploring the normalization of denom first:
+  denom *= k;
+  
+        System.out.printf("   =>numer=%4e : s2=%.4e s3=%.4e\n", numer, s2, s3);
+        System.out.printf("   =>denom=%4e : 1st=%.4e 2nd=%.4e\n", denom, 
+            ((k-1.)/(double)k) * txx * tyy, sxxyy/(double)k);
+        
+        //NOTE: alphaT seems too large
         double betaT = numer / denom;        
         double alphaT = numer * betaT;
         
         //double t = efficientDCov(x, y, k, rand);
         
-        //Reject H0 if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
+        // see 3.3 and 3.5 in The Distance Correlation Chi-Square Test of Shen and Vogelstein
+        //   and note that when corsq = 1, univariate samples are dependent
+        
+        
+        //Reject independence (==H0) if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);
                 
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
-        double stat = n*(txy + s2*s3);
+        System.out.printf("?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,\n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
+            Math.sqrt(dcorsq), dcorsq, dcorsq*invK, n*dcorsq*invK, 
+            alphaT, betaT, 1.-alpha, g);
         
-        System.out.printf("Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n  (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
+        double stat = n*(txy + s2*s3);        
+        
+        System.out.printf("Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
             Cp, Cq, txy, n, k, s2, s3, stat, alphaT, betaT, 1.-alpha, g);
         System.out.flush();
         
-        if (stat > g) {
+        //if (stat > g) {
+        if (Math.sqrt(dcorsq) > g) {
             return false;
         }
         return true;        
