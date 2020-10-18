@@ -119,8 +119,8 @@ public class MultivariateDistance {
     }
     
     /**
-     * test for independence of x and y using permutations of y and the efficient
-     * dCov as a statistic.
+     * test for independence of x and y using permutations of y (approximating the null distribution) 
+     and the efficient  dCov as a statistic.
      <pre>
       following the algorithm
       “A Statistically And Numerically Efficient Independence Test Based On 
@@ -130,8 +130,8 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x
-     * @param y
+     * @param x.  x.length must be >= 20
+     * @param y.  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param nIterations the number of iterations for statistic calculations
      * (note that each iteration constructs a new permutation of y, so this
@@ -152,8 +152,8 @@ public class MultivariateDistance {
     }
     
     /**
-     * test for independence of x and y using permutations of y and the efficient
-     * dCov as a statistic.
+     * test for independence of x and y using permutations of y (approximating the null distribution) 
+     and the efficient  dCov as a statistic.
      <pre>
       following the algorithm
       “A Statistically And Numerically Efficient Independence Test Based On 
@@ -163,8 +163,8 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x
-     * @param y
+     * @param x.  x.length must be >= 20
+     * @param y.  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param nIterations the number of iterations for statistic calculations
      * (note that each iteration constructs a new permutation of y, so this
@@ -215,6 +215,7 @@ public class MultivariateDistance {
         
         System.out.printf("t=%.4e, s=%.4e,  1.-alpha=%.4e\n", t, s, 1.-alpha);
         System.out.flush();
+        //reject the independence hypothesis (H0) when s is smaller than critical level α (which is 1-α in this case).
         return (s < (1.-alpha));
     }
         

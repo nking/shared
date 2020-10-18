@@ -7,19 +7,19 @@ import algorithms.util.FormatArray;
 import java.util.Arrays;
 
 /**
- * calculates the distance covariance between univariate vectors x and y as
-     "a weighted  distance between the joint characteristic function and 
-     the product of marginal distributions.
-    
-     * The method covariance() is a port of the Matlab code from
-     * "A fast algorithm for computing distance correlation"
-     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
-     * Volume 135, July 2019, Pages 15-24.
-     * https://arxiv.org/pdf/1810.11332.pdf
-     * 
-     * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
-     * the same as the number in y
- * 
+ * calculates the square of the unbiased distance covariance and correlation 
+   between univariate vectors x and y as
+   "a weighted  distance between the joint characteristic function and 
+   the product of marginal distributions following algorithms in
+   <pre>
+      "A fast algorithm for computing distance correlation"
+      2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+      Volume 135, July 2019, Pages 15-24.
+      https://arxiv.org/pdf/1810.11332.pdf
+   </pre>
+   Runtime is O(n * lg_2(n)) where n is the number of points in x which is
+   the same as the number in y
+
  * TODO: consider implementing Brownian Distance Covariance.
  * TODO: add notes for Hilbert-Schmidt independence measure (HSIC) - Lasso.
  
