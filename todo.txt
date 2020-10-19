@@ -23,3 +23,6 @@
    -- "Handling Massive N-Gram Datasets"
 
 -- clean up the multiply and dot operations in MatrixUtil
+
+-- consider http://members.cbio.mines-paristech.fr/~jvert/svn/bibli/local/Bengio2004Learning.pdf
+

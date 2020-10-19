@@ -1,6 +1,7 @@
-package algorithms.matrix;
+package algorithms.dimensionReduction;
 
 import algorithms.imageProcessing.SummedAreaTable0;
+import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.CDFRandomSelect;
 import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
@@ -51,16 +52,17 @@ public class CURDecomposition {
      * by using FlexCompColMatrix and FlexCompRowMatrix for C, U, R, and 
      * result matrices.
      * Also, for very large matrices, consider implementing in CDFRandomSelect.java
-     * the integer transformation and storage in YFAstTrie.
+     * the integer transformation and storage in YFastTrie.
      * 
      * @param a is an mxn matrix.
      * @param k
      * @return 
+     * @throws no.uib.cipr.matrix.NotConvergedException 
      */
     public static CUR calculateDecomposition(double[][] a, int k) throws NotConvergedException {
 
         CDFs cdfs = _calculateCDFs(a, k);
-                
+       
         SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);
         
         SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pdfs.colPDF);

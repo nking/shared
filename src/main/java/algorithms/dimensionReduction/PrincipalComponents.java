@@ -1,4 +1,4 @@
-package algorithms.pca;
+package algorithms.dimensionReduction;
 
 import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
@@ -82,8 +82,6 @@ public class PrincipalComponents {
            the 1st principal direction is the 1st column of U.
         */
     
-        //TODO: replace this covariance with the faster methods when those are ready for use
-        //[x[0].length][x[0].length]
         double[][] cov = BruteForce.covariance(x);
         assert(nDimensions == cov.length);
         assert(nDimensions == cov[0].length);

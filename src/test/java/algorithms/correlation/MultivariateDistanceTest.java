@@ -271,6 +271,9 @@ public class MultivariateDistanceTest extends TestCase {
             System.out.flush();
             
             indep3 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
+            
+            //the authors note that the assymptotic dependence test, i.e. areIndependent2
+            //   has less power for low dimensional dependency in high dimensional data
             indep4 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
             
             System.out.printf("  [*,*] indep=(%b, %b)\n", indep3, indep4);
@@ -315,6 +318,7 @@ public class MultivariateDistanceTest extends TestCase {
 
     /*
     other test distributions from Shen and Vogelstein:
+    https://arxiv.org/pdf/1912.12150.pdf
     
     Spiral(X,Y):letZ∼N(0,5),ε∼N(0,1),
             X = Z cos(πZ),

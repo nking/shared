@@ -1,8 +1,8 @@
-package algorithms.pca;
+package algorithms.dimensionReduction;
 
+import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.Standardization;
-import algorithms.pca.PrincipalComponents.PCAStats;
 import algorithms.util.ResourceFinder;
 import java.io.BufferedReader;
 import java.io.File;

@@ -3,7 +3,6 @@ package algorithms.correlation;
 import algorithms.correlation.UnivariateDistance.DCor;
 import algorithms.correlation.UnivariateDistance.DCov;
 import algorithms.matrix.MatrixUtil;
-import algorithms.misc.MiscMath0;
 import algorithms.misc.Shuffle;
 import algorithms.statistics.Gamma;
 import algorithms.statistics.GammaCDF;
@@ -232,6 +231,10 @@ public class MultivariateDistance {
      <pre>
       The authors note that this assymptotic dependence test has less power for 
       low dimensional dependency in high dimensional data.
+      One workaround may be to perform dimension reduction before using this method.
+      For dimension reduction, see CURDecomposition class, methods in
+       "Learning Eigenfunctions Links Spectral Embedding
+        and Kernel PCA", etc.
      </pre>
      * @param x.  x.length must be >= 20
      * @param y.  x.length must be >= 20
@@ -265,6 +268,10 @@ public class MultivariateDistance {
      <pre>
       The authors note that this assymptotic dependence test has less power for 
       low dimensional dependency in high dimensional data.
+      One workaround may be to perform dimension reduction before using this method.
+      For dimension reduction, see CURDecomposition class, methods in
+       "Learning Eigenfunctions Links Spectral Embedding
+        and Kernel PCA", etc.
      </pre>
      * @param x.  x.length must be >= 20
      * @param y.  x.length must be >= 20
@@ -385,6 +392,7 @@ public class MultivariateDistance {
         
         // see 3.3 and 3.5 in The Distance Correlation Chi-Square Test of Shen and Vogelstein
         //   and note that when corsq = 1, univariate samples are dependent
+        //   https://arxiv.org/pdf/1912.12150.pdf
         
         
         //Reject independence (==H0) if n*t + s2*s3 > Gamma(alphaT, betaT; 1 - alpha);

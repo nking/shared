@@ -1,8 +1,9 @@
-package algorithms.matrix;
+package algorithms.dimensionReduction;
 
-import algorithms.matrix.CURDecomposition.CUR;
-import algorithms.matrix.CURDecomposition.PDFs;
-import algorithms.matrix.CURDecomposition.SelectedFromA;
+import algorithms.dimensionReduction.CURDecomposition.CUR;
+import algorithms.dimensionReduction.CURDecomposition.PDFs;
+import algorithms.dimensionReduction.CURDecomposition.SelectedFromA;
+import algorithms.matrix.MatrixUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
