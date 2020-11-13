@@ -1,4 +1,4 @@
-package algorithms.misc;
+package algorithms.sort;
 
 import java.security.SecureRandom;
 import java.util.Arrays;

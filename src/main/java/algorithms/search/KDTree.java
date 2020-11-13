@@ -1,6 +1,6 @@
 package algorithms.search;
 
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;

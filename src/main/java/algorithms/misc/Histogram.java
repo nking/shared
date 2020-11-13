@@ -1,6 +1,6 @@
 package algorithms.misc;
 
-import algorithms.CountingSort;
+import algorithms.sort.CountingSort;
 import algorithms.util.Errors;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
+import algorithms.sort.MiscSorter;
 
 /**
  *  TODO:  improve this class...

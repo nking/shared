@@ -1,6 +1,6 @@
 package algorithms.misc;
 
-import algorithms.CountingSort;
+import algorithms.sort.CountingSort;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import algorithms.sort.MiscSorter;
 
 /**
     miscellaneous math methods. some could probably be improved.

@@ -1,6 +1,6 @@
 package algorithms.search;
 
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import algorithms.util.PairFloat;
 import java.util.ArrayDeque;
 import java.util.Arrays;

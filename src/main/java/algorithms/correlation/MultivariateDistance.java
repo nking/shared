@@ -11,7 +11,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- *
+ * methods for calculating multivariate distance covariance and testing for
+ * independence.
+ * 
+ * TODO: consider adding another method for High-Dimensional Independence 
+ * Testing: Shen 2020, "High-Dimensional Independence Testing and Maximum 
+   Marginal Correlation", https://arxiv.org/pdf/2001.01095.pdf
+ * 
  * @author nichole
  */
 public class MultivariateDistance {
@@ -219,7 +225,7 @@ public class MultivariateDistance {
     }
         
     /**
-     * NOT READY FOR USE.
+     * NOT READY FOR USE, instead use method areIndependent1().
      * test for independence of x and y using threshold of an approximate 
      * asymptotic distribution
      <pre>
@@ -255,7 +261,7 @@ public class MultivariateDistance {
     }
     
     /**
-     * NOTE READY FOR USE.
+     * NOT READY FOR USE, instead use method areIndependent1().
      * 
      * test for independence of x and y using threshold of an approximate 
      * asymptotic distribution

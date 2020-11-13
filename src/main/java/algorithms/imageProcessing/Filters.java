@@ -2,7 +2,7 @@ package algorithms.imageProcessing;
 
 import algorithms.FixedSizeSortedVector;
 import algorithms.misc.MiscMath0;
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import gnu.trove.list.TIntList;
 import java.util.Arrays;
 

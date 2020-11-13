@@ -2,7 +2,7 @@ package algorithms.correlation;
 
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import algorithms.util.FormatArray;
 import java.util.Arrays;
 

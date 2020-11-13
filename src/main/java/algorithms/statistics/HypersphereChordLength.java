@@ -5,7 +5,7 @@ import algorithms.misc.Distances;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.set.TIntSet;

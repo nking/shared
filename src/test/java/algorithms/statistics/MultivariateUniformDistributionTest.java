@@ -5,7 +5,7 @@ import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import algorithms.optimization.GeometricMedian;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;

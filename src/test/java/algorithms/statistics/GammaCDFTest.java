@@ -74,7 +74,7 @@ public class GammaCDFTest extends TestCase {
         rand.setSeed(seed);
         
         double shape, scale, alpha, x, p;
-        final double tolP = 1.e-3;
+        final double tolP = 1.e-2;
         final double tolX = 1.e-3;
         
         double alphaMin = 0.001;
