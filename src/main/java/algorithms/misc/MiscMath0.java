@@ -1348,6 +1348,9 @@ public class MiscMath0 {
      * @return 
      */
     public static int numberOfBitsWOB(int v) {
+        if (v == 0) {
+            return 1;
+        }
         //from http://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
         // then edited for negative numbers and signed int
         int sign = v >>> 31;

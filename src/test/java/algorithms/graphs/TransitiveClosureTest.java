@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.VeryLongBitString;
 import java.util.Arrays;
 import junit.framework.TestCase;
 
@@ -27,15 +28,43 @@ public class TransitiveClosureTest extends TestCase {
         e[2] = new boolean[]{true, true, true, true};
         e[3] = new boolean[]{true, true, true, true};
         
+        int n = c.length;
+        
+        /*System.out.println("input:");
+        for (int i = 0; i < n; i++) {
+            System.out.println("c i=" + i + " : " + Arrays.toString(c[i]));
+        }
+        System.out.println("output:");
+        for (int i = 0; i < n; i++) {
+            System.out.println("e i=" + i + " : " + Arrays.toString(e[i]));
+        }*/
+        
         TransitiveClosure tc = new TransitiveClosure();
         //tc.setDebug(true);
-        tc.calc(c);
+        boolean[][] t = tc.calc(c);
         
-        boolean[][] t = tc.t;
         assertEquals(e.length, t.length);
         for (int i = 0; i < e.length; ++i) {
             assertTrue(Arrays.equals(e[i], t[i]));
         }
         
+        
+        //tc.setDebug(true);
+        VeryLongBitString[] cBS = TransitiveClosure.convert(c);
+        VeryLongBitString[] eBS = TransitiveClosure.convert(e);
+        /*System.out.println("input:");
+        for (int i = 0; i < n; i++) {
+            System.out.println("t i=" + i + " : " + cBS[i].toString());
+        }
+        System.out.println("output:");
+        for (int i = 0; i < n; i++) {
+            System.out.println("t i=" + i + " : " + eBS[i].toString());
+        }*/
+        //tc.setDebug(true);
+        VeryLongBitString[] tBS = tc.calc(cBS);
+        assertEquals(e.length, t.length);
+        for (int i = 0; i < e.length; ++i) {
+            assertTrue(Arrays.equals(eBS[i].getSetBits(), tBS[i].getSetBits()));
+        }
     }
 }
