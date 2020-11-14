@@ -1,7 +1,6 @@
 package algorithms.shortestPaths;
 
 import algorithms.util.SimpleLinkedListNode;
-import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.Arrays;
@@ -13,7 +12,8 @@ import java.util.Arrays;
  * there can be negative edge weights in the input graph, but no negative weight
  * cycles.
  * 
- * runtime complexity is <em>O(|V|^2 + |V||E|)</em>
+ * runtime complexity is <em>O(|V|^2 + |V||E|)</em> which is better than
+ * Floyd-Warshall if E is less than V^2.
  * 
  * implemented following Cormen et al. "Introduction to Algorithms".
  * 
