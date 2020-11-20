@@ -61,6 +61,22 @@ public class Betweenness {
         color[s] = 1;
         d[s] = 0;
         w[s] = 1;
+       
+        /*
+        The iteration has to be performed over the graph source nodes
+        with the source nodes being either:
+        all nodes in the graph or all nodes in the graph without parents.
+
+        Then need to understand how to combine information from the different
+        iterations.  This is mentioned in mmds chap 10, so need to read details.
+        
+        *to determine root nodes, that is, nodes without parents, could perform
+        DFS on the graph because it visits each node.  The DFS predecessor 
+        array contains a "-1" for each node without a predecessor.
+        Note that the quick addition of topological sort to that gives
+        a route from leafs to parents.
+        
+        */
         
         // calc vertex weights
         int nE = 0;
@@ -72,10 +88,12 @@ public class Betweenness {
         while (!queue.isEmpty()) {
             u = queue.remove().intValue();
             members.add(u);
+            System.out.printf("u=%d\n", u);
             SimpleLinkedListNode vNode = adjacencyList[u];
             if (vNode == null || vNode.getKey() == -1) {
                 leaf.add(u);
                 color[u] = 2;
+                System.out.printf("    LEAF\n");
                 continue;
             }
             while (vNode != null && vNode.getKey() != -1) {
@@ -86,6 +104,7 @@ public class Betweenness {
                     w[v] = w[u];
                     queue.add(v);
                     nE++;
+                    System.out.printf("  v=%d\n", v);
                 } else if (d[v] == (d[u] + 1)) {
                     w[v] += w[u];
                 } else {
@@ -107,17 +126,21 @@ public class Betweenness {
         TIntIterator pIter;
         while (tIter.hasNext()) {
             t = tIter.next();
+            System.out.printf("t leaf=%d\n", t);
             pIter = p[t].iterator();
             while (pIter.hasNext()) {
                 i = pIter.next();
+                System.out.printf("  p=%d\n", i);
                 if (!enqd.contains(i)) {
                     queue.add(i);
                     enqd.add(i);
                 }
                 e = (float) w[i] / (float) w[t];
                 edges.put(new PairInt(i, t), e);
+                System.out.printf("  edge=(%d, %d) w=%.3e\n", i, t, w);
             }
         }
+        System.out.println("q="+ queue.toString());
         float e2;
         while (!queue.isEmpty()) {
             i = queue.remove().intValue();
