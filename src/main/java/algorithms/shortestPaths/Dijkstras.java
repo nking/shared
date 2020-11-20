@@ -10,8 +10,8 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.Arrays;
 
 /**
- * given a weighted directed graph with weight function, the shortest path from
- * u to v is the path whose sum of weights is the minimum.
+ * given a weighted directed graph with weight function, solves the single
+ * source shortest paths.
  * 
  * All edge weights must be non-negative.
  * 

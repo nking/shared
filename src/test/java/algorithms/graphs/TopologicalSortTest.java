@@ -1,17 +1,9 @@
 package algorithms.graphs;
 
-import algorithms.disjointSets.DisjointSet2Helper;
-import algorithms.disjointSets.DisjointSet2Node;
 import algorithms.util.SimpleLinkedListNode;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import junit.framework.TestCase;
 
 /**

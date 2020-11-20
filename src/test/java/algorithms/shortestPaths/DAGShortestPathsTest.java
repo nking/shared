@@ -48,7 +48,7 @@ public class DAGShortestPathsTest extends TestCase {
          
          int src = 0;
          int dest = 4;
-         DAGShortestPath sp = new DAGShortestPath();
+         DAGShortestPaths sp = new DAGShortestPaths();
          sp.find(g, w, src);
          
          int[] path = sp.getShortestPathToVertex(dest);
