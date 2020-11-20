@@ -97,12 +97,11 @@ public class Betweenness {
             color[u] = 2;
         }
         assert(queue.isEmpty());
+        
         // calc edge weights
         TObjectFloatMap edges = new TObjectFloatHashMap<PairInt>();
         TIntSet enqd = new TIntHashSet();
         float e;
-        //NOTE: since only need max edge, will compare below
-        //      instead of storing in a priority queue/max queue
         TIntIterator tIter = leaf.iterator();
         int t, i, ip;
         TIntIterator pIter;
@@ -142,6 +141,7 @@ public class Betweenness {
                 edges.put(new PairInt(ip, i), e2);
             }
         }
+        
         Results results = new Results();
         results.edges = edges;
         results.src = s;
