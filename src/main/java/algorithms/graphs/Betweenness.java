@@ -19,12 +19,12 @@ import java.util.Queue;
 public class Betweenness {
     
     /**
-     * implementation of unweighted graph distance metric of Girvan-Newman 
+     * implementation of unweighted graph edge scoring metric of Girvan-Newman 
      * algorithm.
      * Reference is 2004 Newman and Girvan,
      * "Finding and evaluating community structure in networks".
      * 
-     * For more information and other graph distance algorithms and 
+     * For more information and other graph socring and distance algorithms and 
      * cluster finding (a.k.a. community finding) see also
      * <pre>
      * Chapter 10 from "Mining of Massive Datasets"
