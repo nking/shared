@@ -18,6 +18,35 @@ import java.util.Queue;
  */
 public class Betweenness {
     
+    /**
+     * implementation of unweighted graph distance metric of Girvan-Newman 
+     * algorithm.
+     * Reference is 2004 Newman and Girvan,
+     * "Finding and evaluating community structure in networks".
+     * 
+     * For more information and other graph distance algorithms and 
+     * cluster finding (a.k.a. community finding) see also
+     * <pre>
+     * Chapter 10 from "Mining of Massive Datasets"
+       by Leskovec, Rajaraman, and Ullman
+     * http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
+     * 
+     * and
+     * 
+     * 2005 paper "Complex networks: Structure and dynamics" by
+                Boccalettia, Latorab, Morenod, Chavezf, and  Hwanga
+                Physics Reports
+               
+       and
+       
+       2010 WWW2010 conference paper "Empirical Comparison of Algorithms for
+            Network Community Detection" by Leskovec, Lang, and Mahoney
+     
+     * </pre>
+     * @param adjacencyList
+     * @param s
+     * @return 
+     */
     public Results girvanNewmanDistances(SimpleLinkedListNode[] adjacencyList, final int s) {
         final int nV = adjacencyList.length;
         // init
