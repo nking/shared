@@ -58,9 +58,25 @@ import java.util.logging.Logger;
 public class StronglyConnectedComponents {
     
     private SimpleLinkedListNode[] g;
+    
+    /**
+     * index numbers the nodes consecutively in the order in which they are discovered
+     */
+    private int[] index;
+    
+    /**
+    lowLink represents the smallest index of any node known to be reachable 
+       from v through v's DFS subtree, including v itself.
+    Therefore v must be left on the stack if v.lowlink less than v.index, 
+    whereas v must be removed as the root of a strongly connected component 
+    if v.lowlink equals v.index. 
+     
+    The value v.lowlink is computed during the depth-first search from v,
+    as this finds the nodes that are reachable from v.
+     */
     private int[] lowLink;
     private int[] onStack;
-    private int[] index;
+    
     private int time;
     private List<SimpleLinkedListNode> scc;
     private int[] inSCC;
@@ -76,6 +92,9 @@ public class StronglyConnectedComponents {
      * @return strongly connected components as a list of linked-lists.  Note
      * that the return order of the vertices in the list and their 
      * linked-lists is the reverse of the topological sort.
+     * 
+     * following https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+     * 
      */
     public List<SimpleLinkedListNode> find(SimpleLinkedListNode[] graph) {
         
@@ -162,14 +181,7 @@ public class StronglyConnectedComponents {
     }
     
     private String toString(int node) {
-        /*
-        private int[] lowLink;
-    private int[] onStack;
-    private int[] index;
-    private int time;
-    private List<SimpleLinkedListNode> scc;
-    private Stack<Integer> stack;
-*/
+        
         StringBuilder sb = new StringBuilder();
         sb.append("node=").append(node).append(", lowLink=").append(lowLink[node])
             .append(", index=").append(index[node])

@@ -105,6 +105,17 @@ public class DFS {
         }        
     }
     
+    /**
+     * alterative pattern for walking code
+     */
+    void _walk(int[] vertexOrder) {
+        for (int u : vertexOrder) {
+            if (visited[u] == 0) {
+                visit(u);
+            }
+        }
+    }
+    
     private void visit(int u) {
         //System.out.println("load method frame for " + u);
         
