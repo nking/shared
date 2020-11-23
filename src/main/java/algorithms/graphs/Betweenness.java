@@ -32,6 +32,9 @@ public class Betweenness {
      * Reference is 2004 Newman and Girvan,
      * "Finding and evaluating community structure in networks".
      * 
+     * The runtime complexity is <em>1 + the number of graph roots (i.e. nodes without predecessors)
+     *   times  O(|V| + |E|)</em>.
+     * 
      * For more information and other graph socring and distance algorithms and 
      * cluster finding (a.k.a. community finding) see also
      * <pre>
@@ -57,6 +60,7 @@ public class Betweenness {
      */
     public Results girvanNewmanDistances(SimpleLinkedListNode[] adjacencyList, final int s) {
         
+        //avg O(|E|);  worst: O(|V| + |E|)
         int[] rootIndexes = findRoots(adjacencyList, s);
         
         final int nV = adjacencyList.length;
@@ -78,6 +82,8 @@ public class Betweenness {
         //final TIntObjectMap<TIntIntMap> d = new TIntObjectHashMap<TIntIntMap>();
         
         final TIntSet members = new TIntHashSet();
+        
+        // runtime is # of roots * O(|V| + |E|)
         
         for (int src : rootIndexes) {
         
