@@ -3,6 +3,7 @@ package algorithms.graphs;
 import algorithms.graphs.Betweenness.Results;
 import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TObjectFloatIterator;
 import gnu.trove.map.TObjectFloatMap;
 import gnu.trove.map.hash.TObjectFloatHashMap;
 import gnu.trove.set.TIntSet;
@@ -31,17 +32,11 @@ public class BetweennessTest extends TestCase {
         adjList[4].insert(5); adjList[4].insert(6);
         
         Betweenness b = new Betweenness();
-        Results r = b.girvanNewmanDistances(adjList, 0);
+        Results r;        
+        TObjectFloatMap<PairInt> edges;
+        TIntSet v;
         
-        TObjectFloatMap<PairInt> edges = r.getEdges();
-        assertNotNull(edges);
-        assertEquals(8, edges.size());
-        TIntSet v = r.getVertexes();
-        assertNotNull(v);
-        assertEquals(7, v.size());
-        assertEquals(0, r.getSrc());
-        
-        TObjectFloatMap<PairInt> expected = new TObjectFloatHashMap();
+        TObjectFloatMap<PairInt> expected = new TObjectFloatHashMap<PairInt>();
         expected.put(new PairInt(0, 1), 11.f/6.f);
         expected.put(new PairInt(0, 2), 25.f/6.f);
         expected.put(new PairInt(1, 3), 5.f/6.f);
@@ -51,8 +46,57 @@ public class BetweennessTest extends TestCase {
         expected.put(new PairInt(4, 5), 1.f/3.f);
         expected.put(new PairInt(4, 6), 1.f);
         
+        r = b.girvanNewmanDistances(adjList, 0);
+        System.out.println("result=\n" + r.toString());
+        
+        edges = r.getEdges();
+        assertNotNull(edges);
+        assertEquals(expected.size(), edges.size());
+        v = r.getVertexes();
+        assertNotNull(v);
+        assertEquals(nV, v.size());
+        
+        double tol = 1.e-3;
+        TObjectFloatIterator<PairInt> iter = expected.iterator();
+        
         for (int i = 0; i < nV; ++i) {
             assertTrue(v.contains(i));
+            iter.advance();
+            PairInt euv = iter.key();
+            float ew = iter.value();
+            assertTrue(edges.containsKey(euv));
+            assertTrue(Math.abs(edges.get(euv) - ew) < tol);
+        }
+                
+        // ------
+        System.out.println("\ncutting edge=(0,2)");
+        adjList[0].delete(2);
+        
+        r = b.girvanNewmanDistances(adjList, 0);
+        edges = r.getEdges();
+        
+        System.out.println("result2=\n" + r.toString());
+        expected = new TObjectFloatHashMap<PairInt>();
+        expected.put(new PairInt(0, 1), 3.f);
+        expected.put(new PairInt(1, 3), 2.f);
+        expected.put(new PairInt(2, 3), 5.f/6.f);
+        expected.put(new PairInt(3, 5), 2.f/3.f);
+        expected.put(new PairInt(2, 4), 7.f/3.f);
+        expected.put(new PairInt(4, 5), 1.f/3.f);
+        expected.put(new PairInt(4, 6), 1.f);
+        
+        assertEquals(expected.size(), edges.size());
+        assertEquals(nV, r.getVertexes().size());
+        
+        iter = expected.iterator();
+        
+        for (int i = 0; i < nV; ++i) {
+            assertTrue(v.contains(i));
+            iter.advance();
+            PairInt euv = iter.key();
+            float ew = iter.value();
+            assertTrue(edges.containsKey(euv));
+            assertTrue(Math.abs(edges.get(euv) - ew) < tol);
         }
     }
 }
