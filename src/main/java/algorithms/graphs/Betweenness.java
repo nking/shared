@@ -35,16 +35,16 @@ public class Betweenness {
      * The runtime complexity is <em>1 + the number of graph roots (i.e. nodes without predecessors)
      *   times  O(|V| + |E|)</em>.
      * 
-     * For more information and other graph socring and distance algorithms and 
+     * For more information and other graph scoring and distance algorithms and 
      * cluster finding (a.k.a. community finding) see also
-     * <pre>
-     * Chapter 10 from "Mining of Massive Datasets"
+      <pre>
+       Chapter 10 from "Mining of Massive Datasets"
        by Leskovec, Rajaraman, and Ullman
-     * http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
-     * 
-     * and
-     * 
-     * 2005 paper "Complex networks: Structure and dynamics" by
+       http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
+       
+       and
+       
+       2005 paper "Complex networks: Structure and dynamics" by
                 Boccalettia, Latorab, Morenod, Chavezf, and  Hwanga
                 Physics Reports
                
@@ -53,7 +53,7 @@ public class Betweenness {
        2010 WWW2010 conference paper "Empirical Comparison of Algorithms for
             Network Community Detection" by Leskovec, Lang, and Mahoney
      
-     * </pre>
+     </pre>
      * @param adjacencyList
      * @param s
      * @return 
