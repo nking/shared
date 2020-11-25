@@ -289,7 +289,6 @@ public class Betweenness {
         
         if (rootIndexes.length == 0) {
             rootIndexes = new int[]{s};
-            //throw new IllegalArgumentException("this algorithm operates on a DAG and has been given a graph without a true root node");
         }
         
         final int nV = adjacencyList.length;
