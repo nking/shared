@@ -143,7 +143,7 @@ public class BetweennessTest extends TestCase {
         expected.put(new PairInt(4, 5), 1.f/3.f);
         expected.put(new PairInt(4, 6), 1.f);
         
-        r = b.girvanNewmanDirectionless(adjList2, 0);
+        r = b.girvanNewmanUndirected(adjList2, 0);
         System.out.println("result=\n" + r.toString());
         
         edges = r.getEdges();

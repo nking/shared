@@ -282,7 +282,7 @@ public class Betweenness {
      * @param s source node to begin the graph traversal
      * @return scores for the edges of the graph, calculated using the Girvan-Newman algorithm.
      */
-    public Results girvanNewmanDirectionless(SimpleLinkedListNode[] adjacencyList, final int s) {
+    public Results girvanNewmanUndirected(SimpleLinkedListNode[] adjacencyList, final int s) {
         
         //avg O(|E|);  worst: O(|V| + |E|)
         int[] rootIndexes = findRoots(adjacencyList, s);
