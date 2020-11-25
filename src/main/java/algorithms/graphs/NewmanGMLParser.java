@@ -106,8 +106,7 @@ public class NewmanGMLParser {
     }
     
     /**
-     * note: assumes srch characters are each 32 bit characters as this method does not 
-     * check for code points > 1 byte.
+     * note: assumes srch characters each fit into 1 code point.
      * @param in
      * @param srch
      * @return
@@ -145,21 +144,13 @@ public class NewmanGMLParser {
             if ((char)ch == '[') {
                 break;
             }
-            if (Character.charCount(ch) == 1) {
-                type.append((char)ch);
-            } else {
-                type.append(Character.toChars(ch));
-            }
+            type.appendCodePoint(ch);
         }
         while ((ch = in.read()) > -1) {
             if ((char)ch == ']') {
                 return true;
             }
-            if (Character.charCount(ch) == 1) {
-                content.append((char)ch);
-            } else {
-                content.append(Character.toChars(ch));
-            }
+            content.appendCodePoint(ch);
         }
         return false;
     }
