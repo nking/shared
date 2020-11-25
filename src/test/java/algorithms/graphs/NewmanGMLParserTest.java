@@ -25,7 +25,7 @@ public class NewmanGMLParserTest extends TestCase {
         String path = ResourceFinder.findFileInTestResources("celegansneural.gml");
         GMLGraph g = NewmanGMLParser.readGraph(path);
         assertNotNull(g.graphType);
-        //System.out.println(g.graphType);
+        System.out.println("graphType=" + g.graphType);
     }
 
     /**

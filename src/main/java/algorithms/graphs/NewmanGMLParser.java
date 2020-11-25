@@ -1,31 +1,20 @@
 package algorithms.graphs;
 
 import algorithms.util.PairInt;
-import algorithms.util.ResourceFinder;
-import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectFloatMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectFloatHashMap;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PushbackInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * rough reduced function parser built to read the zachary's karate club file
  * from http://www-personal.umich.edu/~mejn/netdata/
  * into a graph.
- * 
- * TODO: should change the reading of characters to handle low and high surrogate code points
- * upon need.
  * 
  * @author nichole
  */
@@ -88,6 +77,7 @@ public class NewmanGMLParser {
             }
             
             while (r) {
+                
                 r = readTypeAndContent(in, type, content);
                 
                 /*if (type.equals("node")){
@@ -115,10 +105,16 @@ public class NewmanGMLParser {
         return g;
     }
     
+    /**
+     * note: assumes srch characters are each 32 bit characters as this method does not 
+     * check for code points > 1 byte.
+     * @param in
+     * @param srch
+     * @return
+     * @throws IOException 
+     */
     static boolean readToEndOf(BufferedReader in, String srch) throws IOException {
         int ch;
-        //NOTE: for UTF-8 may have code characters that are high and low surrogate paris of code point
-        //   so would need to change this
         while ((ch = in.read()) > -1) {
             srchloop :
             if ((char)ch == srch.charAt(0)) {
@@ -145,21 +141,25 @@ public class NewmanGMLParser {
     static boolean readTypeAndContent(BufferedReader in, StringBuilder type, 
         StringBuilder content) throws IOException {
         int ch;
-        //NOTE: for UTF-8 may have code characters that are high and low surrogate paris of code point
-        //   so would need to change this
         while ((ch = in.read()) > -1) {
-            //System.out.println("c=" + (char)ch);
             if ((char)ch == '[') {
                 break;
             }
-            type.append((char)ch);
+            if (Character.charCount(ch) == 1) {
+                type.append((char)ch);
+            } else {
+                type.append(Character.toChars(ch));
+            }
         }
         while ((ch = in.read()) > -1) {
-            //System.out.println("c=" + (char)ch);
             if ((char)ch == ']') {
                 return true;
             }
-            content.append((char)ch);
+            if (Character.charCount(ch) == 1) {
+                content.append((char)ch);
+            } else {
+                content.append(Character.toChars(ch));
+            }
         }
         return false;
     }
