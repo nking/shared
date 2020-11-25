@@ -19,9 +19,10 @@ import java.util.logging.Logger;
  * from http://www-personal.umich.edu/~mejn/netdata/
  * into a graph.
  * 
- * the GML format is at:
- * http://graphics.stanford.edu/courses/cs368-00-spring/TA/manuals/LEDA/gml_graph.html#29665
-     
+ * the GML format is from:
+   "GML: A portable Graph File Format" by Michael Himsolt
+    http://openmis.ru/doc/clang/gml-tr.html 
+ 
  NOTE: if one wanted to define all required and optional attributes, could
  make a more formal parser using ANTLR at antlr.org
  
