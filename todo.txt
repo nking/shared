@@ -1,3 +1,5 @@
+-- update the JUnit library and make any needed changes
+
 -- consider implementing a 3D voronoi
 
 -- for improving the current NearestNeighbor2DLong
