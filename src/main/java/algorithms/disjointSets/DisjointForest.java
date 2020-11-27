@@ -1,5 +1,8 @@
 package algorithms.disjointSets;
 
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +20,9 @@ import java.util.Set;
  * findSet method which makes subsequent membership disjointSet queries
  * faster.
  * 
- * implementation follows that in Cormen et al. Introduction to Algorithms.
+ * implementation follows that in Cormen et al. Introduction to Algorithms
+ * who include references in chapter notes, specifically Tarjan 1999 class notes
+ * for COS 423 Princeton University.
  * 
  * @author nichole
  */
@@ -214,6 +219,56 @@ public class DisjointForest<T> {
         return parent;
     }
   
+    /**
+     * @return the trees
+     */
+    public Map<DisjointSet2Node<T>, RootedTreeDisjointSet<T>> getTrees() {
+        return trees;
+    }
+    
+    /**
+     * given the adjacency list of a graph, return the disjoint connected 
+     * components.  implemented from pseudocode in Cormen et al. Introduction
+     * To Algorithms.
+     * @param adjList
+     * @return the connected components as disjoint trees in a map with 
+     *     key = vertex number and value = disjoint tree.
+     */
+    public static Map<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> 
+        connectedComponents(SimpleLinkedListNode[] adjList) {
+        
+        DisjointForest<Integer> forest = new DisjointForest<>();
+        
+        TIntObjectMap<DisjointSet2Node<Integer>> vertexMap = new TIntObjectHashMap<DisjointSet2Node<Integer>>();
+        DisjointSet2Node<Integer> uVertex, vVertex;
+        
+        for (int u = 0; u < adjList.length; ++u) {
+            uVertex = new DisjointSet2Node<Integer>(u);
+            vertexMap.put(u, uVertex);
+            forest.makeSet(uVertex);
+        }
+        
+        for (int u = 0; u < adjList.length; ++u) {
+            
+            uVertex = vertexMap.get(u);
+                        
+            SimpleLinkedListNode vNode = adjList[u];
+            while (vNode != null && vNode.getKey() != -1) {
+                
+                int v = vNode.getKey();
+                
+                vVertex = vertexMap.get(v);
+                
+                if (!forest.findSet(uVertex).equals(forest.findSet(vVertex))) {
+                    forest.union(uVertex, vVertex);
+                }
+                
+                vNode = vNode.getNext();
+            }
+        }
+        return forest.getTrees();
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -285,6 +340,32 @@ public class DisjointForest<T> {
         public RootedTreeDisjointSet() {
             nodes = new HashSet<DisjointSet2Node<T>>();
         }
+        
+        /**
+         * find the least common ancestor for node x and y in a tree using
+         * Tarjan's off-line least common ancestor algorithm.
+         * implemented from pseudocode in Cormen et al. Introduction to 
+         * Algorithms.
+         * 
+         * @param x
+         * @param y
+         * @return 
+         
+        public DisjointSet2Node<T> lca(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
+            
+            method lca(u) :
+                makeset(u)
+                ancestor[ findSet(u)] = u
+                for each child v of u in tree :
+                    do lca(v)
+                    union(u, v)
+                    ancestor[ findSet(u) ] = u
+                color[u] = black
+                for each node v such that u,v is a member of the unordered pairs of nodes
+                    if (color[v] == black)
+                        then return ancestor[ findSet(v) ]
+            
+        }*/
 
         @Override
         public String toString() {
@@ -327,10 +408,4 @@ public class DisjointForest<T> {
 
     }
 
-    /**
-     * @return the trees
-     */
-    public Map<DisjointSet2Node<T>, RootedTreeDisjointSet<T>> getTrees() {
-        return trees;
-    }
 }

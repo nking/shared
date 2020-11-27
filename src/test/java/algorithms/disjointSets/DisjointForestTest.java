@@ -1,6 +1,9 @@
 package algorithms.disjointSets;
 
+import algorithms.disjointSets.DisjointForest.RootedTreeDisjointSet;
+import algorithms.util.SimpleLinkedListNode;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import junit.framework.TestCase;
 
@@ -59,5 +62,30 @@ public class DisjointForestTest extends TestCase {
             assertEquals(parentPOfC, entry.getKey());
             assertEquals(parentPOfC, entry.getValue().parent);
         }
+    }
+    
+    public void test1() {
+        /*
+        public static Map<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> 
+        connectedComponents(SimpleLinkedListNode[] adjList) {
+        */
+        int a = 0; int b = 1; int c = 2; int d = 3;int e = 4; 
+        int f = 5; int g = 6; int h = 7;
+        SimpleLinkedListNode[] adjList = new SimpleLinkedListNode[8];
+        for (int i = 0; i < 8; ++i) {
+            adjList[i] = new SimpleLinkedListNode();
+        }
+        int nUnassigned = 1;
+        
+        adjList[c].insert(h); adjList[c].insert(e);
+        adjList[h].insert(b);
+        
+        adjList[f].insert(d);
+        adjList[d].insert(g);
+        
+        Map<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> comp =
+            DisjointForest.connectedComponents(adjList);
+        
+        assertEquals(2 + nUnassigned, comp.size());
     }
 }
