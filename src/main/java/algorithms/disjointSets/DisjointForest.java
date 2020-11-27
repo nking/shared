@@ -17,6 +17,8 @@ import java.util.Set;
  * findSet method which makes subsequent membership disjointSet queries
  * faster.
  * 
+ * implementation follows that in Cormen et al. Introduction to Algorithms.
+ * 
  * @author nichole
  */
 public class DisjointForest<T> {
