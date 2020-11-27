@@ -85,28 +85,31 @@ public class DisjointSet2Node<T> {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        
-        sb.append("[member=");
+        sb.append("    [parent=");
+        if (parent != null) {
+            if (parent.equals(this)) {
+                sb.append("self");
+            } else if (parent.member != null) {
+                sb.append(parent.member);
+            } else {
+                sb.append(parent.hashCode());
+            }
+        }
+        sb.append(", ");
+        sb.append("member=");
         if (member != null) {
             sb.append(member.toString());
         }
-        sb.append("; ");
+        sb.append(", ");
         sb.append("rank=").append(Integer.toString(rank)).append("; ");
         
         sb.append("data=");
         if (data != null) {
             sb.append(data.toString());
         }
-        sb.append("; ");
-        
-        sb.append("parent=");
-        if (parent != null) {
-            if (parent.equals(this)) {
-                sb.append("self");
-            } else {
-                sb.append(parent.toString());
-            }
-        }
+        sb.append(", ");
+        sb.append("hashcode=").append(parent.hashCode());
+        sb.append(", ");
         sb.append("] ");
         
         return sb.toString();
