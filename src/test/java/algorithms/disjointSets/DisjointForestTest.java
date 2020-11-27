@@ -1,5 +1,7 @@
 package algorithms.disjointSets;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
 import junit.framework.TestCase;
 
 /**
@@ -21,10 +23,6 @@ public class DisjointForestTest extends TestCase {
         DisjointSet2Node<String> e = new DisjointSet2Node<String>("e");
         DisjointSet2Node<String> h = new DisjointSet2Node<String>("h");
         
-        // d, f, g is another tree
-        DisjointSet2Node<String> d = new DisjointSet2Node<String>("d");
-        DisjointSet2Node<String> f = new DisjointSet2Node<String>("f");
-        DisjointSet2Node<String> g = new DisjointSet2Node<String>("g");
         
         DisjointForest<String> forest = new DisjointForest<>();
         
@@ -52,5 +50,14 @@ public class DisjointForestTest extends TestCase {
         DisjointSet2Node<String> parentPOfC = forest.findSet(c);
         System.out.println("\nforest(b,c,e,h) after findSet(c):\n" + forest.toString());
         assertEquals(1, forest.getTrees().size());
+        
+        Iterator<Entry<DisjointSet2Node<String>, DisjointForest.RootedTreeDisjointSet<String>>> iter 
+            = forest.getTrees().entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<DisjointSet2Node<String>, DisjointForest.RootedTreeDisjointSet<String>>
+                entry = iter.next();
+            assertEquals(parentPOfC, entry.getKey());
+            assertEquals(parentPOfC, entry.getValue().parent);
+        }
     }
 }
