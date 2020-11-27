@@ -109,7 +109,7 @@ public class BetweennessTest extends TestCase {
         }
     }
     
-    public void testGirvanNewmanDirectionless() {
+    public void testGirvanNewmanUndirected() {
         int nV = 7;
         
         SimpleLinkedListNode[] adjList2 = new SimpleLinkedListNode[nV];

@@ -243,6 +243,8 @@ public class NewmanGMLParser {
                 id = p[i+1];
             } else if (p[i].equalsIgnoreCase("label")) {
                 label = p[i+1];
+                label = label.replaceAll("^\"", "");
+                label = label.replaceAll("\"$", "");
             }
         } 
         
