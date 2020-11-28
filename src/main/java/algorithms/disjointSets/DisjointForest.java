@@ -3,6 +3,8 @@ package algorithms.disjointSets;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -231,11 +233,10 @@ public class DisjointForest<T> {
      * components.  implemented from pseudocode in Cormen et al. Introduction
      * To Algorithms.
      * @param adjList
-     * @return the connected components as disjoint trees in a map with 
-     *     key = vertex number and value = disjoint tree.
+     * @return the connected components as a list of the disjoint sets of 
+     * vertex numbers.
      */
-    public static Map<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> 
-        connectedComponents(SimpleLinkedListNode[] adjList) {
+    public static List<TIntSet> connectedComponents(SimpleLinkedListNode[] adjList) {
         
         DisjointForest<Integer> forest = new DisjointForest<>();
         
@@ -266,7 +267,26 @@ public class DisjointForest<T> {
                 vNode = vNode.getNext();
             }
         }
-        return forest.getTrees();
+        
+        Map<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> map = 
+            forest.getTrees();
+        
+        List<TIntSet> components = new ArrayList<>(map.size());
+        
+        Iterator<Entry<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>>> iter =
+            map.entrySet().iterator();
+        
+        while (iter.hasNext()) {
+            TIntSet c = new TIntHashSet();
+            
+            Entry<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> entry = iter.next();
+            Set<DisjointSet2Node<Integer>> nodes = entry.getValue().nodes;
+            for (DisjointSet2Node<Integer> node : nodes) {
+                c.add(node.member);
+            }
+            components.add(c);
+        }
+        return components;
     }
     
     @Override

@@ -2,7 +2,9 @@ package algorithms.disjointSets;
 
 import algorithms.disjointSets.DisjointForest.RootedTreeDisjointSet;
 import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.set.TIntSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import junit.framework.TestCase;
@@ -83,8 +85,7 @@ public class DisjointForestTest extends TestCase {
         adjList[f].insert(d);
         adjList[d].insert(g);
         
-        Map<DisjointSet2Node<Integer>, RootedTreeDisjointSet<Integer>> comp =
-            DisjointForest.connectedComponents(adjList);
+        List<TIntSet> comp = DisjointForest.connectedComponents(adjList);
         
         assertEquals(2 + nUnassigned, comp.size());
     }
