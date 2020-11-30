@@ -69,7 +69,7 @@ public class DisjointForest<T> {
      * </pre>
      * 
      * @param x
-     * @return
+     * @return top-most parent in ancestry of x.
      */
     public DisjointSet2Node<T> findSet(DisjointSet2Node<T> x) {
                 
@@ -152,8 +152,8 @@ public class DisjointForest<T> {
     private void addToForest(RootedTreeDisjointSet<T> t) {
         getTrees().put(t.parent, t);
     }
-    private RootedTreeDisjointSet<T> removeFromForest(DisjointSet2Node<T> key) {
-        return getTrees().remove(key);
+    private RootedTreeDisjointSet<T> removeTreeFromForest(DisjointSet2Node<T> key) {
+        return getTrees().remove(key.parent);
     }
     
     /**
@@ -177,14 +177,24 @@ public class DisjointForest<T> {
             return x;
         }
         
-        RootedTreeDisjointSet<T> tX = removeFromForest(x.parent);
-        RootedTreeDisjointSet<T> tY = removeFromForest(y.parent);
+        /*System.out.println("\nforest=" + toString());
+        System.out.println("x=" + x.member + " x.parent=" + x.parent.member);
+        System.out.println("y=" + y.member + " y.parent=" + y.parent.member);
+        System.out.flush();*/
+        
+        RootedTreeDisjointSet<T> tX = removeTreeFromForest(x);
+        RootedTreeDisjointSet<T> tY = removeTreeFromForest(y);
         
         DisjointSet2Node<T> parent = link(x, y);
         
-        tX.nodes.addAll(tY.nodes);
-        addToForest(tX);
-
+        if (tX.nodes.size() <= tY.nodes.size()) {
+            tX.nodes.addAll(tY.nodes);
+            trees.put(parent, tX);
+        } else {
+            tY.nodes.addAll(tX.nodes);
+            trees.put(parent, tY);
+        }
+                
         return parent;
     }
     
@@ -209,14 +219,13 @@ public class DisjointForest<T> {
             return y;
         }
         
-        RootedTreeDisjointSet<T> tX = removeFromForest(x.parent);
-        RootedTreeDisjointSet<T> tY = removeFromForest(y.parent);
+        RootedTreeDisjointSet<T> tX = removeTreeFromForest(x);
+        RootedTreeDisjointSet<T> tY = removeTreeFromForest(y);
         
         DisjointSet2Node<T> parent = linkChooseY(x, y);
         
         tY.nodes.addAll(tX.nodes);
-        
-        addToForest(tY);
+        trees.put(parent, tY);
         
         return parent;
     }
@@ -253,13 +262,17 @@ public class DisjointForest<T> {
         for (int u = 0; u < adjList.length; ++u) {
             
             uVertex = vertexMap.get(u);
-                        
+            
             SimpleLinkedListNode vNode = adjList[u];
             while (vNode != null && vNode.getKey() != -1) {
                 
                 int v = vNode.getKey();
                 
                 vVertex = vertexMap.get(v);
+                
+                if (vVertex == null) {
+                    continue;
+                }
                 
                 if (!forest.findSet(uVertex).equals(forest.findSet(vVertex))) {
                     forest.union(uVertex, vVertex);
