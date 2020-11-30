@@ -236,15 +236,16 @@ public class DisjointForest<T> {
      * @return the connected components as a list of the disjoint sets of 
      * vertex numbers.
      */
-    public static List<TIntSet> connectedComponents(SimpleLinkedListNode[] adjList) {
+    public static List<TIntSet> connectedComponents(final SimpleLinkedListNode[] 
+        adjList) {
         
         DisjointForest<Integer> forest = new DisjointForest<>();
         
-        TIntObjectMap<DisjointSet2Node<Integer>> vertexMap = new TIntObjectHashMap<DisjointSet2Node<Integer>>();
+        TIntObjectMap<DisjointSet2Node<Integer>> vertexMap = new TIntObjectHashMap<>();
         DisjointSet2Node<Integer> uVertex, vVertex;
         
         for (int u = 0; u < adjList.length; ++u) {
-            uVertex = new DisjointSet2Node<Integer>(u);
+            uVertex = new DisjointSet2Node<>(u);
             vertexMap.put(u, uVertex);
             forest.makeSet(uVertex);
         }

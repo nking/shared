@@ -3,6 +3,7 @@ package algorithms.graphs;
 import algorithms.graphs.NewmanGMLParser.GMLGraph;
 import algorithms.util.PairInt;
 import algorithms.util.ResourceFinder;
+import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.list.TFloatList;
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,10 +49,25 @@ public class NewmanGMLParserTest extends TestCase {
             nE += p.getValue().size();
         }
         assertEquals(nEExpected, nE);
+        
+        SimpleLinkedListNode[] a = GraphUtil.createAdjacencyList(g);
+        assertEquals(297, a.length);
+        
+        iter = edgeMap.entrySet().iterator();
+        PairInt uv;
+        SimpleLinkedListNode node;
+        while (iter.hasNext()) {
+            p = iter.next();
+            uv = p.getKey();
+            node = a[uv.getX()];
+            assertTrue(node.contains(uv.getY()));
+        }
+        
     }
     
     public void testReadGraph1() throws Exception {
         
+        // indexes start at "1"
         String path = ResourceFinder.findFileInTestResources("karate.gml");
         GMLGraph g = NewmanGMLParser.readGraph(path);
         
@@ -68,6 +84,19 @@ public class NewmanGMLParserTest extends TestCase {
             nE += p.getValue().size();
         }
         assertEquals(nEExpected, nE);
+        
+        SimpleLinkedListNode[] a = GraphUtil.createAdjacencyList2(g);
+        assertEquals(34 + 1, a.length);
+        
+        iter = edgeMap.entrySet().iterator();
+        PairInt uv;
+        SimpleLinkedListNode node;
+        while (iter.hasNext()) {
+            p = iter.next();
+            uv = p.getKey();
+            node = a[uv.getX()];
+            assertTrue(node.contains(uv.getY()));
+        }
     }
 
     /**
