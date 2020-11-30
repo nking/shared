@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class Betweenness {
     
     private Logger log = Logger.getLogger(getClass().getSimpleName());
-    private Level logLevel = Level.FINE;
+    private Level logLevel = Level.INFO;
     /**
      * implementation of unweighted graph edge scoring from Girvan-Newman 
      * algorithm, accepting a DAG.   Each graph node without a predecessor
@@ -74,8 +74,8 @@ public class Betweenness {
             " then use girvanNewmanDirectionless with a choise of a source node");
         }
         
-        //print(adjacencyList);
-        //System.out.println("roots=" + Arrays.toString(rootIndexes));
+        print(adjacencyList);
+        System.out.println("roots=" + Arrays.toString(rootIndexes));
         
         final int nV = adjacencyList.length;
         // init
@@ -110,6 +110,15 @@ public class Betweenness {
             dBest[src] = 0;
             w[src] = 1;
             
+            /*
+            1) d[s]=0  w[s]=1
+            2) Every vertex i adjacent to s is given distance d[i]=d[s]+1 and w[i]=w[s]=1
+            3) For each vertex j adjacent to one of those vertices i:
+                a) If j has not yet been assigned a distance, 
+                       it is assigned distance d[j]=d[i]+1 and weight w[j]=w[i]
+                b) if j has already been assigned a distance and d[j]==d[1]+1 then w[j]=w[j]+w[i]
+                c) if j has already been assigned a distance and d[j]<d[i]+1, do nothing.
+            */
             log.log(logLevel, "root=" + src);
       
             // calc vertex weights
@@ -125,12 +134,12 @@ public class Betweenness {
             //    log.log(logLevel, "color=" + Arrays.toString(color));
                 u = queue.remove().intValue();
                 members.add(u);
-                log.log(logLevel, String.format("u=%d\n", u));
+                log.log(logLevel, String.format("u=%d", u));
                 SimpleLinkedListNode vNode = adjacencyList[u];
                 if (vNode == null || vNode.getKey() == -1) {
                     leaf.add(u);
                     color[u] = 2;
-                    log.log(logLevel, "    LEAF\n");
+                    log.log(logLevel, "    LEAF");
                     continue;
                 }
                 while (vNode != null && vNode.getKey() != -1) {
@@ -140,17 +149,17 @@ public class Betweenness {
                         d[v] = d[u] + 1;
                         w[v] = w[u];
                         queue.add(v);
-                        log.log(logLevel, String.format("  v=%d\n", v));
+                        log.log(logLevel, String.format("  v=%d", v));
                         if (d[v] < dBest[v]) {
                             dBest[v] = d[v];
                         }
                     } else if (d[v] == (d[u] + 1)) {
                         w[v] += w[u];
                     }
-                    if (d[u] < d[v]) {
+                    //if (d[u] < d[v]) {
                         p[v].add(u);
-                        log.log(logLevel, String.format("  p[%d]=%d\n", v, u));
-                    }
+                        log.log(logLevel, String.format("    p[%d]=%d", v, u));
+                    //}
                     vNode = vNode.getNext();
                 }
                 color[u] = 2;
@@ -159,12 +168,12 @@ public class Betweenness {
          
             //add weights from previous root traversals
             if (rootIndexes.length > 1) {
-           //     log.log(logLevel, "\n  w=" + Arrays.toString(w));
+            //    log.log(logLevel, "\n  w=" + Arrays.toString(w));
                 for (int i = 0; i < w.length; ++i) {
                     w[i] += wG[i];
                 }
-           //     log.log(logLevel, "  wG=" + Arrays.toString(wG));
-           //     log.log(logLevel, "->w=" + Arrays.toString(w));
+            //    log.log(logLevel, "  wG=" + Arrays.toString(wG));
+            //    log.log(logLevel, "->w=" + Arrays.toString(w));
             }        
             
             // calc edge weights
@@ -176,33 +185,21 @@ public class Betweenness {
             PairInt uv;
             while (tIter.hasNext()) {
                 t = tIter.next();
-                log.log(logLevel, String.format("t leaf=%d\n", t));
+                log.log(logLevel, String.format("t leaf=%d", t));
+                // calc edge for all edges into leaf:
                 pIter = p[t].iterator();
                 while (pIter.hasNext()) {
                     i = pIter.next();
-                    log.log(logLevel, String.format("  p=%d\n", i));
+                    log.log(logLevel, String.format("    p=%d", i));
                     if (!enqd.contains(i)) {
                         queue.add(i);
                         enqd.add(i);
                     }
-                    /*
                     e = (float) w[i] / (float) w[t];
-                    assert(d[i] < d[t]);
+ //                   assert(d[i] < d[t]);
                     uv = new PairInt(i, t);
                     wEdges.put(uv, e);
-                    log.log(logLevel, String.format("  edge=(%d, %d) w=%.3e\n", i, t, e));
-                    */
-                    // calc edges for all direct children of i instead of only child t
-                    SimpleLinkedListNode jNode = adjacencyList[i];
-                    while (jNode != null && jNode.getKey() != -1) {
-                        int j = jNode.getKey();
-                        e = (float) w[i] / (float) w[j];
-                        assert(d[i] < d[j]);
-                        uv = new PairInt(i, j);
-                        wEdges.put(uv, e);
-                        log.log(logLevel, String.format("  edge=(%d, %d) w=%.3e\n", i, j, e));
-                        jNode = jNode.getNext();
-                    }
+                    log.log(logLevel, String.format("  edge=(%d, %d) w=%.3e", i, t, e));
                 }
             }
          //   log.log(logLevel, "w={0}", Arrays.toString(w));
@@ -219,14 +216,20 @@ public class Betweenness {
                     int j = jNode.getKey();
                     ij = new PairInt(i, j);
                     log.log(logLevel, String.format("  i=%d j=%d", i, j));
-///ERROR: look for why no edge from 8->2 in graph karate.gml
-                    assert(d[i] < d[j]);
-                    assert(wEdges.containsKey(ij));
-                    e += wEdges.get(ij);
+//                    assert(d[i] < d[j]);
+                    
+                    //assert(wEdges.containsKey(ij));
+                    if (!wEdges.containsKey(ij)) {
+                        e += ((float) w[i] / (float) w[j]);
+                        //wEdges.put(ij, (float) w[i] / (float) w[j]);
+                    } else {
+                        e += wEdges.get(ij);
+                    }
+                    
                     log.log(logLevel, String.format("  + (w[%d]/w[%d]=%.3f)", i, j, wEdges.get(ij)));
                     jNode = jNode.getNext();
                 }
-                log.log(logLevel, String.format("  \n   =>%.3f\n", e));
+                log.log(logLevel, String.format("     =>%.3f", e));
 
                 pIter = p[i].iterator();
                 while (pIter.hasNext()) {
@@ -235,13 +238,13 @@ public class Betweenness {
                         queue.add(ip);
                         enqd.add(ip);
                     }
-                    log.log(logLevel, String.format("  d[%d]=%d,  d[%d]=%d\n", ip, d[ip], i, d[i]));
+                    log.log(logLevel, String.format("  d[%d]=%d,  d[%d]=%d", ip, d[ip], i, d[i]));
                  //   assert(d[ip] < d[i]);
                     e2 = (float) w[ip] / (float) w[i];
                     e2 *= e;
-                    log.log(logLevel, String.format("    e=(%.3f)*(w[%d]/w[%d]=%.3f)\n", e, ip, i, (float) w[ip] / (float) w[i]));
+                    log.log(logLevel, String.format("    e=(%.3f)*(w[%d]/w[%d]=%.3f)", e, ip, i, (float) w[ip] / (float) w[i]));
                     uv = new PairInt(ip, i);
-                    log.log(logLevel, String.format("    edge=(%d, %d) w=%.3e\n", ip, i, e2));
+                    log.log(logLevel, String.format("    edge=(%d, %d) w=%.3e", ip, i, e2));
                     wEdges.put(uv, e2);
                 }
             }
@@ -541,7 +544,7 @@ public class Betweenness {
         return true;
     }
 
-    /*private void print(SimpleLinkedListNode[] adjacencyList) {
+    private void print(SimpleLinkedListNode[] adjacencyList) {
         
         StringBuffer sb = new StringBuffer();
         
@@ -557,7 +560,7 @@ public class Betweenness {
             sb.append(String.format("]\n"));
         }
         System.out.println(sb.toString());
-    }*/
+    }
     
     public static class Results {
         
