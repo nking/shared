@@ -1,13 +1,16 @@
 package algorithms.graphs;
 
+import algorithms.misc.MinMaxPeakFinder;
 import algorithms.util.PairInt;
 import algorithms.util.ResourceFinder;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TFloatList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -44,70 +47,33 @@ public class DendogramTest extends TestCase {
         
         // store q and k to look for peak in q
         TIntList ks = new TIntArrayList();
-        TDoubleList qs = new TDoubleArrayList();
+        TFloatList qs = new TFloatArrayList();
+        
+        Modularity m = new Modularity();
         
         double[][] e;
-        int i, j, k, c1, c2;
-        double trE, q;
+        int i, j, k;
+        double q;
         for (Dendogram.DendogramLayer layer : layers) {
             
+            q = m.girvanNewman2002(layer, adjList, nEdges);
             k = layer.nComponents;
             
-            //create matrix e where e[i][j] is fraction of edges from i to jover all edges
-            e = new double[k][k];
-            for (i = 0; i < k; ++i) {
-                e[i] = new double[k];
-            }
-            
-            // count number of edges between communities using direction of edges
-            for (i = 0; i < layer.vertexComponents.length; ++i) {
-                c1 = layer.vertexComponents[i];
-                if (c1 == -1) {
-                    continue;
-                }
-                
-                SimpleLinkedListNode jNode = adjList[i];
-                while (jNode != null && jNode.getKey() != -1) {
-                    j = jNode.getKey();
-                    c2 = layer.vertexComponents[j];
-                    if (c2 == -1) {
-                        continue;
-                    }
-                    e[c1][c2]++;
-                    jNode = jNode.getNext();
-                }
-            }
-            
-            // divide matrix e by number of edges
-            for (i = 0; i < k; ++i) {
-                for (j = 0; j < k; ++j) {
-                    e[i][j] /= nEdges;
-                }
-            }
-            
-            //Trace of e is the fraction of edges in the network that connect 
-            //   vertices in the same community.  this is high for good component divisions.
-            trE = 0;
-            for (i = 0; i < k; ++i) {
-                trE += e[i][i];
-            }
-            
-            // Q = trE - || e^2 ||
-            q = 0;
-            for (i = 0; i < k; ++i) {
-                for (j = 0; j < k; ++j) {
-                    q += (e[i][j] * e[i][j]);
-                }
-            }
-            q = trE - q;
-            
             ks.add(k);
-            qs.add(q);
+            qs.add((float)q);
         }
         
         for (i = 0; i < ks.size(); ++i) {
             System.out.printf("k=%d q=%.3f\n", ks.get(i), qs.get(i));
         }
+        
+        MinMaxPeakFinder mpf = new MinMaxPeakFinder();
+        int[] maxIdxs = mpf.findPeaks(qs.toArray(), 0.f, 2.5f);
+        for (i = 0; i < maxIdxs.length; ++i) {
+            int idx = maxIdxs[i];
+            System.out.printf("found peak for q=%.3f k=%d\n", qs.get(idx), ks.get(idx));
+        }
+        
     }
 
 }
