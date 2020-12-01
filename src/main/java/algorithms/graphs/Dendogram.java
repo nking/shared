@@ -77,8 +77,20 @@ public class Dendogram {
     }
     
     public static class DendogramLayer {
+        /**
+         * the number of components (a.k.a. communities) in graph layer
+         */
         int nComponents;
+        
+        /**
+         * index is vertex number, value is component number.  if value is -1,
+         * there is no assigned component.
+         */
         int[] vertexComponents;
+        
+        /**
+         * map with key = component number, value = set of vertex numbers in the component
+         */
         TIntObjectMap<TIntSet> componentVertexes;
     }
     
