@@ -62,7 +62,14 @@ public class Modularity {
      * given the original graph adjacency list, compute the modularity of the
      * graph using the connected components from an iteration of the girvan-newman
      * algorithm.
-     * 
+     Reference: Newman and Girvan 2004, PHYSICAL REVIEW E 69, 026113,
+     "Finding and evaluating community structure in networks"
+
+     NOTE: If the number of within-community edges is no better than random,
+     * we will get Q = 0. value approaching the maximum, Q = 1, indicate strong
+     * community structure [50]. values tend to be 0.3 to 0.7 and higher values
+     * are rare.
+     *
      * @param originalAdjacencyList
      * @param layer the results of an iteration of the girvan-newman algorithm
      * followed by use of DisjointForest.connectedComponents to find the disjoint
@@ -94,11 +101,6 @@ public class Modularity {
            communities they belong to, we would have
                eij = ai*aj.
 
-           If the number of within-community edges is no better than random, we will get
-               Q = 0.
-             value approaching the maximum,
-               Q = 1, indicate strong community structure [50].
-             values tend to be 0.3 to 0.7 and higher values are rare.
           */
         double[][] e;
         int i, j, k, c1, c2;
