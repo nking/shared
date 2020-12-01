@@ -6,7 +6,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- *
+ * miscellaneous graph methods.
+ * 
+ * TODO: consider a method to remap vertex keys for input graphs that start 
+ * counting at 1 instead of 0 (they need vertex 0 removed and all vertex
+ * numbers and vertex numbers in edges decreased by 1.
+ * 
  * @author nichole
  */
 public class GraphUtil {
