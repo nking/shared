@@ -31,12 +31,15 @@ public class UnweightedGraphCommunityFinder {
      * we will get Q = 0. value approaching the maximum, Q = 1, indicate strong
      * community structure [50]. values tend to be 0.3 to 0.7 and higher values
      * are rare.
-     *
+     * 
+     * NOTE: see notes for Newman 2006 spectral modularity algorithms in
+     * this project's directory docs/miscNotes.
+     
      * @return the largest modularity in the dendogram made from hierarchical
      * subgraphs made from iterative removal of the maximum edge 
      * from the graph where the score is calculated
      * by the Girvan-Newman 2002 algorithm.
-     
+     * 
      * @param adjList unweighted graph adjacency list.
      * @param src the source vertex to start calculations with if known.  has
      * to be a valid vertex in the graph, but a random choice does affect the 
@@ -97,45 +100,6 @@ public class UnweightedGraphCommunityFinder {
         best.layer = layers.get(maxQIdx);
         best.modularity = maxQ;
         return best;
-    }
-    
-    /**
-     * a matrix based eigenvalue algorithm for dividing the graph into 2 subgraphs 
-     * and iteratively their subgraphs until they are indivisible by a rule
-     * based on the eigenvalues of the modularity matrix..
-     * 
-     * following:
-     * Newman 2006, PNAS June 6, 2006 103 (23) 8577-8582
-        “Modularity and community structure in networks”
-        https://arxiv.org/pdf/physics/0602124.pdf
-     * @param adjList
-     * @return 
-     */
-    public static BestDivision newman2006(SimpleLinkedListNode[] adjList) {
-        /*
-        B_i_j(g) = A_i_j - ( (k_i * k_j)/ (2*m) ) - delta_i_j*[k_i(g) - k_i*(d_g/(2*m))
-        
-        Q_g = s^T * B(g) * s
-        
-        if Q_g does not increase, the division should not be made.
-        That happens when there are not positive eigenvalues in matrix B(g)
-        (--> if leading, descending ordered eigenvalue is 0, then the subgraph
-        is indivisible)
-        
-        
-        Thus our algorithm is as follows. We construct the
-        modularity matrix for our network and find its leading
-        (most positive) eigenvalue and eigenvector. We divide
-        the network into two parts according to the signs of the
-        elements of this vector, and then repeat for each of the
-        parts. If at any stage we find that the proposed split
-        makes a zero or negative contribution to the total modularity, 
-        we leave the corresponding subgraph undivided.
-        When the entire network has been decomposed into indivisible subgraphs in this way, the algorithm ends.
-        One immediate corollary of this approach is that all
-        “communities” in the network are, by definition, indivisible subgraphs
-        */
-        throw new UnsupportedOperationException("not yet implemented");
     }
     
     private static double countEdges(SimpleLinkedListNode[] adjList) {
