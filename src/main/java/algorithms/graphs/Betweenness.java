@@ -23,7 +23,9 @@ import java.util.logging.Logger;
 public class Betweenness {
     
     private Logger log = Logger.getLogger(getClass().getSimpleName());
+    
     private Level logLevel = Level.FINE;
+    
     /**
      * implementation of unweighted graph edge scoring from Girvan-Newman 
      * algorithm, accepting a DAG.   Each graph node without a predecessor
@@ -75,7 +77,8 @@ public class Betweenness {
         }
         
         // print(adjacencyList);
-        //System.out.println("roots=" + Arrays.toString(rootIndexes));
+        System.out.printf("nV=%d, roots=%s", adjacencyList.length, 
+            Arrays.toString(rootIndexes));
         
         final int nV = adjacencyList.length;
         // init

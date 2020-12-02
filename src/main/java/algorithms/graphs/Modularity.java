@@ -16,6 +16,17 @@ The modularity is, up to a multiplicative constant, the number of edges
  * for community structure precisely by looking for the divisions of a network
  * that have positive, and preferably large, values of the modularity
  
+ on a spectral approximation:
+ 
+ maximizing the term involving the leading eigenvalue and completely ignoring all the
+others turns out to be effective here... ignoring the inconvenient
+fact that it is not possible to make s perfectly parallel to
+u1 and go ahead and maximize the term in β1 anyway.
+Given that we are free to choose the sizes of our two
+groups of vertices, the greatest value of the coefficient
+
+
+ 
  NOTE: a paper with tables summarizing different modularity algorithms for
      different definitions of communities as disjoint or sharing members is
      Table 2 on page 5 of
@@ -61,7 +72,7 @@ public class Modularity {
     /**
      * given the original graph adjacency list, compute the modularity of the
      * graph using the connected components from an iteration of the girvan-newman
-     * algorithm.
+     * algorithm for edge betweenness scores.
      Reference: Newman and Girvan 2004, PHYSICAL REVIEW E 69, 026113,
      "Finding and evaluating community structure in networks"
 
@@ -77,7 +88,7 @@ public class Modularity {
      * @param nEdges the number of edges in the original graph.  presumably the code using
      * this method has calculated it once for the original graph already, to pass
      * in to this method over repeated uses.
-     * @return the modularity as defined by girvan & newman 2001 and Newman & Girvan 2004.
+     * @return the modularity as defined by girvan & newman 2002 and Newman & Girvan 2004.
      */
     public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
         originalAdjacencyList, double nEdges) {

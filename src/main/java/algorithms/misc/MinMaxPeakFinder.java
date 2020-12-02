@@ -105,7 +105,8 @@ public class MinMaxPeakFinder {
      * @param values
      * @param lowThreshold
      * @param factorAboveMin
-     * @return 
+     * @return an array with indexes of peak values.  if none were found an empty
+     * array is returned.
      */
     public int[] findPeaks(float[] values, float lowThreshold, 
         float factorAboveMin) {
