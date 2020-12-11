@@ -16,7 +16,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.Arrays;
 import algorithms.sort.MiscSorter;
 
@@ -1168,6 +1167,56 @@ public class MiscMath0 {
         return f;
     }
     
+    /**
+     * compute n!/k!(n-k)! for k small compared to n
+     * (Aho & Ullman "Foundations of Computer Science")
+     *
+     * @param n
+     * @param k
+     * @return
+     * @throws ArithmeticException thrown when result is out of range of type long
+     */
+    public static long computeNDivKTimesNMinusK0(int n, int k) {
+
+        if (n == k) {
+            return 1;
+        }
+        int i;
+        double result = 1;
+        for (i = n; i > (n-k); i--) {
+            result *= i;
+        }
+        for (i = 2; i <= k; i++) {
+            result /= i;
+        }
+                
+        return Math.round(result);
+    }
+    
+    /**
+     * compute n!/k!(n-k)! for small m-n
+     * (Aho & Ullman "Foundations of Computer Science")
+     *
+     * @param n
+     * @param k
+     * @return
+     * @throws ArithmeticException thrown when result is out of range of type long
+     */
+    public static long computeNDivKTimesNMinusK1(int n, int k) {
+
+        if (n == k) {
+            return 1;
+        }
+        int i;
+        double result = 1;
+        for (i = n; i > (n-k); i--) {
+            result *= i;
+            result /= (i - n + k);
+        }
+        
+        return Math.round(result);
+    }
+    
      /**
      * compute n!/k!(n-k)!.  Note that if n or k are larger than 12,
      * computeNDivKTimesNMinusKBigIntegerExact is used and in that case,
@@ -1236,23 +1285,53 @@ public class MiscMath0 {
             return BigInteger.ONE;
         }
         
-        BigDecimal num = BigDecimal.ONE;
-        for (int i = n; i > (n - k); --i) {
-            BigDecimal m = new BigDecimal(Integer.toString(i));
-            num = num.multiply(m);
-        }
+        MathContext ctx = MathContext.UNLIMITED;
         
-        BigDecimal divisor = BigDecimal.ONE;
-        for (int i = 2; i <= k; i++) {
-            BigDecimal m = new BigDecimal(Integer.toString(i));
-            divisor = divisor.multiply(m);
+        /*
+        if k is small or if n-k is small, can improve the division steps, 
+        following Aho & Ullman "Foundations of Computer Science".
+        
+        TODO: work out boundaries for small k and small n-k
+        including interchanging k! for (n-k)! when the later is larger,
+        e.g. the results for n=100 and k=80 are the same as n=100 and k=20.
+        */
+        
+        BigDecimal result = BigDecimal.ONE;
+        int i;
+        BigDecimal m;
+        if (k < 10) {
+            // small k
+            for (i = n; i > (n - k); i--) {
+                m = new BigDecimal(Integer.toString(i), ctx);
+                result = result.multiply(m, ctx);
+            }
+            for (i = 2; i <= k; i++) {
+                m = new BigDecimal(Integer.toString(i), ctx);
+                result = result.divide(m, ctx);
+            }
+        } else if ((n - k) < 20) {
+            // small (n-k)
+            for (i = n; i > (n - k); i--) {
+                m = new BigDecimal(Integer.toString(i), ctx);
+                result = result.multiply(m, ctx);
+                m = new BigDecimal(Integer.toString(i - n + k), ctx);
+                result = result.divide(m, ctx);
+            }
+        } else {
+            // the standard method
+            for (i = n; i > (n - k); --i) {
+                m = new BigDecimal(Integer.toString(i), ctx);
+                result = result.multiply(m, ctx);
+            }
+            BigDecimal divisor = BigDecimal.ONE;
+            for (i = 2; i <= k; i++) {
+                m = new BigDecimal(Integer.toString(i), ctx);
+                divisor = divisor.multiply(m, ctx);
+            }
+            result = result.divide(divisor, ctx);
         }
                 
-        num = num.divide(divisor, RoundingMode.UP);
-        
-        num = num.round(MathContext.DECIMAL64);
-        
-        return num.toBigInteger();
+        return result.toBigInteger();
     }
     
     /**

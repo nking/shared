@@ -10,6 +10,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.logging.Logger;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -712,6 +713,51 @@ public class MiscMath0Test extends TestCase {
 
         result = MiscMath0.factorial(0);
         assertTrue(result == 0);
+    }
+    
+    public void testcomputeNDivKTimesNMinusK() throws Exception {
+        
+        int n, k;
+        long nComb;
+        
+        n = 6;
+        k = 2;
+        nComb = MiscMath0.computeNDivKTimesNMinusKExact(n, k);
+        assertEquals(15, nComb);
+        
+        n = 2;
+        k = 1;
+        nComb = MiscMath0.computeNDivKTimesNMinusKExact(n, k);
+        assertEquals(2, nComb);
+        
+        n = (int)Math.sqrt(Integer.MAX_VALUE);
+        k = 2;
+        nComb = MiscMath0.computeNDivKTimesNMinusKExact(n, k);
+        assertEquals(((n*(n-1))/2), nComb);
+        
+        n = (int)Math.sqrt(Integer.MAX_VALUE);
+        k = 2;
+        nComb = MiscMath0.computeNDivKTimesNMinusKExact(n, k);
+        assertEquals(((n*(n-1))/2), nComb);
+        
+        n = 20;
+        k = 4;
+        long expected = 4845;
+        nComb = MiscMath0.computeNDivKTimesNMinusK0(n, k);
+        assertEquals(expected, nComb);
+        
+        n = 100;
+        k = 90;
+        expected = 17310309456440L;
+        nComb = MiscMath0.computeNDivKTimesNMinusK1(n, k);
+        assertEquals(expected, nComb);
+        
+        n = 100;
+        k = 80;
+        BigInteger expected2 = new BigInteger("535983370403809682970");
+        BigInteger nComb2 = MiscMath0.computeNDivKTimesNMinusKBigIntegerExact(n,k);
+        assertEquals(expected2, nComb2);
+        
     }
     
 }
