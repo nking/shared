@@ -2,6 +2,9 @@
 
 -- consider implementing a 3D voronoi
 
+-- consider refactoring the code for permutations (Shuffle), combinations
+   and partitions to place in one package/directory.
+
 -- for improving the current NearestNeighbor2DLong
    could consider locality based hashing along y axis.
 

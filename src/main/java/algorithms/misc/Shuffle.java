@@ -4,7 +4,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- *
+ * included is the Fisher-Yates algorithm which can be used to create unbiased random permutations.
+
+   As the number of permuations of a sequence of integers of length n is n!, there are limits to
+   calculating all permutations.  For n < 20, could implement Heap's recursive algorithm if needed or
+   Ives' iterative algorithm.
+
  * @author nichole
  */
 public class Shuffle {
