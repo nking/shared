@@ -1358,6 +1358,28 @@ public class MiscMath0 {
     }
     
     /**
+     * compute n!
+     *
+     * @param n
+     * @return
+     */
+    public static BigInteger factorialBigInteger(int n) {
+
+        BigInteger result = BigInteger.ONE;
+
+        for (int i = 2; i <= n; i++) {
+            
+            byte[] bytes = MiscMath0.writeToBigEndianBytes(i);
+            
+            BigInteger v = new BigInteger(bytes);
+            
+            result = result.multiply(v);
+        }
+        
+        return result;
+    }
+    
+    /**
      * write value to a byte array in big endian, that is LSB in highest order bit
      * (MSB is in lowest memory address).
      * these are signed values stored as twos complement and can be input

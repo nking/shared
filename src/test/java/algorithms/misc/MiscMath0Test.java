@@ -758,6 +758,19 @@ public class MiscMath0Test extends TestCase {
         BigInteger nComb2 = MiscMath0.computeNDivKTimesNMinusKBigIntegerExact(n,k);
         assertEquals(expected2, nComb2);
         
+        n = 100;
+        k = 20;
+        expected2 = new BigInteger("535983370403809682970");
+        nComb2 = MiscMath0.computeNDivKTimesNMinusKBigIntegerExact(n,k);
+        assertEquals(expected2, nComb2);
     }
     
+    public void testFactorialBigInteger() throws Exception {
+
+        BigInteger expected = new BigInteger("87178291200");
+        
+        BigInteger result = MiscMath0.factorialBigInteger(14);
+
+        assertTrue(result.compareTo(expected) == 0);
+    }
 }
