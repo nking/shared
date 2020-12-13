@@ -581,7 +581,7 @@ public class HypersphereChordLength {
         
         int m = idx.length;
                 
-        int np = (int) MiscMath0.computeNDivKTimesNMinusKExact(m, 2);
+        int np = (int) MiscMath0.computeNDivKTimesNMinusK(m, 2);
         
         double[] d = new double[np];
                 

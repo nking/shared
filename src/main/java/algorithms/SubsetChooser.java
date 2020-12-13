@@ -67,7 +67,7 @@ public class SubsetChooser {
         count = 1;
 
         // n!/(k!(n-k)!)
-        np = MiscMath0.computeNDivKTimesNMinusKExact(n, k);
+        np = MiscMath0.computeNDivKTimesNMinusK(n, k);
 
         if (n < 64) {
             
