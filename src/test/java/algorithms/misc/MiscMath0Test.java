@@ -750,8 +750,7 @@ public class MiscMath0Test extends TestCase {
         k = 90;
         expected = 17310309456440L;
         nComb = MiscMath0.computeNDivKTimesNMinusK(n, k);
-        //assertEquals(expected, nComb);
-        assertTrue(Math.abs(expected - nComb) <= 1);
+        assertEquals(expected, nComb);
         
         n = 100;
         k = 80;

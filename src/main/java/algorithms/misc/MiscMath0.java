@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Arrays;
 import algorithms.sort.MiscSorter;
+import java.math.RoundingMode;
 
 /**
     miscellaneous math methods. some could probably be improved.
@@ -1253,7 +1254,7 @@ public class MiscMath0 {
             m = new BigDecimal(Integer.toString(i - n + k), ctx);
             result = result.divide(m, ctx);
         }
-                
+        result = result.setScale(0, RoundingMode.HALF_UP);
         return result.toBigInteger();
     }
     
