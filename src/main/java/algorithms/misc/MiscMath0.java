@@ -1251,13 +1251,7 @@ public class MiscMath0 {
             m = new BigDecimal(Integer.toString(i), ctx);
             result = result.multiply(m, ctx);
             m = new BigDecimal(Integer.toString(i - n + k), ctx);
-            try {
             result = result.divide(m, ctx);
-            } catch (Throwable t) {
-                System.out.println(t.getMessage().toString());
-                System.out.flush();
-                Throwable c = t.getCause();
-            }//i=19, n=20, k=4.  m=21
         }
                 
         return result.toBigInteger();
