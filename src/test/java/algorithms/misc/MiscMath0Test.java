@@ -773,4 +773,15 @@ public class MiscMath0Test extends TestCase {
 
         assertTrue(result.compareTo(expected) == 0);
     }
+    
+    public void testModularExponentiation() {
+        System.out.println("modularExponentiation");
+        
+        int a = 7;
+        int b = 560;
+        int n = 561;
+        int expResult = 1;
+        long result = MiscMath0.modularExponentiation(a, b, n);
+        assertTrue(expResult == result);
+    }
 }
