@@ -121,6 +121,8 @@ public class GreatestCommonDenominator {
      * 
      * extended euclid 
      * 
+     * if a > b > 0, runtime complexity is O(log_2(b)).
+     * 
      * @param a
      * @param b
      * @return 
@@ -133,14 +135,12 @@ public class GreatestCommonDenominator {
         long[] dxy_p = extendedEuclid(b, a % b);
         
         long t = (long)Math.floor((double)a/(double)b);
+        long r = dxy_p[1] - t*dxy_p[2];
         
-        //System.out.format("a=%d b=%d (a/b)=%d d=%d x=%d y=%d\n", 
-        //    a, b, t, dxy_p[0], dxy_p[2], dxy_p[1] - t*dxy_p[2]);
+        //System.out.format("  a=%d b=%d floor(a/b)=%d  euclid(a,a mod b)=%s\n", 
+        //    a, b, t, Arrays.toString(dxy_p));
         
-        long[] dxy = new long[] {
-            dxy_p[0], dxy_p[2], (dxy_p[1] - t*dxy_p[2])
-        };
-        return dxy;
+        return new long[] {dxy_p[0], dxy_p[2], r};
     }
     
 }

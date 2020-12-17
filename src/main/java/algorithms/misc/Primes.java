@@ -1,15 +1,12 @@
 package algorithms.misc;
 
 import gnu.trove.iterator.TLongIterator;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
-import gnu.trove.set.TIntSet;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TIntHashSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -20,17 +17,25 @@ public class Primes {
     
     /**
      * integer factorization following Pollard-Rho algorithm in Cormen et al. 
-     * "Introduction to Algorithms"
+     * "Introduction to Algorithms".  Usually can find at least one small integer
+     * that divides the number n.  The runtime is usually O(n^1/4).
+     * 
+     * NOTE: for factoring large numbers, may want to implement:
+     * "Factoring integers with the number field sieve"
+        J. P. Buhler,  H. W. Lenstra, Jr., Carl Pomerance
+     * http://www.math.leidenuniv.nl/~hwl/PUBLICATIONS/1993e/art.pdf
      * 
      * @param n
      * @return 
+     * @throws java.security.NoSuchAlgorithmException 
      */
     public static TLongSet pollardRhoFactorization(final long n) throws NoSuchAlgorithmException {
         
         ThreadLocalRandom rand = ThreadLocalRandom.current();
         
+        boolean useEdits = true;
+        
         TLongSet factors = new TLongHashSet();
-        TLongIterator iter;
         
         /* only the most recent value of x_i needs to be retained, so to reduce
         space, will only keep x_latest and x_latest_index. */
@@ -41,46 +46,68 @@ public class Primes {
 
         long y = x_latest;
         long k = 2;
+        long[] dxy;
         
         long maxIter = (long)Math.ceil(Math.pow(n, 0.25));
-        long m, r;
-        long n2 = n;
+        long m, r, dabs;
         
-        while (i < n) {
-            i++;
-            x_latest = ((x_latest * x_latest) - 1) % n2;
+        // store y and x_latest pairs and break when cycle returns
+        TLongObjectMap<TLongSet> pairs = new TLongObjectHashMap<TLongSet>();
+        TLongSet pairsV;
+        
+        while (true) {
             
-            //System.out.printf("*n=%d x_latest=%d\n", n, x_latest);
-            //System.out.flush();
+            //System.out.printf("  n=%d i=%d) x_latest=%d\n", n, i, x_latest);  System.out.flush();
+            
+            i++;
+            x_latest = ((x_latest * x_latest) - 1) % n;
             
             long tmp = y - x_latest;
-            long d = GreatestCommonDenominator.extendedEuclid(tmp, n2)[0];
-            //long d = GreatestCommonDenominator.euclid(tmp, n2);
-            long dabs = Math.abs(d);
             
-            //System.out.printf(" d=%d\n", d);
-            //System.out.flush();
+            // store for cycle checks:
+            if (pairs.containsKey(y)) {
+                if (pairs.get(y).contains(x_latest)) {
+                    break;
+                } else {
+                    pairs.get(y).add(x_latest);
+                }
+            } else {
+                pairsV = new TLongHashSet();
+                pairsV.add(x_latest);
+                pairs.put(y, pairsV);
+            }
+                        
+            dxy = GreatestCommonDenominator.extendedEuclid(tmp, n);
+            //long d = GreatestCommonDenominator.euclid(tmp, n);
+            dabs = Math.abs(dxy[0]);
             
-            if ((dabs != 1) && (dabs != n)) {
-                //NOTE: could add a check here that it is prime
+            //System.out.printf("    y=%d, x_latest=%d, EE(%d,%d)=%s\n", 
+            //    y, x_latest, tmp, n, Arrays.toString(dxy));  System.out.flush();
+            
+            if ((dabs != 1) && (dabs != Math.abs(n))) {
                 factors.add(dabs);
-                n2 = n / dabs;
-                //System.out.printf(" * store %d (size=%d), n2=%d\n", dabs, factors.size(), n2);
+                //System.out.printf(" * store %d (size=%d)\n", dabs, factors.size());
             }
             
             // check for stopping conditions
-            iter = factors.iterator();
-            m = 1;
-            while (iter.hasNext()) {
-                r = iter.next();
-                //System.out.printf("  r=%d", r);
-                m *= r;
-            }
-            //System.out.printf("   =>%d\n", m);
-            //System.out.flush();
+            m = multiply(factors);
             
-            if (m == n) {
+            /*if(!factors.isEmpty()) {
+                System.out.printf("   %s=> m=%d (n=%d x_latest=%d)\n", 
+                    Arrays.toString(factors.toArray()), m, n, x_latest);
+                System.out.flush();
+            }*/
+            
+            if (m == Math.abs(n)) {
                 break;
+            }
+            if (useEdits && m > Math.abs(n)) {
+                return new TLongHashSet();
+                /*while (m > n && !factors.isEmpty()) {
+                    long rm = max(factors);
+                    factors.remove(rm);
+                    m = multiply(factors);
+                }*/
             }
             
             if (i == k) {
@@ -88,7 +115,7 @@ public class Primes {
                 k *= 2;
             }            
         }
-        //System.out.printf("i=%d  n^(1/4)=%d\n", i, maxIter);
+        //System.out.printf("  i=%d  n^(1/4)=%d\n", i, maxIter);
         //System.out.flush();
 
         return factors;
@@ -199,10 +226,31 @@ public class Primes {
                 return true;
             }
         }
-        //if (x[i] != 1){
         if (x[t - 1] != 1){
             return true;
         }
         return false;
+    }
+
+    private static long multiply(TLongSet factors) {
+        TLongIterator iter = factors.iterator();
+        long m = 1;
+        while (iter.hasNext()) {
+            m *= iter.next();
+        }
+        return m;
+    }
+    
+    private static long max(TLongSet factors) {
+        TLongIterator iter = factors.iterator();
+        long m = Long.MIN_VALUE;
+        long r;
+        while (iter.hasNext()) {
+            r = iter.next();
+            if (r > m) {
+                m = r;
+            }
+        }
+        return m;
     }
 }
