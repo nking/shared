@@ -401,6 +401,10 @@ public class DisjointForest<T> {
             
         }*/
 
+        public Set<DisjointSet2Node<T>> getNodes() {
+            return nodes;
+        }
+        
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

@@ -6,7 +6,6 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -64,7 +63,7 @@ public class Primes {
             
             long tmp = y - x_latest;
             
-            // store for cycle checks:
+            // break condition: check for complete cycle
             if (pairs.containsKey(y)) {
                 if (pairs.get(y).contains(x_latest)) {
                     break;
@@ -87,29 +86,29 @@ public class Primes {
             if ((dabs != 1) && (dabs != Math.abs(n))) {
                 factors.add(dabs);
                 //System.out.printf(" * store %d (size=%d)\n", dabs, factors.size());
-            }
-            
-            // check for stopping conditions
-            m = multiply(factors);
-            
-            /*if(!factors.isEmpty()) {
-                System.out.printf("   %s=> m=%d (n=%d x_latest=%d)\n", 
-                    Arrays.toString(factors.toArray()), m, n, x_latest);
-                System.out.flush();
-            }*/
-            
-            if (m == Math.abs(n)) {
-                break;
-            }
-            if (useEdits && m > Math.abs(n)) {
-                return new TLongHashSet();
-                /*while (m > n && !factors.isEmpty()) {
-                    long rm = max(factors);
-                    factors.remove(rm);
-                    m = multiply(factors);
+                
+                // break condition: check for factoring >= n
+                
+                m = multiply(factors);
+
+                /*if(!factors.isEmpty()) {
+                    System.out.printf("   %s=> m=%d (n=%d x_latest=%d)\n", 
+                        Arrays.toString(factors.toArray()), m, n, x_latest);
+                    System.out.flush();
                 }*/
+                if (m == Math.abs(n)) {
+                    break;
+                }
+                if (useEdits && m > Math.abs(n)) {
+                    return new TLongHashSet();
+                    /*while (m > n && !factors.isEmpty()) {
+                        long rm = max(factors);
+                        factors.remove(rm);
+                        m = multiply(factors);
+                    }*/
+                }
             }
-            
+                        
             if (i == k) {
                 y = x_latest;
                 k *= 2;

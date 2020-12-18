@@ -39,7 +39,7 @@ public class MiscSorter {
     }
     
     /**
-     * use merge sort to sort a1 in decreasing value order and return the 
+     * use merge sort to sort a1 in increasing value order and return the 
      * indexes of the original a1 indexes in the sorted order.
      * 
      * @param a1
@@ -55,7 +55,7 @@ public class MiscSorter {
         
         return indexes;
     }
-    
+   
     /**
      * use merge sort to sort a1 and a2 by a1 in ascending order, breaking ties 
      * by a2 and return the indexes of the original indexes 

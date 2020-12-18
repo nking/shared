@@ -104,7 +104,7 @@ public class YFastTrieWrapper {
         
         set0.remove(node);
         
-        if (set0.size() == 0) {
+        if (set0.isEmpty()) {
             boolean removed = yft.remove(Integer.valueOf(keyIdx));
             assert(removed);
             map.remove(keyIdx);
