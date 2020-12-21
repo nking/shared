@@ -29,7 +29,15 @@ public class TopologicalSortTest extends TestCase {
                    \     V
                     > jacket 3/4
         
+        ordered by tf (reversed post-order traversal):
+             r        r                       r       r
         // socks, undershorts, pants, shoes, watch, shirt, belt, tie, jacket
+        tf  18        16        15      14    10      8      7    5     4
+        
+        ordered by ti (pre-order traversal):
+             1      2     3     6      9        11        12      13    17
+          shirt, tie,  jacket, belt, watch, undershorts, pants, shoes, socks
+            r                          r        r                        r
         */
         Map<String, Integer> objs = new HashMap<String, Integer>();
         objs.put("shirt", 0);      // belt, tie

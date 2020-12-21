@@ -108,6 +108,15 @@ public class MinHeapForRT2012 {
         }
     }
     
+    /**
+     if using a YFastTrie the runtime complexity is O(log log(M))
+        where M is the number of bits of the maximum value the trie
+        was initialized with.
+     If using a FibonacciHeap, the runtime complexity is O(log_2 N) or better
+       where N is the number of entries in the heap.
+        
+     * @return 
+     */
     public HeapNode extractMin() {
         
         switch(algorithm) {
@@ -120,7 +129,7 @@ public class MinHeapForRT2012 {
     }
     
     private HeapNode extractMin1() {
-        
+        // runtime is O(log_2 N) or better
         HeapNode node = heap1.extractMin();
         if (node != null) {
             return node;
@@ -129,7 +138,10 @@ public class MinHeapForRT2012 {
         }
     }
     
-    private HeapNode extractMin2() {        
+    private HeapNode extractMin2() { 
+        // runtime is runtime complexity is O(log log(M))
+        //    where M is the number of bits of the maximum value the trie
+        //    was initialized with
         return heap2.extractMin();
     }
     

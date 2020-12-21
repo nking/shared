@@ -15,11 +15,13 @@ import java.util.Arrays;
  * 
  * All edge weights must be non-negative.
  * 
- * The runtime complexity is O(V + E) due to use of a YFastTrie as the min-priority heap.
- * Note that if the heap wrapper has to choose a Fibonacci instead due to
- * memory constraints, the runtime complexity is O(V*log_2V + E) instead.
+ * The runtime complexity is O(|V| + |E|) due to use of a YFastTrie as the min-priority heap.
+   Note runtime complexity using YFasttrie is O(|V|*(log log(M)) + |E|)     
+   where M is the number of bits of the maximum value the trie
+   runtime complexity using Fibonacci is O(|V|*log_2|V| + |E|)
  * 
- * implemented from pseudocode from Cormen et al. "Introduction to Algorithms".
+ * implemented from pseudocode from Cormen et al. "Introduction to Algorithms"
+ * then edited to use heaps and priority queues.
  * 
  * from Cormen et al. :
  * 

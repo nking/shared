@@ -620,6 +620,10 @@ public class RedBlackBSTLongInt2 {
             }
             if (key == h) {
                
+                //NLK: TODO: revisit this code. it or similar had a bug I fixed,
+                //    but forgot to communicate the fix back to the authors or
+                //    follow up on whether they fixed it.
+                
                 /*
                 useful in visualizing this case is
                 https://www.cs.princeton.edu/~rs/talks/LLRB/RedBlack.pdf
@@ -1856,7 +1860,8 @@ public class RedBlackBSTLongInt2 {
     }
     
     /**
-     * visit each node using pattern: root, left subtree, right subtree
+     * visit each node using pattern: 
+     *     root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
      */
     protected long[] getPreOrderTraversalIterative(Long node, int addExtraToSize) {
@@ -1908,7 +1913,8 @@ public class RedBlackBSTLongInt2 {
     }
 
     /**
-     * visit each node using pattern: left subtree, right subtree, root subtree
+     * visit each node using pattern: 
+     *     left subtree, right subtree, root subtree
      * in an iterative manner rather than invoking the method recursively.
      */
     protected long[] getPostOrderTraversalIterative(Long node) {
@@ -1963,6 +1969,54 @@ public class RedBlackBSTLongInt2 {
         return array;
     }
    
+    /**
+    visit each node using pattern root node, then all direct children of root node (=level 2),
+    then all direct children of those children (=level 3), etc
+    in an iterative manner.
+    */
+    protected long[] getLevelOrderTraversalIterative(Long node) {
+        if (isEmpty()) {
+            return new long[0];
+        }
+        
+        int sz = size();
+        
+        long[] array = new long[sz];
+        int count = 0;
+        
+        if (node == null) {
+            return array;
+        }
+        
+        // can use stacks or queues interchangeably here, but if prefer 
+        //   left to right norder, will want queues.
+        java.util.Queue<Long> level = new ArrayDeque<Long>();
+        java.util.Queue<Long> nextLevel = new ArrayDeque<Long>();
+        
+        level.add(node);
+        
+        while (true) {
+            while (!level.isEmpty()) {
+                node = level.poll();
+                array[count] = node;
+                count++;
+                if (nodeMap.leftIsSet(node.longValue())) {
+                    nextLevel.add(nodeMap.getLeft(node.longValue()));
+                }
+                if (nodeMap.rightIsSet(node.longValue())) {
+                    nextLevel.add(nodeMap.getRight(node.longValue()));
+                } 
+            }
+            if (nextLevel.isEmpty()) {
+                break;
+            }
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        }
+                
+        return array;
+    }
+    
     /**
      * estimate the size that an instance of RedBlackBSTLongInt with
      * n entries would occupy in heap space in Bytes.

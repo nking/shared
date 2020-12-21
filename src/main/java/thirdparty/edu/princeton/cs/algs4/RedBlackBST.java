@@ -21,6 +21,7 @@ package thirdparty.edu.princeton.cs.algs4;
  ******************************************************************************/
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -872,6 +873,52 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
                 node = node.right;
             }
         }
+        return array;
+    }
+    
+    /**
+    visit each node using pattern root node, then all direct children of root node (=level 2),
+    then all direct children of those children (=level 3), etc
+    in an iterative manner.
+    */
+    protected List<RBNode> getLevelOrderTraversalIterative(RBNode node) {
+       
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        
+        List<RBNode> array = new ArrayList<RBNode>();
+        int count = 0;
+        
+        if (node == null) {
+            return array;
+        }
+        
+        // can use stacks or queues interchangeably here, but if prefer 
+        //   left to right norder, will want queues.
+        java.util.Queue<RBNode> level = new ArrayDeque<RBNode>();
+        java.util.Queue<RBNode> nextLevel = new ArrayDeque<RBNode>();
+        
+        level.add(node);
+        
+        while (true) {
+            while (!level.isEmpty()) {
+                node = level.poll();
+                array.add(node);
+                if (node.left != null) {
+                    nextLevel.add(node.left);
+                }
+                if (node.right != null) {
+                    nextLevel.add(node.right);
+                } 
+            }
+            if (nextLevel.isEmpty()) {
+                break;
+            }
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        }
+                
         return array;
     }
     

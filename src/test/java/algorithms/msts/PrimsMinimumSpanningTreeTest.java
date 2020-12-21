@@ -109,6 +109,7 @@ public class PrimsMinimumSpanningTreeTest extends TestCase {
           [a]       11      [i]         4     14      [e]
                8    |     7     6              |   10
                  \ [h] / -- 1  --[g]-- 2 -- \ [f]/
+        
         */
         
         

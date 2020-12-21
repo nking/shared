@@ -132,7 +132,7 @@ public class DFS {
                 predecessor[v] = u;
                 visit(v);
             } else if (predecessor[v] == -1) {
-                // in case the instance graph is not ordered top-down
+                // visited, but no predecessor yet
                 predecessor[v] = u;
             }
             next = next.getNext();

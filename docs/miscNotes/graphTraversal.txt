@@ -1,0 +1,243 @@
+Examples of traversals are
+in-order, pre-order, and post-order traversals.
+These are in several code, such as RedBlackBST.java and 
+TopologicalSortTest (DFS).
+There is also level-order traversal which is naturally present in BFS.
+Iterative examples are present below.
+
+pre-order traversal:
+    root 
+    left sub-tree 
+    right sub-tree
+post-order traversal:
+    left sub-tree 
+    right sub-tree
+    root sub-tree
+in-order traversal:
+    left sub-tree
+    root (after all of left and before all of right),
+    right sub-tree
+level-order traversal
+    root, then all direct children of root node (=level 2),
+    then all direct children of those children (=level 3), etc
+
+Note that in the snippets below one could add a visit or color array to help populate
+a predecessor array, and one could add start and end time arrays for node visits
+as is done with dfs and bfs.
+
+pre-order traversal:
+    root, left sub-tree, right sub-tree
+
+     protected List<RBNode> getPreOrderTraversalIterative(RBNode node, int addExtraToSize) {
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        int sz = size() + addExtraToSize;
+        List<RBNode> array = new ArrayList<RBNode>();
+        int count = 0;
+        Stack<RBNode> stack = new Stack<>();
+        while (count < sz && (!stack.isEmpty() || node != null)) {
+            if (node != null) {
+                array.add(node);
+                count++;
+                if (count < sz) {
+                    stack.push(node);
+                }
+                node = node.left;
+            } else {
+                node = stack.pop();
+                node = node.right;
+            }
+        }
+        return array;
+    }
+
+
+in-order traversal:
+    left sub-tree, root, right sub-tree
+
+    List<RBNode> getInOrderTraversalIterative(RBNode node) {
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        int sz = size();
+        List<RBNode> array = new ArrayList<RBNode>();;
+        int count = 0;
+        Stack<RBNode> stack = new Stack<>();
+        while (!stack.isEmpty() || (node != null)) {
+            if (node != null) {
+                stack.push(node);
+                node = node.left;
+            } else if (count < sz) {
+                node = stack.pop();
+                array.add(node);
+                count++;
+                node = node.right;
+            }
+        }
+        return array;
+
+post-order traversal:
+    left sub-tree, right sub-tree, root sub-tree
+
+    protected List<RBNode> getPostOrderTraversalIterative(RBNode node) {
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        List<RBNode> array = new ArrayList<RBNode>();
+        int count = 0;
+        if (node == null) {
+            return array;
+        }
+        Stack<RBNode> stack = new Stack<>();
+        Stack<RBNode> stack2 = new Stack<>();
+        stack.push(node);
+        while (!stack.isEmpty()) {
+            node = stack.pop();
+            stack2.push(node);
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+            if (node.right != null) {
+                stack.push(node.right);
+            }            
+        }
+        while (!stack2.isEmpty()) {
+            node = stack2.pop();
+            //process(node);
+            array.add(node);
+        }
+        return array;
+    }
+
+
+level-order traversal:
+    root node, then all direct children of root node (=level 2),
+     then all direct children of those children (=level 3), etc
+    (see BFS below)
+    (see also BeamSearch in the curvature scale space project for BFS with a limited number of levels)
+
+    protected List<RBNode> getLevelOrderTraversalIterative(RBNode node) {
+        if (isEmpty()) {
+            return new ArrayList<RBNode>();
+        }
+        List<RBNode> array = new ArrayList<RBNode>();
+        if (node == null) {
+            return array;
+        }
+        // can use stacks or queues interchangeably here, but if prefer 
+        //   left to right norder, will want queues.
+        java.util.Queue<RBNode> level = new ArrayDeque<RBNode>();
+        java.util.Queue<RBNode> nextLevel = new ArrayDeque<RBNode>();
+        level.add(node);
+        while (true) {
+            while (!level.isEmpty()) {
+                node = level.poll();
+                array.add(node);
+                if (node.left != null) {
+                    nextLevel.add(node.left);
+                }
+                if (node.right != null) {
+                    nextLevel.add(node.right);
+                } 
+            }
+            if (nextLevel.isEmpty()) {
+                break;
+            }
+            level.addAll(nextLevel);
+            nextLevel.clear();
+        }
+        return array;
+
+----
+DFS:
+   runtime complexity O(|V| + |E|) 
+
+    // initialize
+    Arrays.fill(color,0);
+    Arrays.fill(d, Integer.MAX_VALUE);
+    Arrays.fill(predecessor[u], -1);
+    for (int u = 0; u < g.length; u++) {
+        if (visited[u] == 0) {
+            visited[u] = 1;
+            time++;
+            td[u] = time;
+            SimpleLinkedListNode next = g[u];
+            while (next != null && next.getKey() != -1) {
+                int v = next.getKey();
+                if (visited[v] == 0) {
+                    predecessor[v] = u;
+                    visit(v);
+                } else if (predecessor[v] == -1) {
+                    // visited, but no predecessor yet
+                    predecessor[v] = u;
+                }
+                next = next.getNext();
+            }
+            visited[u] = 2;
+            time++;
+            tf[u] = time;
+        }
+    }
+
+----
+BFS (breadth first search):
+   (see Dijkstra's and UniformCostSearch below too)
+   runtime complexity O(|V| + |E|) but is potentially less than DFS as it will not 
+      search paths unreachable from srcNode.
+
+        // initialize
+        Arrays.fill(color,0);
+        Arrays.fill(d, Integer.MAX_VALUE);
+        Arrays.fill(predecessor[u], -1);
+        setColorToGray(srcNode);
+        d[srcNode] = 0;
+        predecessor[srcNode] = -1;
+
+        Queue queue = new Queue();
+        queue.enqueue(srcNode);
+        while (!queue.isEmpty()) {
+            LinkedListNode uNode = queue.dequeue();
+            LinkedList neighbors = adjacencyList[uNode.key];
+            if (neighbors == null) {
+                continue;
+            }
+            LinkedListNode vNode = neighbors.list;
+            while (vNode != null) {
+                if (isColorWhite(vNode.key)) {
+                    setColorToGray(vNode.key);
+                    int dTmp = (d[uNode.key] == Integer.MAX_VALUE) ? Integer.MAX_VALUE : d[uNode.key] + 1;
+                    d[vNode.key] = dTmp;
+                    predecessor[vNode.key] = uNode.key;
+                    queue.enqueue(vNode.key);   
+                }
+                vNode = vNode.next;
+            }
+            setColorToBlack(uNode.key);
+        }
+
+----
+Dijkstra's  Search
+   uses BFS pattern to compare distances of node from src to assign node predecessor
+      and to decrease it's key in the heap (where the key is the distance from source)
+
+   init as in BFS, but also use a min-heap/yfasttrie initialized to hold all nodes.
+
+   runtime complexity using yfasttrie is O(|V|*(log log(M)) + |E|) 
+        where M is the number of bits of the maximum value the trie
+   runtime complexity using Fibonacci is O(|V|*log_2|V| + |E|) 
+
+----
+Uniform Cost Search
+   given a weighted directed graph with weight function, finds the greedy 
+   but optimal best-first shortest path with smaller number of items in the queue than
+   Dijkstras.
+
+   init as in BFS and Dijkstra's, but also use a min-heap/yfasttrie initialized to hold only src node.
+
+   therefore, it only searches nodes along the path from source (unlike a dfs pattern which
+   would search all nodes, and unlike dijkstra's which searches all nodes because the
+   heap/trie is initialized with all nodes).
+
+   runtime complexity is <= dijkstra's because it searches fewer nodes.
+
