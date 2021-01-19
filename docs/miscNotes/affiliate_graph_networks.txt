@@ -1,0 +1,154 @@
+from chap 10 of the book "Mining of Massive Datasets"
+   by Jure Leskovec, Anand Rajaraman, Jeff Ullman
+
+
+overlapping commmunities:
+
+one would expect greater probability that 2 people know each other if they are
+in the same club, hence greater possiblity that they would be friends in the social graph.
+--> expect edges to be dense within any community
+--> expect edges to be even denser in the intersection of 2 communities.
+
+
+MLE (maximum likelihood expectation):
+   - make an assumption about the generative process (the model) that
+     creates instances of some artifact, for example, “friends graphs".
+   - the model has parameters that determine the probability of generating any
+     particulr instance of the artifact.
+   - the probability of the instance is called the likelihood.
+   - * one assumes that the value of the parameters that gives the largest value of the
+     likelihood is the correct model for the observed artifact.
+
+  Example: in making a random overlapping graph with one parameterin the model:
+   - let p be the probablility that each edge is present
+     and 1-p is the probability that an edge is not present.
+   
+     Example:
+        graph w/ 15 nodes and 23 edges.
+        
+        number of pairs of nodes = C(15, 2) = 105
+
+        probability (likelihood) of generating the instance of the graph in Fig 10.19
+           given each edge chosen w/ probability p
+           (uses the geometric probability distibution: number of Bernoulli trials or 
+           failures before the first success)
+           = p^(23) * (1-p)^(105-23)
+           = p^(23) * (1-p)^(82)
+
+        determine maximum by taking derivative and setting to 0:
+          23 * p^(22) * (1-p)^(82) - 82 * p^(23) * (1-p)^(81) = 0
+          p^(22)  * (1-p)^(81) * (23*(1-p) - 82*p) = 0
+           roots are p = 0 or 1 or when 23-23*p-82*p=0
+             since p=1 or 1 results in aminimum value,
+             the maximum is obtained when 23-23*p-82*p=0
+             --> p = 23/10
+           
+AGN:
+    to generate social graphs from communities
+        observe how the parameters of the model influence the likelihood 
+        of seeing a given graph, to then calc how to solve for parameter values
+        that give the maximum likelihood.
+
+    elements for generating a graph:
+      - number of communities
+      - number of nodes (people) in the graph
+      - each community can have any sets of individuals as members.
+        parameter of model: community membership
+      - Each community C has a probability p_C associated with it, 
+        parameter of model: 
+          p_C = the probability that two members of community C are connected 
+                by an edge because they are both members of C. 
+      - if a pair of nodes exists in 2 or more communities,
+        an edge should exist between them if any of the p_C induces it.
+        -- this decision about whether the edge should exist is for
+           each individual community, independent of other communities.
+
+       p_{uv} = the probability of an edge between u and v is
+              = 1 - ∏_{C in M}(1 - p_C)
+              = 1 - products of (1 -- p_C) for all C in M
+              where M is the set of communities that u and v are part of
+          NOTE: when u and v are not in any communities together, p_{uv} = eps
+                where eps is a very small positive number.
+
+    For a problem where the memberships in communities are known:
+        the likelihood of E being exactly the set of edges in the observed graph is
+           = ∏_{u,v in E}(p_{uv}) * ∏_{u,v not in E}(1 - p_{uv})
+           = product of p_{uv} for all (u,v) in E times the product of (1-p{u,v}) for all (u,v) not in E 
+
+        results in an equation composed of terms of the p_C of each community in E.
+        Solving for the parameters giving the MLE can be done with:
+           Newton's method w/ multivariable strategies
+           BFGS
+        Since the parameters, that is, the probabilities are constrained to be (0, 1],
+           can use constrained optimization techniques?
+
+            
+    For a problem where the goal is to assign members to communities to find largest
+    MLE solution.   And once the memberships are determined, the p_C of each community C
+    can be determined.
+       The most popular method for doing so is gradient descent, but that is for continuous
+       solutions, not disrete steps of changes in membership, so both are combined:
+         - small changes to the assignment, say by insertion or deletion of one member for one community. 
+           - For each such assignment, we can solve for the best community probabilities (the p_C’s) 
+             by gradient descent
+           - the "current" assignment becomes the better of the current and latest ahere best is 
+             the one with higher likelihood.
+           - if the change didn't improve the likelihood, try another change for current assignment.
+           - eventually no small changed will improve the likelihood
+         ==> the affiliation-graph model is the resutling membership assinment along w/ the p_C's maximimizing the MLE
+       NOTE that this solution may not be a global optimum.
+            Therefore global search strategies such as multiple tries using random starting xolutions
+            areoften employed.
+       NOTE: one can also change the model from fixed number of communities to allow smallnumber of 
+            merging of communities OR adding a new community with randomly selected members.
+            Another change to the model is to solve for the best MLE of the fixed number of communities
+            then add 1 more community and solve again to see if MLE improves, and if not, 
+            subtract one from the number of communities to see if the likelihood improves. 
+            If either of those changes improves things, then repeat the process of moving in the 
+            direction or more or fewer communities, whichever led to an improvement.
+
+
+    For a problem where the goal is to assign members a strength of membership to communities instead of
+    an "all or nothing" membership  to find largest MLE solution:
+        In this model:
+          - the number of communities is fixed.  the set of individuals is fixed.
+          - F_{xC} is the strength of membership of individual x in community C.
+            These parameters can take any nonnegative value, and a value of 0 means the individual is 
+            definitely not in the community.
+          - p_C(u,v) = probability that community C causes there to be an edge between
+                       nodes u and v
+                     = 1 - exp(-F_{u,C}*F_{v*C})
+          - p_{u,v} = probability of there being an edge between u and v
+                    = 1 - ∏_{C}(1 - p_C(u,v))
+          - using the model assumption for p_C(u,v)
+               p_{u,v} = 1 - exp( -∑_C( F_{u,C}*F_{v*C} ) )
+
+          - as before, let E be the set of edges in the observed graph.
+            the likelihood of the observed graph 
+               = product of the expression for p_{uv} for each edge (u, v) that is in E, 
+                 times the product of 1−p_{uv} for each edge (u, v) that is not in E. 
+               = ∏_{(u,v) in E} (1 - exp(-∑_C( F_{u,C}*F_{v*C}))) * ∏_{(u,v) not in E} (exp(∑_C( F_{u,C}*F_{v*C})))
+
+            * Taking the logarithm:
+               ==> argmax of  ∑_{(u,v) in E} log(1 - exp(-∑_C( F_{u,C}*F_{v*C}))) - ∑_{(u,v) not in E} log(∑_C(F_{u,C}*F_{v*C}))
+                    Then find the values for the F_{xC}’s that maximizes the expression
+                   - one way to solve is use gradient descent : 
+                       pick one node x, and adjust all the values of the F_{xC}’s in the direction 
+                       that most improves the value of the expression.
+                         (Notice that the only factors whose values change in response to changes to the 
+                         F_{xC}’s are those where one of u and v is x and the other of u and v is a node 
+                         adjacent to x, i.e. there is an edge between u and v. Since the degree of a node 
+                         is typically much less than the number of edges in the graph, we can avoid looking 
+                         at most of the terms in the expression at each step.)
+ 
+       see implementations in
+          https://snap.stanford.edu/snap-2.1/description.html
+              agmfit: Detects network communities from a given network by fitting the 
+                      Affiliation Graph Model (AGM) to the given network by maximum likelihood estimation.
+              agmgen: Implements the Affiliation Graph Model (AGM). AGM generates a realistic looking graph 
+                      from the community affiliation of the nodes.
+          http://snap.stanford.edu/agm/
+
+       adding more details on BIGCLAM from the SNAP AGM web page and from 
+          https://www.imperial.ac.uk/media/imperial-college/faculty-of-engineering/computing/public/BryanLiu.pdf
+
