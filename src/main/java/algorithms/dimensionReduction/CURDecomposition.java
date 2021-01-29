@@ -152,6 +152,8 @@ public class CURDecomposition {
      * calculate the col and row Frobenius norm discrete probabilities from a
      * (a.k.a. calculating Marginal probability mass function of the contingency table).
      * runtime is O(N) where N = mxn.
+     * NOTE: the Frobenius norm is the square root of the sum of the squares of 
+     * all elements of a matrix.
      * @param a an mxn matrix.
      * @return  the column and row PDFs of matrix a where a row PDF is the
      * Frobenius norm of the column divided by the Frobenius norm of the

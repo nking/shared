@@ -64,7 +64,7 @@ public class UnivariateDistance {
      * 
      * @param x sample of univariate observations of a variable
      * @param y second sample of univariate observations (can be of another variable)
-     * @return covariance of X and Y and intermediate data.  
+     * @return covariance of X and Y along with intermediate data.  
      */
     public static DCov fastDcov(double[] x, double[] y) {
 
@@ -855,6 +855,7 @@ public class UnivariateDistance {
          * a_.. = summation_{i:1,n}( a_i )
          * where a_i = summation_{j:1,n}( a_i_j )
          * where a_i_j = |x_i - x_j|_p
+         * and |·|_p is the euclidean norm in real space with dimension p
          */
         public double aDotDot;
         
@@ -862,41 +863,51 @@ public class UnivariateDistance {
          * this is a_i of eqn (2) of the paper.
          * where a_i = summation_{j:1,n}( a_i_j )
          * where a_i_j = |x_i - x_j|_p
+         * where p is the number of dimensions of vector x
+         * and |·|_p is the euclidean norm in real space with dimension p
          */
         public double[] ai;
         
         /**
-         * this is b.. of eqn (2) of the paper.
-         * b_.. = summation_{i:1,n}( b_i )
-         * where b_i = summation_{j:1,n}( b_i_j )
-         * where b_i_j = |y_i - y_j|_q
+         <pre>
+         this is b.. of eqn (2) of the paper.
+         b_.. = summation_{i:1,n}( b_i )
+         where b_i = summation_{j:1,n}( b_i_j )
+         where b_i_j = |y_i - y_j|_q
+         where q is the number of dimensions of vector y
+         and |·|_q is the euclidean norm in real space with dimension q
+         </pre>
          */
         public double bDotDot;
         
         /**
-         * this is b_i of eqn (2) of the paper.
-         * where b_i = summation_{j:1,n}( b_i_j )
-         * where b_i_j = |y_i - y_j|_q
+         <pre>
+         this is b_i of eqn (2) of the paper.
+         where b_i = summation_{j:1,n}( b_i_j )
+         where b_i_j = |y_i - y_j|_q
+         where q is the number of dimensions of vector y
+         and |·|_q is the euclidean norm in real space with dimension q
+         </pre>
          */
         public double[] bi;
         
         /**
-        iv1(j) = summation_{i<j,y_i<y_j}( 1 )
+        iv1(j) = summation_{i .lt. j, y_i .lt. y_j}( 1 )
         */
         public double[] iv1;
         
         /**
-        iv2(j) = summation_{i<j,y_i<y_j}( x_i )
+        iv2(j) = summation_{i .lt. j, y_i .lt. y_j}( x_i )
         */
         public double[] iv2;
         
         /**
-        iv3(j) = summation_{i<j,y_i<y_j}( y_i )
+        iv3(j) = summation_{i .lt. j, y_i .lt. y_j}( y_i )
         */
         public double[] iv3;
         
         /**
-        iv4(j) = summation_{i<j,y_i<y_j}( x_i * y_i )
+        iv4(j) = summation_{i .lt. j, y_i .lt. y_j}( x_i * y_i )
         */
         public double[] iv4;
                 
