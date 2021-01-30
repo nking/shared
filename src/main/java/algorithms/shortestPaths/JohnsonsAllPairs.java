@@ -165,6 +165,7 @@ public class JohnsonsAllPairs {
         */
         for (int u = 0; u < g.length; ++u) {
             
+            //TODO: consider replacing dijkstra's with UniformCostSearch
             Dijkstras dijkstras = new Dijkstras(g, g2.w, u);
             
             dijkstras.find();
