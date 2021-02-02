@@ -47,6 +47,10 @@ public class FibonacciHeapWrapper {
         }
     }
     
+    /**
+     * runtime is O(1).  makes no attempt to consolidate tree.
+     * @param node 
+     */
     public void insert(HeapNode node) {
         
         int key = (int)node.getKey();
@@ -76,9 +80,9 @@ public class FibonacciHeapWrapper {
     }
 
     /**
-     * note, depending upon number of bins, this may
-     * not be an O(1) decrease key, but may be a
-     * delete and insert, so should be reconsidered...
+     * note, key1 and key2 are in same heap, the runtime is 
+     * O(1) for decrease key, else the runtime is a 
+     * delete and insert as O(lg_2(n)).
      * 
      * @param node
      * @param key2 
@@ -87,40 +91,44 @@ public class FibonacciHeapWrapper {
         
         int key = (int)node.getKey();
         
-        int binIdx;
+        int binIdx1, binIdx2;
         if (heaps.length == 1) {
-            binIdx = 0;
+            binIdx1 = 0;
+            binIdx2 = 0;
         } else {
-            binIdx = key/binSz;
+            binIdx1 = key/binSz;
+            binIdx2 = (int)key2/binSz;
         }
-        
-        if (key == key2) {
+                
+        if (binIdx1 == binIdx2) {
             
-            heaps[binIdx].decreaseKey(node, key2);
+            heaps[binIdx1].decreaseKey(node, key2);
             
         } else {
         
-            heaps[binIdx].remove(node);
+            //runtime is that of extractMin, O(lg2(n))
+            heaps[binIdx1].remove(node);
                 
             node.setKey(key2);
-        
-            if (heaps.length > 1) {
-                binIdx = (int)key2/binSz;
-            }
      
-            if (heaps[binIdx] == null) {
-               heaps[binIdx] = new Heap();
+            if (heaps[binIdx2] == null) {
+               heaps[binIdx2] = new Heap();
             }
-        
-            heaps[binIdx].insert(node);
+            
+            //runtime is O(1).  makes no attempt to consolidate tree.
+            heaps[binIdx2].insert(node);
         }
         
         if (key2 < lastKnownMinKey) {
             lastKnownMinKey = key2;
-            lastKnownMinKeyIdx = binIdx;
+            lastKnownMinKeyIdx = binIdx2;
         }
     }
     
+    /**
+     * runtime is O(log_2 N) or better.
+     * @return 
+     */
     public HeapNode extractMin() {
         
         if (n == 0) {
@@ -141,6 +149,26 @@ public class FibonacciHeapWrapper {
         }
         
         return null;
+    }
+    
+    /**
+     * runtime complexity is O(lg2(n))
+     * @param node 
+     */
+    public void remove(HeapNode node) {
+        
+        int key = (int)node.getKey();
+        
+        int binIdx;
+        if (heaps.length == 1) {
+            binIdx = 0;
+        } else {
+            binIdx = key/binSz;
+        }
+        //runtime is that of extractMin, O(lg2(n))
+        heaps[binIdx].remove(node);
+        
+        n--;
     }
     
     public long getNumberOfNodes() {

@@ -1,16 +1,14 @@
-package algorithms;
+package algorithms.heapsAndPQs;
 
 import algorithms.misc.Misc0;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import thirdparty.ods.*;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
 import junit.framework.TestCase;
 
 /**

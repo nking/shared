@@ -1,6 +1,6 @@
 package algorithms.bipartite;
 
-import algorithms.YFastTrie;
+import algorithms.heapsAndPQs.YFastTrie;
 import algorithms.heapsAndPQs.HeapNode;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -92,6 +92,16 @@ public class MinHeapForRT2012 {
         }
     }
     
+    /**
+     * for fib. heap runtime is //runtime is O(1).
+     * for yft runtime complexity for best case is O(1) when there
+     * is already a similar key in the XFastTrie, else is O(log_2(w)) + O(w-l)
+     * where w is the number of bits set in the constructor and l is the prefix 
+     * tree already filled leading up to the value node.  The performance of 
+     * the XFastTrie increases when more nodes are in it (can see that in the
+     * l term).
+     * @param node 
+     */
     public void insert(HeapNode node) {
         
         if (node.getKey() < 0) {
@@ -115,7 +125,7 @@ public class MinHeapForRT2012 {
      If using a FibonacciHeap, the runtime complexity is O(log_2 N) or better
        where N is the number of entries in the heap.
         
-     * @return 
+     * @return extracted node which is the minimum in the queue
      */
     public HeapNode extractMin() {
         
@@ -151,7 +161,7 @@ public class MinHeapForRT2012 {
         
         heap1.insert(node);
         
-        log.fine("insert into minHeap at key =" + key);        
+        log.fine("insert into fib minHeap at key =" + key);        
     }
     
     private void insert2(HeapNode node) {
@@ -160,9 +170,16 @@ public class MinHeapForRT2012 {
         
         heap2.insert(node);
         
-        log.fine("insert into minHeap at key =" + key);        
+        log.fine("insert into yft minHeap at key =" + key);        
     }
     
+    /**
+     if using a YFastTrie the runtime complexity is O(log log(M))
+        where M is the number of bits of the maximum value the trie
+        was initialized with.
+     If using a FibonacciHeap, the runtime complexity is O(1).
+        
+     */
     public void decreaseKey(HeapNode node, long key2) {
     
         switch(algorithm) {
@@ -185,10 +202,48 @@ public class MinHeapForRT2012 {
     
     private void decreaseKey2(HeapNode node, long key2) {
 
-        log.fine("decreaseKey in fibHeap from key=" + 
+        log.fine("decreaseKey in yft from key=" + 
             node.getKey() + " to key=" + key2);
         
         heap2.decreaseKey(node, key2);
+    }
+    
+     /**
+     If using a FibonacciHeap, the runtime complexity is O(log_2(n)).
+     If using YFT, runtime complexity is O(10) or better. It is dependent on the bit length 
+     * of the largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     */
+    public void remove(HeapNode node) {
+    
+        switch(algorithm) {
+            case 1:
+                remove1(node);
+                break;
+            default:
+                remove2(node);
+                break;
+        }
+    }
+     
+    /**
+     * runtime complexity is O(lg_2(n))
+     * @param node 
+     */
+    private void remove1(HeapNode node) {
+
+        log.fine("remove in fibHeap key=" + 
+            node.getKey());
+        
+        heap1.remove(node);
+    }
+    
+    private void remove2(HeapNode node) {
+
+        log.fine("remove in yft key=" + 
+            node.getKey());
+        
+        heap2.remove(node);
     }
     
     public long getNumberOfNodes() {

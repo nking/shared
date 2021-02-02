@@ -1,6 +1,6 @@
 package algorithms.search;
 
-import algorithms.YFastTrieLong;
+import algorithms.heapsAndPQs.YFastTrieLong;
 import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TLongIterator;

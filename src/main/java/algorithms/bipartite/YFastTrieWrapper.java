@@ -1,6 +1,6 @@
 package algorithms.bipartite;
 
-import algorithms.YFastTrie;
+import algorithms.heapsAndPQs.YFastTrie;
 import algorithms.heapsAndPQs.HeapNode;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.HashSet;
@@ -129,6 +129,31 @@ public class YFastTrieWrapper {
         if (key2 < lastKnownMinKey) {
             lastKnownMinKey = key2;
         }
+    }
+    
+    /**
+     * runtime complexity is O(10) or better. It is dependent on the bit length 
+     * of the largest number to hold or query, and the balance between the number
+     * of bins and number of items per bin.
+     * @param node 
+     */
+    public void remove(HeapNode node) {
+
+        int keyIdx = (int)node.getKey();
+                
+        Set<HeapNode> set0 = map.get(keyIdx);
+        
+        assert(set0 != null);
+        
+        set0.remove(node);
+        
+        if (set0.isEmpty()) {
+            boolean removed = yft.remove(Integer.valueOf(keyIdx));
+            assert(removed);
+            map.remove(keyIdx);
+        }
+        
+        n--;
     }
     
     /**

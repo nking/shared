@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.heapsAndPQs;
 
 import algorithms.misc.Misc0;
 import gnu.trove.list.TLongList;

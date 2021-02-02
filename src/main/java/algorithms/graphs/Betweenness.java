@@ -506,6 +506,8 @@ public class Betweenness {
     
     private int[] findRoots(SimpleLinkedListNode[] adjacencyList, int s) {
          
+        // walk all nodes in graph to get the predecessor nodes
+        //   using DFS
         DFS dfs = new DFS(adjacencyList);
         dfs.walk();
         

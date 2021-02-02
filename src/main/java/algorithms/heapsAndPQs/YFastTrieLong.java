@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.heapsAndPQs;
 
 import algorithms.util.ObjectSpaceEstimator;
 import gnu.trove.map.TLongLongMap;

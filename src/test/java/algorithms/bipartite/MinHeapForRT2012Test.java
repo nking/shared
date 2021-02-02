@@ -3,6 +3,8 @@ package algorithms.bipartite;
 import algorithms.heapsAndPQs.HeapNode;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.Set;
 import junit.framework.TestCase;
 
 /**
@@ -73,4 +75,61 @@ public class MinHeapForRT2012Test extends TestCase {
         }
     }
     
+    
+    public void test2() throws NoSuchAlgorithmException {
+        
+        SecureRandom random = SecureRandom.getInstanceStrong();
+        long seed = System.currentTimeMillis();
+        System.out.println("SEED=" + seed);
+        random.setSeed(seed);
+        
+        int nTests = 1;
+        int maxValue = 150000;
+        int k = 0;
+        boolean typeFibonacci = false;
+        boolean typeYFT = false;
+        
+        while ((!typeFibonacci || !typeYFT) && (k < 4)) {
+            
+            int nT = nTests;
+            int maxV = maxValue * (k + 1);
+            int approxN = maxV * 10;
+            int maxNumberOfBits = (int)Math.ceil(Math.log(maxV)/Math.log(2));
+            
+            Set<HeapNode> nodes = new HashSet<HeapNode>();
+            
+            for (int t = 0; t < nT; ++t) {
+                
+                MinHeapForRT2012 heap = new MinHeapForRT2012(maxV, approxN,
+                    maxNumberOfBits);
+                
+                System.out.println(heap.toString());
+                if (heap.toString().contains("ibonacci")) {
+                    typeFibonacci = true;
+                } else {
+                    typeYFT = true;
+                }
+                System.out.println("maxV=" + maxV + " approxN=" + approxN + 
+                    " maxNBits=" + maxNumberOfBits);
+                
+                for (int i = 0; i < approxN; ++i) {
+                    int key = random.nextInt(maxV);
+                    HeapNode node = new HeapNode(key);
+                    node.setData(Integer.valueOf(key));
+                    heap.insert(node);
+                    nodes.add(node);
+                }
+                
+                assertEquals(approxN, (int)heap.getNumberOfNodes());
+                int c = (int)heap.getNumberOfNodes();
+                for (HeapNode node : nodes) {
+                    heap.remove(node);
+                    c--;
+                    assertEquals(c, (int)heap.getNumberOfNodes());
+                }
+                assertEquals(0, (int)heap.getNumberOfNodes());
+            }
+            k++;
+        }
+    }
 }
