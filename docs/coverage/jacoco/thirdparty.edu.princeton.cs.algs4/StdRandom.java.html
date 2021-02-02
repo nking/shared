@@ -77,7 +77,7 @@ import java.util.Random;
     // static initializer
     static {
         // this is how the seed was set in Java 1.4
-<span class="fc" id="L80">        seed = System.currentTimeMillis();</span>
+<span class="fc" id="L80">        seed = System.nanoTime();</span>
 <span class="fc" id="L81">        random = new Random(seed);</span>
 <span class="fc" id="L82">    }</span>
 

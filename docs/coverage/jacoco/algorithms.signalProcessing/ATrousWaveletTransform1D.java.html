@@ -11,17 +11,17 @@ import java.util.List;
 <span class="fc" id="L11">public class ATrousWaveletTransform1D {</span>
    
     /**
-     * The a trous algorithm is a fast implementation of a wavelet transform 
-     * with no downsampling.   It is non-orthogonal, semi-linear runtime
-     * complexity, is invariant under translation, and the transform is 
-     * isotropic.
-     * Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
+      The a-trous algorithm is a fast implementation of a wavelet transform 
+       with no downsampling.   It is non-orthogonal, semi-linear runtime
+       complexity, is invariant under translation, and the transform is 
+       isotropic.
+       Implemented from pseudocode in http://www.multiresolution.com/svbook.pdf
        The scaling function used is the lower resolution choice, the triangle
-       * function.
-       * &lt;pre&gt;
-       * The method uses recursive convolution operations, including previous
-       * result to make next.
-       * &lt;/pre&gt;
+       function.
+       &lt;pre&gt;
+       The method uses recursive convolution operations, including previous
+       result to make next.
+       &lt;/pre&gt;
      * @param input
      * @param outputTransformed
      * @param outputCoeff 
@@ -166,7 +166,7 @@ import java.util.List;
        Not sure, but I think that is what the authors implemented.
         
        Given to this method are the center pixel index for the A Trous window
-       and the offsets as dx and dy chosen from the universe U of 8 neigbhor
+       and the offsets as dx and dy chosen from the universe U of 8 neighbor
        offsets.
         
        For each pixel in the window, will determine its intensity difference 

@@ -12,10 +12,9 @@
    then moved to this shared library project which has the same copyright
    and license.
 
- * 
  * @author nichole
  */
-<span class="fc" id="L18">public class Rotate {</span>
+<span class="fc" id="L17">public class Rotate {</span>
     
     /**
      * The solution is O(N) and uses the pattern flip top sub-array, flip bottom
@@ -29,42 +28,42 @@
      */
     public void rotate(int[] a, int left) {
         
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (a == null) {</span>
-<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L35" title="2 of 4 branches missed.">        if ((left == 0) || (left == a.length)) {</span>
-<span class="nc" id="L36">            return;</span>
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">        if ((left == 0) || (left == a.length)) {</span>
+<span class="nc" id="L35">            return;</span>
         }
                 
-<span class="fc" id="L39">        int n = a.length;</span>
+<span class="fc" id="L38">        int n = a.length;</span>
         
-<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (left &gt; 0) {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (left &gt; 0) {</span>
         
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">            if (left &gt; n) {</span>
-<span class="nc" id="L44">                left = left % n;</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">            if (left &gt; n) {</span>
+<span class="nc" id="L43">                left = left % n;</span>
             }
 
-<span class="fc" id="L47">            reverse(a, 0, left - 1);</span>
-<span class="fc" id="L48">            reverse(a, left, n - 1);</span>
-<span class="fc" id="L49">            reverse(a, 0, n - 1);</span>
+<span class="fc" id="L46">            reverse(a, 0, left - 1);</span>
+<span class="fc" id="L47">            reverse(a, left, n - 1);</span>
+<span class="fc" id="L48">            reverse(a, 0, n - 1);</span>
             
         } else {
             
-<span class="fc" id="L53">            left *= -1;</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">            if (left &gt; n) {</span>
-<span class="fc" id="L55">                left = left % n;</span>
+<span class="fc" id="L52">            left *= -1;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (left &gt; n) {</span>
+<span class="fc" id="L54">                left = left % n;</span>
             }
             
-<span class="fc" id="L58">            reverse(a, n - left, n - 1);</span>
-<span class="fc" id="L59">            reverse(a, 0, left);</span>
-<span class="fc" id="L60">            reverse(a, 0, n - 1);</span>
+<span class="fc" id="L57">            reverse(a, n - left, n - 1);</span>
+<span class="fc" id="L58">            reverse(a, 0, left);</span>
+<span class="fc" id="L59">            reverse(a, 0, n - 1);</span>
         }
 
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L62">    }</span>
     
     public void rotate2(int[] a, int left) {
-<span class="fc" id="L66">        rotate2(a, a.length, left);</span>
-<span class="fc" id="L67">    }</span>
+<span class="fc" id="L65">        rotate2(a, a.length, left);</span>
+<span class="fc" id="L66">    }</span>
     
     /**
      * The solution is O(N) and uses the pattern of moving the first element
@@ -91,141 +90,141 @@
      */
     public void rotate2(int[] a, int n, int left) {
         
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (a == null) {</span>
-<span class="nc" id="L95">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L94">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
         }
-<span class="fc bfc" id="L97" title="All 4 branches covered.">        if ((left == 0) || (left == a.length)) {</span>
-<span class="fc" id="L98">            return;</span>
+<span class="fc bfc" id="L96" title="All 4 branches covered.">        if ((left == 0) || (left == a.length)) {</span>
+<span class="fc" id="L97">            return;</span>
         }
                 
-<span class="fc bfc" id="L101" title="All 2 branches covered.">        boolean leftIsNegative = (left &lt; 0);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        boolean leftIsNegative = (left &lt; 0);</span>
         
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (leftIsNegative) {</span>
-<span class="fc" id="L104">            reverse(a, 0, n - 1);</span>
-<span class="fc" id="L105">            left *= -1;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (leftIsNegative) {</span>
+<span class="fc" id="L103">            reverse(a, 0, n - 1);</span>
+<span class="fc" id="L104">            left *= -1;</span>
         }        
         
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (left &gt; n) {</span>
-<span class="fc" id="L109">            left = left % n;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (left &gt; n) {</span>
+<span class="fc" id="L108">            left = left % n;</span>
         }
                 
-<span class="fc" id="L112">        int firstIdx = 0;</span>
-<span class="fc" id="L113">        int lastIdx = n - 1;</span>
+<span class="fc" id="L111">        int firstIdx = 0;</span>
+<span class="fc" id="L112">        int lastIdx = n - 1;</span>
         
-<span class="fc" id="L115">        int offset = 0;</span>
-<span class="fc" id="L116">        int count = 0;</span>
-<span class="fc" id="L117">        int tmp = a[offset];</span>
+<span class="fc" id="L114">        int offset = 0;</span>
+<span class="fc" id="L115">        int count = 0;</span>
+<span class="fc" id="L116">        int tmp = a[offset];</span>
         
-<span class="fc" id="L119">        boolean tmpHoldsFirstValue = true;</span>
-<span class="fc" id="L120">        boolean tmpHoldsLastValue = false;</span>
+<span class="fc" id="L118">        boolean tmpHoldsFirstValue = true;</span>
+<span class="fc" id="L119">        boolean tmpHoldsLastValue = false;</span>
         
-<span class="fc" id="L122">        int nIter = 0;</span>
-<span class="fc" id="L123">        int prevResetOffset = 0;</span>
-<span class="fc" id="L124">        int prevResetNIter = 0;</span>
+<span class="fc" id="L121">        int nIter = 0;</span>
+<span class="fc" id="L122">        int prevResetOffset = 0;</span>
+<span class="fc" id="L123">        int prevResetNIter = 0;</span>
                 
         int idx, idx0;
         while (true) {
             
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            if (nIter &gt; n) {</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">            if (nIter &gt; n) {</span>
                 // this shouldn't happen!
-<span class="nc" id="L131">                throw new IllegalStateException(&quot;the algorithm has an error.&quot;);</span>
+<span class="nc" id="L130">                throw new IllegalStateException(&quot;the algorithm has an error.&quot;);</span>
             }
             
-<span class="fc" id="L134">            count++;</span>
-<span class="fc" id="L135">            idx = (left*count) + offset;</span>
-<span class="fc" id="L136">            idx0 = idx - left;</span>
+<span class="fc" id="L133">            count++;</span>
+<span class="fc" id="L134">            idx = (left*count) + offset;</span>
+<span class="fc" id="L135">            idx0 = idx - left;</span>
             
             // check for conditions to exit loop or change loop parameters:
-<span class="fc bfc" id="L139" title="All 2 branches covered.">            if (nIter == (n - left)) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            if (nIter == (n - left)) {</span>
                 
-<span class="fc" id="L141">                a[idx0] = tmp;</span>
+<span class="fc" id="L140">                a[idx0] = tmp;</span>
                 
-<span class="fc bfc" id="L143" title="All 2 branches covered.">                if (tmpHoldsFirstValue) {</span>
-<span class="fc" id="L144">                    firstIdx = idx0;</span>
-<span class="fc" id="L145">                    tmpHoldsFirstValue = false;</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                } else if (tmpHoldsLastValue) {</span>
-<span class="nc" id="L147">                    lastIdx = idx0;</span>
-<span class="nc" id="L148">                    tmpHoldsLastValue = false;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                if (tmpHoldsFirstValue) {</span>
+<span class="fc" id="L143">                    firstIdx = idx0;</span>
+<span class="fc" id="L144">                    tmpHoldsFirstValue = false;</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">                } else if (tmpHoldsLastValue) {</span>
+<span class="nc" id="L146">                    lastIdx = idx0;</span>
+<span class="nc" id="L147">                    tmpHoldsLastValue = false;</span>
                 }
                 
-<span class="fc bfc" id="L151" title="All 4 branches covered.">                if ((nIter == (n - 1)) || (nIter == firstIdx)){</span>
+<span class="fc bfc" id="L150" title="All 4 branches covered.">                if ((nIter == (n - 1)) || (nIter == firstIdx)){</span>
                     
-<span class="fc" id="L153">                    break;</span>
+<span class="fc" id="L152">                    break;</span>
                     
                 } else {
                     
                     // recalc offset
-<span class="fc bfc" id="L158" title="All 2 branches covered.">                    if (prevResetOffset == 0) {</span>
-<span class="fc" id="L159">                        offset = lastIdx + 1;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                    if (prevResetOffset == 0) {</span>
+<span class="fc" id="L158">                        offset = lastIdx + 1;</span>
                     } else {
-<span class="fc" id="L161">                        offset = prevResetOffset + (nIter - prevResetNIter);</span>
+<span class="fc" id="L160">                        offset = prevResetOffset + (nIter - prevResetNIter);</span>
                     }
-<span class="fc" id="L163">                    prevResetOffset = offset;</span>
-<span class="fc" id="L164">                    prevResetNIter = nIter;</span>
+<span class="fc" id="L162">                    prevResetOffset = offset;</span>
+<span class="fc" id="L163">                    prevResetNIter = nIter;</span>
 
                     // recalc left
-<span class="fc" id="L167">                    left = firstIdx - offset;</span>
+<span class="fc" id="L166">                    left = firstIdx - offset;</span>
                     
-<span class="fc" id="L169">                    firstIdx = offset;</span>
+<span class="fc" id="L168">                    firstIdx = offset;</span>
                     
                 }
                 
-<span class="fc" id="L173">                count = 0;</span>
-<span class="fc" id="L174">                tmp = a[offset];</span>
+<span class="fc" id="L172">                count = 0;</span>
+<span class="fc" id="L173">                tmp = a[offset];</span>
                 
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">                if (offset == firstIdx) {</span>
-<span class="fc" id="L177">                    tmpHoldsFirstValue = true;</span>
-<span class="nc bnc" id="L178" title="All 2 branches missed.">                } else if (offset == lastIdx) {</span>
-<span class="nc" id="L179">                    tmpHoldsLastValue = true;</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">                if (offset == firstIdx) {</span>
+<span class="fc" id="L176">                    tmpHoldsFirstValue = true;</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">                } else if (offset == lastIdx) {</span>
+<span class="nc" id="L178">                    tmpHoldsLastValue = true;</span>
                 }
                 
                 continue;
             }
 
-<span class="pc bpc" id="L185" title="1 of 4 branches missed.">            if ((idx &lt; n) &amp;&amp; (idx &gt; -1)) {</span>
+<span class="pc bpc" id="L184" title="1 of 4 branches missed.">            if ((idx &lt; n) &amp;&amp; (idx &gt; -1)) {</span>
                 
-<span class="fc" id="L187">                a[idx0] = a[idx];</span>
+<span class="fc" id="L186">                a[idx0] = a[idx];</span>
                 
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">                if (idx == firstIdx) {</span>
-<span class="nc" id="L190">                    firstIdx = idx0;</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">                } else if (idx == lastIdx) {</span>
-<span class="fc" id="L192">                    lastIdx = idx0;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">                if (idx == firstIdx) {</span>
+<span class="nc" id="L189">                    firstIdx = idx0;</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                } else if (idx == lastIdx) {</span>
+<span class="fc" id="L191">                    lastIdx = idx0;</span>
                 }
                 
-<span class="fc" id="L195">                nIter++;</span>
+<span class="fc" id="L194">                nIter++;</span>
                 
             } else {
                 // idx has overrun a bounds
                 
-<span class="fc" id="L200">                a[idx0] = tmp;</span>
+<span class="fc" id="L199">                a[idx0] = tmp;</span>
                 
-<span class="fc bfc" id="L202" title="All 2 branches covered.">                if (tmpHoldsFirstValue) {</span>
-<span class="fc" id="L203">                    firstIdx = idx0;</span>
-<span class="fc" id="L204">                    tmpHoldsFirstValue = false;</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">                } else if (tmpHoldsLastValue) {</span>
-<span class="nc" id="L206">                    lastIdx = idx0;</span>
-<span class="nc" id="L207">                    tmpHoldsLastValue = false;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">                if (tmpHoldsFirstValue) {</span>
+<span class="fc" id="L202">                    firstIdx = idx0;</span>
+<span class="fc" id="L203">                    tmpHoldsFirstValue = false;</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">                } else if (tmpHoldsLastValue) {</span>
+<span class="nc" id="L205">                    lastIdx = idx0;</span>
+<span class="nc" id="L206">                    tmpHoldsLastValue = false;</span>
                 }
                 
-<span class="fc" id="L210">                offset++;</span>
-<span class="fc" id="L211">                count = 0;</span>
-<span class="fc" id="L212">                tmp = a[offset];</span>
+<span class="fc" id="L209">                offset++;</span>
+<span class="fc" id="L210">                count = 0;</span>
+<span class="fc" id="L211">                tmp = a[offset];</span>
                 
-<span class="pc bpc" id="L214" title="1 of 2 branches missed.">                if (offset == firstIdx) {</span>
-<span class="nc" id="L215">                    tmpHoldsFirstValue = true;</span>
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">                } else if (offset == lastIdx) {</span>
-<span class="nc" id="L217">                    tmpHoldsLastValue = true;</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">                if (offset == firstIdx) {</span>
+<span class="nc" id="L214">                    tmpHoldsFirstValue = true;</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">                } else if (offset == lastIdx) {</span>
+<span class="nc" id="L216">                    tmpHoldsLastValue = true;</span>
                 }                
             }
         }
                 
         //System.out.println(&quot;    nIter=&quot; + nIter);
         
-<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (leftIsNegative) {</span>
-<span class="fc" id="L225">            reverse(a, 0, n - 1);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (leftIsNegative) {</span>
+<span class="fc" id="L224">            reverse(a, 0, n - 1);</span>
             //left *= -1;
         }
-<span class="fc" id="L228">    }</span>
+<span class="fc" id="L227">    }</span>
   
     /**
      * reverse the array between indexes idxLo and idxHi, inclusive.
@@ -237,29 +236,29 @@
      */
     public void reverse(int[] a, int idxLo, int idxHi) {
         
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        if (a == null) {</span>
-<span class="nc" id="L241">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
         }
-<span class="fc" id="L243">        int n = a.length;</span>
-<span class="pc bpc" id="L244" title="2 of 4 branches missed.">        if ((idxLo &lt; 0) || (idxLo &gt; (n - 1))) {</span>
-<span class="nc" id="L245">            throw new IllegalArgumentException(&quot;idxLo is out of bounds of array&quot;);</span>
+<span class="fc" id="L242">        int n = a.length;</span>
+<span class="pc bpc" id="L243" title="2 of 4 branches missed.">        if ((idxLo &lt; 0) || (idxLo &gt; (n - 1))) {</span>
+<span class="nc" id="L244">            throw new IllegalArgumentException(&quot;idxLo is out of bounds of array&quot;);</span>
         }
-<span class="pc bpc" id="L247" title="2 of 4 branches missed.">        if ((idxHi &lt; 0) || (idxHi &gt; (n - 1))) {</span>
-<span class="nc" id="L248">            throw new IllegalArgumentException(&quot;idxHi is out of bounds of array&quot;);</span>
+<span class="pc bpc" id="L246" title="2 of 4 branches missed.">        if ((idxHi &lt; 0) || (idxHi &gt; (n - 1))) {</span>
+<span class="nc" id="L247">            throw new IllegalArgumentException(&quot;idxHi is out of bounds of array&quot;);</span>
         }
         
-<span class="fc" id="L251">        n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L250">        n = idxHi - idxLo + 1;</span>
         
-<span class="fc" id="L253">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L252">        int end = idxLo + (n/2);</span>
         
-<span class="fc" id="L255">        int count = 0;</span>
-<span class="fc bfc" id="L256" title="All 2 branches covered.">        for (int i = idxLo; i &lt; end; i++) {</span>
-<span class="fc" id="L257">            int idx2 = idxHi - count;</span>
-<span class="fc" id="L258">            int swap = a[i];</span>
-<span class="fc" id="L259">            a[i] = a[idx2];</span>
-<span class="fc" id="L260">            a[idx2] = swap;</span>
-<span class="fc" id="L261">            count++;</span>
+<span class="fc" id="L254">        int count = 0;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (int i = idxLo; i &lt; end; i++) {</span>
+<span class="fc" id="L256">            int idx2 = idxHi - count;</span>
+<span class="fc" id="L257">            int swap = a[i];</span>
+<span class="fc" id="L258">            a[i] = a[idx2];</span>
+<span class="fc" id="L259">            a[idx2] = swap;</span>
+<span class="fc" id="L260">            count++;</span>
         }
-<span class="fc" id="L263">    }</span>
+<span class="fc" id="L262">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

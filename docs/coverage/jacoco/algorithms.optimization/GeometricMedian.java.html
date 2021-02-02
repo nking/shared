@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeometricMedian.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.optimization</a> &gt; <span class="el_source">GeometricMedian.java</span></div><h1>GeometricMedian.java</h1><pre class="source lang-java linenums">package algorithms.optimization;
+
+import java.util.Arrays;
+import thirdparty.dlib.optimization.AbstractGeometricMedianFunction;
+import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
+
+/**
+ * the geometric median:
+   a.k.a. spatial median.
+   the weighted version is a.k.a. L1-median (though it uses the euclidean distance)
+   and the multivariate L1 -median (L1 -MM).
+   
+   definition: the point which minimizes the sum of the euclidean distance of that
+     point to all other points in the set.
+     the sum is a convex function (i.e. local search will work).
+     Unfortunately, no algorithms are closed form, that is no algorithms have a
+     finite number of computational operations.
+     The geometric median is a rotation and translation invariant estimator that
+     achieves the optimal breakdown point of 0.5, i.e. it is a good estimator
+     even when up to half of the input data is arbitrarily corrupted.
+     https://dl.acm.org/doi/pdf/10.1145/2897518.2897647
+     
+     From  https://www.pnas.org/content/pnas/97/4/1423.full.pdf
+     &quot;...the problem of minimizing the weighted sum of the
+    Euclidean distances from m points, in Real space of dimension d (R^d). 
+    In industrial applications, this is known as the optimal location problem 
+    of Weber (2). In statistics, the solution of this optimization problem
+    is the spatial median or L1-MM, considered by Brown (3) and
+    Small (4). As noted by Kuhn (5), the problem goes back to
+    Fermat in the early seventeenth century and was generalized
+    to the current form by Simpson in his Doctrine and Application of Fluxions (6). 
+    In the nineteenth century, Steiner made
+    significant contributions to this problem and its extensions (cf.
+    Courant and Robbins; ref. 7). Thus, the problem is known as
+    the Fermat–Weber location problem and also as the Euclidean–
+    Steiner problem.&quot;
+     
+ * 
+ * https://feb.kuleuven.be/public/u0017833/PDF-FILES/l1medianR2.pdf
+ * NOTE: the Vardi-Zhang 2000 update method with the author's implemented non-linear
+ * optimization, appears to have a runtime of O(N log_2 N)
+ * 
+ * NOTE: that there is research on handling sparse matrices in other applications
+ * such as bundle adjustment where a sparse version of Levenberg-Marquardt is used.
+ * see papers by  Lourakis and Argyros, etc.
+ * http://users.ics.forth.gr/~lourakis/sba/PRCV_colloq.pdf
+ * https://www.researchgate.net/profile/Antonis_Argyros/publication/221111908_Is_Levenberg-Marquardt_the_Most_Efficient_Optimization_Algorithm_for_Implementing_Bundle_Adjustment/links/00b7d51c7d377ba56e000000/Is-Levenberg-Marquardt-the-Most-Efficient-Optimization-Algorithm-for-Implementing-Bundle-Adjustment.pdf
+ 
+ * @author nichole
+ */
+<span class="fc" id="L51">public class GeometricMedian {</span>
+   
+    /**
+     * use first derivative to find minimum sum of function defining geometric-median.
+     * Gauss-Newton's method has been altered to use back-tracking with a deceasing step size.
+     * The first derivative of the geometric-median is not zero so can use
+     * first order Householder methods, but cannot use 2nd order Householder methods
+     * because the 2nd derivative is 0.
+     * &lt;pre&gt;
+       example for nDimensions = 2:
+       f = summation_i=1_n( || X - obs_i || )/n
+           where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2)
+       df/dX_0 = d/dx( (1/n)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) ))
+               = (1/n)*(1/2)*2*(X_0-obs_i_0)*(1)
+                  / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+               = (1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+       df/dX_1 = (1./n)*(X_1-obs_i_1) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+
+       d/dX_0 of df/dX_0 = (1./n) * (1) * (-1/2)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) )
+                           *2*(X_0-obs_i_0)*(1)
+                         = (-1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) )
+       
+       Hessian d/dX of d/dX where p is nDimensions and I is the identity matrix of size pxp:
+                            ( (    I_p      )   ( (X - obs_i)*(X - obs_i)^T )
+           = summation_i=1_n( (-------------) - ( --------------------------)
+                            ( (||X - obs_i||)   (      ||X - obs_i||^3      )
+         ...
+
+     * &lt;/pre&gt;
+     * 
+     * NOTE: if nDimensions == nDataPoints, the init is replaced with the
+     * euclidean centroid.  These are &quot;colinear&quot; cases extended to more than
+     * 2 dimensions.  There are many solutions for these cases, but the 
+     * euclidean centroid is chosen here.
+     * 
+     * NOTE, algorithm currently may fail to minimize if arrives at demand points.
+     * One should use instead, the method newtonsThenVardiZhang which checks for 
+     * that and updates the solution if needed.
+     * 
+     * @param function
+     *  @param init input output variable holding the estimates for the
+     * geometric median in all dimensions.
+     * @return the minimum of the sum of the squared sum of thedifferences of
+     * the observed points from the geometric median.
+     */
+    public double newtonsMethod2(AbstractGeometricMedianFunction function,
+        double[] init) {
+        
+<span class="fc" id="L99">        int nDimensions = function.getNDimensions();</span>
+<span class="fc" id="L100">        int nData = function.getNData();</span>
+        
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (init.length != nDimensions) {</span>
+<span class="nc" id="L103">            throw new IllegalArgumentException(&quot;init.length must equal nDimensions&quot;);</span>
+        }
+        
+        //TODO: handle this condition for unweighted spatial median quickly, 
+        // no iteration needed:
+        // &quot;If more than n/2 observations are concentrated in one point, say y, 
+        // the solution of the L1-median is y&quot;
+        /*if (function instanceof GeometricMedianUnweightedFunction) {
+            double[] pt = occursAsMoreThanHalf(function);
+            if (pt != null) {
+                System.arraycopy(pt, 0, init, 0, init.length);
+                return function.f(init);
+            }
+        }*/
+        
+        // assuming for now, that this is true:
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (nData == nDimensions) {</span>
+<span class="fc" id="L120">            double[] cen = function.calculateCentroid();</span>
+<span class="fc" id="L121">            System.arraycopy(cen, 0, init, 0, nDimensions);</span>
+        }
+        
+        //NOTE: if observed data given to function has been standardized,
+        //   then it is &quot;zero centered&quot;, that is, has a mean of 0.
+        //   The derivative of the geometric-median will be 0 for points
+        //   equal to the centroid whether standardized or not.  
+        //   The centroid is a true geometric-median for
+        //   some data, but for those that it is not, alternative methods of
+        //   estimating the gradient at that point are needed.
+        //   ... added logic to try finite difference if the derivatives are
+        //   zero.
+        
+        //TODO: rewrite this search one day using more rigorous methods for
+        //    implementation of finite difference within newtons
+        
+        //Gauss-Newton's:
+        //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
+        
+        //Gauss-Newton's with a factor (alpha) to decrease step size:
+        //x_{t+1} = x_{t} - alpha*(f(x_{t}) / f'(x_{t}))
+        
+<span class="fc" id="L143">        double alpha = 1.0;</span>
+<span class="fc" id="L144">        double alphaFactor = 0.2;//0.33;</span>
+        
+        // iterate until derivative is 0 or essentially no change of estimate
+        
+        //TODO set this as a fraction of the data ranges if data is not standardized
+<span class="fc" id="L149">        double fds = 0.001;</span>
+        
+<span class="fc" id="L151">        double eps = 1.e-17;</span>
+        
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (init.length != nDimensions) {</span>
+<span class="nc" id="L154">            throw new IllegalArgumentException(&quot;init.length must equal function.getNDimensions()&quot;);</span>
+        }
+                
+<span class="fc" id="L157">        double[] geoMedian1 = Arrays.copyOf(init, init.length);</span>
+        double[] prevGeoMedian1;
+<span class="fc" id="L159">        double fEval = function.f(geoMedian1);</span>
+        double prevFEval;
+<span class="fc" id="L161">        double[] fDerEval = function.der(geoMedian1);</span>
+<span class="fc" id="L162">        double[] fEval2 = function.evaluateGeoMedianPerDimension(geoMedian1);</span>
+        double[] prevFEval2;
+        boolean usedFiniteDifference;
+        double[] fd;
+        
+        int i, j, d, cg;
+        double r2;
+<span class="fc" id="L169">        int c = 0;</span>
+<span class="fc" id="L170">        int backtracked = 0;</span>
+                
+        while (true) {
+<span class="fc" id="L173">            prevFEval = fEval;</span>
+<span class="fc" id="L174">            prevFEval2 = Arrays.copyOf(fEval2, fEval2.length);</span>
+<span class="fc" id="L175">            prevGeoMedian1 = Arrays.copyOf(geoMedian1, geoMedian1.length);</span>
+                        
+            // re-calculate any values of fDerEval that are 0, using finite difference:
+<span class="fc" id="L178">            usedFiniteDifference = false;</span>
+<span class="fc" id="L179">           System.out.printf(&quot;[gm=(%s)  f=%.3e der=(%s)]\n&quot;,</span>
+<span class="fc" id="L180">                AbstractGeometricMedianFunction.toString(prevGeoMedian1),</span>
+<span class="fc" id="L181">                prevFEval,</span>
+<span class="fc" id="L182">                AbstractGeometricMedianFunction.toString(fDerEval));</span>
+<span class="fc" id="L183">            System.out.flush();</span>
+           
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            for (i = 0; i &lt; nDimensions; ++i) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">                if (Math.abs(fDerEval[i]) &lt; eps) {</span>
+                    // finite difference, secant method, broyden's method:
+<span class="fc" id="L188">                    fd = function.finiteDifference(prevGeoMedian1);</span>
+<span class="fc" id="L189">                    System.arraycopy(fd, 0, fDerEval, 0, nDimensions);</span>
+<span class="fc" id="L190">                    usedFiniteDifference = true;</span>
+<span class="fc" id="L191">                    break;</span>
+                }
+            }
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (usedFiniteDifference) {</span>
+<span class="fc" id="L195">                System.out.printf(&quot;  [finite difference=(%s)]\n&quot;,</span>
+<span class="fc" id="L196">                    AbstractGeometricMedianFunction.toString(fDerEval));</span>
+<span class="fc" id="L197">                System.out.flush();</span>
+                
+                // stopping strategy
+<span class="fc" id="L200">                cg = 0;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">                for (i = 0; i &lt; nDimensions; ++i) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">                    if (Math.abs(fDerEval[i]) &lt;= fds) {</span>
+<span class="fc" id="L203">                        cg++;</span>
+                    }
+                }
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                if (cg == nDimensions) {</span>
+<span class="fc" id="L207">                    System.arraycopy(prevGeoMedian1, 0, init, 0, init.length);</span>
+<span class="fc" id="L208">                    return prevFEval;</span>
+                }
+            }
+            
+            // first derivative is used here, but not the hessian.
+            // could use the hessian to refine the data step size.
+            // hessian: d^2f(x)/dx_i dx_j
+            //    x_{t+1} = x_{t} - (1/H(x_{t})) * f'(x_{t})
+            //       with alpha as a line search step size again.
+            // NOTE that if the equation were not convex, would also pursue additional
+            //    information about the point where gradient becomes 0 using
+            //    the hessian (pt being min, max, or saddle point).
+            // critical point:
+            //     min for hessian positive definite (all the eigenvalues are positive)
+            //     max for hessian negative definit
+            //     saddle for hessian indefinite
+            
+<span class="fc bfc" id="L225" title="All 2 branches covered.">            for (i = 0; i &lt; nDimensions; ++i) {</span>
+                //x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
+<span class="fc bfc" id="L227" title="All 2 branches covered.">                if (Math.abs(fEval2[i]) &lt; eps) {</span>
+<span class="fc" id="L228">                    r2 = 0;</span>
+                } else {
+<span class="fc" id="L230">                    r2 = alpha * (fEval2[i]/(double)nData) / (fDerEval[i] + eps);</span>
+                }
+<span class="fc" id="L232">                geoMedian1[i] -= r2;</span>
+            }
+            
+<span class="fc" id="L235">            fEval = function.f(geoMedian1);</span>
+<span class="fc" id="L236">            fDerEval = function.der(geoMedian1);</span>
+<span class="fc" id="L237">            fEval2 = function.evaluateGeoMedianPerDimension(geoMedian1);</span>
+            
+<span class="fc" id="L239">            System.out.printf(&quot;f=%.3e  der=%s\n  =&gt; gm=(%s)\n  prevf=%.3e %s\n  prevgm=(%s)\n&quot;,</span>
+<span class="fc" id="L240">                fEval, AbstractGeometricMedianFunction.toString(fDerEval),</span>
+<span class="fc" id="L241">                AbstractGeometricMedianFunction.toString(geoMedian1),</span>
+<span class="fc" id="L242">                prevFEval, AbstractGeometricMedianFunction.toString(prevFEval2),</span>
+<span class="fc" id="L243">                AbstractGeometricMedianFunction.toString(prevGeoMedian1)</span>
+                );
+<span class="fc" id="L245">            System.out.flush();</span>
+            
+            // backtrack and reduce step size.
+            //  following description of backtracking in Newton's method from
+            //  &quot;Numerical Recipes in C&quot;, Section 9.7
+            //  by William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery
+<span class="fc bfc" id="L251" title="All 4 branches covered.">            if ((fEval &gt; prevFEval) || (Math.abs(fEval - prevFEval) &lt;= fds))  {</span>
+<span class="fc" id="L252">                c++;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">                if (backtracked &gt; 1) {</span>
+                    // return this solution or previous
+<span class="fc" id="L255">                    System.arraycopy(prevGeoMedian1, 0, init, 0, init.length);</span>
+<span class="fc" id="L256">                    return prevFEval;</span>
+                }
+<span class="fc" id="L258">                backtracked++;</span>
+<span class="fc" id="L259">                fEval = prevFEval;</span>
+<span class="fc" id="L260">                fEval2 = Arrays.copyOf(prevFEval2, fEval2.length);</span>
+<span class="fc" id="L261">                geoMedian1 = Arrays.copyOf(prevGeoMedian1, geoMedian1.length);</span>
+<span class="fc" id="L262">                alpha *= alphaFactor;</span>
+<span class="fc" id="L263">                continue;</span>
+            } else {
+<span class="fc" id="L265">                backtracked = 0;</span>
+            }
+            
+            // stopping strategy
+<span class="fc" id="L269">            cg = 0;</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">            for (i = 0; i &lt; nDimensions; ++i) {</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">                if (Math.abs(fDerEval[i]) &lt;= fds) {</span>
+<span class="fc" id="L272">                    cg++;</span>
+                }
+            }
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">            if (cg == nDimensions) {</span>
+<span class="nc" id="L276">                System.arraycopy(geoMedian1, 0, init, 0, init.length);</span>
+<span class="nc" id="L277">                return fEval;</span>
+            }
+<span class="fc" id="L279">            c++;</span>
+        }
+    }
+    
+    /**
+     * if init is a root of the function, and error is errorTolerance or smaller,
+       then the function derivative evaluated at the root plus and at the root minus
+       the error will have opposing signs.
+     * @param function
+     * @param init
+     * @return 
+     */
+    public boolean verify(AbstractGeometricMedianFunction function,
+        double[] init, double errorTolerance) {
+        
+<span class="fc" id="L294">        double d = errorTolerance;</span>
+<span class="fc" id="L295">        double[] minus = Arrays.copyOf(init, init.length);</span>
+<span class="fc" id="L296">        double[] plus = Arrays.copyOf(init, init.length);</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (int i = 0; i &lt; minus.length; ++i) {</span>
+<span class="fc" id="L298">            minus[i] -= d;</span>
+<span class="fc" id="L299">            plus[i] += d;</span>
+        }
+<span class="fc" id="L301">        double[] fMinus = function.der(minus);</span>
+<span class="fc" id="L302">        double[] fPlus = function.der(plus);</span>
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">        for (int i = 0; i &lt; minus.length; ++i) {</span>
+<span class="pc bpc" id="L304" title="3 of 8 branches missed.">            if ((fMinus[i] &lt; 0 &amp;&amp; fPlus[i] &gt; 0) || (fMinus[i] &gt; 0 &amp;&amp; fPlus[i] &lt; 0)) {</span>
+<span class="fc" id="L305">                return true;</span>
+            }
+        }
+<span class="nc" id="L308">        return false;</span>
+    }
+    
+    /**
+     * this methods uses newtonsMethod2 to completion and then uses the 
+     * Vardi Zhang (2000) algorithm to update argmin X if it's a point in obs.
+     *
+     * Vardi &amp; Zhang 2000:
+     * &quot;The multivariate L1-median and associated data depth&quot;,
+       Yehuda Vardi and Cun-Hui Zhang
+     *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf
+     * 
+     * @param function
+     * @param geoMedian input output variable holding the estimates for the
+     * geometric median in all dimensions.
+     * @return the minimum of the sum of the squared sum of the differences of
+     * the observed points from the geometric median.
+     */
+    public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
+        double[] geoMedian) {
+        
+        // scale these by the data weights?
+<span class="fc" id="L330">        double fds0 = 1.e-4;</span>
+<span class="fc" id="L331">        double fds = 1.e-3;</span>
+        
+<span class="fc" id="L333">        boolean[] checks = new boolean[2];</span>
+<span class="fc" id="L334">        int checkTol = 0;</span>
+        double f0, diffF;
+<span class="fc" id="L336">        double f1 = Double.MAX_VALUE;</span>
+<span class="fc" id="L337">        int[] isMedian = new int[function.getNData()];</span>
+<span class="fc" id="L338">        double[] prevGeoMedian = new double[geoMedian.length];</span>
+<span class="fc" id="L339">        int nIter = 0;</span>
+<span class="fc" id="L340">        int nIterMax = 100;</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        while (nIter &lt; nIterMax) {</span>
+            
+<span class="fc" id="L343">            f0 = newtonsMethod2(function, geoMedian);</span>
+
+<span class="fc" id="L345">            System.out.printf(&quot;%d) newton's f=%.7e gm=%s\n&quot;, nIter, f0, </span>
+<span class="fc" id="L346">                AbstractGeometricMedianFunction.toString(geoMedian));</span>
+            
+<span class="fc" id="L348">            function.isMedian(geoMedian, isMedian);</span>
+
+<span class="fc" id="L350">            System.arraycopy(geoMedian, 0, prevGeoMedian, 0, geoMedian.length);</span>
+            
+<span class="fc" id="L352">            f1 = function.vardiZhang(isMedian, geoMedian, checks);</span>
+        
+            // this is negative while minimizing
+<span class="fc" id="L355">            diffF = f1 - f0;</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">            if (!(diffF &lt;= 0.) ) {</span>
+                // NOTE: if this happens, I may have a bug in vardiZhang
+<span class="fc" id="L358">                System.err.println(&quot;check for an error in impl of method &quot; +</span>
+<span class="fc" id="L359">                    function.getClass().getSimpleName() + &quot;.vardiZhang&quot;);</span>
+<span class="fc" id="L360">                f1 = f0;</span>
+<span class="fc" id="L361">                System.arraycopy(prevGeoMedian, 0, geoMedian, 0, geoMedian.length);</span>
+<span class="fc" id="L362">                break;</span>
+            }
+            
+<span class="fc" id="L365">            System.out.printf(&quot;  vz f=%.7e gm=%s checks=%s\n&quot;, f1, </span>
+<span class="fc" id="L366">                AbstractGeometricMedianFunction.toString(geoMedian),</span>
+<span class="fc" id="L367">                Arrays.toString(checks));</span>
+<span class="fc" id="L368">            System.out.flush();</span>
+            
+            // stopping criteria:
+<span class="pc bpc" id="L371" title="3 of 4 branches missed.">            if (checks[0] &amp;&amp; checks[1]) {</span>
+<span class="nc" id="L372">                break;</span>
+            }
+            
+            // stopping criteria:
+<span class="fc bfc" id="L376" title="All 2 branches covered.">            if (Math.abs(diffF) &lt; fds0) {</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">                for (checkTol = 0; checkTol &lt; geoMedian.length; ++checkTol) {</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">                    if (Math.abs(prevGeoMedian[checkTol] - geoMedian[checkTol])</span>
+                        &gt; fds) {
+<span class="fc" id="L380">                        break;</span>
+                    }
+                }
+<span class="fc bfc" id="L383" title="All 2 branches covered.">                if (checkTol == geoMedian.length) {</span>
+<span class="fc" id="L384">                    break;</span>
+                }
+            }
+            
+<span class="fc" id="L388">            nIter++;</span>
+        }
+
+<span class="fc" id="L391">        return f1;</span>
+    }
+
+    private double[] occursAsMoreThanHalf(AbstractGeometricMedianFunction function) {
+<span class="nc" id="L395">        double[] obs = function.getObs();</span>
+<span class="nc" id="L396">        int nDimensions = function.getNDimensions();</span>
+<span class="nc" id="L397">        int nData = function.getNData();</span>
+        
+        // store points and frequency
+        // TODO: create a data structure like PaiInt to hold a double array
+        //   with edited equals for a tolerance of equality
+        //   (presumably 1e-17) and a hashcode to return same hash for
+        //   similar entries truncated to tolerance.
+        int i, j, d;
+        double a, b;
+<span class="nc bnc" id="L406" title="All 2 branches missed.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="nc" id="L408">                j = i * nDimensions + d;</span>
+                
+            }
+        }
+<span class="nc" id="L412">        throw new UnsupportedOperationException(&quot;not currently implemented&quot;);</span>
+    }
+    
+    /**
+     * The Levenberg-Marquardt method is similar to the Gauss-Newton method, but adds
+     * a term for invertibility and L1 regularization to 
+     * f' as the denominator of the update.
+     * The added term is λ_t*I_nxn.  
+     * It's a damping parameter, for the iteration function that can be changed 
+     based on the result in each step.
+     When λ → 0 , the added term vanishes and the technique reverts to Newton’s 
+     method.   
+     When λ becomes large, the scheme becomes the gradient descent method. 
+     This improves the robustness of the algorithm when the initial values are 
+     far from the final minimum.
+     
+     Marquardt suggested starting with a small value for λ. 
+     If the results of the previous step improves the objective function, 
+     x_{t+1} is incremented by the update and the the value of λ is decreased 
+     (say by a factor of 2) and the method continues. 
+     If the method (unfortunately) increases the objective function, the step 
+     is discarded and λ is increased.
+     
+     Marquardt also replaced the identity matrix I with the diagonal matrix 
+     consisting of the elements of (DF(x_{t}))^T*(DF(x_{t})) to create
+     varied step sizes with direction (small gradient gets larger step).
+     
+     Improved Levenberg-Marquardt by Jia borrows some ideas from the simulated 
+     annealing method (SA).   It interprets slow cooling as a slow decrease in 
+     the probability of accepting worse solutions as it explores the solution 
+     space.
+     
+     The ILM is provided a method that optimizer has a chance to get out of the 
+     local minimum, but there is no guarantee that the global minimum can be 
+     reached at the end.
+     
+       &lt;pre&gt;
+       Gauss-Newton:
+           x_{t+1} = x_{t} - f(x_{t}) / f'(x_{t})
+        
+           let F(x_{t}) = stacks of f(x_{t})_i into a column vector,
+           and DF is the jacobian of F
+            
+           x_{t+1} = x_{t} - ( (DF(x_{t}))^T*(DF(x_{t})) )^-1 * (DF(x_{t}))^T*F(x_{t})
+           
+      Levenberg-Marquardt:
+           x_{t+1} = x_{t} - ( (DF(x_{t}))^T*(DF(x_{t})) + lambda_t*I_nxn )^-1 * (DF(x_{t}))^T*F(x_{t})
+           
+      Improved Levenberg-Marquard (ILM)t
+           see pg 199 og Jia thesis (can start at pg 208-ish, update is on pg 220).
+           
+     &lt;/pre&gt;
+     
+        material is from the book &quot;Numerical Algorithms&quot; by Justin Solomon,
+        and from publications of
+        &quot;Fitting a Parametric Model to a Cloud of Points Via Optimization Methods&quot;
+        by Pengcheng Jia
+        https://surface.syr.edu/cgi/viewcontent.cgi?article=1673&amp;context=etd
+        
+     * @param function
+     * @param init
+     * @return 
+     */
+    /*public double levenbergMarquardt(AbstractGeometricMedianFunction function,
+        double[] init) {
+        
+    }*/
+
+   /*
+    NOTE: this method can only be used on 2 dimensional data.  
+    NOTE: unit standardization is performed internally and de-normalization
+    if needed, so no need to pre-process the data for that.
+    
+    an iterative linear least squares.
+    
+    &lt;pre&gt; 
+    F(M) = Summation_over_i( || obs_i - M || )
+        goal: find M which minimizes F(M)
+    example with n=2 dimensions and objective 
+          
+    
+    Full Rank (includes OVER-DETERMINED, m .gt. n, rank==n):
+        A * x = b
+        A is mxn
+        x is m length
+        b is n length
+           has no exact solutions.
+           minimize the error b - A*x to find x.
+           set deriv to 0.
+    
+        x = (A^T A)^−1 A^T b where (A^T A)^−1 A^T (a m×n matrix) is the pseudo-inverse
+    
+    Rank Deficient (includes UNDER-DETERMINED, n .lt. m):
+        A * x = b
+        A is mxn
+        x is m length
+        b is n length
+           has infinitely many solutions.
+           columns of A are independent.
+           find smallest by minimizing x subject
+           to constraint b = A*x.
+           adding a lagrange multiplier then set deriv to 0.
+    
+        x = A^T*(A A^T)^−1 * b where (A^T A)^−1 A^T (a m×n matrix) is the pseudo-inverse
+            where A^T*(A A^T)^−1 (a m×n matrix) is the pseudo-inverse
+    
+        the pseudo-inverse is calculated from the SVD:
+            
+        A = U*S*V^T from SVD  
+            U is mxn orthonormal columns
+            S is nxn with non-negative singular values.  rank is number of non-zero entries
+            V is  nxn
+        x_LS = summation_over_rank((u_i^T * b / s_i) * v_i)
+    
+        note, the pseudo-inverse was V*R*U^T where R is 1/diagonal of S
+    
+    
+    RANK==NDATA
+        r == m  and  r == n  square an invertible   A*x=b   has 1 soln
+        columns of A are independent.
+        use Full-Rank solution, but if I is invertible, can use the inverse of A instead.
+    &lt;/pre&gt;
+    @param init input variable holding coordinates of current estimate of
+    geometric median.
+    @return evaluation of the objective, summation_i=1_n(||geoMedian - obs_i||^2)/n
+    */
+    //private double leastSquares(AbstractGeometricMedianFunction function,
+    //    double[] init) throws NotConvergedException {
+    
+        /*        
+        following Strang, Linear Algebra for the full rank case.
+        can solve in many ways.
+        
+        Example for unweighted geometric median:
+           Input: (-20, 48), (-20, -48), (20, 0), (59, 0)
+           Geometric Median = (20,0) with minimum distance = 163.964
+        
+        By Algebra:
+        =============
+            ||A*x-b||^2 isn't solvable, but using the projection is:
+               ||A*x-p||^2 + ||e||^2 where e is small
+        
+        let A = point matrix
+        -20   48
+        -20  -48
+         20    0
+         59    0
+        
+        b would have to be a vector of the calculated distance of each point from
+          the current geometric-median.
+        
+        solving for x
+        
+        presumably, one could use x as a factor on a property of the points
+        to update the current geometric-median.
+        
+        let a = point matrix    calculated b=
+        -20   48             66.06814663663572
+        -20  -48             61.554853586049575
+         20    0             3.605551275463989
+         59    0             37.12142238654117
+        
+        a^T*a =
+      -20  -20  20  59 ]  * [ -20   48 =[ -20*-20-20*-20+20*20+59*59  -20*48-20*-48+0+0 ] = [4681 0   ]
+       48  -48   0   0 ]    [ -20  -48  [  48*-20-48*-20*0+0+0        48*48-48*-48+0+0      [-960 4608]
+                            [  20    0
+                            [  59    0
+
+      a^T*b =
+      -20  -20  20  59 ]  * [66.068  = [-20*66.068 + -20*61.555 + 20*3.606 + 59.*37.121 = [-290.26
+       48  -48   0   0 ]    [61.555    [ 48*66.068 + -48*61.555 +  0*3.606 +  0.*37.121   [216.624
+                            [3.606
+                            [37.121
+
+       a^T*a*x = a^T*b
+      ( x = (a^T/(a^T*a)) * b )
+      pseudoinverse(a^T*a) =  4608  960         -290.26  = [-0.0523
+                              0     4681         216.624    0.0470
+                              --------------
+                              4681*4608 + 0
+
+                 ? -0.0523*x_mean = -0.509925
+                    0.0470*y_mean = 0   &lt;--- can never use the found x to update when the mean is 0
+                    standard deviation would presumably be better:
+                    stdev = (37.9726, 39.3446)
+                    update of median_0 = -0.0523*37.973 = -1.99
+                    update of median_1 = 0.0470*39.345   = 1.85
+        
+        
+        ==============
+        By Calculus
+        ==============
+        df/dx_0 =  2*(-20*x_0 + 48*x_1 - 66.068)*(-20) + 2*(-20*x_0 - 48*x_1 - 61.555)*(-20) + 2*(20*x_0 - 3.606)*(20) +2*(59*x_0 - 37.121)*(59)
+           = x_0*(9362.0) + x_1*(0) + 580.402
+           = x_0*(9362.0) + 580.402 = 0  x_0==&gt; -0.061
+        
+        df/dx_1 =  2*(-20*x_0 + 48*x_1 - 66.068)*(48) + 2*(-20*x_0 - 48*x_1 - 61.555)*(-48)
+           =  x_0*(2.*-20*48 + 2.*-20*-48) +x_1*(2.*48.*48 + 2.*-48*-48) + 2.48.*-66.068 + 2.*-61.555*-48.
+           =  x_0*(0) +x_1*(9216) -433.248
+           =  x_1*(9216) -433.248 = 0 ==&gt; x_1 = 0.047
+        
+        so the values of x_0 and x_1 would give same suggested updates of median.
+        
+        Then another iteration would be needed, and the cycle repeated until
+        stopping conditions were met.
+        
+        */        
+        
+    //}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

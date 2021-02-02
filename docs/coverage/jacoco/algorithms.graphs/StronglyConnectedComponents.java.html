@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StronglyConnectedComponents.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">StronglyConnectedComponents.java</span></div><h1>StronglyConnectedComponents.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.SimpleLinkedListNode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * A strongly connected (a.k.a. diconnected) graph is one in which every vertex 
+ * is reachable from every other vertex.
+ * The strongly connected components of an arbitrary directed graph form a 
+ * partition into subgraphs that are themselves strongly connected.
+ * 
+ * It is possible to test the strong connectivity of a graph, or to find 
+ * its strongly connected components, in linear time (that is, Θ(V+E)).
+ * 
+ * A directed graph is called strongly connected if there is a path in each 
+ * direction between each pair of vertices of the graph. That is, a path exists 
+ * from the first vertex in the pair to the second, and another path exists 
+ * from the second vertex to the first. 
+ * 
+ * A pair of vertices u and v in a directed graph G that may not itself be 
+ * strongly connected, are said to be strongly connected to each other if there 
+ * is a path in each direction between them.
+ * 
+ * Tarjan's strongly connected components algorithm traverses the graph once, 
+ * using a stack in which the vertices are not removed unless found to be
+ * strongly connected.
+ * 
+ * Runtime complexity is O(|E| + |V|) (average?), and the worse case runtime
+ * complexity is one in which the graph is completely connected, strongly,
+ * O(|V|*(2 + 5w)) where w is the word size in bits.
+ * 
+ * https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+ * 
+ * Further information on use in processing very large datasets such as 
+ * in transitive closure is in the book &quot;Mining of Massive Datasets&quot; 
+ * by Jure Leskovec, Anand Rajaraman, Jeff Ullman
+ * http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
+ * A strongly connected component (SCC) of a graph is a set of nodes S such that:
+      1. Every node in S reaches every other node in S.
+      2. S is maximal, in the sense that there is no node outside S that both
+         reaches every node in S and is reached by every node in S.
+* 
+ * 
+ * first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+
+ * @author nichole
+ */
+<span class="fc" id="L58">public class StronglyConnectedComponents {</span>
+    
+    private SimpleLinkedListNode[] g;
+    
+    /**
+     * index numbers the nodes consecutively in the order in which they are discovered
+     */
+    private int[] index;
+    
+    /**
+    lowLink represents the smallest index of any node known to be reachable 
+       from v through v's DFS subtree, including v itself.
+    Therefore v must be left on the stack if v.lowlink less than v.index, 
+    whereas v must be removed as the root of a strongly connected component 
+    if v.lowlink equals v.index. 
+     
+    The value v.lowlink is computed during the depth-first search from v,
+    as this finds the nodes that are reachable from v.
+     */
+    private int[] lowLink;
+    private int[] onStack;
+    
+    private int time;
+    private List&lt;SimpleLinkedListNode&gt; scc;
+    private int[] inSCC;
+    private Stack&lt;Integer&gt; stack;
+    
+<span class="fc" id="L85">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
+    
+<span class="fc" id="L87">    private Level logLevel = Level.FINEST;</span>
+    
+    /**
+     *  find the strongly connected components.
+     * @param graph graph in the form of an adjacency list
+     * @return strongly connected components as a list of linked-lists.  Note
+     * that the return order of the vertices in the list and their 
+     * linked-lists is the reverse of the topological sort.
+     * 
+     * following https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+     * 
+     */
+    public List&lt;SimpleLinkedListNode&gt; find(SimpleLinkedListNode[] graph) {
+        
+<span class="fc" id="L101">        check(graph);</span>
+        
+<span class="fc" id="L103">        g = Arrays.copyOf(graph, graph.length);</span>
+<span class="fc" id="L104">        lowLink = new int[g.length];</span>
+<span class="fc" id="L105">        index = new int[g.length];</span>
+<span class="fc" id="L106">        Arrays.fill(index, -1);</span>
+<span class="fc" id="L107">        Arrays.fill(lowLink, -1);</span>
+<span class="fc" id="L108">        onStack = new int[g.length];</span>
+<span class="fc" id="L109">        scc = new ArrayList&lt;SimpleLinkedListNode&gt;();</span>
+<span class="fc" id="L110">        inSCC = new int[g.length];</span>
+<span class="fc" id="L111">        time = 0;</span>
+<span class="fc" id="L112">        stack = new Stack&lt;Integer&gt;();</span>
+        
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L115">            strongConnect(i);</span>
+        }
+        
+<span class="fc" id="L118">        return scc;</span>
+    }
+    
+    private void strongConnect(int v) {
+        
+<span class="fc" id="L123">        index[v] = time;</span>
+<span class="fc" id="L124">        lowLink[v] = time;</span>
+<span class="fc" id="L125">        time++;</span>
+        
+<span class="fc" id="L127">        stack.push(v);</span>
+<span class="fc" id="L128">        onStack[v] = 1;</span>
+        
+<span class="fc" id="L130">        log.log(logLevel, &quot;v:&quot; + toString(v));</span>
+                
+<span class="fc" id="L132">        SimpleLinkedListNode wNode = g[v];</span>
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">        while (wNode != null &amp;&amp; wNode.getKey() != -1) {</span>
+<span class="fc" id="L134">            int w = wNode.getKey();</span>
+<span class="fc" id="L135">            log.log(logLevel, &quot;    w=&quot; + toString(w));            </span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (index[w] == -1) {</span>
+                // Successor w has not yet been visited; recurse on it
+<span class="fc" id="L138">                strongConnect(w);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                lowLink[v] = (lowLink[v] &lt;= lowLink[w]) ? lowLink[v] : lowLink[w];</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            } else if (onStack[w] == 1) {</span>
+                // w is in stack S and hence in the current SCC
+                // If w is not on stack, then (v, w) is a cross-edge in the 
+                // DFS tree and must be ignored.
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                lowLink[v] = (lowLink[v] &lt;= index[w]) ? lowLink[v] : index[w];</span>
+            }
+<span class="fc" id="L146">            wNode = wNode.getNext();</span>
+<span class="fc" id="L147">        }</span>
+        
+        // If v is a root node, pop the stack and generate an SCC
+<span class="fc bfc" id="L150" title="All 4 branches covered.">        if (lowLink[v] == index[v] &amp;&amp; inSCC[v] == 0) {</span>
+<span class="fc" id="L151">            log.log(logLevel, &quot;    START scc &quot; + v);</span>
+<span class="fc" id="L152">            SimpleLinkedListNode sccNode = new SimpleLinkedListNode();</span>
+<span class="fc" id="L153">            scc.add(sccNode);</span>
+<span class="fc" id="L154">            inSCC[v] = 1;</span>
+            int w;
+            do {
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">                if (stack.isEmpty()) {</span>
+<span class="nc" id="L158">                    break;</span>
+                }
+<span class="fc" id="L160">                w = stack.pop();</span>
+<span class="fc" id="L161">                onStack[w] = 0;</span>
+<span class="fc" id="L162">                sccNode.insert(w);</span>
+<span class="fc" id="L163">                inSCC[w] = 1;</span>
+<span class="fc" id="L164">                log.log(logLevel, &quot;    add &quot; + w + &quot; to scc&quot;);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            } while (w != v);</span>
+<span class="fc" id="L166">            log.log(logLevel, &quot;stack size=&quot; + stack.size());</span>
+        }
+<span class="fc" id="L168">    }</span>
+
+    private void check(SimpleLinkedListNode[] graph) {
+
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (graph == null) {</span>
+<span class="nc" id="L173">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (SimpleLinkedListNode node : graph) {</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">            if (node == null) {</span>
+<span class="nc" id="L178">                throw new IllegalArgumentException(&quot;graph nodes cannot be null&quot;);</span>
+            }
+        }
+<span class="fc" id="L181">    }</span>
+    
+    private String toString(int node) {
+        
+<span class="fc" id="L185">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L186">        sb.append(&quot;node=&quot;).append(node).append(&quot;, lowLink=&quot;).append(lowLink[node])</span>
+<span class="fc" id="L187">            .append(&quot;, index=&quot;).append(index[node])</span>
+<span class="fc" id="L188">            .append(&quot;, onStack=&quot;).append(onStack[node])</span>
+<span class="fc" id="L189">            .append(&quot; (time=&quot;).append(time).append(&quot;);&quot;);</span>
+<span class="fc" id="L190">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

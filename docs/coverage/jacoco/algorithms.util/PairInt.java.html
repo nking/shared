@@ -61,7 +61,7 @@ public class PairInt {
         
 <span class="fc" id="L62">        PairInt other = (PairInt)obj;</span>
         
-<span class="pc bpc" id="L64" title="1 of 4 branches missed.">        return (x == other.getX()) &amp;&amp; (y == other.getY());</span>
+<span class="fc bfc" id="L64" title="All 4 branches covered.">        return (x == other.getX()) &amp;&amp; (y == other.getY());</span>
     }
 
     @Override
@@ -109,10 +109,10 @@ public class PairInt {
     @Override
     public String toString() {
         
-<span class="nc" id="L112">        StringBuilder sb = new StringBuilder(&quot;(&quot;);</span>
-<span class="nc" id="L113">        sb.append(Integer.toString(x)).append(&quot;,&quot;).append(Integer.toString(y)).append(&quot;)&quot;);</span>
+<span class="fc" id="L112">        StringBuilder sb = new StringBuilder(&quot;(&quot;);</span>
+<span class="fc" id="L113">        sb.append(Integer.toString(x)).append(&quot;,&quot;).append(Integer.toString(y)).append(&quot;)&quot;);</span>
         
-<span class="nc" id="L115">        return sb.toString();</span>
+<span class="fc" id="L115">        return sb.toString();</span>
     }
     
 }

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkedListCostNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.util</a> &gt; <span class="el_source">LinkedListCostNode.java</span></div><h1>LinkedListCostNode.java</h1><pre class="source lang-java linenums">package algorithms.util;
+
+/**
+ * extends SimpleLinkedListNode to hold an integer for the cost (which is
+ * by default Integer.MAX_VALUE for use with min heaps and priority queues).
+ * (NOTE, could edit the code to make defaultCost modifiable.)
+ * 
+ * @author nichole
+ */
+public class LinkedListCostNode extends SimpleLinkedListNode {
+    
+    public final static int DEFAULT_COST = Integer.MAX_VALUE;
+    
+<span class="fc" id="L14">    protected int cost = DEFAULT_COST;</span>
+    
+    public LinkedListCostNode() {
+<span class="fc" id="L17">        super();</span>
+<span class="fc" id="L18">    }</span>
+    
+    public LinkedListCostNode(int insertKey, int cost) {
+<span class="fc" id="L21">        super(insertKey);</span>
+<span class="fc" id="L22">        this.cost = cost;</span>
+<span class="fc" id="L23">    }</span>
+    
+    public LinkedListCostNode(int insertKey) {
+<span class="fc" id="L26">        super(insertKey);</span>
+<span class="fc" id="L27">    }</span>
+    
+    public int getCost() {
+<span class="fc" id="L30">        return cost;</span>
+    }
+    
+    @Override
+    public SimpleLinkedListNode insert(int insertKey) {
+<span class="fc" id="L35">        return insert(insertKey, DEFAULT_COST);</span>
+    }
+    
+    public LinkedListCostNode insert(int insertKey, int insertCost) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">         if (insertKey == -1) {</span>
+<span class="fc" id="L40">            throw new IllegalArgumentException(</span>
+            &quot;insertKey must be larger than -1&quot;);
+        }
+<span class="fc" id="L43">        n++;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (this.key == -1) {</span>
+<span class="fc" id="L45">            key = insertKey;</span>
+<span class="fc" id="L46">            cost = insertCost;</span>
+<span class="fc" id="L47">            return this;</span>
+        }
+        
+<span class="fc" id="L50">        LinkedListCostNode node = new LinkedListCostNode(key, cost);</span>
+        
+<span class="fc" id="L52">        key = insertKey;</span>
+<span class="fc" id="L53">        cost = insertCost;</span>
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (next == null) {</span>
+<span class="fc" id="L56">            next = node;</span>
+<span class="fc" id="L57">            return this;</span>
+        }
+        
+<span class="fc" id="L60">        node.next = next;</span>
+        
+<span class="fc" id="L62">        next = node;</span>
+        
+<span class="fc" id="L64">        return node;</span>
+    }
+    
+    @Override
+    public SimpleLinkedListNode insertIfDoesNotAlreadyExist(int insertKey) {
+<span class="fc" id="L69">        return insertIfDoesNotAlreadyExist(insertKey, DEFAULT_COST);</span>
+    }
+    
+    public LinkedListCostNode insertIfDoesNotAlreadyExist(int insertKey, int insertCost) {
+        
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (insertKey == -1) {</span>
+<span class="fc" id="L75">            throw new IllegalArgumentException(</span>
+            &quot;insertKey must be larger than -1&quot;);
+        }
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (insertKey == this.key) {</span>
+<span class="fc" id="L79">            return null;</span>
+        }
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (this.key == -1) {</span>
+<span class="fc" id="L82">            key = insertKey;</span>
+<span class="fc" id="L83">            cost = insertCost;</span>
+<span class="fc" id="L84">            return this;</span>
+        }
+        
+<span class="fc" id="L87">        SimpleLinkedListNode node = search(insertKey);</span>
+        
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (node != null) {</span>
+<span class="fc" id="L90">            return null;</span>
+        }
+        
+<span class="fc" id="L93">        return insert(insertKey, insertCost);</span>
+    }
+    
+    public void delete(LinkedListCostNode node) {
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (key == -1) {</span>
+<span class="fc" id="L99">            return;</span>
+        }
+        
+        // if its the first node, we have to transfer data
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (this.equals(node)) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (this.next == null) {</span>
+<span class="fc" id="L105">                this.key = -1;</span>
+<span class="fc" id="L106">                this.cost = DEFAULT_COST;</span>
+            } else {
+<span class="fc" id="L108">                this.key = next.key;</span>
+<span class="fc" id="L109">                this.cost = ((LinkedListCostNode)next).cost;</span>
+<span class="fc" id="L110">                this.next = next.next;</span>
+            }
+<span class="fc" id="L112">            n--;</span>
+<span class="fc" id="L113">            return;</span>
+        }
+
+        // start w/ 2nd node because we've already searched the first
+<span class="fc" id="L117">        LinkedListCostNode last = this;</span>
+        
+<span class="fc" id="L119">        LinkedListCostNode current = last;</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        while (current.next != null) {</span>
+<span class="fc" id="L122">            current = (LinkedListCostNode)current.next;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            if (current.equals(node)) {</span>
+<span class="fc" id="L124">                last.next = current.next; </span>
+<span class="fc" id="L125">                n--;</span>
+<span class="fc" id="L126">                break;</span>
+            }
+<span class="fc" id="L128">            last = current;            </span>
+        }
+<span class="fc" id="L130">    }</span>
+    
+    /**
+     * delete the first node found with key == deleteKey.
+     * 
+     * @param deleteKey 
+     */
+    @Override
+    public void delete(int deleteKey) {
+
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        if (deleteKey == -1) {</span>
+<span class="fc" id="L141">            return;</span>
+        }
+        
+        // if its the first node, we have to transfer data
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        if (this.key == deleteKey) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            if (this.next == null) {</span>
+<span class="fc" id="L147">                this.key = -1;</span>
+<span class="fc" id="L148">                this.cost = DEFAULT_COST;</span>
+            } else {
+<span class="fc" id="L150">                this.key = next.key;</span>
+<span class="fc" id="L151">                this.cost = ((LinkedListCostNode)next).getCost();</span>
+<span class="fc" id="L152">                this.next = next.next;</span>
+            }
+<span class="fc" id="L154">            n--;</span>
+<span class="fc" id="L155">            return;</span>
+        }
+        
+        // start w/ 2nd node because we've already searched the first
+<span class="fc" id="L159">        LinkedListCostNode last = this;</span>
+        
+<span class="fc" id="L161">        LinkedListCostNode current = last;</span>
+
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        while (current.next != null) {</span>
+<span class="fc" id="L164">            current = (LinkedListCostNode)current.next;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (current.key == deleteKey) {</span>
+<span class="fc" id="L166">                last.next = current.next;</span>
+<span class="fc" id="L167">                n--;</span>
+<span class="fc" id="L168">                break;</span>
+            }
+<span class="fc" id="L170">            last = current;</span>
+        }
+<span class="fc" id="L172">    }</span>
+    
+    public static long approximateMemoryUsed() {
+        
+<span class="nc" id="L176">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
+    
+<span class="nc bnc" id="L178" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
+    
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        int nbits = (is32Bit) ? 32 : 64;</span>
+    
+<span class="nc" id="L182">        int overheadBytes = 16;</span>
+    
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        int intBytes = (is32Bit) ? 4 : 8;</span>
+        // 4 ints:
+<span class="nc" id="L186">        intBytes *= 4;</span>
+        
+<span class="nc" id="L188">        int refBytes = nbits/8;</span>
+
+<span class="nc" id="L190">        long sumBytes = intBytes + refBytes;</span>
+       
+<span class="nc" id="L192">        sumBytes += overheadBytes;</span>
+        
+<span class="nc" id="L194">        long padding = (sumBytes % 8);</span>
+        
+<span class="nc" id="L196">        sumBytes += padding;</span>
+        
+<span class="nc" id="L198">        return sumBytes;</span>
+    }
+    
+    /**
+     * only the key is used for this equals identity
+     * @param arg0
+     * @return 
+     */
+    @Override
+    public boolean equals(Object arg0) {
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (!(arg0 instanceof LinkedListCostNode)) {</span>
+<span class="fc" id="L209">            return false;</span>
+        }
+<span class="fc" id="L211">        LinkedListCostNode other = (LinkedListCostNode)arg0;</span>
+        
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        return (other.key == this.key);</span>
+    }
+    
+    @Override
+    public int hashCode() {
+        // even if same keys, want different hashcodes
+<span class="nc" id="L219">        return super.hashCode(); </span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

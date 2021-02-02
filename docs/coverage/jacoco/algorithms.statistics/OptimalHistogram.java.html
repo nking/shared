@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OptimalHistogram.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">OptimalHistogram.java</span></div><h1>OptimalHistogram.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L7">public class OptimalHistogram {</span>
+    
+    // implementation of 
+    // &quot;Optimal Histograms With Quality Guarantees&quot;,
+    // 1998, Jagadish et al., Proceedings of the 24th VLDB Conference.
+    //http://infolab.stanford.edu/~datar/courses/cs361a/papers/vopt.pdf
+    
+    // also see curvature project for fast integer multi-dimensional histograms:
+    // src/algorithms/imageProcessing/OtsuThresholding.java
+    
+    // KDE's
+    // for gaussian smoothing: h = 1.06 * sigma * n^(-1/5)
+        //     or, let A=min(standard deviation, interquantile range/1.34).
+        //      then h = 0.9 * A * n^(-1/5)
+        //
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

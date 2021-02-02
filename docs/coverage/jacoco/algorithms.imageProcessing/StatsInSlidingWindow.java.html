@@ -23,10 +23,11 @@ import java.util.Arrays;
     
     /**
      * calculate a running maximum of a window of size xWindow, yWindow.
+     * 
      * runtime complexity is
-     *     n_rows * ((xWindow * yWindow) + ((n_cols)*lg2(xWindow * yWindow)))
-     * so is roughly O(n_pixels * lg2(window area)) where n_pixels = n_rows * n_cols
-     *
+     * yWindow * O(xWindow * yWindow) + (n_pixels * lg2(xWindow * yWindow))
+     *     so for small windows and large N, is roughly O(n_pixels * lg2(window area))
+     * 
      * NOTE: should only be used by a single thread.
      * 
      * NOTE: the border points outside of the window retain their 
@@ -40,114 +41,114 @@ import java.util.Arrays;
     public void calculateMaximum(float[][] input, float[][] output, int xWindow,
         int yWindow) {
 
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (input == null) {</span>
-<span class="nc" id="L44">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (input == null) {</span>
+<span class="nc" id="L45">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (input.length &lt; xWindow) {</span>
-<span class="nc" id="L47">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (input.length &lt; xWindow) {</span>
+<span class="nc" id="L48">            throw new IllegalArgumentException(</span>
             &quot;input.length must be equal to or greater than xWindow&quot;);
         }
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (input[0].length &lt; yWindow) {</span>
-<span class="nc" id="L51">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (input[0].length &lt; yWindow) {</span>
+<span class="nc" id="L52">            throw new IllegalArgumentException(</span>
             &quot;input[0].length must be equal to or greater than yWindow&quot;);
         }
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (output == null) {</span>
-<span class="nc" id="L55">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (output == null) {</span>
+<span class="nc" id="L56">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (input.length != output.length) {</span>
-<span class="nc" id="L58">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (input.length != output.length) {</span>
+<span class="nc" id="L59">            throw new IllegalArgumentException(</span>
             &quot;input.length must be equal to output.length&quot;);
         }
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (input[0].length != output[0].length) {</span>
-<span class="nc" id="L62">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (input[0].length != output[0].length) {</span>
+<span class="nc" id="L63">            throw new IllegalArgumentException(</span>
             &quot;input[0].length must be equal to output[0].length&quot;);
         }
         
         // tailored for maximum stats
-<span class="fc" id="L67">        int xLen2 = input.length + xWindow;</span>
-<span class="fc" id="L68">        int yLen2 = input[0].length + yWindow;</span>
-<span class="fc" id="L69">        float[][] input2 = new float[xLen2][];</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (int i = 0; i &lt; input2.length; ++i) {</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">            if (i &lt; input.length) {</span>
-<span class="fc" id="L72">                input2[i] = Arrays.copyOf(input[i], yLen2);</span>
+<span class="fc" id="L68">        int xLen2 = input.length + xWindow;</span>
+<span class="fc" id="L69">        int yLen2 = input[0].length + yWindow;</span>
+<span class="fc" id="L70">        float[][] input2 = new float[xLen2][];</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int i = 0; i &lt; input2.length; ++i) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">            if (i &lt; input.length) {</span>
+<span class="fc" id="L73">                input2[i] = Arrays.copyOf(input[i], yLen2);</span>
             } else {
-<span class="fc" id="L74">                input2[i] = new float[yLen2];</span>
+<span class="fc" id="L75">                input2[i] = new float[yLen2];</span>
             }
         }
 
-<span class="fc" id="L78">        int nW = xWindow * yWindow;</span>
+<span class="fc" id="L79">        int nW = xWindow * yWindow;</span>
 
-<span class="fc" id="L80">        int xh = xWindow/2;</span>
-<span class="fc" id="L81">        int yh = yWindow/2;</span>
+<span class="fc" id="L81">        int xh = xWindow/2;</span>
+<span class="fc" id="L82">        int yh = yWindow/2;</span>
         
-<span class="fc bfc" id="L83" title="All 2 branches covered.">        boolean xHEven = (xh &amp; 1) == 0;</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">        boolean yHEven = (yh &amp; 1) == 0;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        boolean xHEven = (xh &amp; 1) == 0;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        boolean yHEven = (yh &amp; 1) == 0;</span>
         
-<span class="fc" id="L86">        int h = input2[0].length;</span>
-<span class="fc" id="L87">        int w = input2.length;</span>
-<span class="fc" id="L88">        int w0 = input.length;</span>
-<span class="fc" id="L89">        int h0 = input[0].length;</span>
+<span class="fc" id="L87">        int h = input2[0].length;</span>
+<span class="fc" id="L88">        int w = input2.length;</span>
+<span class="fc" id="L89">        int w0 = input.length;</span>
+<span class="fc" id="L90">        int h0 = input[0].length;</span>
         
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        for (int row = 0; row &lt;= (h - yWindow); ++row) {</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        for (int row = 0; row &lt;= (h - yWindow); ++row) {</span>
 
-<span class="fc" id="L93">            int jIdx = row;</span>
+<span class="fc" id="L94">            int jIdx = row;</span>
             
-<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (jIdx &gt;= h0) {</span>
-<span class="fc" id="L96">                break;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (jIdx &gt;= h0) {</span>
+<span class="fc" id="L97">                break;</span>
             }
             
-<span class="fc" id="L99">            SortedVector sVec = new SortedVector(nW);</span>
+<span class="fc" id="L100">            SortedVector sVec = new SortedVector(nW);</span>
 
             // add the first nW to the sorted vector
-<span class="fc bfc" id="L102" title="All 2 branches covered.">            for (int i = 0; i &lt; xWindow; ++i) {</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">                for (int j = row; j &lt; (row + yWindow); ++j) {</span>
-<span class="fc" id="L104">                    sVec.append(input2[i][j]);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            for (int i = 0; i &lt; xWindow; ++i) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">                for (int j = row; j &lt; (row + yWindow); ++j) {</span>
+<span class="fc" id="L105">                    sVec.append(input2[i][j]);</span>
                 }
             }
             
-<span class="pc bpc" id="L108" title="3 of 4 branches missed.">            assert(sVec.n == sVec.a.length);</span>
-<span class="pc bpc" id="L109" title="3 of 4 branches missed.">            assert(sVec.sorted);</span>
+<span class="pc bpc" id="L109" title="3 of 4 branches missed.">            assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L110" title="3 of 4 branches missed.">            assert(sVec.sorted);</span>
 
             //O(k) + (N)*lg2(k)
             float maximum;
             
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            for (int i = (xWindow - 1); i &lt; w; ++i) {</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">            for (int i = (xWindow - 1); i &lt; w; ++i) {</span>
                 
-<span class="fc" id="L116">                int iIdx = i - xWindow + 1;</span>
+<span class="fc" id="L117">                int iIdx = i - xWindow + 1;</span>
              
-<span class="fc bfc" id="L118" title="All 2 branches covered.">                if (iIdx &gt;= w0) {</span>
-<span class="fc" id="L119">                    break;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">                if (iIdx &gt;= w0) {</span>
+<span class="fc" id="L120">                    break;</span>
                 }
                 
                 //O(1)
-<span class="fc" id="L123">                maximum = sVec.getMaximum();</span>
+<span class="fc" id="L124">                maximum = sVec.getMaximum();</span>
                 
-<span class="fc" id="L125">                output[iIdx][jIdx] = maximum;</span>
+<span class="fc" id="L126">                output[iIdx][jIdx] = maximum;</span>
 
                 // remove each item from last column in window
                 // and add each item in next column for window,
 
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">                if ((i + 1) &lt; w) {</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">                if ((i + 1) &lt; w) {</span>
                     
-<span class="fc bfc" id="L132" title="All 2 branches covered.">                    for (int j = row; j &lt; (row + yWindow); ++j) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                    for (int j = row; j &lt; (row + yWindow); ++j) {</span>
 
-<span class="pc bpc" id="L134" title="3 of 4 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L135" title="3 of 4 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
 
                         // remove : O(log_2(k))
-<span class="fc" id="L137">                        sVec.remove(input2[i - xWindow + 1][j]);</span>
+<span class="fc" id="L138">                        sVec.remove(input2[i - xWindow + 1][j]);</span>
 
-<span class="pc bpc" id="L139" title="3 of 4 branches missed.">                        assert(sVec.n == (sVec.a.length - 1));</span>
+<span class="pc bpc" id="L140" title="3 of 4 branches missed.">                        assert(sVec.n == (sVec.a.length - 1));</span>
                       
                         // add : O(log_2(k)) + &lt; O(k)
-<span class="fc" id="L142">                        sVec.insertIntoOpenSlot(input2[i + 1][j]);</span>
+<span class="fc" id="L143">                        sVec.insertIntoOpenSlot(input2[i + 1][j]);</span>
                        
-<span class="pc bpc" id="L144" title="3 of 4 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L145" title="3 of 4 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
                     }       
                 }
             }                        
         }
         
-<span class="fc" id="L150">    }</span>
+<span class="fc" id="L151">    }</span>
     
     /**
      * calculate a running maximum of a window of size window
@@ -165,76 +166,76 @@ import java.util.Arrays;
      */
     public void calculateMaximum(float[] input, float[] output, int window) {
 
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (input == null) {</span>
-<span class="nc" id="L169">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (input == null) {</span>
+<span class="nc" id="L170">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (input.length &lt; window) {</span>
-<span class="nc" id="L172">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (input.length &lt; window) {</span>
+<span class="nc" id="L173">            throw new IllegalArgumentException(</span>
             &quot;input.length must be equal to or greater than xWindow&quot;);
         }
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">        if (output == null) {</span>
-<span class="nc" id="L176">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (output == null) {</span>
+<span class="nc" id="L177">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (input.length != output.length) {</span>
-<span class="nc" id="L179">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (input.length != output.length) {</span>
+<span class="nc" id="L180">            throw new IllegalArgumentException(</span>
             &quot;input.length must be equal to output.length&quot;);
         }
         
         // tailored for maximum stats
-<span class="fc" id="L184">        int xLen2 = input.length + window;</span>
-<span class="fc" id="L185">        float[] input2 = Arrays.copyOf(input, xLen2);</span>
+<span class="fc" id="L185">        int xLen2 = input.length + window;</span>
+<span class="fc" id="L186">        float[] input2 = Arrays.copyOf(input, xLen2);</span>
         
-<span class="fc" id="L187">        int nW = window;</span>
-<span class="fc" id="L188">        int xh = window/2;</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">        boolean xHEven = (xh &amp; 1) == 0;</span>
-<span class="fc" id="L190">        int w = input2.length;</span>
-<span class="fc" id="L191">        int w0 = input.length;</span>
+<span class="fc" id="L188">        int nW = window;</span>
+<span class="fc" id="L189">        int xh = window/2;</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        boolean xHEven = (xh &amp; 1) == 0;</span>
+<span class="fc" id="L191">        int w = input2.length;</span>
+<span class="fc" id="L192">        int w0 = input.length;</span>
         
-<span class="fc" id="L193">        SortedVector sVec = new SortedVector(nW);</span>
+<span class="fc" id="L194">        SortedVector sVec = new SortedVector(nW);</span>
 
         // add the first nW to the sorted vector
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (int i = 0; i &lt; window; ++i) {</span>
-<span class="fc" id="L197">            sVec.append(input2[i]);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        for (int i = 0; i &lt; window; ++i) {</span>
+<span class="fc" id="L198">            sVec.append(input2[i]);</span>
         }
 
-<span class="pc bpc" id="L200" title="3 of 4 branches missed.">        assert(sVec.n == sVec.a.length);</span>
-<span class="pc bpc" id="L201" title="3 of 4 branches missed.">        assert(sVec.sorted);</span>
+<span class="pc bpc" id="L201" title="3 of 4 branches missed.">        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L202" title="3 of 4 branches missed.">        assert(sVec.sorted);</span>
 
         //O(k) + (N)*lg2(k)
         float maximum;
 
-<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        for (int i = (window - 1); i &lt; w; ++i) {</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">        for (int i = (window - 1); i &lt; w; ++i) {</span>
 
-<span class="fc" id="L208">            int iIdx = i - window + 1;</span>
+<span class="fc" id="L209">            int iIdx = i - window + 1;</span>
 
-<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (iIdx &gt;= w0) {</span>
-<span class="fc" id="L211">                break;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">            if (iIdx &gt;= w0) {</span>
+<span class="fc" id="L212">                break;</span>
             }
 
             //O(1)
-<span class="fc" id="L215">            maximum = sVec.getMaximum();</span>
+<span class="fc" id="L216">            maximum = sVec.getMaximum();</span>
 
-<span class="fc" id="L217">            output[iIdx] = maximum;</span>
+<span class="fc" id="L218">            output[iIdx] = maximum;</span>
 
             // remove each item from last column in window
             // and add each item in next column for window,
 
-<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            if ((i + 1) &lt; w) {</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">            if ((i + 1) &lt; w) {</span>
 
-<span class="pc bpc" id="L224" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L225" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
 
                 // remove : O(log_2(k))
-<span class="fc" id="L227">                sVec.remove(input2[i - window + 1]);</span>
+<span class="fc" id="L228">                sVec.remove(input2[i - window + 1]);</span>
 
-<span class="pc bpc" id="L229" title="3 of 4 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
+<span class="pc bpc" id="L230" title="3 of 4 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
 
                 // add : O(log_2(k)) + &lt; O(k)
-<span class="fc" id="L232">                sVec.insertIntoOpenSlot(input2[i + 1]);</span>
+<span class="fc" id="L233">                sVec.insertIntoOpenSlot(input2[i + 1]);</span>
 
-<span class="pc bpc" id="L234" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+<span class="pc bpc" id="L235" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
             }
         }                                
-<span class="fc" id="L237">    }</span>
+<span class="fc" id="L238">    }</span>
     
     /**
      * a fixed size list that keeps the contents sorted after the capacity is

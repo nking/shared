@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UniformCostSearch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.shortestPaths</a> &gt; <span class="el_source">UniformCostSearch.java</span></div><h1>UniformCostSearch.java</h1><pre class="source lang-java linenums">package algorithms.shortestPaths;
+
+import algorithms.bipartite.MinHeapForRT2012;
+import algorithms.heapsAndPQs.HeapNode;
+import algorithms.misc.MiscMath0;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+   Uniform Cost Search (a.k.a. weighted best-first search).
+ * given a weighted directed graph with weight function, finds the greedy 
+ * but optimal best-first shortest path with smaller number of items in the queue than
+ * Dijkstras, but for the source and target shortest-path problem.
+   Uniform Cost Search is a variant of Best-First-Search.
+  
+   NOTE: to save more space, could refactor to use bit-vectors for state variables.
+  
+ * All edge weights must be non-negative.
+ * 
+ * The runtime complexity is O(V + E) due to use of a YFastTrie as the min-priority heap.
+ * Note that if the heap wrapper has to choose a Fibonacci instead due to
+ * memory constraints, the runtime complexity is O(V*log_2V + E) instead.
+
+   implemented from
+   &quot;Position Paper: Dijkstra’s Algorithm versus Uniform Cost Search or a Case Against Dijkstra’s Algorithm&quot;
+    by Felner
+    Proceedings, The Fourth International Symposium on Combinatorial Search (SoCS-2011)
+    https://www.aaai.org/ocs/index.php/SOCS/SOCS11/paper/viewFile/4017/4357
+
+    implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+
+ * @author nichole
+ */
+public class UniformCostSearch {
+    
+    /**
+     * directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     */
+<span class="fc" id="L51">    protected SimpleLinkedListNode[] g = null;</span>
+    
+    /* edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+    */
+<span class="fc" id="L57">    protected TIntIntMap[] w = null;</span>
+    
+<span class="fc" id="L59">    protected int[] dist = null;</span>
+    
+<span class="fc" id="L61">    protected int[] visited = null;</span>
+
+<span class="fc" id="L63">    protected int[] predecessor = null;   </span>
+    
+<span class="fc" id="L65">    protected int src = -1;</span>
+
+<span class="fc" id="L67">    protected int dest = -1;</span>
+    
+<span class="fc" id="L69">    private int sentinel = Integer.MAX_VALUE;</span>
+        
+    // this is recalculated in constructor
+<span class="fc" id="L72">    private int maxValue = sentinel - 1;</span>
+
+    // key is cost of path so far plus the edge weight
+<span class="fc" id="L75">    protected MinHeapForRT2012 heap = null;</span>
+
+    // refs to nodes internal to heap for decrease key operations
+<span class="fc" id="L78">    protected HeapNode[] nodes = null;</span>
+    
+<span class="fc" id="L80">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
+    
+<span class="fc" id="L82">    private Level logLevel = Level.FINEST;</span>
+    
+    /**
+     *
+     * @param dAG directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     * Note that all vertexes, including edge vertexes, must be present as an
+     * index of the array dAG, i.e. all vertexes must have numerical value 
+     * less than dAG.length.
+     * @param weights the edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+     * @param sourceVertex the source vertex index
+     * @param destVertex the destination vertex index.  NOTE: to search all
+     * nodes reachable from source, supply a desVertex that is a negative number
+     * or a number larger than the length of dAG. e.g. destVetex = Integer.MAX_VALUE.
+     * 
+     */
+    public UniformCostSearch(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex,
+<span class="fc" id="L102">        int destVertex) {</span>
+        
+<span class="pc bpc" id="L104" title="2 of 4 branches missed.">        if (dAG == null || dAG.length == 0) {</span>
+<span class="nc" id="L105">            throw new IllegalArgumentException(&quot;dAG cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L107" title="2 of 4 branches missed.">        if (sourceVertex &lt; 0 || sourceVertex &gt;= dAG.length) {</span>
+<span class="nc" id="L108">            throw new IllegalArgumentException(&quot;sourceIndex cannot be null&quot;);</span>
+        }
+        
+        /*
+        initialize single source (g, s)
+          initial node is sourceVertex and has cost 0
+          initialize the priority queue and add the source node
+          initialize visited array to -1
+          note: the cost function is g(n), the sum of the weights of the 
+            edges from the source node to node n along the shortest currently 
+            known path. g(v) = g(u) + w(u, v).
+        loop do
+          if priority queue empty, return failure
+          node = queue.extractMin
+          if (visited[goal] is completed) done
+          set visited[node] to explored
+          for each v adjacent to node
+            g(v) = g(u) + w(u,v)
+            if (v is not explored and is not in queue)
+              insert v into queue
+            else if child is in queue and dist[child] &gt; path_cost
+              decrease key of v to path_cost
+        */ 
+
+        // only source node is added to heap initially:
+<span class="fc" id="L133">        init(dAG, weights, sourceVertex, destVertex);        </span>
+<span class="fc" id="L134">    }</span>
+        
+    /**
+     *  find the single shortest path in dAG with edge weights w starting from s.
+     */
+    public void find() {
+                               
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
+
+<span class="fc" id="L143">            HeapNode uNode = heap.extractMin();</span>
+            
+<span class="fc" id="L145">            int u = ((Integer)uNode.getData()).intValue();</span>
+
+<span class="fc" id="L147">            log.log(logLevel, &quot;u: &quot; + toString(u));</span>
+            
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (u == dest) {</span>
+<span class="fc" id="L150">                log.log(logLevel, &quot;exit heap.n=&quot; + heap.getNumberOfNodes());</span>
+<span class="fc" id="L151">                return;</span>
+            }
+
+<span class="fc" id="L154">            visited[u] = 2;</span>
+            
+            // null the entry in nodes so it isn't used in decrease key
+<span class="fc" id="L157">            nodes[u] = null;</span>
+            
+<span class="fc" id="L159">            TIntIntMap uWeights = w[u];</span>
+            
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">            if (uWeights == null) {</span>
+<span class="nc" id="L162">                continue;</span>
+            }
+
+<span class="fc" id="L165">            SimpleLinkedListNode vNode = g[u];</span>
+            
+<span class="pc bpc" id="L167" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+            
+<span class="fc" id="L169">                int v = vNode.getKey();</span>
+               
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
+<span class="nc" id="L172">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+                    + u + &quot; to &quot; + v);
+                }
+            
+<span class="fc" id="L176">                int dUPlusWUV = uWeights.get(v) + dist[u];</span>
+                
+<span class="fc" id="L178">                log.log(logLevel, &quot;  v: &quot; + toString(v) + &quot; dist=&quot; + dUPlusWUV);</span>
+                                
+<span class="fc bfc" id="L180" title="All 2 branches covered.">                if (visited[v] == 0) {</span>
+<span class="fc" id="L181">                    visited[v] = 1;</span>
+<span class="fc" id="L182">                    log.log(logLevel, &quot;  add to min-heap v=&quot; + v);</span>
+<span class="fc" id="L183">                    dist[v] = dUPlusWUV;</span>
+<span class="fc" id="L184">                    int key = dist[v];</span>
+<span class="fc" id="L185">                    HeapNode node = new HeapNode(key);</span>
+<span class="fc" id="L186">                    node.setData(Integer.valueOf(v));</span>
+<span class="fc" id="L187">                    heap.insert(node);</span>
+<span class="fc" id="L188">                    nodes[v] = node;</span>
+<span class="fc" id="L189">                    predecessor[v] = u;</span>
+<span class="fc" id="L190">                } else {</span>
+<span class="pc bpc" id="L191" title="1 of 4 branches missed.">                    if (nodes[v] != null &amp;&amp; dist[v] &gt; dUPlusWUV) {</span>
+<span class="fc" id="L192">                        log.log(logLevel, &quot;    decrease key to &quot; + dUPlusWUV);</span>
+<span class="fc" id="L193">                        dist[v] = dUPlusWUV;</span>
+<span class="fc" id="L194">                        predecessor[v] = u;</span>
+<span class="fc" id="L195">                        heap.decreaseKey(nodes[v], dUPlusWUV);</span>
+                    }
+                }
+                
+<span class="fc" id="L199">                vNode = vNode.getNext();</span>
+<span class="fc" id="L200">            }</span>
+<span class="fc" id="L201">        }</span>
+<span class="fc" id="L202">    }</span>
+    
+    private void init(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex,
+        int destVertex) {
+        
+<span class="fc" id="L207">        g = dAG.clone();</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        for (int i = 0; i &lt; dAG.length; ++i) {</span>
+<span class="fc" id="L209">            g[i] = new SimpleLinkedListNode(dAG[i]);</span>
+        }
+<span class="fc" id="L211">        w = weights.clone();</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">            if (weights[i] != null) {</span>
+<span class="fc" id="L214">                w[i] = new TIntIntHashMap(weights[i]);</span>
+            }
+        }
+<span class="fc" id="L217">        src = sourceVertex;</span>
+<span class="fc" id="L218">        dest = destVertex;</span>
+        
+<span class="fc" id="L220">        maxValue = calcUpperLimitKeyValue();</span>
+        
+<span class="fc" id="L222">        sentinel = maxValue + 1;</span>
+    
+<span class="fc" id="L224">        dist = new int[g.length];</span>
+<span class="fc" id="L225">        predecessor = new int[g.length];</span>
+<span class="fc" id="L226">        visited = new int[g.length];</span>
+        
+<span class="fc" id="L228">        Arrays.fill(dist, sentinel);</span>
+<span class="fc" id="L229">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L230">        Arrays.fill(visited, 0);</span>
+        
+<span class="fc" id="L232">        dist[src] = 0;</span>
+                
+<span class="fc" id="L234">        initHeap();</span>
+<span class="fc" id="L235">    }</span>
+    
+    private void initHeap() {
+        
+<span class="fc" id="L239">        int n = g.length;</span>
+                
+<span class="fc" id="L241">        int nBits = (int)Math.ceil(Math.log(maxValue/Math.log(2)));</span>
+        
+        //int maxValue, int approxN, int maxNumberOfBits
+<span class="fc" id="L244">        heap = new MinHeapForRT2012(sentinel, n, nBits);</span>
+
+<span class="fc" id="L246">        nodes = new HeapNode[n];</span>
+
+<span class="fc" id="L248">        int key = dist[src];</span>
+
+<span class="fc" id="L250">        HeapNode node = new HeapNode(key);</span>
+<span class="fc" id="L251">        node.setData(Integer.valueOf(src));</span>
+
+<span class="fc" id="L253">        heap.insert(node);</span>
+
+<span class="fc" id="L255">        nodes[src] = node;</span>
+<span class="fc" id="L256">    }</span>
+    
+    /**
+     * get shortest path from source to destIndex
+     * @param destVertex
+     * @return 
+     */
+    public int[] getShortestPathToVertex(int destVertex) {
+<span class="pc bpc" id="L264" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= g.length) {</span>
+<span class="nc" id="L265">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L268">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+        
+<span class="fc" id="L271">        log.log(logLevel, &quot;    dist[]=&quot; + Arrays.toString(dist));</span>
+        
+<span class="fc" id="L273">        int[] p = new int[g.length];</span>
+<span class="fc" id="L274">        p[p.length - 1] = destVertex;</span>
+                
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (destVertex == src) {</span>
+<span class="fc" id="L278">                int len = p.length - 1 - i;</span>
+<span class="fc" id="L279">                int[] t = new int[len];</span>
+<span class="fc" id="L280">                System.arraycopy(p, i + 1, t, 0, len);</span>
+<span class="fc" id="L281">                return t;</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
+<span class="nc" id="L283">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
+            }
+<span class="fc" id="L285">            p[i] = predecessor[destVertex];</span>
+<span class="fc" id="L286">            destVertex = p[i];</span>
+        }
+        
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        if (p[0] != src) {</span>
+<span class="nc" id="L290">            throw new IllegalStateException(&quot;path did not complete correctly for destIndex&quot;);</span>
+        }
+        
+<span class="nc" id="L293">        return p;</span>
+    }
+    
+    public int getSumOfPath(int[] vertexes) {
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
+<span class="nc" id="L298">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (dist == null) {</span>
+<span class="nc" id="L301">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+<span class="fc" id="L303">        int sum = 0;</span>
+        int u, v;
+<span class="fc bfc" id="L305" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
+<span class="fc" id="L306">            u = vertexes[i - 1];</span>
+<span class="fc" id="L307">            v = vertexes[i];</span>
+            
+<span class="fc" id="L309">            TIntIntMap uWeights = w[u];</span>
+            
+<span class="pc bpc" id="L311" title="2 of 4 branches missed.">            if (uWeights == null || !uWeights.containsKey(v)) {</span>
+<span class="nc" id="L312">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+                    + u + &quot; to &quot; + v);
+            }
+            
+<span class="fc" id="L316">            sum += uWeights.get(v);</span>
+        }
+<span class="fc" id="L318">        return sum;</span>
+    }
+
+    private int calcUpperLimitKeyValue() {
+        
+<span class="fc" id="L323">        int max = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
+<span class="fc" id="L325">            TIntIntMap map = w[i];</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">            if (map == null) {</span>
+<span class="fc" id="L327">                continue;</span>
+            }
+<span class="fc" id="L329">            TIntIntIterator iter = map.iterator();</span>
+            int value;
+<span class="fc bfc" id="L331" title="All 2 branches covered.">            for (int j = 0; j &lt; map.size(); ++j) {</span>
+<span class="fc" id="L332">                iter.advance();</span>
+<span class="fc" id="L333">                value = iter.value();</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">                if (value &gt; max) {</span>
+<span class="fc" id="L335">                    max = value;</span>
+                }
+            }
+        }
+        
+        // if # of bits in max * g.length is larger than max_integer,
+        //   use max_integer, else use it
+<span class="fc" id="L342">        int b1 = MiscMath0.numberOfBits(max);</span>
+<span class="fc" id="L343">        int b2 = MiscMath0.numberOfBits(g.length);</span>
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if ((b1 + b2) &gt; 31) {</span>
+<span class="nc" id="L345">            max = Integer.MAX_VALUE - 1;</span>
+        } else {
+<span class="fc" id="L347">            max *= g.length;</span>
+        }
+        
+<span class="fc" id="L350">        return max;</span>
+    }
+    
+    private String toString(int u) {
+<span class="fc" id="L354">        StringBuffer sb = new StringBuffer();</span>
+<span class="fc" id="L355">        sb.append(&quot;node=&quot;).append(u).append(&quot;: visited=&quot;).append(visited[u]).</span>
+<span class="fc" id="L356">               append(&quot;, dist=&quot;).append(dist[u])</span>
+<span class="fc" id="L357">                .append(&quot;, prev=&quot;).append(predecessor[u])</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">                .append(&quot; is in queue=&quot;).append(!(nodes[u] == null));</span>
+<span class="fc" id="L359">        return sb.toString();</span>
+    }
+
+    private boolean isANode(int dest) {
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        if (dest &lt; 0) {</span>
+<span class="nc" id="L364">            return false;</span>
+        }
+<span class="nc bnc" id="L366" title="All 2 branches missed.">        return (dest &lt; g.length);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

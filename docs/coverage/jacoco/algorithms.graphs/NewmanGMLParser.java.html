@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NewmanGMLParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">NewmanGMLParser.java</span></div><h1>NewmanGMLParser.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.PairInt;
+import gnu.trove.list.TFloatList;
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+/**
+ * rough reduced function parser built to read a few of the GML files
+ * from http://www-personal.umich.edu/~mejn/netdata/
+ * into a graph.
+ * 
+ * the GML format is from:
+   &quot;GML: A portable Graph File Format&quot; by Michael Himsolt
+    http://openmis.ru/doc/clang/gml-tr.html 
+ 
+ NOTE: if one wanted to define all required and optional attributes, could
+ make a more formal parser using ANTLR at antlr.org
+ 
+ * @author nichole
+ */
+<span class="nc" id="L31">public class NewmanGMLParser {</span>
+
+<span class="fc" id="L33">    private static Logger log = Logger.getLogger(&quot;NewmanGMLParser&quot;);</span>
+    
+    public static class GMLGraph {
+        String graphType;
+        Map&lt;PairInt, TFloatList&gt; edgeWeightMap;
+        TIntObjectMap&lt;String&gt; nodeIdLabelMap;
+    }
+        
+    public static GMLGraph readGraph(String filePath) 
+        throws FileNotFoundException, IOException {
+        
+        // format at
+        //http://graphics.stanford.edu/courses/cs368-00-spring/TA/manuals/LEDA/gml_graph.html#29665
+                
+        // node map with key = id, value = label.
+<span class="fc" id="L48">        TIntObjectMap&lt;String&gt; nodeIdLabelMap = new TIntObjectHashMap&lt;String&gt;();</span>
+        
+        // edge map, key = (source, target), value = weights;  source and target are edge node ids.
+<span class="fc" id="L51">        Map&lt;PairInt, TFloatList&gt; edgeMap = new HashMap&lt;PairInt, TFloatList&gt;();</span>
+        
+<span class="fc" id="L53">        String graphType = null;</span>
+        
+<span class="fc" id="L55">        FileReader reader = null;</span>
+<span class="fc" id="L56">        BufferedReader in = null;</span>
+        
+        // successfully read from stream
+<span class="fc" id="L59">        boolean r = true;</span>
+        
+<span class="fc" id="L61">        StringBuilder type = new StringBuilder();</span>
+<span class="fc" id="L62">        StringBuilder content = new StringBuilder();</span>
+<span class="fc" id="L63">        String parse = null;</span>
+        int eIdx, nIdx;
+        
+        try {
+            
+<span class="fc" id="L68">            in = new BufferedReader(new FileReader(new File(filePath)));</span>
+
+            // find graph [ which may have an end of line marker and spaces in between
+<span class="fc" id="L71">            r = readToEndOf(in, &quot;graph&quot;);</span>
+<span class="fc" id="L72">            r = readToEndOf(in, &quot;[&quot;);</span>
+            
+            // for first object read only , parse type for a graph type
+<span class="fc" id="L75">            r = readTypeAndContent(in, type, content);</span>
+<span class="fc" id="L76">            parse = type.toString().trim();</span>
+<span class="fc" id="L77">            nIdx = parse.indexOf(&quot;node&quot;);</span>
+<span class="fc" id="L78">            eIdx = parse.indexOf(&quot;edge&quot;);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (eIdx != -1) {</span>
+<span class="nc" id="L80">                graphType = parse.substring(0, eIdx).trim();</span>
+<span class="nc" id="L81">                parseAndStoreEdge(content.toString(), edgeMap);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            } else if (nIdx != -1) {</span>
+<span class="fc" id="L83">                graphType = parse.substring(0, nIdx).trim();</span>
+<span class="fc" id="L84">                parseAndStoreNode(content.toString(), nodeIdLabelMap);</span>
+            } else {
+                //empty graph
+<span class="nc" id="L87">                return new GMLGraph();</span>
+            }
+            
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            while (r) {</span>
+<span class="fc" id="L91">                content = content.delete(0, content.length());</span>
+<span class="fc" id="L92">                type = type.delete(0, type.length());</span>
+                
+<span class="fc" id="L94">                r = readTypeAndContent(in, type, content);</span>
+<span class="fc" id="L95">                parse = type.toString().trim();</span>
+                //System.out.printf(&quot; %s&quot;, parse);   
+                
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                if (parse.equals(&quot;node&quot;)){</span>
+<span class="fc" id="L99">                    parseAndStoreNode(content.toString(), nodeIdLabelMap);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">                } else if (parse.equals(&quot;edge&quot;)) {</span>
+<span class="fc" id="L101">                    parseAndStoreEdge(content.toString(), edgeMap);</span>
+                } else {
+                    break;
+                }
+            }
+            
+        } finally {
+<span class="pc bpc" id="L108" title="5 of 6 branches missed.">            if (in != null) {</span>
+<span class="pc" id="L109">                in.close();</span>
+            }
+<span class="pc bpc" id="L111" title="5 of 6 branches missed.">            if (reader != null) {</span>
+<span class="nc" id="L112">                reader.close();</span>
+            }
+        }
+
+<span class="fc" id="L116">        GMLGraph g = new GMLGraph();</span>
+<span class="fc" id="L117">        g.edgeWeightMap = edgeMap;</span>
+<span class="fc" id="L118">        g.nodeIdLabelMap = nodeIdLabelMap;</span>
+<span class="fc" id="L119">        g.graphType = graphType;</span>
+<span class="fc" id="L120">        return g;</span>
+    }
+    
+    /**
+     * note: assumes srch characters each fit into 1 code point.
+     * @param in
+     * @param srch
+     * @return
+     * @throws IOException 
+     */
+    static boolean readToEndOf(BufferedReader in, String srch) throws IOException {
+        int ch;
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        while ((ch = in.read()) &gt; -1) {</span>
+            srchloop :
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            if ((char)ch == srch.charAt(0)) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">                for (int i = 1; i &lt; srch.length(); ++i) {</span>
+<span class="fc" id="L136">                    ch = in.read();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">                    if ((char)ch != srch.charAt(i)) {</span>
+<span class="fc" id="L138">                        break srchloop;</span>
+                    }
+                }
+<span class="fc" id="L141">                return true;</span>
+            }
+        }
+<span class="nc" id="L144">        return false;</span>
+    }
+    
+    /**
+     * read everything up to first [ as type, then everything up until last ] as content
+     * @param in
+     * @param type
+     * @param content
+     * @return
+     * @throws IOException 
+     */
+    static boolean readTypeAndContent(BufferedReader in, StringBuilder type, 
+        StringBuilder content) throws IOException {
+        int ch;
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        while ((ch = in.read()) &gt; -1) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if ((char)ch == '[') {</span>
+<span class="fc" id="L160">                break;</span>
+            }
+<span class="fc" id="L162">            type.appendCodePoint(ch);</span>
+        }
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        while ((ch = in.read()) &gt; -1) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if ((char)ch == ']') {</span>
+<span class="fc" id="L166">                return true;</span>
+            }
+<span class="fc" id="L168">            content.appendCodePoint(ch);</span>
+        }
+<span class="fc" id="L170">        return false;</span>
+    }
+    
+    /**
+     * parses the key-value pairs of the edge content.
+     * recognizes source, target, and value.
+     * the value by default is &quot;1&quot; if not present.
+     * NOTE: the other attributes such as label are not currently stored.
+     * 
+     * @param content
+     * @param edgeMap 
+     */
+    private static void parseAndStoreEdge(String content, Map&lt;PairInt, TFloatList&gt; edgeMap) {
+        
+<span class="fc" id="L184">        content = content.trim();</span>
+        
+<span class="fc" id="L186">        String[] p = content.split(&quot;\\s+&quot;);</span>
+        //System.out.println(Arrays.toString(p));
+        
+        //source, target, and value
+<span class="fc" id="L190">        String source = null;</span>
+<span class="fc" id="L191">        String target = null;</span>
+<span class="fc" id="L192">        String value = null;</span>
+        
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i+=2) {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (p[i].equalsIgnoreCase(&quot;source&quot;)) {</span>
+<span class="fc" id="L196">                source = p[i+1];</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">            } else if (p[i].equalsIgnoreCase(&quot;target&quot;)) {</span>
+<span class="fc" id="L198">                target = p[i+1];</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            } else if (p[i].equalsIgnoreCase(&quot;value&quot;)) {</span>
+<span class="fc" id="L200">                value = p[i+1];</span>
+            }
+        }
+        
+<span class="pc bpc" id="L204" title="2 of 4 branches missed.">        if (source == null || target == null) {</span>
+<span class="nc" id="L205">            throw new IllegalArgumentException(&quot;edge is missing source and/or target: &quot; + content);</span>
+        }
+        
+<span class="fc" id="L208">        PairInt e = new PairInt(Integer.valueOf(source), Integer.valueOf(target));</span>
+        
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (!edgeMap.containsKey(e)) {</span>
+<span class="fc" id="L211">            edgeMap.put(e, new TFloatArrayList());</span>
+        } else {
+<span class="fc" id="L213">            log.warning(&quot;edge &quot; + e.toString() + &quot; is in file more than once. &quot;);</span>
+        }
+        
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L217">            edgeMap.get(e).add(1);</span>
+        } else {
+<span class="fc" id="L219">            edgeMap.get(e).add(Float.valueOf(value));</span>
+        }
+<span class="fc" id="L221">    }</span>
+    
+    /**
+     * parses the key-value pairs from the node content and stores the
+     * attributes id and label.  if label is not present, a string
+     * representation of id's value is stored for it.
+     * 
+     * @param content
+     * @param nodeIdLabelMap 
+     */
+    private static void parseAndStoreNode(String content, 
+        TIntObjectMap&lt;String&gt; nodeIdLabelMap) {
+        
+<span class="fc" id="L234">        content = content.trim();</span>
+        
+<span class="fc" id="L236">        String[] p = content.split(&quot;\\s+&quot;);</span>
+        
+<span class="fc" id="L238">        String id = null;</span>
+<span class="fc" id="L239">        String label = null;</span>
+        
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i+=2) {</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">            if (p[i].equalsIgnoreCase(&quot;id&quot;)) {</span>
+<span class="fc" id="L243">                id = p[i+1];</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">            } else if (p[i].equalsIgnoreCase(&quot;label&quot;)) {</span>
+<span class="fc" id="L245">                label = p[i+1];</span>
+<span class="fc" id="L246">                label = label.replaceAll(&quot;^\&quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L247">                label = label.replaceAll(&quot;\&quot;$&quot;, &quot;&quot;);</span>
+            }
+        } 
+        
+<span class="pc bpc" id="L251" title="1 of 4 branches missed.">        if (label == null &amp;&amp; id != null) {</span>
+<span class="fc" id="L252">            label = id;</span>
+        }
+        
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        if (id == null) {</span>
+<span class="nc" id="L256">            throw new IllegalArgumentException(&quot;node is missing id: &quot; + content);</span>
+        }
+        
+<span class="fc" id="L259">        int idI = Integer.valueOf(id);</span>
+        
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">        if (nodeIdLabelMap.containsKey(idI)) {</span>
+<span class="nc" id="L262">            log.warning(&quot;node id=&quot; + id + &quot; is in file more than once&quot;);</span>
+        }
+        
+<span class="fc" id="L265">        nodeIdLabelMap.put(idI, label);</span>
+<span class="fc" id="L266">    }</span>
+
+    /*
+    from: &quot;GML: A portable Graph File Format&quot; by Michael Himsolt
+    http://openmis.ru/doc/clang/gml-tr.html
+    
+    Global Defined Keys
+        .id int
+        Defines an identification number for an object. This is usually used to represent pointers.
+        .label string
+        Defines a label attached to an object.
+        .comment string
+        Defines a comment embedded in a GML file. Comments are ignored by the application.
+        .Creator string
+        Shows which application created this file and should therefore only be used once per file at the top level. .Creator is obviously unsafe.
+        .graphics list
+        Describes graphics which are used to draw a particular object.Within graphics, the following keys are defined:
+        .graphics.x float
+        Defines the x coordinate of the center of the object.
+        .graphics.y float
+        Defines the y coordinate of the center of the object.
+        .graphics.z float
+        Defines the z coordinate of the center of the object.
+        .graphics.w float
+        Defines the width of the object.
+        .graphics.h float
+        Defines the height of the object.
+        .graphics.d float
+        Defines the depth of the object.
+        Coordinates are pixel coordinates on a standard 72 dpi drawing area. Applications may use them as screen coordinates.
+
+    Example:
+        graph [
+          node [
+            id 7
+            label &quot;5&quot;
+            edgeAnchor &quot;corners&quot;
+            labelAnchor &quot;n&quot;
+            graphics [
+              center [ x 82.0000 y 42.0000 ]
+              w 16.0000
+              h 16.0000
+              type &quot;rectangle&quot;
+              fill &quot;#000000&quot;
+            ]
+          ]
+          node [
+            id 15
+            label &quot;13&quot;
+            edgeAnchor &quot;corners&quot;
+            labelAnchor &quot;c&quot;
+            graphics [
+              center [ x 73.0000 y 160.000 ]
+              w 16.0000
+              h 16.0000
+              type &quot;rectangle&quot;
+              fill &quot;#FF0000&quot;
+            ]
+          ]
+          edge [
+            label &quot;24&quot;
+            labelAnchor &quot;first&quot;
+            source 7
+            target 15
+            graphics [
+              type &quot;line&quot;
+              arrow &quot;last&quot;
+              Line [
+                point [ x 82.0000 y 42.0000 ]
+                point [ x 10.0000 y 10.0000 ]
+                point [ x 100.000 y 100.000 ]
+                point [ x 80.0000 y 30.0000 ]
+                point [ x 120.000 y 230.000 ]
+                point [ x 73.0000 y 160.000 ]
+              ]
+            ]
+          ]
+        ]
+    */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

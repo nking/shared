@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Primes.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.misc</a> &gt; <span class="el_source">Primes.java</span></div><h1>Primes.java</h1><pre class="source lang-java linenums">package algorithms.misc;
+
+import gnu.trove.iterator.TLongIterator;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L15">public class Primes {</span>
+    
+    /**
+     * integer factorization following Pollard-Rho algorithm in Cormen et al. 
+     * &quot;Introduction to Algorithms&quot;.  Usually can find at least one small integer
+     * that divides the number n.  The runtime is usually O(n^1/4).
+     * 
+     * NOTE: for factoring large numbers, may want to implement:
+     * &quot;Factoring integers with the number field sieve&quot;
+        J. P. Buhler,  H. W. Lenstra, Jr., Carl Pomerance
+     * http://www.math.leidenuniv.nl/~hwl/PUBLICATIONS/1993e/art.pdf
+     * 
+     * @param n
+     * @return 
+     * @throws java.security.NoSuchAlgorithmException 
+     */
+    public static TLongSet pollardRhoFactorization(final long n) throws NoSuchAlgorithmException {
+        
+<span class="fc" id="L33">        ThreadLocalRandom rand = ThreadLocalRandom.current();</span>
+        
+<span class="fc" id="L35">        boolean useEdits = true;</span>
+        
+<span class="fc" id="L37">        TLongSet factors = new TLongHashSet();</span>
+        
+        /* only the most recent value of x_i needs to be retained, so to reduce
+        space, will only keep x_latest and x_latest_index. */
+        
+<span class="fc" id="L42">        long i = 1;</span>
+        
+<span class="fc" id="L44">        long x_latest = rand.nextLong(n - 1);</span>
+
+<span class="fc" id="L46">        long y = x_latest;</span>
+<span class="fc" id="L47">        long k = 2;</span>
+        long[] dxy;
+        
+<span class="fc" id="L50">        long maxIter = (long)Math.ceil(Math.pow(n, 0.25));</span>
+        long m, r, dabs;
+        
+        // store y and x_latest pairs and break when cycle returns
+<span class="fc" id="L54">        TLongObjectMap&lt;TLongSet&gt; pairs = new TLongObjectHashMap&lt;TLongSet&gt;();</span>
+        TLongSet pairsV;
+        
+        while (true) {
+            
+            //System.out.printf(&quot;  n=%d i=%d) x_latest=%d\n&quot;, n, i, x_latest);  System.out.flush();
+            
+<span class="fc" id="L61">            i++;</span>
+<span class="fc" id="L62">            x_latest = ((x_latest * x_latest) - 1) % n;</span>
+            
+<span class="fc" id="L64">            long tmp = y - x_latest;</span>
+            
+            // break condition: check for complete cycle
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            if (pairs.containsKey(y)) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                if (pairs.get(y).contains(x_latest)) {</span>
+<span class="fc" id="L69">                    break;</span>
+                } else {
+<span class="fc" id="L71">                    pairs.get(y).add(x_latest);</span>
+                }
+            } else {
+<span class="fc" id="L74">                pairsV = new TLongHashSet();</span>
+<span class="fc" id="L75">                pairsV.add(x_latest);</span>
+<span class="fc" id="L76">                pairs.put(y, pairsV);</span>
+            }
+                        
+<span class="fc" id="L79">            dxy = GreatestCommonDenominator.extendedEuclid(tmp, n);</span>
+            //long d = GreatestCommonDenominator.euclid(tmp, n);
+<span class="fc" id="L81">            dabs = Math.abs(dxy[0]);</span>
+            
+            //System.out.printf(&quot;    y=%d, x_latest=%d, EE(%d,%d)=%s\n&quot;, 
+            //    y, x_latest, tmp, n, Arrays.toString(dxy));  System.out.flush();
+            
+<span class="fc bfc" id="L86" title="All 4 branches covered.">            if ((dabs != 1) &amp;&amp; (dabs != Math.abs(n))) {</span>
+<span class="fc" id="L87">                factors.add(dabs);</span>
+                //System.out.printf(&quot; * store %d (size=%d)\n&quot;, dabs, factors.size());
+                
+                // break condition: check for factoring &gt;= n
+                
+<span class="fc" id="L92">                m = multiply(factors);</span>
+
+                /*if(!factors.isEmpty()) {
+                    System.out.printf(&quot;   %s=&gt; m=%d (n=%d x_latest=%d)\n&quot;, 
+                        Arrays.toString(factors.toArray()), m, n, x_latest);
+                    System.out.flush();
+                }*/
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                if (m == Math.abs(n)) {</span>
+<span class="fc" id="L100">                    break;</span>
+                }
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">                if (useEdits &amp;&amp; m &gt; Math.abs(n)) {</span>
+<span class="fc" id="L103">                    return new TLongHashSet();</span>
+                    /*while (m &gt; n &amp;&amp; !factors.isEmpty()) {
+                        long rm = max(factors);
+                        factors.remove(rm);
+                        m = multiply(factors);
+                    }*/
+                }
+            }
+                        
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (i == k) {</span>
+<span class="fc" id="L113">                y = x_latest;</span>
+<span class="fc" id="L114">                k *= 2;</span>
+            }            
+<span class="fc" id="L116">        }</span>
+        //System.out.printf(&quot;  i=%d  n^(1/4)=%d\n&quot;, i, maxIter);
+        //System.out.flush();
+
+<span class="fc" id="L120">        return factors;</span>
+    }
+    
+    /*
+    from Aho &amp; Ullman:
+    
+    Fermat’s theorem states that if p is a prime, and a is any integer between 1 and p − 1, 
+    then a^(p−1) leaves a remainder of 1 when divided by p.
+    
+    usually, if a is chosen at random between 1 and p−1, then the probability
+    is at least 1/2 that a^(p−1) will have a remainder other than 1 when divided by p.
+    
+    e.g., let p = 7. Then 1^6, 2^6,...6^6 are respectively 1, 64, 729, 4096, 15625, and 46656. 
+    Their remainders when divided by 7 are all 1. 
+    However, if p = 6, a composite number, 
+    then 1^5, 2^5,...5^5 are respectively 1, 32, 243, 1024, and 3125,
+    Their remainders when divided by 6 are 1, 2, 3, 4, and 5. 
+    ==&gt; Only 20% are 1.
+    
+    Thus, the “algorithm” for testing whether a number p is a prime is to select
+    k integers from 1 to p − 1, independently and at random. 
+    
+    If for any selected a we find the remainder of ( a^(p−1) )/p to be other 
+    than 1, we say p is composite; otherwise, we say it is prime. 
+    If it weren’t for the “bad” composites, we could say that the
+    probability of failure is at most 2^(−k).
+    */
+
+    /**
+     * using the Miller-Rabin algorithm uses s random tries to determine whether
+     * n is definitely a composite number or possibly is prime.
+     * implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
+     * @param n
+     * @param s number of random tries to use
+     * @return 
+     */
+    public static boolean probablyPrime(long n, int s) {
+        
+<span class="fc" id="L158">        ThreadLocalRandom rand = ThreadLocalRandom.current();</span>
+        long a;
+        int j;
+        
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (j = 0; j &lt; s; ++j) {</span>
+<span class="fc" id="L163">            a = rand.nextLong(1, n-1);</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            if (witness(a, n, rand)) {</span>
+<span class="nc" id="L165">                return false;</span>
+            }
+        }
+<span class="fc" id="L168">        return true;</span>
+    }
+
+    /*** implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
+     * @param n
+     * @return 
+     */
+    static boolean witness(long a, long n, ThreadLocalRandom rand) {
+                
+        // a^(n-1) = (a^u)^(2^t)
+        
+        /*
+        let n -1 = u*2^t 
+            where u is odd and t &gt;= 1
+        x_0 = modularExponentiation(a, u, n)
+        for (i = 1 to t
+            x_i = (x_(i-1))^2 mod n
+            if (x_i == 1 and x_(i-1) != 1 and x_(i-1) != (n-1)) 
+                return true
+        if (x_i != 1
+            return true
+        return false
+        */
+        
+        
+        /* let n-1 = 2^t * u   where t&gt;=1 and u is odd
+        
+        also, t &lt; n
+        
+        2^t = (n-1)/u
+        log_2( 2^t ) = t = log_2( (n-1)/u )
+        
+        u = (n-1)/(2^t)
+        */
+        // randomly choose t as 1 &lt;= t &lt;= (n-1), but use a maximum value of integer
+        //    if n is a long larger than 31 bits
+<span class="fc" id="L204">        int t = 1;</span>
+<span class="fc" id="L205">        long u = 1;</span>
+        
+        do {
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">            if (n &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L209">                t = rand.nextInt(1, Integer.MAX_VALUE - 1);</span>
+            } else {
+<span class="fc" id="L211">                t = rand.nextInt(1, (int)n - 1);</span>
+            }
+<span class="fc" id="L213">            u = (n - 1)/((long)Math.pow(2, t));</span>
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">        } while ((u &amp; 1) == 0);</span>
+        
+<span class="fc" id="L216">        long[] x = new long[t + 1];</span>
+        int i;
+        long xim;
+<span class="fc" id="L219">        x[0] = MiscMath0.modularExponentiation(a, u, n);</span>
+        
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        for (i = 1; i &lt; t; ++i) {</span>
+<span class="nc" id="L222">            xim = x[i - 1];</span>
+<span class="nc" id="L223">            x[i] = (xim*xim) % n;</span>
+<span class="nc bnc" id="L224" title="All 6 branches missed.">            if (x[i] == 1 &amp;&amp; xim != 1 &amp;&amp; xim != (n-1)) {</span>
+<span class="nc" id="L225">                return true;</span>
+            }
+        }
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (x[t - 1] != 1){</span>
+<span class="fc" id="L229">            return true;</span>
+        }
+<span class="fc" id="L231">        return false;</span>
+    }
+
+    private static long multiply(TLongSet factors) {
+<span class="fc" id="L235">        TLongIterator iter = factors.iterator();</span>
+<span class="fc" id="L236">        long m = 1;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L238">            m *= iter.next();</span>
+        }
+<span class="fc" id="L240">        return m;</span>
+    }
+    
+    private static long max(TLongSet factors) {
+<span class="nc" id="L244">        TLongIterator iter = factors.iterator();</span>
+<span class="nc" id="L245">        long m = Long.MIN_VALUE;</span>
+        long r;
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L248">            r = iter.next();</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">            if (r &gt; m) {</span>
+<span class="nc" id="L250">                m = r;</span>
+            }
+        }
+<span class="nc" id="L253">        return m;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

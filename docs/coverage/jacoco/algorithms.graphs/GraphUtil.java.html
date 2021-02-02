@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">GraphUtil.java</span></div><h1>GraphUtil.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
+import java.util.Arrays;
+import java.util.Iterator;
+
+/**
+ * miscellaneous graph methods.
+ * 
+ * TODO: consider a method to remap vertex keys for input graphs that start 
+ * counting at 1 instead of 0 (they need vertex 0 removed and all vertex
+ * numbers and vertex numbers in edges decreased by 1.
+ * 
+ * @author nichole
+ */
+<span class="nc" id="L17">public class GraphUtil {</span>
+    
+    /**
+     * create an adjacency list from the given graph knowing that the vertexes 
+     * present are numbered 0 through number of vertexes-1.
+     * Note that even if more than one edge is present in the direction from 
+     * vertex u to vertex v, only one is present in the adjacency list for that
+     * directional edge in the returned adjacency list.
+     * runtime complexity is O(|V| + |E|).
+     * @param g
+     * @return 
+     */
+    public static SimpleLinkedListNode[] createAdjacencyList(
+        NewmanGMLParser.GMLGraph g) {
+        
+<span class="fc" id="L32">        int nV = g.nodeIdLabelMap.size();</span>
+        
+<span class="fc" id="L34">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
+        
+<span class="fc" id="L36">        return out;</span>
+    }
+    
+    /**
+     * create an adjacency list from a graph which may be missing vertex information
+     * and might not be numbered from 0 to |V|-1.
+     * runtime complexity is O((|V|*log_2(|V|( * |E|) which is longer 
+     * due to a needed sort.
+     * Note that even if more than one edge is present in the direction from 
+     * vertex u to vertex v, only one is present in the adjacency list for that
+     * directional edge in the returned adjacency list.
+     * @param g
+     * @return 
+     */
+    public static SimpleLinkedListNode[] createAdjacencyList2(
+        NewmanGMLParser.GMLGraph g) {
+        
+<span class="fc" id="L53">        int[] vs = g.nodeIdLabelMap.keys();</span>
+<span class="fc" id="L54">        Arrays.sort(vs, 0, vs.length);</span>
+<span class="fc" id="L55">        int nV = vs[vs.length - 1] + 1;</span>
+        
+<span class="fc" id="L57">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
+        
+<span class="fc" id="L59">        return out;</span>
+    }
+    
+    private static SimpleLinkedListNode[] createAdjacencyList(
+        NewmanGMLParser.GMLGraph g, final int nVertexes) {
+        
+<span class="fc" id="L65">        SimpleLinkedListNode[] out = new SimpleLinkedListNode[nVertexes];</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (int v = 0; v &lt; nVertexes; ++v) {</span>
+<span class="fc" id="L67">            out[v] = new SimpleLinkedListNode();</span>
+        }
+        
+        //Entry&lt;PairInt, TFloatList&gt;entry;
+        PairInt uv;
+        //TFloatList wList;
+        //Iterator&lt;Entry&lt;PairInt, TFloatList&gt;&gt; iter = g.edgeWeightMap.entrySet().iterator();
+<span class="fc" id="L74">        Iterator&lt;PairInt&gt; iter = g.edgeWeightMap.keySet().iterator();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+            //entry = iter.next();
+            //uv = entry.getKey();
+            //wList = entry.getValue();
+<span class="fc" id="L79">            uv = iter.next();</span>
+<span class="fc" id="L80">            out[uv.getX()].insert(uv.getY());</span>
+        }
+        
+<span class="fc" id="L83">        return out;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

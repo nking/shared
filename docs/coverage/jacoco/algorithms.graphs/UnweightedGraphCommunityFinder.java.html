@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnweightedGraphCommunityFinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">UnweightedGraphCommunityFinder.java</span></div><h1>UnweightedGraphCommunityFinder.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.graphs.Dendogram.DendogramLayer;
+import algorithms.misc.MinMaxPeakFinder;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.list.TFloatList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.list.array.TIntArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L16">public class UnweightedGraphCommunityFinder {</span>
+
+    public static class BestDivision {
+        DendogramLayer layer;
+        float modularity;
+    }
+    
+    /**
+     * given the original graph adjacency list, compute the modularity of the
+     * graph using the connected components from an iteration of the girvan-newman
+     * algorithm for edge betweenness scores.
+     Reference: Newman and Girvan 2004, PHYSICAL REVIEW E 69, 026113,
+     &quot;Finding and evaluating community structure in networks&quot;
+
+     NOTE: If the number of within-community edges is no better than random,
+     * we will get Q = 0. value approaching the maximum, Q = 1, indicate strong
+     * community structure [50]. values tend to be 0.3 to 0.7 and higher values
+     * are rare.
+     * 
+     * NOTE: see notes for Newman 2006 spectral modularity algorithms in
+     * this project's directory docs/miscNotes.
+     
+     * @return the largest modularity in the dendogram made from hierarchical
+     * subgraphs made from iterative removal of the maximum edge 
+     * from the graph where the score is calculated
+     * by the Girvan-Newman 2002 algorithm.
+     * 
+     * @param adjList unweighted graph adjacency list.
+     * @param src the source vertex to start calculations with if known.  has
+     * to be a valid vertex in the graph, but a random choice does affect the 
+     * results adversely.
+     */
+    public static BestDivision girvanNewman2002(SimpleLinkedListNode[] adjList,
+        int src) {
+                
+<span class="fc" id="L51">        Dendogram d = new Dendogram(adjList);</span>
+        
+<span class="fc" id="L53">        int kFinal = d.createUsingGirvanNewman(src);</span>
+        
+<span class="fc" id="L55">        List&lt;Dendogram.DendogramLayer&gt; layers = d.getLayers();</span>
+        
+<span class="fc" id="L57">        double nEdges = countEdges(adjList);</span>
+        
+        // store q and k to look for peak in q
+<span class="fc" id="L60">        TIntList ks = new TIntArrayList();</span>
+<span class="fc" id="L61">        TFloatList qs = new TFloatArrayList();</span>
+        
+<span class="fc" id="L63">        Modularity m = new Modularity();</span>
+        
+        double[][] e;
+        int i, j, k;
+        double q;
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Dendogram.DendogramLayer layer : layers) {</span>
+            
+<span class="fc" id="L70">            q = m.girvanNewman2002(layer, adjList, nEdges);</span>
+<span class="fc" id="L71">            k = layer.nComponents;</span>
+            
+<span class="fc" id="L73">            ks.add(k);</span>
+<span class="fc" id="L74">            qs.add((float)q);</span>
+<span class="fc" id="L75">        }</span>
+        
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (i = 0; i &lt; ks.size(); ++i) {</span>
+<span class="fc" id="L78">            System.out.printf(&quot;k=%d q=%.3f\n&quot;, ks.get(i), qs.get(i));</span>
+        }
+        
+        // find the max among the peaks
+<span class="fc" id="L82">        MinMaxPeakFinder mpf = new MinMaxPeakFinder();</span>
+<span class="fc" id="L83">        int[] maxIdxs = mpf.findPeaks(qs.toArray(), 0.f, 2.5f);</span>
+<span class="fc" id="L84">        float maxQ = Float.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L85">        int maxQIdx = -1;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (i = 0; i &lt; maxIdxs.length; ++i) {</span>
+<span class="fc" id="L87">            int idx = maxIdxs[i];</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">            if (ks.get(idx) &gt; maxQ) {</span>
+<span class="fc" id="L89">                maxQ = ks.get(idx);</span>
+<span class="fc" id="L90">                maxQIdx = idx;</span>
+            }
+<span class="fc" id="L92">            System.out.printf(&quot;found a peak for q=%.3f k=%d\n&quot;, qs.get(idx), ks.get(idx));</span>
+        }
+        
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (maxQIdx == -1) {</span>
+<span class="nc" id="L96">            return null;</span>
+        }
+        
+<span class="fc" id="L99">        BestDivision best = new BestDivision();</span>
+<span class="fc" id="L100">        best.layer = layers.get(maxQIdx);</span>
+<span class="fc" id="L101">        best.modularity = maxQ;</span>
+<span class="fc" id="L102">        return best;</span>
+    }
+    
+    private static double countEdges(SimpleLinkedListNode[] adjList) {
+        
+<span class="fc" id="L107">        int n = 0;</span>
+        
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
+<span class="fc" id="L110">            SimpleLinkedListNode vNode = adjList[u];</span>
+<span class="fc bfc" id="L111" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+<span class="fc" id="L112">                int v = vNode.getKey();</span>
+<span class="fc" id="L113">                n++;</span>
+<span class="fc" id="L114">                vNode = vNode.getNext();</span>
+<span class="fc" id="L115">            }</span>
+        }
+        
+<span class="fc" id="L118">        return n;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

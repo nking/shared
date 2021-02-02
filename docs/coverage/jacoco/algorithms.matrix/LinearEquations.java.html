@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinearEquations.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.matrix</a> &gt; <span class="el_source">LinearEquations.java</span></div><h1>LinearEquations.java</h1><pre class="source lang-java linenums">package algorithms.matrix;
+
+import java.util.Arrays;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrices;
+import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
+
+/**
+   LUPSolve, __, and __ follow
+   pseudocode from Cormen, Leiserson, Rivest, and Stein, &quot;Introduction to
+   Computer Algorithms&quot;.
+*/
+<span class="pc bpc" id="L14" title="1 of 2 branches missed.">public class LinearEquations {</span>
+
+    /**
+     solving for 'x' in equations:
+       a_0_0*x_0   +  a_0_1*x_1   + ... a_0_n*x_n     = b_0
+       a_1_0*x_0   +  a_1_1*x_1   + ... a_1_n*x_n     = b_1
+          ...
+       a_n-1_0*x_0 +  a_n-1_1*x_1 + ... a_{n-1}_n*x_{n-1} = b_{n-1}
+     where a is a square matrix, that is, there are n equations and n
+     unknowns.
+     LUP decomposition is more numerically stable than x = A^-1*b.
+         can find L, U, and P such that P*A=L*U
+     where L is a lower triangular matrix, U is an upper triangular matrix,
+     and P is a permutation matrix.
+     (a permutation matrix is all 0's excepting a single 1 in each column, uniquely.
+     multiplying a vector by a permutation rearranges the members of the vector.)
+     Uses forward substitution then back substitution.
+       L*U*x=P*b.
+         let y=U*x.
+       L*y=P*b  (uses forward substitution with these results).
+       U*x=y    (uses back substitution with these results).
+       A*x=b    (then solves x_i=(y_i - summation_j=i_to_{n-1}(u_i_j*x_j))/u_i_i).
+     runtime complexity is O(n^2) for backward and forward substitutions.
+     @param ell is an nxn lower triangular matrix using row major format.
+     @param u is an nxn upper triangular matrix using row major format.
+     @param p is an array of length n holding permutation vector columns. 
+            e.g. p_0=0 states that column 0 contains a 1 for row=0.
+            e.g. p_1=2 states that column 2 contains a 1 for row=1.
+            full_permutation_matrix = zeros everywhere except the row, col pairs in p
+     @param b is an array of length n.
+     @return array of x
+    */
+    public static double[] LUPSolve(double[][] ell, double[][] u, int[] p, double[] b) {
+<span class="fc" id="L47">        int n = ell.length;</span>
+<span class="fc" id="L48">        assertSquareMatrix(ell, &quot;ell&quot;);</span>
+<span class="fc" id="L49">        assertSquareMatrix(u, &quot;u&quot;);</span>
+<span class="fc" id="L50">        assertArrayLength(n, p, &quot;p&quot;);</span>
+<span class="fc" id="L51">        assertArrayLength(n, b, &quot;b&quot;);</span>
+
+<span class="fc" id="L53">        double[] y = new double[n];</span>
+<span class="fc" id="L54">        double[] x = new double[n];</span>
+<span class="fc" id="L55">        double tempsum = 0;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L57">            tempsum = 0;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int j = 0; j &lt; i; j++) {</span>
+<span class="fc" id="L59">                tempsum += ell[i][j]*y[j];</span>
+            }
+<span class="fc" id="L61">            y[i] = b[p[i]] - tempsum;</span>
+        }
+<span class="fc" id="L63">        tempsum = 0;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (int i = n-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L65">            tempsum = 0;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if (i != (n-1)) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                for (int j = i+1; j &lt; n; j++) {</span>
+<span class="fc" id="L68">                    tempsum += u[i][j]*x[j];</span>
+                }
+            }
+<span class="fc" id="L71">            x[i] = (y[i] - tempsum)/u[i][i];</span>
+        }
+<span class="fc" id="L73">        return x;</span>
+    }
+
+    /**
+     * an efficient LUP decomposition for a being a square non-singular matrix and
+     * P is the Identity matrix.   uses Gaussian elimination and the Schur
+     * complement while making recursive subdivision subdivisions.
+     * The runtime is O(n^3).
+     * @param a two dimensional array in row major format.  
+     * a is a non-singular matrix(i.e. has exactly one solution).  the rank of
+     * a is n (it's dimensions are m x n).
+     * @return LU a wrapper holding the 2 two-dimensional row major output arrays.
+     * L and U.
+     */
+    public static LU LUDecomposition(double[][] a) {
+<span class="fc" id="L88">        int n = a.length;</span>
+<span class="fc" id="L89">        assertSquareMatrix(a, &quot;a&quot;);</span>
+        
+<span class="fc" id="L91">        a = copy(a);</span>
+        
+<span class="fc" id="L93">        double[][] ell = new double[n][];</span>
+<span class="fc" id="L94">        double[][] u = new double[n][];</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L96">            ell[i] = new double[n];</span>
+<span class="fc" id="L97">            u[i] = new double[n];</span>
+<span class="fc" id="L98">            ell[i][i] = 1;</span>
+<span class="fc" id="L99">            u[i][i] = 1;</span>
+        }
+        
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int k = 0; k &lt; n; k++) {</span>
+<span class="fc" id="L103">            u[k][k] = a[k][k];</span>
+            
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
+<span class="fc" id="L106">                ell[i][k] = a[i][k]/u[k][k];</span>
+<span class="fc" id="L107">                u[k][i] = a[k][i];</span>
+            }
+            
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                for (int j = k+1; j &lt; n; j++) {</span>
+<span class="fc" id="L112">                    a[i][j] -= (ell[i][k] * u[k][j]); </span>
+                }
+            }
+        }
+                
+<span class="fc" id="L117">        return new LU(ell, u);</span>
+    }
+    
+    /**
+     * an LUP decomposition for a being a square non-singular matrix that tries 
+     * to reduce errors due to division by small numbers.  
+     * creates a permutation matrix to pivot rows so that the row reduction
+     * divisions are by the largest numbers.
+     * uses Gaussian elimination and the Schur
+     * complement while making recursive subdivision subdivisions.
+     * The runtime is O(n^3).
+     * @param a two dimensional array in row major format.  
+     * a is a non-singular matrix(i.e. has exactly one solution).  the rank of
+     * a is n (it's dimensions are m x n).
+     * @return LUP a wrapper holding the 2 two-dimensional row major output arrays.
+     * L and U and the condensed permutation array p, where P*A=L*U.
+     */
+    public static LUP LUPDecomposition(double[][] a) {
+<span class="fc" id="L135">        int n = a.length;</span>
+<span class="fc" id="L136">        assertSquareMatrix(a, &quot;a&quot;);</span>
+        
+<span class="fc" id="L138">        a = copy(a);</span>
+        
+<span class="fc" id="L140">        int[] pi = new int[n];</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {            </span>
+<span class="fc" id="L142">            pi[i] = i;</span>
+        }
+        
+        double p;
+        double temp;
+<span class="fc" id="L147">        int k2 = -1;</span>
+        double swap;
+        int swapI;
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        for (int k = 0; k &lt; n; k++) {</span>
+<span class="fc" id="L151">            p = 0;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            for (int i = k; i &lt; n; i++) {</span>
+<span class="fc" id="L153">                temp = Math.abs(a[i][k]);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                if (temp &gt; p) {</span>
+<span class="fc" id="L155">                    p = temp;</span>
+<span class="fc" id="L156">                    k2 = i;</span>
+                }
+            }
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">            if (p == 0.) {</span>
+<span class="nc" id="L160">                throw new IllegalStateException(&quot;Error: a is a singular matrix&quot;);</span>
+            }
+<span class="pc bpc" id="L162" title="3 of 4 branches missed.">            assert(k2 &gt;= 0);</span>
+<span class="fc" id="L163">            swapI = pi[k2];</span>
+<span class="fc" id="L164">            pi[k2] = pi[k];</span>
+<span class="fc" id="L165">            pi[k] = swapI;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L167">                swap = a[k2][i];</span>
+<span class="fc" id="L168">                a[k2][i] = a[k][i];</span>
+<span class="fc" id="L169">                a[k][i] = swap;</span>
+            }
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
+<span class="fc" id="L172">                a[i][k] /= a[k][k];</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                for (int j = k+1; j &lt; n; j++) {</span>
+<span class="fc" id="L174">                    a[i][j] -= (a[i][k] * a[k][j]);</span>
+                }
+            }
+        }
+       
+        // setting the upper and lower triangles of a into ell and u to pass
+        //   pack as arguments.
+        //   the original pseudocode uses only a and modifies the original in place
+        //     to conserve space.
+<span class="fc" id="L183">        double[][] ell = new double[n][];</span>
+<span class="fc" id="L184">        double[][] u = new double[n][];</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L186">            ell[i] = new double[n];</span>
+<span class="fc" id="L187">            u[i] = new double[n];</span>
+<span class="fc" id="L188">            u[i][i] = 1;</span>
+<span class="fc" id="L189">            ell[i][i] = 1;</span>
+        }
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            for (int j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">                if (i &gt; j) {</span>
+<span class="fc" id="L194">                    ell[i][j] = a[i][j];</span>
+                } else {
+<span class="fc" id="L196">                    u[i][j] = a[i][j];</span>
+                }
+            }
+        }
+        
+<span class="fc" id="L201">        return new LUP(ell, u, pi);</span>
+    }
+    
+    /**
+     * given data points xy and the assumption that measurement errors are small,
+     * fit a polynomial of order polyOrder to the data points, minimizing the
+     * error, i.e. solve for coefficients c in y_i = summation(c_i*x^i) + error.
+     * calculated by c = pseudo-inverse of A * y where A is the components of
+     * x as polynomial factors.
+     * NOTE that a regularized linear least squares algorithm called Elastic-Net
+     * is implemented in project curvature-scale-space-corners-and-transformations.
+     * TODO: move Elastic-Net to this project.
+     * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
+     * To Algorithms.
+     * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
+     * @param polyOrder the order of a polynomial to fit.  should be .lte. the
+     * number of rows.
+     * @param solveForFullRank set to 'False' to use the SVD for a pseudoinverse.
+     * set to 'True' when AX=b has no solution.  when 'True', the algorithm
+     * uses (inverse(A^T*A) * A^T) for the pseudo-inverse.
+     * @return coefficients c where y_i = summation(c_i*x^i) + error
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder, boolean
+        solveForFullRank) throws NotConvergedException {
+<span class="fc" id="L226">        return _leastSquaresPolynomial(xy, polyOrder, solveForFullRank);</span>
+    }
+    
+    /**
+     * given data points xy and the assumption that measurement errors are small,
+     * fit a polynomial of order polyOrder to the data points, minimizing the
+     * error, i.e. solve for coefficients c in y_i = summation(c_i*x^i) + error.
+     * calculated by c = pseudo-inverse of A * y where A is the components of
+     * x as polynomial factors.
+     * NOTE that a regularized linear least squares algorithm called Elastic-Net
+     * is implemented in project curvature-scale-space-corners-and-transformations.
+     * TODO: move Elastic-Net to this project.
+     * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
+     * To Algorithms.
+     * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
+     * @param polyOrder the order of a polynomial to fit.  should be .lte. the
+     * number of rows.
+     * @return coefficients c where y_i = summation(c_i*x^i) + error
+     */
+    public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder) throws NotConvergedException {
+<span class="nc" id="L246">        return _leastSquaresPolynomial(xy, polyOrder, false);</span>
+    }
+    
+    /**
+     * given data points xy and the assumption that measurement errors are small,
+     * fit a polynomial of order polyOrder to the data points, minimizing the
+     * error, i.e. solve for coefficients c in y_i = summation(c_i*x^i) + error.
+     * calculated by c = pseudo-inverse of A * y where A is the components of
+     * x as polynomial factors.
+     * NOTE that a regularized linear least squares algorithm called Elastic-Net
+     * is implemented in project curvature-scale-space-corners-and-transformations.
+     * TODO: move Elastic-Net to this project.
+     * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
+     * To Algorithms.
+     * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
+     * @param polyOrder the order of a polynomial to fit.  should be .lte. the
+     * number of rows.
+     * @param solveFullRank set to 'False' to use the SVD for a pseudoinverse.
+     * set to 'True' when AX=b has no solution.  when 'True', the algorithm
+     * uses (inverse(A^T*A) * A^T) for the pseudo-inverse.
+     * @return coefficients c where y_i = summation(c_i*x^i) + error
+     */
+    public static double[] _leastSquaresPolynomial(double[][] xy, int polyOrder,
+        boolean solveFullRank) throws NotConvergedException {
+        
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">        if (polyOrder &lt; 0) {</span>
+<span class="nc" id="L272">            throw new IllegalArgumentException(&quot;polyOrder must be 0 or larger&quot;);</span>
+        }
+<span class="fc" id="L274">        int nRows = xy.length;</span>
+        
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        if (polyOrder &gt; nRows) {</span>
+<span class="nc" id="L277">            throw new IllegalArgumentException(&quot;polyOrder should be smaller &quot;</span>
+                    + &quot; than or equal to the number of data rows&quot;);
+        }
+        
+        // create matrix A
+<span class="fc" id="L282">        double[][] a = new double[nRows][];</span>
+        double x;
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L285">            a[i] = new double[polyOrder + 1];</span>
+<span class="fc" id="L286">            a[i][0] = 1;</span>
+        }
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L289">            x = xy[i][0];</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">            for (int k = 0; k &lt; polyOrder; ++k) {</span>
+<span class="fc" id="L291">                a[i][k + 1] = x * a[i][k];</span>
+            }
+        }
+        
+        double[][] aPInv;
+<span class="fc bfc" id="L296" title="All 2 branches covered.">        if (solveFullRank) {</span>
+            //AX=b has no solution
+            //uses (inverse(A^T*A) * A^T in pseudo-inverse
+<span class="fc" id="L299">            aPInv = MatrixUtil.pseudoinverseFullRank(a);</span>
+        } else {
+            // uses SVD of a in pseudo-inverse
+            // Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
+            //inverse of A.
+            // method is valid for  rows .lte. rank,
+            // but for rows .gt. rank, the null-space needs to be solved instead.
+<span class="fc" id="L306">            aPInv = MatrixUtil.pseudoinverseRankDeficient(a);</span>
+        }
+        
+<span class="fc" id="L309">        double[] y = new double[nRows];</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L311">            y[i] = xy[i][1];</span>
+        }
+        
+<span class="fc" id="L314">        double[] c = MatrixUtil.multiply(aPInv, y);</span>
+        
+<span class="fc" id="L316">        return c;</span>
+    }
+    
+    public static class LU {
+        double[][] ell;
+        double[][] u;
+        public LU(double[][] ell, double[][] u) {
+            this.ell = ell;
+            this.u = u;
+        }
+    }
+    
+    public static class LUP {
+        double[][] ell;
+        double[][] u;
+        int[] p;
+        public LUP(double[][] ell, double[][] u, int[] p) {
+            this.ell = ell;
+            this.u = u;
+            this.p = p;
+        }
+    }
+    
+    private static void assertSquareMatrix(double[][] a, String name) {
+<span class="fc" id="L340">        int n = a.length;</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if (a[0].length != n) {</span>
+<span class="nc" id="L342">            throw new IllegalArgumentException(name + &quot; must be a square matrix&quot;);</span>
+        }
+<span class="fc" id="L344">    }</span>
+
+    private static void assertArrayLength(int n, double[] a, String name) {
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">        if (a.length != n) {</span>
+<span class="nc" id="L348">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
+        }
+<span class="fc" id="L350">    }</span>
+
+    private static void assertArrayLength(int n, int[] a, String name) {
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        if (a.length != n) {</span>
+<span class="nc" id="L354">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
+        }
+<span class="fc" id="L356">    }</span>
+    
+    private static double[][] copy(double[][] a) {
+<span class="fc" id="L359">        int nrows = a.length;</span>
+<span class="fc" id="L360">        double[][] c = new double[nrows][];</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">        for (int i = 0; i &lt; nrows; ++i) {</span>
+<span class="fc" id="L362">            c[i] = Arrays.copyOf(a[i], a[i].length);</span>
+        }
+<span class="fc" id="L364">        return c;</span>
+    }
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

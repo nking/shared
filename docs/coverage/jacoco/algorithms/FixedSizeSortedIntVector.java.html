@@ -120,8 +120,8 @@ public class FixedSizeSortedIntVector {
     }
 
     /**
-     * Insert the value into the list while maintaining the sorted state
-     * of the list.
+     * Insert the value into the list while maintaining the sorted state of the 
+     * list.
      * @param value
      */
     private void insertIntoOpenSlot(int value) {

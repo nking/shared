@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeometricMedianUnweightedFunction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.dlib.optimization</a> &gt; <span class="el_source">GeometricMedianUnweightedFunction.java</span></div><h1>GeometricMedianUnweightedFunction.java</h1><pre class="source lang-java linenums">package thirdparty.dlib.optimization;
+
+import java.util.Arrays;
+
+/**
+ * objective function implementations for use with search algorithms using IFunction
+ * as input for the geometric-median.
+ * 
+   a.k.a. spatial median.
+   the weighted version is a.k.a. L1-median (though it uses the euclidean distance)
+   and the multivariate L1 -median (L1 -MM).
+   
+   definition: the point which minimizes the sum of the euclidean distance of that
+     point to all other points in the set.
+     the sum is a convex function (i.e. local search will work).
+     Unfortunately, no algorithms are closed form, that is no algorithms have a
+     finite number of computational operations.
+     The geometric median is a rotation and translation invariant estimator that
+     achieves the optimal breakdown point of 0.5, i.e. it is a good estimator
+     even when up to half of the input data is arbitrarily corrupted.
+     (https://dl.acm.org/doi/pdf/10.1145/2897518.2897647)
+     
+      &lt;pre&gt;
+      f = summation_i=1_n( || X - obs_i || )/n     
+               where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
+      df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(-1/2) * (2*(X_0-obs_i_0))
+              = (1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)
+      df/dX_1 = (1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)  
+      
+       d/dX_0 of df/dX_0 = (1./n) * (1) * (-1/2)*summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(-3/2) )
+                           *2*(X_0-obs_i_0)*(1)
+                         = (-1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(3/2) )
+       d/dX_1 of df/dX_0 = 0
+       Hessian d/dX of d/dX where p is nDimensions and I is the identity matrix of size pxp:
+                                ( (    I_p      )   ( (X - obs_i)*(X - obs_i)^T )
+               = summation_i=1_n( (-------------) - ( --------------------------)
+                                ( (||X - obs_i||)   (      ||X - obs_i||^3      )
+      &lt;/pre&gt;
+      
+      * NOTE: consider using Standardization normalization  on
+      the data before using this class then use Standardization de-normalization
+      on the resulting geometric-median afterwards and run the evaluation on that
+      result.
+  
+      Caveat is that the algorithm can fail within a stop strategy tolerance of
+      the centroid because the derivative becomes 0.
+      
+      Either the algorithm has to be alert for that and adapt to it (by checking
+      for centroid and testing points around it outside of the tolerance, presumably),
+      OR you should use the weighted geometric-median.
+      
+ * @author nichole
+ */
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFunction {</span>
+ 
+    /**
+     * the number of dimensions present in the observations.  e.g. 2 for x and y axes.
+     */
+    final int nDimensions;
+    
+    /**
+     * the observations from all dimensions in format of
+     * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
+     * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
+     *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
+     */
+    final double[] obs;
+    
+    /**
+     * a rough number that isn't properly normalized for use in the finiteDifference
+     * method.
+     */
+<span class="fc" id="L73">    final double fDEps = 1e3*eps;</span>
+
+    /**
+     * class holding the objective and derivative of the geometric-median for use
+     * with search algorithms such as the LBFGs.
+     * 
+     * @param observations the observations from all dimensions in format of
+     * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
+     * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
+     *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
+     * @param numberOfDimensions the number of data dimensions present in
+     * observations array.
+     */
+<span class="fc" id="L86">    public GeometricMedianUnweightedFunction(double[] observations, int numberOfDimensions) {</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (numberOfDimensions &lt; 1) {</span>
+<span class="nc" id="L88">            throw new IllegalArgumentException(&quot;numberOfDimensions must be &gt; 0&quot;);</span>
+        }
+<span class="fc" id="L90">        this.nDimensions = numberOfDimensions;</span>
+<span class="fc" id="L91">        this.obs = Arrays.copyOf(observations, observations.length);</span>
+
+<span class="fc" id="L93">        int n = obs.length;</span>
+
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (n &lt; 1) {</span>
+<span class="nc" id="L96">            throw new IllegalArgumentException(&quot;observations must have length &gt; 0&quot;);</span>
+        }
+
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if ((n % nDimensions) != 0) {</span>
+<span class="nc" id="L100">            throw new IllegalArgumentException(&quot;observations.length must be a multiple of &quot;</span>
+                    + &quot;numberOfDimensions&quot;);
+        }
+<span class="fc" id="L103">    }</span>
+
+    /**
+     * given observed data points obs = (x_i, y_i, ...) want to solve for
+     * X=(x_geo_median, y_geo_median, ...), that is X = arg min of || X-obs
+     * ||_2, that is, the X which minimizes the sum of the differences, where _2
+     * is notation for using L2 distances.
+     *
+     * the objective is calculated by setting the derivative of the cost function to 0.
+       &lt;pre&gt;
+       The cost function is:
+          C(X) = summation_i=1_n( || X - obs_i || ) / n
+      
+          where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)  
+      &lt;/pre&gt;
+     *
+     * @param geoMedian input variable holding coordinates of current
+     * estimate of geometric median.
+     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     * ||^2)/n
+     */
+    @Override
+    public double f(double[] geoMedian) {
+
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (geoMedian.length != nDimensions) {</span>
+<span class="nc" id="L128">            throw new IllegalArgumentException(&quot;geoMedian length should equal nDimensions&quot;);</span>
+        }
+
+<span class="fc" id="L131">        return evaluateGeoMedian(geoMedian);</span>
+    }
+
+    /**
+     *
+     * d/dX of the objective C(X) = summation_i=1_n(|| X-obs_i ||^2)/n where the
+     * observed data points are obs = (x_i, y_i, ...) and X=(x_geo_median,
+     * y_geo_median, ...)
+     
+       &lt;pre&gt;
+       f = summation_i=1_n( || X - obs_i || )/n
+           where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       df/dX_0 = (0.5/n) * ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(-1/2) * (2*(X_0-obs_i_0))
+               = (1./n) * (X_0-obs_i_0) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       df/dX_1 = (1./n) * (X_1-obs_i_1) / ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 + ...)^(1/2)
+       ...
+       
+       &lt;/pre&gt;
+     
+      @param geoMedian coordinates of current estimate of geometric median
+      @return evaluation of the derivative
+     */
+    @Override
+    public double[] der(double[] geoMedian) {
+
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (geoMedian.length != nDimensions) {</span>
+<span class="nc" id="L157">            throw new IllegalArgumentException(&quot;geoMedian length should equal nDimensions&quot;);</span>
+        }
+        
+        if (false) {
+            return finiteDifference(geoMedian);
+        }
+
+        //double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
+
+<span class="fc" id="L166">        double[] diffs = calculateDifferences(geoMedian);</span>
+        
+<span class="fc" id="L168">        double[] ssdPerPoint = calculateSSDPerPoint(diffs);</span>
+        
+<span class="fc" id="L170">        int nData = (int) (obs.length / nDimensions);</span>
+        
+<span class="pc bpc" id="L172" title="3 of 4 branches missed.">        assert(ssdPerPoint.length == nData);</span>
+        
+<span class="fc" id="L174">        double s = 0;</span>
+        int i;
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (i = 0; i &lt; ssdPerPoint.length; ++i) {</span>
+<span class="fc" id="L177">            s += Math.sqrt(ssdPerPoint[i]);</span>
+        }
+        
+        // to avoid divide by 0:
+<span class="fc" id="L181">        s += eps;</span>
+        
+        //df/dX_0 = (1./n)*(X_0-obs_i_0) / summation_i=1_n( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 )^(1/2) )
+<span class="fc" id="L184">        double[] dfDX = new double[nDimensions];</span>
+        
+        // NOTE: can see that the unweighted algorithm will not make progress when
+        //    the current geometric-median estimate is the centroid.
+        int j, d;
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {            </span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L191">                j = i * nDimensions + d;</span>
+<span class="fc" id="L192">                dfDX[d] += (geoMedian[d] - obs[j]);</span>
+            }
+        }
+        
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L197">            dfDX[d] /= (nData * s);</span>
+        }
+        
+<span class="fc" id="L200">        return dfDX;</span>
+    }
+    
+    public int getNDimensions() {
+<span class="fc" id="L204">        return nDimensions;</span>
+    }
+    
+    public double[] getObs() {
+<span class="fc" id="L208">        return obs;</span>
+    }
+    
+    public double getFDEps() {
+<span class="nc" id="L212">        return fDEps;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

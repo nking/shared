@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dendogram.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">Dendogram.java</span></div><h1>Dendogram.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.disjointSets.DisjointForest;
+import algorithms.graphs.Betweenness.Results;
+import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TObjectFloatIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectFloatMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ *
+ * @author nichole
+ */
+public class Dendogram {
+
+    private final List&lt;DendogramLayer&gt; layers;
+    
+    private final SimpleLinkedListNode[] originalGraph;
+    
+<span class="nc" id="L27">    private Dendogram() {originalGraph=null;layers=null;}</span>
+    
+<span class="fc" id="L29">    public Dendogram(final SimpleLinkedListNode[] adjList) {</span>
+<span class="fc" id="L30">        originalGraph = copyGraph(adjList);</span>
+<span class="fc" id="L31">        layers = new ArrayList&lt;DendogramLayer&gt;(adjList.length);</span>
+<span class="fc" id="L32">    }</span>
+    
+    private SimpleLinkedListNode[] copyGraph(final SimpleLinkedListNode[] g) {
+<span class="fc" id="L35">        SimpleLinkedListNode[] c = g.clone();</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L37">            c[i] = new SimpleLinkedListNode(g[i]);</span>
+        }
+<span class="fc" id="L39">        return c;</span>
+    }
+    
+    public int createUsingGirvanNewman(int src) {
+        
+<span class="fc" id="L44">        int nV = originalGraph.length;</span>
+        
+<span class="fc" id="L46">        Betweenness b = new Betweenness();</span>
+<span class="fc" id="L47">        SimpleLinkedListNode[] g = copyGraph(originalGraph);</span>
+
+<span class="fc" id="L49">        List&lt;TIntSet&gt; cc = DisjointForest.connectedComponents(g);</span>
+<span class="fc" id="L50">        int nC = cc.size();</span>
+<span class="fc" id="L51">        DendogramLayer layer = createDendogramLayer(cc, nV);</span>
+<span class="fc" id="L52">        getLayers().add(layer);</span>
+        
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        while (nC &lt; nV) {</span>
+            
+<span class="fc" id="L56">            System.out.printf(&quot;nComponents=%d (nV=%d)\n&quot;, nC, nV);</span>
+<span class="fc" id="L57">            System.out.flush();</span>
+
+<span class="fc" id="L59">            Results r = b.girvanNewmanDAG(g, src);</span>
+
+<span class="fc" id="L61">            TObjectFloatMap&lt;PairInt&gt; edgeWeights = r.getEdges();</span>
+<span class="fc" id="L62">            PairInt max = getMaxEdge(edgeWeights);</span>
+<span class="fc" id="L63">            System.out.printf(&quot;max edge = (%d, %d)\n&quot;, max.getX(), max.getY());</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            if (max == null) {</span>
+<span class="nc" id="L65">                break;</span>
+            }
+            
+<span class="fc" id="L68">            g[max.getX()].delete(max.getY());</span>
+
+<span class="fc" id="L70">            cc = DisjointForest.connectedComponents(g);</span>
+<span class="fc" id="L71">            nC = cc.size();</span>
+<span class="fc" id="L72">            layer = createDendogramLayer(cc, nV);</span>
+<span class="fc" id="L73">            getLayers().add(layer);</span>
+<span class="fc" id="L74">        }</span>
+        
+<span class="fc" id="L76">        return nC;</span>
+    }
+    
+    public static class DendogramLayer {
+        /**
+         * the number of components (a.k.a. communities) in graph layer
+         */
+        int nComponents;
+        
+        /**
+         * index is vertex number, value is component number.  if value is -1,
+         * there is no assigned component.
+         */
+        int[] vertexComponents;
+        
+        /**
+         * map with key = component number, value = set of vertex numbers in the component
+         */
+        TIntObjectMap&lt;TIntSet&gt; componentVertexes;
+    }
+    
+    private DendogramLayer createDendogramLayer(List&lt;TIntSet&gt; cc,int nVertexes) {
+<span class="fc" id="L98">        DendogramLayer layer = new DendogramLayer();</span>
+<span class="fc" id="L99">        layer.nComponents = cc.size();</span>
+<span class="fc" id="L100">        layer.vertexComponents = new int[nVertexes];</span>
+<span class="fc" id="L101">        Arrays.fill(layer.vertexComponents, -1);</span>
+<span class="fc" id="L102">        layer.componentVertexes = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        
+        TIntIterator iter;
+        int v;
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int c = 0; c &lt; cc.size(); ++c) {</span>
+            
+<span class="fc" id="L108">            TIntSet set = cc.get(c);</span>
+            
+<span class="fc" id="L110">            layer.componentVertexes.put(c, set);</span>
+            
+<span class="fc" id="L112">            iter = set.iterator();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">            while (iter.hasNext()){</span>
+<span class="fc" id="L114">                v = iter.next();</span>
+<span class="fc" id="L115">                layer.vertexComponents[v] = c;</span>
+            }    
+        }
+        
+<span class="fc" id="L119">        return layer;</span>
+    }
+
+    private PairInt getMaxEdge(TObjectFloatMap&lt;PairInt&gt; edgeWeights) {
+        
+<span class="fc" id="L124">        TObjectFloatIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
+        
+<span class="fc" id="L126">        float max = Float.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L127">        PairInt maxP = null;</span>
+        float w;
+        
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        for (int i = 0; i &lt; edgeWeights.size(); ++i) {</span>
+<span class="fc" id="L131">            iter.advance();</span>
+<span class="fc" id="L132">            w = iter.value();</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (w &gt; max) {</span>
+<span class="fc" id="L134">                max = w;</span>
+<span class="fc" id="L135">                maxP = iter.key();</span>
+            }
+        }
+        
+<span class="fc" id="L139">        return maxP;</span>
+    }
+
+    /**
+     * @return the layers
+     */
+    public List&lt;DendogramLayer&gt; getLayers() {
+<span class="fc" id="L146">        return layers;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

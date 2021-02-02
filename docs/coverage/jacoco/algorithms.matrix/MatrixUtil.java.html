@@ -1,0 +1,1828 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatrixUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.matrix</a> &gt; <span class="el_source">MatrixUtil.java</span></div><h1>MatrixUtil.java</h1><pre class="source lang-java linenums">package algorithms.matrix;
+
+import algorithms.matrix.LinearEquations.LUP;
+import static algorithms.matrix.LinearEquations.LUPDecomposition;
+import algorithms.misc.Misc0;
+import gnu.trove.list.array.TDoubleArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrices;
+import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.MatrixEntry;
+import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
+
+/**
+ * TODO: tidy code for multiply and dot operations
+ * 
+ * @author nichole
+ */
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">public class MatrixUtil {</span>
+    
+    /**
+     * multiply matrix m by vector n
+     * @param m two dimensional array in row major format
+     * @param n one dimensional array
+     * @return vector of length m.length
+     */
+    public static double[] multiply(double[][] m, double[] n) {
+
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L37" title="2 of 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+        
+<span class="fc" id="L41">        int mcols = m[0].length;</span>
+
+<span class="fc" id="L43">        int mrows = m.length;</span>
+
+<span class="fc" id="L45">        int ncols = n.length;</span>
+        
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (mcols != ncols) {</span>
+<span class="nc" id="L48">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m must equal the length of n&quot;);
+        }
+        
+<span class="fc" id="L52">        double[] c = new double[mrows];</span>
+
+<span class="fc" id="L54">        int cCol = 0;</span>
+        
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int row = 0; row &lt; mrows; row++) {</span>
+                        
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int col = 0; col &lt; mcols; col++) {</span>
+                
+<span class="fc" id="L60">                c[cCol] += (m[row][col] * n[col]);</span>
+            }
+            
+<span class="fc" id="L63">            cCol++;        </span>
+        }
+
+<span class="fc" id="L66">        return c;</span>
+    }
+    
+    /**
+     * multiply matrix m by vector n
+     * @param m two dimensional array in row major format
+     * @param n one dimensional array
+     * @return the multiplication of matrix m by n
+     */
+    public static float[] multiply(float[][] m, float[] n) {
+
+<span class="nc bnc" id="L77" title="All 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L80" title="All 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L81">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc" id="L84">        int mcols = m[0].length;</span>
+
+<span class="nc" id="L86">        int mrows = m.length;</span>
+
+<span class="nc" id="L88">        int ncols = n.length;</span>
+        
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (mcols != ncols) {</span>
+<span class="nc" id="L91">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m must equal the number of rows in n&quot;);
+        }
+        
+<span class="nc" id="L95">        float[] c = new float[mrows];</span>
+
+<span class="nc" id="L97">        int cCol = 0;</span>
+        
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        for (int row = 0; row &lt; mrows; row++) {</span>
+                        
+<span class="nc bnc" id="L101" title="All 2 branches missed.">            for (int col = 0; col &lt; mcols; col++) {</span>
+                
+<span class="nc" id="L103">                c[cCol] += (m[row][col] * n[col]);</span>
+            }
+            
+<span class="nc" id="L106">            cCol++;        </span>
+        }
+
+<span class="nc" id="L109">        return c;</span>
+    }
+    
+    /**
+     * multiply vector m by factor
+     * @param m one dimensional array that is input and output for result
+     * @param factor factor to multiply m by
+     */
+    public static void multiply(int[] m, int factor) {
+
+<span class="nc bnc" id="L119" title="All 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L120">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc" id="L123">        int len = m.length;</span>
+                
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        for (int i = 0; i &lt; len; i++) {                        </span>
+<span class="nc" id="L126">            m[i] *= factor;</span>
+        }
+<span class="nc" id="L128">    }</span>
+    
+    /**
+     * multiply matrix m by factor
+     * @param a two dimensional array in that is input and output for result
+     * @param m factor to multiply m by
+     */
+    public static void multiply(float[][] a, float m) {
+
+<span class="nc bnc" id="L137" title="All 4 branches missed.">        if (a == null || a.length == 0) {</span>
+<span class="nc" id="L138">            throw new IllegalArgumentException(&quot;a cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc" id="L141">        int mcols = a.length;</span>
+
+<span class="nc" id="L143">        int mrows = a[0].length;</span>
+        
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        for (int col = 0; col &lt; mcols; col++) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            for (int row = 0; row &lt; mrows; row++) {</span>
+<span class="nc" id="L147">                a[col][row] *= m;</span>
+            }            
+        }
+<span class="nc" id="L150">    }</span>
+    
+    public static void multiply(int[] m, int[] n) {
+
+<span class="nc bnc" id="L154" title="All 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L155">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L158" title="All 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L159">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L163">            throw new IllegalArgumentException(&quot;m must be the same size as n&quot;);</span>
+        }
+        
+<span class="nc" id="L166">        int len = m.length;</span>
+                
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        for (int i = 0; i &lt; len; i++) {                        </span>
+<span class="nc" id="L169">            m[i] *= n[i];</span>
+        }
+<span class="nc" id="L171">    }</span>
+    
+    /*
+    public static double[][] fastMultiply(double[][] m, double[][] n) {
+        
+        consider using Native BLAS from the included Netlib package
+        BLAS.getInstance().dgemm.
+        
+        Can see example in this repository's related proejct called
+        https://github.com/nking/curvature-scale-space-corners-and-transformations.git
+        in the test class tests//algorithms/NetlibTest.java
+        
+        or in MTJ source code
+        https://github.com/fommil/matrix-toolkits-java/blob/master/src/main/java/no/uib/cipr/matrix/DenseMatrix.java#L299
+        
+    }*/
+    
+    /**
+     * multiply matrix m by matrix n
+     * @param m tow dimensional array in ro major format
+     * @param n two dimensional array in row major format
+     * @return multiplication of m by n
+     */
+    public static double[][] multiply(double[][] m, double[][] n) {
+
+<span class="pc bpc" id="L196" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L197">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L199" title="2 of 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L200">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+        
+<span class="fc" id="L203">        int mrows = m.length;</span>
+
+<span class="fc" id="L205">        int mcols = m[0].length;</span>
+
+<span class="fc" id="L207">        int nrows = n.length;</span>
+        
+<span class="fc" id="L209">        int ncols = n[0].length;</span>
+        
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        if (mcols != nrows) {</span>
+<span class="nc" id="L212">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m (=&quot; + mcols + &quot;) &quot;
+                + &quot; must equal the number of rows in n (=&quot; + nrows + &quot;)&quot;);
+        }
+        
+        /*
+        a b c      p0 p1 p2
+        d e f      p3 p4 p5
+                   p6 p7 p8        
+        a*p0 + b*p3 + c*p6    a*p1 + b*p4 + c*p7    a*p2 + b*p5 + c*p8
+        d*p0 + d*p3 + e*p6    d*p1 + d*p4 + e*p7    d*p2 + e*p5 + f*p8
+        */
+        
+        // mrows X ncols
+<span class="fc" id="L226">        double[][] c = new double[mrows][];</span>
+        
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (int mrow = 0; mrow &lt; mrows; mrow++) {</span>
+<span class="fc" id="L229">            c[mrow] = new double[ncols];</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            for (int ncol = 0; ncol &lt; ncols; ncol++) {</span>
+<span class="fc" id="L231">                double sum = 0;                </span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">                for (int mcol = 0; mcol &lt; mcols; mcol++) {</span>
+<span class="fc" id="L233">                    sum += (m[mrow][mcol] * n[mcol][ncol]);                    </span>
+                }
+<span class="fc" id="L235">                c[mrow][ncol] = sum;</span>
+            }            
+        }
+
+<span class="fc" id="L239">        return c;</span>
+    }
+    
+    public static void multiply(double[] a, double f) {
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L244">            a[i] *= f;</span>
+        }
+<span class="fc" id="L246">    }</span>
+    
+    public static void multiply(double[][] m, double factor) {
+
+<span class="fc" id="L250">        int nrows = m.length;</span>
+<span class="fc" id="L251">        int ncols = m[0].length;</span>
+
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (int i = 0; i &lt; nrows; i++) {</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            for (int j = 0; j &lt; ncols; j++) {</span>
+<span class="fc" id="L255">                m[i][j] = factor*m[i][j];</span>
+            }
+        }
+<span class="fc" id="L258">    }</span>
+    
+    /**
+     * perform dot product and return matrix of size mrows X ncols
+     * @param m
+     * @param n
+     * @return 
+     */
+    public static DenseMatrix multiply(
+        Matrix m, Matrix n) {
+
+<span class="pc bpc" id="L269" title="3 of 6 branches missed.">        if (m == null || m.numRows() == 0 || m.numColumns() == 0) {</span>
+<span class="nc" id="L270">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L272" title="3 of 6 branches missed.">        if (n == null || n.numRows() == 0 || n.numColumns() == 0) {</span>
+<span class="nc" id="L273">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+        
+<span class="fc" id="L276">        int mrows = m.numRows();</span>
+
+<span class="fc" id="L278">        int mcols = m.numColumns();</span>
+
+<span class="fc" id="L280">        int nrows = n.numRows();</span>
+        
+<span class="fc" id="L282">        int ncols = n.numColumns();</span>
+        
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">        if (mcols != nrows) {</span>
+<span class="nc" id="L285">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m must equal the number of rows in n&quot;);
+        }
+        
+        /*
+        a b c      p0 p1 p2
+        d e f      p3 p4 p5
+                   p6 p7 p8        
+        a*p0+... a*p a*p
+        d*p0+... d*p d*p
+        */
+        
+<span class="fc" id="L297">        no.uib.cipr.matrix.DenseMatrix c = new DenseMatrix(mrows, ncols);</span>
+        
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        for (int row = 0; row &lt; mrows; row++) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            for (int ncol = 0; ncol &lt; ncols; ncol++) {</span>
+<span class="fc" id="L301">                double sum = 0;                </span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">                for (int mcol = 0; mcol &lt; mcols; mcol++) {</span>
+<span class="fc" id="L303">                    sum += (m.get(row, mcol) * n.get(mcol, ncol));                    </span>
+                }
+<span class="fc" id="L305">                c.set(row, ncol, sum);</span>
+            }            
+        }
+
+<span class="fc" id="L309">        return c;</span>
+    }
+    
+    
+    public static double[] multiply(Matrix a, double[] b) {
+        
+<span class="pc bpc" id="L315" title="2 of 4 branches missed.">        if (a == null || a.numRows() == 0) {</span>
+<span class="nc" id="L316">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L318" title="2 of 4 branches missed.">        if (b == null || b.length == 0) {</span>
+<span class="nc" id="L319">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+        
+<span class="fc" id="L322">        int mrows = a.numRows();</span>
+
+<span class="fc" id="L324">        int mcols = a.numColumns();</span>
+
+<span class="fc" id="L326">        int nrows = b.length;</span>
+        
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        if (mcols != nrows) {</span>
+<span class="nc" id="L329">            throw new IllegalArgumentException(</span>
+                &quot;the number of cols in a must equal the length of b&quot;);
+        }
+        
+<span class="fc" id="L333">        double[] c = new double[mrows];</span>
+
+<span class="fc" id="L335">        int cCol = 0;</span>
+        
+        /*
+        a0 1 2     0
+                   1
+                   2
+        */
+        
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        for (int row = 0; row &lt; mrows; row++) {</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">            for (int col = 0; col &lt; mcols; col++) {</span>
+<span class="fc" id="L345">                c[cCol] += (a.get(row, col) * b[col]);</span>
+            }
+<span class="fc" id="L347">            cCol++;        </span>
+        }
+
+<span class="fc" id="L350">        return c;</span>
+    }
+    
+    public static void multiply(TDoubleArrayList a, double f) {
+<span class="nc bnc" id="L354" title="All 2 branches missed.">        for (int i = 0; i &lt; a.size(); ++i) {</span>
+<span class="nc" id="L355">            a.set(i, f * a.get(i));</span>
+        }
+<span class="nc" id="L357">    }</span>
+    
+    public static void multiply(Matrix a, double b) {
+        
+<span class="nc bnc" id="L361" title="All 4 branches missed.">        if (a == null || a.numRows() == 0) {</span>
+<span class="nc" id="L362">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc" id="L365">        Iterator&lt;MatrixEntry&gt; iter = a.iterator();</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L367">            MatrixEntry entry = iter.next();</span>
+<span class="nc" id="L368">            entry.set(entry.get() * b);</span>
+<span class="nc" id="L369">        }</span>
+        
+<span class="nc" id="L371">    }</span>
+    
+    /**
+     * perform dot product of m and a diagonalized matrix of diag,
+     * and return matrix of size mrows X mcols
+     * @param m
+     * @param diag
+     * @return 
+     */
+    public static double[][] multiplyByDiagonal(
+        double[][] m, double[] diag) {
+
+<span class="nc bnc" id="L383" title="All 6 branches missed.">        if (m == null || m.length == 0 || m[0].length == 0) {</span>
+<span class="nc" id="L384">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L386" title="All 4 branches missed.">        if (diag == null || diag.length == 0) {</span>
+<span class="nc" id="L387">            throw new IllegalArgumentException(&quot;diag cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc" id="L390">        int mrows = m.length;</span>
+
+<span class="nc" id="L392">        int mcols = m[0].length;</span>
+
+<span class="nc" id="L394">        int nrows = diag.length;</span>
+                
+<span class="nc bnc" id="L396" title="All 2 branches missed.">        if (mcols != nrows) {</span>
+<span class="nc" id="L397">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m must equal the number of rows in n&quot;);
+        }
+        
+        /*
+        a b c      p0 0  0
+        d e f      0  p1 0
+                   0  0  p2        
+        */
+        
+<span class="nc" id="L407">        double[][] c = new double[mrows][mcols];</span>
+        
+<span class="nc bnc" id="L409" title="All 2 branches missed.">        for (int row = 0; row &lt; mrows; row++) {</span>
+<span class="nc" id="L410">            c[row] = new double[mcols];</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">            for (int mcol = 0; mcol &lt; mcols; mcol++) {</span>
+<span class="nc" id="L412">                c[row][mcol] = m[row][mcol] * diag[mcol];</span>
+            }            
+        }
+
+<span class="nc" id="L416">        return c;</span>
+    }
+    
+    /**
+     * perform dot product of m and a diagonalized matrix of diag,
+     * and return matrix of size mrows X mcols
+     * @param m
+     * @param diag
+     */
+    public static void multiplyByDiagonal(DenseMatrix m, double[] diag) {
+
+<span class="nc bnc" id="L427" title="All 6 branches missed.">        if (m == null || m.numRows() == 0 || m.numColumns() == 0) {</span>
+<span class="nc" id="L428">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L430" title="All 4 branches missed.">        if (diag == null || diag.length == 0) {</span>
+<span class="nc" id="L431">            throw new IllegalArgumentException(&quot;diag cannot be null or empty&quot;);</span>
+        }
+        
+<span class="nc" id="L434">        int mrows = m.numRows();</span>
+
+<span class="nc" id="L436">        int mcols = m.numColumns();</span>
+
+<span class="nc" id="L438">        int nrows = diag.length;</span>
+                
+<span class="nc bnc" id="L440" title="All 2 branches missed.">        if (mcols != nrows) {</span>
+<span class="nc" id="L441">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m must equal the number of rows in n&quot;);
+        }
+        
+        /*
+        a b c      p0 0  0
+        d e f      0  p1 0
+                   0  0  p2        
+        */
+                
+<span class="nc bnc" id="L451" title="All 2 branches missed.">        for (int row = 0; row &lt; mrows; row++) {</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">            for (int mcol = 0; mcol &lt; mcols; mcol++) {</span>
+<span class="nc" id="L453">                m.set(row, mcol,  m.get(row, mcol) * diag[mcol]);</span>
+            }            
+        }
+<span class="nc" id="L456">    }</span>
+    
+    public static double multiplyByTranspose(TDoubleArrayList a, 
+        TDoubleArrayList b) {
+<span class="nc" id="L460">        int sz0 = a.size();</span>
+<span class="nc" id="L461">        int sz1 = b.size();</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (sz0 != sz1) {</span>
+<span class="nc" id="L463">            throw new IllegalArgumentException(</span>
+                &quot;a and b must be same size&quot;);
+        }
+<span class="nc" id="L466">        double s = 0;</span>
+<span class="nc bnc" id="L467" title="All 2 branches missed.">        for (int i = 0; i &lt; a.size(); ++i) {</span>
+<span class="nc" id="L468">            s += a.get(i) * b.get(i);</span>
+        }
+<span class="nc" id="L470">        return s;</span>
+    }
+    
+    public static double multiplyByTranspose(double[] a, 
+        double[] b) {
+<span class="fc" id="L475">        int sz0 = a.length;</span>
+<span class="fc" id="L476">        int sz1 = b.length;</span>
+<span class="pc bpc" id="L477" title="1 of 2 branches missed.">        if (sz0 != sz1) {</span>
+<span class="nc" id="L478">            throw new IllegalArgumentException(</span>
+                &quot;a and b must be same size&quot;);
+        }
+<span class="fc" id="L481">        double s = 0;</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L483">            s += a[i] * b[i];</span>
+        }
+<span class="fc" id="L485">        return s;</span>
+    }
+    
+    public static double dot(double[] a, double[] b) {
+
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (a.length != b.length) {</span>
+<span class="nc" id="L491">            throw new IllegalArgumentException(&quot;a.length must == b.length&quot;);</span>
+        }
+        
+<span class="fc" id="L494">        double sum = 0;</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L496">            sum += (a[i] * b[i]);</span>
+        }
+
+<span class="fc" id="L499">        return sum;</span>
+    }
+    
+    public static double dot(int[] a, double[] b) {
+
+<span class="pc bpc" id="L504" title="1 of 2 branches missed.">        if (a.length != b.length) {</span>
+<span class="nc" id="L505">            throw new IllegalArgumentException(&quot;a.length must == b.length&quot;);</span>
+        }
+        
+<span class="fc" id="L508">        double sum = 0;</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L510">            sum += (a[i] * b[i]);</span>
+        }
+
+<span class="fc" id="L513">        return sum;</span>
+    }
+    
+    public static double[][] dot(DenseMatrix m1, DenseMatrix m2) {
+        
+<span class="pc bpc" id="L518" title="1 of 2 branches missed.">        if (m1 == null) {</span>
+<span class="nc" id="L519">            throw new IllegalArgumentException(&quot;m1 cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">        if (m2 == null) {</span>
+<span class="nc" id="L522">            throw new IllegalArgumentException(&quot;m2 cannot be null&quot;);</span>
+        }
+<span class="fc" id="L524">        int cCols = m2.numColumns();</span>
+<span class="fc" id="L525">        int cRows = m1.numRows();</span>
+        
+<span class="pc bpc" id="L527" title="1 of 2 branches missed.">        if (m1.numColumns() != m2.numRows()) {</span>
+<span class="nc" id="L528">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m1 != number of rows in m2&quot;);
+        }
+        
+        // m1 dot m2
+<span class="fc" id="L533">        double[][] m = new double[cRows][cCols];</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">        for (int i = 0; i &lt; cRows; i++) {</span>
+<span class="fc" id="L535">            m[i] = new double[cCols];</span>
+        }
+        
+        /*
+        t00  t01  t02       x1  x2  x3  x4
+        t10  t11  t12       y1  y2  y3  y4
+        t20  t21  t22       1    1   1   1
+        
+        row=0, col=0:nCols0  times and plus col=0, row=0:nRows1 --&gt; stored in row, row + (cAdd=0)
+        row=1, col=0:nCols0  times and plus col=0, row=0:nRows1 --&gt; stored in row, row + (cAdd=0)
+                
+        row=0, col=0:nCols0  times and plus col=(cAdd=1), row=0:nRows1 --&gt; stored in row, row + (cAdd=0)
+        */
+        
+<span class="fc bfc" id="L549" title="All 2 branches covered.">        for (int colAdd = 0; colAdd &lt; m2.numColumns(); colAdd++) {</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">            for (int row = 0; row &lt; m1.numRows(); ++row) {</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">                for (int col = 0; col &lt; m1.numColumns(); col++) {</span>
+<span class="fc" id="L552">                    double a = m1.get(row, col);</span>
+<span class="fc" id="L553">                    double b = m2.get(col, colAdd);</span>
+<span class="fc" id="L554">                    m[row][colAdd] += (a * b);</span>
+                }
+            }
+        }
+
+<span class="fc" id="L559">        return m;</span>
+    }
+        
+    /**
+     * apply dot operator to m1 and m2 which are formatted using same as 
+     * DenseMatrix, that is row major [row][col].
+     * @param m1
+     * @param m2
+     * @return 
+     */
+    public static double[][] dot(double[][] m1, double[][] m2) {
+        
+<span class="nc bnc" id="L571" title="All 2 branches missed.">        if (m1 == null) {</span>
+<span class="nc" id="L572">            throw new IllegalArgumentException(&quot;m1 cannot be null&quot;);</span>
+        }
+<span class="nc bnc" id="L574" title="All 2 branches missed.">        if (m2 == null) {</span>
+<span class="nc" id="L575">            throw new IllegalArgumentException(&quot;m2 cannot be null&quot;);</span>
+        }
+<span class="nc" id="L577">        int cCols = m2[0].length;</span>
+<span class="nc" id="L578">        int cRows = m1.length;</span>
+        
+<span class="nc bnc" id="L580" title="All 2 branches missed.">        if (m1[0].length != m2.length) {</span>
+<span class="nc" id="L581">            throw new IllegalArgumentException(</span>
+                &quot;the number of columns in m1 != number of rows in m2&quot;);
+        }
+        
+        // m1 dot m2
+<span class="nc" id="L586">        double[][] m = new double[cRows][cCols];</span>
+<span class="nc bnc" id="L587" title="All 2 branches missed.">        for (int i = 0; i &lt; cRows; i++) {</span>
+<span class="nc" id="L588">            m[i] = new double[cCols];</span>
+        }
+        
+<span class="nc bnc" id="L591" title="All 2 branches missed.">        for (int colAdd = 0; colAdd &lt; m2[0].length; colAdd++) {</span>
+<span class="nc bnc" id="L592" title="All 2 branches missed.">            for (int row = 0; row &lt; m1.length; ++row) {</span>
+<span class="nc bnc" id="L593" title="All 2 branches missed.">                for (int col = 0; col &lt; m1[0].length; col++) {</span>
+<span class="nc" id="L594">                    double a = m1[row][col];</span>
+<span class="nc" id="L595">                    double b = m2[col][colAdd];</span>
+<span class="nc" id="L596">                    m[row][colAdd] += (a * b);</span>
+                }
+            }
+        }
+
+<span class="nc" id="L601">        return m;</span>
+    }
+    
+    /**
+     * calculate the product of vectors a and b as a*b^T.
+     * @param a
+     * @param b
+     * @return outer product in double array of size [a.length][b.length])
+     */
+    public static double[][] outerProduct(double[] a, double[] b) {
+        
+<span class="nc" id="L612">        return vTv(a, b);</span>
+    }
+    
+    
+    public static TDoubleArrayList subtract(TDoubleArrayList a, TDoubleArrayList b) {
+<span class="nc" id="L617">        int sz0 = a.size();</span>
+<span class="nc" id="L618">        int sz1 = b.size();</span>
+<span class="nc bnc" id="L619" title="All 2 branches missed.">        if (sz0 != sz1) {</span>
+<span class="nc" id="L620">            throw new IllegalArgumentException(</span>
+                &quot;a and b must be same size&quot;);
+        }
+<span class="nc" id="L623">        TDoubleArrayList c = new TDoubleArrayList(sz0);</span>
+<span class="nc bnc" id="L624" title="All 2 branches missed.">        for (int i = 0; i &lt; a.size(); ++i) {</span>
+<span class="nc" id="L625">            c.add(a.get(i) - b.get(i));</span>
+        }
+<span class="nc" id="L627">        return c;</span>
+    }
+    
+    public static double[] subtract(double[] m, double[] n) {
+
+<span class="fc" id="L632">        int len = m.length;</span>
+
+<span class="fc" id="L634">        double[] c = new double[len];</span>
+
+<span class="fc" id="L636">        subtract(m, n, c);</span>
+
+<span class="fc" id="L638">        return c;</span>
+    }
+    
+    public static void subtract(double[] m, double[] n,
+        double[] output) {
+
+<span class="pc bpc" id="L644" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L645">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L647" title="2 of 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L648">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L650" title="1 of 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L651">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+
+<span class="fc" id="L654">        int len = m.length;</span>
+
+<span class="fc bfc" id="L656" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L657">            output[i] = m[i] - n[i];</span>
+        }
+<span class="fc" id="L659">    }</span>
+    
+        public static double[] add(double[] m, double[] n) {
+
+<span class="pc bpc" id="L663" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L664">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L666" title="2 of 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L667">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L669" title="1 of 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L670">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+        
+<span class="fc" id="L673">        int len = m.length;</span>
+     
+<span class="fc" id="L675">        double[] c = new double[len];</span>
+        
+<span class="fc bfc" id="L677" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L678">            c[i] = m[i] + n[i];</span>
+        }
+
+<span class="fc" id="L681">        return c;</span>
+    }
+    
+    public static float[] add(float[] m, float[] n) {
+
+<span class="pc bpc" id="L686" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L687">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L689" title="2 of 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L690">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L692" title="1 of 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L693">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+        
+<span class="fc" id="L696">        int len = m.length;</span>
+     
+<span class="fc" id="L698">        float[] c = new float[len];</span>
+        
+<span class="fc bfc" id="L700" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L701">            c[i] = m[i] + n[i];</span>
+        }
+
+<span class="fc" id="L704">        return c;</span>
+    }
+    
+    public static float[][] subtract(float[][] m, float[][] n) {
+
+<span class="nc bnc" id="L709" title="All 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L710">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L712" title="All 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L713">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L715" title="All 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L716">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+<span class="nc bnc" id="L718" title="All 2 branches missed.">        if (m[0].length != n[0].length) {</span>
+<span class="nc" id="L719">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+        
+<span class="nc" id="L722">        float[][] c = new float[m.length][];</span>
+
+<span class="nc bnc" id="L724" title="All 2 branches missed.">        for (int i = 0; i &lt; m.length; ++i) {</span>
+<span class="nc" id="L725">            c[i] = new float[m[0].length];</span>
+<span class="nc bnc" id="L726" title="All 2 branches missed.">            for (int j = 0; j &lt; m[0].length; ++j) {</span>
+<span class="nc" id="L727">                c[i][j] -= m[i][j] - n[i][j];</span>
+            }
+        }
+
+<span class="nc" id="L731">        return c;</span>
+    }
+    
+    public static float[][] add(float[][] m, float[][] n) {
+
+<span class="nc bnc" id="L736" title="All 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L737">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L739" title="All 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L740">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L742" title="All 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L743">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+<span class="nc bnc" id="L745" title="All 2 branches missed.">        if (m[0].length != n[0].length) {</span>
+<span class="nc" id="L746">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+        
+<span class="nc" id="L749">        float[][] c = new float[m.length][];</span>
+
+<span class="nc bnc" id="L751" title="All 2 branches missed.">        for (int i = 0; i &lt; m.length; ++i) {</span>
+<span class="nc" id="L752">            c[i] = new float[m[0].length];</span>
+<span class="nc bnc" id="L753" title="All 2 branches missed.">            for (int j = 0; j &lt; m[0].length; ++j) {</span>
+<span class="nc" id="L754">                c[i][j] = m[i][j] + n[i][j];</span>
+            }
+        }
+
+<span class="nc" id="L758">        return c;</span>
+    }
+
+    public static float[] subtract(float[] m, float[] n) {
+
+<span class="nc bnc" id="L763" title="All 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L764">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L766" title="All 4 branches missed.">        if (n == null || n.length == 0) {</span>
+<span class="nc" id="L767">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L769" title="All 2 branches missed.">        if (m.length != n.length) {</span>
+<span class="nc" id="L770">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+        
+<span class="nc" id="L773">        int len = m.length;</span>
+     
+<span class="nc" id="L775">        float[] c = new float[len];</span>
+        
+<span class="nc bnc" id="L777" title="All 2 branches missed.">        for (int i = 0; i &lt; len; i++) {</span>
+<span class="nc" id="L778">            c[i] = m[i] - n[i];</span>
+        }
+
+<span class="nc" id="L781">        return c;</span>
+    }
+    
+    public static DenseMatrix subtract(DenseMatrix m, DenseMatrix n) {
+
+<span class="nc bnc" id="L786" title="All 2 branches missed.">        if (m == null) {</span>
+<span class="nc" id="L787">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L789" title="All 2 branches missed.">        if (n == null) {</span>
+<span class="nc" id="L790">            throw new IllegalArgumentException(&quot;n cannot be null or empty&quot;);</span>
+        }
+<span class="nc bnc" id="L792" title="All 4 branches missed.">        if (m.numRows() != n.numRows() || m.numColumns() != n.numColumns()) {</span>
+<span class="nc" id="L793">            throw new IllegalArgumentException(&quot;m and n must be same length&quot;);</span>
+        }
+        
+<span class="nc" id="L796">        DenseMatrix output = new DenseMatrix(m.numRows(), m.numColumns());</span>
+        
+<span class="nc bnc" id="L798" title="All 2 branches missed.">        for (int i = 0; i &lt; m.numRows(); ++i) {</span>
+<span class="nc bnc" id="L799" title="All 2 branches missed.">            for (int j = 0; j &lt; m.numColumns(); ++j) {</span>
+<span class="nc" id="L800">                double v0 = m.get(i, j);</span>
+<span class="nc" id="L801">                double v1 = n.get(i, j);</span>
+<span class="nc" id="L802">                output.set(i, j, v0 - v1);</span>
+            }
+        }
+        
+<span class="nc" id="L806">        return output;</span>
+    }
+    
+    public static void add(int[] m, int n) {
+
+<span class="pc bpc" id="L811" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L812">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+        
+<span class="fc" id="L815">        int len = m.length;</span>
+             
+<span class="fc bfc" id="L817" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L818">            m[i] += n;</span>
+        }
+<span class="fc" id="L820">    }</span>
+    
+    public static float[][] transpose(float[][] m) {
+
+<span class="pc bpc" id="L824" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L825">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+
+<span class="fc" id="L828">        int mRows = m.length;</span>
+<span class="fc" id="L829">        int mCols = m[0].length;</span>
+
+<span class="fc" id="L831">        float[][] t = new float[mCols][];</span>
+<span class="fc bfc" id="L832" title="All 2 branches covered.">        for (int i = 0; i &lt; mCols; i++) {</span>
+<span class="fc" id="L833">            t[i] = new float[mRows];</span>
+        }
+
+<span class="fc bfc" id="L836" title="All 2 branches covered.">        for (int i = 0; i &lt; mRows; i++) {</span>
+<span class="fc bfc" id="L837" title="All 2 branches covered.">            for (int j = 0; j &lt; mCols; j++) {</span>
+<span class="fc" id="L838">                t[j][i] = m[i][j];</span>
+            }
+        }
+
+<span class="fc" id="L842">        return t;</span>
+    }
+    
+    public static DenseMatrix transpose(DenseMatrix m) {
+        
+<span class="nc" id="L847">        int mRows = m.numRows();</span>
+<span class="nc" id="L848">        int mCols = m.numColumns();</span>
+        
+<span class="nc" id="L850">        double[][] t = new double[mRows][];</span>
+<span class="nc bnc" id="L851" title="All 2 branches missed.">        for (int i = 0; i &lt; mRows; i++) {</span>
+<span class="nc" id="L852">            t[i] = new double[mCols];</span>
+<span class="nc bnc" id="L853" title="All 2 branches missed.">            for (int j = 0; j &lt; mCols; j++) {</span>
+<span class="nc" id="L854">                t[i][j] = m.get(i, j);</span>
+            }
+        } 
+        
+<span class="nc" id="L858">        double[][] transposed = transpose(t);</span>
+        
+<span class="nc" id="L860">        DenseMatrix mT = new DenseMatrix(transposed);</span>
+        
+<span class="nc" id="L862">        return mT;</span>
+    }
+    
+    public static double[][] transpose(double[][] m) {
+
+<span class="pc bpc" id="L867" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L868">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+        
+<span class="fc" id="L871">        int mRows = m.length;</span>
+<span class="fc" id="L872">        int mCols = m[0].length;</span>
+        
+<span class="fc" id="L874">        double[][] t = new double[mCols][];</span>
+<span class="fc bfc" id="L875" title="All 2 branches covered.">        for (int i = 0; i &lt; mCols; i++) {</span>
+<span class="fc" id="L876">            t[i] = new double[mRows];</span>
+        }
+        
+<span class="fc bfc" id="L879" title="All 2 branches covered.">        for (int i = 0; i &lt; mRows; i++) {</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">            for (int j = 0; j &lt; mCols; j++) {</span>
+<span class="fc" id="L881">                t[j][i] = m[i][j];</span>
+            }
+        }
+        
+<span class="fc" id="L885">        return t;</span>
+    }
+    
+    public static double[][] convertToRowMajor(DenseMatrix a) {
+<span class="fc" id="L889">        int nc = a.numColumns();</span>
+<span class="fc" id="L890">        int nr = a.numRows();</span>
+<span class="fc" id="L891">        double[][] out = new double[nr][];</span>
+<span class="fc bfc" id="L892" title="All 2 branches covered.">        for (int i = 0; i &lt; nr; ++i) {</span>
+<span class="fc" id="L893">            out[i] = new double[nc];</span>
+<span class="fc bfc" id="L894" title="All 2 branches covered.">            for (int j = 0; j &lt; nc; ++j) {</span>
+<span class="fc" id="L895">                out[i][j] = a.get(i, j);</span>
+            }
+        }
+<span class="fc" id="L898">        return out;</span>
+    }
+    
+    /**
+     * calculate the pseudo-inverse of matrix a, using the SVD of a,
+     * specifically, V*R*U^T where R is 1/diagonal of S.
+     * Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
+     * inverse of A.
+     * 
+     * Following Gilbert Strang's &quot;Introduction to Linear Algebra&quot;.
+     * 
+     * TODO: read &quot;ALTERNATIVE METHODS OF CALCULATION OF THE PSEUDO INVERSE
+       OF A NON FULL-RANK MATRIX&quot; by M. A. Murray-Lasso, 2008
+       http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
+     * @param a
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static double[][] pseudoinverseRankDeficient(double[][] a) throws NotConvergedException {
+<span class="fc" id="L917">        int m = a.length;</span>
+<span class="fc" id="L918">        int n = a[0].length;</span>
+        
+        // limit for a number to be significant above 0
+<span class="fc" id="L921">        double eps = 1e-15;</span>
+        
+        // from Gilbert Strang's &quot;Introduction to Linear Algebra&quot;:
+        // uses SVD:
+        //
+        //   A_inverse = V * pseudoinverse(S) * U^T
+        //        where pseudoinverse(S) is simply an empty matrix with the diagonal
+        //        being the reciprocal of each singular value
+        //      NOTE: compare number of ops w/ this factoring:
+        //          V * (pseudoinverse(S) * U^T)
+        //   A_inverse is n X m
+        //
+        //   V is n X n
+        //   pseudoinverse(S) is n X m
+        //   U^T is m X m
+        
+<span class="fc" id="L937">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
+<span class="fc" id="L938">        SVD svd = SVD.factorize(aMatrix);</span>
+        
+        //TODO: rewrite to use fewer data structures and multiply in place.
+        
+        // s is an array of size min(m,n)
+<span class="fc" id="L943">        double[] s = svd.getS();</span>
+<span class="fc" id="L944">        int rank = 0;</span>
+<span class="fc bfc" id="L945" title="All 2 branches covered.">        for (double sv : s) {</span>
+<span class="fc bfc" id="L946" title="All 2 branches covered.">            if (sv &gt; eps) {</span>
+<span class="fc" id="L947">                rank++;</span>
+            }
+        }
+<span class="fc" id="L950">        DenseMatrix vTM = svd.getVt();</span>
+<span class="fc" id="L951">        double[][] vT = MatrixUtil.convertToRowMajor(vTM);</span>
+<span class="fc" id="L952">        double[][] v = MatrixUtil.transpose(vT);</span>
+<span class="fc" id="L953">        DenseMatrix uM = svd.getU();</span>
+<span class="fc" id="L954">        double[][] uT = MatrixUtil.convertToRowMajor(uM);</span>
+        
+        /*
+        U is mxm orthonormal columns
+        S is mxn with non-negative singular values.  rank is number of non-zero entries
+        V is  nxn
+        */
+<span class="pc bpc" id="L961" title="3 of 4 branches missed.">        assert(v.length == n);</span>
+<span class="pc bpc" id="L962" title="3 of 4 branches missed.">        assert(v[0].length == n);</span>
+<span class="pc bpc" id="L963" title="3 of 4 branches missed.">        assert(uT.length == m);</span>
+<span class="pc bpc" id="L964" title="3 of 4 branches missed.">        assert(uT[0].length == m);</span>
+        
+<span class="fc" id="L966">        double[][] sInverse = new double[n][];</span>
+<span class="fc bfc" id="L967" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L968">            sInverse[i] = new double[m];</span>
+        }
+        
+<span class="fc bfc" id="L971" title="All 2 branches covered.">        for (int i = 0; i &lt; s.length; ++i) {</span>
+<span class="fc" id="L972">            double sI = s[i];</span>
+<span class="fc bfc" id="L973" title="All 2 branches covered.">            if (sI &gt; eps) {</span>
+<span class="fc" id="L974">                sInverse[i][i] = 1./sI;</span>
+            }
+        }
+        /*
+        U is mxn orthonormal columns
+        S is nxn with non-negative singular values.  rank is number of non-zero entries
+        V is  nxn
+        pseudoinverse(S) is nxm
+        */
+        
+        //A_inverse = V * pseudoinverse(S) * U^T
+<span class="fc" id="L985">        double[][] inv = MatrixUtil.multiply(v, sInverse);</span>
+<span class="fc" id="L986">        inv = MatrixUtil.multiply(inv, uT);</span>
+        
+<span class="fc" id="L988">        return inv;</span>
+    }
+    
+    /**
+     * calculate the pseudo-inverse of matrix a (dimensions mxn) which is a full
+     * rank matrix, i.e. rank = m, using LUP decomposition
+     * &lt;pre&gt;
+       for case m .lt. n: 
+           should calculate A† = A^T * (A * A^T)^(−1)
+        
+        for case n .lt. m: 
+           should calculate A† = (A^T * A)^(−1) * A^T
+     &lt;/pre&gt;
+     * NOTE that (A^T*A) (or (A * A^T)) has to be invertible, that is, 
+     * the reduced echelon form of A has linearly independent columns (rank==n).
+     * following pseudocode from Cormen et al. Introduction to Algorithms.
+     * @param a two dimensional array in row major format with dimensions
+     * m x n.  a is a full-rank matrix.
+     * a is a non-singular matrix(i.e. has exactly one solution). 
+     * 
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static double[][] pseudoinverseFullRank(double[][] a) throws NotConvergedException {
+<span class="fc" id="L1012">        int m = a.length;</span>
+<span class="fc" id="L1013">        int n = a[0].length;</span>
+        
+        /*
+        NOTE: 
+        for case m &lt; n: 
+           should calculate A† = A^T * (A * A^T)^(−1)
+        
+        for case n &lt; m: 
+           should calculate A† = (A^T * A)^(−1) * A^T
+        */
+        
+        // limit for a number to be significant above 0 (precision of computer)
+<span class="fc" id="L1025">        double eps = 1e-16;</span>
+        
+        //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
+<span class="fc" id="L1028">        double[][] aT = MatrixUtil.transpose(a);</span>
+<span class="fc" id="L1029">        double[][] aTA = MatrixUtil.multiply(aT, a);</span>
+<span class="fc" id="L1030">        DenseMatrix aTAM = new DenseMatrix(aTA);</span>
+        
+        //NOTE that (A^T*A) has to be invertible, that is, the reduced echelon form
+        // of A has linearly independent columns (no free variables, only pivots.
+        // which also means rank==n).
+        //
+        // could invert (A^T*A) using the cofactor matrix/determinant
+        //   or a convenience method from MTJ Matrix.solve
+        
+<span class="fc" id="L1039">        DenseMatrix I = Matrices.identity(aTA[0].length);</span>
+<span class="fc" id="L1040">        DenseMatrix identity = I.copy();</span>
+                
+        // A.solve(Matrix B, Matrix X) solves X = A\B.
+        // A*(A^-1) = I  ... identity = aTA / I
+<span class="fc" id="L1044">        DenseMatrix aTAIM = (DenseMatrix)aTAM.solve(I, identity);</span>
+<span class="fc" id="L1045">        double[][] aTAI = MatrixUtil.convertToRowMajor(aTAIM);</span>
+<span class="fc" id="L1046">        double[][] inv = MatrixUtil.multiply(aTAI, aT);</span>
+               
+<span class="fc" id="L1048">        return inv;</span>
+    }
+    
+    /**
+      from Strang &quot;Introduction to Linear Algebra&quot;:
+      &lt;pre&gt;
+       an inverse matrix may or may not exist.  
+       (1) has to be a square matrix.
+           A^-1 x A = I, where I is the identity matrix.
+       (2) an inverse matrix has n pivots remaining after elimination,
+                where pivot is the leftmost non-zero variable.
+       (3) after elimination, next test for possible invertibility is 
+             that the determinant is not zero
+
+       if A is invertible, then A * x = b can be solved as x = A^-1 * b
+       and (A * B)^-1 = B^-1 * A^-1
+      &lt;/pre&gt;
+     NOTE: because this uses decomposition, each application using it should decide whether
+     * to perform the exterior operations at same time to avoid recomputing
+     * any matrices.
+     * @param a
+     * @return true if is invertible
+     */
+    public static boolean isInvertible(double[][] a) {
+        
+<span class="nc" id="L1073">        int m = a.length;</span>
+<span class="nc" id="L1074">        int n = a[0].length;</span>
+<span class="nc bnc" id="L1075" title="All 2 branches missed.">        if (m != n) {</span>
+<span class="nc" id="L1076">            throw new IllegalArgumentException(&quot;a is not a squae matrix&quot;);</span>
+        }
+        
+        //rank:
+        // -- could use PackCholesky followed by check for positive definiteness
+        // -- could use LUP decomposition andcount the L diagonal 1's
+        // -- could use SVD and count the unique singular values in D
+<span class="nc" id="L1083">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
+        
+<span class="nc" id="L1085">        int rank = 0;</span>
+<span class="nc bnc" id="L1086" title="All 2 branches missed.">        for (int i = 0; i &lt; lup.ell.length; ++i) {</span>
+<span class="nc bnc" id="L1087" title="All 2 branches missed.">            if (Math.abs(lup.ell[i][i] - 1.0) &lt; 1.e-7) {</span>
+<span class="nc" id="L1088">                rank++;</span>
+            }
+        }
+<span class="nc bnc" id="L1091" title="All 2 branches missed.">        if (rank != n) {</span>
+<span class="nc" id="L1092">            return false;</span>
+        }
+        
+        // determinant (-1)^n * det(U) where det(U) is product of diagonal
+<span class="nc" id="L1096">        double det = 1;</span>
+<span class="nc bnc" id="L1097" title="All 2 branches missed.">        for (int i = 0; i &lt; lup.ell.length; ++i) {</span>
+<span class="nc" id="L1098">            det *= lup.u[i][i];</span>
+        }
+<span class="nc bnc" id="L1100" title="All 2 branches missed.">        if ((n % 2) != 0) {</span>
+<span class="nc" id="L1101">            det *= -1;</span>
+        }
+        
+<span class="nc bnc" id="L1104" title="All 2 branches missed.">        if (Math.abs(det) &gt; 1e-15) {</span>
+            // determinant is not zero, so is invertible
+<span class="nc" id="L1106">            return true;</span>
+        }
+        
+<span class="nc" id="L1109">        return false;</span>
+    }
+    
+    /**
+     * given data points xy, want to create a matrix usable to transform
+     * the data points by scaling and translation so that:
+        a) points are translated so that their centroid is at the origin.
+        b) points are scaled so that the average distance from the
+           origin is sqrt(2).
+       Can use the transformation matrix with dot operator: Misc.multiply(xy, tMatrix).
+     * @param xy
+     * @return a matrix for use for canonical transformation of the points.
+     * the format of the result is 
+     * &lt;pre&gt;
+     *  t[0] = new double[]{scale,       0,     -centroidX*scale};
+        t[1] = new double[]{0,           scale, -centroidY*scale};
+       &lt;/pre&gt;
+     */
+    public static double[][] calculateNormalizationMatrix2X3(double[][] xy) {
+        
+<span class="nc" id="L1129">        int nRows = xy.length;</span>
+        
+<span class="nc" id="L1131">        double cen0 = 0;</span>
+<span class="nc" id="L1132">        double cen1 = 0;</span>
+<span class="nc bnc" id="L1133" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L1134">            cen0 += xy[i][0];</span>
+<span class="nc" id="L1135">            cen1 += xy[i][1];</span>
+        }
+<span class="nc" id="L1137">        cen0 /= (double)nRows;</span>
+<span class="nc" id="L1138">        cen1 /= (double)nRows;</span>
+        
+<span class="nc" id="L1140">        double mean = 0;</span>
+<span class="nc bnc" id="L1141" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L1142">            double diffX = xy[i][0] - cen0;</span>
+<span class="nc" id="L1143">            double diffY = xy[i][1] - cen1;</span>
+<span class="nc" id="L1144">            double dist = Math.sqrt((diffX * diffX) + (diffY * diffY));</span>
+<span class="nc" id="L1145">            mean += dist;</span>
+        }
+<span class="nc" id="L1147">        mean /= (double)nRows;</span>
+        
+        /*
+        mean * factor = sqrt(2)
+        */
+<span class="nc" id="L1152">        double scale = Math.sqrt(2)/mean;</span>
+                
+<span class="nc" id="L1154">        double[][] t = new double[2][];</span>
+<span class="nc" id="L1155">        t[0] = new double[]{scale,       0,     -cen0*scale};</span>
+<span class="nc" id="L1156">        t[1] = new double[]{0,           scale, -cen1*scale};</span>
+        
+<span class="nc" id="L1158">        return t;</span>
+    }
+    
+     public static float[][] copy(float[][] a) {
+
+<span class="nc" id="L1163">        float[][] c = new float[a.length][a[0].length];</span>
+
+<span class="nc bnc" id="L1165" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L1166">            c[i] = new float[a[0].length];</span>
+<span class="nc" id="L1167">            System.arraycopy(a[i], 0, c[i], 0, a[0].length);</span>
+        }
+        
+<span class="nc" id="L1170">        return c;</span>
+    }
+
+    public static double[][] copy(double[][] a) {
+        
+<span class="fc" id="L1175">        double[][] m = new double[a.length][];</span>
+        
+<span class="fc bfc" id="L1177" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L1178">            int n0 = a[i].length;</span>
+<span class="fc" id="L1179">            m[i] = new double[n0];</span>
+<span class="fc" id="L1180">            System.arraycopy(a[i], 0, m[i], 0, n0);</span>
+        }
+        
+<span class="fc" id="L1183">        return m;</span>
+    }
+    
+    /**
+     * 
+     * @param a
+     * @param row0 beginning index, inclusive
+     * @param row1 end index, exclusive
+     * @param col0 beginning index, inclusive
+     * @param col1 end index, exclusive
+     * @return 
+     */
+    public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
+        
+<span class="fc" id="L1197">        int nr2 = row1 - row0 + 1;</span>
+<span class="fc" id="L1198">        int nc2 = col1 - col0 + 1;</span>
+        
+<span class="fc" id="L1200">        double[][] m = new double[nr2][];</span>
+        int i, j;
+<span class="fc bfc" id="L1202" title="All 2 branches covered.">        for (i = 0; i &lt; nr2; ++i) {</span>
+<span class="fc" id="L1203">            m[i] = new double[nc2];</span>
+<span class="fc" id="L1204">            System.arraycopy(a[row0 + i], col0, m[i], 0, nc2);</span>
+        }
+        
+<span class="fc" id="L1207">        return m;</span>
+    }
+    
+      /**
+     * using cofactors and minors of the matrix, return the determinant.
+     * in practice one can use any row as the primary set of cofactors or
+     * any column.  this method may be optimized in the future, but for now,
+     * uses the first column as the cofactors.
+     *
+     * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11
+        + 135 + 2 = 148
+     *         | 2   1  5 |
+     */
+    public static double determinant(Matrix m) {
+
+<span class="nc" id="L1223">        double[][] a = no.uib.cipr.matrix.Matrices.getArray(m);</span>
+
+<span class="nc" id="L1225">        return determinant(a);</span>
+    }
+    
+    /**
+     * using cofactors and minors of the matrix, return the determinant.
+     * in practice one can use any row as the primary set of cofactors or
+     * any column.  this method may be optimized in the future, but for now,
+     * uses the first column as the cofactors.
+     *
+     * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 
+        + 135 + 2 = 148
+     *         | 2   1  5 |
+     */
+    public static double determinant(double[][] m) {
+
+<span class="pc bpc" id="L1241" title="2 of 4 branches missed.">        if (m == null || m.length == 0) {</span>
+<span class="nc" id="L1242">            throw new IllegalArgumentException(&quot;m cannot be null or empty&quot;);</span>
+        }
+<span class="pc bpc" id="L1244" title="1 of 2 branches missed.">        if (m.length != m[0].length) {</span>
+<span class="nc" id="L1245">            throw new IllegalArgumentException(&quot;m must be a square&quot;);</span>
+        }
+<span class="fc bfc" id="L1247" title="All 2 branches covered.">        if (m.length == 1) {</span>
+<span class="fc" id="L1248">            return m[0][0];</span>
+<span class="fc bfc" id="L1249" title="All 2 branches covered.">        } else if (m.length == 2) {</span>
+<span class="fc" id="L1250">            double s = ( m[0][0]*m[1][1] ) - ( m[0][1]*m[1][0] );</span>
+<span class="fc" id="L1251">            return s;</span>
+        } else {
+<span class="fc" id="L1253">            double s = 0.0;</span>
+            // use 1st row as cofactors and minors
+<span class="fc bfc" id="L1255" title="All 2 branches covered.">            for (int i = 0; i &lt; m.length; i++) {</span>
+
+<span class="fc" id="L1257">                double[][] n = copyExcept(m, i, 0);</span>
+                
+<span class="fc" id="L1259">                double tmp = m[i][0] * determinant(n);</span>
+                                
+<span class="fc bfc" id="L1261" title="All 2 branches covered.">                if ((i &amp; 1) == 0) {</span>
+<span class="fc" id="L1262">                    s +=  tmp;</span>
+                } else {
+<span class="fc" id="L1264">                    s -=  tmp;</span>
+                }
+            }
+<span class="fc" id="L1267">            return s;</span>
+        }
+    }
+    
+    /**
+     * create copy of matrix m except row and col
+     * @param m
+     * @param i
+     * @param i0
+     * @return
+     */
+    private static double[][] copyExcept(double[][] m, int col, int row) {
+
+<span class="fc" id="L1280">        double[][] n = new double[m.length - 1][m.length - 1];</span>
+
+<span class="fc" id="L1282">        int nr = 0;</span>
+<span class="fc" id="L1283">        int nc = 0;</span>
+
+<span class="fc bfc" id="L1285" title="All 2 branches covered.">        for (int mCol = 0; mCol &lt; m.length; mCol++) {</span>
+<span class="fc bfc" id="L1286" title="All 2 branches covered.">            if (mCol == col) {</span>
+<span class="fc" id="L1287">                continue;</span>
+            }
+
+<span class="fc" id="L1290">            n[nc] = new double[m.length - 1];</span>
+            
+<span class="fc" id="L1292">            nr = 0;</span>
+<span class="fc bfc" id="L1293" title="All 2 branches covered.">            for (int mRow = 0; mRow &lt; m[0].length; mRow++) {</span>
+<span class="fc bfc" id="L1294" title="All 2 branches covered.">                if (mRow == row) {</span>
+<span class="fc" id="L1295">                    continue;</span>
+                }
+
+<span class="fc" id="L1298">                n[nc][nr] = m[mCol][mRow];</span>
+<span class="fc" id="L1299">                nr++;</span>
+            }
+<span class="fc" id="L1301">            nc++;</span>
+        }
+
+<span class="fc" id="L1304">        return n;</span>
+    }
+   
+    /**
+     * the outer product of vectors v1 and v2 as the
+     * transpose of v1 times v2.
+     * @param v1
+     * @param v2
+     * @return the outer product of v1 and v2 as double array of 
+     * size v1.length X v2.length.
+     */
+    public static double[][] vTv(double[] v1, double[] v2) {
+<span class="fc" id="L1316">        int n = v1.length;</span>
+<span class="fc" id="L1317">        int m = v2.length;</span>
+<span class="fc" id="L1318">        double[][] out = new double[n][m];</span>
+<span class="fc bfc" id="L1319" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
+<span class="fc bfc" id="L1320" title="All 2 branches covered.">            for (int col = 0; col &lt; m; ++col) {</span>
+<span class="fc" id="L1321">                out[row][col] = v1[row] * v2[col];</span>
+            }
+        }
+<span class="fc" id="L1324">        return out;</span>
+    }
+    
+    /**
+     * determine the largest eigenvalue using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method is implemented from pseudocode in Golub and van Loan 
+     * &quot;Matrix Computations&quot;.
+     * NOTE that the number of necessary iterations is dependent upon
+     * how close the largest and second largest eigenvalues are and that ratio
+     * tends to be near &quot;1&quot; for large matrices and in that case, the power
+     * method isn't the right method (consider QR or SVD).
+     * @param a
+     * @param nIterations
+     * @return 
+     */
+    public static double powerMethod(double[][] a, int nIterations) {
+
+<span class="pc bpc" id="L1345" title="1 of 2 branches missed.">        if (!isPositiveDefinite(a)) {</span>
+<span class="nc" id="L1346">            throw new IllegalArgumentException(&quot;a must be positive definite&quot;);</span>
+        }
+        
+        // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
+
+<span class="fc" id="L1351">        int nR = a.length;</span>
+<span class="fc" id="L1352">        double[] v = new double[nR];</span>
+        double[] z;
+        double norm;
+<span class="fc" id="L1355">        double eig = 0;</span>
+        int row;
+        
+<span class="fc" id="L1358">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L1359">        long seed = System.nanoTime();</span>
+        //System.out.println(&quot;SEED=&quot; + seed);
+<span class="fc" id="L1361">        rand.setSeed(seed);</span>
+        //avoid orthogonal first guess at v using randomization.
+<span class="fc bfc" id="L1363" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L1364">            v[row] = rand.nextDouble();</span>
+        }
+            
+<span class="fc bfc" id="L1367" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
+            
+<span class="fc" id="L1369">            z = MatrixUtil.multiply(a, v);</span>
+<span class="fc" id="L1370">            norm = 0;</span>
+<span class="fc bfc" id="L1371" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L1372">                norm += (z[row]*z[row]);</span>
+            }
+<span class="fc" id="L1374">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L1375">            eig = norm;</span>
+<span class="fc bfc" id="L1376" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L1377">                v[row] = z[row] / eig;</span>
+            }
+            //System.out.printf(&quot;eig=%.3f\n  v=%s\n  z=%s\n&quot;, eig, Arrays.toString(v),
+            //    Arrays.toString(z));
+        }
+<span class="fc" id="L1382">        return eig;</span>
+    }
+    
+    /**
+     * determine the largest eigenvalue using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method is implemented from pseudocode in Golub and van Loan 
+     * &quot;Matrix Computations&quot;.
+     * NOTE that the number of necessary iterations is dependent upon
+     * how close the largest and second largest eigenvalues are and that ratio
+     * tends to be near &quot;1&quot; for large matrices and in that case, the power
+     * method isn't the right method (consider QR or SVD).
+     * @param a
+     * @param tolerance iterations are stopped when the current multiplication vector
+     * difference from previous is smaller than tolerance for each item.
+     * @param x an initialized vector of size a.length that will be filled by
+     * this method to hold the vector used to calculate eig = x^T * a * x
+     * @return 
+     */
+    public static double powerMethod(double[][] a, double tolerance, double[] x) {
+<span class="fc" id="L1405">        int nR = a.length;</span>
+<span class="fc" id="L1406">        double[] v = new double[nR];</span>
+        double[] z;
+        double norm, t;
+<span class="fc" id="L1409">        double eig = 0;</span>
+        int row, stop;
+        
+<span class="fc" id="L1412">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L1413">        long seed = System.nanoTime();</span>
+        //System.out.println(&quot;SEED=&quot; + seed);
+<span class="fc" id="L1415">        rand.setSeed(seed);</span>
+        //avoid orthogonal first guess at v using randomization.
+<span class="fc bfc" id="L1417" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L1418">            v[row] = rand.nextDouble();</span>
+        }
+        
+<span class="fc" id="L1421">        int nIter = 0;</span>
+        
+        while (true) {
+                        
+<span class="fc" id="L1425">            z = MatrixUtil.multiply(a, v);</span>
+<span class="fc" id="L1426">            norm = 0;</span>
+<span class="fc bfc" id="L1427" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L1428">                norm += (z[row]*z[row]);</span>
+            }
+<span class="fc" id="L1430">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L1431">            eig = norm;</span>
+<span class="fc" id="L1432">            stop = 1;</span>
+<span class="fc bfc" id="L1433" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L1434">                t = z[row]/eig;</span>
+<span class="fc bfc" id="L1435" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
+<span class="fc" id="L1436">                    stop = 0;</span>
+                }
+<span class="fc" id="L1438">                v[row] = z[row] / eig;</span>
+            }
+<span class="fc bfc" id="L1440" title="All 2 branches covered.">            if (stop == 1) {</span>
+<span class="fc" id="L1441">                break;</span>
+            }
+            //System.out.printf(&quot;nIter=%d eig=%.3f\n  v=%s\n  z=%s\n&quot;, nIter, 
+            //    eig, Arrays.toString(v), Arrays.toString(z));
+<span class="fc" id="L1445">            nIter++;</span>
+        }
+<span class="fc" id="L1447">        System.arraycopy(v, 0, x, 0, v.length);</span>
+<span class="fc" id="L1448">        return eig;</span>
+    }
+    
+     /**
+     * determine the largest eigenvalue using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method is implemented from pseudocode in Golub and van Loan 
+     * &quot;Matrix Computations&quot;.
+     * NOTE that the number of necessary iterations is dependent upon
+     * how close the largest and second largest eigenvalues are and that ratio
+     * tends to be near &quot;1&quot; for large matrices and in that case, the power
+     * method isn't the right method (consider QR or SVD).
+     * @param a
+     * @param tolerance iterations are stopped when the current multiplication vector
+     * difference from previous is smaller than tolerance for each item.
+     * @return 
+     */
+    public static double powerMethod(double[][] a, double tolerance) {
+<span class="fc" id="L1469">        double[] x = new double[a.length];</span>
+<span class="fc" id="L1470">        return powerMethod(a, tolerance, x);</span>
+    }
+    
+    /**
+     * determine the eigenvalue pairs using the power method.  note that
+     * array a must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix a first
+     * because the first initial guess of an eigenvector of a is composed
+     * of random values between [0 and 1).
+     * The method follows &quot;Mining of Massive Datasets&quot; by Leskovec, Rajaraman,
+     * and Ullman.  http://www.mmds.org/
+     * @param a
+     * @param tolerance iterations are stopped when the current multiplication vector
+     * difference from previous is smaller than tolerance for each item.
+     * @return an array of a.length eigenvectors
+     */
+    public static double[] powerMethodEigenPairs(double[][] a, double tolerance) {
+        
+<span class="fc" id="L1488">        double[] x = new double[a.length];</span>
+        double eig;
+<span class="fc" id="L1490">        double[] eigs = new double[a.length];</span>
+        double[][] x2, a2;
+        
+<span class="fc bfc" id="L1493" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
+            
+<span class="fc" id="L1495">            eigs[nr] = powerMethod(a, tolerance, x);</span>
+            
+<span class="fc" id="L1497">            x2 = vTv(x, x);</span>
+<span class="fc" id="L1498">            a2 = copy(a);</span>
+<span class="fc bfc" id="L1499" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc bfc" id="L1500" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
+<span class="fc" id="L1501">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
+                }
+            }
+<span class="fc" id="L1504">            a = a2;</span>
+            
+<span class="fc" id="L1506">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
+<span class="fc" id="L1507">            System.out.println(&quot;  a2=\n&quot;);</span>
+<span class="fc bfc" id="L1508" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc" id="L1509">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
+            }
+        }
+                
+<span class="fc" id="L1513">        return eigs;</span>
+    }
+    
+    /**
+     * calculate the square root of symmetric positive definite matrix A using SVD.
+     * 
+     * &lt;pre&gt;
+     *    [U, S, V] = svd(A)
+     *    J = V * S^(1/2) * V^T is a symmetric n×n matrix, such that square root of A = JJ.
+     *    J is non-negative definite.
+     * &lt;/pre&gt;
+     * from Allan Jepson's lecture on Gilbert Strang's SVD in machine learning
+     * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
+     * @param a a square symmetric non-negative definite matrix.
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[][] squareRoot(double[][] a) throws NotConvergedException {
+        
+<span class="pc bpc" id="L1531" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
+<span class="nc" id="L1532">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
+        }
+        
+<span class="fc" id="L1535">        int m = a.length;</span>
+<span class="fc" id="L1536">        int n = a[0].length;</span>
+        
+<span class="pc bpc" id="L1538" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
+<span class="nc" id="L1539">            a = MatrixUtil.transpose(a);</span>
+<span class="nc" id="L1540">            m = a.length;</span>
+<span class="nc" id="L1541">            n = a[0].length;</span>
+        }
+        
+        // limit for a number to be significant above 0
+<span class="fc" id="L1545">        double eps = 1e-16;</span>
+        
+<span class="fc" id="L1547">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
+<span class="fc" id="L1548">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
+        
+        // s is an array of size min(m,n)  which is nxn here
+<span class="fc" id="L1551">        double[] s = svd.getS();</span>
+        
+<span class="fc" id="L1553">        double[][] sMatrix = new double[n][n];</span>
+<span class="fc bfc" id="L1554" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L1555">            sMatrix[i] = new double[n];</span>
+<span class="fc" id="L1556">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
+        }
+        
+<span class="fc" id="L1559">        int rank = 0;</span>
+<span class="fc bfc" id="L1560" title="All 2 branches covered.">        for (double sv : s) {</span>
+<span class="pc bpc" id="L1561" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="fc" id="L1562">                rank++;</span>
+            }
+        }
+        // the number of distinct non-zero eigenvalues is rank.
+        // there are 2^(rank) square roots
+        
+        /*
+        S has singular values along the diagonal and those are the square roots 
+        of positive eigenvalues of A.  the number of them is == the rank of A.
+        NOTE the singular values are the eigenvalues of A*A^T of A^T*A.
+        
+        S = [ sqrt(λ_1)     0        ...
+            [     0      sqrt(λ_2)   ...
+        
+        */
+                
+        /*
+        U is mxm orthonormal columns
+        S is nxn with non-negative singular values.  rank is number of non-zero entries
+        V is  mxn
+        
+            [nxn] * [nxn] * [nxn]
+        J = V * S^(1/2) * V^T  is [nxn]
+        */       
+                 
+        /*
+          a00  a01   s00  0 
+          a10  a11     0  s11
+          a20  a21
+        
+        a_r0_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r0_c1 * s_r1_c1
+        a_r1_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r1_c1 * s_r1_c1
+        a_r2_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r2_c1 * s_r1_c1
+        =
+        a_r0_c0 * s[0]    a_r0_c1 * s[1]
+        a_r1_c0 * s[0]    a_r1_c1 * s[1]
+        a_r2_c0 * s[0]    a_r2_c1 * s[1]
+        */
+<span class="fc" id="L1600">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
+<span class="fc" id="L1601">        DenseMatrix u = (DenseMatrix) svd.getU();</span>
+        
+<span class="fc" id="L1603">        double[][] _vT = Matrices.getArray(vT);</span>
+      
+<span class="fc" id="L1605">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
+<span class="fc" id="L1606">        j = MatrixUtil.multiply(j, _vT);</span>
+        
+<span class="fc" id="L1608">        return j;</span>
+    }
+    
+    public static boolean isSquare(double[][] a) {
+<span class="pc bpc" id="L1612" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
+    }
+    
+    /*
+     * NOTE: this method is a very rough look at symmetry.  
+       matrix echelon row reduction should be performed 
+       (a may have 0's) and isn't present yet.
+     * @param a
+     * @return 
+    public static boolean isSymmetric(double[][] a) {
+        if (!isSquare(a)) {
+            return false;
+        }
+                
+        // need reduced echelon form then can compare entries
+        
+        double tol = 1e-3;
+        double r;
+        int n = a.length;
+        int i, j;
+        for (i = 0; i &lt; n; ++i) {
+            for (j = 0; j &lt; n; ++j) {
+                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    */
+    
+    public static boolean isPositiveSymmetric(double[][] a) {
+<span class="nc bnc" id="L1644" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L1645">            return false;</span>
+        }
+                        
+<span class="nc" id="L1648">        double tol = 1e-3;</span>
+<span class="nc" id="L1649">        int n = a.length;</span>
+        int i, j;
+<span class="nc bnc" id="L1651" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc bnc" id="L1652" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L1653" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
+<span class="nc" id="L1654">                    return false;</span>
+                }
+<span class="nc bnc" id="L1656" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
+<span class="nc" id="L1657">                    return false;</span>
+                }
+            }
+        }
+<span class="nc" id="L1661">        return true;</span>
+    }
+    
+    /**
+     * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive
+     * 
+     * @param a
+     * @return 
+     */
+    public static boolean isPositiveDefinite(double[][] a) {
+<span class="pc bpc" id="L1671" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L1672">            return false;</span>
+        }
+        /*
+        from Strang &quot;Linear Algebra&quot;:
+        
+        matrix A is positive definite for every non-zero vector x if x^T*A*x &gt; 0 
+        
+        when a symmetric 2x2 matrix has 1 of these 4, it has all 4:
+            1) both eigenvectors are positive
+            2) the 1x1 and 2x2 ... determinants are positive a&gt;0 and a*c-b^2&gt;0
+            3) the pivots are positive a&gt;0 and a*c-b^2&gt;0
+            4) the function x^T*A*x is positive except at (0.0)
+
+        */
+        // using rule that left upward rooted determinants &gt; 0
+<span class="fc" id="L1687">        int n = a.length;</span>
+        double[][] sa;
+        double det;
+<span class="fc bfc" id="L1690" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L1691">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
+<span class="fc" id="L1692">            det = MatrixUtil.determinant(sa);</span>
+<span class="pc bpc" id="L1693" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
+<span class="nc" id="L1694">                return false;</span>
+            }
+        }
+<span class="fc" id="L1697">        return true;</span>
+    }
+    
+        /*
+         * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+         *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 + 135 + 2 =
+ 148
+         *         | 2   1  5 |
+         *
+         *          3 4     7  4    7  3
+         *          1 5     2  5    2  1
+         * 
+         *         -5 2     1  2    1 -5
+         *          1 5     2  5    2  1
+         *
+         *         -5 2     1  2    1 -5
+         *          3 4     7  4    7  3
+    */
+    public static double[][] createCofactor(double[][] m) {
+
+<span class="fc" id="L1717">        int ncols = m.length;</span>
+<span class="fc" id="L1718">        int nrows = m[0].length;</span>
+
+<span class="fc" id="L1720">        double[][] cofactor = new double[ncols][nrows];</span>
+
+<span class="fc bfc" id="L1722" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
+            
+<span class="fc" id="L1724">            cofactor[i] = new double[nrows];</span>
+
+<span class="fc bfc" id="L1726" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
+
+<span class="fc bfc" id="L1728" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
+
+<span class="fc bfc" id="L1730" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
+
+<span class="fc" id="L1732">                double[][] n = copyExcept(m, i, j);</span>
+
+<span class="fc" id="L1734">                double cfctr = determinant(n);</span>
+
+<span class="fc bfc" id="L1736" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
+<span class="fc" id="L1737">                    cfctr = -1*cfctr;</span>
+                }
+
+<span class="fc" id="L1740">                cofactor[i][j] = cfctr;</span>
+            }
+         }
+<span class="fc" id="L1743">        return cofactor;</span>
+    }
+    
+        /**
+     * find the equation for which A * A^(-1) = the identity matrix
+     *
+     *             1
+     * A^(-1) =  ------ C^(T)  where C_ij = cofactor of a_ij
+     *            det A
+     *
+     * @param m
+     * @return
+     */
+    public static double[][] inverse(double[][] m) {
+
+        // create cofactor of matrix:
+<span class="fc" id="L1759">        double[][] cofactor = createCofactor(m);</span>
+
+<span class="fc" id="L1761">        double[][] cofactorTransposed = transpose(cofactor);</span>
+
+<span class="fc" id="L1763">        double det = determinant(m);</span>
+
+<span class="fc" id="L1765">        multiply(cofactorTransposed, 1./det);</span>
+
+<span class="fc" id="L1767">        return cofactorTransposed;</span>
+    }
+    
+    /**
+     * given a as vectors of data of nSamples of nVariables, return the
+     * mean of each of the variables. 
+     * note that the format must be a[nSamples][nVariables],
+     * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
+     * and nVariables = 3;
+     * @param a
+     * @return 
+     */
+    public static double[] mean(double[][] a) {
+<span class="fc" id="L1780">        int nSamples = a.length;</span>
+<span class="fc" id="L1781">        int nVariables = a[0].length;</span>
+        
+        int i, j;
+<span class="fc" id="L1784">        double[] mean = new double[nVariables];</span>
+        double sum;
+<span class="fc bfc" id="L1786" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
+<span class="fc" id="L1787">            sum = 0;</span>
+<span class="fc bfc" id="L1788" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc" id="L1789">                sum += (a[i][j]);</span>
+            }
+<span class="fc" id="L1791">            mean[j] = sum/(double)nSamples;</span>
+        }
+<span class="fc" id="L1793">        return mean;</span>
+    }
+    
+    /**
+     * given a as vectors of data of nSamples of nVariables, return the
+     * mean of each of the variables. 
+     * note that the format must be a[nSamples][nVariables],
+     * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
+     * and nVariables = 3;
+     * @param a
+     * @return 
+     */
+    public static double[] standardDeviation(double[][] a) {
+<span class="fc" id="L1806">        int nSamples = a.length;</span>
+<span class="fc" id="L1807">        int nVars = a[0].length;</span>
+        
+<span class="fc" id="L1809">        double[] c = mean(a);</span>
+        
+<span class="fc" id="L1811">        double[] out = new double[nVars];</span>
+        int i, d;
+        double diff;
+<span class="fc bfc" id="L1814" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L1815" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L1816">                diff = a[i][d] - c[d];</span>
+<span class="fc" id="L1817">                out[d] += (diff*diff);</span>
+            }
+        }
+<span class="fc bfc" id="L1820" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L1821">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); </span>
+        }
+        
+<span class="fc" id="L1824">        return out;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

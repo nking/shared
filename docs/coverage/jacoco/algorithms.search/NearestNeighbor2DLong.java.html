@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NearestNeighbor2DLong.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.search</a> &gt; <span class="el_source">NearestNeighbor2DLong.java</span></div><h1>NearestNeighbor2DLong.java</h1><pre class="source lang-java linenums">package algorithms.search;
 
-import algorithms.YFastTrieLong;
+import algorithms.heapsAndPQs.YFastTrieLong;
 import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TLongIterator;
@@ -341,7 +341,7 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L341">                closestDist = dMin;</span>
 <span class="fc" id="L342">                closestDistPlusTol = closestDist + tolerance;</span>
             }
-<span class="pc bpc" id="L344" title="1 of 4 branches missed.">            if ((predecessor != -1) &amp;&amp; </span>
+<span class="fc bfc" id="L344" title="All 4 branches covered.">            if ((predecessor != -1) &amp;&amp; </span>
                 (dp2 &lt;= closestDistPlusTol)) {
 <span class="fc" id="L346">                closestIndexes.add(predecessor);</span>
             }
@@ -367,8 +367,8 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L367">        int yLow = estimateLowBound(y, goal);</span>
        
         int yCurrent;
-<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        if (predecessor == -1) {</span>
-<span class="nc" id="L371">            yCurrent = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">        if (predecessor == -1) {</span>
+<span class="fc" id="L371">            yCurrent = Integer.MIN_VALUE;</span>
         } else {
 <span class="fc" id="L373">            int pRow = getRow(predecessor);</span>
 <span class="fc bfc" id="L374" title="All 2 branches covered.">            if (pRow &lt; y) {</span>
@@ -710,8 +710,8 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L710">        int yLow = estimateLowBound(y, goal);</span>
        
         int yCurrent;
-<span class="pc bpc" id="L713" title="1 of 2 branches missed.">        if (predecessor == -1) {</span>
-<span class="nc" id="L714">            yCurrent = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L713" title="All 2 branches covered.">        if (predecessor == -1) {</span>
+<span class="fc" id="L714">            yCurrent = Integer.MIN_VALUE;</span>
         } else {
 <span class="fc" id="L716">            int pRow = getRow(predecessor);</span>
 <span class="fc bfc" id="L717" title="All 2 branches covered.">            if (pRow &lt; y) {</span>
@@ -790,7 +790,7 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L790">                closestIndexes.add(s2);</span>
             }
             
-<span class="pc bpc" id="L793" title="1 of 2 branches missed.">            if (p2 != -1) {</span>
+<span class="fc bfc" id="L793" title="All 2 branches covered.">            if (p2 != -1) {</span>
 <span class="fc" id="L794">                long expectedNext = getInternalIndex(x, yCurrent - 1);</span>
 <span class="pc bpc" id="L795" title="1 of 2 branches missed.">                if (p2 &gt; expectedNext) {</span>
 <span class="fc" id="L796">                    yCurrent -= 1;</span>
@@ -798,7 +798,7 @@ public class NearestNeighbor2DLong {
 <span class="nc" id="L798">                    yCurrent = getRow(p2) - 1;</span>
                 }
 <span class="fc" id="L800">            } else {</span>
-<span class="nc" id="L801">                yCurrent = Integer.MIN_VALUE;</span>
+<span class="fc" id="L801">                yCurrent = Integer.MIN_VALUE;</span>
             }
 <span class="fc" id="L803">        }</span>
         

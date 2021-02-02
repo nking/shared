@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Modularity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">Modularity.java</span></div><h1>Modularity.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.SimpleLinkedListNode;
+
+/**
+Newman 2006, &quot;Modularity and community structure in networks&quot;
+https://arxiv.org/pdf/physics/0602124.pdf
+
+modularity is a graph quality function over possible divisions of a network.
+...
+The modularity is, up to a multiplicative constant, the number of edges
+ * falling within groups minus the expected number in an equivalent network with
+ * edges placed at random. (A precise mathematical formulation is given below.)
+ * The modularity can be either positive or negative, with positive values
+ * indicating the possible presence of community structure. Thus, one can search
+ * for community structure precisely by looking for the divisions of a network
+ * that have positive, and preferably large, values of the modularity
+ 
+ on a spectral approximation:
+ 
+ maximizing the term involving the leading eigenvalue and completely ignoring all the
+others turns out to be effective here... ignoring the inconvenient
+fact that it is not possible to make s perfectly parallel to
+u1 and go ahead and maximize the term in β1 anyway.
+Given that we are free to choose the sizes of our two
+groups of vertices, the greatest value of the coefficient
+
+
+ 
+ NOTE: a paper with tables summarizing different modularity algorithms for
+     different definitions of communities as disjoint or sharing members is
+     Table 2 on page 5 of
+     https://arxiv.org/pdf/1708.00977.pdf
+      
+     
+ &lt;pre&gt;
+ Newman 2006:
+    defines modularity using eignevectors of a characteritic matrix
+    modularity Q = 
+      
+Duch and Arenas 2005 &quot;Community detection in complex networks using extremal 
+optimization&quot;
+    Q =
+     
+  
+ Clauset, Newman, Moore, 2004
+    Q = 
+
+
+Nadakudiki and Newman 2012, &quot;Graph spectra and the detectability of community 
+structure in networks&quot;
+https://arxiv.org/pdf/1205.1813.pdf
+
+ &lt;/pre&gt;
+ J. Duch and A. Arenas, Community detection in complex
+networks using extremal optimization. Phys. Rev. E 72,
+027104 (2005).
+
+A. Clauset, M. E. J. Newman, and C. Moore, Finding
+community structure in very large networks. Phys. Rev.
+E 70, 066111 (2004).
+
+
+NOTE: Newman generates random graphs for testing too:
+   https://arxiv.org/pdf/cond-mat/0209450.pdf
+   https://arxiv.org/pdf/cond-mat/0210146.pdf
+   
+ * @author nichole
+ */
+<span class="fc" id="L70">public class Modularity {</span>
+    
+    /**
+     * given the original graph adjacency list, compute the modularity of the
+     * graph using the connected components from an iteration of the girvan-newman
+     * algorithm for edge betweenness scores.
+     Reference: Newman and Girvan 2004, PHYSICAL REVIEW E 69, 026113,
+     &quot;Finding and evaluating community structure in networks&quot;
+
+     NOTE: If the number of within-community edges is no better than random,
+     * we will get Q = 0. value approaching the maximum, Q = 1, indicate strong
+     * community structure [50]. values tend to be 0.3 to 0.7 and higher values
+     * are rare.
+     *
+     * @param originalAdjacencyList
+     * @param layer the results of an iteration of the girvan-newman algorithm
+     * followed by use of DisjointForest.connectedComponents to find the disjoint
+     * sets of connected nodes.
+     * @param nEdges the number of edges in the original graph.  presumably the code using
+     * this method has calculated it once for the original graph already, to pass
+     * in to this method over repeated uses.
+     * @return the modularity as defined by girvan &amp; newman 2002 and Newman &amp; Girvan 2004.
+     */
+    public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
+        originalAdjacencyList, double nEdges) {
+        
+        // NOTE: communities are disjoint sets for Girvan-Newman 2002 and 2004
+       
+        /*
+        modularity Q =  Tr e - ||e^2||
+           where ||e^2|| is the sum of the square of elements of matrix e.
+           where matrix e is a k x k matrix with each 
+               element eij being the fraction of network edges connecting community i to j.
+               matrix e is upper right triangle or eij is split in half between 
+                   eij and eji for symmetry (either way ensures i:j gets counted only once).
+
+           where Tr e = summation_{over i}( eii )
+               Tr e gives fraction of network edges in same community connecting.
+               this should be large for good community divisions, but is not
+               a good indicator of the quality of the division.
+
+           in a network in which edges fall between vertices without regard for the 
+           communities they belong to, we would have
+               eij = ai*aj.
+
+          */
+        double[][] e;
+        int i, j, k, c1, c2;
+        double trE, q;
+
+<span class="fc" id="L120">        k = layer.nComponents;</span>
+
+        //create matrix e where e[i][j] is fraction of edges from i to jover all edges
+<span class="fc" id="L123">        e = new double[k][k];</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L125">            e[i] = new double[k];</span>
+        }
+
+        // count number of edges between communities using direction of edges
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (i = 0; i &lt; layer.vertexComponents.length; ++i) {</span>
+<span class="fc" id="L130">            c1 = layer.vertexComponents[i];</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">            if (c1 == -1) {</span>
+<span class="nc" id="L132">                continue;</span>
+            }
+
+<span class="fc" id="L135">            SimpleLinkedListNode jNode = originalAdjacencyList[i];</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">            while (jNode != null &amp;&amp; jNode.getKey() != -1) {</span>
+<span class="fc" id="L137">                j = jNode.getKey();</span>
+<span class="fc" id="L138">                c2 = layer.vertexComponents[j];</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">                if (c2 == -1) {</span>
+<span class="nc" id="L140">                    continue;</span>
+                }
+<span class="fc" id="L142">                e[c1][c2]++;</span>
+<span class="fc" id="L143">                jNode = jNode.getNext();</span>
+            }
+        }
+
+        // divide matrix e by number of edges
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (j = 0; j &lt; k; ++j) {</span>
+<span class="fc" id="L150">                e[i][j] /= nEdges;</span>
+            }
+        }
+
+        //Trace of e is the fraction of edges in the network that connect 
+        //   vertices in the same community.  this is high for good component divisions.
+<span class="fc" id="L156">        trE = 0;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L158">            trE += e[i][i];</span>
+        }
+
+        // Q = trE - || e^2 ||
+<span class="fc" id="L162">        q = 0;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            for (j = 0; j &lt; k; ++j) {</span>
+<span class="fc" id="L165">                q += (e[i][j] * e[i][j]);</span>
+            }
+        }
+<span class="fc" id="L168">        q = trE - q;</span>
+
+<span class="fc" id="L170">        return q;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DFS.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">DFS.java</span></div><h1>DFS.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.sort.MiscSorter;
+import algorithms.util.SimpleLinkedListNode;
+import java.util.Arrays;
+
+/**
+   DFS
+
+   searches the full depth of a graph or subgraph when possible first then
+      backtracks to the unexplored edges and unexplored nodes repeating until
+      all nodes are visited.  unlike BFS, it may contain many predecessor trees, 
+      that is a predecessor forest of nodes that are the shortest from the 
+      source to each reachable node.  for this reason, DFS searches can need a 
+      lot of memory.
+
+   average runtime is approx O(|E|), worst case runtime: O(|V| + |E|)
+   worst case space needed: O(|V|)
+
+   implemented following Cormen et al. &quot;Introduction To Algorithms&quot;
+
+   pros of DFS:
+      useful in topological sorting
+      connected components, espec 2-(edge or vertex) and 3-(edge or vertex).
+      finding the bridges of a graph
+      Generating words in order to plot the limit set of a group.
+      Finding strongly connected components.
+      Planarity testing
+      Solving puzzles with only one solution, such as mazes. (
+      biconnectivity in graphs.
+  
+   cons of DFS:
+      difficult to parallelize.
+      requires more memory, in C++ too because it's not using tail recursion
+      in its recursion.
+  
+ first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+
+* 
+ * @author nichole
+ */
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">public class DFS {</span>
+
+    /**
+     * adjacency matrix with connected i-&gt;j indicated by the index and each
+     *    node in the linked list, respectively.
+     * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
+     */
+    protected final SimpleLinkedListNode[] g;
+
+    /** 
+     * holds state for whether a node has been visited.  0 = not visited,
+     * 1 = visiting now, 2 = was visited.
+    */
+    protected final int[] visited;
+
+    /**
+     * time when node is first discovered
+     */
+    protected final int[] td;
+
+    /**
+     * time when node's adjacency list has all been visited
+     */
+    protected final int[] tf;
+   
+    protected final int[] predecessor;
+
+<span class="fc" id="L74">    protected int time = 0;</span>
+    
+    /**
+     * @param directedEdges  adjacency matrix with connected i-&gt;j indicated 
+     * by the index and each node in the linked list, respectively.
+     * Note that the key of each node is expected to be the same as it's index
+     * in the adjacency matrix.
+     * For example, adjacent to node 3 is found via directedEdges[3] as all in 
+     * the linked list.
+     */
+<span class="fc" id="L84">    public DFS(SimpleLinkedListNode[] directedEdges) {</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (directedEdges == null) {</span>
+<span class="nc" id="L86">            throw new IllegalArgumentException(&quot;directedEdges cannot be null&quot;);</span>
+        }
+<span class="fc" id="L88">        g = directedEdges.clone();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L90">            g[i] = new SimpleLinkedListNode(directedEdges[i]);</span>
+        }
+<span class="fc" id="L92">        this.visited = new int[g.length];</span>
+<span class="fc" id="L93">        this.td = new int[g.length];</span>
+<span class="fc" id="L94">        this.tf = new int[g.length];</span>
+<span class="fc" id="L95">        this.predecessor = new int[g.length];</span>
+<span class="fc" id="L96">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L97">    }</span>
+
+    public void walk() {
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; u++) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L103">                visit(u);</span>
+            }
+        }        
+<span class="fc" id="L106">    }</span>
+    
+    /**
+     * alterative pattern for walking code
+     */
+    void _walk(int[] vertexOrder) {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        for (int u : vertexOrder) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L114">                visit(u);</span>
+            }
+        }
+<span class="fc" id="L117">    }</span>
+    
+    private void visit(int u) {
+        //System.out.println(&quot;load method frame for &quot; + u);
+        
+<span class="fc" id="L122">        visited[u] = 1;</span>
+<span class="fc" id="L123">        time++;</span>
+        //System.out.println(&quot;  visiting &quot; + u + &quot; to set td=&quot; + time);
+<span class="fc" id="L125">        td[u] = time;</span>
+
+<span class="fc" id="L127">        SimpleLinkedListNode next = g[u];</span>
+        
+<span class="fc bfc" id="L129" title="All 4 branches covered.">        while (next != null &amp;&amp; next.getKey() != -1) {</span>
+<span class="fc" id="L130">            int v = next.getKey();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (visited[v] == 0) {</span>
+<span class="fc" id="L132">                predecessor[v] = u;</span>
+<span class="fc" id="L133">                visit(v);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            } else if (predecessor[v] == -1) {</span>
+                // visited, but no predecessor yet
+<span class="fc" id="L136">                predecessor[v] = u;</span>
+            }
+<span class="fc" id="L138">            next = next.getNext();</span>
+<span class="fc" id="L139">        }</span>
+<span class="fc" id="L140">        visited[u] = 2;</span>
+<span class="fc" id="L141">        time++;</span>
+<span class="fc" id="L142">        tf[u] = time;</span>
+        //System.out.println(&quot;  visited &quot; + u + &quot;) to set tf=&quot; + time);
+<span class="fc" id="L144">    }</span>
+    
+    /**
+     * get predecessor indexes
+     * @return get predecessor indexes
+     */
+    public int[] getPredecessorIndexes() {
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L152">            return null;</span>
+        }
+<span class="fc" id="L154">        return Arrays.copyOf(predecessor, predecessor.length);</span>
+    }
+    
+    /**
+     * return the indexes in order of the starts of their traversals
+     * @return 
+     */
+    public int[] getOrderedBeginIndexes() {
+<span class="fc" id="L162">        return sortForIndexes(td);</span>
+    }
+    
+    private int[] sortForIndexes(int[] a) {
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L167">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (g == null) {</span>
+<span class="nc" id="L170">            return null;</span>
+        }
+<span class="pc bpc" id="L172" title="3 of 4 branches missed.">        assert(a.length == g.length);</span>
+<span class="fc" id="L173">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L174">        int[] idxs = new int[a.length];</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
+<span class="fc" id="L176">            idxs[i] = i;</span>
+        }
+<span class="fc" id="L178">        MiscSorter.sortBy1stArg(a, idxs);</span>
+<span class="fc" id="L179">        return idxs;</span>
+    }
+    
+    /**
+     * return the indexes in order of the ends of their traversal
+     * @return 
+     */
+    public int[] getOrderedEndIndexes() {
+<span class="fc" id="L187">        return sortForIndexes(tf);</span>
+    }
+    
+    public int[] getTd() {
+<span class="fc" id="L191">        return td;</span>
+    }
+
+    public int[] getTf() {
+<span class="fc" id="L195">        return tf;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

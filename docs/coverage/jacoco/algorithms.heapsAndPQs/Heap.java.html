@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Heap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.heapsAndPQs</a> &gt; <span class="el_source">Heap.java</span></div><h1>Heap.java</h1><pre class="source lang-java linenums">package algorithms.heapsAndPQs;
+
+import algorithms.DoubleLinkedCircularList;
+import algorithms.util.ResourceFinder;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.Stack;
+import java.util.logging.Logger;
+
+/**
+ * Class contains a Fibonacci heap, that is, a loose collection of trees based
+ * upon binomial heaps, hence satisfying the minimum heap property:
+ *     object.child.key &gt;= object.key.
+ *
+ * With a Fibonacci heap, the minimum key of the entire heap is always at the
+ * top of one of the trees.
+ *
+ * Fibonacci heap potential = t + 2m
+ *     where t = number of trees
+ *           m = number of marked nodes.  (marked when node has been recently
+ *               made a child of another node and &gt;= 1 of it's own children
+ *               have been cut.  root nodes are never marked.)
+ *
+ * &lt;pre&gt;
+ * Runtime complexity:
+ *
+ *    Find-minimum is O(1) amortized time because there is always an instance
+ * reference to it.
+ *
+ *    Insert, decrease key work in constant amortized time.
+ *
+ *    Delete and delete minimum work in O(log n) amortized time.
+ *
+ *    Extract-min and delete should be used sparingly for this structure to be
+ * best utilized and are usually implemented as O(log_2 N).
+ *
+ * This was implemented following pseudo-code from
+ * &quot;Introduction to Algorithms&quot;, by Cormen, Leiserson, Rivest, &amp; Stein
+ * on the Fibonacci Heap.
+ * &lt;/pre&gt;
+ *
+ * @author nichole
+ */
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">public class Heap {</span>
+
+<span class="fc" id="L49">    protected Logger log = Logger.getLogger(this.getClass().getName());</span>
+
+	/** circular doubly linked list of minimum nodes for their respective
+    min-heap-ordered trees */
+<span class="fc" id="L53">	private DoubleLinkedCircularList rootList = new DoubleLinkedCircularList();</span>
+
+	/** root of tree containing a minimum key.  it's null for an empty tree */
+<span class="fc" id="L56">	protected HeapNode minimumNode = null;</span>
+
+<span class="fc" id="L58">	private long n = 0;</span>
+
+    /**
+     * insert node into heap.  runtime is O(1).  makes no attempt to consolidate
+     * tree.
+     *
+     * @param node
+     */
+    public void insert(HeapNode node) {
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    	if (node.getKey() == DoubleLinkedCircularList.noValue) {</span>
+<span class="nc" id="L68">            throw new IllegalArgumentException(</span>
+                &quot;node.key must be set before insert into heap.&quot; +
+                &quot; must have value != DoubleLinkedCircularList.noValue&quot;);
+        }
+<span class="fc" id="L72">    	node.setNumberOfChildren(0);</span>
+<span class="fc" id="L73">        node.setParent(null);</span>
+<span class="fc" id="L74">        node.removeChildren();</span>
+<span class="fc" id="L75">        node.setLeft(node);</span>
+<span class="fc" id="L76">        node.setRight(node);</span>
+<span class="fc" id="L77">        node.setMark(false);</span>
+
+        // concatenate root list containing node with this.rootList
+<span class="fc" id="L80">        rootList.insert(node);</span>
+
+<span class="fc bfc" id="L82" title="All 4 branches covered.">        if ((minimumNode == null) || (node.getKey() &lt; minimumNode.getKey())) {</span>
+<span class="fc" id="L83">            minimumNode = node;</span>
+        }
+
+<span class="fc" id="L86">        n++;</span>
+<span class="fc" id="L87">    }</span>
+
+    public boolean isEmpty() {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        return (minimumNode == null);</span>
+    }
+    
+    public HeapNode peekMin() {
+<span class="nc" id="L94">        return minimumNode;</span>
+    }
+
+    /**
+     * extract minimum from the heap.
+     * runtime is O(log_2 N) or better.
+     * @return
+     */
+    public HeapNode extractMin() {
+
+<span class="fc" id="L104">        long sentinel = DoubleLinkedCircularList.sentinelKey;</span>
+
+<span class="fc" id="L106">    	HeapNode z = minimumNode;</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (z == null) {</span>
+<span class="fc" id="L109">            return z;</span>
+        }
+
+        //save reference to right of minimum node
+<span class="fc" id="L113">        HeapNode nextMin = z.getRight();</span>
+
+        // detach each child and add it to heap
+<span class="fc" id="L116">        HeapNode x = z.getChildren().getSentinel().getRight();</span>
+
+        // for each child x of z
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        while (x.getKey() != sentinel) {</span>
+<span class="fc" id="L120">            HeapNode next = x.getRight();</span>
+<span class="fc" id="L121">            x.setParent(null);</span>
+<span class="fc" id="L122">            rootList.insert(x);</span>
+<span class="fc" id="L123">            x = next;</span>
+<span class="fc" id="L124">        }</span>
+
+<span class="fc" id="L126">        rootList.remove(z);</span>
+
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (z.equals(nextMin)) {</span>
+<span class="nc" id="L129">            minimumNode = null;</span>
+        } else {
+<span class="fc" id="L131">            minimumNode = nextMin;</span>
+<span class="fc" id="L132">            consolidate();</span>
+        }
+
+<span class="fc" id="L135">        n--;</span>
+        
+        // remove z's member variables so that any use outside of heap does not
+        // affect the heap
+<span class="fc" id="L139">        z.removeChildren();</span>
+<span class="fc" id="L140">        z.setParent(null);</span>
+<span class="fc" id="L141">        z.setRight(null);</span>
+<span class="fc" id="L142">        z.setLeft(null);</span>
+ 
+<span class="fc" id="L144">        return z;</span>
+    }
+
+    public long getNumberOfNodes() {
+<span class="fc" id="L148">        return n;</span>
+    }
+
+    void consolidate() {
+
+    	// D[n] = max degree of any node = lg_2(n) = lg_2(Integer.MAX) = 31
+        //int maxDegree = (int) (Math.log(this.n)/Math.log(2));
+<span class="fc" id="L155">        int maxDegree = 31;</span>
+
+<span class="fc" id="L157">        HeapNode[] a = new HeapNode[maxDegree];</span>
+
+<span class="fc" id="L159">        HeapNode w = rootList.getSentinel().getRight();</span>
+
+        // n*m*(constants)
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        while (w.getKey() != DoubleLinkedCircularList.sentinelKey) {</span>
+
+<span class="fc" id="L164">            HeapNode x = w;</span>
+
+            // because the x.right gets changed in link(), nab the next
+            // reference before link
+<span class="fc" id="L168">            HeapNode next = w.getRight();</span>
+
+<span class="fc" id="L170">            int d = x.getNumberOfChildren();</span>
+
+<span class="pc bpc" id="L172" title="3 of 4 branches missed.">            assert(d &lt;= maxDegree);</span>
+
+            // is there another node of the same degree, that is, has the
+            // same number of children?
+<span class="pc bpc" id="L176" title="1 of 4 branches missed.">            while ((d &lt; a.length) &amp;&amp; (a[d] != null)) {</span>
+
+<span class="fc" id="L178">                HeapNode y = a[d];</span>
+
+<span class="fc bfc" id="L180" title="All 2 branches covered.">                if (x.getKey() &gt; y.getKey()) {</span>
+<span class="fc" id="L181">                    HeapNode tmp = x;</span>
+<span class="fc" id="L182">                    x = y;</span>
+<span class="fc" id="L183">                    y = tmp;</span>
+                }
+
+                // link removes y (which has a key larger than x now) from
+                // rootList and adds it as a child of x
+<span class="fc" id="L188">                link(y, x);</span>
+
+<span class="fc" id="L190">                a[d] = null;</span>
+<span class="fc" id="L191">                d++;</span>
+<span class="fc" id="L192">            }</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">            if (d &lt; a.length) {</span>
+<span class="fc" id="L194">                a[d] = x;</span>
+            } else {
+<span class="nc" id="L196">                throw new IllegalStateException(&quot;maxDegree=&quot; + maxDegree</span>
+                + &quot; but d is &quot; + d);
+            }
+
+<span class="fc" id="L200">            w = next;</span>
+<span class="fc" id="L201">        }</span>
+
+<span class="fc" id="L203">        minimumNode = null;</span>
+
+        // remove all from root list:
+<span class="fc" id="L206">        rootList.resetSentinel();</span>
+<span class="fc" id="L207">        rootList.resetNumber();</span>
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; i++) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (a[i] != null) {</span>
+
+<span class="fc" id="L212">            	rootList.insert(a[i]);</span>
+
+<span class="fc bfc" id="L214" title="All 4 branches covered.">                if ((minimumNode == null) || (a[i].getKey() &lt; minimumNode.getKey()) ) {</span>
+<span class="fc" id="L215">                    minimumNode = a[i];</span>
+                }
+            }
+        }
+<span class="fc" id="L219">    }</span>
+
+    void link(HeapNode y, HeapNode x) {
+    	 // moves y to a child position of x
+<span class="fc" id="L223">        rootList.remove(y);</span>
+<span class="fc" id="L224">        x.addChild(y);</span>
+<span class="fc" id="L225">        y.setParent(x);</span>
+<span class="fc" id="L226">        y.setMark(false);</span>
+<span class="fc" id="L227">    }</span>
+
+    /**
+     * decrease key for node x.  Note that it is the responsibility of the
+     * invoker to assert that x is currently in the heap.  If x is not in
+     * the heap, it gets added to it and then the state of the heap is
+     * corrupted.
+     *
+     * runtime is O(1)
+     *
+     * @param x
+     * @param decreaseToThisKey
+     */
+    public void decreaseKey(HeapNode x, long decreaseToThisKey) {
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (decreaseToThisKey &gt; x.getKey()) {</span>
+<span class="nc" id="L242">            throw new IllegalArgumentException(</span>
+                &quot;key cannot be larger than x.key&quot;);
+        }
+<span class="fc" id="L245">        x.setKey(decreaseToThisKey);</span>
+<span class="fc" id="L246">        HeapNode y = x.getParent();</span>
+<span class="pc bpc" id="L247" title="1 of 4 branches missed.">        if ((y != null) &amp;&amp; (x.getKey() &lt; y.getKey())) {</span>
+<span class="fc" id="L248">            cut(x, y);</span>
+<span class="fc" id="L249">            cascadingCut(y);</span>
+        }
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        if (x.getKey() &lt; minimumNode.getKey()) {</span>
+<span class="fc" id="L252">            minimumNode = x;</span>
+        }
+<span class="fc" id="L254">    }</span>
+
+    /**
+     * removes child node from tree and starts a new one with it.
+     *
+     * @param x
+     * @param y
+     */
+    protected void cut(HeapNode x, HeapNode y) {
+        // remove x from child list of y and decrement y.degree
+<span class="fc" id="L264">        y.removeChild(x);</span>
+
+        // add x to root list
+<span class="fc" id="L267">        rootList.insert(x);</span>
+<span class="fc" id="L268">        x.setParent(null);</span>
+<span class="fc" id="L269">        x.setMark(false);</span>
+<span class="fc" id="L270">    }</span>
+
+    /**
+     * c*O(1)
+     *
+     * @param y
+     */
+    protected void cascadingCut(HeapNode y) {
+<span class="fc" id="L278">        HeapNode z = y.getParent();</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        if (z != null) {</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">            if (!y.isMark()) {</span>
+<span class="fc" id="L281">                y.setMark(true);</span>
+            } else {
+<span class="fc" id="L283">                cut(y, z);</span>
+<span class="fc" id="L284">                cascadingCut(z);</span>
+            }
+        }
+<span class="fc" id="L287">    }</span>
+
+    // runtime is that of extractMin, O(lg2(n))
+    public void remove(HeapNode x) {
+        // runtime O(1)
+<span class="fc" id="L292">        decreaseKey(x, DoubleLinkedCircularList.minValue);</span>
+
+<span class="fc" id="L294">        extractMin();</span>
+<span class="fc" id="L295">    }</span>
+
+    /**
+     * searches the rootList and children using in-order traversal to
+     * find the node with the given key.
+     *
+     * @param key
+     * @return
+     */
+    HeapNode search(long key) {
+
+        // search rootList using in-order traversal
+
+<span class="fc" id="L308">        HeapNode node = rootList.getSentinel().getRight();</span>
+
+<span class="fc" id="L310">        long sentinel = DoubleLinkedCircularList.sentinelKey;</span>
+
+<span class="fc" id="L312">        Stack&lt;HeapNode&gt; stack = new Stack&lt;HeapNode&gt;();</span>
+
+<span class="fc bfc" id="L314" title="All 4 branches covered.">        while (!stack.isEmpty() || (node.getKey() != sentinel)) {</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            if (node.getKey() != sentinel) {</span>
+
+<span class="fc" id="L317">                stack.push(node);</span>
+
+<span class="fc" id="L319">                node = node.getRight();</span>
+
+            } else {
+
+<span class="fc" id="L323">                node = stack.pop();</span>
+
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                if (node.getKey() == key) {</span>
+<span class="fc" id="L326">                    return node;</span>
+                }
+
+<span class="fc" id="L329">                node = node.getChildren().getSentinel().getRight();</span>
+            }
+        }
+
+<span class="fc" id="L333">        return null;</span>
+    }
+
+    public DoubleLinkedCircularList getRootList() {
+<span class="fc" id="L337">        return rootList ;</span>
+    }
+
+    public void printRootList() {
+<span class="fc" id="L341">        StringBuilder sb = new StringBuilder(</span>
+<span class="fc" id="L342">            String.format(&quot;(n=%d rootList.n=%d) &quot;, n, rootList.getNumberOfNodes()));</span>
+<span class="fc" id="L343">        sb.append(&quot; minimumNode=&quot;);</span>
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if (minimumNode != null) {</span>
+<span class="fc" id="L345">            sb.append(minimumNode);</span>
+        }
+<span class="fc" id="L347">        sb.append(&quot;;  rootList=&quot;);</span>
+<span class="fc" id="L348">        HeapNode t = this.rootList.getSentinel().getRight();</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">        while (t.getKey() != DoubleLinkedCircularList.sentinelKey) {</span>
+<span class="fc" id="L350">            String str = String.format(&quot;%d&quot;, t.getKey());</span>
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">            if (sb.length() &gt; 0) {</span>
+<span class="fc" id="L352">                sb.append(&quot; &quot;);</span>
+            }
+<span class="fc" id="L354">            sb.append(str);</span>
+<span class="fc" id="L355">            t = t.getRight();</span>
+<span class="fc" id="L356">        }</span>
+
+<span class="fc" id="L358">        log.info(sb.toString());</span>
+<span class="fc" id="L359">    }</span>
+
+<span class="fc" id="L361">    private BufferedWriter debugWriter = null;</span>
+    
+    private BufferedWriter createWriter() throws IOException {
+                
+<span class="fc" id="L365">        String bin = ResourceFinder.findDirectory(&quot;bin&quot;);</span>
+<span class="fc" id="L366">        String fileName = &quot;debug_heap_&quot; + System.currentTimeMillis() + &quot;.txt&quot;;</span>
+<span class="fc" id="L367">        String filePath = bin + &quot;/&quot; + fileName;</span>
+<span class="fc" id="L368">        File file = new File(filePath);</span>
+        
+<span class="fc" id="L370">        BufferedWriter writer = Files.newBufferedWriter(file.toPath(), </span>
+<span class="fc" id="L371">            Charset.forName(&quot;US-ASCII&quot;));</span>
+        
+<span class="fc" id="L373">        return writer;</span>
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+<span class="fc" id="L379">            closeDebug();</span>
+        } finally {
+<span class="pc" id="L381">            super.finalize();</span>
+<span class="fc" id="L382">        }</span>
+<span class="fc" id="L383">    }</span>
+    
+    private void closeDebug() {
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        if (debugWriter != null) {</span>
+            try {
+<span class="fc" id="L388">                debugWriter.close();</span>
+<span class="fc" id="L389">                debugWriter = null;</span>
+<span class="nc" id="L390">            } catch (IOException ex) {</span>
+<span class="nc" id="L391">                log.severe(ex.getMessage());</span>
+<span class="fc" id="L392">            }</span>
+        }
+<span class="fc" id="L394">    }</span>
+    
+    public void printHeapToTestOut(String label) {
+                
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        if (debugWriter == null) {</span>
+            try {
+<span class="fc" id="L400">                debugWriter = createWriter();</span>
+<span class="nc" id="L401">            } catch (IOException ex) {</span>
+<span class="nc" id="L402">                closeDebug();</span>
+<span class="fc" id="L403">            }</span>
+        }
+        
+<span class="pc bpc" id="L406" title="1 of 2 branches missed.">        if (debugWriter != null) {</span>
+            try {
+<span class="fc" id="L408">                printHeap(label, debugWriter);</span>
+<span class="nc" id="L409">            } catch (IOException ex) {</span>
+<span class="nc" id="L410">                log.severe(ex.getMessage());</span>
+<span class="fc" id="L411">            }</span>
+        }
+<span class="fc" id="L413">    }</span>
+    
+    public void printHeap(String label, BufferedWriter writer) throws IOException {
+        
+<span class="fc" id="L417">        int bufferSize = 1024;//2 * 72 * 4;</span>
+                        
+<span class="pc bpc" id="L419" title="1 of 2 branches missed.">        if (label != null) {</span>
+<span class="fc" id="L420">            char[] c = label.toCharArray();</span>
+<span class="fc" id="L421">            writer.write(c, 0, c.length);</span>
+<span class="fc" id="L422">            writer.write(&quot;\n&quot;);</span>
+<span class="fc" id="L423">            writer.flush();</span>
+        }
+        
+<span class="fc" id="L426">        char[] c = String.format(&quot;(n=%d rootList.n=%d) &quot;, n, rootList.getNumberOfNodes()).toCharArray();</span>
+<span class="fc" id="L427">        writer.write(c, 0, c.length);</span>
+<span class="fc" id="L428">        c = &quot; minimumNode=&quot;.toCharArray();</span>
+<span class="fc" id="L429">        writer.write(c, 0, c.length);</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if (minimumNode != null) {</span>
+<span class="fc" id="L431">            c = minimumNode.toString().toCharArray();</span>
+<span class="fc" id="L432">            writer.write(c, 0, c.length);</span>
+<span class="pc bpc" id="L433" title="1 of 2 branches missed.">            if (minimumNode.getData() != null) {</span>
+<span class="nc" id="L434">                writer.write(minimumNode.getData().toString());</span>
+            }
+        }
+<span class="fc" id="L437">        c = &quot;;  heap=\n&quot;.toCharArray();</span>
+<span class="fc" id="L438">        writer.write(c, 0, c.length);</span>
+<span class="fc" id="L439">        writer.flush();</span>
+            
+        // pre-order traversal of the heap
+
+<span class="fc" id="L443">        HeapNode node = rootList.getSentinel().getRight();</span>
+
+<span class="fc" id="L445">        long sentinel = DoubleLinkedCircularList.sentinelKey;</span>
+
+<span class="fc" id="L447">        Stack&lt;HeapNode&gt; stack = new Stack&lt;HeapNode&gt;();</span>
+
+<span class="fc" id="L449">        int currentLevel = -1;</span>
+        
+<span class="fc" id="L451">        StringBuilder sb = new StringBuilder(bufferSize);</span>
+
+<span class="fc" id="L453">        int nIter = 0;</span>
+        
+<span class="fc bfc" id="L455" title="All 4 branches covered.">        while (!stack.isEmpty() || (node.getKey() != sentinel)) {</span>
+            
+<span class="fc" id="L457">            nIter++;</span>
+            
+<span class="fc bfc" id="L459" title="All 2 branches covered.">            if (node.getKey() != sentinel) {</span>
+
+<span class="fc" id="L461">                currentLevel++;</span>
+                
+<span class="pc bpc" id="L463" title="1 of 2 branches missed.">                if (sb.length() &gt; 72) {</span>
+<span class="nc" id="L464">                    sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L465">                    c = sb.toString().toCharArray();</span>
+<span class="nc" id="L466">                    writer.write(c, 0, c.length);</span>
+<span class="nc bnc" id="L467" title="All 2 branches missed.">                    if (nIter % 100 == 0) {</span>
+<span class="nc" id="L468">                        writer.flush();</span>
+                    }
+<span class="nc" id="L470">                    sb = new StringBuilder(bufferSize);</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">                    if (currentLevel &gt; 0) {</span>
+<span class="nc" id="L472">                        sb.append(&quot;    &quot;);</span>
+                    }
+                }
+
+<span class="fc" id="L476">                sb.append(&quot; &quot;).append(&quot;[&quot;).append(currentLevel);</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">                if (currentLevel==0) {</span>
+<span class="pc bpc" id="L478" title="1 of 2 branches missed.">                    if (node.getData() != null) {</span>
+<span class="nc" id="L479">                        writer.write(node.getData().toString());</span>
+                    }
+                }
+<span class="fc" id="L482">                sb.append(&quot;] key=&quot;);</span>
+<span class="pc bpc" id="L483" title="1 of 2 branches missed.">                if (node.getKey() == Long.MAX_VALUE) {</span>
+<span class="nc" id="L484">                    sb.append(&quot;M&quot;);</span>
+                } else {
+<span class="fc" id="L486">                    sb.append(node.getKey());</span>
+                }
+
+<span class="fc" id="L489">                stack.push(node);</span>
+
+<span class="fc" id="L491">                node = node.getChildren().getSentinel().getRight();</span>
+
+            } else {
+
+<span class="fc" id="L495">                node = stack.pop();</span>
+
+<span class="fc bfc" id="L497" title="All 2 branches covered.">                boolean eol = (currentLevel == 0);</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">                if (!eol) {</span>
+<span class="fc" id="L499">                    eol = true;</span>
+<span class="fc" id="L500">                    int nSb = sb.length();</span>
+<span class="pc bpc" id="L501" title="1 of 2 branches missed.">                    if (nSb &gt; 1) {</span>
+<span class="fc" id="L502">                        int c0 = sb.charAt(nSb - 1);</span>
+<span class="fc" id="L503">                        int c1 = sb.charAt(nSb - 2);</span>
+<span class="fc" id="L504">                        int space = (int)' ';</span>
+<span class="pc bpc" id="L505" title="1 of 4 branches missed.">                        if (c0 == space &amp;&amp; c1 == space) {</span>
+<span class="fc" id="L506">                            eol = false;</span>
+                        }
+                    }
+                }
+<span class="fc bfc" id="L510" title="All 2 branches covered.">                if (!eol) {</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">                    if (sb.length() &gt; 72) {</span>
+<span class="nc" id="L512">                        sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L513">                        c = sb.toString().toCharArray();</span>
+<span class="nc" id="L514">                        writer.write(c, 0, c.length);</span>
+<span class="nc bnc" id="L515" title="All 2 branches missed.">                        if (nIter % 100 == 0) {</span>
+<span class="nc" id="L516">                            writer.flush();</span>
+                        }
+<span class="nc" id="L518">                        sb = new StringBuilder(&quot;    &quot;);</span>
+                    }
+                }
+<span class="fc bfc" id="L521" title="All 2 branches covered.">                if (eol) {</span>
+<span class="fc" id="L522">                    sb.append(&quot;\n&quot;);</span>
+<span class="fc" id="L523">                    c = sb.toString().toCharArray();</span>
+<span class="fc" id="L524">                    writer.write(c, 0, c.length);</span>
+<span class="pc bpc" id="L525" title="1 of 2 branches missed.">                    if ((nIter % 100) == 0) {</span>
+<span class="nc" id="L526">                        writer.flush();</span>
+                    }
+<span class="fc" id="L528">                    sb = new StringBuilder();</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">                    if (currentLevel &gt; 0) {</span>
+<span class="fc" id="L530">                        sb.append(&quot;    &quot;);</span>
+                    }
+                }
+
+<span class="fc" id="L534">                currentLevel--;</span>
+
+<span class="fc" id="L536">                node = node.getRight();</span>
+<span class="fc" id="L537">            }</span>
+        }
+
+<span class="fc" id="L540">        c = sb.toString().toCharArray();</span>
+<span class="fc" id="L541">        writer.write(c, 0, c.length);</span>
+<span class="fc" id="L542">        writer.flush();</span>
+<span class="fc" id="L543">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

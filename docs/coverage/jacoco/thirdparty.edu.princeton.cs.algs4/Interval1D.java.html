@@ -19,9 +19,10 @@ import java.util.Comparator;
 /**
  *  The &lt;tt&gt;Interval1D&lt;/tt&gt; class represents a one-dimensional interval.
  *  The interval is &lt;em&gt;closed&lt;/em&gt;&amp;mdash;it contains both endpoints.
- *  Intervals are immutable: their values cannot be changed after they are created.
- *  The class &lt;code&gt;Interval1D&lt;/code&gt; includes methods for checking whether
- *  an interval contains a point and determining whether two intervals intersect.
+ *  Intervals are immutable: their values cannot be changed after they are 
+ *  created.  The class &lt;code&gt;Interval1D&lt;/code&gt; includes methods for checking 
+ *  whether an interval contains a point and determining whether two intervals 
+ *  intersect.
  *  &lt;p&gt;
  *  For additional documentation, 
  *  see &lt;a href=&quot;http://algs4.cs.princeton.edu/12oop&quot;&gt;Section 1.2&lt;/a&gt; of 
@@ -35,17 +36,17 @@ public class Interval1D {
     /**
      * Compares two intervals by min endpoint.
      */
-<span class="nc" id="L38">    public static final Comparator&lt;Interval1D&gt; MIN_ENDPOINT_ORDER  = new MinEndpointComparator();</span>
+<span class="nc" id="L39">    public static final Comparator&lt;Interval1D&gt; MIN_ENDPOINT_ORDER = new MinEndpointComparator();</span>
 
     /**
      * Compares two intervals by max endpoint.
      */
-<span class="nc" id="L43">    public static final Comparator&lt;Interval1D&gt; MAX_ENDPOINT_ORDER = new MaxEndpointComparator();</span>
+<span class="nc" id="L44">    public static final Comparator&lt;Interval1D&gt; MAX_ENDPOINT_ORDER = new MaxEndpointComparator();</span>
 
     /**
      * Compares two intervals by length.
      */
-<span class="nc" id="L48">    public static final Comparator&lt;Interval1D&gt; LENGTH_ORDER = new LengthComparator();</span>
+<span class="nc" id="L49">    public static final Comparator&lt;Interval1D&gt; LENGTH_ORDER = new LengthComparator();</span>
 
     private final double min;
     private final double max;
@@ -61,22 +62,22 @@ public class Interval1D {
      *         &lt;tt&gt;Double.NEGATIVE_INFINITY&lt;/tt&gt;
 
      */
-<span class="nc" id="L64">    public Interval1D(double min, double max) {</span>
-<span class="nc bnc" id="L65" title="All 4 branches missed.">        if (Double.isInfinite(min) || Double.isInfinite(max))</span>
-<span class="nc" id="L66">            throw new IllegalArgumentException(&quot;Endpoints must be finite&quot;);</span>
-<span class="nc bnc" id="L67" title="All 4 branches missed.">        if (Double.isNaN(min) || Double.isNaN(max))</span>
-<span class="nc" id="L68">            throw new IllegalArgumentException(&quot;Endpoints cannot be NaN&quot;);</span>
+<span class="nc" id="L65">    public Interval1D(double min, double max) {</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">        if (Double.isInfinite(min) || Double.isInfinite(max))</span>
+<span class="nc" id="L67">            throw new IllegalArgumentException(&quot;Endpoints must be finite&quot;);</span>
+<span class="nc bnc" id="L68" title="All 4 branches missed.">        if (Double.isNaN(min) || Double.isNaN(max))</span>
+<span class="nc" id="L69">            throw new IllegalArgumentException(&quot;Endpoints cannot be NaN&quot;);</span>
 
         // convert -0.0 to +0.0
-<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (min == 0.0) min = 0.0;</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (max == 0.0) max = 0.0;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (min == -0.0) min = 0.0;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (max == -0.0) max = 0.0;</span>
 
-<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (min &lt;= max) {</span>
-<span class="nc" id="L75">            this.min = min;</span>
-<span class="nc" id="L76">            this.max = max;</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (min &lt;= max) {</span>
+<span class="nc" id="L76">            this.min = min;</span>
+<span class="nc" id="L77">            this.max = max;</span>
         }
-<span class="nc" id="L78">        else throw new IllegalArgumentException(&quot;Illegal interval&quot;);</span>
-<span class="nc" id="L79">    }</span>
+<span class="nc" id="L79">        else throw new IllegalArgumentException(&quot;Illegal interval&quot;);</span>
+<span class="nc" id="L80">    }</span>
 
     /**
      * Returns the left endpoint of this interval.
@@ -85,7 +86,7 @@ public class Interval1D {
      * @deprecated Replaced by {@link #min()}.
      */
     public double left() { 
-<span class="nc" id="L88">        return min;</span>
+<span class="nc" id="L89">        return min;</span>
     }
 
     /**
@@ -94,7 +95,7 @@ public class Interval1D {
      * @deprecated Replaced by {@link #max()}.
      */
     public double right() { 
-<span class="nc" id="L97">        return max;</span>
+<span class="nc" id="L98">        return max;</span>
     }
 
     /**
@@ -103,7 +104,7 @@ public class Interval1D {
      * @return the min endpoint of this interval
      */
     public double min() { 
-<span class="nc" id="L106">        return min;</span>
+<span class="nc" id="L107">        return min;</span>
     }
 
     /**
@@ -112,7 +113,7 @@ public class Interval1D {
      * @return the max endpoint of this interval
      */
     public double max() { 
-<span class="nc" id="L115">        return max;</span>
+<span class="nc" id="L116">        return max;</span>
     }
 
     /**
@@ -123,9 +124,9 @@ public class Interval1D {
      *         &lt;tt&gt;false&lt;/tt&gt; otherwise
      */
     public boolean intersects(Interval1D that) {
-<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (this.max &lt; that.min) return false;</span>
-<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (that.max &lt; this.min) return false;</span>
-<span class="nc" id="L128">        return true;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (this.max &lt; that.min) return false;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (that.max &lt; this.min) return false;</span>
+<span class="nc" id="L129">        return true;</span>
     }
 
     /**
@@ -136,7 +137,7 @@ public class Interval1D {
      *         &lt;tt&gt;false&lt;/tt&gt; otherwise
      */
     public boolean contains(double x) {
-<span class="nc bnc" id="L139" title="All 4 branches missed.">        return (min &lt;= x) &amp;&amp; (x &lt;= max);</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">        return (min &lt;= x) &amp;&amp; (x &lt;= max);</span>
     }
 
     /**
@@ -145,7 +146,7 @@ public class Interval1D {
      * @return the length of this interval (max - min)
      */
     public double length() {
-<span class="nc" id="L148">        return max - min;</span>
+<span class="nc" id="L149">        return max - min;</span>
     }
 
     /**
@@ -154,7 +155,7 @@ public class Interval1D {
      * @return a string representation of this interval in the form [min, max]
      */
     public String toString() {
-<span class="nc" id="L157">        return &quot;[&quot; + min + &quot;, &quot; + max + &quot;]&quot;;</span>
+<span class="nc" id="L158">        return &quot;[&quot; + min + &quot;, &quot; + max + &quot;]&quot;;</span>
     }
 
     /**
@@ -165,11 +166,11 @@ public class Interval1D {
      *         &lt;tt&gt;false&lt;/tt&gt; otherwise
      */
     public boolean equals(Object other) {
-<span class="nc bnc" id="L168" title="All 2 branches missed.">        if (other == this) return true;</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (other == null) return false;</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (other.getClass() != this.getClass()) return false;</span>
-<span class="nc" id="L171">        Interval1D that = (Interval1D) other;</span>
-<span class="nc bnc" id="L172" title="All 4 branches missed.">        return this.min == that.min &amp;&amp; this.max == that.max;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (other == this) return true;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (other == null) return false;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (other.getClass() != this.getClass()) return false;</span>
+<span class="nc" id="L172">        Interval1D that = (Interval1D) other;</span>
+<span class="nc bnc" id="L173" title="All 4 branches missed.">        return this.min == that.min &amp;&amp; this.max == that.max;</span>
     }
 
     /**
@@ -178,9 +179,9 @@ public class Interval1D {
      * @return an integer hash code for this interval
      */
     public int hashCode() {
-<span class="nc" id="L181">        int hash1 = ((Double) min).hashCode();</span>
-<span class="nc" id="L182">        int hash2 = ((Double) max).hashCode();</span>
-<span class="nc" id="L183">        return 31*hash1 + hash2;</span>
+<span class="nc" id="L182">        int hash1 = ((Double) min).hashCode();</span>
+<span class="nc" id="L183">        int hash2 = ((Double) max).hashCode();</span>
+<span class="nc" id="L184">        return 31*hash1 + hash2;</span>
     }
 
     // ascending order of min endpoint, breaking ties by max endpoint
@@ -220,35 +221,35 @@ public class Interval1D {
      * Unit tests the &lt;tt&gt;Interval1D&lt;/tt&gt; data type.
      */
     public static void main(String[] args) {
-<span class="nc" id="L223">        Interval1D[] intervals = new Interval1D[4];</span>
-<span class="nc" id="L224">        intervals[0] = new Interval1D(15.0, 33.0);</span>
-<span class="nc" id="L225">        intervals[1] = new Interval1D(45.0, 60.0);</span>
-<span class="nc" id="L226">        intervals[2] = new Interval1D(20.0, 70.0);</span>
-<span class="nc" id="L227">        intervals[3] = new Interval1D(46.0, 55.0);</span>
+<span class="nc" id="L224">        Interval1D[] intervals = new Interval1D[4];</span>
+<span class="nc" id="L225">        intervals[0] = new Interval1D(15.0, 33.0);</span>
+<span class="nc" id="L226">        intervals[1] = new Interval1D(45.0, 60.0);</span>
+<span class="nc" id="L227">        intervals[2] = new Interval1D(20.0, 70.0);</span>
+<span class="nc" id="L228">        intervals[3] = new Interval1D(46.0, 55.0);</span>
 
-<span class="nc" id="L229">        System.out.println(&quot;Unsorted&quot;);</span>
-<span class="nc bnc" id="L230" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
-<span class="nc" id="L231">            System.out.println(intervals[i]);</span>
-<span class="nc" id="L232">        System.out.println();</span>
+<span class="nc" id="L230">        System.out.println(&quot;Unsorted&quot;);</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
+<span class="nc" id="L232">            System.out.println(intervals[i]);</span>
+<span class="nc" id="L233">        System.out.println();</span>
         
-<span class="nc" id="L234">        System.out.println(&quot;Sort by min endpoint&quot;);</span>
-<span class="nc" id="L235">        Arrays.sort(intervals, Interval1D.MIN_ENDPOINT_ORDER);</span>
-<span class="nc bnc" id="L236" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
-<span class="nc" id="L237">            System.out.println(intervals[i]);</span>
-<span class="nc" id="L238">        System.out.println();</span>
+<span class="nc" id="L235">        System.out.println(&quot;Sort by min endpoint&quot;);</span>
+<span class="nc" id="L236">        Arrays.sort(intervals, Interval1D.MIN_ENDPOINT_ORDER);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
+<span class="nc" id="L238">            System.out.println(intervals[i]);</span>
+<span class="nc" id="L239">        System.out.println();</span>
 
-<span class="nc" id="L240">        System.out.println(&quot;Sort by max endpoint&quot;);</span>
-<span class="nc" id="L241">        Arrays.sort(intervals, Interval1D.MAX_ENDPOINT_ORDER);</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
-<span class="nc" id="L243">            System.out.println(intervals[i]);</span>
-<span class="nc" id="L244">        System.out.println();</span>
+<span class="nc" id="L241">        System.out.println(&quot;Sort by max endpoint&quot;);</span>
+<span class="nc" id="L242">        Arrays.sort(intervals, Interval1D.MAX_ENDPOINT_ORDER);</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
+<span class="nc" id="L244">            System.out.println(intervals[i]);</span>
+<span class="nc" id="L245">        System.out.println();</span>
 
-<span class="nc" id="L246">        System.out.println(&quot;Sort by length&quot;);</span>
-<span class="nc" id="L247">        Arrays.sort(intervals, Interval1D.LENGTH_ORDER);</span>
-<span class="nc bnc" id="L248" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
-<span class="nc" id="L249">            System.out.println(intervals[i]);</span>
-<span class="nc" id="L250">        System.out.println();</span>
-<span class="nc" id="L251">    }</span>
+<span class="nc" id="L247">        System.out.println(&quot;Sort by length&quot;);</span>
+<span class="nc" id="L248">        Arrays.sort(intervals, Interval1D.LENGTH_ORDER);</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        for (int i = 0; i &lt; intervals.length; i++)</span>
+<span class="nc" id="L250">            System.out.println(intervals[i]);</span>
+<span class="nc" id="L251">        System.out.println();</span>
+<span class="nc" id="L252">    }</span>
 }
 
 /******************************************************************************

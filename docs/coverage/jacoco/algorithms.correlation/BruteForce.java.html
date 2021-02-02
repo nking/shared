@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BruteForce.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.correlation</a> &gt; <span class="el_source">BruteForce.java</span></div><h1>BruteForce.java</h1><pre class="source lang-java linenums">package algorithms.correlation;
+
+import algorithms.matrix.MatrixUtil;
+import java.util.Arrays;
+
+/**
+ * implemented from 
+        
+ * useful for Mahalanobis distance among many things.
+ * 
+ * @author nichole
+ */
+<span class="nc" id="L13">public class BruteForce {</span>
+    
+    /**
+     * calculate the correlation matrix for a using a brute force method
+     * @param a an mxn matrix of data with the dimensions being columns
+     * and the datum number being rows.
+     * &lt;pre&gt;
+     * e.g.  a[0] = new double[]{10, 100, 1000}
+     *       a[1] = new double[]{ 9, 110, 900}
+     * &lt;/pre&gt;
+     * @return the correlation matrix as a double array of size [a[0].length][a[0].length]
+     */
+    public static double[][] correlation(double[][] a) {
+        
+<span class="nc" id="L27">        double eps= 1.e-15;</span>
+        
+        // cor_i_j = cov_i_j / (sqrt(var_i)*sqrt(var_j))
+        
+<span class="nc" id="L31">        double[][] cov = covariance(a);</span>
+        
+<span class="nc" id="L33">        double[][] cor = new double[cov.length][cov[0].length];</span>
+        int i, j;
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (i = 0; i &lt; cov.length; ++i) {</span>
+<span class="nc" id="L36">            cor[i] = new double[cov[i].length];</span>
+        }
+        double si, sj;
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        for (i = 0; i &lt; cor.length; ++i) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            si = (cov[i][i] &gt; eps) ? Math.sqrt(cov[i][i]) : 0;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">            for (j = i; j &lt; cor[i].length; ++j) {</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">                sj = (cov[j][j] &gt; eps) ? Math.sqrt(cov[j][j]) : 0;</span>
+<span class="nc bnc" id="L43" title="All 4 branches missed.">                if (si &gt; eps &amp;&amp; sj &gt; eps) {</span>
+<span class="nc" id="L44">                    cor[i][j] = cov[i][j]/(si*sj);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                    if (i != j) {</span>
+<span class="nc" id="L46">                        cor[j][i] = cor[i][j];</span>
+                    }
+                }
+            }
+        }
+        
+<span class="nc" id="L52">        return cor;</span>
+    }
+    
+    /**
+     * calculate the covariance matrix for a using a brute force method.
+     * The covariance matrix is also known as auto-covariance matrix, 
+     * dispersion matrix, variance matrix, and the variance–covariance matrix.
+     * @param a an mxn matrix of data with the dimensions being columns
+     * and the datum number being rows.
+     * &lt;pre&gt;
+     * e.g.  a[0] = new double[]{10, 100, 1000}
+     *       a[1] = new double[]{ 9, 110, 900}
+     * &lt;/pre&gt;
+     * @return the covariance matrix as a double array of size [a[0].length][a[0].length]
+     */
+    public static double[][] covariance(double[][] a) {
+        
+<span class="fc" id="L69">        int nRows = a.length;</span>
+<span class="fc" id="L70">        int nCols = a[0].length;</span>
+        
+        int i, j;
+        
+<span class="fc" id="L74">        double[] mean = MatrixUtil.mean(a);</span>
+        
+<span class="fc" id="L76">        double[][] diffs = new double[nRows][];</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L78">            diffs[i] = new double[nCols];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            for (j = 0; j &lt; nCols; ++j) {</span>
+<span class="fc" id="L80">                diffs[i][j] = (a[i][j] - mean[j]);</span>
+            }
+        }
+        
+        /*System.out.printf(&quot;bf stand. means=%s\n&quot;, Arrays.toString(mean));
+        
+        System.out.flush();
+        System.out.printf(&quot;bf stand. diffs=\n&quot;);
+        for ( i = 0; i &lt; diffs.length; ++i) {
+            for ( j = 0; j &lt; diffs[i].length; ++j) {
+                System.out.printf(&quot;%11.3e  &quot;, diffs[i][j]);
+            }
+            System.out.printf(&quot;\n&quot;);
+        }
+        System.out.flush();
+        */
+        
+<span class="fc" id="L97">        double[][] cov = new double[nCols][];</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (i = 0; i &lt; nCols; ++i) {</span>
+<span class="fc" id="L99">            cov[i] = new double[nCols];</span>
+        }
+     
+        double sum;
+        int ii;
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            for (j = i; j &lt; nCols; ++j) {</span>
+<span class="fc" id="L106">                sum = 0;</span>
+                // multiply diffs[*][i] by diffs[*][j]
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                for (ii = 0; ii &lt; nRows; ++ii) {</span>
+<span class="fc" id="L109">                    sum += (diffs[ii][i] * diffs[ii][j]);</span>
+                }
+<span class="fc" id="L111">                sum /= ((double)(nRows-1.));</span>
+<span class="fc" id="L112">                cov[i][j] = sum;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">                if (i != j) {</span>
+<span class="fc" id="L114">                    cov[j][i] = sum;</span>
+                }
+            }
+        }
+        
+        /*System.out.printf(&quot;bf stand. cov=\n&quot;);
+        for ( i = 0; i &lt; cov.length; ++i) {
+            for ( j = 0; j &lt; cov[i].length; ++j) {
+                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
+            }
+            System.out.printf(&quot;\n&quot;);
+        }
+        System.out.flush();*/
+        
+<span class="fc" id="L128">        return cov;</span>
+    }
+    
+    /**
+     * calculate the covariance matrix for a using simplest brute force method
+     * Cov_a = (1/n) a * a^T for a being standardized to subtract the mean of
+     * each type from the measurement of same type.
+     * The covariance matrix is also known as auto-covariance matrix, 
+     * dispersion matrix, variance matrix, and the variance–covariance matrix.
+     * @param a an mxn matrix of data with the dimensions being rows
+     * and the datum number being columns.  NOTE that a must be &quot;zero mean&quot; centered.
+     * &lt;pre&gt;
+     * e.g.  a[0] = new double[]{10,  9}
+     *       a[1] = new double[]{99,  100}
+     *       a[2] = new double[]{1000, 900}
+     * &lt;/pre&gt;
+     * @return the covariance matrix as a double array of size [a[0].length][a[0].length]
+     */
+    public static double[][] covariance2(double[][] a) {
+        
+<span class="fc" id="L148">        int n = a[0].length;</span>
+        
+<span class="fc" id="L150">        double[][] cov = MatrixUtil.multiply(a, MatrixUtil.transpose(a));</span>
+        
+        int i, j;
+<span class="fc" id="L153">        double invN = 1./((double)n - 1.);</span>
+        
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (i = 0 ; i &lt; cov.length; ++i) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            for (j = 0; j &lt; cov[i].length; ++j) {</span>
+<span class="fc" id="L157">                cov[i][j] *= invN;</span>
+            }
+        }
+        
+<span class="fc" id="L161">        System.out.printf(&quot;bf cov=\n&quot;);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for ( i = 0; i &lt; cov.length; ++i) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            for ( j = 0; j &lt; cov[i].length; ++j) {</span>
+<span class="fc" id="L164">                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);</span>
+            }
+<span class="fc" id="L166">            System.out.printf(&quot;\n&quot;);</span>
+        }
+<span class="fc" id="L168">        System.out.flush();</span>
+        
+<span class="fc" id="L170">        return cov;</span>
+    }
+   
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ROC.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">ROC.java</span></div><h1>ROC.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+import algorithms.sort.MiscSorter;
+import algorithms.util.PairFloatArray;
+import java.util.Arrays;
+
+/**
+ * calculates ROC plot points and area under the curve given a set of test
+ * examples with f-scores, and positive or negative labels.
+ * 
+ * @author nichole
+ */
+<span class="nc" id="L13">public class ROC {</span>
+   
+    /**
+     * calculates for 2-classes, the ROC plot points and area under the curve 
+     * given a set of test examples with f-scores, and positive or negative labels.
+     * The algorithms are from “An introduction to ROC analysis” by Fawcett, 2006, 
+     * Pattern Recognition Letters 27, 61–874
+       https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf
+
+       Runtime is O(n*log_2(n)).
+       
+     * @param fScores
+     * @param labels
+     * @return 
+     */
+    public static ROCResults calcAUCAndPoints(double[] fScores, boolean[] labels) {
+        
+<span class="fc" id="L30">        fScores = Arrays.copyOf(fScores, fScores.length);</span>
+        
+        // sort by decreasing fScores
+<span class="fc" id="L33">        int[] indexes = MiscSorter.mergeSortDecreasing(fScores);</span>
+        
+<span class="fc" id="L35">        int[] nPCounts = countLabels(labels);</span>
+<span class="fc" id="L36">        float neg = nPCounts[0];</span>
+<span class="fc" id="L37">        float pos = nPCounts[1];</span>
+        
+<span class="fc" id="L39">        double tol = 1.e-15;</span>
+        float x, y;
+<span class="fc" id="L41">        float fp = 0;</span>
+<span class="fc" id="L42">        float tp = 0;</span>
+<span class="fc" id="L43">        float fpPrev = 0;</span>
+<span class="fc" id="L44">        float tpPrev = 0;</span>
+        
+<span class="fc" id="L46">        PairFloatArray pts = new PairFloatArray(fScores.length + 1);</span>
+        
+<span class="fc" id="L48">        double fPrev = Double.NEGATIVE_INFINITY;</span>
+        
+<span class="fc" id="L50">        double auc = 0;</span>
+        
+        double diff;
+<span class="fc" id="L53">        int i = 0;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        while (i &lt; fScores.length) {</span>
+<span class="fc" id="L55">            diff = Math.abs(fPrev - fScores[i]);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">            if (diff &gt; tol) {</span>
+<span class="fc" id="L57">                x = fp/neg;</span>
+<span class="fc" id="L58">                y = tp/pos;</span>
+<span class="fc" id="L59">                pts.add(x, y);</span>
+                
+<span class="fc" id="L61">                auc += (trapezoidalArea(fp, fpPrev, tp, tpPrev));</span>
+                
+<span class="fc" id="L63">                fPrev = fScores[i];</span>
+<span class="fc" id="L64">                fpPrev = fp;</span>
+<span class="fc" id="L65">                tpPrev = tp;</span>
+            }
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            if (labels[indexes[i]]) {</span>
+<span class="fc" id="L68">                tp++;</span>
+            } else {
+<span class="fc" id="L70">                fp++;</span>
+            }
+<span class="fc" id="L72">            ++i;</span>
+        }
+<span class="fc" id="L74">        x = fp / neg;</span>
+<span class="fc" id="L75">        y = tp / pos;</span>
+<span class="fc" id="L76">        pts.add(x, y);</span>
+        
+<span class="fc" id="L78">        auc += (trapezoidalArea(fp, fpPrev, tp, tpPrev));</span>
+<span class="fc" id="L79">        auc /= (neg * pos);</span>
+        
+<span class="fc" id="L81">        ROCResults roc = new ROCResults();</span>
+<span class="fc" id="L82">        roc.sortedFScores = fScores;</span>
+<span class="fc" id="L83">        roc.indexes = indexes;</span>
+<span class="fc" id="L84">        roc.pts = pts;</span>
+<span class="fc" id="L85">        roc.auc = auc;</span>
+        
+<span class="fc" id="L87">        return roc;</span>
+    }
+    
+    /**
+     Not currently implemented, but could be upon need.
+     Following the Hand and Till 2001 summary in Section 9 of 
+        “An introduction to ROC analysis” by Fawcett, 2006, 
+     Pattern Recognition Letters 27, 61–874
+       https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf
+    */
+    //public static double multiClassAUCHandTill2001() {
+        /*
+        Hand and Till (2001) derive a multi-class generalization of the AUC 
+        that is insensitive to class distribution and error costs.  
+        The derivation is too detailed to summarize here, but it is based 
+        upon the fact that the AUC is equivalent to the probability that the 
+        classifier will rank a randomly chosen positive instance higher than 
+        a randomly chosen negative instance. From this probabilistic form, 
+        they derive a formulation that measures the unweighted pairwise 
+        discriminability of classes.  n is the number of classes and AUC(ci,cj) 
+        is the area under the two-class ROC curve involving classes ci and cj.  
+        The summation is calculated over all pairs of distinct classes, 
+        irrespective of order. There are |C|*(|C| - 1)/2 such pairs, so the 
+        time complexity of their measure is O(|C|^2*n*log_2(n)).
+        
+        nClasses = |C|.
+        
+        Their measure, which they call M, is equivalent to:
+            AUC_total= (1/(nClasses*(nClasses-1)) 
+                         * summation_{ci,cj}( AUC(ci, cj) )
+        */
+    //    throw new UnsupportedOperationException(&quot;not implemented, but could be upon need&quot;);
+    //}
+    
+    private static double trapezoidalArea(double x1, double x2, double y1, 
+        double y2) {
+        
+<span class="fc" id="L124">        double base = Math.abs(x1 - x2);</span>
+<span class="fc" id="L125">        double height = (y1 + y2) / 2.;</span>
+        
+<span class="fc" id="L127">        return base * height;</span>
+    }
+
+    private static int[] countLabels(boolean[] labels) {
+<span class="fc" id="L131">        int[] npc = new int[2];</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int i = 0; i &lt; labels.length; ++i) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (labels[i]) {</span>
+<span class="fc" id="L134">                npc[1]++;</span>
+            } else {
+<span class="fc" id="L136">                npc[0]++;</span>
+            }
+        }
+<span class="fc" id="L139">        return npc;</span>
+    }
+    
+    public static class ROCResults {
+        double[] sortedFScores;
+        int[] indexes;
+        PairFloatArray pts;
+        double auc;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Erf.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.smile.math.special</a> &gt; <span class="el_source">Erf.java</span></div><h1>Erf.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * from from https://github.com/haifengl/smile
+ * 
+ * Copyright (c) 2010-2020 Haifeng Li. All rights reserved.
+ *
+ * Smile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Smile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Smile.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+
+package thirdparty.smile.math.special;
+
+import static java.lang.Math.*;
+
+/**
+ * The error function. The error function (or the Gauss error function)
+ * is a special function of sigmoid shape which occurs in probability,
+ * statistics, materials science, and partial differential equations.
+ * It is defined as:
+ * &lt;p&gt;
+ * &lt;pre&gt;
+ *     erf(x) = &lt;i&gt;&lt;big&gt;&amp;#8747;&lt;/big&gt;&lt;sub&gt;&lt;small&gt;0&lt;/small&gt;&lt;/sub&gt;&lt;sup&gt;&lt;small&gt;x&lt;/small&gt;&lt;/sup&gt; e&lt;sup&gt;-t&lt;sup&gt;2&lt;/sup&gt;&lt;/sup&gt;dt&lt;/i&gt;
+ * &lt;/pre&gt;
+ * The complementary error function, denoted erfc, is defined as
+ * &lt;code&gt;erfc(x) = 1 - erf(x)&lt;/code&gt;. The error function and complementary
+ * error function are special cases of the incomplete gamma function.
+ * 
+ * @author Haifeng Li
+ */
+public class Erf {
+    /** Utility classes should not have public constructors. */
+<span class="nc" id="L41">    private Erf() {</span>
+
+<span class="nc" id="L43">    }</span>
+
+<span class="nc" id="L45">    private static final double[] cof = {</span>
+        -1.3026537197817094, 6.4196979235649026e-1,
+        1.9476473204185836e-2, -9.561514786808631e-3, -9.46595344482036e-4,
+        3.66839497852761e-4, 4.2523324806907e-5, -2.0278578112534e-5,
+        -1.624290004647e-6, 1.303655835580e-6, 1.5626441722e-8, -8.5238095915e-8,
+        6.529054439e-9, 5.059343495e-9, -9.91364156e-10, -2.27365122e-10,
+        9.6467911e-11, 2.394038e-12, -6.886027e-12, 8.94487e-13, 3.13092e-13,
+        -1.12708e-13, 3.81e-16, 7.106e-15, -1.523e-15, -9.4e-17, 1.21e-16, -2.8e-17
+    };
+
+    /**
+     * The Gauss error function.
+     */
+    public static double erf(double x) {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (x &gt;= 0.) {</span>
+<span class="nc" id="L60">            return 1.0 - erfccheb(x);</span>
+        } else {
+<span class="nc" id="L62">            return erfccheb(-x) - 1.0;</span>
+        }
+    }
+
+    /**
+     * The complementary error function.
+     */
+    public static double erfc(double x) {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (x &gt;= 0.) {</span>
+<span class="nc" id="L71">            return erfccheb(x);</span>
+        } else {
+<span class="nc" id="L73">            return 2.0 - erfccheb(-x);</span>
+        }
+    }
+
+    /**
+     * The complementary error function with fractional error everywhere less
+     * than 1.2 &amp;times; 10&lt;sup&gt;-7&lt;/sup&gt;. This concise routine is faster than erfc.
+     */
+    public static double erfcc(double x) {
+<span class="nc" id="L82">        double z = abs(x);</span>
+<span class="nc" id="L83">        double t = 2.0 / (2.0 + z);</span>
+<span class="nc" id="L84">        double ans = t * exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +</span>
+                t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 +
+                t * (-0.82215223 + t * 0.17087277)))))))));
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        return (x &gt;= 0.0 ? ans : 2.0 - ans);</span>
+    }
+
+    private static double erfccheb(double z) {
+<span class="nc" id="L92">        double t, ty, tmp, d = 0., dd = 0.;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (z &lt; 0.) {</span>
+<span class="nc" id="L94">            throw new IllegalArgumentException(&quot;erfccheb requires nonnegative argument&quot;);</span>
+        }
+<span class="nc" id="L96">        t = 2. / (2. + z);</span>
+<span class="nc" id="L97">        ty = 4. * t - 2.;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        for (int j = cof.length - 1; j &gt; 0; j--) {</span>
+<span class="nc" id="L99">            tmp = d;</span>
+<span class="nc" id="L100">            d = ty * d - dd + cof[j];</span>
+<span class="nc" id="L101">            dd = tmp;</span>
+        }
+<span class="nc" id="L103">        return t * exp(-z * z + 0.5 * (cof[0] + ty * d) - dd);</span>
+    }
+
+    /**
+     * The inverse complementary error function.
+     */
+    public static double inverfc(double p) {
+        double x, err, t, pp;
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (p &gt;= 2.0) {</span>
+<span class="nc" id="L112">            return -100.;</span>
+        }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (p &lt;= 0.0) {</span>
+<span class="nc" id="L115">            return 100.;</span>
+        }
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        pp = (p &lt; 1.0) ? p : 2. - p;</span>
+<span class="nc" id="L118">        t = sqrt(-2. * log(pp / 2.));</span>
+<span class="nc" id="L119">        x = -0.70711 * ((2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t);</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        for (int j = 0; j &lt; 2; j++) {</span>
+<span class="nc" id="L121">            err = erfc(x) - pp;</span>
+<span class="nc" id="L122">            x += err / (1.12837916709551257 * exp(-x * x) - x * err);</span>
+        }
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        return (p &lt; 1.0 ? x : -x);</span>
+    }
+
+    /**
+     * The inverse error function.
+     */
+    public static double inverf(double p) {
+<span class="nc" id="L131">        return inverfc(1. - p);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

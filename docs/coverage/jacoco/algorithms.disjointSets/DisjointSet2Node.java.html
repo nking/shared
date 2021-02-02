@@ -85,31 +85,34 @@ public class DisjointSet2Node&lt;T&gt; {
     public String toString() {
         
 <span class="fc" id="L87">        StringBuilder sb = new StringBuilder();</span>
-        
-<span class="fc" id="L89">        sb.append(&quot;[member=&quot;);</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (member != null) {</span>
-<span class="fc" id="L91">            sb.append(member.toString());</span>
-        }
-<span class="fc" id="L93">        sb.append(&quot;; &quot;);</span>
-<span class="fc" id="L94">        sb.append(&quot;rank=&quot;).append(Integer.toString(rank)).append(&quot;; &quot;);</span>
-        
-<span class="fc" id="L96">        sb.append(&quot;data=&quot;);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (data != null) {</span>
-<span class="fc" id="L98">            sb.append(data.toString());</span>
-        }
-<span class="fc" id="L100">        sb.append(&quot;; &quot;);</span>
-        
-<span class="fc" id="L102">        sb.append(&quot;parent=&quot;);</span>
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (parent != null) {</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (parent.equals(this)) {</span>
-<span class="fc" id="L105">                sb.append(&quot;self&quot;);</span>
+<span class="fc" id="L88">        sb.append(&quot;    [parent=&quot;);</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">        if (parent != null) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (parent.equals(this)) {</span>
+<span class="fc" id="L91">                sb.append(&quot;self&quot;);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            } else if (parent.member != null) {</span>
+<span class="fc" id="L93">                sb.append(parent.member);</span>
             } else {
-<span class="fc" id="L107">                sb.append(parent.toString());</span>
+<span class="nc" id="L95">                sb.append(parent.hashCode());</span>
             }
         }
-<span class="fc" id="L110">        sb.append(&quot;;] &quot;);</span>
+<span class="fc" id="L98">        sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L99">        sb.append(&quot;member=&quot;);</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (member != null) {</span>
+<span class="fc" id="L101">            sb.append(member.toString());</span>
+        }
+<span class="fc" id="L103">        sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L104">        sb.append(&quot;rank=&quot;).append(Integer.toString(rank)).append(&quot;; &quot;);</span>
         
-<span class="fc" id="L112">        return sb.toString();</span>
+<span class="fc" id="L106">        sb.append(&quot;data=&quot;);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (data != null) {</span>
+<span class="fc" id="L108">            sb.append(data.toString());</span>
+        }
+<span class="fc" id="L110">        sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L111">        sb.append(&quot;hashcode=&quot;).append(parent.hashCode());</span>
+<span class="fc" id="L112">        sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L113">        sb.append(&quot;] &quot;);</span>
+        
+<span class="fc" id="L115">        return sb.toString();</span>
     }
   
 }

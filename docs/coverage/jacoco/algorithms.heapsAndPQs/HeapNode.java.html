@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeapNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.heapsAndPQs</a> &gt; <span class="el_source">HeapNode.java</span></div><h1>HeapNode.java</h1><pre class="source lang-java linenums">package algorithms.heapsAndPQs;
+
+import algorithms.DoubleLinkedCircularList;
+
+public class HeapNode {
+    
+	/* fields needed for node in circular, doubly linked list */
+<span class="fc" id="L8">	private long key = DoubleLinkedCircularList.noValue;</span>
+<span class="fc" id="L9">    private HeapNode right = null;</span>
+<span class="fc" id="L10">    private HeapNode left = null;</span>
+
+    /* fields needed for a Fibonacci Heap Node */
+<span class="fc" id="L13">    private HeapNode parent = null;</span>
+<span class="fc" id="L14">    private DoubleLinkedCircularList children = null;</span>
+    
+    /* field to carry data  */
+<span class="fc" id="L17">    private Object data = null;</span>
+
+    /**
+     * a.k.a. degree
+     */
+<span class="fc" id="L22">    private int numberOfChildren = 0;</span>
+<span class="fc" id="L23">    private boolean mark = false;</span>
+
+<span class="fc" id="L25">    public HeapNode() {</span>
+<span class="fc" id="L26">    }</span>
+    
+<span class="fc" id="L28">    public HeapNode(long key) {</span>
+<span class="fc" id="L29">        this.key = key;</span>
+<span class="fc" id="L30">    }</span>
+    
+    /**
+     * add node to list of children.  numberOfChildren is incremented.
+     *
+     * note that this method is not for use with multiple threads.  
+     * it's fast and meant to be
+     * accessed synchronously only (children are not protected by mutex).
+     *
+     * @param child
+     */
+    public void addChild(HeapNode child) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">    	if (children == null) {</span>
+<span class="fc" id="L43">    		children = new DoubleLinkedCircularList();</span>
+    	}
+<span class="fc" id="L45">    	children.insert(child);</span>
+<span class="fc" id="L46">    	child.parent = this;</span>
+<span class="fc" id="L47">    	numberOfChildren++;</span>
+<span class="fc" id="L48">    }</span>
+    
+    public void removeChildren() {
+<span class="fc" id="L51">        this.children = null;</span>
+<span class="fc" id="L52">    }</span>
+
+    /** note that this method is not for use with multiple threads.  
+     * it's fast and meant to be
+     * accessed synchronously only (children are not protected by mutex)
+     *
+     * @param child
+     */
+    public void removeChild(HeapNode child) {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">    	if (children == null) {</span>
+<span class="nc" id="L62">    		return;</span>
+    	}
+<span class="fc" id="L64">    	child.parent = null;</span>
+<span class="fc" id="L65">    	children.remove(child);</span>
+<span class="fc" id="L66">    	numberOfChildren--;</span>
+<span class="fc" id="L67">    }</span>
+
+    /** note that this method is not for use with multiple threads.  
+     * it's fast and meant to be
+     * accessed synchronously only (children are not protected by mutex)
+     *
+     * @param childKey
+     */
+    public void removeChild(long childKey) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">    	if (children == null) {</span>
+<span class="nc" id="L77">    		return;</span>
+    	}
+<span class="nc" id="L79">    	children.remove(childKey);</span>
+<span class="nc" id="L80">    	numberOfChildren--;</span>
+<span class="nc" id="L81">    }</span>
+
+    /** note that this method is not for use with multiple threads.  
+     * it's fast and meant to be
+     * accessed synchronously only (children are not protected by mutex 
+     * and are not copied out)
+     * 
+     * @return
+     */
+    public DoubleLinkedCircularList getChildren() {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">    	if (children == null) {</span>
+<span class="fc" id="L92">    		children = new DoubleLinkedCircularList();</span>
+    	}
+<span class="fc" id="L94">    	return children;</span>
+    }
+
+    /**
+     * @return the key
+     */
+    public long getKey() {
+<span class="fc" id="L101">        return key;</span>
+    }
+
+    /**
+     * @return the right
+     */
+    public HeapNode getRight() {
+<span class="fc" id="L108">        return right;</span>
+    }
+
+    /**
+     * @return the left
+     */
+    public HeapNode getLeft() {
+<span class="fc" id="L115">        return left;</span>
+    }
+
+    /**
+     * @return the parent
+     */
+    public HeapNode getParent() {
+<span class="fc" id="L122">        return parent;</span>
+    }
+
+    /**
+     * @return the numberOfChildren
+     */
+    public int getNumberOfChildren() {
+<span class="fc" id="L129">        return numberOfChildren;</span>
+    }
+
+    /**
+     * @return the mark
+     */
+    public boolean isMark() {
+<span class="fc" id="L136">        return mark;</span>
+    }
+
+    /**
+     * @return the data
+     */
+    public Object getData() {
+<span class="fc" id="L143">        return data;</span>
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(long key) {
+<span class="fc" id="L150">        this.key = key;</span>
+<span class="fc" id="L151">    }</span>
+
+    /**
+     * @param right the right to set
+     */
+    public void setRight(HeapNode right) {
+<span class="fc" id="L157">        this.right = right;</span>
+<span class="fc" id="L158">    }</span>
+
+    /**
+     * @param theLeft the left to set
+     */
+    public void setLeft(HeapNode theLeft) {
+<span class="fc" id="L164">        left = theLeft;</span>
+<span class="fc" id="L165">    }</span>
+
+    /**
+     * @param theParent the parent to set
+     */
+    public void setParent(HeapNode theParent) {
+<span class="fc" id="L171">        parent = theParent;</span>
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * @param children the children to set
+     */
+    public void setChildren(DoubleLinkedCircularList children) {
+<span class="nc" id="L178">        this.children = children;</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        if (children != null) {</span>
+<span class="nc" id="L180">            numberOfChildren = (int) children.getNumberOfNodes();</span>
+        }
+<span class="nc" id="L182">    }</span>
+
+    /**
+     * @param numberOfChildren the numberOfChildren to set
+     */
+    public void setNumberOfChildren(int numberOfChildren) {
+<span class="fc" id="L188">        this.numberOfChildren = numberOfChildren;</span>
+<span class="fc" id="L189">    }</span>
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(Object data) {
+<span class="fc" id="L195">        this.data = data;</span>
+<span class="fc" id="L196">    }</span>
+
+    /**
+     * @param mark the mark to set
+     */
+    public void setMark(boolean mark) {
+<span class="fc" id="L202">        this.mark = mark;</span>
+<span class="fc" id="L203">    }</span>
+
+    @SuppressWarnings({&quot;rawtypes&quot;})
+    public static Class getType() {
+<span class="nc" id="L207">        return HeapNode.class;</span>
+    }
+    
+    @Override
+    public String toString() {
+       
+<span class="fc" id="L213">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L214">        sb.append(&quot;key=&quot;).append(Long.toString(key))</span>
+<span class="fc" id="L215">            .append(&quot; nChildren=&quot;).append(Integer.toString(numberOfChildren))</span>
+<span class="fc" id="L216">            .append(&quot; mark=&quot;).append(Boolean.toString(mark))</span>
+<span class="fc" id="L217">            .append(&quot; data=&quot;);</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L219">            sb.append(data.toString());</span>
+        }
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        if (parent != null) {</span>
+<span class="nc" id="L222">            sb.append(&quot; prnt=&quot;).append(parent.getKey());</span>
+        }
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">        if (left != null) {</span>
+<span class="fc" id="L225">            sb.append(&quot; lft=&quot;).append(left.getKey());</span>
+        }
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (right != null) {</span>
+<span class="fc" id="L228">            sb.append(&quot; rgt=&quot;).append(right.getKey());</span>
+        }
+        
+<span class="fc" id="L231">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

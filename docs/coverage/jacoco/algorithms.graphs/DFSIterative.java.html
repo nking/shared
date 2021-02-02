@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DFSIterative.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">DFSIterative.java</span></div><h1>DFSIterative.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.sort.MiscSorter;
+import algorithms.util.SimpleLinkedListNode;
+import java.util.Arrays;
+import java.util.Stack;
+
+/**
+   DFS
+
+   searches the full depth of a graph or subgraph when possible first then
+      backtracks to the unexplored edges and unexplored nodes repeating until
+      all nodes are visited.  unlike BFS, it may contain many predecessor trees, 
+      that is a predecessor forest of nodes that are the shortest from the 
+      source to each reachable node.  for this reason, DFS searches can need a 
+      lot of memory.
+
+   average runtime is approx O(|E|), worst case runtime: O(|V| + |E|)
+   worst case space needed: O(|V|)
+
+   implemented using recursion following Cormen et al. &quot;Introduction To Algorithms&quot;
+   then re-factored to iterative by using a stack following advice in 
+   https://www.codeproject.com/Articles/418776/How-to-replace-recursive-functions-using-stack-and
+
+   first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+
+* 
+ * @author nichole
+ */
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">public class DFSIterative {</span>
+    /**
+     * adjacency matrix with connected i-&gt;j indicated by the index and each
+     *    node in the linked list, respectively.
+     * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
+     */
+    private SimpleLinkedListNode[] g;
+    
+    /** 
+     * holds state for whether a node has been visited.  0 = not visited,
+     * 1 = visiting now, 2 = was visited.
+    */
+    private int[] visited;
+
+    /**
+     * time when node is first discovered
+     */
+    private int[] td;
+
+    /**
+     * time when node's adjacency list has all been visited
+     */
+    private int[] tf;
+   
+    private int[] predecessor;
+
+    private int time;
+
+<span class="fc" id="L63">    public DFSIterative() {</span>
+        
+<span class="fc" id="L65">    }</span>
+
+    /**
+     * @param directedEdges  adjacency matrix with connected i-&gt;j indicated 
+     * by the index and each node in the linked list, respectively.
+     * Note that the key of each node is expected to be the same as it's index
+     * in the adjacency matrix.
+     * For example, adjacent to node 3 is found via directedEdges[3] as all in 
+     * the linked list.
+     */
+    public void walk(SimpleLinkedListNode[] directedEdges) {
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">        if (directedEdges == null || directedEdges.length == 0) {</span>
+<span class="nc" id="L77">            throw new IllegalArgumentException(&quot;directedEdges cannot be null or empty&quot;);</span>
+        }
+<span class="fc" id="L79">        g = directedEdges.clone();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L81">            g[i] = new SimpleLinkedListNode(directedEdges[i]);</span>
+        }
+<span class="fc" id="L83">        visited = new int[g.length];</span>
+<span class="fc" id="L84">        td = new int[g.length];</span>
+<span class="fc" id="L85">        tf = new int[g.length];</span>
+<span class="fc" id="L86">        predecessor = new int[g.length];</span>
+<span class="fc" id="L87">        Arrays.fill(td, -1);</span>
+<span class="fc" id="L88">        Arrays.fill(tf, -1);</span>
+<span class="fc" id="L89">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L90">        time = 0;</span>
+        
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; u++) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L94">                walk(u);</span>
+            }
+        }
+<span class="fc" id="L97">    }</span>
+    
+    private void walk(int u) {
+        
+<span class="fc" id="L101">        Stack&lt;Snapshot&gt; stack = new Stack&lt;Snapshot&gt;();</span>
+        Snapshot current;
+        
+        //System.out.println(&quot;*load method frame for &quot; + u);
+        
+<span class="fc" id="L106">        current = new Snapshot(u);</span>
+<span class="fc" id="L107">        current.stage = 0;</span>
+<span class="fc" id="L108">        stack.push(current);</span>
+        
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        while(!stack.empty()) {</span>
+            
+<span class="fc" id="L112">            current = stack.pop();</span>
+            
+            //System.out.println(current.toString());
+            
+<span class="pc bpc" id="L116" title="1 of 3 branches missed.">            switch(current.stage) {</span>
+                case 0: { 
+                    // before recursion is invoked
+<span class="fc" id="L119">                    visited[current.node] = 1;</span>
+<span class="fc" id="L120">                    time++;</span>
+                    //System.out.println(&quot;  0: visiting &quot; + current.node + &quot; to set td=&quot; + time);
+<span class="fc" id="L122">                    td[current.node] = time;</span>
+                    
+<span class="fc" id="L124">                    current.stage = 1;</span>
+<span class="fc" id="L125">                    stack.push(current);</span>
+                    
+                    //System.out.format(&quot;  0: push onto stack u=%d\n&quot;, current.node);
+                            
+<span class="fc" id="L129">                    SimpleLinkedListNode next = g[current.node];</span>
+                    
+<span class="pc bpc" id="L131" title="1 of 4 branches missed.">                    if (next != null &amp;&amp; next.getKey() != -1) {</span>
+                        
+<span class="fc" id="L133">                        int v = next.getKey();</span>
+                        
+<span class="fc" id="L135">                        g[current.node].delete(next);</span>
+                                                      
+<span class="fc bfc" id="L137" title="All 2 branches covered.">                        if (visited[v] == 0) {</span>
+                            
+<span class="fc" id="L139">                            predecessor[v] = current.node;</span>
+                            
+<span class="fc" id="L141">                            Snapshot newSnapshot = new Snapshot(v);</span>
+<span class="fc" id="L142">                            newSnapshot.stage = 0;</span>
+<span class="fc" id="L143">                            stack.push(newSnapshot);</span>
+
+                            //System.out.format(&quot;   0: and push onto stack v=%d\n&quot;, v);
+                            //System.out.println(&quot;   0: [v: &quot; + newSnapshot.toString() + &quot;]&quot;);
+  
+<span class="fc" id="L148">                            continue;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                        } else if (predecessor[v] == -1) {</span>
+                            // in case the instance graph is not ordered top-down
+<span class="fc" id="L151">                            predecessor[v] = current.node;</span>
+                        }
+<span class="fc" id="L153">                    }</span>
+                    break;
+                }
+                case 1: {
+                    //System.out.println(&quot; 1: have all child links been visited?  snap=&quot;
+                    //   + current.toString());
+                    
+<span class="fc" id="L160">                    SimpleLinkedListNode next = g[current.node];</span>
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">                    if (next != null &amp;&amp; next.getKey() != -1) {</span>
+                        
+<span class="fc" id="L163">                        int v = next.getKey();</span>
+                        
+                        //System.out.format(&quot; 1: there is a child link %d\n&quot;, v);
+                        
+<span class="fc" id="L167">                        g[current.node].delete(next);</span>
+                        
+<span class="fc" id="L169">                        current.stage = 1;</span>
+<span class="fc" id="L170">                        stack.push(current);</span>
+
+                        //System.out.format(&quot;  0: push onto stack u=%d\n&quot;, current.node);
+                                                      
+<span class="fc bfc" id="L174" title="All 2 branches covered.">                        if (visited[v] == 0) {</span>
+                            
+<span class="fc" id="L176">                            predecessor[v] = current.node;</span>
+                            
+<span class="fc" id="L178">                            Snapshot newSnapshot = new Snapshot(v);</span>
+<span class="fc" id="L179">                            newSnapshot.stage = 0;</span>
+<span class="fc" id="L180">                            stack.push(newSnapshot);</span>
+
+                            //System.out.format(&quot;   1: and push onto stack v=%d\n&quot;, v);
+                            //System.out.println(&quot;   1: [v: &quot; + newSnapshot.toString() + &quot;]&quot;);
+  
+<span class="fc" id="L185">                            continue;</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">                        } else if (predecessor[v] == -1) {</span>
+<span class="nc" id="L187">                            predecessor[v] = current.node;</span>
+                        }
+                        
+                        continue;
+                    }
+                    
+<span class="fc" id="L193">                    visited[current.node] = 2;</span>
+<span class="fc" id="L194">                    time++;</span>
+<span class="fc" id="L195">                    tf[current.node] = time;</span>
+                    //System.out.format(&quot; 1: end visit to %d, set tf=%d\n&quot;,
+                    //    current.node, time);
+
+<span class="fc" id="L199">                    break;</span>
+                }
+            }
+        }
+<span class="fc" id="L203">    }</span>
+    
+    private class Snapshot {
+        
+        /**
+         * index of current snapshot within DFSIterative instance's arrays.
+         */
+        protected final int node;
+                
+        protected int stage = 0;
+                        
+        public Snapshot(int u) {
+            this.node = u;
+        }
+                
+        public Snapshot(Snapshot s) {
+            this.stage = s.stage;
+            this.node = s.node;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;node=&quot;).append(Integer.toString(node))
+                .append(&quot;, stage=&quot;).append(Integer.toString(stage))
+                .append(&quot;, prev=&quot;).append(Integer.toString(predecessor[node]))
+                .append(&quot;, visited=&quot;).append(Integer.toString(visited[node]))
+            ;
+            return sb.toString();
+        }
+        
+    }
+    
+    /**
+     * get predecessor indexes
+     * @return get predecessor indexes
+     */
+    public int[] getPredecessorIndexes() {
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L242">            return null;</span>
+        }
+<span class="nc" id="L244">        return Arrays.copyOf(predecessor, predecessor.length);</span>
+    }
+    
+    /**
+     * return the indexes in order of the starts of their traversals
+     * @return 
+     */
+    public int[] getOrderedBeginIndexes() {
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">        if (td == null) {</span>
+<span class="nc" id="L253">            return null;</span>
+        }
+<span class="fc" id="L255">        return sortForIndexes(td);</span>
+    }
+    
+    private int[] sortForIndexes(int[] a) {
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L260">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        if (g == null) {</span>
+<span class="nc" id="L263">            return null;</span>
+        }
+<span class="pc bpc" id="L265" title="3 of 4 branches missed.">        assert(a.length == g.length);</span>
+<span class="fc" id="L266">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L267">        int[] idxs = new int[a.length];</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
+<span class="fc" id="L269">            idxs[i] = i;</span>
+        }
+<span class="fc" id="L271">        MiscSorter.sortBy1stArg(a, idxs);</span>
+<span class="fc" id="L272">        return idxs;</span>
+    }
+    
+    /**
+     * return the indexes in order of the ends of their traversal
+     * @return 
+     */
+    public int[] getOrderedEndIndexes() {
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">        if (tf == null) {</span>
+<span class="nc" id="L281">            return null;</span>
+        }
+<span class="fc" id="L283">        return sortForIndexes(tf);</span>
+    }
+    
+    public int[] getTd() {
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">        if (td == null) {</span>
+<span class="nc" id="L288">            return null;</span>
+        }
+<span class="fc" id="L290">        return td;</span>
+    }
+
+    public int[] getTf() {
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">        if (tf == null) {</span>
+<span class="nc" id="L295">            return null;</span>
+        }
+<span class="fc" id="L297">        return tf;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

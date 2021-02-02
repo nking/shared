@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Beta.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.smile.math.special</a> &gt; <span class="el_source">Beta.java</span></div><h1>Beta.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * from https://github.com/haifengl/smile/tree/master/math/src/main/java/smile/math/special
+ * 
+ * Copyright (c) 2010-2020 Haifeng Li. All rights reserved.
+ *
+ * Smile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Smile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Smile.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+
+package thirdparty.smile.math.special;
+
+import static java.lang.Math.*;
+import java.util.logging.Logger;
+import static thirdparty.smile.math.special.Gamma.lgamma;
+
+/**
+ * The beta function, also called the Euler integral of the first kind.
+ * &lt;p&gt;
+ * &lt;pre&gt;
+ *     B(x, y) = &lt;i&gt;&lt;big&gt;&amp;#8747;&lt;/big&gt;&lt;sub&gt;&lt;small&gt;0&lt;/small&gt;&lt;/sub&gt;&lt;sup&gt;&lt;small&gt;1&lt;/small&gt;&lt;/sup&gt; t&lt;sup&gt;x-1&lt;/sup&gt; (1-t)&lt;sup&gt;y-1&lt;/sup&gt;dt&lt;/i&gt;
+ * &lt;/pre&gt;
+ * for &lt;code&gt;x, y &amp;gt; 0&lt;/code&gt; and the integration is over [0, 1].
+ * The beta function is symmetric, i.e. &lt;code&gt;B(x, y) = B(y, x)&lt;/code&gt;.
+ *
+ * @author Haifeng Li
+ */
+public class Beta {
+    //private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Beta.class);
+<span class="fc" id="L39">    private static final Logger logger = Logger.getLogger(&quot;thirdparty.smile.math.special.Beta&quot;);</span>
+    
+    /** Utility classes should not have public constructors. */
+<span class="nc" id="L42">    private Beta() {</span>
+
+<span class="nc" id="L44">    }</span>
+
+    /**
+     *  A small number close to the smallest representable floating point number.
+     */
+    private static final double FPMIN = 1e-300;
+
+    /**
+     * Beta function, also called the Euler integral of the first kind.
+     * The beta function is symmetric, i.e. B(x,y)==B(y,x).
+     */
+    public static double beta(double x, double y) {
+<span class="fc" id="L56">        return exp(lgamma(x) + lgamma(y) - lgamma(x + y));</span>
+    }
+
+    /**
+     * Regularized Incomplete Beta function.
+     * Continued Fraction approximation (see Numerical recipies for details)
+     */
+    public static double regularizedIncompleteBetaFunction(double alpha, double beta, double x) {
+        // This function is often used to calculate p-value of model fitting.
+        // Due to floating error, the model may provide a x that could be slightly
+        // greater than 1 or less than 0. We allow tiny slack here to avoid brute exception.
+<span class="fc" id="L67">        final double EPS = 1E-8;</span>
+
+<span class="pc bpc" id="L69" title="3 of 4 branches missed.">        if (x &lt; 0.0 &amp;&amp; abs(x) &lt; EPS) {</span>
+<span class="nc" id="L70">            return 0.0;</span>
+        }
+
+<span class="pc bpc" id="L73" title="3 of 4 branches missed.">        if (x &gt; 1.0 &amp;&amp; abs(x - 1.0) &lt; EPS) {</span>
+<span class="nc" id="L74">            return 1.0;</span>
+        }
+
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">        if (x &lt; 0.0 || x &gt; 1.0) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;Invalid x: &quot; + x);</span>
+        }
+
+<span class="fc" id="L81">        double ibeta = 0.0;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (x == 0.0) {</span>
+<span class="fc" id="L83">            ibeta = 0.0;</span>
+        } else {
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">            if (x == 1.0) {</span>
+<span class="nc" id="L86">                ibeta = 1.0;</span>
+            } else {
+                // Term before continued fraction
+<span class="fc" id="L89">                ibeta = exp(lgamma(alpha + beta) - lgamma(alpha) - lgamma(beta) + alpha * log(x) + beta * log(1.0D - x));</span>
+                // Continued fraction
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                if (x &lt; (alpha + 1.0) / (alpha + beta + 2.0)) {</span>
+<span class="fc" id="L92">                    ibeta = ibeta * incompleteFractionSummation(alpha, beta, x) / alpha;</span>
+                } else {
+                    // Use symmetry relationship
+<span class="fc" id="L95">                    ibeta = 1.0 - ibeta * incompleteFractionSummation(beta, alpha, 1.0 - x) / beta;</span>
+                }
+            }
+        }
+<span class="fc" id="L99">        return ibeta;</span>
+    }
+
+    /**
+     * Incomplete fraction summation used in the method regularizedIncompleteBeta
+     * using a modified Lentz's method.
+     */
+    private static double incompleteFractionSummation(double alpha, double beta, double x) {
+<span class="fc" id="L107">        final int MAXITER = 500;</span>
+<span class="fc" id="L108">        final double EPS = 3.0E-7;</span>
+
+<span class="fc" id="L110">        double aplusb = alpha + beta;</span>
+<span class="fc" id="L111">        double aplus1 = alpha + 1.0;</span>
+<span class="fc" id="L112">        double aminus1 = alpha - 1.0;</span>
+<span class="fc" id="L113">        double c = 1.0;</span>
+<span class="fc" id="L114">        double d = 1.0 - aplusb * x / aplus1;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        if (abs(d) &lt; FPMIN) {</span>
+<span class="nc" id="L116">            d = FPMIN;</span>
+        }
+<span class="fc" id="L118">        d = 1.0 / d;</span>
+<span class="fc" id="L119">        double h = d;</span>
+<span class="fc" id="L120">        double aa = 0.0;</span>
+<span class="fc" id="L121">        double del = 0.0;</span>
+<span class="fc" id="L122">        int i = 1, i2 = 0;</span>
+<span class="fc" id="L123">        boolean test = true;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        while (test) {</span>
+<span class="fc" id="L125">            i2 = 2 * i;</span>
+<span class="fc" id="L126">            aa = i * (beta - i) * x / ((aminus1 + i2) * (alpha + i2));</span>
+<span class="fc" id="L127">            d = 1.0 + aa * d;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">            if (abs(d) &lt; FPMIN) {</span>
+<span class="nc" id="L129">                d = FPMIN;</span>
+            }
+<span class="fc" id="L131">            c = 1.0 + aa / c;</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if (abs(c) &lt; FPMIN) {</span>
+<span class="nc" id="L133">                c = FPMIN;</span>
+            }
+<span class="fc" id="L135">            d = 1.0 / d;</span>
+<span class="fc" id="L136">            h *= d * c;</span>
+<span class="fc" id="L137">            aa = -(alpha + i) * (aplusb + i) * x / ((alpha + i2) * (aplus1 + i2));</span>
+<span class="fc" id="L138">            d = 1.0 + aa * d;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if (abs(d) &lt; FPMIN) {</span>
+<span class="nc" id="L140">                d = FPMIN;</span>
+            }
+<span class="fc" id="L142">            c = 1.0 + aa / c;</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">            if (abs(c) &lt; FPMIN) {</span>
+<span class="nc" id="L144">                c = FPMIN;</span>
+            }
+<span class="fc" id="L146">            d = 1.0 / d;</span>
+<span class="fc" id="L147">            del = d * c;</span>
+<span class="fc" id="L148">            h *= del;</span>
+<span class="fc" id="L149">            i++;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            if (abs(del - 1.0) &lt; EPS) {</span>
+<span class="fc" id="L151">                test = false;</span>
+            }
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">            if (i &gt; MAXITER) {</span>
+<span class="nc" id="L154">                test = false;</span>
+<span class="nc" id="L155">                logger.severe(&quot;Beta.incompleteFractionSummation: Maximum number of iterations wes exceeded&quot;);</span>
+            }
+        }
+<span class="fc" id="L158">        return h;</span>
+    }
+
+    /**
+     * Inverse of regularized incomplete beta function.
+     */
+    public static double inverseRegularizedIncompleteBetaFunction(double alpha, double beta, double p) {
+<span class="fc" id="L165">        final double EPS = 1.0E-8;</span>
+
+        double pp, t, u, err, x, al, h, w, afac;
+<span class="fc" id="L168">        double a1 = alpha - 1.;</span>
+<span class="fc" id="L169">        double b1 = beta - 1.;</span>
+
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (p &lt;= 0.0) {</span>
+<span class="nc" id="L172">            return 0.0;</span>
+        }
+
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">        if (p &gt;= 1.0) {</span>
+<span class="nc" id="L176">            return 1.0;</span>
+        }
+
+<span class="pc bpc" id="L179" title="1 of 4 branches missed.">        if (alpha &gt;= 1. &amp;&amp; beta &gt;= 1.) {</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">            pp = (p &lt; 0.5) ? p : 1. - p;</span>
+<span class="fc" id="L181">            t = sqrt(-2. * log(pp));</span>
+<span class="fc" id="L182">            x = (2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t;</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">            if (p &lt; 0.5) {</span>
+<span class="fc" id="L184">                x = -x;</span>
+            }
+<span class="fc" id="L186">            al = (x * x - 3.) / 6.;</span>
+<span class="fc" id="L187">            h = 2. / (1. / (2. * alpha - 1.) + 1. / (2. * beta - 1.));</span>
+<span class="fc" id="L188">            w = (x * sqrt(al + h) / h) - (1. / (2. * beta - 1) - 1. / (2. * alpha - 1.)) * (al + 5. / 6. - 2. / (3. * h));</span>
+<span class="fc" id="L189">            x = alpha / (alpha + beta * exp(2. * w));</span>
+        } else {
+<span class="fc" id="L191">            double lna = log(alpha / (alpha + beta));</span>
+<span class="fc" id="L192">            double lnb = log(beta / (alpha + beta));</span>
+<span class="fc" id="L193">            t = exp(alpha * lna) / alpha;</span>
+<span class="fc" id="L194">            u = exp(beta * lnb) / beta;</span>
+<span class="fc" id="L195">            w = t + u;</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">            if (p &lt; t / w) {</span>
+<span class="fc" id="L197">                x = pow(alpha * w * p, 1. / alpha);</span>
+            } else {
+<span class="nc" id="L199">                x = 1. - pow(beta * w * (1. - p), 1. / beta);</span>
+            }
+        }
+<span class="fc" id="L202">        afac = -lgamma(alpha) - lgamma(beta) + lgamma(alpha + beta);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        for (int j = 0; j &lt; 10; j++) {</span>
+<span class="pc bpc" id="L204" title="2 of 4 branches missed.">            if (x == 0. || x == 1.) {</span>
+<span class="nc" id="L205">                return x;</span>
+            }
+<span class="fc" id="L207">            err = regularizedIncompleteBetaFunction(alpha, beta, x) - p;</span>
+<span class="fc" id="L208">            t = exp(a1 * log(x) + b1 * log(1. - x) + afac);</span>
+<span class="fc" id="L209">            u = err / t;</span>
+<span class="fc" id="L210">            x -= (t = u / (1. - 0.5 * min(1., u * (a1 / x - b1 / (1. - x)))));</span>
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">            if (x &lt;= 0.) {</span>
+<span class="nc" id="L212">                x = 0.5 * (x + t);</span>
+            }
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">            if (x &gt;= 1.) {</span>
+<span class="nc" id="L215">                x = 0.5 * (x + t + 1.);</span>
+            }
+<span class="pc bpc" id="L217" title="1 of 4 branches missed.">            if (abs(t) &lt; EPS * x &amp;&amp; j &gt; 0) {</span>
+<span class="fc" id="L218">                break;</span>
+            }
+        }
+<span class="fc" id="L221">        return x;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

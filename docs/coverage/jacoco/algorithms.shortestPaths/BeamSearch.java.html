@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BeamSearch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.shortestPaths</a> &gt; <span class="el_source">BeamSearch.java</span></div><h1>BeamSearch.java</h1><pre class="source lang-java linenums">package algorithms.shortestPaths;
+
+import algorithms.util.SimpleLinkedListNode;
+
+import algorithms.FixedSizeSortedVector; 
+import algorithms.util.LinkedListCostNode;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import java.util.Arrays;
+import thirdparty.edu.princeton.cs.algs4.Queue;
+
+        
+/**
+from https://www.wikiwand.com/en/Beam_search
+Beam Search uses a greedy, breadth-first search to build its search tree,
+but only keeps top k (beam size) nodes at each level in memory.
+The next level will then be expanded from these k nodes.
+
+Complete search variants of beam search are made by combining it with 
+depth-first search resulting in beam stack search and depth-first beam search, 
+or combining it with limited discrepancy search resulting in beam search 
+using limited discrepancy backtracking (BULB). 
+The resulting search algorithms are anytime algorithms that find good but 
+likely sub-optimal solutions quickly, like beam search, then backtrack and 
+continue to find improved solutions until convergence to an optimal solution.
+
+breadth-first search:
+ given a graph, it visits every node reachable from s and computes the
+ distance to each of those nodes.  the predecessor tree is those nodes
+ reachable from s.   the distance array can be used to find the
+ shortest path.
+
+ * @author nichole
+ */
+public class BeamSearch {
+
+<span class="fc" id="L37">    protected int[] d = null;</span>
+
+<span class="fc" id="L39">    protected int[] predecessor = null;</span>
+
+<span class="fc" id="L41">    protected int[] color = null;</span>
+
+<span class="fc" id="L43">    protected SimpleLinkedListNode[] adjacencyList = null;</span>
+
+    // source index
+    protected final int s;
+    protected final int beamSize;
+
+    /**
+     * constructor with adjacency list, with default equal cost edges.
+     * @param theAdjacencyList
+     * @param sourceNodeIndex start index for search
+     * @param beamSize in the breadth-first search, for each set of child nodes, 
+     * only the smallest cost nodes are expanded to continue search and the
+     * limited number of those smallest cost nodes is beamSize.
+     */
+    public BeamSearch(SimpleLinkedListNode[] theAdjacencyList, int sourceNodeIndex,
+<span class="fc" id="L58">            final int beamSize) {</span>
+
+<span class="fc" id="L60">        this.adjacencyList = theAdjacencyList;</span>
+<span class="fc" id="L61">        this.d = new int[adjacencyList.length];</span>
+<span class="fc" id="L62">        this.predecessor = new int[adjacencyList.length];</span>
+<span class="fc" id="L63">        this.color = new int[adjacencyList.length];</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (sourceNodeIndex &lt; 0) {</span>
+<span class="nc" id="L65">            throw new IllegalArgumentException(&quot;sourceNodeIndex cannot be a negative number&quot;);</span>
+        }
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (sourceNodeIndex &gt;= adjacencyList.length) {</span>
+<span class="nc" id="L68">            throw new IllegalArgumentException(&quot;sourceNodeIndex must be an index within size limits of theAdjacencyList&quot;);</span>
+        }
+<span class="fc" id="L70">        this.s = sourceNodeIndex;</span>
+        
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (beamSize &lt;= 0) {</span>
+<span class="nc" id="L73">            throw new IllegalArgumentException(&quot;beamSize must be a positive number greater than 0&quot;);</span>
+        }
+<span class="fc" id="L75">        this.beamSize = beamSize;</span>
+<span class="fc" id="L76">    }</span>
+    
+    /**
+     * constructor with edge costs in adjacency list.
+     * @param theAdjacencyList adjacency list that includes edge costs
+     * @param sourceNodeIndex start index for search
+     * @param beamSize in the breadth-first search, for each set of child nodes, 
+     * only the smallest cost nodes are expanded to continue search and the
+     * limited number of those smallest cost nodes is beamSize.
+     */
+    public BeamSearch(LinkedListCostNode[] theAdjacencyList, int sourceNodeIndex,
+<span class="fc" id="L87">            final int beamSize) {</span>
+
+<span class="fc" id="L89">        this.adjacencyList = theAdjacencyList;</span>
+<span class="fc" id="L90">        this.d = new int[adjacencyList.length];</span>
+<span class="fc" id="L91">        this.predecessor = new int[adjacencyList.length];</span>
+<span class="fc" id="L92">        this.color = new int[adjacencyList.length];</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if (sourceNodeIndex &lt; 0) {</span>
+<span class="nc" id="L94">            throw new IllegalArgumentException(&quot;sourceNodeIndex cannot be a negative number&quot;);</span>
+        }
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (sourceNodeIndex &gt;= adjacencyList.length) {</span>
+<span class="nc" id="L97">            throw new IllegalArgumentException(&quot;sourceNodeIndex must be an index within size limits of theAdjacencyList&quot;);</span>
+        }
+<span class="fc" id="L99">        this.s = sourceNodeIndex;</span>
+        
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (beamSize &lt;= 0) {</span>
+<span class="nc" id="L102">            throw new IllegalArgumentException(&quot;beamSize must be a positive number greater than 0&quot;);</span>
+        }
+<span class="fc" id="L104">        this.beamSize = beamSize;</span>
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * add source index to the bfs tree.
+     * @return list of indexes searched
+     */
+    public TIntList search() {
+
+<span class="fc" id="L113">        TIntList searched = new TIntArrayList();</span>
+                
+        // initialize
+<span class="fc" id="L116">        Arrays.fill(d, Integer.MAX_VALUE);</span>
+<span class="fc" id="L117">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L118">        Arrays.fill(color, 0);        </span>
+<span class="fc" id="L119">        setColorToGray(s);</span>
+<span class="fc" id="L120">        d[s] = 0;</span>
+<span class="fc" id="L121">        predecessor[s] = -1;</span>
+<span class="fc" id="L122">        Queue queue = new Queue();</span>
+<span class="fc" id="L123">        queue.enqueue(s);</span>
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+
+<span class="fc" id="L127">            int u = (Integer)queue.dequeue();</span>
+
+<span class="fc" id="L129">            searched.add(u);</span>
+
+<span class="fc" id="L131">            SimpleLinkedListNode vNode = adjacencyList[u];</span>
+
+<span class="fc" id="L133">            FixedSizeSortedVector&lt;Index&gt; sorted = </span>
+                new FixedSizeSortedVector(beamSize, Index.class);
+        
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            while (vNode != null) {</span>
+
+<span class="fc" id="L138">                int v = vNode.getKey();</span>
+                
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                if (isColorWhite(v)) {</span>
+
+<span class="fc" id="L142">                    setColorToGray(v);</span>
+
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                    if (vNode instanceof LinkedListCostNode) {</span>
+<span class="fc" id="L145">                        d[v] = d[u] + ((LinkedListCostNode)vNode).getCost();</span>
+                    } else {
+<span class="fc" id="L147">                        d[v] = d[u] + 1;</span>
+                    }
+
+<span class="fc" id="L150">                    predecessor[v] = u;</span>
+
+<span class="fc" id="L152">                    sorted.add(new Index(v));</span>
+                }
+
+<span class="fc" id="L155">                vNode = vNode.getNext();</span>
+<span class="fc" id="L156">            }</span>
+            
+<span class="fc" id="L158">            Index[] sortedArray = sorted.getArray();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            for (int z = 0; z &lt; sorted.getNumberOfItems(); z++) {</span>
+<span class="fc" id="L160">                queue.enqueue(sortedArray[z].idx);</span>
+            }
+
+<span class="fc" id="L163">            setColorToBlack(u);</span>
+<span class="fc" id="L164">        }</span>
+        
+<span class="fc" id="L166">        return searched;</span>
+    }
+
+    protected void setColorToWhite(int nodeIndex) {
+<span class="nc" id="L170">        color[nodeIndex] = 0;</span>
+        //System.out.println(nodeIndex + &quot; = white&quot;);
+<span class="nc" id="L172">    }</span>
+    protected void setColorToGray(int nodeIndex) {
+<span class="fc" id="L174">        color[nodeIndex] = 1;</span>
+        //System.out.println(nodeIndex + &quot; = gray&quot;);
+<span class="fc" id="L176">    }</span>
+    protected void setColorToBlack(int nodeIndex) {
+<span class="fc" id="L178">        color[nodeIndex] = 2;</span>
+        //System.out.println(nodeIndex + &quot; = black&quot;);
+<span class="fc" id="L180">    }</span>
+    protected boolean isColorWhite(int nodeIndex) {
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        return (color[nodeIndex] == 0);</span>
+    }
+
+    private class Index implements Comparable&lt;Index&gt; {
+
+        private final int idx;
+        
+        public Index(int index) {
+            this.idx = index;
+        }
+        
+        @Override
+        public int compareTo(Index c) {
+            int c1 = d[idx];
+            int c2 = d[c.idx];
+            return Integer.compare(c1, c2);
+        }
+        
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

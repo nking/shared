@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Standardization.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">Standardization.java</span></div><h1>Standardization.java</h1><pre class="source lang-java linenums">
+package algorithms.statistics;
+
+import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
+import java.util.Arrays;
+
+/**
+ * various methods for performing statistical standardization and de-normalization
+ * on a data.
+ * 
+ * see https://en.wikipedia.org/wiki/Normalization_(statistics) for more.
+ * 
+ * @author nichole
+ */
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">public class Standardization {</span>
+    
+    /**
+     * performs &quot;standard unit normalization&quot; on the points, that is,
+     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * for each dimension.
+     * 
+     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
+     * @param nDimensions the number of dimensions of a point
+     * @param outputMean the mean of the input data per dimension
+     * @param outputStandardDeviation the standard deviation of the mean subtracted
+     * data per dimension.
+     * @return an array holding the standardized data in format of data array, 
+     * e.g. point_0_0, point_0_1, point_0_2...point_0_{nDimensions-1}].
+     * Note that the results should have a mean of 0 and a standard deviation
+     * of 1 or 0.
+     */
+    public static double[] standardUnitNormalization(double[] data, 
+        int nDimensions, double[] outputMean, double[] outputStandardDeviation) {
+        
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (outputMean.length != nDimensions) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;outputMean.length must equal nDimensions&quot;);</span>
+        }
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nDimensions) {</span>
+<span class="nc" id="L41">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal nDimensions&quot;);</span>
+        }
+        
+        // subtract the mean from the data,
+        // then calculate the standard deviation and divide the data by it.
+<span class="fc" id="L46">        double[] out = Arrays.copyOf(data, data.length);</span>
+        
+<span class="fc" id="L48">        double[] c = MiscMath0.mean(data, nDimensions);</span>
+<span class="fc" id="L49">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
+        
+<span class="fc" id="L51">        int nData = data.length/nDimensions;</span>
+        
+        int i, j, d;
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L56">                j = i * nDimensions + d;</span>
+<span class="fc" id="L57">                out[j] -= c[d];</span>
+            }
+        }
+        
+<span class="fc" id="L61">        double[][] mAndSD = MiscMath0.standardDeviation(out, nDimensions);</span>
+<span class="pc bpc" id="L62" title="3 of 4 branches missed.">        assert(mAndSD[0].length == nDimensions);</span>
+<span class="pc bpc" id="L63" title="3 of 4 branches missed.">        assert(mAndSD[1].length == nDimensions);</span>
+        
+<span class="fc" id="L65">        System.arraycopy(mAndSD[1], 0, outputStandardDeviation, 0, nDimensions);</span>
+        
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L69">                j = i * nDimensions + d;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                if (mAndSD[1][d] &gt; 0.) {</span>
+<span class="fc" id="L71">                    out[j] /= mAndSD[1][d];</span>
+                }
+            }
+        }
+        
+<span class="fc" id="L76">        return out;</span>
+    }
+    
+    /**
+     * performs de-normalization per dimension on data that has been
+     * standardized with &quot;standard unit normalization&quot;, that is,
+     * multiplies by the given standardDeviation and adds the given mean.
+     * for each dimension.
+     * 
+     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
+     * @param nDimensions the number of dimensions of a point
+     * @param mean the mean of the unnormalized input data per dimension
+     * @param standardDeviation the standard deviation of the mean subtracted
+     * unnormalized data per dimension.
+     * @return an array holding the de-normalized data in format similar to data array.
+     */
+    public static double[] standardUnitDenormalization(final double[] data, 
+        final int nDimensions, final double[] mean, final double[] standardDeviation) {
+        
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (mean.length != nDimensions) {</span>
+<span class="nc" id="L97">            throw new IllegalArgumentException(&quot;mean.length must equal nDimensions&quot;);</span>
+        }
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (standardDeviation.length != nDimensions) {</span>
+<span class="nc" id="L100">            throw new IllegalArgumentException(&quot;standardDeviation.length must equal nDimensions&quot;);</span>
+        }
+        
+<span class="fc" id="L103">        double[] out = Arrays.copyOf(data, data.length);</span>
+        
+<span class="fc" id="L105">        int nData = data.length/nDimensions;</span>
+        
+        int i, j, d;
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L110">                j = i * nDimensions + d;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                if (standardDeviation[d] &gt; 0){</span>
+<span class="fc" id="L112">                    out[j] *= standardDeviation[d];</span>
+                }
+<span class="fc" id="L114">                out[j] += mean[d];</span>
+            }
+        }
+        
+<span class="fc" id="L118">        return out;</span>
+    }
+    
+     /**
+     * performs &quot;standard unit normalization&quot; on the points, that is,
+     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * for each dimension.
+     * the input data must have format [nSamples][nVariables], e.g.
+     * data[0] = [10, 100, 1000];
+     * data[1] = [9,  101, 999];
+     *   for nSamples=2 and nVariables = 3;
+     * 
+     * @param data the input data must have format [nSamples][nVariables], e.g.
+     * data[0] = [10, 100, 1000];
+     * data[1] = [9,  101, 999];
+     *   for nSamples=2 and nVariables = 3;
+     * @param outputMean the mean of the input data per variable (a.k.a. dimension)
+     * @param outputStandardDeviation the standard deviation of the mean subtracted
+     * data per dimension.
+     * @return an array holding (data - mean)/stdev
+     */
+    public static double[][] standardUnitNormalization(double[][] data, 
+        double[] outputMean, double[] outputStandardDeviation) {
+        
+<span class="fc" id="L142">        int nSamples = data.length;</span>
+<span class="fc" id="L143">        int nVars = data[0].length;</span>
+        
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (outputMean.length != nVars) {</span>
+<span class="nc" id="L146">            throw new IllegalArgumentException(&quot;outputMean.length must equal data[0].length&quot;);</span>
+        }
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nVars) {</span>
+<span class="nc" id="L149">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal data[0].length&quot;);</span>
+        }
+        
+        // subtract the mean from the data,
+        // then calculate the standard deviation and divide the data by it.
+<span class="fc" id="L154">        double[][] out = MatrixUtil.copy(data);</span>
+        
+<span class="fc" id="L156">        double[] c = MatrixUtil.mean(out);</span>
+<span class="fc" id="L157">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
+                
+        int i, d;
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            for (d = 0; d &lt; out[i].length; ++d) {</span>
+<span class="fc" id="L162">                out[i][d] -= c[d];</span>
+            }
+        }
+        
+<span class="fc" id="L166">        Arrays.fill(outputStandardDeviation, 0);</span>
+                
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+                //mean has already been subtracted:
+<span class="fc" id="L171">                outputStandardDeviation[d] += (out[i][d]*out[i][d]);</span>
+            }
+        }
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L175">            outputStandardDeviation[d] = Math.sqrt(outputStandardDeviation[d]/(nSamples - 1.0)); </span>
+        }
+        
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">                if (outputStandardDeviation[d] &gt; 0.) {</span>
+<span class="fc" id="L181">                    out[i][d] /= outputStandardDeviation[d];</span>
+                }
+            }
+        }
+        
+<span class="fc" id="L186">        return out;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

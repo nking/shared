@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AStar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.shortestPaths</a> &gt; <span class="el_source">AStar.java</span></div><h1>AStar.java</h1><pre class="source lang-java linenums">package algorithms.shortestPaths;
+
+import algorithms.bipartite.MinHeapForRT2012;
+import algorithms.heapsAndPQs.HeapNode;
+import algorithms.misc.MiscMath0;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * 
+  An implementation of the A* algorithm using the &quot;uniform cost search&quot; pattern
+  and heuristics given to the code.
+  
+  http://en.wikipedia.org/wiki/A*_search_algorithm
+ *
+ * &quot;As A* traverses the graph, it follows a path of the lowest known cost,
+ * keeping a sorted priority queue [minimum heap] of alternate path segments
+ * along the way.   If, at any point, a segment of the path being traversed has
+ * a higher cost than another encountered path segment, it abandons the
+ * higher-cost path segment and traverses the lower-cost path segment instead.
+ * This process continues until the goal is reached.&quot;
+ *   -- maintains a minimum heap of nodes to be traversed = the open set.
+ *   -- the implementation below uses a breadth first search w/ depth=1
+ *
+ * If heuristics aren't given to the code, it makes an assumption that all
+ * nodes lie within a straight line distance to the destination node and hence
+ * calculates the heuristic based upon that distance.
+ *
+ * * Variables:
+ *     g[n] is the shortest distance traveled path from the sourceIndx to the
+ *          node n
+ *     h[n] is the smallest estimated cost from the node n to destinationIndx
+ *     f[n] is the total search cost from sourceIndex to node n
+ *          f(n) = g(n) + h(n)
+ * Goal:
+ *     find the path that creates the smallest f[destinationIndx]
+
+*  &lt;pre&gt;
+     for more information on heuristics, see:
+        http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+        https://en.wikipedia.org/wiki/Admissible_heuristic
+        https://en.wikipedia.org/wiki/Consistent_heuristic
+        http://ai.stanford.edu/~latombe/cs121/2011/slides/D-heuristic-search.pdf
+        https://michael.kim/blog/puzzle
+        
+     &quot;admissible&quot; means roughly that the heuristic underestimates the cost to 
+      the goal or formally that h(v_{i},v_{g}) .leq. optimal distv_{i},v_{g})
+      for all (v_{i},v_{g})}(v_{i},v_{g}) where {i,g} are in [0,1,...,n].   
+     
+     from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+     
+     h(n) is an estimate of the minimum cost from any vertex n to the goal.
+      
+     - if h(n) is 0, then f(n) = g(n) + 0, so A* turns into Dijkstra’s (UCS in this case) Algorithm, 
+         which is guaranteed to find a shortest path.
+     - If h(n) is always lower than (or equal to) the cost of moving from n to the goal, 
+         then A* is guaranteed to find a shortest path. 
+         The lower h(n) is, the more node A* expands, making it slower.
+     - If h(n) is exactly equal to the cost of moving from n to the goal, 
+         then A* will only follow the best path and never expand anything else, 
+         making it very fast. Although you can’t make this happen in all cases, 
+         you can make it exact in some special cases. 
+     - If h(n) is sometimes greater than the cost of moving from n to the goal, 
+         then A* is not guaranteed to find a shortest path, but it can run faster.
+     - If h(n) is very high relative to g(n), then only h(n) plays a role, 
+         and A* turns into Greedy Best-First-Search.
+     &lt;/pre&gt;
+ * @author nichole
+ */
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">public class AStar {</span>
+    
+    /**
+     * directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     */
+<span class="fc" id="L82">    protected SimpleLinkedListNode[] graph = null;</span>
+    
+    /* edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+    */
+<span class="fc" id="L88">    protected TIntIntMap[] w = null;</span>
+    
+    // f(n) = g(n) + h(n)
+<span class="fc" id="L91">    protected int[] f = null;</span>
+    
+    // g(n) = distance from source to node n
+<span class="fc" id="L94">    protected int[] g = null;</span>
+    
+    // h(n) = heuristic distance from node n to destination
+<span class="fc" id="L97">    protected int[] h = null;</span>
+    
+<span class="fc" id="L99">    protected int[] visited = null;</span>
+
+<span class="fc" id="L101">    protected int[] predecessor = null;   </span>
+    
+<span class="fc" id="L103">    protected int src = -1;</span>
+
+<span class="fc" id="L105">    protected int dest = -1;</span>
+    
+<span class="fc" id="L107">    private int sentinel = Integer.MAX_VALUE;</span>
+        
+    // this is recalculated in constructor
+<span class="fc" id="L110">    private int maxValue = sentinel - 1;</span>
+
+    // key is cost of path so far plus the edge weight
+<span class="fc" id="L113">    protected MinHeapForRT2012 heap = null;</span>
+
+    // refs to nodes internal to heap for decrease key operations
+<span class="fc" id="L116">    protected HeapNode[] nodes = null;</span>
+    
+<span class="fc" id="L118">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
+    
+<span class="fc" id="L120">    private Level logLevel = Level.FINEST;</span>
+    
+    /**
+     *
+     * @param dAG directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     * Note that all vertexes, including edge vertexes, must be present as an
+     * index of the array dAG, i.e. all vertexes must have numerical value 
+     * less than dAG.length.
+     * @param weights the edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+     * @param heuristics an array of feasible heuristics with the array index 
+     * being the node index.
+     &lt;pre&gt;
+     for more information, see:
+        http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+        http://ai.stanford.edu/~latombe/cs121/2011/slides/D-heuristic-search.pdf
+        https://michael.kim/blog/puzzle
+     &lt;/pre&gt;
+     * @param sourceVertex the source vertex index
+     * @param destVertex the destination vertex index
+     */
+    public AStar(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, 
+        int[] heuristics,
+<span class="fc" id="L146">        int sourceVertex, int destVertex) {</span>
+        
+<span class="pc bpc" id="L148" title="2 of 4 branches missed.">        if (dAG == null || dAG.length == 0) {</span>
+<span class="nc" id="L149">            throw new IllegalArgumentException(&quot;dAG cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L151" title="2 of 4 branches missed.">        if (sourceVertex &lt; 0 || sourceVertex &gt;= dAG.length) {</span>
+<span class="nc" id="L152">            throw new IllegalArgumentException(&quot;sourceIndex cannot be null&quot;);</span>
+        }
+        
+        /*
+        initialize single source (g, s)
+          initial node is sourceVertex and has cost 0
+          initialize the priority queue and add the source node
+          initialize visited array to -1
+          note: the cost function is g(n), the sum of the weights of the 
+            edges from the source node to node n along the shortest currently 
+            known path. g(v) = g(u) + w(u, v).
+        loop do
+          if priority queue empty, return failure
+          node = queue.extractMin
+          if (visited[goal] is completed) done
+          set visited[node] to explored
+          for each v adjacent to node
+            g(v) = g(u) + w(u,v)
+            if (v is not explored and is not in queue)
+              insert v into queue
+            else if child is in queue and dist[child] &gt; path_cost
+              decrease key of v to path_cost
+        */ 
+
+        // only source node is added to heap initially:
+<span class="fc" id="L177">        init(dAG, weights, heuristics, sourceVertex, destVertex);        </span>
+<span class="fc" id="L178">    }</span>
+        
+    /**
+     * find the single shortest path in dAG with edge weights w starting from s
+     * to destination vertex.  if destination supplied in constructor was
+     * outside of graph index limits, all reachable nodes will be searched.
+     */
+    public void find() {
+                               
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
+
+<span class="fc" id="L189">            HeapNode uNode = heap.extractMin();</span>
+            
+<span class="fc" id="L191">            int u = ((Integer)uNode.getData()).intValue();</span>
+
+<span class="fc" id="L193">            log.log(logLevel, &quot;u: &quot; + toString(u));</span>
+            
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (u == dest) {</span>
+<span class="fc" id="L196">                log.log(logLevel, &quot;exit heap.n=&quot; + heap.getNumberOfNodes());</span>
+<span class="fc" id="L197">                return;</span>
+            }
+
+<span class="fc" id="L200">            visited[u] = 2;</span>
+            
+            // null the entry in nodes so it isn't used in decrease key
+<span class="fc" id="L203">            nodes[u] = null;</span>
+            
+<span class="fc" id="L205">            TIntIntMap uWeights = w[u];</span>
+            
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">            if (uWeights == null) {</span>
+<span class="nc" id="L208">                continue;</span>
+            }
+
+<span class="fc" id="L211">            SimpleLinkedListNode vNode = graph[u];</span>
+            
+<span class="pc bpc" id="L213" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+            
+<span class="fc" id="L215">                int v = vNode.getKey();</span>
+               
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
+<span class="nc" id="L218">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+                    + u + &quot; to &quot; + v);
+                }
+                
+<span class="fc" id="L222">                int gUPlusWUV = g[u];</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">                if (gUPlusWUV &lt; sentinel) {</span>
+<span class="fc" id="L224">                    gUPlusWUV += uWeights.get(v);</span>
+                }
+                
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">                if (gUPlusWUV &gt;= g[v]) {</span>
+<span class="nc" id="L228">                    vNode = vNode.getNext();</span>
+<span class="nc" id="L229">                    continue;</span>
+                }
+                                
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">                if (visited[v] == 0) {</span>
+                    
+<span class="fc" id="L234">                    visited[v] = 1;</span>
+                    
+<span class="fc" id="L236">                    g[v] = gUPlusWUV;</span>
+<span class="fc" id="L237">                    f[v] = g[v] + h[v];</span>
+                    
+<span class="fc" id="L239">                    int key = f[v];</span>
+<span class="fc" id="L240">                    HeapNode node = new HeapNode(key);</span>
+<span class="fc" id="L241">                    node.setData(Integer.valueOf(v));</span>
+<span class="fc" id="L242">                    heap.insert(node);</span>
+<span class="fc" id="L243">                    nodes[v] = node;</span>
+<span class="fc" id="L244">                    predecessor[v] = u;</span>
+<span class="pc bnc" id="L245" title="All 2 branches missed.">                } else if (nodes[v] != null) {</span>
+<span class="nc bnc" id="L246" title="All 4 branches missed.">                    assert(visited[v] == 2);</span>
+<span class="nc" id="L247">                    g[v] = gUPlusWUV;</span>
+<span class="nc" id="L248">                    f[v] = g[v] + h[v];</span>
+<span class="nc" id="L249">                    predecessor[v] = u;</span>
+                    
+                    // if h(n) is exact, can use remove here instead of decreaseKey.
+<span class="nc" id="L252">                    heap.decreaseKey(nodes[v], f[v]);</span>
+                }
+                
+<span class="fc" id="L255">                vNode = vNode.getNext();</span>
+<span class="fc" id="L256">            }</span>
+<span class="fc" id="L257">        }</span>
+<span class="nc" id="L258">    }</span>
+    
+    private void init(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, 
+        int[] heuristics, int sourceVertex,
+        int destVertex) {
+        
+<span class="fc" id="L264">        graph = dAG.clone();</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        for (int i = 0; i &lt; dAG.length; ++i) {</span>
+<span class="fc" id="L266">            graph[i] = new SimpleLinkedListNode(dAG[i]);</span>
+        }
+<span class="fc" id="L268">        w = weights.clone();</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">            if (weights[i] != null) {</span>
+<span class="fc" id="L271">                w[i] = new TIntIntHashMap(weights[i]);</span>
+            }
+        }
+<span class="fc" id="L274">        src = sourceVertex;</span>
+<span class="fc" id="L275">        dest = destVertex;</span>
+        
+        // h(n)
+<span class="fc" id="L278">        h = Arrays.copyOf(heuristics, heuristics.length);</span>
+        
+<span class="fc" id="L280">        maxValue = calcUpperLimitKeyValue();</span>
+        
+<span class="fc" id="L282">        sentinel = maxValue + 1;</span>
+    
+<span class="fc" id="L284">        predecessor = new int[graph.length];</span>
+<span class="fc" id="L285">        visited = new int[graph.length];</span>
+<span class="fc" id="L286">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L287">        Arrays.fill(visited, 0);</span>
+        
+        // f(n)
+<span class="fc" id="L290">        f = new int[graph.length];</span>
+<span class="fc" id="L291">        Arrays.fill(f, sentinel);</span>
+                
+        // g(n)
+<span class="fc" id="L294">        g = new int[graph.length];</span>
+<span class="fc" id="L295">        Arrays.fill(g, sentinel);</span>
+                
+        // presumably this is always correct:
+<span class="fc" id="L298">        h[src] = sentinel;</span>
+        
+<span class="fc" id="L300">        g[src] = 0;</span>
+<span class="fc" id="L301">        f[src] = h[src];</span>
+                
+<span class="fc" id="L303">        initHeap();</span>
+<span class="fc" id="L304">    }</span>
+    
+    private void initHeap() {
+        
+<span class="fc" id="L308">        int n = graph.length;</span>
+                
+<span class="fc" id="L310">        int nBits = (int)Math.ceil(Math.log(maxValue/Math.log(2)));</span>
+        
+        //int maxValue, int approxN, int maxNumberOfBits
+<span class="fc" id="L313">        heap = new MinHeapForRT2012(sentinel, n, nBits);</span>
+
+<span class="fc" id="L315">        nodes = new HeapNode[n];</span>
+
+<span class="fc" id="L317">        int key = f[src];</span>
+
+<span class="fc" id="L319">        HeapNode node = new HeapNode(key);</span>
+<span class="fc" id="L320">        node.setData(Integer.valueOf(src));</span>
+
+<span class="fc" id="L322">        heap.insert(node);</span>
+
+<span class="fc" id="L324">        nodes[src] = node;</span>
+<span class="fc" id="L325">    }</span>
+    
+    /**
+     * get shortest path from source to idx
+     * @param idx
+     * @return 
+     */
+    public int getDistanceFromSrc(int idx) {
+<span class="pc bpc" id="L333" title="2 of 4 branches missed.">        if (idx &lt; 0 || idx &gt;= graph.length) {</span>
+<span class="nc" id="L334">            throw new IllegalArgumentException(&quot;idx must be within bounds of graph vertices&quot;);</span>
+        }
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L337">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+<span class="fc" id="L339">        return g[idx];</span>
+    }
+    
+    /**
+     * get shortest path from source to destIndex
+     * @param destVertex
+     * @return 
+     */
+    public int[] getShortestPathToVertex(int destVertex) {
+<span class="pc bpc" id="L348" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= graph.length) {</span>
+<span class="nc" id="L349">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L352">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+                
+<span class="fc" id="L355">        log.log(logLevel, &quot;    f[]=&quot; + Arrays.toString(f));</span>
+<span class="fc" id="L356">        log.log(logLevel, &quot;    g[]=&quot; + Arrays.toString(g));</span>
+        
+<span class="fc" id="L358">        int[] p = new int[graph.length];</span>
+<span class="fc" id="L359">        p[p.length - 1] = destVertex;</span>
+                
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">            if (destVertex == src) {</span>
+<span class="fc" id="L363">                int len = p.length - 1 - i;</span>
+<span class="fc" id="L364">                int[] t = new int[len];</span>
+<span class="fc" id="L365">                System.arraycopy(p, i + 1, t, 0, len);</span>
+<span class="fc" id="L366">                return t;</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
+<span class="nc" id="L368">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
+            }
+<span class="fc" id="L370">            p[i] = predecessor[destVertex];</span>
+<span class="fc" id="L371">            destVertex = p[i];</span>
+        }
+        
+<span class="nc bnc" id="L374" title="All 2 branches missed.">        if (p[0] != src) {</span>
+<span class="nc" id="L375">            throw new IllegalStateException(&quot;path did not complete correctly for destIndex&quot;);</span>
+        }
+        
+<span class="nc" id="L378">        return p;</span>
+    }
+    
+    public int getSumOfPath(int[] vertexes) {
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
+<span class="nc" id="L383">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">        if (f == null) {</span>
+<span class="nc" id="L386">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+<span class="fc" id="L388">        int sum = 0;</span>
+        int u, v;
+<span class="fc bfc" id="L390" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
+<span class="fc" id="L391">            u = vertexes[i - 1];</span>
+<span class="fc" id="L392">            v = vertexes[i];</span>
+            
+<span class="fc" id="L394">            TIntIntMap uWeights = w[u];</span>
+            
+<span class="pc bpc" id="L396" title="2 of 4 branches missed.">            if (uWeights == null || !uWeights.containsKey(v)) {</span>
+<span class="nc" id="L397">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+                    + u + &quot; to &quot; + v);
+            }
+            
+<span class="fc" id="L401">            sum += uWeights.get(v);</span>
+        }
+<span class="fc" id="L403">        return sum;</span>
+    }
+
+    private int calcUpperLimitKeyValue() {
+        
+<span class="fc" id="L408">        int max = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
+<span class="fc" id="L410">            TIntIntMap map = w[i];</span>
+<span class="pc bpc" id="L411" title="1 of 2 branches missed.">            if (map == null) {</span>
+<span class="nc" id="L412">                continue;</span>
+            }
+<span class="fc" id="L414">            TIntIntIterator iter = map.iterator();</span>
+            int value;
+<span class="fc bfc" id="L416" title="All 2 branches covered.">            for (int j = 0; j &lt; map.size(); ++j) {</span>
+<span class="fc" id="L417">                iter.advance();</span>
+<span class="fc" id="L418">                value = iter.value() + h[i];</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">                if (value &gt; max) {</span>
+<span class="fc" id="L420">                    max = value;</span>
+                }
+            }
+        }
+        
+        // if # of bits in max * g.length is larger than max_integer,
+        //   use max_integer, else use it
+<span class="fc" id="L427">        int b1 = MiscMath0.numberOfBits(max);</span>
+<span class="fc" id="L428">        int b2 = MiscMath0.numberOfBits(graph.length);</span>
+<span class="pc bpc" id="L429" title="1 of 2 branches missed.">        if ((b1 + b2) &gt; 31) {</span>
+<span class="nc" id="L430">            max = Integer.MAX_VALUE - 1;</span>
+        } else {
+<span class="fc" id="L432">            max *= graph.length;</span>
+        }
+        
+<span class="fc" id="L435">        return max;</span>
+    }
+    
+    private String toString(int u) {
+<span class="fc" id="L439">        StringBuffer sb = new StringBuffer();</span>
+<span class="fc" id="L440">        sb.append(&quot;node=&quot;).append(u).append(&quot;: visited=&quot;).append(visited[u]).</span>
+<span class="fc" id="L441">               append(&quot;, dist=&quot;).append(f[u])</span>
+<span class="fc" id="L442">                .append(&quot;, prev=&quot;).append(predecessor[u])</span>
+<span class="pc bpc" id="L443" title="1 of 2 branches missed.">                .append(&quot; is in queue=&quot;).append(!(nodes[u] == null));</span>
+<span class="fc" id="L444">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

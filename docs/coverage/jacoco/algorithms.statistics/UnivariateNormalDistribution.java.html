@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnivariateNormalDistribution.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">UnivariateNormalDistribution.java</span></div><h1>UnivariateNormalDistribution.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L10">public class UnivariateNormalDistribution {</span>
+    
+    /**
+     * generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
+            normal distribution with mean=0 and variance=1
+                           1             ( -(x - mu)^2 )
+             f = ------------------ * exp( ----------- )
+                 sigma * sqrt(2*pi)      (    2o~^2    )
+        
+                           1             ( -(x)^2 )
+             f = ------------------ * exp( ------ )
+                     1 * sqrt(2*pi)      (   2    )
+         using the inverse CDF of the standard normal.
+     * @return 
+     */
+    public static double[] randomSampleOfUnitStandard(int n) throws NoSuchAlgorithmException {
+<span class="nc" id="L26">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L27">        long seed = System.nanoTime();</span>
+        //System.out.println(&quot;SEED=&quot; + seed);
+<span class="nc" id="L29">        rand.setSeed(seed);</span>
+        
+<span class="nc" id="L31">        return randomSampleOfUnitStandard(rand, n);</span>
+    }
+    
+    /**
+     * generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
+            normal distribution with mean=0 and variance=1
+                           1             ( -(x - mu)^2 )
+             f = ------------------ * exp( ----------- )
+                 sigma * sqrt(2*pi)      (    2o~^2    )
+        
+                           1             ( -(x)^2 )
+             f = ------------------ * exp( ------ )
+                     1 * sqrt(2*pi)      (   2    )
+          using the inverse CDF of the standard normal.
+     * @param rand
+     * @param n
+     * @return 
+     */
+    public static double[] randomSampleOfUnitStandard(SecureRandom rand, int n) {
+        double t;
+        
+<span class="fc" id="L52">        double[] u = new double[n];</span>
+        
+        int i;
+        // u range is approximately -3.1 to +3.1
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L57">            t = rand.nextDouble();</span>
+<span class="fc" id="L58">            u[i] = CDFStandardNormal.approxInverseShort(t);</span>
+        }
+        
+<span class="fc" id="L61">        return u;</span>
+    }
+    
+    /**
+     * return a random sample of size n of a gaussian distribution that has 
+     * the given mean and sigma.
+     * @param mean the location parameter of the gaussian.  it's the mean.
+     * @param sigma the shape parameter of the gaussian.  it's the standard deviation.
+     * @param rand
+     * @param n
+     * @return 
+     */
+    public static double[] randomSampleOf(double mean, double sigma,
+        SecureRandom rand, int n) {
+                
+<span class="fc" id="L76">        double[] u = randomSampleOfUnitStandard(rand, n);</span>
+               
+        int i;
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L80">            u[i] *= sigma;</span>
+<span class="fc" id="L81">            u[i] += mean;</span>
+        }
+        
+<span class="fc" id="L84">        return u;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

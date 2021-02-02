@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.search</a> &gt; <span class="el_source">KDTree.java</span></div><h1>KDTree.java</h1><pre class="source lang-java linenums">package algorithms.search;
 
-import algorithms.misc.MiscSorter;
+import algorithms.sort.MiscSorter;
 import algorithms.util.ObjectSpaceEstimator;
 import algorithms.util.PairInt;
 import algorithms.util.PixelHelper;
@@ -38,7 +38,7 @@ import java.util.Arrays;
      and using The MIT License (MIT)
 
    then moved to this shared library project which has the same copyright
-&lt;[re&gt;
+&lt;pre&gt;
    mem is in MB: 
      width=5000, height=7000 n=  35000000 mem=      1869  w=25  rt=  25
      width=5000, height=7000 n=   3500000 mem=       186  w=25  rt=  22
@@ -121,7 +121,7 @@ public class KDTree {
 	}
 	
 	/**
-	 * remove unique values by moving up items underneath them.  returns
+	 * remove non-unique values by moving up items underneath them.  returns
 	 * the last index which should be used in the modified arrays given as arguments.
 	 * @param x
 	 * @param y

@@ -53,13 +53,12 @@ public class BinaryTrieNode&lt;T&gt; {
 <span class="fc" id="L53">        return sb.toString();</span>
     }
 
-     
     public static long estimateSizeOnHeap() {
         
-<span class="fc" id="L59">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L60">        est.setNObjRefsFields(4);</span>
+<span class="fc" id="L58">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L59">        est.setNObjRefsFields(4);</span>
                    
-<span class="fc" id="L62">        return est.estimateSizeOnHeap();</span>
+<span class="fc" id="L61">        return est.estimateSizeOnHeap();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

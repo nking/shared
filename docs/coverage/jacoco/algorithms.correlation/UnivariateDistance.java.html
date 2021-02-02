@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnivariateDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.correlation</a> &gt; <span class="el_source">UnivariateDistance.java</span></div><h1>UnivariateDistance.java</h1><pre class="source lang-java linenums">package algorithms.correlation;
+
+import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
+import algorithms.sort.MiscSorter;
+import algorithms.util.FormatArray;
+import java.util.Arrays;
+
+/**
+ * calculates the square of the unbiased distance covariance and correlation 
+   between univariate vectors x and y as
+   &quot;a weighted  distance between the joint characteristic function and 
+   the product of marginal distributions following algorithms in
+   &lt;pre&gt;
+      &quot;A fast algorithm for computing distance correlation&quot;
+      2019 Chaudhuri &amp; Hu, Computational Statistics And Data Analysis,
+      Volume 135, July 2019, Pages 15-24.
+      https://arxiv.org/pdf/1810.11332.pdf
+   &lt;/pre&gt;
+   Runtime is O(n * lg_2(n)) where n is the number of points in x which is
+   the same as the number in y
+
+ * TODO: consider implementing Brownian Distance Covariance.
+ * TODO: add notes for Hilbert-Schmidt independence measure (HSIC) - Lasso.
+ 
+ * NOTE: can use this within feature screening: 
+     Li, R., Zhong, W., and Zhu, L. (2012). 
+     Feature screening via distance correlation learning. 
+     Journal of the American Statistical Association, 107(499):1129–1139
+
+ * @author nichole
+ */
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">public class UnivariateDistance {</span>
+    
+    /**
+     * calculates the unbiased distance covariance between univariate vectors x and y as
+     * &quot;a weighted  distance between the joint characteristic function and 
+     * the product of marginal distributions; 
+     * it is 0 if and only if two random vectors  and  are independent. 
+     * This measure can detect the presence of a dependence structure when the 
+     * sample size is large enough.&quot;
+     * 
+     * This algorithm is an implementation/port of the Matlab code from
+     * &quot;A fast algorithm for computing distance correlation&quot;
+     * 2019 Chaudhuri &amp; Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+     * https://arxiv.org/pdf/1810.11332.pdf
+     * 
+     * The small corrections to make the covariance unbiased are from 
+     * equation 2.5 of “A Statistically And Numerically Efficient Independence 
+       Test Based On Random Projections And Distance Covariance”, 
+       2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+       See also Appendix C of Shen and Vogelstein, 
+       &quot;The Chi-Square Test of Distance Correlation&quot;
+     * 
+     * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
+     * the same as the number in y.
+     * 
+     * NOTE: redundant points are possible in the rankings as &quot;ties&quot; are handled
+     * in the algorithm.  This is one advantage over the similar
+     * algorithm of Huo and Szekely (2016).
+     * 
+     * runtime is  O(n*log_2(n)).
+     * 
+     * @param x sample of univariate observations of a variable
+     * @param y second sample of univariate observations (can be of another variable)
+     * @return covariance of X and Y along with intermediate data.  
+     */
+    public static DCov fastDcov(double[] x, double[] y) {
+
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L72">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
+        }
+
+<span class="fc" id="L75">        int n = x.length;</span>
+
+<span class="fc" id="L77">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L78">        y = Arrays.copyOf(y, y.length);</span>
+        
+        /*
+        System.out.printf(&quot;X=%s\n&quot;, FormatArray.toString(x, &quot;%.3f&quot;));
+        System.out.printf(&quot;Y=%s\n&quot;, FormatArray.toString(y, &quot;%.3f&quot;));
+        */
+
+        //&quot;the algorithm essentially consists of two sorting steps. 
+        //    First we sort X and calculate ai· for i = 1,...,n. 
+        //    Then we sort Y and calculate D and all bi· for i = 1,...,n.&quot;
+        // x and y sorted:
+<span class="fc" id="L89">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);</span>
+        
+        /*
+        System.out.printf(&quot;sortedX=%s\n&quot;, FormatArray.toString(x, &quot;%.3f&quot;));
+        System.out.printf(&quot;sortedY=%s\n&quot;, FormatArray.toString(y, &quot;%.3f&quot;));
+        System.out.printf(&quot;indexes=%s\n&quot;, Arrays.toString(indexes));
+        System.out.println(&quot;//v = [ x  y  x.∗y ];  [n][3]&quot;);
+        System.out.println(&quot;//csumv is cumulative sum of v along columns; [n + 1][3]&quot;);
+        */
+
+<span class="fc" id="L99">        double[] si = MiscMath0.cumulativeSum(x);</span>
+<span class="pc bpc" id="L100" title="3 of 4 branches missed.">        assert (si.length == n);</span>
+
+<span class="fc" id="L102">        double s = si[n - 1];</span>
+
+        //NOTE: in matlab, the .' is transpose without conjugation
+        //NOTE: in matlab, the .* is multiplying same element positions by one another
+        //NOTE: in matlab, vector .' * vector is the outer product
+        //%a_x is the vector of row sums of distance matrix of x
+        //a_x = (−(n −2 ): 2: n ) . ’ . ∗ x + ( s − 2∗ s i ) ;
+        //    a_i= (2*i − n)*x_i + (s_n − 2*s_i).
+<span class="fc" id="L110">        double[] a_x = new double[n];</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (int i = 1; i &lt;= n; ++i) {</span>
+<span class="fc" id="L112">            a_x[i - 1] = ((2. * i - n) * x[i - 1]) + (s - 2. * si[i - 1]);</span>
+        }
+
+        //%Compute Frobenius inner product between the
+        //%distance matrices while finding indexes corresponding
+        //%to sorted y using merge−sort.
+        //%Weight vectors for building the 1st term in Eqn (9)
+        //v = [ x y x.∗y ];  [n][3]
+        //nw = size( v, 2 );
+        //   [ x y x .∗ y ] is column 0 = x, column 1 = y, column 2 = x.*y
+        //   matlab .* is multiplying same element positions by one another
+<span class="fc" id="L123">        int nw = 3;</span>
+
+<span class="fc" id="L125">        double[][] v = new double[n][nw];</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
+<span class="fc" id="L127">            v[row][0] = x[row];</span>
+<span class="fc" id="L128">            v[row][1] = y[row];</span>
+<span class="fc" id="L129">            v[row][2] = x[row] * y[row];</span>
+        }
+
+        //% The columns of idx are buffers to store sort indices and output buffer
+        //%of merge-sort
+        //%we alternate between them and avoid uneccessary copying
+<span class="fc" id="L135">        int[][] idx = new int[n][2];</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L137">            idx[i] = new int[2];</span>
+<span class="fc" id="L138">            idx[i][0] = i + 1;</span>
+        }
+
+        //% iv1, iv2, iv3, iv4 are used to store sum of weights
+        //% On output, for 1 ≤ j ≤ n
+        // [n][1]
+        // iv1(j) = summation_{i&lt;j,y_i&lt;y_j}( 1 )
+        // iv2(j) = summation_{i&lt;j,y_i&lt;y_j}( x_i )
+        // iv3(j) = summation_{i&lt;j,y_i&lt;y_j}( y_i )
+        // iv4(j) = summation_{i&lt;j,y_i&lt;y_j}( x_i * y_i )
+<span class="fc" id="L148">        double[] iv1 = new double[n];</span>
+<span class="fc" id="L149">        double[] iv2 = new double[n];</span>
+<span class="fc" id="L150">        double[] iv3 = new double[n];</span>
+<span class="fc" id="L151">        double[] iv4 = new double[n];</span>
+
+        //NOTE: in matlab, the .' is transpose without conjugation
+        //NOTE: in matlab, the .* is multiplying same element positions by one another
+        //NOTE: in matlab, vector .' * vector is the outer product
+        int i, j, k, kf, st1, st2, e1, e2, idx1, idx2, gap, z, zz;
+<span class="fc" id="L157">        int[] idx_r = new int[n];</span>
+<span class="fc" id="L158">        double[][] csumv = new double[n + 1][nw];</span>
+<span class="fc" id="L159">        double[][] tempv = new double[n][nw];</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L161">            tempv[i] = new double[nw];</span>
+<span class="fc" id="L162">            csumv[i] = new double[nw];</span>
+        }
+<span class="fc" id="L164">        csumv[n] = new double[nw];</span>
+        double[][] tempcs;
+
+        //% The merge sort loop .
+<span class="fc" id="L168">        i = 1;</span>
+<span class="fc" id="L169">        int r = 1;</span>
+<span class="fc" id="L170">        int idx_s = 2;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc" id="L172">            gap = 2 * i;</span>
+<span class="fc" id="L173">            k = 0;</span>
+
+            //idx_r = idx(:, r);
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            for (z = 0; z &lt; idx.length; ++z) {</span>
+<span class="fc" id="L177">                idx_r[z] = idx[z][r - 1];</span>
+            }
+
+            // csumv = [ zeros(1, nw); 
+            // cumsum( v(idx_r, :) ) ] ;
+            // dimensions: row0:  nw columns
+            //             n rows of nw columns
+            //tempv [n][nw];
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">                for (zz = 0; zz &lt; nw; ++zz) {</span>
+<span class="fc" id="L187">                    tempv[z][zz] = v[idx_r[z] - 1][zz];</span>
+                }
+            }
+            //cumulative sum along columns: tempcs [1][nw]
+<span class="fc" id="L191">            tempcs = MiscMath0.cumulativeSumAlongColumns(tempv);</span>
+            //csumv [n+1][nw];
+<span class="fc" id="L193">            Arrays.fill(csumv[0], 0);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">                for (zz = 0; zz &lt; nw; ++zz) {</span>
+<span class="fc" id="L196">                    csumv[z + 1][zz] = tempcs[z][zz];</span>
+                }
+            }
+
+            /*
+            System.out.printf(&quot;\ni=%d, r=%d, gap=%d, idx_s=%d\n&quot;, i, r, gap, idx_s);
+            System.out.printf(&quot;  idx[0]=%s\n&quot;, Arrays.toString(idx[0]));
+            System.out.printf(&quot;  idx[1]=%s\n&quot;, Arrays.toString(idx[1]));
+            System.out.printf(&quot;  iv1=%s\n&quot;, FormatArray.toString(iv1, &quot;%.3f&quot;));
+            System.out.printf(&quot;  iv2=%s\n&quot;, FormatArray.toString(iv2, &quot;%.3f&quot;));
+            System.out.printf(&quot;  iv3=%s\n&quot;, FormatArray.toString(iv3, &quot;%.3f&quot;));
+            System.out.printf(&quot;  iv4=%s\n&quot;, FormatArray.toString(iv4, &quot;%.3f&quot;));
+            for (z = 0; z &lt; n + 1; ++z) {
+                System.out.printf(&quot;  csumv[%d]=%s\n&quot;, z, FormatArray.toString(csumv[z], &quot;%.3f&quot;));
+            }
+            */
+
+            //for j = 1:gap:n;
+<span class="fc bfc" id="L214" title="All 2 branches covered.">            for (j = 1; j &lt;= n; j += gap) {</span>
+<span class="fc" id="L215">                st1 = j;</span>
+<span class="fc" id="L216">                e1 = Math.min(st1 + i - 1, n);</span>
+<span class="fc" id="L217">                st2 = j + i;</span>
+<span class="fc" id="L218">                e2 = Math.min(st2 + i - 1, n);</span>
+
+                /*
+                System.out.printf(&quot;\n**j=%d, st1=%d, e1=%d, st2=%d, e2=%d\n&quot;,
+                        j, st1, e1, st2, e2);
+                */
+
+<span class="fc bfc" id="L225" title="All 4 branches covered.">                while ((st1 &lt;= e1) &amp;&amp; (st2 &lt;= e2)) {</span>
+<span class="fc" id="L226">                    k++;</span>
+<span class="fc" id="L227">                    idx1 = idx_r[st1 - 1];</span>
+<span class="fc" id="L228">                    idx2 = idx_r[st2 - 1];</span>
+
+                    /*
+                    System.out.printf(&quot;\n****k=%d, idx1=%d, idx2=%d, st1=%d, e1=%d, st2=%d, e2=%d\n&quot;,
+                            k, idx1, idx2, st1, e1, st2, e2);
+                    System.out.printf(&quot;    idx[0]=%s\n&quot;, Arrays.toString(idx[0]));
+                    System.out.printf(&quot;    idx[1]=%s\n&quot;, Arrays.toString(idx[1]));
+                    System.out.printf(&quot;    iv1=%s\n&quot;, FormatArray.toString(iv1, &quot;%.3f&quot;));
+                    System.out.printf(&quot;    iv2=%s\n&quot;, FormatArray.toString(iv2, &quot;%.3f&quot;));
+                    System.out.printf(&quot;    iv3=%s\n&quot;, FormatArray.toString(iv3, &quot;%.3f&quot;));
+                    System.out.printf(&quot;    iv4=%s\n&quot;, FormatArray.toString(iv4, &quot;%.3f&quot;));
+                    System.out.printf(&quot;    (y[%d] &gt;= y[%d]) = %b\n&quot;, idx1 - 1, idx2 - 1, (y[idx1 - 1] &gt;= y[idx2 - 1]));
+                    */
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">                    if (y[idx1 - 1] &gt;= y[idx2 - 1]) {</span>
+                        //System.out.printf(&quot;    *idx[%d][%d] = %d\n&quot;, k - 1, idx_s - 1, idx1);
+<span class="fc" id="L244">                        idx[k - 1][idx_s - 1] = idx1;</span>
+<span class="fc" id="L245">                        st1++;</span>
+                    } else {
+                        //System.out.printf(&quot;    *idx[%d][%d] =%d,  INCR iv1:iv4\n&quot;, k - 1, idx_s - 1, idx2);
+<span class="fc" id="L248">                        idx[k - 1][idx_s - 1] = idx2;</span>
+<span class="fc" id="L249">                        st2++;</span>
+<span class="fc" id="L250">                        iv1[idx2 - 1] += (e1 - st1 + 1);</span>
+<span class="fc" id="L251">                        iv2[idx2 - 1] += (csumv[e1 + 1 - 1][0] - csumv[st1 - 1][0]);</span>
+<span class="fc" id="L252">                        iv3[idx2 - 1] += (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]);</span>
+<span class="fc" id="L253">                        iv4[idx2 - 1] += (csumv[e1 + 1 - 1][2] - csumv[st1 - 1][2]);</span>
+                    } // end if-else
+
+                    //System.out.printf(&quot;    (st1 &lt;= e1) = %b, (st2 &lt;= e2) = %b\n&quot;,
+                    //        (st1 &lt;= e1), (st2 &lt;= e2));
+
+                } // end while (( st1 &lt;= e1 ) &amp;&amp; ( st2 &lt;= e2 ) )
+
+<span class="fc bfc" id="L261" title="All 2 branches covered.">                if (st1 &lt;= e1) {</span>
+<span class="fc" id="L262">                    kf = k + e1 - st1 + 1;</span>
+                    // note: idx is int[n][2];  idx_r is int[n]
+                    //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
+<span class="fc" id="L265">                    int c = st1;</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L267">                        idx[z - 1][idx_s - 1] = idx_r[c - 1];</span>
+
+                        //System.out.printf(&quot;    *idx[%d][%d]=idx_r[%d] = %d, \n&quot;, z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
+
+<span class="fc" id="L271">                        c++;</span>
+                    }
+<span class="fc" id="L273">                    k = kf;</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">                } else if (st2 &lt;= e2) {</span>
+<span class="fc" id="L275">                    kf = k + e2 - st2 + 1;</span>
+                    //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
+<span class="fc" id="L277">                    int c = st2;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L279">                        idx[z - 1][idx_s - 1] = idx_r[c - 1];</span>
+
+                        //System.out.printf(&quot;    *idx[%d][%d]=idx_r[%d] = %d, \n&quot;, z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
+
+<span class="fc" id="L283">                        c++;</span>
+                    }
+<span class="fc" id="L285">                    k = kf;</span>
+                }
+
+            } // end for j=
+
+<span class="fc" id="L290">            i = gap;</span>
+<span class="fc" id="L291">            r = 3 - r;</span>
+<span class="fc" id="L292">            idx_s = 3 - idx_s;</span>
+        }
+
+        //% d is the Frobenius inner product of the distance matrices
+        // The second term of Eqn (9):
+        //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
+        //              [1][n] * [n][1] = [1][1]
+<span class="fc" id="L299">        double[] mx = MiscMath0.mean(x, 1);</span>
+<span class="pc bpc" id="L300" title="3 of 4 branches missed.">        assert (mx.length == 1);</span>
+<span class="fc" id="L301">        double[] my = MiscMath0.mean(y, 1);</span>
+<span class="pc bpc" id="L302" title="3 of 4 branches missed.">        assert (my.length == 1);</span>
+<span class="fc" id="L303">        double[] xz = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L304">        double[] yz = Arrays.copyOf(y, y.length);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L306">            xz[z] -= mx[0];</span>
+<span class="fc" id="L307">            yz[z] -= my[0];</span>
+        }
+<span class="fc" id="L309">        double covtermXY = n * MatrixUtil.dot(xz, yz);</span>
+
+        //v is double[n][nw]; v = [ x y x.∗y ];
+        //c1 = iv1 .’ ∗ v (:, 3 );
+        //c2 = sum( iv4 );
+        //c3 = iv2 .’ ∗ y;
+        //c4 = iv3 .’ ∗ x;
+<span class="fc" id="L316">        double[] v3 = new double[n];</span>
+<span class="fc" id="L317">        double c2 = 0;</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L319">            v3[z] = v[z][2];</span>
+<span class="fc" id="L320">            c2 += iv4[z];</span>
+        }
+
+<span class="fc" id="L323">        double c1 = MatrixUtil.dot(iv1, v3);</span>
+<span class="fc" id="L324">        double c3 = MatrixUtil.dot(iv2, y);</span>
+<span class="fc" id="L325">        double c4 = MatrixUtil.dot(iv3, x);</span>
+
+        // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
+<span class="fc" id="L328">        final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;</span>
+
+<span class="fc" id="L330">        double[] b_y = _calcB(y, idx, n, r);</span>
+
+        //NOTE: minor edits to nsq, ncb, and nq to make the covariance
+        // unbiased following equation 2.5 of
+        // “A Statistically And Numerically Efficient Independence Test Based On 
+        // Random Projections And Distance Covariance”, 
+        // 2017, Cheng Huang, And Xiaoming Huo, Annals of Statistics
+        //  See also Appendix C of Shen and ogelstein, 
+        //  &quot;The Chi-Square Test of Distance Correlation&quot;
+        
+        //%covsq equals V^2_n(x, y) the square of the distance covariance
+        //%between x and y
+<span class="fc" id="L342">        double nsq = n * (n - 3.);//(double)(n*n);</span>
+<span class="fc" id="L343">        double ncb = nsq * (n - 2.);//nsq*(double)(n);</span>
+<span class="fc" id="L344">        double nq = ncb * (n - 1.);//ncb*(double)(n);</span>
+        //Eqn (3):
+        //term1 = d / nsq;
+        //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
+        //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
+        //covsq = ( term1 + term3 ) − term2;
+<span class="fc" id="L350">        double term1 = d / nsq;</span>
+<span class="fc" id="L351">        double term2 = (2. / ncb) * (MatrixUtil.dot(a_x, b_y));</span>
+<span class="fc" id="L352">        double a_dot_dot = 0;</span>
+<span class="fc" id="L353">        double b_dot_dot = 0;</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L355">            a_dot_dot += a_x[z];</span>
+<span class="fc" id="L356">            b_dot_dot += b_y[z];</span>
+        }
+
+<span class="fc" id="L359">        double term3 = (a_dot_dot * b_dot_dot) / nq;</span>
+<span class="fc" id="L360">        double covsq = (term1 + term3) - term2;</span>
+        
+        /*       
+        System.out.printf(&quot;iv1=%s\n&quot;, FormatArray.toString(iv1, &quot;%.3f&quot;));
+        System.out.printf(&quot;iv2=%s\n&quot;, FormatArray.toString(iv2, &quot;%.3f&quot;));
+        System.out.printf(&quot;iv3=%s\n&quot;, FormatArray.toString(iv3, &quot;%.3f&quot;));
+        System.out.printf(&quot;iv4=%s\n&quot;, FormatArray.toString(iv4, &quot;%.3f&quot;));
+        */
+        
+        /*
+        TODO: add test here:
+        
+        Distance Based Independence Tests in Secion 2.3 of paper
+        &quot;A Statistically and Numerically Efficient Independence Test Based On
+        Random Projections and Distance Covariance&quot;
+        2017, Huang and Hu
+        
+        (n * covsq / term3) &gt; (InverseNormalCDF(1 - (alpha_s/2))^2
+             where alpha_s is .gt. 0 and .lt. 0.215
+             e.g. alpha_s = 0.05        
+        */
+                    
+<span class="fc" id="L382">        DCov dcov = new DCov();</span>
+<span class="fc" id="L383">        dcov.covsq = covsq;</span>
+<span class="fc" id="L384">        dcov.d = d;</span>
+<span class="fc" id="L385">        dcov.indexes = indexes;</span>
+<span class="fc" id="L386">        dcov.sortedX = x;</span>
+<span class="fc" id="L387">        dcov.sortedY = y;</span>
+<span class="fc" id="L388">        dcov.aDotDot = a_dot_dot;</span>
+<span class="fc" id="L389">        dcov.bDotDot = b_dot_dot;</span>
+<span class="fc" id="L390">        dcov.ai = a_x;</span>
+<span class="fc" id="L391">        dcov.bi = b_y;</span>
+<span class="fc" id="L392">        dcov.iv1 = iv1;</span>
+<span class="fc" id="L393">        dcov.iv2 = iv2;</span>
+<span class="fc" id="L394">        dcov.iv3 = iv3;</span>
+<span class="fc" id="L395">        dcov.iv4 = iv4;</span>
+
+<span class="fc" id="L397">        return dcov;</span>
+    }
+    
+    /**
+     * calculate the covariance matrix for a using the fast algorithm of
+     * &lt;pre&gt;
+     * &quot;A fast algorithm for computing distance correlation&quot;
+     * 2019 Chaudhuri &amp; Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+     * &lt;/pre&gt;
+     * @param a an mxn matrix of data with a sample of a variable per row.
+     * &lt;pre&gt;
+     * e.g.  row 0 holds a sample of variable x, row 1 holds a sample of variable y, 
+     * etc. so that the array format is [nVariables][nSample]
+     *      a[0] = new double[]{x_0, x_1, x_2, ... x_n}
+     *      a[1] = new double[]{y_0, y_1, y_2, ... y_n}
+     *      ...
+     * &lt;/pre&gt;
+     * @return the covariance matrix as a double array of size [a.length][a.length]
+     */
+    /*public static double[][] multivariateCovariance(double[][] a) {
+    
+        from paper:
+            &quot;For multivariate random variables,
+            random projection approach can be adopted (Huang and Huo, 2017), which
+            depends on calculation of distance covariance for univariate variables.&quot;  
+
+        throw new UnsupportedOperationException(&quot;implementation is not yet finished.&quot;);
+    }*/
+      
+        /*
+         matlab code from 
+         &quot;A fast algorithm for computing distance correlation&quot; by Chaudhuri and Hu, 2018
+    
+        % The merge sort loop .  
+        i = 1; r = 1; s = 2;
+        while i &lt; n;
+           gap = 2∗i;
+           k = 0;
+           idx_r = idx(:, r);
+           csumv = [ zeros(1, nw); cumsum( v(idx_r, :) ) ] ;
+           for j = 1:gap:n;
+              st1 = j; e1 = min( st1 + i − 1, n );
+              st2 = j + i; e2 = min( st2 + i − 1, n );
+              while ( st1 &lt;= e1 ) &amp;&amp; ( st2 &lt;= e2 );
+                 k = k +1;
+                 idx1 = idx_r( st1 );
+                 idx2 = idx_r( st2 );
+                 if y( idx1 ) &gt;= y(idx2);
+                    idx(k, s) = idx1;
+                    st1 = st1 + 1;
+                 else
+                    idx(k, s ) = idx2;
+                    st2 = st2 + 1;
+                    iv1( idx2, 1) = iv1( idx2 ) + e1 − st1 +1;
+                    iv2( idx2 ) = iv2( idx2 ) + ( csumv( e1+1, 1) − csumv ( st1, 1 ) ) ;
+                    iv3( idx2 ) = iv3( idx2 ) + ( csumv( e1+1, 2) − csumv ( st1, 2 ) ) ;
+                    iv4( idx2 ) = iv4( idx2 ) + ( csumv( e1+1, 3) − csumv ( st1, 3 ) ) ;
+                 end;
+              end;
+              if st1 &lt;= e1;
+                 kf = k + e1 − st1 + 1;
+                 idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
+                 k = kf ;
+              elseif st2 &lt;=e2;
+                 kf = k + e2 − st2 + 1;
+                 idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
+                 k = kf;
+              end;
+           end;
+           //% d is the Frobenius inner product of the distance matrices
+           covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
+           c1 = iv1 .’ ∗ v (:, 3 );
+           c2 = sum( iv4 );
+           c3 = iv2 .’ ∗ y;
+           c4 = iv3 .’ ∗ x;
+           d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
+           //% b_y is the vector of row sums of distance matrix of y
+           ySorted = y ( idx( n : −1: 1, r ) );
+           si = cumsum( ySorted );
+           s = si( n );
+           b_y = zeros( n , 1 );
+           b_y( idx( n : −1: 1, r ) ) = (−(n −2 ): 2: n ) .’ .∗ ySorted + ( s − 2∗ s i );
+           //%covsq equals V^2_n(x, y) the square of the distance covariance
+           //%between x and y
+           nsq = n∗n;
+           ncb = nsq∗n;
+           nq = ncb∗n;
+           term1 = d / nsq;
+           term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
+           term3 = sum( a_x ) ∗ sum( b_y ) / nq;
+           covsq = ( term1 + term3 ) − term2;
+        */  
+    
+    /**
+     * checks the descending sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
+     * &quot;A fast algorithm for computing distance correlation&quot; by Chaudhuri and Hu, 2018
+     * @param x
+     * @param y
+     * @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
+     */
+    static double[][] _sortCheck(double[] x, double[] y) {
+        
+<span class="pc bpc" id="L500" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L501">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
+        }
+        
+<span class="fc" id="L504">        int n = x.length;</span>
+        
+<span class="fc" id="L506">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L507">        y = Arrays.copyOf(y, y.length);</span>
+        
+        // x and y sorted:
+<span class="fc" id="L510">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);</span>
+         
+<span class="fc" id="L512">        int nw = 3;</span>
+        
+<span class="fc" id="L514">        double[][] v = new double[n][nw];</span>
+<span class="fc" id="L515">        v[0] = Arrays.copyOf(x, n);</span>
+<span class="fc" id="L516">        v[1] = Arrays.copyOf(y, n);</span>
+<span class="fc" id="L517">        v[2] = Arrays.copyOf(x, n);</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
+<span class="fc" id="L519">            v[2][row] *= y[row];</span>
+        }
+        
+        //% The columns of idx are buffers to store sort indices and output buffer
+        //%of merge-sort
+        //%we alternate between them and avoid uneccessary copying
+<span class="fc" id="L525">        int[][] idx = new int[n][2];</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L527">            idx[i] = new int[2];</span>
+<span class="fc" id="L528">            idx[i][0] = i+1;</span>
+        }
+        
+        //NOTE: in matlab, the .' is transpose without conjugation
+        //NOTE: in matlab, the .* is multiplying same element positions by one another
+        //NOTE: in matlab, vector .' * vector is the outer product
+        
+        int i, j, k, kf, st1, st2, e1, e2, idx1, idx2, gap, z, zz;
+<span class="fc" id="L536">        int[] idx_r = new int[n];</span>
+                                
+        //% The merge sort loop .
+<span class="fc" id="L539">        i = 1;</span>
+<span class="fc" id="L540">        int r = 1; </span>
+        // s = 2 in matlab code, was repurposed use of var s which was an integer type due to integer array x's cumulative sum.
+<span class="fc" id="L542">        int idx_s = 2;</span>
+<span class="fc bfc" id="L543" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc" id="L544">           gap = 2*i; </span>
+<span class="fc" id="L545">           k = 0;</span>
+           
+           //idx_r = idx(:, r);
+<span class="fc bfc" id="L548" title="All 2 branches covered.">           for (z = 0; z &lt; idx.length; ++z) {</span>
+<span class="fc" id="L549">               idx_r[z] = idx[z][r-1];</span>
+           }
+           
+<span class="fc bfc" id="L552" title="All 2 branches covered.">           for (j = 1; j &lt;= n; j+=gap) {</span>
+<span class="fc" id="L553">              st1 = j; </span>
+<span class="fc" id="L554">              e1 = Math.min(st1 + i - 1, n);</span>
+<span class="fc" id="L555">              st2 = j + i; </span>
+<span class="fc" id="L556">              e2 = Math.min(st2 + i - 1, n);</span>
+<span class="fc bfc" id="L557" title="All 4 branches covered.">              while (( st1 &lt;= e1 ) &amp;&amp; ( st2 &lt;= e2 ) ) {</span>
+<span class="fc" id="L558">                 k++;</span>
+<span class="fc" id="L559">                 idx1 = idx_r[st1-1];</span>
+<span class="fc" id="L560">                 idx2 = idx_r[st2-1];</span>
+<span class="fc bfc" id="L561" title="All 2 branches covered.">                 if (y[idx1-1] &gt;= y[idx2-1]) {                 </span>
+<span class="fc" id="L562">                    idx[k-1][idx_s-1] = idx1;</span>
+<span class="fc" id="L563">                    st1++;</span>
+                 } else {
+<span class="fc" id="L565">                    idx[k-1][idx_s-1] = idx2;</span>
+<span class="fc" id="L566">                    st2++;</span>
+                 } // end if-else
+              } // end while
+<span class="fc bfc" id="L569" title="All 2 branches covered.">              if (st1 &lt;= e1) {</span>
+<span class="fc" id="L570">                  kf = k + e1 - st1 + 1;</span>
+                  // note: idx is int[n][2];  idx_r is int[n]
+                  //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
+<span class="fc" id="L573">                  int c = st1;</span>
+<span class="fc bfc" id="L574" title="All 2 branches covered.">                  for (z = (k+1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L575">                      idx[z-1][idx_s-1] = idx_r[c-1];</span>
+<span class="fc" id="L576">                      c++;</span>
+                  }
+<span class="fc" id="L578">                  k = kf;</span>
+<span class="pc bpc" id="L579" title="1 of 2 branches missed.">              } else if (st2 &lt;= e2) {</span>
+<span class="fc" id="L580">                  kf = k + e2 - st2 + 1;</span>
+                  //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
+<span class="fc" id="L582">                  int c = st2;</span>
+<span class="fc bfc" id="L583" title="All 2 branches covered.">                  for (z = k+1; z &lt;= kf; ++z) {</span>
+<span class="fc" id="L584">                      idx[z-1][idx_s-1] = idx_r[c-1];</span>
+<span class="fc" id="L585">                      c++;</span>
+                  }
+<span class="fc" id="L587">                  k = kf;</span>
+              }
+           } // end for j=
+           
+<span class="fc" id="L591">           i = gap;</span>
+<span class="fc" id="L592">           r = 3 - r; </span>
+<span class="fc" id="L593">           idx_s = 3 - idx_s;  //2;  3-2=1 // 3-1=2</span>
+           
+        }
+        
+<span class="fc" id="L597">        double[][] sorted = new double[2][x.length];</span>
+<span class="fc" id="L598">        sorted[0] = x;</span>
+<span class="fc" id="L599">        sorted[1] = y;</span>
+<span class="fc" id="L600">        return sorted;</span>
+    }
+
+    private static double[] _calcB(double[] y, int[][] idx, int n, int r) {
+
+        /*
+        System.out.printf(&quot;\n\n*_calcB\n&quot;);
+        System.out.printf(&quot;idx[0]=%s\n&quot;, Arrays.toString(idx[0]));
+        System.out.printf(&quot;idx[1]=%s\n&quot;, Arrays.toString(idx[1]));
+        */
+                    
+<span class="fc" id="L611">        double[] ySorted = new double[n];</span>
+
+        //% b_y is the vector of row sums of distance matrix of y
+        // ySorted = y ( idx( n : −1: 1, r ) );
+<span class="fc" id="L615">        int c = 0;</span>
+        int z;
+
+<span class="fc bfc" id="L618" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
+<span class="fc" id="L619">            ySorted[c] = y[idx[z - 1][r - 1] - 1];</span>
+            //System.out.printf(&quot;ySorted[%d]=y[idx[%d][%d]-1]=y[%d]=%.3f\n&quot;,
+            //        c, z - 1, r - 1, idx[z - 1][r - 1] - 1, y[idx[z - 1][r - 1] - 1]);
+<span class="fc" id="L622">            c++;</span>
+        }
+
+        //si = cumsum( ySorted );
+<span class="fc" id="L626">        double[] si = MiscMath0.cumulativeSum(ySorted);</span>
+<span class="fc" id="L627">        double s = si[n - 1];</span>
+
+        //b_y = zeros( n , 1 );
+<span class="fc" id="L630">        double[] b_y = new double[n];</span>
+
+        //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
+<span class="fc" id="L633">        c = 0;</span>
+<span class="fc" id="L634">        double cc = -(n - 2.);</span>
+<span class="fc bfc" id="L635" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
+<span class="fc" id="L636">            b_y[idx[z - 1][r - 1] - 1] = (cc * ySorted[c]) + (s - (2. * si[c]));</span>
+
+            /*
+            System.out.printf(&quot;(s - (2.*si[%d])) = (%.3f - (2. * %.3f)) = %.3f\n&quot;,
+                    c, s, si[c], (s - (2. * si[c])));
+            System.out.printf(&quot;b_y[idx[%d][%d]-1] =&gt; b_y[%d] = (%.0f * ySorted[%d]) + (s - (2.*si[%d]) = %.3f\n&quot;,
+                    z - 1, r - 1, idx[z - 1][r - 1] - 1, cc, c, c, (cc * ySorted[c]) + (s - (2. * si[c])));
+            */
+
+<span class="fc" id="L645">            c++;</span>
+<span class="fc" id="L646">            cc += 2;</span>
+        }
+
+<span class="fc" id="L649">        return b_y;</span>
+    }
+
+    /**
+     * calculates the distance covariance between univariate vectors x and y as
+     * &quot;a weighted distance between the joint characteristic function and the
+     * product of marginal distributions; it is 0 if and only if two random
+     * vectors and are independent. This measure can detect the presence of a
+     * dependence structure when the sample size is large enough.&quot;
+     *
+     * This algorithm is an implementation/port of the Matlab code from &quot;A fast
+     * algorithm for computing distance correlation&quot; 2019 Chaudhuri &amp; Hu,
+     * Computational Statistics And Data Analysis, Volume 135, July 2019, Pages
+     * 15-24. https://arxiv.org/pdf/1810.11332.pdf
+     *
+     * Runtime is O(n*log_2(n)) where n is the number of points in x which is
+     * the same as the number in y.
+     *
+     * NOTE: redundant points are possible in the rankings as &quot;ties&quot; are handled
+     * in the algorithm. This is one advantage over the similar algorithm of Huo
+     * and Szekely (2016).
+     *
+     * NOTE: that this method follows Algorithm 1 in the paper which stops at
+     * the intermediate steps to show the merge steps clearly. The complete
+     * algorithm is present as fastDcov.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public static DCov _univariateCovariance(double[] x, double[] y) {
+
+<span class="pc bpc" id="L681" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L682">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
+        }
+
+<span class="fc" id="L685">        int n = x.length;</span>
+
+<span class="fc" id="L687">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L688">        y = Arrays.copyOf(y, y.length);</span>
+
+<span class="fc" id="L690">        int[][] idx = new int[2][n];</span>
+<span class="fc" id="L691">        idx[0] = new int[n];</span>
+<span class="fc" id="L692">        idx[1] = new int[n];</span>
+<span class="fc bfc" id="L693" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L694">            idx[0][i] = i + 1;</span>
+        }
+
+<span class="fc" id="L697">        int[] idx_r = new int[n];</span>
+
+<span class="fc" id="L699">        double[] csumT = new double[n + 1];</span>
+<span class="fc" id="L700">        double[] d = new double[n];</span>
+
+        //the merge sort is descending order
+        int gap, k, kf, z, j, st1, e1, st2, e2, idx1, idx2;
+<span class="fc" id="L704">        int i = 1;</span>
+<span class="fc" id="L705">        int r = 1;</span>
+<span class="fc" id="L706">        int idx_s = 2;</span>
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc" id="L708">            gap = 2 * i;</span>
+<span class="fc" id="L709">            k = 0;</span>
+
+<span class="fc" id="L711">            System.arraycopy(idx[r - 1], 0, idx_r, 0, n);</span>
+
+            //csumT = cusum(y[idx r]); 
+            //csumT = (0, csumT );
+<span class="fc" id="L715">            csumT[0] = 0;</span>
+<span class="fc bfc" id="L716" title="All 2 branches covered.">            for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L717">                csumT[z + 1] = y[idx_r[z] - 1];</span>
+            }
+<span class="fc bfc" id="L719" title="All 2 branches covered.">            for (z = 2; z &lt;= n; ++z) {</span>
+<span class="fc" id="L720">                csumT[z] += csumT[z - 1];</span>
+            }
+
+<span class="fc" id="L723">            j = 1;</span>
+
+<span class="fc bfc" id="L725" title="All 2 branches covered.">            while (j &lt; n) {</span>
+
+<span class="fc" id="L727">                st1 = j;</span>
+<span class="fc" id="L728">                e1 = Math.min(st1 + i - 1, n);</span>
+<span class="fc" id="L729">                st2 = j + i;</span>
+<span class="fc" id="L730">                e2 = Math.min(st2 + i - 1, n);</span>
+<span class="fc bfc" id="L731" title="All 4 branches covered.">                while ((st1 &lt;= e1) &amp;&amp; (st2 &lt;= e2)) {</span>
+<span class="fc" id="L732">                    k++;</span>
+<span class="fc" id="L733">                    idx1 = idx_r[st1 - 1];</span>
+<span class="fc" id="L734">                    idx2 = idx_r[st2 - 1];</span>
+<span class="fc bfc" id="L735" title="All 2 branches covered.">                    if (x[idx1 - 1] &gt;= x[idx2 - 1]) {</span>
+<span class="fc" id="L736">                        idx[idx_s - 1][k - 1] = idx1;</span>
+<span class="fc" id="L737">                        st1++;</span>
+                    } else {
+<span class="fc" id="L739">                        idx[idx_s - 1][k - 1] = idx2;</span>
+<span class="fc" id="L740">                        st2++;</span>
+                        // d[] here is similar to iv3 in method fastDCov
+                        //   which is the paper's Appendix Matlab code.
+                        // iv3(j) = summation_{i&lt;j,y_i&lt;y_j}( y_i )
+<span class="fc" id="L744">                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]);</span>
+                    } // end if-else
+                } // end while
+<span class="fc bfc" id="L747" title="All 2 branches covered.">                if (st1 &lt;= e1) {</span>
+<span class="fc" id="L748">                    kf = k + e1 - st1 + 1;</span>
+<span class="fc" id="L749">                    int c = st1;</span>
+<span class="fc bfc" id="L750" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L751">                        idx[idx_s - 1][z - 1] = idx_r[c - 1];</span>
+<span class="fc" id="L752">                        c++;</span>
+                    }
+<span class="fc" id="L754">                    k = kf;</span>
+<span class="pc bpc" id="L755" title="1 of 2 branches missed.">                } else if (st2 &lt;= e2) {</span>
+<span class="fc" id="L756">                    kf = k + e2 - st2 + 1;</span>
+<span class="fc" id="L757">                    int c = st2;</span>
+<span class="fc bfc" id="L758" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L759">                        idx[idx_s - 1][z - 1] = idx_r[c - 1];</span>
+<span class="fc" id="L760">                        c++;</span>
+                    }
+<span class="fc" id="L762">                    k = kf;</span>
+                }
+<span class="fc" id="L764">                j += gap;</span>
+
+            } // end while j
+
+<span class="fc" id="L768">            i = gap;</span>
+<span class="fc" id="L769">            r = 3 - r;</span>
+<span class="fc" id="L770">            idx_s = 3 - idx_s;</span>
+        } // end while i
+
+<span class="fc" id="L773">        double[] sortedX = new double[n];</span>
+<span class="fc" id="L774">        double[] sortedY = new double[n];</span>
+<span class="fc" id="L775">        int[] indexes = new int[n];</span>
+<span class="fc" id="L776">        double[] sortedD = new double[n];</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L778">            indexes[z] = idx[r - 1][z] - 1;</span>
+<span class="fc" id="L779">            sortedX[z] = x[indexes[z]];</span>
+<span class="fc" id="L780">            sortedY[z] = y[indexes[z]];</span>
+<span class="fc" id="L781">            sortedD[z] = d[indexes[z]];</span>
+        }
+
+<span class="fc" id="L784">        DCov dcov = new DCov();</span>
+<span class="fc" id="L785">        dcov.iv3 = sortedD;</span>
+<span class="fc" id="L786">        dcov.indexes = indexes;</span>
+<span class="fc" id="L787">        dcov.sortedX = sortedX;</span>
+<span class="fc" id="L788">        dcov.sortedY = sortedY;</span>
+
+<span class="fc" id="L790">        return dcov;</span>
+    }
+
+    /**
+     * calculates the distance covariance between univariate vectors x and y as
+     * &quot;a weighted  distance between the joint characteristic function and 
+     * the product of marginal distributions; 
+     * it is 0 if and only if two random vectors  and  are independent. 
+     * This measure can detect the presence of a dependence structure when the 
+     * sample size is large enough.&quot;
+     * 
+     * This algorithm is an implementation/port of the Matlab code from
+     * &quot;A fast algorithm for computing distance correlation&quot;
+     * 2019 Chaudhuri &amp; Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+     * 
+     * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
+     * the same as the number in y.
+     * 
+     * NOTE: redundant points are possible in the rankings as &quot;ties&quot; are handled
+     * in the algorithm.  This is one advantage over the similar
+     * algorithm of Huo and Szekely (2016).
+     * 
+     * runtime is  O(n*log_2(n)).
+     * 
+     * @param x sample of univariate observations of a variable
+     * @param y second sample of univariate observations (can be of another variable)
+     * @return the distance correlation of X and Y.  also returns intermediate data.
+     * NOTE that the distance correlation is exactly zero if and only if two 
+     * random variables are independent.
+     */
+    public static DCor fastDcor(double[] x, double[] y) {
+<span class="fc" id="L822">        DCor dcor = new DCor();</span>
+<span class="fc" id="L823">        double tol = 1e-15;</span>
+<span class="fc" id="L824">        dcor.covXXSq = fastDcov(x, x);</span>
+<span class="pc bpc" id="L825" title="1 of 2 branches missed.">        if (dcor.covXXSq.covsq &lt; tol) {</span>
+<span class="nc" id="L826">            dcor.corSq = 0;</span>
+<span class="nc" id="L827">            System.err.println(&quot;cov(XX) is 0, so correlation is 0&quot;);</span>
+<span class="nc" id="L828">            return dcor;</span>
+        }
+<span class="fc" id="L830">        dcor.covYYSq = fastDcov(y, y);</span>
+<span class="pc bpc" id="L831" title="1 of 2 branches missed.">        if (dcor.covYYSq.covsq &lt; tol) {</span>
+<span class="nc" id="L832">            dcor.corSq = 0;</span>
+<span class="nc" id="L833">            System.err.println(&quot;cov(YY) is 0, so correlation is 0&quot;);</span>
+<span class="nc" id="L834">            return dcor;</span>
+        }
+<span class="fc" id="L836">        dcor.covXYSq = fastDcov(x, y);</span>
+<span class="fc bfc" id="L837" title="All 2 branches covered.">        if (dcor.covXYSq.covsq &lt; tol) {</span>
+<span class="fc" id="L838">            dcor.corSq = 0;</span>
+<span class="fc" id="L839">            System.err.println(&quot;cov(XY) is 0, so correlation is 0&quot;);</span>
+<span class="fc" id="L840">            return dcor;</span>
+        }
+<span class="fc" id="L842">        dcor.corSq = dcor.covXYSq.covsq/Math.sqrt(dcor.covXXSq.covsq * dcor.covYYSq.covsq);</span>
+<span class="fc" id="L843">        return dcor;</span>
+    }
+  
+    public static class DCov {
+        public double covsq;
+        public double d;
+        int[] indexes;
+        double[] sortedX;
+        double[] sortedY;
+        
+        /**
+         * this is a.. of eqn (2) of the paper.
+         * a_.. = summation_{i:1,n}( a_i )
+         * where a_i = summation_{j:1,n}( a_i_j )
+         * where a_i_j = |x_i - x_j|_p
+         * and |·|_p is the euclidean norm in real space with dimension p
+         */
+        public double aDotDot;
+        
+        /**
+         * this is a_i of eqn (2) of the paper.
+         * where a_i = summation_{j:1,n}( a_i_j )
+         * where a_i_j = |x_i - x_j|_p
+         * where p is the number of dimensions of vector x
+         * and |·|_p is the euclidean norm in real space with dimension p
+         */
+        public double[] ai;
+        
+        /**
+         &lt;pre&gt;
+         this is b.. of eqn (2) of the paper.
+         b_.. = summation_{i:1,n}( b_i )
+         where b_i = summation_{j:1,n}( b_i_j )
+         where b_i_j = |y_i - y_j|_q
+         where q is the number of dimensions of vector y
+         and |·|_q is the euclidean norm in real space with dimension q
+         &lt;/pre&gt;
+         */
+        public double bDotDot;
+        
+        /**
+         &lt;pre&gt;
+         this is b_i of eqn (2) of the paper.
+         where b_i = summation_{j:1,n}( b_i_j )
+         where b_i_j = |y_i - y_j|_q
+         where q is the number of dimensions of vector y
+         and |·|_q is the euclidean norm in real space with dimension q
+         &lt;/pre&gt;
+         */
+        public double[] bi;
+        
+        /**
+        iv1(j) = summation_{i .lt. j, y_i .lt. y_j}( 1 )
+        */
+        public double[] iv1;
+        
+        /**
+        iv2(j) = summation_{i .lt. j, y_i .lt. y_j}( x_i )
+        */
+        public double[] iv2;
+        
+        /**
+        iv3(j) = summation_{i .lt. j, y_i .lt. y_j}( y_i )
+        */
+        public double[] iv3;
+        
+        /**
+        iv4(j) = summation_{i .lt. j, y_i .lt. y_j}( x_i * y_i )
+        */
+        public double[] iv4;
+                
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;d=&quot;).append(d).append(&quot;\n&quot;);
+            sb.append(&quot;covsq=&quot;).append(covsq).append(&quot;\n&quot;);
+            if (indexes != null) {
+                sb.append(&quot;indexes=&quot;).append(Arrays.toString(indexes)).append(&quot;\n&quot;);
+            }
+            if (sortedX != null) {
+                sb.append(&quot;sortedX=&quot;).append(FormatArray.toString(sortedX, &quot;%.3f&quot;)).append(&quot;\n&quot;);
+            }
+            if (sortedY != null) {
+                sb.append(&quot;sortedY=&quot;).append(FormatArray.toString(sortedY, &quot;%.3f&quot;)).append(&quot;\n&quot;);
+            }
+            if (ai != null) {
+                sb.append(&quot;ai=&quot;).append(FormatArray.toString(ai, &quot;%.3f&quot;)).append(&quot;\n&quot;);
+                sb.append(&quot;a..=&quot;).append(aDotDot).append(&quot;\n&quot;);
+            }
+            if (bi != null) {
+                sb.append(&quot;bi=&quot;).append(FormatArray.toString(bi, &quot;%.3f&quot;)).append(&quot;\n&quot;);
+                sb.append(&quot;b..=&quot;).append(bDotDot).append(&quot;\n&quot;);
+            }
+            if (iv1 != null) {
+                sb.append(&quot;iv1=&quot;).append(Arrays.toString(iv1)).append(&quot;\n&quot;);
+            }
+            if (iv2 != null) {
+                sb.append(&quot;iv2=&quot;).append(Arrays.toString(iv2)).append(&quot;\n&quot;);
+            }
+            if (iv3 != null) {
+                sb.append(&quot;iv3=&quot;).append(Arrays.toString(iv3)).append(&quot;\n&quot;);
+            }
+            if (iv4 != null) {
+                sb.append(&quot;iv4=&quot;).append(Arrays.toString(iv4)).append(&quot;\n&quot;);
+            }
+                        
+            return sb.toString();
+        }
+        
+        public String toString2() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;d=&quot;).append(d).append(&quot;\n&quot;);
+            sb.append(&quot;covsq=&quot;).append(covsq).append(&quot;\n&quot;);
+            if (ai != null) {
+                sb.append(&quot;a..=&quot;).append(aDotDot).append(&quot;\n&quot;);
+            }
+            if (bi != null) {
+                sb.append(&quot;b..=&quot;).append(bDotDot).append(&quot;\n&quot;);
+            }
+                        
+            return sb.toString();
+        }
+    }
+  
+    public static class DCor {
+        public DCov covXYSq;
+        public DCov covXXSq;
+        public DCov covYYSq;
+        public double corSq;
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;corSq=&quot;).append(corSq).append(&quot;\n&quot;);
+            if (covXYSq != null) {
+                sb.append(&quot;covXYSq: &quot;).append(covXYSq.toString());
+                sb.append(&quot;\n&quot;);
+            }
+            if (covXXSq != null) {
+                sb.append(&quot;covXXSq: &quot;).append(covXXSq.toString());
+                sb.append(&quot;\n&quot;);
+            }
+            if (covYYSq != null) {
+                sb.append(&quot;covYYSq: &quot;).append(covYYSq.toString());
+                sb.append(&quot;\n&quot;);
+            }            
+            return sb.toString();
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

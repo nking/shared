@@ -181,7 +181,7 @@ import java.io.IOException;
 <span class="nc" id="L181">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
 <span class="nc" id="L183">        plotter.addPlot(</span>
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
 <span class="nc" id="L187">        return plotter.writeFile(outputFileNumber);</span>
@@ -206,7 +206,7 @@ import java.io.IOException;
 <span class="fc" id="L206">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
 <span class="fc" id="L208">        plotter.addPlot(</span>
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
 <span class="fc" id="L212">        return plotter.writeFile(outputFileSuffix);</span>
@@ -228,7 +228,7 @@ import java.io.IOException;
 <span class="nc" id="L228">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
 <span class="nc" id="L230">        plotter.addPlot(</span>
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
 <span class="nc" id="L234">        return plotter.writeFile(outputFileSuffix);</span>
@@ -255,7 +255,7 @@ import java.io.IOException;
 <span class="nc" id="L255">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
 <span class="nc" id="L257">        plotter.addPlot(</span>
-            xMin, xMax, yMin, yMax,
+            xMin, xMax, yMin, 1.1f*yMax,
             xh, yLogH, xh, yLogH, label);
 
 <span class="nc" id="L261">        return plotter.writeFile(outputFileSuffix);</span>
@@ -316,58 +316,68 @@ import java.io.IOException;
     public void setYHistFloat(float[] yHistFloat) {
 <span class="fc" id="L317">        this.yHistFloat = yHistFloat;</span>
 <span class="fc" id="L318">    }</span>
+    
+    /**
+     * @param yHistInt the yHistFloat to set
+     */
+    public void setYHistFloat(int[] yHistInt) {
+<span class="fc" id="L324">        this.yHistFloat = new float[yHistInt.length];</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        for (int i = 0; i &lt; yHistInt.length; ++i) {</span>
+<span class="fc" id="L326">            yHistFloat[i] = yHistInt[i];</span>
+        }
+<span class="fc" id="L328">    }</span>
 
     /**
      * @param yErrors the yErrors to set
      */
     public void setYErrors(float[] yErrors) {
-<span class="fc" id="L324">        this.yErrors = yErrors;</span>
-<span class="fc" id="L325">    }</span>
+<span class="fc" id="L334">        this.yErrors = yErrors;</span>
+<span class="fc" id="L335">    }</span>
 
     /**
      * @param xErrors the xErrors to set
      */
     public void setXErrors(float[] xErrors) {
-<span class="fc" id="L331">        this.xErrors = xErrors;</span>
-<span class="fc" id="L332">    }</span>
+<span class="fc" id="L341">        this.xErrors = xErrors;</span>
+<span class="fc" id="L342">    }</span>
 
     @Override
     public String toString() {
         
-<span class="nc" id="L337">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L347">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="nc" id="L339">        sb.append(&quot;histogram=[&quot;);</span>
+<span class="nc" id="L349">        sb.append(&quot;histogram=[&quot;);</span>
         
-<span class="nc bnc" id="L341" title="All 2 branches missed.">        for (int i = 0; i &lt; xHist.length; i++) {</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">        for (int i = 0; i &lt; xHist.length; i++) {</span>
             
-<span class="nc" id="L343">            sb.append(&quot;(&quot;).append(xHist[i]).append(&quot;, &quot;);</span>
+<span class="nc" id="L353">            sb.append(&quot;(&quot;).append(xHist[i]).append(&quot;, &quot;);</span>
             
-<span class="nc bnc" id="L345" title="All 2 branches missed.">            if (yHist != null) {</span>
-<span class="nc" id="L346">                sb.append(yHist[i]);</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">            if (yHist != null) {</span>
+<span class="nc" id="L356">                sb.append(yHist[i]);</span>
             } else {
-<span class="nc" id="L348">                sb.append(yHistFloat[i]);</span>
+<span class="nc" id="L358">                sb.append(yHistFloat[i]);</span>
             }
-<span class="nc" id="L350">            sb.append(&quot;) &quot;);</span>
+<span class="nc" id="L360">            sb.append(&quot;) &quot;);</span>
             
         }
         
-<span class="nc" id="L354">        sb.append(&quot;]\n&quot;);</span>
+<span class="nc" id="L364">        sb.append(&quot;]\n&quot;);</span>
         
-<span class="nc bnc" id="L356" title="All 2 branches missed.">        if (xErrors != null) {</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">        if (xErrors != null) {</span>
             
-<span class="nc" id="L358">            sb.append(&quot;histogram errors=[&quot;);</span>
+<span class="nc" id="L368">            sb.append(&quot;histogram errors=[&quot;);</span>
             
-<span class="nc bnc" id="L360" title="All 2 branches missed.">            for (int i = 0; i &lt; xErrors.length; i++) {</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">            for (int i = 0; i &lt; xErrors.length; i++) {</span>
 
-<span class="nc" id="L362">                sb.append(&quot;(&quot;).append(xErrors[i]).append(&quot;, &quot;);</span>
+<span class="nc" id="L372">                sb.append(&quot;(&quot;).append(xErrors[i]).append(&quot;, &quot;);</span>
 
-<span class="nc" id="L364">                sb.append(yErrors[i]).append(&quot;) &quot;);</span>
+<span class="nc" id="L374">                sb.append(yErrors[i]).append(&quot;) &quot;);</span>
             }
             
-<span class="nc" id="L367">            sb.append(&quot;]\n&quot;);</span>
+<span class="nc" id="L377">            sb.append(&quot;]\n&quot;);</span>
         }      
         
-<span class="nc" id="L370">        return sb.toString();</span>
+<span class="nc" id="L380">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

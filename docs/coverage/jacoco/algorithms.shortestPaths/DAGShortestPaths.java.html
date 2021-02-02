@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DAGShortestPaths.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.shortestPaths</a> &gt; <span class="el_source">DAGShortestPaths.java</span></div><h1>DAGShortestPaths.java</h1><pre class="source lang-java linenums">package algorithms.shortestPaths;
+
+import algorithms.graphs.TopologicalSort;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import java.util.Arrays;
+
+/**
+ * given a weighted directed graph with weight function, solves the single
+ * source shortest paths.
+ * 
+ * The DAG shortest path accepts a DAG as input, so does not have negative
+ * weight cycles.
+ * 
+ * The runtime complexity is &lt;em&gt;O(V + E)&lt;/em&gt;.
+ * That's in contrast to the Bellman-Ford single source shortest path 
+ * algorithm which is O(V*E), but can handle negative weight cycles by returning 
+ * false at the end of the algorithm.
+ * 
+ * implemented from pseudocode from Cormen et al. &quot;Introduction to Algorithms&quot;.
+ * 
+ * from Cormen et al. :
+ * useful for determining critical paths in PERT chart analysis.
+ * edges hold jobs to be perform and their weights are the estimated time
+ * to complete the jobs.
+ * If edge (u,v) enters vertex v, and edge (v,x) leaves v, then job (u,v) must
+ * be performed prior to (v,x).
+ *   *A critical path is the longest time to perform an ordered sequence of jobs
+ * and that is the longest path through the DAG.   The weight on a critical
+ * path is the minimum time to perform all jobs.
+ *   Can calculate the critical path by either:
+ *     - negating the edge weights and run this code on that, or
+ *     - or modify a version of this code to use -infinity in the initialization
+ *       method and change '&gt;' to '&lt;' in the relax method.
+ * 
+ * @author nichole
+ */
+public class DAGShortestPaths {
+    
+    /**
+     * directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     */
+<span class="fc" id="L46">    protected SimpleLinkedListNode[] g = null;</span>
+    
+    /* edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+    */
+<span class="fc" id="L52">    protected TIntIntMap[] w = null;</span>
+    
+<span class="fc" id="L54">    protected int[] dist = null;</span>
+
+<span class="fc" id="L56">    protected int[] predecessor = null;   </span>
+    
+<span class="fc" id="L58">    protected int src = -1;</span>
+    
+<span class="fc" id="L60">    public DAGShortestPaths() {</span>
+<span class="fc" id="L61">    }</span>
+    
+    /**
+     * find the single shortest path in dAG with edge weights w starting from s.
+     * @param dAG directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     * Note that all vertexes, including edge vertexes, must be present as an
+     * index of the array dAG, i.e. all vertexes must have numerical value 
+     * less than dAG.length.
+     * @param weights the edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+     * @param sourceVertex the source vertex index
+     */
+    public void find(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex) {
+        
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">        if (dAG == null || dAG.length == 0) {</span>
+<span class="nc" id="L79">            throw new IllegalArgumentException(&quot;dAG cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L81" title="2 of 4 branches missed.">        if (sourceVertex &lt; 0 || sourceVertex &gt;= dAG.length) {</span>
+<span class="nc" id="L82">            throw new IllegalArgumentException(&quot;sourceIndex cannot be null&quot;);</span>
+        }
+        
+        /*
+        topologically sort the vertices of G
+        initialize single source (g, s)
+        for each vertex u, taken in topologically sorted order
+            do for each vertex v in adj[u]
+               do relax(u, v, w)
+        */ 
+        
+<span class="fc" id="L93">        init(dAG, weights, sourceVertex);</span>
+        
+<span class="fc" id="L95">        find();</span>
+<span class="fc" id="L96">    }</span>
+        
+    private void find() {
+       
+<span class="fc" id="L100">        TopologicalSort ts = new TopologicalSort(g);</span>
+        
+<span class="fc" id="L102">        int[] sortedVertexes = ts.sort();</span>
+                
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (int u : sortedVertexes) {</span>
+            
+<span class="fc" id="L106">            TIntIntMap uWeights = w[u];</span>
+            
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (uWeights == null) {</span>
+<span class="fc" id="L109">                continue;</span>
+            }
+            
+<span class="fc" id="L112">            SimpleLinkedListNode next = g[u];</span>
+            
+<span class="pc bpc" id="L114" title="1 of 4 branches missed.">            while (next != null &amp;&amp; next.getKey() != -1) {</span>
+            
+<span class="fc" id="L116">                int v = next.getKey();</span>
+                
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
+<span class="nc" id="L119">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+                    + u + &quot; to &quot; + v);
+                }
+<span class="fc" id="L122">                int wUV = uWeights.get(v);                </span>
+                
+<span class="fc" id="L124">                int dUPlusWUV = wUV;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">                if (dist[u] == Integer.MAX_VALUE) {</span>
+<span class="nc" id="L126">                    dUPlusWUV = Integer.MAX_VALUE;</span>
+                } else {
+<span class="fc" id="L128">                    dUPlusWUV += dist[u];</span>
+                }
+                                
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                if (dist[v] &gt; dUPlusWUV) {</span>
+<span class="fc" id="L132">                    dist[v] = dUPlusWUV;</span>
+<span class="fc" id="L133">                    predecessor[v] = u;</span>
+                }
+                
+<span class="fc" id="L136">                next = next.getNext();</span>
+<span class="fc" id="L137">            }</span>
+        }
+<span class="fc" id="L139">    }</span>
+    
+    private void init(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex) {
+        
+<span class="fc" id="L143">        g = dAG.clone();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int i = 0; i &lt; dAG.length; ++i) {</span>
+<span class="fc" id="L145">            g[i] = new SimpleLinkedListNode(dAG[i]);</span>
+        }
+<span class="fc" id="L147">        w = weights.clone();</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (weights[i] != null) {</span>
+<span class="fc" id="L150">                w[i] = new TIntIntHashMap(weights[i]);</span>
+            }
+        }
+<span class="fc" id="L153">        src = sourceVertex;</span>
+    
+<span class="fc" id="L155">        dist = new int[g.length];</span>
+<span class="fc" id="L156">        predecessor = new int[g.length];</span>
+        
+<span class="fc" id="L158">        Arrays.fill(dist, Integer.MAX_VALUE);</span>
+<span class="fc" id="L159">        Arrays.fill(predecessor, -1);</span>
+        
+<span class="fc" id="L161">        dist[src] = 0;</span>
+<span class="fc" id="L162">    }</span>
+    
+    /**
+     * get shortest path from source to destIndex
+     * @param destVertex
+     * @return 
+     */
+    public int[] getShortestPathToVertex(int destVertex) {
+<span class="pc bpc" id="L170" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= g.length) {</span>
+<span class="nc" id="L171">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L174">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+        
+<span class="fc" id="L177">        int[] p = new int[g.length];</span>
+<span class="fc" id="L178">        p[p.length - 1] = destVertex;</span>
+                
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (destVertex == src) {</span>
+<span class="fc" id="L182">                int len = p.length - 1 - i;</span>
+<span class="fc" id="L183">                int[] t = new int[len];</span>
+<span class="fc" id="L184">                System.arraycopy(p, i + 1, t, 0, len);</span>
+<span class="fc" id="L185">                return t;</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
+<span class="nc" id="L187">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
+            }
+<span class="fc" id="L189">            p[i] = predecessor[destVertex];</span>
+<span class="fc" id="L190">            destVertex = p[i];</span>
+        }
+        
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (p[0] != src) {</span>
+<span class="nc" id="L194">            throw new IllegalStateException(&quot;path did not complete correctly for destIndex&quot;);</span>
+        }
+        
+<span class="nc" id="L197">        return p;</span>
+    }
+    
+    public int getSumOfPath(int[] vertexes) {
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (vertexes == null) {</span>
+<span class="nc" id="L202">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
+        }
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (dist == null) {</span>
+<span class="nc" id="L205">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+<span class="nc" id="L207">        int sum = 0;</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        for (int idx : vertexes) {</span>
+<span class="nc" id="L209">            sum += dist[idx];</span>
+        }
+<span class="nc" id="L211">        return sum;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

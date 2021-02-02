@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CDFStandardNormal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">CDFStandardNormal.java</span></div><h1>CDFStandardNormal.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L7">public class CDFStandardNormal {</span>
+    
+    /**
+     * 
+     * &lt;pre&gt;
+     * Best Fit One Parameter Logistic Equation from:
+     * &quot;A logistic approximation to the cumulative normal distribution&quot;
+     * 2009, Bowling, Khasawneh, Kaewkuekool, and Cho,
+     * JIEM, 2009 – 2(1): 114-127
+     * https://www.jiem.org/index.php/jiem/article/viewFile/60/27/
+     * &lt;pre&gt;
+     * @param p can be .gte. -4.5 and .lte. 4.5
+     * @return 
+     */
+    static double _approxBowling(double p) {
+        // eqn 10:
+<span class="nc" id="L23">        double c = -(0.07056*p*p*p + 1.5976*p); </span>
+<span class="nc" id="L24">        double oneParamLogistic= 1./(1. + Math.exp(c));</span>
+<span class="nc" id="L25">        return oneParamLogistic;</span>
+    }
+    
+    
+    /**
+     an approximation of the CDF of the standard normal gaussian distribution
+     by author Haim Short.
+     The algorithm is useful for reverse look-ups, that is, given p, estimate 
+     the variate X.
+     The algorithm is from:
+     &quot;Simple Approximations for the Inverse Cumulative Function,
+     the Density Function, and the Loss Integral of the Normal Distribution&quot;
+    1982, Shore, Appl Statis, 31, No 2, 108-114
+    
+     NOTE that to compare values to the NIST tables at 
+     https://www.itl.nist.gov/div898/handbook/eda/section3/eda3671.htm
+      for Area under the Normal Curve from 0 to X (which is p = 0.5 to 1.0),
+     one must subtract 0.5 from the search p to use their table.
+     example: to find p=0.75, look for value 0.25 in their table.
+     the X label on the left hand side is 0.6 and the column label at the top
+     is between 0.07 and 0.08, so the X is approx 0.68.
+     
+    The Shore algorithm in this method produces this for the same example:
+    &lt;pre&gt;
+    &gt;&gt;&gt; p=0.75
+    &gt;&gt;&gt; x1=-5.531*( math.pow((1.-p)/p, 0.1193) - 1.); x1
+    0.679421164952841
+    *&lt;/pre&gt;
+     * @param p probability
+     * @return the variate, quantile, x.  the range is approximately -3.1 to +3.1.
+    */
+    public static double approxInverseShort(double p) {
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        double z = (p &gt;= 0.5) ? ((1.-p)/p) : (p/(1.-p));</span>
+<span class="fc" id="L58">        double x = -5.531 * (Math.pow(z, 0.1193) - 1.);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (p &lt;0.5) {</span>
+<span class="fc" id="L60">            x*=-1;</span>
+        }
+<span class="fc" id="L62">        return x;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

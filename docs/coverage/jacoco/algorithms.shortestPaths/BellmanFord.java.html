@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BellmanFord.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.shortestPaths</a> &gt; <span class="el_source">BellmanFord.java</span></div><h1>BellmanFord.java</h1><pre class="source lang-java linenums">package algorithms.shortestPaths;
+
+import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import java.util.Arrays;
+
+/**
+ * solves the single source paths problem.
+ * 
+ * It can handle &lt;em&gt;negative edge weights&lt;/em&gt;, but if there is a negative cycle, it returns false.
+ * It solves the problem using dynamic programming (= dividing the problem into
+ * sub-problems and combining them into the solution).
+ *
+ * It is non-greedy solution that uses the relax function to find the minimum
+ * edge for a node.  relax is invoked |V| - 1 times.
+ * 
+ * Runtime complexity is &lt;em&gt;O(|V||E|)&lt;/em&gt;.
+ * 
+ * implemented following Cormen et al. &quot;Introduction to Algorithms&quot;
+ * 
+ * @author nichole
+ */
+public class BellmanFord {
+    
+    private int nV;
+    
+<span class="fc" id="L31">    protected int[] dist = null;</span>
+
+<span class="fc" id="L33">    protected int[] predecessor = null;   </span>
+    
+<span class="fc" id="L35">    protected int src = -1;</span>
+    
+<span class="fc" id="L37">    private static int sentinel = Integer.MAX_VALUE;</span>
+    
+    private TObjectIntMap&lt;PairInt&gt; edges;
+    
+    /**
+     * 
+     * @param dAG directed acyclic graph where the main index of the object array
+     * is the vertex number, and each vertex has a linked list of outgoing 
+     * edges connecting to the vertexes held in each linked list node key.
+     * Note that all vertexes, including edge vertexes, must be present as an
+     * index of the array dAG, i.e. all vertexes must have numerical value 
+     * less than dAG.length.
+     * @param weights the edge weights in format of outer array index being the
+     * first vertex and the map within having a key being the 2nd vertex of the
+     * edge with value being the edge weight.
+     * @param sourceVertex the source vertex index
+     */
+<span class="fc" id="L54">    public BellmanFord(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex) {</span>
+    
+<span class="pc bpc" id="L56" title="2 of 4 branches missed.">        if (dAG == null || dAG.length == 0) {</span>
+<span class="nc" id="L57">            throw new IllegalArgumentException(&quot;dAG cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L59" title="2 of 4 branches missed.">        if (sourceVertex &lt; 0 || sourceVertex &gt;= dAG.length) {</span>
+<span class="nc" id="L60">            throw new IllegalArgumentException(&quot;sourceIndex cannot be null&quot;);</span>
+        }
+        
+<span class="fc" id="L63">        init(dAG, weights, sourceVertex);</span>
+        
+<span class="fc" id="L65">    }</span>
+        
+    /**
+     * find the single shortest paths in dAG with edge weights w starting from s.
+     * 
+     * @return returns false if a negative cycle is present, else returns true 
+     * and the results are usable.
+     */
+    public boolean find() {
+        /*
+        init
+        for i=1 to |V[G]| - 1
+           for each edge (u,v) in E[G]
+              relax(u,v,w)
+        for each edge (u,v) in E[G]
+           if d(v) &gt; d(u) + w(u,v)
+              return false
+        return true
+        */
+        
+        PairInt uv;
+        int wUV, u, v;
+        TObjectIntIterator&lt;PairInt&gt; iter;
+        
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (int ii = 0; ii &lt; nV; ++ii) {</span>
+<span class="fc" id="L90">            iter = edges.iterator();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            for (int i = 0; i &lt; edges.size(); ++i) {</span>
+<span class="fc" id="L92">                iter.advance();</span>
+<span class="fc" id="L93">                uv = iter.key();</span>
+<span class="fc" id="L94">                u = uv.getX();</span>
+<span class="fc" id="L95">                v = uv.getY();</span>
+<span class="fc" id="L96">                wUV = iter.value();</span>
+<span class="fc" id="L97">                relax(u, v, wUV);</span>
+            }
+            
+            /*System.out.printf(&quot;    d=[%d, %d, %d, %d, %d]\n   p=[%d, %d, %d, %d, %d]\n&quot;,
+                    dist[0], dist[1], dist[2], dist[3], dist[4],
+                    predecessor[0], predecessor[1], predecessor[2], predecessor[3], predecessor[4]);
+            System.out.flush();*/
+        }
+        
+<span class="fc" id="L106">        return checkForNegativeCycle();</span>
+    }
+    
+    private void relax(int u, int v, int wUV) {
+    
+        /*
+        if dv &gt; du + wuv
+            dv = du + wuv
+            pred[v]=u
+        */
+        
+<span class="fc" id="L117">        int dUPlusWUV = wUV;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (dist[u] == sentinel) {</span>
+<span class="fc" id="L119">            dUPlusWUV = sentinel;</span>
+        } else {
+<span class="fc" id="L121">            dUPlusWUV += dist[u];</span>
+        }
+
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (dist[v] &gt; dUPlusWUV) {</span>
+<span class="fc" id="L125">            dist[v] = dUPlusWUV;</span>
+<span class="fc" id="L126">            predecessor[v] = u;</span>
+        }
+        
+<span class="fc" id="L129">    }</span>
+
+    private void init(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex) {
+        
+<span class="fc" id="L133">        nV = dAG.length;</span>
+        
+<span class="fc" id="L135">        src = sourceVertex;</span>
+            
+<span class="fc" id="L137">        dist = new int[nV];</span>
+<span class="fc" id="L138">        predecessor = new int[nV];</span>
+        
+<span class="fc" id="L140">        Arrays.fill(dist, sentinel);</span>
+<span class="fc" id="L141">        Arrays.fill(predecessor, -1);</span>
+        
+<span class="fc" id="L143">        dist[src] = 0;</span>
+               
+<span class="fc" id="L145">        edges = new TObjectIntHashMap&lt;PairInt&gt;();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for (int u = 0; u &lt; nV; ++u) {</span>
+<span class="fc" id="L147">            SimpleLinkedListNode vNode = dAG[u];            </span>
+<span class="fc" id="L148">            TIntIntMap uWgts = weights[u];</span>
+<span class="pc bpc" id="L149" title="2 of 6 branches missed.">            while (vNode != null &amp;&amp; vNode.getKey() != -1 &amp;&amp; uWgts != null) {</span>
+<span class="fc" id="L150">                int v = vNode.getKey();</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">                if (uWgts.containsKey(u)) {</span>
+<span class="nc" id="L152">                    throw new IllegalStateException(&quot;no weight found for edge &quot;</span>
+                        + u + &quot; to &quot; + v);
+                }
+<span class="fc" id="L155">                int wUV = uWgts.get(v);</span>
+<span class="fc" id="L156">                edges.put(new PairInt(u, v), wUV);</span>
+<span class="fc" id="L157">                vNode = vNode.getNext();</span>
+<span class="fc" id="L158">            }</span>
+        }
+<span class="fc" id="L160">    }</span>
+    
+    /**
+     * get shortest path from source to destIndex
+     * @param destVertex
+     * @return 
+     */
+    public int[] getShortestPathToVertex(int destVertex) {
+<span class="pc bpc" id="L168" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= nV) {</span>
+<span class="nc" id="L169">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L172">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+        
+<span class="fc" id="L175">        int[] p = new int[nV];</span>
+<span class="fc" id="L176">        p[p.length - 1] = destVertex;</span>
+                
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            if (destVertex == src) {</span>
+<span class="fc" id="L180">                int len = p.length - 1 - i;</span>
+<span class="fc" id="L181">                int[] t = new int[len];</span>
+<span class="fc" id="L182">                System.arraycopy(p, i + 1, t, 0, len);</span>
+<span class="fc" id="L183">                return t;</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
+<span class="nc" id="L185">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
+            }
+<span class="fc" id="L187">            p[i] = predecessor[destVertex];</span>
+<span class="fc" id="L188">            destVertex = p[i];</span>
+        }
+        
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (p[0] != src) {</span>
+<span class="nc" id="L192">            throw new IllegalStateException(&quot;path did not complete correctly for destIndex&quot;);</span>
+        }
+        
+<span class="fc" id="L195">        return p;</span>
+    }
+    
+    public int getSumOfPath(int[] vertexes) {
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
+<span class="nc" id="L200">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if (dist == null) {</span>
+<span class="nc" id="L203">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+        }
+<span class="fc" id="L205">        int sum = 0;</span>
+        int u, v;
+        PairInt uv;
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
+<span class="fc" id="L209">            u = vertexes[i - 1];</span>
+<span class="fc" id="L210">            v = vertexes[i];</span>
+<span class="fc" id="L211">            uv = new PairInt(u, v);</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">            if (!edges.containsKey(uv)) {</span>
+<span class="nc" id="L213">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+                    + u + &quot; to &quot; + v);
+            }
+                        
+<span class="fc" id="L217">            sum += edges.get(uv);</span>
+        }
+<span class="fc" id="L219">        return sum;</span>
+    }
+
+    private boolean checkForNegativeCycle() {
+        
+<span class="fc" id="L224">        TObjectIntIterator&lt;PairInt&gt; iter = edges.iterator();</span>
+        PairInt uv;
+        int wUV, u, v;
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (int i = 0; i &lt; edges.size(); ++i) {</span>
+<span class="fc" id="L228">            iter.advance();</span>
+<span class="fc" id="L229">            uv = iter.key();</span>
+<span class="fc" id="L230">            u = uv.getX();</span>
+<span class="fc" id="L231">            v = uv.getY();</span>
+<span class="fc" id="L232">            wUV = iter.value();</span>
+
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">            if (dist[u] == sentinel) {</span>
+<span class="nc" id="L235">                throw new IllegalStateException(&quot;dist[&quot; + u + &quot;] was not determined&quot;);</span>
+            }
+
+<span class="fc" id="L238">            int dUPlusWUV = wUV;</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">            if (dist[u] == sentinel) {</span>
+<span class="nc" id="L240">                dUPlusWUV = sentinel;</span>
+            } else {
+<span class="fc" id="L242">                dUPlusWUV += dist[u];</span>
+            }
+
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if (dist[v] &gt; dUPlusWUV) {</span>
+<span class="nc" id="L246">                return false;</span>
+            }
+        }
+        
+<span class="fc" id="L250">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

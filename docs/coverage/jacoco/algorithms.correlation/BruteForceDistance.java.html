@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BruteForceDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.correlation</a> &gt; <span class="el_source">BruteForceDistance.java</span></div><h1>BruteForceDistance.java</h1><pre class="source lang-java linenums">package algorithms.correlation;
+
+import algorithms.matrix.MatrixUtil;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * empirical distance correlation matrix.
+          https://arxiv.org/pdf/0803.4101.pdf
+          MEASURING AND TESTING DEPENDENCE BY CORRELATION OF DISTANCES
+          Szekely, Rizzo, and Bakirov
+          2007, Vol. 35, No. 6, 2769–2794
+            dist. correlation = sqrt(  (1/n^2)*sAB /((1/n^2)sqrt(sAA*sBB) )
+                              = sqrt(  sAB /(sqrt(sAA*sBB) )
+        
+ * useful for Mahalanobis distance among many things.
+ * 
+ * @author nichole
+ */
+<span class="nc" id="L21">public class BruteForceDistance {</span>
+    
+<span class="fc" id="L23">    private static final Level LEVEL = Level.FINE;</span>
+    private static final Logger log;
+    static {
+<span class="fc" id="L26">        log = Logger.getLogger(BruteForceDistance.class.getSimpleName());</span>
+<span class="fc" id="L27">        log.setLevel(Level.FINE);</span>
+<span class="fc" id="L28">    }</span>
+        
+    /**
+     * euclidean distance matrix
+     * (ported from https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
+     * 
+     * @param a
+     * @return 
+     */
+    public static double[][] distanceMatrix(double[][] a) {
+<span class="fc" id="L38">        int n = a.length;</span>
+<span class="fc" id="L39">        int m = a[0].length;</span>
+        
+<span class="fc" id="L41">        double[][] d = new double[n][n];</span>
+        
+        int i, j, col;
+        double diff;
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L46">            d[i] = new double[n];</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            for (j = (i+1); j &lt; n; ++j) {</span>
+                // for each column, subtract cell in row i from row j, square it, and add to total
+<span class="fc bfc" id="L49" title="All 2 branches covered.">                for (col = 0; col &lt; m; ++col) {</span>
+<span class="fc" id="L50">                    diff = a[i][col] - a[j][col];</span>
+<span class="fc" id="L51">                    d[i][j] += (diff * diff);</span>
+                }
+<span class="fc" id="L53">                d[i][j] = Math.sqrt(d[i][j]);</span>
+<span class="fc" id="L54">                d[j][i] = d[i][j];</span>
+            }
+        }
+        
+<span class="fc" id="L58">        return d;</span>
+    }
+ 
+    private static double[] _meanPerColumn(double[][] a) {
+        
+<span class="fc" id="L63">        double[] m = new double[a[0].length];</span>
+        
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (int j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L67">                m[j] += a[i][j];</span>
+            }
+<span class="fc" id="L69">            m[j] /= (double)(a.length);</span>
+        }
+        
+<span class="fc" id="L72">        return m;</span>
+    }
+    
+    private static double[] _meanPerRow(double[][] a) {
+        
+<span class="fc" id="L77">        double[] m = new double[a.length];</span>
+        
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L81">                m[i] += a[i][j];</span>
+            }
+<span class="fc" id="L83">            m[i] /= (double)(a[i].length);</span>
+        }
+        
+<span class="fc" id="L86">        return m;</span>
+    }
+    
+    private static double _grandMean(double[][] a) {
+        
+<span class="fc" id="L91">        double m = 0;</span>
+        
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L95">                m += a[i][j];</span>
+            }
+        }
+<span class="fc" id="L98">        m /= (double)(a.length * a[0].length);</span>
+        
+<span class="fc" id="L100">        return m;</span>
+    }
+    
+    private static void _normalizeDistanceMatrix(double[][] a) {
+        
+<span class="fc" id="L105">        double[] colMeans = _meanPerColumn(a);</span>
+<span class="fc" id="L106">        double[] rowMeans = _meanPerRow(a);</span>
+<span class="fc" id="L107">        double grandMean = _grandMean(a);</span>
+        
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (log.isLoggable(LEVEL)) {</span>
+<span class="fc" id="L110">            StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L111">            sb.append(&quot;col means=&quot;).append(Arrays.toString(colMeans)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L112">            sb.append(&quot;row means=&quot;).append(Arrays.toString(rowMeans)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L113">            sb.append(&quot;grand mean=&quot;).append(Double.toString(grandMean)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L114">            log.log(Level.INFO, sb.toString());</span>
+        }
+        
+        // double center the matrix by 
+        //    subtracting colMeans
+        //    subtracting rowMeans
+        //    add grandMeans
+        double m;
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L124">                m = - colMeans[j] - rowMeans[i] + grandMean;</span>
+<span class="fc" id="L125">                a[i][j] += m;</span>
+            }
+        }
+<span class="fc" id="L128">    }</span>
+    
+    /**
+     * calculate the empirical distance correlation matrix.
+          https://arxiv.org/pdf/0803.4101.pdf
+          MEASURING AND TESTING DEPENDENCE BY CORRELATION OF DISTANCES
+          Szekely, Rizzo, and Bakirov
+          2007, Vol. 35, No. 6, 2769–2794
+            dist. correlation = sqrt(  (1/n^2)*sAB /((1/n^2)sqrt(sAA*sBB) )
+                              = sqrt(  sAB /(sqrt(sAA*sBB) )
+     * also see:
+     * https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
+     * https://numbersandcode.com/some-interesting-observations-with-distance-correlation-coefficients
+     * @param X data in double array format with number of rows n being same as
+     * nRows for Y, though the number of dimensions, that is nCols can be different.
+     * @param Y data in double array format with number of rows n being same as
+     * nRows for X, though the number of dimensions, that is nCols can be different.
+     * @return returns distance correlation and intermediate data.
+     * (i) If E(|X|p + |Y|q) .lt. infinity, then 0 .lte. R .lte. 1, 
+     *     and R(X, Y ) = 0 if and only if X and Y are independent.
+       (ii) 0 .lte. R_n .lte. 1.
+       (iii) If R_n(X, Y) = 1, then there exist a vector a, a nonzero real number
+             b and an orthogonal matrix C such that Y = a + bXC.
+     */
+    public static DCOV correlation1(double[][] X, double[][] Y) {
+        
+<span class="fc" id="L154">        int n = X.length;</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (Y.length != n) {</span>
+<span class="nc" id="L156">            throw new IllegalArgumentException(&quot;X and Y must have same number of rows&quot;);</span>
+        }
+        
+<span class="fc" id="L159">        X = MatrixUtil.copy(X);</span>
+<span class="fc" id="L160">        Y = MatrixUtil.copy(Y);</span>
+        
+        // these may have negative values because of the double-centering normalization:
+<span class="fc" id="L163">        double[][] dMX = distanceMatrix(X);</span>
+<span class="fc" id="L164">        double[][] dMY = distanceMatrix(Y);</span>
+
+<span class="fc" id="L166">        _normalizeDistanceMatrix(dMX);</span>
+<span class="fc" id="L167">        _normalizeDistanceMatrix(dMY);</span>
+       
+        // === empirical distance correlation: ==
+        // https://arxiv.org/pdf/0803.4101.pdf
+        // MEASURING AND TESTING DEPENDENCE BY CORRELATION OF DISTANCES
+        // Szekely, Rizzo, and Bakirov
+        // 2007, Vol. 35, No. 6, 2769–2794
+        //   dist. correlation = sqrt(  (1/n^2)*sXY /((1/n^2)sqrt(sXX*sYY) )
+        //                     = sqrt(  sXY /(sqrt(sXX*sYY) )
+        
+<span class="fc" id="L177">        double sXY = 0;</span>
+<span class="fc" id="L178">        double sXX = 0;</span>
+<span class="fc" id="L179">        double sYY = 0;</span>
+                
+        int i, j;
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            for (j = 0; j &lt; dMX[i].length; ++j) {</span>
+<span class="fc" id="L184">                sXY += (dMX[i][j] * dMY[i][j]);</span>
+<span class="fc" id="L185">                sXX += (dMX[i][j] * dMX[i][j]);</span>
+<span class="fc" id="L186">                sYY += (dMY[i][j] * dMY[i][j]);</span>
+            }
+        }
+        
+<span class="fc" id="L190">        double invN = 1./((double)n-1.);</span>
+        
+<span class="fc" id="L192">        double dCovSq = sXY;</span>
+<span class="fc" id="L193">        double dVarXSq = sXX;</span>
+<span class="fc" id="L194">        double dVarYSq = sYY;</span>
+                
+        //emp. dist. correlation =  sXY /(sqrt(sXX*sYY) )
+<span class="pc bpc" id="L197" title="2 of 4 branches missed.">        double corSq = (dVarXSq &gt; 0 &amp;&amp; dVarYSq &gt; 0) ? dCovSq/Math.sqrt(dVarXSq * dVarYSq) : 0.;</span>
+        
+        /*
+        to test indepence:
+           The Chi-Squared Test of Distance Correlation
+           Shen &amp; Vogelstein 2019 
+           https://www.groundai.com/project/the-chi-square-test-of-distance-correlation/2
+           testing independence using distance correlation now runs in linear time complexity
+        
+        */
+        // T = nrow(DX)*V2XY;   /* test statistic p. 2783. Reject indep when T&gt;=z */
+        // z-score =( M - population mean)/(population stdev) using sample mean and stdev in place of population
+        //
+        //    
+        
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (log.isLoggable(LEVEL)) {</span>
+<span class="fc" id="L213">            StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L214">            sb.append(&quot;n=&quot;).append(n).append(&quot;\n&quot;);</span>
+<span class="fc" id="L215">            sb.append(&quot;dVarXSq=&quot;).append(dVarXSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L216">            sb.append(&quot;dVarYSq=&quot;).append(dVarYSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L217">            sb.append(&quot;dCovXYSq=&quot;).append(dCovSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L218">            sb.append(&quot;dCorSq=&quot;).append(corSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L219">            log.log(Level.INFO, sb.toString());</span>
+        }
+        
+<span class="fc" id="L222">        DCOV dc = new DCOV();</span>
+<span class="fc" id="L223">        dc.corSq = corSq;</span>
+<span class="fc" id="L224">        dc.dCovSq = dCovSq;</span>
+<span class="fc" id="L225">        dc.dVarXSq = dVarXSq;</span>
+<span class="fc" id="L226">        dc.dVarYSq = dVarYSq;</span>
+        
+<span class="fc" id="L228">        return dc;</span>
+    }
+    
+    public static class DCOV {
+        double dCovSq;
+        double dVarXSq;
+        double dVarYSq;                
+        double corSq;
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;corSq=&quot;).append(corSq).append(&quot;\n&quot;);
+            sb.append(&quot;dCovSq: &quot;).append(dCovSq).append(&quot;\n&quot;);
+            sb.append(&quot;dVarXSq: &quot;).append(dVarXSq).append(&quot;\n&quot;);
+            sb.append(&quot;dVarYSq: &quot;).append(dVarYSq).append(&quot;\n&quot;);
+            return sb.toString();
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DisjointForest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.disjointSets</a> &gt; <span class="el_source">DisjointForest.java</span></div><h1>DisjointForest.java</h1><pre class="source lang-java linenums">package algorithms.disjointSets;
+
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+/**
+ * An &quot;all-in-one&quot; class to handle the disjoint set methods and the nodes
+ * in a disjoint forest of trees.
+ *
+ * The disjointSet representation has a path compression operation internal to
+ * findSet method which makes subsequent membership disjointSet queries
+ * faster.
+ * 
+ * implementation follows that in Cormen et al. Introduction to Algorithms
+ * who include references in chapter notes, specifically Tarjan 1999 class notes
+ * for COS 423 Princeton University.
+ * 
+ * @author nichole
+ */
+<span class="fc" id="L31">public class DisjointForest&lt;T&gt; {</span>
+
+    // key = parent nodes
+    // value = disjoint sets
+<span class="fc" id="L35">    private Map&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt; trees =</span>
+        new HashMap&lt;&gt;();
+    
+    /**
+     * make a set out of the given node and add it to the internal forest.
+     * runtime complexity is O(1).
+     * @param x
+     * @return
+     */
+    public RootedTreeDisjointSet&lt;T&gt; makeSet(DisjointSet2Node&lt;T&gt; x) {
+<span class="fc" id="L45">        x.setParent(x);</span>
+<span class="fc" id="L46">        x.setRank(0);</span>
+        
+<span class="fc" id="L48">        RootedTreeDisjointSet&lt;T&gt; set = new RootedTreeDisjointSet&lt;T&gt;(x);</span>
+<span class="fc" id="L49">        addToForest(set);</span>
+<span class="fc" id="L50">        return set;</span>
+    }
+    
+     /**
+     * &lt;pre&gt;
+     * find the set representative for the given node.  As a side effect,
+     * also updates x and all of it's ancestors with the found result so that
+     * they directly point to the top most parent and subsequent lookups are
+     * faster (this is path compression).
+     * runtime complexity:
+     *     the method uses iteration.  
+     *     if we represent x_height as the number of nodes between x's tree 
+     *     root and x, we have 2 times x_height iterations of statements,
+     * so O(x_height).   With path compression here, the amoritzed
+     * worst-case running time is Θ(α(n)) where α is the inverse Ackermann 
+     * function.  
+     * 
+     * The inverse Ackermann function is α(n) = min{k : A_k(1) ≥ n}.
+     * For most purposes, α(n) = O(1) so then the amoritized running time is O(1).
+     * &lt;/pre&gt;
+     * 
+     * @param x
+     * @return top-most parent in ancestry of x.
+     */
+    public DisjointSet2Node&lt;T&gt; findSet(DisjointSet2Node&lt;T&gt; x) {
+                
+        // iterative
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (!x.equals(x.getParent())) {</span>
+            
+<span class="fc" id="L79">            List&lt;DisjointSet2Node&lt;T&gt;&gt; update = new ArrayList&lt;DisjointSet2Node&lt;T&gt;&gt;();</span>
+            
+<span class="fc" id="L81">            DisjointSet2Node&lt;T&gt; parent = x;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            while (!parent.equals(parent.getParent())) {</span>
+<span class="fc" id="L83">                update.add(parent);</span>
+<span class="fc" id="L84">                parent = parent.getParent();</span>
+            }
+            
+            // update the nodes with parent
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            for (DisjointSet2Node&lt;T&gt; node : update) {</span>
+<span class="fc" id="L89">                node.setParent(parent);</span>
+<span class="fc" id="L90">            }</span>
+ 
+        }
+        
+<span class="fc" id="L94">        return x.getParent();</span>
+    }
+    
+    /**
+      assigns to x and y the same parent from both of their parents, choosing
+      the one with largest rank.
+          
+       Runtime complexity is O(1).
+       
+     * @param x
+     * @param y
+     * @return the root found to be the one with equal number of nodes or more nodes
+     */
+    private DisjointSet2Node&lt;T&gt; link(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
+        
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L110">            return x;</span>
+        }
+        
+        DisjointSet2Node&lt;T&gt; parent;
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (x.getRank() &gt;= y.getRank()) {</span>
+<span class="fc" id="L115">            parent = x;</span>
+<span class="fc" id="L116">            y.setParent(parent);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            if (x.getRank() == y.getRank()) {</span>
+<span class="fc" id="L118">                parent.setRank(parent.getRank() + 1);</span>
+            }
+        } else {
+<span class="fc" id="L121">            parent = y;</span>
+<span class="fc" id="L122">            x.setParent(parent);</span>
+        }
+<span class="fc" id="L124">        return parent;</span>
+    }
+    
+    /**
+      assigns to x and y the same parent from both of their parents, choosing
+      the y as the parent.
+          
+       Runtime complexity is O(1).
+       
+     * @param x
+     * @param y
+     * @return the root found to be the one with equal number of nodes or more nodes
+     */
+    private DisjointSet2Node&lt;T&gt; linkChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
+        
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L140">            return y;</span>
+        }
+        
+<span class="nc" id="L143">        DisjointSet2Node&lt;T&gt; parent = y;</span>
+<span class="nc" id="L144">        x.setParent(parent);</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (x.getRank() == y.getRank()) {</span>
+<span class="nc" id="L146">            parent.setRank(parent.getRank() + 1);</span>
+        }
+        
+<span class="nc" id="L149">        return parent;</span>
+    }
+    
+    private void addToForest(RootedTreeDisjointSet&lt;T&gt; t) {
+<span class="fc" id="L153">        getTrees().put(t.parent, t);</span>
+<span class="fc" id="L154">    }</span>
+    private RootedTreeDisjointSet&lt;T&gt; removeTreeFromForest(DisjointSet2Node&lt;T&gt; key) {
+<span class="fc" id="L156">        return getTrees().remove(key.parent);</span>
+    }
+    
+    /**
+     * append the shorter list onto the end of the longer list.
+     * The amortized runtime complexity is O(1) due to the path compression
+     * in findSet.
+     * The method is also known as &quot;union-find&quot; because it uses findSet 
+     * as the first steps before link.
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public DisjointSet2Node&lt;T&gt; union(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
+        
+<span class="fc" id="L172">        x = findSet(x);</span>
+        
+<span class="fc" id="L174">        y = findSet(y);</span>
+        
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L177">            return x;</span>
+        }
+        
+        /*System.out.println(&quot;\nforest=&quot; + toString());
+        System.out.println(&quot;x=&quot; + x.member + &quot; x.parent=&quot; + x.parent.member);
+        System.out.println(&quot;y=&quot; + y.member + &quot; y.parent=&quot; + y.parent.member);
+        System.out.flush();*/
+        
+<span class="fc" id="L185">        RootedTreeDisjointSet&lt;T&gt; tX = removeTreeFromForest(x);</span>
+<span class="fc" id="L186">        RootedTreeDisjointSet&lt;T&gt; tY = removeTreeFromForest(y);</span>
+        
+<span class="fc" id="L188">        DisjointSet2Node&lt;T&gt; parent = link(x, y);</span>
+        
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (tX.nodes.size() &lt;= tY.nodes.size()) {</span>
+<span class="fc" id="L191">            tX.nodes.addAll(tY.nodes);</span>
+<span class="fc" id="L192">            trees.put(parent, tX);</span>
+        } else {
+<span class="fc" id="L194">            tY.nodes.addAll(tX.nodes);</span>
+<span class="fc" id="L195">            trees.put(parent, tY);</span>
+        }
+                
+<span class="fc" id="L198">        return parent;</span>
+    }
+    
+    /**
+     * Compress the paths in x and y and set the parent to be y.
+\     * The amortized runtime complexity is O(1) due to the path compression
+     * in findSet.
+     * The method is also known as &quot;union-find&quot; because it uses findSet 
+     * as the first steps before link.
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public DisjointSet2Node&lt;T&gt; unionChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
+        
+<span class="nc" id="L214">        x = findSet(x);</span>
+        
+<span class="nc" id="L216">        y = findSet(y);</span>
+        
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L219">            return y;</span>
+        }
+        
+<span class="nc" id="L222">        RootedTreeDisjointSet&lt;T&gt; tX = removeTreeFromForest(x);</span>
+<span class="nc" id="L223">        RootedTreeDisjointSet&lt;T&gt; tY = removeTreeFromForest(y);</span>
+        
+<span class="nc" id="L225">        DisjointSet2Node&lt;T&gt; parent = linkChooseY(x, y);</span>
+        
+<span class="nc" id="L227">        tY.nodes.addAll(tX.nodes);</span>
+<span class="nc" id="L228">        trees.put(parent, tY);</span>
+        
+<span class="nc" id="L230">        return parent;</span>
+    }
+  
+    /**
+     * @return the trees
+     */
+    public Map&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt; getTrees() {
+<span class="fc" id="L237">        return trees;</span>
+    }
+    
+    /**
+     * given the adjacency list of a graph, return the disjoint connected 
+     * components.  implemented from pseudocode in Cormen et al. Introduction
+     * To Algorithms.
+     * @param adjList
+     * @return the connected components as a list of the disjoint sets of 
+     * vertex numbers.
+     */
+    public static List&lt;TIntSet&gt; connectedComponents(final SimpleLinkedListNode[] 
+        adjList) {
+        
+<span class="fc" id="L251">        DisjointForest&lt;Integer&gt; forest = new DisjointForest&lt;&gt;();</span>
+        
+<span class="fc" id="L253">        TIntObjectMap&lt;DisjointSet2Node&lt;Integer&gt;&gt; vertexMap = new TIntObjectHashMap&lt;&gt;();</span>
+        DisjointSet2Node&lt;Integer&gt; uVertex, vVertex;
+        
+<span class="fc bfc" id="L256" title="All 2 branches covered.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
+<span class="fc" id="L257">            uVertex = new DisjointSet2Node&lt;&gt;(u);</span>
+<span class="fc" id="L258">            vertexMap.put(u, uVertex);</span>
+<span class="fc" id="L259">            forest.makeSet(uVertex);</span>
+        }
+        
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
+            
+<span class="fc" id="L264">            uVertex = vertexMap.get(u);</span>
+            
+<span class="fc" id="L266">            SimpleLinkedListNode vNode = adjList[u];</span>
+<span class="fc bfc" id="L267" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+                
+<span class="fc" id="L269">                int v = vNode.getKey();</span>
+                
+<span class="fc" id="L271">                vVertex = vertexMap.get(v);</span>
+                
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                if (vVertex == null) {</span>
+<span class="nc" id="L274">                    continue;</span>
+                }
+                
+<span class="fc bfc" id="L277" title="All 2 branches covered.">                if (!forest.findSet(uVertex).equals(forest.findSet(vVertex))) {</span>
+<span class="fc" id="L278">                    forest.union(uVertex, vVertex);</span>
+                }
+                
+<span class="fc" id="L281">                vNode = vNode.getNext();</span>
+<span class="fc" id="L282">            }</span>
+        }
+        
+<span class="fc" id="L285">        Map&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt; map = </span>
+<span class="fc" id="L286">            forest.getTrees();</span>
+        
+<span class="fc" id="L288">        List&lt;TIntSet&gt; components = new ArrayList&lt;&gt;(map.size());</span>
+        
+<span class="fc" id="L290">        Iterator&lt;Entry&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt;&gt; iter =</span>
+<span class="fc" id="L291">            map.entrySet().iterator();</span>
+        
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L294">            TIntSet c = new TIntHashSet();</span>
+            
+<span class="fc" id="L296">            Entry&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt; entry = iter.next();</span>
+<span class="fc" id="L297">            Set&lt;DisjointSet2Node&lt;Integer&gt;&gt; nodes = entry.getValue().nodes;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">            for (DisjointSet2Node&lt;Integer&gt; node : nodes) {</span>
+<span class="fc" id="L299">                c.add(node.member);</span>
+<span class="fc" id="L300">            }</span>
+<span class="fc" id="L301">            components.add(c);</span>
+<span class="fc" id="L302">        }</span>
+<span class="fc" id="L303">        return components;</span>
+    }
+    
+    @Override
+    public String toString() {
+<span class="fc" id="L308">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L309">        sb.append(&quot;trees.size=&quot;);</span>
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">        if (getTrees() != null) {</span>
+<span class="fc" id="L311">            sb.append(getTrees().size());</span>
+        } else {
+<span class="nc" id="L313">            sb.append(&quot;0&quot;);</span>
+        }
+<span class="fc" id="L315">        sb.append(&quot;, [trees=&quot;);</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">        if (getTrees() != null) {</span>
+<span class="fc" id="L317">            Iterator&lt;Entry&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt;&gt; iter </span>
+<span class="fc" id="L318">                = getTrees().entrySet().iterator();</span>
+            Entry&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt; entry;
+            DisjointSet2Node&lt;T&gt; p;
+            RootedTreeDisjointSet&lt;T&gt; t;
+<span class="fc bfc" id="L322" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L323">                entry = iter.next();</span>
+<span class="fc" id="L324">                p = entry.getKey();</span>
+<span class="fc" id="L325">                t = entry.getValue();</span>
+<span class="fc" id="L326">                sb.append(&quot;\n tree p=&quot;);</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">                if (p.member != null) {</span>
+<span class="fc" id="L328">                    sb.append(p.member);</span>
+                } else {
+<span class="nc" id="L330">                    sb.append(p.hashCode());</span>
+                }
+<span class="fc" id="L332">                sb.append(&quot;, t=&quot;).append(t.toString());</span>
+<span class="fc" id="L333">                sb.append(&quot;, &quot;);</span>
+            }
+        }
+<span class="fc" id="L336">        sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L337">        sb.append(&quot;] &quot;);</span>
+
+<span class="fc" id="L339">        return sb.toString();</span>
+    }
+
+    /**
+     * each disjoint set (== instance of this class), has a representative which
+     * is a member of the nodes of this set
+     *
+     * @author nichole
+     */
+    public static class RootedTreeDisjointSet&lt;T&gt; {
+
+        /**
+         * the representative of the tree. it's the root node.
+         */
+        protected DisjointSet2Node&lt;T&gt; repr = null;
+
+        /**
+         * pointer to the tree parent in the forest
+         */
+        protected DisjointSet2Node&lt;T&gt; parent = null;
+
+        private Set&lt;DisjointSet2Node&lt;T&gt;&gt; nodes = null;
+
+        /**
+         * create a new tree with the representative and parent being the node.
+         * the node is added to the internal set holding tree nodes too.
+         * @param node 
+         */
+        public RootedTreeDisjointSet(DisjointSet2Node&lt;T&gt; node) {
+            this.parent = node;
+            this.repr = node;
+            nodes = new HashSet&lt;DisjointSet2Node&lt;T&gt;&gt;();
+            nodes.add(node);
+        }
+
+        public RootedTreeDisjointSet() {
+            nodes = new HashSet&lt;DisjointSet2Node&lt;T&gt;&gt;();
+        }
+        
+        /**
+         * find the least common ancestor for node x and y in a tree using
+         * Tarjan's off-line least common ancestor algorithm.
+         * implemented from pseudocode in Cormen et al. Introduction to 
+         * Algorithms.
+         * 
+         * @param x
+         * @param y
+         * @return 
+         
+        public DisjointSet2Node&lt;T&gt; lca(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
+            
+            method lca(u) :
+                makeset(u)
+                ancestor[ findSet(u)] = u
+                for each child v of u in tree :
+                    do lca(v)
+                    union(u, v)
+                    ancestor[ findSet(u) ] = u
+                color[u] = black
+                for each node v such that u,v is a member of the unordered pairs of nodes
+                    if (color[v] == black)
+                        then return ancestor[ findSet(v) ]
+            
+        }*/
+
+        public Set&lt;DisjointSet2Node&lt;T&gt;&gt; getNodes() {
+            return nodes;
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;nodes.size=&quot;);
+            if (nodes != null) {
+                sb.append(nodes.size());
+            } else {
+                sb.append(&quot;0&quot;);
+            }
+            sb.append(&quot;, [repr=&quot;);
+            if (repr != null) {
+                if (repr.member != null) {
+                    sb.append(repr.member);
+                } else {
+                    sb.append(repr.hashCode());
+                }
+            }
+            sb.append(&quot;, &quot;);
+            sb.append(&quot;parent=&quot;);
+            if (parent != null) {
+                if (parent.member != null) {
+                    sb.append(parent.member);
+                } else {
+                    sb.append(parent.hashCode());
+                }
+            }
+            sb.append(&quot;, &quot;);
+            sb.append(&quot;\n  nodes=&quot;);
+            if (nodes != null) {
+                for (DisjointSet2Node&lt;T&gt; node : nodes){
+                    sb.append(&quot;\n   node=&quot;).append(node.toString());
+                }
+            }
+            sb.append(&quot;, &quot;);
+            sb.append(&quot;] &quot;);
+
+            return sb.toString();
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -113,12 +113,12 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
      * @throws NoSuchElementException if this queue is empty
      */
     public Item dequeue() {
-<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;Queue underflow&quot;);</span>
-<span class="nc" id="L117">        Item item = first.item;</span>
-<span class="nc" id="L118">        first = first.next;</span>
-<span class="nc" id="L119">        n--;</span>
-<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (isEmpty()) last = null;   // to avoid loitering</span>
-<span class="nc" id="L121">        return item;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;Queue underflow&quot;);</span>
+<span class="fc" id="L117">        Item item = first.item;</span>
+<span class="fc" id="L118">        first = first.next;</span>
+<span class="fc" id="L119">        n--;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (isEmpty()) last = null;   // to avoid loitering</span>
+<span class="fc" id="L121">        return item;</span>
     }
 
     /**

@@ -620,6 +620,10 @@ import java.util.Stack;
             }
 <span class="fc bfc" id="L621" title="All 2 branches covered.">            if (key == h) {</span>
                
+                //NLK: TODO: revisit this code. it or similar had a bug I fixed,
+                //    but forgot to communicate the fix back to the authors or
+                //    follow up on whether they fixed it.
+                
                 /*
                 useful in visualizing this case is
                 https://www.cs.princeton.edu/~rs/talks/LLRB/RedBlack.pdf
@@ -655,23 +659,23 @@ import java.util.Stack;
                 //   are rotations in it that may change the branch
                 //   traversed and hence the minimum of that branch
                 //   might not be the same as x.
-<span class="fc" id="L658">                long[] output3 = new long[3];</span>
-<span class="fc" id="L659">                deleteMin(nodeMap.getRight(h), output3);</span>
+<span class="fc" id="L662">                long[] output3 = new long[3];</span>
+<span class="fc" id="L663">                deleteMin(nodeMap.getRight(h), output3);</span>
                         
                 //System.out.println(&quot;deleteMin=&quot; + Arrays.toString(output3));
         
-<span class="fc" id="L663">                int hClr = nodeMap.getNodeColor(h);</span>
-<span class="fc" id="L664">                boolean hLeftExists = nodeMap.leftIsSet(h);</span>
-<span class="fc" id="L665">                boolean hRightExists = nodeMap.rightIsSet(h);</span>
-<span class="fc" id="L666">                boolean hParentExists = nodeMap.parentIsSet(h);</span>
-<span class="fc" id="L667">                long hLeft = nodeMap.getLeft(h);</span>
-<span class="fc" id="L668">                long hRight = nodeMap.getRight(h);</span>
-<span class="fc" id="L669">                long hParent = nodeMap.getParent(h);</span>
-<span class="fc" id="L670">                int hSize = nodeMap.getNodeSize(h);</span>
+<span class="fc" id="L667">                int hClr = nodeMap.getNodeColor(h);</span>
+<span class="fc" id="L668">                boolean hLeftExists = nodeMap.leftIsSet(h);</span>
+<span class="fc" id="L669">                boolean hRightExists = nodeMap.rightIsSet(h);</span>
+<span class="fc" id="L670">                boolean hParentExists = nodeMap.parentIsSet(h);</span>
+<span class="fc" id="L671">                long hLeft = nodeMap.getLeft(h);</span>
+<span class="fc" id="L672">                long hRight = nodeMap.getRight(h);</span>
+<span class="fc" id="L673">                long hParent = nodeMap.getParent(h);</span>
+<span class="fc" id="L674">                int hSize = nodeMap.getNodeSize(h);</span>
                
-<span class="fc" id="L672">                String hDBG = nodeToString(h);</span>
+<span class="fc" id="L676">                String hDBG = nodeToString(h);</span>
                 
-<span class="fc" id="L674">                long x = output3[2];</span>
+<span class="fc" id="L678">                long x = output3[2];</span>
                
                 //System.out.println(
                 //    &quot;   x to get h fields except val. &quot; + 
@@ -679,61 +683,61 @@ import java.util.Stack;
                 //    + &quot;\n   h=&quot; + hDBG
                 //);
                
-<span class="pc bpc" id="L682" title="3 of 4 branches missed.">                assert(x != h);</span>
+<span class="pc bpc" id="L686" title="3 of 4 branches missed.">                assert(x != h);</span>
                 
                 //int xClr = nodeMap.getNodeColor(x);
                 //boolean xLeftExists = nodeMap.leftIsSet(x);
                 //boolean xRightExists = nodeMap.rightIsSet(x);
-<span class="fc" id="L687">                boolean xParentExists = nodeMap.parentIsSet(x);</span>
+<span class="fc" id="L691">                boolean xParentExists = nodeMap.parentIsSet(x);</span>
                 //long xLeft = nodeMap.getLeft(x);
                 //long xRight = nodeMap.getRight(x);
-<span class="fc" id="L690">                long xParent = nodeMap.getParent(x);</span>
-<span class="fc" id="L691">                int xVal = nodeMap.getNodeValue(x);</span>
+<span class="fc" id="L694">                long xParent = nodeMap.getParent(x);</span>
+<span class="fc" id="L695">                int xVal = nodeMap.getNodeValue(x);</span>
                 
                 // finish deleting x if not already
-<span class="pc bpc" id="L694" title="1 of 2 branches missed.">                if (nodeMap.parentIsSet(x)) {</span>
-<span class="fc" id="L695">                    long minParent = nodeMap.getParent(x);</span>
-<span class="pc bpc" id="L696" title="1 of 2 branches missed.">                    if (nodeMap.leftIsSet(minParent)</span>
-<span class="nc bnc" id="L697" title="All 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
-<span class="nc" id="L698">                        nodeMap.unsetLeft(minParent);</span>
-<span class="pc bpc" id="L699" title="1 of 2 branches missed.">                    } else if (nodeMap.rightIsSet(minParent)</span>
-<span class="nc bnc" id="L700" title="All 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
-<span class="nc" id="L701">                        nodeMap.unsetRight(minParent);</span>
+<span class="pc bpc" id="L698" title="1 of 2 branches missed.">                if (nodeMap.parentIsSet(x)) {</span>
+<span class="fc" id="L699">                    long minParent = nodeMap.getParent(x);</span>
+<span class="pc bpc" id="L700" title="1 of 2 branches missed.">                    if (nodeMap.leftIsSet(minParent)</span>
+<span class="nc bnc" id="L701" title="All 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
+<span class="nc" id="L702">                        nodeMap.unsetLeft(minParent);</span>
+<span class="fc bfc" id="L703" title="All 2 branches covered.">                    } else if (nodeMap.rightIsSet(minParent)</span>
+<span class="pc bpc" id="L704" title="1 of 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
+<span class="fc" id="L705">                        nodeMap.unsetRight(minParent);</span>
                     }
-<span class="fc" id="L703">                    nodeMap.unsetParent(x);</span>
+<span class="fc" id="L707">                    nodeMap.unsetParent(x);</span>
                 }
-<span class="pc bpc" id="L705" title="1 of 2 branches missed.">                if (nodeMap.containsKey(x)) {</span>
-<span class="fc" id="L706">                    nodeMap.remove(x);</span>
-                }
-                
-<span class="pc bpc" id="L709" title="2 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
-<span class="nc" id="L710">                    hRightExists = false;</span>
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">                if (nodeMap.containsKey(x)) {</span>
+<span class="fc" id="L710">                    nodeMap.remove(x);</span>
                 }
                 
-<span class="pc bpc" id="L713" title="1 of 2 branches missed.">                if (xParentExists) {</span>
-<span class="pc bpc" id="L714" title="3 of 4 branches missed.">                    assert(!nodeMap.parentIsSet(x));</span>
+<span class="pc bpc" id="L713" title="1 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
+<span class="fc" id="L714">                    hRightExists = false;</span>
                 }
                 
-<span class="fc" id="L717">                setHFromX(x, h, xVal, hClr, </span>
+<span class="pc bpc" id="L717" title="1 of 2 branches missed.">                if (xParentExists) {</span>
+<span class="pc bpc" id="L718" title="3 of 4 branches missed.">                    assert(!nodeMap.parentIsSet(x));</span>
+                }
+                
+<span class="fc" id="L721">                setHFromX(x, h, xVal, hClr, </span>
                     hLeftExists, hLeft, 
                     hRightExists, hRight, hParentExists, hParent, hSize - 1);
                     
-<span class="fc" id="L721">                h = x;</span>
+<span class="fc" id="L725">                h = x;</span>
                 
                 //System.out.println(&quot;  merged=&quot; + nodeToString(h));
                 
-<span class="fc" id="L725">                output[0] = 0;</span>
+<span class="fc" id="L729">                output[0] = 0;</span>
                  
-<span class="fc" id="L727">            } else {</span>
+<span class="fc" id="L731">            } else {</span>
                 //h.right = delete(h.right, key);
-<span class="fc" id="L729">                deleteFromRightAssignRight(h, h, key, output);</span>
-<span class="fc" id="L730">                output[0] = 0;</span>
+<span class="fc" id="L733">                deleteFromRightAssignRight(h, h, key, output);</span>
+<span class="fc" id="L734">                output[0] = 0;</span>
             }
         }
                 
-<span class="fc" id="L734">        output[0] = 0;</span>
-<span class="fc" id="L735">        output[1] = balance(h);  </span>
-<span class="fc" id="L736">    }</span>
+<span class="fc" id="L738">        output[0] = 0;</span>
+<span class="fc" id="L739">        output[1] = balance(h);  </span>
+<span class="fc" id="L740">    }</span>
     
    /***************************************************************************
     *  Red-black tree helper functions.
@@ -749,8 +753,8 @@ import java.util.Stack;
         //System.out.println(&quot;  *RR &quot; + h);
         
         // assert (h != null) &amp;&amp; isRed(h.left);
-<span class="pc bpc" id="L752" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(h));</span>
-<span class="pc bpc" id="L753" title="3 of 4 branches missed.">        assert(isLeftRed(h));</span>
+<span class="pc bpc" id="L756" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(h));</span>
+<span class="pc bpc" id="L757" title="3 of 4 branches missed.">        assert(isLeftRed(h));</span>
         
         /*
         Node x = h.left;
@@ -762,47 +766,47 @@ import java.util.Stack;
         h.size = size(h.left) + size(h.right) + 1;
         */
         
-<span class="fc" id="L765">        long x = nodeMap.getLeft(h);</span>
+<span class="fc" id="L769">        long x = nodeMap.getLeft(h);</span>
 
         //System.out.println(&quot;  before RR h=&quot; + nodeToString(h));
         //System.out.println(&quot;  before RR x=&quot; + nodeToString(x));
         
-<span class="fc bfc" id="L770" title="All 2 branches covered.">        if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc bfc" id="L774" title="All 2 branches covered.">        if (nodeMap.rightIsSet(x)) {</span>
             //System.out.println(&quot;--0&quot;);
             //h.left = x.right;
-<span class="fc" id="L773">            long xRight = nodeMap.getRight(x);</span>
+<span class="fc" id="L777">            long xRight = nodeMap.getRight(x);</span>
             
-<span class="fc" id="L775">            nodeMap.updateLeft(h, xRight);</span>
-<span class="fc" id="L776">            nodeMap.updateParent(xRight, h);</span>
-<span class="fc" id="L777">        } else {</span>
+<span class="fc" id="L779">            nodeMap.updateLeft(h, xRight);</span>
+<span class="fc" id="L780">            nodeMap.updateParent(xRight, h);</span>
+<span class="fc" id="L781">        } else {</span>
             //System.out.println(&quot;--1&quot;);
-<span class="fc" id="L779">            nodeMap.unsetLeft(h);</span>
+<span class="fc" id="L783">            nodeMap.unsetLeft(h);</span>
         }
-<span class="fc bfc" id="L781" title="All 2 branches covered.">        if (nodeMap.parentIsSet(h)) {</span>
+<span class="fc bfc" id="L785" title="All 2 branches covered.">        if (nodeMap.parentIsSet(h)) {</span>
             //System.out.println(&quot;--2&quot;);
-<span class="fc" id="L783">            long hParent = nodeMap.getParent(h);</span>
+<span class="fc" id="L787">            long hParent = nodeMap.getParent(h);</span>
             // assign x as child of its new parent
             
-<span class="fc" id="L786">            nodeMap.updateParent(x, hParent);</span>
-<span class="pc bpc" id="L787" title="1 of 4 branches missed.">            if (nodeMap.leftIsSet(hParent) &amp;&amp; nodeMap.getLeft(hParent) ==</span>
+<span class="fc" id="L790">            nodeMap.updateParent(x, hParent);</span>
+<span class="pc bpc" id="L791" title="1 of 4 branches missed.">            if (nodeMap.leftIsSet(hParent) &amp;&amp; nodeMap.getLeft(hParent) ==</span>
                 h) {
                 //System.out.println(&quot;--3&quot;);
-<span class="fc" id="L790">                nodeMap.updateLeft(hParent, x);</span>
+<span class="fc" id="L794">                nodeMap.updateLeft(hParent, x);</span>
             } else {
                 //System.out.println(&quot;--4&quot;);
-<span class="fc" id="L793">                nodeMap.updateRight(hParent, x);</span>
+<span class="fc" id="L797">                nodeMap.updateRight(hParent, x);</span>
             }
-<span class="fc" id="L795">        } else {</span>
+<span class="fc" id="L799">        } else {</span>
             //System.out.println(&quot;--5&quot;);
-<span class="fc" id="L797">            nodeMap.unsetParent(x);</span>
+<span class="fc" id="L801">            nodeMap.unsetParent(x);</span>
             //root = x;
         }
         
         //System.out.println(&quot;  in RR after h.left h=&quot; + nodeToString(h));
         
         //x.right = h;
-<span class="fc" id="L804">        nodeMap.updateRight(x, h);</span>
-<span class="fc" id="L805">        nodeMap.updateParent(h, x);</span>
+<span class="fc" id="L808">        nodeMap.updateRight(x, h);</span>
+<span class="fc" id="L809">        nodeMap.updateParent(h, x);</span>
         
         //System.out.println(&quot;  in RR after x.right h=&quot; + nodeToString(h));
         //System.out.println(&quot;  in RR after x.right x=&quot; + nodeToString(x));
@@ -810,21 +814,21 @@ import java.util.Stack;
         //x.color = x.right.color;
         //x.right.color = RED;
         //x.size = h.size;
-<span class="fc" id="L813">        nodeMap.updateNodeColor(x, nodeMap.getNodeColor(nodeMap.getRight(x)));</span>
-<span class="fc" id="L814">        nodeMap.updateNodeColor(nodeMap.getRight(x), RED);</span>
+<span class="fc" id="L817">        nodeMap.updateNodeColor(x, nodeMap.getNodeColor(nodeMap.getRight(x)));</span>
+<span class="fc" id="L818">        nodeMap.updateNodeColor(nodeMap.getRight(x), RED);</span>
         
-<span class="fc" id="L816">        nodeMap.updateNodeSize(x, nodeMap.getNodeSize(h));</span>
+<span class="fc" id="L820">        nodeMap.updateNodeSize(x, nodeMap.getNodeSize(h));</span>
         
         //h.size = size(h.left) + size(h.right) + 1;
-<span class="fc" id="L819">        int size = sizeLeft(h) + sizeRight(h) + 1;</span>
-<span class="fc" id="L820">        nodeMap.updateNodeSize(h, size);</span>
+<span class="fc" id="L823">        int size = sizeLeft(h) + sizeRight(h) + 1;</span>
+<span class="fc" id="L824">        nodeMap.updateNodeSize(h, size);</span>
         
         //System.out.println(&quot;  after RR: h=&quot; + nodeToString(h));
         
         //System.out.println(&quot;after rotateRight:&quot;);
         //printPreOrderTraversal();
         
-<span class="fc" id="L827">        return x;</span>
+<span class="fc" id="L831">        return x;</span>
     }
 
     /**
@@ -837,132 +841,132 @@ import java.util.Stack;
         //System.out.println(&quot;  *RL h=&quot; + h);
         
         // assert (h != null) &amp;&amp; isRed(h.right);
-<span class="pc bpc" id="L840" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(h));</span>
-<span class="pc bpc" id="L841" title="3 of 4 branches missed.">        assert(isRightRed(h));</span>
+<span class="pc bpc" id="L844" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(h));</span>
+<span class="pc bpc" id="L845" title="3 of 4 branches missed.">        assert(isRightRed(h));</span>
         
         //Node x = h.right;
-<span class="fc" id="L844">        long x = nodeMap.getRight(h);</span>
+<span class="fc" id="L848">        long x = nodeMap.getRight(h);</span>
         
         //System.out.println(&quot;  before RL h=&quot; + nodeToString(h));
         //System.out.println(&quot;  before RL x=&quot; + nodeToString(x));
 
         //h.right = x.left;
-<span class="fc bfc" id="L850" title="All 2 branches covered.">        if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc bfc" id="L854" title="All 2 branches covered.">        if (nodeMap.leftIsSet(x)) {</span>
             //System.out.println(&quot;---0&quot;);
-<span class="fc" id="L852">            long left = nodeMap.getLeft(x);</span>
+<span class="fc" id="L856">            long left = nodeMap.getLeft(x);</span>
             
-<span class="fc" id="L854">            nodeMap.updateRight(h, left);</span>
-<span class="fc" id="L855">            nodeMap.updateParent(left, h);</span>
+<span class="fc" id="L858">            nodeMap.updateRight(h, left);</span>
+<span class="fc" id="L859">            nodeMap.updateParent(left, h);</span>
             
-<span class="fc" id="L857">        } else {</span>
+<span class="fc" id="L861">        } else {</span>
             //System.out.println(&quot;---1&quot;);
-<span class="fc" id="L859">            nodeMap.unsetRight(h);</span>
+<span class="fc" id="L863">            nodeMap.unsetRight(h);</span>
         }
        
         //System.out.println(&quot;  in RL after h.right h=&quot; + nodeToString(h));
         
-<span class="fc bfc" id="L864" title="All 2 branches covered.">        if (nodeMap.parentIsSet(h)) {</span>
+<span class="fc bfc" id="L868" title="All 2 branches covered.">        if (nodeMap.parentIsSet(h)) {</span>
             //System.out.println(&quot;---2&quot;);
-<span class="fc" id="L866">            long hParent = nodeMap.getParent(h);</span>
-<span class="fc" id="L867">            nodeMap.updateParent(x, hParent);</span>
-<span class="pc bpc" id="L868" title="1 of 4 branches missed.">            if (nodeMap.leftIsSet(hParent) &amp;&amp; nodeMap.getLeft(hParent) ==</span>
+<span class="fc" id="L870">            long hParent = nodeMap.getParent(h);</span>
+<span class="fc" id="L871">            nodeMap.updateParent(x, hParent);</span>
+<span class="pc bpc" id="L872" title="1 of 4 branches missed.">            if (nodeMap.leftIsSet(hParent) &amp;&amp; nodeMap.getLeft(hParent) ==</span>
                 h) {
                 //System.out.println(&quot;---3&quot;);
-<span class="fc" id="L871">                nodeMap.updateLeft(hParent, x);</span>
+<span class="fc" id="L875">                nodeMap.updateLeft(hParent, x);</span>
             } else {
                 //System.out.println(&quot;---4&quot;);
-<span class="fc" id="L874">                nodeMap.updateRight(hParent, x);</span>
+<span class="fc" id="L878">                nodeMap.updateRight(hParent, x);</span>
             }
-<span class="fc" id="L876">        } else {</span>
+<span class="fc" id="L880">        } else {</span>
             //System.out.println(&quot;---5&quot;);
-<span class="fc" id="L878">            nodeMap.unsetParent(x);</span>
+<span class="fc" id="L882">            nodeMap.unsetParent(x);</span>
         }
                 
         //x.left = h;
-<span class="fc" id="L882">        nodeMap.updateLeft(x, h);</span>
-<span class="fc" id="L883">        nodeMap.updateParent(h, x);</span>
+<span class="fc" id="L886">        nodeMap.updateLeft(x, h);</span>
+<span class="fc" id="L887">        nodeMap.updateParent(h, x);</span>
         
         //System.out.println(&quot;  in RL after x.left h=&quot; + nodeToString(h));
         //System.out.println(&quot;  in RL after x.left x=&quot; + nodeToString(x));
 
         //x.color = x.left.color;
-<span class="fc" id="L889">        nodeMap.updateNodeColor(x, nodeMap.getNodeColor(h));</span>
+<span class="fc" id="L893">        nodeMap.updateNodeColor(x, nodeMap.getNodeColor(h));</span>
         //x.left.color = RED;
-<span class="fc" id="L891">        nodeMap.updateNodeColor(h, RED);</span>
+<span class="fc" id="L895">        nodeMap.updateNodeColor(h, RED);</span>
         
-<span class="fc" id="L893">        nodeMap.updateNodeSize(x, nodeMap.getNodeSize(h));</span>
+<span class="fc" id="L897">        nodeMap.updateNodeSize(x, nodeMap.getNodeSize(h));</span>
         
-<span class="fc" id="L895">        int size = sizeLeft(h) + sizeRight(h) + 1;</span>
-<span class="fc" id="L896">        nodeMap.updateNodeSize(h, size);</span>
+<span class="fc" id="L899">        int size = sizeLeft(h) + sizeRight(h) + 1;</span>
+<span class="fc" id="L900">        nodeMap.updateNodeSize(h, size);</span>
                
         //System.out.println(&quot;  after RL: h=&quot; + nodeToString(h));
         
-<span class="fc" id="L900">        return x;</span>
+<span class="fc" id="L904">        return x;</span>
     }
 
     // flip the colors of a node and its two children
     protected void flipColors(long h) {
         // h must have opposite color of its two children
-<span class="pc bpc" id="L906" title="5 of 6 branches missed.">        assert(nodeMap.containsKey(h) &amp;&amp; nodeMap.leftIsSet(h) </span>
-<span class="nc bnc" id="L907" title="All 2 branches missed.">            &amp;&amp; nodeMap.rightIsSet(h));</span>
-<span class="pc bpc" id="L908" title="7 of 8 branches missed.">        assert(!isRed(h) &amp;&amp;  isLeftRed(h) &amp;&amp;  isRightRed(h))</span>
-<span class="nc bnc" id="L909" title="All 6 branches missed.">        || (isRed(h)  &amp;&amp; !isLeftRed(h) &amp;&amp; !isRightRed(h));</span>
+<span class="pc bpc" id="L910" title="5 of 6 branches missed.">        assert(nodeMap.containsKey(h) &amp;&amp; nodeMap.leftIsSet(h) </span>
+<span class="nc bnc" id="L911" title="All 2 branches missed.">            &amp;&amp; nodeMap.rightIsSet(h));</span>
+<span class="pc bpc" id="L912" title="7 of 8 branches missed.">        assert(!isRed(h) &amp;&amp;  isLeftRed(h) &amp;&amp;  isRightRed(h))</span>
+<span class="nc bnc" id="L913" title="All 6 branches missed.">        || (isRed(h)  &amp;&amp; !isLeftRed(h) &amp;&amp; !isRightRed(h));</span>
         
         /*
         h.color = !h.color;
         h.left.color = !h.left.color;
         h.right.color = !h.right.color;
         */
-<span class="fc" id="L916">        int clr = nodeMap.getNodeColor(h);</span>
-<span class="fc" id="L917">        clr ^= 1;</span>
-<span class="fc" id="L918">        nodeMap.updateNodeColor(h, clr);</span>
-        
-<span class="fc" id="L920">        clr = nodeMap.getNodeColor(nodeMap.getLeft(h));</span>
+<span class="fc" id="L920">        int clr = nodeMap.getNodeColor(h);</span>
 <span class="fc" id="L921">        clr ^= 1;</span>
-<span class="fc" id="L922">        nodeMap.updateNodeColor(nodeMap.getLeft(h), clr);</span>
+<span class="fc" id="L922">        nodeMap.updateNodeColor(h, clr);</span>
         
-<span class="fc" id="L924">        clr = nodeMap.getNodeColor(nodeMap.getRight(h));</span>
+<span class="fc" id="L924">        clr = nodeMap.getNodeColor(nodeMap.getLeft(h));</span>
 <span class="fc" id="L925">        clr ^= 1;</span>
-<span class="fc" id="L926">        nodeMap.updateNodeColor(nodeMap.getRight(h), clr);</span>
-<span class="fc" id="L927">    }</span>
+<span class="fc" id="L926">        nodeMap.updateNodeColor(nodeMap.getLeft(h), clr);</span>
+        
+<span class="fc" id="L928">        clr = nodeMap.getNodeColor(nodeMap.getRight(h));</span>
+<span class="fc" id="L929">        clr ^= 1;</span>
+<span class="fc" id="L930">        nodeMap.updateNodeColor(nodeMap.getRight(h), clr);</span>
+<span class="fc" id="L931">    }</span>
 
     // Assuming that h is red and both h.left and h.left.left
     // are black, make h.left or one of its children red.
     protected long moveRedLeft(long h) {
-<span class="pc bpc" id="L932" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(h));</span>
-<span class="pc bpc" id="L933" title="7 of 8 branches missed.">        assert(isRed(h) &amp;&amp; !isLeftRed(h) &amp;&amp; !isLeftLeftRed(h));</span>
+<span class="pc bpc" id="L936" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(h));</span>
+<span class="pc bpc" id="L937" title="7 of 8 branches missed.">        assert(isRed(h) &amp;&amp; !isLeftRed(h) &amp;&amp; !isLeftLeftRed(h));</span>
 
         //System.out.println(&quot;moveRedLeft &quot; + nodeToString(h));
         
-<span class="fc" id="L937">        flipColors(h);</span>
-<span class="fc bfc" id="L938" title="All 2 branches covered.">        if (isRightLeftRed(h)) {</span>
+<span class="fc" id="L941">        flipColors(h);</span>
+<span class="fc bfc" id="L942" title="All 2 branches covered.">        if (isRightLeftRed(h)) {</span>
             //h.right = rotateRight(h.right);
-<span class="fc" id="L940">            long rKey = rotateRight(nodeMap.getRight(h));</span>
-<span class="fc" id="L941">            nodeMap.updateRight(h, rKey);</span>
-<span class="fc" id="L942">            nodeMap.updateParent(rKey, h);</span>
-<span class="fc" id="L943">            h = rotateLeft(h);</span>
-<span class="fc" id="L944">            flipColors(h);</span>
+<span class="fc" id="L944">            long rKey = rotateRight(nodeMap.getRight(h));</span>
+<span class="fc" id="L945">            nodeMap.updateRight(h, rKey);</span>
+<span class="fc" id="L946">            nodeMap.updateParent(rKey, h);</span>
+<span class="fc" id="L947">            h = rotateLeft(h);</span>
+<span class="fc" id="L948">            flipColors(h);</span>
         }
-<span class="fc" id="L946">        return h;</span>
+<span class="fc" id="L950">        return h;</span>
     }
 
     //move red node down the right spine of the tree
     // Assuming that h is red and both h.right and h.right.left
     // are black, make h.right or one of its children red.
     private long moveRedRight(long h) {
-<span class="pc bpc" id="L953" title="3 of 4 branches missed.">        assert (nodeMap.containsKey(h));</span>
-<span class="pc bpc" id="L954" title="7 of 8 branches missed.">        assert(isRed(h) &amp;&amp; !isRightRed(h) &amp;&amp; !isRightLeftRed(h));</span>
+<span class="pc bpc" id="L957" title="3 of 4 branches missed.">        assert (nodeMap.containsKey(h));</span>
+<span class="pc bpc" id="L958" title="7 of 8 branches missed.">        assert(isRed(h) &amp;&amp; !isRightRed(h) &amp;&amp; !isRightLeftRed(h));</span>
         
-<span class="fc" id="L956">        flipColors(h);</span>
-<span class="pc bpc" id="L957" title="1 of 2 branches missed.">        if (isLeftLeftRed(h)) { </span>
-<span class="nc" id="L958">            h = rotateRight(h);</span>
-<span class="nc" id="L959">            flipColors(h);</span>
+<span class="fc" id="L960">        flipColors(h);</span>
+<span class="fc bfc" id="L961" title="All 2 branches covered.">        if (isLeftLeftRed(h)) { </span>
+<span class="fc" id="L962">            h = rotateRight(h);</span>
+<span class="fc" id="L963">            flipColors(h);</span>
         }
         
         //System.out.println(&quot;after moveRedRight h=&quot; + nodeToString(h));
         //printPreOrderTraversal();
         
-<span class="fc" id="L965">        return h;</span>
+<span class="fc" id="L969">        return h;</span>
     }
 
     // restore red-black tree invariant
@@ -970,22 +974,22 @@ import java.util.Stack;
         
         //System.out.println(&quot;balance &quot; + nodeToString(h));
         
-<span class="pc bpc" id="L973" title="3 of 4 branches missed.">        assert (nodeMap.containsKey(h));</span>
+<span class="pc bpc" id="L977" title="3 of 4 branches missed.">        assert (nodeMap.containsKey(h));</span>
 
-<span class="fc bfc" id="L975" title="All 2 branches covered.">        if (isRightRed(h))   {</span>
-<span class="fc" id="L976">            h = rotateLeft(h);</span>
+<span class="fc bfc" id="L979" title="All 2 branches covered.">        if (isRightRed(h))   {</span>
+<span class="fc" id="L980">            h = rotateLeft(h);</span>
         }
-<span class="fc bfc" id="L978" title="All 4 branches covered.">        if (isLeftRed(h) &amp;&amp; isLeftLeftRed(h)) {</span>
-<span class="fc" id="L979">            h = rotateRight(h);</span>
+<span class="fc bfc" id="L982" title="All 4 branches covered.">        if (isLeftRed(h) &amp;&amp; isLeftLeftRed(h)) {</span>
+<span class="fc" id="L983">            h = rotateRight(h);</span>
         }
-<span class="fc bfc" id="L981" title="All 4 branches covered.">        if (isLeftRed(h) &amp;&amp; isRightRed(h))  {</span>
-<span class="fc" id="L982">            flipColors(h);</span>
+<span class="fc bfc" id="L985" title="All 4 branches covered.">        if (isLeftRed(h) &amp;&amp; isRightRed(h))  {</span>
+<span class="fc" id="L986">            flipColors(h);</span>
         }
 
-<span class="fc" id="L985">        int size = sizeLeft(h) + sizeRight(h) + 1;</span>
-<span class="fc" id="L986">        nodeMap.updateNodeSize(h, size);</span>
+<span class="fc" id="L989">        int size = sizeLeft(h) + sizeRight(h) + 1;</span>
+<span class="fc" id="L990">        nodeMap.updateNodeSize(h, size);</span>
         
-<span class="fc" id="L988">        return h;</span>
+<span class="fc" id="L992">        return h;</span>
     }
 
 
@@ -998,19 +1002,19 @@ import java.util.Stack;
      * @return the height of the BST (a 1-node tree has height 0)
      */
     public int height() {
-<span class="nc" id="L1001">        return height(root);</span>
+<span class="nc" id="L1005">        return height(root);</span>
     }
     private int height(long x) {
-<span class="nc bnc" id="L1004" title="All 2 branches missed.">        if (!nodeMap.containsKey(x)) return -1;</span>
-<span class="nc" id="L1005">        return 1 + Math.max(heightLeft(x), heightRight(x));</span>
+<span class="nc bnc" id="L1008" title="All 2 branches missed.">        if (!nodeMap.containsKey(x)) return -1;</span>
+<span class="nc" id="L1009">        return 1 + Math.max(heightLeft(x), heightRight(x));</span>
     }
     private int heightLeft(long x) {
-<span class="nc bnc" id="L1008" title="All 2 branches missed.">        if (!nodeMap.leftIsSet(x)) return -1;</span>
-<span class="nc" id="L1009">        return height(nodeMap.getLeft(x));</span>
+<span class="nc bnc" id="L1012" title="All 2 branches missed.">        if (!nodeMap.leftIsSet(x)) return -1;</span>
+<span class="nc" id="L1013">        return height(nodeMap.getLeft(x));</span>
     }
     private int heightRight(long x) {
-<span class="nc bnc" id="L1012" title="All 2 branches missed.">        if (!nodeMap.rightIsSet(x)) return -1;</span>
-<span class="nc" id="L1013">        return height(nodeMap.getRight(x));</span>
+<span class="nc bnc" id="L1016" title="All 2 branches missed.">        if (!nodeMap.rightIsSet(x)) return -1;</span>
+<span class="nc" id="L1017">        return height(nodeMap.getRight(x));</span>
     }
 
    /***************************************************************************
@@ -1024,23 +1028,23 @@ import java.util.Stack;
      * @throws NoSuchElementException if the symbol table is empty
      */
     public void min(long[] output) {
-<span class="pc bpc" id="L1027" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;called min() with empty symbol table&quot;);</span>
-<span class="fc" id="L1028">        output[0] = 0;</span>
-<span class="fc" id="L1029">        min(root, output);</span>
-<span class="fc" id="L1030">    }</span>
+<span class="pc bpc" id="L1031" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;called min() with empty symbol table&quot;);</span>
+<span class="fc" id="L1032">        output[0] = 0;</span>
+<span class="fc" id="L1033">        min(root, output);</span>
+<span class="fc" id="L1034">    }</span>
 
     // the smallest key in subtree rooted at x; null if no such key
     private void min(long x, long[] output) { 
         //assert(nodeMap.containsKey(x));
-<span class="pc bpc" id="L1035" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1036">            output[0] = -1;</span>
-<span class="nc" id="L1037">            return;</span>
+<span class="pc bpc" id="L1039" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1040">            output[0] = -1;</span>
+<span class="nc" id="L1041">            return;</span>
         }
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">        while (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1040">            x = nodeMap.getLeft(x);</span>
+<span class="fc bfc" id="L1043" title="All 2 branches covered.">        while (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1044">            x = nodeMap.getLeft(x);</span>
         }
-<span class="fc" id="L1042">        output[1] = x;</span>
-<span class="fc" id="L1043">    }</span>
+<span class="fc" id="L1046">        output[1] = x;</span>
+<span class="fc" id="L1047">    }</span>
 
     /**
      * Returns the largest key in the symbol table.
@@ -1049,23 +1053,23 @@ import java.util.Stack;
      * @throws NoSuchElementException if the symbol table is empty
      */
     public void max(long[] output) {
-<span class="pc bpc" id="L1052" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;called max() with empty symbol table&quot;);</span>
-<span class="fc" id="L1053">        output[0] = 0;</span>
-<span class="fc" id="L1054">        max(root, output);</span>
-<span class="fc" id="L1055">    } </span>
+<span class="pc bpc" id="L1056" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;called max() with empty symbol table&quot;);</span>
+<span class="fc" id="L1057">        output[0] = 0;</span>
+<span class="fc" id="L1058">        max(root, output);</span>
+<span class="fc" id="L1059">    } </span>
 
     // the largest key in the subtree rooted at x; null if no such key
     private void max(long x, long[] output) { 
         //assert(nodeMap.containsKey(x));
-<span class="pc bpc" id="L1060" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1061">            output[0] = -1;</span>
-<span class="nc" id="L1062">            return;</span>
+<span class="pc bpc" id="L1064" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1065">            output[0] = -1;</span>
+<span class="nc" id="L1066">            return;</span>
         }
-<span class="fc bfc" id="L1064" title="All 2 branches covered.">        while (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1065">            x = nodeMap.getRight(x);</span>
+<span class="fc bfc" id="L1068" title="All 2 branches covered.">        while (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1069">            x = nodeMap.getRight(x);</span>
         }
-<span class="fc" id="L1067">        output[1] = x;</span>
-<span class="fc" id="L1068">    }</span>
+<span class="fc" id="L1071">        output[1] = x;</span>
+<span class="fc" id="L1072">    }</span>
 
     /**
      * Returns the largest key in the symbol table less than or equal to {@code key}.
@@ -1075,15 +1079,15 @@ import java.util.Stack;
      @throws NoSuchElementException if the tree is empty
      */
     public void floor(long key, long[] output) {
-<span class="pc bpc" id="L1078" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
-<span class="nc" id="L1079">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+<span class="pc bpc" id="L1082" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L1083">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
         }
-<span class="pc bpc" id="L1081" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1082">            output[0] = -1;</span>
-<span class="nc" id="L1083">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+<span class="pc bpc" id="L1085" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1086">            output[0] = -1;</span>
+<span class="nc" id="L1087">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
         }
-<span class="fc" id="L1085">        floor(root, key, output);</span>
-<span class="fc" id="L1086">    }    </span>
+<span class="fc" id="L1089">        floor(root, key, output);</span>
+<span class="fc" id="L1090">    }    </span>
 
     /**
      * Returns the largest key in the symbol table less than {@code key}.
@@ -1093,49 +1097,49 @@ import java.util.Stack;
      @throws NoSuchElementException if the tree is empty
      */
     public void lower(long key, long[] output) {
-<span class="pc bpc" id="L1096" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
-<span class="nc" id="L1097">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+<span class="pc bpc" id="L1100" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L1101">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
         }
-<span class="pc bpc" id="L1099" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1100">            output[0] = -1;</span>
-<span class="nc" id="L1101">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+<span class="pc bpc" id="L1103" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1104">            output[0] = -1;</span>
+<span class="nc" id="L1105">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
         }
-<span class="fc" id="L1103">        TLongList stack = new TLongArrayList();</span>
-<span class="fc" id="L1104">        output[0] = 0;</span>
-<span class="fc" id="L1105">        lower(root, key, stack, output);</span>
-<span class="fc" id="L1106">    }    </span>
+<span class="fc" id="L1107">        TLongList stack = new TLongArrayList();</span>
+<span class="fc" id="L1108">        output[0] = 0;</span>
+<span class="fc" id="L1109">        lower(root, key, stack, output);</span>
+<span class="fc" id="L1110">    }    </span>
     
     // the largest key in the subtree rooted at x less than or equal to the given key
     private void floor(long x, long key, long[] output) {
-<span class="pc bpc" id="L1110" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1111">            output[0] = -1;</span>
-<span class="nc" id="L1112">            return;</span>
+<span class="pc bpc" id="L1114" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1115">            output[0] = -1;</span>
+<span class="nc" id="L1116">            return;</span>
         }
-<span class="fc" id="L1114">        output[0] = 0;</span>
-<span class="pc bpc" id="L1115" title="1 of 4 branches missed.">        int cmp = (key &lt; x) ? -1 : (key &gt; x) ? 1 : 0;</span>
-<span class="pc bpc" id="L1116" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L1117">            output[1] = x;</span>
-<span class="nc" id="L1118">            return;</span>
+<span class="fc" id="L1118">        output[0] = 0;</span>
+<span class="pc bpc" id="L1119" title="1 of 4 branches missed.">        int cmp = (key &lt; x) ? -1 : (key &gt; x) ? 1 : 0;</span>
+<span class="pc bpc" id="L1120" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L1121">            output[1] = x;</span>
+<span class="nc" id="L1122">            return;</span>
         }
-<span class="fc bfc" id="L1120" title="All 2 branches covered.">        if (cmp &lt; 0)  {</span>
-<span class="fc bfc" id="L1121" title="All 2 branches covered.">            if (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1122">                floor(nodeMap.getLeft(x), key, output);</span>
-<span class="fc" id="L1123">                return;</span>
+<span class="fc bfc" id="L1124" title="All 2 branches covered.">        if (cmp &lt; 0)  {</span>
+<span class="fc bfc" id="L1125" title="All 2 branches covered.">            if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1126">                floor(nodeMap.getLeft(x), key, output);</span>
+<span class="fc" id="L1127">                return;</span>
             }
-<span class="fc" id="L1125">            output[0] = -1;</span>
-<span class="fc" id="L1126">            return;</span>
+<span class="fc" id="L1129">            output[0] = -1;</span>
+<span class="fc" id="L1130">            return;</span>
         }
-<span class="fc bfc" id="L1128" title="All 2 branches covered.">        if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1129">            floor(nodeMap.getRight(x), key, output);</span>
-<span class="fc bfc" id="L1130" title="All 2 branches covered.">            if (output[0] == -1) {</span>
-<span class="fc" id="L1131">                output[0] = 0;</span>
-<span class="fc" id="L1132">                output[1] = x;</span>
+<span class="fc bfc" id="L1132" title="All 2 branches covered.">        if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1133">            floor(nodeMap.getRight(x), key, output);</span>
+<span class="fc bfc" id="L1134" title="All 2 branches covered.">            if (output[0] == -1) {</span>
+<span class="fc" id="L1135">                output[0] = 0;</span>
+<span class="fc" id="L1136">                output[1] = x;</span>
             }
-<span class="fc" id="L1134">            return;</span>
+<span class="fc" id="L1138">            return;</span>
         }
-<span class="fc" id="L1136">        output[0] = 0;</span>
-<span class="fc" id="L1137">        output[1] = x;</span>
-<span class="fc" id="L1138">    }</span>
+<span class="fc" id="L1140">        output[0] = 0;</span>
+<span class="fc" id="L1141">        output[1] = x;</span>
+<span class="fc" id="L1142">    }</span>
     
     /** the largest key in the subtree rooted at x less than the given key
      * 
@@ -1151,89 +1155,89 @@ import java.util.Stack;
     private void lower(long x, long key, TLongList stack, long[] output) { 
        
         //binary search until overshoot
-<span class="fc" id="L1154">        long maxLower = Long.MAX_VALUE;</span>
-<span class="pc bpc" id="L1155" title="1 of 4 branches missed.">        while (nodeMap.containsKey(x) &amp;&amp; key != x) {</span>
-<span class="fc" id="L1156">            stack.add(x);</span>
+<span class="fc" id="L1158">        long maxLower = Long.MAX_VALUE;</span>
+<span class="pc bpc" id="L1159" title="1 of 4 branches missed.">        while (nodeMap.containsKey(x) &amp;&amp; key != x) {</span>
+<span class="fc" id="L1160">            stack.add(x);</span>
             //System.out.println(&quot;lower: x=&quot; + x + &quot; q=&quot; + key);
-<span class="fc bfc" id="L1158" title="All 2 branches covered.">            if (x &lt; key) {</span>
-<span class="fc bfc" id="L1159" title="All 2 branches covered.">                if (maxLower == Long.MAX_VALUE) {</span>
-<span class="fc" id="L1160">                    maxLower = x;</span>
-<span class="pc bpc" id="L1161" title="1 of 2 branches missed.">                } else if (x &gt; maxLower) {</span>
-<span class="fc" id="L1162">                    maxLower = x;</span>
+<span class="fc bfc" id="L1162" title="All 2 branches covered.">            if (x &lt; key) {</span>
+<span class="fc bfc" id="L1163" title="All 2 branches covered.">                if (maxLower == Long.MAX_VALUE) {</span>
+<span class="fc" id="L1164">                    maxLower = x;</span>
+<span class="pc bpc" id="L1165" title="1 of 2 branches missed.">                } else if (x &gt; maxLower) {</span>
+<span class="fc" id="L1166">                    maxLower = x;</span>
                 }
             }
-<span class="fc bfc" id="L1165" title="All 2 branches covered.">            if (key &lt; x) {</span>
-<span class="fc bfc" id="L1166" title="All 2 branches covered.">                if (!nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1167">                    break;</span>
+<span class="fc bfc" id="L1169" title="All 2 branches covered.">            if (key &lt; x) {</span>
+<span class="fc bfc" id="L1170" title="All 2 branches covered.">                if (!nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1171">                    break;</span>
                 }
-<span class="fc" id="L1169">                x = nodeMap.getLeft(x);</span>
+<span class="fc" id="L1173">                x = nodeMap.getLeft(x);</span>
             } else {
                 //System.out.println(&quot;   x=&quot; + x.key);
-<span class="fc bfc" id="L1172" title="All 2 branches covered.">                if (!nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1173">                    break;</span>
+<span class="fc bfc" id="L1176" title="All 2 branches covered.">                if (!nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1177">                    break;</span>
                 }
-<span class="fc" id="L1175">                x = nodeMap.getRight(x);</span>
+<span class="fc" id="L1179">                x = nodeMap.getRight(x);</span>
             }
         }
         
-<span class="fc" id="L1179">        long y = -1;</span>
-<span class="fc" id="L1180">        int yIdx = -1;</span>
-<span class="fc" id="L1181">        boolean yIsSet = false;</span>
+<span class="fc" id="L1183">        long y = -1;</span>
+<span class="fc" id="L1184">        int yIdx = -1;</span>
+<span class="fc" id="L1185">        boolean yIsSet = false;</span>
         
-<span class="pc bpc" id="L1183" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc bnc" id="L1184" title="All 2 branches missed.">            if (stack.size() &gt; 1) {</span>
-<span class="nc" id="L1185">                x = stack.get(stack.size() - 1);</span>
-<span class="nc" id="L1186">                yIdx = stack.size() - 2;</span>
-<span class="nc" id="L1187">                y = stack.get(yIdx);</span>
-<span class="nc" id="L1188">                yIsSet = true;</span>
-<span class="nc bnc" id="L1189" title="All 2 branches missed.">            } else if (stack.size() == 1) {</span>
-<span class="nc" id="L1190">                x = stack.get(stack.size() - 1);</span>
+<span class="pc bpc" id="L1187" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc bnc" id="L1188" title="All 2 branches missed.">            if (stack.size() &gt; 1) {</span>
+<span class="nc" id="L1189">                x = stack.get(stack.size() - 1);</span>
+<span class="nc" id="L1190">                yIdx = stack.size() - 2;</span>
+<span class="nc" id="L1191">                y = stack.get(yIdx);</span>
+<span class="nc" id="L1192">                yIsSet = true;</span>
+<span class="nc bnc" id="L1193" title="All 2 branches missed.">            } else if (stack.size() == 1) {</span>
+<span class="nc" id="L1194">                x = stack.get(stack.size() - 1);</span>
             }
-<span class="fc bfc" id="L1192" title="All 2 branches covered.">        } else if (!stack.isEmpty()) {</span>
-<span class="fc" id="L1193">            yIdx = stack.size() - 1;</span>
-<span class="fc" id="L1194">            y = stack.get(yIdx);</span>
-<span class="fc" id="L1195">            yIsSet = true;</span>
+<span class="fc bfc" id="L1196" title="All 2 branches covered.">        } else if (!stack.isEmpty()) {</span>
+<span class="fc" id="L1197">            yIdx = stack.size() - 1;</span>
+<span class="fc" id="L1198">            y = stack.get(yIdx);</span>
+<span class="fc" id="L1199">            yIsSet = true;</span>
         }
         
-<span class="fc bfc" id="L1198" title="All 2 branches covered.">        if (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1199">            max(nodeMap.getLeft(x), output);</span>
-<span class="fc" id="L1200">            return;</span>
+<span class="fc bfc" id="L1202" title="All 2 branches covered.">        if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1203">            max(nodeMap.getLeft(x), output);</span>
+<span class="fc" id="L1204">            return;</span>
         }
       
         //while (y != null &amp;&amp; x == y.left) {
-<span class="pc bpc" id="L1204" title="1 of 2 branches missed.">        while (yIsSet &amp;&amp; </span>
+<span class="pc bpc" id="L1208" title="1 of 2 branches missed.">        while (yIsSet &amp;&amp; </span>
             (
-<span class="pc bpc" id="L1206" title="1 of 4 branches missed.">            (nodeMap.leftIsSet(y) &amp;&amp; nodeMap.containsKey(x) &amp;&amp;</span>
-<span class="fc bfc" id="L1207" title="All 2 branches covered.">            nodeMap.getLeft(y) == nodeMap.getNodeValue(x)) </span>
+<span class="pc bpc" id="L1210" title="1 of 4 branches missed.">            (nodeMap.leftIsSet(y) &amp;&amp; nodeMap.containsKey(x) &amp;&amp;</span>
+<span class="fc bfc" id="L1211" title="All 2 branches covered.">            nodeMap.getLeft(y) == nodeMap.getNodeValue(x)) </span>
             || 
-<span class="pc bpc" id="L1209" title="1 of 4 branches missed.">            (!nodeMap.leftIsSet(y) &amp;&amp; !nodeMap.containsKey(x))</span>
+<span class="pc bpc" id="L1213" title="1 of 4 branches missed.">            (!nodeMap.leftIsSet(y) &amp;&amp; !nodeMap.containsKey(x))</span>
             )
             ) {
             
             //System.out.println(&quot;lower: y=&quot; + y.key + &quot; q=&quot; + key);
-<span class="fc" id="L1214">            x = y;</span>
-<span class="fc" id="L1215">            yIdx--;</span>
-<span class="fc bfc" id="L1216" title="All 2 branches covered.">            if (yIdx &lt; 0) break;</span>
-<span class="fc" id="L1217">            y = stack.get(yIdx);</span>
-<span class="fc" id="L1218">            yIsSet = true;</span>
+<span class="fc" id="L1218">            x = y;</span>
+<span class="fc" id="L1219">            yIdx--;</span>
+<span class="fc bfc" id="L1220" title="All 2 branches covered.">            if (yIdx &lt; 0) break;</span>
+<span class="fc" id="L1221">            y = stack.get(yIdx);</span>
+<span class="fc" id="L1222">            yIsSet = true;</span>
         }
         
         //System.out.println(&quot;    y=&quot; + y.key + &quot; q=&quot; + key);
-<span class="pc bpc" id="L1222" title="1 of 4 branches missed.">        if (yIsSet &amp;&amp; y &gt;= key) {</span>
-<span class="fc bfc" id="L1223" title="All 2 branches covered.">            if (maxLower &lt; Long.MAX_VALUE) {</span>
-<span class="fc" id="L1224">                output[1] = maxLower;</span>
-<span class="fc" id="L1225">                return;</span>
+<span class="pc bpc" id="L1226" title="1 of 4 branches missed.">        if (yIsSet &amp;&amp; y &gt;= key) {</span>
+<span class="fc bfc" id="L1227" title="All 2 branches covered.">            if (maxLower &lt; Long.MAX_VALUE) {</span>
+<span class="fc" id="L1228">                output[1] = maxLower;</span>
+<span class="fc" id="L1229">                return;</span>
             }
-<span class="fc" id="L1227">            output[0] = -1;</span>
-<span class="fc" id="L1228">            return;</span>
+<span class="fc" id="L1231">            output[0] = -1;</span>
+<span class="fc" id="L1232">            return;</span>
         }
-<span class="pc bpc" id="L1230" title="1 of 2 branches missed.">        if (yIsSet) {</span>
-<span class="fc" id="L1231">            output[0] = 0;</span>
-<span class="fc" id="L1232">            output[1] = y;</span>
+<span class="pc bpc" id="L1234" title="1 of 2 branches missed.">        if (yIsSet) {</span>
+<span class="fc" id="L1235">            output[0] = 0;</span>
+<span class="fc" id="L1236">            output[1] = y;</span>
         } else {
-<span class="nc" id="L1234">            output[0] = -1;</span>
+<span class="nc" id="L1238">            output[0] = -1;</span>
         }
-<span class="fc" id="L1236">    }</span>
+<span class="fc" id="L1240">    }</span>
 
     /**
      * Returns the smallest key in the symbol table greater than or equal to {@code key}.
@@ -1244,16 +1248,16 @@ import java.util.Stack;
      * @throws NoSuchElementException if the tree is empty
      */
     public void ceiling(long key, long[] output) {
-<span class="pc bpc" id="L1247" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
-<span class="nc" id="L1248">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+<span class="pc bpc" id="L1251" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L1252">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
         }
-<span class="pc bpc" id="L1250" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1251">            output[0] = -1;</span>
-<span class="nc" id="L1252">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+<span class="pc bpc" id="L1254" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1255">            output[0] = -1;</span>
+<span class="nc" id="L1256">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
         }
-<span class="fc" id="L1254">        output[0] = 0;</span>
-<span class="fc" id="L1255">        ceiling(root, key, output);</span>
-<span class="fc" id="L1256">    }</span>
+<span class="fc" id="L1258">        output[0] = 0;</span>
+<span class="fc" id="L1259">        ceiling(root, key, output);</span>
+<span class="fc" id="L1260">    }</span>
 
     /**
      * Returns the smallest key in the symbol table greater than {@code key}.
@@ -1264,38 +1268,38 @@ import java.util.Stack;
      * @throws NoSuchElementException if the tree is empty
      */
     public void higher(long key, final long[] output) {
-<span class="pc bpc" id="L1267" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
-<span class="nc" id="L1268">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
+<span class="pc bpc" id="L1271" title="2 of 4 branches missed.">        if (output == null || output.length != 2) {</span>
+<span class="nc" id="L1272">            throw new IllegalArgumentException(&quot;output must be length 2&quot;);</span>
         }
-<span class="pc bpc" id="L1270" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1271">            output[0] = -1;</span>
-<span class="nc" id="L1272">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
+<span class="pc bpc" id="L1274" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1275">            output[0] = -1;</span>
+<span class="nc" id="L1276">            throw new NoSuchElementException(&quot;called floor() with empty symbol table&quot;);</span>
         }
-<span class="fc" id="L1274">        higher(root, key, output);</span>
-<span class="fc" id="L1275">    }</span>
+<span class="fc" id="L1278">        higher(root, key, output);</span>
+<span class="fc" id="L1279">    }</span>
     
     // the smallest key in the subtree rooted at x greater than or equal to the given key
     private void ceiling(long x, long key, long[] output) {
         
         //TODO: make this iterative
         
-<span class="pc bpc" id="L1282" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1283">            output[0] = -1;</span>
-<span class="nc" id="L1284">            return;</span>
+<span class="pc bpc" id="L1286" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1287">            output[0] = -1;</span>
+<span class="nc" id="L1288">            return;</span>
         }
-<span class="fc" id="L1286">        output[0] = 0;</span>
-<span class="pc bpc" id="L1287" title="1 of 4 branches missed.">        int cmp = key &lt; x ? -1 : (key &gt; x) ? 1 : 0; </span>
-<span class="pc bpc" id="L1288" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L1289">            output[1] = x;</span>
-<span class="nc" id="L1290">            return;</span>
+<span class="fc" id="L1290">        output[0] = 0;</span>
+<span class="pc bpc" id="L1291" title="1 of 4 branches missed.">        int cmp = key &lt; x ? -1 : (key &gt; x) ? 1 : 0; </span>
+<span class="pc bpc" id="L1292" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L1293">            output[1] = x;</span>
+<span class="nc" id="L1294">            return;</span>
         }
-<span class="fc bfc" id="L1292" title="All 2 branches covered.">        if (cmp &gt; 0)  {</span>
-<span class="fc bfc" id="L1293" title="All 2 branches covered.">            if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1294">                ceiling(nodeMap.getRight(x), key, output);</span>
+<span class="fc bfc" id="L1296" title="All 2 branches covered.">        if (cmp &gt; 0)  {</span>
+<span class="fc bfc" id="L1297" title="All 2 branches covered.">            if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1298">                ceiling(nodeMap.getRight(x), key, output);</span>
             } else {
-<span class="fc" id="L1296">                output[0] = -1;</span>
+<span class="fc" id="L1300">                output[0] = -1;</span>
             }
-<span class="fc" id="L1298">            return;</span>
+<span class="fc" id="L1302">            return;</span>
         }
         /*
         Node t = ceiling(x.left, key);
@@ -1304,17 +1308,17 @@ import java.util.Stack;
         } else {
             return x;
         }*/
-<span class="fc bfc" id="L1307" title="All 2 branches covered.">        if (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1308">            ceiling(nodeMap.getLeft(x), key, output);</span>
-<span class="fc bfc" id="L1309" title="All 2 branches covered.">            if (output[0] == -1) {</span>
-<span class="fc" id="L1310">                output[0] = 0;</span>
-<span class="fc" id="L1311">                output[1] = x;</span>
+<span class="fc bfc" id="L1311" title="All 2 branches covered.">        if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1312">            ceiling(nodeMap.getLeft(x), key, output);</span>
+<span class="fc bfc" id="L1313" title="All 2 branches covered.">            if (output[0] == -1) {</span>
+<span class="fc" id="L1314">                output[0] = 0;</span>
+<span class="fc" id="L1315">                output[1] = x;</span>
             }
         } else {
-<span class="fc" id="L1314">            output[0] = 0;</span>
-<span class="fc" id="L1315">            output[1] = x;</span>
+<span class="fc" id="L1318">            output[0] = 0;</span>
+<span class="fc" id="L1319">            output[1] = x;</span>
         }
-<span class="fc" id="L1317">    }</span>
+<span class="fc" id="L1321">    }</span>
     
     /** the smallest key in the subtree rooted at x greater than the given key.
      * 
@@ -1334,68 +1338,68 @@ import java.util.Stack;
         left .lte.     right .gte.
         */
         
-<span class="pc bpc" id="L1337" title="1 of 2 branches missed.">        while (nodeMap.containsKey(x)) {</span>
-<span class="fc bfc" id="L1338" title="All 4 branches covered.">            int cmp = key &lt; x ? -1 : (key &gt; x) ? 1 : 0; </span>
+<span class="pc bpc" id="L1341" title="1 of 2 branches missed.">        while (nodeMap.containsKey(x)) {</span>
+<span class="fc bfc" id="L1342" title="All 4 branches covered.">            int cmp = key &lt; x ? -1 : (key &gt; x) ? 1 : 0; </span>
             //System.out.println(&quot;higher: x=&quot; + x + &quot; cmp=&quot; + cmp);
-<span class="fc bfc" id="L1340" title="All 2 branches covered.">            if (cmp &lt; 0) {</span>
-<span class="fc bfc" id="L1341" title="All 2 branches covered.">                if (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1342">                    x = nodeMap.getLeft(x);</span>
+<span class="fc bfc" id="L1344" title="All 2 branches covered.">            if (cmp &lt; 0) {</span>
+<span class="fc bfc" id="L1345" title="All 2 branches covered.">                if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1346">                    x = nodeMap.getLeft(x);</span>
                 } else {
                     break;
                 }
-<span class="fc bfc" id="L1346" title="All 2 branches covered.">            } else if (cmp &gt; 0) {</span>
-<span class="fc bfc" id="L1347" title="All 2 branches covered.">                if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1348">                    x = nodeMap.getRight(x);</span>
+<span class="fc bfc" id="L1350" title="All 2 branches covered.">            } else if (cmp &gt; 0) {</span>
+<span class="fc bfc" id="L1351" title="All 2 branches covered.">                if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1352">                    x = nodeMap.getRight(x);</span>
                 } else {
                     break;
                 }
             } else {
                 break;
             }
-<span class="fc" id="L1355">        }</span>
+<span class="fc" id="L1359">        }</span>
                 
         // right node has larger key
-<span class="fc bfc" id="L1358" title="All 2 branches covered.">        if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1359">            output[0] = 0;</span>
-<span class="fc" id="L1360">            min(nodeMap.getRight(x), output);</span>
+<span class="fc bfc" id="L1362" title="All 2 branches covered.">        if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1363">            output[0] = 0;</span>
+<span class="fc" id="L1364">            min(nodeMap.getRight(x), output);</span>
             //System.out.println(&quot;min=&quot; + Arrays.toString(output));
-<span class="fc" id="L1362">            return;</span>
+<span class="fc" id="L1366">            return;</span>
         }
-<span class="fc" id="L1364">        boolean yIsSet = false;</span>
-<span class="fc" id="L1365">        long y = -1;</span>
-<span class="fc bfc" id="L1366" title="All 2 branches covered.">        if (nodeMap.parentIsSet(x)) {</span>
-<span class="fc" id="L1367">            y = nodeMap.getParent(x);</span>
-<span class="fc" id="L1368">            yIsSet = true;</span>
+<span class="fc" id="L1368">        boolean yIsSet = false;</span>
+<span class="fc" id="L1369">        long y = -1;</span>
+<span class="fc bfc" id="L1370" title="All 2 branches covered.">        if (nodeMap.parentIsSet(x)) {</span>
+<span class="fc" id="L1371">            y = nodeMap.getParent(x);</span>
+<span class="fc" id="L1372">            yIsSet = true;</span>
             //System.out.println(&quot;y=&quot; + y);
         }
-<span class="fc bfc" id="L1371" title="All 4 branches covered.">        while (yIsSet &amp;&amp; nodeMap.rightIsSet(y) &amp;&amp;</span>
-<span class="fc bfc" id="L1372" title="All 2 branches covered.">            x == nodeMap.getRight(y)) {</span>
+<span class="fc bfc" id="L1375" title="All 4 branches covered.">        while (yIsSet &amp;&amp; nodeMap.rightIsSet(y) &amp;&amp;</span>
+<span class="fc bfc" id="L1376" title="All 2 branches covered.">            x == nodeMap.getRight(y)) {</span>
             //System.out.println(&quot;y=&quot; + y + &quot; setting x=&quot; + x + &quot; to y&quot;);
-<span class="fc" id="L1374">            x = y;</span>
-<span class="fc bfc" id="L1375" title="All 2 branches covered.">            if (nodeMap.parentIsSet(x)) {</span>
-<span class="fc" id="L1376">                y = nodeMap.getParent(x);</span>
+<span class="fc" id="L1378">            x = y;</span>
+<span class="fc bfc" id="L1379" title="All 2 branches covered.">            if (nodeMap.parentIsSet(x)) {</span>
+<span class="fc" id="L1380">                y = nodeMap.getParent(x);</span>
             } else {
-<span class="fc" id="L1378">                yIsSet = false;</span>
-<span class="fc" id="L1379">                y = -1;</span>
+<span class="fc" id="L1382">                yIsSet = false;</span>
+<span class="fc" id="L1383">                y = -1;</span>
             }
         }
-<span class="pc bpc" id="L1382" title="2 of 6 branches missed.">        if (x &gt; key &amp;&amp; yIsSet &amp;&amp; y &gt; key) {</span>
-<span class="fc" id="L1383">            output[0] = 0;</span>
-<span class="pc bpc" id="L1384" title="1 of 2 branches missed.">            if (x &lt; y) {</span>
-<span class="fc" id="L1385">                output[1] = x;</span>
+<span class="pc bpc" id="L1386" title="2 of 6 branches missed.">        if (x &gt; key &amp;&amp; yIsSet &amp;&amp; y &gt; key) {</span>
+<span class="fc" id="L1387">            output[0] = 0;</span>
+<span class="pc bpc" id="L1388" title="1 of 2 branches missed.">            if (x &lt; y) {</span>
+<span class="fc" id="L1389">                output[1] = x;</span>
             } else {
-<span class="nc" id="L1387">                output[1] = y;</span>
+<span class="nc" id="L1391">                output[1] = y;</span>
             }
-<span class="pc bpc" id="L1389" title="1 of 2 branches missed.">        } else if (x &gt; key) {</span>
-<span class="nc" id="L1390">            output[0] = 0;</span>
-<span class="nc" id="L1391">            output[1] = x;</span>
-<span class="pc bpc" id="L1392" title="1 of 4 branches missed.">        } else if (yIsSet &amp;&amp; y &gt; key) {</span>
-<span class="fc" id="L1393">            output[0] = 0;</span>
-<span class="fc" id="L1394">            output[1] = y;</span>
+<span class="pc bpc" id="L1393" title="1 of 2 branches missed.">        } else if (x &gt; key) {</span>
+<span class="nc" id="L1394">            output[0] = 0;</span>
+<span class="nc" id="L1395">            output[1] = x;</span>
+<span class="pc bpc" id="L1396" title="1 of 4 branches missed.">        } else if (yIsSet &amp;&amp; y &gt; key) {</span>
+<span class="fc" id="L1397">            output[0] = 0;</span>
+<span class="fc" id="L1398">            output[1] = y;</span>
         } else {
-<span class="fc" id="L1396">            output[0] = -1;</span>
+<span class="fc" id="L1400">            output[0] = -1;</span>
         }
-<span class="fc" id="L1398">    }</span>
+<span class="fc" id="L1402">    }</span>
 
     /**
      * Return the kth smallest key in the symbol table.
@@ -1405,15 +1409,15 @@ import java.util.Stack;
      *     &lt;em&gt;n&lt;/em&gt;–1
      */
     public long select(int k) {
-<span class="pc bpc" id="L1408" title="2 of 4 branches missed.">        if (k &lt; 0 || k &gt;= size()) {</span>
-<span class="nc" id="L1409">            throw new IllegalArgumentException(&quot;called select() with invalid argument: &quot; + k);</span>
+<span class="pc bpc" id="L1412" title="2 of 4 branches missed.">        if (k &lt; 0 || k &gt;= size()) {</span>
+<span class="nc" id="L1413">            throw new IllegalArgumentException(&quot;called select() with invalid argument: &quot; + k);</span>
         }
-<span class="fc" id="L1411">        long[] output = new long[2];</span>
-<span class="fc" id="L1412">        select(root, k, output);</span>
-<span class="pc bpc" id="L1413" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
-<span class="nc" id="L1414">            return -1;</span>
+<span class="fc" id="L1415">        long[] output = new long[2];</span>
+<span class="fc" id="L1416">        select(root, k, output);</span>
+<span class="pc bpc" id="L1417" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
+<span class="nc" id="L1418">            return -1;</span>
         }
-<span class="fc" id="L1416">        return output[1];</span>
+<span class="fc" id="L1420">        return output[1];</span>
     }
 
     // the key of rank k in the subtree rooted at x
@@ -1421,24 +1425,24 @@ import java.util.Stack;
         
         //TODO: make this iterative
         
-<span class="pc bpc" id="L1424" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(x));</span>
-<span class="pc bpc" id="L1425" title="5 of 6 branches missed.">        assert(k &gt;= 0 &amp;&amp; k &lt; size(x));</span>
+<span class="pc bpc" id="L1428" title="3 of 4 branches missed.">        assert(nodeMap.containsKey(x));</span>
+<span class="pc bpc" id="L1429" title="5 of 6 branches missed.">        assert(k &gt;= 0 &amp;&amp; k &lt; size(x));</span>
         
-<span class="fc" id="L1427">        output[0] = 0;</span>
+<span class="fc" id="L1431">        output[0] = 0;</span>
         
-<span class="fc" id="L1429">        int t = sizeLeft(x); </span>
-<span class="fc bfc" id="L1430" title="All 2 branches covered.">        if (t &gt; k) {</span>
-<span class="fc" id="L1431">            select(nodeMap.getLeft(x),  k, output);</span>
-<span class="fc bfc" id="L1432" title="All 2 branches covered.">        } else if (t &lt; k) {</span>
-<span class="pc bpc" id="L1433" title="1 of 2 branches missed.">            if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1434">                select(nodeMap.getRight(x), k-t-1, output);</span>
+<span class="fc" id="L1433">        int t = sizeLeft(x); </span>
+<span class="fc bfc" id="L1434" title="All 2 branches covered.">        if (t &gt; k) {</span>
+<span class="fc" id="L1435">            select(nodeMap.getLeft(x),  k, output);</span>
+<span class="fc bfc" id="L1436" title="All 2 branches covered.">        } else if (t &lt; k) {</span>
+<span class="pc bpc" id="L1437" title="1 of 2 branches missed.">            if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1438">                select(nodeMap.getRight(x), k-t-1, output);</span>
             } else {
-<span class="nc" id="L1436">                output[0] = -1;</span>
+<span class="nc" id="L1440">                output[0] = -1;</span>
             }
         } else {
-<span class="fc" id="L1439">            output[1] = x;</span>
+<span class="fc" id="L1443">            output[1] = x;</span>
         }
-<span class="fc" id="L1441">    } </span>
+<span class="fc" id="L1445">    } </span>
 
     /**
      * Return the number of keys in the symbol table strictly less than {@code key}.
@@ -1447,51 +1451,51 @@ import java.util.Stack;
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public int rank(long key) {
-<span class="fc" id="L1450">        int[] output = new int[2];</span>
-<span class="fc" id="L1451">        rank(key, root, output);</span>
-<span class="pc bpc" id="L1452" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
-<span class="nc" id="L1453">            return 0;</span>
+<span class="fc" id="L1454">        int[] output = new int[2];</span>
+<span class="fc" id="L1455">        rank(key, root, output);</span>
+<span class="pc bpc" id="L1456" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
+<span class="nc" id="L1457">            return 0;</span>
         }
-<span class="fc" id="L1455">        return output[1];</span>
+<span class="fc" id="L1459">        return output[1];</span>
     } 
 
     // number of keys less than key in the subtree rooted at x
     private void rank(long key, long x, int[] output) {
         
         //TODO: make this iterative
-<span class="fc" id="L1462">        output[0] = 0;</span>
+<span class="fc" id="L1466">        output[0] = 0;</span>
         
-<span class="pc bpc" id="L1464" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1465">            output[1] = 0;</span>
-<span class="nc" id="L1466">            return;</span>
+<span class="pc bpc" id="L1468" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1469">            output[1] = 0;</span>
+<span class="nc" id="L1470">            return;</span>
         } 
-<span class="fc bfc" id="L1468" title="All 4 branches covered.">        int cmp = key &lt; x ? -1 : (key &gt; x) ? 1 : 0;  </span>
-<span class="fc bfc" id="L1469" title="All 2 branches covered.">        if (cmp &lt; 0) {</span>
-<span class="pc bpc" id="L1470" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1471">                rank(key, nodeMap.getLeft(x), output);</span>
+<span class="fc bfc" id="L1472" title="All 4 branches covered.">        int cmp = key &lt; x ? -1 : (key &gt; x) ? 1 : 0;  </span>
+<span class="fc bfc" id="L1473" title="All 2 branches covered.">        if (cmp &lt; 0) {</span>
+<span class="pc bpc" id="L1474" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1475">                rank(key, nodeMap.getLeft(x), output);</span>
             } else {
-<span class="nc" id="L1473">                output[1] = 0;</span>
+<span class="nc" id="L1477">                output[1] = 0;</span>
             }
-<span class="fc bfc" id="L1475" title="All 2 branches covered.">        } else if (cmp &gt; 0) {</span>
+<span class="fc bfc" id="L1479" title="All 2 branches covered.">        } else if (cmp &gt; 0) {</span>
             //1 + size(x.left) + rank(key, x.right);
             int sz;
-<span class="pc bpc" id="L1478" title="1 of 2 branches missed.">            if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1479">                output[0] = 0;</span>
-<span class="fc" id="L1480">                rank(key, nodeMap.getRight(x), output);</span>
-<span class="pc bpc" id="L1481" title="1 of 2 branches missed.">                if (output[0] == -1) {</span>
-<span class="nc" id="L1482">                    sz = 1 + sizeLeft(x);</span>
+<span class="pc bpc" id="L1482" title="1 of 2 branches missed.">            if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1483">                output[0] = 0;</span>
+<span class="fc" id="L1484">                rank(key, nodeMap.getRight(x), output);</span>
+<span class="pc bpc" id="L1485" title="1 of 2 branches missed.">                if (output[0] == -1) {</span>
+<span class="nc" id="L1486">                    sz = 1 + sizeLeft(x);</span>
                 } else {
-<span class="fc" id="L1484">                    sz = 1 + sizeLeft(x) + output[1];</span>
+<span class="fc" id="L1488">                    sz = 1 + sizeLeft(x) + output[1];</span>
                 }
             } else {
-<span class="nc" id="L1487">                sz = 1 + sizeLeft(x);</span>
+<span class="nc" id="L1491">                sz = 1 + sizeLeft(x);</span>
             }
-<span class="fc" id="L1489">            output[1] = sz;</span>
-<span class="fc" id="L1490">        } else {</span>
-<span class="fc" id="L1491">            int sz = sizeLeft(x);</span>
-<span class="fc" id="L1492">            output[1] = sz;</span>
+<span class="fc" id="L1493">            output[1] = sz;</span>
+<span class="fc" id="L1494">        } else {</span>
+<span class="fc" id="L1495">            int sz = sizeLeft(x);</span>
+<span class="fc" id="L1496">            output[1] = sz;</span>
         } 
-<span class="fc" id="L1494">    } </span>
+<span class="fc" id="L1498">    } </span>
 
    /***************************************************************************
     *  Range count and range search.
@@ -1505,18 +1509,18 @@ import java.util.Stack;
      */
     public TLongList keys() {
         
-<span class="pc bpc" id="L1508" title="1 of 2 branches missed.">        if (isEmpty()) return new TLongArrayList();</span>
+<span class="pc bpc" id="L1512" title="1 of 2 branches missed.">        if (isEmpty()) return new TLongArrayList();</span>
         
-<span class="fc" id="L1510">        long[] output = new long[2];</span>
-<span class="fc" id="L1511">        min(output);</span>
-<span class="pc bpc" id="L1512" title="3 of 4 branches missed.">        assert(output[0] != -1);</span>
-<span class="fc" id="L1513">        long lo = output[1];</span>
-        
-<span class="fc" id="L1515">        max(output);</span>
+<span class="fc" id="L1514">        long[] output = new long[2];</span>
+<span class="fc" id="L1515">        min(output);</span>
 <span class="pc bpc" id="L1516" title="3 of 4 branches missed.">        assert(output[0] != -1);</span>
-<span class="fc" id="L1517">        long hi = output[1];</span>
+<span class="fc" id="L1517">        long lo = output[1];</span>
         
-<span class="fc" id="L1519">        return keys(lo, hi);</span>
+<span class="fc" id="L1519">        max(output);</span>
+<span class="pc bpc" id="L1520" title="3 of 4 branches missed.">        assert(output[0] != -1);</span>
+<span class="fc" id="L1521">        long hi = output[1];</span>
+        
+<span class="fc" id="L1523">        return keys(lo, hi);</span>
     }
 
     /**
@@ -1532,12 +1536,12 @@ import java.util.Stack;
      */
     public TLongList keys(long lo, long hi) {
 
-<span class="fc" id="L1535">        TLongList queue = new TLongArrayList();</span>
-<span class="pc bpc" id="L1536" title="2 of 4 branches missed.">        if (isEmpty() || lo &gt; hi) return queue;</span>
+<span class="fc" id="L1539">        TLongList queue = new TLongArrayList();</span>
+<span class="pc bpc" id="L1540" title="2 of 4 branches missed.">        if (isEmpty() || lo &gt; hi) return queue;</span>
         
-<span class="fc" id="L1538">        keys(root, queue, lo, hi);</span>
+<span class="fc" id="L1542">        keys(root, queue, lo, hi);</span>
         
-<span class="fc" id="L1540">        return queue;</span>
+<span class="fc" id="L1544">        return queue;</span>
     } 
 
     // add the keys between lo and hi in the subtree rooted at x
@@ -1546,25 +1550,25 @@ import java.util.Stack;
         
         //TODO: make this iterative
         
-<span class="pc bpc" id="L1549" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1550">            return;</span>
+<span class="pc bpc" id="L1553" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1554">            return;</span>
         } 
-<span class="pc bpc" id="L1552" title="1 of 4 branches missed.">        int cmplo = lo &lt; x ? -1 : (lo &gt; x) ? 1 : 0;</span>
-<span class="pc bpc" id="L1553" title="1 of 4 branches missed.">        int cmphi = hi &lt; x ? -1 : (hi &gt; x) ? 1 : 0; </span>
-<span class="fc bfc" id="L1554" title="All 2 branches covered.">        if (cmplo &lt; 0) {</span>
-<span class="fc bfc" id="L1555" title="All 2 branches covered.">            if (nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1556">                keys(nodeMap.getLeft(x), queue, lo, hi);</span>
+<span class="pc bpc" id="L1556" title="1 of 4 branches missed.">        int cmplo = lo &lt; x ? -1 : (lo &gt; x) ? 1 : 0;</span>
+<span class="pc bpc" id="L1557" title="1 of 4 branches missed.">        int cmphi = hi &lt; x ? -1 : (hi &gt; x) ? 1 : 0; </span>
+<span class="fc bfc" id="L1558" title="All 2 branches covered.">        if (cmplo &lt; 0) {</span>
+<span class="fc bfc" id="L1559" title="All 2 branches covered.">            if (nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1560">                keys(nodeMap.getLeft(x), queue, lo, hi);</span>
             }
         } 
-<span class="pc bpc" id="L1559" title="2 of 4 branches missed.">        if (cmplo &lt;= 0 &amp;&amp; cmphi &gt;= 0) {</span>
-<span class="fc" id="L1560">            queue.add(x);</span>
+<span class="pc bpc" id="L1563" title="2 of 4 branches missed.">        if (cmplo &lt;= 0 &amp;&amp; cmphi &gt;= 0) {</span>
+<span class="fc" id="L1564">            queue.add(x);</span>
         } 
-<span class="fc bfc" id="L1562" title="All 2 branches covered.">        if (cmphi &gt; 0) {</span>
-<span class="fc bfc" id="L1563" title="All 2 branches covered.">            if (nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1564">                keys(nodeMap.getRight(x), queue, lo, hi);</span>
+<span class="fc bfc" id="L1566" title="All 2 branches covered.">        if (cmphi &gt; 0) {</span>
+<span class="fc bfc" id="L1567" title="All 2 branches covered.">            if (nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1568">                keys(nodeMap.getRight(x), queue, lo, hi);</span>
             }
         } 
-<span class="fc" id="L1567">    } </span>
+<span class="fc" id="L1571">    } </span>
 
     /**
      * Returns the number of keys in the symbol table in the given range.
@@ -1578,9 +1582,9 @@ import java.util.Stack;
      */
     public int size(long lo, long hi) {
 
-<span class="nc bnc" id="L1581" title="All 2 branches missed.">        if (lo &gt; hi) return 0;</span>
-<span class="nc bnc" id="L1582" title="All 2 branches missed.">        if (contains(hi)) return rank(hi) - rank(lo) + 1;</span>
-<span class="nc" id="L1583">        else              return rank(hi) - rank(lo);</span>
+<span class="nc bnc" id="L1585" title="All 2 branches missed.">        if (lo &gt; hi) return 0;</span>
+<span class="nc bnc" id="L1586" title="All 2 branches missed.">        if (contains(hi)) return rank(hi) - rank(lo) + 1;</span>
+<span class="nc" id="L1587">        else              return rank(hi) - rank(lo);</span>
     }
 
 
@@ -1588,226 +1592,226 @@ import java.util.Stack;
     *  Check integrity of red-black tree data structure.
     ***************************************************************************/
     protected boolean check() {
-<span class="fc" id="L1591">        boolean t1 = isParentChildConsistent();</span>
-<span class="fc" id="L1592">        boolean t2 = isBST();</span>
-<span class="fc" id="L1593">        boolean t3 = isSizeConsistent();</span>
-<span class="fc" id="L1594">        boolean t4 = isRankConsistent();</span>
-<span class="fc" id="L1595">        boolean t5 = is23();</span>
-<span class="fc" id="L1596">        boolean t6 = isBalanced();</span>
-<span class="pc bpc" id="L1597" title="1 of 2 branches missed.">        if (!t1) System.out.println(&quot;Not consistent parent child relationships&quot;);</span>
-<span class="pc bpc" id="L1598" title="1 of 2 branches missed.">        if (!t2) System.out.println(&quot;Not in symmetric order&quot;);</span>
-<span class="pc bpc" id="L1599" title="1 of 2 branches missed.">        if (!t3) System.out.println(&quot;Subtree counts not consistent&quot;);</span>
-<span class="pc bpc" id="L1600" title="1 of 2 branches missed.">        if (!t4) System.out.println(&quot;Ranks not consistent&quot;);</span>
-<span class="pc bpc" id="L1601" title="1 of 2 branches missed.">        if (!t5) System.out.println(&quot;Not a 2-3 tree&quot;);</span>
-<span class="pc bpc" id="L1602" title="1 of 2 branches missed.">        if (!t6) System.out.println(&quot;Not balanced&quot;);</span>
-<span class="fc" id="L1603">        System.out.flush();</span>
-<span class="pc bpc" id="L1604" title="6 of 12 branches missed.">        return t1 &amp;&amp; t2 &amp;&amp; t3 &amp;&amp; t4 &amp;&amp; t5 &amp;&amp; t6;</span>
+<span class="fc" id="L1595">        boolean t1 = isParentChildConsistent();</span>
+<span class="fc" id="L1596">        boolean t2 = isBST();</span>
+<span class="fc" id="L1597">        boolean t3 = isSizeConsistent();</span>
+<span class="fc" id="L1598">        boolean t4 = isRankConsistent();</span>
+<span class="fc" id="L1599">        boolean t5 = is23();</span>
+<span class="fc" id="L1600">        boolean t6 = isBalanced();</span>
+<span class="pc bpc" id="L1601" title="1 of 2 branches missed.">        if (!t1) System.out.println(&quot;Not consistent parent child relationships&quot;);</span>
+<span class="pc bpc" id="L1602" title="1 of 2 branches missed.">        if (!t2) System.out.println(&quot;Not in symmetric order&quot;);</span>
+<span class="pc bpc" id="L1603" title="1 of 2 branches missed.">        if (!t3) System.out.println(&quot;Subtree counts not consistent&quot;);</span>
+<span class="pc bpc" id="L1604" title="1 of 2 branches missed.">        if (!t4) System.out.println(&quot;Ranks not consistent&quot;);</span>
+<span class="pc bpc" id="L1605" title="1 of 2 branches missed.">        if (!t5) System.out.println(&quot;Not a 2-3 tree&quot;);</span>
+<span class="pc bpc" id="L1606" title="1 of 2 branches missed.">        if (!t6) System.out.println(&quot;Not balanced&quot;);</span>
+<span class="fc" id="L1607">        System.out.flush();</span>
+<span class="pc bpc" id="L1608" title="6 of 12 branches missed.">        return t1 &amp;&amp; t2 &amp;&amp; t3 &amp;&amp; t4 &amp;&amp; t5 &amp;&amp; t6;</span>
     }
 
     // does this binary tree satisfy symmetric order?
     // Note: this test also ensures that data structure is a binary tree since order is strict
     private boolean isBST() {
-<span class="fc" id="L1610">        return isBST(root, null, null);</span>
+<span class="fc" id="L1614">        return isBST(root, null, null);</span>
     }
 
     // is the tree rooted at x a BST with all keys strictly between min and max
     // (if min or max is null, treat as empty constraint)
     // Credit: Bob Dondero's elegant solution
     private boolean isBST(long x, Long min, Long max) {
-<span class="pc bpc" id="L1617" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1618">            return true;</span>
+<span class="pc bpc" id="L1621" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1622">            return true;</span>
         }
-<span class="pc bpc" id="L1620" title="1 of 4 branches missed.">        if (min != null &amp;&amp; x &lt;= min.longValue()) {</span>
-<span class="nc" id="L1621">            return false;</span>
+<span class="pc bpc" id="L1624" title="1 of 4 branches missed.">        if (min != null &amp;&amp; x &lt;= min.longValue()) {</span>
+<span class="nc" id="L1625">            return false;</span>
         }
-<span class="pc bpc" id="L1623" title="1 of 4 branches missed.">        if (max != null &amp;&amp; x &gt;= max.longValue()) {</span>
-<span class="nc" id="L1624">            return false;</span>
+<span class="pc bpc" id="L1627" title="1 of 4 branches missed.">        if (max != null &amp;&amp; x &gt;= max.longValue()) {</span>
+<span class="nc" id="L1628">            return false;</span>
         }
-<span class="fc" id="L1626">        Long key = Long.valueOf(x);</span>
-<span class="pc bpc" id="L1627" title="2 of 4 branches missed.">        return isBSTLeft(x, min, key) &amp;&amp; isBSTRight(x, key, max);</span>
+<span class="fc" id="L1630">        Long key = Long.valueOf(x);</span>
+<span class="pc bpc" id="L1631" title="2 of 4 branches missed.">        return isBSTLeft(x, min, key) &amp;&amp; isBSTRight(x, key, max);</span>
     }
     private boolean isBSTLeft(long x, Long min, Long max) {
-<span class="fc bfc" id="L1630" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1631">            return true;</span>
+<span class="fc bfc" id="L1634" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1635">            return true;</span>
         }
-<span class="fc" id="L1633">        long key = nodeMap.getLeft(x);</span>
-<span class="fc" id="L1634">        return isBST(key, min, max);</span>
+<span class="fc" id="L1637">        long key = nodeMap.getLeft(x);</span>
+<span class="fc" id="L1638">        return isBST(key, min, max);</span>
     }
     private boolean isBSTRight(long x, Long min, Long max) {
-<span class="fc bfc" id="L1637" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) {</span>
-<span class="fc" id="L1638">            return true;</span>
+<span class="fc bfc" id="L1641" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) {</span>
+<span class="fc" id="L1642">            return true;</span>
         }
-<span class="fc" id="L1640">        long key = nodeMap.getRight(x);</span>
-<span class="fc" id="L1641">        return isBST(key, min, max);</span>
+<span class="fc" id="L1644">        long key = nodeMap.getRight(x);</span>
+<span class="fc" id="L1645">        return isBST(key, min, max);</span>
     }
 
-<span class="fc" id="L1644">    private boolean isSizeConsistent() { return isSizeConsistent(root); }</span>
+<span class="fc" id="L1648">    private boolean isSizeConsistent() { return isSizeConsistent(root); }</span>
     private boolean isSizeConsistent(long x) {
-<span class="pc bpc" id="L1646" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) return true;</span>
-<span class="pc bpc" id="L1647" title="1 of 2 branches missed.">        if (nodeMap.getNodeSize(x) != sizeLeft(x) + sizeRight(x) + 1) return false;</span>
-<span class="pc bpc" id="L1648" title="2 of 4 branches missed.">        return isSizeConsistentLeft(x) &amp;&amp; isSizeConsistentRight(x);</span>
+<span class="pc bpc" id="L1650" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) return true;</span>
+<span class="pc bpc" id="L1651" title="1 of 2 branches missed.">        if (nodeMap.getNodeSize(x) != sizeLeft(x) + sizeRight(x) + 1) return false;</span>
+<span class="pc bpc" id="L1652" title="2 of 4 branches missed.">        return isSizeConsistentLeft(x) &amp;&amp; isSizeConsistentRight(x);</span>
     }
     private boolean isSizeConsistentLeft(long x) {
-<span class="fc bfc" id="L1651" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) return true;</span>
-<span class="fc" id="L1652">        long key = nodeMap.getLeft(x);</span>
-<span class="fc" id="L1653">        return isSizeConsistent(key);</span>
+<span class="fc bfc" id="L1655" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) return true;</span>
+<span class="fc" id="L1656">        long key = nodeMap.getLeft(x);</span>
+<span class="fc" id="L1657">        return isSizeConsistent(key);</span>
     }
     private boolean isSizeConsistentRight(long x) {
-<span class="fc bfc" id="L1656" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) return true;</span>
-<span class="fc" id="L1657">        long key = nodeMap.getRight(x);</span>
-<span class="fc" id="L1658">        return isSizeConsistent(key);</span>
+<span class="fc bfc" id="L1660" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) return true;</span>
+<span class="fc" id="L1661">        long key = nodeMap.getRight(x);</span>
+<span class="fc" id="L1662">        return isSizeConsistent(key);</span>
     }
 
     // check that ranks are consistent
     private boolean isRankConsistent() {
-<span class="fc bfc" id="L1663" title="All 2 branches covered.">        for (int i = 0; i &lt; size(); i++) {</span>
-<span class="fc" id="L1664">            int r = rank(select(i));</span>
+<span class="fc bfc" id="L1667" title="All 2 branches covered.">        for (int i = 0; i &lt; size(); i++) {</span>
+<span class="fc" id="L1668">            int r = rank(select(i));</span>
             //System.out.println(&quot;i=&quot; + i + &quot; r=&quot; + r + &quot; size=&quot; + size());
-<span class="pc bpc" id="L1666" title="1 of 2 branches missed.">            if (i != r) return false;</span>
+<span class="pc bpc" id="L1670" title="1 of 2 branches missed.">            if (i != r) return false;</span>
         }
-<span class="fc" id="L1668">        TLongList keys = keys();</span>
-<span class="fc bfc" id="L1669" title="All 2 branches covered.">        for (int i = 0; i &lt; keys.size(); ++i) {</span>
-<span class="fc" id="L1670">            long key = keys.get(i);</span>
-<span class="fc" id="L1671">            int r = rank(key);</span>
-<span class="fc" id="L1672">            long s = select(r);</span>
+<span class="fc" id="L1672">        TLongList keys = keys();</span>
+<span class="fc bfc" id="L1673" title="All 2 branches covered.">        for (int i = 0; i &lt; keys.size(); ++i) {</span>
+<span class="fc" id="L1674">            long key = keys.get(i);</span>
+<span class="fc" id="L1675">            int r = rank(key);</span>
+<span class="fc" id="L1676">            long s = select(r);</span>
             //System.out.println(&quot;i=&quot; + i + &quot; key=&quot; + key + &quot; r=&quot; + r + &quot; s=&quot; + s);
-<span class="pc bpc" id="L1674" title="1 of 2 branches missed.">            if (key != s) {</span>
-<span class="nc" id="L1675">                return false;</span>
+<span class="pc bpc" id="L1678" title="1 of 2 branches missed.">            if (key != s) {</span>
+<span class="nc" id="L1679">                return false;</span>
             }
         }
-<span class="fc" id="L1678">        return true;</span>
+<span class="fc" id="L1682">        return true;</span>
     }
 
     // Does the tree have no red right links, and at most one (left)
     // red links in a row on any path?
-<span class="fc" id="L1683">    private boolean is23() { return is23(root); }</span>
+<span class="fc" id="L1687">    private boolean is23() { return is23(root); }</span>
     private boolean is23(long x) {
-<span class="pc bpc" id="L1685" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc" id="L1686">            return true;</span>
+<span class="pc bpc" id="L1689" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc" id="L1690">            return true;</span>
         }
-<span class="pc bpc" id="L1688" title="1 of 2 branches missed.">        if (isRightRed(x)) {</span>
-<span class="nc" id="L1689">            return false;</span>
+<span class="pc bpc" id="L1692" title="1 of 2 branches missed.">        if (isRightRed(x)) {</span>
+<span class="nc" id="L1693">            return false;</span>
         }
-<span class="pc bpc" id="L1691" title="1 of 6 branches missed.">        if (x != root &amp;&amp; isRed(x) &amp;&amp; isLeftRed(x)) {</span>
-<span class="nc" id="L1692">            return false;</span>
+<span class="pc bpc" id="L1695" title="1 of 6 branches missed.">        if (x != root &amp;&amp; isRed(x) &amp;&amp; isLeftRed(x)) {</span>
+<span class="nc" id="L1696">            return false;</span>
         }
-<span class="pc bpc" id="L1694" title="2 of 4 branches missed.">        return is23Left(x) &amp;&amp; is23Right(x);</span>
+<span class="pc bpc" id="L1698" title="2 of 4 branches missed.">        return is23Left(x) &amp;&amp; is23Right(x);</span>
     }
     private boolean is23Left(long x) {
-<span class="fc bfc" id="L1697" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) return true;</span>
-<span class="fc" id="L1698">        return is23(nodeMap.getLeft(x));</span>
+<span class="fc bfc" id="L1701" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) return true;</span>
+<span class="fc" id="L1702">        return is23(nodeMap.getLeft(x));</span>
     }
     private boolean is23Right(long x) {
-<span class="fc bfc" id="L1701" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) return true;</span>
-<span class="fc" id="L1702">        return is23(nodeMap.getRight(x));</span>
+<span class="fc bfc" id="L1705" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) return true;</span>
+<span class="fc" id="L1706">        return is23(nodeMap.getRight(x));</span>
     }
 
     // do all paths from root to leaf have same number of black edges?
     private boolean isBalanced() { 
-<span class="pc bpc" id="L1707" title="1 of 2 branches missed.">        if (!rootIsSet) {</span>
-<span class="nc" id="L1708">            return true;</span>
+<span class="pc bpc" id="L1711" title="1 of 2 branches missed.">        if (!rootIsSet) {</span>
+<span class="nc" id="L1712">            return true;</span>
         }
-<span class="fc" id="L1710">        int black = 0;     // number of black links on path from root to min</span>
-<span class="fc" id="L1711">        long x = root;</span>
-<span class="pc bpc" id="L1712" title="1 of 2 branches missed.">        while (nodeMap.containsKey(x)) {</span>
-<span class="fc bfc" id="L1713" title="All 2 branches covered.">            if (!isRed(x)) {</span>
-<span class="fc" id="L1714">                black++;</span>
+<span class="fc" id="L1714">        int black = 0;     // number of black links on path from root to min</span>
+<span class="fc" id="L1715">        long x = root;</span>
+<span class="pc bpc" id="L1716" title="1 of 2 branches missed.">        while (nodeMap.containsKey(x)) {</span>
+<span class="fc bfc" id="L1717" title="All 2 branches covered.">            if (!isRed(x)) {</span>
+<span class="fc" id="L1718">                black++;</span>
             }
-<span class="fc bfc" id="L1716" title="All 2 branches covered.">            if (!nodeMap.leftIsSet(x)) {</span>
-<span class="fc" id="L1717">                break;</span>
+<span class="fc bfc" id="L1720" title="All 2 branches covered.">            if (!nodeMap.leftIsSet(x)) {</span>
+<span class="fc" id="L1721">                break;</span>
             }
-<span class="fc" id="L1719">            x = nodeMap.getLeft(x);</span>
+<span class="fc" id="L1723">            x = nodeMap.getLeft(x);</span>
         }
-<span class="fc" id="L1721">        return isBalanced(root, black);</span>
+<span class="fc" id="L1725">        return isBalanced(root, black);</span>
     }
 
     // does every path from the root to a leaf have the given number of black links?
     private boolean isBalanced(long x, int black) {
-<span class="pc bpc" id="L1726" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
-<span class="nc bnc" id="L1727" title="All 2 branches missed.">            return black == 0;</span>
+<span class="pc bpc" id="L1730" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(x)) {</span>
+<span class="nc bnc" id="L1731" title="All 2 branches missed.">            return black == 0;</span>
         }
-<span class="fc bfc" id="L1729" title="All 2 branches covered.">        if (!isRed(x)) {</span>
-<span class="fc" id="L1730">            black--;</span>
+<span class="fc bfc" id="L1733" title="All 2 branches covered.">        if (!isRed(x)) {</span>
+<span class="fc" id="L1734">            black--;</span>
         }
-<span class="pc bpc" id="L1732" title="2 of 4 branches missed.">        return isLeftBalanced(x, black) &amp;&amp; isRightBalanced(x, black);</span>
+<span class="pc bpc" id="L1736" title="2 of 4 branches missed.">        return isLeftBalanced(x, black) &amp;&amp; isRightBalanced(x, black);</span>
     }
     private boolean isLeftBalanced(long x, int black) {
-<span class="fc bfc" id="L1735" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) {</span>
-<span class="pc bpc" id="L1736" title="1 of 2 branches missed.">            return black == 0;</span>
+<span class="fc bfc" id="L1739" title="All 2 branches covered.">        if (!nodeMap.leftIsSet(x)) {</span>
+<span class="pc bpc" id="L1740" title="1 of 2 branches missed.">            return black == 0;</span>
         }
-<span class="fc" id="L1738">        long key = nodeMap.getLeft(x);</span>
-<span class="fc" id="L1739">        return isBalanced(key, black);</span>
+<span class="fc" id="L1742">        long key = nodeMap.getLeft(x);</span>
+<span class="fc" id="L1743">        return isBalanced(key, black);</span>
     } 
     private boolean isRightBalanced(long x, int black) {
-<span class="fc bfc" id="L1742" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) {</span>
-<span class="pc bpc" id="L1743" title="1 of 2 branches missed.">            return black == 0;</span>
+<span class="fc bfc" id="L1746" title="All 2 branches covered.">        if (!nodeMap.rightIsSet(x)) {</span>
+<span class="pc bpc" id="L1747" title="1 of 2 branches missed.">            return black == 0;</span>
         }
-<span class="fc" id="L1745">        long key = nodeMap.getRight(x);</span>
-<span class="fc" id="L1746">        return isBalanced(key, black);</span>
+<span class="fc" id="L1749">        long key = nodeMap.getRight(x);</span>
+<span class="fc" id="L1750">        return isBalanced(key, black);</span>
     } 
     
     /**
      * left subtree, root, right subtree
      */
     public void printInOrderTraversal() {
-<span class="fc" id="L1753">        System.out.print(&quot;root=&quot;);</span>
-<span class="pc bpc" id="L1754" title="1 of 2 branches missed.">        if (rootIsSet) {</span>
-<span class="fc" id="L1755">            System.out.print(root);</span>
+<span class="fc" id="L1757">        System.out.print(&quot;root=&quot;);</span>
+<span class="pc bpc" id="L1758" title="1 of 2 branches missed.">        if (rootIsSet) {</span>
+<span class="fc" id="L1759">            System.out.print(root);</span>
         }
-<span class="fc" id="L1757">        System.out.println(&quot;&quot;);</span>
-<span class="fc" id="L1758">        long[] nodes = getInOrderTraversalIterative(root);</span>
-<span class="fc bfc" id="L1759" title="All 2 branches covered.">        for (long node : nodes) {</span>
-<span class="fc" id="L1760">            System.out.println(&quot;node=&quot; + nodeToString(node));</span>
+<span class="fc" id="L1761">        System.out.println(&quot;&quot;);</span>
+<span class="fc" id="L1762">        long[] nodes = getInOrderTraversalIterative(root);</span>
+<span class="fc bfc" id="L1763" title="All 2 branches covered.">        for (long node : nodes) {</span>
+<span class="fc" id="L1764">            System.out.println(&quot;node=&quot; + nodeToString(node));</span>
         }
-<span class="fc" id="L1762">    }</span>
+<span class="fc" id="L1766">    }</span>
     
     /**
      * root, left subtree, right subtree
      */
     public void printPreOrderTraversal() {
-<span class="fc" id="L1768">        System.out.print(&quot;root=&quot;);</span>
-<span class="pc bpc" id="L1769" title="1 of 2 branches missed.">        if (rootIsSet) {</span>
-<span class="fc" id="L1770">            System.out.print(root);</span>
+<span class="fc" id="L1772">        System.out.print(&quot;root=&quot;);</span>
+<span class="pc bpc" id="L1773" title="1 of 2 branches missed.">        if (rootIsSet) {</span>
+<span class="fc" id="L1774">            System.out.print(root);</span>
         }
-<span class="fc" id="L1772">        System.out.println(&quot; size=&quot; + size());</span>
-<span class="fc" id="L1773">        long[] nodes = getPreOrderTraversalIterative(root, 1);</span>
-<span class="fc bfc" id="L1774" title="All 2 branches covered.">        for (long node : nodes) {</span>
-<span class="fc" id="L1775">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
+<span class="fc" id="L1776">        System.out.println(&quot; size=&quot; + size());</span>
+<span class="fc" id="L1777">        long[] nodes = getPreOrderTraversalIterative(root, 1);</span>
+<span class="fc bfc" id="L1778" title="All 2 branches covered.">        for (long node : nodes) {</span>
+<span class="fc" id="L1779">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
         }
-<span class="fc" id="L1777">    }</span>
+<span class="fc" id="L1781">    }</span>
     public void printPreOrderTraversal2(long topNode) {
-<span class="nc" id="L1779">        System.out.print(&quot;root=&quot;);</span>
-<span class="nc bnc" id="L1780" title="All 2 branches missed.">        if (rootIsSet) {</span>
-<span class="nc" id="L1781">            System.out.print(root);</span>
+<span class="nc" id="L1783">        System.out.print(&quot;root=&quot;);</span>
+<span class="nc bnc" id="L1784" title="All 2 branches missed.">        if (rootIsSet) {</span>
+<span class="nc" id="L1785">            System.out.print(root);</span>
         }
-<span class="nc" id="L1783">        System.out.println(&quot; size=&quot; + size());</span>
-<span class="nc" id="L1784">        long[] nodes = getPreOrderTraversalIterative(topNode, 1);</span>
-<span class="nc bnc" id="L1785" title="All 2 branches missed.">        for (long node : nodes) {</span>
-<span class="nc" id="L1786">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
+<span class="nc" id="L1787">        System.out.println(&quot; size=&quot; + size());</span>
+<span class="nc" id="L1788">        long[] nodes = getPreOrderTraversalIterative(topNode, 1);</span>
+<span class="nc bnc" id="L1789" title="All 2 branches missed.">        for (long node : nodes) {</span>
+<span class="nc" id="L1790">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
         }
-<span class="nc" id="L1788">    }</span>
+<span class="nc" id="L1792">    }</span>
     private void printPreOrderTraversal(int addExtraToSize) {
-<span class="nc" id="L1790">        long[] nodes = getPreOrderTraversalIterative(root, </span>
+<span class="nc" id="L1794">        long[] nodes = getPreOrderTraversalIterative(root, </span>
             addExtraToSize);
-<span class="nc" id="L1792">        System.out.print(&quot;root=&quot;);</span>
-<span class="nc bnc" id="L1793" title="All 2 branches missed.">        if (rootIsSet) {</span>
-<span class="nc" id="L1794">            System.out.print(root);</span>
+<span class="nc" id="L1796">        System.out.print(&quot;root=&quot;);</span>
+<span class="nc bnc" id="L1797" title="All 2 branches missed.">        if (rootIsSet) {</span>
+<span class="nc" id="L1798">            System.out.print(root);</span>
         }
-<span class="nc" id="L1796">        System.out.println(&quot;&quot;);</span>
-<span class="nc bnc" id="L1797" title="All 2 branches missed.">        for (long node : nodes) {</span>
-<span class="nc" id="L1798">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
+<span class="nc" id="L1800">        System.out.println(&quot;&quot;);</span>
+<span class="nc bnc" id="L1801" title="All 2 branches missed.">        for (long node : nodes) {</span>
+<span class="nc" id="L1802">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
         }
-<span class="nc" id="L1800">    }</span>
+<span class="nc" id="L1804">    }</span>
     
     /**
      * left subtree, right subtree, root subtree
      */
     public void printPostOrderTraversal() {
-<span class="fc" id="L1806">        long[] nodes = getPostOrderTraversalIterative(root);</span>
-<span class="fc bfc" id="L1807" title="All 2 branches covered.">        for (long node : nodes) {</span>
-<span class="fc" id="L1808">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
+<span class="fc" id="L1810">        long[] nodes = getPostOrderTraversalIterative(root);</span>
+<span class="fc bfc" id="L1811" title="All 2 branches covered.">        for (long node : nodes) {</span>
+<span class="fc" id="L1812">            System.out.println(&quot;  node=&quot; + nodeToString(node));</span>
         }
-<span class="fc" id="L1810">    }</span>
+<span class="fc" id="L1814">    }</span>
 
     /**
      * visit each node using pattern left subtree, root, right subtree
@@ -1815,48 +1819,49 @@ import java.util.Stack;
      */
     protected long[] getInOrderTraversalIterative(Long node) {
        
-<span class="pc bpc" id="L1818" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1819">            return new long[0];</span>
+<span class="pc bpc" id="L1822" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1823">            return new long[0];</span>
         }
         
-<span class="fc" id="L1822">        int sz = size();</span>
+<span class="fc" id="L1826">        int sz = size();</span>
         
-<span class="fc" id="L1824">        long[] array = new long[sz];</span>
-<span class="fc" id="L1825">        int count = 0;</span>
+<span class="fc" id="L1828">        long[] array = new long[sz];</span>
+<span class="fc" id="L1829">        int count = 0;</span>
         
-<span class="fc" id="L1827">        Stack&lt;Long&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L1831">        Stack&lt;Long&gt; stack = new Stack&lt;&gt;();</span>
                
-<span class="fc bfc" id="L1829" title="All 4 branches covered.">        while (!stack.isEmpty() || (node != null)) {</span>
-<span class="fc bfc" id="L1830" title="All 2 branches covered.">            if (node != null) {</span>
+<span class="fc bfc" id="L1833" title="All 4 branches covered.">        while (!stack.isEmpty() || (node != null)) {</span>
+<span class="fc bfc" id="L1834" title="All 2 branches covered.">            if (node != null) {</span>
                  
-<span class="fc" id="L1832">                stack.push(node);</span>
+<span class="fc" id="L1836">                stack.push(node);</span>
                 
-<span class="fc bfc" id="L1834" title="All 2 branches covered.">                node = nodeMap.leftIsSet(node.longValue()) ?</span>
-<span class="fc" id="L1835">                    nodeMap.getLeft(node.longValue()) : null;</span>
+<span class="fc bfc" id="L1838" title="All 2 branches covered.">                node = nodeMap.leftIsSet(node.longValue()) ?</span>
+<span class="fc" id="L1839">                    nodeMap.getLeft(node.longValue()) : null;</span>
             
-<span class="pc bpc" id="L1837" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
+<span class="pc bpc" id="L1841" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
                 
-<span class="fc" id="L1839">                node = stack.pop();</span>
+<span class="fc" id="L1843">                node = stack.pop();</span>
                 
-<span class="fc" id="L1841">                array[count] = node;</span>
-<span class="fc" id="L1842">                count++;</span>
+<span class="fc" id="L1845">                array[count] = node;</span>
+<span class="fc" id="L1846">                count++;</span>
                 
                 //System.out.println(node.key);
                 
-<span class="fc bfc" id="L1846" title="All 2 branches covered.">                node = nodeMap.rightIsSet(node.longValue()) ?</span>
-<span class="fc" id="L1847">                    nodeMap.getRight(node.longValue()) : null;</span>
+<span class="fc bfc" id="L1850" title="All 2 branches covered.">                node = nodeMap.rightIsSet(node.longValue()) ?</span>
+<span class="fc" id="L1851">                    nodeMap.getRight(node.longValue()) : null;</span>
             }
         }
-<span class="pc bpc" id="L1850" title="1 of 2 branches missed.">        if (count &lt; sz) {</span>
+<span class="pc bpc" id="L1854" title="1 of 2 branches missed.">        if (count &lt; sz) {</span>
             // can happen during debugging when insert is not complete yet
-<span class="nc" id="L1852">            array = Arrays.copyOf(array, count);</span>
+<span class="nc" id="L1856">            array = Arrays.copyOf(array, count);</span>
         }
         
-<span class="fc" id="L1855">        return array;</span>
+<span class="fc" id="L1859">        return array;</span>
     }
     
     /**
-     * visit each node using pattern: root, left subtree, right subtree
+     * visit each node using pattern: 
+     *     root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
      */
     protected long[] getPreOrderTraversalIterative(Long node, int addExtraToSize) {
@@ -1866,103 +1871,152 @@ import java.util.Stack;
         //   in the middle of a put where the node size is not yet updated.
         // The count conditionals below are otherwise, not needed.
         
-<span class="pc bpc" id="L1869" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1870">            return new long[0];</span>
+<span class="pc bpc" id="L1874" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1875">            return new long[0];</span>
         }
                 
-<span class="fc" id="L1873">        int sz = size(node) + addExtraToSize;</span>
+<span class="fc" id="L1878">        int sz = size(node) + addExtraToSize;</span>
         
-<span class="fc" id="L1875">        long[] array = new long[sz];</span>
-<span class="fc" id="L1876">        int count = 0;</span>
+<span class="fc" id="L1880">        long[] array = new long[sz];</span>
+<span class="fc" id="L1881">        int count = 0;</span>
         
-<span class="fc" id="L1878">        Stack&lt;Long&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L1883">        Stack&lt;Long&gt; stack = new Stack&lt;&gt;();</span>
         
-<span class="fc bfc" id="L1880" title="All 6 branches covered.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
-<span class="pc bpc" id="L1881" title="1 of 4 branches missed.">            if (node != null &amp;&amp; count &lt; sz) {</span>
+<span class="fc bfc" id="L1885" title="All 6 branches covered.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
+<span class="pc bpc" id="L1886" title="1 of 4 branches missed.">            if (node != null &amp;&amp; count &lt; sz) {</span>
                 
-<span class="fc" id="L1883">                array[count] = node;</span>
-<span class="fc" id="L1884">                count++;</span>
+<span class="fc" id="L1888">                array[count] = node;</span>
+<span class="fc" id="L1889">                count++;</span>
                 //System.out.println(node);
                 
-<span class="fc bfc" id="L1887" title="All 2 branches covered.">                if (count &lt; sz) {</span>
-<span class="fc" id="L1888">                    stack.push(node);</span>
+<span class="fc bfc" id="L1892" title="All 2 branches covered.">                if (count &lt; sz) {</span>
+<span class="fc" id="L1893">                    stack.push(node);</span>
                 }
                 
-<span class="fc bfc" id="L1891" title="All 2 branches covered.">                node = nodeMap.leftIsSet(node.longValue()) ?</span>
-<span class="fc" id="L1892">                    nodeMap.getLeft(node.longValue()) : null;</span>
+<span class="fc bfc" id="L1896" title="All 2 branches covered.">                node = nodeMap.leftIsSet(node.longValue()) ?</span>
+<span class="fc" id="L1897">                    nodeMap.getLeft(node.longValue()) : null;</span>
             
-<span class="pc bpc" id="L1894" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
+<span class="pc bpc" id="L1899" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
                 
-<span class="fc" id="L1896">                node = stack.pop();</span>
+<span class="fc" id="L1901">                node = stack.pop();</span>
                 
-<span class="fc bfc" id="L1898" title="All 2 branches covered.">                node = nodeMap.rightIsSet(node.longValue()) ?</span>
-<span class="fc" id="L1899">                    nodeMap.getRight(node.longValue()) : null;</span>
+<span class="fc bfc" id="L1903" title="All 2 branches covered.">                node = nodeMap.rightIsSet(node.longValue()) ?</span>
+<span class="fc" id="L1904">                    nodeMap.getRight(node.longValue()) : null;</span>
             }
         }
         
-<span class="fc bfc" id="L1903" title="All 2 branches covered.">        if (count &lt; sz) {</span>
-<span class="fc" id="L1904">            array = Arrays.copyOf(array, count);</span>
+<span class="fc bfc" id="L1908" title="All 2 branches covered.">        if (count &lt; sz) {</span>
+<span class="fc" id="L1909">            array = Arrays.copyOf(array, count);</span>
         }
         
-<span class="fc" id="L1907">        return array;</span>
+<span class="fc" id="L1912">        return array;</span>
     }
 
     /**
-     * visit each node using pattern: left subtree, right subtree, root subtree
+     * visit each node using pattern: 
+     *     left subtree, right subtree, root subtree
      * in an iterative manner rather than invoking the method recursively.
      */
     protected long[] getPostOrderTraversalIterative(Long node) {
     
-<span class="pc bpc" id="L1916" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L1917">            return new long[0];</span>
+<span class="pc bpc" id="L1922" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1923">            return new long[0];</span>
         }
         
-<span class="fc" id="L1920">        int sz = size();</span>
+<span class="fc" id="L1926">        int sz = size();</span>
         
-<span class="fc" id="L1922">        long[] array = new long[sz];</span>
-<span class="fc" id="L1923">        int count = 0;</span>
+<span class="fc" id="L1928">        long[] array = new long[sz];</span>
+<span class="fc" id="L1929">        int count = 0;</span>
         
-<span class="pc bpc" id="L1925" title="1 of 2 branches missed.">        if (node == null) {</span>
-<span class="nc" id="L1926">            return array;</span>
+<span class="pc bpc" id="L1931" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L1932">            return array;</span>
         }
         
-<span class="fc" id="L1929">        Stack&lt;Long&gt; stack = new Stack&lt;Long&gt;();</span>
-<span class="fc" id="L1930">        Stack&lt;Long&gt; stack2 = new Stack&lt;Long&gt;();</span>
-<span class="fc" id="L1931">        stack.push(node);</span>
+<span class="fc" id="L1935">        Stack&lt;Long&gt; stack = new Stack&lt;Long&gt;();</span>
+<span class="fc" id="L1936">        Stack&lt;Long&gt; stack2 = new Stack&lt;Long&gt;();</span>
+<span class="fc" id="L1937">        stack.push(node);</span>
         
-<span class="fc bfc" id="L1933" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
+<span class="fc bfc" id="L1939" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
             
-<span class="fc" id="L1935">            node = stack.pop();</span>
+<span class="fc" id="L1941">            node = stack.pop();</span>
             
-<span class="fc" id="L1937">            stack2.push(node);</span>
+<span class="fc" id="L1943">            stack2.push(node);</span>
             
-<span class="fc bfc" id="L1939" title="All 2 branches covered.">            if (nodeMap.leftIsSet(node.longValue())) {</span>
-<span class="fc" id="L1940">                stack.push(nodeMap.getLeft(node.longValue()));</span>
+<span class="fc bfc" id="L1945" title="All 2 branches covered.">            if (nodeMap.leftIsSet(node.longValue())) {</span>
+<span class="fc" id="L1946">                stack.push(nodeMap.getLeft(node.longValue()));</span>
             }
 
-<span class="fc bfc" id="L1943" title="All 2 branches covered.">            if (nodeMap.rightIsSet(node.longValue())) {</span>
-<span class="fc" id="L1944">                stack.push(nodeMap.getRight(node.longValue()));</span>
+<span class="fc bfc" id="L1949" title="All 2 branches covered.">            if (nodeMap.rightIsSet(node.longValue())) {</span>
+<span class="fc" id="L1950">                stack.push(nodeMap.getRight(node.longValue()));</span>
             }
         }
         
-<span class="pc bpc" id="L1948" title="1 of 4 branches missed.">        while (!stack2.isEmpty() &amp;&amp; count &lt; sz) {</span>
+<span class="pc bpc" id="L1954" title="1 of 4 branches missed.">        while (!stack2.isEmpty() &amp;&amp; count &lt; sz) {</span>
             
-<span class="fc" id="L1950">            node = stack2.pop();</span>
+<span class="fc" id="L1956">            node = stack2.pop();</span>
             
             //process(node);
-<span class="fc" id="L1953">            array[count] = node;</span>
-<span class="fc" id="L1954">            count++;</span>
+<span class="fc" id="L1959">            array[count] = node;</span>
+<span class="fc" id="L1960">            count++;</span>
             //System.out.println(node);
         }
         
-<span class="pc bpc" id="L1958" title="1 of 2 branches missed.">        if (count &lt; sz) {</span>
+<span class="pc bpc" id="L1964" title="1 of 2 branches missed.">        if (count &lt; sz) {</span>
             // can happen during debugging when insert is not complete yet
-<span class="nc" id="L1960">            array = Arrays.copyOf(array, count);</span>
+<span class="nc" id="L1966">            array = Arrays.copyOf(array, count);</span>
         }
          
-<span class="fc" id="L1963">        return array;</span>
+<span class="fc" id="L1969">        return array;</span>
     }
    
+    /**
+    visit each node using pattern root node, then all direct children of root node (=level 2),
+    then all direct children of those children (=level 3), etc
+    in an iterative manner.
+    */
+    protected long[] getLevelOrderTraversalIterative(Long node) {
+<span class="nc bnc" id="L1978" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1979">            return new long[0];</span>
+        }
+        
+<span class="nc" id="L1982">        int sz = size();</span>
+        
+<span class="nc" id="L1984">        long[] array = new long[sz];</span>
+<span class="nc" id="L1985">        int count = 0;</span>
+        
+<span class="nc bnc" id="L1987" title="All 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L1988">            return array;</span>
+        }
+        
+        // can use stacks or queues interchangeably here, but if prefer 
+        //   left to right norder, will want queues.
+<span class="nc" id="L1993">        java.util.Queue&lt;Long&gt; level = new ArrayDeque&lt;Long&gt;();</span>
+<span class="nc" id="L1994">        java.util.Queue&lt;Long&gt; nextLevel = new ArrayDeque&lt;Long&gt;();</span>
+        
+<span class="nc" id="L1996">        level.add(node);</span>
+        
+        while (true) {
+<span class="nc bnc" id="L1999" title="All 2 branches missed.">            while (!level.isEmpty()) {</span>
+<span class="nc" id="L2000">                node = level.poll();</span>
+<span class="nc" id="L2001">                array[count] = node;</span>
+<span class="nc" id="L2002">                count++;</span>
+<span class="nc bnc" id="L2003" title="All 2 branches missed.">                if (nodeMap.leftIsSet(node.longValue())) {</span>
+<span class="nc" id="L2004">                    nextLevel.add(nodeMap.getLeft(node.longValue()));</span>
+                }
+<span class="nc bnc" id="L2006" title="All 2 branches missed.">                if (nodeMap.rightIsSet(node.longValue())) {</span>
+<span class="nc" id="L2007">                    nextLevel.add(nodeMap.getRight(node.longValue()));</span>
+                } 
+            }
+<span class="nc bnc" id="L2010" title="All 2 branches missed.">            if (nextLevel.isEmpty()) {</span>
+<span class="nc" id="L2011">                break;</span>
+            }
+<span class="nc" id="L2013">            level.addAll(nextLevel);</span>
+<span class="nc" id="L2014">            nextLevel.clear();</span>
+        }
+                
+<span class="nc" id="L2017">        return array;</span>
+    }
+    
     /**
      * estimate the size that an instance of RedBlackBSTLongInt with
      * n entries would occupy in heap space in Bytes.
@@ -1974,105 +2028,105 @@ import java.util.Stack;
      */
     public static long estimateSizeOnHeap(int numberOfEntries) {
         
-<span class="fc" id="L1977">        long total = 0;</span>
+<span class="fc" id="L2031">        long total = 0;</span>
        
-<span class="fc" id="L1979">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L1980">        est.setNBooleanFields(1);</span>
-<span class="fc" id="L1981">        est.setNLongFields(1);</span>
-<span class="fc" id="L1982">        est.setNArrayRefsFields(1);</span>
-<span class="fc" id="L1983">        est.setNIntFields(4);</span>
+<span class="fc" id="L2033">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L2034">        est.setNBooleanFields(1);</span>
+<span class="fc" id="L2035">        est.setNLongFields(1);</span>
+<span class="fc" id="L2036">        est.setNArrayRefsFields(1);</span>
+<span class="fc" id="L2037">        est.setNIntFields(4);</span>
        
-<span class="fc" id="L1985">        total += est.estimateSizeOnHeap();</span>
+<span class="fc" id="L2039">        total += est.estimateSizeOnHeap();</span>
         
-<span class="fc" id="L1987">        total += NodeMap.estimateSizeOnHeap(numberOfEntries);</span>
+<span class="fc" id="L2041">        total += NodeMap.estimateSizeOnHeap(numberOfEntries);</span>
              
-<span class="fc" id="L1989">        return total;</span>
+<span class="fc" id="L2043">        return total;</span>
     }
     
     private String nodeToString(long key) {
         //assert(nodeMap.containsKey(key));
-<span class="pc bpc" id="L1994" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(key)) {</span>
+<span class="pc bpc" id="L2048" title="1 of 2 branches missed.">        if (!nodeMap.containsKey(key)) {</span>
             // this can happen in the middle of a method, for example,
             // when root has been removed and new is not yet assigned
-<span class="nc" id="L1997">            System.out.println(&quot;ERROR: key &quot; + key + &quot; not in maps&quot;);</span>
-<span class="nc" id="L1998">            return &quot;&quot;;</span>
+<span class="nc" id="L2051">            System.out.println(&quot;ERROR: key &quot; + key + &quot; not in maps&quot;);</span>
+<span class="nc" id="L2052">            return &quot;&quot;;</span>
         }
         
-<span class="fc" id="L2001">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L2055">        StringBuilder sb = new StringBuilder();</span>
         //node=key=0 val=0 color=false size=1
-<span class="fc" id="L2003">        sb.append(&quot;key=&quot;).append(key).append(&quot; val=&quot;).append(nodeMap.getNodeValue(key));</span>
-<span class="fc" id="L2004">        sb.append(&quot; color=&quot;).append(nodeMap.getNodeColor(key));</span>
-<span class="fc" id="L2005">        sb.append(&quot; size=&quot;).append(nodeMap.getNodeSize(key));</span>
-<span class="fc" id="L2006">        sb.append(&quot; p=&quot;);</span>
-<span class="fc bfc" id="L2007" title="All 2 branches covered.">        if (nodeMap.parentIsSet(key)) {</span>
-<span class="fc" id="L2008">           sb.append(nodeMap.getParent(key));</span>
+<span class="fc" id="L2057">        sb.append(&quot;key=&quot;).append(key).append(&quot; val=&quot;).append(nodeMap.getNodeValue(key));</span>
+<span class="fc" id="L2058">        sb.append(&quot; color=&quot;).append(nodeMap.getNodeColor(key));</span>
+<span class="fc" id="L2059">        sb.append(&quot; size=&quot;).append(nodeMap.getNodeSize(key));</span>
+<span class="fc" id="L2060">        sb.append(&quot; p=&quot;);</span>
+<span class="fc bfc" id="L2061" title="All 2 branches covered.">        if (nodeMap.parentIsSet(key)) {</span>
+<span class="fc" id="L2062">           sb.append(nodeMap.getParent(key));</span>
         }
-<span class="fc" id="L2010">        sb.append(&quot; l=&quot;);</span>
-<span class="fc bfc" id="L2011" title="All 2 branches covered.">        if (nodeMap.leftIsSet(key)) {</span>
-<span class="fc" id="L2012">           sb.append(nodeMap.getLeft(key));</span>
+<span class="fc" id="L2064">        sb.append(&quot; l=&quot;);</span>
+<span class="fc bfc" id="L2065" title="All 2 branches covered.">        if (nodeMap.leftIsSet(key)) {</span>
+<span class="fc" id="L2066">           sb.append(nodeMap.getLeft(key));</span>
         }
-<span class="fc" id="L2014">        sb.append(&quot; r=&quot;);</span>
-<span class="fc bfc" id="L2015" title="All 2 branches covered.">        if (nodeMap.rightIsSet(key)) {</span>
-<span class="fc" id="L2016">           sb.append(nodeMap.getRight(key));</span>
+<span class="fc" id="L2068">        sb.append(&quot; r=&quot;);</span>
+<span class="fc bfc" id="L2069" title="All 2 branches covered.">        if (nodeMap.rightIsSet(key)) {</span>
+<span class="fc" id="L2070">           sb.append(nodeMap.getRight(key));</span>
         }
-<span class="fc" id="L2018">        return sb.toString();</span>
+<span class="fc" id="L2072">        return sb.toString();</span>
     }
 
     private boolean isParentChildConsistent() {
         
-<span class="fc" id="L2023">        boolean passed = true;</span>
+<span class="fc" id="L2077">        boolean passed = true;</span>
         
-<span class="pc bpc" id="L2025" title="1 of 2 branches missed.">        if (!rootIsSet) {</span>
-<span class="nc bnc" id="L2026" title="All 2 branches missed.">            if (!nodeMap.isEmpty()) {</span>
-<span class="nc" id="L2027">                System.err.println(&quot;maps not empty, but root is&quot;);</span>
-<span class="nc" id="L2028">                passed = false;</span>
+<span class="pc bpc" id="L2079" title="1 of 2 branches missed.">        if (!rootIsSet) {</span>
+<span class="nc bnc" id="L2080" title="All 2 branches missed.">            if (!nodeMap.isEmpty()) {</span>
+<span class="nc" id="L2081">                System.err.println(&quot;maps not empty, but root is&quot;);</span>
+<span class="nc" id="L2082">                passed = false;</span>
             }
         }
         
         //System.out.println(&quot;root=&quot; + nodeToString(root));
         
-<span class="pc bpc" id="L2034" title="1 of 2 branches missed.">        if (nodeMap.parentIsSet(root)) {</span>
-<span class="nc" id="L2035">            System.err.println(&quot;root should not have parent key&quot;);</span>
-<span class="nc" id="L2036">            passed = false;</span>
+<span class="pc bpc" id="L2088" title="1 of 2 branches missed.">        if (nodeMap.parentIsSet(root)) {</span>
+<span class="nc" id="L2089">            System.err.println(&quot;root should not have parent key&quot;);</span>
+<span class="nc" id="L2090">            passed = false;</span>
         }
         
-<span class="fc" id="L2039">        long[] nodes = getPreOrderTraversalIterative(root, 0);</span>
-<span class="fc bfc" id="L2040" title="All 2 branches covered.">        for (long key : nodes) {</span>
-<span class="fc bfc" id="L2041" title="All 2 branches covered.">            if (nodeMap.leftIsSet(key)) {</span>
-<span class="fc" id="L2042">                long child = nodeMap.getLeft(key);</span>
-<span class="pc bpc" id="L2043" title="1 of 2 branches missed.">                if (!nodeMap.parentIsSet(child)) {</span>
-<span class="nc" id="L2044">                    System.err.format(</span>
+<span class="fc" id="L2093">        long[] nodes = getPreOrderTraversalIterative(root, 0);</span>
+<span class="fc bfc" id="L2094" title="All 2 branches covered.">        for (long key : nodes) {</span>
+<span class="fc bfc" id="L2095" title="All 2 branches covered.">            if (nodeMap.leftIsSet(key)) {</span>
+<span class="fc" id="L2096">                long child = nodeMap.getLeft(key);</span>
+<span class="pc bpc" id="L2097" title="1 of 2 branches missed.">                if (!nodeMap.parentIsSet(child)) {</span>
+<span class="nc" id="L2098">                    System.err.format(</span>
                         &quot;error in %d.left=%d has no parent\n&quot;,
-<span class="nc" id="L2046">                        key, child);</span>
-<span class="nc" id="L2047">                    passed = false;</span>
-<span class="pc bpc" id="L2048" title="1 of 2 branches missed.">                } else if (nodeMap.getParent(child) != key) {</span>
-<span class="nc" id="L2049">                    System.err.format(</span>
+<span class="nc" id="L2100">                        key, child);</span>
+<span class="nc" id="L2101">                    passed = false;</span>
+<span class="pc bpc" id="L2102" title="1 of 2 branches missed.">                } else if (nodeMap.getParent(child) != key) {</span>
+<span class="nc" id="L2103">                    System.err.format(</span>
                         &quot;error in left: %d.left=%d but %d.parent=%d\n&quot;,
-<span class="nc" id="L2051">                        key, child, child, nodeMap.getParent(child));</span>
-<span class="nc" id="L2052">                    passed = false;</span>
+<span class="nc" id="L2105">                        key, child, child, nodeMap.getParent(child));</span>
+<span class="nc" id="L2106">                    passed = false;</span>
                 }
             }
-<span class="fc bfc" id="L2055" title="All 2 branches covered.">            if (nodeMap.rightIsSet(key)) {</span>
-<span class="fc" id="L2056">                long child = nodeMap.getRight(key);</span>
-<span class="pc bpc" id="L2057" title="1 of 2 branches missed.">                if (!nodeMap.parentIsSet(child)) {</span>
-<span class="nc" id="L2058">                    System.err.format(</span>
+<span class="fc bfc" id="L2109" title="All 2 branches covered.">            if (nodeMap.rightIsSet(key)) {</span>
+<span class="fc" id="L2110">                long child = nodeMap.getRight(key);</span>
+<span class="pc bpc" id="L2111" title="1 of 2 branches missed.">                if (!nodeMap.parentIsSet(child)) {</span>
+<span class="nc" id="L2112">                    System.err.format(</span>
                         &quot;error in %d.right=%d has no parent\n&quot;,
-<span class="nc" id="L2060">                        key, child);</span>
-<span class="nc" id="L2061">                    passed = false;</span>
-<span class="pc bpc" id="L2062" title="1 of 2 branches missed.">                } else if (nodeMap.getParent(child) != key) {</span>
-<span class="nc" id="L2063">                    System.err.format(</span>
+<span class="nc" id="L2114">                        key, child);</span>
+<span class="nc" id="L2115">                    passed = false;</span>
+<span class="pc bpc" id="L2116" title="1 of 2 branches missed.">                } else if (nodeMap.getParent(child) != key) {</span>
+<span class="nc" id="L2117">                    System.err.format(</span>
                         &quot;error in right: %d.right=%d but %d.parent=%d\n&quot;,
-<span class="nc" id="L2065">                        key, child, child, nodeMap.getParent(child));</span>
-<span class="nc" id="L2066">                    passed = false;</span>
+<span class="nc" id="L2119">                        key, child, child, nodeMap.getParent(child));</span>
+<span class="nc" id="L2120">                    passed = false;</span>
                 }
             }
         }
-<span class="pc bpc" id="L2070" title="1 of 2 branches missed.">        if (nodes.length != size()) {</span>
-<span class="nc" id="L2071">            System.out.println(&quot;ERROR in nodes extraction&quot;);</span>
-<span class="nc" id="L2072">            passed = false;</span>
+<span class="pc bpc" id="L2124" title="1 of 2 branches missed.">        if (nodes.length != size()) {</span>
+<span class="nc" id="L2125">            System.out.println(&quot;ERROR in nodes extraction&quot;);</span>
+<span class="nc" id="L2126">            passed = false;</span>
         }
         
-<span class="fc" id="L2075">        return passed;</span>
+<span class="fc" id="L2129">        return passed;</span>
     }
     
     /**
@@ -2100,194 +2154,194 @@ import java.util.Stack;
      */
     public void printSmallTree(long node, long maxValue) {
        
-<span class="fc" id="L2103">        int w = (int)Math.ceil(Math.log(maxValue)/Math.log(10));</span>
+<span class="fc" id="L2157">        int w = (int)Math.ceil(Math.log(maxValue)/Math.log(10));</span>
         
-<span class="fc" id="L2105">        int n = nodeMap.getNodeSize(node);</span>
-<span class="fc" id="L2106">        int h = (int)Math.ceil(Math.log(n + 1)/Math.log(2));</span>
+<span class="fc" id="L2159">        int n = nodeMap.getNodeSize(node);</span>
+<span class="fc" id="L2160">        int h = (int)Math.ceil(Math.log(n + 1)/Math.log(2));</span>
         
         //System.out.println(&quot;w=&quot; + w + &quot; n=&quot; + n + &quot; h=&quot; + h);
         
-<span class="fc" id="L2110">        int baselineLength = (w + 1) * (1 &lt;&lt; (h - 1));</span>
+<span class="fc" id="L2164">        int baselineLength = (w + 1) * (1 &lt;&lt; (h - 1));</span>
        
-<span class="pc bpc" id="L2112" title="1 of 2 branches missed.">        if (baselineLength &gt; 100) {</span>
-<span class="nc" id="L2113">            throw new IllegalArgumentException(&quot;the number of characters needed&quot;</span>
+<span class="pc bpc" id="L2166" title="1 of 2 branches missed.">        if (baselineLength &gt; 100) {</span>
+<span class="nc" id="L2167">            throw new IllegalArgumentException(&quot;the number of characters needed&quot;</span>
                 + &quot; for the leaves is &gt; 100&quot;);
         }
         
-<span class="fc" id="L2117">        ArrayDeque&lt;Long&gt; levelQ = new ArrayDeque();</span>
-<span class="fc" id="L2118">        ArrayDeque&lt;Long&gt; nextLevelQ = new ArrayDeque&lt;Long&gt;();</span>
-<span class="fc" id="L2119">        levelQ.add(node);</span>
-<span class="fc" id="L2120">        int level = 0;</span>
-<span class="fc" id="L2121">        int hw = (w+1)/2;</span>
-<span class="fc" id="L2122">        int indent = (baselineLength - (w+1))/2;</span>
-<span class="pc bpc" id="L2123" title="3 of 4 branches missed.">        while (!levelQ.isEmpty() || !nextLevelQ.isEmpty()) {</span>
-<span class="fc" id="L2124">            level++;</span>
-<span class="fc bfc" id="L2125" title="All 2 branches covered.">            if (level &gt; h) {</span>
-<span class="fc" id="L2126">                break;</span>
+<span class="fc" id="L2171">        ArrayDeque&lt;Long&gt; levelQ = new ArrayDeque();</span>
+<span class="fc" id="L2172">        ArrayDeque&lt;Long&gt; nextLevelQ = new ArrayDeque&lt;Long&gt;();</span>
+<span class="fc" id="L2173">        levelQ.add(node);</span>
+<span class="fc" id="L2174">        int level = 0;</span>
+<span class="fc" id="L2175">        int hw = (w+1)/2;</span>
+<span class="fc" id="L2176">        int indent = (baselineLength - (w+1))/2;</span>
+<span class="pc bpc" id="L2177" title="3 of 4 branches missed.">        while (!levelQ.isEmpty() || !nextLevelQ.isEmpty()) {</span>
+<span class="fc" id="L2178">            level++;</span>
+<span class="fc bfc" id="L2179" title="All 2 branches covered.">            if (level &gt; h) {</span>
+<span class="fc" id="L2180">                break;</span>
             }
-<span class="fc bfc" id="L2128" title="All 2 branches covered.">            if (level &gt; 1) {</span>
-<span class="fc" id="L2129">                indent /= 2;</span>
-<span class="pc bpc" id="L2130" title="1 of 2 branches missed.">                if (indent - hw &gt; 1) {</span>
-<span class="nc" id="L2131">                    indent -= hw;</span>
+<span class="fc bfc" id="L2182" title="All 2 branches covered.">            if (level &gt; 1) {</span>
+<span class="fc" id="L2183">                indent /= 2;</span>
+<span class="pc bpc" id="L2184" title="1 of 2 branches missed.">                if (indent - hw &gt; 1) {</span>
+<span class="nc" id="L2185">                    indent -= hw;</span>
                 }
             }
-<span class="fc" id="L2134">            int nn = 1 &lt;&lt; (level - 1);</span>
-<span class="fc" id="L2135">            int nodeSpace = (w+1) * nn;</span>
-<span class="fc" id="L2136">            int spacing = baselineLength - nodeSpace - 2*indent;</span>
-<span class="fc bfc" id="L2137" title="All 2 branches covered.">            if ((nn - 1) &gt; 0) {</span>
-<span class="fc" id="L2138">                spacing /= (nn-1);</span>
+<span class="fc" id="L2188">            int nn = 1 &lt;&lt; (level - 1);</span>
+<span class="fc" id="L2189">            int nodeSpace = (w+1) * nn;</span>
+<span class="fc" id="L2190">            int spacing = baselineLength - nodeSpace - 2*indent;</span>
+<span class="fc bfc" id="L2191" title="All 2 branches covered.">            if ((nn - 1) &gt; 0) {</span>
+<span class="fc" id="L2192">                spacing /= (nn-1);</span>
             }
             //System.out.println(&quot;spacing=&quot; + spacing + &quot; indent=&quot; + indent
             //    + &quot; bl=&quot; + baselineLength + &quot; ns=&quot; + nodeSpace);
-<span class="fc" id="L2142">            int prevPos = -1;</span>
-<span class="fc" id="L2143">            StringBuilder sb0 = new StringBuilder(baselineLength);</span>
-<span class="fc" id="L2144">            StringBuilder sb1 = new StringBuilder(baselineLength);</span>
-<span class="fc bfc" id="L2145" title="All 2 branches covered.">            while (!levelQ.isEmpty()) {</span>
-<span class="fc" id="L2146">                long z = levelQ.pop();</span>
+<span class="fc" id="L2196">            int prevPos = -1;</span>
+<span class="fc" id="L2197">            StringBuilder sb0 = new StringBuilder(baselineLength);</span>
+<span class="fc" id="L2198">            StringBuilder sb1 = new StringBuilder(baselineLength);</span>
+<span class="fc bfc" id="L2199" title="All 2 branches covered.">            while (!levelQ.isEmpty()) {</span>
+<span class="fc" id="L2200">                long z = levelQ.pop();</span>
                 int nSpaces;
-<span class="fc bfc" id="L2148" title="All 2 branches covered.">                if (level == 1) {</span>
-<span class="fc" id="L2149">                    nSpaces = indent;</span>
-<span class="fc bfc" id="L2150" title="All 2 branches covered.">                } else if (prevPos == -1) {</span>
-<span class="fc" id="L2151">                    nSpaces = indent;</span>
+<span class="fc bfc" id="L2202" title="All 2 branches covered.">                if (level == 1) {</span>
+<span class="fc" id="L2203">                    nSpaces = indent;</span>
+<span class="fc bfc" id="L2204" title="All 2 branches covered.">                } else if (prevPos == -1) {</span>
+<span class="fc" id="L2205">                    nSpaces = indent;</span>
                 } else {
-<span class="fc" id="L2153">                    nSpaces = spacing;</span>
+<span class="fc" id="L2207">                    nSpaces = spacing;</span>
                 }
-<span class="fc" id="L2155">                addSpaces(nSpaces, sb0);</span>
-<span class="fc" id="L2156">                addSpaces(nSpaces, sb1);</span>
-<span class="fc" id="L2157">                prevPos += nSpaces;</span>
-<span class="fc bfc" id="L2158" title="All 2 branches covered.">                if (z == Long.MIN_VALUE) {</span>
-<span class="fc" id="L2159">                    addSpaces(w + 1, sb0);</span>
-<span class="fc" id="L2160">                    addSpaces(w + 1, sb1);</span>
+<span class="fc" id="L2209">                addSpaces(nSpaces, sb0);</span>
+<span class="fc" id="L2210">                addSpaces(nSpaces, sb1);</span>
+<span class="fc" id="L2211">                prevPos += nSpaces;</span>
+<span class="fc bfc" id="L2212" title="All 2 branches covered.">                if (z == Long.MIN_VALUE) {</span>
+<span class="fc" id="L2213">                    addSpaces(w + 1, sb0);</span>
+<span class="fc" id="L2214">                    addSpaces(w + 1, sb1);</span>
                     // add 2 empty placeholders
-<span class="fc" id="L2162">                    nextLevelQ.add(Long.MIN_VALUE);</span>
-<span class="fc" id="L2163">                    nextLevelQ.add(Long.MIN_VALUE);</span>
-<span class="fc" id="L2164">                    continue;                    </span>
+<span class="fc" id="L2216">                    nextLevelQ.add(Long.MIN_VALUE);</span>
+<span class="fc" id="L2217">                    nextLevelQ.add(Long.MIN_VALUE);</span>
+<span class="fc" id="L2218">                    continue;                    </span>
                 }
-<span class="pc bpc" id="L2166" title="1 of 2 branches missed.">                if (!nodeMap.containsKey(z)) {</span>
-<span class="nc" id="L2167">                    continue;</span>
+<span class="pc bpc" id="L2220" title="1 of 2 branches missed.">                if (!nodeMap.containsKey(z)) {</span>
+<span class="nc" id="L2221">                    continue;</span>
                 }
-<span class="fc" id="L2169">                int clr = nodeMap.getNodeColor(z);</span>
-<span class="fc" id="L2170">                String keyC = Long.toString(z);</span>
-<span class="fc" id="L2171">                String clrC = Integer.toString(clr);</span>
+<span class="fc" id="L2223">                int clr = nodeMap.getNodeColor(z);</span>
+<span class="fc" id="L2224">                String keyC = Long.toString(z);</span>
+<span class="fc" id="L2225">                String clrC = Integer.toString(clr);</span>
             
-<span class="fc" id="L2173">                sb0.append(keyC);</span>
-<span class="fc" id="L2174">                sb1.append(clrC);</span>
-<span class="fc" id="L2175">                addSpaces(1, sb0);</span>
-<span class="fc" id="L2176">                addSpaces(w + 1 - clrC.length(), sb1);</span>
+<span class="fc" id="L2227">                sb0.append(keyC);</span>
+<span class="fc" id="L2228">                sb1.append(clrC);</span>
+<span class="fc" id="L2229">                addSpaces(1, sb0);</span>
+<span class="fc" id="L2230">                addSpaces(w + 1 - clrC.length(), sb1);</span>
                 
-<span class="fc bfc" id="L2178" title="All 2 branches covered.">                if (nodeMap.leftIsSet(z)) {</span>
-<span class="fc" id="L2179">                    nextLevelQ.add(nodeMap.getLeft(z));</span>
+<span class="fc bfc" id="L2232" title="All 2 branches covered.">                if (nodeMap.leftIsSet(z)) {</span>
+<span class="fc" id="L2233">                    nextLevelQ.add(nodeMap.getLeft(z));</span>
                 } else {
-<span class="fc" id="L2181">                    nextLevelQ.add(Long.MIN_VALUE);</span>
+<span class="fc" id="L2235">                    nextLevelQ.add(Long.MIN_VALUE);</span>
                 }
-<span class="fc bfc" id="L2183" title="All 2 branches covered.">                if (nodeMap.rightIsSet(z)) {</span>
-<span class="fc" id="L2184">                    nextLevelQ.add(nodeMap.getRight(z));</span>
+<span class="fc bfc" id="L2237" title="All 2 branches covered.">                if (nodeMap.rightIsSet(z)) {</span>
+<span class="fc" id="L2238">                    nextLevelQ.add(nodeMap.getRight(z));</span>
                 } else {
-<span class="fc" id="L2186">                    nextLevelQ.add(Long.MIN_VALUE);</span>
+<span class="fc" id="L2240">                    nextLevelQ.add(Long.MIN_VALUE);</span>
                 }
-<span class="fc" id="L2188">            }</span>
-<span class="fc" id="L2189">            System.out.println(sb0.toString());</span>
-<span class="fc" id="L2190">            System.out.println(sb1.toString());</span>
-<span class="fc" id="L2191">            System.out.println(&quot;&quot;);</span>
-<span class="pc bpc" id="L2192" title="3 of 4 branches missed.">            assert(levelQ.isEmpty());</span>
-<span class="fc" id="L2193">            levelQ.addAll(nextLevelQ);</span>
-<span class="fc" id="L2194">            nextLevelQ.clear();</span>
-<span class="fc" id="L2195">        }</span>
-<span class="fc" id="L2196">    } </span>
+<span class="fc" id="L2242">            }</span>
+<span class="fc" id="L2243">            System.out.println(sb0.toString());</span>
+<span class="fc" id="L2244">            System.out.println(sb1.toString());</span>
+<span class="fc" id="L2245">            System.out.println(&quot;&quot;);</span>
+<span class="pc bpc" id="L2246" title="3 of 4 branches missed.">            assert(levelQ.isEmpty());</span>
+<span class="fc" id="L2247">            levelQ.addAll(nextLevelQ);</span>
+<span class="fc" id="L2248">            nextLevelQ.clear();</span>
+<span class="fc" id="L2249">        }</span>
+<span class="fc" id="L2250">    } </span>
     private void addSpaces(int nSpaces, StringBuilder sb) {
-<span class="fc bfc" id="L2198" title="All 2 branches covered.">        for (int i = 0; i &lt; nSpaces; ++i) {</span>
-<span class="fc" id="L2199">            sb.append(&quot; &quot;);</span>
+<span class="fc bfc" id="L2252" title="All 2 branches covered.">        for (int i = 0; i &lt; nSpaces; ++i) {</span>
+<span class="fc" id="L2253">            sb.append(&quot; &quot;);</span>
         }
-<span class="fc" id="L2201">    }</span>
+<span class="fc" id="L2255">    }</span>
     
     private boolean containsLeft(long key) {
-<span class="nc" id="L2204">        return nodeMap.leftIsSet(key);</span>
+<span class="nc" id="L2258">        return nodeMap.leftIsSet(key);</span>
     }
     private boolean containsRight(long key) {
-<span class="nc" id="L2207">        return nodeMap.rightIsSet(key);</span>
+<span class="nc" id="L2261">        return nodeMap.rightIsSet(key);</span>
     }
     private boolean containsParent(long key) {
-<span class="nc" id="L2210">        return nodeMap.parentIsSet(key);</span>
+<span class="nc" id="L2264">        return nodeMap.parentIsSet(key);</span>
     }
     private boolean containsParentLeft(long key) {
-<span class="nc bnc" id="L2213" title="All 2 branches missed.">        if (containsParent(key)) {</span>
-<span class="nc" id="L2214">            return containsLeft(nodeMap.getParent(key));</span>
+<span class="nc bnc" id="L2267" title="All 2 branches missed.">        if (containsParent(key)) {</span>
+<span class="nc" id="L2268">            return containsLeft(nodeMap.getParent(key));</span>
         }
-<span class="nc" id="L2216">        return false;</span>
+<span class="nc" id="L2270">        return false;</span>
     }
     private boolean containsParentRight(long key) {
-<span class="nc bnc" id="L2219" title="All 2 branches missed.">        if (containsParent(key)) {</span>
-<span class="nc" id="L2220">            return containsRight(nodeMap.getParent(key));</span>
+<span class="nc bnc" id="L2273" title="All 2 branches missed.">        if (containsParent(key)) {</span>
+<span class="nc" id="L2274">            return containsRight(nodeMap.getParent(key));</span>
         }
-<span class="nc" id="L2222">        return false;</span>
+<span class="nc" id="L2276">        return false;</span>
     }
 
     private void deleteFromLeftAssignLeft(long delH, long asnH, long key, 
         long[] output) {
        
-<span class="fc" id="L2228">        delete(nodeMap.getLeft(delH), key, output);</span>
-<span class="fc bfc" id="L2229" title="All 2 branches covered.">        if (output[0] == -1) {</span>
-<span class="fc" id="L2230">            nodeMap.unsetLeft(asnH);</span>
+<span class="fc" id="L2282">        delete(nodeMap.getLeft(delH), key, output);</span>
+<span class="fc bfc" id="L2283" title="All 2 branches covered.">        if (output[0] == -1) {</span>
+<span class="fc" id="L2284">            nodeMap.unsetLeft(asnH);</span>
         } else {
-<span class="fc" id="L2232">            nodeMap.updateLeft(delH, output[1]);</span>
-<span class="fc" id="L2233">            nodeMap.updateParent(output[1], delH);</span>
+<span class="fc" id="L2286">            nodeMap.updateLeft(delH, output[1]);</span>
+<span class="fc" id="L2287">            nodeMap.updateParent(output[1], delH);</span>
         }
-<span class="fc" id="L2235">    }</span>
+<span class="fc" id="L2289">    }</span>
 
     private void deleteFromRightAssignRight(long hDel, long hAsn, long key, 
         long[] output) {
         
-<span class="pc bpc" id="L2240" title="3 of 4 branches missed.">        assert(nodeMap.rightIsSet(hDel));</span>
+<span class="pc bpc" id="L2294" title="3 of 4 branches missed.">        assert(nodeMap.rightIsSet(hDel));</span>
         
         //h.right = delete(h.right, key);
 
-<span class="fc" id="L2244">        delete(nodeMap.getRight(hDel), key, output);</span>
+<span class="fc" id="L2298">        delete(nodeMap.getRight(hDel), key, output);</span>
         
-<span class="fc bfc" id="L2246" title="All 2 branches covered.">        if (output[0] == -1) {</span>
-<span class="fc" id="L2247">            nodeMap.unsetRight(hAsn);</span>
+<span class="fc bfc" id="L2300" title="All 2 branches covered.">        if (output[0] == -1) {</span>
+<span class="fc" id="L2301">            nodeMap.unsetRight(hAsn);</span>
         } else {
-<span class="fc" id="L2249">            nodeMap.updateRight(hAsn, output[1]);</span>
-<span class="fc" id="L2250">            nodeMap.updateParent(output[1], hAsn);</span>
+<span class="fc" id="L2303">            nodeMap.updateRight(hAsn, output[1]);</span>
+<span class="fc" id="L2304">            nodeMap.updateParent(output[1], hAsn);</span>
         }
-<span class="fc" id="L2252">    }</span>
+<span class="fc" id="L2306">    }</span>
              
     private void setHFromX(long x, long h, int xVal, int hClr, 
         boolean hLeftExists, long hLeft, 
         boolean hRightExists, long hRight, 
         boolean hParentExists, long hParent, int hSize) {
         
-<span class="pc bpc" id="L2259" title="3 of 4 branches missed.">        assert(x != h);</span>
-<span class="fc" id="L2260">        nodeMap.put(x, xVal, hClr, hSize);</span>
+<span class="pc bpc" id="L2313" title="3 of 4 branches missed.">        assert(x != h);</span>
+<span class="fc" id="L2314">        nodeMap.put(x, xVal, hClr, hSize);</span>
      
-<span class="pc bpc" id="L2262" title="1 of 2 branches missed.">        if (hParentExists) {</span>
-<span class="fc" id="L2263">            nodeMap.updateParent(x, hParent);</span>
-<span class="pc bpc" id="L2264" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(hParent) </span>
-<span class="pc bpc" id="L2265" title="1 of 2 branches missed.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
-<span class="nc" id="L2266">                nodeMap.updateLeft(hParent, x);</span>
+<span class="pc bpc" id="L2316" title="1 of 2 branches missed.">        if (hParentExists) {</span>
+<span class="fc" id="L2317">            nodeMap.updateParent(x, hParent);</span>
+<span class="pc bpc" id="L2318" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(hParent) </span>
+<span class="fc bfc" id="L2319" title="All 2 branches covered.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
+<span class="fc" id="L2320">                nodeMap.updateLeft(hParent, x);</span>
             } else {
-<span class="pc bpc" id="L2268" title="3 of 4 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
-<span class="nc bnc" id="L2269" title="All 2 branches missed.">                    &amp;&amp; nodeMap.getRight(hParent) == h);</span>
-<span class="fc" id="L2270">                nodeMap.updateRight(hParent, x);</span>
+<span class="pc bpc" id="L2322" title="3 of 4 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
+<span class="nc bnc" id="L2323" title="All 2 branches missed.">                    &amp;&amp; nodeMap.getRight(hParent) == h);</span>
+<span class="fc" id="L2324">                nodeMap.updateRight(hParent, x);</span>
             }
         } else {
             //h is root
         }
         
-<span class="pc bpc" id="L2276" title="1 of 2 branches missed.">        if (hLeftExists) {</span>
-<span class="fc" id="L2277">            nodeMap.updateParent(hLeft, x);</span>
-<span class="fc" id="L2278">            nodeMap.updateLeft(x, hLeft);</span>
+<span class="fc bfc" id="L2330" title="All 2 branches covered.">        if (hLeftExists) {</span>
+<span class="fc" id="L2331">            nodeMap.updateParent(hLeft, x);</span>
+<span class="fc" id="L2332">            nodeMap.updateLeft(x, hLeft);</span>
         }
-<span class="pc bpc" id="L2280" title="1 of 2 branches missed.">        if (hRightExists) {</span>
-<span class="fc" id="L2281">            nodeMap.updateParent(hRight, x);</span>
-<span class="fc" id="L2282">            nodeMap.updateRight(x, hRight);</span>
+<span class="fc bfc" id="L2334" title="All 2 branches covered.">        if (hRightExists) {</span>
+<span class="fc" id="L2335">            nodeMap.updateParent(hRight, x);</span>
+<span class="fc" id="L2336">            nodeMap.updateRight(x, hRight);</span>
         }
         
-<span class="fc" id="L2285">        nodeMap.remove(h); </span>
+<span class="fc" id="L2339">        nodeMap.remove(h); </span>
         
-<span class="pc bpc" id="L2287" title="1 of 2 branches missed.">        if (h == root) {</span>
-<span class="nc" id="L2288">            root = x;</span>
+<span class="pc bpc" id="L2341" title="1 of 2 branches missed.">        if (h == root) {</span>
+<span class="nc" id="L2342">            root = x;</span>
         }
-<span class="fc" id="L2290">    }</span>
+<span class="fc" id="L2344">    }</span>
     
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

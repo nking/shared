@@ -10,8 +10,19 @@ import java.util.List;
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
+ * 
+ * from https://en.wikipedia.org/wiki/Quadtree
+ * A quadtree is a tree data structure in which each internal node has exactly 
+ * four children. Quadtrees are the two-dimensional analog of octrees and 
+ * are most often used to partition a two-dimensional space by recursively 
+ * subdividing it into four quadrants or regions. The data associated with a 
+ * leaf cell varies by application, but the leaf cell represents a &quot;unit of 
+ * interesting spatial information&quot;.
+ * 
+ *     public void insert(T x, T y, Value value)
+ *     public List&lt;Value&gt; query2D(Interval2D&lt;T&gt; rect)
  */
-<span class="nc" id="L14">public class QuadTree&lt;T extends Comparable&lt;T&gt;, Value&gt;  {</span>
+<span class="nc" id="L25">public class QuadTree&lt;T extends Comparable&lt;T&gt;, Value&gt;  {</span>
     
     private Node&lt;T&gt; root;
 
@@ -35,18 +46,18 @@ import java.util.List;
     ***************************************************************************/
     @SuppressWarnings({&quot;unchecked&quot;})
     public void insert(T x, T y, Value value) {
-<span class="nc" id="L38">        root = insert(root, x, y, value);</span>
-<span class="nc" id="L39">    }</span>
+<span class="nc" id="L49">        root = insert(root, x, y, value);</span>
+<span class="nc" id="L50">    }</span>
 
     @SuppressWarnings({&quot;unchecked&quot;})
     private Node&lt;T&gt; insert(Node&lt;T&gt; h, T x, T y, Value value) {
-<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (h == null) return new Node&lt;T&gt;(x, y, value);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (h == null) return new Node&lt;T&gt;(x, y, value);</span>
         //// if (eq(x, h.x) &amp;&amp; eq(y, h.y)) h.value = value;  // duplicate
-<span class="nc bnc" id="L45" title="All 4 branches missed.">        else if ( less(x, h.x) &amp;&amp;  less(y, h.y)) h.SW = insert(h.SW, x, y, value);</span>
-<span class="nc bnc" id="L46" title="All 4 branches missed.">        else if ( less(x, h.x) &amp;&amp; !less(y, h.y)) h.NW = insert(h.NW, x, y, value);</span>
-<span class="nc bnc" id="L47" title="All 4 branches missed.">        else if (!less(x, h.x) &amp;&amp;  less(y, h.y)) h.SE = insert(h.SE, x, y, value);</span>
-<span class="nc bnc" id="L48" title="All 4 branches missed.">        else if (!less(x, h.x) &amp;&amp; !less(y, h.y)) h.NE = insert(h.NE, x, y, value);</span>
-<span class="nc" id="L49">        return h;</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">        else if ( less(x, h.x) &amp;&amp;  less(y, h.y)) h.SW = insert(h.SW, x, y, value);</span>
+<span class="nc bnc" id="L57" title="All 4 branches missed.">        else if ( less(x, h.x) &amp;&amp; !less(y, h.y)) h.NW = insert(h.NW, x, y, value);</span>
+<span class="nc bnc" id="L58" title="All 4 branches missed.">        else if (!less(x, h.x) &amp;&amp;  less(y, h.y)) h.SE = insert(h.SE, x, y, value);</span>
+<span class="nc bnc" id="L59" title="All 4 branches missed.">        else if (!less(x, h.x) &amp;&amp; !less(y, h.y)) h.NE = insert(h.NE, x, y, value);</span>
+<span class="nc" id="L60">        return h;</span>
     }
 
 
@@ -56,75 +67,75 @@ import java.util.List;
     @SuppressWarnings({&quot;unchecked&quot;})
     public List&lt;Value&gt; query2D(Interval2D&lt;T&gt; rect) {
         
-<span class="nc" id="L59">        List&lt;Value&gt; output = new ArrayList&lt;Value&gt;();</span>
+<span class="nc" id="L70">        List&lt;Value&gt; output = new ArrayList&lt;Value&gt;();</span>
         
-<span class="nc" id="L61">        query2D(root, rect, output);</span>
+<span class="nc" id="L72">        query2D(root, rect, output);</span>
     
-<span class="nc" id="L63">        return output;</span>
+<span class="nc" id="L74">        return output;</span>
     }
 
     @SuppressWarnings({&quot;unchecked&quot;})
     private void query2D(Node&lt;T&gt; h, Interval2D&lt;T&gt; rect, List&lt;Value&gt; output) {
         
-<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (h == null) return;</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (h == null) return;</span>
         
-<span class="nc" id="L71">        T xmin = rect.intervalX.min();</span>
-<span class="nc" id="L72">        T ymin = rect.intervalY.min();</span>
-<span class="nc" id="L73">        T xmax = rect.intervalX.max();</span>
-<span class="nc" id="L74">        T ymax = rect.intervalY.max();</span>
+<span class="nc" id="L82">        T xmin = rect.intervalX.min();</span>
+<span class="nc" id="L83">        T ymin = rect.intervalY.min();</span>
+<span class="nc" id="L84">        T xmax = rect.intervalX.max();</span>
+<span class="nc" id="L85">        T ymax = rect.intervalY.max();</span>
         
-<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (rect.contains(h.x, h.y)) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (rect.contains(h.x, h.y)) {</span>
             //System.out.println(&quot;    (&quot; + h.x + &quot;, &quot; + h.y + &quot;) &quot; + h.value);
-<span class="nc" id="L78">            output.add(h.value);</span>
+<span class="nc" id="L89">            output.add(h.value);</span>
         }
         
-<span class="nc bnc" id="L81" title="All 4 branches missed.">        if ( less(xmin, h.x) &amp;&amp;  less(ymin, h.y)) query2D(h.SW, rect, output);</span>
-<span class="nc bnc" id="L82" title="All 4 branches missed.">        if ( less(xmin, h.x) &amp;&amp; !less(ymax, h.y)) query2D(h.NW, rect, output);</span>
-<span class="nc bnc" id="L83" title="All 4 branches missed.">        if (!less(xmax, h.x) &amp;&amp;  less(ymin, h.y)) query2D(h.SE, rect, output);</span>
-<span class="nc bnc" id="L84" title="All 4 branches missed.">        if (!less(xmax, h.x) &amp;&amp; !less(ymax, h.y)) query2D(h.NE, rect, output);</span>
-<span class="nc" id="L85">    }</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">        if ( less(xmin, h.x) &amp;&amp;  less(ymin, h.y)) query2D(h.SW, rect, output);</span>
+<span class="nc bnc" id="L93" title="All 4 branches missed.">        if ( less(xmin, h.x) &amp;&amp; !less(ymax, h.y)) query2D(h.NW, rect, output);</span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">        if (!less(xmax, h.x) &amp;&amp;  less(ymin, h.y)) query2D(h.SE, rect, output);</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (!less(xmax, h.x) &amp;&amp; !less(ymax, h.y)) query2D(h.NE, rect, output);</span>
+<span class="nc" id="L96">    }</span>
 
 
    /***************************************************************************
     *  helper comparison functions
     ***************************************************************************/
 
-<span class="nc bnc" id="L92" title="All 2 branches missed.">    private boolean less(T k1, T k2) { return k1.compareTo(k2) &lt;  0; }</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">    private boolean eq  (T k1, T k2) { return k1.compareTo(k2) == 0; }</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">    private boolean less(T k1, T k2) { return k1.compareTo(k2) &lt;  0; }</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">    private boolean eq  (T k1, T k2) { return k1.compareTo(k2) == 0; }</span>
 
 
    /***************************************************************************
     *  test client
     ***************************************************************************/
     public static void main(String[] args) {
-<span class="nc" id="L100">        int M = Integer.parseInt(args[0]);   // queries</span>
-<span class="nc" id="L101">        int N = Integer.parseInt(args[1]);   // points</span>
+<span class="nc" id="L111">        int M = Integer.parseInt(args[0]);   // queries</span>
+<span class="nc" id="L112">        int N = Integer.parseInt(args[1]);   // points</span>
 
-<span class="nc" id="L103">        QuadTree&lt;Integer, String&gt; st = new QuadTree&lt;Integer, String&gt;();</span>
+<span class="nc" id="L114">        QuadTree&lt;Integer, String&gt; st = new QuadTree&lt;Integer, String&gt;();</span>
 
         // insert N random points in the unit square
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        for (int i = 0; i &lt; N; i++) {</span>
-<span class="nc" id="L107">            Integer x = (int) (100 * Math.random());</span>
-<span class="nc" id="L108">            Integer y = (int) (100 * Math.random());</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        for (int i = 0; i &lt; N; i++) {</span>
+<span class="nc" id="L118">            Integer x = (int) (100 * Math.random());</span>
+<span class="nc" id="L119">            Integer y = (int) (100 * Math.random());</span>
             // StdOut.println(&quot;(&quot; + x + &quot;, &quot; + y + &quot;)&quot;);
-<span class="nc" id="L110">            st.insert(x, y, &quot;P&quot; + i);</span>
+<span class="nc" id="L121">            st.insert(x, y, &quot;P&quot; + i);</span>
         }
-<span class="nc" id="L112">        System.out.println(&quot;Done preprocessing &quot; + N + &quot; points&quot;);</span>
+<span class="nc" id="L123">        System.out.println(&quot;Done preprocessing &quot; + N + &quot; points&quot;);</span>
 
         // do some range searches
-<span class="nc bnc" id="L115" title="All 2 branches missed.">        for (int i = 0; i &lt; M; i++) {</span>
-<span class="nc" id="L116">            Integer xmin = (int) (100 * Math.random());</span>
-<span class="nc" id="L117">            Integer ymin = (int) (100 * Math.random());</span>
-<span class="nc" id="L118">            Integer xmax = xmin + (int) (10 * Math.random());</span>
-<span class="nc" id="L119">            Integer ymax = ymin + (int) (20 * Math.random());</span>
-<span class="nc" id="L120">            Interval&lt;Integer&gt; intX = new Interval&lt;Integer&gt;(xmin, xmax);</span>
-<span class="nc" id="L121">            Interval&lt;Integer&gt; intY = new Interval&lt;Integer&gt;(ymin, ymax);</span>
-<span class="nc" id="L122">            Interval2D&lt;Integer&gt; rect = new Interval2D&lt;Integer&gt;(intX, intY);</span>
-<span class="nc" id="L123">            System.out.println(rect + &quot; : &quot;);</span>
-<span class="nc" id="L124">            st.query2D(rect);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (int i = 0; i &lt; M; i++) {</span>
+<span class="nc" id="L127">            Integer xmin = (int) (100 * Math.random());</span>
+<span class="nc" id="L128">            Integer ymin = (int) (100 * Math.random());</span>
+<span class="nc" id="L129">            Integer xmax = xmin + (int) (10 * Math.random());</span>
+<span class="nc" id="L130">            Integer ymax = ymin + (int) (20 * Math.random());</span>
+<span class="nc" id="L131">            Interval&lt;Integer&gt; intX = new Interval&lt;Integer&gt;(xmin, xmax);</span>
+<span class="nc" id="L132">            Interval&lt;Integer&gt; intY = new Interval&lt;Integer&gt;(ymin, ymax);</span>
+<span class="nc" id="L133">            Interval2D&lt;Integer&gt; rect = new Interval2D&lt;Integer&gt;(intX, intY);</span>
+<span class="nc" id="L134">            System.out.println(rect + &quot; : &quot;);</span>
+<span class="nc" id="L135">            st.query2D(rect);</span>
         }
         
-<span class="nc" id="L127">    }</span>
+<span class="nc" id="L138">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

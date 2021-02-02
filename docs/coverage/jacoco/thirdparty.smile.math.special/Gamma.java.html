@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gamma.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.smile.math.special</a> &gt; <span class="el_source">Gamma.java</span></div><h1>Gamma.java</h1><pre class="source lang-java linenums">/*******************************************************************************
+ * from from https://github.com/haifengl/smile
+ * 
+ * Copyright (c) 2010-2020 Haifeng Li. All rights reserved.
+ *
+ * Smile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Smile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Smile.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+ ******************************************************************************/
+
+package thirdparty.smile.math.special;
+
+import static java.lang.Math.*;
+import java.util.logging.Logger;
+//import static smile.math.MathEx.factorial;
+//import static smile.math.MathEx.lfactorial;
+
+/**
+ * The gamma, digamma, and incomplete gamma functions.
+ * 
+ * @author Haifeng Li
+ */
+public class Gamma {
+    //private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Gamma.class);
+<span class="fc" id="L34">    private static final Logger logger = Logger.getLogger(&quot;thirdparty.smile.math.special.Gamma&quot;);</span>
+
+    /** Utility classes should not have public constructors. */
+<span class="nc" id="L37">    private Gamma() {</span>
+        
+<span class="nc" id="L39">    }</span>
+
+    /**
+     *  A small number close to the smallest representable floating point number.
+     */
+    private static final double FPMIN = 1e-300;
+    /**
+     * Lanczos Gamma Function approximation - N (number of coefficients - 1)
+     */
+    private static final int LANCZOS_N = 6;
+    /**
+     * Lanczos Gamma Function approximation - Coefficients
+     */
+<span class="fc" id="L52">    private static final double[] LANCZOS_COEFF = {1.000000000190015, 76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179E-2, -0.5395239384953E-5};</span>
+    /**
+     * Lanczos Gamma Function approximation - small gamma
+     */
+    private static final double LANCZOS_SMALL_GAMMA = 5.0;
+    /**
+     * Maximum number of iterations allowed in Incomplete Gamma Function calculations
+     */
+    private static final int INCOMPLETE_GAMMA_MAX_ITERATIONS = 1000;
+    /**
+     * Tolerance used in terminating series in Incomplete Gamma Function calculations
+     */
+    private static final double INCOMPLETE_GAMMA_EPSILON = 1.0E-8;
+
+    /**
+     * Gamma function. Lanczos approximation (6 terms).
+     */
+    public static double gamma(double x) {
+<span class="fc" id="L70">        double xcopy = x;</span>
+<span class="fc" id="L71">        double first = x + LANCZOS_SMALL_GAMMA + 0.5;</span>
+<span class="fc" id="L72">        double second = LANCZOS_COEFF[0];</span>
+<span class="fc" id="L73">        double fg = 0.0;</span>
+
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (x &gt;= 0.0) {</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">            if (x &gt;= 1.0 &amp;&amp; x - (int) x == 0.0) {</span>
+<span class="fc" id="L77">                fg = factorial((int) x - 1);</span>
+            } else {
+<span class="fc" id="L79">                first = pow(first, x + 0.5) * exp(-first);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">                for (int i = 1; i &lt;= LANCZOS_N; i++) {</span>
+<span class="fc" id="L81">                    second += LANCZOS_COEFF[i] / ++xcopy;</span>
+                }
+<span class="fc" id="L83">                fg = first * sqrt(2.0 * PI) * second / x;</span>
+            }
+        } else {
+<span class="nc" id="L86">            fg = -PI / (x * gamma(-x) * sin(PI * x));</span>
+        }
+<span class="fc" id="L88">        return fg;</span>
+    }
+
+    /**
+     * The log of the Gamma function. Lanczos approximation (6 terms)
+     */
+    public static double lgamma(double x) {
+<span class="fc" id="L95">        double xcopy = x;</span>
+<span class="fc" id="L96">        double fg = 0.0;</span>
+<span class="fc" id="L97">        double first = x + LANCZOS_SMALL_GAMMA + 0.5;</span>
+<span class="fc" id="L98">        double second = LANCZOS_COEFF[0];</span>
+
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (x &gt;= 0.0) {</span>
+<span class="fc bfc" id="L101" title="All 4 branches covered.">            if (x &gt;= 1.0 &amp;&amp; x - (int) x == 0.0) {</span>
+<span class="fc" id="L102">                fg = lfactorial((int) x - 1);</span>
+            } else {
+<span class="fc" id="L104">                first -= (x + 0.5) * log(first);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                for (int i = 1; i &lt;= LANCZOS_N; i++) {</span>
+<span class="fc" id="L106">                    second += LANCZOS_COEFF[i] / ++xcopy;</span>
+                }
+<span class="fc" id="L108">                fg = log(sqrt(2.0 * PI) * second / x) - first;</span>
+            }
+        } else {
+<span class="nc" id="L111">            fg = PI / (gamma(1.0 - x) * sin(PI * x));</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (Double.isFinite(fg)) {</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                if (fg &lt; 0) {</span>
+<span class="nc" id="L115">                    throw new IllegalArgumentException(&quot;The gamma function is negative: &quot; + fg);</span>
+                } else {
+<span class="nc" id="L117">                    fg = log(fg);</span>
+                }
+            }
+        }
+<span class="fc" id="L121">        return fg;</span>
+    }
+
+    /**
+     * Regularized Incomplete Gamma Function
+     * is the lower incomplete gamma function of arguments (s, x) divided by the 
+     * gamma function of argument (s).
+     * P(s,x) = &lt;i&gt;&lt;big&gt;&amp;#8747;&lt;/big&gt;&lt;sub&gt;&lt;small&gt;0&lt;/small&gt;&lt;/sub&gt;&lt;sup&gt;&lt;small&gt;x&lt;/small&gt;&lt;/sup&gt; e&lt;sup&gt;-t&lt;/sup&gt; t&lt;sup&gt;(s-1)&lt;/sup&gt; dt&lt;/i&gt;
+     */
+    public static double regularizedIncompleteGamma(double s, double x) {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (s &lt; 0.0) {</span>
+<span class="nc" id="L132">            throw new IllegalArgumentException(&quot;Invalid s: &quot; + s);</span>
+        }
+
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (x &lt; 0.0) {</span>
+<span class="nc" id="L136">            throw new IllegalArgumentException(&quot;Invalid x: &quot; + x);</span>
+        }
+
+<span class="fc" id="L139">        double igf = 0.0;</span>
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (x &lt; s + 1.0) {</span>
+            // Series representation
+<span class="fc" id="L143">            igf = regularizedIncompleteGammaSeries(s, x);</span>
+        } else {
+            // Continued fraction representation
+<span class="fc" id="L146">            igf = regularizedIncompleteGammaFraction(s, x);</span>
+        }
+
+<span class="fc" id="L149">        return igf;</span>
+    }
+
+    /**
+     * Regularized Upper/Complementary Incomplete Gamma Function
+     * Q(s,x) = 1 - P(s,x) = 1 - &lt;i&gt;&lt;big&gt;&amp;#8747;&lt;/big&gt;&lt;sub&gt;&lt;small&gt;0&lt;/small&gt;&lt;/sub&gt;&lt;sup&gt;&lt;small&gt;x&lt;/small&gt;&lt;/sup&gt; e&lt;sup&gt;-t&lt;/sup&gt; t&lt;sup&gt;(s-1)&lt;/sup&gt; dt&lt;/i&gt;
+     */
+    public static double regularizedUpperIncompleteGamma(double s, double x) {
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (s &lt; 0.0) {</span>
+<span class="nc" id="L158">            throw new IllegalArgumentException(&quot;Invalid s: &quot; + s);</span>
+        }
+
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (x &lt; 0.0) {</span>
+<span class="nc" id="L162">            throw new IllegalArgumentException(&quot;Invalid x: &quot; + x);</span>
+        }
+
+<span class="fc" id="L165">        double igf = 0.0;</span>
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (x != 0.0) {</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">            if (x == 1.0 / 0.0) {</span>
+<span class="nc" id="L169">                igf = 1.0;</span>
+            } else {
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">                if (x &lt; s + 1.0) {</span>
+                    // Series representation
+<span class="fc" id="L173">                    igf = 1.0 - regularizedIncompleteGammaSeries(s, x);</span>
+                } else {
+                    // Continued fraction representation
+<span class="nc" id="L176">                    igf = 1.0 - regularizedIncompleteGammaFraction(s, x);</span>
+                }
+            }
+        }
+<span class="fc" id="L180">        return igf;</span>
+    }
+
+    /**
+     * Regularized Incomplete Gamma Function P(a,x) = &lt;i&gt;&lt;big&gt;&amp;#8747;&lt;/big&gt;&lt;sub&gt;&lt;small&gt;0&lt;/small&gt;&lt;/sub&gt;&lt;sup&gt;&lt;small&gt;x&lt;/small&gt;&lt;/sup&gt; e&lt;sup&gt;-t&lt;/sup&gt; t&lt;sup&gt;(a-1)&lt;/sup&gt; dt&lt;/i&gt;.
+     * Series representation of the function - valid for x &lt; a + 1
+     */
+    private static double regularizedIncompleteGammaSeries(double a, double x) {
+<span class="pc bpc" id="L188" title="3 of 6 branches missed.">        if (a &lt; 0.0 || x &lt; 0.0 || x &gt;= a + 1) {</span>
+<span class="nc" id="L189">            throw new IllegalArgumentException(String.format(&quot;Invalid a = %f, x = %f&quot;, a, x));</span>
+        }
+
+<span class="fc" id="L192">        int i = 0;</span>
+<span class="fc" id="L193">        double igf = 0.0;</span>
+<span class="fc" id="L194">        boolean check = true;</span>
+
+<span class="fc" id="L196">        double acopy = a;</span>
+<span class="fc" id="L197">        double sum = 1.0 / a;</span>
+<span class="fc" id="L198">        double incr = sum;</span>
+<span class="fc" id="L199">        double loggamma = lgamma(a);</span>
+
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        while (check) {</span>
+<span class="fc" id="L202">            ++i;</span>
+<span class="fc" id="L203">            ++a;</span>
+<span class="fc" id="L204">            incr *= x / a;</span>
+<span class="fc" id="L205">            sum += incr;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">            if (abs(incr) &lt; abs(sum) * INCOMPLETE_GAMMA_EPSILON) {</span>
+<span class="fc" id="L207">                igf = sum * exp(-x + acopy * log(x) - loggamma);</span>
+<span class="fc" id="L208">                check = false;</span>
+            }
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">            if (i &gt;= INCOMPLETE_GAMMA_MAX_ITERATIONS) {</span>
+<span class="nc" id="L211">                check = false;</span>
+<span class="nc" id="L212">                igf = sum * exp(-x + acopy * log(x) - loggamma);</span>
+<span class="nc" id="L213">                logger.severe(&quot;Gamma.regularizedIncompleteGammaSeries: Maximum number of iterations wes exceeded&quot;);</span>
+            }
+        }
+<span class="fc" id="L216">        return igf;</span>
+    }
+
+    /**
+     * Regularized Incomplete Gamma Function P(a,x) = &lt;i&gt;&lt;big&gt;&amp;#8747;&lt;/big&gt;&lt;sub&gt;&lt;small&gt;0&lt;/small&gt;&lt;/sub&gt;&lt;sup&gt;&lt;small&gt;x&lt;/small&gt;&lt;/sup&gt; e&lt;sup&gt;-t&lt;/sup&gt; t&lt;sup&gt;(a-1)&lt;/sup&gt; dt&lt;/i&gt;.
+     * Continued Fraction representation of the function - valid for x &amp;ge; a + 1
+     * This method follows the general procedure used in Numerical Recipes.
+     */
+    private static double regularizedIncompleteGammaFraction(double a, double x) {
+<span class="pc bpc" id="L225" title="3 of 6 branches missed.">        if (a &lt; 0.0 || x &lt; 0.0 || x &lt; a + 1) {</span>
+<span class="nc" id="L226">            throw new IllegalArgumentException(String.format(&quot;Invalid a = %f, x = %f&quot;, a, x));</span>
+        }
+
+<span class="fc" id="L229">        int i = 0;</span>
+<span class="fc" id="L230">        double ii = 0.0;</span>
+<span class="fc" id="L231">        double igf = 0.0;</span>
+<span class="fc" id="L232">        boolean check = true;</span>
+
+<span class="fc" id="L234">        double loggamma = lgamma(a);</span>
+<span class="fc" id="L235">        double numer = 0.0;</span>
+<span class="fc" id="L236">        double incr = 0.0;</span>
+<span class="fc" id="L237">        double denom = x - a + 1.0;</span>
+<span class="fc" id="L238">        double first = 1.0 / denom;</span>
+<span class="fc" id="L239">        double term = 1.0 / FPMIN;</span>
+<span class="fc" id="L240">        double prod = first;</span>
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        while (check) {</span>
+<span class="fc" id="L243">            ++i;</span>
+<span class="fc" id="L244">            ii = (double) i;</span>
+<span class="fc" id="L245">            numer = -ii * (ii - a);</span>
+<span class="fc" id="L246">            denom += 2.0D;</span>
+<span class="fc" id="L247">            first = numer * first + denom;</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">            if (abs(first) &lt; FPMIN) {</span>
+<span class="nc" id="L249">                first = FPMIN;</span>
+            }
+<span class="fc" id="L251">            term = denom + numer / term;</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">            if (abs(term) &lt; FPMIN) {</span>
+<span class="nc" id="L253">                term = FPMIN;</span>
+            }
+<span class="fc" id="L255">            first = 1.0D / first;</span>
+<span class="fc" id="L256">            incr = first * term;</span>
+<span class="fc" id="L257">            prod *= incr;</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">            if (abs(incr - 1.0D) &lt; INCOMPLETE_GAMMA_EPSILON) {</span>
+<span class="fc" id="L259">                check = false;</span>
+            }
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">            if (i &gt;= INCOMPLETE_GAMMA_MAX_ITERATIONS) {</span>
+<span class="nc" id="L262">                check = false;</span>
+<span class="nc" id="L263">                logger.severe(&quot;Gamma.regularizedIncompleteGammaFraction: Maximum number of iterations wes exceeded&quot;);</span>
+            }
+        }
+<span class="fc" id="L266">        igf = 1.0 - exp(-x + a * log(x) - loggamma) * prod;</span>
+<span class="fc" id="L267">        return igf;</span>
+    }
+
+    /**
+     * The digamma function is defined as the logarithmic derivative of the gamma function.
+     */
+    public static double digamma(double x) {
+<span class="nc" id="L274">        final double C7[][] = {</span>
+            {
+                1.3524999667726346383e4, 4.5285601699547289655e4,
+                4.5135168469736662555e4, 1.8529011818582610168e4,
+                3.3291525149406935532e3, 2.4068032474357201831e2,
+                5.1577892000139084710, 6.2283506918984745826e-3
+            },
+            {
+                6.9389111753763444376e-7, 1.9768574263046736421e4,
+                4.1255160835353832333e4, 2.9390287119932681918e4,
+                9.0819666074855170271e3, 1.2447477785670856039e3,
+                6.7429129516378593773e1, 1.0
+            }
+        };
+
+<span class="nc" id="L289">        final double C4[][] = {</span>
+            {
+                -2.728175751315296783e-15, -6.481571237661965099e-1,
+                -4.486165439180193579, -7.016772277667586642,
+                -2.129404451310105168
+            },
+            {
+                7.777885485229616042, 5.461177381032150702e1,
+                8.929207004818613702e1, 3.227034937911433614e1,
+                1.0
+            }
+        };
+
+<span class="nc" id="L302">        double prodPj = 0.0;</span>
+<span class="nc" id="L303">        double prodQj = 0.0;</span>
+<span class="nc" id="L304">        double digX = 0.0;</span>
+
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (x &gt;= 3.0) {</span>
+<span class="nc" id="L307">            double x2 = 1.0 / (x * x);</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">            for (int j = 4; j &gt;= 0; j--) {</span>
+<span class="nc" id="L309">                prodPj = prodPj * x2 + C4[0][j];</span>
+<span class="nc" id="L310">                prodQj = prodQj * x2 + C4[1][j];</span>
+            }
+<span class="nc" id="L312">            digX = log(x) - (0.5 / x) + (prodPj / prodQj);</span>
+
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        } else if (x &gt;= 0.5) {</span>
+<span class="nc" id="L315">            final double X0 = 1.46163214496836234126;</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            for (int j = 7; j &gt;= 0; j--) {</span>
+<span class="nc" id="L317">                prodPj = x * prodPj + C7[0][j];</span>
+<span class="nc" id="L318">                prodQj = x * prodQj + C7[1][j];</span>
+            }
+<span class="nc" id="L320">            digX = (x - X0) * (prodPj / prodQj);</span>
+
+<span class="nc" id="L322">        } else {</span>
+<span class="nc" id="L323">            double f = (1.0 - x) - floor(1.0 - x);</span>
+<span class="nc" id="L324">            digX = digamma(1.0 - x) + PI / tan(PI * f);</span>
+        }
+
+<span class="nc" id="L327">        return digX;</span>
+    }
+
+    /**
+     * The inverse of regularized incomplete gamma function.
+     */
+    public static double inverseRegularizedIncompleteGamma(double a, double p) {
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        if (a &lt;= 0.0) {</span>
+<span class="nc" id="L335">            throw new IllegalArgumentException(&quot;a must be pos in invgammap&quot;);</span>
+        }
+
+<span class="nc" id="L338">        final double EPS = 1.0E-8;</span>
+
+        double x, err, t, u, pp;
+<span class="nc" id="L341">        double lna1 = 0.0;</span>
+<span class="nc" id="L342">        double afac = 0.0;</span>
+<span class="nc" id="L343">        double a1 = a - 1;</span>
+<span class="nc" id="L344">        double gln = lgamma(a);</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">        if (p &gt;= 1.) {</span>
+<span class="nc" id="L346">            return max(100., a + 100. * sqrt(a));</span>
+        }
+
+<span class="nc bnc" id="L349" title="All 2 branches missed.">        if (p &lt;= 0.0) {</span>
+<span class="nc" id="L350">            return 0.0;</span>
+        }
+
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        if (a &gt; 1.0) {</span>
+<span class="nc" id="L354">            lna1 = log(a1);</span>
+<span class="nc" id="L355">            afac = exp(a1 * (lna1 - 1.) - gln);</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            pp = (p &lt; 0.5) ? p : 1. - p;</span>
+<span class="nc" id="L357">            t = sqrt(-2. * log(pp));</span>
+<span class="nc" id="L358">            x = (2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t;</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">            if (p &lt; 0.5) {</span>
+<span class="nc" id="L360">                x = -x;</span>
+            }
+<span class="nc" id="L362">            x = max(1.e-3, a * pow(1. - 1. / (9. * a) - x / (3. * sqrt(a)), 3));</span>
+        } else {
+<span class="nc" id="L364">            t = 1.0 - a * (0.253 + a * 0.12);</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">            if (p &lt; t) {</span>
+<span class="nc" id="L366">                x = pow(p / t, 1. / a);</span>
+            } else {
+<span class="nc" id="L368">                x = 1. - log(1. - (p - t) / (1. - t));</span>
+            }
+        }
+<span class="nc bnc" id="L371" title="All 2 branches missed.">        for (int j = 0; j &lt; 12; j++) {</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">            if (x &lt;= 0.0) {</span>
+<span class="nc" id="L373">                return 0.0;</span>
+            }
+<span class="nc" id="L375">            err = regularizedIncompleteGamma(a, x) - p;</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">            if (a &gt; 1.) {</span>
+<span class="nc" id="L377">                t = afac * exp(-(x - a1) + a1 * (log(x) - lna1));</span>
+            } else {
+<span class="nc" id="L379">                t = exp(-x + a1 * log(x) - gln);</span>
+            }
+<span class="nc" id="L381">            u = err / t;</span>
+<span class="nc" id="L382">            x -= (t = u / (1. - 0.5 * min(1., u * ((a - 1.) / x - 1))));</span>
+<span class="nc bnc" id="L383" title="All 2 branches missed.">            if (x &lt;= 0.) {</span>
+<span class="nc" id="L384">                x = 0.5 * (x + t);</span>
+            }
+<span class="nc bnc" id="L386" title="All 2 branches missed.">            if (abs(t) &lt; EPS * x) {</span>
+<span class="nc" id="L387">                break;</span>
+            }
+        }
+<span class="nc" id="L390">        return x;</span>
+    }
+    
+    // from smile.math.MathEx.java:
+     /**
+     * The factorial of n.
+     *
+     * @return factorial returned as double but is, numerically, an integer.
+     * Numerical rounding may make this an approximation after n = 21.
+     */
+    public static double factorial(int n) {
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">        if (n &lt; 0) {</span>
+<span class="nc" id="L402">            throw new IllegalArgumentException(&quot;n has to be non-negative.&quot;);</span>
+        }
+
+<span class="fc" id="L405">        double f = 1.0;</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">        for (int i = 2; i &lt;= n; i++) {</span>
+<span class="fc" id="L407">            f *= i;</span>
+        }
+
+<span class="fc" id="L410">        return f;</span>
+    }
+
+    /**
+     * The log of factorial of n.
+     */
+    public static double lfactorial(int n) {
+<span class="pc bpc" id="L417" title="1 of 2 branches missed.">        if (n &lt; 0) {</span>
+<span class="nc" id="L418">            throw new IllegalArgumentException(String.format(&quot;n has to be non-negative: %d&quot;, n));</span>
+        }
+
+<span class="fc" id="L421">        double f = 0.0;</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">        for (int i = 2; i &lt;= n; i++) {</span>
+<span class="fc" id="L423">            f += Math.log(i);</span>
+        }
+
+<span class="fc" id="L426">        return f;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

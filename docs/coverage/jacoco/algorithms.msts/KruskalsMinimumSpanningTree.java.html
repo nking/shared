@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KruskalsMinimumSpanningTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.msts</a> &gt; <span class="el_source">KruskalsMinimumSpanningTree.java</span></div><h1>KruskalsMinimumSpanningTree.java</h1><pre class="source lang-java linenums">package algorithms.msts;
+
+import algorithms.disjointSets.DisjointForest;
+import algorithms.disjointSets.DisjointSet2Node;
+import algorithms.sort.MiscSorter;
+import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TObjectDoubleIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+
+/**
+*
+  Minimum spanning tree is the minimal network that spans all nodes in a tree
+  and has the smallest cost (sum of edges).
+  
+  Kruskal's grows a forest by sorting the edges first and then adding edges that 
+  are not yet connected to the tree.
+  
+  * RuntimeComplexity is O(|E| lg_2|E|), 
+      which for sparse graphs having |E| .lt. |V|^2,
+      gives O(|E| lg_2|V|).
+      
+  Best time Kruskal's is O(|E| lg_2|V|).
+  Best time  Prim's w/ fib heaps is O(|E| + |V|lg_2|V|).
+  
+ * @author nichole
+ */
+<span class="nc" id="L30">public class KruskalsMinimumSpanningTree {</span>
+    
+    /**
+     * find a minimum spanning tree using Kruskal's algorithm.
+     * @param graph an adjacency list for the graph, where the index of the array
+     * is the vertex number and the keys within each vertex's list node are the
+     * vertex on the other end of an edge.
+     * @param edgeWeights map of edge weights with key being pairs of the
+     * vertex numbers.
+     * @return a minimum spanning tree of the weighted given graph
+     */
+    public static TIntObjectMap&lt;SimpleLinkedListNode&gt; mst(
+        SimpleLinkedListNode[] graph, TObjectDoubleMap&lt;PairInt&gt; edgeWeights) {
+                
+        /* pseudo code form Cormen et al. &quot;Introduction to Computer Science&quot;.
+         *
+         *  initialize set A to the empty set and create |V| trees, one containing each vertex
+         *
+         *      A &lt;-0
+         *      for each vertex v member of V[G]
+         *          do Make-Set(v) 
+         *      sort the edges of E into nondecreasing order by weight w
+         *      for each edge (u, v) member of E, taken in nondecreasing order by weight
+         *          do if Find-Set(u) != Find-Set(v)  
+         *              then A &lt;- A union {(u,v)}
+         *                  Union(u,v)
+         *      return A
+        */
+                
+<span class="fc" id="L59">        DisjointForest&lt;Integer&gt; forest = new DisjointForest&lt;&gt;();</span>
+<span class="fc" id="L60">        TIntObjectMap&lt;DisjointSet2Node&lt;Integer&gt;&gt; vertexMap = new TIntObjectHashMap&lt;&gt;();</span>
+        
+<span class="fc" id="L62">        int nV = graph.length;</span>
+        
+        DisjointSet2Node&lt;Integer&gt; uVertex, vVertex;
+        int u, v;
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (u = 0; u &lt; nV; ++u) {</span>
+<span class="fc" id="L67">            uVertex = new DisjointSet2Node&lt;&gt;(u);</span>
+<span class="fc" id="L68">            vertexMap.put(u, uVertex);</span>
+<span class="fc" id="L69">            forest.makeSet(uVertex);</span>
+        }
+        
+<span class="fc" id="L72">        PairInt[] w = sortWeightsNonDecreasing(edgeWeights);</span>
+        
+<span class="fc" id="L74">        TIntObjectMap&lt;SimpleLinkedListNode&gt; a = new TIntObjectHashMap&lt;&gt;();</span>
+        DisjointSet2Node&lt;Integer&gt; aUV;
+<span class="fc" id="L76">        long sum = 0;</span>
+<span class="fc" id="L77">        int nMSTEdges = 0;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (PairInt e : w) {</span>
+<span class="fc" id="L79">            u = e.getX();</span>
+<span class="fc" id="L80">            v = e.getY();</span>
+<span class="fc" id="L81">            uVertex = forest.findSet(vertexMap.get(u));</span>
+<span class="fc" id="L82">            vVertex = forest.findSet(vertexMap.get(v));</span>
+            
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (!uVertex.equals(vVertex)) {</span>
+                
+<span class="fc" id="L86">                aUV = forest.union(uVertex, vVertex);</span>
+                
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                if (a.containsKey(u)) {</span>
+<span class="fc" id="L89">                    a.get(u).insert(v);</span>
+                } else {
+<span class="fc" id="L91">                    SimpleLinkedListNode node = new SimpleLinkedListNode(v);</span>
+<span class="fc" id="L92">                    a.put(u, node);</span>
+                }
+<span class="fc" id="L94">                sum += edgeWeights.get(new PairInt(u, v));</span>
+<span class="fc" id="L95">                nMSTEdges++;</span>
+            }
+        }
+        
+<span class="fc" id="L99">        System.out.println(&quot;forest stats=&quot; + forest.toString());</span>
+<span class="fc" id="L100">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;, </span>
+<span class="fc" id="L101">            nMSTEdges, edgeWeights.size(), sum);</span>
+        
+<span class="fc" id="L103">        return a;</span>
+    }
+
+    static PairInt[] sortWeightsNonDecreasing(
+        TObjectDoubleMap&lt;PairInt&gt; edgeWeights) {
+        
+<span class="fc" id="L109">        int n = edgeWeights.size();</span>
+        
+<span class="fc" id="L111">        PairInt[] keys = new PairInt[n];</span>
+<span class="fc" id="L112">        double[] w = new double[n];</span>
+        
+<span class="fc" id="L114">        TObjectDoubleIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L116">            iter.advance();</span>
+<span class="fc" id="L117">            keys[i] = iter.key();</span>
+<span class="fc" id="L118">            w[i] = iter.value();</span>
+        }
+        
+<span class="fc" id="L121">        int[] sortedIdxs = MiscSorter.mergeSortIncreasing(w);</span>
+        
+<span class="fc" id="L123">        PairInt[] sortedKeys = new PairInt[n];</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L125">            sortedKeys[i] = keys[sortedIdxs[i]];</span>
+        }
+        
+<span class="fc" id="L128">        return sortedKeys;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DFSWithIndependentSets.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">DFSWithIndependentSets.java</span></div><h1>DFSWithIndependentSets.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.disjointSets.DisjointSet2Helper;
+import algorithms.disjointSets.DisjointSet2Node;
+import algorithms.sort.MiscSorter;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+   DFS
+
+   searches the full depth of a graph or subgraph when possible first then
+      backtracks to the unexplored edges and unexplored nodes repeating until
+      all nodes are visited.  unlike BFS, it may contain many predecessor trees, 
+      that is a predecessor forest of nodes that are the shortest from the 
+      source to each reachable node.  for this reason, DFS searches can need a 
+      lot of memory.
+
+   average runtime is approx O(|E|), worst case runtime: O(|V| + |E|)
+   worst case space needed: O(|V|)
+
+   implemented following Cormen et al. &quot;Introduction To Algorithms&quot;
+
+*   NOTE: have added use of disjoint sets to determine the independent sets
+     during the traversal.
+     Disjoint sets use path compression to update representatives quickly,
+     hence, all connected components can point to the same parent.
+  
+  first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+
+ * @author nichole
+ */
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">public class DFSWithIndependentSets {</span>
+
+    /**
+     * adjacency matrix with connected i-&gt;j indicated by the index and each
+     *    node in the linked list, respectively.
+     * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
+     */
+    protected SimpleLinkedListNode[] g;
+
+    /** 
+     * holds state for whether a node has been visited.  0 = not visited,
+     * 1 = visiting now, 2 = was visited.
+    */
+    protected int[] visited;
+
+    /**
+     * time when node is first discovered
+     */
+    protected int[] td;
+
+    /**
+     * time when node's adjacency list has all been visited
+     */
+    protected int[] tf;
+   
+    protected int[] predecessor;
+
+<span class="fc" id="L71">    protected int time = 0;</span>
+    
+    /**
+     * key = graph index.
+     * value = disjoint set holder, parent.member of internal set is key for parentGroupMap
+     */
+    private TIntObjectHashMap&lt;DisjointSetHolder&gt; indexDJSetMap;
+    
+    /**
+     * key = top-most predecessor index
+     * value = sets of paths through the code present as sub-sequences in tf
+     */
+    private TIntObjectHashMap&lt;TIntHashSet&gt; parentGroupMap;
+    
+    private DisjointSet2Helper disjointSetHelper;
+            
+<span class="fc" id="L87">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
+    
+<span class="fc" id="L89">    private Level logLevel = Level.FINE;</span>
+    
+<span class="fc" id="L91">    public DFSWithIndependentSets() {</span>
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * @param directedEdges  adjacency matrix with connected i-&gt;j indicated 
+     * by the index and each node in the linked list, respectively.
+     * Note that the key of each node is expected to be the same as it's index
+     * in the adjacency matrix.
+     * For example, adjacent to node 3 is found via directedEdges[3] as all in 
+     * the linked list.
+     */
+    public void walk(SimpleLinkedListNode[] directedEdges) {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (directedEdges == null) {</span>
+<span class="nc" id="L104">            throw new IllegalArgumentException(&quot;directedEdges cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (directedEdges == null) {</span>
+<span class="nc" id="L107">            throw new IllegalArgumentException(&quot;directedEdges cannot be null&quot;);</span>
+        }
+<span class="fc" id="L109">        g = directedEdges.clone();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L111">            g[i] = new SimpleLinkedListNode(directedEdges[i]);</span>
+        }
+<span class="fc" id="L113">        visited = new int[g.length];</span>
+<span class="fc" id="L114">        td = new int[g.length];</span>
+<span class="fc" id="L115">        tf = new int[g.length];</span>
+<span class="fc" id="L116">        predecessor = new int[g.length];</span>
+<span class="fc" id="L117">        Arrays.fill(td, -1);</span>
+<span class="fc" id="L118">        Arrays.fill(tf, -1);</span>
+<span class="fc" id="L119">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L120">        time = 0;</span>
+<span class="fc" id="L121">        indexDJSetMap = new TIntObjectHashMap&lt;DisjointSetHolder&gt;();</span>
+<span class="fc" id="L122">        parentGroupMap = new TIntObjectHashMap&lt;TIntHashSet&gt;();</span>
+        
+<span class="fc" id="L124">        disjointSetHelper = new DisjointSet2Helper();</span>
+                
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; u++) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L128">                visit(u);</span>
+            } else {
+<span class="fc" id="L130">                addToMap(u, predecessor[u]);</span>
+            }
+        }
+        
+<span class="fc" id="L134">        populateGroupMap();</span>
+        
+<span class="fc" id="L136">        modifySequenceList();</span>
+<span class="fc" id="L137">    }</span>
+    
+    private void visit(int u) {
+<span class="fc" id="L140">        log.log(logLevel, &quot;  visit u=&quot; + u);</span>
+        
+<span class="fc" id="L142">        visited[u] = 1;</span>
+<span class="fc" id="L143">        time++;</span>
+        //System.out.println(&quot;  visiting &quot; + u + &quot; to set td=&quot; + time);
+<span class="fc" id="L145">        td[u] = time;</span>
+        
+<span class="fc" id="L147">        addToMap(u, predecessor[u]);</span>
+
+<span class="fc" id="L149">        SimpleLinkedListNode next = g[u];</span>
+        
+<span class="fc bfc" id="L151" title="All 4 branches covered.">        while (next != null &amp;&amp; next.getKey() != -1) {</span>
+<span class="fc" id="L152">            int v = next.getKey();</span>
+<span class="fc" id="L153">            log.log(logLevel, &quot;        v=&quot; + v);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            if (visited[v] == 0) {</span>
+<span class="fc" id="L155">                predecessor[v] = u;</span>
+<span class="fc" id="L156">                visit(v);</span>
+            } else {
+<span class="fc" id="L158">                addToMap(v, u);</span>
+            }
+<span class="fc" id="L160">            next = next.getNext();</span>
+<span class="fc" id="L161">        }</span>
+        //addToMap(u, predecessor[u]);
+<span class="fc" id="L163">        visited[u] = 2;</span>
+<span class="fc" id="L164">        time++;</span>
+<span class="fc" id="L165">        tf[u] = time;</span>
+                
+        //System.out.println(&quot;  visited &quot; + u + &quot;) to set tf=&quot; + time);
+<span class="fc" id="L168">    }</span>
+    
+    private void modifySequenceList() {
+<span class="pc bpc" id="L171" title="3 of 4 branches missed.">        assert(tf != null);</span>
+        int p, t;
+        
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (int i = 1; i &lt; tf.length; ++i) {</span>
+<span class="fc" id="L175">            p = predecessor[i];</span>
+<span class="fc" id="L176">            t = tf[i];</span>
+            //if ()
+        }
+<span class="fc" id="L179">    }</span>
+    
+    /**
+     * update indexParentMap and independentGroupsMap for the given node and
+     * presence or absence of predecessor.
+     * @param node 
+     */
+    private void addToMap(int nodeIdx, int prevIdx) {
+        
+<span class="fc" id="L188">        log.log(logLevel, &quot;  addToMap: nodeIdx=&quot; + nodeIdx + &quot; prevIdx=&quot; +</span>
+            prevIdx + &quot; predecessor[&quot; + nodeIdx + &quot;]=&quot; +
+            predecessor[nodeIdx]);
+        
+        /*
+        5 cases:
+            prevIdx exists:
+                (0) nodeIdx exists and is the same as prevIdx
+                    (in this case, no updates are necessary)
+                (1) nodeIdx exists.
+                    (in this case, nodeIdx data was stored upon visit from path
+                     of another parent node.  This additional parent node, prevIdx,
+                     has existing data, so the 2 datasets need to be merged)
+                (2) nodeIdx does not exist.
+                    (in this case, nodeIdx data is created, added to prevIdx
+                     data, and uses the existing djset to store the merged values in
+                     index map.)
+       
+            prevIdx does not exist:
+               (in this case, nodeIdx data was stored upon visit from path
+                  of a parent node and this somehow got invoked during
+                  the loop of the edge indexes.  no need to update anything)
+               (3) nodeIdx exists.
+                   (this should not happen)
+               (4) nodeIdx does not exist
+                   (in this case, new data is created for nodeIdx and stored in maps)
+        
+        NOTE: these objects and thier names will change soon.
+        when finished, will have data structure for sequential indexes in tf,
+        and will have data structures holding independent sets.
+        
+        key = graph index. value = holder for DJSet which has parent idx as key for parentGroupMap.
+        TIntObjectHashMap&lt;DisjointSetHolder&gt; indexDJSetMap
+     
+        TIntObjectHashMap&lt;TIntHashSet&gt; parentGroupMap
+        
+        key = top-most predecessor index. value = set of connected nodes.  
+              each set is independent of one another
+              (no connecting edges between them).
+        TIntObjectHashMap&lt;TIntHashSet&gt; independentGroupsMap;
+        */
+        
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        if (prevIdx &gt; -1) {</span>
+          // merge existing prev with (1) existing or (2) new node
+<span class="fc" id="L232">            DisjointSetHolder prevRef = indexDJSetMap.get(prevIdx);</span>
+<span class="pc bpc" id="L233" title="3 of 4 branches missed.">            assert(prevRef != null);</span>
+<span class="fc" id="L234">            DisjointSet2Node&lt;Integer&gt; prevDJSet = prevRef.set;</span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">            if (prevDJSet == null) {</span>
+<span class="nc" id="L236">                throw new IllegalStateException(&quot;prevDJSet should not be null&quot;);</span>
+            }
+<span class="fc" id="L238">            DisjointSet2Node&lt;Integer&gt; prevParent = prevDJSet.getParent();</span>
+<span class="fc" id="L239">            int prevParentIdx = prevParent.getMember();</span>
+                       
+<span class="fc bfc" id="L241" title="All 2 branches covered.">            if (indexDJSetMap.contains(nodeIdx)) {</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">                if (nodeIdx == prevIdx) {</span>
+                    //Case (0)
+<span class="fc" id="L244">                    return;</span>
+                }
+                // Case (1) merge sets
+<span class="fc" id="L247">                DisjointSetHolder nodeRef = indexDJSetMap.get(nodeIdx);</span>
+<span class="fc" id="L248">                DisjointSet2Node&lt;Integer&gt; nodeDJSet = nodeRef.set;</span>
+                
+<span class="fc bfc" id="L250" title="All 2 branches covered.">                if (prevRef.equals(nodeRef)) {</span>
+                    // Case (?):  
+<span class="fc" id="L252">                    return;</span>
+                }
+<span class="fc bfc" id="L254" title="All 2 branches covered.">                if (prevDJSet.equals(nodeDJSet) || </span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">                    prevDJSet.getMember().intValue() == nodeDJSet.getMember().intValue()) {</span>
+                    // Case (?):  
+<span class="fc" id="L257">                    return;</span>
+                }
+                
+<span class="fc" id="L260">                log.log(logLevel, &quot;   merge: nodeIdx=&quot; + nodeIdx + &quot; prevIdx=&quot; +</span>
+                    prevIdx + &quot;  predecessor[&quot; + nodeIdx + &quot;]=&quot; +
+                    predecessor[nodeIdx] + 
+<span class="fc" id="L263">                    &quot;\n          nodeDJSet=&quot; + nodeDJSet.toString() +</span>
+<span class="fc" id="L264">                    &quot;\n          prevDJSet=&quot; + prevDJSet.toString()                        </span>
+                );
+                
+<span class="fc" id="L267">                prevDJSet = disjointSetHelper.unionChooseY(nodeDJSet, prevDJSet);</span>
+                
+<span class="fc" id="L269">                prevRef.set = prevDJSet;</span>
+<span class="fc" id="L270">                nodeRef.set = prevDJSet;</span>
+<span class="fc" id="L271">                log.log(logLevel, &quot;    merged: &quot; +</span>
+<span class="fc" id="L272">                    &quot;\n          prevDJSet=&quot; + prevDJSet.toString()                        </span>
+                );
+                
+                // indexParentMap entries already existed for both nodes,
+                //   so only needed to update existing values,
+                //   no need for indexParentMap.put
+                
+                //Note that the parent set node will be pruned after all map additions
+                //in O(N) by traversing the index map to keep only existing parent
+                //nodes in the parentGroupMap.
+                
+<span class="fc" id="L283">            } else {</span>
+                // Case (2) create new data and add it to prev
+<span class="fc" id="L285">                indexDJSetMap.put(nodeIdx, prevRef);</span>
+                    
+<span class="fc" id="L287">                DisjointSet2Node&lt;Integer&gt; temp = new DisjointSet2Node&lt;Integer&gt;(nodeIdx);</span>
+<span class="fc" id="L288">                temp = disjointSetHelper.makeSet(temp);</span>
+                
+<span class="fc" id="L290">                log.log(logLevel, &quot;    merge: nodeIdx=&quot; + nodeIdx + &quot; prevIdx=&quot; +</span>
+                    prevIdx + &quot; predecessor[&quot; + nodeIdx + &quot;]=&quot; + predecessor[nodeIdx] + 
+<span class="fc" id="L292">                    &quot;\n           temp=&quot; + temp.toString() +</span>
+<span class="fc" id="L293">                    &quot;\n           prevDJSet=&quot; + prevDJSet.toString()                        </span>
+                );
+                
+<span class="fc" id="L296">                prevDJSet = disjointSetHelper.unionChooseY(temp, prevDJSet);</span>
+                
+<span class="fc" id="L298">                prevRef.set = prevDJSet;</span>
+                
+<span class="fc" id="L300">                log.log(logLevel, &quot;   merged: &quot; +</span>
+<span class="fc" id="L301">                    &quot;\n          prevDJSet=&quot; + prevDJSet.toString()                        </span>
+                );
+                
+<span class="fc" id="L304">                indexDJSetMap.put(nodeIdx, prevRef);</span>
+            }
+            
+<span class="fc" id="L307">        } else {</span>
+            // prev does not exist so this must be a top-most node
+<span class="pc bpc" id="L309" title="1 of 2 branches missed.">            if (indexDJSetMap.contains(nodeIdx)) {</span>
+                // Case (3) prevIdx does not exist but nodeIdx does
+<span class="nc" id="L311">                return;</span>
+               } else {
+                // Case (4) create data for nodeIdx and store it for itself and as it's own parent
+<span class="fc" id="L314">                DisjointSetHolder nodeRef = new DisjointSetHolder();</span>
+<span class="fc" id="L315">                nodeRef.set = new DisjointSet2Node&lt;Integer&gt;(nodeIdx);</span>
+<span class="fc" id="L316">                nodeRef.set = disjointSetHelper.makeSet(nodeRef.set);</span>
+<span class="pc bpc" id="L317" title="3 of 4 branches missed.">                assert(nodeRef.set.getParent().getMember().intValue() == nodeIdx);</span>
+<span class="fc" id="L318">                indexDJSetMap.put(nodeIdx, nodeRef);</span>
+
+<span class="fc" id="L320">                TIntHashSet nodeGroupSet = new TIntHashSet();</span>
+<span class="fc" id="L321">                nodeGroupSet.add(nodeIdx);</span>
+            }
+        }
+<span class="fc" id="L324">        log.log(logLevel, &quot;   addToMap results:&quot; + </span>
+<span class="fc" id="L325">            &quot;\n         prevIdx=&quot; + prevIdx + &quot; prevRef=&quot; + indexDJSetMap.get(prevIdx) +</span>
+<span class="fc" id="L326">            &quot;\n         nodeIdx=&quot; + nodeIdx + &quot; nodeRef=&quot; + indexDJSetMap.get(nodeIdx));</span>
+<span class="fc" id="L327">    }</span>
+
+    private void populateGroupMap() {
+        
+<span class="fc" id="L331">        TIntObjectIterator&lt;DisjointSetHolder&gt; iter = indexDJSetMap.iterator();</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        for (int ii = indexDJSetMap.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L333">            iter.advance();</span>
+<span class="fc" id="L334">            int idx = iter.key();</span>
+<span class="fc" id="L335">            int pIdx = iter.value().set.getParent().getMember();</span>
+<span class="fc" id="L336">            TIntHashSet set = parentGroupMap.get(pIdx);</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">            if (set == null) {         </span>
+<span class="fc" id="L338">            set = new TIntHashSet();</span>
+<span class="fc" id="L339">                parentGroupMap.put(pIdx, set);</span>
+            }
+<span class="fc" id="L341">            set.add(idx);</span>
+<span class="fc" id="L342">        }</span>
+<span class="fc" id="L343">    }</span>
+    
+    /**
+     * class to hold a disjoint set node so that the reference stored as a value
+     * in a java HashMap is updated and shared among more than one instance,
+     * rather than obsolete after a union creates a new parent node for other
+     * elements.
+     */
+    private class DisjointSetHolder {
+        protected DisjointSet2Node&lt;Integer&gt; set = null;
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;hash: @&quot;).append(Integer.toHexString(hashCode()));
+            if (set != null) {
+                sb.append(&quot; &quot;).append(set.toString());
+            }
+            return sb.toString();
+        }
+        
+    }
+                           
+    /**
+     * get predecessor indexes
+     * @return get predecessor indexes
+     */
+    public int[] getPredecessorIndexes() {
+<span class="nc bnc" id="L371" title="All 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L372">            return null;</span>
+        }
+<span class="nc" id="L374">        return Arrays.copyOf(predecessor, predecessor.length);</span>
+    }
+    
+    /**
+     * return the indexes in order of the starts of their traversals
+     * @return 
+     */
+    public int[] getOrderedBeginIndexes() {
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">        if (td == null) {</span>
+<span class="nc" id="L383">            return null;</span>
+        }
+<span class="fc" id="L385">        return sortForIndexes(td);</span>
+    }
+    
+    private int[] sortForIndexes(int[] a) {
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L390">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">        if (g == null) {</span>
+<span class="nc" id="L393">            return null;</span>
+        }
+<span class="pc bpc" id="L395" title="3 of 4 branches missed.">        assert(a.length == g.length);</span>
+<span class="fc" id="L396">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L397">        int[] idxs = new int[a.length];</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
+<span class="fc" id="L399">            idxs[i] = i;</span>
+        }
+<span class="fc" id="L401">        MiscSorter.sortBy1stArg(a, idxs);</span>
+<span class="fc" id="L402">        return idxs;</span>
+    }
+    /**
+     * return the indexes in order of the ends of their traversal
+     * @return 
+     */
+    public int[] getOrderedEndIndexes() {
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (tf == null) {</span>
+<span class="nc" id="L410">            return null;</span>
+        }
+<span class="fc" id="L412">        return sortForIndexes(tf);</span>
+    }
+    
+    public int[] getTd() {
+<span class="fc" id="L416">        return td;</span>
+    }
+
+    public int[] getTf() {
+<span class="fc" id="L420">        return tf;</span>
+    }
+    
+    /**
+     * get a map of sequential path members in tf
+     * @return a map w/ keys = parent index of independent set, value = 
+     *    indexes of members in a sequential path in tf
+     */
+    public TIntObjectHashMap&lt;TIntHashSet&gt; getIndependentSets() {
+<span class="fc" id="L429">        return parentGroupMap;</span>
+    }
+    public int getParentIndexForIndependentSets(int node) {
+<span class="nc bnc" id="L432" title="All 2 branches missed.">        if (!indexDJSetMap.contains(node)) {</span>
+<span class="nc" id="L433">            throw new IllegalStateException(&quot;there was no entry for node=&quot; + node);</span>
+        }
+<span class="nc" id="L435">        DisjointSet2Node&lt;Integer&gt; parentNode = indexDJSetMap.get(node).set;</span>
+<span class="nc bnc" id="L436" title="All 2 branches missed.">        if (parentNode == null) {</span>
+<span class="nc" id="L437">            throw new IllegalStateException(&quot;there was no entry for node=&quot; + node);</span>
+        }
+<span class="nc" id="L439">        return parentNode.getParent().getMember();</span>
+    }
+    
+    /**
+     * creates a string of the independent sets in format:
+     *    parent=(top-most index), set=(indexes in independent set)
+     * @return 
+     */
+    public String printIndependentSets() {
+        
+<span class="fc" id="L449">        StringBuilder sb = new StringBuilder();</span>
+<span class="pc bpc" id="L450" title="1 of 2 branches missed.">        if (parentGroupMap == null) {</span>
+<span class="nc" id="L451">            return sb.toString();</span>
+        }
+        
+<span class="fc" id="L454">        TIntObjectIterator&lt;TIntHashSet&gt; iter = this.parentGroupMap.iterator();</span>
+        
+<span class="fc bfc" id="L456" title="All 2 branches covered.">        for (int ii = this.parentGroupMap.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L457">            iter.advance();</span>
+<span class="fc" id="L458">            int parentNode = iter.key();</span>
+<span class="fc" id="L459">            TIntHashSet indepSet = iter.value();</span>
+<span class="fc" id="L460">            sb.append(&quot;parent=&quot;).append(Integer.toString(parentNode)).append(&quot;; set=&quot;);</span>
+<span class="fc" id="L461">            TIntIterator iter2 = indepSet.iterator();</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L463">                int idx = iter2.next();</span>
+<span class="fc" id="L464">                sb.append(Integer.toString(idx)).append(&quot;, &quot;);</span>
+<span class="fc" id="L465">            }</span>
+<span class="fc" id="L466">            sb.append(&quot;\n&quot;);</span>
+<span class="fc" id="L467">        }</span>
+<span class="fc" id="L468">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

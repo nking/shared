@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HypersphereChordLength.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">HypersphereChordLength.java</span></div><h1>HypersphereChordLength.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+import algorithms.SubsetChooser;
+import algorithms.misc.Distances;
+import algorithms.misc.Histogram;
+import algorithms.misc.HistogramHolder;
+import algorithms.misc.MiscMath0;
+import algorithms.sort.MiscSorter;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import thirdparty.smile.math.special.Beta;
+
+/**
+ *  functions useful for testing uniformity of points on the n-sphere
+ * from the paper:
+ * &lt;pre&gt;
+ * Measuring spatial uniformity with the hypersphere chord length distribution
+           2020, Panagiotis Sidiropoulos
+        https://arxiv.org/pdf/2004.05692.pdf
+        arXiv:2004.05692v1 [cs.CG] 12 Apr 2020
+ * &lt;/pre&gt;
+ * @author nichole
+ */
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">public class HypersphereChordLength {</span>
+    
+    /**
+     * M points selected uniformly and independently from the surface of a
+        n-dimensional hypersphere of radius R.
+     * @param d pairwise euclidean distances
+     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     * @param n the number of dimensions of the hypersphere
+     * @return vector of the probabilities
+     */
+    public static double[] pdf(double[] d, double r, int n) {
+        
+        /*
+        term1 = r^2 * beta( (n-1)/2, 1/2 )
+        
+        term2 = ( (d^2/r^2) - (d^4/(4*r^4)) )
+        
+        f_n(d) = (d/term1) * ( term2^((n-3)/2) )
+        */
+        
+<span class="fc" id="L48">        double[] pdf = new double[d.length];</span>
+        
+<span class="fc" id="L50">        double rsq = r*r;</span>
+<span class="fc" id="L51">        double rq = rsq * rsq;</span>
+<span class="fc" id="L52">        double term1 = rsq * Beta.beta((n-1)/2., 0.5);</span>
+        double term2, dsq, dq;
+        
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (int i = 0; i &lt; d.length; ++i) {</span>
+<span class="fc" id="L56">            dsq = d[i]*d[i];</span>
+<span class="fc" id="L57">            dq = dsq * dsq;</span>
+<span class="fc" id="L58">            term2 = (dsq/rsq) - (0.25*dq/rq);</span>
+<span class="fc" id="L59">            pdf[i] = (d[i]/term1) * Math.pow(term2, (n-3)/2.);</span>
+        }
+        
+<span class="fc" id="L62">        return pdf;</span>
+    }
+    
+    /**
+     * M points selected uniformly and independently from the surface of a
+        n-dimensional hypersphere of radius R.
+     * @param d pairwise euclidean distances
+     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     * @param n the number of dimensions of the hypersphere
+     * @return 
+     */
+    public static double[] cdf(double[] d, double r, int n) {
+        
+        /*
+        x = ( (d^2/r^2) - (d^4/(4*r^4)) )
+        
+        a = (n-1)/2
+        b = 1/2
+        
+        I is regularized incomplete beta function
+        
+        for d &lt; r*sqrt(2):
+            P(D&lt;=d) = F_n(d) = (1/2) * I(a, b, x)
+        for d &gt;= r*sqrt(2)
+            P(D&lt;=d) = F_n(d) = 1. - (1/2) * I(a, b, x)
+        */
+        
+<span class="fc" id="L89">        double[] cdf = new double[d.length];</span>
+        
+<span class="fc" id="L91">        double rsqrt2 = r * Math.sqrt(2.);</span>
+<span class="fc" id="L92">        double rsq = r*r;</span>
+<span class="fc" id="L93">        double rq = rsq * rsq;</span>
+        double dsq, dq, x;
+        
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (int i = 0; i &lt; d.length; ++i) {</span>
+<span class="fc" id="L97">            dsq = d[i]*d[i];</span>
+<span class="fc" id="L98">            dq = dsq * dsq;</span>
+<span class="fc" id="L99">            x = (dsq/rsq) - (0.25*dq/rq);</span>
+            
+<span class="fc" id="L101">            cdf[i] = 0.5 * Beta.regularizedIncompleteBetaFunction((n-1)/2., 0.5, x);</span>
+            
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (d[i] &gt;= rsqrt2) {</span>
+<span class="fc" id="L104">                cdf[i] = 1. - cdf[i];</span>
+            }
+        }
+        
+<span class="fc" id="L108">        return cdf;</span>
+    }
+    
+    /**
+     *
+     * @param k the k-th moment
+     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     * @param n the number of dimensions of the hypersphere
+     * @return 
+     */
+    public static double momentAboutOrigin(int k, double r, int n) {
+        
+        /*
+        term1 = 2^(k+n-2)
+        term2 = B((n-1)/2, 1/2)
+        term3 = B( (k+n-1)/2, (n-1)/2)
+        term4 = r^k
+        
+        E(D^k) = (term1/term2) * term3 * term4
+        */
+        
+        // could use 1 &lt;&lt; (k + n - 2) instead for power of 2:
+<span class="nc" id="L130">        double term1 = Math.pow(2, k + n - 2);</span>
+<span class="nc" id="L131">        double term2 = Beta.beta((n-1)/2., 0.5);</span>
+<span class="nc" id="L132">        double term3 = Beta.beta((k+n-1)/2., (n-1)/2.);</span>
+<span class="nc" id="L133">        double term4 = Math.pow(r, k);</span>
+        
+<span class="nc" id="L135">        return (term1/term2) * term3 * term4;</span>
+    }
+    
+    /**
+     *
+     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     * @param n the number of dimensions of the hypersphere
+     * @return 
+     */
+    public static double meanOfChordLengthDistribution(double r, int n) {
+        
+        /*
+        term1 = (gamma(n/2))^2
+        term2 = gamma(n-(1/2))
+        term3 = sqrt(pi)
+        term4 = r*2^(n-1)
+        
+        mu = term4*(term1/(term2 * term3))
+        */
+        
+<span class="fc" id="L155">        double term1 = Gamma.lanczosGamma9(n/2.);</span>
+<span class="fc" id="L156">        term1 *= term1;</span>
+        
+<span class="fc" id="L158">        double term2 = Gamma.lanczosGamma9(n - (1./2.));</span>
+        
+<span class="fc" id="L160">        double term3 = Math.sqrt(Math.PI);</span>
+        
+        // could use 1 &lt;&lt; (n-1) instead for power of 2:
+<span class="fc" id="L163">        double term4 = r * Math.pow(2, n - 1.);</span>
+        
+<span class="fc" id="L165">        return term4*(term1/(term2 * term3));</span>
+    }
+    
+    /**
+     *
+     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     * @param n the number of dimensions of the hypersphere
+     * @return 
+     */
+    public static double varianceOfChordLengthDistribution(double r, int n) {
+        
+        /*
+        term1 = (gamma(n/2))^4
+        term2 = (gamma(n-(1/2)))^2
+        term3 = pi
+        term4 = 2^(2*n-2)
+        
+        sigma^2 = (r^2)*(2 - ((term1*term4)/(term3*term2)))
+        */
+        
+<span class="fc" id="L185">        double term1 = Gamma.lanczosGamma9(n/2.);</span>
+<span class="fc" id="L186">        term1 = Math.pow(term1, 4.);</span>
+        
+<span class="fc" id="L188">        double term2 = Gamma.lanczosGamma9(n - (1./2.));</span>
+<span class="fc" id="L189">        term2 *= term2;</span>
+        
+<span class="fc" id="L191">        double term3 = Math.PI;</span>
+        
+        // could use 1 &lt;&lt; (2*n-2) instead for power of 2:
+<span class="fc" id="L194">        double term4 = Math.pow(2, 2.*n-2);</span>
+        
+<span class="fc" id="L196">        return (r*r)*(2. - ((term1*term4)/(term3*term2)));</span>
+    }
+    
+    public static enum POINT_DISTRIBUTION_TYPE {
+        INTRA_DISTANCE_2, POINT_DISTANCE_3
+    }
+    
+    public static class NonUniformityStats {
+        double oneMinusAlpha;
+        double oneMinusAlphaCritVal;
+        double l1MaxSphere;
+        double l1MaxX;
+        boolean isConsistentWithNonUniform;
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(&quot;isConsistentWithNonUniform=&quot;).append(isConsistentWithNonUniform);
+            sb.append(String.format(&quot;\n1-alpha=%.5f, crit. val.=%.4e \nL1(sphere)=%.4f \nL1(X)=%.4f&quot;, 
+                oneMinusAlpha, oneMinusAlphaCritVal, l1MaxSphere, l1MaxX));
+            return sb.toString();
+        }
+    }
+    
+    /**
+    test to identify non-uniform spatial distribution, assessing 
+    whether the points span the hypersphere 
+    in a way that is compatible with the uniform distribution.
+    &lt;pre&gt;
+    see notes belowx in method comments for calcL1UniformityStatistic
+    &lt;/pre&gt;
+    * TODO: determine the number of iterations to calculate L1's in some manner.
+    * It's currently set to a value of 100 internally.
+    */
+    public static NonUniformityStats calcConfidenceOfNonUniformity(double[][] x, int m,
+        POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
+        
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        if (m &gt; x.length) {</span>
+<span class="nc" id="L232">            throw new IllegalArgumentException(&quot;m must be less than x.length&quot;);</span>
+        }
+        
+<span class="fc" id="L235">        int nDimensions = x[0].length;</span>
+<span class="fc" id="L236">        int nSamples = x.length;</span>
+        
+        // number of L1 statistics
+<span class="fc" id="L239">        int q = 100;</span>
+        
+<span class="fc" id="L241">        double[] l1Sphere = new double[q];</span>
+<span class="fc" id="L242">        double[] l1X = new double[q];</span>
+        double[][] s;
+        
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        for (int i = 0; i &lt; q; ++i) {</span>
+            
+<span class="fc" id="L247">            l1X[i] = calcL1UniformityStatistic(x, m, type, rand);</span>
+            
+<span class="fc" id="L249">            s = MultivariateUniformDistribution</span>
+<span class="fc" id="L250">                .generateUnitStandardNSphereWithRejection(nDimensions, nSamples, rand, true);</span>
+            
+<span class="fc" id="L252">            l1Sphere[i] = calcL1UniformityStatistic(s, m, type, rand);</span>
+        }
+        
+<span class="fc" id="L255">        double[] minMaxSphere = MiscMath0.getMinMax(l1Sphere);</span>
+<span class="fc" id="L256">        double[] minMaxX = MiscMath0.getMinMax(l1X);        </span>
+<span class="fc" id="L257">        double[] avgAndStDevX = MiscMath0.getAvgAndStDev(l1X);</span>
+<span class="fc" id="L258">        double[] avgAndStDevSphere = MiscMath0.getAvgAndStDev(l1Sphere);</span>
+        
+        //1-alpha for hypersphere chord distribution
+<span class="fc" id="L261">        double alphaCV = findCVForAlpha95Percent(nDimensions);</span>
+        
+<span class="fc" id="L263">        System.out.printf(&quot;c.v. for 1-alpha=%.4e\n&quot;, alphaCV);</span>
+<span class="fc" id="L264">        System.out.printf(&quot;S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e\n&quot;, </span>
+<span class="fc" id="L265">            minMaxSphere[0], minMaxSphere[1],</span>
+<span class="fc" id="L266">            avgAndStDevSphere[0], avgAndStDevSphere[1]);</span>
+<span class="fc" id="L267">        System.out.printf(&quot;X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e\n&quot;, </span>
+<span class="fc" id="L268">            minMaxX[0], minMaxX[1],</span>
+<span class="fc" id="L269">            avgAndStDevX[0], avgAndStDevX[1]);</span>
+        
+        // Type I error rejects a null hypothesis as false when it is actually true.
+        // Type II error accepts a null hypothesis as true when it is actually false.
+
+        // alpha=0.05 (probability of Type I error)
+        // confidence level or a confidence coefficient, (1 - α)100% = 95%
+        // confidence interval is interval in x capturing 95% of area 
+        //     under curve, e.g. mu +- 2*sigma/sqrt(n)
+        
+<span class="fc" id="L279">        NonUniformityStats stats = new NonUniformityStats();</span>
+<span class="fc" id="L280">        stats.l1MaxSphere = minMaxSphere[1];</span>
+<span class="fc" id="L281">        stats.l1MaxX = minMaxX[1];</span>
+<span class="fc" id="L282">        stats.oneMinusAlpha = 0.95;</span>
+<span class="fc" id="L283">        stats.oneMinusAlphaCritVal = alphaCV;</span>
+        
+        //TODO: follow up on this:
+        
+        // see Section IV, page 9:
+        //If the α%-largest L1 value of Q is smaller than L1(g) then S can be 
+        //  declared as non-uniform with confidence (100 − α)%.
+        /*if (stats.l1MaxSphere &gt; stats.l1MaxX) {
+            stats.isConsistentWithNonUniform = true;
+        } else {
+            stats.isConsistentWithNonUniform = false;
+        }*/
+        //  min stats.l1MaxX minL1 &gt; (stats.l1MaxSphere avgL1 + c*StDevSphereL1)
+        //       implies not the same distributions
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (minMaxX[0] &gt; (avgAndStDevSphere[0] + alphaCV*avgAndStDevSphere[1])) {</span>
+<span class="fc" id="L298">            stats.isConsistentWithNonUniform = true;</span>
+        } else {
+<span class="fc" id="L300">            stats.isConsistentWithNonUniform = false;</span>
+        }
+        
+<span class="fc" id="L303">        return stats;</span>
+    }
+    
+    /**
+    &lt;pre&gt;
+    IV. HYPERSPHERE CHORD LENGTH DISTRIBUTION AS A UNIFORMITY MEASURE
+       As already mentioned, some of the most interesting properties of the 
+    hypersphere chord length distribution arise from the fact that this is the 
+    limit distribution of the distances of uniformly selected hypersphere points. 
+    To summarise, the hypersphere chord length distribution is the limit 
+    distribution of 3 (related but distinct) distributions:
+        1) M point pairs:
+           The distance distribution of 
+           M point-pairs ||pi − p′i ||, i = 1, 2, ..., M , 
+           if the 2M relevant points pi and p′i are independently selected 
+           from a uniform random distribution.
+        2) M(M − 1)/2 point pairs:
+           The intra-distance distribution of a set of 
+           M points pi,i=1,2,...,M,
+           if the M relevant points are independently selected 
+           from a uniform random distribution, 
+           before the M(M − 1)/2 pairwise distances 
+           ||pi − pj||,i,j = 1,2,...,M,i ̸= j are estimated.
+        3) M - 1 point pairs:
+           The distance distribution of a set of 
+           M − 1 points pi,i = 1,2,...,M − 1 
+           from a fixed point p0 if both pi and p0 are selected 
+           from a uniform random distribution 
+           before the M − 1 pairwise distances 
+           ||pi − p0 ||, i = 1, 2, ..., M − 1 are estimated.
+    The second and the third distribution allow the hypersphere chord length 
+    distribution to be used as an uniformity measure, as is described in the 
+    current section.
+    
+    to quantify the ”uniformity” of an input point distribution on a N-sphere, 
+    the L1 distance is used.  
+    
+        L_1(g) = integral_{x=0_to_2} ( | g_N(x) - f_N(x)| * dx )
+
+           where f_N(x) is hypersphere chord length distribution == the pdf,
+               and
+           g_N is intra-distance distribution of the input point distribution 
+               using model (2) above.
+           x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
+    
+    Initially, uniform pointsets of size M′ (where M′ is much smaller than M) 
+    are generated on the N-sphere and L1 values are sorted, before acquiring 
+    the α%-largest L1 value and finally extrapolating for pointsets of size M. 
+    This value is the threshold with which the input distance distribution 
+    L1(g) is compared to determine whether it is uniform or not.
+    
+    Elaborating on this idea, based on the computational cost of iteratively 
+    estimating pairwise distances, L1 can be used to qualitatively assess 
+    whether an N-dimensional point sample S (consisting of M points, and having 
+    an intra-distribution g) originates from a uniform N-sphere (or 
+    N-hemisphere) distribution following on of the three following approaches:
+        • If S dimension N and sample size M imply a non-prohibitive 
+          computational cost, then Q uniformly distributed point sets of size M 
+          and dimension N are randomly generated and L1 is estimated for all of 
+          them (as well as for S). If the α%-largest L1 value of Q is smaller 
+          than L1(g) then S can be declared as non-uniform with confidence 
+          (100 − α)%.
+    &lt;/pre&gt;
+     * @param x data points in format [nSamples][nDimensions] that are to be
+     * tested as uniformly distributed on an nDimensions hypersphere
+     * (note, there may be some confusion in definitions as the literature using 
+     * von Mises–Fisher distributions for the hypersphere have a multiplier
+     * that includes a dimension that is then multiplied by an n-sphere of dimension n-1).
+     * @param m the number of points to choose from x.length in calculating L1
+     * @param type type of distance distribution to create internally using 
+     * methods outlined about form Section IV. of 2020 Sidiropoulos.
+     * @param rand
+     * @return the calculated L1 statistic from eqn (26) of the paper.
+    */
+    public static double calcL1UniformityStatistic(double[][] x, int m,
+        POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
+        
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">        if (m &gt; x.length) {</span>
+<span class="nc" id="L381">            throw new IllegalArgumentException(&quot;m must be less tna x.length&quot;);</span>
+        }
+        
+<span class="fc" id="L384">        double[] d1 = createOrderedDistanceDistribution(x, m, type, rand);</span>
+        
+<span class="fc" id="L386">        double l1Sum = calcL1UniformityStatistic(d1, x[0].length);</span>
+        
+<span class="fc" id="L388">        return l1Sum;</span>
+    }
+    
+    static double[] createOrderedDistanceDistribution(double[][] x, int m,
+        POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
+        
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">        if (m &gt; x.length) {</span>
+<span class="nc" id="L395">            throw new IllegalArgumentException(&quot;m must be less tna x.length&quot;);</span>
+        }
+        
+        double[] d1;
+
+<span class="pc bpc" id="L400" title="2 of 4 branches missed.">        if (type == null || type.equals(POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2)) {</span>
+
+<span class="fc" id="L402">            int[] xMIdx = chooseM(m, x.length, rand);</span>
+
+<span class="fc" id="L404">            d1 = calcPairwiseDistances(x, xMIdx);</span>
+            
+<span class="fc" id="L406">        } else {</span>
+            // uses POINT_DISTRIBUTION_TYPE.POINT_DISTANCE_3
+            //    resulting length of d is
+            
+<span class="nc" id="L410">            int[] xMIdx = chooseM(m + 1, x.length, rand);</span>
+            
+<span class="nc" id="L412">            int pt1Idx = xMIdx[m];</span>
+<span class="nc" id="L413">            xMIdx = Arrays.copyOfRange(xMIdx, 0, m);</span>
+
+<span class="nc" id="L415">            d1 = calcPairwiseDistances(x, xMIdx, pt1Idx);</span>
+            
+<span class="nc bnc" id="L417" title="All 4 branches missed.">            assert(d1.length == xMIdx.length);</span>
+        }
+        
+<span class="fc" id="L420">        int[] indexes1 = MiscSorter.mergeSortIncreasing(d1);</span>
+        
+<span class="fc" id="L422">        return d1;</span>
+    }
+    
+    /**
+    calculate the uniformity measure based upon the point distances
+    (presumable measured by methods (2) or (3) of Sective IV. of the 
+    2020 Sidiropoulos paper.
+    &lt;pre&gt;
+    to quantify the ”uniformity” of an input point distribution on a N-sphere, 
+    the L1 distance is used.  
+        
+        L_1(g) = integral_{x=0_to_2} ( | g_N(x) - f_N(x)| * dx )
+
+           where f_N(x) is hypersphere chord length distribution == the pdf,
+               and
+           g_N is intra-distance distribution of the input point distribution 
+               using model (2) above.
+           x is the chord length d, so the integration is from d=0 to d=2 (presumably 2*r with r=1).
+    &lt;/pre&gt;
+     * @param d array of point distances, sorted by non-decreasing order.
+     * @param nDimensions
+     * @return the calculated L1 statistic from eqn (26) of the paper.
+    */
+    public static double calcL1UniformityStatistic(double[] d, int nDimensions) {
+        
+        // g_N:
+        // -- from the n-sphere points to be tested, choose m of the points.
+        // -- the M(M − 1)/2 point pairs will be constructed 
+        //    and each distance is the euclidean distance 
+        //    ||pi − pj||,i,j = 1,2,...,M,i ̸= j.
+        // looks like after the pairwise distances are calculated, they 
+        //    need to be ordered (from 0 to 2*r with r=1)
+        //    before used in the L_1(g) calculation.
+        
+        // f_N(x)
+        //   x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
+        //double[] pdf(double[] d, double r, int n)
+        
+        /*
+        L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
+
+           where f_N(x) is hypersphere chord length distribution == the pdf,
+               and
+           g_N is intra-distance distribution of the input point distribution 
+               using model (2) above.
+           x is the chord length d, so the integration is from d=0 to d=2 (probably 2*r).
+        */
+        //L_1(g) = integral_{x=0_to_2} ( | g_N(x)- f_N(x)| * dx )
+        
+<span class="fc" id="L471">        double[] p2 = pdf(d, 1, nDimensions);</span>
+        
+<span class="fc" id="L473">        double[] minMaxD1 = MiscMath0.getMinMax(d);</span>
+        //double[] minMaxD2 = MiscMath0.getMinMax(d2);
+<span class="fc" id="L475">        double minD = minMaxD1[0];</span>
+<span class="fc" id="L476">        double maxD = minMaxD1[1];</span>
+     
+<span class="fc" id="L478">        HistogramHolder h1 = Histogram.calculateScottsHistogram(d);</span>
+<span class="fc" id="L479">        float[] p1 = h1.getYHistFloat();</span>
+<span class="fc" id="L480">        float[] p1x = h1.getXHist();</span>
+<span class="fc" id="L481">        float[] minMaxP1 = MiscMath0.getMinMax(p1);</span>
+<span class="fc" id="L482">        float p1Norm = 1.f/minMaxP1[1];</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        for (int i = 0; i &lt; p1.length; ++i) {</span>
+<span class="fc" id="L484">            p1[i] *= p1Norm;</span>
+        }
+        
+        /*try {
+            PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+            plotter.addPlot(p1x, p1, p1x, p1, &quot;p1&quot;);
+            String str = plotter.writeFile(&quot;p1_hist&quot;);
+            
+            plotter = new PolygonAndPointPlotter();
+            plotter.addPlot(d, p2, null, null, &quot;p2&quot;);
+            String str2 = plotter.writeFile(&quot;p2_hist&quot;);
+        } catch (IOException ex) {
+            Logger.getLogger(HypersphereChordLength.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        
+<span class="fc" id="L499">        float binWidth1 = p1x[1] - p1x[0];</span>
+<span class="fc" id="L500">        float p1Min = p1x[0] - (binWidth1/2.f);</span>
+<span class="fc" id="L501">        float p1Max = p1x[p1x.length - 1] + (binWidth1/2.f);</span>
+        
+<span class="fc" id="L503">        double l1Sum = 0;</span>
+        double dist;
+        double diff;
+        int bin1;
+<span class="fc bfc" id="L507" title="All 2 branches covered.">        for (int i = 0; i &lt; d.length; ++i) {</span>
+<span class="fc" id="L508">            dist = d[i];</span>
+            
+<span class="pc bpc" id="L510" title="2 of 4 branches missed.">            if (dist &lt; 0 || dist &gt; 2) {</span>
+<span class="nc" id="L511">                int z = 0;</span>
+            }
+            
+<span class="fc" id="L514">            bin1 = (int) ((dist - p1Min)/binWidth1);</span>
+<span class="pc bpc" id="L515" title="2 of 4 branches missed.">            if ((bin1 &lt; 0) || (bin1 &gt;= p1x.length)) {</span>
+<span class="nc" id="L516">                throw new IllegalStateException(&quot;bin1 is outside of bounds of histogram&quot;);</span>
+            }
+<span class="fc" id="L518">            diff = p1[bin1] - p2[i];</span>
+<span class="fc" id="L519">            l1Sum += (diff*diff);</span>
+        }
+<span class="fc" id="L521">        l1Sum = Math.sqrt(l1Sum);</span>
+        
+        /*
+            https://www.itl.nist.gov/div898/handbook/eda/section3/eda3674.htm
+
+            chisq stat for deg of freedom
+
+            For an upper-tail one-sided test, find the column corresponding to 
+                1-α in the table containing upper-tail critical 
+                 and reject the null hypothesis if the test statistic is 
+                 greater than the tabled value.
+
+            Upper-tail critical values of chi-square distribution with ν degrees of freedom
+                            Probability less than the critical value
+               ν           0.90      0.95     0.975      0.99     0.999
+
+               1          2.706     3.841     5.024     6.635    10.828
+               2          4.605     5.991     7.378     9.210    13.816
+               3          6.251     7.815     9.348    11.345    16.266
+               4          7.779     9.488    11.143    13.277    18.467
+               5          9.236    11.070    12.833    15.086    20.515
+               6         10.645    12.592    14.449    16.812    22.458
+               7         12.017    14.067    16.013    18.475    24.322
+               8         13.362    15.507    17.535    20.090    26.125
+               9         14.684    16.919    19.023    21.666    27.877
+              10         15.987    18.307    20.483    23.209    29.588
+            */
+        
+<span class="fc" id="L549">        return l1Sum;</span>
+    }
+    
+    /**
+     * randomly choose m numbers from 0 to n-1, inclusive.
+     * @param m
+     * @param n
+     * @param rand
+     * @return
+     */
+    static int[] chooseM(int m, int n, SecureRandom rand) {
+             
+<span class="fc" id="L561">        TIntSet s = new TIntHashSet();</span>
+<span class="fc" id="L562">        int[] mr = new int[m];</span>
+        int i;
+        int rd;
+<span class="fc bfc" id="L565" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L566">            rd = rand.nextInt(n);</span>
+<span class="fc bfc" id="L567" title="All 2 branches covered.">            while (s.contains(rd)) {</span>
+<span class="fc" id="L568">                rd = rand.nextInt(n);</span>
+            }
+<span class="fc" id="L570">            mr[i] = rd;</span>
+<span class="fc" id="L571">            s.add(mr[i]);</span>
+        }
+<span class="fc" id="L573">        return mr;</span>
+    }
+
+    static double[] calcPairwiseDistances(double[][] x, int[] idx) {
+        
+<span class="pc bpc" id="L578" title="1 of 2 branches missed.">        if (idx.length &gt; x.length) {</span>
+<span class="nc" id="L579">            throw new IllegalArgumentException(&quot;m cannot be larger than x.length&quot;);</span>
+        }
+        
+<span class="fc" id="L582">        int m = idx.length;</span>
+                
+<span class="fc" id="L584">        int np = (int) MiscMath0.computeNDivKTimesNMinusK(m, 2);</span>
+        
+<span class="fc" id="L586">        double[] d = new double[np];</span>
+                
+<span class="fc" id="L588">        SubsetChooser chooser = new SubsetChooser(m, 2);</span>
+        
+<span class="fc" id="L590">        int[] selectedIndexes = new int[2];</span>
+        
+<span class="fc" id="L592">        int c = 0;</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">        while (chooser.getNextSubset(selectedIndexes) != -1) {</span>
+<span class="fc" id="L594">            int idx0 = idx[selectedIndexes[0]];</span>
+<span class="fc" id="L595">            int idx1 = idx[selectedIndexes[1]];</span>
+<span class="fc" id="L596">            d[c] = Math.sqrt(Distances.calcEuclideanSquared(x[idx0], x[idx1]));</span>
+<span class="fc" id="L597">            c++;</span>
+<span class="fc" id="L598">        }</span>
+        
+<span class="fc" id="L600">        return d;</span>
+    }
+    
+    static double[] calcPairwiseDistances(double[][] x, int[] idx, int p0Idx) {
+        
+<span class="nc bnc" id="L605" title="All 2 branches missed.">        if (idx.length &gt; x.length) {</span>
+<span class="nc" id="L606">            throw new IllegalArgumentException(&quot;m cannot be larger than x.length&quot;);</span>
+        }
+        
+<span class="nc" id="L609">        int m = idx.length;</span>
+                
+<span class="nc" id="L611">        double[] d = new double[idx.length];</span>
+               
+<span class="nc bnc" id="L613" title="All 2 branches missed.">        for (int i = 0; i &lt; idx.length; ++i) {</span>
+<span class="nc" id="L614">            d[i] = Math.sqrt(Distances.calcEuclideanSquared(x[p0Idx], x[idx[i]]));</span>
+        }
+        
+<span class="nc" id="L617">        return d;</span>
+    }
+
+    /**
+     * calculate the distance of each point from the origin.
+     * assumes points are already w.r.t origin as they are being tested for
+     * uniformity on the unit sphere
+     * @param x points on the unit sphere
+     * @param idx subset of indexes of x to calculate the distances for.
+     * @return 
+     */
+    private static double[] calculateDistancesFromOrigin(double[][] x, int[] idx) {
+                
+<span class="nc" id="L630">        int n = idx.length;</span>
+<span class="nc" id="L631">        int nd = x[0].length;</span>
+
+        // 
+<span class="nc" id="L634">        double[] d = new double[n];</span>
+        double s;   
+        int i, j;
+<span class="nc bnc" id="L637" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L638">            s = 0;</span>
+<span class="nc bnc" id="L639" title="All 2 branches missed.">            for (j = 0; j &lt; nd; ++j) {</span>
+<span class="nc" id="L640">                s += (x[idx[i]][j]*x[idx[i]][j]);</span>
+            }
+<span class="nc" id="L642">            d[i] = Math.sqrt(s);</span>
+        }
+        
+<span class="nc" id="L645">        return d;</span>
+    }
+    
+    /**
+     * a rough critical value for which alpha is 95% for a unit
+     * radius nDimension hypersphere.
+     * @param nDimensions the number of dimensions of the hypersphere
+     * @return  rough critical value for 95% quantile 
+     */
+    public static double findCVForAlpha95Percent(int nDimensions) {
+        
+        // quick look at finding critical values using the CDF.
+        // no inverse function, so &quot;trial-and-error&quot;.
+        //    For r = 1.  n = [2:10:+1,15:50:+5,60:100:+10]
+        //       find d's where alpha=0.95
+        
+<span class="fc" id="L661">        double r = 1;</span>
+        
+<span class="fc" id="L663">        TDoubleList dList = new TDoubleArrayList();</span>
+<span class="pc bpc" id="L664" title="1 of 2 branches missed.">        if (nDimensions &lt; 2) {</span>
+            //fine resolution between 1.9 and 2.0
+<span class="nc bnc" id="L666" title="All 2 branches missed.">            for (double k = 1.99; k &lt;= 2.0; k+=0.001) {</span>
+<span class="nc" id="L667">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L669" title="All 2 branches covered.">        } else if (nDimensions &lt; 5) {</span>
+            //fine resolution between 1.9 and 2.0
+<span class="fc bfc" id="L671" title="All 2 branches covered.">            for (double k = 1.8; k &lt;= 2.0; k+=0.005) {</span>
+<span class="fc" id="L672">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L674" title="All 2 branches covered.">        } else if (nDimensions &lt; 8) {</span>
+            //fine resolution between 1.76 and 1.88
+<span class="fc bfc" id="L676" title="All 2 branches covered.">            for (double k = 1.76; k &lt;= 1.88; k+=0.01) {</span>
+<span class="fc" id="L677">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L679" title="All 2 branches covered.">        } else if (nDimensions &lt;= 10) {</span>
+            //fine resolution between 1.76 and 1.88
+<span class="fc bfc" id="L681" title="All 2 branches covered.">            for (double k = 1.74; k &lt;= 1.88; k+=0.01) {</span>
+<span class="fc" id="L682">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L684" title="All 2 branches covered.">        }  else if (nDimensions &lt; 100) {</span>
+            //fine resolution between 1.5 and ?
+<span class="fc bfc" id="L686" title="All 2 branches covered.">            for (double k = 1.5; k &lt;= 1.75; k+=0.01) {</span>
+<span class="fc" id="L687">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L689" title="All 2 branches covered.">        } else if (nDimensions &lt; 800) {</span>
+            //fine resolution between 1.5 and ?
+<span class="fc bfc" id="L691" title="All 2 branches covered.">            for (double k = 1.45; k &lt;= 1.6; k+=0.005) {</span>
+<span class="fc" id="L692">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L694" title="All 2 branches covered.">        } else if (nDimensions &lt;= 1000) {</span>
+            //fine resolution between 1.5 and ?
+<span class="fc bfc" id="L696" title="All 2 branches covered.">            for (double k = 1.45; k &lt;= 1.455; k+=0.001) {</span>
+<span class="fc" id="L697">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L699" title="All 2 branches covered.">        } else if (nDimensions &lt;= 2000) {</span>
+            //fine resolution between 1.5 and ?
+<span class="fc bfc" id="L701" title="All 2 branches covered.">            for (double k = 1.44; k &lt;= 1.456; k+=0.001) {</span>
+<span class="fc" id="L702">                dList.add(k);</span>
+            }
+<span class="fc bfc" id="L704" title="All 2 branches covered.">        } else if (nDimensions &lt;= 3050) {</span>
+            //fine resolution between 1.5 and ?
+<span class="fc bfc" id="L706" title="All 2 branches covered.">            for (double k = 1.435; k &lt;= 1.45; k+=0.001) {</span>
+<span class="fc" id="L707">                dList.add(k);</span>
+            }
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">        } else if (nDimensions &lt;= 5000) {</span>
+            //fine resolution between 1.5 and ?
+<span class="fc bfc" id="L711" title="All 2 branches covered.">            for (double k = 1.42; k &lt;= 1.45; k+=0.001) {</span>
+<span class="fc" id="L712">                dList.add(k);</span>
+            }
+        }
+<span class="fc" id="L715">        double[] ds = dList.toArray();</span>
+        
+        int n, idx;
+        double[] cdf;
+<span class="fc" id="L719">        double tol = 1e-2;</span>
+        
+        // binary search between d=1.5*r and d=2*R for n &lt;= 100
+<span class="fc" id="L722">        cdf = HypersphereChordLength.cdf(ds, r, nDimensions);</span>
+        //System.out.println(FormatArray.toString(cdf, &quot;%.9f&quot;));
+
+        // Type I error rejects a null hypothesis that is actually true.
+        // Type II error accepts a null hypothesis that is actually false.
+
+        // alpha=0.05 (probability of Type I error)
+        // confidence level or a confidence coefficient, (1 - α)100% = 95%
+<span class="fc" id="L730">        idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);</span>
+        // confidence interval is interval in x capturing 95% of area 
+        //     under curve, e.g. N(0,1): mu +- 1.96*sigma/sqrt(n)
+        
+<span class="fc" id="L734">        return ds[idx];</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

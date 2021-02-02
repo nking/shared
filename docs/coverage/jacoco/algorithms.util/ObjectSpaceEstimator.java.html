@@ -130,10 +130,10 @@
     }
     
     public static long getObjectOverhead() {
-<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (is32Bit) {</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (is32Bit) {</span>
 <span class="nc" id="L134">            return 8;</span>
         } else {
-<span class="nc" id="L136">            return 16;</span>
+<span class="fc" id="L136">            return 16;</span>
         }
     }
 
@@ -531,13 +531,13 @@
     public static long estimateIntSize() {
         
         int idx;
-<span class="nc bnc" id="L534" title="All 2 branches missed.">        if (is32Bit) {</span>
+<span class="pc bpc" id="L534" title="1 of 2 branches missed.">        if (is32Bit) {</span>
 <span class="nc" id="L535">            idx = 0;</span>
         } else {
-<span class="nc" id="L537">            idx = 2;</span>
+<span class="fc" id="L537">            idx = 2;</span>
         }
         
-<span class="nc" id="L540">        return intSz[idx];</span>
+<span class="fc" id="L540">        return intSz[idx];</span>
     }
 
     public static long estimateAStringSize(int maxNumberOfLetters) {

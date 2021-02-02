@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StronglyConnectedComponents2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">StronglyConnectedComponents2.java</span></div><h1>StronglyConnectedComponents2.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.bipartite.MinHeapForRT2012;
+import algorithms.heapsAndPQs.HeapNode;
+import algorithms.misc.MiscMath0;
+import algorithms.sort.MiscSorter;
+import algorithms.util.SimpleLinkedListNode;
+import java.util.Arrays;
+
+/**
+ * From pseudocode in &quot;Introduction to Algorithms&quot; by Cormen et al.
+ * (impl is Tarjan's algorithm).
+ * 
+ * Directed graphs are said to be strongly connected if every vertex is 
+ * reachable from every other vertex.
+ * 
+ * @author nichole
+ */
+<span class="fc" id="L19">public class StronglyConnectedComponents2 {</span>
+        
+    /**
+     * Given the adjacency list for a graph whose vertexes are the indexes of 
+     * the list, return the strongly connected components (the strongly 
+     * connected components are a DAG).
+     * 
+     * RT complexity for worse case is O(|V| + |E|).
+     * 
+     * @param connected adjacency of connected components
+     * @return an array of component numbers that correspond to the indexes of 
+     * connected.
+     * e.g. [0,1,1,0,2] says that vertexes 0 and 3 are strongly connected, 
+     * and vertexes 1 and 2 are strongly connected...
+     */
+    public int[] findStronglyConnectedComponents(SimpleLinkedListNode[] 
+        connected) {
+        
+        /*
+        1) call DFS(g) to compute finishing times f[u] for each vertex u
+        2) compute g^T (where g^T is g with edges reversed)
+        3) call DFS(g^T) in but in the main loop of DFS, consider the vertices in
+            order of decreasing f[u] (as computed in line (1))
+        4) output the vertices of each tree in the depth first forest formed in
+           line (3) as a seperate strongly connected component.
+        */
+<span class="fc" id="L45">        DFS dfs = new DFS(connected);</span>
+<span class="fc" id="L46">        dfs.walk();</span>
+           
+<span class="fc" id="L48">        SimpleLinkedListNode[] reversedEdges = reverse(connected);</span>
+        
+<span class="fc" id="L50">        int[] rTf = Arrays.copyOf(dfs.tf, dfs.tf.length);</span>
+<span class="fc" id="L51">        int[] indexes = new int[rTf.length];</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = 0; i &lt; rTf.length; ++i) {</span>
+<span class="fc" id="L53">            indexes[i] = i;</span>
+        }
+<span class="fc" id="L55">        MiscSorter.sortByDecr(rTf, indexes);</span>
+              
+        // DFS traversing vertices rTF on graph gT
+<span class="fc" id="L58">        DFS dfs2 = new DFS(reversedEdges);</span>
+<span class="fc" id="L59">        dfs2._walk(indexes);</span>
+        
+        /* components can be found by looking at the G' start and end times.
+        The components are between them.
+        
+        For example, see Fig 22.9 from Cormen et al Introduction to Algorithms.
+        The components are indexes c0={0,1,4}, c1={2,3}, c2={5,6}, c3={7}
+        
+                indexes= 0   1   2   3   4   5   6   7
+                G  td=[  1,  2, 11, 12,  9,  3,  4,  5]
+        ===&gt;    G' td=[  1,  3,  7,  8,  2, 11, 12,  15] &lt;===
+                G  tf=[ 16, 15, 14, 13, 10,  8,  7,   6]
+        ===&gt;    G' tf=[  6,  4, 10,  9,  5, 14,  13, 16] &lt;====
+
+        looking at G' td and tf:
+           c0 starts at t=1:6, so that is indexes 0,4,1 
+           c1 starts at t=7:10 is indexes 2,3
+           c2 starts at t=11:14 is indexes 5,6
+           c3 starts at t=7:16 is index 7
+        */
+        
+        // using a yfasttrie with key=start time.  
+        //   the yfasttrie extractMin() has constant small runtime complexity
+<span class="fc" id="L82">        int maxV = MiscMath0.findMax(dfs2.td);</span>
+<span class="fc" id="L83">        int approxN = dfs2.td.length;</span>
+<span class="fc" id="L84">        int maxNumberOfBits = (int)Math.ceil(Math.log(maxV)/Math.log(2));</span>
+<span class="fc" id="L85">        MinHeapForRT2012 heap = new MinHeapForRT2012(maxV, approxN,</span>
+            maxNumberOfBits);
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
+<span class="fc" id="L88">            HeapNode node = new HeapNode(dfs2.td[i]);</span>
+<span class="fc" id="L89">            NodeData d = new NodeData();</span>
+<span class="fc" id="L90">            d.idx = i;</span>
+<span class="fc" id="L91">            d.tf = dfs2.tf[i];</span>
+<span class="fc" id="L92">            node.setData(d);</span>
+<span class="fc" id="L93">            heap.insert(node);</span>
+        }
+   
+<span class="fc" id="L96">        int c = -1;</span>
+<span class="fc" id="L97">        int endTime = Integer.MIN_VALUE;</span>
+<span class="fc" id="L98">        int[] components = new int[dfs2.td.length];</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
+<span class="fc" id="L100">            HeapNode node = heap.extractMin();</span>
+<span class="fc" id="L101">            NodeData d = (NodeData) node.getData();</span>
+            //System.out.printf(&quot;ti=%d, tf=%d, idx=%d   endTime=%d c=%d\n&quot;, 
+            //    node.getKey(), d.tf, d.idx, endTime, c);
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (node.getKey() &lt;= endTime){</span>
+<span class="fc" id="L105">                components[d.idx] = c;</span>
+            } else {
+<span class="fc" id="L107">                c++;</span>
+<span class="fc" id="L108">                endTime = d.tf;</span>
+<span class="fc" id="L109">                components[d.idx] = c;</span>
+            }
+            //System.out.printf(&quot;  idx=%d c=%d\n&quot;, d.idx, components[d.idx]);
+        }
+       
+<span class="fc" id="L114">        return components;</span>
+    }
+    
+    private static class NodeData {
+        int idx;
+        int tf;
+    }
+   
+    private SimpleLinkedListNode[] reverse(SimpleLinkedListNode[] connected) {
+        
+<span class="fc" id="L124">        SimpleLinkedListNode[] reversed = new SimpleLinkedListNode[connected.length];</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (int i = 0; i &lt; connected.length; ++i) {</span>
+<span class="fc" id="L126">            reversed[i] = new SimpleLinkedListNode();</span>
+        }
+        
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int v = 0; v &lt; connected.length; v++) {</span>
+<span class="fc" id="L130">            SimpleLinkedListNode uNode = connected[v];</span>
+<span class="pc bpc" id="L131" title="1 of 4 branches missed.">            while (uNode != null &amp;&amp; uNode.getKey() != -1) {</span>
+<span class="fc" id="L132">                int u = uNode.getKey();</span>
+<span class="fc" id="L133">                reversed[u].insert(v);</span>
+<span class="fc" id="L134">                uNode = uNode.getNext();</span>
+<span class="fc" id="L135">            }</span>
+        }
+        
+<span class="fc" id="L138">        return reversed;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
