@@ -149,6 +149,8 @@ public class JohnsonsAllPairs {
                     throw new IllegalStateException("no weight found for edge " 
                     + u + " to " + v);
                 }
+                assert(hv[u] < sentinel);
+                assert(hv[v] < sentinel);
                 int wUV = uWeights.get(v) + hv[u] - hv[v];
                 
                 uWeights.put(v, wUV);
@@ -166,9 +168,11 @@ public class JohnsonsAllPairs {
         for (int u = 0; u < g.length; ++u) {
             
             //TODO: consider replacing dijkstra's with UniformCostSearch
-            Dijkstras dijkstras = new Dijkstras(g, g2.w, u);
+            //Dijkstras dijkstras = new Dijkstras(g, g2.w, u);
+            //dijkstras.find();
             
-            dijkstras.find();
+            UniformCostSearch ucs = new UniformCostSearch(g, g2.w, u, -1);
+            ucs.find();
                             
             SimpleLinkedListNode v2Node = g[u];
 
@@ -176,11 +180,17 @@ public class JohnsonsAllPairs {
 
                 int v2 = v2Node.getKey();
 
+                assert(hv[v2] < sentinel);
+                assert(hv[u] < sentinel);
+                
                 //do d(u,v) = delta_hat(u, v) + h(v) - h(u)
-                dist[u][v2] = dijkstras.dist[v2] + hv[v2] - hv[u];
-
-                System.arraycopy(dijkstras.predecessor, 0, predecessor[u], 
-                    0, dijkstras.predecessor.length);
+                //dist[u][v2] = dijkstras.dist[v2] + hv[v2] - hv[u];
+                //System.arraycopy(dijkstras.predecessor, 0, predecessor[u], 
+                //    0, dijkstras.predecessor.length);
+               
+                dist[u][v2] = ucs.dist[v2] + hv[v2] - hv[u];
+                System.arraycopy(ucs.predecessor, 0, predecessor[u], 
+                    0, ucs.predecessor.length);
 
                 v2Node = v2Node.getNext();
             }
