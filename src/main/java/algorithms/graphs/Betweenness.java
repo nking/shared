@@ -17,7 +17,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * "Betweenness" is an algorithm to find non-overlapping communities 
+ * within an unweighted, undirected network.
+ * 
+ * <pre>
+      for more information, see:
+ 
+       Chapter 10 from "Mining of Massive Datasets"
+       by Leskovec, Rajaraman, and Ullman
+       http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
+       
+       and
+       
+       2005 paper "Complex networks: Structure and dynamics" by
+                Boccalettia, Latorab, Morenod, Chavezf, and  Hwanga
+                Physics Reports
+               
+       and
+       
+       2010 WWW2010 conference paper "Empirical Comparison of Algorithms for
+            Network Community Detection" by Leskovec, Lang, and Mahoney
+     
+     </pre>
+ 
+    The simplest form of the algorithm attempts to find the edges that are least 
+    likely to be inside a community.
+       
+    Define the betweenness of an edge (a, b) to be the number of pairs of nodes
+    x and y such that the edge (a, b) lies on the shortest path between x and y.
+    To be more precise, since there can be several shortest paths between x and y,
+    edge (a, b) is credited with the fraction of those shortest paths that 
+    include the edge (a, b). As in golf, a high score is bad. 
+    It suggests that the edge (a, b) runs between two different communities; 
+    that is, a and b do not belong to the same community.
+    
  * @author nichole
  */
 public class Betweenness {

@@ -20,7 +20,7 @@ public class MinHeapForRT2012Test extends TestCase {
      * Test of printLastKnownMinMax method, of class MinHeapForRT2012.
      */
     public void test0() throws NoSuchAlgorithmException {
-        
+        System.out.println("test0");
         SecureRandom random = SecureRandom.getInstanceStrong();
         long seed = System.currentTimeMillis();
         System.out.println("SEED=" + seed);
@@ -77,7 +77,7 @@ public class MinHeapForRT2012Test extends TestCase {
     
     
     public void test2() throws NoSuchAlgorithmException {
-        
+        System.out.println("test2");
         SecureRandom random = SecureRandom.getInstanceStrong();
         long seed = System.currentTimeMillis();
         System.out.println("SEED=" + seed);
@@ -89,16 +89,16 @@ public class MinHeapForRT2012Test extends TestCase {
         boolean typeFibonacci = false;
         boolean typeYFT = false;
         
-        while ((!typeFibonacci || !typeYFT) && (k < 4)) {
+        while ((!typeFibonacci || !typeYFT) && (k < 3)) {
             
             int nT = nTests;
             int maxV = maxValue * (k + 1);
             int approxN = maxV * 10;
             int maxNumberOfBits = (int)Math.ceil(Math.log(maxV)/Math.log(2));
             
-            Set<HeapNode> nodes = new HashSet<HeapNode>();
-            
             for (int t = 0; t < nT; ++t) {
+                
+                Set<HeapNode> nodes = new HashSet<HeapNode>();
                 
                 MinHeapForRT2012 heap = new MinHeapForRT2012(maxV, approxN,
                     maxNumberOfBits);
