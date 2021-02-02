@@ -248,7 +248,7 @@ public class AStar {
                     f[v] = g[v] + h[v];
                     predecessor[v] = u;
                     
-                    // if h(n) is exact, can use remove here insteead of decreaseKey.
+                    // if h(n) is exact, can use remove here instead of decreaseKey.
                     heap.decreaseKey(nodes[v], f[v]);
                 }
                 
@@ -274,6 +274,9 @@ public class AStar {
         src = sourceVertex;
         dest = destVertex;
         
+        // h(n)
+        h = Arrays.copyOf(heuristics, heuristics.length);
+        
         maxValue = calcUpperLimitKeyValue();
         
         sentinel = maxValue + 1;
@@ -290,9 +293,9 @@ public class AStar {
         // g(n)
         g = new int[graph.length];
         Arrays.fill(g, sentinel);
-        
-        // h(n)
-        h = Arrays.copyOf(heuristics, heuristics.length);
+                
+        // presumably this is always correct:
+        h[src] = sentinel;
         
         g[src] = 0;
         f[src] = h[src];
@@ -412,7 +415,7 @@ public class AStar {
             int value;
             for (int j = 0; j < map.size(); ++j) {
                 iter.advance();
-                value = iter.value();
+                value = iter.value() + h[i];
                 if (value > max) {
                     max = value;
                 }
