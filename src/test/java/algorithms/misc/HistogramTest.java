@@ -244,8 +244,8 @@ public class HistogramTest extends TestCase {
     public void testReduceHistogramToFirstPeak() throws Exception {
         
         String[] fileNames = new String[] {
-            "Aggregation.txt", "Compound.txt", "Pathbased.txt" , "Spiral.txt",
-            "D31.txt", "R15.txt" , "Jain.txt", "Flame.txt",
+            "Aggregation.txt", "Compound.txt", "pathbased.txt" , "spiral.txt",
+            "D31.txt", "R15.txt" , "jain.txt", "flame.txt",
             "a1.txt", "a2.txt", "a3.txt"
         };
         int[] yPeakIdxes = new int[] {

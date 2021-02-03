@@ -129,6 +129,9 @@ public class ResourceFinder {
         String filePath = cwd + sep + dirName;
 
         File f = new File(filePath);
+        
+        //System.out.println("looking for " + f.toString() + " exists=" + f.exists());
+        
         if (!f.exists()) {
             ClassLoader cls = ResourceFinder.class.getClassLoader();
             URL url = cls.getResource(dirName);
@@ -139,6 +142,7 @@ public class ResourceFinder {
             if (!f.exists()) {
                 throw new IOException("could not find directory named " + dirName);
             }
+            //System.out.println("   found in classloader");
         }
         return filePath;
     }
@@ -174,10 +178,13 @@ public class ResourceFinder {
 
         try {
 
-            String dirPath = findDirectory("testresources");
+            String dirPath = findTestResourcesDirectory();//findDirectory("testresources");
             String filePath = dirPath + sep + fileName;
 
             File f = new File(filePath);
+            
+            //System.out.println("looking for " + f.toString() + " exists=" + f.exists());
+
             if (!f.exists()) {
                 throw new IOException("could not find file at " + filePath);
             }
