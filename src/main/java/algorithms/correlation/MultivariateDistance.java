@@ -238,7 +238,7 @@ public class MultivariateDistance {
       The authors note that this assymptotic dependence test has less power for 
       low dimensional dependency in high dimensional data.
       One workaround may be to perform dimension reduction before using this method.
-      For dimension reduction, see CURDecomposition class, methods in
+      For dimension reduction, see CURDecomposition class, and methods in
        "Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA", etc.
      </pre>
@@ -275,7 +275,7 @@ public class MultivariateDistance {
       The authors note that this assymptotic dependence test has less power for 
       low dimensional dependency in high dimensional data.
       One workaround may be to perform dimension reduction before using this method.
-      For dimension reduction, see CURDecomposition class, methods in
+      For dimension reduction, see CURDecomposition class, and methods in
        "Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA", etc.
      </pre>

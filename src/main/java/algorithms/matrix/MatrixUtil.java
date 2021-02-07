@@ -1,14 +1,11 @@
 package algorithms.matrix;
 
 import algorithms.matrix.LinearEquations.LUP;
-import static algorithms.matrix.LinearEquations.LUPDecomposition;
 import algorithms.misc.Misc0;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.Matrix;
@@ -18,7 +15,22 @@ import no.uib.cipr.matrix.SVD;
 
 /**
  * TODO: tidy code for multiply and dot operations
- * 
+ 
+ <pre>
+   misc notes:
+ 
+   The eigenvalues can be determined in a few ways depending upon the matrix:
+       If A is a positive definite matrix, can use the power method.  
+          Caveat is that it performs best when the spectral gap is large 
+          (diff between largest and 2nd largest eigenvalues).
+       If A is symmetric, can diagonalize A.
+       If A is not symmetric, can either diagonalize A^T*A and use the square root 
+          of those eigenvalues or can use Singular Value Decomposition on A 
+          (the singular values are the eigenvalues of A).
+   Note that the eigenvectors are the same for the diagonalization of A, the 
+   diagonalization of A^T*A, the SVD(A), and the for same operations performed 
+   on the CUR-Decompositions of A (=C) or on C^T*C.
+ </pre>
  * @author nichole
  */
 public class MatrixUtil {
@@ -187,9 +199,9 @@ public class MatrixUtil {
     
     /**
      * multiply matrix m by matrix n
-     * @param m tow dimensional array in ro major format
+     * @param m tow dimensional array in row major format
      * @param n two dimensional array in row major format
-     * @return multiplication of m by n
+     * @return multiplication of m by n.  resulting matrix is size mrows X ncols.
      */
     public static double[][] multiply(double[][] m, double[][] n) {
 
