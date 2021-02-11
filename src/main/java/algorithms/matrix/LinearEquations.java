@@ -1,10 +1,7 @@
 package algorithms.matrix;
 
 import java.util.Arrays;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.SVD;
 
 /**
    LUPSolve, __, and __ follow
@@ -208,16 +205,22 @@ public class LinearEquations {
      * calculated by c = pseudo-inverse of A * y where A is the components of
      * x as polynomial factors.
      * NOTE that a regularized linear least squares algorithm called Elastic-Net
-     * is implemented in project curvature-scale-space-corners-and-transformations.
-     * TODO: move Elastic-Net to this project.
+     * is implemented as thirdparty.scipy.optimization.ElastticNet.
      * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
      * To Algorithms.
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
-     * @param solveForFullRank set to 'False' to use the SVD for a pseudoinverse.
-     * set to 'True' when AX=b has no solution.  when 'True', the algorithm
-     * uses (inverse(A^T*A) * A^T) for the pseudo-inverse.
+     * @param solveForFullRank
+     * when 'True' AX=b has no solution (e.g. xy.length is larger than xy[0].length)
+     * and the algorithm uses (inverse(A^T*A) * A^T) for the pseudo-inverse
+     * (see Chap 4.3 from the book "Introduction to Linear
+     * Algebra" by W Gilbert Strang and Chap 28 from the book "Introductionvto 
+     * Algorithms" by Cormen, Leiserson, Rivest, and Stein.)
+     * when solveForFullRank is set to 'False' this method uses the SVD to
+     * create a pseudoinverse (see Chap 7 from the book "Introduction to Linear
+     * Algebra" by W Gilbert Strang.)
+     *  
      * @return coefficients c where y_i = summation(c_i*x^i) + error
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
@@ -233,8 +236,7 @@ public class LinearEquations {
      * calculated by c = pseudo-inverse of A * y where A is the components of
      * x as polynomial factors.
      * NOTE that a regularized linear least squares algorithm called Elastic-Net
-     * is implemented in project curvature-scale-space-corners-and-transformations.
-     * TODO: move Elastic-Net to this project.
+     * is implemented as thirdparty.scipy.optimization.ElastticNet.
      * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
      * To Algorithms.
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
@@ -253,16 +255,21 @@ public class LinearEquations {
      * calculated by c = pseudo-inverse of A * y where A is the components of
      * x as polynomial factors.
      * NOTE that a regularized linear least squares algorithm called Elastic-Net
-     * is implemented in project curvature-scale-space-corners-and-transformations.
-     * TODO: move Elastic-Net to this project.
+     * is implemented as thirdparty.scipy.optimization.ElastticNet.
      * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
      * To Algorithms.
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
-     * @param solveFullRank set to 'False' to use the SVD for a pseudoinverse.
-     * set to 'True' when AX=b has no solution.  when 'True', the algorithm
-     * uses (inverse(A^T*A) * A^T) for the pseudo-inverse.
+     * @param solveFullRank
+     * when 'True' AX=b has no solution (e.g. xy.length is larger than xy[0].length)
+     * and the algorithm uses (inverse(A^T*A) * A^T) for the pseudo-inverse
+     * (see Chap 4.3 from the book "Introduction to Linear
+     * Algebra" by W Gilbert Strang and Chap 28 from the book "Introductionvto 
+     * Algorithms" by Cormen, Leiserson, Rivest, and Stein.)
+     * when solveForFullRank is set to 'False' this method uses the SVD to
+     * create a pseudoinverse (see Chap 7 from the book "Introduction to Linear
+     * Algebra" by W Gilbert Strang.)
      * @return coefficients c where y_i = summation(c_i*x^i) + error
      */
     public static double[] _leastSquaresPolynomial(double[][] xy, int polyOrder,
@@ -295,7 +302,7 @@ public class LinearEquations {
         double[][] aPInv;
         if (solveFullRank) {
             //AX=b has no solution
-            //uses (inverse(A^T*A) * A^T in pseudo-inverse
+            //using A_pseudoinverse = inverse(A^T*A) * A^T
             aPInv = MatrixUtil.pseudoinverseFullRank(a);
         } else {
             // uses SVD of a in pseudo-inverse

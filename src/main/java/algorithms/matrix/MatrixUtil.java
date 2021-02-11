@@ -188,7 +188,7 @@ public class MatrixUtil {
         consider using Native BLAS from the included Netlib package
         BLAS.getInstance().dgemm.
         
-        Can see example in this repository's related proejct called
+        Can see example in this repository's related project called
         https://github.com/nking/curvature-scale-space-corners-and-transformations.git
         in the test class tests//algorithms/NetlibTest.java
         
@@ -467,7 +467,14 @@ public class MatrixUtil {
         }
     }
     
-    public static double multiplyByTranspose(TDoubleArrayList a, 
+    /**
+     * calculates the inner product of a and b, which is a as a single row matrix
+     * and b as a single column matrix, so is a^T * b.
+     * @param a
+     * @param b
+     * @return scale result of a^T * b
+     */
+    public static double innerProduct(TDoubleArrayList a, 
         TDoubleArrayList b) {
         int sz0 = a.size();
         int sz1 = b.size();
@@ -482,7 +489,14 @@ public class MatrixUtil {
         return s;
     }
     
-    public static double multiplyByTranspose(double[] a, 
+    /**
+     * calculates the inner product of a and b, which is a as a single row matrix
+     * and b as a single column matrix, so is a^T * b.
+     * @param a
+     * @param b
+     * @return scalar result of a^T * b
+     */
+    public static double innerProduct(double[] a, 
         double[] b) {
         int sz0 = a.length;
         int sz1 = b.length;
@@ -498,17 +512,7 @@ public class MatrixUtil {
     }
     
     public static double dot(double[] a, double[] b) {
-
-        if (a.length != b.length) {
-            throw new IllegalArgumentException("a.length must == b.length");
-        }
-        
-        double sum = 0;
-        for (int i = 0; i < a.length; ++i) {
-            sum += (a[i] * b[i]);
-        }
-
-        return sum;
+        return MatrixUtil.innerProduct(a, b);
     }
     
     public static double dot(int[] a, double[] b) {
@@ -612,18 +616,6 @@ public class MatrixUtil {
 
         return m;
     }
-    
-    /**
-     * calculate the product of vectors a and b as a*b^T.
-     * @param a
-     * @param b
-     * @return outer product in double array of size [a.length][b.length])
-     */
-    public static double[][] outerProduct(double[] a, double[] b) {
-        
-        return vTv(a, b);
-    }
-    
     
     public static TDoubleArrayList subtract(TDoubleArrayList a, TDoubleArrayList b) {
         int sz0 = a.size();
@@ -910,6 +902,34 @@ public class MatrixUtil {
         return out;
     }
     
+    /*
+    columns of mxn matrix A are linearly independent only when rank r == n.
+    there are n pivots and no free variables.  \in this case m is .geq. r).
+    only x=0 is in the null space when n == r.
+    
+    the columns of A are independent if x=0 is the only solution to a*x=0.
+    
+    <pre>
+    
+      A is m x n matrix with rank r
+    
+                            r           n
+        .                   .           .
+        |                               |  row space is size        r   x  n
+        |                               |  col space is size        m   x  r
+    r ..|                               |  null space is size     (n-r) x  n
+        |                               |  left null space is size  m   x  (m-r)
+    m ..|                               |
+    
+    1) space r x n transformed    : C(A^T) is row space n x r           ==> all A^T*y
+    2) space (n-r) x r            : N(A) is null space n x (n-r)        ==> A*x = 0
+    3) space m x r                : C(A) is column space m x r          ==> all A*x
+    4) space m x (m-r) transformed: N(A^T) is left null space m x (m-r) ==> A^T*y = 0
+    
+    </pre>
+   .
+    */
+    
     /**
      * calculate the pseudo-inverse of matrix a, using the SVD of a,
      * specifically, V*R*U^T where R is 1/diagonal of S.
@@ -1002,7 +1022,8 @@ public class MatrixUtil {
     
     /**
      * calculate the pseudo-inverse of matrix a (dimensions mxn) which is a full
-     * rank matrix, i.e. rank = m, using LUP decomposition
+     * rank matrix or overdetermined, i.e. rank = m or m > n, using LUP decomposition.
+     * A_pseudoinverse = inverse(A^T*A) * A^T
      * <pre>
        for case m .lt. n: 
            should calculate A† = A^T * (A * A^T)^(−1)
@@ -1024,22 +1045,13 @@ public class MatrixUtil {
         int m = a.length;
         int n = a[0].length;
         
-        /*
-        NOTE: 
-        for case m < n: 
-           should calculate A† = A^T * (A * A^T)^(−1)
-        
-        for case n < m: 
-           should calculate A† = (A^T * A)^(−1) * A^T
-        */
-        
         // limit for a number to be significant above 0 (precision of computer)
         double eps = 1e-16;
         
         //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
-        double[][] aT = MatrixUtil.transpose(a);
-        double[][] aTA = MatrixUtil.multiply(aT, a);
-        DenseMatrix aTAM = new DenseMatrix(aTA);
+        double[][] _aT = MatrixUtil.transpose(a);
+        double[][] _aTA = MatrixUtil.multiply(_aT, a);
+        DenseMatrix aTA = new DenseMatrix(_aTA);
         
         //NOTE that (A^T*A) has to be invertible, that is, the reduced echelon form
         // of A has linearly independent columns (no free variables, only pivots.
@@ -1048,14 +1060,21 @@ public class MatrixUtil {
         // could invert (A^T*A) using the cofactor matrix/determinant
         //   or a convenience method from MTJ Matrix.solve
         
-        DenseMatrix I = Matrices.identity(aTA[0].length);
-        DenseMatrix identity = I.copy();
+        DenseMatrix I = Matrices.identity(_aTA[0].length);
+        DenseMatrix placeholder = I.copy();
+             
+        // the pseudoinverse needs (A^T*A)^-1:
+        //    in general: if an inverse exists for a matrix V then  V * V^-1 = I
+        //    if an inverse exists for (A^T*A) then (A^T*A) * (A^T*A)^-1 = I
                 
-        // A.solve(Matrix B, Matrix X) solves X = A\B.
-        // A*(A^-1) = I  ... identity = aTA / I
-        DenseMatrix aTAIM = (DenseMatrix)aTAM.solve(I, identity);
-        double[][] aTAI = MatrixUtil.convertToRowMajor(aTAIM);
-        double[][] inv = MatrixUtil.multiply(aTAI, aT);
+        // matlab and other matrix notation uses left division symbol in this way:
+        //     x = A\B solves the system of linear equations A*x = B
+        //        can substitute A = A^T*A,   X = (A^T*A)^-1,   B = I
+        //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.        
+        DenseMatrix aTAI = (DenseMatrix)aTA.solve(I, placeholder);
+        double[][] _aTAI = MatrixUtil.convertToRowMajor(aTAI);
+        // _pseudoinverse = inverse(A^T*A) * A^T
+        double[][] inv = MatrixUtil.multiply(_aTAI, _aT);
                
         return inv;
     }
@@ -1283,8 +1302,8 @@ public class MatrixUtil {
     /**
      * create copy of matrix m except row and col
      * @param m
-     * @param i
-     * @param i0
+     * @param col
+     * @param row
      * @return
      */
     private static double[][] copyExcept(double[][] m, int col, int row) {
@@ -1315,16 +1334,16 @@ public class MatrixUtil {
 
         return n;
     }
-   
+    
     /**
-     * the outer product of vectors v1 and v2 as the
-     * transpose of v1 times v2.
+     * the outer product of vectors v1 and v2, which is v1 as a single row matrix
+     * and v2 as a single column matrix, so is v1 * v2^T.
      * @param v1
      * @param v2
      * @return the outer product of v1 and v2 as double array of 
      * size v1.length X v2.length.
      */
-    public static double[][] vTv(double[] v1, double[] v2) {
+    public static double[][] outerProduct(double[] v1, double[] v2) {
         int n = v1.length;
         int m = v2.length;
         double[][] out = new double[n][m];
@@ -1506,7 +1525,7 @@ public class MatrixUtil {
             
             eigs[nr] = powerMethod(a, tolerance, x);
             
-            x2 = vTv(x, x);
+            x2 = outerProduct(x, x);
             a2 = copy(a);
             for (int i = 0; i < a2.length; ++i) {
                 for (int j = 0; j < a2[i].length; ++j) {
@@ -1535,6 +1554,8 @@ public class MatrixUtil {
      * </pre>
      * from Allan Jepson's lecture on Gilbert Strang's SVD in machine learning
      * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
+     * Also see Chap 7.4 of "Introduction to LinearAlgebra" by Strang, the section
+     * on Polar Decomposition.
      * @param a a square symmetric non-negative definite matrix.
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
@@ -1543,7 +1564,7 @@ public class MatrixUtil {
         if (!MatrixUtil.isPositiveDefinite(a)) {
             throw new IllegalArgumentException("a must be a non-negative definite matrix");
         }
-        
+                
         int m = a.length;
         int n = a[0].length;
         
@@ -1610,7 +1631,7 @@ public class MatrixUtil {
         a_r2_c0 * s[0]    a_r2_c1 * s[1]
         */
         DenseMatrix vT = (DenseMatrix) svd.getVt();
-        DenseMatrix u = (DenseMatrix) svd.getU();
+        //DenseMatrix u = (DenseMatrix) svd.getU();
         
         double[][] _vT = Matrices.getArray(vT);
       
@@ -1674,6 +1695,55 @@ public class MatrixUtil {
     }
     
     /**
+     * holds data structures for having solved for the vector x which is the
+     * closest to a given vector b in the subspace defined by A which is
+     * n columns of linearly independent vectors of length m (they are in 
+     * real space R^m).
+     * x is an approximation so is noted as x^{hat}.
+     * the projection p = A*x^{hat}.
+     * The matrix projection P = p*b.
+     */
+    public static class ProjectionResults {
+        double[] x;
+        double[] p;
+        double[][] pMatrix;
+    }
+    /**
+     * solve for the vector x which is the closest to a given vector b in the 
+     * subspace defined by A which is n columns of linearly independent vectors 
+     * of length m (they are in real space R^m).
+     * x is an approximation so is noted as x^{hat}.
+     * the projection p = A*x^{hat}.
+     * The matrix projection P = p*b.
+     * @param a subspace defined by A which is n columns of linearly 
+     * independent vectors of length m (they are in real space R^m).
+     * @param b 
+     * @return 
+     */
+    public static ProjectionResults projection(double[][] a, double[] b) throws NotConvergedException {
+        
+        /*
+        from Chap 4 of the book "Introduction to Linear Algebra" by W Gilbert Strang,
+           x^{hat} = (A^T*A)^-1 * A^T * b
+         and p = A * x^{hat}
+         and P = p * b
+        */
+        
+        ProjectionResults pr = new ProjectionResults();
+        
+        // A_pseudoinverse = inverse(A^T*A) * A^T
+        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullRank(a);
+        
+        pr.x = MatrixUtil.multiply(aPseudoInv, b);
+        
+        pr.p = MatrixUtil.multiply(a, pr.x);
+        
+        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);
+        
+        return pr;
+    }
+    
+    /**
      * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive
      * 
      * @param a
@@ -1683,16 +1753,17 @@ public class MatrixUtil {
         if (!isSquare(a)) {
             return false;
         }
+        
         /*
-        from Strang "Linear Algebra":
+        from Strang "Introduction to Linear Algebra", chapter 6.5.
         
         matrix A is positive definite for every non-zero vector x if x^T*A*x > 0 
         
-        when a symmetric 2x2 matrix has 1 of these 4, it has all 4:
+        when a symmetric nxn matrix has 1 of these 4, it has all 4:
             1) both eigenvectors are positive
-            2) the 1x1 and 2x2 ... determinants are positive a>0 and a*c-b^2>0
+            2) all upper left determinants (the 1x1 and 2x2 ... ) are positive
             3) the pivots are positive a>0 and a*c-b^2>0
-            4) the function x^T*A*x is positive except at (0.0)
+            4) the function x^T * A * x is positive except at x = 0
 
         */
         // using rule that left upward rooted determinants > 0
@@ -1836,4 +1907,68 @@ public class MatrixUtil {
         return out;
     }
     
+    /**
+     * calculate a - v*I where A is square matrix and v is a vector.  I is the identity
+     * matrix.
+     * @param a a square matrix.
+     * @param v a vector of length of a.length.
+     * @return the matrix a - v*I.
+     */
+    public static double[][] aMinusVectorTimesIdentity(double[][] a, double[] v) {
+        int n = a.length;
+        if (n != a[0].length) {
+            throw new IllegalArgumentException("a must be a square matrix");
+        }
+        if (n != v.length) {
+            throw new IllegalArgumentException("v must be same length as a");
+        }
+        
+        double[][] out = copy(a);
+        
+        int i;
+        for (i = 0; i < n; ++i) {
+            out[i][i] -= v[i];
+        }
+        
+        return out;
+    }
+    
+    /**
+     * calculate the sum of the diagonal elements of a
+     * @param a a square matrix.
+     * @return the sum of the diagonal elements of a
+     */
+    public static double trace(double[][] a) {
+        int n = a.length;
+        if (n != a[0].length) {
+            throw new IllegalArgumentException("a must be a square matrix");
+        }
+        
+        double sum = 0;
+        
+        int i;
+        for (i = 0; i < n; ++i) {
+            sum += a[i][i];
+        }
+        
+        return sum;
+    }
+    
+    /**
+     * calculate the sum of the diagonal elements of v*I (i.e. sum of all elements of v)
+     * @param v a vector to be treated as diagonal elements of an identity matrix.
+     * @return the sum of the elements of v
+     */
+    public static double trace(double[] v) {
+        int n = v.length;
+        
+        double sum = 0;
+        
+        int i;
+        for (i = 0; i < n; ++i) {
+            sum += v[i];
+        }
+        
+        return sum;
+    }
 }

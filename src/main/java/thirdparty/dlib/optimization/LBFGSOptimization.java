@@ -75,7 +75,7 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
             
             double alpha = line_search(
                 fls, fValue, flsDer,
-                MatrixUtil.multiplyByTranspose(g, s), // <== gradient * delX
+                MatrixUtil.innerProduct(g, s), // <== gradient * delX
                 searchStrategy.get_wolfe_rho(), 
                 searchStrategy.get_wolfe_sigma(), 
                 minF, 100);
@@ -387,7 +387,7 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
                 matrixR = Arrays.copyOf(x, x.length);
             }
             
-            double result = MatrixUtil.multiplyByTranspose(x, direction);
+            double result = MatrixUtil.innerProduct(x, direction);
             
             return result;
         }

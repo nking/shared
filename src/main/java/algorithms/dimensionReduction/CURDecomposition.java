@@ -36,6 +36,9 @@ import no.uib.cipr.matrix.SVD;
    * Using CMD as the key building block, we further propose procedures to 
    * efficiently construct and analyze dynamic graphs from real-time 
    * application data. ...
+   * Also, kernel PCA, nonmetric multidimensional scaling (NMDS), and a fast
+   * version of isomap.
+   * 
    * 
  * @author nichole
  */
@@ -47,6 +50,13 @@ public class CURDecomposition {
      * in SVD.
      * 
      *  Runtime is O(m*n) Drineas et al.
+     * 
+     * NOTE: Let C = CUR decomposition(A).  The eigenvectors of C are equal
+     * to the eigenvectors of A and both are equal to the eigenvectors
+     * C^T*C and A^T*A.
+     * Let lambda_CC = eigenvalues of C^T*C.
+     * The determinant( C^T*C - lambda * I) = 0.
+     * The trace of (C^T*C) = trace(lambda * I).
      * 
      * NOTE: could improve the speed and space used for very large matrices
      * by using FlexCompColMatrix and FlexCompRowMatrix for C, U, R, and 
@@ -153,7 +163,7 @@ public class CURDecomposition {
      * (a.k.a. calculating Marginal probability mass function of the contingency table).
      * runtime is O(N) where N = mxn.
      * NOTE: the Frobenius norm is the square root of the sum of the squares of 
-     * all elements of a matrix.
+     * all elements of a matrix (2.2-4 of Golub & van Loan).
      * @param a an mxn matrix.
      * @return  the column and row PDFs of matrix a where a row PDF is the
      * Frobenius norm of the column divided by the Frobenius norm of the

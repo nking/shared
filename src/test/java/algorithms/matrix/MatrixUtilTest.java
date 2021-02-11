@@ -1,5 +1,6 @@
 package algorithms.matrix;
 
+import algorithms.matrix.MatrixUtil.ProjectionResults;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -516,5 +517,92 @@ public class MatrixUtilTest extends TestCase {
              assertTrue(Math.abs(diff) < tol);
          }
      
+     }
+     
+     public static void testAMinusVectorTimesIdentity() {
+         
+         double[][] a = new double[3][3];
+         a[0] = new double[]{3, 2, 1};
+         a[1] = new double[]{0, 0, 0};
+         a[2] = new double[]{3, 2, 1};
+         
+         double[] v = new double[]{1, 1, -2};
+         
+         double[][] expected = new double[3][3];
+         expected[0] = new double[]{2, 2, 1};
+         expected[1] = new double[]{0, -1, 0};
+         expected[2] = new double[]{3, 2, 3};
+         
+         double[][] result = MatrixUtil.aMinusVectorTimesIdentity(a, v);
+         assertEquals(expected.length, result.length);
+         assertEquals(expected[0].length, result[0].length);
+         
+         assertTrue(Arrays.equals(expected[0], result[0]));
+         assertTrue(Arrays.equals(expected[1], result[1]));
+         assertTrue(Arrays.equals(expected[2], result[2]));
+     }
+     
+     public static void testTrace() {
+         
+         double[][] a = new double[3][3];
+         a[0] = new double[]{3, 2, 1};
+         a[1] = new double[]{0, 0, 0};
+         a[2] = new double[]{3, 2, 1};
+         
+         double[] v = new double[]{1, 1, -1};
+         
+         double expectedA = 4;
+         double expectedV = 1;
+         
+         double tol = 0.01;
+         
+         double resultA = MatrixUtil.trace(a);
+         double resultV = MatrixUtil.trace(v);
+         
+         assertTrue(Math.abs(expectedA - resultA) < tol);
+         assertTrue(Math.abs(expectedV - resultV) < tol);
+     }
+     
+    
+     public void testProjection() throws NotConvergedException {
+         // from Chap 4 of "Introduction to Linear Algebra" by String
+         double[][] a = new double[3][2];
+         a[0] = new double[]{1, 0};
+         a[1] = new double[]{1, 1};
+         a[2] = new double[]{1, 2};
+         
+         double[] b = new double[]{6, 0, 0};
+         
+         ProjectionResults pr = MatrixUtil.projection(a, b);
+         
+         double[] expectedX = new double[]{5, -3};
+         double[] expectedP = new double[]{5, 2, -1};
+         double[][] expectedPMatrix = new double[3][3];
+         expectedPMatrix[0] = new double[]{5/6., 2/6., -1/6.};
+         expectedPMatrix[1] = new double[]{2/6., 2/6., 2/6.};
+         expectedPMatrix[2] = new double[]{-1/6., 2/6., 5/6.};
+         
+         double tol = 0.01;
+         
+         assertEquals(expectedX.length, pr.x.length);
+         assertEquals(expectedP.length, pr.p.length);
+         assertEquals(expectedPMatrix.length, pr.pMatrix.length);
+         
+         int i, j;
+         double diff;
+         for (i = 0; i < expectedX.length; ++i) {
+             diff = expectedX[i] - pr.x[i];
+             assertTrue(Math.abs(diff) < tol);
+         }
+         for (i = 0; i < expectedP.length; ++i) {
+             diff = expectedP[i] - pr.p[i];
+             assertTrue(Math.abs(diff) < tol);
+         }
+         for (i = 0; i < expectedPMatrix.length; ++i) {
+             for (j = 0; j < expectedPMatrix[i].length; ++j) {
+                 diff = expectedPMatrix[i][j] - pr.pMatrix[i][j];
+                 assertTrue(Math.abs(diff) < tol);
+             }
+         }
      }
 }

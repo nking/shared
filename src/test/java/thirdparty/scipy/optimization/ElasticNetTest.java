@@ -8,7 +8,9 @@ import junit.framework.TestCase;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**
- *
+ * TODO: add tests for Anscombe's Quartet
+ * https://en.wikipedia.org/wiki/Anscombe%27s_quartet
+ * 
  * @author nichole
  */
 public class ElasticNetTest extends TestCase {

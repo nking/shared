@@ -126,7 +126,7 @@ public class LBFGSSearchStrategy {
             dh_temp.s = MatrixUtil.subtract(x, prev_x);
             dh_temp.y = MatrixUtil.subtract(funct_derivative, prev_derivative);
 
-            double temp = MatrixUtil.multiplyByTranspose(dh_temp.s, dh_temp.y);
+            double temp = MatrixUtil.innerProduct(dh_temp.s, dh_temp.y);
         
             // only accept this bit of data if temp isn't zero
             if (Math.abs(temp) > 1.e-7) {
@@ -150,7 +150,7 @@ public class LBFGSSearchStrategy {
                     
                     alpha[i] = 
                         data.get(i).rho * 
-                        MatrixUtil.multiplyByTranspose(
+                        MatrixUtil.innerProduct(
                             data.get(i).s, prev_direction);
                     
                     //prev_direction -= alpha[i]*data[i].y;
@@ -169,7 +169,7 @@ public class LBFGSSearchStrategy {
                 // Unconstrained Optimization (in the L-BFGS section).
                 double H_0 = 
                     1.0/data.get(data.size()-1).rho
-                    / MatrixUtil.multiplyByTranspose(
+                    / MatrixUtil.innerProduct(
                         data.get(data.size()-1).y, 
                         data.get(data.size()-1).y);
 
@@ -181,7 +181,7 @@ public class LBFGSSearchStrategy {
                     
                     double beta = 
                         data.get(i).rho * 
-                        MatrixUtil.multiplyByTranspose(
+                        MatrixUtil.innerProduct(
                         data.get(i).y, prev_direction);
                     
                     //prev_direction += data[i].s * (alpha[i] - beta);

@@ -94,7 +94,6 @@ public class PrincipalComponents {
         // S is mxn
         // V is nxn
         
-        // singular values are square roots of the eigenvalues:
         double[] s = svd.getS();
         
         int rank = 0;
@@ -120,7 +119,7 @@ public class PrincipalComponents {
         DenseMatrix u = svd.getU();
         assert(nDimensions == u.numRows());
         assert(nDimensions == u.numColumns());
-       
+                     
         // extract the nComponents columns of U as the principal axes, a.k.a. 
         //  principal directions.  array format: [nDimensions][nComponents]
         double[][] pa = new double[u.numRows()][nComponents];                                
