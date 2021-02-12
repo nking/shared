@@ -11,6 +11,11 @@ import java.util.Arrays;
  * 
  * see https://en.wikipedia.org/wiki/Normalization_(statistics) for more.
  * 
+ * TODO: add a non-isotropic scaling (see Hartley 1997, end of Section 5):
+     transform points so that
+     1) Their centroid is at the origin.
+     2) The principal moments are both equal to unity
+  
  * @author nichole
  */
 public class Standardization {
