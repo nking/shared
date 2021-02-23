@@ -6,6 +6,7 @@ import algorithms.util.PairIntArray;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -280,7 +281,7 @@ public class HistogramTest extends TestCase {
         Histogram h = new Histogram();
     }
     
-    protected HistogramHolder getHistogram(String fileName) {
+    protected HistogramHolder getHistogram(String fileName) throws IOException {
         
         HistogramHolder hist = new HistogramHolder();
         
@@ -349,7 +350,7 @@ public class HistogramTest extends TestCase {
                 0.0016532135f, 0.0016532135f}
             );
             
-        } else if (fileName.equals("Pathbased.txt")) {
+        } else if (fileName.equals("pathbased.txt")) {
             
             hist.setXHist(new float[]{0.4257853f, 0.49367052f, 0.5615558f, 
                 0.6294411f, 0.6973263f, 0.7652115f, 0.8330968f, 0.9009821f, 
@@ -381,7 +382,7 @@ public class HistogramTest extends TestCase {
                 0.060159065f, 0.07719813f, 0.074333526f}
             );
             
-        } else if (fileName.equals("Spiral.txt")) {
+        } else if (fileName.equals("spiral.txt")) {
             
             hist.setXHist(new float[]{0.4140958f, 0.44548082f, 0.47686586f, 
                 0.5082509f, 0.53963596f, 0.57102096f, 0.60240597f, 0.633791f, 
@@ -493,7 +494,7 @@ public class HistogramTest extends TestCase {
                 0.055779833f, 0.05999243f, 0.058679536f}
             );
             
-        } else if (fileName.equals("Jain.txt")) {
+        } else if (fileName.equals("jain.txt")) {
             
             hist.setXHist(new float[]{0.45988864f, 0.6571544f, 0.8544201f, 
                 1.0516859f, 1.2489518f, 1.4462174f, 1.6434833f, 1.840749f, 
@@ -525,7 +526,7 @@ public class HistogramTest extends TestCase {
                 0.0031047345f}
             );
             
-        } else if (fileName.equals("Flame.txt")) {
+        } else if (fileName.equals("flame.txt")) {
             
             hist.setXHist(new float[]{0.62069994f, 0.7673387f, 0.91397744f, 
                 1.0606163f, 1.2072549f, 1.3538938f, 1.5005324f, 1.6471713f, 
@@ -700,6 +701,8 @@ public class HistogramTest extends TestCase {
                 3.30011E-4f, 3.3713735E-4f}
             );
            
+        } else {
+            throw new IOException("not in code: " + fileName);
         }
         
         return hist;

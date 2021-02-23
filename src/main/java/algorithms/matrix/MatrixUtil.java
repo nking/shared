@@ -14,7 +14,6 @@ import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
 
 /**
- * TODO: tidy code for multiply and dot operations
  
  <pre>
    misc notes:
@@ -270,13 +269,12 @@ public class MatrixUtil {
     }
     
     /**
-     * perform dot product and return matrix of size mrows X ncols
+     * multiply matrices and return matrix of size mrows X ncols
      * @param m
      * @param n
      * @return 
      */
-    public static DenseMatrix multiply(
-        Matrix m, Matrix n) {
+    public static DenseMatrix multiply(Matrix m, Matrix n) {
 
         if (m == null || m.numRows() == 0 || m.numColumns() == 0) {
             throw new IllegalArgumentException("m cannot be null or empty");
@@ -297,7 +295,7 @@ public class MatrixUtil {
             throw new IllegalArgumentException(
                 "the number of columns in m must equal the number of rows in n");
         }
-        
+    
         /*
         a b c      p0 p1 p2
         d e f      p3 p4 p5
@@ -511,11 +509,7 @@ public class MatrixUtil {
         return s;
     }
     
-    public static double dot(double[] a, double[] b) {
-        return MatrixUtil.innerProduct(a, b);
-    }
-    
-    public static double dot(int[] a, double[] b) {
+    public static double innerProduct(int[] a, double[] b) {
 
         if (a.length != b.length) {
             throw new IllegalArgumentException("a.length must == b.length");
@@ -528,95 +522,7 @@ public class MatrixUtil {
 
         return sum;
     }
-    
-    public static double[][] dot(DenseMatrix m1, DenseMatrix m2) {
-        
-        if (m1 == null) {
-            throw new IllegalArgumentException("m1 cannot be null");
-        }
-        if (m2 == null) {
-            throw new IllegalArgumentException("m2 cannot be null");
-        }
-        int cCols = m2.numColumns();
-        int cRows = m1.numRows();
-        
-        if (m1.numColumns() != m2.numRows()) {
-            throw new IllegalArgumentException(
-                "the number of columns in m1 != number of rows in m2");
-        }
-        
-        // m1 dot m2
-        double[][] m = new double[cRows][cCols];
-        for (int i = 0; i < cRows; i++) {
-            m[i] = new double[cCols];
-        }
-        
-        /*
-        t00  t01  t02       x1  x2  x3  x4
-        t10  t11  t12       y1  y2  y3  y4
-        t20  t21  t22       1    1   1   1
-        
-        row=0, col=0:nCols0  times and plus col=0, row=0:nRows1 --> stored in row, row + (cAdd=0)
-        row=1, col=0:nCols0  times and plus col=0, row=0:nRows1 --> stored in row, row + (cAdd=0)
-                
-        row=0, col=0:nCols0  times and plus col=(cAdd=1), row=0:nRows1 --> stored in row, row + (cAdd=0)
-        */
-        
-        for (int colAdd = 0; colAdd < m2.numColumns(); colAdd++) {
-            for (int row = 0; row < m1.numRows(); ++row) {
-                for (int col = 0; col < m1.numColumns(); col++) {
-                    double a = m1.get(row, col);
-                    double b = m2.get(col, colAdd);
-                    m[row][colAdd] += (a * b);
-                }
-            }
-        }
-
-        return m;
-    }
-        
-    /**
-     * apply dot operator to m1 and m2 which are formatted using same as 
-     * DenseMatrix, that is row major [row][col].
-     * @param m1
-     * @param m2
-     * @return 
-     */
-    public static double[][] dot(double[][] m1, double[][] m2) {
-        
-        if (m1 == null) {
-            throw new IllegalArgumentException("m1 cannot be null");
-        }
-        if (m2 == null) {
-            throw new IllegalArgumentException("m2 cannot be null");
-        }
-        int cCols = m2[0].length;
-        int cRows = m1.length;
-        
-        if (m1[0].length != m2.length) {
-            throw new IllegalArgumentException(
-                "the number of columns in m1 != number of rows in m2");
-        }
-        
-        // m1 dot m2
-        double[][] m = new double[cRows][cCols];
-        for (int i = 0; i < cRows; i++) {
-            m[i] = new double[cCols];
-        }
-        
-        for (int colAdd = 0; colAdd < m2[0].length; colAdd++) {
-            for (int row = 0; row < m1.length; ++row) {
-                for (int col = 0; col < m1[0].length; col++) {
-                    double a = m1[row][col];
-                    double b = m2[col][colAdd];
-                    m[row][colAdd] += (a * b);
-                }
-            }
-        }
-
-        return m;
-    }
-    
+     
     public static TDoubleArrayList subtract(TDoubleArrayList a, TDoubleArrayList b) {
         int sz0 = a.size();
         int sz1 = b.size();
@@ -638,6 +544,62 @@ public class MatrixUtil {
         double[] c = new double[len];
 
         subtract(m, n, c);
+
+        return c;
+    }
+    
+    /**
+     * calculate m[i] - s for each i=[0, m.length).
+     * @param m
+     * @param s
+     * @return 
+     */
+    public static double[] subtract(double[] m, double s) {
+
+        int len = m.length;
+
+        double[] c = new double[len];
+
+        for (int i = 0; i < len; ++i) {
+            c[i] = m[i] - s;
+        }
+
+        return c;
+    }
+    /**
+     * calculate s - m[i] for each i=[0, m.length).
+     * @param m
+     * @param s
+     * @return 
+     */
+    public static double[] subtract(double s, double[] m) {
+
+        int len = m.length;
+
+        double[] c = new double[len];
+
+        for (int i = 0; i < len; ++i) {
+            c[i] = s - m[i];
+        }
+
+        return c;
+    }
+    
+    /**
+     * calculate s + m[i] for each i=[0, m.length).
+     * @param m
+     * @param s
+     * @return 
+     */
+    public static double[] add(double s, double[] m) {
+
+        int len = m.length;
+
+        double[] c = new double[len];
+
+        for (int i = 0; i < len; ++i) {
+            c[i] = s + m[i];
+        }
 
         return c;
     }
@@ -1970,5 +1932,112 @@ public class MatrixUtil {
         }
         
         return sum;
+    }
+    
+    /**
+     * element-wise multiplication
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[][] elementwiseMultiplication(double[][] a, double[][] b) {
+        int m = a.length;
+        int n = a[0].length;
+        
+        if (b.length != m || b[0].length != n) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        int j;
+        double[][] out = new double[m][n];
+        for (int i = 0; i < m; ++i) {
+            out[i] = new double[n];
+            for (j = 0; j < n; ++j) {
+                out[i][j] = a[i][j] * b[i][j];
+            }
+        }
+        return out;
+    }
+    
+    /**
+     * element-wise multiplication
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[] elementwiseMultiplication(double[] a, double[] b) {
+        int m = a.length;
+        
+        if (b.length != m) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        int j;
+        double[] out = new double[m];
+        for (int i = 0; i < m; ++i) {
+            out[i] = a[i] * b[i];
+        }
+        return out;
+    }
+    
+    /**
+     * create an array of zeros
+     * @param nRows
+     * @param nCols
+     * @return 
+     */
+    public static double[][] zeros(int nRows, int nCols) {
+        double[][] out = new double[nRows][nCols];
+        for (int i = 0; i < nRows; ++i) {
+            out[i] = new double[nCols];
+            // java, by default, initializes with zeroes
+        }
+        return out;
+    }
+    
+    /**
+     * right divide is element-wise division
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[][] elementwiseDivision(double[][] a, double[][] b) {
+        int m = a.length;
+        int n = a[0].length;
+        
+        if (b.length != m || b[0].length != n) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        int j;
+        double[][] out = new double[m][n];
+        for (int i = 0; i < m; ++i) {
+            out[i] = new double[n];
+            for (j = 0; j < n; ++j) {
+                out[i][j] = a[i][j] / b[i][j];
+            }
+        }
+        return out;
+    }
+    
+    /**
+     * right divide is element-wise division, that is a[i]/b[i] for i = [0, a.length).
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[] elementwiseDivision(double[] a, double[] b) {
+        int m = a.length;
+        
+        if (b.length != m) {
+            throw new IllegalArgumentException("a and b must have same lengths");
+        }
+        
+        int j;
+        double[] out = Arrays.copyOf(a, m);
+        for (int i = 0; i < m; ++i) {
+            out[i] /= b[i];
+        }
+        return out;
     }
 }

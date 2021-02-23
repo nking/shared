@@ -969,7 +969,7 @@ public class Histogram {
         int yPeakIdx = -1;
         
         // specific to use here, find max within first half of histogram
-        for (int i = 0; i < hist.getXHist().length >> 1; i++) {
+        for (int i = 0; i < (hist.getXHist().length >> 1); i++) {
             
             float y = hist.getYHistFloat()[i];
             

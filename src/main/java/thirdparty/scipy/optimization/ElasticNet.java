@@ -29,7 +29,10 @@ import java.util.logging.Logger;
 
   License: BSD 3 clause
  </pre>
-
+ 
+  see definition for class ElasticNet at
+  https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/linear_model/_coordinate_descent.py
+  
    ElasticNet is a linear regression algorithm with combined L1 and L2 priors of the
       LASSO (least absolute shrinkage and selection operator)
       and ridge (a.k.a. Tikhonov regularization) algorithms as regularizer.
@@ -59,8 +62,6 @@ import java.util.logging.Logger;
    alpha corresponds to the lambda parameter in glmnet. Specifically, 
    l1_ratio = 1 is the lasso penalty. Currently, l1_ratio <= 0.01 is not reliable, 
    unless you supply your own sequence of alpha.
-
-
 
  */
 public class ElasticNet {
@@ -767,7 +768,7 @@ public class ElasticNet {
             Xy2 = Arrays.copyOf(Xy2, Xy2.length);
         }
 
-        double alphaMax = Math.sqrt(MatrixUtil.dot(Xy2, Xy2)) /
+        double alphaMax = Math.sqrt(MatrixUtil.innerProduct(Xy2, Xy2)) /
             (nSamples * l1Ratio2);
 
         double start = Math.log(alphaMax * eps)/Math.log(10);
@@ -862,7 +863,7 @@ public class ElasticNet {
         }
 
         // tol *= np.dot(y, y)
-        tol2 *= (MatrixUtil.dot(y2, y2));
+        tol2 *= (MatrixUtil.innerProduct(y2, y2));
 
         int ii, nIter2;
         double w_ii;
@@ -960,10 +961,10 @@ public class ElasticNet {
                 }
 
                 //# R_norm2 = np.dot(R, R)
-                double rNorm2 = MatrixUtil.dot(r, r);
+                double rNorm2 = MatrixUtil.innerProduct(r, r);
 
                 //# w_norm2 = np.dot(w, w)
-                double wNorm2 = MatrixUtil.dot(w, w);
+                double wNorm2 = MatrixUtil.innerProduct(w, w);
 
 
                 if (dual_norm_XtA > alpha2) {
@@ -977,7 +978,7 @@ public class ElasticNet {
 
                 double l1Norm = asum(w);
 
-                double rDotY = MatrixUtil.dot(r, y2);
+                double rDotY = MatrixUtil.innerProduct(r, y2);
                 //# np.dot(R.T, y)
                 gap += (alpha2 * l1Norm
                     - t * rDotY + 0.5 * beta2 * (1 + t*t) * (wNorm2));
@@ -1078,7 +1079,7 @@ public class ElasticNet {
             for (int i = 0; i < coef.length; ++i) {
                 coef[i] /= XStdv[i];
             }
-            this.intercept = yMean - MatrixUtil.dot(XMean, coef);
+            this.intercept = yMean - MatrixUtil.innerProduct(XMean, coef);
         } else {
             this.intercept = 0.;
         }

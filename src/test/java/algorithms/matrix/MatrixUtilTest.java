@@ -263,8 +263,8 @@ public class MatrixUtilTest extends TestCase {
         1000*2 + 100*3 + 10*4    1000*1 +  100*0 + 10*0
         */
        
-        double[][] m = MatrixUtil.dot(new DenseMatrix(m1), 
-            new DenseMatrix(m2));
+        double[][] m = MatrixUtil.convertToRowMajor(MatrixUtil.multiply(new DenseMatrix(m1), 
+            new DenseMatrix(m2)));
         
         assertTrue(m.length == 2);
         assertTrue(m[0].length == 2);
@@ -278,11 +278,11 @@ public class MatrixUtilTest extends TestCase {
         double[] x = new double[]{1, 2, 3, 4, 5};
         double[] y = new double[]{5, 4, 3, 2, 1};
         double expected = 5*1 + 4*2+ 3*3 + 2*4 + 1*5;
-        double dot = MatrixUtil.dot(x, y);
+        double dot = MatrixUtil.innerProduct(x, y);
         assertTrue(Math.abs(expected - dot) < 1.e-15);
         
         int[] xInt = new int[]{1, 2, 3, 4, 5};
-        dot = MatrixUtil.dot(xInt, y);
+        dot = MatrixUtil.innerProduct(xInt, y);
         assertTrue(Math.abs(expected - dot) < 1.e-15);
     }
     

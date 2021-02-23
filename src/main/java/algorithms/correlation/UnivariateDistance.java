@@ -306,7 +306,7 @@ public class UnivariateDistance {
             xz[z] -= mx[0];
             yz[z] -= my[0];
         }
-        double covtermXY = n * MatrixUtil.dot(xz, yz);
+        double covtermXY = n * MatrixUtil.innerProduct(xz, yz);
 
         //v is double[n][nw]; v = [ x y x.∗y ];
         //c1 = iv1 .’ ∗ v (:, 3 );
@@ -320,9 +320,9 @@ public class UnivariateDistance {
             c2 += iv4[z];
         }
 
-        double c1 = MatrixUtil.dot(iv1, v3);
-        double c3 = MatrixUtil.dot(iv2, y);
-        double c4 = MatrixUtil.dot(iv3, x);
+        double c1 = MatrixUtil.innerProduct(iv1, v3);
+        double c3 = MatrixUtil.innerProduct(iv2, y);
+        double c4 = MatrixUtil.innerProduct(iv3, x);
 
         // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
         final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;
@@ -348,7 +348,7 @@ public class UnivariateDistance {
         //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
         //covsq = ( term1 + term3 ) − term2;
         double term1 = d / nsq;
-        double term2 = (2. / ncb) * (MatrixUtil.dot(a_x, b_y));
+        double term2 = (2. / ncb) * (MatrixUtil.innerProduct(a_x, b_y));
         double a_dot_dot = 0;
         double b_dot_dot = 0;
         for (z = 0; z < n; ++z) {
