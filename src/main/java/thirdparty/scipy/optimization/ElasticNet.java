@@ -762,7 +762,7 @@ public class ElasticNet {
             X2 = cr.X;
             y2 = cr.y;
 
-            Xy2 = MatrixUtil.multiply(
+            Xy2 = MatrixUtil.multiplyMatrixByColumnVector(
                 MatrixUtil.transpose(X2), y2);
         } else {
             Xy2 = Arrays.copyOf(Xy2, Xy2.length);

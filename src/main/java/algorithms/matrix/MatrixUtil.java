@@ -35,12 +35,36 @@ import no.uib.cipr.matrix.SVD;
 public class MatrixUtil {
     
     /**
+     * multiply the row vector v by matrix m.
+     * @param v
+     * @param m
+     * @return result is size [1][m[0].length]
+     */
+    public static double[] multiplyRowVectorByMatrix(double[] v, double[][] m) {
+        
+        if (m.length != v.length) {
+            throw new IllegalArgumentException("length of v and length of m must be the same");
+        }
+        
+        int mRows = m.length;
+        int mCols = m[0].length;
+        
+        double[] out = new double[mCols];
+        for (int i = 0; i < mCols; ++i) {
+            for (int j = 0; j < mRows; ++j) {
+                out[i] += (v[j] * m[j][i]);
+            }
+        }
+        return out;
+    }
+    
+    /**
      * multiply matrix m by vector n
      * @param m two dimensional array in row major format
      * @param n one dimensional array
      * @return vector of length m.length
      */
-    public static double[] multiply(double[][] m, double[] n) {
+    public static double[] multiplyMatrixByColumnVector(double[][] m, double[] n) {
 
         if (m == null || m.length == 0) {
             throw new IllegalArgumentException("m cannot be null or empty");
@@ -64,13 +88,10 @@ public class MatrixUtil {
 
         int cCol = 0;
         
-        for (int row = 0; row < mrows; row++) {
-                        
+        for (int row = 0; row < mrows; row++) {                        
             for (int col = 0; col < mcols; col++) {
-                
                 c[cCol] += (m[row][col] * n[col]);
             }
-            
             cCol++;        
         }
 
@@ -81,9 +102,9 @@ public class MatrixUtil {
      * multiply matrix m by vector n
      * @param m two dimensional array in row major format
      * @param n one dimensional array
-     * @return the multiplication of matrix m by n
+     * @return 
      */
-    public static float[] multiply(float[][] m, float[] n) {
+    public static float[] multiplyMatrixByColumnVector(float[][] m, float[] n) {
 
         if (m == null || m.length == 0) {
             throw new IllegalArgumentException("m cannot be null or empty");
@@ -108,12 +129,49 @@ public class MatrixUtil {
         int cCol = 0;
         
         for (int row = 0; row < mrows; row++) {
-                        
             for (int col = 0; col < mcols; col++) {
-                
                 c[cCol] += (m[row][col] * n[col]);
+            }            
+            cCol++;        
+        }
+
+        return c;
+    }
+    
+    public static double[] multiplyMatrixByColumnVector(Matrix a, double[] b) {
+        
+        if (a == null || a.numRows() == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (b == null || b.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        
+        int mrows = a.numRows();
+
+        int mcols = a.numColumns();
+
+        int nrows = b.length;
+        
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                "the number of cols in a must equal the length of b");
+        }
+        
+        double[] c = new double[mrows];
+
+        int cCol = 0;
+        
+        /*
+        a0 1 2     0
+                   1
+                   2
+        */
+        
+        for (int row = 0; row < mrows; row++) {
+            for (int col = 0; col < mcols; col++) {
+                c[cCol] += (a.get(row, col) * b[col]);
             }
-            
             cCol++;        
         }
 
@@ -314,47 +372,6 @@ public class MatrixUtil {
                 }
                 c.set(row, ncol, sum);
             }            
-        }
-
-        return c;
-    }
-    
-    
-    public static double[] multiply(Matrix a, double[] b) {
-        
-        if (a == null || a.numRows() == 0) {
-            throw new IllegalArgumentException("m cannot be null or empty");
-        }
-        if (b == null || b.length == 0) {
-            throw new IllegalArgumentException("n cannot be null or empty");
-        }
-        
-        int mrows = a.numRows();
-
-        int mcols = a.numColumns();
-
-        int nrows = b.length;
-        
-        if (mcols != nrows) {
-            throw new IllegalArgumentException(
-                "the number of cols in a must equal the length of b");
-        }
-        
-        double[] c = new double[mrows];
-
-        int cCol = 0;
-        
-        /*
-        a0 1 2     0
-                   1
-                   2
-        */
-        
-        for (int row = 0; row < mrows; row++) {
-            for (int col = 0; col < mcols; col++) {
-                c[cCol] += (a.get(row, col) * b[col]);
-            }
-            cCol++;        
         }
 
         return c;
@@ -1000,7 +1017,7 @@ public class MatrixUtil {
      * m x n.  a is a full-rank matrix.
      * a is a non-singular matrix(i.e. has exactly one solution). 
      * 
-     * @return
+     * @return matrix of size [a[0].length][a.length]
      * @throws NotConvergedException 
      */
     public static double[][] pseudoinverseFullRank(double[][] a) throws NotConvergedException {
@@ -1359,7 +1376,7 @@ public class MatrixUtil {
             
         for (int i = 0; i < nIterations; ++i) {
             
-            z = MatrixUtil.multiply(a, v);
+            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);
             norm = 0;
             for (row = 0; row < nR; ++row) {
                 norm += (z[row]*z[row]);
@@ -1415,7 +1432,7 @@ public class MatrixUtil {
         
         while (true) {
                         
-            z = MatrixUtil.multiply(a, v);
+            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);
             norm = 0;
             for (row = 0; row < nR; ++row) {
                 norm += (z[row]*z[row]);
@@ -1694,11 +1711,12 @@ public class MatrixUtil {
         ProjectionResults pr = new ProjectionResults();
         
         // A_pseudoinverse = inverse(A^T*A) * A^T
+        // [a[0].length][a.length]
         double[][] aPseudoInv = MatrixUtil.pseudoinverseFullRank(a);
         
-        pr.x = MatrixUtil.multiply(aPseudoInv, b);
+        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);
         
-        pr.p = MatrixUtil.multiply(a, pr.x);
+        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);
         
         pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);
         

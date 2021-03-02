@@ -318,7 +318,7 @@ public class LinearEquations {
             y[i] = xy[i][1];
         }
         
-        double[] c = MatrixUtil.multiply(aPInv, y);
+        double[] c = MatrixUtil.multiplyMatrixByColumnVector(aPInv, y);
         
         return c;
     }

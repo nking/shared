@@ -33,7 +33,7 @@ public class MatrixUtilTest extends TestCase {
 
         double[] b = new double[]{4, 3};
 
-        double[] m = MatrixUtil.multiply(a, b);
+        double[] m = MatrixUtil.multiplyMatrixByColumnVector(a, b);
 
         assertTrue( m[0] ==  10 );
         assertTrue( m[1] ==  17 );
@@ -188,7 +188,7 @@ public class MatrixUtilTest extends TestCase {
         
         double[] y = new double[]{2, 1, 1, 0, 3};
         
-        double[] c = MatrixUtil.multiply(inv, y);
+        double[] c = MatrixUtil.multiplyMatrixByColumnVector(inv, y);
         
         for (int i = 0; i < a[0].length; i++) {
             for (int j = 0; j < a.length; j++) {

@@ -57,8 +57,8 @@ public class LinearEquationsTest extends TestCase {
          double[] y = new double[]{8, 1.4, 1.5};
 
          // assert L*y = permutation * b
-         double[] ly = MatrixUtil.multiply(ell, y);
-         double[] pb = MatrixUtil.multiply(permutation, b);
+         double[] ly = MatrixUtil.multiplyMatrixByColumnVector(ell, y);
+         double[] pb = MatrixUtil.multiplyMatrixByColumnVector(permutation, b);
          for (int i = 0; i < pb.length; ++i) {
              double t1 = ly[i];
              double t2 = pb[i];
@@ -69,7 +69,7 @@ public class LinearEquationsTest extends TestCase {
          double[] expectedX = new double[]{-1.4, 2.2, 0.6};
          
          // assert U*x = y
-         double[] ux = MatrixUtil.multiply(u, expectedX);
+         double[] ux = MatrixUtil.multiplyMatrixByColumnVector(u, expectedX);
          for (int i = 0; i < ux.length; ++i) {
              double t1 = ux[i];
              double t2 = y[i];
@@ -301,7 +301,7 @@ public class LinearEquationsTest extends TestCase {
                     a[i][k + 1] = x * a[i][k];
                 }
             }
-            double[] ac = MatrixUtil.multiply(a, c);
+            double[] ac = MatrixUtil.multiplyMatrixByColumnVector(a, c);
             double[] err = MatrixUtil.subtract(ac, y);
         
             System.out.printf("polyOrder=%d  c=%s  \n    err=%s\n", polyOrder,
@@ -331,7 +331,7 @@ public class LinearEquationsTest extends TestCase {
                     a[i][k + 1] = x_yx * a[i][k];
                 }
             }
-            double[] ac = MatrixUtil.multiply(a, c);
+            double[] ac = MatrixUtil.multiplyMatrixByColumnVector(a, c);
             double[] err = MatrixUtil.subtract(ac, y_yx);
 
             System.out.printf("polyOrder=%d  c_yx=%s  \n    err=%s\n", polyOrder,

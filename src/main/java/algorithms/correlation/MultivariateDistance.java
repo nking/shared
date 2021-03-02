@@ -111,8 +111,8 @@ public class MultivariateDistance {
             v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);
             
             // x * u^T = nX1
-            xu = MatrixUtil.multiply(x, u);
-            yv = MatrixUtil.multiply(y, v);
+            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);
+            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);
             
             dcov = UnivariateDistance.fastDcov(xu, yv);
             
@@ -330,16 +330,16 @@ public class MultivariateDistance {
             v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);
             
             // x * u^T = nX1
-            xu = MatrixUtil.multiply(x, u);
-            yv = MatrixUtil.multiply(y, v);
+            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);
+            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);
             
             dcor = UnivariateDistance.fastDcor(xu, yv);
             dcorsq += dcor.corSq;
             
             uPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);
             vPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);
-            xuPrime = MatrixUtil.multiply(x, uPrime);
-            yvPrime = MatrixUtil.multiply(y, vPrime);
+            xuPrime = MatrixUtil.multiplyMatrixByColumnVector(x, uPrime);
+            yvPrime = MatrixUtil.multiplyMatrixByColumnVector(y, vPrime);
             
             // txy = Ω(k) = C_p * C_q * Ω(u_k*X, v_k*Y)
             // sxxyy = S_{n,1}(k) = (C_p * C_q)^2 * Ω(u_k*X, u_k*X) * * Ω(v_k*Y, v_k*Y)

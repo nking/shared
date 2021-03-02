@@ -69,7 +69,7 @@ public class MultivariateNormalDistribution {
         //System.out.println("u="+Arrays.toString(u));
         
         double[][] ksq = MatrixUtil.squareRoot(k);
-        double[] d = MatrixUtil.multiply(ksq, u);
+        double[] d = MatrixUtil.multiplyMatrixByColumnVector(ksq, u);
         assert(d.length == m.length);
         
         /*{
@@ -194,7 +194,7 @@ public class MultivariateNormalDistribution {
         DenseCholesky c = new DenseCholesky(n, false);
         LowerSPDDenseMatrix lt = new LowerSPDDenseMatrix(new DenseMatrix(k));
         c.factor(lt);
-        double[] d = MatrixUtil.multiply(lt, u);
+        double[] d = MatrixUtil.multiplyMatrixByColumnVector(lt, u);
         
         assert(d.length == m.length);
         
