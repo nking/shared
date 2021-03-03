@@ -1245,6 +1245,7 @@ public class MatrixUtil {
      *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 
         + 135 + 2 = 148
      *         | 2   1  5 |
+     * 
      */
     public static double determinant(double[][] m) {
 
@@ -1312,6 +1313,79 @@ public class MatrixUtil {
         }
 
         return n;
+    }
+    
+    public static double[] crossProduct(double[] p0, double[] p1) {
+        if (p0.length != 3 || p1.length != 3) {
+            throw new IllegalArgumentException("expecting p0 and p1 lengths to be 3");
+        }
+        double[] out = new double[3];
+        out[0] = p0[1]*p1[2] - p0[2]*p1[1];
+        out[1] = p0[2]*p1[0] - p0[0]*p1[2];
+        out[2] = p0[0]*p1[1] - p0[1]*p1[0];
+        return out;
+    }
+    
+    public static boolean areColinear(double[] p0, double[] p1, double eps) {
+        if (p0.length != 3 || p1.length != 3) {
+            throw new IllegalArgumentException("expecting p0 and p1 lengths to be 3");
+        }
+        double[] cp = crossProduct(p0, p1);
+        double norm = lPSum(cp, 2);
+        return Math.abs(norm) < eps;
+    }
+    
+    /**
+     * normalize vector v by euclidean, that is the square root of the sum of 
+     * its squared components.  notation is sometimes ||v||_2.
+     * @param v
+     * @return 
+     */
+    public static double[] normalizeL2(double[] v) {
+        double sum = 0;
+        for (double a : v) {
+            sum += (a*a);
+        }
+        sum = Math.sqrt(sum);
+        for (int i = 0; i < v.length; ++i) {
+            v[i] /= sum;
+        }
+        return v;
+    }
+    
+    /**
+     * summation = the (1/p) power of sum of 
+     * its (components)^p.
+     * @param v
+     * @return 
+     */
+    public static double lPSum(double[] v, double p) {
+        double sum = 0;
+        for (double a : v) {
+            sum += Math.pow(a, p);
+        }
+        sum = Math.pow(sum, 1./p);
+        return sum;
+    }
+    
+    /**
+     * normalize vector v by power p, that is the (1/p) power of sum of 
+     * its (components)^p.  notation is sometimes ||v||_p.
+     * when p = 0, this is the manhattan normalization or taxi-cab normalization,
+     * when p = 2, this is the euclidean normalization.
+     * @param v
+     * @return 
+     */
+    public static double[] normalizeLP(double[] v, double p) {
+        double sum = 0;
+        for (double a : v) {
+            sum += Math.pow(a, p);
+        }
+        sum = Math.pow(sum, 1./p);
+        for (int i = 0; i < v.length; ++i) {
+            v[i] /= sum;
+        }
+        return v;
     }
     
     /**

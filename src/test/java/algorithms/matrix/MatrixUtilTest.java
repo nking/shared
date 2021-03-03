@@ -605,4 +605,38 @@ public class MatrixUtilTest extends TestCase {
              }
          }
      }
+     
+     public void testCrossProduct() {
+         double eps = 1e-6;
+         double[] p0 = new double[]{2, 1, -1};
+         double[] p1 = new double[]{1, 3, -2};
+         
+         double[] expected = new double[]{1, 3, 5};
+         
+         double[] result = MatrixUtil.crossProduct(p0, p1);
+         for (int i = 0; i < result.length; ++i) {
+             assertTrue(Math.abs(result[i] - expected[i]) < eps);
+         }
+         
+         // check right hand rule
+         p0 = new double[]{0, 0, -1};
+         p1 = new double[]{-1, 0, 0};
+         expected = new double[]{0, 1, 0};
+         result = MatrixUtil.crossProduct(p0, p1);
+         for (int i = 0; i < result.length; ++i) {
+             //System.out.printf("crossproduct [%d] %.6e\n", i, result[i]);
+             assertTrue(Math.abs(result[i] - expected[i]) < eps);
+         }
+         result = MatrixUtil.normalizeL2(result);
+         for (int i = 0; i < result.length; ++i) {
+             //System.out.printf("normalized [%d] %.6e\n", i, result[i]);
+             assertTrue(Math.abs(result[i] - expected[i]) < eps);
+         }
+         
+         assertFalse(MatrixUtil.areColinear(p0, p1, eps));
+         
+         p0 = new double[]{0, 0, -1};
+         p1 = new double[]{0, 0, -0.35};
+         assertTrue(MatrixUtil.areColinear(p0, p1, eps));
+     }
 }
