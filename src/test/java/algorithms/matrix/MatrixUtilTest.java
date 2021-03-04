@@ -608,7 +608,7 @@ public class MatrixUtilTest extends TestCase {
      
      public void testCrossProduct() {
          double eps = 1e-6;
-         //Boas, Section 4 Example from book "Mathematical MEthods in the Physical Sciences"
+         //Boas, Section 4 Example from book "Mathematical Methods in the Physical Sciences"
          double[] p0 = new double[]{2, 1, -1};
          double[] p1 = new double[]{1, 3, -2};
          

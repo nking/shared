@@ -1335,6 +1335,20 @@ public class MatrixUtil {
         return Math.abs(norm) < eps;
     }
     
+    public static boolean areColinear(double[] p0, double[] p1, double[] p2, double eps) {
+        if (p0.length != 3 || p1.length != 3 || p2.length != 3) {
+            throw new IllegalArgumentException("expecting p0, p1 and p2 lengths to be 3");
+        }
+        //adapted from code by Peter Kovesis for function 
+        // iscolinear.m.  r =  norm(cross(p2-p1, p3-p1)) < eps
+        // https://www.peterkovesi.com/matlabfns/
+        double[] p21 = MatrixUtil.subtract(p1, p0);
+        double[] p31 = MatrixUtil.subtract(p2, p0);
+        double[] cp = crossProduct(p21, p31);
+        double norm = lPSum(cp, 2);
+        return Math.abs(norm) < eps;
+    }
+    
     /**
      * normalize vector v by euclidean, that is the square root of the sum of 
      * its squared components.  notation is sometimes ||v||_2.
