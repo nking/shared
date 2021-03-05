@@ -2,15 +2,20 @@ package algorithms.matrix;
 
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.misc.Misc0;
+import algorithms.util.FormatArray;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.QR;
+import no.uib.cipr.matrix.RQ;
 import no.uib.cipr.matrix.SVD;
 
 /**
@@ -921,7 +926,7 @@ public class MatrixUtil {
        OF A NON FULL-RANK MATRIX" by M. A. Murray-Lasso, 2008
        http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
      * @param a
-     * @return
+     * @return matrix with dimensions of a^T
      * @throws NotConvergedException 
      */
     public static double[][] pseudoinverseRankDeficient(double[][] a) throws NotConvergedException {
@@ -1119,6 +1124,161 @@ public class MatrixUtil {
         return false;
     }
     
+    public static class QAndR {
+        
+        /**
+         * a matrix of orthogonal vectors.  it has the same dimensions as A, mxn.
+         * <pre>
+         * q_i^T * q_j =  {0 for i!=j (orthogonal)
+         *             =  {1 for i==j (unit vectors, ||q_i||=1)
+         * 
+         *     |   .    .   .       .    |
+         * Q = |  q_0  q_1  ...  q_(n-1) |
+         *     |   .    .   .       .    |
+         * </pre>
+         */
+        public double[][] q;
+        
+        /**
+         * a right upper triangular, positive diagonal matrix defined from the 
+         * Gram-Schmidt method. It is a square matrix of size mXm.
+         * <pre>
+         * A = Q * R
+         *   where A is composed of independent column vectors and is size mxn.
+         *   (any A with independent columns can be factored in Q and R)
+         * 
+         *     | q_0^T * a_0   q_0^T * a_1   ...  q_0^T * a_(m-1) |
+         * R = |       0       q_1^T * a_1   ...  q_1^T * a_(m-1)
+         *     |       0             0       ...  q_(m-1)^T * a_(m-1)
+         * 
+         * one can see that R = Q^T * A
+         * 
+         * that is derived from A^T * A = R^T * Q^T * R * Q ==> R^T * R
+         *                                R^T * Q^T * A ==> R^T * R
+         *                                Q^T * A ==> R
+         * </pre>
+         */
+        public double[][] r;
+        
+    }
+    
+    /**
+     * decompose the mxn matrix 'a' into matrices R and Q.  if m .ge. n, then
+     * QR decomposition is performed, else RQ decomposition is performed.
+     * 
+     * @param a matrix of size mxn having independent rows.
+     * @return upper right triangular matrix R of size mxm and orthogonal
+     * matrix Q of size nxm.
+     */
+    public static QAndR qRRQDecomposition(double[][] a) {
+        return qRRQDecomposition(new DenseMatrix(a));
+    }
+    
+    /**
+     * decompose the mxn matrix 'a' into matrices R and Q.  if m .ge. n, then
+     * QR decomposition is performed, else RQ decomposition is performed.
+     * 
+     * @param a matrix of size mxn having independent rows.
+     * @return upper right triangular matrix R of size mxm and orthogonal
+     * matrix Q of size nxm.
+     */
+    public static QAndR qRRQDecomposition(DenseMatrix a) {
+        
+        QAndR rAndQ = new QAndR();
+        
+        if (a.numRows() < a.numColumns()) {
+            RQ rq = RQ.factorize(a);
+            rAndQ.r = Matrices.getArray(rq.getR());
+            rAndQ.q = Matrices.getArray(rq.getQ());
+        } else {
+            QR qr = QR.factorize(a);
+            rAndQ.q = MatrixUtil.transpose(Matrices.getArray(qr.getQ()));
+            rAndQ.r = MatrixUtil.transpose(Matrices.getArray(qr.getR()));
+        }
+        
+        return rAndQ;
+    }
+    
+    /**
+     * class to hold the results of the Singular Value Decomposition
+     */
+    public static class SVDProducts {
+        
+        /**
+         * given A as an mxn matrix, u is orthogonal column vectors in a matrix of size mxm.
+         * These are eigenvectors of A as columns ordered by the eigenvalues s.
+         */
+        public double[][] u;
+        
+        /**
+         * given A as an mxn matrix, v^T is orthogonal row vectors in a matrix of sizr nxn.
+         * These are eigenvectors of A as rows ordered by the eigenvalues s.
+         */
+        public double[][] vT;
+        
+        /**
+         * given a matrix A of size mxn, s holds the singular values, that is,
+         * the eigenvalues of the SVD decomposition ordered from largest to smallest.
+         */
+        public double[] s;
+        
+    }
+    
+    public static SVDProducts performSVD(double[][] a) throws NotConvergedException {
+        return performSVD(new DenseMatrix(a));
+    }
+    
+    /**
+     * performs SVD on matrix a and if fails to converge, performs SVD on
+     * a*a^T and a^T*a separately to get the factorization components for a.
+     * <pre>
+     *    SVD(A).U == SVD(AA^T).U == SVD(AA^T).V
+          
+          SVD(A).V == SVD(A^TA).V == SVD(A^TA).U 
+          
+          SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
+              and sqrt( SVD(A^TA) eigenvalues )
+       </pre>
+     * @param a
+     * @return 
+     */
+    public static SVDProducts performSVD(DenseMatrix a) throws NotConvergedException {
+        SVD svd;
+        DenseMatrix u = null;
+        DenseMatrix vT = null;
+        double[] sDiag = null;
+        try {
+            svd = SVD.factorize(a);
+            vT = svd.getVt();
+            u = svd.getU();
+            sDiag = svd.getS();
+        } catch (NotConvergedException e) {
+            double[][] _a = MatrixUtil.convertToRowMajor(a);
+            double[][] aTa = MatrixUtil.multiply(MatrixUtil.transpose(_a), _a);
+            double[][] aaT = MatrixUtil.multiply(_a, MatrixUtil.transpose(_a));
+            //SVD(A).U == SVD(AA^T).U == SVD(AA^T).V
+            //SVD(A).V == SVD(A^TA).V == SVD(A^TA).U 
+            //SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
+            //    and sqrt( SVD(A^TA) eigenvalues )
+            svd = SVD.factorize(new DenseMatrix(aTa));
+            vT = svd.getVt();
+            sDiag = svd.getS();
+            for (int i = 0; i < sDiag.length; ++i) {
+                if (sDiag[i] > 0) {
+                    sDiag[i] = Math.sqrt(sDiag[i]);
+                }
+            }
+
+            svd = SVD.factorize(new DenseMatrix(aaT));
+            u = svd.getU();
+        }
+        SVDProducts out = new SVDProducts();
+        out.u = (u != null) ? MatrixUtil.convertToRowMajor(u) : null;
+        out.vT = (vT != null) ? MatrixUtil.convertToRowMajor(vT) : null;
+        out.s = sDiag;
+        return out;
+    }
+    
     /**
      * given data points xy, want to create a matrix usable to transform
      * the data points by scaling and translation so that:
@@ -1313,6 +1473,31 @@ public class MatrixUtil {
         }
 
         return n;
+    }
+    
+    /**
+     * constructs the 3x3 skew-symmetric matrices for use in cross products,
+     * notation is [v]_x.
+     * v cross product with w is v X w = [v]_x * w.
+       <pre>
+       |    0   -v[2]  v[1] |
+       |  v[2]    0    v[0] |
+       | -v[1]  -v[0]    0  |
+       </pre>
+     * @param v
+     * @return 
+     */
+    public static double[][] skewSymmetric(double[] v) {
+        if (v.length != 3) { 
+            throw new IllegalArgumentException("v.length must be 3");
+        }
+        
+        double[][] out = new double[3][3];
+        out[0] = new double[]{0,     -v[2],  v[1]};
+        out[1] = new double[]{v[2],     0 ,  v[0]};
+        out[2] = new double[]{-v[1], -v[0],    0};
+        
+        return out;
     }
     
     public static double[] crossProduct(double[] p0, double[] p1) {

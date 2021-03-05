@@ -1,17 +1,13 @@
 package algorithms.matrix;
 
 import algorithms.matrix.MatrixUtil.ProjectionResults;
+import algorithms.matrix.MatrixUtil.QAndR;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
-import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
-import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
     
 /**
  *
@@ -639,5 +635,30 @@ public class MatrixUtilTest extends TestCase {
          p0 = new double[]{0, 0, -1};
          p1 = new double[]{0, 0, -0.35};
          assertTrue(MatrixUtil.areColinear(p0, p1, eps));
+     }
+     
+     public void testRQDecomposition() throws NotConvergedException {
+         double[][] p = new double[3][4];
+         p[0] = new double[]{3.53553e+2,  3.39645e+2, 2.77744e+2, -1.44946e+6};
+         p[1] = new double[]{-1.03528e+2, 2.33212e+1, 4.59607e+2, -6.3252e+5};
+         p[2] = new double[]{7.07107e-1, -3.53553e-1, 6.12372e-1, -9.18559e+2};
+         QAndR rq = MatrixUtil.qRRQDecomposition(p);
+         
+         double tol = 1e-5;
+         
+         // r is mxm
+         // q is mxn
+         double[][] check = MatrixUtil.multiply(rq.r, rq.q);
+         assertEquals(p.length, check.length);
+         assertEquals(p[0].length, check[0].length);
+         
+         int i, j;
+         double diff;
+         for (i = 0; i < check.length; ++i) {
+             for (j = 0; j < check[i].length; ++j) {
+                 diff = Math.abs(check[i][j] - p[i][j]);
+                 assertTrue(diff < tol);
+             }
+         }
      }
 }
