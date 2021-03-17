@@ -313,6 +313,52 @@ public class MatrixUtil {
         return c;
     }
     
+   
+    public static double[][] createATransposedTimesA(double[][] a) {
+
+        if (a == null || a.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        
+        int m = a.length;
+        int n = a[0].length;
+        
+        /*
+        a00  a01     a00  a01 
+        a10  a11     a10  a11 
+        a20  a21     a20  a21 
+        
+                         i:[0,n)
+        a00  a10  a20    a00  a01
+        a01  a11  a21    a10  a11
+                         a20  a21 
+        
+        a00*a00 + a10*a10 + a20*a20   a00*a01 + a10*a11 + a20*a21   
+        a01*a00 + a11*a10 + a21*a20   a01*a01 + a11*a11 + a21*a21 
+        
+        col0_ dot col0
+        col1_ dot col0
+        */
+        
+        int outCol, i, j;
+        double[][] c = new double[n][n];
+        for (i = 0; i < n; ++i) {
+            c[i] = new double[n];
+        }
+        double sum;
+        for (i = 0; i < n; i++) {
+            for (outCol = 0; outCol < n; outCol++) {
+                sum = 0;
+                for (j = 0; j < m; j++) {
+                    sum += (a[j][outCol] * a[j][i]);
+                }
+                c[outCol][i] = sum;
+            }
+        }
+
+        return c;
+    }
+    
     public static void multiply(double[] a, double f) {
         for (int i = 0; i < a.length; ++i) {
             a[i] *= f;
@@ -489,7 +535,8 @@ public class MatrixUtil {
     
     /**
      * calculates the inner product of a and b, which is a as a single row matrix
-     * and b as a single column matrix, so is a^T * b.
+     * and b as a single column matrix, so is a^T * b.  it's also known as the
+     * scalar product or dot product.
      * @param a
      * @param b
      * @return scale result of a^T * b
@@ -1232,9 +1279,9 @@ public class MatrixUtil {
      * performs SVD on matrix a and if fails to converge, performs SVD on
      * a*a^T and a^T*a separately to get the factorization components for a.
      * <pre>
-     *    SVD(A).U == SVD(AA^T).U == SVD(AA^T).V
-          
-          SVD(A).V == SVD(A^TA).V == SVD(A^TA).U 
+          SVD(A).U == SVD(A^T).V == SVD(AA^T).U == SVD(AA^T).V
+            
+          SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U 
           
           SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
               and sqrt( SVD(A^TA) eigenvalues )
@@ -1256,8 +1303,8 @@ public class MatrixUtil {
             double[][] _a = MatrixUtil.convertToRowMajor(a);
             double[][] aTa = MatrixUtil.multiply(MatrixUtil.transpose(_a), _a);
             double[][] aaT = MatrixUtil.multiply(_a, MatrixUtil.transpose(_a));
-            //SVD(A).U == SVD(AA^T).U == SVD(AA^T).V
-            //SVD(A).V == SVD(A^TA).V == SVD(A^TA).U 
+            //SVD(A).U == SVD(A^T).V == SVD(AA^T).U == SVD(AA^T).V
+            //SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U 
             //SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
             //    and sqrt( SVD(A^TA) eigenvalues )
             svd = SVD.factorize(new DenseMatrix(aTa));
@@ -1275,6 +1322,37 @@ public class MatrixUtil {
         SVDProducts out = new SVDProducts();
         out.u = (u != null) ? MatrixUtil.convertToRowMajor(u) : null;
         out.vT = (vT != null) ? MatrixUtil.convertToRowMajor(vT) : null;
+        out.s = sDiag;
+        return out;
+    }
+    
+    /**
+     * create matrix A^T*A then perform SVD on it.  NOTE that the singular values
+     * returned in S will have the square of values of SVD(A).s.
+     * @param a
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static SVDProducts performSVDATransposeA(double[][] a) throws NotConvergedException {
+        double[][] aTa = MatrixUtil.createATransposedTimesA(a);
+        return performSVDATransposeA(new DenseMatrix(aTa));
+    }
+    
+    public static SVDProducts performSVDATransposeA(DenseMatrix aTa) throws NotConvergedException {
+        
+        SVD svd;
+        DenseMatrix u = null;
+        DenseMatrix vT = null;
+        double[] sDiag = null;
+        
+        svd = SVD.factorize(aTa);
+        vT = svd.getVt();
+        u = svd.getU();
+        sDiag = svd.getS();
+        
+        SVDProducts out = new SVDProducts();
+        out.u = MatrixUtil.convertToRowMajor(u);
+        out.vT = MatrixUtil.convertToRowMajor(vT);
         out.s = sDiag;
         return out;
     }
@@ -2079,7 +2157,7 @@ public class MatrixUtil {
         return cofactor;
     }
     
-        /**
+    /**
      * find the equation for which A * A^(-1) = the identity matrix
      *
      *             1
@@ -2282,6 +2360,15 @@ public class MatrixUtil {
         for (int i = 0; i < nRows; ++i) {
             out[i] = new double[nCols];
             // java, by default, initializes with zeroes
+        }
+        return out;
+    }
+    
+    public static double[][] createIdentityMatrix(int nRows) {
+        double[][] out = new double[nRows][nRows];
+        for (int i = 0; i < nRows; ++i) {
+            out[i] = new double[nRows];
+            out[i][i] = 1;
         }
         return out;
     }

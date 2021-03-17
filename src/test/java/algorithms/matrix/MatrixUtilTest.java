@@ -661,4 +661,46 @@ public class MatrixUtilTest extends TestCase {
              }
          }
      }
+     
+     public void testCreateATransposedTimesA() {
+         double[][] a = new double[3][2];
+         a[0] = new double[]{1, 2};
+         a[1] = new double[]{4, 9};
+         a[2] = new double[]{2, 7};
+         
+         /*
+         1  4  2     1  2
+         2  9  7     4  9
+                     2  7
+         1*1 + 4*4 + 2*2   1+2 + 
+         */
+         
+         double[][] expected = new double[2][2];
+         expected[0] = new double[]{1*1 + 4*4 + 2*2, 1*2 + 4*9 + 2*7};
+         expected[1] = new double[]{2*1 + 9*4 + 7*2, 2*2 + 9*9 + 7*7};
+         
+         double[][] aTa = MatrixUtil.createATransposedTimesA(a);
+         
+         assertEquals(2, aTa.length);
+         assertEquals(2, aTa[0].length);
+         int i, j;
+         double diff;
+         double tol = 1e-7;
+         for (i = 0; i < aTa.length; ++i) {
+             for (j = 0; j < aTa[i].length; ++j) {
+                 diff = Math.abs(aTa[i][j] - expected[i][j]);
+                 assertTrue(diff < tol);
+             }
+         }
+     }
+     
+     public void testIdentity() {
+         int n = 3;
+         double[][] i3 = MatrixUtil.createIdentityMatrix(n);
+         assertEquals(n, i3.length);
+         assertEquals(3, i3[0].length);
+         for (int i = 0; i < n; ++i) {
+             assertTrue(Math.abs(i3[i][i] - 1.) < 1.e-7);
+         }
+     }
 }

@@ -12,9 +12,10 @@ public class FormatArray {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
             sb.append(String.format(decimalFormat, a[i]));
-            if (i < (a.length)) {
-                sb.append(", ");
+            if (i < (a.length - 1)) {
+                sb.append(",");
             }
+            sb.append(" ");
         }
         return sb.toString();
     }
@@ -24,9 +25,10 @@ public class FormatArray {
         for (int i = 0; i < a.length; ++i) {
             for (int j = 0; j < a[i].length; ++j) {
                 sb.append(String.format(decimalFormat, a[i][j]));
-                if (j < (a.length)) {
-                    sb.append(", ");
+                if (j < (a[i].length - 1)) {
+                    sb.append(",");
                 }
+                sb.append(" ");
             }
             sb.append("\n");
         }
@@ -38,9 +40,10 @@ public class FormatArray {
         for (int i = 0; i < a.numRows(); ++i) {
             for (int j = 0; j < a.numColumns(); ++j) {
                 sb.append(String.format(decimalFormat, a.get(i, j)));
-                if (j < (a.numColumns())) {
-                    sb.append(", ");
+                if (j < (a.numColumns() - 1)) {
+                    sb.append(",");
                 }
+                sb.append(" ");
             }
             sb.append("\n");
         }

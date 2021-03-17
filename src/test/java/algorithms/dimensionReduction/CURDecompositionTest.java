@@ -267,6 +267,14 @@ public class CURDecompositionTest extends TestCase {
             System.out.printf("trace(C^TC) = %.4f\n", MatrixUtil.trace(cTc));
             System.out.printf("trace(eigeinvalues of C^TC) = %.4f\n", MatrixUtil.trace(svd1cc.getS()));
             
+            //-------
+            SVD svd1aT = SVD.factorize(new DenseMatrix(aT));
+            System.out.printf("\nSVD(A^T):\n  singularvalues=\n    %s\n  U=\n%s\n  V^T=\n%s\n",
+                FormatArray.toString(svd1aT.getS(), "%.4f"),
+                svd1aT.getU().toString(),
+                svd1aT.getVt().toString()
+            );
+            
             System.out.flush();
         }
     }
