@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.LowerSymmDenseMatrix;
 import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.MatrixEntry;
@@ -17,6 +18,7 @@ import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.QR;
 import no.uib.cipr.matrix.RQ;
 import no.uib.cipr.matrix.SVD;
+import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 
 /**
  
@@ -933,6 +935,34 @@ public class MatrixUtil {
         return out;
     }
     
+    public static double[][] convertToRowMajor(UpperTriangDenseMatrix a) {
+        int nc = a.numColumns();
+        int nr = a.numRows();
+        //TODO: read API to see if can make this more effient by only visiting upper right of matrix
+        double[][] out = new double[nr][];
+        for (int i = 0; i < nr; ++i) {
+            out[i] = new double[nc];
+            for (int j = 0; j < nc; ++j) {
+                out[i][j] = a.get(i, j);
+            }
+        }
+        return out;
+    }
+    
+    public static double[][] convertToRowMajor(LowerSymmDenseMatrix a) {
+        int nc = a.numColumns();
+        int nr = a.numRows();
+        double[][] out = new double[nr][];
+        for (int i = 0; i < nr; ++i) {
+            out[i] = new double[nc];
+            for (int j = 0; j < nc; ++j) {
+                out[i][j] = a.get(i, j);
+            }
+        }
+        return out;
+    }
+    
+            
     /*
     columns of mxn matrix A are linearly independent only when rank r == n.
     there are n pivots and no free variables.  \in this case m is .geq. r).
@@ -1171,81 +1201,6 @@ public class MatrixUtil {
         return false;
     }
     
-    public static class QAndR {
-        
-        /**
-         * a matrix of orthogonal vectors.  it has the same dimensions as A, mxn.
-         * <pre>
-         * q_i^T * q_j =  {0 for i!=j (orthogonal)
-         *             =  {1 for i==j (unit vectors, ||q_i||=1)
-         * 
-         *     |   .    .   .       .    |
-         * Q = |  q_0  q_1  ...  q_(n-1) |
-         *     |   .    .   .       .    |
-         * </pre>
-         */
-        public double[][] q;
-        
-        /**
-         * a right upper triangular, positive diagonal matrix defined from the 
-         * Gram-Schmidt method. It is a square matrix of size mXm.
-         * <pre>
-         * A = Q * R
-         *   where A is composed of independent column vectors and is size mxn.
-         *   (any A with independent columns can be factored in Q and R)
-         * 
-         *     | q_0^T * a_0   q_0^T * a_1   ...  q_0^T * a_(m-1) |
-         * R = |       0       q_1^T * a_1   ...  q_1^T * a_(m-1)
-         *     |       0             0       ...  q_(m-1)^T * a_(m-1)
-         * 
-         * one can see that R = Q^T * A
-         * 
-         * that is derived from A^T * A = R^T * Q^T * R * Q ==> R^T * R
-         *                                R^T * Q^T * A ==> R^T * R
-         *                                Q^T * A ==> R
-         * </pre>
-         */
-        public double[][] r;
-        
-    }
-    
-    /**
-     * decompose the mxn matrix 'a' into matrices R and Q.  if m .ge. n, then
-     * QR decomposition is performed, else RQ decomposition is performed.
-     * 
-     * @param a matrix of size mxn having independent rows.
-     * @return upper right triangular matrix R of size mxm and orthogonal
-     * matrix Q of size nxm.
-     */
-    public static QAndR qRRQDecomposition(double[][] a) {
-        return qRRQDecomposition(new DenseMatrix(a));
-    }
-    
-    /**
-     * decompose the mxn matrix 'a' into matrices R and Q.  if m .ge. n, then
-     * QR decomposition is performed, else RQ decomposition is performed.
-     * 
-     * @param a matrix of size mxn having independent rows.
-     * @return upper right triangular matrix R of size mxm and orthogonal
-     * matrix Q of size nxm.
-     */
-    public static QAndR qRRQDecomposition(DenseMatrix a) {
-        
-        QAndR rAndQ = new QAndR();
-        
-        if (a.numRows() < a.numColumns()) {
-            RQ rq = RQ.factorize(a);
-            rAndQ.r = Matrices.getArray(rq.getR());
-            rAndQ.q = Matrices.getArray(rq.getQ());
-        } else {
-            QR qr = QR.factorize(a);
-            rAndQ.q = MatrixUtil.transpose(Matrices.getArray(qr.getQ()));
-            rAndQ.r = MatrixUtil.transpose(Matrices.getArray(qr.getR()));
-        }
-        
-        return rAndQ;
-    }
-    
     /**
      * class to hold the results of the Singular Value Decomposition
      */
@@ -1450,6 +1405,23 @@ public class MatrixUtil {
         for (i = 0; i < nr2; ++i) {
             m[i] = new double[nc2];
             System.arraycopy(a[row0 + i], col0, m[i], 0, nc2);
+        }
+        
+        return m;
+    }
+    
+    /**
+     * 
+     * @param a
+     * @param col index of column to extract
+     * @return one dimensional array holding the column col of a
+     */
+    public static double[] extractColumn(double[][] a, int col) {
+                
+        double[] m = new double[a.length];
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            m[i] = a[i][col];
         }
         
         return m;

@@ -150,7 +150,7 @@ public class PrincipalComponents {
         }
         
         // extract the first nComponents of rows of V^T:
-        double[][] v = Matrices.getArray(svd.getVt());
+        double[][] v = MatrixUtil.convertToRowMajor(svd.getVt());
         v = MatrixUtil.copySubMatrix(v, 0, nComponents-1, 0, v[0].length-1);
         
         PCAStats stats = new PCAStats();

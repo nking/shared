@@ -125,7 +125,7 @@ public class MultivariateNormalDistributionTest extends TestCase {
         System.out.println("x = A\\b = " + _x.toString());
         
         //perturb the rigth-hand side a little:
-        double[][] b_prime = Matrices.getArray(b);
+        double[][] b_prime = MatrixUtil.convertToRowMajor(b);
         b_prime[0][0] += 0.01;
         b_prime[1][0] += -0.01;
         b_prime[2][0] += 0.01;

@@ -1450,4 +1450,15 @@ public class MiscMath0 {
     public static long getMarsennePrime(int powerOf2) {
         return (1L << powerOf2) - 1;
     }
+    
+    public static double acosh(double z) {
+        //https://mathworld.wolfram.com/InverseHyperbolicCosine.html
+        return Math.log(z + Math.sqrt(z + 1) * Math.sqrt(z - 1));
+    }
+    
+    public static double asinh(double z) {
+        //https://mathworld.wolfram.com/InverseHyperbolicSine.html
+        return Math.log(z + Math.sqrt(z*z + 1));
+    }
+    
 }

@@ -362,9 +362,9 @@ public class CURDecomposition {
         //    [  nc x nr ] * [nr x nr] 
         //  = [nc][nr]
                 
-        double[][] y = Matrices.getArray(YT);
+        double[][] y = MatrixUtil.convertToRowMajor(YT);
         y = MatrixUtil.transpose(y);
-        double[][] xt = Matrices.getArray(X);
+        double[][] xt = MatrixUtil.convertToRowMajor(X);
         xt = MatrixUtil.transpose(xt);
         double[][] u = MatrixUtil.multiply(y, sInvSq);
         u = MatrixUtil.multiply(u, xt);

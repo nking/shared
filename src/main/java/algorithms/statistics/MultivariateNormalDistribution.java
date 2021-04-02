@@ -200,7 +200,7 @@ public class MultivariateNormalDistribution {
         
         {
             // check
-            double[][] lu = Matrices.getArray(lt);
+            double[][] lu = MatrixUtil.convertToRowMajor(lt);
             double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(lu),
                 lu);
             System.out.printf("cov check of decomp  L^T * L =\n");

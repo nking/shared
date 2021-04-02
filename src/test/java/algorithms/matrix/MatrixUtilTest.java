@@ -1,13 +1,14 @@
 package algorithms.matrix;
 
 import algorithms.matrix.MatrixUtil.ProjectionResults;
-import algorithms.matrix.MatrixUtil.QAndR;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.LowerSymmDenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.UpperTriangDenseMatrix;
     
 /**
  *
@@ -280,6 +281,36 @@ public class MatrixUtilTest extends TestCase {
         int[] xInt = new int[]{1, 2, 3, 4, 5};
         dot = MatrixUtil.innerProduct(xInt, y);
         assertTrue(Math.abs(expected - dot) < 1.e-15);
+        
+        //-----------------------
+        double[][] expectedR = new double[3][3];
+        expectedR[0] = new double[]{1, 3, 4};
+        expectedR[1] = new double[]{0, 1, 9};
+        expectedR[2] = new double[]{0, 0, 1};
+        UpperTriangDenseMatrix rM = new UpperTriangDenseMatrix(new DenseMatrix(expectedR));
+        double diff;
+        double tol = 1e-5;
+        
+        double[][] rT = MatrixUtil.convertToRowMajor(rM);
+        assertEquals(expectedR.length, rT.length);
+        for (int i = 0; i < expectedR.length; ++i) {
+            assertEquals(expectedR[i].length, rT[i].length);
+            for (int j = 0; j < expectedR[i].length; ++j) {
+                diff = Math.abs(expectedR[i][j] - rT[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+        LowerSymmDenseMatrix rLM = new LowerSymmDenseMatrix(new DenseMatrix(expectedR));
+        rT = MatrixUtil.convertToRowMajor(rM);
+        assertEquals(expectedR.length, rT.length);
+        for (int i = 0; i < expectedR.length; ++i) {
+            assertEquals(expectedR[i].length, rT[i].length);
+            for (int j = 0; j < expectedR[i].length; ++j) {
+                diff = Math.abs(expectedR[i][j] - rT[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
     }
     
     public void testAdd() throws Exception {
@@ -637,31 +668,6 @@ public class MatrixUtilTest extends TestCase {
          assertTrue(MatrixUtil.areColinear(p0, p1, eps));
      }
      
-     public void testRQDecomposition() throws NotConvergedException {
-         double[][] p = new double[3][4];
-         p[0] = new double[]{3.53553e+2,  3.39645e+2, 2.77744e+2, -1.44946e+6};
-         p[1] = new double[]{-1.03528e+2, 2.33212e+1, 4.59607e+2, -6.3252e+5};
-         p[2] = new double[]{7.07107e-1, -3.53553e-1, 6.12372e-1, -9.18559e+2};
-         QAndR rq = MatrixUtil.qRRQDecomposition(p);
-         
-         double tol = 1e-5;
-         
-         // r is mxm
-         // q is mxn
-         double[][] check = MatrixUtil.multiply(rq.r, rq.q);
-         assertEquals(p.length, check.length);
-         assertEquals(p[0].length, check[0].length);
-         
-         int i, j;
-         double diff;
-         for (i = 0; i < check.length; ++i) {
-             for (j = 0; j < check[i].length; ++j) {
-                 diff = Math.abs(check[i][j] - p[i][j]);
-                 assertTrue(diff < tol);
-             }
-         }
-     }
-     
      public void testCreateATransposedTimesA() {
          double[][] a = new double[3][2];
          a[0] = new double[]{1, 2};
@@ -701,6 +707,26 @@ public class MatrixUtilTest extends TestCase {
          assertEquals(3, i3[0].length);
          for (int i = 0; i < n; ++i) {
              assertTrue(Math.abs(i3[i][i] - 1.) < 1.e-7);
+         }
+     }
+     
+     public void testExtractColumn() {
+         
+         double[][] a = new double[3][2];
+         a[0] = new double[]{0, 5};
+         a[1] = new double[]{9, 3};
+         a[2] = new double[]{4, 9};
+         
+         double[] expected = new double[]{5, 3, 9};
+         
+         double[] r = MatrixUtil.extractColumn(a, 1);
+         assertEquals(expected.length, r.length);
+         
+         double tol = 1.e-5;
+         double diff;
+         for (int i = 0; i < r.length; ++i) {
+             diff = Math.abs(expected[i] - r[i]);
+             assertTrue(diff < tol);
          }
      }
 }
