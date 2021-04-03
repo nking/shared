@@ -50,18 +50,38 @@ import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**
- * calculates polynomial roots by matrix eigenvalue decomposition.
+ * calculates polynomial roots by forming "the companion matrix"
+ * and using matrix eigenvalue decomposition to find the eigenvalues as the roots.
  * The code is adapted from numpy.roots() source code.
  * 
  * @author nichole
  */
 public class PolynomialRootSolver {
     
-    public static Complex[] roots(double[] p) throws NotConvergedException {
-               
+    /**
+     * calculates polynomial roots by forming "the companion matrix"
+     * and using matrix eigenvalue decomposition to find the eigenvalues as the roots.
+     * The code is adapted from numpy.roots() source code.
+ 
+     * @param coeffs coefficients of a polynomial given in the order of decreasing 
+     * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
+     * 
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static Complex[] roots(double[] coeffs) throws NotConvergedException {
+           
+        // http://web.mit.edu/18.06/www/Spring17/Eigenvalue-Polynomials.pdf
+        // form the companion matrix as the characteristic polynomial
+        // https://en.wikipedia.org/wiki/Companion_matrix
+        // Also: The Vandermonde determinant was sometimes called the discriminant, 
+        // although, presently, the discriminant of a polynomial is the square 
+        // of the Vandermonde determinant of the roots of the polynomial.
+        
+        
         double eps = 1.e-5;
         
-        int[] non_zero = nonzero(p, eps);
+        int[] non_zero = nonzero(coeffs, eps);
         
         //System.out.println("non_zero=" + Arrays.toString(non_zero));
         
@@ -69,11 +89,11 @@ public class PolynomialRootSolver {
             return new Complex[]{};
         }
         
-        int trailing_zeros = p.length - non_zero[non_zero.length - 1] - 1;
+        int trailing_zeros = coeffs.length - non_zero[non_zero.length - 1] - 1;
         
-        p = Arrays.copyOfRange(p, non_zero[0], non_zero[non_zero.length - 1] + 1);
+        coeffs = Arrays.copyOfRange(coeffs, non_zero[0], non_zero[non_zero.length - 1] + 1);
         
-        int n = p.length;
+        int n = coeffs.length;
         
         Complex[] roots;
                 
@@ -85,8 +105,8 @@ public class PolynomialRootSolver {
                 m[i][i-1] = 1;
             }
             // divide -p by first element and insert all into first row of m except first entry of p
-            MatrixUtil.multiply(p, -1./p[0]);
-            System.arraycopy(p, 1, m[0], 0, p.length-1);
+            MatrixUtil.multiply(coeffs, -1./coeffs[0]);
+            System.arraycopy(coeffs, 1, m[0], 0, coeffs.length-1);
             
             //System.out.printf("A=\n%s\n", FormatArray.toString(m, "%.3e"));
             

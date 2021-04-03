@@ -1,8 +1,6 @@
 
 package algorithms.misc;
 
-import gnu.trove.list.TDoubleList;
-import gnu.trove.list.array.TDoubleArrayList;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**
@@ -20,17 +18,18 @@ public class CubicRootSolver {
      * NOTE: only solving for the real, rational roots.
      * @param p coefficient p for the first order term.
      * @param q coefficient q for the zero order term.
-     * @return 
+     * @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     public static double[] solveUsingDepressedCubic(double p, double q) {
         
         double eps = 1.e-5;
         
         double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);
-        
+                
         /*
-        TODO: handle characteristic 3 modifications
-        
+        TODO: handle characteristic 3 modifications.
+                
         characteristic 3
 
         When the coefficients belong to a field of characteristic 3, 
@@ -42,7 +41,9 @@ public class CubicRootSolver {
         This allows computing the multiple root, and the third root can be 
         deduced from the sum of the roots, which is provided by Vietas formulas.
         In characteristic characteristic 3, the formula for a triple root involves a cube root.
-        */           
+        */  
+        
+        System.out.println("discr=" + discr);
                  
         if (Math.abs(discr) < eps) {
             // discriminant is 0.  
@@ -61,6 +62,10 @@ public class CubicRootSolver {
       
             double pt2 = Math.sqrt((q*q/4.) + p*p*p/27.);
             double pt1 = -q/2.;
+            if ((pt1 + pt2) < 0 || (pt1 - pt2) < 0) {
+                // stop here and return polynomial solver
+                return new double[]{};
+            }
             double t = Math.pow(pt1 + pt2, 1./3.) + Math.pow(pt1 - pt2, 1./3.);
             return new double[]{t};
         } else {
@@ -140,10 +145,17 @@ public class CubicRootSolver {
      * a*x^3 + b*x^2 + c*x + d = 0.
      * @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
      */
-    public static double[] solve(double[] coeffs) {
+    public static double[] solve(double[] coeffs) throws NotConvergedException {
         if (coeffs.length != 4) {
             throw new IllegalArgumentException("coeffs must be length 4");
         }
+        
+        double tol = 1.e-5;
+        
+        /*
+        if (Math.abs(coeffs[0]) < tol || Math.abs(coeffs[1]) < tol) {
+            return solveUsingGeneral(coeffs);
+        }*/
         
         double[] dCoeffs = calcDepressedCubicCoefficients(coeffs);
                 
@@ -153,14 +165,15 @@ public class CubicRootSolver {
         double p = dCoeffs[3];
         double q = dCoeffs[4];
         
-        // if discriminant is 0 and characteristic is 2 or 3, need to use
-        //    the general solution.
+        double[] t = solveUsingDepressedCubic(p, q);
         
-        double t[] = solveUsingDepressedCubic(p, q);
+        if (t == null || t.length == 0) {
+            return solveUsingGeneral(coeffs);
+        }
         
         double[] x = new double[t.length];
         for (int i = 0; i < x.length; ++i) {
-            x[i] = t[i] - b/3.*a;
+            x[i] = t[i] - a/3.;  // -coeffs[1]/(3.*coeffs[0])
         }
         
         return x;
