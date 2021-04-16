@@ -60,7 +60,19 @@ public class CubicRootSolver {
             // cardano's formula.  valid for discriminant == 0 and > 0
             // one real root and 2 non-real
       
-            double pt2 = Math.sqrt((q*q/4.) + p*p*p/27.);
+            //https://www.codeproject.com/Articles/798474/To-Solve-a-Cubic-Equation
+            /*double u = Math.pow(-q / 2.0 + Math.sqrt(discr), 1./3.0);
+            double v = Math.pow(-q / 2.0 - Math.sqrt(discr), 1./3.0);
+            
+            // still needs backsubstitution by the invoker of method to subtract a/3.0 from real components
+            Complex r1 = new Complex(u + v, 0);
+            
+            Complex r2 = new Complex(-(u + v)/2., (Math.sqrt(3.0) / 2.0) * (u - v));
+            
+            Complex r3 = new Complex(r2.re(), -r2.im());
+            */
+            
+            double pt2 = Math.sqrt(discr);
             double pt1 = -q/2.;
             if ((pt1 + pt2) < 0 || (pt1 - pt2) < 0) {
                 // stop here and return polynomial solver
@@ -68,6 +80,7 @@ public class CubicRootSolver {
             }
             double t = Math.pow(pt1 + pt2, 1./3.) + Math.pow(pt1 - pt2, 1./3.);
             return new double[]{t};
+            
         } else {
             // discriminant < 0.  3 real distinct roots
             // trigonometric solution
@@ -84,16 +97,19 @@ public class CubicRootSolver {
             return t;
             
             /*
-            //for only 1 real root and p < 0, can use the hyperbolic solution:
-            double t0;
-            if (p < 0) {
-                double absq = Math.abs(q);
-                t0 = (-2.*absq/q) * Math.sqrt(-p/3.) *
-                    Math.cosh((1./3.)*acosh(((-3*absq)/(2.*p)) * Math.sqrt(-3/p)));
-            } else {
-                t0 = -2.* Math.sqrt(p/3.) *
-                    Math.sinh((1./3.)*asinh(((3*q)/(2.*p)) * Math.sqrt(3/p)));
-            }
+            alternative implementation:
+            https://www.codeproject.com/Articles/798474/To-Solve-a-Cubic-Equation
+            double r = Math.sqrt(-p * p * p / 27.0);
+            double alpha = Math.atan(Math.sqrt(-discr) / -q * 2.0);
+            if (q > 0) // if q > 0 the angle becomes 2 *PI - alpha
+                alpha = 2.0 * Math.PI - alpha;
+
+           double x1 = Math.pow(r, 1./3.0) * (Math.cos((6.0 * Math.PI - alpha) / 3.0)
+	      + Math.cos(alpha / 3.0));// back substitution by invoker should: - a / 3.0;
+           double x2 = Math.pow(r, 1./3.0) * (Math.cos((2.0 * Math.PI + alpha) / 3.0)
+              + Math.cos((4.0 * Math.PI - alpha) / 3.0));// - a / 3.0;
+           double x3 = Math.pow(r, 1./3.0) * (Math.cos((4.0 * Math.PI + alpha) / 3.0)
+              + Math.cos((2.0 * Math.PI - alpha) / 3.0));// - a / 3.0;
             */
         }
     }

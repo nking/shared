@@ -1529,10 +1529,11 @@ public class MatrixUtil {
      * constructs the 3x3 skew-symmetric matrices for use in cross products,
      * notation is [v]_x.
      * v cross product with w is v X w = [v]_x * w.
+     * It’s individual terms are a_j_i = -a_i_j.
        <pre>
        |    0   -v[2]  v[1] |
-       |  v[2]    0    v[0] |
-       | -v[1]  -v[0]    0  |
+       |  v[2]    0    -v[0] |
+       | -v[1]  v[0]    0  |
        </pre>
      * @param v
      * @return 
@@ -1542,10 +1543,11 @@ public class MatrixUtil {
             throw new IllegalArgumentException("v.length must be 3");
         }
         
+        
         double[][] out = new double[3][3];
         out[0] = new double[]{0,     -v[2],  v[1]};
-        out[1] = new double[]{v[2],     0 ,  v[0]};
-        out[2] = new double[]{-v[1], -v[0],    0};
+        out[1] = new double[]{v[2],     0,  -v[0]};
+        out[2] = new double[]{-v[1], v[0],    0};
         
         return out;
     }
@@ -2295,6 +2297,30 @@ public class MatrixUtil {
             out[i] = new double[n];
             for (j = 0; j < n; ++j) {
                 out[i][j] = a[i][j] * b[i][j];
+            }
+        }
+        return out;
+    }
+    
+    /**
+     * element-wise addition
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[][] elementwiseAdd(double[][] a, double[][] b) {
+        int m = a.length;
+        int n = a[0].length;
+        
+        if (b.length != m || b[0].length != n) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        double[][] out = MatrixUtil.copy(a);
+        int i, j;
+        for (i = 0; i < out.length; ++i) {
+            for (j = 0; j < out[i].length; ++j) {
+                out[i][j] += b[i][j];
             }
         }
         return out;

@@ -1,9 +1,6 @@
 package algorithms.misc;
 
-import algorithms.util.FormatArray;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**

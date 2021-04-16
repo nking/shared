@@ -729,4 +729,66 @@ public class MatrixUtilTest extends TestCase {
              assertTrue(diff < tol);
          }
      }
+     
+     public void testSkewSymmetric() throws NotConvergedException {
+         
+         // test s^T = s^-1
+         // test a crossProduct b = [a]_x * b
+         double[] a = new double[]{1, 7, 5};
+         double[] b = new double[]{2, 3, 4};
+         
+         double[] aXb = MatrixUtil.crossProduct(a, b);
+         double[][] s = MatrixUtil.skewSymmetric(a);
+         double[] sb = MatrixUtil.multiplyMatrixByColumnVector(s, b);
+         
+         double diff;
+         double tol = 1e-5;
+         int i, j;
+         
+         double[][] sT = MatrixUtil.transpose(s);
+         assertEquals(3, sT.length);
+         for (i = 0; i < sT.length; ++i) {
+             for (j = 0; j < sT[i].length; ++j) {
+                 diff = Math.abs(sT[i][j] + s[i][j]);
+                 assertTrue(diff < tol);
+             }
+         }
+         
+         assertEquals(3, sb.length);
+         assertEquals(3, aXb.length);
+         for (i = 0; i < sb.length; ++i) {
+             diff = Math.abs(sb[i] - aXb[i]);
+             assertTrue(diff < tol);
+         }
+     }
+     
+     public void testElementwiseAdd() {
+         double[][] a = new double[3][3];
+         double[][] b = new double[3][3];
+         
+         a[0] = new double[]{1, 2, 3};
+         a[1] = new double[]{2, 2, 3};
+         a[2] = new double[]{3, 2, 4};
+         
+         b[0] = new double[]{10, 0, 30};
+         b[1] = new double[]{20, 10, 3};
+         b[2] = new double[]{30, 20, 40};
+         
+         double[][] expected = new double[3][3];
+         expected[0] = new double[]{11, 2, 33};
+         expected[1] = new double[]{22, 12, 6};
+         expected[2] = new double[]{33, 22, 44};
+         
+         double[][] r = MatrixUtil.elementwiseAdd(a, b);
+         
+         double eps = 1.e-11;
+         double diff;
+         int i, j;
+         for (i = 0; i < 3; ++i) {
+             for (j = 0; j < 3; ++j) {
+                 diff = Math.abs(expected[i][j] - r[i][j]);
+                 assertTrue(diff < eps);
+             }
+         }
+     }
 }
