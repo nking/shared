@@ -993,7 +993,8 @@ public class MatrixUtil {
     
     /**
      * calculate the pseudo-inverse of matrix a, using the SVD of a,
-     * specifically, V*R*U^T where R is 1/diagonal of S.
+     * specifically, V*R*U^T where R is 1/diagonal of S for cases where
+     * rank .leq. m or rank .leq. n where mXn are the dimensions of matrix a.
      * Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
      * inverse of A.
      * 
@@ -1002,7 +1003,7 @@ public class MatrixUtil {
      * TODO: read "ALTERNATIVE METHODS OF CALCULATION OF THE PSEUDO INVERSE
        OF A NON FULL-RANK MATRIX" by M. A. Murray-Lasso, 2008
        http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
-     * @param a
+     * @param a and m X n matrix
      * @return matrix with dimensions of a^T
      * @throws NotConvergedException 
      */
@@ -1602,6 +1603,46 @@ public class MatrixUtil {
             v[i] /= sum;
         }
         return v;
+    }
+    
+    /**
+     * normalize each column of matrix a by the square root of the sum of 
+     * its squared components. ||v||_2 for each column...
+     * @param a matrix
+     */
+    public static void normalizeColumnsL2(double[][] a) {
+        double sum;
+        int j;
+        for (int i = 0; i < a[0].length; ++i) {
+            sum = 0;
+            for (j = 0; j < a.length; ++j) {
+                sum += (a[j][i]*a[j][i]);
+            }
+            sum = Math.sqrt(sum);
+            for (j = 0; j < a.length; ++j) {
+                a[j][i] /= sum;
+            }
+        }
+    }
+    
+    /**
+     * normalize each row of matrix a by the square root of the sum of 
+     * its squared components. ||v||_2 for each row...
+     * @param a matrix
+     */
+    public static void normalizeRowsL2(double[][] a) {
+        double sum;
+        int j;
+        for (int i = 0; i < a.length; ++i) {
+            sum = 0;
+            for (j = 0; j < a[0].length; ++j) {
+                sum += (a[i][j]*a[i][j]);
+            }
+            sum = Math.sqrt(sum);
+            for (j = 0; j < a[0].length; ++j) {
+                a[i][j] /= sum;
+            }
+        }
     }
     
     /**

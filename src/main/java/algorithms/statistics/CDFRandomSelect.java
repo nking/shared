@@ -112,7 +112,7 @@ public class CDFRandomSelect {
         }
         
         if (tol < 0) {
-            throw new IllegalArgumentException("tolerane cannot be negative");
+            throw new IllegalArgumentException("tolerance cannot be negative");
         }
         
         int n = cdf.length;

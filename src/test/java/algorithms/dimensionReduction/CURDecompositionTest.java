@@ -4,6 +4,7 @@ import algorithms.dimensionReduction.CURDecomposition.CUR;
 import algorithms.dimensionReduction.CURDecomposition.PDFs;
 import algorithms.dimensionReduction.CURDecomposition.SelectedFromA;
 import algorithms.matrix.MatrixUtil;
+import algorithms.matrix.MatrixUtil.SVDProducts;
 import algorithms.util.FormatArray;
 import java.util.Arrays;
 import java.util.Map;
@@ -83,6 +84,8 @@ public class CURDecompositionTest extends TestCase {
         expectedR[0] = new double[]{0, 0, 0, 7.79, 7.79};
         expectedR[1] = new double[]{6.36, 6.36, 6.36, 0, 0};
         
+        System.out.printf("cdfs.rowsSelected=%s\n", Arrays.toString(cdfs.rowsSelected));
+        System.out.printf("cdfs.pdfs.rowPDF=%s\n", FormatArray.toString(cdfs.pdfs.rowPDF, "%.4e"));
         
         SelectedFromA r = CURDecomposition._calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);
         assertEquals(expectedR.length, r.r.length);
@@ -122,7 +125,7 @@ public class CURDecompositionTest extends TestCase {
         }
         
         //NOTE: for some reason, the authors multiply all of matrix R by sqrt(2)
-        //  in Figure 11.13.
+        //  in Figure 11.13... normalization possibly
         
         double[][] expectedCUR = new double[7][5];
         expectedCUR[0] = new double[]{0.3929077125588594, 0.3929077125588594,
@@ -274,6 +277,17 @@ public class CURDecompositionTest extends TestCase {
                 svd1aT.getU().toString(),
                 svd1aT.getVt().toString()
             );
+            
+            try {
+            CUR curA = CURDecomposition.calculateDecomposition(a, k);
+            SVDProducts svdCURA = curA.getApproximateSVD();
+            
+            System.out.printf("\nCUR.approxSVD(A):\n  singularvalues=\n    %s\n  U=\n%s\n  V^T=\n%s\n",
+                FormatArray.toString(svdCURA.s, "%.4f "),
+                FormatArray.toString(svdCURA.u, "%.4f "),
+                FormatArray.toString(svdCURA.vT, "%.4f ")
+            );
+            } catch (Throwable t) {}
             
             System.out.flush();
         }

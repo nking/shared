@@ -2,6 +2,7 @@ package algorithms.dimensionReduction;
 
 import algorithms.imageProcessing.SummedAreaTable0;
 import algorithms.matrix.MatrixUtil;
+import algorithms.matrix.MatrixUtil.SVDProducts;
 import algorithms.statistics.CDFRandomSelect;
 import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
@@ -25,7 +26,7 @@ import no.uib.cipr.matrix.SVD;
  * Runtime is O(m*n) Drineas et al.
  * (https://www.pnas.org/content/pnas/106/3/697.full.pdf)
  * 
- * NOTE: consider implementing in future:
+ * NOTE: consider also implementing in future:
    http://www.cs.cmu.edu/~christos/PUBLICATIONS/sdm07-lsm.pdf
    "Less is More: Compact Matrix Decomposition for Large Sparse Graphs"
    2007, Sun, Xie, Zhang, and Faloutsos
@@ -65,8 +66,9 @@ public class CURDecomposition {
      * the integer transformation and storage in YFastTrie.
      * 
      * @param a is an mxn matrix.
-     * @param k
-     * @return 
+     * @param k the rank to approximate
+     * @return the cur decomposition C, U, and R.  c plays the role of svd's U
+     * and R plays he rol of SVD's v^T.
      * @throws no.uib.cipr.matrix.NotConvergedException 
      */
     public static CUR calculateDecomposition(double[][] a, int k) throws NotConvergedException {
@@ -86,8 +88,8 @@ public class CURDecomposition {
         cur.c = c.r;
         cur.r = r.r;
         cur.u = u;
-        cur.result = MatrixUtil.multiply(cur.c, cur.u);
-        cur.result = MatrixUtil.multiply(cur.result, cur.r);
+        cur.result = MatrixUtil.multiply(cur.getC(), cur.getU());
+        cur.result = MatrixUtil.multiply(cur.getResult(), cur.getR());
         
         return cur;        
     }
@@ -345,9 +347,9 @@ public class CURDecomposition {
         }
         
         // this will be transposed
-        double[][] sInvSq = new double[nr][nc];
-        for (i = 0; i < nr; ++i) {
-            sInvSq[i] = new double[nc];
+        double[][] sInvSq = MatrixUtil.zeros(nr, nc);
+        int len = Math.min(nr, nc);
+        for (i = 0; i < len; ++i) {
             if (s[i] > eps) {
                 sInvSq[i][i] = 1./(s[i]*s[i]);
             }
@@ -373,12 +375,77 @@ public class CURDecomposition {
     }
     
     public static class CUR {
-        double[][] c;
-        double[][] u;
-        double[][] r;
-        double[][] result;
+        private double[][] c;
+        private double[][] u;
+        private double[][] r;
+        private double[][] result;
         int[] _colsSelected;
         int[] _rowsSelected;
+        
+        private SVDProducts svd = null;
+
+        /**
+         * @return the c
+         */
+        public double[][] getC() {
+            return c;
+        }
+
+        /**
+         * @return the u
+         */
+        public double[][] getU() {
+            return u;
+        }
+
+        /**
+         * @return the r
+         */
+        public double[][] getR() {
+            return r;
+        }
+
+        /**
+         * @return the result
+         */
+        public double[][] getResult() {
+            return result;
+        }
+        
+        public SVDProducts getApproximateSVD() {
+            if (svd != null) {
+                return svd;
+            }
+            SVDProducts svd2 = new SVDProducts();
+            svd2.u = MatrixUtil.copy(c);
+            svd2.vT = MatrixUtil.copy(r);
+            // normalize U by columns and V^T by rows
+            MatrixUtil.normalizeColumnsL2(svd2.u);
+            MatrixUtil.normalizeRowsL2(svd2.vT);
+            
+            /*
+            a = result which is mXn
+            u is mXm
+            vT is nXn
+            s is mXn
+            
+            S = U^T*A*V
+            */
+            int m = svd2.u.length;
+            int n = svd2.vT.length;
+            
+            double[][] sigma = MatrixUtil.multiply(MatrixUtil.transpose(svd2.u), result);
+            sigma = MatrixUtil.multiply(sigma, MatrixUtil.transpose(svd2.vT));
+            
+            svd2.s = new double[Math.min(sigma.length, sigma[0].length)];
+            for (int i = 0; i < svd2.s.length; ++i) {
+                svd2.s[i] = sigma[i][i];
+            }
+            
+            svd = svd2;
+            
+            return svd;
+        }
     }
     
     public static class PDFs {
