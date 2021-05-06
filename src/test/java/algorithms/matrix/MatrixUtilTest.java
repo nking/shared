@@ -791,4 +791,62 @@ public class MatrixUtilTest extends TestCase {
              }
          }
      }
+     
+     public void testFlip() {
+         double[][] a = new double[3][3];
+         a[0] = new double[]{1, 2, 3};
+         a[1] = new double[]{10, 20, 30};
+         a[2] = new double[]{100, 200, 300};
+         double[][] b = MatrixUtil.copy(a);
+         
+         double[][] expectedLR = new double[3][3];
+         expectedLR[0] = new double[]{3, 2, 1};
+         expectedLR[1] = new double[]{30, 20, 10};
+         expectedLR[2] = new double[]{300, 200, 100};
+         
+         double[][] expectedUD = new double[3][3];
+         expectedUD[2] = new double[]{1, 2, 3};
+         expectedUD[1] = new double[]{10, 20, 30};
+         expectedUD[0] = new double[]{100, 200, 300};
+         
+         double[][] a2 = new double[4][4];
+         a2[0] = new double[]{1, 2, 3, 4};
+         a2[1] = new double[]{10, 20, 30, 40};
+         a2[2] = new double[]{100, 200, 300, 400};
+         a2[3] = new double[]{1000, 2000, 3000, 4000};
+         double[][] b2 = MatrixUtil.copy(a2);
+         
+         double[][] expectedLR2 = new double[4][4];
+         expectedLR2[0] = new double[]{4, 3, 2, 1};
+         expectedLR2[1] = new double[]{40, 30, 20, 10};
+         expectedLR2[2] = new double[]{400, 300, 200, 100};
+         expectedLR2[3] = new double[]{4000, 3000, 2000, 1000};
+         
+         double[][] expectedUD2 = new double[4][4];
+         expectedUD2[0] = new double[]{1000, 2000, 3000};
+         expectedUD2[1] = new double[]{100, 200, 300};
+         expectedUD2[2] = new double[]{10, 20, 30, 40};
+         expectedUD2[3] = new double[]{1, 2, 3, 4};
+         
+         MatrixUtil.flipLR(a);
+         MatrixUtil.flipUD(b);
+         MatrixUtil.flipLR(a2);
+         MatrixUtil.flipUD(b2);
+         
+         double tol = 1.e-5;
+         double diff;
+         int i, j;
+         for (i = 0; i < a.length; ++i) {
+             for (j = 0; j < a[i].length; ++j) {
+                 diff = Math.abs(expectedLR[i][j] - a[i][j]);
+                 assertTrue(diff < tol);
+                 diff = Math.abs(expectedUD[i][j] - b[i][j]);
+                 assertTrue(diff < tol);
+                 diff = Math.abs(expectedLR2[i][j] - a2[i][j]);
+                 assertTrue(diff < tol);
+                 diff = Math.abs(expectedUD2[i][j] - b2[i][j]);
+                 assertTrue(diff < tol);
+             }
+         }
+     }
 }

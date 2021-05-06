@@ -6,6 +6,7 @@ import algorithms.matrix.MatrixUtil.SVDProducts;
 import algorithms.statistics.CDFRandomSelect;
 import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
+import algorithms.util.FormatArray;
 import gnu.trove.map.TIntIntMap;
 import java.util.Arrays;
 import java.util.Random;
@@ -419,6 +420,7 @@ public class CURDecomposition {
             SVDProducts svd2 = new SVDProducts();
             svd2.u = MatrixUtil.copy(c);
             svd2.vT = MatrixUtil.copy(r);
+            
             // normalize U by columns and V^T by rows
             MatrixUtil.normalizeColumnsL2(svd2.u);
             MatrixUtil.normalizeRowsL2(svd2.vT);
@@ -429,22 +431,45 @@ public class CURDecomposition {
             vT is nXn
             s is mXn
             
+            A*V = S*U
             S = U^T*A*V
             */
             int m = svd2.u.length;
             int n = svd2.vT.length;
             
-            double[][] sigma = MatrixUtil.multiply(MatrixUtil.transpose(svd2.u), result);
-            sigma = MatrixUtil.multiply(sigma, MatrixUtil.transpose(svd2.vT));
+            svd2.sigma = MatrixUtil.multiply(MatrixUtil.transpose(svd2.u), result);
+            svd2.sigma = MatrixUtil.multiply(svd2.sigma, MatrixUtil.transpose(svd2.vT));
             
-            svd2.s = new double[Math.min(sigma.length, sigma[0].length)];
+            svd2.s = new double[u[0].length];
             for (int i = 0; i < svd2.s.length; ++i) {
-                svd2.s[i] = sigma[i][i];
+                svd2.s[i] = svd2.sigma[i][i];
             }
             
             svd = svd2;
             
             return svd;
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("c=\n");
+            if (c != null) {
+                sb.append(FormatArray.toString(c, "%.4e"));
+            } 
+            sb.append("\nu=\n");
+            if (u != null) {
+                sb.append(FormatArray.toString(u, "%.4e"));
+            }
+            sb.append("\nr=\n");
+            if (r != null) {
+                sb.append(FormatArray.toString(r, "%.4e"));
+            }
+            sb.append("\ncur=\n");
+            if (result != null) {
+                sb.append(FormatArray.toString(result, "%.4e"));
+            }
+            return sb.toString();
         }
     }
     

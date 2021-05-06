@@ -1222,8 +1222,37 @@ public class MatrixUtil {
         /**
          * given a matrix A of size mxn, s holds the singular values, that is,
          * the eigenvalues of the SVD decomposition ordered from largest to smallest.
+         * these are the diagonal of matrix sigma which may or may not be populated
          */
         public double[] s;
+        
+        /**
+         * the diagonal matrix holding the eigenvalues.  this variable might not
+         * be populated if s is.
+         */
+        public double[][] sigma = null;
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("u=\n");
+            if (u != null) {
+                sb.append(FormatArray.toString(u, "%.4e"));
+            } 
+            sb.append("\ns=\n");
+            if (s != null) {
+                sb.append(FormatArray.toString(s, "%.4e"));
+            }
+            sb.append("\nsigma=\n");
+            if (sigma != null) {
+                sb.append(FormatArray.toString(sigma, "%.4e"));
+            }
+            sb.append("\nvT=\n");
+            if (vT != null) {
+                sb.append(FormatArray.toString(vT, "%.4e"));
+            }
+            return sb.toString();
+        }
         
     }
     
@@ -2456,5 +2485,53 @@ public class MatrixUtil {
             out[i] /= b[i];
         }
         return out;
+    }
+    
+    /**
+     * perform a left-right swap of the columns of a, flipping the matrix
+     * vertically.  the method mimics matlab's flipur.
+     * @param a 
+     */
+    public static void flipLR(double[][] a) {
+        int idxHi = a[0].length - 1;
+        int idxLo = 0;
+        int n = idxHi - idxLo + 1;
+        int end = idxLo + (n/2);
+        
+        double swap;
+        int col, row, idx2;
+        int count = 0;
+        for (col = idxLo; col < end; col++) {
+            idx2 = idxHi - count;
+            for (row = 0; row < a.length; row++) {
+                swap = a[row][col];
+                a[row][col] = a[row][idx2];
+                a[row][idx2] = swap;
+            }
+            count++;
+        }
+    }
+    
+    /**
+     * perform an up-down swap of the rows of a, flipping the matrix
+     * horizontally.  the method mimics matlab's flipud.
+     * @param a 
+     */
+    public static void flipUD(double[][] a) {
+        int idxHi = a.length - 1;
+        int idxLo = 0;
+        int n = idxHi - idxLo + 1;
+        
+        int end = idxLo + (n/2);
+        double[] swap;
+        int count = 0;
+        int i, idx2;
+        for (i = idxLo; i < end; i++) {
+            idx2 = idxHi - count;
+            swap = a[i];
+            a[i] = a[idx2];
+            a[idx2] = swap;
+            count++;
+        }
     }
 }
