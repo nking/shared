@@ -1420,9 +1420,9 @@ public class MatrixUtil {
      * 
      * @param a
      * @param row0 beginning index, inclusive
-     * @param row1 end index, exclusive
+     * @param row1 end index, inclusive
      * @param col0 beginning index, inclusive
-     * @param col1 end index, exclusive
+     * @param col1 end index, inclusive
      * @return 
      */
     public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
@@ -2105,7 +2105,7 @@ public class MatrixUtil {
         
         ProjectionResults pr = new ProjectionResults();
         
-        // A_pseudoinverse = inverse(A^T*A) * A^T
+        // A_pseudoinverse = inverse(A^T*A)^-1 * A^T 
         // [a[0].length][a.length]
         double[][] aPseudoInv = MatrixUtil.pseudoinverseFullRank(a);
         

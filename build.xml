@@ -304,7 +304,10 @@
         </jar>
         <mkdir dir="dist" />
         <copy file="${classes.dir}/com.climbwithyourfeet.shared_${TS}.jar" 
-              tofile="dist/com.climbwithyourfeet.shared.jar" />
+            tofile="dist/com.climbwithyourfeet.shared.jar" />
+        <jar destfile="dist/com.climbwithyourfeet.shared.javadoc.jar" >
+            <fileset dir="${doc.dir}/api" includes="*/**"/>
+        </jar>
     </target>
     
     <target name="coverage">
