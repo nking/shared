@@ -35,6 +35,7 @@ package algorithms.misc;
  *  |a|          = 7.810249675906654
  *  tan(a)       = -6.685231390246571E-6 + 1.0000103108981198i
  *
+ * NLK: added a function for nth roots, power, and natural log
  *************************************************************************/
 
 public class Complex {
@@ -148,4 +149,42 @@ public class Complex {
         return sum;
     }
 
+    /**
+     * get the (1/n) power of this instance
+     * from Boas "mathematical methods in the physical sciences"
+       chap 2, section 13
+     * @param n the number to take the (1/n) power of this instance
+     * @return 
+     */
+    public Complex nthRoot(double n) {
+        // r^(1/n) * (cos(theta/n) + i*sin(theta/n))
+        double rnth = Math.pow(abs(), 1./n);
+        double theta = phase();
+        return new Complex(rnth*Math.cos(theta/n), rnth*Math.sin(theta/n));
+    }
+    
+    /**
+     * get the natural log of this instance
+     * from Boas "mathematical methods in the physical sciences"
+       chap 2, section 13
+     * @return 
+     */
+    public Complex naturalLog() {
+        double r = abs();
+        double theta = phase();
+        return new Complex(Math.log(r), theta);
+    }
+    
+    /**
+     * get this instance raised to the power b
+     * from Boas "mathematical methods in the physical sciences"
+       chap 2, section 13
+     * @param b the power to apply to this instance
+     * @return 
+     */
+    public Complex power(Complex b) {
+        // a^b = e^(b*ln(a))
+        Complex blna = b.times(naturalLog());
+        return blna.exp();
+    }
 }
