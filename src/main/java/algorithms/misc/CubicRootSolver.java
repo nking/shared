@@ -9,6 +9,78 @@ import no.uib.cipr.matrix.NotConvergedException;
  */
 public class CubicRootSolver {
    
+    public static double[] realNonZeroOnly(Complex[] r) {
+        int n = 0;
+        double eps = 1.e-11;
+        int i;
+        for (i = 0; i < r.length;++i){
+            if ( (Math.abs(r[i].re()) > eps) && (Math.abs(r[i].im()) < eps)) {
+                n++;
+            }
+        }
+        double[] out = new double[n];
+        n = 0;
+        for (i = 0; i < r.length;++i){
+            if ( (Math.abs(r[i].re()) > eps) && (Math.abs(r[i].im()) < eps)) {
+                out[n] = r[i].re();
+                n++;
+            }
+        }
+        return out;
+    }
+    
+    /**
+     * solve for t given coefficients p and q using the depressed cubic root t^3 + p*t + q = 0.
+     * The given coefficients are transformed internally to those used by Pearson in 
+     * "Handbook of Applied Mathematics" which uses t^3 + (3q_p)*t + (2r_p) = 0.
+     * 
+     * @param p0 coefficient p for the first order term.
+     * @param q0 coefficient q for the zero order term.
+     * @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     * NOTE that if an empty array is returned, one can use solveUsingGeneral
+     */
+    static Complex[] solveUsingDepressedCubic0(final double p0, final double q0) {
+        
+        double eps = 1.e-5;
+                        
+        /*
+        given:
+           t^3 + p*t + q = 0.
+        Pearson "handbook of applied mathematics":
+           t^3 + (3q_p)*t + (2r_p) = 0.
+           => q_p=p/3
+           => r_p=q/2
+           z^3 = r +- sqrt(r^2 + q^3)
+        */
+        final double q = p0/3.;
+        final double r = q0/2.;
+                
+        double r2q3 = r*r + q*q*q;
+        
+        // z = ( r + math.sqrt(r2q3) )^(1./3.)
+        // y = ( r - math.sqrt(r2q3) )^(1./3.)
+        Complex z = new Complex(r2q3, 0);
+        z = z.nthRoot(2);
+        z = z.plus(r).nthRoot(3);
+        
+        Complex y = new Complex(r2q3, 0);
+        y = y.nthRoot(2).times(-1);
+        y = y.plus(r).nthRoot(3);
+        
+        // w = 0.5*(-1 + i*sqrt(3))
+        Complex w = new Complex(-0.5, 0.5*Math.sqrt(3));
+        Complex w2 = new Complex(-0.5, -0.5*Math.sqrt(3));
+        
+        // roots are 
+        // (-y - z), (-w*y -w2*z), (-w2*y -w*z)
+        Complex[] roots = new Complex[3];
+        roots[0] = y.times(-1).minus(z);
+        roots[1] = w.times(-1).minus(w2.times(z));
+        roots[2] = w2.times(-1).times(y).minus(w.times(z));
+        
+        return roots;
+    }
+    
     /**
      * solve for t given coefficients p and q using the depressed cubic root t^3 + p*t + q = 0.
      * following  
@@ -24,7 +96,7 @@ public class CubicRootSolver {
     public static double[] solveUsingDepressedCubic(double p, double q) {
         
         double eps = 1.e-5;
-        
+       
         double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);
                 
         /*
@@ -115,7 +187,7 @@ public class CubicRootSolver {
     }
     
     /**
-     * calculates coefficients for the reduced form od the cubic equation
+     * calculates coefficients for the reduced form of the cubic equation
      * called the depressed cubic.
      * @param cubicCoeff
      * @return a, b, c, p, q.  returns null if cubicCoeff[0] = 0.
@@ -152,7 +224,7 @@ public class CubicRootSolver {
     
     /**
      * solve for the roots of the equation a*x^3 + b*x^2 + c*x + d = 0
-     * using the depressed cubic, given coefficients a, b, c, d. returns x.
+     * using the depressed cubic.  the method is given coefficients a, b, c, d. and then returns x.
      * following 
      * https://www.mathemania.com/lesson/cardanos-formula-solving-cubic-equations/
      * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic

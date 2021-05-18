@@ -42,6 +42,17 @@ public class CubicRootSolverTest extends TestCase {
             diff = Math.abs(expected[i] - roots[i]);
             assertTrue(diff < tol);
         }
+        Complex[] rootsC = CubicRootSolver.solveUsingDepressedCubic0(p, q);
+        assertTrue(Math.abs(expected[0] - rootsC[2].re()) < tol);
+        assertTrue(Math.abs(0 - rootsC[2].im()) < tol);
+        roots = CubicRootSolver.realNonZeroOnly(rootsC);
+        assertEquals(expected.length, roots.length);
+        for (i = 0; i < roots.length; ++i) {
+            diff = Math.abs(expected[i] - roots[i]);
+            assertTrue(diff < tol);
+        }
+        
+        int ph = 1;
         
         //https://www.mathemania.com/lesson/cardanos-formula-solving-cubic-equations/
         // x^3 - 15*x - 4 = 0.  
@@ -61,7 +72,6 @@ public class CubicRootSolverTest extends TestCase {
             diff = Math.abs(expected[i] - roots[i]);
             assertTrue(diff < tol);
         }
-        
         
         //https://www.math.ucdavis.edu/~kkreith/tutorials/sample.lesson/cardano.html
         //x3 + x2 - 2 = 0  
@@ -134,6 +144,7 @@ public class CubicRootSolverTest extends TestCase {
             diff = Math.abs(expected[i] - roots[i]);
             assertTrue(diff < tol);
         }
+        
         
         //https://www.mathcentre.ac.uk/resources/uploaded/mc-ty-cubicequations-2009-1.pdf
         //x^3 - 5x^2 - 2x + 24 = 0
