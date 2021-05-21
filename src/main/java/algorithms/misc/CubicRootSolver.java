@@ -8,10 +8,10 @@ import no.uib.cipr.matrix.NotConvergedException;
  * @author nichole
  */
 public class CubicRootSolver {
-   
+
+    public static double eps = 1e-7;
     public static double[] realNonZeroOnly(Complex[] r) {
         int n = 0;
-        double eps = 1.e-11;
         int i;
         for (i = 0; i < r.length;++i){
             if ( (Math.abs(r[i].re()) > eps) && (Math.abs(r[i].im()) < eps)) {
@@ -199,10 +199,8 @@ public class CubicRootSolver {
         double a2 = cubicCoeff[1];
         double a1 = cubicCoeff[2];
         double a0 = cubicCoeff[3];
-        
-        double tol = 1e-5;
-        
-        if (Math.abs(a3) < tol) {
+                
+        if (Math.abs(a3) < eps) {
             return null;
         }
         
@@ -235,9 +233,7 @@ public class CubicRootSolver {
         if (coeffs.length != 4) {
             throw new IllegalArgumentException("coeffs must be length 4");
         }
-        
-        double tol = 1.e-5;
-        
+                
         /*
         if (Math.abs(coeffs[0]) < tol || Math.abs(coeffs[1]) < tol) {
             return solveUsingGeneral(coeffs);
@@ -292,9 +288,7 @@ public class CubicRootSolver {
         double b = coeffs[1];
         double c = coeffs[2];
         double d = coeffs[3];
-        
-        double tol = 1e-5;
-        
+                
         /*
         TODO: handle characteristic 2 and 3 modifications
                 
@@ -315,7 +309,7 @@ public class CubicRootSolver {
         
         double discr = 18.*a*b*c*d - 4*b*b*b*d + b*b*c*c - 4*a*c*c*c - 27.*a*a*d*d;
         
-        if (Math.abs(discr) < tol) {
+        if (Math.abs(discr) < eps) {
             // discriminant is 0.  
             //there are 3 real roots, not necessarily distinct (has a multiple root)
             
@@ -350,7 +344,7 @@ public class CubicRootSolver {
             }  
             */
             double[] roots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(
-                coeffs, tol);
+                coeffs, eps);
             
             return roots;
         }

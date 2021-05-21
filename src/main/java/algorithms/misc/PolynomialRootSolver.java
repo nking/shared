@@ -62,6 +62,7 @@ import thirdparty.net.oelen.polsolve.pzeros.PZeros;
  */
 public class PolynomialRootSolver {
     
+    public static double eps = 1.e-7;
     /**
      * 
      * @param coeffs coefficients of a polynomial given in the order of decreasing 
@@ -132,7 +133,8 @@ public class PolynomialRootSolver {
     }
     
     /**
-     * solve for the real roots using MPSolve.
+     * solve for the real roots using MPSolve.  also reduces to unique within tolerance
+     * (no repeated multiplicities).  also sorts the values.
      * @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @param toleranceForZero the value for which any number less than is considered 0.
@@ -142,7 +144,10 @@ public class PolynomialRootSolver {
     public static double[] solveForRealUsingMPSolve(double[] coeffs,
         double toleranceForZero) throws Exception {
         Complex[] roots = solveUsingMPSolve(coeffs);
-        return parseForRealOnly(roots, toleranceForZero);
+        double[] d = parseForRealOnly(roots, toleranceForZero);
+        d = PolynomialRootSolver.reduceToUniqueRoots(d, toleranceForZero);
+        Arrays.sort(d);
+        return d;
     }
     
     /**
@@ -164,10 +169,7 @@ public class PolynomialRootSolver {
         // Also: The Vandermonde determinant was sometimes called the discriminant, 
         // although, presently, the discriminant of a polynomial is the square 
         // of the Vandermonde determinant of the roots of the polynomial.
-        
-        
-        double eps = 1.e-5;
-        
+                
         int[] non_zero = nonzero(coeffs, eps);
         
         //System.out.println("non_zero=" + Arrays.toString(non_zero));
@@ -251,7 +253,30 @@ public class PolynomialRootSolver {
         return parseForRealOnly(roots, toleranceForZero);
     }
     
-    static double[] parseForRealOnly(Complex[] roots, double toleranceForZero) {
+    public static double[] reduceToUniqueRoots(double[] roots, double toleranceForZero) {
+        TDoubleList keep = new TDoubleArrayList();
+        int j;
+        double root, diff, k;
+        boolean same = false;
+        for (int i = 0; i < roots.length; ++i) {
+            root = roots[i];
+            same = false;
+            for (j = 0; j < keep.size(); ++j) {
+                k = keep.get(j);
+                diff = Math.abs(root - k);
+                if (diff < toleranceForZero) {
+                    same = true;
+                    break;
+                }
+            }
+            if (!same) {
+                keep.add(root);
+            }
+        }
+        return keep.toArray();
+    }
+    
+    public static double[] parseForRealOnly(Complex[] roots, double toleranceForZero) {
         if (roots == null || roots.length == 0) {
             return new double[]{};
         }
