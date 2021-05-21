@@ -1,5 +1,6 @@
 package algorithms.misc;
 
+import algorithms.util.FormatArray;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,7 @@ public class PolynomialRootSolverTest extends TestCase {
         super(testName);
     }
     
-    public void test0() throws NotConvergedException {
+    public void test0() throws NotConvergedException, Exception {
         
         double tol = 1e-5;
         
@@ -35,7 +36,7 @@ public class PolynomialRootSolverTest extends TestCase {
      
         assertTrue(Arrays.equals(new int[]{0, 1, 3}, PolynomialRootSolver.nonzero(coeffs, tol)));
         
-        Complex[] roots = PolynomialRootSolver.roots(coeffs);
+        Complex[] roots = PolynomialRootSolver.solveUsingCompanionMatrix(coeffs);
         assertEquals(expectedC.size(), roots.length);
         
         double diff0, diff1;
@@ -57,14 +58,32 @@ public class PolynomialRootSolverTest extends TestCase {
         }
         assertEquals(0, u);
         
-        
-        double[] realRoots = PolynomialRootSolver.realRoots(coeffs);
+        double[] realRoots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(coeffs, tol);
         assertEquals(expected.length, realRoots.length);
         
         for (int i = 0; i < expected.length; ++i) {
             diff0 = Math.abs(expected[i] - realRoots[i]);
             assertTrue(diff0 < tol);
         }
-        
+       
+        Complex[] roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
+        //System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
+        for (Complex rE : expectedC) {
+            for (int i = 0; i < roots2.length; ++i) {
+                Complex r = roots2[i];
+                if (r == null) continue;
+                diff0 = Math.abs(r.re() - rE.re());
+                diff1 = Math.abs(r.im() - rE.im());
+                if (diff0 < tol && diff1 < tol) {
+                    roots2[i] = null;
+                }
+            }
+        }
+        u = 0;
+        for (int i = 0; i < roots2.length; ++i) {
+            Complex r = roots2[i];
+            if (r != null) u++;
+        }
+        assertEquals(0, u);
     }
 }

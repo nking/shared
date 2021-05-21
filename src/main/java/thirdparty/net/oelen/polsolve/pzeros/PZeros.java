@@ -8,6 +8,23 @@ https://woelen.homescience.net/science/math/exps/polynomials/
 https://woelen.homescience.net/science/math/exps/polynomials/software.html
 The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
 https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+
+MPSolve is an implementation of the algorithms of Bini & Fiorentino 2000,
+"Design, analysis, and implementation of a multiprecision polynomial rootfinder".
+...Counting, isolating and approximating all roots in a given set S are the main 
+goals that the algorithm provides. Automatic determination of multiplicities 
+and the detection of real or imaginary roots can be selected as well. 
+Polynomials having coef- ficients with a bounded precision may be processed too.
+...
+The algorithm is based on an adaptive strategy which automatically exploits 
+any specific feature of the input polynomial, like its sparsity or the 
+conditioning of its roots, in order to speed up the computation. 
+... 
+
+The resulting algorithm MPSolve, implemented in C, can deal with polynomials 
+having real or complex coefficients with integer, rational or floating point 
+real and imaginary parts with any number of digits. The algorithm can also 
+process polynomials with approximately known coefficients.
 */
 package thirdparty.net.oelen.polsolve.pzeros;
 

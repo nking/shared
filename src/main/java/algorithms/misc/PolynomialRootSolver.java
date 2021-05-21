@@ -56,20 +56,27 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
 import thirdparty.net.oelen.polsolve.pzeros.PZeros;
 
 /**
- * calculates polynomial roots by forming "the companion matrix"
- * and using matrix eigenvalue decomposition to find the eigenvalues as the roots.
- * The code is adapted from numpy.roots() source code.
+ * methods for calculating the polynomial roots.
  * 
  * @author nichole
  */
 public class PolynomialRootSolver {
     
+    /**
+     * 
+     * @param coeffs coefficients of a polynomial given in the order of decreasing 
+     * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
+     * @return
+     * @throws Exception 
+     */
     public static Complex[] solveUsingMPSolve(double[] coeffs) throws Exception {
         int n = coeffs.length;
+        
+        //dCoeffs are in order of increasing power
         DoubleDouble[] dCoeffs = new DoubleDouble[n];
         int i;
         for (i = 0; i < n; ++i) {
-            dCoeffs[i] = new DoubleDouble(coeffs[i]);
+            dCoeffs[n-i-1] = new DoubleDouble(coeffs[i]);
         }
         
         thirdparty.net.oelen.polarith.Complex[] root = new thirdparty.net.oelen.polarith.Complex[n-1];
@@ -102,8 +109,8 @@ public class PolynomialRootSolver {
                     error = "Error: Coefficient for x^0 (constant coefficient) equals 0";
                     break;
                 case -3:
-                    error = "Error: Ratio of smallest coefficient magnitude and largest coefficient\n" +
-"               magnitude is too large and will lead to underflow/overflow.";
+                    error = "Error: Ratio of smallest coefficient magnitude and largest coefficient" +
+                    " magnitude is too large and will lead to underflow/overflow.";
                     break;
                 default:
                     error = "unknown error from PZeros";
@@ -111,20 +118,23 @@ public class PolynomialRootSolver {
             }
             throw new Exception(error);
         }
-        int nr = result;
+        int nr = root.length;
+        
         Complex[] cRoots = new Complex[nr];
         for (i = 0; i < nr; ++i) {
             cRoots[i] = new Complex(root[i].real(), root[i].imag());
         }
-        
-        //TODO: log the radius and err
-        
+        //System.out.printf("roots=%s\n", FormatArray.toString(cRoots, "%.3e"));
+        //System.out.printf("radius=%s\n", FormatArray.toString(radius, "%.4e"));
+        //System.out.printf("err=%s\n", FormatArray.toString(err, "%b"));
+
         return cRoots;
     }
     
     /**
      * solve for the real roots using MPSolve.
-     * @param coeffs
+     * @param coeffs coefficients of a polynomial given in the order of decreasing 
+     * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @param toleranceForZero the value for which any number less than is considered 0.
      * @return
      * @throws NotConvergedException 
@@ -134,6 +144,7 @@ public class PolynomialRootSolver {
         Complex[] roots = solveUsingMPSolve(coeffs);
         return parseForRealOnly(roots, toleranceForZero);
     }
+    
     /**
      * calculates polynomial roots by forming "the companion matrix"
      * and using matrix eigenvalue decomposition to find the eigenvalues as the roots.
