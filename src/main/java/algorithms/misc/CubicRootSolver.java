@@ -349,7 +349,8 @@ public class CubicRootSolver {
                 // 1 real root
             }  
             */
-            double[] roots = PolynomialRootSolver.realRoots(coeffs);
+            double[] roots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(
+                coeffs, tol);
             
             return roots;
         }

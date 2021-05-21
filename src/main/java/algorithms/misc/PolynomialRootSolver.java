@@ -1,5 +1,9 @@
 /*
-Class PolynomialRootSolver is adapted from numpy.roots source
+The solveUsingMPSolve is from author Wilco Oelen present in directories
+src/main/java/thirdparty/net/oelen/*
+along with the copyrights in class comments.
+
+The solve*UsingCompanionMatrix methods are adapted from numpy.roots source
 code available at
 https://github.com/numpy/numpy/blob/v1.18.1/numpy/lib/polynomial.py#L168-L251
 which is licensed under BSD-3 Clause "New" or "Revised" License.
@@ -48,6 +52,8 @@ import java.util.Arrays;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.NotConvergedException;
+import thirdparty.net.oelen.polarith.DoubleDouble;
+import thirdparty.net.oelen.polsolve.pzeros.PZeros;
 
 /**
  * calculates polynomial roots by forming "the companion matrix"
@@ -58,6 +64,76 @@ import no.uib.cipr.matrix.NotConvergedException;
  */
 public class PolynomialRootSolver {
     
+    public static Complex[] solveUsingMPSolve(double[] coeffs) throws Exception {
+        int n = coeffs.length;
+        DoubleDouble[] dCoeffs = new DoubleDouble[n];
+        int i;
+        for (i = 0; i < n; ++i) {
+            dCoeffs[i] = new DoubleDouble(coeffs[i]);
+        }
+        
+        thirdparty.net.oelen.polarith.Complex[] root = new thirdparty.net.oelen.polarith.Complex[n-1];
+        
+        double[] radius = new double[n];
+        boolean[] err = new boolean[n];
+        PZeros pz = new PZeros(dCoeffs);
+        int result = pz.solve(root, radius, err);
+        
+        /*
+        Returns the degree of the polynomial if the computation succeeds,
+        and returns a value less than the degree of the polynomial if an error
+        occurs (e.g. convergence failure). When a value less than the degree of
+        the polynomial is returned, then only part (or none) of the roots could
+        be determined. If a negative value is returned, then the supplied input
+        is not correct:
+           -1: Leading coefficient equals 0.
+           -2: Coefficient for x^0 (constant coefficient) equals 0.
+           -3: Ratio of smallest coefficient magnitude and largest coefficient
+               magnitude is too large and will lead to underflow/overflow.
+        */
+        if (result < 0) {
+            //handle errors
+            String error;
+            switch(result) {
+                case -1:
+                    error = "Error: Leading coefficient equals 0";
+                    break;
+                case -2:
+                    error = "Error: Coefficient for x^0 (constant coefficient) equals 0";
+                    break;
+                case -3:
+                    error = "Error: Ratio of smallest coefficient magnitude and largest coefficient\n" +
+"               magnitude is too large and will lead to underflow/overflow.";
+                    break;
+                default:
+                    error = "unknown error from PZeros";
+                    break;
+            }
+            throw new Exception(error);
+        }
+        int nr = result;
+        Complex[] cRoots = new Complex[nr];
+        for (i = 0; i < nr; ++i) {
+            cRoots[i] = new Complex(root[i].real(), root[i].imag());
+        }
+        
+        //TODO: log the radius and err
+        
+        return cRoots;
+    }
+    
+    /**
+     * solve for the real roots using MPSolve.
+     * @param coeffs
+     * @param toleranceForZero the value for which any number less than is considered 0.
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static double[] solveForRealUsingMPSolve(double[] coeffs,
+        double toleranceForZero) throws Exception {
+        Complex[] roots = solveUsingMPSolve(coeffs);
+        return parseForRealOnly(roots, toleranceForZero);
+    }
     /**
      * calculates polynomial roots by forming "the companion matrix"
      * and using matrix eigenvalue decomposition to find the eigenvalues as the roots.
@@ -69,7 +145,7 @@ public class PolynomialRootSolver {
      * @return
      * @throws NotConvergedException 
      */
-    public static Complex[] roots(double[] coeffs) throws NotConvergedException {
+    public static Complex[] solveUsingCompanionMatrix(double[] coeffs) throws NotConvergedException {
            
         // http://web.mit.edu/18.06/www/Spring17/Eigenvalue-Polynomials.pdf
         // form the companion matrix as the characteristic polynomial
@@ -149,21 +225,31 @@ public class PolynomialRootSolver {
         return idx.toArray();
     }
     
-    public static double[] realRoots(double[] p) throws NotConvergedException {
+    /**
+     * solve for the real roots using a companion matrix.
+     * @param coeffs
+     * @param toleranceForZero the value for which any number less than is considered 0.
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static double[] solveForRealUsingCompanionMatrix(double[] coeffs,
+        double toleranceForZero) throws NotConvergedException {
         
-        Complex[] roots = roots(p);
+        Complex[] roots = solveUsingCompanionMatrix(coeffs);
         
+        return parseForRealOnly(roots, toleranceForZero);
+    }
+    
+    static double[] parseForRealOnly(Complex[] roots, double toleranceForZero) {
         if (roots == null || roots.length == 0) {
             return new double[]{};
         }
-        
-        double tol = 1e-5;
-        
+                
         // only returning real roots;
         TDoubleList realRoots = new TDoubleArrayList();
         int n = 0;
         for (int i = 0; i < roots.length; ++i) {
-            if (Math.abs(roots[i].im()) < tol) {
+            if (Math.abs(roots[i].im()) < toleranceForZero) {
                 realRoots.add(roots[i].re());
             }
         }
