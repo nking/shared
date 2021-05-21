@@ -40,9 +40,7 @@ public class CubicRootSolver {
      * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     static Complex[] solveUsingDepressedCubic0(final double p0, final double q0) {
-        
-        double eps = 1.e-5;
-                        
+                                
         /*
         given:
            t^3 + p*t + q = 0.
@@ -95,7 +93,7 @@ public class CubicRootSolver {
      */
     public static double[] solveUsingDepressedCubic(double p, double q) {
         
-        double eps = 1.e-5;
+        double eps = 1.e-10;
        
         double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);
                 
@@ -147,7 +145,7 @@ public class CubicRootSolver {
             double pt2 = Math.sqrt(discr);
             double pt1 = -q/2.;
             if ((pt1 + pt2) < 0 || (pt1 - pt2) < 0) {
-                // stop here and return polynomial solver
+                // stop here and let invoker use polynomial solver
                 return new double[]{};
             }
             double t = Math.pow(pt1 + pt2, 1./3.) + Math.pow(pt1 - pt2, 1./3.);
@@ -246,6 +244,10 @@ public class CubicRootSolver {
         }*/
         
         double[] dCoeffs = calcDepressedCubicCoefficients(coeffs);
+        if (dCoeffs == null) {
+            double[] rr2 = solveUsingGeneral(coeffs);
+            return rr2;
+        }
                 
         double a = dCoeffs[0];
         double b = dCoeffs[1];
@@ -256,7 +258,9 @@ public class CubicRootSolver {
         double[] t = solveUsingDepressedCubic(p, q);
         
         if (t == null || t.length == 0) {
-            return solveUsingGeneral(coeffs);
+            //Complex[] rr = solveUsingDepressedCubic0(p, q);
+            double[] rr2 = solveUsingGeneral(coeffs);
+            return rr2;
         }
         
         double[] x = new double[t.length];
