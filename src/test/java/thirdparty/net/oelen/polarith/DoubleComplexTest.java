@@ -6,12 +6,15 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import thirdparty.net.oelen.polarith.DoubleComplex;
-import thirdparty.net.oelen.polarith.DoubleDouble;
+import junit.framework.TestCase;
 
 
-public class DoubleComplexTest {
+public class DoubleComplexTest extends TestCase {
     
+    interface TriFunction<T, U, V, R> {
+        R apply(T t, U u, V v);
+    }
+
     static final String[][] TESTS_3 = {
         {"ABS", "3", "4", "5"},
         {"ABS", "4", "3", "5"},
@@ -67,7 +70,7 @@ public class DoubleComplexTest {
         {"DIV", "1", "-2", null, "-4", "0.5", "0.25"},
     };
     
-    public static void main(String[] args) {
+    public void test0() {
         for (String[] test : TESTS_3) {
             Optional<Function<DoubleComplex,DoubleDouble>> op = getDoubleFunction(test[0]);
             DoubleComplex a = new DoubleComplex(test[1], test[2]);
@@ -236,10 +239,4 @@ public class DoubleComplexTest {
     private static String print(DoubleComplex a) {
         return "" + a.real().toString() + "||" + a.imag().toString();
     }    
-}
-
-
-
-interface TriFunction<T,U,V,R> {
-    R apply(T t, U u, V v);
 }

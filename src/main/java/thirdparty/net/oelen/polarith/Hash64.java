@@ -1,3 +1,14 @@
+/*
+The author of this code is Wilco Oelen and he offers it
+freely without copyright, but asks that his pages are referenced
+as the source if used.
+He has a webpage with information on the polynomial software
+he ported and more modern versions which require jini bindings:
+https://woelen.homescience.net/science/math/exps/polynomials/
+https://woelen.homescience.net/science/math/exps/polynomials/software.html
+The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
+https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+*/
 package thirdparty.net.oelen.polarith;
 
 import java.io.UnsupportedEncodingException;
