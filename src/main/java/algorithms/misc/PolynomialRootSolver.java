@@ -63,8 +63,13 @@ import thirdparty.net.oelen.polsolve.pzeros.PZeros;
 public class PolynomialRootSolver {
     
     public static double eps = 1.e-7;
+    
     /**
-     * 
+     * solve for the roots of the polynomial equation 
+     * a*x^3 + b*x^2 + c*x + d = 0 using the algorithm MPSolve 
+     * of Bini & Robol ported by Wilco Oelen.
+     * NOTE: the 2nd derivative can be useful with the root values
+     * for distinguishing local minimum, maximum, and inflection.
      * @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @return
@@ -134,7 +139,7 @@ public class PolynomialRootSolver {
     
     /**
      * solve for the real roots using MPSolve.  also reduces to unique within tolerance
-     * (no repeated multiplicities).  also sorts the values.
+     * (no repeated multiplicity).  also sorts the values.
      * @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @param toleranceForZero the value for which any number less than is considered 0.

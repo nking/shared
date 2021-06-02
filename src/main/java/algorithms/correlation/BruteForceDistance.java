@@ -24,7 +24,7 @@ public class BruteForceDistance {
     private static final Logger log;
     static {
         log = Logger.getLogger(BruteForceDistance.class.getSimpleName());
-        log.setLevel(Level.FINE);
+        log.setLevel(LEVEL);
     }
         
     /**
