@@ -415,8 +415,7 @@ public class MatrixUtil {
         d*p0+... d*p d*p
         */
         
-        no.uib.cipr.matrix.DenseMatrix c = new DenseMatrix(mrows, ncols);
-        
+        no.uib.cipr.matrix.DenseMatrix c = new DenseMatrix(mrows, ncols);        
         for (int row = 0; row < mrows; row++) {
             for (int ncol = 0; ncol < ncols; ncol++) {
                 double sum = 0;                
@@ -2105,7 +2104,7 @@ public class MatrixUtil {
         
         ProjectionResults pr = new ProjectionResults();
         
-        // A_pseudoinverse = inverse(A^T*A)^-1 * A^T 
+        // A_pseudoinverse = inverse(A^T*A) * A^T 
         // [a[0].length][a.length]
         double[][] aPseudoInv = MatrixUtil.pseudoinverseFullRank(a);
         
@@ -2232,7 +2231,7 @@ public class MatrixUtil {
      * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
      * and nVariables = 3;
      * @param a
-     * @return 
+     * @return mean of each column as an array of size a[0].length
      */
     public static double[] mean(double[][] a) {
         int nSamples = a.length;
@@ -2533,5 +2532,73 @@ public class MatrixUtil {
             a[idx2] = swap;
             count++;
         }
+    }
+    
+    /**
+     * solves for vector x in the equation L*x=b where L is the lower triangular
+     * matrix and b is a vector.
+     * @param lowerTriangular the lower triangular matrix
+     * @param b vector on the righthand side of the equation L*x=b
+     * @return x in equation L*x = b
+     */
+    public static double[] forwardSubstitution(double[][] lowerTriangular, double[] b) {
+        
+        /*
+        from wikipedia article on triangular matrix, forward and back substitution
+        
+        x_1 = b_1/L_1_1
+        
+        x_2 = (b_2 - l_2_1*x_1) / l_2_2
+        
+        x_m = (b_m - summation_i=1_to_(m-1)( l_m_i * x_i) / l_m_m
+        */
+        
+        int m = b.length;
+        
+        if (lowerTriangular[0].length != m) {
+            throw new IllegalArgumentException("the number of columns in "
+                    + "lowerTriangular must equal the length of b");
+        }
+        
+        double[] x = new double[m];
+        
+        int i, j;
+        double sum;
+        for (j = 0; j < m; ++j) {
+            sum = 0;
+            for (i = 0; i < (j-1); ++i) {
+                sum += (lowerTriangular[j][i]*x[i]);
+            }
+            x[j] = (b[j] - sum)/lowerTriangular[j][j];
+        }
+        return x;
+    }
+    
+    /**
+     * solves for vector x in the equation U*x = y where 
+     * U is an upper triangular matrix and y is a vector.
+     * @param upperTriangular the upper triangular matrix
+     * @param y vector on righthand side of equation
+     * @return x in equation U*x = y
+     */
+    public static double[] backwardSubstitution(double[][] upperTriangular, double[] y) {
+        
+        int m = y.length;
+        
+        if (upperTriangular[0].length != m) {
+            throw new IllegalArgumentException("the number of columns in "
+                    + "upperTriangular must equal the length of y");
+        }
+        
+        double[] x = Arrays.copyOf(y, m);
+        int i, k;
+        for (i = m-1; i >= 0; i--) {
+            for (k = 0; k < i; ++k) {
+                x[k] -= (x[i]*upperTriangular[i][k]);
+            }
+            x[i] = x[i]/upperTriangular[i][i];
+        }
+        
+        return x;
     }
 }

@@ -10,6 +10,31 @@ public class LinearEquationsTest extends TestCase {
     public LinearEquationsTest(String testName) {
         super(testName);
     }
+    
+    public void testSolveXFromLUDecomposition() {
+        /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+        double[][] a = new double[3][3];
+        a[0] = new double[]{1, 2, 0};
+        a[1] = new double[]{3, 4, 4};
+        a[2] = new double[]{5, 6, 3};
+
+        double[] b = new double[]{3, 7, 8};
+
+        double[] expectedX = new double[]{-1.4, 2.2, 0.6};
+
+        double tol = 1.e-6;
+        double diff;
+
+        double[] x = LinearEquations.solveXFromLUDecomposition(a, b);
+
+        assertEquals(expectedX.length, x.length);
+
+        for (int i = 0; i < x.length; ++i) {
+            diff = Math.abs(x[i] - expectedX[i]);
+            assertTrue(diff < tol);
+        }
+    }
+            //public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
 
     public void testLUPSolveX() {
 

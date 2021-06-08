@@ -1,6 +1,9 @@
 package algorithms.matrix;
 
+import algorithms.util.FormatArray;
 import java.util.Arrays;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**
@@ -69,6 +72,25 @@ public class LinearEquations {
         }
         return x;
     }
+    
+    /**
+     * solve for x in A*x=b by LU decomposition
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
+        
+        int n = a.length;
+        
+        DenseVector x = new DenseVector(n);
+        DenseVector _b = new DenseVector(b);
+        
+        DenseMatrix aa = new DenseMatrix(a);
+        x = (DenseVector)aa.solve(_b, x);
+                        
+        return x.getData();
+    }
 
     /**
      * an efficient LUP decomposition for a being a square non-singular matrix and
@@ -79,7 +101,7 @@ public class LinearEquations {
      * a is a non-singular matrix(i.e. has exactly one solution).  the rank of
      * a is n (it's dimensions are m x n).
      * @return LU a wrapper holding the 2 two-dimensional row major output arrays.
-     * L and U.
+     * L and U.  they are both size nXn where n=a.length
      */
     public static LU LUDecomposition(double[][] a) {
         int n = a.length;
@@ -87,6 +109,7 @@ public class LinearEquations {
         
         a = copy(a);
         
+        //nXn for both:
         double[][] ell = new double[n][];
         double[][] u = new double[n][];
         for (int i = 0; i < n; ++i) {

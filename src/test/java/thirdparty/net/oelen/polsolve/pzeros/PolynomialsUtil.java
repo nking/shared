@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author woelen
  */
-public class TestPolynomials {
+public class PolynomialsUtil {
     // Test polynomials can be specified by means of a two-letter string and an
     // array of numerical values:
     //   RR : Roots Real, all numbers are real roots. Numbers separated by ; stand for
@@ -297,7 +297,7 @@ public class TestPolynomials {
         nameList.clear();
         polList.clear();    
         try {
-            Field[] fields = TestPolynomials.class.getFields();
+            Field[] fields = PolynomialsUtil.class.getFields();
             for (Field f : fields) {
                 Class<?> clazz = f.getType();
                 if (!clazz.isArray()) {

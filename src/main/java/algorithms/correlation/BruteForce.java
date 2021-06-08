@@ -71,6 +71,7 @@ public class BruteForce {
         
         int i, j;
         
+        // mean of each column:
         double[] mean = MatrixUtil.mean(a);
         
         double[][] diffs = new double[nRows][];

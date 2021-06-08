@@ -251,14 +251,14 @@ public class RPolyTest extends TestCase {
     }
     
     
-    public void testT(String[] args) {
+    public void testT() {
         
         List<String> names = new ArrayList<>();
         List<String[]> pols = new ArrayList<>();
-        TestPolynomials.getPolynomials(names, pols);
+        PolynomialsUtil.getPolynomials(names, pols);
         for (int i=0; i<names.size(); i++) {
             String[] polynom = pols.get(i);
-            if (TestPolynomials.hasRealCoefs(polynom)) {
+            if (PolynomialsUtil.hasRealCoefs(polynom)) {
                 init0(polynom);
                 double[] roots_re = new double[degree()];
                 double[] roots_im = new double[degree()];

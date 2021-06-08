@@ -224,7 +224,7 @@ public class CPolyTest extends TestCase {
     public void mainT() {
         List<String> names = new ArrayList<>();
         List<String[]> pols = new ArrayList<>();
-        TestPolynomials.getPolynomials(names, pols);
+        PolynomialsUtil.getPolynomials(names, pols);
         for (int i=0; i<names.size(); i++) {
             init0(pols.get(i));
             double[] roots_re = new double[degree()];

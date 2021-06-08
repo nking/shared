@@ -476,7 +476,7 @@ public class PZerosTest extends TestCase {
 
         List<String> names = new ArrayList<>();
         List<String[]> pols = new ArrayList<>();
-        TestPolynomials.getPolynomials(names, pols);
+        PolynomialsUtil.getPolynomials(names, pols);
         for (int i = 0; i < names.size(); i++) {
             run1(pols.get(i));
             DoubleComplex[] roots = new DoubleComplex[degree()];
