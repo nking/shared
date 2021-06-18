@@ -921,6 +921,32 @@ public class MatrixUtil {
         return t;
     }
     
+    /**
+     * transpose matrix m into out matrix which must be size m[0].length X m.length.
+     * @param m matrix to transpose
+     * @param out output matrix to hold transposed m
+     * @return 
+     */
+    public static void transpose(double[][] m, double[][] out) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        
+        int mRows = m.length;
+        int mCols = m[0].length;
+        
+        if (out.length != mCols || out[0].length != mRows){
+            throw new IllegalArgumentException("out size must be m[0].length X m.length");
+        }
+        
+        for (int i = 0; i < mRows; i++) {
+            for (int j = 0; j < mCols; j++) {
+                out[j][i] = m[i][j];
+            }
+        }        
+    }
+    
     public static double[][] convertToRowMajor(DenseMatrix a) {
         int nc = a.numColumns();
         int nr = a.numRows();
@@ -1437,6 +1463,34 @@ public class MatrixUtil {
         }
         
         return m;
+    }
+    
+    /**
+     * copy the section of matrix a from row0 to row1 (inclusive) and 
+     * col0 to col1 (inclusive) into output matrix out which must
+     * be size (row1-row0+1) X (col1-col0+1)
+     * @param a
+     * @param row0 beginning index, inclusive
+     * @param row1 end index, inclusive
+     * @param col0 beginning index, inclusive
+     * @param col1 end index, inclusive
+     * @param out output matrix to hold the copied section
+     */
+    public static void copySubMatrix(double[][] a, int row0, int row1, 
+        int col0, int col1, double[][] out) {
+        
+        int nr2 = row1 - row0 + 1;
+        int nc2 = col1 - col0 + 1;
+        
+        if (out.length != nr2 || out[0].length != nc2) {
+            throw new IllegalArgumentException("out dimensions must be "
+                    + " row1 - row0 + 1 X col1 - col0 + 1");
+        }
+        
+        int i, j;
+        for (i = 0; i < nr2; ++i) {
+            System.arraycopy(a[row0 + i], col0, out[i], 0, nc2);
+        }        
     }
     
     /**
@@ -2602,5 +2656,62 @@ public class MatrixUtil {
         }
         
         return x;
+    }
+    
+    public static void fill(double[][] a, double value) {
+        int i;
+        for (i = 0; i < a.length; ++i) {
+            Arrays.fill(a[i], value);
+        }
+    }
+    
+    public static BlockMatrixIsometric transpose(BlockMatrixIsometric a) {
+        
+        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);
+        
+        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());
+        
+        transpose(a.getA(), b.getA());
+        
+        /*
+        double[][] block = MatrixUtil.zeros(a.getBlockSize0(), a.getBlockSize1());
+        double[][] blockT = MatrixUtil.zeros(a.getBlockSize1(), a.getBlockSize0());
+        
+        int nb0 = a.getA().length / a.getBlockSize0();
+        int nb1 = a.getA()[0].length / a.getBlockSize1();
+        
+        int i, j;
+        
+        for (i = 0; i < nb0; ++i) {
+            for (j = 0; j < nb1; ++j) {
+                a.getBlock(block, i, j);
+                transpose(block, blockT);
+                b.setBlock(blockT, j, i);
+                System.out.printf("(%d,%d) blockT=\n%s\n", j, i, FormatArray.toString(blockT, "%.3f"));
+                System.out.printf("b=\n%s\n", FormatArray.toString(b.getA(), "%.3f"));
+            }
+        }
+        */
+        
+        return b;
+    }
+    
+    /**
+     * rewrite matrix a into a vector using the order of all rows of column 0,
+     * then all rows of column 1, etc.
+     * @param a
+     * @return 
+     */
+    public static double[] reshapeToVector(double[][] a) {
+        double[] out = new double[a.length * a[0].length];
+        int c = 0;
+        int i, j;
+        for (j = 0; j < a[0].length; ++j) {
+            for (i = 0; i < a.length; ++i) {
+                out[c] = a[i][j];
+                c++;
+            }
+        }
+        return out;
     }
 }

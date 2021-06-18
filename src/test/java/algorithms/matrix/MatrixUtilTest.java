@@ -1,6 +1,7 @@
 package algorithms.matrix;
 
 import algorithms.matrix.MatrixUtil.ProjectionResults;
+import algorithms.util.FormatArray;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
@@ -137,7 +138,121 @@ public class MatrixUtilTest extends TestCase {
         }
     }
     
-     
+    public void testTransposeD() throws Exception {
+
+        /*
+        100  101  1    100  200
+        200  201  1    101  201
+                        1    1
+        */
+        double[][] bb = new double[2][];
+        bb[0] = new double[]{100, 101, 1};
+        bb[1] = new double[]{200, 201, 1};
+
+        double[][] expected = new double[3][];
+        expected[0] = new double[]{100, 200};
+        expected[1] = new double[]{101, 201};
+        expected[2] = new double[]{1, 1};
+
+        double[][] cc = MatrixUtil.transpose(bb);
+        for (int i = 0; i < cc.length; i++) {
+            for (int j = 0; j < cc[i].length; j++) {
+                assertTrue(expected[i][j] == cc[i][j]);
+            }
+        }
+
+        double[][] dd = MatrixUtil.transpose(cc);
+
+        for (int i = 0; i < dd.length; i++) {
+            for (int j = 0; j < dd[i].length; j++) {
+                assertTrue(bb[i][j] == dd[i][j]);
+            }
+        }
+        
+        bb = new double[2][];
+        bb[0] = new double[]{100, 101, 1};
+        bb[1] = new double[]{200, 201, 1};
+         MatrixUtil.transpose(bb, cc);
+        for (int i = 0; i < cc.length; i++) {
+            for (int j = 0; j < cc[i].length; j++) {
+                assertTrue(expected[i][j] == cc[i][j]);
+            }
+        }
+    }
+    
+    public void testTranspose3() {
+        int a0 = 4;
+        int a1 = 9;
+        int b0 = 2;
+        int b1 = 3;
+        double[][] a = new double[a0][];
+        int i, j;
+        for (i = 0; i < a0; ++i) {
+            a[i] = new double[a1];
+        }
+        
+        double v0 = 0;
+        for (i = 0; i < a0; ++i) {
+            for (j = 0; j < a1; ++j, v0++) {
+                a[i][j] = v0;
+            }
+            System.out.printf("a[%d]=%s\n", i, FormatArray.toString(a[i], "%.0f"));
+        }
+        
+        /*
+         0,   1,  2, |  3,  4,  5,  |  6,  7,  8 
+         9,  10, 11, | 12, 13, 14,  | 15, 16, 17 
+        ----------------------------------------
+         18, 19, 20, | 21, 22, 23,  | 24, 25, 26 
+         27, 28, 29, | 30, 31, 32,  | 33, 34, 35 
+        
+        transposed:
+        0  9  | 3  12  |  6 15 |
+        1  10 | 4  13  |  7 16 |
+        2  11 | 5  14  |  8 17 |
+        ------------------------
+        18 27 | 21 30  | 24 33 |
+        19 28 | 22 31  | 25 34 |
+        20 29 | 23 32  | 26 35 |
+        
+        0  9  | 18 27
+        1  10 | 19 28
+        2  11 | 20 29 
+        --------
+        3  12 | ...
+        4  13 |
+        5  14 |
+        --------
+        6 15  |
+        7 16  |
+        8 17  |
+        */
+        
+        double[][] expected = MatrixUtil.transpose(a);
+                
+        BlockMatrixIsometric mA = new BlockMatrixIsometric(a, b0, b1);
+        
+        BlockMatrixIsometric mB = MatrixUtil.transpose(mA);
+        assertEquals(expected.length, mB.getA().length);
+        assertEquals(expected[0].length, mB.getA()[0].length);
+        
+        double diff;
+        double tol = 1e-7;
+        for (i = 0; i < expected.length; ++i) {
+            for (j = 0; j < expected[0].length; ++j) {
+                diff = Math.abs(expected[i][j] - mB.getA()[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+        double[] c = MatrixUtil.reshapeToVector(mB.getA());
+        assertEquals(expected.length * expected[0].length, c.length);
+        for (i = 0; i < c.length; ++i) {
+            diff = Math.abs(i - c[i]);
+            assertTrue(diff < tol);
+        }
+    }
+    
     public void testPseudoinverse() throws NotConvergedException {
         
         // from example 4, chapter 7 of Strang's Introduction to Lenear Algebra
@@ -452,6 +567,16 @@ public class MatrixUtilTest extends TestCase {
         row0=0; row1=0; nre=1;
         col0=0; col1=0; nce=1;        
         c = MatrixUtil.copySubMatrix(a, row0, row1, col0, col1);
+        assertEquals(nre, c.length);
+        assertEquals(nce, c[0].length);
+        for (i = 0; i < nre; ++i) {
+            for (j = 0; j < nce; ++j) {
+                diff = Math.abs(a[row0 + i][col0 + j] - c[i][j]);
+                assertTrue(diff <= eps);
+            }
+        }
+        MatrixUtil.fill(c, 0);
+        MatrixUtil.copySubMatrix(a, row0, row1, col0, col1, c);
         assertEquals(nre, c.length);
         assertEquals(nce, c[0].length);
         for (i = 0; i < nre; ++i) {
