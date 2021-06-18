@@ -36,7 +36,13 @@ public class MatrixUtilTest extends TestCase {
         assertTrue( m[0] ==  10 );
         assertTrue( m[1] ==  17 );
         assertTrue( m[2] ==  24 );
-     
+        
+        Arrays.fill(m, 0);
+        MatrixUtil.multiplyMatrixByColumnVector(a, b, m);
+        assertTrue( m[0] ==  10 );
+        assertTrue( m[1] ==  17 );
+        assertTrue( m[2] ==  24 );
+        
         double[][] c = new double[3][];
         for (int i = 0; i < 3; i++) {
             c[i] = new double[3];
@@ -77,6 +83,15 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(d[1][1] == 9);
         assertTrue(d[1][2] == 6);
      
+        MatrixUtil.fill(d, 0);
+        MatrixUtil.multiply(a, c, d);
+        assertTrue(d[0][0] == 6);
+        assertTrue(d[0][1] == 6);
+        assertTrue(d[0][2] == 4);
+        assertTrue(d[1][0] == 9);
+        assertTrue(d[1][1] == 9);
+        assertTrue(d[1][2] == 6);
+        
         /*
         example:  m is 1 2 3
                        4 5 6

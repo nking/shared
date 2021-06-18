@@ -1,5 +1,5 @@
 Implementation-Title: Shared ClimbWithYourFeet
-Implementation-Version: 1.1.29
+Implementation-Version: 1.1.30
 Implementation-Vendor: NicholeKing
 Implementation-URL: http://github.com/nking/shared
 Class-Path: trove4j-3.0.3.jar mtj-1.0.4.jar netlib-java-all-1.1.2.jar
