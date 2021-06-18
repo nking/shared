@@ -2537,6 +2537,7 @@ public class MatrixUtil {
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
      * matrix and b is a vector.
+     * runtime complexity is approx (b.length)^2.
      * @param lowerTriangular the lower triangular matrix
      * @param b vector on the righthand side of the equation L*x=b
      * @return x in equation L*x = b
@@ -2577,6 +2578,7 @@ public class MatrixUtil {
     /**
      * solves for vector x in the equation U*x = y where 
      * U is an upper triangular matrix and y is a vector.
+     * runtime complexity is approx (y.length)^2.
      * @param upperTriangular the upper triangular matrix
      * @param y vector on righthand side of equation
      * @return x in equation U*x = y
