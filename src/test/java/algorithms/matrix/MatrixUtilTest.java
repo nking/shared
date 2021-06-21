@@ -992,6 +992,14 @@ public class MatrixUtilTest extends TestCase {
                  assertTrue(diff < eps);
              }
          }
+         
+         MatrixUtil.fill(r, 0);
+         MatrixUtil.elementwiseSubtract(a[0], b[0], r[0]);
+         j = 0;
+         for (i = 0; i < 3; ++i) {
+             diff = Math.abs(expected[0][i] - r[0][i]);
+             assertTrue(diff < eps);
+         }
      }
      
      public void testFlip() {
