@@ -2537,7 +2537,8 @@ public class MatrixUtil {
      * element-wise addition
      * @param a
      * @param b
-     * @param out the results of element wise add of a + b. 
+     * @param out the results of element wise add of a + b. Note that it
+     * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseAdd(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
@@ -2573,7 +2574,8 @@ public class MatrixUtil {
      * element-wise subtraction
      * @param a
      * @param b
-     * @param out the results of element wise subtraction, a - b. 
+     * @param out the results of element wise subtraction, a - b. Note that it
+     * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseSubtract(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
@@ -2598,7 +2600,8 @@ public class MatrixUtil {
      * element-wise subtraction
      * @param a
      * @param b
-     * @param out the results of element wise subtraction, a - b. 
+     * @param out the results of element wise subtraction, a - b. Note that it
+     * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseSubtract(double[] a, double[] b, double[] out) {
         int m = a.length;
