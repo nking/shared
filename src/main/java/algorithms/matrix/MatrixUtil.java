@@ -113,6 +113,9 @@ public class MatrixUtil {
         if (n == null || n.length == 0) {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
+        if (Arrays.hashCode(n) == Arrays.hashCode(out)) {
+            throw new IllegalArgumentException("n cannot be the same as out");
+        }
         
         int mcols = m[0].length;
 
@@ -1581,12 +1584,26 @@ public class MatrixUtil {
     public static double[] extractColumn(double[][] a, int col) {
                 
         double[] m = new double[a.length];
-        int i, j;
-        for (i = 0; i < a.length; ++i) {
-            m[i] = a[i][col];
+        extractColumn(a, col, m);
+        return m;
+    }
+    
+    /**
+     * 
+     * @param a
+     * @param col index of column to extract
+     * @param out one dimensional array holding the column col of a
+     */
+    public static void  extractColumn(double[][] a, int col, double[] out) {
+           
+        if (out.length != a.length) {
+            throw new IllegalArgumentException("out.length must equal a.length");
         }
         
-        return m;
+        int i;
+        for (i = 0; i < a.length; ++i) {
+            out[i] = a[i][col];
+        }        
     }
     
       /**
@@ -2511,21 +2528,70 @@ public class MatrixUtil {
      * @return 
      */
     public static double[][] elementwiseAdd(double[][] a, double[][] b) {
+        double[][] out = MatrixUtil.zeros(a.length, a[0].length);
+        elementwiseAdd(a, b, out);
+        return out;
+    }
+    
+    /**
+     * element-wise addition
+     * @param a
+     * @param b
+     * @param out the results of element wise add of a + b. 
+     */
+    public static void elementwiseAdd(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
         int n = a[0].length;
         
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
+        if (out.length != m || out[0].length != n) {
+            throw new IllegalArgumentException("a and out must have same dimensions");
+        }
         
-        double[][] out = MatrixUtil.copy(a);
         int i, j;
         for (i = 0; i < out.length; ++i) {
             for (j = 0; j < out[i].length; ++j) {
-                out[i][j] += b[i][j];
+                out[i][j] = a[i][j] + b[i][j];
             }
         }
+    }
+    
+    /** element-wise subtraction
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double[][] elementwiseSubtract(double[][] a, double[][] b) {
+        double[][] out = MatrixUtil.zeros(a.length, a[0].length);
+        elementwiseSubtract(a, b, out);
         return out;
+    }
+    
+    /**
+     * element-wise subtraction
+     * @param a
+     * @param b
+     * @param out the results of element wise subtraction, a - b. 
+     */
+    public static void elementwiseSubtract(double[][] a, double[][] b, double[][] out) {
+        int m = a.length;
+        int n = a[0].length;
+        
+        if (b.length != m || b[0].length != n) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        if (out.length != m || out[0].length != n) {
+            throw new IllegalArgumentException("a and out must have same dimensions");
+        }
+        
+        int i, j;
+        for (i = 0; i < out.length; ++i) {
+            for (j = 0; j < out[i].length; ++j) {
+                out[i][j] = a[i][j] - b[i][j];
+            }
+        }
     }
     
     /**

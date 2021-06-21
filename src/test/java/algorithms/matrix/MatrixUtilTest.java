@@ -138,12 +138,12 @@ public class MatrixUtilTest extends TestCase {
         expected[2] = new float[]{1, 1};
 
         float[][] cc = MatrixUtil.transpose(bb);
-                for (int i = 0; i < cc.length; i++) {
+        for (int i = 0; i < cc.length; i++) {
             for (int j = 0; j < cc[i].length; j++) {
                 assertTrue(expected[i][j] == cc[i][j]);
             }
         }
-
+        
         float[][] dd = MatrixUtil.transpose(cc);
 
         for (int i = 0; i < dd.length; i++) {
@@ -170,6 +170,13 @@ public class MatrixUtilTest extends TestCase {
         expected[2] = new double[]{1, 1};
 
         double[][] cc = MatrixUtil.transpose(bb);
+        for (int i = 0; i < cc.length; i++) {
+            for (int j = 0; j < cc[i].length; j++) {
+                assertTrue(expected[i][j] == cc[i][j]);
+            }
+        }
+        MatrixUtil.fill(cc, 0);
+        MatrixUtil.transpose(bb, cc);
         for (int i = 0; i < cc.length; i++) {
             for (int j = 0; j < cc[i].length; j++) {
                 assertTrue(expected[i][j] == cc[i][j]);
@@ -868,6 +875,13 @@ public class MatrixUtilTest extends TestCase {
              diff = Math.abs(expected[i] - r[i]);
              assertTrue(diff < tol);
          }
+         
+         Arrays.fill(r, 0);
+         MatrixUtil.extractColumn(a, 1, r);
+         for (int i = 0; i < r.length; ++i) {
+             diff = Math.abs(expected[i] - r[i]);
+             assertTrue(diff < tol);
+         }
      }
      
      public void testSkewSymmetric() throws NotConvergedException {
@@ -924,6 +938,54 @@ public class MatrixUtilTest extends TestCase {
          double eps = 1.e-11;
          double diff;
          int i, j;
+         for (i = 0; i < 3; ++i) {
+             for (j = 0; j < 3; ++j) {
+                 diff = Math.abs(expected[i][j] - r[i][j]);
+                 assertTrue(diff < eps);
+             }
+         }
+         
+         MatrixUtil.fill(r, 0);
+         MatrixUtil.elementwiseAdd(a, b, r);
+         for (i = 0; i < 3; ++i) {
+             for (j = 0; j < 3; ++j) {
+                 diff = Math.abs(expected[i][j] - r[i][j]);
+                 assertTrue(diff < eps);
+             }
+         }
+     }
+     
+     public void testElementwiseSubtract() {
+         double[][] a = new double[3][3];
+         double[][] b = new double[3][3];
+         
+         a[0] = new double[]{1, 2, 3};
+         a[1] = new double[]{2, 2, 3};
+         a[2] = new double[]{3, 2, 4};
+         
+         b[0] = new double[]{-10, 0, -30};
+         b[1] = new double[]{-20, -10, -3};
+         b[2] = new double[]{-30, -20, -40};
+         
+         double[][] expected = new double[3][3];
+         expected[0] = new double[]{11, 2, 33};
+         expected[1] = new double[]{22, 12, 6};
+         expected[2] = new double[]{33, 22, 44};
+         
+         double[][] r = MatrixUtil.elementwiseSubtract(a, b);
+         
+         double eps = 1.e-11;
+         double diff;
+         int i, j;
+         for (i = 0; i < 3; ++i) {
+             for (j = 0; j < 3; ++j) {
+                 diff = Math.abs(expected[i][j] - r[i][j]);
+                 assertTrue(diff < eps);
+             }
+         }
+         
+         MatrixUtil.fill(r, 0);
+         MatrixUtil.elementwiseSubtract(a, b, r);
          for (i = 0; i < 3; ++i) {
              for (j = 0; j < 3; ++j) {
                  diff = Math.abs(expected[i][j] - r[i][j]);
