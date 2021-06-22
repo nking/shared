@@ -6,8 +6,11 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
+import no.uib.cipr.matrix.DenseCholesky;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.LowerSymmDenseMatrix;
+import no.uib.cipr.matrix.LowerTriangDenseMatrix;
+import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
     
@@ -1058,5 +1061,115 @@ public class MatrixUtilTest extends TestCase {
                  assertTrue(diff < tol);
              }
          }
+     }
+     
+     public void testForwardBackwardSubstitution() {
+         /*
+         a unit test from https://ece.uwaterloo.ca/~dwharder/NumericalAnalysis/04LinearAlgebra/cholesky/
+         
+         ---------------------------------------------------------
+         
+        L = [3 0 0 0; 0.2 4 0 0; -0.1 0.3 2 0; 0.5 -0.4 -0.2 5]
+        L =
+           3.00000   0.00000   0.00000   0.00000
+           0.20000   4.00000   0.00000   0.00000
+          -0.10000   0.30000   2.00000   0.00000
+           0.50000  -0.40000  -0.20000   5.00000
+
+        >> L * L'
+        M = ans =
+
+            9.0000   0.6000  -0.3000   1.5000
+            0.6000  16.0400   1.1800  -1.5000
+           -0.3000   1.1800   4.1000  -0.5700
+            1.5000  -1.5000  -0.5700  25.4500
+         
+         b = (2.49, 0.566, 0.787, -2.209)T.
+         using forward substitution to get y = (0.83, 0.1, 0.42, -0.5)T. 
+         using backward substitution to get x = (0.3, 0, 0.2, -0.1)T.
+         */
+         int i, j;
+         double diff;
+         double tol = 1.e-7;
+         
+         /*
+         double[][] _m2 = new double[4][];
+         _m2[0] = new double[]{9.0000,   0.6000,  -0.3000,   1.5000};
+         _m2[1] = new double[]{0.6000,  16.0400,   1.1800,  -1.5000};
+         _m2[2] = new double[]{-0.3000,   1.1800,   4.1000,  -0.5700};
+         _m2[3] = new double[]{1.5000,  -1.5000,  -0.5700,  25.4500};
+         DenseCholesky chol = no.uib.cipr.matrix.DenseCholesky.factorize(new DenseMatrix(_m2));
+         */
+         
+         double[][] _l2 = new double[4][];
+         _l2[0] = new double[]{3.00000,  0.00000,   0.00000,   0.00000};
+         _l2[1] = new double[]{0.20000,   4.00000,   0.00000,   0.00000};
+         _l2[2] = new double[]{-0.10000,   0.30000,   2.00000,   0.00000};
+         _l2[3] = new double[]{0.50000,  -0.40000,  -0.20000,   5.00000};
+         
+         double[][] _m2_r = MatrixUtil.multiply(_l2, MatrixUtil.transpose(_l2));
+         System.out.printf("m2e=%s\n", FormatArray.toString(_m2_r, "%.3f"));
+         
+         double[] _b2 = new double[]{2.49, 0.566, 0.787, -2.209};
+         double[] _y2 = new double[]{0.83, 0.1, 0.42, -0.5};
+         double[] _x2 = new double[]{0.3, 0, 0.2, -0.1};
+         
+         double[] _y2_r = MatrixUtil.forwardSubstitution(_l2, _b2);
+         System.out.printf("y2e=%s\ny2=%s\n", FormatArray.toString(_y2, "%.3f"),
+             FormatArray.toString(_y2_r, "%.3f"));
+         assertEquals(_y2.length, _y2_r.length);
+         for (i = 0; i < _y2.length; ++i) {
+             diff = Math.abs(_y2[i] - _y2_r[i]);
+             assertTrue(diff < tol);
+         }
+         double[] _x2_r = MatrixUtil.backwardSubstitution(MatrixUtil.transpose(_l2), _y2_r);
+         System.out.printf("x2e=%s\nx2=%s\n", FormatArray.toString(_x2, "%.3f"),
+             FormatArray.toString(_x2_r, "%.3f"));
+         assertEquals(_x2.length, _x2_r.length);
+         for (i = 0; i < _x2.length; ++i) {
+             diff = Math.abs(_x2[i] - _x2_r[i]);
+             assertTrue(diff < tol);
+         }
+         
+         double[] _b2_r = MatrixUtil.multiplyMatrixByColumnVector(_m2_r, _x2_r);
+         System.out.printf("b2e=%s\nb2=%s\n", FormatArray.toString(_b2, "%.3f"),
+             FormatArray.toString(_b2_r, "%.3f"));
+         assertEquals(_b2.length, _b2_r.length);
+         for (i = 0; i < _b2.length; ++i) {
+             diff = Math.abs(_b2[i] - _b2_r[i]);
+             assertTrue(diff < tol);
+         }
+         
+         //-------------------
+         LowerTriangDenseMatrix l2 = new LowerTriangDenseMatrix(new DenseMatrix(_l2));
+         UpperTriangDenseMatrix l2T = new UpperTriangDenseMatrix(new DenseMatrix(
+             MatrixUtil.transpose(_l2)));
+         
+         double[] _y2_r2 = MatrixUtil.forwardSubstitution(l2, _b2);
+         //System.out.printf("y2e=%s\ny2=%s\n", FormatArray.toString(_y2, "%.3f"),
+         //    FormatArray.toString(_y2_r, "%.3f"));
+         assertEquals(_y2.length, _y2_r2.length);
+         for (i = 0; i < _y2.length; ++i) {
+             diff = Math.abs(_y2[i] - _y2_r2[i]);
+             assertTrue(diff < tol);
+         }
+         double[] _x2_r2 = MatrixUtil.backwardSubstitution(l2T, _y2_r2);
+         //System.out.printf("x2e=%s\nx2=%s\n", FormatArray.toString(_x2, "%.3f"),
+         //    FormatArray.toString(_x2_r, "%.3f"));
+         assertEquals(_x2.length, _x2_r2.length);
+         for (i = 0; i < _x2.length; ++i) {
+             diff = Math.abs(_x2[i] - _x2_r2[i]);
+             assertTrue(diff < tol);
+         }
+         
+         double[] _b2_r2 = MatrixUtil.multiplyMatrixByColumnVector(_m2_r, _x2_r2);
+         //System.out.printf("b2e=%s\nb2=%s\n", FormatArray.toString(_b2, "%.3f"),
+         //    FormatArray.toString(_b2_r, "%.3f"));
+         assertEquals(_b2.length, _b2_r2.length);
+         for (i = 0; i < _b2.length; ++i) {
+             diff = Math.abs(_b2[i] - _b2_r2[i]);
+             assertTrue(diff < tol);
+         }
+         
      }
 }
