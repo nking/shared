@@ -57,16 +57,16 @@ public class BlockMatrixIsometric {
             throw new IllegalArgumentException("b size must equal the block size"
                     + " within this instance");
         }
-        if ((blockNumber0 * bSize0) >= getA().length) {
+        if ((blockNumber0 * bSize0) >= a.length) {
             throw new ArrayIndexOutOfBoundsException("blockNumber0 is out of bounds");
         }
-        if ((blockNumber1 * bSize1) >= getA()[0].length) {
+        if ((blockNumber1 * bSize1) >= a[0].length) {
             throw new ArrayIndexOutOfBoundsException("blockNumber1 is out of bounds");
         }
         int start0 = blockNumber0 * bSize0;
         int start1 = blockNumber1 * bSize1;
         for (int i = 0; i < this.bSize0; ++i) {
-            System.arraycopy(b[i], 0, getA()[start0 + i], start1, bSize1);
+            System.arraycopy(b[i], 0, a[start0 + i], start1, bSize1);
         }
     }
     
@@ -99,16 +99,78 @@ public class BlockMatrixIsometric {
             throw new IllegalArgumentException("b size must equal the block size"
                     + " within this instance");
         }
-        if ((blockNumber0 * bSize0) >= getA().length) {
+        if ((blockNumber0 * bSize0) >= a.length) {
             throw new ArrayIndexOutOfBoundsException("blockNumber0 is out of bounds");
         }
-        if ((blockNumber1 * bSize1) >= getA()[0].length) {
+        if ((blockNumber1 * bSize1) >= a[0].length) {
             throw new ArrayIndexOutOfBoundsException("blockNumber1 is out of bounds");
         }
         int start0 = blockNumber0 * bSize0;
         int start1 = blockNumber1 * bSize1;
         for (int i = 0; i < this.bSize0; ++i) {
-            System.arraycopy(getA()[start0 + i], start1, b[i], 0, bSize1);
+            System.arraycopy(a[start0 + i], start1, b[i], 0, bSize1);
+        }
+    }
+    
+    /**
+     * add block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance.
+     * @param b a given block of values to replace a block of this instance with.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void addToBlock(double[][] b, int blockNumber0, int blockNumber1) {
+        if (b.length != bSize0 || b[0].length != bSize1) {
+            throw new IllegalArgumentException("b size must equal the block size"
+                    + " within this instance");
+        }
+        if ((blockNumber0 * bSize0) >= a.length) {
+            throw new ArrayIndexOutOfBoundsException("blockNumber0 is out of bounds");
+        }
+        if ((blockNumber1 * bSize1) >= a[0].length) {
+            throw new ArrayIndexOutOfBoundsException("blockNumber1 is out of bounds");
+        }
+        int start0 = blockNumber0 * bSize0;
+        int start1 = blockNumber1 * bSize1;
+        int i, j;
+        
+        for (i = 0; i < this.bSize0; ++i) {
+            for (j = 0; j < this.bSize1; ++j) {
+                a[start0 + i][start1 + j] += b[i][j];
+            }
+        }
+    }
+    
+    /**
+     * subtract block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance.
+     * @param b a given block of values to replace a block of this instance with.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void subtractFromBlock(double[][] b, int blockNumber0, int blockNumber1) {
+        if (b.length != bSize0 || b[0].length != bSize1) {
+            throw new IllegalArgumentException("b size must equal the block size"
+                    + " within this instance");
+        }
+        if ((blockNumber0 * bSize0) >= a.length) {
+            throw new ArrayIndexOutOfBoundsException("blockNumber0 is out of bounds");
+        }
+        if ((blockNumber1 * bSize1) >= a[0].length) {
+            throw new ArrayIndexOutOfBoundsException("blockNumber1 is out of bounds");
+        }
+        int start0 = blockNumber0 * bSize0;
+        int start1 = blockNumber1 * bSize1;
+        int i, j;
+        
+        for (i = 0; i < this.bSize0; ++i) {
+            for (j = 0; j < this.bSize1; ++j) {
+                a[start0 + i][start1 + j] -= b[i][j];
+            }
         }
     }
 
