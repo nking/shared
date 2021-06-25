@@ -40,7 +40,7 @@ public class BlockMatrixIsometricTest extends TestCase {
         BlockMatrixIsometric mA = new BlockMatrixIsometric(a, b0, b1);
 
         double[][] _a = mA.getA();
-        assertEquals(Arrays.hashCode(a), Arrays.hashCode(_a));
+        assertTrue(Arrays.equals(a, _a));
         
         double[][] b = new double[b0][b1];
         for (i = 0; i < b0; ++i) {

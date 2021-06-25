@@ -114,7 +114,7 @@ public class MatrixUtil {
         if (n == null || n.length == 0) {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
-        if (Arrays.hashCode(n) == Arrays.hashCode(out)) {
+        if (n.toString().equals(out.toString())) {
             throw new IllegalArgumentException("n cannot be the same as out");
         }
         
@@ -2941,4 +2941,5 @@ public class MatrixUtil {
         }
         return out;
     }
+        
 }

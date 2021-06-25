@@ -1,7 +1,9 @@
 package algorithms.matrix;
 
+import algorithms.matrix.LinearEquations.LDM;
 import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
+import algorithms.util.FormatArray;
 import java.util.Arrays;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.NotConvergedException;
@@ -367,4 +369,54 @@ public class LinearEquationsTest extends TestCase {
         System.out.flush();
     }
     
+    public void testLDM() {
+        /*
+        from Golub and van Loan, "Matrix Computations" Example 5.1-1
+        */
+        
+        double[][] a = new double[3][];
+        a[0] = new double[]{10, 10, 20};
+        a[1] = new double[]{20, 25, 40};
+        a[2] = new double[]{30, 50, 61};
+        
+        double[][] ellE = new double[3][];
+        ellE[0] = new double[]{1, 0, 0};
+        ellE[1] = new double[]{2, 1, 0};
+        ellE[2] = new double[]{3, 4, 1};
+        
+        double[] dE = new double[]{10, 5, 1};
+        
+        double[][] mTE = new double[3][];
+        mTE[0] = new double[]{1, 1, 2};
+        mTE[1] = new double[]{0, 1, 0};
+        mTE[2] = new double[]{0, 0, 1};
+        
+        LDM ldm = LinearEquations.LDMDecomposition(a);
+        System.out.printf("L=%s\n", FormatArray.toString(ldm.ell, "%.1f"));
+        System.out.printf("M=%s\n", FormatArray.toString(ldm.m, "%.1f"));
+        System.out.printf("d=%s\n", FormatArray.toString(ldm.d, "%.1f"));
+
+        double diff;
+        double tol = 1e-7;
+        int i, j;
+        
+        assertEquals(ellE.length, ldm.ell.length);
+        assertEquals(ellE[0].length, ldm.ell[0].length);
+        
+        assertEquals(3, ldm.d.length);
+        
+        assertEquals(mTE.length, ldm.m[0].length);
+        assertEquals(mTE[0].length, ldm.m.length);
+     
+        for (i = 0; i < ellE.length; ++i) {
+            diff = Math.abs(dE[i] - ldm.d[i]);
+            assertTrue(diff < tol);
+            for (j = 0; j < ellE[i].length; ++j) {
+                diff = Math.abs(ellE[i][j] - ldm.ell[i][j]);
+                assertTrue(diff < tol);
+                diff = Math.abs(mTE[i][j] - ldm.m[j][i]);
+                assertTrue(diff < tol);
+            }
+        }
+    }
 }

@@ -138,6 +138,71 @@ public class LinearEquations {
     }
     
     /**
+     * for a symmetric matrix A (with real numbers in matrix of size nXn), 
+     * perform and L-D-M decomposition which is a 
+     * variation of L-U decomposition.  If all leading principal sub-matrices of 
+     * A are non-singular then there exist lower unit triangular matrices
+     * L and M and a diagonal matrix D = diag(d1, d2, ...d_n) where d_i = u_i_i.
+     * A = L*D*M^T.
+     * Note that D is non-singular and that M^T = D^-1*U is unit upper triangular.
+     * (A=L*U = L*D*(D^-1*U = L*D*M^T).
+     * <pre>
+     * Once A = L*D*M^T is decomposed, one can solve A*x = b:
+     * L*y = b   (in (n^2)/2 flops
+     * D*z= y    (in n flops)
+     * M^T*x = z (in (n^2)/2 flops)
+     * 
+     * References:
+     * Golub and va Loan, "MAtrix Computations", Section 5.1
+     * </pre>
+     * 2n^3/3 flops.
+     * @param a two dimensional array in row major format.  
+     * a is a symmetric matrix with dimensions n x n.
+     * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
+     * L and M and the diagonal matrix D as a an array of the diagonal.
+     */
+    public static LDM LDMDecomposition(double[][] a) {
+        
+        int n = a.length;
+        
+        assertSquareMatrix(a, "a");
+        
+        // need to have a in row echelon reduced state for this:
+        //assertSymmetrix(a);
+        
+        double[][] ell = MatrixUtil.zeros(n, n);
+        double[][] m = MatrixUtil.zeros(n, n);
+        double[] d = new double[n];
+        
+        int k, i, p;
+        for (k = 1; k <= n; ++k) {
+            d[k-1] = a[k-1][k-1];
+            for (p = 1; p <= (k-1); ++p) {
+                d[k-1] -= (ell[k-1][p-1]*d[p-1]*m[k-1][p-1]);
+            }
+            // error in the 1st edition of Matrix Computations; i=k to n, but they use i=k+1 to n
+            for (i = k/*k+1*/; i <= n; ++i) {
+                
+                ell[i-1][k-1] = a[i-1][k-1];
+                for (p = 1; p <= (k-1); ++p) {
+                    ell[i-1][k-1] -= (ell[i-1][p-1]*d[p-1]*m[k-1][p-1]);
+                }
+                ell[i-1][k-1] /= d[k-1];
+                
+                m[i-1][k-1] = a[k-1][i-1];
+                for (p = 1; p <= (k-1); ++p) {
+                    m[i-1][k-1] -= (ell[k-1][p-1]*d[p-1]*m[i-1][p-1]);
+                }
+                m[i-1][k-1] /= d[k-1];
+            }
+        }
+        
+        LDM ldm = new LDM(ell, d, m);
+        
+        return ldm;
+    }
+    
+    /**
      * an LUP decomposition for a being a square non-singular matrix that tries 
      * to reduce errors due to division by small numbers.  
      * creates a permutation matrix to pivot rows so that the row reduction
@@ -363,6 +428,26 @@ public class LinearEquations {
             this.ell = ell;
             this.u = u;
             this.p = p;
+        }
+    }
+    
+    public static class LDM {
+        double[][] ell;
+        double[] d;
+        double[][] m;
+        public LDM(double[][] ell, double[] d, double[][] m) {
+            this.ell = ell;
+            this.d = d;
+            this.m = m;
+        }
+    }
+    
+    public static class LDL {
+        double[][] ell;
+        double[] d;
+        public LDL(double[][] ell, double[] d) {
+            this.ell = ell;
+            this.d = d;
         }
     }
     
