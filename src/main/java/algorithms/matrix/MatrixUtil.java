@@ -114,6 +114,7 @@ public class MatrixUtil {
         if (n == null || n.length == 0) {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
+        // identity check
         if (n.toString().equals(out.toString())) {
             throw new IllegalArgumentException("n cannot be the same as out");
         }
@@ -359,6 +360,10 @@ public class MatrixUtil {
         }
         if (n == null || n.length == 0) {
             throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        // identity check:
+        if (out.toString().equals(m.toString()) || out.toString().equals(n.toString())) {
+            throw new IllegalArgumentException("out must be a different object than n and m");
         }
         
         int mrows = m.length;

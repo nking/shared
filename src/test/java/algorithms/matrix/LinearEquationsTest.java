@@ -1,12 +1,16 @@
 package algorithms.matrix;
 
+import algorithms.matrix.LinearEquations.LDL;
 import algorithms.matrix.LinearEquations.LDM;
 import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.util.FormatArray;
 import java.util.Arrays;
 import junit.framework.TestCase;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.SVD;
 
 public class LinearEquationsTest extends TestCase { 
     public LinearEquationsTest(String testName) {
@@ -369,7 +373,7 @@ public class LinearEquationsTest extends TestCase {
         System.out.flush();
     }
     
-    public void testLDM() {
+    public void testLDM() throws NotConvergedException {
         /*
         from Golub and van Loan, "Matrix Computations" Example 5.1-1
         */
@@ -390,11 +394,12 @@ public class LinearEquationsTest extends TestCase {
         mTE[0] = new double[]{1, 1, 2};
         mTE[1] = new double[]{0, 1, 0};
         mTE[2] = new double[]{0, 0, 1};
-        
+                
         LDM ldm = LinearEquations.LDMDecomposition(a);
-        System.out.printf("L=%s\n", FormatArray.toString(ldm.ell, "%.1f"));
-        System.out.printf("M=%s\n", FormatArray.toString(ldm.m, "%.1f"));
-        System.out.printf("d=%s\n", FormatArray.toString(ldm.d, "%.1f"));
+        System.out.printf("A=\n%s\n", FormatArray.toString(a, "%.1f"));
+        System.out.printf("L=\n%s\n", FormatArray.toString(ldm.ell, "%.1f"));
+        System.out.printf("M^T=\n%s\n", FormatArray.toString(MatrixUtil.transpose(ldm.m), "%.1f"));
+        System.out.printf("d=\n%s\n", FormatArray.toString(ldm.d, "%.1f"));
 
         double diff;
         double tol = 1e-7;
@@ -418,5 +423,66 @@ public class LinearEquationsTest extends TestCase {
                 assertTrue(diff < tol);
             }
         }
+        
+        double[][] aa = MatrixUtil.multiplyByDiagonal(ldm.ell, ldm.d);
+        MatrixUtil.multiply(aa, MatrixUtil.transpose(ldm.m));
+        
+        System.out.printf("L*D*M^T=\n%s\n", FormatArray.toString(aa, "%.1f"));
+        
+    }
+    
+    public void estLDL() {
+        /*
+        from Golub and van Loan, "Matrix Computations" Example 5.1-2
+        */
+        
+        double[][] a = new double[3][];
+        a[0] = new double[]{10, 20, 30};
+        a[1] = new double[]{20, 45, 80};
+        a[2] = new double[]{30, 80, 171};
+        
+        double[][] ellE = new double[3][];
+        ellE[0] = new double[]{1, 0, 0};
+        ellE[1] = new double[]{2, 1, 0};
+        ellE[2] = new double[]{3, 4, 1};
+        
+        double[] dE = new double[]{10, 5, 1};
+        
+        System.out.printf("A=\n%s\n", FormatArray.toString(a, "%.1f"));
+        
+        LDL ldl = LinearEquations.LDLDecomposition(a);
+        System.out.printf("L=%s\n", FormatArray.toString(ldl.getL(), "%.1f"));
+        System.out.printf("d=%s\n", FormatArray.toString(ldl.getD(), "%.1f"));
+        System.out.printf("A=\n%s\n", FormatArray.toString(a, "%.1f"));
+        
+        double diff;
+        double tol = 1e-7;
+        int i, j;
+        
+        assertEquals(ellE.length, ldl.getL().length);
+        assertEquals(ellE[0].length, ldl.getL()[0].length);
+        
+        assertEquals(3, ldl.getD().length);
+        
+        for (i = 0; i < ellE.length; ++i) {
+            diff = Math.abs(dE[i] - ldl.getD()[i]);
+            assertTrue(diff < tol);
+            for (j = 0; j < ellE[i].length; ++j) {
+                diff = Math.abs(ellE[i][j] - ldl.getL()[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+        double[][] aa = MatrixUtil.multiplyByDiagonal(ldl.getL(), ldl.getD());
+        MatrixUtil.multiply(aa, MatrixUtil.transpose(ldl.getL()));
+        
+        System.out.printf("L*D*L^T=\n%s\n", FormatArray.toString(aa, "%.1f"));
+        /*
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < ellE[i].length; ++j) {
+                diff = Math.abs(a[i][j] - aa[i][j]);
+                assertTrue(diff < tol);
+            }
+        }*/
     }
 }

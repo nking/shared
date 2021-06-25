@@ -201,6 +201,71 @@ public class LinearEquations {
         
         return ldm;
     }
+        
+    /**
+     * for a nonsingular symmetric matrix A (with real numbers in matrix of size nXn), 
+     * perform and L-D-L decomposition which is a 
+     * variation of L-U decomposition.  Computes a unit lower triangular matrix
+     * L and a diagonal matrix D = diag(d1, d2, ...d_n) such that
+     * A = L*D*L^T.
+     * <pre>
+     * 
+     * References:
+     * Golub and va Loan, "Matrix Computations", Algorithm 5.1.2
+     * </pre>
+     * n^3/6 flops.
+     * @param a two dimensional array in row major format.  
+     * a is a symmetric matrix with dimensions n x n.
+     * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
+     * L and M and the diagonal matrix D as a an array of the diagonal.
+     */
+    public static LDL LDLDecomposition(double[][] a) {
+        
+        int n = a.length;
+        
+        assertSquareMatrix(a, "a");
+        
+        double eps = 1e-7;
+        
+        // need to have a in row echelon reduced state for this:
+        //assertSymmetrix(a);
+        
+        //NOTE: if need to conserve memory, can remove the copy statement,
+        //    and add to javadoc comments that a is modified in place.
+        a = MatrixUtil.copy(a);
+        double[] r = new double[n];
+        double[] d = new double[n];
+        
+        int k, i, p;
+        for (k = 1; k <= n; ++k) {
+            for (p = 1; p <= (k-1); ++p) {
+                r[p-1] = d[p-1]*a[k-1][p-1];
+            }
+            d[k-1] = a[k-1][k-1];
+            for (p = 1; p <= (k-1); ++p) {
+                d[k-1] -= a[k-1][p-1]*r[p-1];
+            }
+            if (Math.abs(d[k-1]) < eps) {
+                return null;
+            }
+            for (i = k; i <= n; ++i) {
+                for (p = 1; p <= (k-1); ++p) {
+                    a[i-1][k-1] -= a[i-1][p-1]*r[p-1];
+                }
+                a[i-1][k-1] /= d[k-1];
+            }
+        }
+        
+        for (i = 0; i < n; ++i) {
+            for (k = i+1; k < n; ++k) {
+                a[i][k] = 0;
+            }
+        }
+        
+        LDL ld = new LDL(a, d);
+        
+        return ld;
+    }
     
     /**
      * an LUP decomposition for a being a square non-singular matrix that tries 
@@ -431,6 +496,9 @@ public class LinearEquations {
         }
     }
     
+    /**
+     * lower triangular portion of A = L * D * M^T
+     */
     public static class LDM {
         double[][] ell;
         double[] d;
@@ -443,11 +511,25 @@ public class LinearEquations {
     }
     
     public static class LDL {
-        double[][] ell;
-        double[] d;
+        private double[][] ell;
+        private double[] d;
         public LDL(double[][] ell, double[] d) {
             this.ell = ell;
             this.d = d;
+        }
+
+        /**
+         * @return the L
+         */
+        public double[][] getL() {
+            return ell;
+        }
+
+        /**
+         * @return the d
+         */
+        public double[] getD() {
+            return d;
         }
     }
     
