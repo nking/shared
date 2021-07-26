@@ -1527,6 +1527,23 @@ public class MatrixUtil {
         return m;
     }
     
+    public static void copy(double[][] source, double[][] destination) {
+        
+        int m = source.length;
+        int n = source[0].length;
+        
+        if (destination.length != m) {
+            throw new IllegalArgumentException("destination.length must equal source.length");
+        }
+        if (destination[0].length != n) {
+            throw new IllegalArgumentException("destination[0].length must equal source[0].length");
+        }
+        
+        for (int i = 0; i < source.length; ++i) {
+            System.arraycopy(source[i], 0, destination[i], 0, n);
+        }        
+    }
+    
     /**
      * 
      * @param a
@@ -1842,6 +1859,23 @@ public class MatrixUtil {
         return sum;
     }
     
+    public static double frobeniusNorm(double[][] a) {
+        double sum = 0;
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                sum += a[i][j];
+            }
+        }
+        return sum;
+    }
+    
+    public static double spectralNorm(double[][] r) throws NotConvergedException {
+        SVDProducts svd = performSVDATransposeA(r);
+        double norm = Math.sqrt(svd.s[0]);
+        return norm;
+    }
+    
     /**
      * normalize vector v by power p, that is the (1/p) power of sum of 
      * its (components)^p.  notation is sometimes ||v||_p.
@@ -1894,6 +1928,8 @@ public class MatrixUtil {
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power
      * method isn't the right method (consider QR or SVD).
+     * TODO:consider implementing the inverse power method also to determine the
+     * smallest eigenvalue and its eigenvector
      * @param a
      * @param nIterations
      * @return 

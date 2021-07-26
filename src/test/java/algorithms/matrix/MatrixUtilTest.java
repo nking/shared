@@ -1172,4 +1172,32 @@ public class MatrixUtilTest extends TestCase {
          }
          
      }
+     
+     public void testCopy() {
+        double[][] a = new double[2][];
+        a[0] = new double[]{0, 1, 2, 3};
+        a[1] = new double[]{4, 5, 6, 7};
+        double[][] b = new double[2][];
+        b[0] = new double[]{0, 10, 20, 30};
+        b[1] = new double[]{40, 50, 60, 70};
+        
+        double[][] ac = MatrixUtil.copy(a);
+        int i, j;
+        double diff;
+        double tol = 1e-11;
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                diff = Math.abs(ac[i][j] - a[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+        MatrixUtil.copy(b, ac);
+        for (i = 0; i < b.length; ++i) {
+            for (j = 0; j < b[i].length; ++j) {
+                diff = Math.abs(ac[i][j] - b[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+     }
 }

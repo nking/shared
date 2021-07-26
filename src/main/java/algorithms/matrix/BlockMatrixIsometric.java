@@ -1,5 +1,7 @@
 package algorithms.matrix;
 
+import java.util.Arrays;
+
 /**
  * a class to hold a matrix that is partitioned into blocks of the same size.
  * @author nichole
@@ -40,6 +42,20 @@ public class BlockMatrixIsometric {
         this.a = a;
         this.bSize0 = bSize0;
         this.bSize1 = bSize1;
+    }
+    
+    /**
+     * set all values to 0
+     */
+    public void reset() {
+        fill(0);
+    }
+    
+    void fill(double value) {
+        int i;
+        for (i = 0; i < a.length; ++i) {
+            Arrays.fill(a[i], value);
+        }
     }
     
     /**
@@ -173,7 +189,37 @@ public class BlockMatrixIsometric {
             }
         }
     }
-
+    
+    public BlockMatrixIsometric copy() {
+        BlockMatrixIsometric c = new BlockMatrixIsometric(a, bSize0, bSize1);
+        c.set(this);
+        return c;
+    }
+    
+    /**
+     * set internal contents to equal those of the given b where b has the
+     * same dimensions and block size.
+     * @param b 
+     */
+    public void set(BlockMatrixIsometric b) {
+        if (b.a.length != a.length) {
+            throw new IllegalArgumentException("");
+        }
+        if (b.a[0].length != a[0].length) {
+            throw new IllegalArgumentException("");
+        }
+        if (b.bSize0 != bSize0) {
+            throw new IllegalArgumentException("");
+        }
+        if (b.bSize1 != bSize1) {
+            throw new IllegalArgumentException("");
+        }
+        int i;
+        for (i = 0; i < a.length; ++i) {
+            System.arraycopy(b.a[i], 0, a[i], 0, a[i].length);
+        }
+    }
+    
     /**
      * get the entire matrix of this instance.  Note that this is a reference
      * to the instance and is not a copy of it, so modifications of the

@@ -431,7 +431,7 @@ public class LinearEquationsTest extends TestCase {
         
     }
     
-    public void estLDL() {
+    public void testLDL() {
         /*
         from Golub and van Loan, "Matrix Computations" Example 5.1-2
         */

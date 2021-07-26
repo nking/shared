@@ -1,6 +1,5 @@
 package algorithms.matrix;
 
-import algorithms.util.FormatArray;
 import java.util.Arrays;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.DenseVector;

@@ -132,4 +132,59 @@ public class BlockMatrixIsometricTest extends TestCase {
         
     }
     
+    public void testCopySet() {
+        /*
+        a = | 0  1  2  3  |
+            | 4  5  6  7  |
+        b = | 0  10 20 30 |
+            | 40 50 60 70 |
+        blockSize0 = 1, blockSize2 = 2
+        */
+        double[][] a = new double[2][];
+        a[0] = new double[]{0, 1, 2, 3};
+        a[1] = new double[]{4, 5, 6, 7};
+        double[][] b = new double[2][];
+        b[0] = new double[]{0, 10, 20, 30};
+        b[1] = new double[]{40, 50, 60, 70};
+        
+        BlockMatrixIsometric ba = new BlockMatrixIsometric(a, 1, 2);
+        BlockMatrixIsometric bb = new BlockMatrixIsometric(b, 1, 2);
+        
+        BlockMatrixIsometric ba2 = ba.copy();
+        assertEquals(ba.getBlockSize0(), ba2.getBlockSize0());
+        assertEquals(ba.getBlockSize1(), ba2.getBlockSize1());
+        assertEquals(ba.getA().length, ba2.getA().length);
+        assertEquals(ba.getA()[0].length, ba2.getA()[0].length);
+        
+        int i, j;
+        double diff;
+        double tol = 1e-11;
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                diff = Math.abs(ba.getA()[i][j] - ba2.getA()[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+        ba.set(bb);
+        assertEquals(bb.getBlockSize0(), ba.getBlockSize0());
+        assertEquals(bb.getBlockSize1(), ba.getBlockSize1());
+        assertEquals(bb.getA().length, ba.getA().length);
+        assertEquals(bb.getA()[0].length, ba.getA()[0].length);
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                diff = Math.abs(ba.getA()[i][j] - bb.getA()[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+        ba.reset();
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                diff = Math.abs(ba.getA()[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+    }
+    
 }
