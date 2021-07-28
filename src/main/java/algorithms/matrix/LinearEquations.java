@@ -220,7 +220,7 @@ public class LinearEquations {
         
         assertSquareMatrix(a, "a");
         
-        assertPositiveDefinite(a, "a");
+        //assertPositiveDefinite(a, "a");
         
         LDL ldl = LDLDecomposition(a);
         
