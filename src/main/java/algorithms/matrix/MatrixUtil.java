@@ -7,8 +7,6 @@ import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.LowerSymmDenseMatrix;
 import no.uib.cipr.matrix.LowerTriangDenseMatrix;
@@ -16,8 +14,6 @@ import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.QR;
-import no.uib.cipr.matrix.RQ;
 import no.uib.cipr.matrix.SVD;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 

@@ -485,4 +485,32 @@ public class LinearEquationsTest extends TestCase {
             }
         }*/
     }
+    
+    public void testCholeskyDecomposition() {
+        // example 5.2-1 from Golub & Van Loan, "Matrix Computations"
+        
+        double[][] a  = new double[2][];
+        a[0] = new double[]{2, -2};
+        a[1] = new double[]{-2, 5};
+        
+        double[][] G = LinearEquations.choleskyDecompositionViaLDL(a);
+        
+        double[][] expectedG = new double[2][];
+        expectedG[0] = new double[]{Math.sqrt(2), 0};
+        expectedG[1] = new double[]{-Math.sqrt(2), Math.sqrt(3)};
+        
+        double tol = 1e-3;
+        double diff;
+        int i, j;
+        
+        assertEquals(expectedG.length, G.length);
+        assertEquals(expectedG[0].length, G[0].length);
+        for (i = 0; i < G.length; ++i) {
+            for (j = 0; j < G[0].length; ++j) {
+                diff = Math.abs(G[i][j] - expectedG[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        
+    }
 }

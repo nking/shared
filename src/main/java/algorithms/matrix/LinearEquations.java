@@ -200,6 +200,39 @@ public class LinearEquations {
         
         return ldm;
     }
+    
+    /**
+     * compute the cholesky decomposition for symmetric positive definite matrix
+     * a.
+     * reference:
+     * golub & van loan "matrix computations, theorem 5.2-3.
+     * This method uses LDL decomposition to compute G in 
+     * a = G*G^T where G is a lower triangular matrix with positive
+    * diagonal entries.
+    * TODO: consider implementing algorithm 5.2-1 also.
+     * @param a symmetric positive definite matrix 
+     * @return lower triangular matrix G  which G is a lower triangular matrix with positive
+    * diagonal entries.  a = G*G^T.
+    */
+    public static double[][] choleskyDecompositionViaLDL(double[][] a) {
+        
+        int n = a.length;
+        
+        assertSquareMatrix(a, "a");
+        
+        assertPositiveDefinite(a, "a");
+        
+        LDL ldl = LDLDecomposition(a);
+        
+        double[] d = Arrays.copyOf(ldl.getD(), ldl.getD().length);
+        for (int i = 0; i < d.length; ++i) {
+            d[i] = Math.sqrt(d[i]);
+        }
+        double[][] g = MatrixUtil.multiplyByDiagonal(ldl.getL(), d);
+        
+        return g;
+    }
+            
         
     /**
      * for a nonsingular symmetric matrix A (with real numbers in matrix of size nXn), 
@@ -536,6 +569,13 @@ public class LinearEquations {
         int n = a.length;
         if (a[0].length != n) {
             throw new IllegalArgumentException(name + " must be a square matrix");
+        }
+    }
+    
+    private static void assertPositiveDefinite(double[][] a, String name) {
+        int n = a.length;
+        if (!MatrixUtil.isPositiveDefinite(a)) {
+            throw new IllegalArgumentException(name + " must be a positive definite matrix");
         }
     }
 
