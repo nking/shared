@@ -489,11 +489,13 @@ public class LinearEquationsTest extends TestCase {
     public void testCholeskyDecomposition() {
         // example 5.2-1 from Golub & Van Loan, "Matrix Computations"
         
+        double eps = 1e-7;
+        
         double[][] a  = new double[2][];
         a[0] = new double[]{2, -2};
         a[1] = new double[]{-2, 5};
         
-        double[][] G = LinearEquations.choleskyDecompositionViaLDL(a);
+        double[][] G = LinearEquations.choleskyDecompositionViaLDL(a, eps);
         
         double[][] expectedG = new double[2][];
         expectedG[0] = new double[]{Math.sqrt(2), 0};
