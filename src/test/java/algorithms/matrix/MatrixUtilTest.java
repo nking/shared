@@ -8,6 +8,7 @@ import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.DenseCholesky;
 import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.LowerSymmDenseMatrix;
 import no.uib.cipr.matrix.LowerTriangDenseMatrix;
 import no.uib.cipr.matrix.Matrices;
@@ -1200,4 +1201,46 @@ public class MatrixUtilTest extends TestCase {
             }
         }
      }
+     
+     public void testPSD() throws NotConvergedException {
+        
+         System.out.println("testPSD");
+         
+        // see https://nhigham.com/2020/07/21/what-is-a-symmetric-positive-definite-matrix/
+        // when positive definite, all a[i][i] > 0
+        //    and the eigenvalues of A are all positive
+        //    ... many more
+        // and given a vector x, x^T*A*x > 0
+        //   the later happens when the diagonal has positive diagonal elements 
+        //   and is diagonally dominant, that is, a[i][i] > summation_over_i_except_for_i==j( |a[i][j]| )
+        double[][] a = new double[5][];
+        a[0] = new double[]{0, 1, 2, 3, 4};
+        a[1] = new double[]{1, 0, 1, 2, 3};
+        a[2] = new double[]{2, 1, 0, 1, 2};
+        a[3] = new double[]{3, 2, 1, 0, 1};
+        a[4] = new double[]{4, 3, 2, 1, 0};
+        
+        double eps = 1.1e-10;
+        
+        double[][] aPSD = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(a, eps);
+        
+        double[][] aPSD2 = MatrixUtil.nearestPositiveSemidefiniteToA(a, eps);
+        
+        System.out.printf("aPSD=\n%s\n", FormatArray.toString(aPSD, "%.5e"));
+        System.out.printf("aPSD2=\n%s\n", FormatArray.toString(aPSD2, "%.5e"));
+        
+        double[][] g = LinearEquations.choleskyDecompositionViaLDL(aPSD, eps);
+        System.out.printf("chol(aPSD)=\n%s\n", FormatArray.toString(g, "%.5e"));
+        
+        EVD evd1 = EVD.factorize(new DenseMatrix(a));
+        EVD evd2 = EVD.factorize(new DenseMatrix(aPSD));
+        EVD evd3 = EVD.factorize(new DenseMatrix(aPSD2));
+        EVD evd4 = EVD.factorize(new DenseMatrix(g));
+        
+        System.out.printf("eig(a)=\n%s\n", FormatArray.toString(evd1.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(aPSD)=\n%s\n", FormatArray.toString(evd2.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(aPSD2)=\n%s\n", FormatArray.toString(evd3.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(g)=\n%s\n", FormatArray.toString(evd4.getRealEigenvalues(), "%.5e"));
+    }
+
 }

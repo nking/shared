@@ -8,12 +8,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.LowerSymmDenseMatrix;
 import no.uib.cipr.matrix.LowerTriangDenseMatrix;
 import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.QR;
 import no.uib.cipr.matrix.SVD;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 
@@ -1100,7 +1102,15 @@ public class MatrixUtil {
     */
     
     /**
-     * calculate the pseudo-inverse of matrix a, using the SVD of a,
+     * calculate the pseudo-inverse of matrix a for cases when the rank of a
+     * is less than the width of matrix a.
+     * Note that the term rank can be deceptive for cases when the 
+     * original matrix a was rank deficient and then is perturbed to become
+     * a full rank matrix leading to possibility of larger errors when treated as full rank.
+     * the term rank deficient can be replaced by the ter numerically rank deficient.
+     * (see Bjork 1991 Section 2, "Algorithms for linear least squares problems"
+     * and Chap 6 of Golub & Van Loan).
+     * This method uses the SVD of a,
      * specifically, V*R*U^T where R is 1/diagonal of S for cases where
      * rank .leq. m or rank .leq. n where mXn are the dimensions of matrix a.
      * Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
@@ -1363,6 +1373,20 @@ public class MatrixUtil {
         
     }
     
+    /**
+     * performs SVD on matrix a and if fails to converge, performs SVD on
+     * a*a^T and a^T*a separately to get the factorization components for a.
+     * <pre>
+          SVD(A).U == SVD(A^T).V == SVD(AA^T).U == SVD(AA^T).V
+            
+          SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U 
+          
+          SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
+              and sqrt( SVD(A^TA) eigenvalues )
+       </pre>
+     * @param a
+     * @return 
+     */
     public static SVDProducts performSVD(double[][] a) throws NotConvergedException {
         return performSVD(new DenseMatrix(a));
     }
@@ -1447,6 +1471,29 @@ public class MatrixUtil {
         out.vT = MatrixUtil.convertToRowMajor(vT);
         out.s = sDiag;
         return out;
+    }
+    
+    /**
+     * perform QR decomposition (a.k.a. Francis algorithm, a.k.a. Francis QR step)
+     * on matrix a using the MTJ library.
+     * It's a sophisticated version of the "power method".
+     * A = Q*R of an orthogonal matrix Q and an upper triangular matrix R.
+     * The columns of Q are the eigenvectors of A.
+     * A*Q = Q * diag(eigenvalues of A).
+     * 
+     * <pre>
+     * To calculate the product of eigenvalue or singular values using
+     * QR, see section "Connection to a determinant or a product of eigenvalues"
+     * in wikipedia:
+     * https://en.wikipedia.org/wiki/QR_decomposition
+     * </pre>
+     * 
+     * @param a a square or rectangular matrix.
+     * @return 
+     */
+    public static QR performQRDecomposition(double[][] a) {
+        QR qr = QR.factorize(new DenseMatrix(a));
+        return qr;
     }
     
     /**
@@ -1841,6 +1888,58 @@ public class MatrixUtil {
     }
     
     /**
+     * calculate the condition number as the largest singular value divided
+     * by the singular value for i==(rank-1) of A where the singular values are
+     * found using the SVD.
+     * 
+     * from https://blogs.mathworks.com/cleve/2017/07/17/what-is-the-condition-number-of-a-matrix/
+     * A condition number for a matrix and computational task measures how 
+     * sensitive the answer is to perturbations in the input data and to roundoff 
+     * errors made during the solution process....If a matrix is singular, 
+     * then its condition number is infinite.
+     * ...(A large condition number means that the matrix is close to being singular).
+     * 
+     * 
+     * @param a
+     * @return 
+     */
+    public static double conditionNumber(double[][] a) throws NotConvergedException {
+        
+        SVDProducts svd = performSVD(a);
+        int rm1 = -1;
+        for (int i = 0; i < svd.s.length; ++i) {
+            if (svd.s[i] > 0) {
+                rm1 = i;
+            }
+        }
+        if (rm1 == -1) {
+            throw new IllegalStateException("all singular values of a are 0");
+        }
+        double c = svd.s[0]/svd.s[rm1];
+        
+        return c;
+    }
+    
+    /**
+     * determine the rank of a using the SVD.
+     * @param a
+     * @return
+     * @throws NotConvergedException 
+     */
+    public static double rank(double[][] a) throws NotConvergedException {
+        
+        SVDProducts svd = performSVD(a);
+        int rm1 = -1;
+        for (int i = 0; i < svd.s.length; ++i) {
+            if (svd.s[i] > 0) {
+                rm1 = i;
+            }
+        }
+        
+        return rm1+1;
+    }
+    
+    /**
      * summation = the (1/p) power of sum of 
      * its (components)^p.
      * @param v
@@ -1855,12 +1954,22 @@ public class MatrixUtil {
         return sum;
     }
     
+    /**
+     * calculate the Frobenius Norm of matrix a.
+     * It's the square root of the sum of squares of each element.
+     * It can also be calculated as the square root of the
+     * trace of a_conjugate*a, or as
+     * the square root of the sums of the squares of the singular
+     * values of a.
+     * @param a
+     * @return 
+     */
     public static double frobeniusNorm(double[][] a) {
         double sum = 0;
         int i, j;
         for (i = 0; i < a.length; ++i) {
             for (j = 0; j < a[i].length; ++j) {
-                sum += a[i][j];
+                sum += (a[i][j]*a[i][j]);
             }
         }
         return sum;
@@ -1870,6 +1979,129 @@ public class MatrixUtil {
         SVDProducts svd = performSVDATransposeA(r);
         double norm = Math.sqrt(svd.s[0]);
         return norm;
+    }
+    
+    /**
+     * Given a symmetric matrix and a nonnegative number eps, find the
+     * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
+     * <pre>
+     * References:
+     * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
+     * Cheng and Higham, 1998
+     * 
+     * </pre>
+     * @param a a symmetric matrix
+     * @param eps
+     * @return 
+     */
+    public static double[][] nearestPositiveSemidefiniteToASymmetric(double[][] a,
+        double eps) throws NotConvergedException {
+        
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("a must b a square matrix");
+        }
+        
+        // TODO: fix the test for symmetric and use it here
+         
+        // uses the Frobenius norm as a distinace.  notation: ||A||_F
+        
+        // spectral decomposition 
+        //  X = Q * diag(tau_i) * Q^T
+        //    where tau_i = {    lambda_i for lambda_i >= eps
+        //                  { or eps_i    for lambda_i <  eps
+        //        where lambda_i are the eigenvalues of A
+        
+        EVD evd = EVD.factorize(new DenseMatrix(a));
+        double[][] leftEV = MatrixUtil.convertToRowMajor(evd.getLeftEigenvectors());
+        
+        double[] tau = Arrays.copyOf(evd.getRealEigenvalues(), 
+            evd.getRealEigenvalues().length);
+        
+        int i;
+        for (i = 0; i < tau.length; ++i) {
+            if (tau[i] < eps) {
+                tau[i] = eps;
+            }
+        }
+        
+        double[][] aPSD = MatrixUtil.multiplyByDiagonal(leftEV, tau);
+        aPSD = MatrixUtil.multiply(aPSD, MatrixUtil.transpose(leftEV));
+        
+        /*
+        // another solution for X uses polar decomposition B = UH, 
+        //     where U is orthogonal (U*U^T=I)
+        //     and H is symmetric positive definite (H = H^T >= 0)
+        //         (with H = Q * diag(lambda_i) * Q^T.
+        //         (where Q is svd.v)
+        //
+        //   since A is symmetric): 
+        //   answer is X_F = (A + H)/2
+        
+        // can use polar decompositon on square matrices:
+        double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));
+        MatrixUtil.multiply(b, 0.5);
+        
+        QH qh = performPolarDecomposition(b);
+        
+        //X_F:
+        double[][] aPSD2 = MatrixUtil.elementwiseAdd(a, qh.h);
+        MatrixUtil.multiply(aPSD2, 0.5);
+        */
+        
+        return aPSD;
+    }
+    
+    /**
+     * Given a matrix a that is not necessarily symmetric,
+     * and a nonnegative number eps, find the
+     * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
+     * <pre>
+     * References:
+     * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
+     * 
+     * </pre>
+     * @param a a square matrix which can be non-symmetric.
+     * @param eps
+     * @return 
+     */
+    public static double[][] nearestPositiveSemidefiniteToA(double[][] a,
+        double eps) throws NotConvergedException {
+        
+        // uses the Frobenius norm as a distinace
+        
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("a must b a square matrix");
+        }
+        
+        // TODO: fix the test for symmetric
+        
+        errors here
+        
+        // uses the Frobenius norm as a distinace.  notation: ||A||_F
+        
+        //     the symmetric part of A is matrix B = 0.5*(A + A^T)
+        //     the skew-symmetric part of A is matrix C = 0.5*(A - A^T)
+        //                          note that C = -C^T.
+        
+        // another solution for X uses polar decomposition B = UH, 
+        //     where U is orthogonal (U*U^T=I)
+        //     and H is symmetric positive definite (H = H^T >= 0)
+        //         (with H = Q * diag(lambda_i) * Q^T.
+        //
+        //   since A is symmetric): 
+        //   answer is X_F = (A + H)/2
+        
+        // can use polar decompositon on square matrices:
+        double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));
+        MatrixUtil.multiply(b, 0.5);
+        
+        QH qh = performPolarDecomposition(b);
+        
+        //X_F:
+        double[][] aPSD = MatrixUtil.elementwiseAdd(a, qh.h);
+        MatrixUtil.multiply(aPSD, 0.5);
+        
+        return aPSD;        
     }
     
     /**
@@ -1926,7 +2158,7 @@ public class MatrixUtil {
      * method isn't the right method (consider QR or SVD).
      * TODO:consider implementing the inverse power method also to determine the
      * smallest eigenvalue and its eigenvector
-     * @param a
+     * @param a a positive definite matrix
      * @param nIterations
      * @return 
      */
@@ -1984,7 +2216,7 @@ public class MatrixUtil {
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power
      * method isn't the right method (consider QR or SVD).
-     * @param a
+     * @param a a positive definite matrix
      * @param tolerance iterations are stopped when the current multiplication vector
      * difference from previous is smaller than tolerance for each item.
      * @param x an initialized vector of size a.length that will be filled by
@@ -2050,7 +2282,7 @@ public class MatrixUtil {
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power
      * method isn't the right method (consider QR or SVD).
-     * @param a
+     * @param a a positive definite matrix
      * @param tolerance iterations are stopped when the current multiplication vector
      * difference from previous is smaller than tolerance for each item.
      * @return 
@@ -2068,7 +2300,7 @@ public class MatrixUtil {
      * of random values between [0 and 1).
      * The method follows "Mining of Massive Datasets" by Leskovec, Rajaraman,
      * and Ullman.  http://www.mmds.org/
-     * @param a
+     * @param a a positive definite matrix
      * @param tolerance iterations are stopped when the current multiplication vector
      * difference from previous is smaller than tolerance for each item.
      * @return an array of a.length eigenvectors
@@ -2321,6 +2553,7 @@ public class MatrixUtil {
         
         when a symmetric nxn matrix has 1 of these 4, it has all 4:
             1) both eigenvectors are positive
+               Note: mathworks recommends a tolerance for error, so all eigenvalues > tolerance above 0.
             2) all upper left determinants (the 1x1 and 2x2 ... ) are positive
             3) the pivots are positive a>0 and a*c-b^2>0
             4) the function x^T * A * x is positive except at x = 0
@@ -2978,5 +3211,151 @@ public class MatrixUtil {
         }
         return out;
     }
+     
+    /**
+     * calculate a pre-conditoner matrix based upon the matrix U in
+     * the decompositon P*A = L*U where P is a permutation matrix,
+     * L is a lower triangular matrix, U is an upper triangular matrix.
+     * 
+     * see Bjork 1991 Section 4.3, "Algorithms for linear least squares problems",
+     * especially the end of the section.
+     * 
+     * from wikipedia:
+     * LU factorization with partial pivoting: It turns out that a proper 
+     * permutation in rows (or columns) is sufficient for LU factorization. 
+     * LU factorization with partial pivoting (LUP) refers often to LU 
+     * factorization with row permutations only.
+     * 
+     * The choice of a good preconditioner may improve the speed of an iterative
+     * method.
+     * 
+     * Note that if matrix a has full rank, the ideal choice of a preconditioner
+     * is instead of this method's results, is to use the Cholesky factor of 
+     * A^T*A. 
+     * Note that another preconditioner uses the columns of a to form a diagonal
+     * matrix:   D^(1/2) = diag( sqrt(d_1), ... sqrt(d_n)) where 
+     *   d_j = (||a_j||_2)^2  where a_j is column j of a.
+     * <pre>
+     * using a preconditioner involves reforming A*x = b into
+     * A * (M^-1) * y = b, solve for y
+     * and M * x = y, solve for x.
+     * 
+     * Or the left precondition:
+     *   (M^-1) * (A*x - b) = 0
+     * 
+     * </pre>
+     * 
+     * @param a and m X n matrix
+     * @return matrix with dimensions of a^T
+     * @throws NotConvergedException 
+     */
+    public static double[][] calculatePreconditionerFromLUP(double[][] a) throws NotConvergedException {
         
+        LUP lup = LinearEquations.LUPDecomposition(a);
+        
+        return lup.u;
+    }
+    
+    /**
+     * calculate a pre-conditoner matrix based upon the columns of matrix a to 
+     * form a diagonal matrix:   D^(1/2) = diag( sqrt(d_1), ... sqrt(d_n)) where 
+     *   d_j = (||a_j||_2)^2  where a_j is column j of a.
+     * 
+     * see Bjork 1991 Section 4.3, "Algorithms for linear least squares problems",
+     * especially the end of the section.
+     * 
+     * from wikipedia:
+     * LU factorization with partial pivoting: It turns out that a proper 
+     * permutation in rows (or columns) is sufficient for LU factorization. 
+     * LU factorization with partial pivoting (LUP) refers often to LU 
+     * factorization with row permutations only.
+     * 
+     * The choice of a good preconditioner may improve the speed of an iterative
+     * method.
+     * 
+     * Note that if matrix a has full rank, the ideal choice of a preconditioner
+     * is instead of this method's results, is to use the Cholesky factor of 
+     * A^T*A. 
+     * 
+     * <pre>
+     * using a preconditioner involves reforming A*x = b into
+     * A * (M^-1) * y = b, solve for y
+     * and M * x = y, solve for x.
+     * 
+     * Or the left precondition:
+     *   (M^-1) * (A*x - b) = 0
+     * 
+     * </pre>
+     * 
+     * @param a and m X n matrix
+     * @return matrix with dimensions of a^T
+     * @throws NotConvergedException 
+     */
+    public static double[][] calculatePreconditionerFromColumns(double[][] a) throws NotConvergedException {
+        int m = a.length;
+        int n = a[0].length;
+        /*
+        D^(1/2) = diag( sqrt(d_1), ... sqrt(d_n)) where 
+        d_j = (||a_j||_2)^2  where a_j is column j of a.
+        */
+        int j, i;
+        double[][] diag = MatrixUtil.zeros(n, n);
+        
+        for (j = 0; j < n; ++j) {
+            for (i = 0; i < m; ++i) {
+                diag[j][j] += (a[i][j] + a[i][j]);
+            }
+            diag[j][j] = Math.sqrt(diag[j][j]);
+        }
+        
+        return diag;
+    }
+    
+    /**
+     * perform a polar decomposition on square matrix a.
+     * A = Q*H where Q is orthogonal and H is a symmetric positive semidefinite matrix.  
+     If A is invertible, then H is symmetric positive definite.
+     The method follows Strang "Introduction to Linear Algebra" Chapter 7 section G.
+     * @param a square matrix
+     * @return 
+     */
+    public static QH performPolarDecomposition(double[][] a) throws NotConvergedException {
+        
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("a must b a square matrix");
+        }
+        
+        SVDProducts svd = performSVD(a);
+        
+        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);
+        
+        double[][] v = MatrixUtil.transpose(svd.vT);
+        
+        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);
+        h = MatrixUtil.multiply(h, svd.vT);
+        
+        QH qh = new QH();
+        qh.q = q;
+        qh.h = h;
+        
+        return qh;
+    }
+    
+    /**
+     * a class to hold the results of a polar decomposition
+     */
+    public static class QH {
+        
+        /**
+         * Q is an orthogonal matrix
+         */
+        public double[][] q;
+        
+        /**
+         * H is a symmetric positive semidefinite matrix.  
+         * If the decomposed matrix A is invertible, then H is
+         * symmetric positive definite.
+         */
+        public double[][] h;
+    }
 }

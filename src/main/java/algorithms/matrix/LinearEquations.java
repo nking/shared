@@ -6,6 +6,14 @@ import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**
+ a class of utility methods for linear algebra.
+ <pre>
+ note, for solving linear least squares problems, a good resource aside
+ * from Strang, Golub & van Loan, and Cormen et al. is:
+ “Algorithms for Linear Least Squares Problems”, 
+ Bj̈orck 1991, published in Computer Algorithms for Solving Linear Algebraic Equations;
+ The State of the Art., Vol. 77 of NATO-ASI Series F: Computer and Systems Sciences, pages 57–92.
+ </pre>
    LUPSolve, __, and __ follow
    pseudocode from Cormen, Leiserson, Rivest, and Stein, "Introduction to
    Computer Algorithms".
@@ -211,10 +219,11 @@ public class LinearEquations {
     * diagonal entries.
     * TODO: consider implementing algorithm 5.2-1 also.
      * @param a symmetric positive definite matrix 
+     * @param eps value for an error tolerance around zero used in the LDL decompositon.
      * @return lower triangular matrix G  which G is a lower triangular matrix with positive
     * diagonal entries.  a = G*G^T.
     */
-    public static double[][] choleskyDecompositionViaLDL(double[][] a) {
+    public static double[][] choleskyDecompositionViaLDL(double[][] a, double eps) {
         
         int n = a.length;
         
@@ -222,7 +231,7 @@ public class LinearEquations {
         
         //assertPositiveDefinite(a, "a");
         
-        LDL ldl = LDLDecomposition(a);
+        LDL ldl = LDLDecomposition(a, eps);
         
         double[] d = Arrays.copyOf(ldl.getD(), ldl.getD().length);
         for (int i = 0; i < d.length; ++i) {
@@ -232,8 +241,7 @@ public class LinearEquations {
         
         return g;
     }
-            
-        
+       
     /**
      * for a nonsingular symmetric matrix A (with real numbers in matrix of size nXn), 
      * perform and L-D-L decomposition which is a 
@@ -252,13 +260,34 @@ public class LinearEquations {
      * L and M and the diagonal matrix D as a an array of the diagonal.
      */
     public static LDL LDLDecomposition(double[][] a) {
+        double eps = 1.e-7;
+        return LDLDecomposition(a, eps);
+    }
+        
+    /**
+     * for a nonsingular symmetric matrix A (with real numbers in matrix of size nXn), 
+     * perform and L-D-L decomposition which is a 
+     * variation of L-U decomposition.  Computes a unit lower triangular matrix
+     * L and a diagonal matrix D = diag(d1, d2, ...d_n) such that
+     * A = L*D*L^T.
+     * <pre>
+     * 
+     * References:
+     * Golub and va Loan, "Matrix Computations", Algorithm 5.1.2
+     * </pre>
+     * n^3/6 flops.
+     * @param a two dimensional array in row major format.  
+     * a is a symmetric matrix with dimensions n x n.
+     * @param eps value for a tolerance of an error around 0.
+     * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
+     * L and M and the diagonal matrix D as a an array of the diagonal.
+     */
+    public static LDL LDLDecomposition(double[][] a, double eps) {
         
         int n = a.length;
         
         assertSquareMatrix(a, "a");
-        
-        double eps = 1e-7;
-        
+                
         // need to have a in row echelon reduced state for this:
         //assertSymmetrix(a);
         
@@ -298,6 +327,8 @@ public class LinearEquations {
         
         return ld;
     }
+    
+    
     
     /**
      * an LUP decomposition for a being a square non-singular matrix that tries 
