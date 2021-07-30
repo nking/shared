@@ -2074,9 +2074,7 @@ public class MatrixUtil {
         }
         
         // TODO: fix the test for symmetric
-        
-        errors here
-        
+                
         // uses the Frobenius norm as a distinace.  notation: ||A||_F
         
         //     the symmetric part of A is matrix B = 0.5*(A + A^T)
@@ -2092,16 +2090,48 @@ public class MatrixUtil {
         //   answer is X_F = (A + H)/2
         
         // can use polar decompositon on square matrices:
+                
         double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));
         MatrixUtil.multiply(b, 0.5);
         
+        // H is formed from V, S, and V^T of SVD(B)
         QH qh = performPolarDecomposition(b);
+        double[][] h = qh.h;
         
         //X_F:
-        double[][] aPSD = MatrixUtil.elementwiseAdd(a, qh.h);
+        double[][] aPSD = MatrixUtil.elementwiseAdd(a, h);
         MatrixUtil.multiply(aPSD, 0.5);
         
-        return aPSD;        
+        // check that all eigenvalues are >= eps
+        EVD evd = EVD.factorize(new DenseMatrix(aPSD));
+        int i;
+        double[] eig = evd.getRealEigenvalues();
+        boolean ok = true;
+        for (i = 0; i < eig.length; ++i) {
+            if (eig[i] < eps) {
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) {
+            System.out.printf("before: evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+
+            //still needs a small perturbation to make the eigenvalues all >= eps
+            // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
+        
+            double[] e = Arrays.copyOf(eig, eig.length);
+            Arrays.sort(e);
+            double eigMin = Math.max(-e[0], eps);
+            double[][] D = MatrixUtil.zeros(5, 5);
+            for (i = 0; i < e.length; ++i) {
+                D[i][i] = eigMin;
+            }
+            aPSD = MatrixUtil.elementwiseAdd(aPSD, D);
+            evd = EVD.factorize(new DenseMatrix(aPSD));
+            System.out.printf("after:  evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+        }
+        
+        return aPSD; 
     }
     
     /**
