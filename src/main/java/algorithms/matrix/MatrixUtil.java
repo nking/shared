@@ -2055,6 +2055,9 @@ public class MatrixUtil {
      * Given a matrix a that is not necessarily symmetric,
      * and a nonnegative number eps, find the
      * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
+     * Note that this method attempts to make it symmetric positive definite by
+     * adding a small perturbation of size smallest eigenvalue to the diagonal
+     * of the resulting matrix.
      * <pre>
      * References:
      * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
@@ -3066,6 +3069,21 @@ public class MatrixUtil {
      * @return x in equation L*x = b
      */
     public static double[] forwardSubstitution(double[][] lowerTriangular, double[] b) {
+        double[] outX = new double[b.length];
+        forwardSubstitution(lowerTriangular, b, outX);
+        return outX;
+    }
+    
+    /**
+     * solves for vector x in the equation L*x=b where L is the lower triangular
+     * matrix and b is a vector.
+     * runtime complexity is approx (b.length)^2.
+     * @param lowerTriangular the lower triangular matrix
+     * @param b vector on the righthand side of the equation L*x=b
+     * @param outX output variable x in equation L*x = b.  length is b.length.
+     */
+    public static void forwardSubstitution(double[][] lowerTriangular, double[] b,
+        double[] outX) {
         
         int m = b.length;
         
@@ -3073,18 +3091,18 @@ public class MatrixUtil {
             throw new IllegalArgumentException("the number of columns in "
                     + "lowerTriangular must equal the length of b");
         }
-        
-        double[] x = new double[m];
-        
+        if (outX.length != m) {
+            throw new IllegalArgumentException("outX.length must equal the length of b");
+        }
+                
         int i, j;
         for (i = 0; i < m; ++i) {
-            x[i] = b[i];
+            outX[i] = b[i];
             for (j = 0; j <= (i-1); ++j) {
-                x[i] -= (lowerTriangular[i][j]*x[j]);
+                outX[i] -= (lowerTriangular[i][j] * outX[j]);
             }
-            x[i] /= lowerTriangular[i][i];
+            outX[i] /= lowerTriangular[i][i];
         }
-        return x;
     }
     
     /**
@@ -3104,16 +3122,17 @@ public class MatrixUtil {
                     + "lowerTriangular must equal the length of b");
         }
         
-        double[] x = new double[m];
-        
+        double[] x = new double[b.length];
+                
         int i, j;
         for (i = 0; i < m; ++i) {
             x[i] = b[i];
             for (j = 0; j <= (i-1); ++j) {
-                x[i] -= (lowerTriangular.get(i, j)*x[j]);
+                x[i] -= (lowerTriangular.get(i, j) * x[j]);
             }
             x[i] /= lowerTriangular.get(i, i);
         }
+        
         return x;
     }
     
@@ -3135,24 +3154,50 @@ public class MatrixUtil {
      */
     public static double[] backwardSubstitution(double[][] upperTriangular, double[] y) {
         
+        double[] outX = new double[y.length];
+        
+        backwardSubstitution(upperTriangular, y, outX);
+        
+        return outX;
+    }
+    
+    /**
+     * solves for vector x in the equation U*x = y where 
+     * U is an upper triangular matrix and y is a vector.
+     * runtime complexity is approx (y.length)^2.
+     * @param upperTriangular the upper triangular matrix
+     * (a_i_j=0 where i>j)
+     * <pre>
+     *     0  1  2
+        2  *  *  *
+        1  *  *  
+        0  *
+           0  1  2
+     * </pre>
+     * @param y vector on righthand side of equation
+     * @param outX output variable x in equation U*x = y.  must be length y.length.
+     */
+    public static void backwardSubstitution(double[][] upperTriangular, double[] y,
+        double[] outX) {
+        
         int m = y.length;
         
         if (upperTriangular[0].length != m) {
             throw new IllegalArgumentException("the number of columns in "
                     + "upperTriangular must equal the length of y");
         }
-        
-        double[] x = new double[m];
+        if (outX.length != m) {
+            throw new IllegalArgumentException("outX.length must equal the length of y");
+        }
+                
         int i, j;
         for (i = m-1; i >= 0; i--) {
-            x[i] = y[i];
+            outX[i] = y[i];
             for (j = i+1; j < m; ++j) {
-                x[i] -= (x[j]*upperTriangular[i][j]);
+                outX[i] -= (outX[j]*upperTriangular[i][j]);
             }
-            x[i] /= upperTriangular[i][i];
-        }
-        
-        return x;
+            outX[i] /= upperTriangular[i][i];
+        }        
     }
     
     /**

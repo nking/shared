@@ -218,8 +218,12 @@ public class LinearEquations {
      * a = G*G^T where G is a lower triangular matrix with positive
     * diagonal entries.
     * TODO: consider implementing algorithm 5.2-1 also.
+    * And consider re-compiling MTJ library to include the DenseCholesky.java
+    * which seems to be unsupported in the jar in this project.  alternatively
+    * could invoke the LAPACK method directly using the current build. 
+    * see https://github.com/fommil/matrix-toolkits-java/blob/master/src/main/java/no/uib/cipr/matrix/DenseCholesky.java)
      * @param a symmetric positive definite matrix 
-     * @param eps value for an error tolerance around zero used in the LDL decompositon.
+     * @param eps value for an error tolerance around zero used in the LDL decomposition.
      * @return lower triangular matrix G  which G is a lower triangular matrix with positive
     * diagonal entries.  a = G*G^T.
     */

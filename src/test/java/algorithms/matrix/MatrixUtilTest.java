@@ -1123,10 +1123,20 @@ public class MatrixUtilTest extends TestCase {
              diff = Math.abs(_y2[i] - _y2_r[i]);
              assertTrue(diff < tol);
          }
+         MatrixUtil.forwardSubstitution(_l2, _b2, _y2_r);
+         for (i = 0; i < _y2.length; ++i) {
+             diff = Math.abs(_y2[i] - _y2_r[i]);
+             assertTrue(diff < tol);
+         }
          double[] _x2_r = MatrixUtil.backwardSubstitution(MatrixUtil.transpose(_l2), _y2_r);
          System.out.printf("x2e=%s\nx2=%s\n", FormatArray.toString(_x2, "%.3f"),
              FormatArray.toString(_x2_r, "%.3f"));
          assertEquals(_x2.length, _x2_r.length);
+         for (i = 0; i < _x2.length; ++i) {
+             diff = Math.abs(_x2[i] - _x2_r[i]);
+             assertTrue(diff < tol);
+         }
+         MatrixUtil.backwardSubstitution(MatrixUtil.transpose(_l2), _y2_r, _x2_r);
          for (i = 0; i < _x2.length; ++i) {
              diff = Math.abs(_x2[i] - _x2_r[i]);
              assertTrue(diff < tol);
