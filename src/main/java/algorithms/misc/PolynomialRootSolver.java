@@ -48,6 +48,7 @@ import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import java.io.IOException;
 import java.util.Arrays;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.EVD;
@@ -73,9 +74,9 @@ public class PolynomialRootSolver {
      * @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @return
-     * @throws Exception 
+     * @throws IOException convergence failure
      */
-    public static Complex[] solveUsingMPSolve(double[] coeffs) throws Exception {
+    public static Complex[] solveUsingMPSolve(double[] coeffs) throws IOException {
         int n = coeffs.length;
         
         //dCoeffs are in order of increasing power
@@ -122,7 +123,7 @@ public class PolynomialRootSolver {
                     error = "unknown error from PZeros";
                     break;
             }
-            throw new Exception(error);
+            throw new IOException(error);
         }
         int nr = root.length;
         
@@ -144,10 +145,10 @@ public class PolynomialRootSolver {
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @param toleranceForZero the value for which any number less than is considered 0.
      * @return
-     * @throws NotConvergedException 
+     * @throws  
      */
     public static double[] solveForRealUsingMPSolve(double[] coeffs,
-        double toleranceForZero) throws Exception {
+        double toleranceForZero) throws IOException {
         Complex[] roots = solveUsingMPSolve(coeffs);
         double[] d = parseForRealOnly(roots, toleranceForZero);
         d = PolynomialRootSolver.reduceToUniqueRoots(d, toleranceForZero);
