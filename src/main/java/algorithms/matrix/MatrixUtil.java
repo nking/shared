@@ -1991,7 +1991,9 @@ public class MatrixUtil {
      * 
      * </pre>
      * @param a a symmetric matrix
-     * @param eps
+     * @param eps a tolerance or error above 0 such as machine precision.  must
+     * be greater than or equal to 0.  If it is above 0, this method attempts
+     * to return a symmetric positive definite matrix.
      * @return 
      */
     public static double[][] nearestPositiveSemidefiniteToASymmetric(double[][] a,
@@ -1999,6 +2001,10 @@ public class MatrixUtil {
         
         if (!isSquare(a)) {
             throw new IllegalArgumentException("a must b a square matrix");
+        }
+        
+        if (eps < 0) {
+            throw new IllegalArgumentException("eps must be .gte. 0");
         }
         
         // TODO: fix the test for symmetric and use it here
@@ -2064,8 +2070,11 @@ public class MatrixUtil {
      * 
      * </pre>
      * @param a a square matrix which can be non-symmetric.
-     * @param eps
+     * @param eps a tolerance or error above 0 such as machine precision.  must
+     * be greater than or equal to 0.  If it is above 0, this method attempts
+     * to return a symmetric positive definite matrix.
      * @return 
+     * @throws no.uib.cipr.matrix.NotConvergedException 
      */
     public static double[][] nearestPositiveSemidefiniteToA(double[][] a,
         double eps) throws NotConvergedException {
@@ -2074,6 +2083,9 @@ public class MatrixUtil {
         
         if (!isSquare(a)) {
             throw new IllegalArgumentException("a must b a square matrix");
+        }
+        if (eps < 0) {
+            throw new IllegalArgumentException("eps must be .gte. 0");
         }
         
         // TODO: fix the test for symmetric
@@ -2117,7 +2129,7 @@ public class MatrixUtil {
             }
         }
         if (!ok) {
-            System.out.printf("before: evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+            //System.out.printf("before: evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
 
             //still needs a small perturbation to make the eigenvalues all >= eps
             // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
@@ -2125,13 +2137,13 @@ public class MatrixUtil {
             double[] e = Arrays.copyOf(eig, eig.length);
             Arrays.sort(e);
             double eigMin = Math.max(-e[0], eps);
-            double[][] D = MatrixUtil.zeros(5, 5);
-            for (i = 0; i < e.length; ++i) {
+            double[][] D = MatrixUtil.zeros(a.length, a.length);
+            for (i = 0; i < D.length; ++i) {
                 D[i][i] = eigMin;
             }
             aPSD = MatrixUtil.elementwiseAdd(aPSD, D);
-            evd = EVD.factorize(new DenseMatrix(aPSD));
-            System.out.printf("after:  evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+            //evd = EVD.factorize(new DenseMatrix(aPSD));
+            //System.out.printf("after:  evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
         }
         
         return aPSD; 
