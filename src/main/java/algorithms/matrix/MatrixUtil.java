@@ -1130,6 +1130,42 @@ public class MatrixUtil {
      * @throws NotConvergedException 
      */
     public static double[][] pseudoinverseRankDeficient(double[][] a) throws NotConvergedException {
+        return pseudoinverseRankDeficient(a, true);
+    }
+    
+    /**
+     * calculate the pseudo-inverse of matrix a for cases when the rank of a
+     * is less than the width of matrix a.
+     * Note that the term rank can be deceptive for cases when the 
+     * original matrix a was rank deficient and then is perturbed to become
+     * a full rank matrix leading to possibility of larger errors when treated as full rank.
+     * the term rank deficient can be replaced by the ter numerically rank deficient.
+     * (see Bjork 1991 Section 2, "Algorithms for linear least squares problems"
+     * and Chap 6 of Golub & Van Loan).
+     * This method uses the SVD of a,
+     * specifically, V*R*U^T where R is 1/diagonal of S for cases where
+     * rank .leq. m or rank .leq. n where mXn are the dimensions of matrix a.
+     * Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
+     * inverse of A.
+     * 
+     * Following Gilbert Strang's "Introduction to Linear Algebra".
+     * 
+     * TODO: read "ALTERNATIVE METHODS OF CALCULATION OF THE PSEUDO INVERSE
+       OF A NON FULL-RANK MATRIX" by M. A. Murray-Lasso, 2008
+       http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
+       
+      NOTE: if the rank is found to be equal to a[0].length and 
+      a.length >= a[0].length, the full rank pseudo-inverse
+      * is calculated instead of the rank-deficient;
+     * @param a and m X n matrix
+     * @param checkForFullRank if true, the method looks for a[0],length == rank
+     * and if it is full-rank, the method returns the results form pseudoinverseFullRank(a)
+     * instead.
+     * @return pseudo-inverse of matrix a. dimensions are those of a^T.
+     * @throws NotConvergedException 
+     */
+    static double[][] pseudoinverseRankDeficient(double[][] a,
+        boolean checkForFullRank) throws NotConvergedException {
         int m = a.length;
         int n = a[0].length;
         
@@ -1163,7 +1199,7 @@ public class MatrixUtil {
                 rank++;
             }
         }
-        if (rank == n && m >= n) {
+        if (checkForFullRank && rank == n && m >= n) {
             // use full rank solution:
             return pseudoinverseFullRank(a);
         }
@@ -1183,7 +1219,7 @@ public class MatrixUtil {
         assert(uT.length == m);
         assert(uT[0].length == m);
         
-        double[][] sInverse = zeros(m, n);
+        double[][] sInverse = zeros(n, m);
         double sI;
         for (int i = 0; i < s.length; ++i) {
             sI = s[i];
@@ -1256,13 +1292,17 @@ public class MatrixUtil {
         // matlab and other matrix notation uses left division symbol in this way:
         //     x = A\B solves the system of linear equations A*x = B
         //        can substitute A = A^T*A,   X = (A^T*A)^-1,   B = I
-        //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.        
-        DenseMatrix aTAI = (DenseMatrix)aTA.solve(I, placeholder);
-        double[][] _aTAI = MatrixUtil.convertToRowMajor(aTAI);
-        // _pseudoinverse = inverse(A^T*A) * A^T
-        double[][] inv = MatrixUtil.multiply(_aTAI, _aT);
-               
-        return inv;
+        //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
+        try {
+             DenseMatrix aTAI = (DenseMatrix)aTA.solve(I, placeholder);
+             double[][] _aTAI = MatrixUtil.convertToRowMajor(aTAI);
+            // _pseudoinverse = inverse(A^T*A) * A^T
+            double[][] inv = MatrixUtil.multiply(_aTAI, _aT);
+            return inv;
+        } catch (no.uib.cipr.matrix.MatrixSingularException ex) {
+            return pseudoinverseRankDeficient(a, false);
+        }
+        
     }
     
     /**
