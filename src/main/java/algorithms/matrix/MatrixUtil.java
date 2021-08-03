@@ -1121,8 +1121,12 @@ public class MatrixUtil {
      * TODO: read "ALTERNATIVE METHODS OF CALCULATION OF THE PSEUDO INVERSE
        OF A NON FULL-RANK MATRIX" by M. A. Murray-Lasso, 2008
        http://www.scielo.org.mx/pdf/jart/v6n3/v6n3a4.pdf
+       
+      NOTE: if the rank is found to be equal to a[0].length and 
+      a.length >= a[0].length, the full rank pseudo-inverse
+      * is calculated instead of the rank-deficient;
      * @param a and m X n matrix
-     * @return matrix with dimensions of a^T
+     * @return pseudo-inverse of matrix a. dimensions are those of a^T.
      * @throws NotConvergedException 
      */
     public static double[][] pseudoinverseRankDeficient(double[][] a) throws NotConvergedException {
@@ -1130,9 +1134,9 @@ public class MatrixUtil {
         int n = a[0].length;
         
         // limit for a number to be significant above 0
-        double eps = 1e-15;
+        double eps = 1e-16;
         
-        // from Gilbert Strang's "Introduction to Linear Algebra":
+        // from Gilbert Strang's "Introduction to Linear Algebra", Chap 7:
         // uses SVD:
         //
         //   A_inverse = V * pseudoinverse(S) * U^T
@@ -1159,6 +1163,11 @@ public class MatrixUtil {
                 rank++;
             }
         }
+        if (rank == n && m >= n) {
+            // use full rank solution:
+            return pseudoinverseFullRank(a);
+        }
+        
         DenseMatrix vTM = svd.getVt();
         double[][] vT = MatrixUtil.convertToRowMajor(vTM);
         double[][] v = MatrixUtil.transpose(vT);
@@ -1174,17 +1183,15 @@ public class MatrixUtil {
         assert(uT.length == m);
         assert(uT[0].length == m);
         
-        double[][] sInverse = new double[n][];
-        for (int i = 0; i < n; ++i) {
-            sInverse[i] = new double[m];
-        }
-        
+        double[][] sInverse = zeros(m, n);
+        double sI;
         for (int i = 0; i < s.length; ++i) {
-            double sI = s[i];
+            sI = s[i];
             if (sI > eps) {
                 sInverse[i][i] = 1./sI;
             }
         }
+        
         /*
         U is mxn orthonormal columns
         S is nxn with non-negative singular values.  rank is number of non-zero entries
