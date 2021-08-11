@@ -104,11 +104,15 @@ public class LinearEquations {
      * P is the Identity matrix.   uses Gaussian elimination and the Schur
      * complement while making recursive subdivision subdivisions.
      * The runtime is O(n^3).
-     * @param a two dimensional array in row major format.  
+     * @param a square two dimensional array in row major format.  
      * a is a non-singular matrix(i.e. has exactly one solution).  the rank of
      * a is n (it's dimensions are m x n).
      * @return LU a wrapper holding the 2 two-dimensional row major output arrays.
-     * L and U.  they are both size nXn where n=a.length
+     * L and U.  they are both size nXn where n=a.length.
+     * L is a unit lower triangular matrix (has 1's on the diagonal) and U
+     * is an upper triangular matrix whose diagonals are the matrix pivots.
+     * Note that the determinant of A is the product of the U diagonals,
+     * that is det(A) = u[0][0] * u[1][1]...*u[n-1][n-1].
      */
     public static LU LUDecomposition(double[][] a) {
         int n = a.length;
@@ -255,7 +259,7 @@ public class LinearEquations {
      * <pre>
      * 
      * References:
-     * Golub and va Loan, "Matrix Computations", Algorithm 5.1.2
+     * Golub and van Loan, "Matrix Computations", Algorithm 5.1.2
      * </pre>
      * n^3/6 flops.
      * @param a two dimensional array in row major format.  
@@ -277,7 +281,7 @@ public class LinearEquations {
      * <pre>
      * 
      * References:
-     * Golub and va Loan, "Matrix Computations", Algorithm 5.1.2
+     * Golub and van Loan, "Matrix Computations", Algorithm 5.1.2
      * </pre>
      * n^3/6 flops.
      * @param a two dimensional array in row major format.  
@@ -344,8 +348,8 @@ public class LinearEquations {
      * uses Gaussian elimination and the Schur
      * complement while making recursive subdivision subdivisions.
      * The runtime is O(n^3).
-     * @param a two dimensional array in row major format.  
-     * a is a non-singular matrix(i.e. has exactly one solution).  the rank of
+     * @param a square two dimensional array in row major format.  
+     * a is a non-singular matrix (i.e. has exactly one solution).  the rank of
      * a is n (it's dimensions are m x n).
      * @return LUP a wrapper holding the 2 two-dimensional row major output arrays.
      * L and U and the condensed permutation array p, where P*A=L*U.

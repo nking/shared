@@ -45,7 +45,7 @@ public class PrincipalComponents {
      * @param nComponents the number of principal components to return.
      * @return a few statistics of the SVD of the covariance of A, up to the
      * nComponents dimension.  Note that if the rank of the SVD(cov(A)) is
-     * less than nComponents, then only that amount is returned;
+     * less than nComponents, then only that amount is returned.
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
                 

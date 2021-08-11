@@ -12,7 +12,9 @@ import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.LowerSymmDenseMatrix;
 import no.uib.cipr.matrix.LowerTriangDenseMatrix;
 import no.uib.cipr.matrix.Matrices;
+import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.NotConvergedException;
+import no.uib.cipr.matrix.QR;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
     
 /**
@@ -510,7 +512,15 @@ public class MatrixUtilTest extends TestCase {
         double det = MatrixUtil.determinant(m);
 
         assertEquals(148., det);
+        
+        det = MatrixUtil.determinantFromLU(m);
+        assertTrue(Math.abs(148. - det) < 1e-7);
 
+        DenseMatrix _a = new DenseMatrix(m);
+        Matrix aT = _a.transpose();
+        Matrix a = aT.transpose();
+        det = MatrixUtil.determinant(a);
+        assertTrue(Math.abs(148. - det) < 1e-7);
     }
    
     public static void testPowerMethod() {
@@ -1271,4 +1281,95 @@ public class MatrixUtilTest extends TestCase {
         
     }
 
+     public void testRank() throws NotConvergedException {
+         double[][] a;
+         double eps = 1e-7;
+         int r;
+         
+         a = new double[2][];
+         a[0] = new double[]{1, -2};
+         a[1] = new double[]{3, -6};
+         r = MatrixUtil.rank(a, eps);
+         assertEquals(1, r);
+         
+         a = new double[2][];
+         a[0] = new double[]{0, 2, 4};
+         a[1] = new double[]{3,-2, 5};
+         r = MatrixUtil.rank(a, eps);
+         assertEquals(2, r);
+         
+         a = new double[3][];
+         a[0] = new double[]{2, 4, -2, 2};
+         a[1] = new double[]{4, 9, -3, 8};
+         a[2] = new double[]{-2, -3, 7, 10};
+         r = MatrixUtil.rank(a, eps);
+         assertEquals(3, r);
+         
+         
+     }
+     
+     public void testDiagonalization() throws Exception {
+         
+         System.out.println("testDiagonalization");
+         
+         double[][] a;
+         
+         a = new double[2][];
+         a[0] = new double[]{0.5, 0.5};
+         a[1] = new double[]{0.5, 0.5};
+         
+         MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);
+         System.out.printf("svd(a).u=\n%s\n", FormatArray.toString(svd.u, "%.3e"));
+         System.out.printf("svd(a).vT=\n%s\n", FormatArray.toString(svd.vT, "%.3e"));
+         System.out.printf("svd(a).s=\n%s\n", FormatArray.toString(svd.s, "%.3e"));
+         
+         double[][] q_uvt = MatrixUtil.multiply(svd.u, svd.vT);
+         System.out.printf("Q_uvt = svd(a).u * svd(a).vT=\n%s\n", FormatArray.toString(q_uvt, "%.3e"));
+         
+         // a must have independent columns, so that's violated.  just looking at results.
+         // The columns of Q are the eigenvectors of A.
+         // A*Q = Q * diag(eigenvalues of A).
+         QR qr = QR.factorize(new DenseMatrix(a));
+         System.out.printf("\nqr(a).q=\n%s\n", FormatArray.toString(
+             Matrices.getArray(qr.getQ()), "%.3e"));
+         System.out.printf("qr(a).r=\n%s\n", FormatArray.toString(
+             Matrices.getArray(qr.getR()), "%.3e"));
+         
+         double[][] s, sInv, sInv2, delta, delta2, a2, a3;
+         
+         s = MatrixUtil.copy(svd.u);
+         DenseMatrix _s = new DenseMatrix(s);
+         System.out.printf("s = svd(a).u=\n%s\n", FormatArray.toString(s, "%.3e"));
+         
+         //x = A\B solves the system of linear equations A*x = B for x.
+         //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
+         //  S*S^-1 = I
+         //  S.solve(I, sInv) to get sInv using MTJ:
+         DenseMatrix _sInv = new DenseMatrix(_s.numRows(), _s.numColumns());
+             _sInv = (DenseMatrix) _s.solve(
+             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), 
+             _sInv);
+         sInv = MatrixUtil.convertToRowMajor(_sInv);
+         
+         sInv2 = MatrixUtil.inverse(s);
+         System.out.printf("sInv=S\\I:  S.solve(I, sInv)=\n%s\n", 
+             FormatArray.toString(sInv, "%.3e"));
+         System.out.printf("sInv2=MU.inverse(s)=\n%s\n", 
+             FormatArray.toString(sInv2, "%.3e"));
+                 
+         // Delta = sInv * A * s 
+         delta = MatrixUtil.multiply(MatrixUtil.multiply(sInv, a), s);
+         System.out.printf("Delta = sInv * A * s=\n%s\n", 
+             FormatArray.toString(delta, "%.3e"));
+         
+         delta2 = MatrixUtil.zeros(svd.s.length, svd.s.length);
+         for (int i = 0; i < delta.length; ++i) {
+             delta2[i][i] = svd.s[i];
+         }
+         // A = S * Delta * S^-1
+         a2 = MatrixUtil.multiply(MatrixUtil.multiply(s, delta), sInv);
+         a3 = MatrixUtil.multiply(MatrixUtil.multiply(s, delta2), sInv);
+         System.out.printf(" A = S * Delta * S^-1\n%s\n", FormatArray.toString(a2, "%.3e"));
+         System.out.printf(" A = S * Delta2(from svd) * S^-1\n%s\n", FormatArray.toString(a3, "%.3e"));
+     }
 }

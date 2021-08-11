@@ -1,5 +1,6 @@
 package algorithms.matrix;
 
+import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.misc.Misc0;
 import algorithms.util.FormatArray;
@@ -16,6 +17,7 @@ import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.QR;
+import no.uib.cipr.matrix.QRP;
 import no.uib.cipr.matrix.SVD;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 
@@ -25,7 +27,8 @@ import no.uib.cipr.matrix.UpperTriangDenseMatrix;
    misc notes:
  
    The eigenvalues can be determined in a few ways depending upon the matrix:
-       If A is a positive definite matrix, can use the power method.  
+       If A is a positive definite matrix, can use the power method to find 
+       the largest eigenvalue.  
           Caveat is that it performs best when the spectral gap is large 
           (diff between largest and 2nd largest eigenvalues).
        If A is symmetric, can diagonalize A.
@@ -33,8 +36,13 @@ import no.uib.cipr.matrix.UpperTriangDenseMatrix;
           of those eigenvalues or can use Singular Value Decomposition on A 
           (the singular values are the eigenvalues of A).
    Note that the eigenvectors are the same for the diagonalization of A, the 
-   diagonalization of A^T*A, the SVD(A), and the for same operations performed 
+   diagonalization of A^T*A, the SVD(A), and the same operations performed 
    on the CUR-Decompositions of A (=C) or on C^T*C.
+   NOTE: for large-scale eigenvalue problems,consider cur decomposition,power 
+   * method, qr decomposition (which for general matrices might include the 
+   * schur decomposition followed by back substitution), or
+   * for hermetician matrices can use divide and conquer eigenvalue algorithms and they
+   * are parallelizable.
  </pre>
  * @author nichole
  */
@@ -302,7 +310,7 @@ public class MatrixUtil {
     
     /**
      * multiply matrix m by matrix n
-     * @param m tow dimensional array in row major format
+     * @param m two dimensional array in row major format
      * @param n two dimensional array in row major format
      * @return multiplication of m by n.  resulting matrix is size mrows X ncols.
      */
@@ -1290,7 +1298,7 @@ public class MatrixUtil {
         //    if an inverse exists for (A^T*A) then (A^T*A) * (A^T*A)^-1 = I
                 
         // matlab and other matrix notation uses left division symbol in this way:
-        //     x = A\B solves the system of linear equations A*x = B
+        //     x = A\B solves the system of linear equations A*x = B for x.
         //        can substitute A = A^T*A,   X = (A^T*A)^-1,   B = I
         //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
         try {
@@ -1312,7 +1320,8 @@ public class MatrixUtil {
        (1) has to be a square matrix.
            A^-1 x A = I, where I is the identity matrix.
        (2) an inverse matrix has n pivots remaining after elimination,
-                where pivot is the leftmost non-zero variable.
+                where pivot is the leftmost non-zero variable. i.e. the rank r
+                is equal to the dimension of the square matrix which is n.
        (3) after elimination, next test for possible invertibility is 
              that the determinant is not zero
 
@@ -1335,7 +1344,7 @@ public class MatrixUtil {
         
         //rank:
         // -- could use PackCholesky followed by check for positive definiteness
-        // -- could use LUP decomposition andcount the L diagonal 1's
+        // -- could use LUP decomposition and count the L diagonal 1's
         // -- could use SVD and count the unique singular values in D
         LUP lup = LinearEquations.LUPDecomposition(a);
         
@@ -1364,6 +1373,59 @@ public class MatrixUtil {
         }
         
         return false;
+    }
+    
+    /**
+      determine the rank of martix A
+      <pre>
+      If matrix A is a square matrix:
+          uses LUP decomposition and counts the L diagonal 1's
+      Else
+          uses SVD and counts the non-zero diagonal singular values.
+          
+      NOTE: a positive tolerance level eps is used to find the number of singular values
+      above eps instead of 0.
+      </pre>
+     * @param a
+     * @param eps a positive number for the tolerance above zero of the pivots or
+     * singular values.
+     * @return the rank of A
+     */
+    public static int rank(double[][] a, double eps) throws NotConvergedException {
+       
+        int m = a.length;
+        int n = a[0].length;
+        int rank = 0;
+        if (m == n) {
+            int rU = 0;
+            LU lu = LinearEquations.LUDecomposition(a);
+            for (int i = 0; i < lu.u.length; ++i) {
+                if (Math.abs(lu.u[i][i] - 1.0) < eps) {
+                    rU++;
+                }
+            }
+            int rL = 0;
+            for (int i = 0; i < lu.ell.length; ++i) {
+                if (Math.abs(lu.ell[i][i] - 1.0) < eps) {
+                    rL++;
+                }
+            }
+            return Math.min(rU, rL);
+        }
+        
+        /* or
+        QRP qrp = QRP.factorize(new DenseMatrix(a));
+        final double EPS = 1e-12;
+        int rank2 =  qrp.getRank();
+        */
+       
+        SVDProducts svd = performSVD(a);
+        for (double sv : svd.s) {
+            if (sv > eps) {
+                rank++;
+            }
+        }
+        return rank;
     }
     
     /**
@@ -1524,7 +1586,7 @@ public class MatrixUtil {
      * perform QR decomposition (a.k.a. Francis algorithm, a.k.a. Francis QR step)
      * on matrix a using the MTJ library.
      * It's a sophisticated version of the "power method".
-     * A = Q*R of an orthogonal matrix Q and an upper triangular matrix R.
+     * A = Q*R of an orthonormal matrix Q and an upper triangular matrix R.
      * The columns of Q are the eigenvectors of A.
      * A*Q = Q * diag(eigenvalues of A).
      * 
@@ -1535,7 +1597,7 @@ public class MatrixUtil {
      * https://en.wikipedia.org/wiki/QR_decomposition
      * </pre>
      * 
-     * @param a a square or rectangular matrix.
+     * @param a a square or rectangular matrix with independent columns.
      * @return 
      */
     public static QR performQRDecomposition(double[][] a) {
@@ -1727,12 +1789,18 @@ public class MatrixUtil {
      *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11
         + 135 + 2 = 148
      *         | 2   1  5 |
+     * <pre>
+     * Note that det(a) = 0 shows that matrix a is a singular matrix and is not
+     * invertible.
+     * </pre>
+     * @param a a square matrix
+     * @return the determinant of matrix a
      */
-    public static double determinant(Matrix m) {
+    public static double determinant(Matrix a) {
 
-        double[][] a = no.uib.cipr.matrix.Matrices.getArray(m);
+        double[][] ma = no.uib.cipr.matrix.Matrices.getArray(a);
 
-        return determinant(a);
+        return determinant(ma);
     }
     
     /**
@@ -1745,29 +1813,34 @@ public class MatrixUtil {
      *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 
         + 135 + 2 = 148
      *         | 2   1  5 |
-     * 
+     * <pre>
+     * Note that det(a) = 0 shows that matrix a is a singular matrix and is not
+     * invertible.
+     * </pre>
+     * @param a a square matrix
+     * @return 
      */
-    public static double determinant(double[][] m) {
+    public static double determinant(double[][] a) {
 
-        if (m == null || m.length == 0) {
-            throw new IllegalArgumentException("m cannot be null or empty");
+        if (a == null || a.length == 0) {
+            throw new IllegalArgumentException("matrix a cannot be null or empty");
         }
-        if (m.length != m[0].length) {
-            throw new IllegalArgumentException("m must be a square");
+        if (a.length != a[0].length) {
+            throw new IllegalArgumentException("matrix a must be square");
         }
-        if (m.length == 1) {
-            return m[0][0];
-        } else if (m.length == 2) {
-            double s = ( m[0][0]*m[1][1] ) - ( m[0][1]*m[1][0] );
+        if (a.length == 1) {
+            return a[0][0];
+        } else if (a.length == 2) {
+            double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );
             return s;
         } else {
             double s = 0.0;
             // use 1st row as cofactors and minors
-            for (int i = 0; i < m.length; i++) {
+            for (int i = 0; i < a.length; i++) {
 
-                double[][] n = copyExcept(m, i, 0);
+                double[][] n = copyExcept(a, i, 0);
                 
-                double tmp = m[i][0] * determinant(n);
+                double tmp = a[i][0] * determinant(n);
                                 
                 if ((i & 1) == 0) {
                     s +=  tmp;
@@ -1776,6 +1849,39 @@ public class MatrixUtil {
                 }
             }
             return s;
+        }
+    }
+    
+    /**
+     * calculate the determinant of a using the diagonal of U from the
+     * LU decomposition.
+     * 
+     * @param a a square matrix
+     * @return 
+     */
+    public static double determinantFromLU(double[][] a) {
+
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("matrix a must be square");
+        }
+        switch (a.length) {
+            case 0:
+                throw new IllegalArgumentException("matrix a length must be larger than 0");
+            case 1:
+                return a[0][0];
+            case 2: {
+                double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );
+                return s;
+            }
+            default: {
+                LU lu = LinearEquations.LUDecomposition(a);
+                double d = 1;
+                int i;
+                for (i = 0; i < lu.u.length; ++i) {
+                    d *= lu.u[i][i];
+                }
+                return d;
+            }
         }
     }
     
@@ -1821,9 +1927,11 @@ public class MatrixUtil {
      * v cross product with w is v X w = [v]_x * w.
      * It’s individual terms are a_j_i = -a_i_j.
        <pre>
-       |    0   -v[2]  v[1] |
+       |    0   -v[2]   v[1] |
        |  v[2]    0    -v[0] |
-       | -v[1]  v[0]    0  |
+       | -v[1]  v[0]      0  |
+       
+       Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
      * @param v
      * @return 
@@ -1965,25 +2073,6 @@ public class MatrixUtil {
         double c = svd.s[0]/svd.s[rm1];
         
         return c;
-    }
-    
-    /**
-     * determine the rank of a using the SVD.
-     * @param a
-     * @return
-     * @throws NotConvergedException 
-     */
-    public static double rank(double[][] a) throws NotConvergedException {
-        
-        SVDProducts svd = performSVD(a);
-        int rm1 = -1;
-        for (int i = 0; i < svd.s.length; ++i) {
-            if (svd.s[i] > 0) {
-                rm1 = i;
-            }
-        }
-        
-        return rm1+1;
     }
     
     /**
@@ -2238,8 +2327,8 @@ public class MatrixUtil {
     
     /**
      * determine the largest eigenvalue using the power method.  note that
-     * array a must be diagonalizable, that is, a positive definite matrix.
-     * for best results, perform standard normalization on matrix a first
+     * matrix A must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix A first
      * because the first initial guess of an eigenvector of a is composed
      * of random values between [0 and 1).
      * The method is implemented from pseudocode in Golub and van Loan 
@@ -2298,8 +2387,8 @@ public class MatrixUtil {
     
     /**
      * determine the largest eigenvalue using the power method.  note that
-     * array a must be diagonalizable, that is, a positive definite matrix.
-     * for best results, perform standard normalization on matrix a first
+     * matrix A must be diagonalizable, that is, a positive definite matrix.
+     * for best results, perform standard normalization on matrix A first
      * because the first initial guess of an eigenvector of a is composed
      * of random values between [0 and 1).
      * The method is implemented from pseudocode in Golub and van Loan 
@@ -2425,6 +2514,70 @@ public class MatrixUtil {
         }
                 
         return eigs;
+    }
+    
+    /**
+     * calculate (matrix A)^power using it's eigen decompostion:
+     * A^power = S * (Delta^power) * S^-1
+     * where S holds eigenvectors in its columns.  Delta is a diagonal matrix
+     * holding the eigenvalues.
+     * @param a a square matrix
+     * @param power
+     * @return 
+     */
+    public double[][] powerOf(double[][] a, int power) throws NotConvergedException {
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("matrix a must be square");
+        }
+        double eps = 1E-15;
+        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);
+        
+        int rank = 0;
+        for (double sv : svd.s) {
+            if (sv > eps) {
+                rank++;
+            }
+        }
+        
+        if (rank < svd.u.length) {
+            // this case has eigenvalues that are 0.
+            //  det(A - lambda*I) = 0, so is not diagonalizable.
+            throw new IllegalStateException("there are eigenvalues with value 0, so matrix a is not diagonalizable");
+        }
+        
+        double[] d = new double[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            d[i] = Math.pow(svd.s[i], power);
+        }
+                
+        double[][] s = svd.u;
+        
+        double[][] sInv;
+        // check that the eigenvectors are independent.
+        // using left divide notation:
+        //  x = A\B solves the system of linear equations A*x = B for x.
+        //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
+        //  S*S^-1 = I
+        //  S.solve(I, sInv) to get sInv using MTJ:
+        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);
+        _sInv = (DenseMatrix) new DenseMatrix(s).solve(
+             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), 
+             _sInv);
+        sInv = MatrixUtil.convertToRowMajor(_sInv);
+ 
+        /*
+            // check this condition... S not invertible so check math in A = S^-1 * Delta * S
+            //                         where S^-1 is pseudoinverse
+            //sInv = svd(s).V * pseudoinverse(svd(s).s) * svd(s).U^T
+            sInv = MatrixUtil.pseudoinverseRankDeficient(s, false);
+            double[][] chk = MatrixUtil.multiply(s, sInv);
+            System.out.printf("check S*S^-1 ~ I:\n%s\n", FormatArray.toString(chk, "%.5e"));
+        */
+        
+        // A = S^-1 * delta^power * S
+        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);
+        
+        return aP;
     }
     
     /**
@@ -2712,13 +2865,20 @@ public class MatrixUtil {
     }
     
     /**
-     * find the equation for which A * A^(-1) = the identity matrix
+     * find the equation for which A * A^(-1) = the identity matrix using cramer's rule.
+     * 
+     * note that for a to be invertible, none of its eigenvalues can be 0.
+     * also note that if the number of linearly independent vectors os matrix
+     * A is equal to the number of columns of A, one can use the spectral
+     * decomposition: A^-1 = Q * (delta)^-1 * Q^-1
+     * where Q is a matrix whose columns hold eigenvectors and delta is a diagonal
+     * matrix holding the eigenvalues.
      *
      *             1
      * A^(-1) =  ------ C^(T)  where C_ij = cofactor of a_ij
      *            det A
      *
-     * @param m
+     * @param m a square invertible matrix.
      * @return
      */
     public static double[][] inverse(double[][] m) {
@@ -2819,7 +2979,9 @@ public class MatrixUtil {
     }
     
     /**
-     * calculate the sum of the diagonal elements of a
+     * calculate the sum of the diagonal elements of a.
+     * Note that the trace of matrix A equals the sum of its eigenvalues.
+     * Note: the trace of A is equal to the sum of its eigenvalues.
      * @param a a square matrix.
      * @return the sum of the diagonal elements of a
      */
