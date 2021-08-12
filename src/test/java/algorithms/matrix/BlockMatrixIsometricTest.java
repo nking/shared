@@ -185,6 +185,67 @@ public class BlockMatrixIsometricTest extends TestCase {
                 assertTrue(diff < tol);
             }
         }
+        
+        //test setColumnBlock and setRowBlock
+        a = new double[2][];
+        a[0] = new double[]{0, 1, 2, 3};
+        a[1] = new double[]{4, 5, 6, 7};
+        ba = new BlockMatrixIsometric(a, 1, 2);
+        
+        double[] tmp = new double[2];
+        double[] row = new double[]{100, 200};
+        
+        ba.getRowBlock(tmp, 1, 1);
+        assertTrue(Math.abs(tmp[0] - 6.) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - 7.) < 1e-15);
+        
+        ba.setRowBlock(row, 1, 1);
+        ba.getRowBlock(tmp, 1, 1);
+        assertTrue(Math.abs(tmp[0] - 100.) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - 200.) < 1e-15);
+        
+        tmp[0] = -1; tmp[1] = 2;
+        ba.addToRowBlock(tmp, 0, 1);
+        ba.getRowBlock(tmp, 0, 1);
+        assertTrue(Math.abs(tmp[0] - (2-1.)) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - (3+2.)) < 1e-15);
+        
+        tmp[0] = -1; tmp[1] = 2;
+        ba.subtractFromRowBlock(tmp, 1, 0);
+        ba.getRowBlock(tmp, 1, 0);
+        assertTrue(Math.abs(tmp[0] - (4 - -1.)) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - (5 - 2.)) < 1e-15);
+        
+        // test column methods
+        a = new double[4][];
+        a[0] = new double[]{0, 1};
+        a[1] = new double[]{4, 5};
+        a[2] = new double[]{2, 3};
+        a[3] = new double[]{6, 7};
+        ba = new BlockMatrixIsometric(a, 2, 1); 
+        
+        double[] col = new double[]{100, 200};
+        
+        ba.getColumnBlock(tmp, 0, 1);
+        assertTrue(Math.abs(tmp[0] - 1.) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - 5.) < 1e-15);
+        
+        ba.setColumnBlock(col, 0, 1);
+        ba.getColumnBlock(tmp, 0, 1);
+        assertTrue(Math.abs(tmp[0] - 100.) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - 200.) < 1e-15);
+        
+        tmp[0] = -1; tmp[1] = 2;
+        ba.addToColumnBlock(tmp, 1, 0);
+        ba.getColumnBlock(tmp, 1, 0);
+        assertTrue(Math.abs(tmp[0] - (2-1.)) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - (6+2.)) < 1e-15);
+        
+        tmp[0] = -1; tmp[1] = 2;
+        ba.subtractFromColumnBlock(tmp, 1, 1);
+        ba.getColumnBlock(tmp, 1, 1);
+        assertTrue(Math.abs(tmp[0] - (3 - -1.)) < 1e-15);
+        assertTrue(Math.abs(tmp[1] - (7 - 2.)) < 1e-15);
     }
     
 }
