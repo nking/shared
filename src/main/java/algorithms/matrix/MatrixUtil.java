@@ -20,6 +20,7 @@ import no.uib.cipr.matrix.QR;
 import no.uib.cipr.matrix.QRP;
 import no.uib.cipr.matrix.SVD;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
+import com.github.fommil.netlib.LAPACK;
 
 /**
  
@@ -1343,7 +1344,7 @@ public class MatrixUtil {
         }
         
         //rank:
-        // -- could use PackCholesky followed by check for positive definiteness
+        // -- could use Cholesky factorization followed by check for positive definiteness
         // -- could use LUP decomposition and count the L diagonal 1's
         // -- could use SVD and count the unique singular values in D
         LUP lup = LinearEquations.LUPDecomposition(a);
@@ -3299,6 +3300,7 @@ public class MatrixUtil {
      * solves for vector x in the equation L*x=b where L is the lower triangular
      * matrix and b is a vector.
      * runtime complexity is approx (b.length)^2.
+     * method follows Golub & Van Loan algorithm 4.1-1.
      * @param lowerTriangular the lower triangular matrix
      * @param b vector on the righthand side of the equation L*x=b
      * @param outX output variable x in equation L*x = b.  length is b.length.
@@ -3330,6 +3332,7 @@ public class MatrixUtil {
      * solves for vector x in the equation L*x=b where L is the lower triangular
      * matrix and b is a vector.
      * runtime complexity is approx (b.length)^2.
+     * method follows Golub & Van Loan algorithm 4.1-1.
      * @param lowerTriangular the lower triangular matrix
      * @param b vector on the righthand side of the equation L*x=b
      * @return x in equation L*x = b
@@ -3361,6 +3364,7 @@ public class MatrixUtil {
      * solves for vector x in the equation U*x = y where 
      * U is an upper triangular matrix and y is a vector.
      * runtime complexity is approx (y.length)^2.
+     * method follows Golub & Van Loan algorithm 4.1-2.
      * @param upperTriangular the upper triangular matrix
      * (a_i_j=0 where i>j)
      * <pre>

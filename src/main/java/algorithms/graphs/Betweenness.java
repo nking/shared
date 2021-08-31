@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  
     The simplest form of the algorithm attempts to find the edges that are least 
     likely to be inside a community.
-       
+
     Define the betweenness of an edge (a, b) to be the number of pairs of nodes
     x and y such that the edge (a, b) lies on the shortest path between x and y.
     To be more precise, since there can be several shortest paths between x and y,
@@ -62,7 +62,7 @@ public class Betweenness {
     /**
      * implementation of unweighted graph edge scoring from Girvan-Newman 
      * algorithm, accepting a DAG.   Each graph node without a predecessor
-     * is iterated over to calculated node and edge weights.  
+     * is iterated over to calculate node and edge weights.  
      * The choice of the src node as a method argument does not affect the 
      * final scored edge weights,
        but is present in case information about the graph provides a best src

@@ -12,9 +12,9 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 /**
 *
-  Minimum spanning tree is the minimal network that spans all nodes in a tree
-  and has the smallest cost (sum of edges).
-  
+* minimum spanning tree is the subset of edges in a weighted undirected graph
+ * that connect all vertexes for a total minimum cost (sum of edge weights).
+ * 
   Kruskal's grows a forest by sorting the edges first and then adding edges that 
   are not yet connected to the tree.
   

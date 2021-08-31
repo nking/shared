@@ -24,13 +24,14 @@ public class GreatestCommonDenominator {
      * @return
      */
     public static int euclid(int a, int b) {
-        if (b == 0) {
-            return a;
+        int t;
+        while (b != 0) {
+            t = b;
+            b = a % b;
+            a = t;
         }
-        count++;
-        return euclid(b, a % b);
+        return Math.max(a, -a);
     }
-    public static int count = 0;
 
     /**
      * return the greatest common denominator of the 2 integers.
@@ -42,13 +43,13 @@ public class GreatestCommonDenominator {
      * @return
      */
     public static long euclid(long a, long b) {
-        //System.out.format("a=%d b=%d\n", a, b); System.out.flush();
-        if (b == 0) {
-            //System.out.format("   euclid=%d\n", a); System.out.flush();
-            return a;
+        long t;
+        while (b != 0) {
+            t = b;
+            b = a % b;
+            a = t;
         }
-        count++;
-        return euclid(b, a % b);
+        return Math.max(a, -a);
     }
     
     /**

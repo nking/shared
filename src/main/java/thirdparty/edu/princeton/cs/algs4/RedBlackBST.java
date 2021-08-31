@@ -840,6 +840,23 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     /**
     visit each node using pattern left subtree, root, right subtree
     in an iterative manner rather than invoking the method recursively.
+    * <pre>
+    * example:
+                   10
+              5           20
+                        30
+        
+            returns [5,10,30,20]
+    </pre>
+    <pre>
+     from "Data Structures and Algorithms", Garnett, and Del Tongo 2008.
+     The recursive version is:
+         if root ̸= null {
+             inorder(root.Left) 
+             yield root.Value 
+             inorder(root.Right)
+         }
+     </pre>
     */
     protected List<RBNode> getInOrderTraversalIterative(RBNode node) {
        
@@ -849,7 +866,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         
         int sz = size();
        
-        List<RBNode> array = new ArrayList<RBNode>();;
+        List<RBNode> out = new ArrayList<RBNode>();;
         int count = 0;
         
         Stack<RBNode> stack = new Stack<>();
@@ -865,7 +882,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
                 
                 node = stack.pop();
                 
-                array.add(node);
+                out.add(node);
                 count++;
                 
                 //System.out.println(node.key);
@@ -873,7 +890,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
                 node = node.right;
             }
         }
-        return array;
+        return out;
     }
     
     /**
@@ -925,6 +942,15 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     /**
      * visit each node using pattern: root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
+     <pre>
+     from "Data Structures and Algorithms", Garnett, and Del Tongo 2008.
+     The recursive version is:
+         if root ̸= null {
+             yield root.Value 
+             preorder(root.Left) 
+             preorder(root.Right)
+         }
+     </pre>
      */
     protected List<RBNode> getPreOrderTraversalIterative(RBNode node, int addExtraToSize) {
        
@@ -933,13 +959,14 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         //   in the middle of a put where the node size is not yet updated.
         // The count conditionals below are otherwise, not needed.
         
+        List<RBNode> out = new ArrayList<RBNode>();
+        
         if (isEmpty()) {
-            return new ArrayList<RBNode>();
+            return out;
         }
                 
         int sz = size() + addExtraToSize;
         
-        List<RBNode> array = new ArrayList<RBNode>();
         int count = 0;
         
         Stack<RBNode> stack = new Stack<>();
@@ -947,7 +974,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         while (count < sz && (!stack.isEmpty() || node != null)) {
             if (node != null) {
               
-                array.add(node);
+                out.add(node);
                 
                 count++;
                 
@@ -965,12 +992,29 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             }
         }
         
-        return array;
+        return out;
     }
 
     /**
      * visit each node using pattern: left subtree, right subtree, root subtree
      * in an iterative manner rather than invoking the method recursively.
+     <pre>
+       example:
+                 10
+              5           20
+                        30
+        
+        gives out=[5, 30, 20, 10]
+     </pre>
+     <pre>
+     from "Data Structures and Algorithms", Garnett, and Del Tongo 2008.
+     The recursive version is:
+         if root ̸= null {
+             postorder(root.Left) 
+             postorder(root.Right)
+             yield root.Value
+         }
+     </pre>
      */
     protected List<RBNode> getPostOrderTraversalIterative(RBNode node) {
         
@@ -978,11 +1022,11 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             return new ArrayList<RBNode>();
         }
         
-        List<RBNode> array = new ArrayList<RBNode>();
+        List<RBNode> out = new ArrayList<RBNode>();
         int count = 0;
         
         if (node == null) {
-            return array;
+            return out;
         }
         
         Stack<RBNode> stack = new Stack<>();
@@ -1009,12 +1053,12 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             node = stack2.pop();
             
             //process(node);
-            array.add(node);
+            out.add(node);
             count++;
             //System.out.println(node.key);
         }
          
-        return array;
+        return out;
     }
     
 }

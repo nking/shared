@@ -24,8 +24,23 @@ import no.uib.cipr.matrix.SVD;
  * Datasets" by Jure Leskovec, Anand Rajaraman, Jeff Ullman.
  * http://www.mmds.org/
  * 
- * Runtime is O(m*n) Drineas et al.
+ * "CUR matrix decompositions for improved data analysis"
+ * Runtime is O(m*n) Drineas et al. 2008
  * (https://www.pnas.org/content/pnas/106/3/697.full.pdf)
+ * "CUR decompositions are low-rank matrix decompositions that are explicitly 
+ * expressed in terms of a small number of actual columns and/or actual rows of 
+ * the data matrix...
+ * We present an algorithm that preferentially chooses columns and rows that 
+ * exhibit high “statistical leverage” and, thus, in a very precise statistical 
+ * sense, exert a disproportionately large “influence” on the best low-rank fit 
+ * of the data matrix. By selecting columns and rows in this manner, we obtain 
+ * improved relative-error and constant-factor approximation guarantees in 
+ * worst-case analysis, as opposed to the much coarser additive-error guarantees 
+ * of prior work. In addition, since the construction involves computing 
+ * quantities with a natural and widely studied statistical interpretation, 
+ * we can leverage ideas from diagnostic regression analysis to employ these 
+ * matrix decompositions for exploratory data analysis."
+ * 
  * 
  * NOTE: consider also implementing in future:
    http://www.cs.cmu.edu/~christos/PUBLICATIONS/sdm07-lsm.pdf

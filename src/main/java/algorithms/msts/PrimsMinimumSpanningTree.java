@@ -11,6 +11,9 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.Arrays;
 
 /**
+ * minimum spanning tree is the subset of edges in a weighted undirected graph
+ * that connect all vertexes for a total minimum cost (sum of edge weights).
+ * 
  * Implemented from pseudo code in Cormen et al. Introduction to Algorithms and
       from http://en.wikipedia.org/wiki/Prim's_algorithm
      
@@ -24,15 +27,15 @@ import java.util.Arrays;
      
       Prim's algorithm:
      
-      Grow a Tree in Running time is^A O((|N| + |E|)log|N|)
-      -- Start by picking any vertex to be the root of the tree.^@
-      -- While the tree does not contain all vertices in the graph ﬁnd shortest
+      Grow a Tree in Running time is O((|N| + |E|)log|N|)
+      -- Start by picking any vertex to be the root of the tree.
+      -- While the tree does not contain all vertices in the graph find shortest
          edge leaving the tree and add it to the tree.
    
   * a few definitions:
  *     a cut(S, V-S) of an undirected graph G=(V,E) is a partition of V.
  *     
- *     an edge (u,v) in E crosses the cut (S, V-S) if one of it's end points is 
+ *     an edge (u,v) in E crosses the cut (S, V-S) if one of its end points is 
  *        in S and the other is in V-S
  *        
  *     a cut respects a set of edges A if no edge in A crosses the cut
@@ -53,6 +56,9 @@ import java.util.Arrays;
   Following pseudo-code from Introduction to Algorithms,
   by Cormen et al.
 
+* 
+ * this implementation uses a YFastTrie min priority queue and adjacency list.
+ * 
 * 
  * @author nichole
  */
@@ -107,6 +113,7 @@ public class PrimsMinimumSpanningTree<T> {
         HeapNode node;
         PairInt uv;
         
+        //O(|V|)
         //int maxValue, int approxN, int maxNumberOfBits
         MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel, nV, maxNBits);
         for (int v = 0; v < nV; ++v) {
@@ -116,8 +123,10 @@ public class PrimsMinimumSpanningTree<T> {
             nodes[v] = node;
         }
         
+        // worse case O((|V| + |E|)*(lg_2 lg_2 (maxNBits)))
         while (heap.getNumberOfNodes() > 0) {
             
+            //essentially O(small constant of lg_2 lg_2 (maxNBits))
             HeapNode uNode = heap.extractMin();
             
             int u = (Integer)uNode.getData();
@@ -148,6 +157,7 @@ public class PrimsMinimumSpanningTree<T> {
                 if (wUV < key[v]) {
                     pi[v] = u;
                     key[v] = wUV;
+                    //essentially O(small constant of lg_2 lg_2 (maxNBits))
                     heap.decreaseKey(nodes[v], wUV);
                 }
                 

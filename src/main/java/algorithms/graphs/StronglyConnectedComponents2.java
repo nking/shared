@@ -64,6 +64,9 @@ public class StronglyConnectedComponents2 {
         For example, see Fig 22.9 from Cormen et al Introduction to Algorithms.
         The components are indexes c0={0,1,4}, c1={2,3}, c2={5,6}, c3={7}
         
+        td is time when node is first discovered in dfs search
+        tf is finish time
+        
                 indexes= 0   1   2   3   4   5   6   7
                 G  td=[  1,  2, 11, 12,  9,  3,  4,  5]
         ===>    G' td=[  1,  3,  7,  8,  2, 11, 12,  15] <===
@@ -74,8 +77,20 @@ public class StronglyConnectedComponents2 {
            c0 starts at t=1:6, so that is indexes 0,4,1 
            c1 starts at t=7:10 is indexes 2,3
            c2 starts at t=11:14 is indexes 5,6
-           c3 starts at t=7:16 is index 7
+           c3 starts at t=15:16 is index 7
         */
+        
+        //ascending sort by dfs2.td, then select over ascending
+        // for a list:  sort by mergesort or quicksort is O(N*log_2(N)),  select is O(1)
+        // for a minheap (yfasttrie): sort is N inserts of O(log_2(w)) + O(w-l)
+        //                            where w is the number of bits used for a data
+        //                            and l is the prefix tree already filled
+        //                            leading up to the value node.
+        //                           and select is extractMin which is O(log_2(w)) + O(w-l).
+        // so if use a data size of 16 bits:
+        //     for n<20 use a list, else use a yfastrie
+        // if use a data size of 32 bits:
+        //     for n<32 use a list, else use a yfasttrie
         
         // using a yfasttrie with key=start time.  
         //   the yfasttrie extractMin() has constant small runtime complexity
@@ -85,6 +100,7 @@ public class StronglyConnectedComponents2 {
         MinHeapForRT2012 heap = new MinHeapForRT2012(maxV, approxN,
             maxNumberOfBits);
         for (int i = 0; i < dfs2.td.length; ++i) {
+            // td is time when node is first discovered in dfs search
             HeapNode node = new HeapNode(dfs2.td[i]);
             NodeData d = new NodeData();
             d.idx = i;

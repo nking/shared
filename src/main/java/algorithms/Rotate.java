@@ -251,13 +251,12 @@ public class Rotate {
         
         int end = idxLo + (n/2);
         
-        int count = 0;
+        int idx2 = idxHi;
         for (int i = idxLo; i < end; i++) {
-            int idx2 = idxHi - count;
             int swap = a[i];
             a[i] = a[idx2];
             a[idx2] = swap;
-            count++;
+            idx2--;
         }
     }
 }

@@ -1,8 +1,12 @@
 package algorithms.matrix;
 
 import java.util.Arrays;
+import no.uib.cipr.matrix.DenseCholesky;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.DenseVector;
+import no.uib.cipr.matrix.LowerSPDDenseMatrix;
+import no.uib.cipr.matrix.LowerTriangDenseMatrix;
+import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**
@@ -41,6 +45,7 @@ public class LinearEquations {
        U*x=y    (uses back substitution with these results).
        A*x=b    (then solves x_i=(y_i - summation_j=i_to_{n-1}(u_i_j*x_j))/u_i_i).
      runtime complexity is O(n^2) for backward and forward substitutions.
+     * The method follows Cormet et al. Chap 28.3.
      @param ell is an nxn lower triangular matrix using row major format.
      @param u is an nxn upper triangular matrix using row major format.
      @param p is an array of length n holding permutation vector columns. 
@@ -215,17 +220,31 @@ public class LinearEquations {
     
     /**
      * compute the cholesky decomposition for symmetric positive definite matrix
+     * a using the MTJ library.
+     * @param a symmetric positive definite matrix 
+     * @return lower triangular matrix G  which G is a lower triangular matrix with positive
+    * diagonal entries.  a = G*G^T.
+    */
+    public static double[][] choleskyDecompositionViaMTJ(double[][] a) {
+        int n = a.length;
+        
+        assertSquareMatrix(a, "a");
+        
+        DenseCholesky chol = new DenseCholesky(n, false);
+        chol = chol.factor(new LowerSPDDenseMatrix(new DenseMatrix(a)));
+        LowerTriangDenseMatrix ell = chol.getL();
+        return Matrices.getArray(ell);
+    }
+    
+    /**
+     * compute the cholesky decomposition for symmetric positive definite matrix
      * a.
      * reference:
      * golub & van loan "matrix computations, theorem 5.2-3.
      * This method uses LDL decomposition to compute G in 
      * a = G*G^T where G is a lower triangular matrix with positive
     * diagonal entries.
-    * TODO: consider implementing algorithm 5.2-1 also.
-    * And consider re-compiling MTJ library to include the DenseCholesky.java
-    * which seems to be unsupported in the jar in this project.  alternatively
-    * could invoke the LAPACK method directly using the current build. 
-    * see https://github.com/fommil/matrix-toolkits-java/blob/master/src/main/java/no/uib/cipr/matrix/DenseCholesky.java)
+    * 
      * @param a symmetric positive definite matrix 
      * @param eps value for an error tolerance around zero used in the LDL decomposition.
      * @return lower triangular matrix G  which G is a lower triangular matrix with positive
@@ -289,10 +308,13 @@ public class LinearEquations {
      * @param eps value for a tolerance of an error around 0.
      * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
      * L and M and the diagonal matrix D as a an array of the diagonal.
+     * Note that the method will return null when an intermediary calculation 
+     * is smaller than eps.
      */
     public static LDL LDLDecomposition(double[][] a, double eps) {
         
-        int n = a.length;
+        int m = a.length;
+        int n = a[0].length;
         
         assertSquareMatrix(a, "a");
                 
@@ -302,11 +324,11 @@ public class LinearEquations {
         //NOTE: if need to conserve memory, can remove the copy statement,
         //    and add to javadoc comments that a is modified in place.
         a = MatrixUtil.copy(a);
-        double[] r = new double[n];
-        double[] d = new double[n];
+        double[] r = new double[m];
+        double[] d = new double[m];
         
         int k, i, p;
-        for (k = 1; k <= n; ++k) {
+        for (k = 1; k <= m; ++k) {
             for (p = 1; p <= (k-1); ++p) {
                 r[p-1] = d[p-1]*a[k-1][p-1];
             }
@@ -319,7 +341,7 @@ public class LinearEquations {
                     Math.abs(d[k-1]), eps);
                 return null;
             }
-            for (i = k; i <= n; ++i) {
+            for (i = k; i <= m; ++i) {
                 for (p = 1; p <= (k-1); ++p) {
                     a[i-1][k-1] -= a[i-1][p-1]*r[p-1];
                 }
@@ -327,8 +349,8 @@ public class LinearEquations {
             }
         }
         
-        for (i = 0; i < n; ++i) {
-            for (k = i+1; k < n; ++k) {
+        for (i = 0; i < m; ++i) {
+            for (k = i+1; k < m; ++k) {
                 a[i][k] = 0;
             }
         }

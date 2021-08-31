@@ -1404,6 +1404,7 @@ public class MiscMath0 {
      * @return 
      */
     public static long modularExponentiation(long a, long b, long n) {
+        // d modulo n = d - n*math.floor(d/n)
         long c = 0;
         long d = 1;
         int i;

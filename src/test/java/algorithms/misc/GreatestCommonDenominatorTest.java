@@ -26,19 +26,15 @@ public class GreatestCommonDenominatorTest extends TestCase {
     public void testEuclid0() {
         System.out.println("testEuclid0");
         int a = 11;
-        int nIter = 0;
         for (int b = (a-1); b > 0; b--) {
-            GreatestCommonDenominator.count = 0;
             int result = GreatestCommonDenominator.euclid(a, b);
-            System.out.println("count=" + GreatestCommonDenominator.count + " result=" + result);
-            nIter += GreatestCommonDenominator.count;
+            System.out.println(" result=" + result);
             if (result == 1) {
                 // a is possibly prime
             } else {
                 // a is not prime
             }
         }
-        System.out.println("nIter=" + nIter + " to prove that 11 is prime");
     }
 
     /**

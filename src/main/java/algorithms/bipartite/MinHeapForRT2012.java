@@ -16,6 +16,10 @@ import java.util.logging.Logger;
  * The Fibonacci Heap has O(1) operations excepting
  * extractMin which is O(lg_2(N_nodes)).
  * 
+ * The YFastTrie has O(log log(M)) operations including successor and
+ * predecessor where M is M is the number of bits
+ * of the maximum value in the domain.
+ * 
  * @author nichole
  */
 public class MinHeapForRT2012 {

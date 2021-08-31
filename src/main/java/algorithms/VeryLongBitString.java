@@ -29,6 +29,7 @@ public final class VeryLongBitString {
     
     protected static final long ITEM_BIT_LENGTH = 64L;
     
+    // the length of an array in java is limited to Integer.MAX_VALUE
     protected static final long N_MAX_BITS = Integer.MAX_VALUE * ITEM_BIT_LENGTH;
     
     protected final long capacityBits;

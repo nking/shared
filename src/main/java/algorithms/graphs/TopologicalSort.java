@@ -71,29 +71,20 @@ public class TopologicalSort {
          
          reverse(fIdxs);
         
-         /*
-         NOTE: some unit tests suggest that some implementations of topological sort
-         next use partitioning of connected components and then further 
-         sorts the results by the longest subsequences within the results,
-         but does not change order for same subsequence length.
-         */
          return fIdxs;
     }
     
     private void reverse(int[] a) {
         int idxLo = 0;
         int idxHi = a.length - 1;
-        int n = idxHi - idxLo + 1;
-        
-        int end = idxLo + (n/2);
-        
-        int count = 0;
-        for (int i = idxLo; i < end; i++) {
-            int idx2 = idxHi - count;
-            int swap = a[i];
+        int n = idxHi - idxLo + 1;        
+        int swap;
+        int idx2 = idxHi;
+        for (int i = idxLo; i < (idxLo + (n/2)); i++) {
+            swap = a[i];
             a[i] = a[idx2];
             a[idx2] = swap;
-            count++;
+            idx2--;
         }
     }
     
