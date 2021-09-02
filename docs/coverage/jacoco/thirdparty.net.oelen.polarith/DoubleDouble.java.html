@@ -1,0 +1,3115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoubleDouble.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.net.oelen.polarith</a> &gt; <span class="el_source">DoubleDouble.java</span></div><h1>DoubleDouble.java</h1><pre class="source lang-java linenums">/*
+The author of this code is Wilco Oelen and he offers it
+freely without copyright, but asks that his pages are referenced
+as the source if used.
+He has a webpage with information on the polynomial software
+he ported and more modern versions which require jini bindings:
+https://woelen.homescience.net/science/math/exps/polynomials/
+https://woelen.homescience.net/science/math/exps/polynomials/software.html
+The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
+https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+*/
+package thirdparty.net.oelen.polarith;
+
+import java.io.Serializable;
+import java.util.Arrays;
+
+/**
+ * Immutable, extended-precision floating-point numbers which maintain 105 bits
+ * (approximately 30 decimal digits) of precision.
+ * &lt;p&gt;
+ * A DoubleDouble uses a representation containing two double-precision values.
+ * A number x is represented as a pair of doubles, x.hi and x.lo, such that the
+ * number represented by x is x.hi + x.lo, where
+ * &lt;pre&gt;
+ *    |x.lo| &lt;= 0.5*ulp(x.hi)
+ * &lt;/pre&gt; and ulp(y) means &quot;unit in the last place of y&quot;. The basic arithmetic
+ * operations are implemented using convenient properties of IEEE-754
+ * floating-point arithmetic.
+ * &lt;p&gt;
+ * The range of values which can be represented is the same as in IEEE-754. The
+ * precision of the representable numbers is twice as great as IEEE-754 double
+ * precision.
+ * &lt;p&gt;
+ * The correctness of the arithmetic algorithms relies on operations being
+ * performed with standard IEEE-754 double precision and rounding. This is the
+ * Java standard arithmetic model, but for performance reasons Java
+ * implementations are not constrained to using this standard by default. Some
+ * processors (notably the Intel Pentium architecure) perform floating point
+ * operations in (non-IEEE-754-standard) extended-precision. A JVM
+ * implementation may choose to use the non-standard extended-precision as its
+ * default arithmetic mode. To prevent this from happening, this code uses the
+ * Java &lt;tt&gt;strictfp&lt;/tt&gt; modifier, which forces all operations to take place in
+ * the standard IEEE-754 rounding model.
+ * &lt;p&gt;
+ * The API provides a value-oriented interface. DoubleDouble values are
+ * immutable; operations on them return new objects carrying the result of the
+ * operation. This provides a much simpler semantics for writing DoubleDouble
+ * expressions, and Java memory management is efficient enough that this imposes
+ * very little performance penalty.
+ * &lt;p&gt;
+ * This implementation uses algorithms originally designed variously by Knuth,
+ * Kahan, Dekker, and Linnainmaa. Douglas Priest developed the first C
+ * implementation of these techniques. Other more recent C++ implementation are
+ * due to Keith M. Briggs and David Bailey et al.
+ *
+ * &lt;h3&gt;References&lt;/h3&gt;
+ * &lt;ul&gt;
+ * &lt;li&gt;Priest, D., &lt;i&gt;Algorithms for Arbitrary Precision Floating Point
+ * Arithmetic&lt;/i&gt;, in P. Kornerup and D. Matula, Eds., Proc. 10th Symposium on
+ * Computer Arithmetic, IEEE Computer Society Press, Los Alamitos, Calif., 1991.
+ * &lt;li&gt;Yozo Hida, Xiaoye S. Li and David H. Bailey,
+ * &lt;i&gt;Quad-Double Arithmetic: Algorithms, Implementation, and Application&lt;/i&gt;,
+ * manuscript, Oct 2000; Lawrence Berkeley National Laboratory Report BNL-46996.
+ * &lt;li&gt;David Bailey, &lt;i&gt;High Precision Software Directory&lt;/i&gt;;
+ * &lt;tt&gt;http://crd.lbl.gov/~dhbailey/mpdist/index.html&lt;/tt&gt;
+ * &lt;/ul&gt;
+ *
+ *
+ * @author Martin Davis
+ *
+ */
+public final strictfp class DoubleDouble implements Serializable, Comparable, Cloneable {
+    
+<span class="fc" id="L74">    public static final long serialVersionUID = Hash64.hash(&quot;DoubleDouble_v1.0&quot;);</span>
+
+    /**
+     * The value nearest to the constant Pi.
+     */
+<span class="fc" id="L79">    public static final DoubleDouble PI = new DoubleDouble(</span>
+            3.141592653589793116e+00,
+            1.224646799147353207e-16);
+
+    /**
+     * The value nearest to the constant 2 * Pi.
+     */
+<span class="fc" id="L86">    public static final DoubleDouble TWO_PI = new DoubleDouble(</span>
+            6.283185307179586232e+00,
+            2.449293598294706414e-16);
+
+    /**
+     * The value nearest to the constant Pi / 2.
+     */
+<span class="fc" id="L93">    public static final DoubleDouble PI_2 = new DoubleDouble(</span>
+            1.570796326794896558e+00,
+            6.123233995736766036e-17);
+
+    /**
+     * The value nearest to the constant e (the natural logarithm base).
+     */
+<span class="fc" id="L100">    public static final DoubleDouble E = new DoubleDouble(</span>
+            2.718281828459045091e+00,
+            1.445646891729250158e-16);
+    
+    
+    
+    /**
+     * A few simple numerical constants.
+     */
+<span class="fc" id="L109">    public static final DoubleDouble ZERO = new DoubleDouble();</span>
+<span class="fc" id="L110">    public static final DoubleDouble ONE = new DoubleDouble(1.0);</span>
+<span class="fc" id="L111">    public static final DoubleDouble TWO = new DoubleDouble(2.0);</span>
+<span class="fc" id="L112">    public static final DoubleDouble TEN = new DoubleDouble(10.0);</span>
+<span class="fc" id="L113">    public static final DoubleDouble MAXINT = new DoubleDouble(Integer.MAX_VALUE);</span>
+<span class="fc" id="L114">    public static final DoubleDouble MAXLONG = new DoubleDouble(Long.MAX_VALUE);</span>
+<span class="fc" id="L115">    public static final DoubleDouble MININT = new DoubleDouble(Integer.MIN_VALUE);</span>
+<span class="fc" id="L116">    public static final DoubleDouble MINLONG = new DoubleDouble(Long.MIN_VALUE);</span>
+
+    /**
+     * A value representing the result of an operation which does not return a
+     * valid number.
+     */
+<span class="fc" id="L122">    public static final DoubleDouble NaN = new DoubleDouble(Double.NaN, Double.NaN);</span>
+
+    /**
+     * The smallest representable relative difference between two {link @
+     * DoubleDouble} values
+     */
+    public static final double EPS = 1.23259516440783e-32;  /* = 2^-106 */
+
+
+    
+    
+    /**
+     * Converts the string argument to a DoubleDouble number.
+     *
+     * @param str a string containing a representation of a numeric value
+     * @return the extended precision version of the value
+     * @throws NumberFormatException if &lt;tt&gt;s&lt;/tt&gt; is not a valid representation
+     * of a number
+     */
+    public static DoubleDouble valueOf(String str)
+            throws NumberFormatException {
+<span class="nc" id="L143">        return parse(str);</span>
+    }
+
+    
+    
+    
+    /**
+     * Converts the &lt;tt&gt;double&lt;/tt&gt; argument to a DoubleDouble number.
+     *
+     * @param x a numeric value
+     * @return the extended precision version of the value
+     */
+    public static DoubleDouble valueOf(double x) {
+<span class="nc" id="L156">        return new DoubleDouble(x);</span>
+    }
+
+    
+    
+    
+    /**
+     * Converts the &lt;tt&gt;long&lt;/tt&gt; argument to a DoubleDouble number.
+     *
+     * @param x a numeric value
+     * @return the extended precision version of the value
+     */
+    public static DoubleDouble valueOf(long x) {
+<span class="nc" id="L169">        return new DoubleDouble(x);</span>
+    }
+
+    
+    
+    
+    /**
+     * Converts the &lt;tt&gt;int&lt;/tt&gt; argument to a DoubleDouble number.
+     *
+     * @param x a numeric value
+     * @return the extended precision version of the value
+     */
+    public static DoubleDouble valueOf(int x) {
+<span class="nc" id="L182">        return new DoubleDouble(x);</span>
+    }
+
+    
+    
+    
+    /**
+     * The value to split a double-precision value on during multiplication
+     */
+    private static final double SPLIT = 0x08000001; // 2^27+1, for IEEE double
+
+    
+    
+    
+    /**
+     * The high-order component of the double-double precision value.
+     */
+    double hi;  // Not private, must be accessible from same package.
+
+    
+    
+    
+    /**
+     * The low-order component of the double-double precision value.
+     */
+    double lo;  // Not private, must be accessible from same package.
+
+    
+    
+    
+    /**
+     * Creates a new DoubleDouble with value 0.0.
+     */
+<span class="fc" id="L215">    public DoubleDouble() {</span>
+<span class="fc" id="L216">        hi = lo = 0.0;</span>
+<span class="fc" id="L217">    }</span>
+    
+    
+    
+
+    /**
+     * Creates a new DoubleDouble with value x.
+     *
+     * @param x the value to initialize
+     */
+<span class="fc" id="L227">    public DoubleDouble(double x) {</span>
+<span class="fc" id="L228">        hi = x;</span>
+<span class="fc" id="L229">        lo = 0.0;</span>
+<span class="fc" id="L230">    }</span>
+
+    
+    /**
+     * Creates a new DoubleDouble with value i.
+     *
+     * @param i the value to initialize
+     */
+<span class="fc" id="L238">    public DoubleDouble(int i) {</span>
+<span class="fc" id="L239">        hi = i;</span>
+<span class="fc" id="L240">        lo = 0;</span>
+<span class="fc" id="L241">    }</span>
+    
+
+    
+    /**
+     * Creates a new DoubleDouble with value l.
+     *
+     * @param l the value to initialize
+     */
+<span class="fc" id="L250">    public DoubleDouble(long l) { </span>
+<span class="fc" id="L251">        hi = l &amp; 0xfffffffffffff800l;</span>
+<span class="fc" id="L252">        lo = l &amp; 0x7ffl;</span>
+<span class="fc" id="L253">        double s = hi + lo;</span>
+<span class="fc" id="L254">        double err = lo - (s - hi);</span>
+<span class="fc" id="L255">        hi = s;</span>
+<span class="fc" id="L256">        lo = err;</span>
+<span class="fc" id="L257">    }</span>
+    
+    
+    
+
+    /**
+     * Creates a new DoubleDouble with value (hi, lo).
+     *
+     * @param hi the high-order component
+     * @param lo the high-order component
+     */
+<span class="fc" id="L268">    private DoubleDouble(double hi, double lo) {</span>
+        // This method does no normalization of a number, it assumes
+        // that hi and lo are correct for further operations. For this
+        // reason it only is made available for internal use in this
+        // library.
+<span class="fc" id="L273">        this.hi = hi;</span>
+<span class="fc" id="L274">        this.lo = lo;</span>
+<span class="fc" id="L275">    }</span>
+    
+    
+    
+
+    /**
+     * Creates a new DoubleDouble with value equal to the argument.
+     *
+     * @param str the value to initialize by
+     * @throws NumberFormatException if &lt;tt&gt;str&lt;/tt&gt; is not a valid
+     * representation of a number
+     */
+    public DoubleDouble(String str)
+<span class="fc" id="L288">            throws NumberFormatException {</span>
+<span class="fc" id="L289">        DoubleDouble val = parse(str);</span>
+<span class="fc" id="L290">        this.hi = val.hi;</span>
+<span class="fc" id="L291">        this.lo = val.lo;</span>
+<span class="fc" id="L292">    }</span>
+    
+    
+    
+
+    /**
+     * Creates and returns a copy of this value.
+     *
+     * @return a copy of this value
+     * @throws CloneNotSupportedException but in practice this never
+     * will occur for a DoubleDouble object
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+<span class="nc" id="L306">        DoubleDouble cp = (DoubleDouble)super.clone();</span>
+<span class="nc" id="L307">        cp.hi = hi;</span>
+<span class="nc" id="L308">        cp.lo = lo;</span>
+<span class="nc" id="L309">        return cp;</span>
+    }
+    
+    
+    
+
+    private void RENORM() {
+<span class="nc" id="L316">        double s = hi + lo;</span>
+<span class="nc" id="L317">        double err = lo - (s - hi);</span>
+<span class="nc" id="L318">        hi = s;</span>
+<span class="nc" id="L319">        lo = err;</span>
+<span class="nc" id="L320">    }</span>
+    
+    
+    
+    
+    /**
+     * Returns a double[] array with approximate values of the supplied
+     * DoubleDouble array. Null values are converted to 0.0.
+     *
+     * @param arr The DoubleDouble[] array to be converted to double[].
+     * @return A double[] array with approximate values of the input array.
+     */
+    public static double[] toDouble(DoubleDouble[] arr) {
+<span class="fc" id="L333">        double[] a = new double[arr.length];</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">            a[i] = arr[i] == null ? 0.0 : arr[i].hi + arr[i].lo;</span>
+        }
+<span class="fc" id="L337">        return a;</span>
+    }
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble[] array with values of the supplied
+     * double array.
+     *
+     * @param arr The double[] array to be converted to DoubleDouble[].
+     * @return A DoubleDouble[] array with values of the input array.
+     */
+    public static DoubleDouble[] toDoubleDouble(double[] arr) {
+<span class="nc" id="L351">        DoubleDouble[] a = new DoubleDouble[arr.length];</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="nc" id="L353">            a[i] = new DoubleDouble(arr[i]);</span>
+        }
+<span class="nc" id="L355">        return a;</span>
+    }
+    
+    
+    
+    
+    /**
+     * Converts a DoubleDouble[] array to a double[] array. The
+     * output array can optionally be supplied. If no array is
+     * supplied (null value is given), then the needed array is
+     * created. Null values are converted to 0.0.
+     *
+     * @param a The output double[] array, in which the approximate converted
+     * values are stored. A null-value may be supplied. In that case an output
+     * array is created. If the output array is too short, then only part of
+     * the DoubleDouble values is converted.
+     * @param arr The DoubleDouble[] array to be converted to double[].
+     * @return A double[] array with approximate values of the input array.
+     * This can be the supplied input array or a newly allocated one.
+     */
+    public static double[] toDouble(double[] a, DoubleDouble[] arr) {
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        if (a == null) a = new double[arr.length];</span>
+<span class="nc bnc" id="L377" title="All 4 branches missed.">        for (int i=0; i&lt;a.length &amp;&amp; i&lt;arr.length; i++) {</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">            a[i] = arr[i] == null ? 0.0 : arr[i].hi + arr[i].lo;</span>
+        }
+<span class="nc" id="L380">        return a;</span>
+    }
+    
+    
+    
+    
+    /**
+     * Converts a double[] array to a DoubleDouble[] array. The
+     * output array can optionally be supplied. If no array is
+     * supplied (null value is given), then the needed array is
+     * created.
+     *
+     * @param a The output DoubleDouble[] array, in which the converted
+     * values are stored. A null-value may be supplied. In that case an
+     * output array is created. If the output array is too short, then 
+     * only part of the values is converted.
+     * @param arr The double[] array to be converted to DoubleDouble[].
+     * @return A DoubleDouble[] array with values of the input array.
+     * This can be the supplied input array or a newly allocated one.
+     */
+    public static DoubleDouble[] toDoubleDouble(DoubleDouble[] a, double[] arr) {
+<span class="nc bnc" id="L401" title="All 2 branches missed.">        if (a == null) a = new DoubleDouble[arr.length];</span>
+<span class="nc bnc" id="L402" title="All 4 branches missed.">        for (int i=0; i&lt;a.length &amp;&amp; i&lt;arr.length; i++) {</span>
+<span class="nc" id="L403">            a[i] = new DoubleDouble(arr[i]);</span>
+        }
+<span class="nc" id="L405">        return a;</span>
+    }
+     
+     
+     
+     
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + y)&lt;/tt&gt;.
+     *
+     * @param y the addend
+     * @return &lt;tt&gt;(this + y)&lt;/tt&gt;
+     */
+    public DoubleDouble add(DoubleDouble y) {
+<span class="pc bpc" id="L418" title="2 of 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L419">            return NaN;</span>
+        }
+        double a, b, c;
+<span class="fc" id="L422">        b = hi + y.hi;</span>
+<span class="fc" id="L423">        a = hi - b;</span>
+<span class="fc" id="L424">        c = ((hi - (a + b)) + (a + y.hi)) + (lo + y.lo);</span>
+<span class="fc" id="L425">        a = b + c;</span>
+<span class="fc" id="L426">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+     
+     
+     
+     
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + y)&lt;/tt&gt;.
+     *
+     * @param y the addend
+     * @return &lt;tt&gt;(this + y)&lt;/tt&gt;
+     */
+    public DoubleDouble add(long y) {
+<span class="nc bnc" id="L439" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L440">            return NaN;</span>
+        }
+<span class="nc" id="L442">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L443">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L444">        double s = yhi + ylo;</span>
+<span class="nc" id="L445">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L446">        yhi = s;</span>
+<span class="nc" id="L447">        ylo = err;</span>
+        
+        double a, b, c;
+<span class="nc" id="L450">        b = hi + yhi;</span>
+<span class="nc" id="L451">        a = hi - b;</span>
+<span class="nc" id="L452">        c = ((hi - (a + b)) + (a + yhi)) + (lo + ylo);</span>
+<span class="nc" id="L453">        a = b + c;</span>
+<span class="nc" id="L454">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+    
+    
+
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + y)&lt;/tt&gt;. This
+     * method is slightly more accurate than the standard add() method,
+     * but it also is slower. This method assures accuracy within one
+     * ulp(), while the standard add() method can have an error of two
+     * ulp().
+     *
+     * @param y the addend
+     * @return &lt;tt&gt;(this + y)&lt;/tt&gt;
+     */
+    public DoubleDouble addStrict(DoubleDouble y) {
+<span class="nc bnc" id="L471" title="All 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L472">            return NaN;</span>
+        }
+        double H, h, T, t, S, s, e, f;
+<span class="nc" id="L475">        S = hi + y.hi;</span>
+<span class="nc" id="L476">        T = lo + y.lo;</span>
+<span class="nc" id="L477">        e = S - hi;</span>
+<span class="nc" id="L478">        f = T - lo;</span>
+<span class="nc" id="L479">        s = S - e;</span>
+<span class="nc" id="L480">        t = T - f;</span>
+<span class="nc" id="L481">        s = (y.hi - e) + (hi - s);</span>
+<span class="nc" id="L482">        t = (y.lo - f) + (lo - t);</span>
+<span class="nc" id="L483">        e = s + T;</span>
+<span class="nc" id="L484">        H = S + e;</span>
+<span class="nc" id="L485">        h = e + (S - H);</span>
+<span class="nc" id="L486">        e = t + h;</span>
+
+<span class="nc" id="L488">        double zhi = H + e;</span>
+<span class="nc" id="L489">        double zlo = e + (H - zhi);</span>
+<span class="nc" id="L490">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + y)&lt;/tt&gt;.
+     *
+     * @param y the addend
+     * @return &lt;tt&gt;(this + y)&lt;/tt&gt;
+     */
+    public DoubleDouble add(double y) {
+<span class="nc bnc" id="L503" title="All 4 branches missed.">        if (hi!=hi || y!=y) {</span>
+<span class="nc" id="L504">            return NaN;</span>
+        }
+
+        double a, b, c;
+<span class="nc" id="L508">        b = hi + y;</span>
+<span class="nc" id="L509">        a = hi - b;</span>
+<span class="nc" id="L510">        c = ((hi - (b + a)) + (y + a)) + lo;</span>
+<span class="nc" id="L511">        a = b + c;</span>
+<span class="nc" id="L512">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + y)&lt;/tt&gt;.
+     *
+     * @param y the addend
+     * @return &lt;tt&gt;(this + y)&lt;/tt&gt;
+     */
+    public DoubleDouble add(int y) {
+<span class="pc bpc" id="L525" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L526">            return NaN;</span>
+        }
+
+        double a, b, c;
+<span class="fc" id="L530">        b = hi + y;</span>
+<span class="fc" id="L531">        a = hi - b;</span>
+<span class="fc" id="L532">        c = ((hi - (b + a)) + (y + a)) + lo;</span>
+<span class="fc" id="L533">        a = b + c;</span>
+<span class="fc" id="L534">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + 1)&lt;/tt&gt;.
+     *
+     * @return &lt;tt&gt;(this + 1)&lt;/tt&gt;
+     */
+    public DoubleDouble add1() {
+<span class="pc bpc" id="L546" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L547">            return NaN;</span>
+        }
+
+        double a, b, c;
+<span class="fc" id="L551">        b = hi + 1.0;</span>
+<span class="fc" id="L552">        a = hi - b;</span>
+<span class="fc" id="L553">        c = ((hi - (b + a)) + (1.0 + a)) + lo;</span>
+<span class="fc" id="L554">        a = b + c;</span>
+<span class="fc" id="L555">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - y)&lt;/tt&gt;.
+     *
+     * @param y the subtrahend
+     * @return &lt;tt&gt;(this - y)&lt;/tt&gt;
+     */
+    public DoubleDouble sub(DoubleDouble y) {
+<span class="pc bpc" id="L568" title="2 of 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L569">            return NaN;</span>
+        }
+        double a, b, c;
+<span class="fc" id="L572">        b = hi - y.hi;</span>
+<span class="fc" id="L573">        a = hi - b;</span>
+<span class="fc" id="L574">        c = ((hi - (a + b)) + (a - y.hi)) + (lo - y.lo);</span>
+<span class="fc" id="L575">        a = b + c;</span>
+<span class="fc" id="L576">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - y)&lt;/tt&gt;.
+     *
+     * @param y the subtrahend
+     * @return &lt;tt&gt;(this - y)&lt;/tt&gt;
+     */
+    public DoubleDouble sub(long y) {
+<span class="nc bnc" id="L589" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L590">            return NaN;</span>
+        }
+    
+<span class="nc" id="L593">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L594">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L595">        double s = yhi + ylo;</span>
+<span class="nc" id="L596">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L597">        yhi = s;</span>
+<span class="nc" id="L598">        ylo = err;</span>
+        
+        double a, b, c;
+<span class="nc" id="L601">        b = hi - yhi;</span>
+<span class="nc" id="L602">        a = hi - b;</span>
+<span class="nc" id="L603">        c = ((hi - (a + b)) + (a - yhi)) + (lo - ylo);</span>
+<span class="nc" id="L604">        a = b + c;</span>
+<span class="nc" id="L605">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+    
+
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - y)&lt;/tt&gt;. This
+     * method is slightly more accurate than the standard sub() method,
+     * but it also is slower. This method assures accuracy within one
+     * ulp(), while the standard sub() method can have an error of two
+     * ulp().
+     *
+     * @param y the addend
+     * @return &lt;tt&gt;(this - y)&lt;/tt&gt;
+     */
+    public DoubleDouble subStrict(DoubleDouble y) {
+<span class="nc bnc" id="L621" title="All 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L622">            return NaN;</span>
+        }
+        
+        double H, h, T, t, S, s, e, f;
+<span class="nc" id="L626">        S = hi - y.hi;</span>
+<span class="nc" id="L627">        T = lo - y.lo;</span>
+<span class="nc" id="L628">        e = S - hi;</span>
+<span class="nc" id="L629">        f = T - lo;</span>
+<span class="nc" id="L630">        s = S - e;</span>
+<span class="nc" id="L631">        t = T - f;</span>
+<span class="nc" id="L632">        s = (-y.hi - e) + (hi - s);</span>
+<span class="nc" id="L633">        t = (-y.lo - f) + (lo - t);</span>
+<span class="nc" id="L634">        e = s + T;</span>
+<span class="nc" id="L635">        H = S + e;</span>
+<span class="nc" id="L636">        h = e + (S - H);</span>
+<span class="nc" id="L637">        e = t + h;</span>
+
+<span class="nc" id="L639">        double zhi = H + e;</span>
+<span class="nc" id="L640">        double zlo = e + (H - zhi);</span>
+<span class="nc" id="L641">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - y)&lt;/tt&gt;.
+     *
+     * @param y the subtrahend
+     * @return &lt;tt&gt;(this - y)&lt;/tt&gt;
+     */
+    public DoubleDouble sub(double y) {
+<span class="nc bnc" id="L654" title="All 4 branches missed.">        if (hi!=hi || y!=y) {</span>
+<span class="nc" id="L655">            return NaN;</span>
+        }
+
+        double a, b, c;
+<span class="nc" id="L659">        b = hi - y;</span>
+<span class="nc" id="L660">        a = hi - b;</span>
+<span class="nc" id="L661">        c = ((hi - (b + a)) + (a - y)) + lo;</span>
+<span class="nc" id="L662">        a = b + c;</span>
+<span class="nc" id="L663">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - y)&lt;/tt&gt;.
+     *
+     * @param y the subtrahend
+     * @return &lt;tt&gt;(this - y)&lt;/tt&gt;
+     */
+    public DoubleDouble sub(int y) {
+<span class="pc bpc" id="L676" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L677">            return NaN;</span>
+        }
+
+        double a, b, c;
+<span class="fc" id="L681">        b = hi - y;</span>
+<span class="fc" id="L682">        a = hi - b;</span>
+<span class="fc" id="L683">        c = ((hi - (b + a)) + (a - y)) + lo;</span>
+<span class="fc" id="L684">        a = b + c;</span>
+<span class="fc" id="L685">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - 1)&lt;/tt&gt;.
+     *
+     * @return &lt;tt&gt;(this - 1)&lt;/tt&gt;
+     */
+    public DoubleDouble sub1() {
+<span class="pc bpc" id="L697" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L698">            return NaN;</span>
+        }
+
+        double a, b, c;
+<span class="fc" id="L702">        b = hi - 1.0;</span>
+<span class="fc" id="L703">        a = hi - b;</span>
+<span class="fc" id="L704">        c = ((hi - (b + a)) + (a - 1.0)) + lo;</span>
+<span class="fc" id="L705">        a = b + c;</span>
+<span class="fc" id="L706">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;-this&lt;/tt&gt;.
+     *
+     * @return &lt;tt&gt;-this&lt;/tt&gt;
+     */
+    public DoubleDouble neg() {
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L719">            return NaN;</span>
+        }
+<span class="fc" id="L721">        return new DoubleDouble(-hi, -lo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @return &lt;tt&gt;(this * y)&lt;/tt&gt;
+     */
+    public DoubleDouble mul(DoubleDouble y) {
+<span class="pc bpc" id="L734" title="2 of 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L735">            return NaN;</span>
+        }
+        
+        double hx, tx, hy, ty, C, c;
+<span class="fc" id="L739">        C = SPLIT * hi;</span>
+<span class="fc" id="L740">        hx = C - hi;</span>
+<span class="fc" id="L741">        c = SPLIT * y.hi;</span>
+<span class="fc" id="L742">        hx = C - hx;</span>
+<span class="fc" id="L743">        tx = hi - hx;</span>
+<span class="fc" id="L744">        hy = c - y.hi;</span>
+<span class="fc" id="L745">        C = hi * y.hi;</span>
+<span class="fc" id="L746">        hy = c - hy;</span>
+<span class="fc" id="L747">        ty = y.hi - hy;</span>
+<span class="fc" id="L748">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (hi * y.lo + lo * y.hi);</span>
+<span class="fc" id="L749">        double zhi = C + c;</span>
+<span class="fc" id="L750">        hx = C - zhi;</span>
+<span class="fc" id="L751">        double zlo = c + hx;</span>
+<span class="fc" id="L752">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @return &lt;tt&gt;(this * y)&lt;/tt&gt;
+     */
+    public DoubleDouble mul(long y) {
+<span class="nc bnc" id="L765" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L766">            return NaN;</span>
+        }
+    
+<span class="nc" id="L769">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L770">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L771">        double s = yhi + ylo;</span>
+<span class="nc" id="L772">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L773">        yhi = s;</span>
+<span class="nc" id="L774">        ylo = err;</span>
+        
+        double hx, tx, hy, ty, C, c;
+<span class="nc" id="L777">        C = SPLIT * hi;</span>
+<span class="nc" id="L778">        hx = C - hi;</span>
+<span class="nc" id="L779">        c = SPLIT * yhi;</span>
+<span class="nc" id="L780">        hx = C - hx;</span>
+<span class="nc" id="L781">        tx = hi - hx;</span>
+<span class="nc" id="L782">        hy = c - yhi;</span>
+<span class="nc" id="L783">        C = hi * yhi;</span>
+<span class="nc" id="L784">        hy = c - hy;</span>
+<span class="nc" id="L785">        ty = yhi - hy;</span>
+<span class="nc" id="L786">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (hi * ylo + lo * yhi);</span>
+<span class="nc" id="L787">        double zhi = C + c;</span>
+<span class="nc" id="L788">        hx = C - zhi;</span>
+<span class="nc" id="L789">        double zlo = c + hx;</span>
+<span class="nc" id="L790">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @return &lt;tt&gt;(this * y)&lt;/tt&gt;
+     */
+    public DoubleDouble mul(double y) {
+<span class="pc bpc" id="L803" title="2 of 4 branches missed.">        if (hi!=hi || y!=y) {</span>
+<span class="nc" id="L804">            return NaN;</span>
+        }
+        double hx, tx, hy, ty, C, c;
+<span class="fc" id="L807">        C = SPLIT * hi;</span>
+<span class="fc" id="L808">        hx = C - hi;</span>
+<span class="fc" id="L809">        c = SPLIT * y;</span>
+<span class="fc" id="L810">        hx = C - hx;</span>
+<span class="fc" id="L811">        tx = hi - hx;</span>
+<span class="fc" id="L812">        hy = c - y;</span>
+<span class="fc" id="L813">        C = hi * y;</span>
+<span class="fc" id="L814">        hy = c - hy;</span>
+<span class="fc" id="L815">        ty = y - hy;</span>
+<span class="fc" id="L816">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (lo * y);</span>
+<span class="fc" id="L817">        double zhi = C + c;</span>
+<span class="fc" id="L818">        hx = C - zhi;</span>
+<span class="fc" id="L819">        double zlo = c + hx;</span>
+<span class="fc" id="L820">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @return &lt;tt&gt;(this * y)&lt;/tt&gt;
+     */
+    public DoubleDouble mul(int y) {
+<span class="pc bpc" id="L833" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L834">            return NaN;</span>
+        }
+        double hx, tx, hy, ty, C, c;
+<span class="fc" id="L837">        C = SPLIT * hi;</span>
+<span class="fc" id="L838">        hx = C - hi;</span>
+<span class="fc" id="L839">        c = SPLIT * y;</span>
+<span class="fc" id="L840">        hx = C - hx;</span>
+<span class="fc" id="L841">        tx = hi - hx;</span>
+<span class="fc" id="L842">        hy = c - y;</span>
+<span class="fc" id="L843">        C = hi * y;</span>
+<span class="fc" id="L844">        hy = c - hy;</span>
+<span class="fc" id="L845">        ty = y - hy;</span>
+<span class="fc" id="L846">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (lo * y);</span>
+<span class="fc" id="L847">        double zhi = C + c;</span>
+<span class="fc" id="L848">        hx = C - zhi;</span>
+<span class="fc" id="L849">        double zlo = c + hx;</span>
+<span class="fc" id="L850">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y)&lt;/tt&gt;. This method
+     * may ONLY be used when y is an exact power of two, e.g. 0.125, 0.25, 0.5,
+     * 1, 2, 4, 8, and so on. A special much more efficient method for
+     * multiplication is used in these cases.
+     *
+     * @param y the multiplicand
+     * @return &lt;tt&gt;(this * y)&lt;/tt&gt;
+     */
+    public DoubleDouble mulPowerOf2(double y) {
+<span class="pc bpc" id="L866" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L867">            return NaN;</span>
+        }
+<span class="fc" id="L869">        return new DoubleDouble(hi * y, lo * y);</span>
+    }
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this / y)&lt;/tt&gt;.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(this / y)&lt;/tt&gt;
+     */
+    public DoubleDouble div(DoubleDouble y) {
+<span class="pc bpc" id="L882" title="2 of 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L883">            return NaN;</span>
+        }
+        double hc, tc, hy, ty, C, c, U, u;
+<span class="fc" id="L886">        C = hi / y.hi;</span>
+<span class="fc" id="L887">        c = SPLIT * C;</span>
+<span class="fc" id="L888">        hc = c - C;</span>
+<span class="fc" id="L889">        u = SPLIT * y.hi;</span>
+<span class="fc" id="L890">        hc = c - hc;</span>
+<span class="fc" id="L891">        tc = C - hc;</span>
+<span class="fc" id="L892">        hy = u - y.hi;</span>
+<span class="fc" id="L893">        U = C * y.hi;</span>
+<span class="fc" id="L894">        hy = u - hy;</span>
+<span class="fc" id="L895">        ty = y.hi - hy;</span>
+<span class="fc" id="L896">        u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;</span>
+<span class="fc" id="L897">        c = ((((hi - U) - u) + lo) - C * y.lo) / y.hi;</span>
+<span class="fc" id="L898">        u = C + c;</span>
+
+<span class="fc" id="L900">        double zhi = u;</span>
+<span class="fc" id="L901">        double zlo = (C - u) + c;</span>
+<span class="fc" id="L902">        return new DoubleDouble(zhi, zlo);</span>
+    }
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this / y)&lt;/tt&gt;.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(this / y)&lt;/tt&gt;
+     */
+    public DoubleDouble div(long y) {
+<span class="nc bnc" id="L915" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L916">            return NaN;</span>
+        }
+    
+<span class="nc" id="L919">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L920">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L921">        double s = yhi + ylo;</span>
+<span class="nc" id="L922">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L923">        yhi = s;</span>
+<span class="nc" id="L924">        ylo = err;</span>
+        
+        double hc, tc, hy, ty, C, c, U, u;
+<span class="nc" id="L927">        C = hi / yhi;</span>
+<span class="nc" id="L928">        c = SPLIT * C;</span>
+<span class="nc" id="L929">        hc = c - C;</span>
+<span class="nc" id="L930">        u = SPLIT * yhi;</span>
+<span class="nc" id="L931">        hc = c - hc;</span>
+<span class="nc" id="L932">        tc = C - hc;</span>
+<span class="nc" id="L933">        hy = u - yhi;</span>
+<span class="nc" id="L934">        U = C * yhi;</span>
+<span class="nc" id="L935">        hy = u - hy;</span>
+<span class="nc" id="L936">        ty = yhi - hy;</span>
+<span class="nc" id="L937">        u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;</span>
+<span class="nc" id="L938">        c = ((((hi - U) - u) + lo) - C * ylo) / yhi;</span>
+<span class="nc" id="L939">        u = C + c;</span>
+
+<span class="nc" id="L941">        double zhi = u;</span>
+<span class="nc" id="L942">        double zlo = (C - u) + c;</span>
+<span class="nc" id="L943">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this / y)&lt;/tt&gt;.
+     * This strict method is more precise than the normally used div()
+     * method, but it also is slower. This strict method assures accuracy
+     * within one ulp, the div() method sometimes may have one bit less
+     * of accuracy, but in normal situations it works well.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(this / y)&lt;/tt&gt;
+     */
+    public DoubleDouble divStrict(DoubleDouble y) {
+<span class="nc bnc" id="L960" title="All 4 branches missed.">        if (hi!=hi || y.hi!=y.hi) {</span>
+<span class="nc" id="L961">            return NaN;</span>
+        }
+        double a, b, c, d, e, f, g;
+<span class="nc" id="L964">        f = hi / y.hi;</span>
+<span class="nc" id="L965">        a = 0x08000001 * y.hi;</span>
+<span class="nc" id="L966">        a += y.hi - a;</span>
+<span class="nc" id="L967">        b = y.hi - a;</span>
+<span class="nc" id="L968">        c = 0x08000001 * f;</span>
+<span class="nc" id="L969">        c += f - c;</span>
+<span class="nc" id="L970">        d = f - c;</span>
+<span class="nc" id="L971">        e = y.hi * f;</span>
+<span class="nc" id="L972">        c = (((a * c - e) + (a * d + b * c)) + b * d) + y.lo * f;</span>
+<span class="nc" id="L973">        b = lo - c;</span>
+<span class="nc" id="L974">        d = lo - b;</span>
+<span class="nc" id="L975">        a = hi - e;</span>
+<span class="nc" id="L976">        e = (hi - ((hi - a) + a)) + b;</span>
+<span class="nc" id="L977">        g = a + e;</span>
+<span class="nc" id="L978">        e += (a - g) + ((lo - (d + b)) + (d - c));</span>
+<span class="nc" id="L979">        a = g + e;</span>
+<span class="nc" id="L980">        b = a / y.hi;</span>
+<span class="nc" id="L981">        f += (e + (g - a)) / y.hi;</span>
+<span class="nc" id="L982">        a = f + b;</span>
+<span class="nc" id="L983">        return new DoubleDouble(a, b + (f - a));</span>
+    }
+
+    
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this / y)&lt;/tt&gt;.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(this / y)&lt;/tt&gt;
+     */
+    public DoubleDouble div(double y) {
+<span class="nc bnc" id="L998" title="All 4 branches missed.">        if (hi!=hi || y!=y) {</span>
+<span class="nc" id="L999">            return NaN;</span>
+        }
+        double hc, tc, hy, ty, C, c, U, u;
+<span class="nc" id="L1002">        C = hi / y;</span>
+<span class="nc" id="L1003">        c = SPLIT * C;</span>
+<span class="nc" id="L1004">        hc = c - C;</span>
+<span class="nc" id="L1005">        u = SPLIT * y;</span>
+<span class="nc" id="L1006">        hc = c - hc;</span>
+<span class="nc" id="L1007">        tc = C - hc;</span>
+<span class="nc" id="L1008">        hy = u - y;</span>
+<span class="nc" id="L1009">        U = C * y;</span>
+<span class="nc" id="L1010">        hy = u - hy;</span>
+<span class="nc" id="L1011">        ty = y - hy;</span>
+<span class="nc" id="L1012">        u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;</span>
+<span class="nc" id="L1013">        c = (((hi - U) - u) + lo) / y;</span>
+<span class="nc" id="L1014">        u = C + c;</span>
+
+<span class="nc" id="L1016">        double zhi = u;</span>
+<span class="nc" id="L1017">        double zlo = (C - u) + c;</span>
+<span class="nc" id="L1018">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this / y)&lt;/tt&gt;.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(this / y)&lt;/tt&gt;
+     */
+    public DoubleDouble div(int y) {
+<span class="nc bnc" id="L1033" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1034">            return NaN;</span>
+        }
+        double hc, tc, hy, ty, C, c, U, u;
+<span class="nc" id="L1037">        C = hi / y;</span>
+<span class="nc" id="L1038">        c = SPLIT * C;</span>
+<span class="nc" id="L1039">        hc = c - C;</span>
+<span class="nc" id="L1040">        u = SPLIT * y;</span>
+<span class="nc" id="L1041">        hc = c - hc;</span>
+<span class="nc" id="L1042">        tc = C - hc;</span>
+<span class="nc" id="L1043">        hy = u - y;</span>
+<span class="nc" id="L1044">        U = C * y;</span>
+<span class="nc" id="L1045">        hy = u - hy;</span>
+<span class="nc" id="L1046">        ty = y - hy;</span>
+<span class="nc" id="L1047">        u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;</span>
+<span class="nc" id="L1048">        c = (((hi - U) - u) + lo) / y;</span>
+<span class="nc" id="L1049">        u = C + c;</span>
+
+<span class="nc" id="L1051">        double zhi = u;</span>
+<span class="nc" id="L1052">        double zlo = (C - u) + c;</span>
+<span class="nc" id="L1053">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this / y)&lt;/tt&gt;. This method
+     * may ONLY be used when y is an exact power of two, e.g. 0.125, 0.25, 0.5,
+     * 1, 2, 4, 8, and so on. A special much more efficient method for
+     * multiplication is used in these cases.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(this * y)&lt;/tt&gt;
+     */
+    public DoubleDouble divPowerOf2(double y) {
+<span class="nc bnc" id="L1069" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1070">            return NaN;</span>
+        }
+<span class="nc" id="L1072">        y = 1.0 / y;</span>
+<span class="nc" id="L1073">        return new DoubleDouble(hi * y, lo * y);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;1 / this&lt;/tt&gt;.
+     *
+     * @return the reciprocal of this value
+     */
+    public DoubleDouble recip() {
+<span class="pc bpc" id="L1085" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1086">            return NaN;</span>
+        }
+        double hc, tc, hy, ty, C, c, U, u;
+<span class="fc" id="L1089">        C = 1.0 / hi;</span>
+<span class="fc" id="L1090">        c = SPLIT * C;</span>
+<span class="fc" id="L1091">        hc = c - C;</span>
+<span class="fc" id="L1092">        u = SPLIT * hi;</span>
+<span class="fc" id="L1093">        hc = c - hc;</span>
+<span class="fc" id="L1094">        tc = C - hc;</span>
+<span class="fc" id="L1095">        hy = u - hi;</span>
+<span class="fc" id="L1096">        U = C * hi;</span>
+<span class="fc" id="L1097">        hy = u - hy;</span>
+<span class="fc" id="L1098">        ty = hi - hy;</span>
+<span class="fc" id="L1099">        u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;</span>
+<span class="fc" id="L1100">        c = ((((1.0 - U) - u)) - C * lo) / hi;</span>
+
+<span class="fc" id="L1102">        double zhi = C + c;</span>
+<span class="fc" id="L1103">        double zlo = (C - zhi) + c;</span>
+<span class="fc" id="L1104">        return new DoubleDouble(zhi, zlo);</span>
+    }
+    
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(y / this)&lt;/tt&gt;. Using this
+     * method is much more efficient than creating a new DoubleDouble(y) and
+     * calling div() on that value. This method allows a single double to be
+     * divided by a DoubleDouble at DoubleDouble precision.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(y / this)&lt;/tt&gt;
+     */
+    public DoubleDouble recip(double y) {
+<span class="nc bnc" id="L1121" title="All 4 branches missed.">        if (hi!=hi || y!=y) {</span>
+<span class="nc" id="L1122">            return NaN;</span>
+        }
+        double a, b, c, d, e, f;
+<span class="nc" id="L1125">        f = y / hi;</span>
+<span class="nc" id="L1126">        a = 0x08000001 * hi;</span>
+<span class="nc" id="L1127">        a += hi - a;</span>
+<span class="nc" id="L1128">        b = hi - a;</span>
+<span class="nc" id="L1129">        c = 0x08000001 * f;</span>
+<span class="nc" id="L1130">        c += f - c;</span>
+<span class="nc" id="L1131">        d = f - c;</span>
+<span class="nc" id="L1132">        e = hi * f;</span>
+<span class="nc" id="L1133">        b = ((y - e) - ((((a * c - e) + (a * d + b * c)) + b * d) + lo * f)) / hi;</span>
+<span class="nc" id="L1134">        a = f + b;</span>
+<span class="nc" id="L1135">        return new DoubleDouble(a, b + (f - a));</span>
+    }
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(y / this)&lt;/tt&gt;. Using this
+     * method is much more efficient than creating a new DoubleDouble(y) and
+     * calling div() on that value. This method allows a single long to be
+     * divided by a DoubleDouble at DoubleDouble precision.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(y / this)&lt;/tt&gt;
+     */
+    public DoubleDouble recip(long y) {
+<span class="nc bnc" id="L1151" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1152">            return NaN;</span>
+        }
+    
+<span class="nc" id="L1155">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L1156">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L1157">        double s = yhi + ylo;</span>
+<span class="nc" id="L1158">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L1159">        yhi = s;</span>
+<span class="nc" id="L1160">        ylo = err;</span>
+        
+        double hc, tc, hy, ty, C, c, U, u;
+<span class="nc" id="L1163">        C = yhi / hi;</span>
+<span class="nc" id="L1164">        c = SPLIT * C;</span>
+<span class="nc" id="L1165">        hc = c - C;</span>
+<span class="nc" id="L1166">        u = SPLIT * hi;</span>
+<span class="nc" id="L1167">        hc = c - hc;</span>
+<span class="nc" id="L1168">        tc = C - hc;</span>
+<span class="nc" id="L1169">        hy = u - hi;</span>
+<span class="nc" id="L1170">        U = C * hi;</span>
+<span class="nc" id="L1171">        hy = u - hy;</span>
+<span class="nc" id="L1172">        ty = hi - hy;</span>
+<span class="nc" id="L1173">        u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;</span>
+<span class="nc" id="L1174">        c = ((((yhi - U) - u) + ylo) - C * lo) / hi;</span>
+<span class="nc" id="L1175">        u = C + c;</span>
+
+<span class="nc" id="L1177">        double zhi = u;</span>
+<span class="nc" id="L1178">        double zlo = (C - u) + c;</span>
+<span class="nc" id="L1179">        return new DoubleDouble(zhi, zlo);</span>
+    }
+    
+    
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(y / this)&lt;/tt&gt;. Using this
+     * method is much more efficient than creating a new DoubleDouble(y) and
+     * calling div() on that value. This method allows a single integer to be
+     * divided by a DoubleDouble at DoubleDouble precision.
+     *
+     * @param y the divisor
+     * @return &lt;tt&gt;(y / this)&lt;/tt&gt;
+     */
+    public DoubleDouble recip(int y) {
+<span class="nc bnc" id="L1196" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1197">            return NaN;</span>
+        }
+        double a, b, c, d, e, f;
+<span class="nc" id="L1200">        f = y / hi;</span>
+<span class="nc" id="L1201">        a = 0x08000001 * hi;</span>
+<span class="nc" id="L1202">        a += hi - a;</span>
+<span class="nc" id="L1203">        b = hi - a;</span>
+<span class="nc" id="L1204">        c = 0x08000001 * f;</span>
+<span class="nc" id="L1205">        c += f - c;</span>
+<span class="nc" id="L1206">        d = f - c;</span>
+<span class="nc" id="L1207">        e = hi * f;</span>
+<span class="nc" id="L1208">        b = ((y - e) - ((((a * c - e) + (a * d + b * c)) + b * d) + lo * f)) / hi;</span>
+<span class="nc" id="L1209">        a = f + b;</span>
+<span class="nc" id="L1210">        return new DoubleDouble(a, b + (f - a));</span>
+    }
+    
+    
+
+
+    
+    /**
+     * Computes the square of this value.
+     *
+     * @return the square of this value.
+     */
+    public DoubleDouble sqr() {
+<span class="pc bpc" id="L1223" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1224">            return NaN;</span>
+        }
+        double a, b, c;
+<span class="fc" id="L1227">        a = SPLIT * hi;</span>
+<span class="fc" id="L1228">        a += hi - a;</span>
+<span class="fc" id="L1229">        b = hi - a;</span>
+<span class="fc" id="L1230">        c = hi * hi;</span>
+<span class="fc" id="L1231">        b = ((((a * a - c) + a * b * 2) + b * b) + hi * lo * 2) + lo * lo;</span>
+<span class="fc" id="L1232">        a = b + c;</span>
+<span class="fc" id="L1233">        return new DoubleDouble(a, b + (c - a));</span>
+    }
+    
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y + yy)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @param yy the addend
+     * @return &lt;tt&gt;(this * y + yy)&lt;/tt&gt;
+     */
+    public DoubleDouble muladd(DoubleDouble y, DoubleDouble yy) {
+<span class="nc bnc" id="L1248" title="All 6 branches missed.">        if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {</span>
+<span class="nc" id="L1249">            return NaN;</span>
+        }
+        
+        double hx, tx, hy, ty, C, a, b, c;
+        
+        // Perform the multiplication.
+<span class="nc" id="L1255">        C = SPLIT * hi;</span>
+<span class="nc" id="L1256">        hx = C - hi;</span>
+<span class="nc" id="L1257">        c = SPLIT * y.hi;</span>
+<span class="nc" id="L1258">        hx = C - hx;</span>
+<span class="nc" id="L1259">        tx = hi - hx;</span>
+<span class="nc" id="L1260">        hy = c - y.hi;</span>
+<span class="nc" id="L1261">        C = hi * y.hi;</span>
+<span class="nc" id="L1262">        hy = c - hy;</span>
+<span class="nc" id="L1263">        ty = y.hi - hy;</span>
+<span class="nc" id="L1264">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (hi * y.lo + lo * y.hi);</span>
+<span class="nc" id="L1265">        double zhi = C + c;</span>
+<span class="nc" id="L1266">        hx = C - zhi;</span>
+<span class="nc" id="L1267">        double zlo = c + hx;</span>
+        
+        // Perform the addition.
+<span class="nc" id="L1270">        b = zhi + yy.hi;</span>
+<span class="nc" id="L1271">        a = zhi - b;</span>
+<span class="nc" id="L1272">        c = ((zhi - (a + b)) + (a + yy.hi)) + (zlo + yy.lo);</span>
+<span class="nc" id="L1273">        a = b + c;</span>
+<span class="nc" id="L1274">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+    
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y - yy)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @param yy the addend
+     * @return &lt;tt&gt;(this * y - yy)&lt;/tt&gt;
+     */
+    public DoubleDouble mulsub(DoubleDouble y, DoubleDouble yy) {
+<span class="nc bnc" id="L1289" title="All 6 branches missed.">        if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {</span>
+<span class="nc" id="L1290">            return NaN;</span>
+        }
+        
+        double hx, tx, hy, ty, C, a, b, c;
+        
+        // Perform the multiplication.
+<span class="nc" id="L1296">        C = SPLIT * hi;</span>
+<span class="nc" id="L1297">        hx = C - hi;</span>
+<span class="nc" id="L1298">        c = SPLIT * y.hi;</span>
+<span class="nc" id="L1299">        hx = C - hx;</span>
+<span class="nc" id="L1300">        tx = hi - hx;</span>
+<span class="nc" id="L1301">        hy = c - y.hi;</span>
+<span class="nc" id="L1302">        C = hi * y.hi;</span>
+<span class="nc" id="L1303">        hy = c - hy;</span>
+<span class="nc" id="L1304">        ty = y.hi - hy;</span>
+<span class="nc" id="L1305">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (hi * y.lo + lo * y.hi);</span>
+<span class="nc" id="L1306">        double zhi = C + c;</span>
+<span class="nc" id="L1307">        hx = C - zhi;</span>
+<span class="nc" id="L1308">        double zlo = c + hx;</span>
+        
+        // Perform the subtraction.
+<span class="nc" id="L1311">        b = zhi - yy.hi;</span>
+<span class="nc" id="L1312">        a = zhi - b;</span>
+<span class="nc" id="L1313">        c = ((zhi - (a + b)) + (a - yy.hi)) + (zlo - yy.lo);</span>
+<span class="nc" id="L1314">        a = b + c;</span>
+<span class="nc" id="L1315">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+    
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this + y * yy)&lt;/tt&gt;.
+     *
+     * @param y the first factor of the product
+     * @param yy the second facvtor of the product
+     * @return &lt;tt&gt;(this + y*yy)&lt;/tt&gt;
+     */
+    public DoubleDouble addmul(DoubleDouble y, DoubleDouble yy) {
+<span class="nc bnc" id="L1330" title="All 6 branches missed.">        if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {</span>
+<span class="nc" id="L1331">            return NaN;</span>
+        }
+        
+        double hx, tx, hy, ty, C, a, b, c;
+        
+        // Perform the multiplication and the negation.
+<span class="nc" id="L1337">        C = SPLIT * yy.hi;</span>
+<span class="nc" id="L1338">        hx = C - yy.hi;</span>
+<span class="nc" id="L1339">        c = SPLIT * y.hi;</span>
+<span class="nc" id="L1340">        hx = C - hx;</span>
+<span class="nc" id="L1341">        tx = yy.hi - hx;</span>
+<span class="nc" id="L1342">        hy = c - y.hi;</span>
+<span class="nc" id="L1343">        C = yy.hi * y.hi;</span>
+<span class="nc" id="L1344">        hy = c - hy;</span>
+<span class="nc" id="L1345">        ty = y.hi - hy;</span>
+<span class="nc" id="L1346">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (yy.hi * y.lo + yy.lo * y.hi);</span>
+<span class="nc" id="L1347">        double zhi = C + c;</span>
+<span class="nc" id="L1348">        hx = C - zhi;</span>
+<span class="nc" id="L1349">        double zlo = c + hx;</span>
+        
+        // Perform the addition of this.
+<span class="nc" id="L1352">        b = zhi + hi;</span>
+<span class="nc" id="L1353">        a = zhi - b;</span>
+<span class="nc" id="L1354">        c = ((zhi - (a + b)) + (a + hi)) + (zlo + lo);</span>
+<span class="nc" id="L1355">        a = b + c;</span>
+<span class="nc" id="L1356">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+    
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this - y * yy)&lt;/tt&gt;.
+     *
+     * @param y the first factor of the product
+     * @param yy the second facvtor of the product
+     * @return &lt;tt&gt;(this - y*yy)&lt;/tt&gt;
+     */
+    public DoubleDouble submul(DoubleDouble y, DoubleDouble yy) {
+<span class="nc bnc" id="L1371" title="All 6 branches missed.">        if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {</span>
+<span class="nc" id="L1372">            return NaN;</span>
+        }
+        
+        double hx, tx, hy, ty, C, a, b, c;
+        
+        // Perform the multiplication and the negation.
+<span class="nc" id="L1378">        C = -SPLIT * yy.hi;</span>
+<span class="nc" id="L1379">        hx = C + yy.hi;</span>
+<span class="nc" id="L1380">        c = SPLIT * y.hi;</span>
+<span class="nc" id="L1381">        hx = C - hx;</span>
+<span class="nc" id="L1382">        tx = -yy.hi - hx;</span>
+<span class="nc" id="L1383">        hy = c - y.hi;</span>
+<span class="nc" id="L1384">        C = -yy.hi * y.hi;</span>
+<span class="nc" id="L1385">        hy = c - hy;</span>
+<span class="nc" id="L1386">        ty = y.hi - hy;</span>
+<span class="nc" id="L1387">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) - (yy.hi * y.lo + yy.lo * y.hi);</span>
+<span class="nc" id="L1388">        double zhi = C + c;</span>
+<span class="nc" id="L1389">        hx = C - zhi;</span>
+<span class="nc" id="L1390">        double zlo = c + hx;</span>
+        
+        // Perform the addition of this.
+<span class="nc" id="L1393">        b = zhi + hi;</span>
+<span class="nc" id="L1394">        a = zhi - b;</span>
+<span class="nc" id="L1395">        c = ((zhi - (a + b)) + (a + hi)) + (zlo + lo);</span>
+<span class="nc" id="L1396">        a = b + c;</span>
+<span class="nc" id="L1397">        return new DoubleDouble(a, c + (b - a));</span>
+    }
+    
+
+    
+    
+    
+    /**
+     * Returns a DoubleDouble whose value is &lt;tt&gt;(this * y * yy)&lt;/tt&gt;.
+     *
+     * @param y the multiplicand
+     * @param yy the addend
+     * @return &lt;tt&gt;(this * y * yy)&lt;/tt&gt;
+     */
+    public DoubleDouble mulmul(DoubleDouble y, DoubleDouble yy) {
+<span class="nc bnc" id="L1412" title="All 6 branches missed.">        if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {</span>
+<span class="nc" id="L1413">            return NaN;</span>
+        }
+        
+        double hx, tx, hy, ty, C, a, b, c;
+        
+        // Perform the first multiplication.
+<span class="nc" id="L1419">        C = SPLIT * hi;</span>
+<span class="nc" id="L1420">        hx = C - hi;</span>
+<span class="nc" id="L1421">        c = SPLIT * y.hi;</span>
+<span class="nc" id="L1422">        hx = C - hx;</span>
+<span class="nc" id="L1423">        tx = hi - hx;</span>
+<span class="nc" id="L1424">        hy = c - y.hi;</span>
+<span class="nc" id="L1425">        C = hi * y.hi;</span>
+<span class="nc" id="L1426">        hy = c - hy;</span>
+<span class="nc" id="L1427">        ty = y.hi - hy;</span>
+<span class="nc" id="L1428">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (hi * y.lo + lo * y.hi);</span>
+<span class="nc" id="L1429">        double zhi = C + c;</span>
+<span class="nc" id="L1430">        hx = C - zhi;</span>
+<span class="nc" id="L1431">        double zlo = c + hx;</span>
+        
+        // Perform the second multiplication.
+<span class="nc" id="L1434">        C = SPLIT * zhi;</span>
+<span class="nc" id="L1435">        hx = C - zhi;</span>
+<span class="nc" id="L1436">        c = SPLIT * yy.hi;</span>
+<span class="nc" id="L1437">        hx = C - hx;</span>
+<span class="nc" id="L1438">        tx = zhi - hx;</span>
+<span class="nc" id="L1439">        hy = c - yy.hi;</span>
+<span class="nc" id="L1440">        C = zhi * yy.hi;</span>
+<span class="nc" id="L1441">        hy = c - hy;</span>
+<span class="nc" id="L1442">        ty = yy.hi - hy;</span>
+<span class="nc" id="L1443">        c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (zhi * yy.lo + zlo * yy.hi);</span>
+<span class="nc" id="L1444">        zhi = C + c;</span>
+<span class="nc" id="L1445">        hx = C - zhi;</span>
+<span class="nc" id="L1446">        zlo = c + hx;</span>
+        
+<span class="nc" id="L1448">        return new DoubleDouble(zhi, zlo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns the largest (closest to positive infinity) value that is not
+     * greater than the argument and is equal to a mathematical integer. Special
+     * cases:
+     * &lt;ul&gt;
+     * &lt;li&gt;If this value is NaN, returns NaN.
+     * &lt;/ul&gt;
+     *
+     * @return the largest (closest to positive infinity) value that is not
+     * greater than the argument and is equal to a mathematical integer.
+     */
+    public DoubleDouble floor() {
+<span class="nc bnc" id="L1466" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1467">            return NaN;</span>
+        }
+<span class="nc" id="L1469">        double fhi = StrictMath.floor(hi);</span>
+<span class="nc bnc" id="L1470" title="All 2 branches missed.">        if (fhi == hi) {</span>
+            // hi is already integral, floor the low word.
+<span class="nc" id="L1472">            double flo = StrictMath.floor(lo);</span>
+<span class="nc" id="L1473">            double st = fhi + flo; flo = flo + (fhi - st); fhi = st;  </span>
+<span class="nc" id="L1474">            return new DoubleDouble(fhi, flo);</span>
+        }
+        
+<span class="nc" id="L1477">        return new DoubleDouble(fhi);</span>
+    }
+
+    
+    
+    /**
+     * Returns the smallest (closest to negative infinity) value that is not
+     * less than the argument and is equal to a mathematical integer. Special
+     * cases:
+     * &lt;ul&gt;
+     * &lt;li&gt;If this value is NaN, returns NaN.
+     * &lt;/ul&gt;
+     *
+     * @return the smallest (closest to negative infinity) value that is not
+     * less than the argument and is equal to a mathematical integer.
+     */
+    public DoubleDouble ceil() {
+<span class="nc bnc" id="L1494" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1495">            return NaN;</span>
+        }
+<span class="nc" id="L1497">        double fhi = StrictMath.ceil(hi);</span>
+<span class="nc bnc" id="L1498" title="All 2 branches missed.">        if (fhi == hi) {</span>
+            // hi is already integral, ceil the low word
+<span class="nc" id="L1500">            double flo = StrictMath.ceil(lo);</span>
+<span class="nc" id="L1501">            double st = fhi + flo; flo = flo + (fhi - st); fhi = st;  </span>
+<span class="nc" id="L1502">            return new DoubleDouble(fhi, flo);</span>
+        }
+<span class="nc" id="L1504">        return new DoubleDouble(fhi);</span>
+    }
+
+    
+    
+
+    /**
+     * Returns the integer which is largest in absolute value and not further
+     * from zero than this value. Special cases:
+     * &lt;ul&gt;
+     * &lt;li&gt;If this value is NaN, returns NaN.
+     * &lt;/ul&gt;
+     *
+     * @return the integer which is largest in absolute value and not further
+     * from zero than this value
+     */
+    public DoubleDouble trunc() {
+<span class="nc bnc" id="L1521" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1522">            return NaN;</span>
+        }
+<span class="nc bnc" id="L1524" title="All 6 branches missed.">        return (hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0)) ? ceil() : floor();</span>
+    }
+
+    
+    
+    
+    /**
+     * Returns an integer indicating the sign of this value.
+     * &lt;ul&gt;
+     * &lt;li&gt;if this value is &gt; 0, returns 1
+     * &lt;li&gt;if this value is &lt; 0, returns -1 
+     * &lt;li&gt;if this value is = 0, returns 0
+     * &lt;li&gt;if this value is NaN, returns 0
+     * &lt;/ul&gt;
+     *
+     * @return an integer indicating the sign of this value
+     */
+    public int signum() {
+<span class="nc bnc" id="L1542" title="All 6 branches missed.">        if (hi &gt; 0.0 || (hi == 0.0 &amp;&amp; lo &gt; 0.0)) {</span>
+<span class="nc" id="L1543">            return 1;</span>
+        }
+<span class="nc bnc" id="L1545" title="All 6 branches missed.">        if (hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0)) {</span>
+<span class="nc" id="L1546">            return -1;</span>
+        }
+<span class="nc" id="L1548">        return 0;</span>
+    }
+
+    
+    
+    
+    /**
+     * Rounds this value to the nearest integer. For positive integers, 0.5
+     * is rounded upwards, e.g. 3.5 is rounded to 4. For negative integers,
+     * 0.5 is rounded downwards (towards -infinity), e.g. -3.5 is rounded
+     * to -4.
+     * Special case:
+     * &lt;ul&gt;
+     * &lt;li&gt;If this value is NaN, returns NaN.
+     * &lt;/ul&gt;
+     *
+     * @return this value rounded to the nearest integer.
+     */
+    public DoubleDouble round() {
+<span class="nc bnc" id="L1567" title="All 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1568">            return NaN;</span>
+        }
+        
+<span class="nc bnc" id="L1571" title="All 6 branches missed.">        return (hi &gt; 0.0 || (hi == 0.0 &amp;&amp; lo &gt; 0.0)) ? add(0.5).floor() : sub(0.5).ceil();</span>
+    }
+
+    
+    
+    
+    
+    /**
+     * Returns the absolute value of this value. Special cases:
+     * &lt;ul&gt;
+     * &lt;li&gt;If this value is NaN, it is returned.
+     * &lt;/ul&gt;
+     *
+     * @return the absolute value of this value
+     */
+    public DoubleDouble abs() {
+<span class="pc bpc" id="L1587" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1588">            return NaN;</span>
+        }
+<span class="pc bpc" id="L1590" title="1 of 6 branches missed.">        if (hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0)) {</span>
+<span class="fc" id="L1591">            return new DoubleDouble(-hi, -lo);</span>
+        }
+<span class="fc" id="L1593">        return this;</span>
+    }
+
+    
+    
+
+
+    
+    /**
+     * Computes the positive square root of this value. If the number is NaN or
+     * negative, NaN is returned. 
+     *
+     * @return the positive square root of this number. If the argument is NaN
+     * or less than zero, the result is NaN.
+     */
+    public DoubleDouble sqrt() {
+<span class="pc bpc" id="L1609" title="3 of 4 branches missed.">        if (hi == 0.0 &amp;&amp; lo == 0.0) {</span>
+<span class="nc" id="L1610">            return this;</span>
+        }
+<span class="pc bpc" id="L1612" title="5 of 8 branches missed.">        if (hi!=hi || hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0)) {</span>
+<span class="nc" id="L1613">            return NaN;</span>
+        }
+
+        double a, b, c, d, e;
+<span class="fc" id="L1617">        d = 1 / StrictMath.sqrt(hi);</span>
+<span class="fc" id="L1618">        e = hi * d;</span>
+<span class="fc" id="L1619">        a = 0x08000001 * e;</span>
+<span class="fc" id="L1620">        a += e - a;</span>
+<span class="fc" id="L1621">        b = e - a;</span>
+<span class="fc" id="L1622">        c = e * e;</span>
+<span class="fc" id="L1623">        b = ((a * a - c) + a * b * 2) + b * b;</span>
+<span class="fc" id="L1624">        a = hi - c;</span>
+<span class="fc" id="L1625">        c = hi - a;</span>
+        //c = (a + ((((hi - (c + a)) + (c - c)) + lo) - b)) * d * 0.5;
+<span class="fc" id="L1627">        c = (a + ((((hi - (c + a))) + lo) - b)) * d * 0.5;</span>
+<span class="fc" id="L1628">        a = e + c;</span>
+<span class="fc" id="L1629">        b = e - a;</span>
+<span class="fc" id="L1630">        return new DoubleDouble(a, (e - (b + a)) + (b + c));</span>
+    }
+    
+    
+    
+    
+    
+    /**
+     * Computes the positive square root of this value. If the number is NaN or
+     * negative, NaN is returned. This strict method is more precise than the
+     * sqrt() method, but it also is slower. This strict method assures
+     * accuracy within one ulp, the sqrt() method sometimes may have one bit
+     * less of accuracy, but in normal situations it works well.
+     *
+     * @return the positive square root of this number. If the argument is NaN
+     * or less than zero, the result is NaN.
+     */
+    
+    public DoubleDouble sqrtStrict() {
+        // Strategy:  Use Karp's trick:  if x is an approximation
+        // to sqrt(a), then
+        //
+        // sqrt(a) = a*x + [a - (a*x)^2] * x / 2   (approx)
+        //
+        // The approximation is accurate to twice the accuracy of x.
+        // Also, the multiplication (a*x) and [-]*x can be done with
+        // only half the precision.
+<span class="nc bnc" id="L1657" title="All 4 branches missed.">        if (hi == 0.0 &amp;&amp; lo == 0.0) {</span>
+<span class="nc" id="L1658">            return this;</span>
+        }
+<span class="nc bnc" id="L1660" title="All 8 branches missed.">        if (hi!=hi || hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0)) {</span>
+<span class="nc" id="L1661">            return NaN;</span>
+        }
+
+        double a, b, c, d, e, f, g, h;
+<span class="nc" id="L1665">        g = 1 / StrictMath.sqrt(hi);</span>
+<span class="nc" id="L1666">        h = hi * g;</span>
+<span class="nc" id="L1667">        g *= 0.5;</span>
+<span class="nc" id="L1668">        a = 0x08000001 * h;</span>
+<span class="nc" id="L1669">        a += h - a;</span>
+<span class="nc" id="L1670">        b = h - a;</span>
+<span class="nc" id="L1671">        c = h * h;</span>
+<span class="nc" id="L1672">        b = ((a * a - c) + a * b * 2) + b * b;</span>
+<span class="nc" id="L1673">        a = lo - b;</span>
+<span class="nc" id="L1674">        f = lo - a;</span>
+<span class="nc" id="L1675">        e = hi - c;</span>
+<span class="nc" id="L1676">        d = hi - e;</span>
+<span class="nc" id="L1677">        d = ((hi - (d + e)) + (d - c)) + a;</span>
+<span class="nc" id="L1678">        c = e + d;</span>
+<span class="nc" id="L1679">        b = (d + (e - c)) + ((lo - (f + a)) + (f - b));</span>
+<span class="nc" id="L1680">        a = c + b;</span>
+<span class="nc" id="L1681">        b += (c - a);</span>
+<span class="nc" id="L1682">        c = 0x08000001 * a;</span>
+<span class="nc" id="L1683">        c += a - c;</span>
+<span class="nc" id="L1684">        d = a - c;</span>
+<span class="nc" id="L1685">        e = 0x08000001 * g;</span>
+<span class="nc" id="L1686">        e += g - e;</span>
+<span class="nc" id="L1687">        f = g - e;</span>
+<span class="nc" id="L1688">        a = a * g;</span>
+<span class="nc" id="L1689">        e = ((c * e - a) + (c * f + d * e)) + d * f;</span>
+<span class="nc" id="L1690">        e += b * g;</span>
+<span class="nc" id="L1691">        b = a + e;</span>
+<span class="nc" id="L1692">        e += a - b;</span>
+<span class="nc" id="L1693">        f = b + h;</span>
+<span class="nc" id="L1694">        c = b - f;</span>
+<span class="nc" id="L1695">        return new DoubleDouble(f, e + ((b - (f + c)) + (h + c)));</span>
+    }
+    
+    // The function below is commented away, but kept here
+    // for documenting purposes. This is Karp's trick made
+    // explicit in working Java code. The code above is
+    // used with everything written out such that no method
+    // calls and instantiation overhead occurs.
+    // The function below is equally well as the one above.
+    /*
+    public DoubleDouble sqrt() {
+
+        if (hi == 0.0 &amp;&amp; lo == 0.0) {
+            return this;
+        }
+        if (hi!=hi || hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0)) {
+            return NaN;
+        }
+
+        double x = 1.0 / StrictMath.sqrt(hi);
+        double ax = hi * x;
+
+        DoubleDouble axdd = new DoubleDouble(ax);
+        DoubleDouble diffSq = this.sub(axdd.sqr());
+        double d2 = diffSq.hi * (x * 0.5);
+
+        return axdd.add(new DoubleDouble(d2));
+    }
+    */
+
+    
+    
+    
+    /**
+     * Computes the value of this number raised to an integral power. Follows
+     * semantics of Java Math.pow as closely as possible.
+     *
+     * @param exp the integer exponent
+     * @return x raised to the integral power exp
+     */
+    public DoubleDouble pow(int exp) {
+<span class="pc bpc" id="L1736" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1737">            return NaN;</span>
+        }
+<span class="fc bfc" id="L1739" title="All 2 branches covered.">        if (exp == 0) {</span>
+<span class="fc" id="L1740">            return ONE;</span>
+        }
+
+        // Variable r = this;
+<span class="fc" id="L1744">        double rhi = hi;</span>
+<span class="fc" id="L1745">        double rlo = lo;</span>
+        
+        // Variable s = 1.0;
+<span class="fc" id="L1748">        double shi = 1.0;</span>
+<span class="fc" id="L1749">        double slo = 0.0;</span>
+        
+<span class="fc bfc" id="L1751" title="All 2 branches covered.">        int n = (exp &gt; 0) ? exp : -exp;</span>
+<span class="fc bfc" id="L1752" title="All 2 branches covered.">        if (n &gt; 1) {</span>
+            /* Use binary exponentiation */
+<span class="fc bfc" id="L1754" title="All 2 branches covered.">            while (n &gt; 0) {</span>
+<span class="fc bfc" id="L1755" title="All 2 branches covered.">                if ((n &amp; 1) == 1) {</span>
+                    // s = s*r
+                    double hx, tx, hy, ty, C, c;
+<span class="fc" id="L1758">                    C = SPLIT * shi;</span>
+<span class="fc" id="L1759">                    hx = C - shi;</span>
+<span class="fc" id="L1760">                    c = SPLIT * rhi;</span>
+<span class="fc" id="L1761">                    hx = C - hx;</span>
+<span class="fc" id="L1762">                    tx = shi - hx;</span>
+<span class="fc" id="L1763">                    hy = c - rhi;</span>
+<span class="fc" id="L1764">                    C = shi * rhi;</span>
+<span class="fc" id="L1765">                    hy = c - hy;</span>
+<span class="fc" id="L1766">                    ty = rhi - hy;</span>
+<span class="fc" id="L1767">                    c = ((((hx * hy - C) + hx * ty) + tx * hy) + tx * ty) + (shi * rlo + slo * rhi);</span>
+<span class="fc" id="L1768">                    shi = C + c;</span>
+<span class="fc" id="L1769">                    hx = C - shi;</span>
+<span class="fc" id="L1770">                    slo = c + hx;</span>
+                }
+<span class="fc" id="L1772">                n &gt;&gt;= 1;</span>
+<span class="fc bfc" id="L1773" title="All 2 branches covered.">                if (n &gt; 0) {</span>
+                    // r = r^2
+                    double a, b, c;
+<span class="fc" id="L1776">                    a = SPLIT * rhi;</span>
+<span class="fc" id="L1777">                    a += rhi - a;</span>
+<span class="fc" id="L1778">                    b = rhi - a;</span>
+<span class="fc" id="L1779">                    c = rhi * rhi;</span>
+<span class="fc" id="L1780">                    b = ((((a * a - c) + a * b * 2) + b * b) + rhi * rlo * 2) + rlo * rlo;</span>
+<span class="fc" id="L1781">                    a = b + c;</span>
+<span class="fc" id="L1782">                    rhi = a;</span>
+<span class="fc" id="L1783">                    rlo = b + (c - a);</span>
+<span class="fc" id="L1784">                }</span>
+            }
+        } 
+        else {
+<span class="fc" id="L1788">            shi = rhi;</span>
+<span class="fc" id="L1789">            slo = rlo;</span>
+        }
+
+        /* Compute the reciprocal if n is negative. */
+<span class="fc bfc" id="L1793" title="All 2 branches covered.">        if (exp &lt; 0) {</span>
+            // s = 1/s
+            double a, b, c, d, e, f;
+<span class="fc" id="L1796">            f = 1.0 / shi;</span>
+<span class="fc" id="L1797">            a = SPLIT * shi;</span>
+<span class="fc" id="L1798">            a += shi - a;</span>
+<span class="fc" id="L1799">            b = shi - a;</span>
+<span class="fc" id="L1800">            c = SPLIT * f;</span>
+<span class="fc" id="L1801">            c += f - c;</span>
+<span class="fc" id="L1802">            d = f - c;</span>
+<span class="fc" id="L1803">            e = shi * f;</span>
+<span class="fc" id="L1804">            b = ((1.0 - e) - ((((a * c - e) + (a * d + b * c)) + b * d) + slo * f)) / shi;</span>
+<span class="fc" id="L1805">            a = f + b;</span>
+<span class="fc" id="L1806">            shi = a;</span>
+<span class="fc" id="L1807">            slo = b + (f - a);</span>
+        }
+        
+<span class="fc" id="L1810">        return new DoubleDouble(shi, slo);</span>
+    }
+    
+    
+    
+    
+    /**
+     * Computes y-th root of a DoubleDouble. The number y
+     * must be positive.
+     *
+     * @param y the integer telling which root is taken
+     * @return this, raised to the power 1/y.
+     */
+    public DoubleDouble root(int y) {
+<span class="pc bpc" id="L1824" title="2 of 4 branches missed.">        if (y &lt;=0 || hi != hi) {</span>
+<span class="nc" id="L1825">            return NaN;</span>
+        }
+<span class="pc bpc" id="L1827" title="3 of 6 branches missed.">        boolean isNeg = hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0);</span>
+
+<span class="pc bpc" id="L1829" title="1 of 4 branches missed.">        if (isNeg &amp;&amp; ((y &amp; 1) == 0)) {</span>
+<span class="nc" id="L1830">            return NaN;</span>
+        }
+        
+<span class="pc bpc" id="L1833" title="3 of 4 branches missed.">        if (hi == 0 &amp;&amp; lo == 0) {</span>
+<span class="nc" id="L1834">            return this;</span>
+        }
+        
+<span class="pc bpc" id="L1837" title="2 of 3 branches missed.">        switch (y) {</span>
+            case 1:
+<span class="nc" id="L1839">                return this;</span>
+            case 2:
+<span class="nc" id="L1841">                return sqrt();</span>
+            default:
+                // fall through.
+        }
+        
+        double a, b, c, d, e, f, g, h, i, j, k, l, m;
+        int z;
+
+<span class="fc bfc" id="L1849" title="All 2 branches covered.">        if (isNeg) {</span>
+<span class="fc" id="L1850">            b = -hi;</span>
+<span class="fc" id="L1851">            c = -lo;</span>
+        }
+        else {
+<span class="fc" id="L1854">            b = hi;</span>
+<span class="fc" id="L1855">            c = lo;</span>
+        }
+        
+<span class="fc" id="L1858">        a = StrictMath.exp(StrictMath.log(b) / (-y));</span>
+<span class="fc" id="L1859">        z = y;</span>
+<span class="fc" id="L1860">        k = a;</span>
+<span class="fc" id="L1861">        l = 0;</span>
+<span class="fc" id="L1862">        g = 1;</span>
+<span class="fc" id="L1863">        h = 0;</span>
+<span class="fc bfc" id="L1864" title="All 2 branches covered.">        while (z &gt; 0) {</span>
+<span class="fc bfc" id="L1865" title="All 2 branches covered.">            if ((z &amp; 1) &gt; 0) {</span>
+<span class="fc" id="L1866">                d = SPLIT * g;</span>
+<span class="fc" id="L1867">                d += g - d;</span>
+<span class="fc" id="L1868">                e = g - d;</span>
+<span class="fc" id="L1869">                f = SPLIT * k;</span>
+<span class="fc" id="L1870">                f += k - f;</span>
+<span class="fc" id="L1871">                i = k - f;</span>
+<span class="fc" id="L1872">                j = g * k;</span>
+<span class="fc" id="L1873">                h = (((d * f - j) + (d * i + e * f)) + e * i) + (h * k + g * l);</span>
+<span class="fc" id="L1874">                g = j + h;</span>
+<span class="fc" id="L1875">                h += j - g;</span>
+            }
+<span class="fc" id="L1877">            f = SPLIT * k;</span>
+<span class="fc" id="L1878">            f = f + (k - f);</span>
+<span class="fc" id="L1879">            i = k - f;</span>
+<span class="fc" id="L1880">            j = k * k;</span>
+<span class="fc" id="L1881">            i = ((f * f - j) + f * i * 2) + i * i;</span>
+<span class="fc" id="L1882">            i += k * l * 2;</span>
+<span class="fc" id="L1883">            i += l * l;</span>
+<span class="fc" id="L1884">            k = i + j;</span>
+<span class="fc" id="L1885">            l = i + (j - k);</span>
+<span class="fc" id="L1886">            z &gt;&gt;= 1;</span>
+        }
+
+<span class="fc" id="L1889">        l = SPLIT * b;</span>
+<span class="fc" id="L1890">        l += b - l;</span>
+<span class="fc" id="L1891">        m = b - l;</span>
+<span class="fc" id="L1892">        d = SPLIT * g;</span>
+<span class="fc" id="L1893">        d += g - d;</span>
+<span class="fc" id="L1894">        e = g - d;</span>
+<span class="fc" id="L1895">        f = b * g;</span>
+<span class="fc" id="L1896">        d = (((l * d - f) + (l * e + m * d)) + m * e) + (c * g + b * h);</span>
+<span class="fc" id="L1897">        e = 1 - f;</span>
+<span class="fc" id="L1898">        l = e - d;</span>
+<span class="fc" id="L1899">        m = (e - l) - d;</span>
+<span class="fc" id="L1900">        d = SPLIT * l;</span>
+<span class="fc" id="L1901">        d += l - d;</span>
+<span class="fc" id="L1902">        e = l - d;</span>
+<span class="fc" id="L1903">        f = SPLIT * a;</span>
+<span class="fc" id="L1904">        f += a - f;</span>
+<span class="fc" id="L1905">        g = a - f;</span>
+<span class="fc" id="L1906">        l *= a;</span>
+<span class="fc" id="L1907">        m *= a;</span>
+<span class="fc" id="L1908">        m += (((d * f - l) + (d * g + e * f)) + e * g);</span>
+<span class="fc" id="L1909">        d = l / y;</span>
+<span class="fc" id="L1910">        e = SPLIT * d;</span>
+<span class="fc" id="L1911">        e += d - e;</span>
+<span class="fc" id="L1912">        f = d - e;</span>
+<span class="fc" id="L1913">        g = SPLIT * y;</span>
+<span class="fc" id="L1914">        g += y - g;</span>
+<span class="fc" id="L1915">        h = y - g;</span>
+<span class="fc" id="L1916">        i = d * y;</span>
+<span class="fc" id="L1917">        j = l - i;</span>
+<span class="fc" id="L1918">        k = l - j;</span>
+<span class="fc" id="L1919">        m = (j + ((((l - (k + j)) + (k - i)) + m) - (((e * g - i) + (e * h + f * g)) + f * h))) / y;</span>
+<span class="fc" id="L1920">        e = d + a;</span>
+<span class="fc" id="L1921">        l = d - e;</span>
+<span class="fc" id="L1922">        m += (d - (e + l)) + (a + l);</span>
+<span class="fc bfc" id="L1923" title="All 2 branches covered.">        if (isNeg) {</span>
+<span class="fc" id="L1924">            e = -e;</span>
+<span class="fc" id="L1925">            m = -m;</span>
+        }
+<span class="fc" id="L1927">        i = 1 / e;</span>
+<span class="fc" id="L1928">        l = SPLIT * e;</span>
+<span class="fc" id="L1929">        l += e - l;</span>
+<span class="fc" id="L1930">        d = e - l;</span>
+<span class="fc" id="L1931">        f = SPLIT * i;</span>
+<span class="fc" id="L1932">        f += i - f;</span>
+<span class="fc" id="L1933">        g = i - f;</span>
+<span class="fc" id="L1934">        h = e * i;</span>
+<span class="fc" id="L1935">        m = ((1 - h) - ((((l * f - h) + (l * g + d * f)) + d * g) + m * i)) / e;</span>
+<span class="fc" id="L1936">        l = i + m;</span>
+<span class="fc" id="L1937">        return new DoubleDouble(l, m + (i - l));</span>
+    }
+    
+    
+    
+
+    
+    // Devil's values:
+    // 0.693147180559945309417232121458174
+    // 1.03972077083991796412584818218727
+    // 1.03972077083991796312584818218727
+    public DoubleDouble exp() {
+<span class="pc bpc" id="L1949" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L1950">            return NaN;</span>
+        }
+<span class="pc bpc" id="L1952" title="1 of 2 branches missed.">        if (hi &gt; 691.067739) {</span>
+<span class="nc" id="L1953">            return new DoubleDouble(Double.POSITIVE_INFINITY);</span>
+        }
+
+<span class="fc" id="L1956">        double a, b, c, d, e, f, g = 0.5, h = 0, i, j, k, l, m, n, o, p, q = 2, r = 1;</span>
+        int s;
+
+<span class="fc" id="L1959">        a = SPLIT * hi;</span>
+<span class="fc" id="L1960">        a += hi - a;</span>
+<span class="fc" id="L1961">        b = a - hi;</span>
+<span class="fc" id="L1962">        c = hi * 1.4426950408889634;</span>
+<span class="fc" id="L1963">        b = (((a * 1.4426950514316559 - c) - (b * 1.4426950514316559 + a * 1.0542692496784412E-8)) + b * 1.0542692496784412E-8)</span>
+                + (lo * 1.4426950408889634 + hi * 2.0355273740931033E-17);
+<span class="fc" id="L1965">        s = (int) StrictMath.round(c);</span>
+<span class="fc bfc" id="L1966" title="All 2 branches covered.">        if (c == s) {</span>
+<span class="fc" id="L1967">            s += (int) StrictMath.round(b);</span>
+        } 
+<span class="pc bpc" id="L1969" title="3 of 4 branches missed.">        else if (StrictMath.abs(s - c) == 0.5 &amp;&amp; b &lt; 0.0) {</span>
+<span class="nc" id="L1970">            s--;</span>
+        }
+<span class="fc" id="L1972">        e = 0.6931471805599453 * s;</span>
+<span class="fc" id="L1973">        c = ((s * 0.6931471824645996 - e) - (s * 1.904654323148236E-9)) + 2.3190468138462996E-17 * s;</span>
+<span class="fc" id="L1974">        b = lo - c;</span>
+<span class="fc" id="L1975">        d = lo - b;</span>
+<span class="fc" id="L1976">        e = hi - e;</span>
+<span class="fc" id="L1977">        a = e + b;</span>
+<span class="fc" id="L1978">        b = ((lo - (d + b)) + (d - c)) + (b + (e - a));</span>
+<span class="fc" id="L1979">        e = a + 1;</span>
+<span class="fc" id="L1980">        c = a - e;</span>
+<span class="fc" id="L1981">        d = ((a - (e + c)) + (1 + c)) + b;</span>
+<span class="fc" id="L1982">        c = e + d;</span>
+<span class="fc" id="L1983">        d += e - c;</span>
+<span class="fc" id="L1984">        e = SPLIT * a;</span>
+<span class="fc" id="L1985">        e += a - e;</span>
+<span class="fc" id="L1986">        f = a - e;</span>
+<span class="fc" id="L1987">        i = a * a;</span>
+<span class="fc" id="L1988">        f = ((e * e - i) + e * f * 2) + f * f;</span>
+<span class="fc" id="L1989">        f += a * b * 2;</span>
+<span class="fc" id="L1990">        f += b * b;</span>
+<span class="fc" id="L1991">        e = f + i;</span>
+<span class="fc" id="L1992">        f += i - e;</span>
+<span class="fc" id="L1993">        i = e * g;</span>
+<span class="fc" id="L1994">        j = f * g;</span>
+        do {
+<span class="fc" id="L1996">            k = d + j;</span>
+<span class="fc" id="L1997">            l = d - k;</span>
+<span class="fc" id="L1998">            m = c + i;</span>
+<span class="fc" id="L1999">            n = c - m;</span>
+<span class="fc" id="L2000">            n = ((c - (n + m)) + (n + i)) + k;</span>
+<span class="fc" id="L2001">            o = m + n;</span>
+<span class="fc" id="L2002">            d = (n + (m - o)) + ((d - (l + k)) + (l + j));</span>
+<span class="fc" id="L2003">            c = o + d;</span>
+<span class="fc" id="L2004">            d += o - c;</span>
+<span class="fc" id="L2005">            k = SPLIT * e;</span>
+<span class="fc" id="L2006">            k += e - k;</span>
+<span class="fc" id="L2007">            l = e - k;</span>
+<span class="fc" id="L2008">            m = SPLIT * a;</span>
+<span class="fc" id="L2009">            m += a - m;</span>
+<span class="fc" id="L2010">            n = a - m;</span>
+<span class="fc" id="L2011">            o = e * a;</span>
+<span class="fc" id="L2012">            f = (((k * m - o) + (k * n + l * m)) + l * n) + (f * a + e * b);</span>
+<span class="fc" id="L2013">            e = o + f;</span>
+<span class="fc" id="L2014">            f += o - e;</span>
+<span class="fc" id="L2015">            n = g / ++q;</span>
+<span class="fc" id="L2016">            k = SPLIT * n;</span>
+<span class="fc" id="L2017">            k += n - k;</span>
+<span class="fc" id="L2018">            l = n - k;</span>
+<span class="fc" id="L2019">            m = n * q;</span>
+<span class="fc" id="L2020">            o = g - m;</span>
+<span class="fc" id="L2021">            p = g - o;</span>
+<span class="fc" id="L2022">            h = (o + ((((g - (p + o)) + (p - m)) + h) - (((k * q - m) + l * q)))) / q;</span>
+<span class="fc" id="L2023">            g = n;</span>
+<span class="fc" id="L2024">            i = SPLIT * e;</span>
+<span class="fc" id="L2025">            i += e - i;</span>
+<span class="fc" id="L2026">            k = e - i;</span>
+<span class="fc" id="L2027">            j = SPLIT * g;</span>
+<span class="fc" id="L2028">            j += g - j;</span>
+<span class="fc" id="L2029">            l = g - j;</span>
+<span class="fc" id="L2030">            m = e * g;</span>
+<span class="fc" id="L2031">            j = (((i * j - m) + (i * l + k * j)) + k * l) + (f * g + e * h);</span>
+<span class="fc" id="L2032">            i = m + j;</span>
+<span class="fc" id="L2033">            j += m - i;</span>
+        } 
+<span class="fc bfc" id="L2035" title="All 4 branches covered.">        while (i &gt; 1e-40 || i &lt; -1e-40);</span>
+
+<span class="pc bpc" id="L2037" title="1 of 2 branches missed.">        if (s &lt; 0) {</span>
+<span class="nc" id="L2038">            s = -s;</span>
+<span class="nc" id="L2039">            a = 0.5;</span>
+        } 
+        else {
+<span class="fc" id="L2042">            a = 2;</span>
+        }
+
+<span class="fc bfc" id="L2045" title="All 2 branches covered.">        while (s &gt; 0) {</span>
+<span class="fc bfc" id="L2046" title="All 2 branches covered.">            if ((s &amp; 1) &gt; 0) {</span>
+<span class="fc" id="L2047">                r *= a;</span>
+            }
+<span class="fc" id="L2049">            a *= a;</span>
+<span class="fc" id="L2050">            s &gt;&gt;= 1;</span>
+        }
+<span class="fc" id="L2052">        a = d + j;</span>
+<span class="fc" id="L2053">        b = d - a;</span>
+<span class="fc" id="L2054">        e = c + i;</span>
+<span class="fc" id="L2055">        f = c - e;</span>
+<span class="fc" id="L2056">        f = ((c - (f + e)) + (f + i)) + a;</span>
+<span class="fc" id="L2057">        c = e + f;</span>
+<span class="fc" id="L2058">        d = (f + (e - c)) + ((d - (b + a)) + (b + j));</span>
+<span class="fc" id="L2059">        return new DoubleDouble(c * r, d * r);</span>
+    }
+    
+    
+    
+    
+    
+
+    public DoubleDouble log() {
+<span class="pc bpc" id="L2068" title="2 of 4 branches missed.">        if (hi!=hi || hi &lt;= 0.0) {</span>
+<span class="nc" id="L2069">            return NaN;</span>
+        }
+
+<span class="fc" id="L2072">        double a, b, c, d, e, f, g = 0.5, h = 0, i, j, k, l, m, n, o, p, q = 2, r = 1, s;</span>
+        int t;
+
+<span class="fc" id="L2075">        s = StrictMath.log(hi);</span>
+
+<span class="fc" id="L2077">        a = SPLIT * s;</span>
+<span class="fc" id="L2078">        a += s + a;</span>
+<span class="fc" id="L2079">        b = s - a;</span>
+<span class="fc" id="L2080">        c = s * -1.4426950408889634;</span>
+<span class="fc" id="L2081">        b = (((a * -1.4426950514316559 - c) + (a * 1.0542692496784412E-8 - b * 1.4426950514316559)) + b * 1.0542692496784412E-8) - (s * 2.0355273740931033E-17);</span>
+<span class="fc" id="L2082">        t = (int) StrictMath.round(c);</span>
+<span class="fc bfc" id="L2083" title="All 2 branches covered.">        if (a == t) {</span>
+<span class="fc" id="L2084">            t += (int) StrictMath.round(b);</span>
+        } 
+<span class="pc bpc" id="L2086" title="3 of 4 branches missed.">        else if (StrictMath.abs(t - a) == 0.5 &amp;&amp; b &lt; 0.0) {</span>
+<span class="nc" id="L2087">            t--;</span>
+        }
+<span class="fc" id="L2089">        e = 0.6931471805599453 * t;</span>
+<span class="fc" id="L2090">        c = ((t * 0.6931471824645996 - e) - (t * 1.904654323148236E-9)) + 2.3190468138462996E-17 * t;</span>
+<span class="fc" id="L2091">        e += s;</span>
+<span class="fc" id="L2092">        a = e + c;</span>
+<span class="fc" id="L2093">        b = (a - e) - c;</span>
+<span class="fc" id="L2094">        e = 1 - a;</span>
+<span class="fc" id="L2095">        d = ((1 - e) - a) + b;</span>
+<span class="fc" id="L2096">        c = e + d;</span>
+<span class="fc" id="L2097">        d += e - c;</span>
+<span class="fc" id="L2098">        e = SPLIT * -a;</span>
+<span class="fc" id="L2099">        e -= a + e;</span>
+<span class="fc" id="L2100">        f = a + e;</span>
+<span class="fc" id="L2101">        i = a * a;</span>
+<span class="fc" id="L2102">        f = ((e * e - i) - e * f * 2) + f * f;</span>
+<span class="fc" id="L2103">        f += -a * b * 2;</span>
+<span class="fc" id="L2104">        a = -a;</span>
+<span class="fc" id="L2105">        f += b * b;</span>
+<span class="fc" id="L2106">        e = f + i;</span>
+<span class="fc" id="L2107">        f += i - e;</span>
+<span class="fc" id="L2108">        l = SPLIT * e;</span>
+<span class="fc" id="L2109">        l += e - l;</span>
+        //k = e - l;
+<span class="fc" id="L2111">        i = e * g;</span>
+<span class="fc" id="L2112">        j = f * g;</span>
+        do {
+<span class="fc" id="L2114">            k = d + j;</span>
+<span class="fc" id="L2115">            l = d - k;</span>
+<span class="fc" id="L2116">            m = c + i;</span>
+<span class="fc" id="L2117">            n = c - m;</span>
+<span class="fc" id="L2118">            n = ((c - (n + m)) + (n + i)) + k;</span>
+<span class="fc" id="L2119">            o = m + n;</span>
+<span class="fc" id="L2120">            d = (n + (m - o)) + ((d - (l + k)) + (l + j));</span>
+<span class="fc" id="L2121">            c = o + d;</span>
+<span class="fc" id="L2122">            d += o - c;</span>
+<span class="fc" id="L2123">            k = SPLIT * e;</span>
+<span class="fc" id="L2124">            k += e - k;</span>
+<span class="fc" id="L2125">            l = e - k;</span>
+<span class="fc" id="L2126">            m = SPLIT * a;</span>
+<span class="fc" id="L2127">            m += a - m;</span>
+<span class="fc" id="L2128">            n = a - m;</span>
+<span class="fc" id="L2129">            o = e * a;</span>
+<span class="fc" id="L2130">            f = (((k * m - o) + (k * n + l * m)) + l * n) + (f * a + e * b);</span>
+<span class="fc" id="L2131">            e = o + f;</span>
+<span class="fc" id="L2132">            f += o - e;</span>
+<span class="fc" id="L2133">            n = g / ++q;</span>
+<span class="fc" id="L2134">            k = SPLIT * n;</span>
+<span class="fc" id="L2135">            k += n - k;</span>
+<span class="fc" id="L2136">            l = n - k;</span>
+<span class="fc" id="L2137">            m = n * q;</span>
+<span class="fc" id="L2138">            o = g - m;</span>
+<span class="fc" id="L2139">            p = g - o;</span>
+<span class="fc" id="L2140">            h = (o + ((((g - (p + o)) + (p - m)) + h) - (((k * q - m) + l * q)))) / q;</span>
+<span class="fc" id="L2141">            g = n;</span>
+<span class="fc" id="L2142">            i = SPLIT * e;</span>
+<span class="fc" id="L2143">            i += e - i;</span>
+<span class="fc" id="L2144">            k = e - i;</span>
+<span class="fc" id="L2145">            j = SPLIT * g;</span>
+<span class="fc" id="L2146">            j += g - j;</span>
+<span class="fc" id="L2147">            l = g - j;</span>
+<span class="fc" id="L2148">            m = e * g;</span>
+<span class="fc" id="L2149">            j = (((i * j - m) + (i * l + k * j)) + k * l) + (f * g + e * h);</span>
+<span class="fc" id="L2150">            i = m + j;</span>
+<span class="fc" id="L2151">            j += m - i;</span>
+        } 
+<span class="fc bfc" id="L2153" title="All 4 branches covered.">        while (i &gt; 1e-40 || i &lt; -1e-40);</span>
+
+<span class="fc bfc" id="L2155" title="All 2 branches covered.">        if (t &lt; 0) {</span>
+<span class="fc" id="L2156">            t = -t;</span>
+<span class="fc" id="L2157">            k = 0.5;</span>
+        } 
+        else {
+<span class="fc" id="L2160">            k = 2;</span>
+        }
+
+<span class="fc bfc" id="L2163" title="All 2 branches covered.">        while (t &gt; 0) {</span>
+<span class="fc bfc" id="L2164" title="All 2 branches covered.">            if ((t &amp; 1) &gt; 0) {</span>
+<span class="fc" id="L2165">                r *= k;</span>
+            }
+<span class="fc" id="L2167">            k *= k;</span>
+<span class="fc" id="L2168">            t &gt;&gt;= 1;</span>
+        }
+<span class="fc" id="L2170">        a = d + j;</span>
+<span class="fc" id="L2171">        b = d - a;</span>
+<span class="fc" id="L2172">        e = c + i;</span>
+<span class="fc" id="L2173">        f = c - e;</span>
+<span class="fc" id="L2174">        f = ((c - (f + e)) + (f + i)) + a;</span>
+<span class="fc" id="L2175">        g = e + f;</span>
+<span class="fc" id="L2176">        h = ((f + (e - g)) + ((d - (b + a)) + (b + j))) * r;</span>
+<span class="fc" id="L2177">        g *= r;</span>
+<span class="fc" id="L2178">        a = SPLIT * hi;</span>
+<span class="fc" id="L2179">        a += hi - a;</span>
+<span class="fc" id="L2180">        c = hi - a;</span>
+<span class="fc" id="L2181">        b = SPLIT * g;</span>
+<span class="fc" id="L2182">        b += g - b;</span>
+<span class="fc" id="L2183">        d = g - b;</span>
+<span class="fc" id="L2184">        e = hi * g;</span>
+<span class="fc" id="L2185">        b = (((a * b - e) + (a * d + c * b)) + c * d) + (lo * g + hi * h);</span>
+<span class="fc" id="L2186">        a = --e + b;</span>
+<span class="fc" id="L2187">        b += e - a;</span>
+<span class="fc" id="L2188">        c = a + s;</span>
+<span class="fc" id="L2189">        d = a - c;</span>
+<span class="fc" id="L2190">        b += ((a - (c + d)) + (s + d));</span>
+<span class="fc" id="L2191">        a = c + b;</span>
+<span class="fc" id="L2192">        return new DoubleDouble(a, b + (c - a));</span>
+    }
+
+    
+    
+    
+    /*------------------------------------------------------------
+     *   Conversion Functions
+     *------------------------------------------------------------
+     */
+    /**
+     * Converts this value to the nearest double-precision number.
+     *
+     * @return the nearest double-precision number to this value
+     */
+    public double doubleValue() {
+<span class="fc" id="L2208">        return hi + lo;</span>
+    }
+
+    
+    
+    
+    /*------------------------------------------------------------
+     *   Conversion Functions
+     *------------------------------------------------------------
+     */
+    /**
+     * Converts this value to the absolute value of the
+     * nearest double-precision number.
+     *
+     * @return the absolute value of the nearest double-precision 
+     * number to this value
+     */
+    public double dabs() {
+<span class="nc" id="L2226">        double a = hi + lo;</span>
+<span class="nc bnc" id="L2227" title="All 2 branches missed.">        return (a &gt;= 0) ? a : -a;</span>
+    }
+
+    
+    
+    
+    /**
+     * Converts this value to the nearest integer.
+     *
+     * @return the nearest integer to this value
+     */
+    public int intValue() {
+        double fhi;
+<span class="nc bnc" id="L2240" title="All 6 branches missed.">        if (hi &gt; 0.0 || (hi == 0.0 &amp;&amp; lo &gt;= 0.0)) {</span>
+            // Non-negative number, use the floor function.
+<span class="nc" id="L2242">            fhi = StrictMath.floor(hi);</span>
+<span class="nc bnc" id="L2243" title="All 2 branches missed.">            if (fhi == hi) {</span>
+<span class="nc" id="L2244">                fhi += StrictMath.floor(lo);  </span>
+            }
+        }
+        else {
+            // Negative number, use the ceil function.
+<span class="nc" id="L2249">            fhi = StrictMath.ceil(hi);</span>
+<span class="nc bnc" id="L2250" title="All 2 branches missed.">            if (fhi == hi) {</span>
+<span class="nc" id="L2251">                fhi += StrictMath.ceil(lo);  </span>
+            }
+        }
+<span class="nc bnc" id="L2254" title="All 4 branches missed.">        return (fhi &lt; MININT.hi) ? Integer.MIN_VALUE : (fhi &gt; MAXINT.hi ? Integer.MAX_VALUE : (int)fhi);</span>
+    }
+
+    
+    
+    
+    /**
+     * Converts this value to the nearest integer.
+     *
+     * @return the nearest integer to this value
+     */
+    public long longValue() {
+<span class="nc" id="L2266">        double fhi, flo = 0.0;</span>
+<span class="nc bnc" id="L2267" title="All 6 branches missed.">        if (hi &gt; 0.0 || (hi == 0.0 &amp;&amp; lo &gt;= 0.0)) {</span>
+            // Non-negative number, use the floor function.
+<span class="nc" id="L2269">            fhi = StrictMath.floor(hi);</span>
+<span class="nc bnc" id="L2270" title="All 2 branches missed.">            if (fhi == hi) {</span>
+<span class="nc" id="L2271">                flo = StrictMath.floor(lo);</span>
+<span class="nc" id="L2272">                double st = fhi + flo; flo = flo + (fhi - st); fhi = st;</span>
+<span class="nc" id="L2273">            }</span>
+        }
+        else {
+            // Negative number, use the ceil function.
+<span class="nc" id="L2277">            fhi = StrictMath.ceil(hi);</span>
+<span class="nc bnc" id="L2278" title="All 2 branches missed.">            if (fhi == hi) {</span>
+<span class="nc" id="L2279">                flo = StrictMath.ceil(lo);</span>
+<span class="nc" id="L2280">                double st = fhi + flo; flo = flo + (fhi - st); fhi = st;  </span>
+            }
+        }
+        
+<span class="nc bnc" id="L2284" title="All 6 branches missed.">        if (fhi &gt; MAXLONG.hi || (fhi == MAXLONG.hi &amp;&amp; flo &gt;= MAXLONG.lo)) return Long.MAX_VALUE;</span>
+<span class="nc bnc" id="L2285" title="All 6 branches missed.">        if (fhi &lt; MINLONG.hi || (fhi == MINLONG.hi &amp;&amp; flo &lt;= MINLONG.lo)) return Long.MIN_VALUE;</span>
+        
+<span class="nc" id="L2287">        return ((long)fhi) + ((long)flo);</span>
+    }
+
+    
+    
+    
+    /*------------------------------------------------------------
+     *   Predicates
+     *------------------------------------------------------------
+     */
+    
+    /**
+     * Tests whether this value is equal to 0.
+     *
+     * @return true if this value is equal to 0
+     */
+    public boolean isZero() {
+<span class="pc bpc" id="L2304" title="1 of 4 branches missed.">        return hi == 0.0 &amp;&amp; lo == 0.0;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is equal to 1.
+     *
+     * @return true if this value is equal to 1
+     */
+    public boolean isOne() {
+<span class="nc bnc" id="L2316" title="All 4 branches missed.">        return hi == 1.0 &amp;&amp; lo == 0.0;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than 0.
+     *
+     * @return true if this value is less than 0
+     */
+    public boolean isNegative() {
+<span class="pc bpc" id="L2328" title="3 of 6 branches missed.">        return hi &lt; 0.0 || (hi == 0.0 &amp;&amp; lo &lt; 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than 0.
+     *
+     * @return true if this value is greater than 0
+     */
+    public boolean isPositive() {
+<span class="nc bnc" id="L2340" title="All 6 branches missed.">        return hi &gt; 0.0 || (hi == 0.0 &amp;&amp; lo &gt; 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is NaN.
+     *
+     * @return true if this value is NaN
+     */
+    public boolean isNaN() {
+<span class="nc bnc" id="L2352" title="All 2 branches missed.">        return hi!=hi;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is close to another value.
+     *
+     * @param b a DoubleDouble value, to be compared with this
+     * @param eps a specification of the relatieve precision
+     * @return true if this value is close to the other value with relative
+     * precision, given by eps.
+     */
+    public boolean isNear(DoubleDouble b, double eps) {
+<span class="pc bpc" id="L2367" title="3 of 6 branches missed.">        if (hi!=hi || b.hi!=b.hi || eps!=eps) {</span>
+<span class="nc" id="L2368">            return false;</span>
+        }
+<span class="fc" id="L2370">        double a = abs().doubleValue();</span>
+<span class="fc" id="L2371">        double diff = sub(b).abs().doubleValue();</span>
+<span class="pc bpc" id="L2372" title="1 of 2 branches missed.">        return diff &lt; a * eps;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is equal to another &lt;tt&gt;DoubleDouble&lt;/tt&gt; value.
+     *
+     * @param y a DoubleDouble value
+     * @return true if this value = y
+     */
+    public boolean equals(DoubleDouble y) {
+<span class="nc bnc" id="L2385" title="All 4 branches missed.">        return hi == y.hi &amp;&amp; lo == y.lo;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is equal to a given &lt;tt&gt;double&lt;/tt&gt; value.
+     *
+     * @param y a double value
+     * @return true if this value = y
+     */
+    public boolean equals(double y) {
+<span class="nc bnc" id="L2398" title="All 4 branches missed.">        return hi == y &amp;&amp; lo == 0;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is equal to a given &lt;tt&gt;long&lt;/tt&gt; value.
+     *
+     * @param y a long value
+     * @return true if this value = y
+     */
+    public boolean equals(long y) {
+<span class="nc" id="L2411">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L2412">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L2413">        double s = yhi + ylo;</span>
+<span class="nc" id="L2414">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L2415">        yhi = s;</span>
+<span class="nc" id="L2416">        ylo = err;</span>
+<span class="nc bnc" id="L2417" title="All 4 branches missed.">        return hi == yhi &amp;&amp; lo == ylo;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is equal to a given &lt;tt&gt;int&lt;/tt&gt; value.
+     *
+     * @param y an int value
+     * @return true if this value = y
+     */
+    public boolean equals(int y) {
+<span class="nc bnc" id="L2430" title="All 4 branches missed.">        return hi == y &amp;&amp; lo == 0;</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than another &lt;tt&gt;DoubleDouble&lt;/tt&gt;
+     * value.
+     *
+     * @param y a DoubleDouble value
+     * @return true if this value &gt; y
+     */
+    public boolean gt(DoubleDouble y) {
+<span class="nc bnc" id="L2444" title="All 6 branches missed.">        return (hi &gt; y.hi) || (hi == y.hi &amp;&amp; lo &gt; y.lo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than a given &lt;tt&gt;double&lt;/tt&gt;
+     * value.
+     *
+     * @param y a double value
+     * @return true if this value &gt; y
+     */
+    public boolean gt(double y) {
+<span class="pc bpc" id="L2458" title="3 of 6 branches missed.">        return (hi &gt; y) || (hi == y &amp;&amp; lo &gt; 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than a given
+     * &lt;tt&gt;long&lt;/tt&gt; value.
+     *
+     * @param y a long value
+     * @return true if this value &gt;= y
+     */
+    public boolean gt(long y) {
+<span class="nc" id="L2472">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L2473">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L2474">        double s = yhi + ylo;</span>
+<span class="nc" id="L2475">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L2476">        yhi = s;</span>
+<span class="nc" id="L2477">        ylo = err;</span>
+<span class="nc bnc" id="L2478" title="All 6 branches missed.">        return (hi &gt; yhi) || (hi == yhi &amp;&amp; lo &gt; ylo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than a given &lt;tt&gt;int&lt;/tt&gt;
+     * value.
+     *
+     * @param y an int value
+     * @return true if this value &gt; y
+     */
+    public boolean gt(int y) {
+<span class="nc bnc" id="L2492" title="All 6 branches missed.">        return (hi &gt; y) || (hi == y &amp;&amp; lo &gt; 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than or equals to another
+     * &lt;tt&gt;DoubleDouble&lt;/tt&gt; value.
+     *
+     * @param y a DoubleDouble value
+     * @return true if this value &gt;= y
+     */
+    public boolean ge(DoubleDouble y) {
+<span class="nc bnc" id="L2506" title="All 6 branches missed.">        return (hi &gt; y.hi) || (hi == y.hi &amp;&amp; lo &gt;= y.lo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than or equals to a given
+     * &lt;tt&gt;double&lt;/tt&gt; value.
+     *
+     * @param y a double value
+     * @return true if this value &gt;= y
+     */
+    public boolean ge(double y) {
+<span class="nc bnc" id="L2520" title="All 6 branches missed.">        return (hi &gt; y) || (hi == y &amp;&amp; lo &gt;= 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than or equals to a given
+     * &lt;tt&gt;long&lt;/tt&gt; value.
+     *
+     * @param y a long value
+     * @return true if this value &gt;= y
+     */
+    public boolean ge(long y) {
+<span class="nc" id="L2534">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L2535">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L2536">        double s = yhi + ylo;</span>
+<span class="nc" id="L2537">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L2538">        yhi = s;</span>
+<span class="nc" id="L2539">        ylo = err;</span>
+<span class="nc bnc" id="L2540" title="All 6 branches missed.">        return (hi &gt; yhi) || (hi == yhi &amp;&amp; lo &gt;= ylo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is greater than or equals to a given
+     * &lt;tt&gt;int&lt;/tt&gt; value.
+     *
+     * @param y an int value
+     * @return true if this value &gt;= y
+     */
+    public boolean ge(int y) {
+<span class="pc bpc" id="L2554" title="2 of 6 branches missed.">        return (hi &gt; y) || (hi == y &amp;&amp; lo &gt;= 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than another &lt;tt&gt;DoubleDouble&lt;/tt&gt;
+     * value.
+     *
+     * @param y a DoubleDouble value
+     * @return true if this value &lt; y
+     */
+    public boolean lt(DoubleDouble y) {
+<span class="nc bnc" id="L2568" title="All 6 branches missed.">        return (hi &lt; y.hi) || (hi == y.hi &amp;&amp; lo &lt; y.lo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than a given &lt;tt&gt;double&lt;/tt&gt;
+     * value.
+     *
+     * @param y a double value
+     * @return true if this value &lt; y
+     */
+    public boolean lt(double y) {
+<span class="fc bfc" id="L2582" title="All 6 branches covered.">        return (hi &lt; y) || (hi == y &amp;&amp; lo &lt; 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than a given
+     * &lt;tt&gt;long&lt;/tt&gt; value.
+     *
+     * @param y a long value
+     * @return true if this value &lt;= y
+     */
+    public boolean lt(long y) { 
+<span class="nc" id="L2596">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L2597">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L2598">        double s = yhi + ylo;</span>
+<span class="nc" id="L2599">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L2600">        yhi = s;</span>
+<span class="nc" id="L2601">        ylo = err;</span>
+<span class="nc bnc" id="L2602" title="All 6 branches missed.">        return (hi &lt; yhi) || (hi == yhi &amp;&amp; lo &lt; ylo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than a given &lt;tt&gt;int&lt;/tt&gt;
+     * value.
+     *
+     * @param y an int value
+     * @return true if this value &lt; y
+     */
+    public boolean lt(int y) {
+<span class="nc bnc" id="L2616" title="All 6 branches missed.">        return (hi &lt; y) || (hi == y &amp;&amp; lo &lt; 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than or equal to another
+     * &lt;tt&gt;DoubleDouble&lt;/tt&gt; value.
+     *
+     * @param y a DoubleDouble value
+     * @return true if this value &lt;= y
+     */
+    public boolean le(DoubleDouble y) {
+<span class="nc bnc" id="L2630" title="All 6 branches missed.">        return (hi &lt; y.hi) || (hi == y.hi &amp;&amp; lo &lt;= y.lo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than or equal to a given
+     * &lt;tt&gt;double&lt;/tt&gt; value.
+     *
+     * @param y a double value
+     * @return true if this value &lt;= y
+     */
+    public boolean le(double y) {
+<span class="nc bnc" id="L2644" title="All 6 branches missed.">        return (hi &lt; y) || (hi == y &amp;&amp; lo &lt;= 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than or equal to a given
+     * &lt;tt&gt;long&lt;/tt&gt; value.
+     *
+     * @param y a long value
+     * @return true if this value &lt;= y
+     */
+    public boolean le(long y) { 
+<span class="nc" id="L2658">        double yhi = y &amp; 0xfffffffffffff800l;</span>
+<span class="nc" id="L2659">        double ylo = y &amp; 0x7ffl;</span>
+<span class="nc" id="L2660">        double s = yhi + ylo;</span>
+<span class="nc" id="L2661">        double err = ylo - (s - yhi);</span>
+<span class="nc" id="L2662">        yhi = s;</span>
+<span class="nc" id="L2663">        ylo = err;</span>
+<span class="nc bnc" id="L2664" title="All 6 branches missed.">        return (hi &lt; yhi) || (hi == yhi &amp;&amp; lo &lt;= ylo);</span>
+    }
+
+    
+    
+    
+    /**
+     * Tests whether this value is less than or equal to a given
+     * &lt;tt&gt;int&lt;/tt&gt; value.
+     *
+     * @param y an int value
+     * @return true if this value &lt;= y
+     */
+    public boolean le(int y) {
+<span class="nc bnc" id="L2678" title="All 6 branches missed.">        return (hi &lt; y) || (hi == y &amp;&amp; lo &lt;= 0.0);</span>
+    }
+
+    
+    
+    
+    /**
+     * Compares two DoubleDouble objects numerically.
+     *
+     * @return -1,0 or 1 depending on whether this value is less than, equal to
+     * or greater than the value of &lt;tt&gt;o&lt;/tt&gt;
+     */
+    @Override
+    public int compareTo(Object o) {
+<span class="pc bpc" id="L2692" title="1 of 2 branches missed.">        if (o instanceof DoubleDouble) {</span>
+<span class="fc" id="L2693">            DoubleDouble other = (DoubleDouble)o;</span>
+<span class="fc bfc" id="L2694" title="All 6 branches covered.">            if (hi &lt; other.hi || (hi == other.hi &amp;&amp; lo &lt; other.lo)) {return -1;}</span>
+<span class="pc bpc" id="L2695" title="1 of 6 branches missed.">            if (hi &gt; other.hi || (hi == other.hi &amp;&amp; lo &gt; other.lo)) {return 1;}</span>
+<span class="fc" id="L2696">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2699" title="All 2 branches missed.">        if (o instanceof Double) {</span>
+<span class="nc" id="L2700">            double other = (Double)o;</span>
+<span class="nc bnc" id="L2701" title="All 6 branches missed.">            if (hi &lt; other || (hi == other &amp;&amp; lo &lt; 0)) {return -1;}</span>
+<span class="nc bnc" id="L2702" title="All 6 branches missed.">            if (hi &gt; other || (hi == other &amp;&amp; lo &gt; 0)) {return 1;}</span>
+<span class="nc" id="L2703">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2706" title="All 2 branches missed.">        if (o instanceof Long) {</span>
+<span class="nc" id="L2707">            DoubleDouble other = new DoubleDouble((Long)o);</span>
+<span class="nc bnc" id="L2708" title="All 6 branches missed.">            if (hi &lt; other.hi || (hi == other.hi &amp;&amp; lo &lt; other.lo)) {return -1;}</span>
+<span class="nc bnc" id="L2709" title="All 6 branches missed.">            if (hi &gt; other.hi || (hi == other.hi &amp;&amp; lo &gt; other.lo)) {return 1;}</span>
+<span class="nc" id="L2710">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2713" title="All 2 branches missed.">        if (o instanceof Integer) {</span>
+<span class="nc" id="L2714">            double other = (Integer)o;</span>
+<span class="nc bnc" id="L2715" title="All 6 branches missed.">            if (hi &lt; other || (hi == other &amp;&amp; lo &lt; 0)) {return -1;}</span>
+<span class="nc bnc" id="L2716" title="All 6 branches missed.">            if (hi &gt; other || (hi == other &amp;&amp; lo &gt; 0)) {return 1;}</span>
+<span class="nc" id="L2717">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2720" title="All 2 branches missed.">        if (o instanceof Float) {</span>
+<span class="nc" id="L2721">            double other = (Float)o;</span>
+<span class="nc bnc" id="L2722" title="All 6 branches missed.">            if (hi &lt; other || (hi == other &amp;&amp; lo &lt; 0)) {return -1;}</span>
+<span class="nc bnc" id="L2723" title="All 6 branches missed.">            if (hi &gt; other || (hi == other &amp;&amp; lo &gt; 0)) {return 1;}</span>
+<span class="nc" id="L2724">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2727" title="All 2 branches missed.">        if (o instanceof String) {</span>
+<span class="nc" id="L2728">            DoubleDouble other = new DoubleDouble((String)o);</span>
+<span class="nc bnc" id="L2729" title="All 6 branches missed.">            if (hi &lt; other.hi || (hi == other.hi &amp;&amp; lo &lt; other.lo)) {return -1;}</span>
+<span class="nc bnc" id="L2730" title="All 6 branches missed.">            if (hi &gt; other.hi || (hi == other.hi &amp;&amp; lo &gt; other.lo)) {return 1;}</span>
+<span class="nc" id="L2731">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2734" title="All 2 branches missed.">        if (o instanceof Short) {</span>
+<span class="nc" id="L2735">            double other = (Short)o;</span>
+<span class="nc bnc" id="L2736" title="All 6 branches missed.">            if (hi &lt; other || (hi == other &amp;&amp; lo &lt; 0)) {return -1;}</span>
+<span class="nc bnc" id="L2737" title="All 6 branches missed.">            if (hi &gt; other || (hi == other &amp;&amp; lo &gt; 0)) {return 1;}</span>
+<span class="nc" id="L2738">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2741" title="All 2 branches missed.">        if (o instanceof Byte) {</span>
+<span class="nc" id="L2742">            double other = (Byte)o;</span>
+<span class="nc bnc" id="L2743" title="All 6 branches missed.">            if (hi &lt; other || (hi == other &amp;&amp; lo &lt; 0)) {return -1;}</span>
+<span class="nc bnc" id="L2744" title="All 6 branches missed.">            if (hi &gt; other || (hi == other &amp;&amp; lo &gt; 0)) {return 1;}</span>
+<span class="nc" id="L2745">            return 0;</span>
+        }
+        
+<span class="nc bnc" id="L2748" title="All 2 branches missed.">        if (o instanceof Character) {</span>
+<span class="nc" id="L2749">            double other = (Character)o;</span>
+<span class="nc bnc" id="L2750" title="All 6 branches missed.">            if (hi &lt; other || (hi == other &amp;&amp; lo &lt; 0)) {return -1;}</span>
+<span class="nc bnc" id="L2751" title="All 6 branches missed.">            if (hi &gt; other || (hi == other &amp;&amp; lo &gt; 0)) {return 1;}</span>
+<span class="nc" id="L2752">            return 0;</span>
+        }
+        
+<span class="nc" id="L2755">        throw new RuntimeException(&quot;Cannot compare class &quot; + o.getClass().getName() + &quot; to DoubleDouble value.&quot;);</span>
+    }
+
+    
+    
+    
+    
+    /*------------------------------------------------------------
+     *   Output
+     *------------------------------------------------------------
+     */
+    
+    /**
+     * Dumps the components of this number to a string.
+     *
+     * @return a string showing the components of the number
+     */
+    public String dump() {
+<span class="nc" id="L2773">        return &quot;DD&lt;&quot; + hi + &quot;, &quot; + lo + &quot;&gt;&quot;;</span>
+    }
+    
+        
+    
+<span class="fc" id="L2778">    private static final char[] BASE_36_TABLE = { //</span>
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', //
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', //
+        'U', 'V', 'W', 'X', 'Y', 'Z'};
+    
+<span class="fc" id="L2784">    private static final char[] ZEROES = { //</span>
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', //
+        '0', '0', '0', '0', '0'};
+    
+    
+<span class="fc" id="L2798">    private static final double[] DIGITS_PER_BIT = new double[37];</span>
+    static {
+<span class="fc" id="L2800">        double log2 = StrictMath.log(2);</span>
+<span class="fc bfc" id="L2801" title="All 2 branches covered.">        for (int base = 2; base &lt;= 36; base++) {</span>
+<span class="fc" id="L2802">            DIGITS_PER_BIT[base] = log2 / StrictMath.log(base);</span>
+        }
+<span class="fc" id="L2804">    }</span>
+    
+    
+    /**
+     * Prints a DoubleDouble in the decimal number system to a String.
+     * Normal notation is used for numbers in the range 0.001 to 1e10,
+     * numbers outside of this range are printed in scientific notation.
+     * @return The String, representing the number.
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L2815">        return toString(10, 0, false);</span>
+    }
+
+    
+    
+    /**
+     * Prints this DoubleDouble to a String. This method provides a lot
+     * of flexibility on how to print the number.
+     * @param radix The radix of the number system in which this DoubleDouble
+     * is printed. The exponent (if scientific notation is used) is always
+     * printed in the decimal system. E.g. in the hexadecimal system, the
+     * number A.BCDEFe20 stands for A.BCDEF*power, where power is 16^20 in
+     * the decimal system.
+     * @param maxPrecision The maximum number of digits in the given radix to
+     * be printed. If the value 0 is supplied, then the number of digits is
+     * such that the entire precision of the number is used (for radix 10 this
+     * means that 31 digits are printed, for radix 16, this means that 26 
+     * digits are printed). If a value is supplied, which uses more than the
+     * precision of a DoubleDouble, then the number of digits is limited as if
+     * the value 0 were aupplied.
+     * @param sci A boolean, telling whether normal notation or scientific
+     * notation with exponents needs to be used.
+     * @return 
+     */
+    public String toString(int radix, int maxPrecision, boolean sci) {
+<span class="pc bpc" id="L2840" title="1 of 2 branches missed.">        if (hi!=hi) {</span>
+<span class="nc" id="L2841">            return &quot;NaN&quot;;</span>
+        }
+        
+        // Get the precision. (The number of significant digits required
+        // for an accurate representation of this number). 
+<span class="fc" id="L2846">        int precision = (int)(105 * DIGITS_PER_BIT[radix]);</span>
+<span class="pc bpc" id="L2847" title="3 of 4 branches missed.">        if (maxPrecision &gt; 0 &amp;&amp; maxPrecision &lt; precision) {</span>
+<span class="nc" id="L2848">            precision = maxPrecision;</span>
+        }
+
+        // Get the raw digit representation.
+<span class="fc" id="L2852">        char[] chars = new char[precision + 1];</span>
+<span class="fc" id="L2853">        int exp = to_digits(chars, precision, radix) + 1;</span>
+
+        // Get some properties.
+<span class="fc" id="L2856">        int left = StrictMath.max(0, -exp);</span>
+<span class="fc" id="L2857">        int right = StrictMath.max(0, exp);</span>
+<span class="pc bpc" id="L2858" title="1 of 2 branches missed.">        if (chars[precision - 1] == 0) {</span>
+<span class="nc" id="L2859">            precision--;</span>
+        }
+<span class="pc bpc" id="L2861" title="3 of 8 branches missed.">        sci = sci || (exp&lt;-3 || exp&gt;10 || exp&gt;precision);</span>
+
+        // Allocate exactly the right size string.
+<span class="fc bfc" id="L2864" title="All 4 branches covered.">        StringBuilder out = new StringBuilder(precision + (sci ? 3 : left) + (exp &gt; 0 ? 1 : 2));</span>
+
+        // Build the string.
+<span class="fc bfc" id="L2867" title="All 2 branches covered.">        if (hi &lt; 0) {</span>
+<span class="fc" id="L2868">            out.append('-');</span>
+        }
+<span class="fc bfc" id="L2870" title="All 2 branches covered.">        if (sci) {</span>
+<span class="fc" id="L2871">            out.append(chars, 0, 1);</span>
+<span class="fc" id="L2872">            out.append('.');</span>
+<span class="fc" id="L2873">            out.append(chars, 1, precision - 1);</span>
+<span class="fc" id="L2874">            out.append('e');</span>
+<span class="fc" id="L2875">            out.append(exp - 1);</span>
+        } else {
+<span class="fc bfc" id="L2877" title="All 2 branches covered.">            if (exp &lt;= 0) {</span>
+<span class="fc" id="L2878">                out.append('0');</span>
+            }
+<span class="fc bfc" id="L2880" title="All 2 branches covered.">            if (right &gt; 0) {</span>
+<span class="fc" id="L2881">                out.append(chars, 0, right);</span>
+            }
+<span class="fc" id="L2883">            out.append('.');</span>
+<span class="fc bfc" id="L2884" title="All 2 branches covered.">            if (left &gt; 0) {</span>
+<span class="pc bpc" id="L2885" title="1 of 2 branches missed.">                if (DoubleDouble.ZEROES.length &lt; left) {</span>
+<span class="nc" id="L2886">                    System.err.println(left);</span>
+                } else {
+<span class="fc" id="L2888">                    out.append(DoubleDouble.ZEROES, 0, left);</span>
+                }
+            }
+<span class="fc" id="L2891">            out.append(chars, right, precision - right);</span>
+        }
+
+<span class="fc" id="L2894">        return out.toString();</span>
+    }
+
+    
+    
+    
+    private int to_digits(char[] s, int precision, int base) {
+<span class="fc" id="L2901">        int halfBase = (base + 1) &gt;&gt; 1;</span>
+
+<span class="pc bpc" id="L2903" title="1 of 4 branches missed.">        if (hi == 0.0 &amp;&amp; lo == 0) {</span>
+<span class="fc" id="L2904">            Arrays.fill(s, 0, precision, '0');</span>
+<span class="fc" id="L2905">            return 0;</span>
+        }
+
+        // First determine the (approximate) exponent.
+<span class="fc" id="L2909">        DoubleDouble temp = this.abs();</span>
+<span class="fc" id="L2910">        int exp = (int) StrictMath.floor(StrictMath.log(temp.hi) / StrictMath.log(base));</span>
+
+<span class="fc" id="L2912">        DoubleDouble p = new DoubleDouble(base);</span>
+<span class="pc bpc" id="L2913" title="1 of 2 branches missed.">        if (exp &lt; -300) {</span>
+<span class="nc" id="L2914">            temp = temp.mul(p.pow(150));</span>
+<span class="nc" id="L2915">            p = p.pow(-exp - 150);</span>
+<span class="nc" id="L2916">            temp = temp.mul(p);</span>
+        } 
+        else {
+<span class="fc" id="L2919">            p = p.pow(-exp);</span>
+<span class="fc" id="L2920">            temp = temp.mul(p);</span>
+        }
+
+        // Fix roundoff errors. (eg. floor(log10(1e9))=floor(8.9999~)=8)
+<span class="pc bpc" id="L2924" title="1 of 2 branches missed.">        if (temp.ge(base)) {</span>
+<span class="nc" id="L2925">            exp++;</span>
+<span class="nc" id="L2926">            temp = temp.div(base);</span>
+        } 
+<span class="fc bfc" id="L2928" title="All 2 branches covered.">        else if (temp.lt(1.0)) {</span>
+<span class="fc" id="L2929">            exp--;</span>
+<span class="fc" id="L2930">            temp = temp.mul(base);</span>
+        }
+
+<span class="pc bpc" id="L2933" title="2 of 4 branches missed.">        if (temp.ge(base) || temp.lt(1.0)) {</span>
+<span class="nc" id="L2934">            throw new RuntimeException(&quot;Can't compute exponent.&quot;);</span>
+        }
+
+        // Handle one digit more. Used afterwards for rounding.
+<span class="fc" id="L2938">        int numDigits = precision + 1;</span>
+
+        // Extract the digits.
+<span class="fc bfc" id="L2941" title="All 2 branches covered.">        for (int i = 0; i &lt; numDigits; i++) {</span>
+<span class="fc" id="L2942">            int val = (int) temp.hi;</span>
+<span class="fc" id="L2943">            temp = temp.sub(val);</span>
+<span class="fc" id="L2944">            temp = temp.mul(base);</span>
+<span class="fc" id="L2945">            s[i] = (char) val;</span>
+        }
+
+<span class="pc bpc" id="L2948" title="1 of 2 branches missed.">        if (s[0] &lt;= 0) {</span>
+<span class="nc" id="L2949">            throw new RuntimeException(&quot;Negative leading digit.&quot;);</span>
+        }
+
+        // Fix negative digits due to roundoff error in exponent.
+<span class="fc bfc" id="L2953" title="All 2 branches covered.">        for (int i = numDigits - 1; i &gt; 0; i--) {</span>
+<span class="fc bfc" id="L2954" title="All 2 branches covered.">            if (s[i] &gt;= 32768) {</span>
+<span class="fc" id="L2955">                s[i - 1]--;</span>
+<span class="fc" id="L2956">                s[i] += base;</span>
+            }
+        }
+
+        // Round, handle carry.
+<span class="fc bfc" id="L2961" title="All 2 branches covered.">        if (s[precision] &gt;= halfBase) {</span>
+<span class="fc" id="L2962">            s[precision - 1]++;</span>
+<span class="fc" id="L2963">            int i = precision - 1;</span>
+<span class="fc bfc" id="L2964" title="All 4 branches covered.">            while (i &gt; 0 &amp;&amp; s[i] &gt;= base) {</span>
+<span class="fc" id="L2965">                s[i] -= base;</span>
+<span class="fc" id="L2966">                s[--i]++;</span>
+            }
+        }
+<span class="fc" id="L2969">        s[precision] = 0;</span>
+
+        // If first digit became too high, shift right and
+        // replace first digit by &quot;10&quot;.
+<span class="fc bfc" id="L2973" title="All 2 branches covered.">        if (s[0] &gt;= base) {</span>
+<span class="fc" id="L2974">            exp++;</span>
+<span class="fc bfc" id="L2975" title="All 2 branches covered.">            for (int i = precision; i &gt;= 2; i--) {</span>
+<span class="fc" id="L2976">                s[i] = s[i-1];</span>
+            }
+<span class="fc" id="L2978">            s[1] = (char)(s[0] - base);</span>
+<span class="fc" id="L2979">            s[0] = 1;</span>
+        }
+
+        // If first digit became zero, shift left.
+<span class="pc bpc" id="L2983" title="1 of 2 branches missed.">        if (s[0] == 0) {</span>
+<span class="nc" id="L2984">            exp--;</span>
+<span class="nc bnc" id="L2985" title="All 2 branches missed.">            for (int i = 0; i &lt; precision; i++) {</span>
+<span class="nc" id="L2986">                s[i] = s[i+1];</span>
+            }
+        }
+
+        // Convert to ASCII.
+<span class="fc bfc" id="L2991" title="All 2 branches covered.">        for (int i = 0; i &lt; precision; i++) {</span>
+<span class="fc" id="L2992">            s[i] = DoubleDouble.BASE_36_TABLE[s[i]];</span>
+        }
+
+<span class="fc" id="L2995">        return exp;</span>
+    }
+
+    
+
+    
+
+    /*------------------------------------------------------------
+     *   Input
+     *------------------------------------------------------------
+     */
+    
+    /**
+     * Converts a string representation of a real number into a DoubleDouble
+     * value. The format accepted is similar to the standard Java real number
+     * syntax. It is defined by the following regular expression:
+     * &lt;pre&gt;
+     * [&lt;tt&gt;+&lt;/tt&gt;|&lt;tt&gt;-&lt;/tt&gt;] {&lt;i&gt;digit&lt;/i&gt;} [ &lt;tt&gt;.&lt;/tt&gt; {&lt;i&gt;digit&lt;/i&gt;} ] [ ( &lt;tt&gt;e&lt;/tt&gt; | &lt;tt&gt;E&lt;/tt&gt; ) [&lt;tt&gt;+&lt;/tt&gt;|&lt;tt&gt;-&lt;/tt&gt;] {&lt;i&gt;digit&lt;/i&gt;}+
+     * &lt;pre&gt;
+     *
+     * @param str the string to parse
+     * @return the value of the parsed number
+     * @throws NumberFormatException if &lt;tt&gt;str&lt;/tt&gt; is not a valid
+     * representation of a number
+     */
+    private static DoubleDouble parse(String str) throws NumberFormatException {
+<span class="fc" id="L3021">        int i = 0;</span>
+<span class="fc" id="L3022">        int strlen = str.length();</span>
+
+        // skip leading whitespace
+<span class="pc bpc" id="L3025" title="1 of 2 branches missed.">        while (Character.isWhitespace(str.charAt(i))) {</span>
+<span class="nc" id="L3026">            i++;</span>
+        }
+<span class="pc bpc" id="L3028" title="1 of 2 branches missed.">        if (str.substring(i).equals(&quot;NaN&quot;)) {</span>
+<span class="nc" id="L3029">            return NaN;</span>
+        }
+
+        // check for sign
+<span class="fc" id="L3033">        boolean isNegative = false;</span>
+<span class="pc bpc" id="L3034" title="1 of 2 branches missed.">        if (i &lt; strlen) {</span>
+<span class="fc" id="L3035">            char signCh = str.charAt(i);</span>
+<span class="pc bpc" id="L3036" title="1 of 4 branches missed.">            if (signCh == '-' || signCh == '+') {</span>
+<span class="fc" id="L3037">                i++;</span>
+<span class="pc bpc" id="L3038" title="1 of 2 branches missed.">                if (signCh == '-') {</span>
+<span class="fc" id="L3039">                    isNegative = true;</span>
+                }
+            }
+        }
+
+        // scan all digits and accumulate into an integral value
+        // Keep track of the location of the decimal point (if any)
+        // to allow scaling later.
+<span class="fc" id="L3047">        DoubleDouble val = new DoubleDouble();</span>
+
+<span class="fc" id="L3049">        int numDigits = 0;</span>
+<span class="fc" id="L3050">        int numBeforeDec = -1;</span>
+<span class="fc" id="L3051">        int exp = 0;</span>
+        while (true) {
+<span class="fc bfc" id="L3053" title="All 2 branches covered.">            if (i &gt;= strlen) {</span>
+<span class="fc" id="L3054">                break;</span>
+            }
+<span class="fc" id="L3056">            char ch = str.charAt(i);</span>
+<span class="fc" id="L3057">            i++;</span>
+<span class="fc bfc" id="L3058" title="All 2 branches covered.">            if (Character.isDigit(ch)) {</span>
+<span class="fc" id="L3059">                int d = ch - '0';</span>
+<span class="fc" id="L3060">                val = val.mul(10);</span>
+<span class="fc" id="L3061">                val = val.add(d);</span>
+<span class="fc" id="L3062">                numDigits++;</span>
+<span class="fc" id="L3063">                continue;</span>
+            }
+<span class="fc bfc" id="L3065" title="All 2 branches covered.">            if (ch == '.') {</span>
+<span class="pc bpc" id="L3066" title="1 of 2 branches missed.">                if (numBeforeDec != -1) {</span>
+<span class="nc" id="L3067">                    throw new NumberFormatException(&quot;Multiple decimal dots in number string &quot; + str);</span>
+                }
+<span class="fc" id="L3069">                numBeforeDec = numDigits;</span>
+<span class="fc" id="L3070">                continue;</span>
+            }
+<span class="pc bpc" id="L3072" title="3 of 4 branches missed.">            if (ch == 'e' || ch == 'E') {</span>
+<span class="fc" id="L3073">                String expStr = str.substring(i);</span>
+                // this should catch any format problems with the exponent
+                try {
+<span class="fc" id="L3076">                    exp = Integer.parseInt(expStr);</span>
+<span class="nc" id="L3077">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L3078">                    throw new NumberFormatException(&quot;Invalid exponent &quot; + expStr + &quot; in string &quot; + str);</span>
+<span class="fc" id="L3079">                }</span>
+                break;
+            }
+<span class="nc" id="L3082">            throw new NumberFormatException(&quot;Unexpected character '&quot; + ch</span>
+                    + &quot;' at position &quot; + i
+                    + &quot; in string &quot; + str);
+        }
+<span class="fc" id="L3086">        DoubleDouble val2 = val;</span>
+        
+        // If there was no decimal dot, then set the number of digits before
+        // the decimal dot to the number of digits.
+<span class="fc bfc" id="L3090" title="All 2 branches covered.">        if (numBeforeDec == -1) {</span>
+<span class="fc" id="L3091">            numBeforeDec = numDigits;</span>
+        }
+
+        // scale the number correctly
+<span class="fc" id="L3095">        int numDecPlaces = numDigits - numBeforeDec - exp;</span>
+<span class="fc bfc" id="L3096" title="All 2 branches covered.">        if (numDecPlaces == 0) {</span>
+<span class="fc" id="L3097">            val2 = val;</span>
+        } 
+<span class="fc bfc" id="L3099" title="All 2 branches covered.">        else if (numDecPlaces &gt; 0) {</span>
+<span class="fc" id="L3100">            DoubleDouble scale = TEN.pow(numDecPlaces);</span>
+<span class="fc" id="L3101">            val2 = val.div(scale);</span>
+<span class="fc" id="L3102">        } </span>
+<span class="pc bpc" id="L3103" title="1 of 2 branches missed.">        else if (numDecPlaces &lt; 0) {</span>
+<span class="fc" id="L3104">            DoubleDouble scale = TEN.pow(-numDecPlaces);</span>
+<span class="fc" id="L3105">            val2 = val.mul(scale);</span>
+        }
+        
+        // apply leading sign, if any
+<span class="fc bfc" id="L3109" title="All 2 branches covered.">        if (isNegative) {</span>
+<span class="fc" id="L3110">            return val2.neg();</span>
+        }
+<span class="fc" id="L3112">        return val2;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -71,13 +71,14 @@ import java.util.Arrays;
         
         int i, j;
         
-<span class="fc" id="L74">        double[] mean = MatrixUtil.mean(a);</span>
+        // mean of each column:
+<span class="fc" id="L75">        double[] mean = MatrixUtil.mean(a);</span>
         
-<span class="fc" id="L76">        double[][] diffs = new double[nRows][];</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L78">            diffs[i] = new double[nCols];</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">            for (j = 0; j &lt; nCols; ++j) {</span>
-<span class="fc" id="L80">                diffs[i][j] = (a[i][j] - mean[j]);</span>
+<span class="fc" id="L77">        double[][] diffs = new double[nRows][];</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L79">            diffs[i] = new double[nCols];</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            for (j = 0; j &lt; nCols; ++j) {</span>
+<span class="fc" id="L81">                diffs[i][j] = (a[i][j] - mean[j]);</span>
             }
         }
         
@@ -94,24 +95,24 @@ import java.util.Arrays;
         System.out.flush();
         */
         
-<span class="fc" id="L97">        double[][] cov = new double[nCols][];</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (i = 0; i &lt; nCols; ++i) {</span>
-<span class="fc" id="L99">            cov[i] = new double[nCols];</span>
+<span class="fc" id="L98">        double[][] cov = new double[nCols][];</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        for (i = 0; i &lt; nCols; ++i) {</span>
+<span class="fc" id="L100">            cov[i] = new double[nCols];</span>
         }
      
         double sum;
         int ii;
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">            for (j = i; j &lt; nCols; ++j) {</span>
-<span class="fc" id="L106">                sum = 0;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            for (j = i; j &lt; nCols; ++j) {</span>
+<span class="fc" id="L107">                sum = 0;</span>
                 // multiply diffs[*][i] by diffs[*][j]
-<span class="fc bfc" id="L108" title="All 2 branches covered.">                for (ii = 0; ii &lt; nRows; ++ii) {</span>
-<span class="fc" id="L109">                    sum += (diffs[ii][i] * diffs[ii][j]);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                for (ii = 0; ii &lt; nRows; ++ii) {</span>
+<span class="fc" id="L110">                    sum += (diffs[ii][i] * diffs[ii][j]);</span>
                 }
-<span class="fc" id="L111">                sum /= ((double)(nRows-1.));</span>
-<span class="fc" id="L112">                cov[i][j] = sum;</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">                if (i != j) {</span>
-<span class="fc" id="L114">                    cov[j][i] = sum;</span>
+<span class="fc" id="L112">                sum /= ((double)(nRows-1.));</span>
+<span class="fc" id="L113">                cov[i][j] = sum;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">                if (i != j) {</span>
+<span class="fc" id="L115">                    cov[j][i] = sum;</span>
                 }
             }
         }
@@ -125,7 +126,7 @@ import java.util.Arrays;
         }
         System.out.flush();*/
         
-<span class="fc" id="L128">        return cov;</span>
+<span class="fc" id="L129">        return cov;</span>
     }
     
     /**
@@ -145,29 +146,29 @@ import java.util.Arrays;
      */
     public static double[][] covariance2(double[][] a) {
         
-<span class="fc" id="L148">        int n = a[0].length;</span>
+<span class="fc" id="L149">        int n = a[0].length;</span>
         
-<span class="fc" id="L150">        double[][] cov = MatrixUtil.multiply(a, MatrixUtil.transpose(a));</span>
+<span class="fc" id="L151">        double[][] cov = MatrixUtil.multiply(a, MatrixUtil.transpose(a));</span>
         
         int i, j;
-<span class="fc" id="L153">        double invN = 1./((double)n - 1.);</span>
+<span class="fc" id="L154">        double invN = 1./((double)n - 1.);</span>
         
-<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (i = 0 ; i &lt; cov.length; ++i) {</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">            for (j = 0; j &lt; cov[i].length; ++j) {</span>
-<span class="fc" id="L157">                cov[i][j] *= invN;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        for (i = 0 ; i &lt; cov.length; ++i) {</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            for (j = 0; j &lt; cov[i].length; ++j) {</span>
+<span class="fc" id="L158">                cov[i][j] *= invN;</span>
             }
         }
         
-<span class="fc" id="L161">        System.out.printf(&quot;bf cov=\n&quot;);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        for ( i = 0; i &lt; cov.length; ++i) {</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">            for ( j = 0; j &lt; cov[i].length; ++j) {</span>
-<span class="fc" id="L164">                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);</span>
+<span class="fc" id="L162">        System.out.printf(&quot;bf cov=\n&quot;);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        for ( i = 0; i &lt; cov.length; ++i) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            for ( j = 0; j &lt; cov[i].length; ++j) {</span>
+<span class="fc" id="L165">                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);</span>
             }
-<span class="fc" id="L166">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L167">            System.out.printf(&quot;\n&quot;);</span>
         }
-<span class="fc" id="L168">        System.out.flush();</span>
+<span class="fc" id="L169">        System.out.flush();</span>
         
-<span class="fc" id="L170">        return cov;</span>
+<span class="fc" id="L171">        return cov;</span>
     }
    
 }

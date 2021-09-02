@@ -75,7 +75,7 @@ import java.util.Arrays;
             
 <span class="fc" id="L76">            double alpha = line_search(</span>
                 fls, fValue, flsDer,
-<span class="fc" id="L78">                MatrixUtil.multiplyByTranspose(g, s), // &lt;== gradient * delX</span>
+<span class="fc" id="L78">                MatrixUtil.innerProduct(g, s), // &lt;== gradient * delX</span>
 <span class="fc" id="L79">                searchStrategy.get_wolfe_rho(), </span>
 <span class="fc" id="L80">                searchStrategy.get_wolfe_sigma(), </span>
                 minF, 100);
@@ -387,7 +387,7 @@ import java.util.Arrays;
                 matrixR = Arrays.copyOf(x, x.length);
             }
             
-            double result = MatrixUtil.multiplyByTranspose(x, direction);
+            double result = MatrixUtil.innerProduct(x, direction);
             
             return result;
         }

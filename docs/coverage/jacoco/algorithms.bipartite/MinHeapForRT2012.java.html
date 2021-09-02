@@ -16,28 +16,32 @@ import java.util.logging.Logger;
  * The Fibonacci Heap has O(1) operations excepting
  * extractMin which is O(lg_2(N_nodes)).
  * 
+ * The YFastTrie has O(log log(M)) operations including successor and
+ * predecessor where M is M is the number of bits
+ * of the maximum value in the domain.
+ * 
  * @author nichole
  */
 public class MinHeapForRT2012 {
 
-<span class="fc" id="L23">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
+<span class="fc" id="L27">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
     
     // 1 = Fibonacci, 2 = YFastTrie
     private final int algorithm;
         
-<span class="fc" id="L28">    private int lastKnownMinKey0 = 0;</span>
+<span class="fc" id="L32">    private int lastKnownMinKey0 = 0;</span>
     
     // for use in tuning the capacity
-<span class="fc" id="L31">    private int lastKnownMaxKey0 = 0;</span>
+<span class="fc" id="L35">    private int lastKnownMaxKey0 = 0;</span>
     
     private final FibonacciHeapWrapper heap1;
 
     private final YFastTrieWrapper heap2;
     
     void printLastKnownMinMax() {
-<span class="nc" id="L38">        log.fine(&quot;min=&quot; + lastKnownMinKey0</span>
+<span class="nc" id="L42">        log.fine(&quot;min=&quot; + lastKnownMinKey0</span>
             + &quot; max=&quot; + lastKnownMaxKey0);
-<span class="nc" id="L40">    }</span>
+<span class="nc" id="L44">    }</span>
     
     /**
      * 
@@ -58,39 +62,39 @@ public class MinHeapForRT2012 {
      * @param maxNumberOfBits
      * 
      */
-<span class="fc" id="L61">    public MinHeapForRT2012(int maxValue, int approxN, int maxNumberOfBits) {</span>
+<span class="fc" id="L65">    public MinHeapForRT2012(int maxValue, int approxN, int maxNumberOfBits) {</span>
 
         //use yfasttrie if theres enough memory        
-<span class="fc" id="L64">        long totalMemory = Runtime.getRuntime().totalMemory();</span>
-<span class="fc" id="L65">        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();</span>
-<span class="fc" id="L66">        long heapUsage = mbean.getHeapMemoryUsage().getUsed();</span>
-<span class="fc" id="L67">        long avail = totalMemory - heapUsage;</span>
+<span class="fc" id="L68">        long totalMemory = Runtime.getRuntime().totalMemory();</span>
+<span class="fc" id="L69">        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();</span>
+<span class="fc" id="L70">        long heapUsage = mbean.getHeapMemoryUsage().getUsed();</span>
+<span class="fc" id="L71">        long avail = totalMemory - heapUsage;</span>
 
-<span class="fc" id="L69">        long[] yftEstimate = YFastTrie.estimateSizeOnHeap(maxValue, </span>
+<span class="fc" id="L73">        long[] yftEstimate = YFastTrie.estimateSizeOnHeap(maxValue, </span>
                 maxNumberOfBits);
         
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        log.fine(&quot;avail=&quot; + avail + &quot; yftEst=&quot; + yftEstimate[1] + &quot; &lt; &quot; +</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        log.fine(&quot;avail=&quot; + avail + &quot; yftEst=&quot; + yftEstimate[1] + &quot; &lt; &quot; +</span>
             (yftEstimate[1] &lt; avail));
         
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (yftEstimate[1] &lt; avail) {</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (yftEstimate[1] &lt; avail) {</span>
             // wanting the base of the prefix tree to be filled
             // to improve performance.   for larger N
             
-<span class="fc" id="L79">            algorithm = 2;</span>
+<span class="fc" id="L83">            algorithm = 2;</span>
             
-<span class="fc" id="L81">            heap2 = new YFastTrieWrapper(maxValue);</span>
+<span class="fc" id="L85">            heap2 = new YFastTrieWrapper(maxValue);</span>
             
-<span class="fc" id="L83">            heap1 = null;</span>
+<span class="fc" id="L87">            heap1 = null;</span>
             
         } else {
             
-<span class="nc" id="L87">            algorithm = 1;</span>
+<span class="nc" id="L91">            algorithm = 1;</span>
         
-<span class="nc" id="L89">            heap1 = new FibonacciHeapWrapper(approxN, maxValue);</span>
+<span class="nc" id="L93">            heap1 = new FibonacciHeapWrapper(approxN, maxValue);</span>
         
-<span class="nc" id="L91">            heap2 = null;</span>
+<span class="nc" id="L95">            heap2 = null;</span>
         }
-<span class="fc" id="L93">    }</span>
+<span class="fc" id="L97">    }</span>
     
     /**
      * for fib. heap runtime is //runtime is O(1).
@@ -104,19 +108,19 @@ public class MinHeapForRT2012 {
      */
     public void insert(HeapNode node) {
         
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        if (node.getKey() &lt; 0) {</span>
-<span class="nc" id="L108">            throw new IllegalArgumentException(&quot;key must be &gt;= 0&quot;);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (node.getKey() &lt; 0) {</span>
+<span class="nc" id="L112">            throw new IllegalArgumentException(&quot;key must be &gt;= 0&quot;);</span>
         }
         
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L113">                insert1(node);</span>
-<span class="nc" id="L114">                break;</span>
+<span class="nc" id="L117">                insert1(node);</span>
+<span class="nc" id="L118">                break;</span>
             default:
-<span class="fc" id="L116">                insert2(node);</span>
+<span class="fc" id="L120">                insert2(node);</span>
                 break;
         }
-<span class="fc" id="L119">    }</span>
+<span class="fc" id="L123">    }</span>
     
     /**
      if using a YFastTrie the runtime complexity is O(log log(M))
@@ -129,22 +133,22 @@ public class MinHeapForRT2012 {
      */
     public HeapNode extractMin() {
         
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L134">                return extractMin1();</span>
+<span class="nc" id="L138">                return extractMin1();</span>
             default:
-<span class="fc" id="L136">                return extractMin2();</span>
+<span class="fc" id="L140">                return extractMin2();</span>
         }
         
     }
     
     private HeapNode extractMin1() {
         // runtime is O(log_2 N) or better
-<span class="nc" id="L143">        HeapNode node = heap1.extractMin();</span>
-<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (node != null) {</span>
-<span class="nc" id="L145">            return node;</span>
+<span class="nc" id="L147">        HeapNode node = heap1.extractMin();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (node != null) {</span>
+<span class="nc" id="L149">            return node;</span>
         } else {
-<span class="nc" id="L147">            return null;</span>
+<span class="nc" id="L151">            return null;</span>
         }
     }
     
@@ -152,26 +156,26 @@ public class MinHeapForRT2012 {
         // runtime is runtime complexity is O(log log(M))
         //    where M is the number of bits of the maximum value the trie
         //    was initialized with
-<span class="fc" id="L155">        return heap2.extractMin();</span>
+<span class="fc" id="L159">        return heap2.extractMin();</span>
     }
     
     private void insert1(HeapNode node) {
          
-<span class="nc" id="L160">        int key = (int)node.getKey();</span>
+<span class="nc" id="L164">        int key = (int)node.getKey();</span>
         
-<span class="nc" id="L162">        heap1.insert(node);</span>
+<span class="nc" id="L166">        heap1.insert(node);</span>
         
-<span class="nc" id="L164">        log.fine(&quot;insert into fib minHeap at key =&quot; + key);        </span>
-<span class="nc" id="L165">    }</span>
+<span class="nc" id="L168">        log.fine(&quot;insert into fib minHeap at key =&quot; + key);        </span>
+<span class="nc" id="L169">    }</span>
     
     private void insert2(HeapNode node) {
          
-<span class="fc" id="L169">        int key = (int)node.getKey();</span>
+<span class="fc" id="L173">        int key = (int)node.getKey();</span>
         
-<span class="fc" id="L171">        heap2.insert(node);</span>
+<span class="fc" id="L175">        heap2.insert(node);</span>
         
-<span class="fc" id="L173">        log.fine(&quot;insert into yft minHeap at key =&quot; + key);        </span>
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L177">        log.fine(&quot;insert into yft minHeap at key =&quot; + key);        </span>
+<span class="fc" id="L178">    }</span>
     
     /**
      if using a YFastTrie the runtime complexity is O(log log(M))
@@ -182,31 +186,31 @@ public class MinHeapForRT2012 {
      */
     public void decreaseKey(HeapNode node, long key2) {
     
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L187">                decreaseKey1(node, key2);</span>
-<span class="nc" id="L188">                break;</span>
+<span class="nc" id="L191">                decreaseKey1(node, key2);</span>
+<span class="nc" id="L192">                break;</span>
             default:
-<span class="fc" id="L190">                decreaseKey2(node, key2);</span>
+<span class="fc" id="L194">                decreaseKey2(node, key2);</span>
                 break;
         }
-<span class="fc" id="L193">    }</span>
+<span class="fc" id="L197">    }</span>
      
     private void decreaseKey1(HeapNode node, long key2) {
 
-<span class="nc" id="L197">        log.fine(&quot;decreaseKey in fibHeap from key=&quot; + </span>
-<span class="nc" id="L198">            node.getKey() + &quot; to key=&quot; + key2);</span>
+<span class="nc" id="L201">        log.fine(&quot;decreaseKey in fibHeap from key=&quot; + </span>
+<span class="nc" id="L202">            node.getKey() + &quot; to key=&quot; + key2);</span>
         
-<span class="nc" id="L200">        heap1.decreaseKey(node, key2);</span>
-<span class="nc" id="L201">    }</span>
+<span class="nc" id="L204">        heap1.decreaseKey(node, key2);</span>
+<span class="nc" id="L205">    }</span>
     
     private void decreaseKey2(HeapNode node, long key2) {
 
-<span class="fc" id="L205">        log.fine(&quot;decreaseKey in yft from key=&quot; + </span>
-<span class="fc" id="L206">            node.getKey() + &quot; to key=&quot; + key2);</span>
+<span class="fc" id="L209">        log.fine(&quot;decreaseKey in yft from key=&quot; + </span>
+<span class="fc" id="L210">            node.getKey() + &quot; to key=&quot; + key2);</span>
         
-<span class="fc" id="L208">        heap2.decreaseKey(node, key2);</span>
-<span class="fc" id="L209">    }</span>
+<span class="fc" id="L212">        heap2.decreaseKey(node, key2);</span>
+<span class="fc" id="L213">    }</span>
     
      /**
      If using a FibonacciHeap, the runtime complexity is O(log_2(n)).
@@ -216,15 +220,15 @@ public class MinHeapForRT2012 {
      */
     public void remove(HeapNode node) {
     
-<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L221">                remove1(node);</span>
-<span class="nc" id="L222">                break;</span>
+<span class="nc" id="L225">                remove1(node);</span>
+<span class="nc" id="L226">                break;</span>
             default:
-<span class="fc" id="L224">                remove2(node);</span>
+<span class="fc" id="L228">                remove2(node);</span>
                 break;
         }
-<span class="fc" id="L227">    }</span>
+<span class="fc" id="L231">    }</span>
      
     /**
      * runtime complexity is O(lg_2(n))
@@ -232,44 +236,44 @@ public class MinHeapForRT2012 {
      */
     private void remove1(HeapNode node) {
 
-<span class="nc" id="L235">        log.fine(&quot;remove in fibHeap key=&quot; + </span>
-<span class="nc" id="L236">            node.getKey());</span>
+<span class="nc" id="L239">        log.fine(&quot;remove in fibHeap key=&quot; + </span>
+<span class="nc" id="L240">            node.getKey());</span>
         
-<span class="nc" id="L238">        heap1.remove(node);</span>
-<span class="nc" id="L239">    }</span>
+<span class="nc" id="L242">        heap1.remove(node);</span>
+<span class="nc" id="L243">    }</span>
     
     private void remove2(HeapNode node) {
 
-<span class="fc" id="L243">        log.fine(&quot;remove in yft key=&quot; + </span>
-<span class="fc" id="L244">            node.getKey());</span>
+<span class="fc" id="L247">        log.fine(&quot;remove in yft key=&quot; + </span>
+<span class="fc" id="L248">            node.getKey());</span>
         
-<span class="fc" id="L246">        heap2.remove(node);</span>
-<span class="fc" id="L247">    }</span>
+<span class="fc" id="L250">        heap2.remove(node);</span>
+<span class="fc" id="L251">    }</span>
     
     public long getNumberOfNodes() {
         
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L253">                return heap1.getNumberOfNodes();</span>
+<span class="nc" id="L257">                return heap1.getNumberOfNodes();</span>
             default:
-<span class="fc" id="L255">                return heap2.getNumberOfNodes();</span>
+<span class="fc" id="L259">                return heap2.getNumberOfNodes();</span>
         }
     }
 
     @Override
     public String toString() {
     
-<span class="fc" id="L262">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L263">        sb.append(&quot;min heap type = &quot;);</span>
-<span class="pc bpc" id="L264" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="fc" id="L266">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L267">        sb.append(&quot;min heap type = &quot;);</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L266">                sb.append(&quot;Fibonacci Heap&quot;); break;</span>
+<span class="nc" id="L270">                sb.append(&quot;Fibonacci Heap&quot;); break;</span>
             default:
-<span class="fc" id="L268">                sb.append(&quot;YFastTrie min priority queue&quot;); break;</span>
+<span class="fc" id="L272">                sb.append(&quot;YFastTrie min priority queue&quot;); break;</span>
         }
-<span class="fc" id="L270">        sb.append(&quot;. size=&quot;).append(getNumberOfNodes());</span>
+<span class="fc" id="L274">        sb.append(&quot;. size=&quot;).append(getNumberOfNodes());</span>
         
-<span class="fc" id="L272">        return sb.toString();</span>
+<span class="fc" id="L276">        return sb.toString();</span>
     }
     
     

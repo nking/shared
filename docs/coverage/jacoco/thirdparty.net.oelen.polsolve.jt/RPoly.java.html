@@ -1,0 +1,1252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RPoly.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.net.oelen.polsolve.jt</a> &gt; <span class="el_source">RPoly.java</span></div><h1>RPoly.java</h1><pre class="source lang-java linenums">/*
+ *   RPoly  -- A class that represents a polynomial equation.
+ *
+ *   Copyright (C) 2014, 2015 by Wilco Oelen
+ *   All rights reserved.
+ *   
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Lesser General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *   
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *   Or visit:  http://www.gnu.org/licenses/lgpl.html
+ **/
+
+package thirdparty.net.oelen.polsolve.jt;
+
+
+
+/**
+ * &lt;p&gt;
+ * Represents a polynomial equation of the form p(x) = A + B*x + C*x^2 + D*x^3 +
+ * ... where A, B, C, etc are real coefficients.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * Includes a method for finding the zeros of a real polynomial by a specialized
+ * version of the algorithm of Jenkins and Traub, developed especially for poly-
+ * nomials with real coefficients. This specialized method is approximately 3
+ * times as fast as the general algorithm when applied to the same polynomial.
+ * Like the general algorithm, the specialized method finds the zeros one at
+ * a time in roughly increasing order of modulus and deflates the polynomial
+ * to one of lower degree.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * Zero finder ported from FORTRAN version of algorithm 493 courtesy &lt;a
+ * href=&quot;http://www.netlib.org/&quot;&gt;Netlib Repository&lt;/a&gt;.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * This class is not thread-safe. &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * Modified by: Wilco Oelen         &lt;/p&gt;
+ * 
+ * @author Wilco Oelen
+ * @version October 6, 2015
+ *
+ */
+
+public strictfp class RPoly {   // Use strictfp to assure behavior is same on all platforms
+
+    private final double coef[];
+
+    
+    
+    
+    // Make this constructor unavailable for calling environments.
+<span class="nc" id="L66">    private RPoly() {</span>
+<span class="nc" id="L67">        coef = null;</span>
+<span class="nc" id="L68">    }</span>
+
+    
+        
+    /**
+     * Constructor of the polynomial, with the coefficients given as an array of
+     * doubles.
+     *
+     * @param coef The coefficients of the polynomial in the order of the
+     * constant term to the term with the highest power, i.e. the polynomial is
+     * coef[0] + coef[1]*x + coef[2]*x^2 ... coef[N]*x^N, where N+1 is the
+     * length of the supplied array. Element coef[N] must be non-zero!
+     */
+<span class="fc" id="L81">    public RPoly(double[] coef) {</span>
+<span class="fc" id="L82">        this.coef = coef.clone();</span>
+<span class="fc" id="L83">    }</span>
+
+    
+    
+    
+    
+    /**
+     * Evaluates the polynomial at the given double argument.
+     *
+     * @param x The real value for which the polynomial must be evaluated. The
+     * result is a real value.
+     * @return The value of the polynomial, evaluated at the given argument.
+     */
+    public double eval(double x) {
+<span class="nc" id="L97">        int deg = coef.length - 1;</span>
+<span class="nc" id="L98">        double val = coef[deg];</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        for (int i = deg - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L100">            val = val * x + coef[i];</span>
+        }
+<span class="nc" id="L102">        return val;</span>
+    }
+
+    
+    
+    
+    
+    /**
+     * Evaluates the polynomial at the given complex argument.
+     *
+     * @param xre The real part of the argument at which the polynomial is
+     * evaluated.
+     * @param xim The imaginary part of the argument at which the polynomial is
+     * evaluated.
+     * @return A double array, which contains the complex value of the
+     * polynomial, evaluated at the given argument. The returned array contains
+     * two real values. The value at index 0 is the real part of the return
+     * value and the value at index 1 is the imaginary part of the return value.
+     */
+    public double[] eval(double xre, double xim) {
+<span class="nc" id="L122">        int deg = coef.length - 1;</span>
+<span class="nc" id="L123">        double re = coef[deg];</span>
+<span class="nc" id="L124">        double im = 0.0;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        for (int i = deg - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L126">            double re2 = re * xre - im * xim + coef[i];</span>
+<span class="nc" id="L127">            double im2 = re * xim + im * xre;</span>
+<span class="nc" id="L128">            re = re2;</span>
+<span class="nc" id="L129">            im = im2;</span>
+        }
+<span class="nc" id="L131">        return new double[] {re, im};</span>
+    }
+
+    
+    
+    
+    
+    /**
+     * Evaluates the polynomial at the given complex argument. This is
+     * like the other eval() method, but in this one the result of the
+     * evaluation is put in an array, which already is allocated in the
+     * calling environment. This method allows many evaluations of the
+     * polynomial without the need to allocate many small 2-element arrays
+     * for storing the result.
+     *
+     * @param result A double-array with at least two elements, in which
+     * the result of the evaluation is stored. The value at index 0 is
+     * replaced by the real part of the polynomial value and the value at
+     * index 1 is replaced by the imaginary part of the polynomial value.
+     * If the supplied array contains more than 2 elements, then the elements
+     * with index 2 or larger are not touched at all.
+     * @param xre The real part of the argument at which the polynomial is
+     * evaluated.
+     * @param xim The imaginary part of the argument at which the polynomial is
+     * evaluated.
+     */
+    public void eval(double[] result, double xre, double xim) {
+<span class="nc" id="L158">        int deg = coef.length - 1;</span>
+<span class="nc" id="L159">        double pre = coef[deg];</span>
+<span class="nc" id="L160">        double pim = 0.0;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        for (int i = deg - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L162">            double pre2 = pre * xre - pim * xim + coef[i];</span>
+<span class="nc" id="L163">            double pim2 = pre * xim + pim * xre;</span>
+<span class="nc" id="L164">            pre = pre2;</span>
+<span class="nc" id="L165">            pim = pim2;</span>
+        }
+<span class="nc" id="L167">        result[0] = pre;</span>
+<span class="nc" id="L168">        result[1] = pim;</span>
+<span class="nc" id="L169">    }</span>
+
+    
+    
+    
+    
+    /**
+     * Evaluates the polynomial and the derivative of the polynomial
+     * simultaneously for the given value of x.
+     *
+     * @param result A double-array with at least two elements, in which
+     * the result of the evaluation is stored. The value at index 0 is
+     * replaced by the real part of the polynomial value and the value at
+     * index 1 is replaced by the imaginary part of the polynomial value.
+     * If the supplied array contains more than 2 elements, then the elements
+     * with index 2 or larger are not touched at all.
+     * @param dresult A double-array with at least two elements, in which
+     * the result of the evaluation is stored. The value at index 0 is
+     * replaced by the real part of the derivative value and the value at
+     * index 1 is replaced by the imaginary part of the derivative value.
+     * If the supplied array contains more than 2 elements, then the elements
+     * with index 2 or larger are not touched at all.
+     * @param xre The real part of the argument at which the derivative is
+     * evaluated.
+     * @param xim The imaginary part of the argument at which the derivative is
+     * evaluated.
+     */
+    public void eval_deriv(double[] result, double[] dresult, double xre, double xim) {
+<span class="nc" id="L197">        int deg = coef.length - 1;</span>
+        
+        // p = coef[deg]
+<span class="nc" id="L200">        double pre = coef[deg];</span>
+<span class="nc" id="L201">        double pim = 0.0;</span>
+        
+        // dp = 0
+<span class="nc" id="L204">        double dpre = 0.0;</span>
+<span class="nc" id="L205">        double dpim = 0.0;</span>
+        
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        for (int i = deg - 1; i &gt;= 0; i--) {</span>
+            // dp = dp*x + p
+<span class="nc" id="L209">            double dpre2 = dpre * xre - dpim * xim + pre;</span>
+<span class="nc" id="L210">            double dpim2 = dpre * xim + dpim * xre + pim;</span>
+<span class="nc" id="L211">            dpre = dpre2;</span>
+<span class="nc" id="L212">            dpim = dpim2;</span>
+            
+            // p = p*x + coef[i];
+<span class="nc" id="L215">            double pre2 = pre * xre - pim * xim + coef[i];</span>
+<span class="nc" id="L216">            double pim2 = pre * xim + pim * xre;</span>
+<span class="nc" id="L217">            pre = pre2;</span>
+<span class="nc" id="L218">            pim = pim2;</span>
+        }
+<span class="nc" id="L220">        result[0] = pre;</span>
+<span class="nc" id="L221">        result[1] = pim;</span>
+<span class="nc" id="L222">        dresult[0] = dpre;</span>
+<span class="nc" id="L223">        dresult[1] = dpim;</span>
+<span class="nc" id="L224">    }</span>
+
+    
+    
+    
+    /**
+     * Returns the degree of the polynomial.
+     *
+     * @return The degree of the polynomial.
+     */
+    public int degree() {
+<span class="nc" id="L235">        return coef.length - 1;</span>
+    }
+    
+    
+    
+    
+    /**
+     * Creates a String representation of this polynomial.
+     *
+     * @return The String representation of this object.
+	*
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L249">        StringBuilder buffer = new StringBuilder();</span>
+
+<span class="nc" id="L251">        int NN = coef.length;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        for (int i=0; i&lt;NN; i++) {</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">            if (coef[i] &lt; 0) {</span>
+<span class="nc" id="L254">                String term = &quot;     - x^&quot; + i + &quot; * &quot; + (-coef[i]) + &quot;\n&quot;;</span>
+<span class="nc" id="L255">                buffer.append(term);</span>
+<span class="nc" id="L256">            }</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">            else if (coef[i] &gt; 0) {</span>
+<span class="nc" id="L258">                String term = &quot;       x^&quot; + i + &quot; * &quot; + coef[i] + &quot;\n&quot;;</span>
+<span class="nc" id="L259">                buffer.append(term);</span>
+            }
+            else {
+                // No row is generated for a zero term.
+            }
+        }
+
+<span class="nc" id="L266">        return buffer.toString();</span>
+    }
+
+    
+    
+    
+    /**
+     * This method computes the roots of the polynomial and stores the roots
+     * in preallocated arrays, which are passed as arguments.
+     * @param zeror Array, in which the real parts of the zeros will be stored
+     * after computation of the zeros. This array must have a length of at
+     * least N elements, where N is the degree of the polynomial.
+     * @param zeroi Array, in which the imaginary parts of the zeros will be stored
+     * after computation of the zeros. This array must have a length of at
+     * least N elements, where N is the degree of the polynomial.
+     * @return Returns the degree of the polynomial if the computation succeeds,
+     * and returns a value less than the degree of the polynomial if an error
+     * occurs (e.g. convergence failure). When a value less than the degree of
+     * the polynomial is returned, then only part (or none) of the roots could
+     * be determined.
+     */
+    public int solve(double[] zeror, double[] zeroi) {
+<span class="fc" id="L288">        p = new double[coef.length];</span>
+<span class="fc" id="L289">        int degree = p.length - 1;</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i++) {</span>
+<span class="fc" id="L291">            p[i] = coef[degree - i];</span>
+        }
+
+<span class="fc" id="L294">        int nzeros = rpoly(degree, zeror, zeroi);</span>
+<span class="fc" id="L295">        return nzeros;</span>
+    }
+
+    
+    
+    
+    /***********************************************************************/
+    /***********************************************************************/
+    /********* Below follows the port of the original Fortran  *************/
+    /********* program. It is all private to this module!     *************/
+    /********* The code above is a wrapper for easy usage. *************/
+    /***********************************************************************/
+    /***********************************************************************/
+    /***********************************************************************/
+    
+    
+    
+    /*      Jenkins-Traub real polynomial root finder.
+     *
+     *      Translation of TOMS493 from FORTRAN to Java. The code is
+     *      reorganized strongly because Java does not have a goto
+     *      statement. Besides the restructuring, there also are
+     *      quite a few algorithmic changes. The original Fortran
+     *      code is quite buggy. The most important changes are:
+     *          - adopted scaling mechanism for polynomial coefficients
+     *            from CPoly and removed the original malfunctioning
+     *            scaling code of algorithm 493.
+     *          - added logic to the termination of the iteration
+     *            process, such that after the newly found root can be
+     *            isolated, one more iteration step is performed, such
+     *            that a more accurate result is obtained.
+     *
+     *      The calling conventions are slightly modified to return
+     *      the number of roots found as the function value.
+     *
+     *      INPUT:
+     *      op - double precision vector of coefficients in order of
+     *              decreasing powers.
+     *      degree - integer degree of polynomial
+     *
+     *      OUTPUT:
+     *      zeror,zeroi - output double precision vectors of the
+     *                    real and imaginary parts of the zeros.
+     *
+     *      RETURN:
+     *      returnval: -1 if leading coefficient is zero, otherwise
+     *                  number of roots found. 
+     */
+
+    private static final double DEG_TO_RAD = 3.14159265358979323846 / 180;  // Degrees-to-radians conversion factor = PI/180
+<span class="fc" id="L345">    private static final double COSR = Math.cos(94.0 * DEG_TO_RAD);  // = -0.069756474</span>
+<span class="fc" id="L346">    private static final double SINR = Math.sin(94.0 * DEG_TO_RAD);  // = 0.99756405</span>
+<span class="fc" id="L347">    private static final double SQRT_0_5 = Math.sqrt(0.5);</span>
+    private static final double INFIN = 1e40;    // Double.MAX_VALUE;
+    private static final double SMALNO = 1e-40;  // Double.MIN_NORMAL;
+    private static final double ETA = 1.0 / (1l &lt;&lt; 52);
+<span class="fc" id="L351">    private static final double HI = Math.sqrt(INFIN);</span>
+    private static final double LO = SMALNO / ETA;
+    private static final double ARE = ETA;
+    private static final double MRE = ETA;
+
+    
+    private double[] p, qp, k, qk, svk;
+    private double u, v;
+    private double a, b;
+    private double c, d;
+    private double sr, a1;
+    private double a3, a7, e, f, g, h;
+    private double szr, szi, lzr, lzi;
+    private int n;
+
+    private int rpoly(int degree, double[] zeror, double[] zeroi) {
+        double t, aa, bb, cc;
+        double[] temp;
+        double[] pt;
+        double xx, yy, x, bnd;
+        double xm, ff, df, dx;
+        int cnt, nz, i, j, jj, nm1;
+        boolean zerok;
+
+<span class="fc" id="L375">        n = degree;</span>
+        
+        /*  Initialization of constants for shift rotation. */
+<span class="fc" id="L378">        xx = SQRT_0_5;</span>
+<span class="fc" id="L379">        yy = -xx;</span>
+        /*  Algorithm fails if the leading coefficient is zero. */
+<span class="pc bpc" id="L381" title="1 of 2 branches missed.">        if (p[0] == 0.0) {</span>
+<span class="nc" id="L382">            return -1;</span>
+        }
+        /*  Remove the zeros at the origin, if any. */
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">        while (p[n] == 0.0) {</span>
+<span class="nc" id="L386">            j = degree - n;</span>
+<span class="nc" id="L387">            zeror[j] = 0.0;</span>
+<span class="nc" id="L388">            zeroi[j] = 0.0;</span>
+<span class="nc" id="L389">            n--;</span>
+        }
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">        if (n &lt; 1) {</span>
+<span class="nc" id="L392">            return degree;</span>
+        }
+        /*
+         *  Allocate memory here
+         */
+<span class="fc" id="L397">        temp = new double[degree + 1];</span>
+<span class="fc" id="L398">        pt = new double[degree + 1];</span>
+<span class="fc" id="L399">        qp = new double[degree + 1];</span>
+<span class="fc" id="L400">        k = new double[degree + 1];</span>
+<span class="fc" id="L401">        qk = new double[degree + 1];</span>
+<span class="fc" id="L402">        svk = new double[degree + 1];</span>
+
+    outer:
+        while (true) {
+            /*  Start the algorithm for one zero. */
+<span class="fc bfc" id="L407" title="All 2 branches covered.">            if (n == 1) {</span>
+<span class="fc" id="L408">                zeror[degree - 1] = -p[1] / p[0];</span>
+<span class="fc" id="L409">                zeroi[degree - 1] = 0.0;</span>
+<span class="fc" id="L410">                n -= 1;</span>
+<span class="fc" id="L411">                return degree - n;</span>
+            }
+            /*  Calculate the final zero or pair of zeros. */
+<span class="fc bfc" id="L414" title="All 2 branches covered.">            if (n == 2) {</span>
+<span class="fc" id="L415">                quad(p[0], p[1], p[2]);   // Returns its results through szr, szi, lzr, lzi</span>
+<span class="fc" id="L416">                zeror[degree - 2] = szr;</span>
+<span class="fc" id="L417">                zeroi[degree - 2] = szi;</span>
+<span class="fc" id="L418">                zeror[degree - 1] = lzr;</span>
+<span class="fc" id="L419">                zeroi[degree - 1] = lzi;</span>
+<span class="fc" id="L420">                n -= 2;</span>
+<span class="fc" id="L421">                return degree - n;</span>
+            }
+            
+            // WILCO: Replaced scaling code of the original Fortran code by
+            // the scaling mechanism as is used in the original Fortran code
+            // of CPoly. The code in the original RPoly scales the coefficients
+            // to just above underflow level and this makes the code quite
+            // sensitive to loss of accuracy. Probably this is one of the bugs
+            // of the TOMS code, algorithm 493: http://www.netlib.org/toms/493
+            // This code seems to have unnoticed errors, which may be lingering
+            // for years already.
+<span class="fc" id="L432">            int factorExponent = scale(p);</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">            if (factorExponent != 0) {</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">                for (i = 0; i &lt;= n; i++) {</span>
+<span class="fc" id="L435">                    p[i] = Math.scalb(p[i], factorExponent);     // Scale polynomial with factor 2^factorExponent.</span>
+                }
+            }
+
+            /*  Compute lower bound on moduli of roots. */
+<span class="fc bfc" id="L440" title="All 2 branches covered.">            for (i = 0; i &lt;= n; i++) {</span>
+<span class="fc" id="L441">                pt[i] = (Math.abs(p[i]));</span>
+            }
+<span class="fc" id="L443">            pt[n] = -pt[n];</span>
+            /*  Compute upper estimate of bound. */
+<span class="fc" id="L445">            x = Math.exp((Math.log(-pt[n]) - Math.log(pt[0])) / (double) n);</span>
+            /*  If Newton step at the origin is better, use it. */
+<span class="fc bfc" id="L447" title="All 2 branches covered.">            if (pt[n - 1] != 0.0) {</span>
+<span class="fc" id="L448">                xm = -pt[n] / pt[n - 1];</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">                if (xm &lt; x) {</span>
+<span class="fc" id="L450">                    x = xm;</span>
+                }
+            }
+            /*  Chop the interval (0,x) until ff &lt;= 0 */
+            while (true) {
+<span class="fc" id="L455">                xm = x * 0.1;</span>
+<span class="fc" id="L456">                ff = pt[0];</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">                for (i = 1; i &lt;= n; i++) {</span>
+<span class="fc" id="L458">                    ff = ff * xm + pt[i];</span>
+                }
+<span class="fc bfc" id="L460" title="All 2 branches covered.">                if (ff &lt;= 0.0) {</span>
+<span class="fc" id="L461">                    break;</span>
+                }
+<span class="fc" id="L463">                x = xm;</span>
+            }
+<span class="fc" id="L465">            dx = x;</span>
+            /*  Do Newton interation until x converges to two 
+             *  decimal places. 
+             */
+<span class="fc bfc" id="L469" title="All 2 branches covered.">            while (Math.abs(dx / x) &gt; 0.005) {</span>
+<span class="fc" id="L470">                ff = pt[0];</span>
+<span class="fc" id="L471">                df = ff;</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">                for (i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L473">                    ff = ff * x + pt[i];</span>
+<span class="fc" id="L474">                    df = df * x + ff;</span>
+                }
+<span class="fc" id="L476">                ff = ff * x + pt[n];</span>
+<span class="fc" id="L477">                dx = ff / df;</span>
+<span class="fc" id="L478">                x -= dx;</span>
+            }
+<span class="fc" id="L480">            bnd = x;</span>
+            /*  Compute the derivative as the initial k polynomial
+             *  and do 5 steps with no shift.
+             */
+<span class="fc" id="L484">            nm1 = n - 1;</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">            for (i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L486">                k[i] = (double) (n - i) * p[i] / (double) n;</span>
+            }
+<span class="fc" id="L488">            k[0] = p[0];</span>
+<span class="fc" id="L489">            aa = p[n];</span>
+<span class="fc" id="L490">            bb = p[n - 1];</span>
+<span class="fc bfc" id="L491" title="All 2 branches covered.">            zerok = (k[n - 1] == 0);</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">            for (jj = 0; jj &lt; 5; jj++) {</span>
+<span class="fc" id="L493">                cc = k[n - 1];</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">                if (!zerok) {</span>
+                    /*  Use a scaled form of recurrence if value of k at 0 is nonzero. */
+<span class="fc" id="L496">                    t = -aa / cc;</span>
+<span class="fc bfc" id="L497" title="All 2 branches covered.">                    for (i = 0; i &lt; nm1; i++) {</span>
+<span class="fc" id="L498">                        j = n - i - 1;</span>
+<span class="fc" id="L499">                        k[j] = t * k[j - 1] + p[j];</span>
+                    }
+<span class="fc" id="L501">                    k[0] = p[0];</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">                    zerok = (Math.abs(k[n - 1]) &lt;= Math.abs(bb) * ETA * 10.0);</span>
+                } else {
+                    /*  Use unscaled form of recurrence. */
+<span class="fc bfc" id="L505" title="All 2 branches covered.">                    for (i = 0; i &lt; nm1; i++) {</span>
+<span class="fc" id="L506">                        j = n - i - 1;</span>
+<span class="fc" id="L507">                        k[j] = k[j - 1];</span>
+                    }
+<span class="fc" id="L509">                    k[0] = 0.0;</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">                    zerok = (k[n - 1] == 0.0);</span>
+                }
+            }
+            /*  Save k for restarts with new shifts. */
+<span class="fc bfc" id="L514" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L515">                temp[i] = k[i];</span>
+            }
+            /*  Loop to select the quadratic corresponding to each new shift. */
+<span class="pc bpc" id="L518" title="1 of 2 branches missed.">            for (cnt = 1; cnt &lt;= 20; cnt++) {</span>
+                /*  Quadratic corresponds to a double shift to a            
+                 *  non-real point and its complex conjugate. The point
+                 *  has modulus bnd and amplitude rotated by 94 degrees
+                 *  from the previous shift.
+                 */
+<span class="fc" id="L524">                double xxx = COSR * xx - SINR * yy;</span>
+<span class="fc" id="L525">                yy = SINR * xx + COSR * yy;</span>
+<span class="fc" id="L526">                xx = xxx;</span>
+<span class="fc" id="L527">                sr = bnd * xx;</span>
+<span class="fc" id="L528">                u = -2.0 * sr;</span>
+<span class="fc" id="L529">                v = bnd;</span>
+<span class="fc" id="L530">                nz = fxshfr(20 * cnt);</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">                if (nz != 0) {</span>
+                    /*  The second stage jumps directly to one of the third
+                     *  stage iterations and returns here if successful.
+                     *  Deflate the polynomial, store the zero or zeros and
+                     *  return to the main algorithm.
+                     */
+<span class="fc" id="L537">                    j = degree - n;</span>
+<span class="fc" id="L538">                    zeror[j] = szr;</span>
+<span class="fc" id="L539">                    zeroi[j] = szi;</span>
+<span class="fc" id="L540">                    n -= nz;</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">                    for (i = 0; i &lt;= n; i++) {</span>
+<span class="fc" id="L542">                        p[i] = qp[i];</span>
+                    }
+<span class="fc bfc" id="L544" title="All 2 branches covered.">                    if (nz != 1) {</span>
+<span class="fc" id="L545">                        zeror[j + 1] = lzr;</span>
+<span class="fc" id="L546">                        zeroi[j + 1] = lzi;</span>
+                    }
+                    continue outer;
+                }
+                /*  Iteration is unsuccessful: another quadratic
+                 *  is chosen after restoring k.
+                 */
+<span class="fc bfc" id="L553" title="All 2 branches covered.">                for (i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L554">                    k[i] = temp[i];</span>
+                }
+            }
+
+<span class="nc" id="L558">            return degree - n;</span>
+        }
+    }
+
+    
+    
+    
+    // WILCO: Deviation from original algorithm 493. In the original
+    // version of the algorithm the polynomial is scaled such that
+    // all coefficients become very small, in the order of magnitude
+    // of 10^-40. This new scale() method tries to keep coefficients 
+    // around the order of magnitude 1.0.
+    private static int scale(double[] PT) {
+        // Find the largest and the smallest moduli of coefficients.
+<span class="fc" id="L572">        int NN = PT.length;</span>
+<span class="fc" id="L573">        double max = 0.0;</span>
+<span class="fc" id="L574">        double min = INFIN;</span>
+        double X, sc;
+<span class="fc bfc" id="L576" title="All 2 branches covered.">        for (int i = 0; i &lt; NN; ++i) {</span>
+<span class="fc" id="L577">            X = Math.abs(PT[i]);</span>
+<span class="fc bfc" id="L578" title="All 2 branches covered.">            if (X &gt; max) {</span>
+<span class="fc" id="L579">                max = X;</span>
+            }
+<span class="fc bfc" id="L581" title="All 4 branches covered.">            if (X != 0.0 &amp;&amp; X &lt; min) {</span>
+<span class="fc" id="L582">                min = X;</span>
+            }
+        }
+
+        // Scale only if there are very large or very small components.
+<span class="fc bfc" id="L587" title="All 4 branches covered.">        if (min &gt;= LO &amp;&amp; max &lt;= HI) {</span>
+<span class="fc" id="L588">            return 0;</span>
+        }
+
+<span class="fc" id="L591">        X = LO / min;</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">        if (X &gt; 1.0) {</span>
+<span class="fc" id="L593">            sc = X;</span>
+<span class="fc bfc" id="L594" title="All 2 branches covered.">            if (INFIN / sc &gt; max) {</span>
+<span class="fc" id="L595">                return 0;</span>
+            }
+        } else {
+<span class="fc" id="L598">            sc = 1.0 / Math.sqrt(max * min);</span>
+        }
+
+        // Compute a scale factor, close to sc, but in such a way
+        // that the factor is exact and a power of 2, such that
+        // multiplication with this factor does not lead to loss
+        // of any precision in the coefficients. Not the scale 
+        // factor itself, but the exponent of 2 is returned.
+<span class="fc" id="L606">        return Math.getExponent(sc) + 1;</span>
+    }
+
+    
+    
+    private
+    double ui, vi;  // Used from within fxshfr() and initialized in newest().
+                    // ui and vi are used as input to quadit() and also are
+                    // changed by quadit(), also by calling newest(). In a
+                    // language like C, ui and vi could be local in fxshfr()
+                    // and pointers could be passed to newest() and quadit(),
+                    // but in Java they are made class variables.
+    
+    private
+    double s;       // A similar issue as for ui and vi exists for the local
+                    // variable s in fxshfr(). In the fortran code, this is
+                    // passed as a VAR-parameter, which can be changed by the
+                    // called function. In C this could be solved by passing
+                    // a pointer to s. In Java, a class variable must be made
+                    // of this, which only is used in the context of fxshfr()
+                    // and methods called from that.
+    
+    /*  Computes up to L2 fixed shift k-polynomials,
+     *  testing for convergence in the linear or quadratic
+     *  case. Initiates one of the variable shift
+     *  iterations and returns with the number of zeros
+     *  found.
+     */
+    private int fxshfr(int l2) {
+        // double ui, vi;    // Not used because of reasons explained above.
+        // double s;         // Not used because of reasons explained above.
+        double betas, betav, oss, ovv, ss, vv, ts, tv;
+<span class="fc" id="L638">        double ots = 0, otv = 0, tvv, tss;</span>
+        int type, i;
+        boolean vtry, stry;
+
+<span class="fc" id="L642">        betav = 0.25;</span>
+<span class="fc" id="L643">        betas = 0.25;</span>
+<span class="fc" id="L644">        oss = sr;</span>
+<span class="fc" id="L645">        ovv = v;</span>
+        /*  Evaluate polynomial by synthetic division. */
+<span class="fc" id="L647">        quadsd_ab(n, u, v, p, qp);</span>
+<span class="fc" id="L648">        type = calcsc();</span>
+<span class="fc bfc" id="L649" title="All 2 branches covered.">        for (int j = 1; j &lt;= l2; j++) {</span>
+            /*  Calculate next k polynomial and estimate v. */
+<span class="fc" id="L651">            nextk(type);</span>
+<span class="fc" id="L652">            type = calcsc();</span>
+<span class="fc" id="L653">            newest(type);    // Fills ui and vi with values.</span>
+<span class="fc" id="L654">            vv = vi;</span>
+            /*  Estimate s. */
+<span class="fc" id="L656">            ss = 0.0;</span>
+<span class="fc bfc" id="L657" title="All 2 branches covered.">            if (k[n - 1] != 0.0) {</span>
+<span class="fc" id="L658">                ss = -p[n] / k[n - 1];</span>
+            }
+<span class="fc" id="L660">            tv = 1.0;</span>
+<span class="fc" id="L661">            ts = 1.0;</span>
+<span class="pc bpc" id="L662" title="1 of 4 branches missed.">            if (j != 1 &amp;&amp; type != 3) {</span>
+
+                /*  Compute relative measures of convergence of s and v sequences. */
+<span class="fc bfc" id="L665" title="All 2 branches covered.">                if (vv != 0.0) {</span>
+<span class="fc" id="L666">                    tv = Math.abs((vv - ovv) / vv);</span>
+                }
+<span class="pc bpc" id="L668" title="1 of 2 branches missed.">                if (ss != 0.0) {</span>
+<span class="fc" id="L669">                    ts = Math.abs((ss - oss) / ss);</span>
+                }
+                /*  If decreasing, multiply two most recent convergence measures. */
+<span class="fc" id="L672">                tvv = 1.0;</span>
+<span class="fc bfc" id="L673" title="All 2 branches covered.">                if (tv &lt; otv) {</span>
+<span class="fc" id="L674">                    tvv = tv * otv;</span>
+                }
+<span class="fc" id="L676">                tss = 1.0;</span>
+<span class="fc bfc" id="L677" title="All 2 branches covered.">                if (ts &lt; ots) {</span>
+<span class="fc" id="L678">                    tss = ts * ots;</span>
+                }
+                /*  Compare with convergence criteria. */
+<span class="fc bfc" id="L681" title="All 2 branches covered.">                boolean vpass = (tvv &lt; betav);</span>
+<span class="fc bfc" id="L682" title="All 2 branches covered.">                boolean spass = (tss &lt; betas);</span>
+<span class="fc bfc" id="L683" title="All 4 branches covered.">                if (spass || vpass) {</span>
+                    /*  At least one sequence has passed the convergence test.
+                     *  Store variables before iterating.
+                     */
+<span class="fc" id="L687">                    double svu = u;</span>
+<span class="fc" id="L688">                    double svv = v;</span>
+<span class="fc bfc" id="L689" title="All 2 branches covered.">                    for (i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L690">                        svk[i] = k[i];</span>
+                    }
+<span class="fc" id="L692">                    s = ss;</span>
+                    /*  Choose iteration according to the fastest converging
+                     *  sequence.
+                     */
+<span class="fc" id="L696">                    vtry = false;</span>
+<span class="fc" id="L697">                    stry = false;</span>
+<span class="fc" id="L698">                    int state = 20;</span>
+<span class="fc bfc" id="L699" title="All 6 branches covered.">                    if (spass &amp;&amp; (!vpass || tss &lt; tvv)) {</span>
+<span class="fc" id="L700">                        state = 40;</span>
+                    }
+<span class="fc bfc" id="L702" title="All 2 branches covered.">                    while (state != 70) {</span>
+<span class="pc bpc" id="L703" title="1 of 4 branches missed.">                        switch (state) {</span>
+                            case 20: {   // Iteration for quadratic factor.
+<span class="fc" id="L705">                                int nz = quadit();    // Beware: Changes ui and vi!</span>
+<span class="fc bfc" id="L706" title="All 2 branches covered.">                                if (nz &gt; 0) {</span>
+<span class="fc" id="L707">                                    return nz;</span>
+                                }
+                                //  Quadratic iteration has failed. Flag that it has
+                                //  been tried and decrease the convergence criterion.
+<span class="fc" id="L711">                                vtry = true;</span>
+<span class="fc" id="L712">                                betav *= 0.25;</span>
+                                //  Try linear iteration if it has not been tried and
+                                //  the S sequence is converging.
+<span class="fc bfc" id="L715" title="All 4 branches covered.">                                if (!stry &amp;&amp; spass) {</span>
+<span class="fc bfc" id="L716" title="All 2 branches covered.">                                    for (i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L717">                                        k[i] = svk[i];</span>
+                                    }
+<span class="fc" id="L719">                                    state = 40;</span>
+                                }
+                                else {
+<span class="fc" id="L722">                                    state = 50;</span>
+                                }
+<span class="fc" id="L724">                                break;</span>
+                            }
+                            case 40: {   // Iteration for linear factor.   
+<span class="fc" id="L727">                                int nz = realit();   // Beware: changes s!</span>
+<span class="fc bfc" id="L728" title="All 2 branches covered.">                                if (nz &gt; 0) {</span>
+<span class="fc" id="L729">                                    return nz;</span>
+                                }
+                                //  Linear iteration has failed. Flag that it has been
+                                //  tried and decrease the convergence criterion.
+<span class="fc" id="L733">                                stry = true;</span>
+<span class="fc" id="L734">                                betas *= 0.25;</span>
+<span class="fc bfc" id="L735" title="All 2 branches covered.">                                if (nz == -1) {</span>
+                                    // nz == -1, almost double real zero, 
+                                    // we attempt quadratic iteration.
+<span class="fc" id="L738">                                    ui = -(s + s);</span>
+<span class="fc" id="L739">                                    vi = s * s;</span>
+<span class="fc" id="L740">                                    state = 20;</span>
+                                }
+                                else  {  // nz == 0
+<span class="fc" id="L743">                                    state = 50;</span>
+                                } 
+<span class="fc" id="L745">                                break;</span>
+                            }
+                            case 50: {   // Restoration of variables.
+<span class="fc" id="L748">                                u = svu;</span>
+<span class="fc" id="L749">                                v = svv;</span>
+<span class="fc bfc" id="L750" title="All 2 branches covered.">                                for (i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L751">                                    k[i] = svk[i];</span>
+                                }
+                                // Try quadratic iteration if it has not been tried
+                                // and the V sequence is converging.
+<span class="fc bfc" id="L755" title="All 4 branches covered.">                                if (vpass &amp;&amp; !vtry) {</span>
+<span class="fc" id="L756">                                    state = 20;</span>
+                                } 
+                                else {
+                                    // Recompute QP and scalar values to continue the
+                                    // second stage.
+<span class="fc" id="L761">                                    quadsd_ab(n, u, v, p, qp);</span>
+<span class="fc" id="L762">                                    type = calcsc();</span>
+<span class="fc" id="L763">                                    state = 70;</span>
+                                }
+<span class="fc" id="L765">                                break;</span>
+                            }
+                            default:   // Should never be reached, if this is reached, then internal error!
+<span class="nc" id="L768">                                throw new RuntimeException(&quot;RPoly internal error (fxshfr:state=&quot; + state + &quot;), contact developer of this code!&quot;);</span>
+                        }
+                    }
+                }
+            }
+
+<span class="fc" id="L774">            ovv = vv;</span>
+<span class="fc" id="L775">            oss = ss;</span>
+<span class="fc" id="L776">            otv = tv;</span>
+<span class="fc" id="L777">            ots = ts;</span>
+        }
+        
+        // No convergence.
+<span class="fc" id="L781">        return 0;</span>
+    }
+    
+    
+    
+    
+    
+    /*  Variable-shift k-polynomial iteration for a
+     *  quadratic factor converges only if the zeros are
+     *  equimodular or nearly so.
+     *  This method uses ui and vi as inputs and also uses
+     *  these as outputs.
+     *  nz - number of zeros found.
+     */
+    private int quadit() {
+<span class="fc" id="L796">        double mp, omp = 0, ee, relstp = 0, t, zm;</span>
+        int type, i, j;
+        boolean tried;
+
+<span class="fc" id="L800">        tried = false;</span>
+<span class="fc" id="L801">        u = ui;</span>
+<span class="fc" id="L802">        v = vi;</span>
+<span class="fc" id="L803">        j = 0;</span>
+
+        /*  Main loop. */
+<span class="fc" id="L806">        int nOK = 0;</span>
+        while (true) {
+<span class="fc" id="L808">            quad(1.0, u, v);   // Returns roots through szr, szi, lzr, lzi</span>
+            
+            //  Return if roots of the quadratic are real and not
+            //  close to multiple or nearly equal and of opposite sign.
+<span class="fc bfc" id="L812" title="All 2 branches covered.">            if (Math.abs(Math.abs(szr) - Math.abs(lzr)) &gt; 0.01 * Math.abs(lzr)) {</span>
+<span class="fc" id="L813">                return 0;</span>
+            }
+            //  Evaluate polynomial by quadratic synthetic division.
+<span class="fc" id="L816">            quadsd_ab(n, u, v, p, qp);</span>
+<span class="fc" id="L817">            mp = Math.abs(a - szr * b) + Math.abs(szi * b);</span>
+            //  Compute a rigorous bound on the rounding error in evaluating p.
+<span class="fc" id="L819">            zm = Math.sqrt(Math.abs(v));</span>
+<span class="fc" id="L820">            ee = 2.0 * Math.abs(qp[0]);</span>
+<span class="fc" id="L821">            t = -szr * b;</span>
+<span class="fc bfc" id="L822" title="All 2 branches covered.">            for (i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L823">                ee = ee * zm + Math.abs(qp[i]);</span>
+            }
+<span class="fc" id="L825">            ee = ee * zm + Math.abs(a + t);</span>
+<span class="fc" id="L826">            ee = (5.0 * MRE + 4.0 * ARE) * ee</span>
+<span class="fc" id="L827">                    - (5.0 * MRE + 2.0 * ARE) * (Math.abs(a + t) + Math.abs(b) * zm)</span>
+<span class="fc" id="L828">                    + 2.0 * ARE * Math.abs(t);</span>
+            //  Iteration has converged sufficiently if the
+            //  polynomial value is less than 20 times this bound.
+            
+            // WILCO: Added nOK logic. Only after two iterations
+            // within the error bound we accept the root. The
+            // additional iteration makes the returned root more
+            // accurate in nearly all cases. This strategy removes
+            // another known issue of Algorithm 493. The original
+            // Fortran code sometimes returns a set of zeros, which
+            // is isolated, but which is quite inaccurate, sometimes
+            // only to 2 or 3 decimal places. The extra iteration
+            // makes this issue much less severe, although in some
+            // rare cases, where roots are present in clusters, there
+            // still may be such cases.
+<span class="fc bfc" id="L843" title="All 2 branches covered.">            if (mp &lt;= 20.0 * ee) {</span>
+<span class="fc" id="L844">                nOK++;</span>
+<span class="fc bfc" id="L845" title="All 2 branches covered.">                if (nOK == 2) {</span>
+<span class="fc" id="L846">                    return 2;   // Converged to two zeros.</span>
+                }
+            } 
+            else {
+<span class="fc" id="L850">                nOK = 0;</span>
+            }
+<span class="fc" id="L852">            j++;</span>
+            //  Stop iteration after 20 steps.
+<span class="fc bfc" id="L854" title="All 2 branches covered.">            if (j &gt; 20) {</span>
+<span class="fc" id="L855">                return 0;  // No convergence.</span>
+            }
+<span class="fc bfc" id="L857" title="All 2 branches covered.">            if (j &gt;= 2) {</span>
+<span class="fc bfc" id="L858" title="All 6 branches covered.">                if (relstp &gt; 0.01 || mp &lt; omp || tried) {</span>
+
+                } 
+                else {
+                    //  A cluster appears to be stalling the convergence.
+                    //  Five fixed shift steps are taken with a u,v close
+                    //  to the cluster.
+<span class="pc bpc" id="L865" title="1 of 2 branches missed.">                    if (relstp &lt; ETA) {</span>
+<span class="nc" id="L866">                        relstp = ETA;</span>
+                    }
+<span class="fc" id="L868">                    relstp = Math.sqrt(relstp);</span>
+<span class="fc" id="L869">                    u = u - u * relstp;</span>
+<span class="fc" id="L870">                    v = v + v * relstp;</span>
+<span class="fc" id="L871">                    quadsd_ab(n, u, v, p, qp);</span>
+<span class="fc bfc" id="L872" title="All 2 branches covered.">                    for (i = 0; i &lt; 5; i++) {</span>
+<span class="fc" id="L873">                        type = calcsc();</span>
+<span class="fc" id="L874">                        nextk(type);</span>
+                    }
+<span class="fc" id="L876">                    tried = true;</span>
+<span class="fc" id="L877">                    j = 0;   // reset loop counter</span>
+                }
+            }
+
+<span class="fc" id="L881">            omp = mp;</span>
+
+            //  Calculate next k polynomial and new u and v.
+<span class="fc" id="L884">            type = calcsc();</span>
+<span class="fc" id="L885">            nextk(type);</span>
+<span class="fc" id="L886">            type = calcsc();</span>
+<span class="fc" id="L887">            newest(type);</span>
+            //  If vi is zero the iteration is not converging.
+<span class="fc bfc" id="L889" title="All 2 branches covered.">            if (vi == 0.0) {</span>
+<span class="fc" id="L890">                return 0;</span>
+            }
+<span class="fc" id="L892">            relstp = Math.abs((vi - v) / vi);</span>
+<span class="fc" id="L893">            u = ui;</span>
+<span class="fc" id="L894">            v = vi;</span>
+        }
+    }
+    
+    
+    
+    
+    
+    /*  Variable-shift H polynomial iteration for a real zero.
+     *  return nz, number of zeros found
+     *  
+     *  sss - starting iterate
+     *  In the Java version, the argument sss is removed, it is
+     *  connected to the variable s from the calling environment.
+     *  iflag - flag to indicate a pair of zeros near real axis, used
+     *          as output variable in original code.
+     *  In the Java version, iflag is removed and the return value nz
+     *  is set to -1 to indicate that a double zero is encountered.
+     */
+    private int realit(/* DoublePar sss, IntPar iflag */) {
+<span class="fc" id="L914">        double t = 0, sss;</span>
+<span class="fc" id="L915">        double omp = 0;</span>
+        int j;
+
+<span class="fc" id="L918">        sss = s;</span>
+<span class="fc" id="L919">        int nz = 0;</span>
+<span class="fc" id="L920">        j = 0;</span>
+        /*  Main loop */
+<span class="fc" id="L922">        int nOK = 0;</span>
+        while (true) {
+<span class="fc" id="L924">            double pv = p[0];</span>
+            /*  Evaluate p at s. */
+<span class="fc" id="L926">            qp[0] = pv;</span>
+<span class="fc bfc" id="L927" title="All 2 branches covered.">            for (int i = 1; i &lt;= n; i++) {</span>
+<span class="fc" id="L928">                pv = pv * sss + p[i];</span>
+<span class="fc" id="L929">                qp[i] = pv;</span>
+            }
+<span class="fc" id="L931">            double mp = Math.abs(pv);</span>
+            //  Compute a rigorous bound on the error in evaluating p.
+<span class="fc" id="L933">            double ms = Math.abs(sss);</span>
+<span class="fc" id="L934">            double ee = (MRE / (ARE + MRE)) * Math.abs(qp[0]);</span>
+<span class="fc bfc" id="L935" title="All 2 branches covered.">            for (int i = 1; i &lt;= n; i++) {</span>
+<span class="fc" id="L936">                ee = ee * ms + Math.abs(qp[i]);</span>
+            }
+            //  Iteration has converged sufficiently if the polynomial
+            //  value is less than 20 times this bound.
+
+            // WILCO: Added nOK logic. Only after two iterations
+            // within the error bound we accept the root. The
+            // additional iteration makes the returned root more
+            // accurate in nearly all cases.
+            // See comment in quadit() above!
+<span class="fc bfc" id="L946" title="All 2 branches covered.">            if (mp &lt;= 20.0 * ((ARE + MRE) * ee - MRE * mp)) {</span>
+<span class="fc" id="L947">                nOK++;</span>
+<span class="fc bfc" id="L948" title="All 2 branches covered.">                if (nOK == 2) {</span>
+<span class="fc" id="L949">                    nz = 1;</span>
+<span class="fc" id="L950">                    szr = sss;</span>
+<span class="fc" id="L951">                    szi = 0.0;</span>
+<span class="fc" id="L952">                    return nz;</span>
+                }
+            } 
+            else {
+<span class="fc" id="L956">                nOK = 0;</span>
+            }
+<span class="fc" id="L958">            j++;</span>
+            //  Stop iteration after 10 steps.
+<span class="fc bfc" id="L960" title="All 2 branches covered.">            if (j &gt; 10) {</span>
+<span class="fc" id="L961">                return nz;</span>
+            }
+<span class="fc bfc" id="L963" title="All 2 branches covered.">            if (j &gt;= 2) {</span>
+<span class="fc bfc" id="L964" title="All 4 branches covered.">                if (Math.abs(t) &gt; 0.001 * Math.abs(sss - t) || mp &lt; omp) {</span>
+
+                } 
+                else {
+                    //  A cluster of zeros near the real axis has been
+                    //  encountered. Return with iflag set to initiate a
+                    //  quadratic iteration.
+<span class="fc" id="L971">                    nz = -1;     // Indicate that quadratic iteration is needed.</span>
+<span class="fc" id="L972">                    s = sss;     // In the original code, the var parameter sss is modified,</span>
+                                 // here we set the class variable s, because in the original
+                                 // code this function is called with a reference to s.
+<span class="fc" id="L975">                    return nz;</span>
+                }
+            }
+            //  Return if the polynomial value has increased significantly.
+<span class="fc" id="L979">            omp = mp;</span>
+            //  Compute t, the next polynomial, and the new iterate.
+<span class="fc" id="L981">            double kv = k[0];</span>
+<span class="fc" id="L982">            qk[0] = kv;</span>
+<span class="fc bfc" id="L983" title="All 2 branches covered.">            for (int i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L984">                kv = kv * sss + k[i];</span>
+<span class="fc" id="L985">                qk[i] = kv;</span>
+            }
+<span class="fc bfc" id="L987" title="All 2 branches covered.">            if (Math.abs(kv) &lt;= Math.abs(k[n - 1]) * 10.0 * ETA) {         // HVE n -&gt; n-1</span>
+                //  Use unscaled form.
+<span class="fc" id="L989">                k[0] = 0.0;</span>
+<span class="fc bfc" id="L990" title="All 2 branches covered.">                for (int i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L991">                    k[i] = qk[i - 1];</span>
+                }
+            } else {
+                //  Use the scaled form of the recurrence if the value
+                //  of k at s is nonzero.
+<span class="fc" id="L996">                t = -pv / kv;</span>
+<span class="fc" id="L997">                k[0] = qp[0];</span>
+<span class="fc bfc" id="L998" title="All 2 branches covered.">                for (int i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L999">                    k[i] = t * qk[i - 1] + qp[i];</span>
+                }
+            }
+<span class="fc" id="L1002">            kv = k[0];</span>
+<span class="fc bfc" id="L1003" title="All 2 branches covered.">            for (int i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L1004">                kv = kv * sss + k[i];</span>
+            }
+<span class="fc" id="L1006">            t = 0.0;</span>
+<span class="fc bfc" id="L1007" title="All 2 branches covered.">            if (Math.abs(kv) &gt; Math.abs(k[n - 1] * 10.0 * ETA)) {</span>
+<span class="fc" id="L1008">                t = -pv / kv;</span>
+            }
+<span class="fc" id="L1010">            sss += t;</span>
+<span class="fc" id="L1011">        }</span>
+    }
+
+    
+    
+    
+    
+    /*  This routine calculates scalar quantities used to
+     *  compute the next k polynomial and new estimates of
+     *  the quadratic coefficients.
+     *  type - integer variable set here indicating how the
+     *  calculations are normalized to avoid overflow.
+     */
+    private int calcsc() {
+        int type;
+        /*  Synthetic division of k by the quadratic 1,u,v */
+<span class="fc" id="L1027">        quadsd_cd(n - 1, u, v, k, qk);</span>
+<span class="fc bfc" id="L1028" title="All 2 branches covered.">        if (Math.abs(c) &lt;= Math.abs(k[n - 1] * 100.0 * ETA)</span>
+<span class="pc bpc" id="L1029" title="1 of 2 branches missed.">                &amp;&amp; Math.abs(d) &lt;= Math.abs(k[n - 2] * 100.0 * ETA)) {</span>
+<span class="fc" id="L1030">            type = 3;</span>
+            /*  Type=3 indicates the quadratic is almost a factor of k. */
+<span class="fc" id="L1032">            return type;</span>
+        }
+
+<span class="fc bfc" id="L1035" title="All 2 branches covered.">        if (Math.abs(d) &lt; Math.abs(c)) {</span>
+<span class="fc" id="L1036">            type = 1;</span>
+            /*  Type=1 indicates that all formulas are divided by c. */
+<span class="fc" id="L1038">            e = a / c;</span>
+<span class="fc" id="L1039">            f = d / c;</span>
+<span class="fc" id="L1040">            g = u * e;</span>
+<span class="fc" id="L1041">            h = v * b;</span>
+<span class="fc" id="L1042">            a3 = a * e + (h / c + g) * b;</span>
+<span class="fc" id="L1043">            a1 = b - a * (d / c);</span>
+<span class="fc" id="L1044">            a7 = a + g * d + h * f;</span>
+<span class="fc" id="L1045">            return type;</span>
+        }
+<span class="fc" id="L1047">        type = 2;</span>
+        /*  Type=2 indicates that all formulas are divided by d. */
+<span class="fc" id="L1049">        e = a / d;</span>
+<span class="fc" id="L1050">        f = c / d;</span>
+<span class="fc" id="L1051">        g = u * b;</span>
+<span class="fc" id="L1052">        h = v * b;</span>
+<span class="fc" id="L1053">        a3 = (a + g) * e + h * (b / d);</span>
+<span class="fc" id="L1054">        a1 = b * f - a;</span>
+<span class="fc" id="L1055">        a7 = (f + u) * a + h;</span>
+<span class="fc" id="L1056">        return type;</span>
+    }
+
+    
+    
+    
+    
+    /*  Computes the next k polynomials using scalars 
+     *  computed in calcsc.
+     */
+    private void nextk(int type) {
+        double temp;
+        int i;
+
+<span class="fc bfc" id="L1070" title="All 2 branches covered.">        if (type == 3) {</span>
+            /*  Use unscaled form of the recurrence if type is 3. */
+<span class="fc" id="L1072">            k[0] = 0.0;</span>
+<span class="fc" id="L1073">            k[1] = 0.0;</span>
+<span class="fc bfc" id="L1074" title="All 2 branches covered.">            for (i = 2; i &lt; n; i++) {</span>
+<span class="fc" id="L1075">                k[i] = qk[i - 2];</span>
+            }
+<span class="fc" id="L1077">            return;</span>
+        }
+<span class="fc" id="L1079">        temp = a;</span>
+<span class="fc bfc" id="L1080" title="All 2 branches covered.">        if (type == 1) {</span>
+<span class="fc" id="L1081">            temp = b;</span>
+        }
+<span class="fc bfc" id="L1083" title="All 2 branches covered.">        if (Math.abs(a1) &lt;= Math.abs(temp) * ETA * 10.0) {</span>
+            /*  If a1 is nearly zero then use a special form of the
+             *  recurrence.
+             */
+<span class="fc" id="L1087">            k[0] = 0.0;</span>
+<span class="fc" id="L1088">            k[1] = -a7 * qp[0];</span>
+<span class="fc bfc" id="L1089" title="All 2 branches covered.">            for (i = 2; i &lt; n; i++) {</span>
+<span class="fc" id="L1090">                k[i] = a3 * qk[i - 2] - a7 * qp[i - 1];</span>
+            }
+        }
+        else {
+            /*  Use scaled form of the recurrence. */
+<span class="fc" id="L1095">            a7 /= a1;</span>
+<span class="fc" id="L1096">            a3 /= a1;</span>
+<span class="fc" id="L1097">            k[0] = qp[0];</span>
+<span class="fc" id="L1098">            k[1] = qp[1] - a7 * qp[0];</span>
+<span class="fc bfc" id="L1099" title="All 2 branches covered.">            for (i = 2; i &lt; n; i++) {</span>
+<span class="fc" id="L1100">                k[i] = a3 * qk[i - 2] - a7 * qp[i - 1] + qp[i];</span>
+            }
+        }
+<span class="fc" id="L1103">    }</span>
+
+    
+    
+    
+    
+    
+    /*  Compute new estimates of the quadratic coefficients
+     *  using the scalars computed in calcsc.
+     */
+    private void newest(int type) {
+        double a4, a5, b1, b2, c1, c2, c3, c4, temp;
+
+        /* Use formulas appropriate to setting of type. */
+<span class="fc bfc" id="L1117" title="All 2 branches covered.">        if (type == 3) {</span>
+            /*  If type=3 the quadratic is zeroed. */
+<span class="fc" id="L1119">            ui = 0.0;</span>
+<span class="fc" id="L1120">            vi = 0.0;</span>
+<span class="fc" id="L1121">            return;</span>
+        }
+<span class="fc bfc" id="L1123" title="All 2 branches covered.">        if (type == 2) {</span>
+<span class="fc" id="L1124">            a4 = (a + g) * f + h;</span>
+<span class="fc" id="L1125">            a5 = (f + u) * c + v * d;</span>
+        } else {
+<span class="fc" id="L1127">            a4 = a + u * b + h * f;</span>
+<span class="fc" id="L1128">            a5 = c + (u + v * f) * d;</span>
+        }
+        /*  Evaluate new quadratic coefficients. */
+<span class="fc" id="L1131">        b1 = -k[n - 1] / p[n];</span>
+<span class="fc" id="L1132">        b2 = -(k[n - 2] + b1 * p[n - 1]) / p[n];</span>
+<span class="fc" id="L1133">        c1 = v * b2 * a1;</span>
+<span class="fc" id="L1134">        c2 = b1 * a7;</span>
+<span class="fc" id="L1135">        c3 = b1 * b1 * a3;</span>
+<span class="fc" id="L1136">        c4 = c1 - c2 - c3;</span>
+<span class="fc" id="L1137">        temp = a5 + b1 * a4 - c4;</span>
+<span class="fc bfc" id="L1138" title="All 2 branches covered.">        if (temp == 0.0) {</span>
+<span class="fc" id="L1139">            ui = 0.0;</span>
+<span class="fc" id="L1140">            vi = 0.0;</span>
+<span class="fc" id="L1141">            return;</span>
+        }
+<span class="fc" id="L1143">        ui = u - (u * (c3 + c2) + v * (b1 * a1 + b2 * a7)) / temp;</span>
+<span class="fc" id="L1144">        vi = v * (1.0 + c4 / temp);</span>
+<span class="fc" id="L1145">    }</span>
+
+    
+    
+    
+    
+    /*  Divides p by the quadratic 1,u,v placing the quotient
+     *  in q and the remainder in class variables a,b.
+     */
+    private void quadsd_ab(int nn, double u, double v, double[] p, double[] q) {
+        double cc;
+        int i;
+
+<span class="fc" id="L1158">        b = p[0];</span>
+<span class="fc" id="L1159">        q[0] = b;</span>
+<span class="fc" id="L1160">        a = p[1] - b * u;</span>
+<span class="fc" id="L1161">        q[1] = a;</span>
+<span class="fc bfc" id="L1162" title="All 2 branches covered.">        for (i = 2; i &lt;= nn; i++) {</span>
+<span class="fc" id="L1163">            cc = p[i] - a * u - b * v;</span>
+<span class="fc" id="L1164">            q[i] = cc;</span>
+<span class="fc" id="L1165">            b = a;</span>
+<span class="fc" id="L1166">            a = cc;</span>
+        }
+<span class="fc" id="L1168">    }</span>
+    /*  Divides p by the quadratic 1,u,v placing the quotient
+     *  in q and the remainder in class variables c,d.
+     */
+    private void quadsd_cd(int nn, double u, double v, double[] p, double[] q) {
+        double cc;
+        int i;
+
+<span class="fc" id="L1176">        d = p[0];</span>
+<span class="fc" id="L1177">        q[0] = d;</span>
+<span class="fc" id="L1178">        c = p[1] - d * u;</span>
+<span class="fc" id="L1179">        q[1] = c;</span>
+<span class="fc bfc" id="L1180" title="All 2 branches covered.">        for (i = 2; i &lt;= nn; i++) {</span>
+<span class="fc" id="L1181">            cc = p[i] - c * u - d * v;</span>
+<span class="fc" id="L1182">            q[i] = cc;</span>
+<span class="fc" id="L1183">            d = c;</span>
+<span class="fc" id="L1184">            c = cc;</span>
+        }
+<span class="fc" id="L1186">    }</span>
+
+    
+    
+    
+    
+    
+    /*  Calculate the zeros of the quadratic a*z^2 + b1*z + c.
+     *  The quadratic formula, modified to avoid overflow, is used 
+     *  to find the larger zero if the zeros are real and both
+     *  are complex. The smaller real zero is found directly from 
+     *  the product of the zeros c/a.
+     */
+    private void quad(double a, double b1, double c) {
+        double b, d, e;
+
+<span class="pc bpc" id="L1202" title="1 of 2 branches missed.">        if (a == 0.0) {         /* less than two roots */</span>
+<span class="nc bnc" id="L1203" title="All 2 branches missed.">            szr = (b1!=0.0) ? -c/b1 : 0.0;</span>
+<span class="nc" id="L1204">            lzr = 0.0;</span>
+<span class="nc" id="L1205">            szi = 0.0;</span>
+<span class="nc" id="L1206">            lzi = 0.0;</span>
+<span class="nc" id="L1207">            return;</span>
+        }
+        
+<span class="fc bfc" id="L1210" title="All 2 branches covered.">        if (c == 0.0) {         /* one real root, one zero root */</span>
+<span class="fc" id="L1211">            szr = 0.0;</span>
+<span class="fc" id="L1212">            lzr = -b1/a;</span>
+<span class="fc" id="L1213">            szi = 0.0;</span>
+<span class="fc" id="L1214">            lzi = 0.0;</span>
+<span class="fc" id="L1215">            return;</span>
+        }
+        
+        /* Compute square root of abs(discriminant) avoiding overflow. */
+<span class="fc" id="L1219">        b = b1 / 2.0;</span>
+<span class="fc" id="L1220">        double ab = Math.abs(b);</span>
+<span class="fc" id="L1221">        double ac = Math.abs(c);</span>
+<span class="fc bfc" id="L1222" title="All 2 branches covered.">        if (ab &lt; ac) {</span>
+<span class="fc bfc" id="L1223" title="All 2 branches covered.">            e = (c&lt;0.0) ? -a : a;</span>
+<span class="fc" id="L1224">            e = b * (b / ac) - e;</span>
+<span class="fc" id="L1225">            d = Math.sqrt(Math.abs(e)) * Math.sqrt(ac);</span>
+        } 
+        else {
+<span class="fc" id="L1228">            e = 1.0 - (a / b) * (c / b);</span>
+<span class="fc" id="L1229">            d = Math.sqrt(Math.abs(e)) * ab;</span>
+        }
+<span class="fc bfc" id="L1231" title="All 2 branches covered.">        if (e &lt; 0.0) {   </span>
+            /* complex conjugate zeros */
+<span class="fc" id="L1233">            lzr = szr = -b / a;</span>
+<span class="fc" id="L1234">            szi = Math.abs(d / a);</span>
+<span class="fc" id="L1235">            lzi = -szi;</span>
+        } 
+        else {
+            /* real zeros, compute zero with largest magnitude first */
+<span class="fc bfc" id="L1239" title="All 2 branches covered.">            if (b &gt;= 0.0) {</span>
+<span class="fc" id="L1240">                d = -d;</span>
+            }
+<span class="fc" id="L1242">            lzr = (-b + d) / a;</span>
+<span class="fc" id="L1243">            szr = 0.0;</span>
+<span class="pc bpc" id="L1244" title="1 of 2 branches missed.">            if (lzr != 0.0) {</span>
+<span class="fc" id="L1245">                szr = (c / lzr) / a;</span>
+            }
+<span class="fc" id="L1247">            szi = 0.0;</span>
+<span class="fc" id="L1248">            lzi = 0.0;</span>
+        }
+<span class="fc" id="L1250">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

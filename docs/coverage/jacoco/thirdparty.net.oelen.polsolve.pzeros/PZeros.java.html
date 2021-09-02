@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PZeros.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.net.oelen.polsolve.pzeros</a> &gt; <span class="el_source">PZeros.java</span></div><h1>PZeros.java</h1><pre class="source lang-java linenums">/*
+The author of this code is Wilco Oelen and he offers it
+freely without copyright, but asks that his pages are referenced
+as the source if used.
+He has a webpage with information on the polynomial software
+he ported and more modern versions which require jini bindings:
+https://woelen.homescience.net/science/math/exps/polynomials/
+https://woelen.homescience.net/science/math/exps/polynomials/software.html
+The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
+https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+
+MPSolve is an implementation of the algorithms of Bini &amp; Fiorentino 2000,
+&quot;Design, analysis, and implementation of a multiprecision polynomial rootfinder&quot;.
+...Counting, isolating and approximating all roots in a given set S are the main 
+goals that the algorithm provides. Automatic determination of multiplicities 
+and the detection of real or imaginary roots can be selected as well. 
+Polynomials having coef- ficients with a bounded precision may be processed too.
+...
+The algorithm is based on an adaptive strategy which automatically exploits 
+any specific feature of the input polynomial, like its sparsity or the 
+conditioning of its roots, in order to speed up the computation. 
+... 
+
+The resulting algorithm MPSolve, implemented in C, can deal with polynomials 
+having real or complex coefficients with integer, rational or floating point 
+real and imaginary parts with any number of digits. The algorithm can also 
+process polynomials with approximately known coefficients.
+*/
+package thirdparty.net.oelen.polsolve.pzeros;
+
+import thirdparty.net.oelen.polarith.Complex;
+import thirdparty.net.oelen.polarith.DoubleComplex;
+import thirdparty.net.oelen.polarith.DoubleDouble;
+
+
+// This class is the class that has public methods and can be used by
+// user programs. The other classes in this package (PZerosD, PZerosDD,
+// and Convex) are not intended for use by user programs, they are 
+// helper classes for PZeros.
+// Below follows documentation of all public methods, which are provided
+// by the PZeros class.
+
+public strictfp class PZeros {
+<span class="fc" id="L44">    private static int MAX_ITERATIONS = 10000;</span>
+    
+    private int degree;
+    private DoubleDouble[] coefsReal;
+    private DoubleComplex[] coefsCplx;
+    
+    
+    /**
+     * Constructor that takes an array of real coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
+     * polynomial is equal to the length of the supplied array minus 1.
+     *
+     * @param coef An array of real coefficients in order of increasing power.
+     */
+<span class="fc" id="L59">    public PZeros(double[] coef) {</span>
+<span class="fc" id="L60">        degree = coef.length - 1;</span>
+<span class="fc" id="L61">        coefsReal = new DoubleDouble[coef.length];</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (int i=0; i&lt;coef.length; i++) {</span>
+<span class="fc" id="L63">            coefsReal[i] = new DoubleDouble(coef[i]);</span>
+        }
+<span class="fc" id="L65">        coefsCplx = null;</span>
+<span class="fc" id="L66">    }</span>
+    
+    
+    
+    
+    
+    /**
+     * Constructor that takes an array of real coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
+     * polynomial is equal to the length of the supplied array minus 1.
+     *
+     * @param coef An array of real coefficients in order of increasing power.
+     */
+<span class="nc" id="L80">    public PZeros(String[] coef) {</span>
+<span class="nc" id="L81">        degree = coef.length - 1;</span>
+<span class="nc" id="L82">        coefsReal = new DoubleDouble[coef.length];</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        for (int i=0; i&lt;coef.length; i++) {</span>
+<span class="nc" id="L84">            coefsReal[i] = new DoubleDouble(coef[i]);</span>
+        }
+<span class="nc" id="L86">        coefsCplx = null;</span>
+<span class="nc" id="L87">    }</span>
+    
+    
+    
+    
+    
+    /**
+     * Constructor that takes an array of real coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
+     * polynomial is equal to the length of the supplied array minus 1.
+     *
+     * @param coef An array of real coefficients in order of increasing power.
+     */
+<span class="fc" id="L101">    public PZeros(DoubleDouble[] coef) {</span>
+<span class="fc" id="L102">        degree = coef.length - 1;</span>
+<span class="fc" id="L103">        coefsReal = new DoubleDouble[coef.length];</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (int i=0; i&lt;coef.length; i++) {</span>
+<span class="fc" id="L105">            coefsReal[i] = coef[i];</span>
+        }
+<span class="fc" id="L107">        coefsCplx = null;</span>
+<span class="fc" id="L108">    }</span>
+
+    
+    
+    
+    /**
+     * Constructor that takes an array with the real part of coefficients and 
+     * an array with the imaginary part of the coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}.
+     * The degree of the polynomial is determined by the length of the longest
+     * supplied array. If the longest supplied array has N elements, then the
+     * degree of the polynomial equals N-1. The shorter array is extended with
+     * zero values for the higher powers. E.g. a polynomial with arrays
+     * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
+     * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
+     *
+     * @param coef_re An array containing the real part of the coefficients 
+     * in order of increasing power. If the supplied array equals null, then
+     * the degree is determined by the length of the other array and the real
+     * part of all coefficients equals 0 in that case.
+     * @param coef_im An array containing the imaginary part of the coefficients
+     * in order of increasing power. If the supplied array equals null, then
+     * the degree is determined by the length of the other array and the imaginary
+     * part of all coefficients equals 0 in that case.
+     */
+<span class="nc" id="L134">    public PZeros(double[] coef_re, double[] coef_im) {</span>
+<span class="nc bnc" id="L135" title="All 8 branches missed.">        if ((coef_re == null || coef_re.length==0) &amp;&amp; </span>
+            (coef_im == null || coef_im.length==0)) {
+<span class="nc" id="L137">            throw new RuntimeException(&quot;Construction of PZeros with empty coefficient set.&quot;);</span>
+        }
+<span class="nc bnc" id="L139" title="All 4 branches missed.">        if (coef_im == null || coef_im.length==0) {</span>
+<span class="nc" id="L140">            degree = coef_re.length - 1;</span>
+<span class="nc" id="L141">            coefsReal = new DoubleDouble[coef_re.length];</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            for (int i=0; i&lt;coef_re.length; i++) {</span>
+<span class="nc" id="L143">                coefsReal[i] = new DoubleDouble(coef_re[i]);</span>
+            }
+<span class="nc" id="L145">            coefsCplx = null;</span>
+<span class="nc" id="L146">            return;</span>
+        }
+        
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        if (coef_re == null) {</span>
+<span class="nc" id="L150">            coef_re = new double[0];</span>
+        }
+        
+<span class="nc" id="L153">        int degRe = coef_re.length - 1;</span>
+<span class="nc" id="L154">        int degIm = coef_im.length - 1;</span>
+        
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (degRe &lt; degIm) {</span>
+<span class="nc" id="L157">            degree = degIm;</span>
+<span class="nc" id="L158">            coefsCplx = new DoubleComplex[coef_im.length];</span>
+            int i;
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            for (i=0; i&lt;=degRe; i++) {</span>
+<span class="nc" id="L161">                coefsCplx[i] = new DoubleComplex(coef_re[i], coef_im[i]);</span>
+            }
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            for (; i&lt;coef_im.length; i++) {</span>
+<span class="nc" id="L164">                coefsCplx[i] = new DoubleComplex(DoubleDouble.ZERO, new DoubleDouble(coef_im[i]));</span>
+            }
+<span class="nc" id="L166">        }</span>
+        else {
+<span class="nc" id="L168">            degree = degRe;</span>
+<span class="nc" id="L169">            coefsCplx = new DoubleComplex[coef_re.length];</span>
+            int i;
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            for (i=0; i&lt;=degIm; i++) {</span>
+<span class="nc" id="L172">                coefsCplx[i] = new DoubleComplex(coef_re[i], coef_im[i]);</span>
+            }
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            for (; i&lt;coef_re.length; i++) {</span>
+<span class="nc" id="L175">                coefsCplx[i] = new DoubleComplex(coef_re[i]);</span>
+            }
+        }
+        
+<span class="nc" id="L179">        coefsReal = null;</span>
+<span class="nc" id="L180">    }</span>
+
+    
+    
+    
+    /**
+     * Constructor that takes an array with the real part of coefficients and 
+     * an array with the imaginary part of the coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 can be created with coef[] = {A, B, C, D, E}.
+     * The degree of the polynomial is determined by the length of the longest
+     * supplied array. If the longest supplied array has N elements, then the
+     * degree of the polynomial equals N-1. The shorter array is extended with
+     * zero values for the higher powers. E.g. a polynomial with arrays
+     * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
+     * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
+     *
+     * @param coef_re An array containing the real part of the coefficients 
+     * in order of increasing power. If the supplied array equals null, then
+     * the degree is determined by the length of the other array and the real
+     * part of all coefficients equals 0 in that case.
+     * @param coef_im An array containing the imaginary part of the coefficients
+     * in order of increasing power. If the supplied array equals null, then
+     * the degree is determined by the length of the other array and the imaginary
+     * part of all coefficients equals 0 in that case.
+     */
+<span class="nc" id="L206">    public PZeros(String[] coef_re, String[] coef_im) {</span>
+<span class="nc bnc" id="L207" title="All 8 branches missed.">        if ((coef_re == null || coef_re.length==0) &amp;&amp; </span>
+            (coef_im == null || coef_im.length==0)) {
+<span class="nc" id="L209">            throw new RuntimeException(&quot;Construction of PZeros with empty coefficient set.&quot;);</span>
+        }
+<span class="nc bnc" id="L211" title="All 4 branches missed.">        if (coef_im == null || coef_im.length==0) {</span>
+<span class="nc" id="L212">            degree = coef_re.length - 1;</span>
+<span class="nc" id="L213">            coefsReal = new DoubleDouble[coef_re.length];</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">            for (int i=0; i&lt;coef_re.length; i++) {</span>
+<span class="nc" id="L215">                coefsReal[i] = new DoubleDouble(coef_re[i]);</span>
+            }
+<span class="nc" id="L217">            coefsCplx = null;</span>
+<span class="nc" id="L218">            return;</span>
+        }
+        
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (coef_re == null) {</span>
+<span class="nc" id="L222">            coef_re = new String[0];</span>
+        }
+        
+<span class="nc" id="L225">        int degRe = coef_re.length - 1;</span>
+<span class="nc" id="L226">        int degIm = coef_im.length - 1;</span>
+        
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if (degRe &lt; degIm) {</span>
+<span class="nc" id="L229">            degree = degIm;</span>
+<span class="nc" id="L230">            coefsCplx = new DoubleComplex[coef_im.length];</span>
+            int i;
+<span class="nc bnc" id="L232" title="All 2 branches missed.">            for (i=0; i&lt;=degRe; i++) {</span>
+<span class="nc" id="L233">                coefsCplx[i] = new DoubleComplex(coef_re[i], coef_im[i]);</span>
+            }
+<span class="nc bnc" id="L235" title="All 2 branches missed.">            for (; i&lt;coef_im.length; i++) {</span>
+<span class="nc" id="L236">                coefsCplx[i] = new DoubleComplex(DoubleDouble.ZERO, new DoubleDouble(coef_im[i]));</span>
+            }
+<span class="nc" id="L238">        }</span>
+        else {
+<span class="nc" id="L240">            degree = degRe;</span>
+<span class="nc" id="L241">            coefsCplx = new DoubleComplex[coef_re.length];</span>
+            int i;
+<span class="nc bnc" id="L243" title="All 2 branches missed.">            for (i=0; i&lt;=degIm; i++) {</span>
+<span class="nc" id="L244">                coefsCplx[i] = new DoubleComplex(coef_re[i], coef_im[i]);</span>
+            }
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            for (; i&lt;coef_re.length; i++) {</span>
+<span class="nc" id="L247">                coefsCplx[i] = new DoubleComplex(coef_re[i]);</span>
+            }
+        }
+        
+<span class="nc" id="L251">        coefsReal = null;</span>
+<span class="nc" id="L252">    }</span>
+
+    
+    
+    
+    /**
+     * Constructor that takes an array with the real part of coefficients and 
+     * an array with the imaginary part of the coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 can be created with coef[] = {A, B, C, D, E}.
+     * The degree of the polynomial is determined by the length of the longest
+     * supplied array. If the longest supplied array has N elements, then the
+     * degree of the polynomial equals N-1. The shorter array is extended with
+     * zero values for the higher powers. E.g. a polynomial with arrays
+     * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
+     * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
+     *
+     * @param coef_re An array containing the real part of the coefficients 
+     * in order of increasing power. If the supplied array equals null, then
+     * the degree is determined by the length of the other array and the real
+     * part of all coefficients equals 0 in that case.
+     * @param coef_im An array containing the imaginary part of the coefficients
+     * in order of increasing power. If the supplied array equals null, then
+     * the degree is determined by the length of the other array and the imaginary
+     * part of all coefficients equals 0 in that case.
+     */
+<span class="nc" id="L278">    public PZeros(DoubleDouble[] coef_re, DoubleDouble[] coef_im) {</span>
+<span class="nc bnc" id="L279" title="All 8 branches missed.">        if ((coef_re == null || coef_re.length==0) &amp;&amp; </span>
+            (coef_im == null || coef_im.length==0)) {
+<span class="nc" id="L281">            throw new RuntimeException(&quot;Construction of PZeros with empty coefficient set.&quot;);</span>
+        }
+<span class="nc bnc" id="L283" title="All 4 branches missed.">        if (coef_im == null || coef_im.length==0) {</span>
+<span class="nc" id="L284">            degree = coef_re.length - 1;</span>
+<span class="nc" id="L285">            coefsReal = new DoubleDouble[coef_re.length];</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">            for (int i=0; i&lt;coef_re.length; i++) {</span>
+<span class="nc" id="L287">                coefsReal[i] = coef_re[i];</span>
+            }
+<span class="nc" id="L289">            coefsCplx = null;</span>
+<span class="nc" id="L290">            return;</span>
+        }
+        
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (coef_re == null) {</span>
+<span class="nc" id="L294">            coef_re = new DoubleDouble[0];</span>
+        }
+        
+<span class="nc" id="L297">        int degRe = coef_re.length - 1;</span>
+<span class="nc" id="L298">        int degIm = coef_im.length - 1;</span>
+        
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        if (degRe &lt; degIm) {</span>
+<span class="nc" id="L301">            degree = degIm;</span>
+<span class="nc" id="L302">            coefsCplx = new DoubleComplex[coef_im.length];</span>
+            int i;
+<span class="nc bnc" id="L304" title="All 2 branches missed.">            for (i=0; i&lt;=degRe; i++) {</span>
+<span class="nc" id="L305">                coefsCplx[i] = new DoubleComplex(coef_re[i], coef_im[i]);</span>
+            }
+<span class="nc bnc" id="L307" title="All 2 branches missed.">            for (; i&lt;coef_im.length; i++) {</span>
+<span class="nc" id="L308">                coefsCplx[i] = new DoubleComplex(DoubleDouble.ZERO, coef_im[i]);</span>
+            }
+<span class="nc" id="L310">        }</span>
+        else {
+<span class="nc" id="L312">            degree = degRe;</span>
+<span class="nc" id="L313">            coefsCplx = new DoubleComplex[coef_re.length];</span>
+            int i;
+<span class="nc bnc" id="L315" title="All 2 branches missed.">            for (i=0; i&lt;=degIm; i++) {</span>
+<span class="nc" id="L316">                coefsCplx[i] = new DoubleComplex(coef_re[i], coef_im[i]);</span>
+            }
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            for (; i&lt;coef_re.length; i++) {</span>
+<span class="nc" id="L319">                coefsCplx[i] = new DoubleComplex(coef_re[i]);</span>
+            }
+        }
+        
+<span class="nc" id="L323">        coefsReal = null;</span>
+<span class="nc" id="L324">    }</span>
+    
+    
+    
+    
+    
+    /**
+     * Constructor that takes an array of complex coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 can be created with coef[] = {A, B, C, D, E}. The degree of the
+     * polynomial is equal to the length of the supplied array minus 1.
+     *
+     * @param coef An array of complex coefficients in order of increasing power.
+     */
+<span class="fc" id="L338">    public PZeros(DoubleComplex[] coef) {</span>
+<span class="fc" id="L339">        degree = coef.length - 1;</span>
+<span class="fc" id="L340">        coefsCplx = new DoubleComplex[coef.length];</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (int i=0; i&lt;coef.length; i++) {</span>
+<span class="fc" id="L342">            coefsCplx[i] = coef[i];</span>
+        }
+<span class="fc" id="L344">        coefsReal = null;</span>
+<span class="fc" id="L345">    }</span>
+    
+    
+    
+    
+    
+    /**
+     * Constructor that takes an array of complex coefficients. Coefficients are
+     * supplied in order of increasing power. Example: p(x) = A + B*x + C*x^2 +
+     * D*x^3 + E*x^4 can be created with coef[] = {A, B, C, D, E}. The degree of the
+     * polynomial is equal to the length of the supplied array minus 1.
+     *
+     * @param coef An array of complex coefficients in order of increasing power.
+     */
+<span class="fc" id="L359">    public PZeros(Complex[] coef) {</span>
+<span class="fc" id="L360">        degree = coef.length - 1;</span>
+<span class="fc" id="L361">        coefsCplx = new DoubleComplex[coef.length];</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">        for (int i=0; i&lt;coef.length; i++) {</span>
+<span class="fc" id="L363">            coefsCplx[i] = new DoubleComplex(coef[i]);</span>
+        }
+<span class="fc" id="L365">        coefsReal = null;</span>
+<span class="fc" id="L366">    }</span>
+
+    
+    
+    
+    /**
+     * Returns the degree of the polynomial.
+     *
+     * @return The degree of the polynomial.
+     */
+    public int degree() {
+<span class="nc" id="L377">        return degree;</span>
+    }
+    
+    
+    
+    
+    
+    
+    /**
+     * This method computes the roots of the polynomial and stores the roots
+     * in preallocated arrays, which are passed as arguments. DoubleDouble
+     * 105-bit precision is used for the calculations and the results also are
+     * returned at DoubleDouble precision.
+     * @param root Array, in which the zeros will be stored after computation of 
+     * the zeros. This array must have a length of at least N elements, where N 
+     * is the degree of the polynomial.
+     * @param radius Array, which gives an indication of the accuracy of the found
+     * roots. For each root, a radius is returned. The root is assured to be in the
+     * disk with the corresponding radius, centered around the returned root.
+     * @param err Array, which specifies whether the root and its corresponding
+     * radius of accuracy could be determined correctly. If err[i] is true, then
+     * the program did not converge for root[i].
+     * @return Returns the degree of the polynomial if the computation succeeds,
+     * and returns a value less than the degree of the polynomial if an error
+     * occurs (e.g. convergence failure). When a value less than the degree of
+     * the polynomial is returned, then only part (or none) of the roots could
+     * be determined. If a negative value is returned, then the supplied input
+     * is not correct:
+     *   -1: Leading coefficient equals 0.
+     *   -2: Coefficient for x^0 (constant coefficient) equals 0.
+     *   -3: Ratio of smallest coefficient magnitude and largest coefficient
+     *       magnitude is too large and will lead to underflow/overflow.
+     */
+    public int solve(DoubleComplex[] root, double[] radius, boolean[] err) {
+        int status;
+<span class="fc" id="L412">        int[] iter = new int[] {0};</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (coefsReal != null) {</span>
+<span class="fc" id="L414">            status = pzeros(degree, coefsReal, MAX_ITERATIONS, root, radius, err, iter);</span>
+        }
+        else {
+<span class="fc" id="L417">            status = pzeros(degree, coefsCplx, MAX_ITERATIONS, root, radius, err, iter);</span>
+        }
+<span class="fc" id="L419">        return status;</span>
+    }
+    
+    
+    
+    
+    
+    
+    /**
+     * This method computes the roots of the polynomial and stores the roots
+     * in preallocated arrays, which are passed as arguments. Standard 53-bits
+     * precision is used for the calculations and the results also are returned as
+     * standard 53-bits precision numbers.
+     * @param root Array, in which the zeros will be stored after computation of 
+     * the zeros. This array must have a length of at least N elements, where N 
+     * is the degree of the polynomial.
+     * @param radius Array, which gives an indication of the accuracy of the found
+     * roots. For each root, a radius is returned. The root is assured to be in the
+     * disk with the corresponding radius, centered around the returned root.
+     * @param err Array, which specifies whether the root and its corresponding
+     * radius of accuracy could be determined correctly. If err[i] is true, then
+     * the program did not converge for root[i].
+     * @return Returns the degree of the polynomial if the computation succeeds,
+     * and returns a value less than the degree of the polynomial if an error
+     * occurs (e.g. convergence failure). When a value less than the degree of
+     * the polynomial is returned, then only part (or none) of the roots could
+     * be determined. If a negative value is returned, then the supplied input
+     * is not correct:
+     *   -1: Leading coefficient equals 0.
+     *   -2: Coefficient for x^0 (constant coefficient) equals 0.
+     *   -3: Ratio of smallest coefficient magnitude and largest coefficient
+     *       magnitude is too large and will lead to underflow/overflow.
+     */
+    public int solve(Complex[] root, double[] radius, boolean[] err) {
+        int status;
+<span class="fc" id="L454">        int[] iter = new int[] {0};</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">        if (coefsReal != null) {</span>
+<span class="fc" id="L456">            status = pzeros(degree, DoubleDouble.toDouble(coefsReal), MAX_ITERATIONS, root, radius, err, iter);</span>
+        }
+        else {
+<span class="fc" id="L459">            status = pzeros(degree, DoubleComplex.toComplex(coefsCplx), MAX_ITERATIONS, root, radius, err, iter);</span>
+        }
+<span class="fc" id="L461">        return status;</span>
+    }
+    
+    
+    
+    
+    
+    
+    
+    /***********************************************************************/
+    /***********************************************************************/
+    /********* Below follows the port of the original Fortran  *************/
+    /********* program. It is all private to this module!     *************/
+    /********* The code above is a wrapper for easy usage. *************/
+    /***********************************************************************/
+    /***********************************************************************/
+    /***********************************************************************/
+    
+    
+    
+    // Driver code, which uses PolSolveD for normal double precision (53 bits),
+    // and uses PolSolveDD for DoubleDouble precision (104 bits). This code
+    // contains driver methods for solving real and complex polynomial equations.
+    //
+    // The driver methods for DoubleDouble precision use a special strategy. They
+    // first use the normal precision code and if this cannot improve the solutions
+    // anymore, or cannot find all solutions, then it uses the DoubleDouble code
+    // to improve the situation. This strategy makes the use of DoubleDouble code
+    // approximately 3 times as fast, compared with sole use of DoubleDouble. For
+    // the great majority of polynomials, this strategy assures that the initial
+    // search and isolation of roots is done at normal precision, while the slower
+    // high precision code only is used at the final stages of refinement.
+    
+    private static final double BIG = Double.MAX_VALUE;     // near overflow of double
+    private static final double EPS_D = 1.0 / (1l&lt;&lt;52);     // 52 bits of precision
+    private static final double EPS_DD = EPS_D*EPS_D;       // 104 bits of precision
+    
+
+    
+    // Driver method for polynomial with real coefficients at 105 bit precision.
+    private static int pzeros(int n, DoubleDouble[] a, int itmax,
+                             DoubleComplex[] root, double[] radius, boolean[] err, int[] iter) {
+<span class="fc" id="L503">        double[] apoly = new double[n + 1];</span>
+<span class="fc" id="L504">        double[] apolyr = new double[n + 1];</span>
+        
+        // If we have a linear equation, simply call the high precision code
+        // and let it compute the zero at high precision.
+<span class="pc bpc" id="L508" title="1 of 2 branches missed.">        if (n == 1) {</span>
+<span class="nc" id="L509">            int status = PZerosDD.polzeros(n, a, n*EPS_DD, BIG, 1,</span>
+                    root, radius, err, iter,
+                    true, apoly, apolyr, true);
+<span class="nc bnc" id="L512" title="All 2 branches missed.">            return status == 0 ? 1 : status;</span>
+        }
+        
+        // First call the lower precision code and prepare coefficient arrays
+        // and root arrays for the lower precision numbers.
+<span class="fc" id="L517">        double[] a_d = new double[a.length];</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        for (int i=0; i&lt;a.length; i++) {</span>
+<span class="fc" id="L519">            a_d[i] = a[i].doubleValue();</span>
+        }
+<span class="fc" id="L521">        Complex[] root_d = new Complex[root.length];</span>
+<span class="fc" id="L522">        int status = PZerosD.polzeros(n, a_d, n*EPS_D, BIG, 3*itmax/5,</span>
+                root_d, radius, err, iter,
+                true, apoly, apolyr, false);
+<span class="pc bpc" id="L525" title="3 of 4 branches missed.">        if (status != 0 &amp;&amp; status != -4) {</span>
+<span class="nc" id="L526">            return status;</span>
+        }
+        
+        // Convert the found roots to the higher precision format and prepare
+        // a boolean status vector for the high precision code. With these
+        // high quality initial estimates continue the process of root finding
+        // at high precision.
+<span class="fc bfc" id="L533" title="All 2 branches covered.">        for (int i=0; i&lt;root.length; i++) {</span>
+<span class="fc" id="L534">            root[i] = new DoubleComplex(root_d[i].real(), root_d[i].imag());</span>
+<span class="pc bpc" id="L535" title="1 of 2 branches missed.">            err[i] = (radius[i] &gt;= 0.0);</span>
+        }
+<span class="fc" id="L537">        status = PZerosDD.polzeros(n, a, n*EPS_DD, BIG, itmax,</span>
+                      root, radius, err, iter,
+                      false, apoly, apolyr, true);
+<span class="fc" id="L540">        return transformStatus(status, err);</span>
+    }
+    
+    
+    
+    
+    // Driver method for polynomial with complex coefficients at 104 bit precision.
+    private static int pzeros(int n, DoubleComplex[] a, int itmax,
+                             DoubleComplex[] root, double[] radius, boolean[] err, int[] iter) {
+<span class="fc" id="L549">        double[] apoly = new double[n + 1];</span>
+<span class="fc" id="L550">        double[] apolyr = new double[n + 1];</span>
+        
+        // If we have a linear equation, simply call the high precision code
+        // and let it compute the zero at high precision.
+<span class="pc bpc" id="L554" title="1 of 2 branches missed.">        if (n == 1) {</span>
+<span class="nc" id="L555">            int status = PZerosDD.polzeros(n, a, n*EPS_DD, BIG, 1,</span>
+                    root, radius, err, iter,
+                    true, apoly, apolyr, true);
+<span class="nc bnc" id="L558" title="All 2 branches missed.">            return status == 0 ? 1 : status;</span>
+        }
+        
+        // First call the lower precision code and prepare coefficient arrays
+        // and root arrays for the lower precision numbers.
+<span class="fc" id="L563">        Complex[] a_d = new Complex[a.length];</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">        for (int i=0; i&lt;a.length; i++) {</span>
+<span class="fc" id="L565">            a_d[i] = new Complex(a[i].real().doubleValue(), a[i].imag().doubleValue());</span>
+        }
+<span class="fc" id="L567">        Complex[] root_d = new Complex[root.length];</span>
+<span class="fc" id="L568">        int status = PZerosD.polzeros(n, a_d, n*EPS_D, BIG, 3*itmax/5,</span>
+                root_d, radius, err, iter,
+                true, apoly, apolyr, false);
+<span class="pc bpc" id="L571" title="3 of 4 branches missed.">        if (status != 0 &amp;&amp; status != -4) {</span>
+<span class="nc" id="L572">            return status;</span>
+        }
+        
+        
+        // Convert the found roots to the higher precision format and prepare
+        // a boolean status vector for the high precision code. With these
+        // high quality initial estimates continue the process of root finding
+        // at high precision.
+<span class="fc bfc" id="L580" title="All 2 branches covered.">        for (int i=0; i&lt;root.length; i++) {</span>
+<span class="fc" id="L581">            root[i] = new DoubleComplex(root_d[i].real(), root_d[i].imag());</span>
+<span class="pc bpc" id="L582" title="1 of 2 branches missed.">            err[i] = (radius[i] &gt;= 0.0);</span>
+        }
+<span class="fc" id="L584">        status = PZerosDD.polzeros(n, a, n*EPS_DD, BIG, itmax,</span>
+                    root, radius, err, iter,
+                    false, apoly, apolyr, true);
+<span class="fc" id="L587">        return transformStatus(status, err);</span>
+    }
+    
+    
+    
+
+    // Driver method for polynomial with real coefficients at 53 bit precision.
+    private static int pzeros(int n, double[] a, int itmax,
+                             Complex[] root, double[] radius, boolean[] err, int[] iter) {
+<span class="fc" id="L596">        double[] apoly = new double[n + 1];</span>
+<span class="fc" id="L597">        double[] apolyr = new double[n + 1];</span>
+<span class="fc" id="L598">        int status = PZerosD.polzeros(n, a, EPS_D, BIG, itmax,</span>
+                root, radius, err, iter,
+                true, apoly, apolyr, true);
+<span class="fc" id="L601">        return transformStatus(status, err);</span>
+    }
+    
+    
+    
+    
+    // Driver method for polynomial with complex coefficients at 53 bit precision.
+    private static int pzeros(int n, Complex[] a, int itmax,
+                             Complex[] root, double[] radius, boolean[] err, int[] iter) {
+<span class="fc" id="L610">        double[] apoly = new double[n + 1];</span>
+<span class="fc" id="L611">        double[] apolyr = new double[n + 1];</span>
+<span class="fc" id="L612">        int status = PZerosD.polzeros(n, a, EPS_D, BIG, itmax,</span>
+                root, radius, err, iter,
+                true, apoly, apolyr, true);
+<span class="fc" id="L615">        return transformStatus(status, err);</span>
+    }
+    
+    
+    
+    
+    
+    private static int transformStatus(int status, boolean[] err) {
+<span class="pc bpc" id="L623" title="3 of 4 branches missed.">        if (status == 0 || status == -4) {</span>
+<span class="fc" id="L624">            status = 0;</span>
+<span class="fc bfc" id="L625" title="All 2 branches covered.">            for (boolean e : err) {</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">                if (!e) status++;</span>
+            }
+        }
+<span class="fc" id="L629">        return status;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

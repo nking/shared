@@ -71,31 +71,22 @@ public class TopologicalSort {
          
 <span class="fc" id="L72">         reverse(fIdxs);</span>
         
-         /*
-         NOTE: some unit tests suggest that some implementations of topological sort
-         next use partitioning of connected components and then further 
-         sorts the results by the longest subsequences within the results,
-         but does not change order for same subsequence length.
-         */
-<span class="fc" id="L80">         return fIdxs;</span>
+<span class="fc" id="L74">         return fIdxs;</span>
     }
     
     private void reverse(int[] a) {
-<span class="fc" id="L84">        int idxLo = 0;</span>
-<span class="fc" id="L85">        int idxHi = a.length - 1;</span>
-<span class="fc" id="L86">        int n = idxHi - idxLo + 1;</span>
-        
-<span class="fc" id="L88">        int end = idxLo + (n/2);</span>
-        
-<span class="fc" id="L90">        int count = 0;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int i = idxLo; i &lt; end; i++) {</span>
-<span class="fc" id="L92">            int idx2 = idxHi - count;</span>
-<span class="fc" id="L93">            int swap = a[i];</span>
-<span class="fc" id="L94">            a[i] = a[idx2];</span>
-<span class="fc" id="L95">            a[idx2] = swap;</span>
-<span class="fc" id="L96">            count++;</span>
+<span class="fc" id="L78">        int idxLo = 0;</span>
+<span class="fc" id="L79">        int idxHi = a.length - 1;</span>
+<span class="fc" id="L80">        int n = idxHi - idxLo + 1;        </span>
+        int swap;
+<span class="fc" id="L82">        int idx2 = idxHi;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (int i = idxLo; i &lt; (idxLo + (n/2)); i++) {</span>
+<span class="fc" id="L84">            swap = a[i];</span>
+<span class="fc" id="L85">            a[i] = a[idx2];</span>
+<span class="fc" id="L86">            a[idx2] = swap;</span>
+<span class="fc" id="L87">            idx2--;</span>
         }
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L89">    }</span>
     
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

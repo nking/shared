@@ -35,6 +35,7 @@
  *  |a|          = 7.810249675906654
  *  tan(a)       = -6.685231390246571E-6 + 1.0000103108981198i
  *
+ * NLK: added a function for nth roots, power, and natural log
  *************************************************************************/
 
 public class Complex {
@@ -42,111 +43,149 @@ public class Complex {
     private final double im;   // the imaginary part
 
     // create a new object with the given real and imaginary parts
-<span class="fc" id="L45">    public Complex(double real, double imag) {</span>
-<span class="fc" id="L46">        re = real;</span>
-<span class="fc" id="L47">        im = imag;</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L46">    public Complex(double real, double imag) {</span>
+<span class="fc" id="L47">        re = real;</span>
+<span class="fc" id="L48">        im = imag;</span>
+<span class="fc" id="L49">    }</span>
 
     // return a string representation of the invoking Complex object
     public String toString() {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (im == 0) return re + &quot;&quot;;</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (re == 0) return im + &quot;i&quot;;</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (im &lt;  0) return re + &quot; - &quot; + (-im) + &quot;i&quot;;</span>
-<span class="nc" id="L55">        return re + &quot; + &quot; + im + &quot;i&quot;;</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (im == 0) return re + &quot;&quot;;</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (re == 0) return im + &quot;i&quot;;</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (im &lt;  0) return re + &quot; - &quot; + (-im) + &quot;i&quot;;</span>
+<span class="nc" id="L56">        return re + &quot; + &quot; + im + &quot;i&quot;;</span>
     }
 
     // return abs/modulus/magnitude and angle/phase/argument
-<span class="nc" id="L59">    public double abs()   { return Math.hypot(re, im); }  // Math.sqrt(re*re + im*im)</span>
-<span class="nc" id="L60">    public double phase() { return Math.atan2(im, re); }  // between -pi and pi</span>
+<span class="fc" id="L60">    public double abs()   { return Math.hypot(re, im); }  // Math.sqrt(re*re + im*im)</span>
+<span class="fc" id="L61">    public double phase() { return Math.atan2(im, re); }  // between -pi and pi</span>
 
     // return a new Complex object whose value is (this + b)
     public Complex plus(Complex b) {
-<span class="fc" id="L64">        Complex a = this;             // invoking object</span>
-<span class="fc" id="L65">        double real = a.re + b.re;</span>
-<span class="fc" id="L66">        double imag = a.im + b.im;</span>
-<span class="fc" id="L67">        return new Complex(real, imag);</span>
+<span class="fc" id="L65">        Complex a = this;             // invoking object</span>
+<span class="fc" id="L66">        double real = a.re + b.re;</span>
+<span class="fc" id="L67">        double imag = a.im + b.im;</span>
+<span class="fc" id="L68">        return new Complex(real, imag);</span>
     }
     
     // return a new Complex object whose value is (this + b)
     public Complex plus(double b) {
-<span class="nc" id="L72">        Complex a = this;             // invoking object</span>
-<span class="nc" id="L73">        double real = a.re + b;</span>
-<span class="nc" id="L74">        double imag = a.im;</span>
-<span class="nc" id="L75">        return new Complex(real, imag);</span>
+<span class="fc" id="L73">        Complex a = this;             // invoking object</span>
+<span class="fc" id="L74">        double real = a.re + b;</span>
+<span class="fc" id="L75">        double imag = a.im;</span>
+<span class="fc" id="L76">        return new Complex(real, imag);</span>
     }
 
     // return a new Complex object whose value is (this - b)
     public Complex minus(Complex b) {
-<span class="fc" id="L80">        Complex a = this;</span>
-<span class="fc" id="L81">        double real = a.re - b.re;</span>
-<span class="fc" id="L82">        double imag = a.im - b.im;</span>
-<span class="fc" id="L83">        return new Complex(real, imag);</span>
+<span class="fc" id="L81">        Complex a = this;</span>
+<span class="fc" id="L82">        double real = a.re - b.re;</span>
+<span class="fc" id="L83">        double imag = a.im - b.im;</span>
+<span class="fc" id="L84">        return new Complex(real, imag);</span>
     }
     
     public Complex copy() {
-<span class="fc" id="L87">        return new Complex(this.re, this.im);</span>
+<span class="fc" id="L88">        return new Complex(this.re, this.im);</span>
     }
 
     // return a new Complex object whose value is (this * b)
     public Complex times(Complex b) {
-<span class="fc" id="L92">        Complex a = this;</span>
-<span class="fc" id="L93">        double real = a.re * b.re - a.im * b.im;</span>
-<span class="fc" id="L94">        double imag = a.re * b.im + a.im * b.re;</span>
-<span class="fc" id="L95">        return new Complex(real, imag);</span>
+<span class="fc" id="L93">        Complex a = this;</span>
+<span class="fc" id="L94">        double real = a.re * b.re - a.im * b.im;</span>
+<span class="fc" id="L95">        double imag = a.re * b.im + a.im * b.re;</span>
+<span class="fc" id="L96">        return new Complex(real, imag);</span>
     }
 
     // scalar multiplication
     // return a new object whose value is (this * alpha)
     public Complex times(double alpha) {
-<span class="fc" id="L101">        return new Complex(alpha * re, alpha * im);</span>
+<span class="fc" id="L102">        return new Complex(alpha * re, alpha * im);</span>
     }
 
     // return a new Complex object whose value is the conjugate of this
-<span class="nc" id="L105">    public Complex conjugate() {  return new Complex(re, -im); }</span>
+<span class="fc" id="L106">    public Complex conjugate() {  return new Complex(re, -im); }</span>
 
     // return a new Complex object whose value is the reciprocal of this
     public Complex reciprocal() {
-<span class="nc" id="L109">        double scale = re*re + im*im;</span>
-<span class="nc" id="L110">        return new Complex(re / scale, -im / scale);</span>
+<span class="fc" id="L110">        double scale = re*re + im*im;</span>
+<span class="fc" id="L111">        return new Complex(re / scale, -im / scale);</span>
     }
 
     // return the real or imaginary part
-<span class="fc" id="L114">    public double re() { return re; }</span>
-<span class="fc" id="L115">    public double im() { return im; }</span>
+<span class="fc" id="L115">    public double re() { return re; }</span>
+<span class="fc" id="L116">    public double im() { return im; }</span>
 
     // return a / b
     public Complex divided(Complex b) {
-<span class="nc" id="L119">        Complex a = this;</span>
-<span class="nc" id="L120">        return a.times(b.reciprocal());</span>
+<span class="fc" id="L120">        Complex a = this;</span>
+<span class="fc" id="L121">        return a.times(b.reciprocal());</span>
     }
 
     // return a new Complex object whose value is the complex exponential of this
     public Complex exp() {
-<span class="nc" id="L125">        return new Complex(Math.exp(re) * Math.cos(im), Math.exp(re) * Math.sin(im));</span>
+<span class="fc" id="L126">        return new Complex(Math.exp(re) * Math.cos(im), Math.exp(re) * Math.sin(im));</span>
     }
 
     // return a new Complex object whose value is the complex sine of this
     public Complex sin() {
-<span class="nc" id="L130">        return new Complex(Math.sin(re) * Math.cosh(im), Math.cos(re) * Math.sinh(im));</span>
+<span class="fc" id="L131">        return new Complex(Math.sin(re) * Math.cosh(im), Math.cos(re) * Math.sinh(im));</span>
     }
 
     // return a new Complex object whose value is the complex cosine of this
     public Complex cos() {
-<span class="nc" id="L135">        return new Complex(Math.cos(re) * Math.cosh(im), -Math.sin(re) * Math.sinh(im));</span>
+<span class="fc" id="L136">        return new Complex(Math.cos(re) * Math.cosh(im), -Math.sin(re) * Math.sinh(im));</span>
     }
 
     // return a new Complex object whose value is the complex tangent of this
     public Complex tan() {
-<span class="nc" id="L140">        return sin().divided(cos());</span>
+<span class="fc" id="L141">        return sin().divided(cos());</span>
     }
     
     // a static version of plus
     public static Complex plus(Complex a, Complex b) {
-<span class="nc" id="L145">        double real = a.re + b.re;</span>
-<span class="nc" id="L146">        double imag = a.im + b.im;</span>
-<span class="nc" id="L147">        Complex sum = new Complex(real, imag);</span>
-<span class="nc" id="L148">        return sum;</span>
+<span class="nc" id="L146">        double real = a.re + b.re;</span>
+<span class="nc" id="L147">        double imag = a.im + b.im;</span>
+<span class="nc" id="L148">        Complex sum = new Complex(real, imag);</span>
+<span class="nc" id="L149">        return sum;</span>
     }
 
+    /**
+     * get the (1/n) power of this instance
+     * from Boas &quot;mathematical methods in the physical sciences&quot;
+       chap 2, section 13
+     * @param n the number to take the (1/n) power of this instance
+     * @return 
+     */
+    public Complex nthRoot(double n) {
+        // r^(1/n) * (cos(theta/n) + i*sin(theta/n))
+<span class="fc" id="L161">        double rnth = Math.pow(abs(), 1./n);</span>
+<span class="fc" id="L162">        double theta = phase();</span>
+<span class="fc" id="L163">        return new Complex(rnth*Math.cos(theta/n), rnth*Math.sin(theta/n));</span>
+    }
+    
+    /**
+     * get the natural log of this instance
+     * from Boas &quot;mathematical methods in the physical sciences&quot;
+       chap 2, section 13
+     * @return 
+     */
+    public Complex naturalLog() {
+<span class="fc" id="L173">        double r = abs();</span>
+<span class="fc" id="L174">        double theta = phase();</span>
+<span class="fc" id="L175">        return new Complex(Math.log(r), theta);</span>
+    }
+    
+    /**
+     * get this instance raised to the power b
+     * from Boas &quot;mathematical methods in the physical sciences&quot;
+       chap 2, section 13
+     * @param b the power to apply to this instance
+     * @return 
+     */
+    public Complex power(Complex b) {
+        // a^b = e^(b*ln(a))
+<span class="fc" id="L187">        Complex blna = b.times(naturalLog());</span>
+<span class="fc" id="L188">        return blna.exp();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

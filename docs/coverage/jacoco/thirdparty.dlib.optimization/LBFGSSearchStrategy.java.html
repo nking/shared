@@ -126,7 +126,7 @@ public class LBFGSSearchStrategy {
 <span class="fc" id="L126">            dh_temp.s = MatrixUtil.subtract(x, prev_x);</span>
 <span class="fc" id="L127">            dh_temp.y = MatrixUtil.subtract(funct_derivative, prev_derivative);</span>
 
-<span class="fc" id="L129">            double temp = MatrixUtil.multiplyByTranspose(dh_temp.s, dh_temp.y);</span>
+<span class="fc" id="L129">            double temp = MatrixUtil.innerProduct(dh_temp.s, dh_temp.y);</span>
         
             // only accept this bit of data if temp isn't zero
 <span class="fc bfc" id="L132" title="All 2 branches covered.">            if (Math.abs(temp) &gt; 1.e-7) {</span>
@@ -150,7 +150,7 @@ public class LBFGSSearchStrategy {
                     
 <span class="fc" id="L151">                    alpha[i] = </span>
 <span class="fc" id="L152">                        data.get(i).rho * </span>
-<span class="fc" id="L153">                        MatrixUtil.multiplyByTranspose(</span>
+<span class="fc" id="L153">                        MatrixUtil.innerProduct(</span>
 <span class="fc" id="L154">                            data.get(i).s, prev_direction);</span>
                     
                     //prev_direction -= alpha[i]*data[i].y;
@@ -169,7 +169,7 @@ public class LBFGSSearchStrategy {
                 // Unconstrained Optimization (in the L-BFGS section).
 <span class="fc" id="L170">                double H_0 = </span>
 <span class="fc" id="L171">                    1.0/data.get(data.size()-1).rho</span>
-<span class="fc" id="L172">                    / MatrixUtil.multiplyByTranspose(</span>
+<span class="fc" id="L172">                    / MatrixUtil.innerProduct(</span>
 <span class="fc" id="L173">                        data.get(data.size()-1).y, </span>
 <span class="fc" id="L174">                        data.get(data.size()-1).y);</span>
 
@@ -181,7 +181,7 @@ public class LBFGSSearchStrategy {
                     
 <span class="fc" id="L182">                    double beta = </span>
 <span class="fc" id="L183">                        data.get(i).rho * </span>
-<span class="fc" id="L184">                        MatrixUtil.multiplyByTranspose(</span>
+<span class="fc" id="L184">                        MatrixUtil.innerProduct(</span>
 <span class="fc" id="L185">                        data.get(i).y, prev_direction);</span>
                     
                     //prev_direction += data[i].s * (alpha[i] - beta);

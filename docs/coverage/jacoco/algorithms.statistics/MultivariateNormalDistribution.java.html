@@ -69,7 +69,7 @@ import no.uib.cipr.matrix.NotConvergedException;
         //System.out.println(&quot;u=&quot;+Arrays.toString(u));
         
 <span class="fc" id="L71">        double[][] ksq = MatrixUtil.squareRoot(k);</span>
-<span class="fc" id="L72">        double[] d = MatrixUtil.multiply(ksq, u);</span>
+<span class="fc" id="L72">        double[] d = MatrixUtil.multiplyMatrixByColumnVector(ksq, u);</span>
 <span class="pc bpc" id="L73" title="3 of 4 branches missed.">        assert(d.length == m.length);</span>
         
         /*{
@@ -194,13 +194,13 @@ import no.uib.cipr.matrix.NotConvergedException;
 <span class="fc" id="L194">        DenseCholesky c = new DenseCholesky(n, false);</span>
 <span class="fc" id="L195">        LowerSPDDenseMatrix lt = new LowerSPDDenseMatrix(new DenseMatrix(k));</span>
 <span class="fc" id="L196">        c.factor(lt);</span>
-<span class="fc" id="L197">        double[] d = MatrixUtil.multiply(lt, u);</span>
+<span class="fc" id="L197">        double[] d = MatrixUtil.multiplyMatrixByColumnVector(lt, u);</span>
         
 <span class="pc bpc" id="L199" title="3 of 4 branches missed.">        assert(d.length == m.length);</span>
         
         {
             // check
-<span class="fc" id="L203">            double[][] lu = Matrices.getArray(lt);</span>
+<span class="fc" id="L203">            double[][] lu = MatrixUtil.convertToRowMajor(lt);</span>
 <span class="fc" id="L204">            double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(lu),</span>
                 lu);
 <span class="fc" id="L206">            System.out.printf(&quot;cov check of decomp  L^T * L =\n&quot;);</span>

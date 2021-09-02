@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BlockMatrixIsometric.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.matrix</a> &gt; <span class="el_source">BlockMatrixIsometric.java</span></div><h1>BlockMatrixIsometric.java</h1><pre class="source lang-java linenums">package algorithms.matrix;
+
+import java.util.Arrays;
+
+/**
+ * a class to hold a matrix that is partitioned into blocks of the same size.
+ * @author nichole
+ */
+public class BlockMatrixIsometric {
+    /**
+     * the matrix
+     */
+    private final double[][] a;
+    /**
+     * the blocks' sizes in the row dimension
+     */
+    private final int bSize0; 
+    
+    /**
+     * the blocks' sizes in the column dimension
+     */
+    private final int bSize1;
+    
+    /**
+     * constructor.  The matrix a is not copied in.   This is a 
+     * pass-by-reference constructor.
+     * @param a
+     * @param bSize0 block size along the first dimension (rows)
+     * @param bSize1 block size along the second dimension (columns)
+     */
+<span class="fc" id="L31">    public BlockMatrixIsometric(double[][] a, int bSize0, int bSize1) {</span>
+<span class="fc" id="L32">        int n = a.length;</span>
+<span class="fc" id="L33">        int m = a[0].length;</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if ((n % bSize0) != 0) {</span>
+<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;a.length must be evenly divided&quot;</span>
+                    + &quot; by bSize0&quot;);
+        }
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if ((m % bSize1) != 0) {</span>
+<span class="nc" id="L39">            throw new IllegalArgumentException(&quot;a[0].length must be evenly divided&quot;</span>
+                    + &quot; by bSize1&quot;);
+        }
+<span class="fc" id="L42">        this.a = a;</span>
+<span class="fc" id="L43">        this.bSize0 = bSize0;</span>
+<span class="fc" id="L44">        this.bSize1 = bSize1;</span>
+<span class="fc" id="L45">    }</span>
+    
+    /**
+     * set all values to 0
+     */
+    public void reset() {
+<span class="fc" id="L51">        fill(0);</span>
+<span class="fc" id="L52">    }</span>
+    
+    void fill(double value) {
+        int i;
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L57">            Arrays.fill(a[i], value);</span>
+        }
+<span class="fc" id="L59">    }</span>
+    
+    /**
+     * set values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * to the given block b.  b must be the same size as the block size
+     * of this instance.
+     * @param b a given block of values to replace a block of this instance with.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void setBlock(double[][] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">        if (b.length != bSize0 || b[0].length != bSize1) {</span>
+<span class="nc" id="L73">            throw new IllegalArgumentException(&quot;b size must equal the block size&quot;</span>
+                    + &quot; within this instance&quot;);
+        }
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L77">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L80">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L82">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L83">        int start1 = blockNumber1 * bSize1;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (int i = 0; i &lt; this.bSize0; ++i) {</span>
+<span class="fc" id="L85">            System.arraycopy(b[i], 0, a[start0 + i], start1, bSize1);</span>
+        }
+<span class="fc" id="L87">    }</span>
+    
+    /**
+     * set values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * to the given row block b which is a single dimension array.  
+     * b.length must equal this.bSize1, and this.bSize0 must equal 1.
+     * @param b a given block of values in a single dimension array to replace a 
+     * block of this instance with.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void setRowBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (bSize0 != 1) {</span>
+<span class="nc" id="L102">            throw new IllegalArgumentException(&quot;block b is a row array &quot;</span>
+                    + &quot; and so this instance, when constructed, should &quot;
+                    + &quot; have used bSize0=1&quot;);
+        }
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (b.length != bSize1) {</span>
+<span class="nc" id="L107">            throw new IllegalArgumentException(&quot;this.bSize1 must equal b.length&quot;);</span>
+        }
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L110">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L113">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L115">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L116">        int start1 = blockNumber1 * bSize1;</span>
+        
+        //a[start0][start1] = b
+<span class="fc" id="L119">        System.arraycopy(b, 0, a[start0], start1, b.length);</span>
+<span class="fc" id="L120">    }</span>
+    
+    /**
+     * set values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * to the given column block b which is a single dimension array.  
+     * b.length must equal this.bSize0, and this.bSize1 must equal 1.
+     * @param b a given block of values in a single dimension array to replace a 
+     * block of this instance with.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void setColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (bSize1 != 1) {</span>
+<span class="nc" id="L135">            throw new IllegalArgumentException(&quot;block b is a column array &quot;</span>
+                    + &quot; and so this instance, when constructed, should &quot;
+                    + &quot; have used bSize1=1&quot;);
+        }
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (b.length != bSize0) {</span>
+<span class="nc" id="L140">            throw new IllegalArgumentException(&quot;this.bSize0 must equal b.length&quot;);</span>
+        }
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L143">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L146">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L148">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L149">        int start1 = blockNumber1 * bSize1;</span>
+                        
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        for (int i = 0; i &lt; this.bSize0; ++i) {</span>
+<span class="fc" id="L152">            a[start0 + i][start1] = b[i];</span>
+        }
+<span class="fc" id="L154">    }</span>
+    
+    /**
+     * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     * @return contents of (blockNumber0, blockNumber1) of matrix a in this instance.
+     */
+    public double[][] getBlock(int blockNumber0, int blockNumber1) {
+<span class="fc" id="L165">        double[][] b = MatrixUtil.zeros(bSize0, bSize1);</span>
+<span class="fc" id="L166">        getBlock(b, blockNumber0, blockNumber1);</span>
+<span class="fc" id="L167">        return b;</span>
+    }
+    
+    /**
+     * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * and set them into the given block b.
+     * @param b the output block for the contents of (blockNumber0, blockNumber1) 
+     * of matrix a in this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void getBlock(double[][] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L181" title="2 of 4 branches missed.">        if (b.length != bSize0 || b[0].length != bSize1) {</span>
+<span class="nc" id="L182">            throw new IllegalArgumentException(&quot;b size must equal the block size&quot;</span>
+                    + &quot; within this instance&quot;);
+        }
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L186">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L189">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L191">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L192">        int start1 = blockNumber1 * bSize1;</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        for (int i = 0; i &lt; this.bSize0; ++i) {</span>
+<span class="fc" id="L194">            System.arraycopy(a[start0 + i], start1, b[i], 0, bSize1);</span>
+        }
+<span class="fc" id="L196">    }</span>
+    
+    /**
+     * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * and set them into the given row block b.
+     * @param b the output row block for the contents of (blockNumber0, blockNumber1) 
+     * of matrix a in this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void getRowBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (bSize0 != 1) {</span>
+<span class="nc" id="L210">            throw new IllegalArgumentException(&quot;expecting this.bSize0=1 for row blocks.&quot;</span>
+            + &quot; this.bSize0 is set at construction.&quot;);
+        }
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        if (b.length != bSize1) {</span>
+<span class="nc" id="L214">            throw new IllegalArgumentException(&quot;b.length must equal this.bSize1&quot;);</span>
+        }
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L217">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L220">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L222">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L223">        int start1 = blockNumber1 * bSize1;</span>
+        
+<span class="fc" id="L225">        System.arraycopy(a[start0], start1, b, 0, bSize1);</span>
+<span class="fc" id="L226">    }</span>
+    
+    /**
+     * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
+     * and set them into the given column block b.
+     * @param b the output column block for the contents of (blockNumber0, blockNumber1) 
+     * of matrix a in this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void getColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (bSize1 != 1) {</span>
+<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;expecting this.bSize1=1 for column blocks.&quot;</span>
+            + &quot; this.bSize1 is set at construction.&quot;);
+        }
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (b.length != bSize0) {</span>
+<span class="nc" id="L244">            throw new IllegalArgumentException(&quot;b.length must equal this.bSize0&quot;);</span>
+        }
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L247">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L250">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L252">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L253">        int start1 = blockNumber1 * bSize1;</span>
+        
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (int i = 0; i &lt; this.bSize0; ++i) {</span>
+<span class="fc" id="L256">            b[i] = a[start0 + i][start1];</span>
+        }
+<span class="fc" id="L258">    }</span>
+    
+    /**
+     * add block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance.
+     * @param b a given block of values to add to a block of this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void addToBlock(double[][] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L270" title="2 of 4 branches missed.">        if (b.length != bSize0 || b[0].length != bSize1) {</span>
+<span class="nc" id="L271">            throw new IllegalArgumentException(&quot;b size must equal the block size&quot;</span>
+                    + &quot; within this instance&quot;);
+        }
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L275">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L278">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L280">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L281">        int start1 = blockNumber1 * bSize1;</span>
+        int i, j;
+        
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        for (i = 0; i &lt; this.bSize0; ++i) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            for (j = 0; j &lt; this.bSize1; ++j) {</span>
+<span class="fc" id="L286">                a[start0 + i][start1 + j] += b[i][j];</span>
+            }
+        }
+<span class="fc" id="L289">    }</span>
+    
+    /**
+     * add column block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance, including
+     * this.bSize1 must equal 1 at construction.
+     * @param b a given column block of values to add to a block of this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void addToColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">        if (bSize1 != 1) {</span>
+<span class="nc" id="L303">            throw new IllegalArgumentException(&quot;this.bSize1 must equal 1 for column blocks.&quot;</span>
+            + &quot;  That is set at construction.&quot;);
+        }
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        if (b.length != bSize0) {</span>
+<span class="nc" id="L307">            throw new IllegalArgumentException(&quot;b.length must equal this.bSize0&quot;);</span>
+        }
+<span class="pc bpc" id="L309" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L310">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L313">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L315">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L316">        int start1 = blockNumber1 * bSize1;</span>
+        int i;
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
+<span class="fc" id="L319">            a[start0 + i][start1] += b[i];</span>
+        }
+<span class="fc" id="L321">    }</span>
+    
+    /**
+     * add row block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance, including
+     * this.bSize0 must equal 1 at construction.
+     * @param b a given row block of values to add to a block of this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void addToRowBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">        if (bSize0 != 1) {</span>
+<span class="nc" id="L335">            throw new IllegalArgumentException(&quot;this.bSize0 must equal 1 for row blocks.&quot;</span>
+            + &quot;  That is set at construction.&quot;);
+        }
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">        if (b.length != bSize1) {</span>
+<span class="nc" id="L339">            throw new IllegalArgumentException(&quot;b.length must equal this.bSize1&quot;);</span>
+        }
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L342">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L345">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L347">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L348">        int start1 = blockNumber1 * bSize1;</span>
+        int i;
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
+<span class="fc" id="L351">            a[start0][start1 + i] += b[i];</span>
+        }
+<span class="fc" id="L353">    }</span>
+    
+    /**
+     * subtract block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance.
+     * @param b a given block of values to replace a block of this instance with.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void subtractFromBlock(double[][] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L365" title="2 of 4 branches missed.">        if (b.length != bSize0 || b[0].length != bSize1) {</span>
+<span class="nc" id="L366">            throw new IllegalArgumentException(&quot;b size must equal the block size&quot;</span>
+                    + &quot; within this instance&quot;);
+        }
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L370">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L373">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L375">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L376">        int start1 = blockNumber1 * bSize1;</span>
+        int i, j;
+        
+<span class="fc bfc" id="L379" title="All 2 branches covered.">        for (i = 0; i &lt; this.bSize0; ++i) {</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">            for (j = 0; j &lt; this.bSize1; ++j) {</span>
+<span class="fc" id="L381">                a[start0 + i][start1 + j] -= b[i][j];</span>
+            }
+        }
+<span class="fc" id="L384">    }</span>
+    
+    /**
+     * subtract column block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance, including
+     * this.bSize1 must equal 1 at construction.
+     * @param b a given column block of values to subtract from a block of this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void subtractFromColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">        if (bSize1 != 1) {</span>
+<span class="nc" id="L398">            throw new IllegalArgumentException(&quot;this.bSize1 must equal 1 for column blocks.&quot;</span>
+            + &quot;  That is set at construction.&quot;);
+        }
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">        if (b.length != bSize0) {</span>
+<span class="nc" id="L402">            throw new IllegalArgumentException(&quot;b.length must equal this.bSize0&quot;);</span>
+        }
+<span class="pc bpc" id="L404" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L405">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L407" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L408">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L410">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L411">        int start1 = blockNumber1 * bSize1;</span>
+        int i;
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
+<span class="fc" id="L414">            a[start0 + i][start1] -= b[i];</span>
+        }
+<span class="fc" id="L416">    }</span>
+    
+    /**
+     * subtract row block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * b must be the same size as the block size of this instance, including
+     * this.bSize0 must equal 1 at construction.
+     * @param b a given row block of values to subtract from a block of this instance.
+     * @param blockNumber0 the number of the block along the first dimension,
+     * that is, rows.
+     * @param blockNumber1 the number of the block along the second dimension,
+     * that is, columns.
+     */
+    public void subtractFromRowBlock(double[] b, int blockNumber0, int blockNumber1) {
+<span class="pc bpc" id="L429" title="1 of 2 branches missed.">        if (bSize0 != 1) {</span>
+<span class="nc" id="L430">            throw new IllegalArgumentException(&quot;this.bSize0 must equal 1 for row blocks.&quot;</span>
+            + &quot;  That is set at construction.&quot;);
+        }
+<span class="pc bpc" id="L433" title="1 of 2 branches missed.">        if (b.length != bSize1) {</span>
+<span class="nc" id="L434">            throw new IllegalArgumentException(&quot;b.length must equal this.bSize1&quot;);</span>
+        }
+<span class="pc bpc" id="L436" title="1 of 2 branches missed.">        if ((blockNumber0 * bSize0) &gt;= a.length) {</span>
+<span class="nc" id="L437">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber0 is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">        if ((blockNumber1 * bSize1) &gt;= a[0].length) {</span>
+<span class="nc" id="L440">            throw new ArrayIndexOutOfBoundsException(&quot;blockNumber1 is out of bounds&quot;);</span>
+        }
+<span class="fc" id="L442">        int start0 = blockNumber0 * bSize0;</span>
+<span class="fc" id="L443">        int start1 = blockNumber1 * bSize1;</span>
+        int i;
+<span class="fc bfc" id="L445" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
+<span class="fc" id="L446">            a[start0][start1 + i] -= b[i];</span>
+        }
+<span class="fc" id="L448">    }</span>
+    
+    public BlockMatrixIsometric copy() {
+<span class="fc" id="L451">        BlockMatrixIsometric c = new BlockMatrixIsometric(a, bSize0, bSize1);</span>
+<span class="fc" id="L452">        c.set(this);</span>
+<span class="fc" id="L453">        return c;</span>
+    }
+    
+    /**
+     * set internal contents to equal those of the given b where b has the
+     * same dimensions and block size.
+     * @param b 
+     */
+    public void set(BlockMatrixIsometric b) {
+<span class="pc bpc" id="L462" title="1 of 2 branches missed.">        if (b.a.length != a.length) {</span>
+<span class="nc" id="L463">            throw new IllegalArgumentException(&quot;&quot;);</span>
+        }
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">        if (b.a[0].length != a[0].length) {</span>
+<span class="nc" id="L466">            throw new IllegalArgumentException(&quot;&quot;);</span>
+        }
+<span class="pc bpc" id="L468" title="1 of 2 branches missed.">        if (b.bSize0 != bSize0) {</span>
+<span class="nc" id="L469">            throw new IllegalArgumentException(&quot;&quot;);</span>
+        }
+<span class="pc bpc" id="L471" title="1 of 2 branches missed.">        if (b.bSize1 != bSize1) {</span>
+<span class="nc" id="L472">            throw new IllegalArgumentException(&quot;&quot;);</span>
+        }
+        int i;
+<span class="fc bfc" id="L475" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L476">            System.arraycopy(b.a[i], 0, a[i], 0, a[i].length);</span>
+        }
+<span class="fc" id="L478">    }</span>
+    
+    /**
+     * get the entire matrix of this instance.  Note that this is a reference
+     * to the instance and is not a copy of it, so modifications of the
+     * returned matrix affect this instance too.
+     * @return the a
+     */
+    public double[][] getA() {
+<span class="fc" id="L487">        return a;</span>
+    }
+
+    /**
+     * get the size of dimension 0 of the blocks in this instance
+     * @return the bSize0
+     */
+    public int getBlockSize0() {
+<span class="fc" id="L495">        return bSize0;</span>
+    }
+
+    /**
+     * get the size of dimension 1 of the blocks in this instance
+     * @return the bSize1
+     */
+    public int getBlockSize1() {
+<span class="fc" id="L503">        return bSize1;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -1404,21 +1404,22 @@ import java.math.RoundingMode;
      * @return 
      */
     public static long modularExponentiation(long a, long b, long n) {
-<span class="fc" id="L1407">        long c = 0;</span>
-<span class="fc" id="L1408">        long d = 1;</span>
+        // d modulo n = d - n*math.floor(d/n)
+<span class="fc" id="L1408">        long c = 0;</span>
+<span class="fc" id="L1409">        long d = 1;</span>
         int i;
-<span class="fc" id="L1410">        int nBits = MiscMath0.numberOfBits(b);</span>
-<span class="fc bfc" id="L1411" title="All 2 branches covered.">        for (i = nBits; i &gt;= 0; i--) {</span>
-<span class="fc" id="L1412">            c *= 2;</span>
-<span class="fc" id="L1413">            d = (d*d) % n;</span>
+<span class="fc" id="L1411">        int nBits = MiscMath0.numberOfBits(b);</span>
+<span class="fc bfc" id="L1412" title="All 2 branches covered.">        for (i = nBits; i &gt;= 0; i--) {</span>
+<span class="fc" id="L1413">            c *= 2;</span>
+<span class="fc" id="L1414">            d = (d*d) % n;</span>
             // bit set test
-<span class="fc bfc" id="L1415" title="All 2 branches covered.">            if ((b  &amp; (1L &lt;&lt; i)) != 0) {</span>
-<span class="fc" id="L1416">                c++;</span>
-<span class="fc" id="L1417">                d = (d*a) % n;</span>
+<span class="fc bfc" id="L1416" title="All 2 branches covered.">            if ((b  &amp; (1L &lt;&lt; i)) != 0) {</span>
+<span class="fc" id="L1417">                c++;</span>
+<span class="fc" id="L1418">                d = (d*a) % n;</span>
             }
         }
         
-<span class="fc" id="L1421">        return d;</span>
+<span class="fc" id="L1422">        return d;</span>
     }
 
     /**
@@ -1431,14 +1432,14 @@ import java.math.RoundingMode;
         // for 32 bit  2147483647 which is a Mersenne prime
         // for 62 bit  2305843009213693951
         //     64 bits 9223372036854775783
-<span class="nc" id="L1434">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
+<span class="nc" id="L1435">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
 
-<span class="nc bnc" id="L1436" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
+<span class="nc bnc" id="L1437" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
         
-<span class="nc bnc" id="L1438" title="All 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L1439">            return 2147483647l;</span>
+<span class="nc bnc" id="L1439" title="All 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L1440">            return 2147483647l;</span>
         } else {
-<span class="nc" id="L1441">            return 9223372036854775783l;</span>
+<span class="nc" id="L1442">            return 9223372036854775783l;</span>
         }
     }
     
@@ -1448,7 +1449,18 @@ import java.math.RoundingMode;
      * @return 
      */
     public static long getMarsennePrime(int powerOf2) {
-<span class="nc" id="L1451">        return (1L &lt;&lt; powerOf2) - 1;</span>
+<span class="nc" id="L1452">        return (1L &lt;&lt; powerOf2) - 1;</span>
     }
+    
+    public static double acosh(double z) {
+        //https://mathworld.wolfram.com/InverseHyperbolicCosine.html
+<span class="nc" id="L1457">        return Math.log(z + Math.sqrt(z + 1) * Math.sqrt(z - 1));</span>
+    }
+    
+    public static double asinh(double z) {
+        //https://mathworld.wolfram.com/InverseHyperbolicSine.html
+<span class="nc" id="L1462">        return Math.log(z + Math.sqrt(z*z + 1));</span>
+    }
+    
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

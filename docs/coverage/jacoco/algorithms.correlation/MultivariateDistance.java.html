@@ -111,8 +111,8 @@ import java.security.SecureRandom;
 <span class="fc" id="L111">            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
             
             // x * u^T = nX1
-<span class="fc" id="L114">            xu = MatrixUtil.multiply(x, u);</span>
-<span class="fc" id="L115">            yv = MatrixUtil.multiply(y, v);</span>
+<span class="fc" id="L114">            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);</span>
+<span class="fc" id="L115">            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);</span>
             
 <span class="fc" id="L117">            dcov = UnivariateDistance.fastDcov(xu, yv);</span>
             
@@ -238,7 +238,7 @@ import java.security.SecureRandom;
       The authors note that this assymptotic dependence test has less power for 
       low dimensional dependency in high dimensional data.
       One workaround may be to perform dimension reduction before using this method.
-      For dimension reduction, see CURDecomposition class, methods in
+      For dimension reduction, see CURDecomposition class, and methods in
        &quot;Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA&quot;, etc.
      &lt;/pre&gt;
@@ -275,7 +275,7 @@ import java.security.SecureRandom;
       The authors note that this assymptotic dependence test has less power for 
       low dimensional dependency in high dimensional data.
       One workaround may be to perform dimension reduction before using this method.
-      For dimension reduction, see CURDecomposition class, methods in
+      For dimension reduction, see CURDecomposition class, and methods in
        &quot;Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA&quot;, etc.
      &lt;/pre&gt;
@@ -330,16 +330,16 @@ import java.security.SecureRandom;
 <span class="fc" id="L330">            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
             
             // x * u^T = nX1
-<span class="fc" id="L333">            xu = MatrixUtil.multiply(x, u);</span>
-<span class="fc" id="L334">            yv = MatrixUtil.multiply(y, v);</span>
+<span class="fc" id="L333">            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);</span>
+<span class="fc" id="L334">            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);</span>
             
 <span class="fc" id="L336">            dcor = UnivariateDistance.fastDcor(xu, yv);</span>
 <span class="fc" id="L337">            dcorsq += dcor.corSq;</span>
             
 <span class="fc" id="L339">            uPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
 <span class="fc" id="L340">            vPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
-<span class="fc" id="L341">            xuPrime = MatrixUtil.multiply(x, uPrime);</span>
-<span class="fc" id="L342">            yvPrime = MatrixUtil.multiply(y, vPrime);</span>
+<span class="fc" id="L341">            xuPrime = MatrixUtil.multiplyMatrixByColumnVector(x, uPrime);</span>
+<span class="fc" id="L342">            yvPrime = MatrixUtil.multiplyMatrixByColumnVector(y, vPrime);</span>
             
             // txy = Ω(k) = C_p * C_q * Ω(u_k*X, v_k*Y)
             // sxxyy = S_{n,1}(k) = (C_p * C_q)^2 * Ω(u_k*X, u_k*X) * * Ω(v_k*Y, v_k*Y)

@@ -306,7 +306,7 @@ import java.util.Arrays;
 <span class="fc" id="L306">            xz[z] -= mx[0];</span>
 <span class="fc" id="L307">            yz[z] -= my[0];</span>
         }
-<span class="fc" id="L309">        double covtermXY = n * MatrixUtil.dot(xz, yz);</span>
+<span class="fc" id="L309">        double covtermXY = n * MatrixUtil.innerProduct(xz, yz);</span>
 
         //v is double[n][nw]; v = [ x y x.∗y ];
         //c1 = iv1 .’ ∗ v (:, 3 );
@@ -320,9 +320,9 @@ import java.util.Arrays;
 <span class="fc" id="L320">            c2 += iv4[z];</span>
         }
 
-<span class="fc" id="L323">        double c1 = MatrixUtil.dot(iv1, v3);</span>
-<span class="fc" id="L324">        double c3 = MatrixUtil.dot(iv2, y);</span>
-<span class="fc" id="L325">        double c4 = MatrixUtil.dot(iv3, x);</span>
+<span class="fc" id="L323">        double c1 = MatrixUtil.innerProduct(iv1, v3);</span>
+<span class="fc" id="L324">        double c3 = MatrixUtil.innerProduct(iv2, y);</span>
+<span class="fc" id="L325">        double c4 = MatrixUtil.innerProduct(iv3, x);</span>
 
         // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
 <span class="fc" id="L328">        final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;</span>
@@ -348,7 +348,7 @@ import java.util.Arrays;
         //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
         //covsq = ( term1 + term3 ) − term2;
 <span class="fc" id="L350">        double term1 = d / nsq;</span>
-<span class="fc" id="L351">        double term2 = (2. / ncb) * (MatrixUtil.dot(a_x, b_y));</span>
+<span class="fc" id="L351">        double term2 = (2. / ncb) * (MatrixUtil.innerProduct(a_x, b_y));</span>
 <span class="fc" id="L352">        double a_dot_dot = 0;</span>
 <span class="fc" id="L353">        double b_dot_dot = 0;</span>
 <span class="fc bfc" id="L354" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Hash64.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.net.oelen.polarith</a> &gt; <span class="el_source">Hash64.java</span></div><h1>Hash64.java</h1><pre class="source lang-java linenums">/*
+The author of this code is Wilco Oelen and he offers it
+freely without copyright, but asks that his pages are referenced
+as the source if used.
+He has a webpage with information on the polynomial software
+he ported and more modern versions which require jini bindings:
+https://woelen.homescience.net/science/math/exps/polynomials/
+https://woelen.homescience.net/science/math/exps/polynomials/software.html
+The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
+https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+*/
+package thirdparty.net.oelen.polarith;
+
+import java.io.UnsupportedEncodingException;
+
+// A strong very fast 64 byte hash generator.
+// This can be used on any datatype which can
+// be represented as a byte array. A helper
+// function for strings is supplied.
+
+<span class="nc" id="L21">class Hash64 {</span>
+    private static final long[] byteTable;
+    static {
+<span class="fc" id="L24">        byteTable = new long[256];</span>
+<span class="fc" id="L25">        long h = 0x544B2FBACAAF1684L;</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for (int i = 0; i &lt; 256; i++) {</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            for (int j = 0; j &lt; 31; j++) {</span>
+<span class="fc" id="L28">                h = (h &gt;&gt;&gt; 7) ^ h;</span>
+<span class="fc" id="L29">                h = (h &lt;&lt; 11) ^ h;</span>
+<span class="fc" id="L30">                h = (h &gt;&gt;&gt; 10) ^ h;</span>
+            }
+<span class="fc" id="L32">            byteTable[i] = h;</span>
+        }
+<span class="fc" id="L34">    }</span>
+    
+    private static final long HSTART = 0xBB40E64DA205B064L;
+    private static final long HMULT = 7664345821815920749L;
+    
+    
+    public static long hash(String msg) {
+        long hsh;
+<span class="fc" id="L42">        byte[] data = null;</span>
+        try {
+<span class="fc" id="L44">            data = msg.getBytes(&quot;UTF-8&quot;);</span>
+<span class="fc" id="L45">            hsh = hash(data);</span>
+        } 
+<span class="nc" id="L47">        catch (UnsupportedEncodingException ign) {</span>
+            // This never occurs, the UTF-8 encoding is a standard
+            // encoding and this exception hence never is thrown.
+<span class="nc" id="L50">            hsh = msg.hashCode();</span>
+<span class="fc" id="L51">        }</span>
+<span class="fc" id="L52">        return hsh;</span>
+    }
+    
+    
+    
+    public static long hash(byte[] data) {
+<span class="fc" id="L58">        long h = HSTART;</span>
+<span class="fc" id="L59">        final long hmult = HMULT;</span>
+<span class="fc" id="L60">        final long[] ht = byteTable;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int len = data.length, i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L62">            h = (h * hmult) ^ ht[data[i] &amp; 0xff];</span>
+        }
+<span class="fc" id="L64">        return h;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

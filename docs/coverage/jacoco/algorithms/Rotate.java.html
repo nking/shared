@@ -251,14 +251,13 @@
         
 <span class="fc" id="L252">        int end = idxLo + (n/2);</span>
         
-<span class="fc" id="L254">        int count = 0;</span>
+<span class="fc" id="L254">        int idx2 = idxHi;</span>
 <span class="fc bfc" id="L255" title="All 2 branches covered.">        for (int i = idxLo; i &lt; end; i++) {</span>
-<span class="fc" id="L256">            int idx2 = idxHi - count;</span>
-<span class="fc" id="L257">            int swap = a[i];</span>
-<span class="fc" id="L258">            a[i] = a[idx2];</span>
-<span class="fc" id="L259">            a[idx2] = swap;</span>
-<span class="fc" id="L260">            count++;</span>
+<span class="fc" id="L256">            int swap = a[i];</span>
+<span class="fc" id="L257">            a[i] = a[idx2];</span>
+<span class="fc" id="L258">            a[idx2] = swap;</span>
+<span class="fc" id="L259">            idx2--;</span>
         }
-<span class="fc" id="L262">    }</span>
+<span class="fc" id="L261">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

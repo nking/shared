@@ -11,9 +11,14 @@ import java.util.Arrays;
  * 
  * see https://en.wikipedia.org/wiki/Normalization_(statistics) for more.
  * 
+ * TODO: add a non-isotropic scaling (see Hartley 1997, end of Section 5):
+     transform points so that
+     1) Their centroid is at the origin.
+     2) The principal moments are both equal to unity
+  
  * @author nichole
  */
-<span class="pc bpc" id="L16" title="1 of 2 branches missed.">public class Standardization {</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">public class Standardization {</span>
     
     /**
      * performs &quot;standard unit normalization&quot; on the points, that is,
@@ -34,46 +39,46 @@ import java.util.Arrays;
     public static double[] standardUnitNormalization(double[] data, 
         int nDimensions, double[] outputMean, double[] outputStandardDeviation) {
         
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (outputMean.length != nDimensions) {</span>
-<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;outputMean.length must equal nDimensions&quot;);</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (outputMean.length != nDimensions) {</span>
+<span class="nc" id="L43">            throw new IllegalArgumentException(&quot;outputMean.length must equal nDimensions&quot;);</span>
         }
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nDimensions) {</span>
-<span class="nc" id="L41">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal nDimensions&quot;);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nDimensions) {</span>
+<span class="nc" id="L46">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal nDimensions&quot;);</span>
         }
         
         // subtract the mean from the data,
         // then calculate the standard deviation and divide the data by it.
-<span class="fc" id="L46">        double[] out = Arrays.copyOf(data, data.length);</span>
+<span class="fc" id="L51">        double[] out = Arrays.copyOf(data, data.length);</span>
         
-<span class="fc" id="L48">        double[] c = MiscMath0.mean(data, nDimensions);</span>
-<span class="fc" id="L49">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
+<span class="fc" id="L53">        double[] c = MiscMath0.mean(data, nDimensions);</span>
+<span class="fc" id="L54">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
         
-<span class="fc" id="L51">        int nData = data.length/nDimensions;</span>
+<span class="fc" id="L56">        int nData = data.length/nDimensions;</span>
         
         int i, j, d;
-<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L56">                j = i * nDimensions + d;</span>
-<span class="fc" id="L57">                out[j] -= c[d];</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L61">                j = i * nDimensions + d;</span>
+<span class="fc" id="L62">                out[j] -= c[d];</span>
             }
         }
         
-<span class="fc" id="L61">        double[][] mAndSD = MiscMath0.standardDeviation(out, nDimensions);</span>
-<span class="pc bpc" id="L62" title="3 of 4 branches missed.">        assert(mAndSD[0].length == nDimensions);</span>
-<span class="pc bpc" id="L63" title="3 of 4 branches missed.">        assert(mAndSD[1].length == nDimensions);</span>
+<span class="fc" id="L66">        double[][] mAndSD = MiscMath0.standardDeviation(out, nDimensions);</span>
+<span class="pc bpc" id="L67" title="3 of 4 branches missed.">        assert(mAndSD[0].length == nDimensions);</span>
+<span class="pc bpc" id="L68" title="3 of 4 branches missed.">        assert(mAndSD[1].length == nDimensions);</span>
         
-<span class="fc" id="L65">        System.arraycopy(mAndSD[1], 0, outputStandardDeviation, 0, nDimensions);</span>
+<span class="fc" id="L70">        System.arraycopy(mAndSD[1], 0, outputStandardDeviation, 0, nDimensions);</span>
         
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L69">                j = i * nDimensions + d;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">                if (mAndSD[1][d] &gt; 0.) {</span>
-<span class="fc" id="L71">                    out[j] /= mAndSD[1][d];</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L74">                j = i * nDimensions + d;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">                if (mAndSD[1][d] &gt; 0.) {</span>
+<span class="fc" id="L76">                    out[j] /= mAndSD[1][d];</span>
                 }
             }
         }
         
-<span class="fc" id="L76">        return out;</span>
+<span class="fc" id="L81">        return out;</span>
     }
     
     /**
@@ -93,29 +98,29 @@ import java.util.Arrays;
     public static double[] standardUnitDenormalization(final double[] data, 
         final int nDimensions, final double[] mean, final double[] standardDeviation) {
         
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (mean.length != nDimensions) {</span>
-<span class="nc" id="L97">            throw new IllegalArgumentException(&quot;mean.length must equal nDimensions&quot;);</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (mean.length != nDimensions) {</span>
+<span class="nc" id="L102">            throw new IllegalArgumentException(&quot;mean.length must equal nDimensions&quot;);</span>
         }
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (standardDeviation.length != nDimensions) {</span>
-<span class="nc" id="L100">            throw new IllegalArgumentException(&quot;standardDeviation.length must equal nDimensions&quot;);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (standardDeviation.length != nDimensions) {</span>
+<span class="nc" id="L105">            throw new IllegalArgumentException(&quot;standardDeviation.length must equal nDimensions&quot;);</span>
         }
         
-<span class="fc" id="L103">        double[] out = Arrays.copyOf(data, data.length);</span>
+<span class="fc" id="L108">        double[] out = Arrays.copyOf(data, data.length);</span>
         
-<span class="fc" id="L105">        int nData = data.length/nDimensions;</span>
+<span class="fc" id="L110">        int nData = data.length/nDimensions;</span>
         
         int i, j, d;
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L110">                j = i * nDimensions + d;</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">                if (standardDeviation[d] &gt; 0){</span>
-<span class="fc" id="L112">                    out[j] *= standardDeviation[d];</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L115">                j = i * nDimensions + d;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                if (standardDeviation[d] &gt; 0){</span>
+<span class="fc" id="L117">                    out[j] *= standardDeviation[d];</span>
                 }
-<span class="fc" id="L114">                out[j] += mean[d];</span>
+<span class="fc" id="L119">                out[j] += mean[d];</span>
             }
         }
         
-<span class="fc" id="L118">        return out;</span>
+<span class="fc" id="L123">        return out;</span>
     }
     
      /**
@@ -139,51 +144,51 @@ import java.util.Arrays;
     public static double[][] standardUnitNormalization(double[][] data, 
         double[] outputMean, double[] outputStandardDeviation) {
         
-<span class="fc" id="L142">        int nSamples = data.length;</span>
-<span class="fc" id="L143">        int nVars = data[0].length;</span>
+<span class="fc" id="L147">        int nSamples = data.length;</span>
+<span class="fc" id="L148">        int nVars = data[0].length;</span>
         
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (outputMean.length != nVars) {</span>
-<span class="nc" id="L146">            throw new IllegalArgumentException(&quot;outputMean.length must equal data[0].length&quot;);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (outputMean.length != nVars) {</span>
+<span class="nc" id="L151">            throw new IllegalArgumentException(&quot;outputMean.length must equal data[0].length&quot;);</span>
         }
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nVars) {</span>
-<span class="nc" id="L149">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal data[0].length&quot;);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nVars) {</span>
+<span class="nc" id="L154">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal data[0].length&quot;);</span>
         }
         
         // subtract the mean from the data,
         // then calculate the standard deviation and divide the data by it.
-<span class="fc" id="L154">        double[][] out = MatrixUtil.copy(data);</span>
+<span class="fc" id="L159">        double[][] out = MatrixUtil.copy(data);</span>
         
-<span class="fc" id="L156">        double[] c = MatrixUtil.mean(out);</span>
-<span class="fc" id="L157">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
+<span class="fc" id="L161">        double[] c = MatrixUtil.mean(out);</span>
+<span class="fc" id="L162">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
                 
         int i, d;
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">            for (d = 0; d &lt; out[i].length; ++d) {</span>
-<span class="fc" id="L162">                out[i][d] -= c[d];</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            for (d = 0; d &lt; out[i].length; ++d) {</span>
+<span class="fc" id="L167">                out[i][d] -= c[d];</span>
             }
         }
         
-<span class="fc" id="L166">        Arrays.fill(outputStandardDeviation, 0);</span>
+<span class="fc" id="L171">        Arrays.fill(outputStandardDeviation, 0);</span>
                 
-<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
                 //mean has already been subtracted:
-<span class="fc" id="L171">                outputStandardDeviation[d] += (out[i][d]*out[i][d]);</span>
+<span class="fc" id="L176">                outputStandardDeviation[d] += (out[i][d]*out[i][d]);</span>
             }
         }
-<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L175">            outputStandardDeviation[d] = Math.sqrt(outputStandardDeviation[d]/(nSamples - 1.0)); </span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L180">            outputStandardDeviation[d] = Math.sqrt(outputStandardDeviation[d]/(nSamples - 1.0)); </span>
         }
         
-<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">                if (outputStandardDeviation[d] &gt; 0.) {</span>
-<span class="fc" id="L181">                    out[i][d] /= outputStandardDeviation[d];</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">                if (outputStandardDeviation[d] &gt; 0.) {</span>
+<span class="fc" id="L186">                    out[i][d] /= outputStandardDeviation[d];</span>
                 }
             }
         }
         
-<span class="fc" id="L186">        return out;</span>
+<span class="fc" id="L191">        return out;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

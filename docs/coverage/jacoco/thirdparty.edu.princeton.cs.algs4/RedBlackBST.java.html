@@ -840,40 +840,57 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
     /**
     visit each node using pattern left subtree, root, right subtree
     in an iterative manner rather than invoking the method recursively.
+    * &lt;pre&gt;
+    * example:
+                   10
+              5           20
+                        30
+        
+            returns [5,10,30,20]
+    &lt;/pre&gt;
+    &lt;pre&gt;
+     from &quot;Data Structures and Algorithms&quot;, Garnett, and Del Tongo 2008.
+     The recursive version is:
+         if root ̸= null {
+             inorder(root.Left) 
+             yield root.Value 
+             inorder(root.Right)
+         }
+     &lt;/pre&gt;
     */
     protected List&lt;RBNode&gt; getInOrderTraversalIterative(RBNode node) {
        
-<span class="pc bpc" id="L846" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L847">            return new ArrayList&lt;RBNode&gt;();</span>
+<span class="pc bpc" id="L863" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L864">            return new ArrayList&lt;RBNode&gt;();</span>
         }
         
-<span class="fc" id="L850">        int sz = size();</span>
+<span class="fc" id="L867">        int sz = size();</span>
        
-<span class="fc" id="L852">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();;</span>
-<span class="fc" id="L853">        int count = 0;</span>
+<span class="fc" id="L869">        List&lt;RBNode&gt; out = new ArrayList&lt;RBNode&gt;();;</span>
+<span class="fc" id="L870">        int count = 0;</span>
         
-<span class="fc" id="L855">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L872">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
                
-<span class="fc bfc" id="L857" title="All 4 branches covered.">        while (!stack.isEmpty() || (node != null)) {</span>
-<span class="fc bfc" id="L858" title="All 2 branches covered.">            if (node != null) {</span>
+<span class="fc bfc" id="L874" title="All 4 branches covered.">        while (!stack.isEmpty() || (node != null)) {</span>
+<span class="fc bfc" id="L875" title="All 2 branches covered.">            if (node != null) {</span>
                  
-<span class="fc" id="L860">                stack.push(node);</span>
+<span class="fc" id="L877">                stack.push(node);</span>
                 
-<span class="fc" id="L862">                node = node.left;</span>
+<span class="fc" id="L879">                node = node.left;</span>
             
-<span class="pc bpc" id="L864" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
+<span class="pc bpc" id="L881" title="1 of 2 branches missed.">            } else if (count &lt; sz) {</span>
                 
-<span class="fc" id="L866">                node = stack.pop();</span>
+<span class="fc" id="L883">                node = stack.pop();</span>
                 
-<span class="fc" id="L868">                array.add(node);</span>
-<span class="fc" id="L869">                count++;</span>
+<span class="fc" id="L885">                out.add(node);</span>
+<span class="fc" id="L886">                count++;</span>
                 
                 //System.out.println(node.key);
                 
-<span class="fc" id="L873">                node = node.right;</span>
+<span class="fc" id="L890">                node = node.right;</span>
             }
         }
-<span class="fc" id="L876">        return array;</span>
+<span class="fc" id="L893">        return out;</span>
     }
     
     /**
@@ -883,48 +900,57 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
     */
     protected List&lt;RBNode&gt; getLevelOrderTraversalIterative(RBNode node) {
        
-<span class="nc bnc" id="L886" title="All 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L887">            return new ArrayList&lt;RBNode&gt;();</span>
+<span class="nc bnc" id="L903" title="All 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L904">            return new ArrayList&lt;RBNode&gt;();</span>
         }
         
-<span class="nc" id="L890">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
-<span class="nc" id="L891">        int count = 0;</span>
+<span class="nc" id="L907">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
+<span class="nc" id="L908">        int count = 0;</span>
         
-<span class="nc bnc" id="L893" title="All 2 branches missed.">        if (node == null) {</span>
-<span class="nc" id="L894">            return array;</span>
+<span class="nc bnc" id="L910" title="All 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L911">            return array;</span>
         }
         
         // can use stacks or queues interchangeably here, but if prefer 
         //   left to right norder, will want queues.
-<span class="nc" id="L899">        java.util.Queue&lt;RBNode&gt; level = new ArrayDeque&lt;RBNode&gt;();</span>
-<span class="nc" id="L900">        java.util.Queue&lt;RBNode&gt; nextLevel = new ArrayDeque&lt;RBNode&gt;();</span>
+<span class="nc" id="L916">        java.util.Queue&lt;RBNode&gt; level = new ArrayDeque&lt;RBNode&gt;();</span>
+<span class="nc" id="L917">        java.util.Queue&lt;RBNode&gt; nextLevel = new ArrayDeque&lt;RBNode&gt;();</span>
         
-<span class="nc" id="L902">        level.add(node);</span>
+<span class="nc" id="L919">        level.add(node);</span>
         
         while (true) {
-<span class="nc bnc" id="L905" title="All 2 branches missed.">            while (!level.isEmpty()) {</span>
-<span class="nc" id="L906">                node = level.poll();</span>
-<span class="nc" id="L907">                array.add(node);</span>
-<span class="nc bnc" id="L908" title="All 2 branches missed.">                if (node.left != null) {</span>
-<span class="nc" id="L909">                    nextLevel.add(node.left);</span>
+<span class="nc bnc" id="L922" title="All 2 branches missed.">            while (!level.isEmpty()) {</span>
+<span class="nc" id="L923">                node = level.poll();</span>
+<span class="nc" id="L924">                array.add(node);</span>
+<span class="nc bnc" id="L925" title="All 2 branches missed.">                if (node.left != null) {</span>
+<span class="nc" id="L926">                    nextLevel.add(node.left);</span>
                 }
-<span class="nc bnc" id="L911" title="All 2 branches missed.">                if (node.right != null) {</span>
-<span class="nc" id="L912">                    nextLevel.add(node.right);</span>
+<span class="nc bnc" id="L928" title="All 2 branches missed.">                if (node.right != null) {</span>
+<span class="nc" id="L929">                    nextLevel.add(node.right);</span>
                 } 
             }
-<span class="nc bnc" id="L915" title="All 2 branches missed.">            if (nextLevel.isEmpty()) {</span>
-<span class="nc" id="L916">                break;</span>
+<span class="nc bnc" id="L932" title="All 2 branches missed.">            if (nextLevel.isEmpty()) {</span>
+<span class="nc" id="L933">                break;</span>
             }
-<span class="nc" id="L918">            level.addAll(nextLevel);</span>
-<span class="nc" id="L919">            nextLevel.clear();</span>
+<span class="nc" id="L935">            level.addAll(nextLevel);</span>
+<span class="nc" id="L936">            nextLevel.clear();</span>
         }
                 
-<span class="nc" id="L922">        return array;</span>
+<span class="nc" id="L939">        return array;</span>
     }
     
     /**
      * visit each node using pattern: root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
+     &lt;pre&gt;
+     from &quot;Data Structures and Algorithms&quot;, Garnett, and Del Tongo 2008.
+     The recursive version is:
+         if root ̸= null {
+             yield root.Value 
+             preorder(root.Left) 
+             preorder(root.Right)
+         }
+     &lt;/pre&gt;
      */
     protected List&lt;RBNode&gt; getPreOrderTraversalIterative(RBNode node, int addExtraToSize) {
        
@@ -933,88 +959,106 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         //   in the middle of a put where the node size is not yet updated.
         // The count conditionals below are otherwise, not needed.
         
-<span class="pc bpc" id="L936" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L937">            return new ArrayList&lt;RBNode&gt;();</span>
+<span class="fc" id="L962">        List&lt;RBNode&gt; out = new ArrayList&lt;RBNode&gt;();</span>
+        
+<span class="pc bpc" id="L964" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L965">            return out;</span>
         }
                 
-<span class="fc" id="L940">        int sz = size() + addExtraToSize;</span>
+<span class="fc" id="L968">        int sz = size() + addExtraToSize;</span>
         
-<span class="fc" id="L942">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
-<span class="fc" id="L943">        int count = 0;</span>
+<span class="fc" id="L970">        int count = 0;</span>
         
-<span class="fc" id="L945">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L972">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
         
-<span class="pc bpc" id="L947" title="1 of 6 branches missed.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
-<span class="fc bfc" id="L948" title="All 2 branches covered.">            if (node != null) {</span>
+<span class="pc bpc" id="L974" title="1 of 6 branches missed.">        while (count &lt; sz &amp;&amp; (!stack.isEmpty() || node != null)) {</span>
+<span class="fc bfc" id="L975" title="All 2 branches covered.">            if (node != null) {</span>
               
-<span class="fc" id="L950">                array.add(node);</span>
+<span class="fc" id="L977">                out.add(node);</span>
                 
-<span class="fc" id="L952">                count++;</span>
+<span class="fc" id="L979">                count++;</span>
                 
-<span class="fc bfc" id="L954" title="All 2 branches covered.">                if (count &lt; sz) {</span>
-<span class="fc" id="L955">                    stack.push(node);</span>
+<span class="fc bfc" id="L981" title="All 2 branches covered.">                if (count &lt; sz) {</span>
+<span class="fc" id="L982">                    stack.push(node);</span>
                 }
                 
-<span class="fc" id="L958">                node = node.left;</span>
+<span class="fc" id="L985">                node = node.left;</span>
             
             } else {
                 
-<span class="fc" id="L962">                node = stack.pop();</span>
+<span class="fc" id="L989">                node = stack.pop();</span>
                 
-<span class="fc" id="L964">                node = node.right;</span>
+<span class="fc" id="L991">                node = node.right;</span>
             }
         }
         
-<span class="fc" id="L968">        return array;</span>
+<span class="fc" id="L995">        return out;</span>
     }
 
     /**
      * visit each node using pattern: left subtree, right subtree, root subtree
      * in an iterative manner rather than invoking the method recursively.
+     &lt;pre&gt;
+       example:
+                 10
+              5           20
+                        30
+        
+        gives out=[5, 30, 20, 10]
+     &lt;/pre&gt;
+     &lt;pre&gt;
+     from &quot;Data Structures and Algorithms&quot;, Garnett, and Del Tongo 2008.
+     The recursive version is:
+         if root ̸= null {
+             postorder(root.Left) 
+             postorder(root.Right)
+             yield root.Value
+         }
+     &lt;/pre&gt;
      */
     protected List&lt;RBNode&gt; getPostOrderTraversalIterative(RBNode node) {
         
-<span class="pc bpc" id="L977" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
-<span class="nc" id="L978">            return new ArrayList&lt;RBNode&gt;();</span>
+<span class="pc bpc" id="L1021" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L1022">            return new ArrayList&lt;RBNode&gt;();</span>
         }
         
-<span class="fc" id="L981">        List&lt;RBNode&gt; array = new ArrayList&lt;RBNode&gt;();</span>
-<span class="fc" id="L982">        int count = 0;</span>
+<span class="fc" id="L1025">        List&lt;RBNode&gt; out = new ArrayList&lt;RBNode&gt;();</span>
+<span class="fc" id="L1026">        int count = 0;</span>
         
-<span class="pc bpc" id="L984" title="1 of 2 branches missed.">        if (node == null) {</span>
-<span class="nc" id="L985">            return array;</span>
+<span class="pc bpc" id="L1028" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L1029">            return out;</span>
         }
         
-<span class="fc" id="L988">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
-<span class="fc" id="L989">        Stack&lt;RBNode&gt; stack2 = new Stack&lt;&gt;();</span>
-<span class="fc" id="L990">        stack.push(node);</span>
+<span class="fc" id="L1032">        Stack&lt;RBNode&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L1033">        Stack&lt;RBNode&gt; stack2 = new Stack&lt;&gt;();</span>
+<span class="fc" id="L1034">        stack.push(node);</span>
         
-<span class="fc bfc" id="L992" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
+<span class="fc bfc" id="L1036" title="All 2 branches covered.">        while (!stack.isEmpty()) {</span>
             
-<span class="fc" id="L994">            node = stack.pop();</span>
+<span class="fc" id="L1038">            node = stack.pop();</span>
             
-<span class="fc" id="L996">            stack2.push(node);</span>
+<span class="fc" id="L1040">            stack2.push(node);</span>
             
-<span class="fc bfc" id="L998" title="All 2 branches covered.">            if (node.left != null) {</span>
-<span class="fc" id="L999">                stack.push(node.left);</span>
+<span class="fc bfc" id="L1042" title="All 2 branches covered.">            if (node.left != null) {</span>
+<span class="fc" id="L1043">                stack.push(node.left);</span>
             }
 
-<span class="fc bfc" id="L1002" title="All 2 branches covered.">            if (node.right != null) {</span>
-<span class="fc" id="L1003">                stack.push(node.right);</span>
+<span class="fc bfc" id="L1046" title="All 2 branches covered.">            if (node.right != null) {</span>
+<span class="fc" id="L1047">                stack.push(node.right);</span>
             }            
         }
         
-<span class="fc bfc" id="L1007" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
+<span class="fc bfc" id="L1051" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
             
-<span class="fc" id="L1009">            node = stack2.pop();</span>
+<span class="fc" id="L1053">            node = stack2.pop();</span>
             
             //process(node);
-<span class="fc" id="L1012">            array.add(node);</span>
-<span class="fc" id="L1013">            count++;</span>
+<span class="fc" id="L1056">            out.add(node);</span>
+<span class="fc" id="L1057">            count++;</span>
             //System.out.println(node.key);
         }
          
-<span class="fc" id="L1017">        return array;</span>
+<span class="fc" id="L1061">        return out;</span>
     }
     
 }

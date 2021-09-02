@@ -15,7 +15,7 @@ import java.util.logging.Logger;
    Uniform Cost Search (a.k.a. weighted best-first search).
  * given a weighted directed graph with weight function, finds the greedy 
  * but optimal best-first shortest path with smaller number of items in the queue than
- * Dijkstras, but for the source and target shortest-path problem.
+ * Dijkstras, but for the single source and single target (a.k.a. single pair) shortest-path problem.
    Uniform Cost Search is a variant of Best-First-Search.
   
    NOTE: to save more space, could refactor to use bit-vectors for state variables.

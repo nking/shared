@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Convex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.net.oelen.polsolve.pzeros</a> &gt; <span class="el_source">Convex.java</span></div><h1>Convex.java</h1><pre class="source lang-java linenums">/*
+The author of this code is Wilco Oelen and he offers it
+freely without copyright, but asks that his pages are referenced
+as the source if used.
+He has a webpage with information on the polynomial software
+he ported and more modern versions which require jini bindings:
+https://woelen.homescience.net/science/math/exps/polynomials/
+https://woelen.homescience.net/science/math/exps/polynomials/software.html
+The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
+https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+*/
+package thirdparty.net.oelen.polsolve.pzeros;
+
+
+/************************************************************************
+*                             CLASS CONVEX                              *
+*************************************************************************
+* Compute  the upper convex hull of the set (i,a(i)), i.e., the set of  *
+* vertices (i_k,a(i_k)), k=1,2,...,m, such that the points (i,a(i)) lie *
+* below the straight lines passing through two consecutive vertices.    *
+* The abscissae of the vertices of the convex hull equal the indices of *
+* the TRUE  components of the logical output vector H.                  *
+* The used method requires O(nlog n) comparisons and is based on a      *
+* divide-and-conquer technique. Once the upper convex hull of two       *
+* contiguous sets  (say, {(1,a(1)),(2,a(2)),...,(k,a(k))} and           *
+* {(k,a(k)), (k+1,a(k+1)),...,(q,a(q))}) have been computed, then       *
+* the upper convex hull of their union is provided by the subroutine    *
+* CMERGE. The program starts with sets made up by two consecutive       *
+* points, which trivially constitute a convex hull, then obtains sets   *
+* of 3,5,9... points,  up to  arrive at the entire set.                 *
+* The program uses the subroutine  CMERGE; the subroutine CMERGE uses   *
+* the subroutines LEFT, RIGHT and CTEST. The latter tests the convexity *
+* of the angle formed by the points (i,a(i)), (j,a(j)), (k,a(k)) in the *
+* vertex (j,a(j)) up to within a given tolerance TOLER, where i&lt;j&lt;k.    *
+*************************************************************************/
+
+<span class="nc" id="L37">strictfp class Convex {</span>
+    
+    private final static double TOLER = 0.4;	// slope tolerace
+    
+    private static int MIN(int x, int y) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        return (x &lt; y) ? x : y;</span>
+    }
+    
+    
+    
+    
+
+    /************************************************************************
+    *                             SUBROUTINE LEFT                           *
+    ************************************************************************* 
+    * Given as input the integer I and the vector H of logical, compute the *
+    * the maximum integer IL such that IL&lt;I and H(IL) is TRUE.              *
+    ************************************************************************* 
+    * Input variables:                                                      *
+    *     N   : length of the vector H                                      *
+    *     H   : vector of logical                                           *
+    *     I   : integer                                                     *
+    ************************************************************************* 
+    * Output variable:                                                      *
+    *     IL  : maximum integer such that IL&lt;I, H(IL)=.TRUE.                *
+    *************************************************************************/
+    private static int left(int i, int lo, boolean[] h) {
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (i == lo) {</span>
+<span class="nc" id="L65">            return lo;</span>
+        }
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (i--; i &gt; lo; i--) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (h[i]) {</span>
+<span class="fc" id="L69">                break;</span>
+            }
+        }
+<span class="fc" id="L72">        return i;</span>
+    }
+    
+    
+    
+    
+
+    /************************************************************************
+    *                             SUBROUTINE RIGHT                          *
+    *************************************************************************
+    ************************************************************************* 
+    * Given as input the integer I and the vector H of logical, compute the *
+    * the minimum integer IR such that IR&gt;I and H(IL) is TRUE.              *
+    *************************************************************************
+    ************************************************************************* 
+    * Input variables:                                                      *
+    *     N   : length of the vector H                                      *
+    *     H   : vector of logical                                           *
+    *     I   : integer                                                     *
+    ************************************************************************* 
+    * Output variable:                                                      *
+    *     IR  : minimum integer such that IR&gt;I, H(IR)=.TRUE.                *
+    *************************************************************************/
+    
+    private static int right(int i, int up, boolean[] h) {
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (i == up) {</span>
+<span class="nc" id="L98">            return up;</span>
+        }
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (i++; i &lt; up; i++) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            if (h[i]) {</span>
+<span class="fc" id="L102">                break;</span>
+            }
+        }
+<span class="fc" id="L105">        return i;</span>
+    }
+    
+    
+    
+    
+
+    /************************************************************************
+    *                             FUNCTION CTEST                            *
+    ************************************************************************* 
+    * Test the convexity of the angle formed by (IL,A(IL)), (I,A(I)),       *
+    * (IR,A(IR)) at the vertex (I,A(I)), up to within the tolerance         *
+    * TOLER. If convexity holds then the function is set to .TRUE.,         *
+    * otherwise CTEST=.FALSE. The parameter TOLER is set to 0.4 by default. *
+    ************************************************************************* 
+    * Input variables:                                                      *
+    *     N       : length of the vector A                                  *
+    *     A       : vector of double                                        *
+    *     IL,I,IR : integers such that IL&lt;I&lt;IR                              *
+    *************************************************************************
+    * Output:                                                               *
+    *     .TRUE. if the angle formed by (IL,A(IL)), (I,A(I)), (IR,A(IR)) at *
+    *            the vertex (I,A(I)), is convex up to within the tolerance  *
+    *            TOLER, i.e., if                                            *
+    *            (A(I)-A(IL))*(IR-I)-(A(IR)-A(I))*(I-IL)&gt;TOLER.             *
+    *     .FALSE.,  otherwise.                                              *
+    *************************************************************************/
+    
+    private static boolean ctest(int il, int i, int ir, double[] a) {
+        double s1, s2;
+
+<span class="fc" id="L136">        s1 = (a[i] - a[il]) * (ir - i);</span>
+<span class="fc" id="L137">        s2 = (a[ir] - a[i]) * (i - il);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        return (s1 - s2 &gt; TOLER);</span>
+    }
+    
+    
+    
+    
+
+    /************************************************************************
+    *                             SUBROUTINE CMERGE                         *
+    *************************************************************************
+    * Given the upper convex hulls of two consecutive sets of pairs         *
+    * (j,A(j)), compute the upper convex hull of their union                *
+    *************************************************************************
+    * Input variables:                                                      *
+    *     N    : length of the vector A                                     *
+    *     A    : vector defining the points (j,A(j))                        *
+    *     I    : abscissa of the common vertex of the two sets              *
+    *     M    : the number of elements of each set is M+1                  *
+    *************************************************************************
+    * Input/Output variable:                                                *
+    *     H    : vector defining the vertices of the convex hull, i.e.,     *
+    *            H(j) is .TRUE. if (j,A(j)) is a vertex of the convex hull  *
+    *            This vector is used also as output.                        *
+    *************************************************************************/
+    
+    private static void cmerge(int lo, int i, int up, double a[], boolean[] h) {
+        int il, ir, ill, irr;
+        boolean tstl, tstr;
+
+<span class="fc" id="L167">        ill = lo;</span>
+<span class="fc" id="L168">        irr = up;</span>
+<span class="fc" id="L169">        il = left(i, lo, h);</span>
+<span class="fc" id="L170">        ir = right(i, up, h);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (ctest(il, i, ir, a)) {</span>
+<span class="fc" id="L172">            return;</span>
+        }
+<span class="fc" id="L174">        h[i] = false;</span>
+        do {
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (il == lo) {</span>
+<span class="fc" id="L177">                tstl = true;</span>
+            } 
+            else {
+<span class="fc" id="L180">                ill = left(il, lo, h);</span>
+<span class="fc" id="L181">                tstl = ctest(ill, il, ir, a);</span>
+            }
+
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (ir == up) {</span>
+<span class="fc" id="L185">                tstr = true;</span>
+            } 
+            else {
+<span class="fc" id="L188">                irr = right(ir, up, h);</span>
+<span class="fc" id="L189">                tstr = ctest(il, ir, irr, a);</span>
+            }
+
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            if (!tstl) {</span>
+<span class="fc" id="L193">                h[il] = false;</span>
+<span class="fc" id="L194">                il = ill;</span>
+            }
+<span class="fc bfc" id="L196" title="All 2 branches covered.">            if (!tstr) {</span>
+<span class="fc" id="L197">                h[ir] = false;</span>
+<span class="fc" id="L198">                ir = irr;</span>
+            }
+<span class="fc bfc" id="L200" title="All 4 branches covered.">        } while (!(tstl &amp;&amp; tstr));</span>
+<span class="fc" id="L201">    }</span>
+
+    
+    
+    
+    
+    /**************************************************************
+    *                       SUBROUTINE CNVEX                      *
+    * *************************************************************
+    * Compute the convex hull of the data set a[]. The result     *
+    * is in the bool vector h[]. The algorithm successively       *
+    * merges adjacent convex hulls of sizes 2, 4, 8, ...          *
+    ***************************************************************/
+    
+    static void cnvex(int n, double a[], boolean[] h) {
+        int m, c;
+
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        for (m = 0; m &lt;= n; m++) {</span>
+<span class="fc" id="L219">            h[m] = true;</span>
+        }
+
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (m = 1; m &lt; n; m &lt;&lt;= 1) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            for (c = m; c &lt; n; c += 2 * m) {</span>
+<span class="fc" id="L224">                cmerge(c - m, c, MIN(n, c + m), a, h);</span>
+            }
+        }
+<span class="fc" id="L227">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

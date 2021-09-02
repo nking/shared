@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Complex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.net.oelen.polarith</a> &gt; <span class="el_source">Complex.java</span></div><h1>Complex.java</h1><pre class="source lang-java linenums">/*
+The author of this code is Wilco Oelen and he offers it
+freely without copyright, but asks that his pages are referenced
+as the source if used.
+He has a webpage with information on the polynomial software
+he ported and more modern versions which require jini bindings:
+https://woelen.homescience.net/science/math/exps/polynomials/
+https://woelen.homescience.net/science/math/exps/polynomials/software.html
+The code here is from the Java port of RPoly, CPoly and MPSolve 1996 algorithms:
+https://woelen.homescience.net/science/math/exps/polynomials/software/polsolve.tgz
+*/
+package thirdparty.net.oelen.polarith;
+
+import java.io.Serializable;
+
+
+
+// An immutable Complex class, supporting basic arithmetic
+// on complex numbers. The public members re, im are final
+// and hence cannot be modified.
+
+public final class Complex implements Serializable {
+<span class="fc" id="L23">    private static final long serialVersionUID = Hash64.hash(&quot;Complex_v1.0&quot;);</span>
+    
+<span class="fc" id="L25">    public static final Complex ZERO = new Complex(0.0, 0.0);</span>
+<span class="fc" id="L26">    public static final Complex ONE = new Complex(1.0, 0.0);</span>
+<span class="fc" id="L27">    public static final Complex I = new Complex(0.0, 1.0);</span>
+    
+    public final double re;
+    public final double im;
+
+<span class="fc" id="L32">    public Complex(double re, double im) {</span>
+<span class="fc" id="L33">        this.re = re;</span>
+<span class="fc" id="L34">        this.im = im;</span>
+<span class="fc" id="L35">    }</span>
+
+<span class="nc" id="L37">    public Complex(double re) {</span>
+<span class="nc" id="L38">        this.re = re;</span>
+<span class="nc" id="L39">        this.im = 0.0;</span>
+<span class="nc" id="L40">    }</span>
+
+<span class="nc" id="L42">    public Complex() {</span>
+<span class="nc" id="L43">        this.re = 0.0;</span>
+<span class="nc" id="L44">        this.im = 0.0;</span>
+<span class="nc" id="L45">    }</span>
+
+
+
+    public Complex add(double re) {
+<span class="fc" id="L50">        return new Complex(this.re + re, this.im);</span>
+    }
+
+
+    public Complex add(double re, double im) {
+<span class="nc" id="L55">        return new Complex(this.re + re, this.im + im);</span>
+    }
+
+
+    public Complex add(Complex a) {
+<span class="nc" id="L60">        return new Complex(this.re + a.re, this.im + a.im);</span>
+    }
+
+
+
+    
+    public Complex add1() {
+<span class="nc" id="L67">        return new Complex(this.re + 1.0, this.im);</span>
+    }
+
+
+
+
+    public Complex sub(double re) {
+<span class="nc" id="L74">        return new Complex(this.re - re, this.im);</span>
+    }
+
+
+    public Complex sub(double re, double im) {
+<span class="nc" id="L79">        return new Complex(this.re - re, this.im - im);</span>
+    }
+
+
+    public Complex sub(Complex a) {
+<span class="fc" id="L84">        return new Complex(this.re - a.re, this.im - a.im);</span>
+    }
+
+
+
+
+    public Complex sub1() {
+<span class="fc" id="L91">        return new Complex(this.re - 1.0, this.im);</span>
+    }
+
+
+
+
+    public Complex mul(double re) {
+<span class="fc" id="L98">        return new Complex(this.re * re, this.im * re);</span>
+    }
+
+    public Complex mul(double re, double im) {
+<span class="nc" id="L102">        return new Complex(this.re * re - this.im * im, this.im * re + this.re * im);</span>
+    }
+
+    public Complex mul(Complex a) {
+<span class="fc" id="L106">        return new Complex(this.re * a.re - this.im * a.im, this.im * a.re + this.re * a.im);</span>
+    }
+
+
+
+
+
+    public Complex sqr() {
+<span class="nc" id="L114">        return new Complex(this.re * this.re - this.im * this.im, 2 * this.im * this.re);</span>
+    }
+
+
+
+
+    public Complex div(double re) {
+<span class="nc" id="L121">        return new Complex(this.re/re, this.im/re);</span>
+    }
+
+    
+    
+    
+<span class="fc" id="L127">    private static final double THRESH_MAX = 0.5 * Math.sqrt(Double.MAX_VALUE);</span>
+<span class="fc" id="L128">    private static final double THRESH_MIN = 1.0/THRESH_MAX;</span>
+    
+    public Complex div(double re, double im) {
+<span class="fc" id="L131">        double are = Math.abs(re);</span>
+<span class="fc" id="L132">        double aim = Math.abs(im);</span>
+
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (are + aim &gt; THRESH_MAX) {</span>
+            // Use a special algorithm, which assures that
+            // no overflow occurs, but which is slower.
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (are &gt; aim) {</span>
+<span class="nc" id="L138">                double im_re = im/re;</span>
+<span class="nc" id="L139">                double rr = 1.0/(re + im_re*im);</span>
+<span class="nc" id="L140">                return new Complex((this.re + this.im*im_re)*rr, (this.im - this.re*im_re)*rr);</span>
+            }
+            else {
+<span class="nc" id="L143">                double re_im = re/im;</span>
+<span class="nc" id="L144">                double rr = 1.0/(re*re_im + im);</span>
+<span class="nc" id="L145">                return new Complex((this.re*re_im + this.im)*rr, (this.im*re_im - this.re)*rr);</span>
+            }
+        }
+
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (are + aim &lt; THRESH_MIN) {</span>
+            // Use a special algorithm, which assures that
+            // no underflow occurs, but which is slower.
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            if (are &lt; aim) {</span>
+<span class="nc" id="L153">                double im_re = im/re;</span>
+<span class="nc" id="L154">                double rr = 1.0/(re + im_re*im);</span>
+<span class="nc" id="L155">                return new Complex((this.re + this.im*im_re)*rr, (this.im - this.re*im_re)*rr);</span>
+            }
+            else {
+<span class="nc" id="L158">                double re_im = re/im;</span>
+<span class="nc" id="L159">                double rr = 1.0/(re*re_im + im);</span>
+<span class="nc" id="L160">                return new Complex((this.re*re_im + this.im)*rr, (this.im*re_im - this.re)*rr);</span>
+            }
+        }
+
+<span class="fc" id="L164">        double rr = 1.0/(re*re + im*im);</span>
+<span class="fc" id="L165">        return new Complex((this.re*re + this.im*im)*rr, (this.im*re - this.re*im)*rr);</span>
+    }
+
+    
+    
+    
+    public Complex div(Complex a) {
+<span class="fc" id="L172">        double are = Math.abs(a.re);</span>
+<span class="fc" id="L173">        double aim = Math.abs(a.im);</span>
+
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">        if (are + aim &gt; THRESH_MAX) {</span>
+<span class="nc" id="L176">            return div(a.re, a.im);</span>
+        }
+
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (are + aim &lt; THRESH_MIN) {</span>
+<span class="nc" id="L180">            return div(a.re, a.im);</span>
+        }
+
+<span class="fc" id="L183">        double rr = 1.0/(a.re*a.re + a.im*a.im);</span>
+<span class="fc" id="L184">        return new Complex((this.re*a.re + this.im*a.im)*rr, (this.im*a.re - this.re*a.im)*rr);</span>
+    }
+    
+    
+    
+    
+    
+    
+    public Complex recip() {
+<span class="fc" id="L193">        double are = Math.abs(re);</span>
+<span class="fc" id="L194">        double aim = Math.abs(im);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (are &gt; aim) {</span>
+<span class="fc" id="L196">            double r = im / re;</span>
+<span class="fc" id="L197">            double den = re + r * im;</span>
+            
+<span class="fc" id="L199">            double cre = 1.0/den;</span>
+<span class="fc" id="L200">            double cim = -r/den;</span>
+<span class="fc" id="L201">            return new Complex(cre, cim);</span>
+        }
+        else {
+<span class="fc" id="L204">            double r = re / im;</span>
+<span class="fc" id="L205">            double den = im + r * re;</span>
+<span class="fc" id="L206">            double cre = r / den;</span>
+<span class="fc" id="L207">            double cim = -1.0/den;</span>
+<span class="fc" id="L208">            return new Complex(cre, cim);</span>
+        }
+    }
+    
+    
+
+
+
+    public double abs() {
+<span class="fc" id="L217">        double are = Math.abs(re);</span>
+<span class="fc" id="L218">        double aim = Math.abs(im);</span>
+        
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (aim == 0.0) {</span>
+<span class="fc" id="L221">            return are;</span>
+        }
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (are == 0.0) {</span>
+<span class="fc" id="L224">            return aim;</span>
+        }
+        
+        // We do not simply use sqrt(re*re+im*im). If we used that
+        // then there would be an intermediate overflow for values
+        // in the order of magnitude of 10^154. The code below does
+        // a little smarter arithmetic and only overflows if the
+        // number really cannot be represented anymore in a double
+        // (which is in the order of magnitude of 10^308).
+        
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (are &gt; aim) {</span>
+<span class="fc" id="L235">            double im_re = aim/are;</span>
+<span class="fc" id="L236">            return are * Math.sqrt(1.0 + im_re*im_re);</span>
+        }
+        else {
+<span class="fc" id="L239">            double re_im = are/aim;</span>
+<span class="fc" id="L240">            return aim * Math.sqrt(re_im*re_im + 1.0);</span>
+        }
+    }
+
+
+
+    public double abs1() {
+<span class="fc" id="L247">        double are = Math.abs(re);</span>
+<span class="fc" id="L248">        double aim = Math.abs(im);</span>
+<span class="fc" id="L249">        return are + aim;</span>
+    }
+
+
+
+    public double real() {
+<span class="fc" id="L255">        return this.re;</span>
+    }
+
+
+
+    public double imag() {
+<span class="fc" id="L261">        return this.im;</span>
+    }
+    
+    
+    
+    public Complex neg() {
+<span class="fc" id="L267">        return new Complex(-re, -im);</span>
+    }
+    
+    
+    
+    public Complex conj() {
+<span class="nc" id="L273">        return new Complex(re, -im);</span>
+    }
+    
+    
+    
+    public boolean isZero() {
+<span class="pc bpc" id="L279" title="1 of 4 branches missed.">        return re==0.0 &amp;&amp; im==0.0;</span>
+    }
+    
+    
+    
+    @Override
+    public String toString() {
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (im == 0.0) {</span>
+<span class="nc" id="L287">            return &quot;&quot; + re;</span>
+        }
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">        if (re == 0.0) {</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">            if (im &lt; 0) {</span>
+<span class="nc" id="L291">                return &quot;-i*&quot; + (-im);</span>
+            }
+<span class="nc" id="L293">            return &quot;i*&quot; + im;</span>
+        }
+        
+<span class="fc" id="L296">        double r = re;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (r &lt; 0) {</span>
+<span class="fc" id="L298">            r = -r;</span>
+        }
+        
+<span class="fc" id="L301">        double i = im;</span>
+<span class="fc" id="L302">        boolean imIsNeg = false;</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (i &lt; 0) {</span>
+<span class="fc" id="L304">            i = -i;</span>
+<span class="fc" id="L305">            imIsNeg = true;</span>
+        }
+        
+<span class="fc" id="L308">        double r_i = r/i;</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (r_i &gt; 4e15) {</span>
+<span class="fc" id="L310">            return &quot;&quot; + re;</span>
+        }
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        if (r_i &lt; 2.5e-16) {</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">            return (imIsNeg ? &quot;i*&quot; : &quot;-i*&quot;) + i;</span>
+        }
+        
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        return &quot;&quot; + re + (imIsNeg ? &quot; + i*&quot; : &quot; - i*&quot;) + i;</span>
+    }
+    
+    
+    
+    public static double[] toReal(Complex[] arr) {
+<span class="nc" id="L322">        double[] arr_re = new double[arr.length];</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="nc" id="L324">            arr_re[i] = arr[i].re;</span>
+        }
+<span class="nc" id="L326">        return arr_re;</span>
+    }
+    
+    
+    
+    public static double[] toImag(Complex[] arr) {
+<span class="nc" id="L332">        double[] arr_im = new double[arr.length];</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="nc" id="L334">            arr_im[i] = arr[i].im;</span>
+        }
+<span class="nc" id="L336">        return arr_im;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
