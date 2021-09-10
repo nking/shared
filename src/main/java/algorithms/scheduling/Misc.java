@@ -542,6 +542,18 @@ public class Misc {
 
      runtime complexity is between O(n*log_2(n)) and O(n^2), with a worse
      case of O(n^2).
+     * 
+     * Note: can compare this algorithm to the left-edge algorithms which
+     * sorts by increasing finish times, then loops over each request
+     * to add all sequential non-conflicting requests to a resource, then
+     * start a new resource for a conflict.
+     * Then one attempts to merge resources, by visiting them in reverse order.
+     * After all requests have been placed in a resource, one attempts to
+     * merge the non-conflicting resources by visiting them in reverse order
+     * and comparing to the previous resource (that is, starting with the last resource
+     * created, and then the one before it, etc until the first is visited).
+     * The left-edge algorithm runtime is similar to this interval partitioning greedy algorithm.
+     * 
      * @param s start times
      * @param f finish times
      * @return indexes of resources to schedule the requests on.
