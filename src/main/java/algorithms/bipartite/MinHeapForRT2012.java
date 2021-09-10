@@ -97,12 +97,12 @@ public class MinHeapForRT2012 {
     }
     
     /**
-     * for fib. heap runtime is //runtime is O(1).
+     * for fib. heap runtime is runtime is O(1).
      * for yft runtime complexity for best case is O(1) when there
-     * is already a similar key in the XFastTrie, else is O(log_2(w)) + O(w-l)
+     * is already a similar key in the YFastTrie, else is O(log_2(w)) + O(w-l)
      * where w is the number of bits set in the constructor and l is the prefix 
      * tree already filled leading up to the value node.  The performance of 
-     * the XFastTrie increases when more nodes are in it (can see that in the
+     * the YFastTrie increases when more nodes are in it (can see that in the
      * l term).
      * @param node 
      */
@@ -114,9 +114,11 @@ public class MinHeapForRT2012 {
         
         switch(algorithm) {
             case 1:
+                // Fibonacci
                 insert1(node);
                 break;
             default:
+                // YFastTrie
                 insert2(node);
                 break;
         }
@@ -142,6 +144,11 @@ public class MinHeapForRT2012 {
         
     }
     
+    /**
+     * extract min-key from Fibonacci heap.
+     * runtime is O(log_2 N) or better.
+     * @return 
+     */
     private HeapNode extractMin1() {
         // runtime is O(log_2 N) or better
         HeapNode node = heap1.extractMin();
@@ -152,13 +159,21 @@ public class MinHeapForRT2012 {
         }
     }
     
+    /**
+     * extract min-key from YFastTrie min priority queue.
+     * runtime complexity is O(log log(M)) where M is the number of bits 
+     * of the maximum value that the trie can hold (set during construction). 
+     * @return 
+     */
     private HeapNode extractMin2() { 
-        // runtime is runtime complexity is O(log log(M))
-        //    where M is the number of bits of the maximum value the trie
-        //    was initialized with
+        // runtime is runtime complexity is 
         return heap2.extractMin();
     }
     
+    /**
+     * insert into Fibonacci heap. r.t. complexity is O(1)
+     * @param node 
+     */
     private void insert1(HeapNode node) {
          
         int key = (int)node.getKey();
@@ -168,6 +183,18 @@ public class MinHeapForRT2012 {
         log.fine("insert into fib minHeap at key =" + key);        
     }
     
+    /**
+     * insert node into YFastTrie min priority queue.
+     * runtime complexity for best case is O(1) when there
+     * is already a similar key in the YFastTrie, else is
+     * is O(log_2(w)) + O(w-l)
+     * where w is the number of bits set in the constructor
+     * and l is the prefix tree already filled leading
+     * up to the value x.  The performance of the YFastTrie
+     * increases when more nodes are in it (can see that in the
+     * l term).
+     * @param node
+     */
     private void insert2(HeapNode node) {
          
         int key = (int)node.getKey();
@@ -231,6 +258,7 @@ public class MinHeapForRT2012 {
     }
      
     /**
+     * remove from Fibonacci heap
      * runtime complexity is O(lg_2(n))
      * @param node 
      */
@@ -242,6 +270,11 @@ public class MinHeapForRT2012 {
         heap1.remove(node);
     }
     
+    /**
+     * remove node from YFastTrie min priority queue.
+     * runtime complexity is O(log log(M)) where M is the number of bits 
+     * of the maximum value that the trie can hold (set during construction). 
+     */
     private void remove2(HeapNode node) {
 
         log.fine("remove in yft key=" + 
