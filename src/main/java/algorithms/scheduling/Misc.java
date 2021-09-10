@@ -14,9 +14,7 @@ import java.util.TreeSet;
  * @author nichole
  */
 public class Misc {
-    
-    //TODO: add leftedge aka LRE aka EFF (Interval Partitioning)
-    
+        
      /**
      * schedule a set of n tasks where each task is associated with a execution time 
      * t_i and a deadline d_i. 
@@ -39,7 +37,7 @@ public class Misc {
      * @param outputLate output array to hold lateness for the resulting scheduled index order
      * @return indexes for scheduling order
      */
-    public int[] schedulingUnweightedIntervalGreedy(double[] t, double[] d,
+    public int[] unweightedIntervalMinimizeLateGreedy(double[] t, double[] d,
         double[] outputStart, double[] outputLate) {
         int n = t.length;
         if (d.length != n) {
@@ -68,7 +66,50 @@ public class Misc {
             outputLate[i] = Math.max(0, f_prev - d[i]);
         }
         return indexes;
-    } 
+    }
+    
+    /**
+     * schedule a set of n tasks where each task is associated with a execution time 
+     * t_i and a deadline d_i. 
+     * The objective is to schedule the tasks, no two overlapping in time, 
+     * such that they are all completed before their deadline. 
+     * If this is not possible, define the lateness of the ith task to be amount 
+     * by which its finish time exceeds its deadline. 
+     * The objective is to minimize the maximum lateness over all the tasks.
+     * 
+     * The algorithm is aka Earliest Finish First (EFF) and Earliest Deadline First (EDF)
+     * 
+     * References:
+     * <pre>
+     * lecture 7 notes of David Mount for CMSC 451 
+     * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
+     * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
+     * </pre>
+     * 
+     * @param s start times for tasks
+     * @param f finish times for tasks
+     * @return indexes for scheduled non-conflicting tasks
+     */
+    public int[] unweightedIntervalNoConflicts(double[] s, double[] f) {
+        int n = s.length;
+        s = Arrays.copyOf(s, s.length);
+        f = Arrays.copyOf(f, f.length);
+        
+        //sort tasks by increasing finish times 
+        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(f, s);
+        double f_prev = Double.NEGATIVE_INFINITY; // f is the finish time of previous task
+        int i; 
+        int[] scheduled = new int[n];
+        int count = 0;
+        for (i = 0; i < n; ++i) {
+            if (s[i] > f_prev) {
+                scheduled[count++] = indexes[i];
+                f_prev = f[i];
+            }
+        }
+        scheduled = Arrays.copyOfRange(scheduled, 0, count);
+        return scheduled;
+    }
     
        /**
      * The objective is to compute any maximum sized subset of non-overlapping intervals.
@@ -92,7 +133,7 @@ public class Misc {
      * @param v interval weights
      * @return indexes of scheduled intervals.
      */
-    public int[] bottomUpWeightedIntervalSchedule(double[] s, double[] f, double[] v) {
+    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
         //interval [si, fi] of start and finish times
         s = Arrays.copyOf(s, s.length);
         f = Arrays.copyOf(f, f.length);
@@ -212,7 +253,7 @@ public class Misc {
      * @param penalties
      * @return 
      */
-    public int[] schedulingWeightedGreedy(int[] deadlines, int[] penalties) {
+    public int[] weightedGreedy(int[] deadlines, int[] penalties) {
         
         //deadlines = Arrays.copyOf(deadlines, deadlines.length);
         //penalties = Arrays.copyOf(penalties, penalties.length);
@@ -482,6 +523,85 @@ public class Misc {
         b[i + 1] = b[idxHi];
         b[idxHi] = swap;
         return i + 1;
+    }
+
+    /**
+    Interval Partitioning:
+    Given an infinite number of possible exclusive resources to use, 
+    schedule all the activities using the smallest number of resources.
+    The activity requests each have a start and finish time.
+    Let the resources be a collection R, partitioned into d disjoint subsets R_0,...R_{d-1}
+    such that events of R_j are mutually non-conflicting, for each j: 0 ≤ j ≤ (d-1).
+
+    References:
+    <pre>
+    lecture 7 notes of David Mount for CMSC 451       
+    Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
+    https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
+    </pre>
+
+     runtime complexity is between O(n*log_2(n)) and O(n^2), with a worse
+     case of O(n^2).
+     * @param s start times
+     * @param f finish times
+     * @return indexes of resources to schedule the requests on.
+     */
+    public int[] intervalPartitionGreedy(double[] s, double[] f) {     
+        double[] s2 = Arrays.copyOf(s, s.length);
+        
+        /*
+        (1) sort the requests by increasing order of start times. 
+        (2) assign to each request the smallest color (possibly a new color) 
+            such that it conflicts with no other requests of this color class. 
+        */
+        
+        // runtime complexity O(n)
+        //sort requests by increasing start times
+        int[] indexes = MiscSorter.mergeSortIncreasing(s2);
+        double[] f2 = new double[s2.length];
+        int i, j;
+        for (i = 0; i < f.length; ++i) {
+            f2[i] = f[indexes[i]];
+        }
+        //System.out.println("indexes sorted by start times = " + Arrays.toString(indexes));
+        
+        // a color for each request
+        int[] c = new int[s.length];
+        
+        TIntSet excl;        
+        int color;
+        // runtime complexity < O(n^2), but worse case is O(n^2)
+        for (i = 0; i < f2.length; ++i) {
+            excl = new TIntHashSet();
+            for (j = 0; j < i; ++j) {
+                //j is always smaller than i so s[j] <= s[i].  
+                //  then order is (sj,fj)  (si,fi)
+                
+                //if ([s[j],f[j]] overlaps [s[i],f[i]]) 
+                if (s2[i] < f2[j]) {
+                    excl.add(c[j]);
+                    /*System.out.printf("conflict for i2=%d, j2=%d (s2[%d]<f2[%d])=(%.1f, %.2f)\n",
+                        i, j, i, j, s2[i], f2[i]);
+                    System.out.printf("==> i=%d, j=%d (s2[%d]<f2[%d])=(%.1f, %.2f)\n",
+                        indexes[i], indexes[j], indexes[i], indexes[j], 
+                        s[indexes[i]], f[indexes[i]]);
+                    */
+                }
+            }
+            //Let c be the smallest color NOT in E
+            for (color = 0; color < f2.length; ++color) {
+                if (!excl.contains(color)) {
+                    break;
+                }
+            }
+            c[i] = color;
+        }
+        //rewrite c in terms of original indexes of method argument's unsorted (s,f)
+        int[] c2 = new int[f2.length];
+        for (i = 0; i < f2.length; ++i) {
+            c2[indexes[i]] = c[i];
+        }
+        return c2;
     }
 
 }

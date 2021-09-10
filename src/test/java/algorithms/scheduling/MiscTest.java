@@ -14,14 +14,14 @@ public class MiscTest extends TestCase {
         super(testName);
     }
     
-    public void testSchedulingUnweightedIntervalGreedy() {
+    public void testUnweightedIntervalMinimizeLateGreedy() {
         double[] d = new double[]{1, 2, 3, 4, 5};
         double[] t = new double[]{0.5, 0.75, 1.8, 1.8, 0.3};
 
         double[] outputStart = new double[t.length];
         double[] outputLate = new double[t.length];
         Misc misc = new Misc();
-        int[] indexes = misc.schedulingUnweightedIntervalGreedy(t, d, outputStart, outputLate);
+        int[] indexes = misc.unweightedIntervalMinimizeLateGreedy(t, d, outputStart, outputLate);
         
         /*
         System.out.printf("lateness=\n%s\n", FormatArray.toString(outputLate, "%.3f"));
@@ -51,7 +51,7 @@ public class MiscTest extends TestCase {
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
      * 
      */
-    public void testBottomUpWeightedIntervalSchedule() {
+    public void testWeightedIntervalBottomUp() {
         
         //TODO: add more tests and include changing the order of items in this one
         
@@ -60,7 +60,7 @@ public class MiscTest extends TestCase {
         double[] v = new double[]{2, 6, 3.5, 7, 8, 1.1};
 
         Misc misc =new Misc();
-        int[] indexes = misc.bottomUpWeightedIntervalSchedule(s, f, v);
+        int[] indexes = misc.weightedIntervalBottomUp(s, f, v);
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         int i;
         double sum = 0;
@@ -74,7 +74,7 @@ public class MiscTest extends TestCase {
         assertTrue(Arrays.equals(expected, indexes));
     }
     
-    public void testSchedulingWeightedGreedy() {
+    public void testWeightedGreedy() {
         System.out.println("unit task with weighted deadline scheduling");
         
         // testing for task scheduling with penalty for lateness
@@ -99,7 +99,7 @@ public class MiscTest extends TestCase {
         int[] w = new int[]{70, 60, 50, 40, 30, 20, 10};
        
         Misc misc =new Misc();
-        int[] indexes = misc.schedulingWeightedGreedy(d, w);
+        int[] indexes = misc.weightedGreedy(d, w);
         
         /*
         System.out.println("scheduled tasks = " + Arrays.toString(indexes));
@@ -121,4 +121,34 @@ public class MiscTest extends TestCase {
         assertTrue(Arrays.equals(expected, indexes));
     }
    
+    public void testUnweightedIntervalNoConflicts() {
+        
+        double[] s = new double[]{1,4,0,7,2, 8,11,3};
+        double[] t = new double[]{5, 6, 9, 10, 11, 13, 14, 15};
+        int[] expected = new int[]{1-1, 4-1, 7-1};
+        Misc misc = new Misc();
+        int[] indexes = misc.unweightedIntervalNoConflicts(s, t);
+        assertTrue(Arrays.equals(expected, indexes));
+    }
+    
+    public void testIntervalPartitionGreedy() {
+        /* Fig 4. from
+        lecture 7 notes of David Mount for CMSC 451       
+        Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
+        https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
+        */
+        //                        0   1   2    3   4    5   6   7   8   9   10   11
+        double[] s = new double[]{0,  1,  2,  6.5, 7.5, 10, 13, 19, 23, 26, 26,  31};
+        double[] f = new double[]{4.5,10, 6.5,11,  22,  24,17.5,25, 32, 29.5, 33, 34};
+        
+        Misc misc = new Misc();
+        int[] resources = misc.intervalPartitionGreedy(s, f);
+        System.out.println("resources=" + Arrays.toString(resources));
+        
+        //                        0   1  2  3  4  5  6  7  8  9  10 11
+        int[] expected = new int[]{0, 1, 2, 0, 2, 1, 0, 0, 2, 0, 1, 0};
+        int[] expected2 = new int[]{0, 1, 2, 0, 2, 1, 0, 0, 2, 1, 0, 1};
+        assertTrue(Arrays.equals(expected, resources) || 
+            Arrays.equals(expected2, resources));
+    }
 }
