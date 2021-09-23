@@ -82,7 +82,7 @@ public class FibonacciHeapWrapper {
     /**
      * note, key1 and key2 are in same heap, the runtime is 
      * O(1) for decrease key, else the runtime is a 
-     * delete and insert as O(lg_2(n)).
+     * delete and insert as O(log_2(n)).
      * 
      * @param node
      * @param key2 
@@ -106,7 +106,7 @@ public class FibonacciHeapWrapper {
             
         } else {
         
-            //runtime is that of extractMin, O(lg2(n))
+            //runtime is that of extractMin, O(log_2(n))
             heaps[binIdx1].remove(node);
                 
             node.setKey(key2);
@@ -152,7 +152,7 @@ public class FibonacciHeapWrapper {
     }
     
     /**
-     * runtime complexity is O(lg2(n))
+     * runtime complexity is O(log_2(n))
      * @param node 
      */
     public void remove(HeapNode node) {
@@ -165,7 +165,7 @@ public class FibonacciHeapWrapper {
         } else {
             binIdx = key/binSz;
         }
-        //runtime is that of extractMin, O(lg2(n))
+        //runtime is that of extractMin, O(log_2(n))
         heaps[binIdx].remove(node);
         
         n--;
