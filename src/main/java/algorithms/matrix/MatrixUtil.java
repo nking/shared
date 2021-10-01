@@ -1992,15 +1992,7 @@ public class MatrixUtil {
      * @return 
      */
     public static double[] normalizeL2(double[] v) {
-        double sum = 0;
-        for (double a : v) {
-            sum += (a*a);
-        }
-        sum = Math.sqrt(sum);
-        for (int i = 0; i < v.length; ++i) {
-            v[i] /= sum;
-        }
-        return v;
+        return normalizeLP(v, 2);
     }
     
     /**
@@ -2299,11 +2291,12 @@ public class MatrixUtil {
         for (double a : v) {
             sum += Math.pow(a, p);
         }
+        double[] out = Arrays.copyOf(v, v.length);
         sum = Math.pow(sum, 1./p);
         for (int i = 0; i < v.length; ++i) {
-            v[i] /= sum;
+            out[i] /= sum;
         }
-        return v;
+        return out;
     }
     
     /**

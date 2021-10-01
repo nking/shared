@@ -1372,4 +1372,36 @@ public class MatrixUtilTest extends TestCase {
          System.out.printf(" A = S * Delta * S^-1\n%s\n", FormatArray.toString(a2, "%.3e"));
          System.out.printf(" A = S * Delta2(from svd) * S^-1\n%s\n", FormatArray.toString(a3, "%.3e"));
      }
+     
+     public void testNormalizeLP() {
+         double eps= 1e-7;
+         
+         double[] a = new double[]{1, 2, 3, 4};
+         double p = 3;
+         double[] expected = new double[]{
+             0.215443469003, 0.430886938006, 0.64633040701, 0.861773876013
+         };
+         double[] b = MatrixUtil.normalizeLP(a, p);
+         int i;
+         assertEquals(expected.length, b.length);
+         for (i=0; i < b.length; ++i) {
+             assertTrue(Math.abs(expected[i]-b[i]) < eps);
+         }
+         assertTrue(Arrays.equals(new double[]{1, 2, 3, 4}, a));
+     }
+     public void testNormalizeL2() {
+         double eps= 1e-7;
+         
+         double[] a = new double[]{1, 2, 3, 4};
+         double[] expected = new double[]{
+             0.182574185835, 0.36514837167, 0.547722557505, 0.73029674334
+         };
+         double[] b = MatrixUtil.normalizeL2(a);
+         int i;
+         assertEquals(expected.length, b.length);
+         for (i=0; i < b.length; ++i) {
+             assertTrue(Math.abs(expected[i]-b[i]) < eps);
+         }
+         assertTrue(Arrays.equals(new double[]{1, 2, 3, 4}, a));
+     }
 }
