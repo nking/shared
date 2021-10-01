@@ -11,6 +11,7 @@ algorithms.matrix
 algorithms.misc
 algorithms.msts
 algorithms.optimization
+algorithms.scheduling
 algorithms.search
 algorithms.shortestPaths
 algorithms.signalProcessing
