@@ -323,12 +323,63 @@ public class MatrixUtilTest extends TestCase {
         expected[1] = new double[]{-0.388, 0.093, 0.19, 0.193, -0.088};
         expected[2] = new double[]{0.06, -0.036, -0.048, -0.036, 0.06};
         
+        // c = pseudoinv(A) * y
+        
         //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
-        double[][] inv = MatrixUtil.pseudoinverseFullRank(a);
+        double[][] inv = MatrixUtil.pseudoinverseFullColumnRank(a);
         
         double[] y = new double[]{2, 1, 1, 0, 3};
         
+        double[] expectedC = new double[]{1.2, -0.757, 0.214};
+        
         double[] c = MatrixUtil.multiplyMatrixByColumnVector(inv, y);
+        
+        assertEquals(expectedC.length, c.length);
+        
+        double diff;
+        
+        for (int i = 0; i < a[0].length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                double t1 = expected[i][j];
+                double t2 = inv[i][j];
+                diff = Math.abs(t2 - t1);
+                assertTrue(diff < eps);
+            }
+        }
+        
+        for (int i = 0; i < expectedC.length; ++i) {
+            diff = Math.abs(expectedC[i] - c[i]);
+            assertTrue(diff < eps);
+        }
+             
+    }
+    
+    public void testPseudoinverse3() throws NotConvergedException {
+        
+        // from Cormen et al Introduction to Algorithms chap 28, near Fig 28.3
+        double[][] a = new double[5][];
+        a[0] = new double[]{1, -1, 1};
+        a[1] = new double[]{1, 1, 1};
+        a[2] = new double[]{1, 2, 4};
+        a[3] = new double[]{1, 3, 9};
+        a[4] = new double[]{1, 5, 25};
+                
+        double eps = 1e-16;
+        eps = 0.01;
+        
+        double[][] expected = new double[3][];
+        expected[0] = new double[]{0.5, 0.3, 0.2, 0.1, -0.1};
+        expected[1] = new double[]{-0.388, 0.093, 0.19, 0.193, -0.088};
+        expected[2] = new double[]{0.06, -0.036, -0.048, -0.036, 0.06};
+        
+        a = MatrixUtil.transpose(a);
+        expected = MatrixUtil.transpose(expected);
+        
+        double[][] inv = MatrixUtil.pseudoinverseFullRowRank(a);
+        
+        //double[] y = new double[]{2, 1, 1, 0, 3};
+        
+        //double[] c = MatrixUtil.multiplyMatrixByColumnVector(inv, y);
         
         for (int i = 0; i < a[0].length; i++) {
             for (int j = 0; j < a.length; j++) {
@@ -338,13 +389,6 @@ public class MatrixUtilTest extends TestCase {
                 assertTrue(diff < eps);
             }
         }
-        
-        a[0] = new double[]{1, -1, 1};
-        a[1] = new double[]{1, 1, 1};
-        a[2] = new double[]{1, 2, 4};
-        a[3] = new double[]{1, 3, 9};
-        a[4] = new double[]{1, 5, 25};
-        double[][] inv2 = MatrixUtil.pseudoinverseRankDeficient(a);
                 
     }
     

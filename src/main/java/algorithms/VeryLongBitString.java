@@ -390,7 +390,7 @@ public final class VeryLongBitString {
     }
 
     /**
-     * return the number of bits different betweeen the bitstring
+     * return the number of bits different between the bit-string
      * otherBS and this and return that count.
      * Note that otherBS must have the same number of bits.
      * @param otherBS

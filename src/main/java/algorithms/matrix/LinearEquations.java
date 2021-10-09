@@ -551,7 +551,7 @@ public class LinearEquations {
         if (solveFullRank) {
             //AX=b has no solution
             //using A_pseudoinverse = inverse(A^T*A) * A^T
-            aPInv = MatrixUtil.pseudoinverseFullRank(a);
+            aPInv = MatrixUtil.pseudoinverseFullColumnRank(a);
         } else {
             // uses SVD of a in pseudo-inverse
             // Note that if A^-1 exists, then the pseudo-inverse of A is equal to the

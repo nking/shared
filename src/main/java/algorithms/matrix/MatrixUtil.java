@@ -45,6 +45,15 @@ import com.github.fommil.netlib.LAPACK;
    * for hermetician matrices can use divide and conquer eigenvalue algorithms and they
    * are parallelizable.
  </pre>
+ * 
+ * TODO: implement Orthogonal Iteration from Morita and Kanade Sect 3.2.2
+   "A straightforward generalization of the power method can be used to compute 
+   several dominant eigenvectors of a symmetric matrix."
+   A useful alternative to the singular value decomposition in situations 
+   where B is a large matrix and only a few of its largest eigenvalues are needed.
+   * for p eigenvalues out of n, if lambda__(p_1)/lambda_p is very small,
+   * the computation of the eigenvectors should proceed quickly.
+   
  * @author nichole
  */
 public class MatrixUtil {
@@ -1210,7 +1219,7 @@ public class MatrixUtil {
         }
         if (checkForFullRank && rank == n && m >= n) {
             // use full rank solution:
-            return pseudoinverseFullRank(a);
+            return pseudoinverseFullColumnRank(a);
         }
         
         DenseMatrix vTM = svd.getVt();
@@ -1253,15 +1262,14 @@ public class MatrixUtil {
     
     /**
      * calculate the pseudo-inverse of matrix a (dimensions mxn) which is a full
-     * rank matrix or overdetermined, i.e. rank = m or m > n, using LUP decomposition.
-     * A_pseudoinverse = inverse(A^T*A) * A^T
-     * <pre>
-       for case m .lt. n: 
-           should calculate A† = A^T * (A * A^T)^(−1)
-        
-        for case n .lt. m: 
-           should calculate A† = (A^T * A)^(−1) * A^T
-     </pre>
+     * column rank matrix or overdetermined, 
+     * n >= rank.
+     * A_pseudoinverse for A being full column rank = inverse(A^T*A) * A^T.
+     * This particular pseudoinverse constitutes a left inverse.
+     * pseudoinv(A)*A = I.
+     * 
+     * If inverting A^T*A fails, the methor returns results of pseudoinverseRankDeficient().
+     * 
      * NOTE that (A^T*A) (or (A * A^T)) has to be invertible, that is, 
      * the reduced echelon form of A has linearly independent columns (rank==n).
      * following pseudocode from Cormen et al. Introduction to Algorithms.
@@ -1272,7 +1280,7 @@ public class MatrixUtil {
      * @return matrix of size [a[0].length][a.length]
      * @throws NotConvergedException 
      */
-    public static double[][] pseudoinverseFullRank(double[][] a) throws NotConvergedException {
+    public static double[][] pseudoinverseFullColumnRank(double[][] a) throws NotConvergedException {
         int m = a.length;
         int n = a[0].length;
         
@@ -1307,6 +1315,52 @@ public class MatrixUtil {
              double[][] _aTAI = MatrixUtil.convertToRowMajor(aTAI);
             // _pseudoinverse = inverse(A^T*A) * A^T
             double[][] inv = MatrixUtil.multiply(_aTAI, _aT);
+            return inv;
+        } catch (no.uib.cipr.matrix.MatrixSingularException ex) {
+            return pseudoinverseRankDeficient(a, false);
+        }
+    }
+    
+    /**
+     * calculate the pseudo-inverse of matrix a (dimensions mxn) which is a full
+     * row rank matrix, m >= rank.
+     * A_pseudoinverse for A being full row rank = a^T*inverse(A*A^T).
+     * This particular pseudoinverse constitutes a right inverse.
+     * A*pseudoinv(A) = I.
+     * 
+     * @param a two dimensional array in row major format with dimensions
+     * m x n.  a is a full-rank matrix.
+     * a is a non-singular matrix(i.e. has exactly one solution). 
+     * 
+     * @return matrix of size [a[0].length][a.length]
+     * @throws NotConvergedException 
+     */
+    public static double[][] pseudoinverseFullRowRank(double[][] a) throws NotConvergedException {
+        int m = a.length;
+        int n = a[0].length;
+        
+        // limit for a number to be significant above 0 (precision of computer)
+        double eps = 1e-16;
+        
+        //A^T(AA^T)^-1
+        double[][] _aT = MatrixUtil.transpose(a);
+        double[][] _aAT = MatrixUtil.multiply(a, _aT);
+        DenseMatrix aAT = new DenseMatrix(_aAT);
+        
+        DenseMatrix I = Matrices.identity(_aAT[0].length);
+        DenseMatrix placeholder = I.copy();
+             
+        // the pseudoinverse needs (A*A^T)^-1:
+                
+        // matlab and other matrix notation uses left division symbol in this way:
+        //     x = A\B solves the system of linear equations A*x = B for x.
+        //        can substitute A = A^T*A,   X = (A^T*A)^-1,   B = I
+        //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
+        try {
+             DenseMatrix aATI = (DenseMatrix)aAT.solve(I, placeholder);
+             double[][] _aATI = MatrixUtil.convertToRowMajor(aATI);
+            // _pseudoinverse = inverse(A^T*A) * A^T
+            double[][] inv = MatrixUtil.multiply(_aT, _aATI);
             return inv;
         } catch (no.uib.cipr.matrix.MatrixSingularException ex) {
             return pseudoinverseRankDeficient(a, false);
@@ -1555,7 +1609,7 @@ public class MatrixUtil {
     /**
      * create matrix A^T*A then perform SVD on it.  NOTE that the singular values
      * returned in S will have the square of values of SVD(A).s.
-     * @param a
+     * @param a the matrix a (internally, a^T*a will be calculated and used)
      * @return
      * @throws NotConvergedException 
      */
@@ -2763,7 +2817,7 @@ public class MatrixUtil {
         
         // A_pseudoinverse = inverse(A^T*A) * A^T 
         // [a[0].length][a.length]
-        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullRank(a);
+        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);
         
         pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);
         
