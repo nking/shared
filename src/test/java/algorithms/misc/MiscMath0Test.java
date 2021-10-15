@@ -379,74 +379,6 @@ public class MiscMath0Test extends TestCase {
         assertEquals(-3.f, min);
     }
     
-    public void testCalcQuartilesTest_float() {
-        
-        // 0 1 2  4 4 4  4 6 8  12 12 16
-        //   3      12     18      40
-        //  3/73    ...
-        
-        float[] a = new float[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
-        
-        float[] expected = new float[]{
-            3.f/73.f, 12.f/73.f, 18.f/73.f, 40.f/73.f};
-    
-        float[] b = MiscMath0.calcQuartiles(a, true);
-        
-        assertTrue(Arrays.equals(b, expected));
-        
-        a = new float[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
-        
-        b = MiscMath0.calcQuartiles(a, false);
-        
-        assertTrue(Arrays.equals(b, expected));
-    }
-    
-    public void testCalcQuartilesTest_double() {
-        
-        // 0 1 2  4 4 4  4 6 8  12 12 16
-        //   3      12     18      40
-        //  3/73    ...
-        
-        double[] a = new double[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
-        
-        double[] expected = new double[]{
-            3./73., 12./73., 18./73., 40./73.};
-    
-        double[] b = MiscMath0.calcQuartiles(a, true);
-        
-        assertTrue(Arrays.equals(b, expected));
-        
-        a = new double[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
-        
-        b = MiscMath0.calcQuartiles(a, false);
-        
-        assertTrue(Arrays.equals(b, expected));
-    }
-    
-    public void testCalcQuartilesTest_int() {
-        
-        // 0 1 2  4 4 4  4 6 8  12 12 16
-        //   3      12     18      40
-        //  3/73    ...
-        
-        float norm = 73.f;
-        
-        int[] a = new int[]{0, 1, 2, 4, 4, 4, 4, 6, 8, 12, 12, 16};
-        
-        float[] expected = new float[]{
-            (3.f/73.f), (12.f/73.f), (18.f/73.f), (40.f/73.f)};
-    
-        float[] b = MiscMath0.calcQuartiles(a, true);
-        
-        assertTrue(Arrays.equals(b, expected));
-        
-        a = new int[]{4, 4, 4, 4, 0, 1, 2, 6, 8, 12, 12, 16};
-        
-        b = MiscMath0.calcQuartiles(a, false);
-        
-        assertTrue(Arrays.equals(b, expected));
-    }
-    
     public void testMean() {
         
         double[] data;
@@ -783,5 +715,59 @@ public class MiscMath0Test extends TestCase {
         int expResult = 1;
         long result = MiscMath0.modularExponentiation(a, b, n);
         assertTrue(expResult == result);
+    }
+    
+    public void testMAD() {
+        // test from https://en.m.wikipedia.org/wiki/Median_absolute_deviation
+        double[] x = new double[]{1, 1, 2, 2, 4, 6, 9};
+        double[] mad = MiscMath0.calculateMedianOfAbsoluteDeviation(x);
+        double tol = 1e-3;
+        double expectedMAD = 1;
+        double expectedMedian = 2;
+        double expectedMin = 1;
+        double expectedMax = 9;
+        assertTrue(Math.abs(mad[0] - expectedMAD) < tol);
+        assertTrue(Math.abs(mad[1] - expectedMedian) < tol);
+        assertTrue(Math.abs(mad[2] - expectedMin) < tol);
+        assertTrue(Math.abs(mad[3] - expectedMax) < tol);
+    }
+    
+    public void testQuartiles() {
+        // test is from https://en.m.wikipedia.org/wiki/Interquartile_range
+        double[] x = new double[]{
+            7, 7, 31, 31, 47, 75, 87, 115, 116, 119, 119, 155, 177
+        };
+        
+        double[] expected = new double[]{
+            31, 87, 119, 7, 177
+        };
+        // returns q1, q2, q3, min, max
+        double[] q = MiscMath0.calculateQuartiles(x);
+        
+        assertEquals(expected.length, q.length);
+        
+        double tol = 1e-16;
+        for (int i = 0; i < q.length; ++i) {
+            assertTrue(Math.abs(expected[i] - q[i]) < tol);
+        }
+        
+        // test tukey while at it
+        // iqr= 119 - 31 = 88.
+        // r0 = 31 - k*88 = 13.4
+        // r1 = 119 + k*88 = 136.6
+        
+        int[] expectedInliers;
+        int n = x.length;
+        
+        double k = 0.2; // very low value just for tests
+        expectedInliers = new int[]{2, 3, 4, 5, 6, 7, 8, 9, 10};
+        
+        int[] inliers = MiscMath0.findInliersUsingTukeyFences(x, k);
+        
+        assertEquals(expectedInliers.length, inliers.length);
+        
+        for (int i = 0; i < q.length; ++i) {
+            assertTrue(Math.abs(expectedInliers[i] - inliers[i]) < tol);
+        }
     }
 }
