@@ -753,8 +753,8 @@ public class MiscMath0Test extends TestCase {
         
         // test tukey while at it
         // iqr= 119 - 31 = 88.
-        // r0 = 31 - k*88 = 13.4
-        // r1 = 119 + k*88 = 136.6
+        // r0 = 31 - k*88 = 
+        // r1 = 119 + k*88;
         
         int[] expectedInliers;
         int n = x.length;
