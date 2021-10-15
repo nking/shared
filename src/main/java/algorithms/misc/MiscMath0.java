@@ -613,6 +613,127 @@ public class MiscMath0 {
     }
     
     /**
+     * calculate the quartiles Q1, Q2, and Q3 of x as
+     * <pre>
+     * x = ascending sort(x)
+     * n = x.length;
+     * Q1 = median of x[0] through x[n/2] which is x[n/4];
+     * Q2 = median of x = x[n/2];
+     * Q3 = median of x[n/2] through x[n-1] = x[(int)0.75*n];
+     * </pre>
+     * The IQR is Q3 - Q1;
+     * @param x
+     * @return an array holding Q1, Q2, Q3, min and max
+     */
+    public static double[] calculateQuartiles(double[] x) {
+        
+        x = Arrays.copyOf(x, x.length);
+        Arrays.sort(x);
+        
+        int n = x.length;
+        
+        double[] q = new double[]{
+            x[n/4], x[n/2], x[(int)(0.75*n)], x[0], x[n-1]
+        };
+        
+        return q;
+    }
+    
+    /**
+    uses Tukey fences to find inlier indexes in x with factor k=1.5
+    <pre>
+    calculated as
+       q = calculateQuartiles(x);
+       iqr = q[2]-q[0];
+       inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
+     * @param x
+     * @return 
+    */
+    public static int[] findInliersUsingTukeyFences(double[] x) {
+        return findInliersUsingTukeyFences(x, 1.5);
+    }
+    
+    /**
+    uses Tukey fences to find inlier indexes in x with factor k=3
+    <pre>
+    calculated as
+       q = calculateQuartiles(x);
+       iqr = q[2]-q[0];
+       inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
+     * @param x
+     * @return 
+    */
+    public static int[] findFarInliersUsingTukeyFences(double[] x) {
+        return findInliersUsingTukeyFences(x, 3);
+    }
+    
+    /**
+    uses Tukey fences to find inlier indexes in x.
+    <pre>
+    calculated as
+       q = calculateQuartiles(x);
+       iqr = q[2]-q[0];
+       inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
+     * @param x
+     * @param k
+     * @return 
+    */
+    public static int[] findInliersUsingTukeyFences(double[] x, double k) {
+        // from https://en.m.wikipedia.org/wiki/Outlier
+        double[] q = calculateQuartiles(x);
+        int n = x.length;
+        int[] inlierIndexes = new int[n];
+        int i;
+        int count = 0;
+        double iqr = q[2] - q[0];
+        double r0 = q[0] - k*iqr;
+        double r1 = q[2] + k*iqr;
+        for (i = 0; i < n; ++i) {
+            if (x[i] >= r0 && x[i] <= r1) {
+                inlierIndexes[count] = i;
+                count++;
+            }
+        }
+        return Arrays.copyOf(inlierIndexes, count);
+    }
+    
+    /**
+     * calculate the median of absolute deviation (MAD) as
+     * <pre>
+     *  absDev_i = abs(x_i - median(x))
+        mad = median( absDev)
+     * </pre>
+     * and returns the median, followed by the median of absolute deviation.
+     * to use the MAD as one uses standard deviation in determining outliers,
+     * use stDev = k*MAD where k is a constant scale factor.  
+     * For gaussian k~1.4826.
+       Then and outlier is outside the range [median - 3*MAD, median + 3*MAD].
+     * @param x
+     * @return an array holding the median of absolute deviation of x, 
+     * the median, the min, and the max.
+     */
+    public static double[] calculateMedianOfAbsoluteDeviation(double[] x) {
+        
+        x = Arrays.copyOf(x, x.length);
+        Arrays.sort(x);
+        
+        int n = x.length;
+        
+        double median = x[n/2];
+        
+        double[] d = new double[n];
+        
+        int i;
+        for (i = 0; i < n; ++i) {
+            d[i] = Math.abs(x[i] - median);
+        }
+        
+        Arrays.sort(d);
+        
+        return new double[]{d[n/2], median, x[0], x[n-1]};
+    }
+    
+    /**
      * calculate the median and the interquartile range
      * @param x
      * @return 
@@ -843,108 +964,6 @@ public class MiscMath0 {
         
         return rev;
         
-    }
-    
-    public static float[] calcQuartiles(int[] a, boolean isSorted) {
-        
-        if (!isSorted) {
-            a = Arrays.copyOf(a, a.length);
-            Arrays.sort(a);
-        }
-        
-        int n = a.length;
-        float t25 = (float)n/4.f;
-        float t50 = (float)n/2.f;
-        float t75 = (float)n*3.f/4.f;
-        
-        float norm = 0;
-        float[] sums = new float[4];    
-        for (int i = 0; i < n; ++i) {
-            if (i < t25) {
-                sums[0] += a[i];
-            } else if (i < t50) {
-                sums[1] += a[i];
-            } else if (i < t75) {
-                sums[2] += a[i];
-            } else {
-                sums[3] += a[i];
-            }
-            norm += a[i];
-        }
-        
-        for (int i = 0; i < sums.length; ++i) {
-            sums[i] = (float)sums[i]/norm;
-        }
-        
-        return sums;
-    }
-    
-    public static float[] calcQuartiles(float[] a, boolean isSorted) {
-        
-        if (!isSorted) {
-            a = Arrays.copyOf(a, a.length);
-            Arrays.sort(a);
-        }
-        
-        int n = a.length;
-        float norm = 0;
-        float t25 = (float)n/4.f;
-        float t50 = (float)n/2.f;
-        float t75 = (float)n*3.f/4.f;
-        
-        float[] sums = new float[4];    
-        for (int i = 0; i < n; ++i) {
-            if (i < t25) {
-                sums[0] += a[i];
-            } else if (i < t50) {
-                sums[1] += a[i];
-            } else if (i < t75) {
-                sums[2] += a[i];
-            } else {
-                sums[3] += a[i];
-            }
-            norm += a[i];
-        }
-        
-        for (int i = 0; i < sums.length; ++i) {
-            sums[i] /= norm;
-        }
-        
-        return sums;
-    }
-    
-    public static double[] calcQuartiles(double[] a, boolean isSorted) {
-        
-        if (!isSorted) {
-            a = Arrays.copyOf(a, a.length);
-            Arrays.sort(a);
-        }
-        
-        int n = a.length;
-        double norm = 0;
-        float t25 = (float)n/4.f;
-        float t50 = (float)n/2.f;
-        float t75 = (float)n*3.f/4.f;
-        
-        double[] sums = new double[4];    
-        for (int i = 0; i < n; ++i) {
-            if (i < t25) {
-                sums[0] += a[i];
-            } else if (i < t50) {
-                sums[1] += a[i];
-            } else if (i < t75) {
-                sums[2] += a[i];
-            } else {
-                sums[3] += a[i];
-            }
-            norm += a[i];
-        }
-        
-        for (int i = 0; i < sums.length; ++i) {
-            sums[i] /= norm;
-        }
-        
-        return sums;
     }
     
        /**
