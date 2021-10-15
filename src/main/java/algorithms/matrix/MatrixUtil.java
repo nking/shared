@@ -1489,6 +1489,11 @@ public class MatrixUtil {
     public static class SVDProducts {
         
         /**
+         * the rank of the input matrix
+         */
+        public int rank;
+        
+        /**
          * given A as an mxn matrix, u is orthogonal column vectors in a matrix of size mxm.
          * These are eigenvectors of A as columns ordered by the eigenvalues s.
          */
@@ -1599,10 +1604,18 @@ public class MatrixUtil {
             svd = SVD.factorize(new DenseMatrix(aaT));
             u = svd.getU();
         }
+        int rank = 0;
+        double eps = 1E-15;
+        for (double sv : svd.getS()) {
+            if (sv > eps) {
+                rank++;
+            }
+        }
         SVDProducts out = new SVDProducts();
         out.u = (u != null) ? MatrixUtil.convertToRowMajor(u) : null;
         out.vT = (vT != null) ? MatrixUtil.convertToRowMajor(vT) : null;
         out.s = sDiag;
+        out.rank = rank;
         return out;
     }
     
@@ -1996,13 +2009,50 @@ public class MatrixUtil {
             throw new IllegalArgumentException("v.length must be 3");
         }
         
-        
         double[][] out = new double[3][3];
+        skewSymmetric(v, out);
+        return out;
+    }
+    
+    /**
+     * constructs the 3x3 skew-symmetric matrices for use in cross products,
+     * notation is [v]_x.
+     * v cross product with w is v X w = [v]_x * w.
+     * It’s individual terms are a_j_i = -a_i_j.
+       <pre>
+       |    0   -v[2]   v[1] |
+       |  v[2]    0    -v[0] |
+       | -v[1]  v[0]      0  |
+       
+       Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
+       </pre>
+     * @param v
+     * @param out 
+     */
+    public static void skewSymmetric(double[] v, double[][] out) {
+        if (v.length != 3) { 
+            throw new IllegalArgumentException("v.length must be 3");
+        }
+        if (out.length != 3 || out[0].length != 3) { 
+            throw new IllegalArgumentException("out must be 3X3");
+        }
+        
+        /*
         out[0] = new double[]{0,     -v[2],  v[1]};
         out[1] = new double[]{v[2],     0,  -v[0]};
         out[2] = new double[]{-v[1], v[0],    0};
+        */
         
-        return out;
+        out[0][0] = 0;
+        out[0][1] = -v[2];
+        out[0][2] = v[1];
+        out[1][0] = v[2];
+        out[1][1] = 0;
+        out[1][2] = -v[0];
+        out[2][0] = -v[1];
+        out[2][1] = v[0];
+        out[2][2] = 0;
+        
     }
     
     public static double[] crossProduct(double[] p0, double[] p1) {
@@ -3207,6 +3257,26 @@ public class MatrixUtil {
         double[] out = new double[m];
         for (int i = 0; i < m; ++i) {
             out[i] = a[i] * b[i];
+        }
+        return out;
+    }
+    
+    /**
+     * dot product, summation_over_i(a[i]*b[i])
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static double dot(double[] a, double[] b) {
+        int m = a.length;
+        
+        if (b.length != m) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        double out = 0;
+        for (int i = 0; i < m; ++i) {
+            out += a[i] * b[i];
         }
         return out;
     }
