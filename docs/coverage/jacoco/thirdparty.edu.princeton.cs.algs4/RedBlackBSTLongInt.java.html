@@ -432,16 +432,16 @@ key, left or right field.
 <span class="fc bfc" id="L432" title="All 2 branches covered.">            if (isRed(h.left)) {</span>
 <span class="fc" id="L433">                h = rotateRight(h);</span>
             }
-<span class="fc bfc" id="L435" title="All 4 branches covered.">            if (key == h.key &amp;&amp; (h.right == null)) {</span>
+<span class="pc bpc" id="L435" title="1 of 4 branches missed.">            if (key == h.key &amp;&amp; (h.right == null)) {</span>
 <span class="fc" id="L436">                return null;</span>
             }
 <span class="fc bfc" id="L438" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left)) {</span>
 <span class="fc" id="L439">                h = moveRedRight(h);</span>
             }
             //System.out.println(&quot;key=&quot; + key + &quot; h.key=&quot; + h.key);
-<span class="fc bfc" id="L442" title="All 2 branches covered.">            if (key == h.key) {</span>
+<span class="pc bpc" id="L442" title="1 of 2 branches missed.">            if (key == h.key) {</span>
                 
-<span class="fc" id="L444">                Node x = min(h.right);</span>
+<span class="nc" id="L444">                Node x = min(h.right);</span>
                 
                 //System.out.println(
                 //    &quot;   x to get h fields except val. &quot; + 
@@ -449,17 +449,17 @@ key, left or right field.
                 //    + &quot;\n   h=&quot; + h.toString(findParent(h))
                 //);
                 
-<span class="fc" id="L452">                h.key = x.key;</span>
-<span class="fc" id="L453">                h.val = x.val;</span>
+<span class="nc" id="L452">                h.key = x.key;</span>
+<span class="nc" id="L453">                h.val = x.val;</span>
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
                                 
-<span class="fc" id="L457">                h.right = deleteMin(h.right);</span>
+<span class="nc" id="L457">                h.right = deleteMin(h.right);</span>
                 
                 //System.out.println(&quot;   after deleteMin x =&quot; + 
                 //    h.toString(findParent(h)));
               
-<span class="fc" id="L462">            } else {</span>
+<span class="nc" id="L462">            } else {</span>
 <span class="fc" id="L463">                h.right = delete(h.right, key);</span>
             }
         }

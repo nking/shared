@@ -344,7 +344,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         // assert get(h, key) != null;
 
 <span class="fc bfc" id="L346" title="All 2 branches covered.">        if (key.compareTo(h.key) &lt; 0)  {</span>
-<span class="fc bfc" id="L347" title="All 4 branches covered.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
+<span class="pc bpc" id="L347" title="1 of 4 branches missed.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
 <span class="fc" id="L348">                h = moveRedLeft(h);</span>
 <span class="fc" id="L349">            h.left = delete(h.left, key);</span>
         }
