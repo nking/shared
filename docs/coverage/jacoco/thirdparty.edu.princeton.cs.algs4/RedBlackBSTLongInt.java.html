@@ -330,7 +330,7 @@ key, left or right field.
 <span class="pc bpc" id="L330" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L333" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L333" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L334">            root.color = RED;</span>
 
 <span class="fc" id="L336">        root = deleteMin(root);</span>
@@ -409,7 +409,7 @@ key, left or right field.
 <span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L412" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L412" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L413">            root.color = RED;</span>
 
 <span class="fc" id="L415">        root = delete(root, key);</span>

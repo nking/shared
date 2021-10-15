@@ -175,7 +175,7 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc bfc" id="L175" title="All 2 branches covered.">		while (v != null) {</span>
 <span class="fc bfc" id="L176" title="All 4 branches covered.">			if ((v.child[left] == null </span>
 	        	&amp;&amp; (v.jump == null ||
-<span class="fc bfc" id="L178" title="All 8 branches covered.">                it.intValue(v.jump.x) &gt; ix))</span>
+<span class="pc bpc" id="L178" title="1 of 8 branches missed.">                it.intValue(v.jump.x) &gt; ix))</span>
 			|| (v.child[right] == null 
 	    		&amp;&amp; (v.jump == null || 
 <span class="fc bfc" id="L181" title="All 2 branches covered.">                (v.jump.x != null &amp;&amp; it.intValue(v.jump.x) &lt; ix))</span>
