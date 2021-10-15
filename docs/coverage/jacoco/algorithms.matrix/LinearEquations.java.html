@@ -551,7 +551,7 @@ import no.uib.cipr.matrix.NotConvergedException;
 <span class="fc bfc" id="L551" title="All 2 branches covered.">        if (solveFullRank) {</span>
             //AX=b has no solution
             //using A_pseudoinverse = inverse(A^T*A) * A^T
-<span class="fc" id="L554">            aPInv = MatrixUtil.pseudoinverseFullRank(a);</span>
+<span class="fc" id="L554">            aPInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
         } else {
             // uses SVD of a in pseudo-inverse
             // Note that if A^-1 exists, then the pseudo-inverse of A is equal to the

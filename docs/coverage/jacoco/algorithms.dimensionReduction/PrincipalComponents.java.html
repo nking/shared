@@ -13,9 +13,46 @@ import no.uib.cipr.matrix.SVD;
  * of vectors of samples following G. Strang's SVD in machine learning in
  * http://www.cs.toronto.edu/~jepson/csc420/
  * 
+ * from wikipedia:
+ * The principal components of a collection of points in a real coordinate space 
+ * are a sequence of p unit vectors, where the i-th vector is the direction of 
+ * a line that best fits the data while being orthogonal to the first i-1 vectors. 
+ * Here, a best-fitting line is defined as one that minimizes the average 
+ * squared distance from the points to the line. These directions constitute an 
+ * orthonormal basis in which different individual dimensions of the data are 
+ * linearly uncorrelated. Principal component analysis (PCA) is the process of 
+ * computing the principal components and using them to perform a change of basis 
+ * on the data, sometimes using only the first few principal components and 
+ * ignoring the rest.
+ * 
+ * from wikipedia:
+ * 
+ * PCA is closely related to Fisher's Discriminant Anaylsisi a.k.a. 
+ * Linear Discriminant analysis and factor analysis in that they both look for 
+ * linear combinations of variables which best explain the data.[4] 
+ * LDA explicitly attempts to model the difference between the classes of data. 
+ * PCA, in contrast, does not take into account any difference in class, 
+ * and factor analysis builds the feature combinations based on differences 
+ * rather than similarities.
+ * NOTE:  Fisher's original article[1] actually describes a slightly different 
+ * discriminant, which does not make some of the assumptions of LDA such as 
+ * normally distributed classes or equal class covariances.
+ * 
+ * LDA is closely related to analysis of variance (ANOVA) and regression analysis, 
+ * which also attempt to express one dependent variable as a linear combination 
+ * of other features or measurements.[1][2] However, ANOVA uses categorical 
+ * independent variables and a continuous dependent variable, whereas 
+ * discriminant analysis has continuous independent variables and a categorical 
+ * dependent variable (i.e. the class label).[3] Logistic regression and 
+ * probit regression are more similar to LDA than ANOVA is, as they also 
+ * explain a categorical variable by the values of continuous independent 
+ * variables. These other methods are preferable in applications where it is 
+ * not reasonable to assume that the independent variables are normally 
+ * distributed, which is a fundamental assumption of the LDA method.
+ * 
  * @author nichole
  */
-<span class="pc bpc" id="L18" title="1 of 2 branches missed.">public class PrincipalComponents {</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">public class PrincipalComponents {</span>
     
     /**
      * calculate the principal components of the unit standardized data x
@@ -49,15 +86,15 @@ import no.uib.cipr.matrix.SVD;
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
                 
-<span class="fc" id="L52">        int n = x.length;</span>
-<span class="fc" id="L53">        int nDimensions = x[0].length;</span>
+<span class="fc" id="L89">        int n = x.length;</span>
+<span class="fc" id="L90">        int nDimensions = x[0].length;</span>
         
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (nComponents &gt; nDimensions) {</span>
-<span class="nc" id="L56">            throw new IllegalArgumentException(&quot;x has &quot; + nDimensions + &quot; but &quot; </span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (nComponents &gt; nDimensions) {</span>
+<span class="nc" id="L93">            throw new IllegalArgumentException(&quot;x has &quot; + nDimensions + &quot; but &quot; </span>
                 + &quot; nComponents principal components were requested.&quot;);
         }
         
-<span class="fc" id="L60">        double eps = 1.e-15;</span>
+<span class="fc" id="L97">        double eps = 1.e-15;</span>
            
         /*
         NOTE that the Strang approach does not assume the data has been
@@ -82,51 +119,51 @@ import no.uib.cipr.matrix.SVD;
            the 1st principal direction is the 1st column of U.
         */
     
-<span class="fc" id="L85">        double[][] cov = BruteForce.covariance(x);</span>
-<span class="pc bpc" id="L86" title="3 of 4 branches missed.">        assert(nDimensions == cov.length);</span>
-<span class="pc bpc" id="L87" title="3 of 4 branches missed.">        assert(nDimensions == cov[0].length);</span>
+<span class="fc" id="L122">        double[][] cov = BruteForce.covariance(x);</span>
+<span class="pc bpc" id="L123" title="3 of 4 branches missed.">        assert(nDimensions == cov.length);</span>
+<span class="pc bpc" id="L124" title="3 of 4 branches missed.">        assert(nDimensions == cov[0].length);</span>
                         
         //NOTE: we know that cov is symmetric positive definite, so there are
         //   many operations special to it one could explore for diagonalization
         
-<span class="fc" id="L92">        SVD svd = SVD.factorize(new DenseMatrix(cov));</span>
+<span class="fc" id="L129">        SVD svd = SVD.factorize(new DenseMatrix(cov));</span>
         // U is mxm
         // S is mxn
         // V is nxn
         
-<span class="fc" id="L97">        double[] s = svd.getS();</span>
+<span class="fc" id="L134">        double[] s = svd.getS();</span>
         
-<span class="fc" id="L99">        int rank = 0;</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (int i = 0; i &lt; s.length; ++i) {</span>
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
-<span class="fc" id="L102">                rank++;</span>
+<span class="fc" id="L136">        int rank = 0;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (int i = 0; i &lt; s.length; ++i) {</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="fc" id="L139">                rank++;</span>
             }
         }
         
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (nComponents &gt; rank) {</span>
-<span class="nc" id="L107">            nComponents = rank;</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        if (nComponents &gt; rank) {</span>
+<span class="nc" id="L144">            nComponents = rank;</span>
         }
         
         //eigenvalue_i = lambda_i = (s_i^2)/(n-1)
-<span class="fc" id="L111">        double[] eV = Arrays.copyOf(s, rank);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        for (int i = 0; i &lt; eV.length; ++i) {</span>
-<span class="fc" id="L113">            eV[i] *= eV[i];</span>
-<span class="fc" id="L114">            eV[i] /= ((double)n - 1.);</span>
+<span class="fc" id="L148">        double[] eV = Arrays.copyOf(s, rank);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        for (int i = 0; i &lt; eV.length; ++i) {</span>
+<span class="fc" id="L150">            eV[i] *= eV[i];</span>
+<span class="fc" id="L151">            eV[i] /= ((double)n - 1.);</span>
         }
         
         // COLUMNS of u are the principal axes, a.k.a. principal directions
         // size is nDimensions x nDimensions
-<span class="fc" id="L119">        DenseMatrix u = svd.getU();</span>
-<span class="pc bpc" id="L120" title="3 of 4 branches missed.">        assert(nDimensions == u.numRows());</span>
-<span class="pc bpc" id="L121" title="3 of 4 branches missed.">        assert(nDimensions == u.numColumns());</span>
+<span class="fc" id="L156">        DenseMatrix u = svd.getU();</span>
+<span class="pc bpc" id="L157" title="3 of 4 branches missed.">        assert(nDimensions == u.numRows());</span>
+<span class="pc bpc" id="L158" title="3 of 4 branches missed.">        assert(nDimensions == u.numColumns());</span>
                      
         // extract the nComponents columns of U as the principal axes, a.k.a. 
         //  principal directions.  array format: [nDimensions][nComponents]
-<span class="fc" id="L125">        double[][] pa = new double[u.numRows()][nComponents];                                </span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (int row = 0; row &lt; u.numRows(); ++row) {</span>
-<span class="fc" id="L127">            pa[row] = new double[nComponents];</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">            for (int col = 0; col &lt; nComponents; ++col) {</span>
-<span class="fc" id="L129">                pa[row][col] = u.get(row, col);</span>
+<span class="fc" id="L162">        double[][] pa = new double[u.numRows()][nComponents];                                </span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (int row = 0; row &lt; u.numRows(); ++row) {</span>
+<span class="fc" id="L164">            pa[row] = new double[nComponents];</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            for (int col = 0; col &lt; nComponents; ++col) {</span>
+<span class="fc" id="L166">                pa[row][col] = u.get(row, col);</span>
             }
         }
         
@@ -140,107 +177,107 @@ import no.uib.cipr.matrix.SVD;
         
         // principal components are the projections of the principal axes on U
         //   the &quot;1 sigma&quot; lengths are:
-<span class="fc" id="L143">        double[][] projections = new double[pa.length][pa[0].length];</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int row = 0; row &lt; pa.length; ++row) {</span>
-<span class="fc" id="L145">            projections[row] = Arrays.copyOf(pa[row], pa[row].length);</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">            for (int col = 0; col &lt; pa[row].length; ++col) {</span>
+<span class="fc" id="L180">        double[][] projections = new double[pa.length][pa[0].length];</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (int row = 0; row &lt; pa.length; ++row) {</span>
+<span class="fc" id="L182">            projections[row] = Arrays.copyOf(pa[row], pa[row].length);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            for (int col = 0; col &lt; pa[row].length; ++col) {</span>
                 // note, if wanted &quot;3 sigma&quot; instead, use factor 3*s[col] here:
-<span class="fc" id="L148">                projections[row][col] *= s[col];</span>
+<span class="fc" id="L185">                projections[row][col] *= s[col];</span>
             }
         }
         
         // extract the first nComponents of rows of V^T:
-<span class="fc" id="L153">        double[][] v = MatrixUtil.convertToRowMajor(svd.getVt());</span>
-<span class="fc" id="L154">        v = MatrixUtil.copySubMatrix(v, 0, nComponents-1, 0, v[0].length-1);</span>
+<span class="fc" id="L190">        double[][] v = MatrixUtil.convertToRowMajor(svd.getVt());</span>
+<span class="fc" id="L191">        v = MatrixUtil.copySubMatrix(v, 0, nComponents-1, 0, v[0].length-1);</span>
         
-<span class="fc" id="L156">        PCAStats stats = new PCAStats();</span>
-<span class="fc" id="L157">        stats.nComponents = nComponents;</span>
-<span class="fc" id="L158">        stats.principalDirections = pa;</span>
-<span class="fc" id="L159">        stats.eigenvalues = eV;</span>
-<span class="fc" id="L160">        stats.vTP = v;</span>
+<span class="fc" id="L193">        PCAStats stats = new PCAStats();</span>
+<span class="fc" id="L194">        stats.nComponents = nComponents;</span>
+<span class="fc" id="L195">        stats.principalDirections = pa;</span>
+<span class="fc" id="L196">        stats.eigenvalues = eV;</span>
+<span class="fc" id="L197">        stats.vTP = v;</span>
         
-<span class="fc" id="L162">        stats.s = new double[nComponents];</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (int i = 0; i &lt; nComponents; ++i) {</span>
-<span class="fc" id="L164">            stats.s[i] = s[i];</span>
+<span class="fc" id="L199">        stats.s = new double[nComponents];</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (int i = 0; i &lt; nComponents; ++i) {</span>
+<span class="fc" id="L201">            stats.s[i] = s[i];</span>
         }
                 
-<span class="fc" id="L167">        double total = 0;</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int j = 0; j &lt; rank; ++j) {</span>
-<span class="fc" id="L169">            total += s[j];</span>
+<span class="fc" id="L204">        double total = 0;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (int j = 0; j &lt; rank; ++j) {</span>
+<span class="fc" id="L206">            total += s[j];</span>
         }
-<span class="fc" id="L171">        double[] fracs = new double[rank];</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (int j = 0; j &lt; rank; ++j) {</span>
-<span class="fc" id="L173">            fracs[j] = s[j]/total;</span>
+<span class="fc" id="L208">        double[] fracs = new double[rank];</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        for (int j = 0; j &lt; rank; ++j) {</span>
+<span class="fc" id="L210">            fracs[j] = s[j]/total;</span>
         }
-<span class="fc" id="L175">        double[] c = Arrays.copyOf(fracs, fracs.length);</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (int j = 1; j &lt; c.length; ++j) {</span>
-<span class="fc" id="L177">            c[j] += c[j-1];</span>
+<span class="fc" id="L212">        double[] c = Arrays.copyOf(fracs, fracs.length);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (int j = 1; j &lt; c.length; ++j) {</span>
+<span class="fc" id="L214">            c[j] += c[j-1];</span>
         }
-<span class="fc" id="L179">        stats.cumulativeProportion = c;</span>
+<span class="fc" id="L216">        stats.cumulativeProportion = c;</span>
         
-<span class="fc" id="L181">        double sum = 0;</span>
+<span class="fc" id="L218">        double sum = 0;</span>
         int p;
-<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (int j = (nComponents+1); j &lt;= nDimensions; ++j) {</span>
-<span class="fc" id="L184">            p = j - 1;</span>
-<span class="fc" id="L185">            sum += s[p];</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        for (int j = (nComponents+1); j &lt;= nDimensions; ++j) {</span>
+<span class="fc" id="L221">            p = j - 1;</span>
+<span class="fc" id="L222">            sum += s[p];</span>
         }
-<span class="fc" id="L187">        stats.ssdP = sum;</span>
-<span class="fc" id="L188">        stats.fractionVariance = (total - sum)/total;</span>
+<span class="fc" id="L224">        stats.ssdP = sum;</span>
+<span class="fc" id="L225">        stats.fractionVariance = (total - sum)/total;</span>
         
-<span class="fc" id="L190">        System.out.println(&quot;singular values of SVD(cov) = sqrts of eigenvalues of cov = &quot;);</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        for (int i = 0; i &lt; rank; ++i) {</span>
-<span class="fc" id="L192">            System.out.printf(&quot;%11.3e  &quot;, s[i]);</span>
+<span class="fc" id="L227">        System.out.println(&quot;singular values of SVD(cov) = sqrts of eigenvalues of cov = &quot;);</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (int i = 0; i &lt; rank; ++i) {</span>
+<span class="fc" id="L229">            System.out.printf(&quot;%11.3e  &quot;, s[i]);</span>
         }
-<span class="fc" id="L194">        System.out.println();</span>
-<span class="fc" id="L195">        System.out.println(&quot;eigenvalues of cov = &quot;);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (int i = 0; i &lt; eV.length; ++i) {</span>
-<span class="fc" id="L197">            System.out.printf(&quot;%11.3e  &quot;, eV[i]);</span>
+<span class="fc" id="L231">        System.out.println();</span>
+<span class="fc" id="L232">        System.out.println(&quot;eigenvalues of cov = &quot;);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        for (int i = 0; i &lt; eV.length; ++i) {</span>
+<span class="fc" id="L234">            System.out.printf(&quot;%11.3e  &quot;, eV[i]);</span>
         }
-<span class="fc" id="L199">        System.out.println();</span>
-<span class="fc" id="L200">        System.out.println(&quot;U of SVD(cov) = &quot;);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">        for (int i = 0; i &lt; u.numRows(); ++i) {</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">            for (int j = 0; j &lt; u.numColumns(); ++j) {</span>
-<span class="fc" id="L203">                System.out.printf(&quot;%12.5e  &quot;, u.get(i, j));</span>
+<span class="fc" id="L236">        System.out.println();</span>
+<span class="fc" id="L237">        System.out.println(&quot;U of SVD(cov) = &quot;);</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        for (int i = 0; i &lt; u.numRows(); ++i) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">            for (int j = 0; j &lt; u.numColumns(); ++j) {</span>
+<span class="fc" id="L240">                System.out.printf(&quot;%12.5e  &quot;, u.get(i, j));</span>
             }
-<span class="fc" id="L205">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L242">            System.out.printf(&quot;\n&quot;);</span>
         }
-<span class="fc" id="L207">        System.out.println(&quot;V_p of SVD(cov) = &quot;);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">        for (int i = 0; i &lt; v.length; ++i) {</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">            for (int j = 0; j &lt; v[i].length; ++j) {</span>
-<span class="fc" id="L210">                System.out.printf(&quot;%12.5e  &quot;, v[i][j]);</span>
+<span class="fc" id="L244">        System.out.println(&quot;V_p of SVD(cov) = &quot;);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        for (int i = 0; i &lt; v.length; ++i) {</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">            for (int j = 0; j &lt; v[i].length; ++j) {</span>
+<span class="fc" id="L247">                System.out.printf(&quot;%12.5e  &quot;, v[i][j]);</span>
             }
-<span class="fc" id="L212">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L249">            System.out.printf(&quot;\n&quot;);</span>
         }
         
-<span class="fc" id="L215">        System.out.println(&quot;eigenvalue fractions of total = &quot;);</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">        for (int i = 0; i &lt; fracs.length; ++i) {</span>
-<span class="fc" id="L217">            System.out.printf(&quot;%11.3e  &quot;, fracs[i]);</span>
+<span class="fc" id="L252">        System.out.println(&quot;eigenvalue fractions of total = &quot;);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (int i = 0; i &lt; fracs.length; ++i) {</span>
+<span class="fc" id="L254">            System.out.printf(&quot;%11.3e  &quot;, fracs[i]);</span>
         }
-<span class="fc" id="L219">        System.out.println();</span>
-<span class="fc" id="L220">        System.out.println(&quot;eigenvalue cumulativeProportion= &quot;);</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">        for (int i = 0; i &lt; stats.cumulativeProportion.length; ++i) {</span>
-<span class="fc" id="L222">            System.out.printf(&quot;%11.3e  &quot;, stats.cumulativeProportion[i]);</span>
+<span class="fc" id="L256">        System.out.println();</span>
+<span class="fc" id="L257">        System.out.println(&quot;eigenvalue cumulativeProportion= &quot;);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        for (int i = 0; i &lt; stats.cumulativeProportion.length; ++i) {</span>
+<span class="fc" id="L259">            System.out.printf(&quot;%11.3e  &quot;, stats.cumulativeProportion[i]);</span>
         }
-<span class="fc" id="L224">        System.out.println();</span>
+<span class="fc" id="L261">        System.out.println();</span>
         
-<span class="fc" id="L226">        System.out.println(&quot;principal directions= &quot;);</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (int i = 0; i &lt; stats.principalDirections.length; ++i) {</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">            for (int j = 0; j &lt; stats.principalDirections[i].length; ++j) {</span>
-<span class="fc" id="L229">                System.out.printf(&quot;%12.5e  &quot;, stats.principalDirections[i][j]);</span>
+<span class="fc" id="L263">        System.out.println(&quot;principal directions= &quot;);</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        for (int i = 0; i &lt; stats.principalDirections.length; ++i) {</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">            for (int j = 0; j &lt; stats.principalDirections[i].length; ++j) {</span>
+<span class="fc" id="L266">                System.out.printf(&quot;%12.5e  &quot;, stats.principalDirections[i][j]);</span>
             }
-<span class="fc" id="L231">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L268">            System.out.printf(&quot;\n&quot;);</span>
         }
-<span class="fc" id="L233">        System.out.println(&quot;principal projections (=u_p*s)=&quot;);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">        for (int i = 0; i &lt; projections.length; ++i) {</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">            for (int j = 0; j &lt; projections[i].length; ++j) {</span>
-<span class="fc" id="L236">                System.out.printf(&quot;%11.3e  &quot;, projections[i][j]);</span>
+<span class="fc" id="L270">        System.out.println(&quot;principal projections (=u_p*s)=&quot;);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        for (int i = 0; i &lt; projections.length; ++i) {</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">            for (int j = 0; j &lt; projections[i].length; ++j) {</span>
+<span class="fc" id="L273">                System.out.printf(&quot;%11.3e  &quot;, projections[i][j]);</span>
             }
-<span class="fc" id="L238">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L275">            System.out.printf(&quot;\n&quot;);</span>
         }
         
-<span class="fc" id="L241">        System.out.flush();</span>
+<span class="fc" id="L278">        System.out.flush();</span>
         
-<span class="fc" id="L243">        return stats;</span>
+<span class="fc" id="L280">        return stats;</span>
     }
     
     /**
@@ -269,10 +306,10 @@ import no.uib.cipr.matrix.SVD;
         then the reconstruction is r(⃗a ) = m⃗ + U ⃗a 
         */
        
-<span class="fc" id="L272">        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);</span>
-<span class="fc" id="L273">        b = MatrixUtil.multiply(b, stats.vTP);</span>
+<span class="fc" id="L309">        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);</span>
+<span class="fc" id="L310">        b = MatrixUtil.multiply(b, stats.vTP);</span>
         
-<span class="fc" id="L275">        return b;</span>
+<span class="fc" id="L312">        return b;</span>
     }
     
     public static class PCAStats {

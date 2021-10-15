@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FindAllBridgesDFS.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">FindAllBridgesDFS.java</span></div><h1>FindAllBridgesDFS.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.sort.MiscSorter;
+import algorithms.util.PairIntArray;
+import algorithms.util.SimpleLinkedListNode;
+import java.util.Arrays;
+
+/**
+ * Find all bridges using DFS.
+ * 
+ * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming that u is the parent of v) there is no back edge within v’s subtree that leads to a vertex whose discovery time is strictly smaller than v’s discovery time.
+ * 
+   definitions:
+   Bridge is any edge whose removal results in a disconnected graph.
+   tree edges connect a parent with its child in the DFS tree.
+   back edges connect a (non-parent) ancestor with a (non-child) descendant.
+   2-Edge Connected: A graph is 2-edge connected if it contains no bridges
+    
+   average runtime is approx O(|E|), worst case runtime: O(|V| + |E|)
+   worst case space needed: O(|V|).
+
+   References:
+     * &lt;pre&gt;
+     * lecture 4 notes of David Mount for CMSC 451 
+     * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
+     * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect04-edge-connectivity.pdf
+     * &lt;/pre&gt;
+* 
+* explanation:
+* Suppose that we are currently processing a vertex u in DFSvisit, and we see 
+* an edge (u,v) going to a neighbor v of u. 
+* If this edge is a back edge (that is, if v is an ancestor of u) 
+* then (u,v) cannot be a bridge, because the tree edges between u and v provide 
+* a second way to connect these vertices. Therefore, we may limit consideration 
+* to when (u,v) is a tree edge, that is, v has not yet been discovered, 
+* and so we will invoke DFSvisit(v). While we are doing this, we will keep 
+* track of the back edges in the subtree rooted at v.
+ *
+ * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming 
+ * that u is the parent of v) there is no back edge within v’s subtree that 
+ * leads to a vertex whose discovery time is strictly smaller than v’s 
+ * discovery time.
+ */
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">public class FindAllBridgesDFS {</span>
+
+    /**
+     * adjacency matrix with connected i-&gt;j indicated by the index and each
+     *    node in the linked list, respectively.
+     * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
+     */
+    protected final SimpleLinkedListNode[] g;
+
+    /** 
+     * holds state for whether a node has been visited.  0 = not visited,
+     * 1 = visiting now, 2 = was visited.
+    */
+    protected final int[] visited;
+
+    /**
+     * time when node is first discovered
+     */
+    protected final int[] td;
+
+    /**
+     * time when node's adjacency list has all been visited
+     */
+    protected final int[] tf;
+   
+    protected final int[] predecessor;
+    
+    /**
+     * Low[u] is the closest to the root that you can get in the tree by 
+     * taking any one back edge from either u or any of its descendants.
+     */
+    protected final int[] tdLow;
+
+<span class="fc" id="L77">    protected int time = 0;</span>
+    
+    /**
+     * @param directedEdges  adjacency matrix with connected i-&gt;j indicated 
+     * by the index and each node in the linked list, respectively.
+     * Note that the key of each node is expected to be the same as it's index
+     * in the adjacency matrix.
+     * For example, adjacent to node 3 is found via directedEdges[3] as all in 
+     * the linked list.
+     */
+<span class="fc" id="L87">    public FindAllBridgesDFS(SimpleLinkedListNode[] directedEdges) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (directedEdges == null) {</span>
+<span class="nc" id="L89">            throw new IllegalArgumentException(&quot;directedEdges cannot be null&quot;);</span>
+        }
+<span class="fc" id="L91">        g = directedEdges.clone();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L93">            g[i] = new SimpleLinkedListNode(directedEdges[i]);</span>
+        }
+<span class="fc" id="L95">        this.visited = new int[g.length];</span>
+<span class="fc" id="L96">        this.td = new int[g.length];</span>
+<span class="fc" id="L97">        this.tf = new int[g.length];</span>
+<span class="fc" id="L98">        this.predecessor = new int[g.length];</span>
+<span class="fc" id="L99">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L100">        this.tdLow = new int[g.length];</span>
+<span class="fc" id="L101">    }</span>
+
+    /**
+     * find all bridges using DFS.
+     * @return the bridges as (u, v) pairs of edges.
+     */
+    public PairIntArray walk() {
+        int u, v;
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (u = 0; u &lt; g.length; u++) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L111">                visit(u);</span>
+            }
+        }
+<span class="fc" id="L114">        PairIntArray b = new PairIntArray();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (v = 0; v &lt; g.length; v++) {</span>
+<span class="fc" id="L116">            u = predecessor[v];</span>
+<span class="fc bfc" id="L117" title="All 4 branches covered.">            if (u != -1 &amp;&amp; (td[v] == tdLow[v])) {</span>
+                // found a bridge
+<span class="fc" id="L119">                b.add(u, v);</span>
+            }
+        }
+<span class="fc" id="L122">        return b;</span>
+    }
+    
+    /**
+     * alterative pattern for walking code
+     */
+    void _walk(int[] vertexOrder) {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        for (int u : vertexOrder) {</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            if (visited[u] == 0) {</span>
+<span class="nc" id="L131">                visit(u);</span>
+            }
+        }
+<span class="nc" id="L134">    }</span>
+    
+    private void visit(int u) {
+        //System.out.println(&quot;load method frame for &quot; + u);
+        
+<span class="fc" id="L139">        visited[u] = 1;</span>
+<span class="fc" id="L140">        time++;</span>
+        //System.out.println(&quot;  visiting &quot; + u + &quot; to set td=&quot; + time);
+<span class="fc" id="L142">        td[u] = time;</span>
+<span class="fc" id="L143">        tdLow[u] = td[u];</span>
+
+<span class="fc" id="L145">        SimpleLinkedListNode next = g[u];</span>
+        
+<span class="pc bpc" id="L147" title="1 of 4 branches missed.">        while (next != null &amp;&amp; next.getKey() != -1) {</span>
+<span class="fc" id="L148">            int v = next.getKey();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (visited[v] == 0) {</span>
+<span class="fc" id="L150">                predecessor[v] = u;</span>
+<span class="fc" id="L151">                visit(v);</span>
+                // tree edge
+<span class="fc" id="L153">                tdLow[u] = Math.min(tdLow[u], tdLow[v]);  // update Low[u]</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            } else if (predecessor[u] != v) {</span>
+                // back edge
+<span class="fc" id="L156">                tdLow[u] = Math.min(tdLow[u], td[v]);       // update Low[u]</span>
+            }
+<span class="fc" id="L158">            next = next.getNext();</span>
+<span class="fc" id="L159">        }</span>
+<span class="fc" id="L160">        visited[u] = 2;</span>
+<span class="fc" id="L161">        time++;</span>
+<span class="fc" id="L162">        tf[u] = time;</span>
+        //System.out.println(&quot;  visited &quot; + u + &quot;) to set tf=&quot; + time);
+<span class="fc" id="L164">    }</span>
+    
+    /**
+     * get predecessor indexes
+     * @return get predecessor indexes
+     */
+    public int[] getPredecessorIndexes() {
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L172">            return null;</span>
+        }
+<span class="nc" id="L174">        return Arrays.copyOf(predecessor, predecessor.length);</span>
+    }
+    
+    /**
+     * return the indexes in order of the starts of their traversals
+     * @return 
+     */
+    public int[] getOrderedBeginIndexes() {
+<span class="nc" id="L182">        return sortForIndexes(td);</span>
+    }
+    
+    private int[] sortForIndexes(int[] a) {
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L187">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+        }
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        if (g == null) {</span>
+<span class="nc" id="L190">            return null;</span>
+        }
+<span class="nc bnc" id="L192" title="All 4 branches missed.">        assert(a.length == g.length);</span>
+<span class="nc" id="L193">        a = Arrays.copyOf(a, a.length);</span>
+<span class="nc" id="L194">        int[] idxs = new int[a.length];</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
+<span class="nc" id="L196">            idxs[i] = i;</span>
+        }
+<span class="nc" id="L198">        MiscSorter.sortBy1stArg(a, idxs);</span>
+<span class="nc" id="L199">        return idxs;</span>
+    }
+    
+    /**
+     * return the indexes in order of the ends of their traversal
+     * @return 
+     */
+    public int[] getOrderedEndIndexes() {
+<span class="nc" id="L207">        return sortForIndexes(tf);</span>
+    }
+    
+    public int[] getTd() {
+<span class="nc" id="L211">        return td;</span>
+    }
+
+    public int[] getTf() {
+<span class="nc" id="L215">        return tf;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
