@@ -2358,7 +2358,7 @@ public class PrintfFormat {
     private String printXFormat(String sx) {
       int nLeadingZeros = 0;
       int nBlanks = 0;
-      if (sx.equals("0")&&precisionSet&&precision==0)
+      if (sx == null || (sx.equals("0")&&precisionSet&&precision==0))
         sx="";
       if (precisionSet)
         nLeadingZeros = precision-sx.length();
@@ -2635,7 +2635,7 @@ public class PrintfFormat {
     private String printOFormat(String sx) {
       int nLeadingZeros = 0;
       int nBlanks = 0;
-      if (sx.equals("0")&&precisionSet&&precision==0)
+      if (sx == null || (sx.equals("0")&&precisionSet&&precision==0))
         sx="";
       if (precisionSet)
         nLeadingZeros = precision-sx.length();

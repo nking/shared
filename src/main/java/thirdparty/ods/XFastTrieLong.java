@@ -189,8 +189,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
             (S)u.child[prev] : null;   // predecessor
 		S succ = (u.child[next] != null) ?
             (S)u.child[next] : null;   // successor
-		pred.child[next] = succ;
-		succ.child[prev] = pred;
+                pred.child[next] = (pred != null) ? succ : null;
+		succ.child[prev] = (succ != null) ? pred : null;
 		u.child[next] = u.child[prev] = null;
 		S w = u;
 		// 3 - delete nodes on path to u

@@ -108,8 +108,10 @@ public class DisjointSet2Node<T> {
             sb.append(data.toString());
         }
         sb.append(", ");
-        sb.append("hashcode=").append(parent.hashCode());
-        sb.append(", ");
+        if (parent != null) {
+            sb.append("hashcode=").append(parent.hashCode());
+            sb.append(", ");
+        }
         sb.append("] ");
         
         return sb.toString();

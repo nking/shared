@@ -793,7 +793,7 @@ public class VoronoiFortunesSweep {
             
             // if the HE isn't found, search backwards and forwards in the hash map
             // for the first non-null entry
-        
+       
             for (i = 1; i < ELhashsize; i += 1) {
                 if ((he = ELGetHash(bucket - i)) != null) {
                     break;
@@ -801,6 +801,11 @@ public class VoronoiFortunesSweep {
                 if ((he = ELGetHash(bucket + i)) != null) {
                     break;
                 }
+            }
+            
+            if (he == null) {
+                throw new IllegalStateException("no left half edges." 
+                  + "check input data float[] xValues, float[] yValues");
             }
         }
         

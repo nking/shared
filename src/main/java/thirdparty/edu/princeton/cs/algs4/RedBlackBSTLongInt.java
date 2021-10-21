@@ -721,12 +721,15 @@ public class RedBlackBSTLongInt {
                 y = stack.get(yIdx);
             } else if (stack.size() == 1) {
                 x = stack.get(stack.size() - 1);
+            } else {
+                //x and y are null and stack was empty so method argument x was also null
+                return null;
             }
         } else if (!stack.isEmpty()) {
             yIdx = stack.size() - 1;
             y = stack.get(yIdx);
         }
-        
+       
         if (x.left != null) {
             return max(x.left);
         }
@@ -853,6 +856,9 @@ public class RedBlackBSTLongInt {
                 y = stack.get(yIdx);
             } else if (stack.size() == 1) {
                 x = stack.get(stack.size() - 1);
+            } else {
+                //x and y are null and stack was empty so method argument x was also null
+                return null;
             }
         } else if (!stack.isEmpty()) {
             yIdx = stack.size() - 1;
