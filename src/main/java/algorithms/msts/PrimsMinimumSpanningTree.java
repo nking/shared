@@ -44,7 +44,7 @@ import java.util.Arrays;
  *         crossing the cut.   a tie can mean more than one light edge for a cut.
  *         
  *    
- *     the goal is to visit every node in the input graph in a greedy dfs style (that is
+ *     the goal is to visit every node in the input graph in a greedy BFS style (that is
  *     find the next best connected edge and continue from there) adding an edge if
  *     the end points are not already in the tree and if the edge is the minimum of the
  *     u neighbors.
