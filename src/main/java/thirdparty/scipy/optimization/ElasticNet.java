@@ -265,6 +265,14 @@ public class ElasticNet {
         // edited for y being one dimension
         if (Xy != null) {
             thisXy = Arrays.copyOf(Xy, Xy.length);
+            // avoding NPEs below
+            thisDualGaps = new double[]{ Double.NEGATIVE_INFINITY};
+            thisNIter = new TIntArrayList();
+            thisNIter.add(Integer.MIN_VALUE);
+            thisCoef = new double[nFeatures][nAlphas];
+            for (int i = 0; i < nFeatures; ++i) {
+                thisCoef[i] = new double[nAlphas];
+            }
         } else {
             // call to enet_path on line 272 of coordinate_descent.py
             PathResults pathResults =
