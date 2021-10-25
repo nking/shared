@@ -14,7 +14,7 @@ The modularity is, up to a multiplicative constant, the number of edges
  * The modularity can be either positive or negative, with positive values
  * indicating the possible presence of community structure. Thus, one can search
  * for community structure precisely by looking for the divisions of a network
- * that have positive, and preferably large, values of the modularity
+ * that have positive, and preferably large, values of the modularity.
  
  on a spectral approximation:
  
