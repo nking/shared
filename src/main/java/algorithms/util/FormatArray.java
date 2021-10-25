@@ -76,4 +76,34 @@ public class FormatArray {
         sb.append("\n");
         return sb.toString();
     }
+
+    public static String toString(int[][] a, String decimalFormat) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < a.length; ++i) {
+            for (int j = 0; j < a[i].length; ++j) {
+                sb.append(String.format(decimalFormat, a[i][j]));
+                if (j < (a[i].length - 1)) {
+                    sb.append(",");
+                }
+                sb.append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+    
+    public static String toString(float[][] a, String decimalFormat) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < a.length; ++i) {
+            for (int j = 0; j < a[i].length; ++j) {
+                sb.append(String.format(decimalFormat, a[i][j]));
+                if (j < (a[i].length - 1)) {
+                    sb.append(",");
+                }
+                sb.append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }

@@ -40,7 +40,6 @@ public class FloydWarshalAllPairs {
     /**
      * find the shortest paths between pairs of vertexes.
      * @param w
-     * @return
      */
     public void findShortestPaths(int[][] w) {
                 
