@@ -107,7 +107,7 @@ public class Knapsack01 {
         for (i = 1; i <= n; i++) {
             for (wc = 1; wc <= capacity; wc++) {
                 t = memo[i-1][wc];
-                if (wc >= weights[i-1]) {
+                if (wc >= weights[i-1]) { // to avoid exceeding capacity
                     c = memo[i-1][wc-weights[i-1]] + values[i-1];
                     memo[i][wc] = Math.max( c, t);
                 } else {
@@ -133,22 +133,29 @@ public class Knapsack01 {
      */
     static int approxDynamically(int[] values, int[] weights, int capacity) {
 
-        int minW = MiscMath0.findMin(weights);
-        int factor = minW;
+        int factor;
+        int q1 = findQ1Diff(weights);
+        if (q1 < 2) {
+            factor = 1;
+        } else {
+            factor = q1;
+        }
+        //int minW = MiscMath0.findMin(weights);
+        //factor = minW;
         
         int n = values.length;
         int i, j, t, c, t2, wc, w;
         
         int[] ws = getIntervals(capacity, factor);
         
-        System.out.printf("capacity=%d, minW=%d, intervals=%s\n", capacity, 
-            minW, Arrays.toString(ws));
+        System.out.printf("capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n", capacity, 
+            factor, q1, Arrays.toString(ws));
                 
         int[][] memo = new int[n + 1][ws.length + 1];
         for (i = 0; i < memo.length; i++) {
             memo[i] = new int[ws.length  + 1];
         }
-                // 2, 4, 6, 8, 10
+        
         for (i = 1; i <= n; i++) {
             for (j = 0; j < ws.length; ++j) {//10,8,6,4,2
                 w = ws[j];//capacities
@@ -178,6 +185,25 @@ public class Knapsack01 {
         wcs.reverse();  
         
         return wcs.toArray();
+    }
+
+    private static int findQ1Diff(int[] a) {
+        a = Arrays.copyOf(a, a.length);
+        Arrays.sort(a);
+        int[] diffs = new int[a.length-1];
+        int i, d;
+        int minDiff = Integer.MAX_VALUE;
+        for (i = 1; i < a.length; ++i) {
+            d = a[i] - a[i - 1];
+            if (d < minDiff) {
+                minDiff = d;
+            }
+            diffs[i-1] = d;
+        }
+        int q1 = diffs[(int)(diffs.length*.25)];
+        System.out.printf("median diff=%d  Q1 diff = %d\n", diffs[diffs.length/2],
+            q1);
+        return q1;
     }
 
 }

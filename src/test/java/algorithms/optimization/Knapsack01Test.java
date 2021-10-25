@@ -73,7 +73,7 @@ public class Knapsack01Test extends TestCase {
         
         result = Knapsack01.approxDynamically(values, weights, 400);
 
-        System.out.println("result minW: " +result);
+        System.out.println("result approx: " +result);
                 
     }
         
