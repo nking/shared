@@ -345,13 +345,11 @@ public class TSPDynamic {
     // https://www.interviewbit.com/blog/travelling-salesman-problem/
     //   with bug fixes here to the method least, and corrections to use
     // the start node.  sent the changes to interviewbit too.
-    private int[] completed = null;
     Set<Integer> uncompleted = null;
     private final int sentinel = Integer.MAX_VALUE;
 
     public void solveRecursively() {
         // init
-        this.completed = new int[N];
         tour.clear();
         minTourCost = 0;
         solverFinished = false;
@@ -375,8 +373,6 @@ public class TSPDynamic {
     */
     
     private void mincost(int city) {
-
-        completed[city] = 1;
         
         //O(lg2(N)):
         uncompleted.remove(city);
