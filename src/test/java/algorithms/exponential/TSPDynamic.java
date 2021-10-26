@@ -4,15 +4,20 @@ import algorithms.util.FormatArray;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * a look at solving TSP dynamically. The algorithms is NP-Hard, no known
- * polynomial time algorithms for TSP, so an approximation such as TSP-Prim's
+ * Dynamic algorithms for the traveling Salesman problem.. 
+ * The algorithms is NP-Hard, no known
+ * polynomial time algorithms exist for TSP, so an approximation such as TSP-Prim's
  * MST should be used or one of the 1.5*optimal algorithms (see wikipedia).
  *
- * This dynamic version is just to be instructive, not to be used as the
+ * This dynamic version is instructive, and not to be used for most datasets as the
  * runtime complexity is O(n^2 * 2^n) where n is the number of vertices.
- * *
+ * 
+ * The iterative method is limited to data holding 31 cities or less,
+ * and the recursive method is limited to 2^31 -1 cities.
  * <pre>
  * references:
  * 
@@ -114,12 +119,20 @@ public class TSPDynamic {
     private List<Integer> tour = new ArrayList<>();
     private double minTourCost = Double.POSITIVE_INFINITY;
     private boolean solverFinished = false;
+    
+    private static Logger logger;
 
+    /**
+     * 
+     * @param distance 
+     */
     public TSPDynamic(double[][] distance) {
         this(0, distance);
     }
 
     public TSPDynamic(int start, double[][] distance) {
+        
+        logger = Logger.getLogger(this.getClass().getSimpleName());
         
         N = distance.length;
 
@@ -152,8 +165,16 @@ public class TSPDynamic {
         return minTourCost;
     }
 
-    // Solves the traveling salesman problem and caches solution.
+    /** Solves the traveling salesman problem and caches solution.
+     * NOTE that algorithm can only handle N < 32.
+     */
     public void solveIteratively() {
+        
+        if (N > 31) {
+            throw new IllegalArgumentException("the dynamic iterative algorithm "
+                + "has a limit of 31 for the number of cities.   Consider the "
+                + "recursive algorithm which has a limit of 2^31 - 1");
+        }
 
         if (solverFinished) {
             return;
@@ -177,34 +198,40 @@ public class TSPDynamic {
             */
              
         }
-        
-        System.out.printf("memo[%d][%d]=\n%s\n", memo.length, memo[0].length, 
-            FormatArray.toString(memo, "%.1f"));
+        logger.log(Level.FINE, String.format(
+        //System.out.printf(
+            "memo[%d][%d]=\n%s\n", memo.length, memo[0].length, 
+            FormatArray.toString(memo, "%.1f")));
 
         // r is the number of vertexes within n vertexes, in which the subset bits are set to 1.
         for (int r = 3; r <= N; r++) {
             for (int subset : combinations(r, N)) {
                 
-                System.out.printf("r=%d subset=%d(%s)\n", r, subset, Integer.toBinaryString(subset));
+                logger.log(Level.FINE, String.format(
+                //System.out.printf(
+                    "r=%d subset=%d(%s)\n", r, subset, Integer.toBinaryString(subset)));
                 
                 if (notIn(start, subset)) {
                     continue;
                 }
-                
-                if (subset == END_STATE) {
-                    System.out.printf("  writing last column in memo\n");
-                }
-                
+                                
                 for (int next = 0; next < N; next++) {
-                    System.out.printf("   next=%d(%s)", next, Integer.toBinaryString(next));
+                    logger.log(Level.FINE, String.format(
+                        //System.out.printf(
+                        "   next=%d(%s)", next, Integer.toBinaryString(next)));
                     if (next == start || notIn(next, subset)) {
-                        System.out.printf("\n");
+                        logger.log(Level.FINE, String.format(
+                            //System.out.printf(
+                            "\n"));
                         continue;
                     }
                     
                     int subsetWithoutNext = subset ^ (1 << next);
                     
-                    System.out.printf("   subsetWithoutNext=%d(%s)\n", subsetWithoutNext, Integer.toBinaryString(subsetWithoutNext));
+                    logger.log(Level.FINE, String.format(
+                    //System.out.printf(
+                        "   subsetWithoutNext=%d(%s)\n", subsetWithoutNext, 
+                        Integer.toBinaryString(subsetWithoutNext)));
                     
                     double minDist = Double.POSITIVE_INFINITY;
                     for (int end = 0; end < N; end++) {
@@ -214,13 +241,17 @@ public class TSPDynamic {
                         double newDistance = memo[end][subsetWithoutNext] + distance[end][next];
                         if (newDistance < minDist) {
                             minDist = newDistance;
-                            System.out.printf("      end=%d(%s) "
+                            logger.log(Level.FINE, String.format(
+                            //System.out.printf(
+                               "      end=%d(%s) "
                                + "minDist = memo[end %d][subWONxt %d] + distance[end %d][next %d] = %.1f\n", 
-                               end, Integer.toBinaryString(end), end, subsetWithoutNext, end, next, minDist);
+                               end, Integer.toBinaryString(end), end, subsetWithoutNext, end, next, minDist));
                         }
                     }
-                    System.out.printf("      stored as memo[next %d][subset %d]=%.1f\n",
-                        next, subset, minDist);
+                    logger.log(Level.FINE, String.format(
+                    //System.out.printf(
+                        "      stored as memo[next %d][subset %d]=%.1f\n",
+                        next, subset, minDist));
                     memo[next][subset] = minDist;
                 }
             }
@@ -234,7 +265,9 @@ public class TSPDynamic {
             double tourCost = memo[i][END_STATE] + distance[i][start];
             if (tourCost < minTourCost) {
                 minTourCost = tourCost;
-                System.out.printf("      i=%d minTourCost=%.1f\n", i, minTourCost);
+                logger.log(Level.FINE, String.format(
+                //System.out.printf(
+                    "      i=%d minTourCost=%.1f\n", i, minTourCost));
             }
         }
         int lastIndex = start;
@@ -310,7 +343,7 @@ public class TSPDynamic {
     //===================================
     // https://www.interviewbit.com/blog/travelling-salesman-problem/
     private int[] completed = null;
-    private int sentinel = Integer.MAX_VALUE;
+    private final int sentinel = Integer.MAX_VALUE;
 
     public void solveRecursively() {
         this.completed = new int[N];
@@ -322,7 +355,9 @@ public class TSPDynamic {
 
         solverFinished = true;
 
-        System.out.printf("\ntour cost=%.0f\n", minTourCost);
+        logger.log(Level.FINE, String.format(
+        //System.out.printf(
+            "\ntour cost=%.0f\n", minTourCost));
     }
 
     private void mincost(int city) {
@@ -330,13 +365,17 @@ public class TSPDynamic {
 
         completed[city] = 1;
 
-        System.out.printf("%d--->", city);
+        logger.log(Level.FINE, String.format(
+        //System.out.printf(
+            "%d--->", city));
         tour.add(city);
         ncity = least(city);
 
         if (ncity == sentinel) {
             ncity = 0;
-            System.out.printf("%d", ncity);
+            logger.log(Level.FINE, String.format(
+            //System.out.printf(
+                "%d", ncity));
             minTourCost += distance[city][ncity];
             tour.add(ncity);
 
