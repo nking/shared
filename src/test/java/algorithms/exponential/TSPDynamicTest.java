@@ -12,7 +12,8 @@ public class TSPDynamicTest extends TestCase {
     public TSPDynamicTest() {
     }
     
-    public void est0() {
+    public void test1() {
+        System.out.println("test1");
          // Create adjacency matrix
         int n = 6;
         double[][] distanceMatrix = new double[n][n];
@@ -49,6 +50,7 @@ public class TSPDynamicTest extends TestCase {
     }
     
     public void test2() {
+        System.out.println("test2");
          // https://www.baeldung.com/cs/tsp-dynamic-programming
          
         //A B C D E
@@ -72,20 +74,26 @@ public class TSPDynamicTest extends TestCase {
         int expectedCost = 29;//8+4+2+3+12
         TSPDynamic solver = new TSPDynamic(startNode, distanceMatrix);
 
-        solver.solveRecursively();
-        
-        List<Integer> tour = solver.getTour();
-        System.out.println("Tour: " + tour);
+        for (int ii = 0; ii < 2; ++ii) {
+            if (ii == 0) {
+                solver.solveIteratively();
+            } else {
+                solver.solveRecursively();
+            }
 
-        double cost = solver.getTourCost();
-        System.out.println("Tour cost: " + solver.getTourCost());
+            List<Integer> tour = solver.getTour();
+            System.out.println("Tour: " + tour);
 
-        assertEquals(expectedTour.length, tour.size());
-        assertTrue(Math.abs(expectedCost-cost) < 1e-17);
-        
-        for (int i = 0; i < expectedTour.length; ++i) {
-            assertEquals(expectedTour[i], tour.get(i).intValue());
-        }        
+            double cost = solver.getTourCost();
+            System.out.println("Tour cost: " + solver.getTourCost());
+
+            assertEquals(expectedTour.length, tour.size());
+            assertTrue(Math.abs(expectedCost - cost) < 1e-17);
+
+            for (int i = 0; i < expectedTour.length; ++i) {
+                assertEquals(expectedTour[i], tour.get(i).intValue());
+            }
+        }
         
     }
 }
