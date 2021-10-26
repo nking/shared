@@ -121,19 +121,20 @@ public class TSPDynamic {
     private boolean solverFinished = false;
     
     private static Logger logger;
+    private static Level LEVEL = Level.FINE;
 
     /**
+     * construct the TSP instance using the distance matrix.  the starting
+     * vertex will always be 0, as the start node does not matter for a
+     * solution including a cycle with all vertexes.
      * 
      * @param distance 
      */
     public TSPDynamic(double[][] distance) {
         this(0, distance);
     }
-
+    
     public TSPDynamic(int start, double[][] distance) {
-        
-        logger = Logger.getLogger(this.getClass().getSimpleName());
-        
         N = distance.length;
 
         if (N <= 2) {
@@ -142,11 +143,11 @@ public class TSPDynamic {
         if (N != distance[0].length) {
             throw new IllegalStateException("Matrix must be square (n x n)");
         }
-        if (start < 0 || start >= N) {
-            throw new IllegalArgumentException("Invalid start node.");
-        }
         this.start = start;
         this.distance = distance;
+        
+        logger = Logger.getLogger(this.getClass().getSimpleName());
+        
     }
 
     // Returns the optimal tour for the traveling salesman problem.
@@ -198,7 +199,7 @@ public class TSPDynamic {
             */
              
         }
-        logger.log(Level.FINE, String.format(
+        logger.log(LEVEL, String.format(
         //System.out.printf(
             "memo[%d][%d]=\n%s\n", memo.length, memo[0].length, 
             FormatArray.toString(memo, "%.1f")));
@@ -207,7 +208,7 @@ public class TSPDynamic {
         for (int r = 3; r <= N; r++) {
             for (int subset : combinations(r, N)) {
                 
-                logger.log(Level.FINE, String.format(
+                logger.log(LEVEL, String.format(
                 //System.out.printf(
                     "r=%d subset=%d(%s)\n", r, subset, Integer.toBinaryString(subset)));
                 
@@ -216,11 +217,11 @@ public class TSPDynamic {
                 }
                                 
                 for (int next = 0; next < N; next++) {
-                    logger.log(Level.FINE, String.format(
+                    logger.log(LEVEL, String.format(
                         //System.out.printf(
                         "   next=%d(%s)", next, Integer.toBinaryString(next)));
                     if (next == start || notIn(next, subset)) {
-                        logger.log(Level.FINE, String.format(
+                        logger.log(LEVEL, String.format(
                             //System.out.printf(
                             "\n"));
                         continue;
@@ -228,7 +229,7 @@ public class TSPDynamic {
                     
                     int subsetWithoutNext = subset ^ (1 << next);
                     
-                    logger.log(Level.FINE, String.format(
+                    logger.log(LEVEL, String.format(
                     //System.out.printf(
                         "   subsetWithoutNext=%d(%s)\n", subsetWithoutNext, 
                         Integer.toBinaryString(subsetWithoutNext)));
@@ -241,14 +242,14 @@ public class TSPDynamic {
                         double newDistance = memo[end][subsetWithoutNext] + distance[end][next];
                         if (newDistance < minDist) {
                             minDist = newDistance;
-                            logger.log(Level.FINE, String.format(
+                            logger.log(LEVEL, String.format(
                             //System.out.printf(
                                "      end=%d(%s) "
                                + "minDist = memo[end %d][subWONxt %d] + distance[end %d][next %d] = %.1f\n", 
                                end, Integer.toBinaryString(end), end, subsetWithoutNext, end, next, minDist));
                         }
                     }
-                    logger.log(Level.FINE, String.format(
+                    logger.log(LEVEL, String.format(
                     //System.out.printf(
                         "      stored as memo[next %d][subset %d]=%.1f\n",
                         next, subset, minDist));
@@ -265,7 +266,7 @@ public class TSPDynamic {
             double tourCost = memo[i][END_STATE] + distance[i][start];
             if (tourCost < minTourCost) {
                 minTourCost = tourCost;
-                logger.log(Level.FINE, String.format(
+                logger.log(LEVEL, String.format(
                 //System.out.printf(
                     "      i=%d minTourCost=%.1f\n", i, minTourCost));
             }
@@ -350,30 +351,30 @@ public class TSPDynamic {
         tour.clear();
         minTourCost = 0;
         solverFinished = false;
-
+        
         mincost(start);
 
         solverFinished = true;
 
-        logger.log(Level.FINE, String.format(
+        logger.log(LEVEL, String.format(
         //System.out.printf(
             "\ntour cost=%.0f\n", minTourCost));
     }
-
+    
     private void mincost(int city) {
         int ncity;
 
         completed[city] = 1;
 
-        logger.log(Level.FINE, String.format(
+        logger.log(LEVEL, String.format(
         //System.out.printf(
             "%d--->", city));
         tour.add(city);
         ncity = least(city);
 
         if (ncity == sentinel) {
-            ncity = 0;
-            logger.log(Level.FINE, String.format(
+            ncity = start;
+            logger.log(LEVEL, String.format(
             //System.out.printf(
                 "%d", ncity));
             minTourCost += distance[city][ncity];
@@ -389,11 +390,11 @@ public class TSPDynamic {
         int i, nc = sentinel;
         double min = sentinel;
         double kmin = sentinel;
-
+        
         for (i = 0; i < N; i++) {
             if ((distance[c][i] != 0) && (completed[i] == 0)) {
-                if (distance[c][i] + distance[i][c] < min) {
-                    min = distance[i][0] + distance[c][i];
+                if (distance[start][i] + distance[c][i] < min) {
+                    min = distance[start][i] + distance[c][i];
                     kmin = distance[c][i];
                     nc = i;
                 }
