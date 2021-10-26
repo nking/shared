@@ -343,6 +343,8 @@ public class TSPDynamic {
     
     //===================================
     // https://www.interviewbit.com/blog/travelling-salesman-problem/
+    //   with bug fixes here to the method least, and corrections to use
+    // the start node.  sent the changes to interviewbit too.
     private int[] completed = null;
     private final int sentinel = Integer.MAX_VALUE;
 
