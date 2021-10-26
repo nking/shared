@@ -3,7 +3,9 @@ package algorithms.exponential;
 import algorithms.util.FormatArray;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -102,8 +104,6 @@ import java.util.logging.Logger;
  * (n-1)*(n-2) * summation_over_k_from_1_to_{n-2}( C(n-3, k-1) )
  * =  (n-1)*(n-2) * 2^(n-3).
  * The runtime complexity is then O(n^2 * 2^n).
- * 
- * How is summation_over_k_from_1_to_{n-2}( C(n-3, k-1) ) ~ 2^(n-3) ?
  * 
  * The 2nd stage is O(n) and does affect the runtime complexity.
  * 
@@ -346,13 +346,19 @@ public class TSPDynamic {
     //   with bug fixes here to the method least, and corrections to use
     // the start node.  sent the changes to interviewbit too.
     private int[] completed = null;
+    Set<Integer> uncompleted = null;
     private final int sentinel = Integer.MAX_VALUE;
 
     public void solveRecursively() {
+        // init
         this.completed = new int[N];
         tour.clear();
         minTourCost = 0;
         solverFinished = false;
+        uncompleted = new HashSet<Integer>();
+        for (int i = 0; i < N; ++i) {
+            uncompleted.add(i);
+        }
         
         mincost(start);
 
@@ -366,18 +372,21 @@ public class TSPDynamic {
     mincost(start)
         mincost(  s1 = min_Arg_i (dist[start][i] + dist[c][i]) )
         mincost( s2 = ...)
-        
     */
     
     private void mincost(int city) {
 
         completed[city] = 1;
+        
+        //O(lg2(N)):
+        uncompleted.remove(city);
 
         logger.log(LEVEL, String.format(
         //System.out.printf(
             "%d--->", city));
         tour.add(city);
         
+        // O(N-1)
         //minTourCost += dist[city][ncity] where ncity is the minimum i in dist[start][i] + dist[city][i]
         int ncity = least(city);
 
@@ -395,12 +404,14 @@ public class TSPDynamic {
     }
 
     private int least(int c) {
-        int i, nc = sentinel;
+        int nc = sentinel;
         double min = sentinel;
         double kmin = sentinel;
         
-        for (i = 0; i < N; i++) {
-            if ((distance[c][i] != 0) && (completed[i] == 0)) {
+        // using i=0:N is O(N), so changed to loop only over "uncompleted" items
+        //for (i = 0; i < N; i++) {
+        for (int i : uncompleted) {
+            if (distance[c][i] != 0) {
                 if (distance[start][i] + distance[c][i] < min) {
                     min = distance[start][i] + distance[c][i];
                     kmin = distance[c][i];
