@@ -85,6 +85,7 @@ public class TSPDynamicTest extends TestCase {
         //A, E, D, C, B -> 0, 4, 3, 2, 1, 0
         int[] expectedTour0 = new int[]{0, 4, 3, 2, 1, 0};
         int[] expectedTour1 = new int[]{1, 0, 4, 3, 2, 1};
+        int[] expectedTour12 = new int[]{1, 2, 3, 4, 0, 1};
         int[] expectedTour;
         int startNode;
         int expectedCost = 29;//8+4+2+3+12
@@ -101,6 +102,8 @@ public class TSPDynamicTest extends TestCase {
                 solver = new TSPDynamic(startNode, distanceMatrix);
                 solver.solveRecursively();
                 expectedTour = expectedTour1;
+                // symmetric distance matrix, so cycle in other direction also a correct answer
+                expectedTour = expectedTour12;
             }
 
             List<Integer> tour = solver.getTour();
@@ -108,13 +111,13 @@ public class TSPDynamicTest extends TestCase {
 
             double cost = solver.getTourCost();
             System.out.println("Tour cost: " + solver.getTourCost());
-/*
+
             assertEquals(expectedTour.length, tour.size());
             assertTrue(Math.abs(expectedCost - cost) < 1e-17);
 
             for (int i = 0; i < expectedTour.length; ++i) {
                 assertEquals(expectedTour[i], tour.get(i).intValue());
-            }*/
+            }
         }
         
     }
