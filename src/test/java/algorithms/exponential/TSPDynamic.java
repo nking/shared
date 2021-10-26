@@ -362,9 +362,14 @@ public class TSPDynamic {
         //System.out.printf(
             "\ntour cost=%.0f\n", minTourCost));
     }
+    /*
+    mincost(start)
+        mincost(  s1 = min_Arg_i (dist[start][i] + dist[c][i]) )
+        mincost( s2 = ...)
+        
+    */
     
     private void mincost(int city) {
-        int ncity;
 
         completed[city] = 1;
 
@@ -372,15 +377,16 @@ public class TSPDynamic {
         //System.out.printf(
             "%d--->", city));
         tour.add(city);
-        ncity = least(city);
+        
+        //minTourCost += dist[city][ncity] where ncity is the minimum i in dist[start][i] + dist[city][i]
+        int ncity = least(city);
 
         if (ncity == sentinel) {
-            ncity = start;
             logger.log(LEVEL, String.format(
             //System.out.printf(
-                "%d", ncity));
-            minTourCost += distance[city][ncity];
-            tour.add(ncity);
+                "%d", start));
+            minTourCost += distance[city][start];
+            tour.add(start);
 
             return;
         }
