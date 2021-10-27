@@ -793,7 +793,7 @@ public class VoronoiFortunesSweep {
             
             // if the HE isn't found, search backwards and forwards in the hash map
             // for the first non-null entry
-        
+       
 <span class="pc bpc" id="L797" title="1 of 2 branches missed.">            for (i = 1; i &lt; ELhashsize; i += 1) {</span>
 <span class="fc bfc" id="L798" title="All 2 branches covered.">                if ((he = ELGetHash(bucket - i)) != null) {</span>
 <span class="fc" id="L799">                    break;</span>
@@ -802,174 +802,179 @@ public class VoronoiFortunesSweep {
 <span class="fc" id="L802">                    break;</span>
                 }
             }
+            
+<span class="pc bpc" id="L806" title="1 of 2 branches missed.">            if (he == null) {</span>
+<span class="nc" id="L807">                throw new IllegalStateException(&quot;no left half edges.&quot; </span>
+                  + &quot;check input data float[] xValues, float[] yValues&quot;);
+            }
         }
         
         // Now search linear list of halfedges for the correct one
-<span class="fc bfc" id="L808" title="All 4 branches covered.">        if (he == ELleftend || </span>
-<span class="fc bfc" id="L809" title="All 2 branches covered.">        (he != ELrightend &amp;&amp; rightOf(he, p))) {</span>
+<span class="fc bfc" id="L813" title="All 4 branches covered.">        if (he == ELleftend || </span>
+<span class="fc bfc" id="L814" title="All 2 branches covered.">        (he != ELrightend &amp;&amp; rightOf(he, p))) {</span>
             // keep going right on the list until either the end is reached, or
             // you find the 1st edge which the point isn't to the right of
             do {
-<span class="fc" id="L813">                he = he.ELright;</span>
-<span class="fc bfc" id="L814" title="All 4 branches covered.">            } while (he != ELrightend &amp;&amp; rightOf(he, p));</span>
-<span class="fc" id="L815">            he = he.ELleft;</span>
+<span class="fc" id="L818">                he = he.ELright;</span>
+<span class="fc bfc" id="L819" title="All 4 branches covered.">            } while (he != ELrightend &amp;&amp; rightOf(he, p));</span>
+<span class="fc" id="L820">            he = he.ELleft;</span>
         } else {
             // if the point is to the left of the HalfEdge, then search left for
             // the HE just to the left of the point
         
             do {
-<span class="fc" id="L821">                he = he.ELleft;</span>
-<span class="fc bfc" id="L822" title="All 4 branches covered.">            } while (he != ELleftend &amp;&amp; !rightOf(he, p));</span>
+<span class="fc" id="L826">                he = he.ELleft;</span>
+<span class="fc bfc" id="L827" title="All 4 branches covered.">            } while (he != ELleftend &amp;&amp; !rightOf(he, p));</span>
         }
 
         // Update hash table and reference counts
-<span class="fc bfc" id="L826" title="All 4 branches covered.">        if (bucket &gt; 0 &amp;&amp; bucket &lt; ELhashsize - 1) {</span>
-<span class="fc" id="L827">            ELhash[bucket] = he;</span>
+<span class="fc bfc" id="L831" title="All 4 branches covered.">        if (bucket &gt; 0 &amp;&amp; bucket &lt; ELhashsize - 1) {</span>
+<span class="fc" id="L832">            ELhash[bucket] = he;</span>
         }
-<span class="fc" id="L829">        return he;</span>
+<span class="fc" id="L834">        return he;</span>
     }
 
     private void pushGraphEdge(Site leftSite, Site rightSite, 
         float x1, float y1, float x2, float y2) {
       
-<span class="fc" id="L835">        GraphEdge newEdge = new GraphEdge();</span>
-<span class="fc" id="L836">        allEdges.add(newEdge);</span>
-<span class="fc" id="L837">        newEdge.x1 = x1;</span>
-<span class="fc" id="L838">        newEdge.y1 = y1;</span>
-<span class="fc" id="L839">        newEdge.x2 = x2;</span>
-<span class="fc" id="L840">        newEdge.y2 = y2;</span>
+<span class="fc" id="L840">        GraphEdge newEdge = new GraphEdge();</span>
+<span class="fc" id="L841">        allEdges.add(newEdge);</span>
+<span class="fc" id="L842">        newEdge.x1 = x1;</span>
+<span class="fc" id="L843">        newEdge.y1 = y1;</span>
+<span class="fc" id="L844">        newEdge.x2 = x2;</span>
+<span class="fc" id="L845">        newEdge.y2 = y2;</span>
 
-<span class="fc" id="L842">        newEdge.site1 = leftSite.sitenbr;</span>
-<span class="fc" id="L843">        newEdge.site2 = rightSite.sitenbr;</span>
-<span class="fc" id="L844">    }</span>
+<span class="fc" id="L847">        newEdge.site1 = leftSite.sitenbr;</span>
+<span class="fc" id="L848">        newEdge.site2 = rightSite.sitenbr;</span>
+<span class="fc" id="L849">    }</span>
 
     private void clipLine(Edge e) {
         float pxmin, pxmax, pymin, pymax;
         Site s1, s2;
-<span class="fc" id="L849">        float x1 = 0, x2 = 0, y1 = 0, y2 = 0;</span>
+<span class="fc" id="L854">        float x1 = 0, x2 = 0, y1 = 0, y2 = 0;</span>
 
-<span class="fc" id="L851">        x1 = e.reg[0].coord.getX();</span>
-<span class="fc" id="L852">        x2 = e.reg[1].coord.getX();</span>
-<span class="fc" id="L853">        y1 = e.reg[0].coord.getY();</span>
-<span class="fc" id="L854">        y2 = e.reg[1].coord.getY();</span>
+<span class="fc" id="L856">        x1 = e.reg[0].coord.getX();</span>
+<span class="fc" id="L857">        x2 = e.reg[1].coord.getX();</span>
+<span class="fc" id="L858">        y1 = e.reg[0].coord.getY();</span>
+<span class="fc" id="L859">        y2 = e.reg[1].coord.getY();</span>
 
         // if the distance between the two points this line 
         // was created from is
         // less than the square root of 2, then ignore it
-<span class="fc bfc" id="L859" title="All 2 branches covered.">        if (Math.sqrt(((x2 - x1) * (x2 - x1)) </span>
+<span class="fc bfc" id="L864" title="All 2 branches covered.">        if (Math.sqrt(((x2 - x1) * (x2 - x1)) </span>
             + ((y2 - y1) * (y2 - y1))) &lt; minDistanceBetweenSites) {
-<span class="fc" id="L861">            return;</span>
+<span class="fc" id="L866">            return;</span>
         }
-<span class="fc" id="L863">        pxmin = borderMinX;</span>
-<span class="fc" id="L864">        pxmax = borderMaxX;</span>
-<span class="fc" id="L865">        pymin = borderMinY;</span>
-<span class="fc" id="L866">        pymax = borderMaxY;</span>
+<span class="fc" id="L868">        pxmin = borderMinX;</span>
+<span class="fc" id="L869">        pxmax = borderMaxX;</span>
+<span class="fc" id="L870">        pymin = borderMinY;</span>
+<span class="fc" id="L871">        pymax = borderMaxY;</span>
 
-<span class="fc bfc" id="L868" title="All 4 branches covered.">        if (e.a == 1.0 &amp;&amp; e.b &gt;= 0.0) {</span>
-<span class="fc" id="L869">            s1 = e.ep[1];</span>
-<span class="fc" id="L870">            s2 = e.ep[0];</span>
+<span class="fc bfc" id="L873" title="All 4 branches covered.">        if (e.a == 1.0 &amp;&amp; e.b &gt;= 0.0) {</span>
+<span class="fc" id="L874">            s1 = e.ep[1];</span>
+<span class="fc" id="L875">            s2 = e.ep[0];</span>
         } else {
-<span class="fc" id="L872">            s1 = e.ep[0];</span>
-<span class="fc" id="L873">            s2 = e.ep[1];</span>
+<span class="fc" id="L877">            s1 = e.ep[0];</span>
+<span class="fc" id="L878">            s2 = e.ep[1];</span>
         }
 
-<span class="fc bfc" id="L876" title="All 2 branches covered.">        if (e.a == 1.0) {</span>
-<span class="fc" id="L877">            y1 = pymin;</span>
-<span class="fc bfc" id="L878" title="All 4 branches covered.">            if (s1 != null &amp;&amp; s1.coord.getY() &gt; pymin) {</span>
-<span class="fc" id="L879">                y1 = s1.coord.getY();</span>
+<span class="fc bfc" id="L881" title="All 2 branches covered.">        if (e.a == 1.0) {</span>
+<span class="fc" id="L882">            y1 = pymin;</span>
+<span class="fc bfc" id="L883" title="All 4 branches covered.">            if (s1 != null &amp;&amp; s1.coord.getY() &gt; pymin) {</span>
+<span class="fc" id="L884">                y1 = s1.coord.getY();</span>
             }
-<span class="fc bfc" id="L881" title="All 2 branches covered.">            if (y1 &gt; pymax) {</span>
-<span class="fc" id="L882">                y1 = pymax;</span>
+<span class="fc bfc" id="L886" title="All 2 branches covered.">            if (y1 &gt; pymax) {</span>
+<span class="fc" id="L887">                y1 = pymax;</span>
             }
-<span class="fc" id="L884">            x1 = e.c - e.b * y1;</span>
-<span class="fc" id="L885">            y2 = pymax;</span>
-<span class="fc bfc" id="L886" title="All 4 branches covered.">            if (s2 != null &amp;&amp; s2.coord.getY() &lt; pymax) {</span>
-<span class="fc" id="L887">                y2 = s2.coord.getY();</span>
+<span class="fc" id="L889">            x1 = e.c - e.b * y1;</span>
+<span class="fc" id="L890">            y2 = pymax;</span>
+<span class="fc bfc" id="L891" title="All 4 branches covered.">            if (s2 != null &amp;&amp; s2.coord.getY() &lt; pymax) {</span>
+<span class="fc" id="L892">                y2 = s2.coord.getY();</span>
             }
 
-<span class="fc bfc" id="L890" title="All 2 branches covered.">            if (y2 &lt; pymin) {</span>
-<span class="fc" id="L891">                y2 = pymin;</span>
+<span class="fc bfc" id="L895" title="All 2 branches covered.">            if (y2 &lt; pymin) {</span>
+<span class="fc" id="L896">                y2 = pymin;</span>
             }
-<span class="fc" id="L893">            x2 = (e.c) - (e.b) * y2;</span>
-<span class="pc bpc" id="L894" title="1 of 10 branches missed.">            if (((x1 &gt; pxmax) &amp; (x2 &gt; pxmax)) | ((x1 &lt; pxmin) &amp; (x2 &lt; pxmin))) {</span>
-<span class="nc" id="L895">                return;</span>
+<span class="fc" id="L898">            x2 = (e.c) - (e.b) * y2;</span>
+<span class="pc bpc" id="L899" title="1 of 10 branches missed.">            if (((x1 &gt; pxmax) &amp; (x2 &gt; pxmax)) | ((x1 &lt; pxmin) &amp; (x2 &lt; pxmin))) {</span>
+<span class="nc" id="L900">                return;</span>
             }
-<span class="fc bfc" id="L897" title="All 2 branches covered.">            if (x1 &gt; pxmax) {</span>
-<span class="fc" id="L898">                x1 = pxmax;</span>
-<span class="fc" id="L899">                y1 = (e.c - x1) / e.b;</span>
+<span class="fc bfc" id="L902" title="All 2 branches covered.">            if (x1 &gt; pxmax) {</span>
+<span class="fc" id="L903">                x1 = pxmax;</span>
+<span class="fc" id="L904">                y1 = (e.c - x1) / e.b;</span>
             }
-<span class="fc bfc" id="L901" title="All 2 branches covered.">            if (x1 &lt; pxmin) {</span>
-<span class="fc" id="L902">                x1 = pxmin;</span>
-<span class="fc" id="L903">                y1 = (e.c - x1) / e.b;</span>
+<span class="fc bfc" id="L906" title="All 2 branches covered.">            if (x1 &lt; pxmin) {</span>
+<span class="fc" id="L907">                x1 = pxmin;</span>
+<span class="fc" id="L908">                y1 = (e.c - x1) / e.b;</span>
             }
-<span class="fc bfc" id="L905" title="All 2 branches covered.">            if (x2 &gt; pxmax) {</span>
-<span class="fc" id="L906">                x2 = pxmax;</span>
-<span class="fc" id="L907">                y2 = (e.c - x2) / e.b;</span>
+<span class="fc bfc" id="L910" title="All 2 branches covered.">            if (x2 &gt; pxmax) {</span>
+<span class="fc" id="L911">                x2 = pxmax;</span>
+<span class="fc" id="L912">                y2 = (e.c - x2) / e.b;</span>
             }
-<span class="fc bfc" id="L909" title="All 2 branches covered.">            if (x2 &lt; pxmin) {</span>
-<span class="fc" id="L910">                x2 = pxmin;</span>
-<span class="fc" id="L911">                y2 = (e.c - x2) / e.b;</span>
+<span class="fc bfc" id="L914" title="All 2 branches covered.">            if (x2 &lt; pxmin) {</span>
+<span class="fc" id="L915">                x2 = pxmin;</span>
+<span class="fc" id="L916">                y2 = (e.c - x2) / e.b;</span>
             }
         } else {
-<span class="fc" id="L914">            x1 = pxmin;</span>
-<span class="fc bfc" id="L915" title="All 4 branches covered.">            if (s1 != null &amp;&amp; s1.coord.getX() &gt; pxmin) {</span>
-<span class="fc" id="L916">                x1 = s1.coord.getX();</span>
+<span class="fc" id="L919">            x1 = pxmin;</span>
+<span class="fc bfc" id="L920" title="All 4 branches covered.">            if (s1 != null &amp;&amp; s1.coord.getX() &gt; pxmin) {</span>
+<span class="fc" id="L921">                x1 = s1.coord.getX();</span>
             }
-<span class="fc bfc" id="L918" title="All 2 branches covered.">            if (x1 &gt; pxmax) {</span>
-<span class="fc" id="L919">                x1 = pxmax;</span>
+<span class="fc bfc" id="L923" title="All 2 branches covered.">            if (x1 &gt; pxmax) {</span>
+<span class="fc" id="L924">                x1 = pxmax;</span>
             }
-<span class="fc" id="L921">            y1 = e.c - e.a * x1;</span>
-<span class="fc" id="L922">            x2 = pxmax;</span>
-<span class="fc bfc" id="L923" title="All 4 branches covered.">            if (s2 != null &amp;&amp; s2.coord.getX() &lt; pxmax) {</span>
-<span class="fc" id="L924">                x2 = s2.coord.getX();</span>
+<span class="fc" id="L926">            y1 = e.c - e.a * x1;</span>
+<span class="fc" id="L927">            x2 = pxmax;</span>
+<span class="fc bfc" id="L928" title="All 4 branches covered.">            if (s2 != null &amp;&amp; s2.coord.getX() &lt; pxmax) {</span>
+<span class="fc" id="L929">                x2 = s2.coord.getX();</span>
             }
-<span class="fc bfc" id="L926" title="All 2 branches covered.">            if (x2 &lt; pxmin) {</span>
-<span class="fc" id="L927">                x2 = pxmin;</span>
+<span class="fc bfc" id="L931" title="All 2 branches covered.">            if (x2 &lt; pxmin) {</span>
+<span class="fc" id="L932">                x2 = pxmin;</span>
             }
-<span class="fc" id="L929">            y2 = e.c - e.a * x2;</span>
-<span class="pc bpc" id="L930" title="4 of 10 branches missed.">            if (((y1 &gt; pymax) &amp; (y2 &gt; pymax)) | ((y1 &lt; pymin) &amp; (y2 &lt; pymin))) {</span>
-<span class="nc" id="L931">                return;</span>
+<span class="fc" id="L934">            y2 = e.c - e.a * x2;</span>
+<span class="pc bpc" id="L935" title="4 of 10 branches missed.">            if (((y1 &gt; pymax) &amp; (y2 &gt; pymax)) | ((y1 &lt; pymin) &amp; (y2 &lt; pymin))) {</span>
+<span class="nc" id="L936">                return;</span>
             }
-<span class="pc bpc" id="L933" title="1 of 2 branches missed.">            if (y1 &gt; pymax) {</span>
-<span class="nc" id="L934">                y1 = pymax;</span>
-<span class="nc" id="L935">                x1 = (e.c - y1) / e.a;</span>
+<span class="pc bpc" id="L938" title="1 of 2 branches missed.">            if (y1 &gt; pymax) {</span>
+<span class="nc" id="L939">                y1 = pymax;</span>
+<span class="nc" id="L940">                x1 = (e.c - y1) / e.a;</span>
             }
-<span class="pc bpc" id="L937" title="1 of 2 branches missed.">            if (y1 &lt; pymin) {</span>
-<span class="nc" id="L938">                y1 = pymin;</span>
-<span class="nc" id="L939">                x1 = (e.c - y1) / e.a;</span>
+<span class="pc bpc" id="L942" title="1 of 2 branches missed.">            if (y1 &lt; pymin) {</span>
+<span class="nc" id="L943">                y1 = pymin;</span>
+<span class="nc" id="L944">                x1 = (e.c - y1) / e.a;</span>
             }
-<span class="fc bfc" id="L941" title="All 2 branches covered.">            if (y2 &gt; pymax) {</span>
-<span class="fc" id="L942">                y2 = pymax;</span>
-<span class="fc" id="L943">                x2 = (e.c - y2) / e.a;</span>
+<span class="fc bfc" id="L946" title="All 2 branches covered.">            if (y2 &gt; pymax) {</span>
+<span class="fc" id="L947">                y2 = pymax;</span>
+<span class="fc" id="L948">                x2 = (e.c - y2) / e.a;</span>
             }
-<span class="pc bpc" id="L945" title="1 of 2 branches missed.">            if (y2 &lt; pymin) {</span>
-<span class="nc" id="L946">                y2 = pymin;</span>
-<span class="nc" id="L947">                x2 = (e.c - y2) / e.a;</span>
+<span class="pc bpc" id="L950" title="1 of 2 branches missed.">            if (y2 &lt; pymin) {</span>
+<span class="nc" id="L951">                y2 = pymin;</span>
+<span class="nc" id="L952">                x2 = (e.c - y2) / e.a;</span>
             }
         }
         
-<span class="fc" id="L951">        float diffX = x2 - x1;</span>
-<span class="fc" id="L952">        float diffY = y2 - y1;</span>
+<span class="fc" id="L956">        float diffX = x2 - x1;</span>
+<span class="fc" id="L957">        float diffY = y2 - y1;</span>
         //this, unfortunately, removes possible edges for
         // points composed of only a straight line
         //if (diffX == 0.f &amp;&amp; diffY == 0.f) {
         //    return;
         //}
-<span class="fc bfc" id="L958" title="All 2 branches covered.">        if (Math.sqrt((diffX * diffX) + (diffY * diffY)) </span>
+<span class="fc bfc" id="L963" title="All 2 branches covered.">        if (Math.sqrt((diffX * diffX) + (diffY * diffY)) </span>
             &lt; minDistanceBetweenSites) {
-<span class="fc" id="L960">            return;</span>
+<span class="fc" id="L965">            return;</span>
         }
         
-<span class="fc" id="L963">        pushGraphEdge(e.reg[0], e.reg[1], x1, y1, x2, y2);</span>
-<span class="fc" id="L964">    }</span>
+<span class="fc" id="L968">        pushGraphEdge(e.reg[0], e.reg[1], x1, y1, x2, y2);</span>
+<span class="fc" id="L969">    }</span>
 
     private void endPoint(Edge e, int lr, Site s) {
-<span class="fc" id="L967">        e.ep[lr] = s;</span>
-<span class="fc bfc" id="L968" title="All 2 branches covered.">        if (e.ep[RE - lr] == null) {</span>
-<span class="fc" id="L969">            return;</span>
+<span class="fc" id="L972">        e.ep[lr] = s;</span>
+<span class="fc bfc" id="L973" title="All 2 branches covered.">        if (e.ep[RE - lr] == null) {</span>
+<span class="fc" id="L974">            return;</span>
         }
-<span class="fc" id="L971">        clipLine(e);</span>
-<span class="fc" id="L972">    }</span>
+<span class="fc" id="L976">        clipLine(e);</span>
+<span class="fc" id="L977">    }</span>
 
     // returns 1 if p is to right of halfedge e
     private boolean rightOf(HalfEdge el, PairFloat p) {
@@ -979,73 +984,73 @@ public class VoronoiFortunesSweep {
         boolean above, fast;
         float dxp, dyp, dxs, t1, t2, t3, yl;
 
-<span class="fc" id="L982">        e = el.ELedge;</span>
-<span class="fc" id="L983">        topsite = e.reg[1];</span>
-<span class="fc bfc" id="L984" title="All 2 branches covered.">        if (p.getX() &gt; topsite.coord.getX()) {</span>
-<span class="fc" id="L985">            rightOfSite = true;</span>
+<span class="fc" id="L987">        e = el.ELedge;</span>
+<span class="fc" id="L988">        topsite = e.reg[1];</span>
+<span class="fc bfc" id="L989" title="All 2 branches covered.">        if (p.getX() &gt; topsite.coord.getX()) {</span>
+<span class="fc" id="L990">            rightOfSite = true;</span>
         } else {
-<span class="fc" id="L987">            rightOfSite = false;</span>
+<span class="fc" id="L992">            rightOfSite = false;</span>
         }
-<span class="fc bfc" id="L989" title="All 4 branches covered.">        if (rightOfSite &amp;&amp; el.ELpm == LE) {</span>
-<span class="fc" id="L990">            return true;</span>
+<span class="fc bfc" id="L994" title="All 4 branches covered.">        if (rightOfSite &amp;&amp; el.ELpm == LE) {</span>
+<span class="fc" id="L995">            return true;</span>
         }
-<span class="fc bfc" id="L992" title="All 4 branches covered.">        if (!rightOfSite &amp;&amp; el.ELpm == RE) {</span>
-<span class="fc" id="L993">            return false;</span>
+<span class="fc bfc" id="L997" title="All 4 branches covered.">        if (!rightOfSite &amp;&amp; el.ELpm == RE) {</span>
+<span class="fc" id="L998">            return false;</span>
         }
 
-<span class="fc bfc" id="L996" title="All 2 branches covered.">        if (e.a == 1.0) {</span>
-<span class="fc" id="L997">            dyp = p.getY() - topsite.coord.getY();</span>
-<span class="fc" id="L998">            dxp = p.getX() - topsite.coord.getX();</span>
-<span class="fc" id="L999">            fast = false;</span>
-<span class="fc bfc" id="L1000" title="All 8 branches covered.">            if ((!rightOfSite &amp; (e.b &lt; 0.0)) | (rightOfSite &amp; (e.b &gt;= 0.0))) {</span>
-<span class="fc bfc" id="L1001" title="All 2 branches covered.">                above = dyp &gt;= e.b * dxp;</span>
-<span class="fc" id="L1002">                fast = above;</span>
+<span class="fc bfc" id="L1001" title="All 2 branches covered.">        if (e.a == 1.0) {</span>
+<span class="fc" id="L1002">            dyp = p.getY() - topsite.coord.getY();</span>
+<span class="fc" id="L1003">            dxp = p.getX() - topsite.coord.getX();</span>
+<span class="fc" id="L1004">            fast = false;</span>
+<span class="fc bfc" id="L1005" title="All 8 branches covered.">            if ((!rightOfSite &amp; (e.b &lt; 0.0)) | (rightOfSite &amp; (e.b &gt;= 0.0))) {</span>
+<span class="fc bfc" id="L1006" title="All 2 branches covered.">                above = dyp &gt;= e.b * dxp;</span>
+<span class="fc" id="L1007">                fast = above;</span>
             } else {
-<span class="fc bfc" id="L1004" title="All 2 branches covered.">                above = p.getX() + p.getY() * e.b &gt; e.c;</span>
-<span class="fc bfc" id="L1005" title="All 2 branches covered.">                if (e.b &lt; 0.0) {</span>
-<span class="fc bfc" id="L1006" title="All 2 branches covered.">                    above = !above;</span>
+<span class="fc bfc" id="L1009" title="All 2 branches covered.">                above = p.getX() + p.getY() * e.b &gt; e.c;</span>
+<span class="fc bfc" id="L1010" title="All 2 branches covered.">                if (e.b &lt; 0.0) {</span>
+<span class="fc bfc" id="L1011" title="All 2 branches covered.">                    above = !above;</span>
                 }
-<span class="fc bfc" id="L1008" title="All 2 branches covered.">                if (!above) {</span>
-<span class="fc" id="L1009">                    fast = true;</span>
+<span class="fc bfc" id="L1013" title="All 2 branches covered.">                if (!above) {</span>
+<span class="fc" id="L1014">                    fast = true;</span>
                 }
             }
-<span class="fc bfc" id="L1012" title="All 2 branches covered.">            if (!fast) {</span>
-<span class="fc" id="L1013">                dxs = topsite.coord.getX() - (e.reg[0]).coord.getX();</span>
-<span class="fc bfc" id="L1014" title="All 2 branches covered.">                above = e.b * (dxp * dxp - dyp * dyp) &lt; dxs * dyp</span>
+<span class="fc bfc" id="L1017" title="All 2 branches covered.">            if (!fast) {</span>
+<span class="fc" id="L1018">                dxs = topsite.coord.getX() - (e.reg[0]).coord.getX();</span>
+<span class="fc bfc" id="L1019" title="All 2 branches covered.">                above = e.b * (dxp * dxp - dyp * dyp) &lt; dxs * dyp</span>
                     * (1.0 + 2.0 * dxp / dxs + e.b * e.b);
-<span class="fc bfc" id="L1016" title="All 2 branches covered.">                if (e.b &lt; 0.0) {</span>
-<span class="fc bfc" id="L1017" title="All 2 branches covered.">                    above = !above;</span>
+<span class="fc bfc" id="L1021" title="All 2 branches covered.">                if (e.b &lt; 0.0) {</span>
+<span class="fc bfc" id="L1022" title="All 2 branches covered.">                    above = !above;</span>
                 }
             }
         } else /* e.b==1.0 */ {
-<span class="fc" id="L1021">            yl = e.c - e.a * p.getX();</span>
-<span class="fc" id="L1022">            t1 = p.getY() - yl;</span>
-<span class="fc" id="L1023">            t2 = p.getX() - topsite.coord.getX();</span>
-<span class="fc" id="L1024">            t3 = yl - topsite.coord.getY();</span>
-<span class="fc bfc" id="L1025" title="All 2 branches covered.">            above = t1 * t1 &gt; t2 * t2 + t3 * t3;</span>
+<span class="fc" id="L1026">            yl = e.c - e.a * p.getX();</span>
+<span class="fc" id="L1027">            t1 = p.getY() - yl;</span>
+<span class="fc" id="L1028">            t2 = p.getX() - topsite.coord.getX();</span>
+<span class="fc" id="L1029">            t3 = yl - topsite.coord.getY();</span>
+<span class="fc bfc" id="L1030" title="All 2 branches covered.">            above = t1 * t1 &gt; t2 * t2 + t3 * t3;</span>
         }
-<span class="fc bfc" id="L1027" title="All 4 branches covered.">        return el.ELpm == LE ? above : !above;</span>
+<span class="fc bfc" id="L1032" title="All 4 branches covered.">        return el.ELpm == LE ? above : !above;</span>
     }
 
     private Site rightReg(HalfEdge he) {
-<span class="fc bfc" id="L1031" title="All 2 branches covered.">        if (he.ELedge == (Edge) null) {</span>
+<span class="fc bfc" id="L1036" title="All 2 branches covered.">        if (he.ELedge == (Edge) null) {</span>
             // if this halfedge has no edge, return the bottom site (whatever
             // that is)
         
-<span class="fc" id="L1035">            return bottomsite;</span>
+<span class="fc" id="L1040">            return bottomsite;</span>
         }
 
         // if the ELpm field is zero, return the site 0 that this edge bisects,
         // otherwise return site number 1
-<span class="fc bfc" id="L1040" title="All 2 branches covered.">        return he.ELpm == LE ? he.ELedge.reg[RE] : </span>
+<span class="fc bfc" id="L1045" title="All 2 branches covered.">        return he.ELpm == LE ? he.ELedge.reg[RE] : </span>
             he.ELedge.reg[LE];
     }
 
     private float dist(Site s, Site t) {
         float dx, dy;
-<span class="fc" id="L1046">        dx = s.coord.getX() - t.coord.getX();</span>
-<span class="fc" id="L1047">        dy = s.coord.getY() - t.coord.getY();</span>
-<span class="fc" id="L1048">        return (float) (Math.sqrt(dx * dx + dy * dy));</span>
+<span class="fc" id="L1051">        dx = s.coord.getX() - t.coord.getX();</span>
+<span class="fc" id="L1052">        dy = s.coord.getY() - t.coord.getY();</span>
+<span class="fc" id="L1053">        return (float) (Math.sqrt(dx * dx + dy * dy));</span>
     }
 
     // create a new site where the HalfEdges el1 and el2 intersect - note that
@@ -1057,46 +1062,46 @@ public class VoronoiFortunesSweep {
         boolean rightOfSite;
         Site v;
 
-<span class="fc" id="L1060">        e1 = el1.ELedge;</span>
-<span class="fc" id="L1061">        e2 = el2.ELedge;</span>
-<span class="fc bfc" id="L1062" title="All 4 branches covered.">        if (e1 == null || e2 == null) {</span>
-<span class="fc" id="L1063">            return null;</span>
-        }
-
-        // if the two edges bisect the same parent, return null
-<span class="fc bfc" id="L1067" title="All 2 branches covered.">        if (e1.reg[1].equals(e2.reg[1])) {</span>
+<span class="fc" id="L1065">        e1 = el1.ELedge;</span>
+<span class="fc" id="L1066">        e2 = el2.ELedge;</span>
+<span class="fc bfc" id="L1067" title="All 4 branches covered.">        if (e1 == null || e2 == null) {</span>
 <span class="fc" id="L1068">            return null;</span>
         }
 
-<span class="fc" id="L1071">        d = e1.a * e2.b - e1.b * e2.a;</span>
-<span class="fc bfc" id="L1072" title="All 4 branches covered.">        if (-1.0e-10 &lt; d &amp;&amp; d &lt; 1.0e-10) {</span>
+        // if the two edges bisect the same parent, return null
+<span class="fc bfc" id="L1072" title="All 2 branches covered.">        if (e1.reg[1].equals(e2.reg[1])) {</span>
 <span class="fc" id="L1073">            return null;</span>
         }
 
-<span class="fc" id="L1076">        xint = (e1.c * e2.b - e2.c * e1.b) / d;</span>
-<span class="fc" id="L1077">        yint = (e2.c * e1.a - e1.c * e2.a) / d;</span>
-
-<span class="fc bfc" id="L1079" title="All 2 branches covered.">        if ((e1.reg[1].coord.getY() &lt; e2.reg[1].coord.getY())</span>
-<span class="fc bfc" id="L1080" title="All 2 branches covered.">            || (e1.reg[1].coord.getY() == e2.reg[1].coord.getY() </span>
-<span class="fc bfc" id="L1081" title="All 2 branches covered.">            &amp;&amp; e1.reg[1].coord.getX() &lt; e2.reg[1].coord.getX())) {</span>
-<span class="fc" id="L1082">            el = el1;</span>
-<span class="fc" id="L1083">            e = e1;</span>
-        } else {
-<span class="fc" id="L1085">            el = el2;</span>
-<span class="fc" id="L1086">            e = e2;</span>
+<span class="fc" id="L1076">        d = e1.a * e2.b - e1.b * e2.a;</span>
+<span class="fc bfc" id="L1077" title="All 4 branches covered.">        if (-1.0e-10 &lt; d &amp;&amp; d &lt; 1.0e-10) {</span>
+<span class="fc" id="L1078">            return null;</span>
         }
 
-<span class="fc bfc" id="L1089" title="All 2 branches covered.">        rightOfSite = xint &gt;= e.reg[1].coord.getX();</span>
-<span class="fc bfc" id="L1090" title="All 8 branches covered.">        if ((rightOfSite &amp;&amp; el.ELpm == LE)</span>
+<span class="fc" id="L1081">        xint = (e1.c * e2.b - e2.c * e1.b) / d;</span>
+<span class="fc" id="L1082">        yint = (e2.c * e1.a - e1.c * e2.a) / d;</span>
+
+<span class="fc bfc" id="L1084" title="All 2 branches covered.">        if ((e1.reg[1].coord.getY() &lt; e2.reg[1].coord.getY())</span>
+<span class="fc bfc" id="L1085" title="All 2 branches covered.">            || (e1.reg[1].coord.getY() == e2.reg[1].coord.getY() </span>
+<span class="fc bfc" id="L1086" title="All 2 branches covered.">            &amp;&amp; e1.reg[1].coord.getX() &lt; e2.reg[1].coord.getX())) {</span>
+<span class="fc" id="L1087">            el = el1;</span>
+<span class="fc" id="L1088">            e = e1;</span>
+        } else {
+<span class="fc" id="L1090">            el = el2;</span>
+<span class="fc" id="L1091">            e = e2;</span>
+        }
+
+<span class="fc bfc" id="L1094" title="All 2 branches covered.">        rightOfSite = xint &gt;= e.reg[1].coord.getX();</span>
+<span class="fc bfc" id="L1095" title="All 8 branches covered.">        if ((rightOfSite &amp;&amp; el.ELpm == LE)</span>
             || (!rightOfSite &amp;&amp; el.ELpm == RE)) {
-<span class="fc" id="L1092">            return null;</span>
+<span class="fc" id="L1097">            return null;</span>
         }
 
         // create a new site at the point of intersection - this is a new vector
         // event waiting to happen
-<span class="fc" id="L1097">        v = new Site();</span>
-<span class="fc" id="L1098">        v.coord = new PairFloat(xint, yint);</span>
-<span class="fc" id="L1099">        return v;</span>
+<span class="fc" id="L1102">        v = new Site();</span>
+<span class="fc" id="L1103">        v.coord = new PairFloat(xint, yint);</span>
+<span class="fc" id="L1104">        return v;</span>
     }
     
 }

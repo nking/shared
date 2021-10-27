@@ -89,7 +89,7 @@ public class FixedSizeSortedVector&lt;T extends Comparable&lt;T&gt;&gt; {
 
 <span class="fc" id="L90">            int comp = value.compareTo(a[compareIdx]);</span>
 
-<span class="fc bfc" id="L92" title="All 2 branches covered.">            if (comp != -1) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            if (comp &gt;= 0) {</span>
 <span class="fc" id="L93">                return false;</span>
             }
 

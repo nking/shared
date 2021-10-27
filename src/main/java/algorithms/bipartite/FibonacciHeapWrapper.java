@@ -4,7 +4,9 @@ import algorithms.heapsAndPQs.Heap;
 import algorithms.heapsAndPQs.HeapNode;
 
 /**
- *
+ *  NOTE: each heap has O(1) decreaseKey, but if multiple bins are used,
+ *     the method takes O(log_2(n)) + O(1).
+ * 
  * @author nichole
  */
 public class FibonacciHeapWrapper {

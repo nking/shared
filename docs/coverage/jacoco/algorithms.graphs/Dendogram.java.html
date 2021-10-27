@@ -15,7 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
+ * encapsulates dendogram layers for each number of communities as
+ * the graph is increasingly partitioned into larger numbers of 
+ * communities.
+ * A dendogram layer is the number of components (a.k.a. communities) 
+ * in graph layer.
+   
  * @author nichole
  */
 public class Dendogram {
@@ -24,56 +29,61 @@ public class Dendogram {
     
     private final SimpleLinkedListNode[] originalGraph;
     
-<span class="nc" id="L27">    private Dendogram() {originalGraph=null;layers=null;}</span>
+<span class="nc" id="L32">    private Dendogram() {originalGraph=null;layers=null;}</span>
     
-<span class="fc" id="L29">    public Dendogram(final SimpleLinkedListNode[] adjList) {</span>
-<span class="fc" id="L30">        originalGraph = copyGraph(adjList);</span>
-<span class="fc" id="L31">        layers = new ArrayList&lt;DendogramLayer&gt;(adjList.length);</span>
-<span class="fc" id="L32">    }</span>
+<span class="fc" id="L34">    public Dendogram(final SimpleLinkedListNode[] adjList) {</span>
+<span class="fc" id="L35">        originalGraph = copyGraph(adjList);</span>
+<span class="fc" id="L36">        layers = new ArrayList&lt;DendogramLayer&gt;(adjList.length);</span>
+<span class="fc" id="L37">    }</span>
     
     private SimpleLinkedListNode[] copyGraph(final SimpleLinkedListNode[] g) {
-<span class="fc" id="L35">        SimpleLinkedListNode[] c = g.clone();</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="fc" id="L37">            c[i] = new SimpleLinkedListNode(g[i]);</span>
+<span class="fc" id="L40">        SimpleLinkedListNode[] c = g.clone();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L42">            c[i] = new SimpleLinkedListNode(g[i]);</span>
         }
-<span class="fc" id="L39">        return c;</span>
+<span class="fc" id="L44">        return c;</span>
     }
     
     public int createUsingGirvanNewman(int src) {
         
-<span class="fc" id="L44">        int nV = originalGraph.length;</span>
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">        if (originalGraph == null || layers == null) {</span>
+<span class="nc" id="L50">            throw new IllegalArgumentException(&quot;instance must be constructed with&quot;</span>
+                    + &quot; adjacency matrix&quot;);
+        }
         
-<span class="fc" id="L46">        Betweenness b = new Betweenness();</span>
-<span class="fc" id="L47">        SimpleLinkedListNode[] g = copyGraph(originalGraph);</span>
+<span class="fc" id="L54">        int nV = originalGraph.length;</span>
+        
+<span class="fc" id="L56">        Betweenness b = new Betweenness();</span>
+<span class="fc" id="L57">        SimpleLinkedListNode[] g = copyGraph(originalGraph);</span>
 
-<span class="fc" id="L49">        List&lt;TIntSet&gt; cc = DisjointForest.connectedComponents(g);</span>
-<span class="fc" id="L50">        int nC = cc.size();</span>
-<span class="fc" id="L51">        DendogramLayer layer = createDendogramLayer(cc, nV);</span>
-<span class="fc" id="L52">        getLayers().add(layer);</span>
+<span class="fc" id="L59">        List&lt;TIntSet&gt; cc = DisjointForest.connectedComponents(g);</span>
+<span class="fc" id="L60">        int nC = cc.size();</span>
+<span class="fc" id="L61">        DendogramLayer layer = createDendogramLayer(cc, nV);</span>
+<span class="fc" id="L62">        getLayers().add(layer);</span>
         
-<span class="fc bfc" id="L54" title="All 2 branches covered.">        while (nC &lt; nV) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        while (nC &lt; nV) {</span>
             
-<span class="fc" id="L56">            System.out.printf(&quot;nComponents=%d (nV=%d)\n&quot;, nC, nV);</span>
-<span class="fc" id="L57">            System.out.flush();</span>
+<span class="fc" id="L66">            System.out.printf(&quot;nComponents=%d (nV=%d)\n&quot;, nC, nV);</span>
+<span class="fc" id="L67">            System.out.flush();</span>
 
-<span class="fc" id="L59">            Results r = b.girvanNewmanDAG(g, src);</span>
+<span class="fc" id="L69">            Results r = b.girvanNewmanDAG(g, src);</span>
 
-<span class="fc" id="L61">            TObjectFloatMap&lt;PairInt&gt; edgeWeights = r.getEdges();</span>
-<span class="fc" id="L62">            PairInt max = getMaxEdge(edgeWeights);</span>
-<span class="fc" id="L63">            System.out.printf(&quot;max edge = (%d, %d)\n&quot;, max.getX(), max.getY());</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            if (max == null) {</span>
-<span class="nc" id="L65">                break;</span>
+<span class="fc" id="L71">            TObjectFloatMap&lt;PairInt&gt; edgeWeights = r.getEdges();</span>
+<span class="fc" id="L72">            PairInt max = getMaxEdge(edgeWeights);</span>
+<span class="fc" id="L73">            System.out.printf(&quot;max edge = (%d, %d)\n&quot;, max.getX(), max.getY());</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">            if (max == null) {</span>
+<span class="nc" id="L75">                break;</span>
             }
             
-<span class="fc" id="L68">            g[max.getX()].delete(max.getY());</span>
+<span class="fc" id="L78">            g[max.getX()].delete(max.getY());</span>
 
-<span class="fc" id="L70">            cc = DisjointForest.connectedComponents(g);</span>
-<span class="fc" id="L71">            nC = cc.size();</span>
-<span class="fc" id="L72">            layer = createDendogramLayer(cc, nV);</span>
-<span class="fc" id="L73">            getLayers().add(layer);</span>
-<span class="fc" id="L74">        }</span>
+<span class="fc" id="L80">            cc = DisjointForest.connectedComponents(g);</span>
+<span class="fc" id="L81">            nC = cc.size();</span>
+<span class="fc" id="L82">            layer = createDendogramLayer(cc, nV);</span>
+<span class="fc" id="L83">            getLayers().add(layer);</span>
+<span class="fc" id="L84">        }</span>
         
-<span class="fc" id="L76">        return nC;</span>
+<span class="fc" id="L86">        return nC;</span>
     }
     
     public static class DendogramLayer {
@@ -95,55 +105,55 @@ public class Dendogram {
     }
     
     private DendogramLayer createDendogramLayer(List&lt;TIntSet&gt; cc,int nVertexes) {
-<span class="fc" id="L98">        DendogramLayer layer = new DendogramLayer();</span>
-<span class="fc" id="L99">        layer.nComponents = cc.size();</span>
-<span class="fc" id="L100">        layer.vertexComponents = new int[nVertexes];</span>
-<span class="fc" id="L101">        Arrays.fill(layer.vertexComponents, -1);</span>
-<span class="fc" id="L102">        layer.componentVertexes = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L108">        DendogramLayer layer = new DendogramLayer();</span>
+<span class="fc" id="L109">        layer.nComponents = cc.size();</span>
+<span class="fc" id="L110">        layer.vertexComponents = new int[nVertexes];</span>
+<span class="fc" id="L111">        Arrays.fill(layer.vertexComponents, -1);</span>
+<span class="fc" id="L112">        layer.componentVertexes = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
         TIntIterator iter;
         int v;
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int c = 0; c &lt; cc.size(); ++c) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int c = 0; c &lt; cc.size(); ++c) {</span>
             
-<span class="fc" id="L108">            TIntSet set = cc.get(c);</span>
+<span class="fc" id="L118">            TIntSet set = cc.get(c);</span>
             
-<span class="fc" id="L110">            layer.componentVertexes.put(c, set);</span>
+<span class="fc" id="L120">            layer.componentVertexes.put(c, set);</span>
             
-<span class="fc" id="L112">            iter = set.iterator();</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">            while (iter.hasNext()){</span>
-<span class="fc" id="L114">                v = iter.next();</span>
-<span class="fc" id="L115">                layer.vertexComponents[v] = c;</span>
+<span class="fc" id="L122">            iter = set.iterator();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            while (iter.hasNext()){</span>
+<span class="fc" id="L124">                v = iter.next();</span>
+<span class="fc" id="L125">                layer.vertexComponents[v] = c;</span>
             }    
         }
         
-<span class="fc" id="L119">        return layer;</span>
+<span class="fc" id="L129">        return layer;</span>
     }
 
     private PairInt getMaxEdge(TObjectFloatMap&lt;PairInt&gt; edgeWeights) {
         
-<span class="fc" id="L124">        TObjectFloatIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
+<span class="fc" id="L134">        TObjectFloatIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
         
-<span class="fc" id="L126">        float max = Float.NEGATIVE_INFINITY;</span>
-<span class="fc" id="L127">        PairInt maxP = null;</span>
+<span class="fc" id="L136">        float max = Float.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L137">        PairInt maxP = null;</span>
         float w;
         
-<span class="fc bfc" id="L130" title="All 2 branches covered.">        for (int i = 0; i &lt; edgeWeights.size(); ++i) {</span>
-<span class="fc" id="L131">            iter.advance();</span>
-<span class="fc" id="L132">            w = iter.value();</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (w &gt; max) {</span>
-<span class="fc" id="L134">                max = w;</span>
-<span class="fc" id="L135">                maxP = iter.key();</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        for (int i = 0; i &lt; edgeWeights.size(); ++i) {</span>
+<span class="fc" id="L141">            iter.advance();</span>
+<span class="fc" id="L142">            w = iter.value();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            if (w &gt; max) {</span>
+<span class="fc" id="L144">                max = w;</span>
+<span class="fc" id="L145">                maxP = iter.key();</span>
             }
         }
         
-<span class="fc" id="L139">        return maxP;</span>
+<span class="fc" id="L149">        return maxP;</span>
     }
 
     /**
      * @return the layers
      */
     public List&lt;DendogramLayer&gt; getLayers() {
-<span class="fc" id="L146">        return layers;</span>
+<span class="fc" id="L156">        return layers;</span>
     }
     
 }

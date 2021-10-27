@@ -72,7 +72,7 @@ import java.util.logging.Logger;
      &lt;/pre&gt;
  * @author nichole
  */
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">public class AStar {</span>
+public class AStar {
     
     /**
      * directed acyclic graph where the main index of the object array
@@ -243,7 +243,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L243">                    nodes[v] = node;</span>
 <span class="fc" id="L244">                    predecessor[v] = u;</span>
 <span class="pc bnc" id="L245" title="All 2 branches missed.">                } else if (nodes[v] != null) {</span>
-<span class="nc bnc" id="L246" title="All 4 branches missed.">                    assert(visited[v] == 2);</span>
+                    //assert(visited[v] == 1);
 <span class="nc" id="L247">                    g[v] = gUPlusWUV;</span>
 <span class="nc" id="L248">                    f[v] = g[v] + h[v];</span>
 <span class="nc" id="L249">                    predecessor[v] = u;</span>

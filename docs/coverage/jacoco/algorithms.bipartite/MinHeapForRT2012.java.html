@@ -208,36 +208,37 @@ public class MinHeapForRT2012 {
      if using a YFastTrie the runtime complexity is O(log log(M))
         where M is the number of bits of the maximum value the trie
         was initialized with.
-     If using a FibonacciHeap, the runtime complexity is O(1).
-        
+     If using a FibonacciHeap, the runtime complexity is O(1) if the node
+     and the new key reside in same heap in the group of heaps, else
+     the remove and insert makes the runtime complexity O(log_2(n)).
      */
     public void decreaseKey(HeapNode node, long key2) {
     
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L218">                decreaseKey1(node, key2);</span>
-<span class="nc" id="L219">                break;</span>
+<span class="nc" id="L219">                decreaseKey1(node, key2);</span>
+<span class="nc" id="L220">                break;</span>
             default:
-<span class="fc" id="L221">                decreaseKey2(node, key2);</span>
+<span class="fc" id="L222">                decreaseKey2(node, key2);</span>
                 break;
         }
-<span class="fc" id="L224">    }</span>
+<span class="fc" id="L225">    }</span>
      
     private void decreaseKey1(HeapNode node, long key2) {
 
-<span class="nc" id="L228">        log.fine(&quot;decreaseKey in fibHeap from key=&quot; + </span>
-<span class="nc" id="L229">            node.getKey() + &quot; to key=&quot; + key2);</span>
+<span class="nc" id="L229">        log.fine(&quot;decreaseKey in fibHeap from key=&quot; + </span>
+<span class="nc" id="L230">            node.getKey() + &quot; to key=&quot; + key2);</span>
         
-<span class="nc" id="L231">        heap1.decreaseKey(node, key2);</span>
-<span class="nc" id="L232">    }</span>
+<span class="nc" id="L232">        heap1.decreaseKey(node, key2);</span>
+<span class="nc" id="L233">    }</span>
     
     private void decreaseKey2(HeapNode node, long key2) {
 
-<span class="fc" id="L236">        log.fine(&quot;decreaseKey in yft from key=&quot; + </span>
-<span class="fc" id="L237">            node.getKey() + &quot; to key=&quot; + key2);</span>
+<span class="fc" id="L237">        log.fine(&quot;decreaseKey in yft from key=&quot; + </span>
+<span class="fc" id="L238">            node.getKey() + &quot; to key=&quot; + key2);</span>
         
-<span class="fc" id="L239">        heap2.decreaseKey(node, key2);</span>
-<span class="fc" id="L240">    }</span>
+<span class="fc" id="L240">        heap2.decreaseKey(node, key2);</span>
+<span class="fc" id="L241">    }</span>
     
      /**
      If using a FibonacciHeap, the runtime complexity is O(log_2(n)).
@@ -247,15 +248,15 @@ public class MinHeapForRT2012 {
      */
     public void remove(HeapNode node) {
     
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L252">                remove1(node);</span>
-<span class="nc" id="L253">                break;</span>
+<span class="nc" id="L253">                remove1(node);</span>
+<span class="nc" id="L254">                break;</span>
             default:
-<span class="fc" id="L255">                remove2(node);</span>
+<span class="fc" id="L256">                remove2(node);</span>
                 break;
         }
-<span class="fc" id="L258">    }</span>
+<span class="fc" id="L259">    }</span>
      
     /**
      * remove from Fibonacci heap
@@ -264,11 +265,11 @@ public class MinHeapForRT2012 {
      */
     private void remove1(HeapNode node) {
 
-<span class="nc" id="L267">        log.fine(&quot;remove in fibHeap key=&quot; + </span>
-<span class="nc" id="L268">            node.getKey());</span>
+<span class="nc" id="L268">        log.fine(&quot;remove in fibHeap key=&quot; + </span>
+<span class="nc" id="L269">            node.getKey());</span>
         
-<span class="nc" id="L270">        heap1.remove(node);</span>
-<span class="nc" id="L271">    }</span>
+<span class="nc" id="L271">        heap1.remove(node);</span>
+<span class="nc" id="L272">    }</span>
     
     /**
      * remove node from YFastTrie min priority queue.
@@ -277,36 +278,36 @@ public class MinHeapForRT2012 {
      */
     private void remove2(HeapNode node) {
 
-<span class="fc" id="L280">        log.fine(&quot;remove in yft key=&quot; + </span>
-<span class="fc" id="L281">            node.getKey());</span>
+<span class="fc" id="L281">        log.fine(&quot;remove in yft key=&quot; + </span>
+<span class="fc" id="L282">            node.getKey());</span>
         
-<span class="fc" id="L283">        heap2.remove(node);</span>
-<span class="fc" id="L284">    }</span>
+<span class="fc" id="L284">        heap2.remove(node);</span>
+<span class="fc" id="L285">    }</span>
     
     public long getNumberOfNodes() {
         
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L290">                return heap1.getNumberOfNodes();</span>
+<span class="nc" id="L291">                return heap1.getNumberOfNodes();</span>
             default:
-<span class="fc" id="L292">                return heap2.getNumberOfNodes();</span>
+<span class="fc" id="L293">                return heap2.getNumberOfNodes();</span>
         }
     }
 
     @Override
     public String toString() {
     
-<span class="fc" id="L299">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L300">        sb.append(&quot;min heap type = &quot;);</span>
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        switch(algorithm) {</span>
+<span class="fc" id="L300">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L301">        sb.append(&quot;min heap type = &quot;);</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">        switch(algorithm) {</span>
             case 1:
-<span class="nc" id="L303">                sb.append(&quot;Fibonacci Heap&quot;); break;</span>
+<span class="nc" id="L304">                sb.append(&quot;Fibonacci Heap&quot;); break;</span>
             default:
-<span class="fc" id="L305">                sb.append(&quot;YFastTrie min priority queue&quot;); break;</span>
+<span class="fc" id="L306">                sb.append(&quot;YFastTrie min priority queue&quot;); break;</span>
         }
-<span class="fc" id="L307">        sb.append(&quot;. size=&quot;).append(getNumberOfNodes());</span>
+<span class="fc" id="L308">        sb.append(&quot;. size=&quot;).append(getNumberOfNodes());</span>
         
-<span class="fc" id="L309">        return sb.toString();</span>
+<span class="fc" id="L310">        return sb.toString();</span>
     }
     
     

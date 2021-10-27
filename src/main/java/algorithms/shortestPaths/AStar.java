@@ -243,7 +243,7 @@ public class AStar {
                     nodes[v] = node;
                     predecessor[v] = u;
                 } else if (nodes[v] != null) {
-                    assert(visited[v] == 2);
+                    //assert(visited[v] == 1);
                     g[v] = gUPlusWUV;
                     f[v] = g[v] + h[v];
                     predecessor[v] = u;

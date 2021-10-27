@@ -14,6 +14,10 @@ import java.util.Arrays;
  * minimum spanning tree is the subset of edges in a weighted undirected graph
  * that connect all vertexes for a total minimum cost (sum of edge weights).
  * 
+ * Prim's is the same as Dijkstra's excepting 2 things:
+    (1) d[v] is the minimum cost of any edge connecting to v
+    and (2) the relax function compares the weight of u,v to d[v]
+ * 
  * Implemented from pseudo code in Cormen et al. Introduction to Algorithms and
       from http://en.wikipedia.org/wiki/Prim's_algorithm
      
@@ -44,7 +48,7 @@ import java.util.Arrays;
  *         crossing the cut.   a tie can mean more than one light edge for a cut.
  *         
  *    
- *     the goal is to visit every node in the input graph in a greedy dfs style (that is
+ *     the goal is to visit every node in the input graph in a greedy BFS style (that is
  *     find the next best connected edge and continue from there) adding an edge if
  *     the end points are not already in the tree and if the edge is the minimum of the
  *     u neighbors.

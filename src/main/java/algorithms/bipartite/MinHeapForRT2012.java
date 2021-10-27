@@ -208,8 +208,9 @@ public class MinHeapForRT2012 {
      if using a YFastTrie the runtime complexity is O(log log(M))
         where M is the number of bits of the maximum value the trie
         was initialized with.
-     If using a FibonacciHeap, the runtime complexity is O(1).
-        
+     If using a FibonacciHeap, the runtime complexity is O(1) if the node
+     and the new key reside in same heap in the group of heaps, else
+     the remove and insert makes the runtime complexity O(log_2(n)).
      */
     public void decreaseKey(HeapNode node, long key2) {
     

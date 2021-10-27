@@ -258,12 +258,21 @@ public class ElasticNet {
         double[] thisDualGaps = null;
         TIntArrayList thisNIter = null;
 
-        int nAlphas = 0;
+        //int nAlphas = 0;
         double[] alphas = new double[]{alpha};
-
+        int nAlphas = alphas.length;
+        
         // edited for y being one dimension
         if (Xy != null) {
             thisXy = Arrays.copyOf(Xy, Xy.length);
+            // avoding NPEs below
+            thisDualGaps = new double[]{ Double.NEGATIVE_INFINITY};
+            thisNIter = new TIntArrayList();
+            thisNIter.add(Integer.MIN_VALUE);
+            thisCoef = new double[nFeatures][nAlphas];
+            for (int i = 0; i < nFeatures; ++i) {
+                thisCoef[i] = new double[nAlphas];
+            }
         } else {
             // call to enet_path on line 272 of coordinate_descent.py
             PathResults pathResults =
@@ -290,14 +299,15 @@ public class ElasticNet {
             //_, this_coef, this_dual_gap, this_iter = \
 
             thisCoef = pathResults.coefs;
-            thisDualGaps = pathResults.dualGaps;
-            thisNIter = pathResults.nIters;
+            thisDualGaps = pathResults.dualGaps; // this length is nAlphas which was 0 before bugfix, and is now 1
+            thisNIter = pathResults.nIters;      //  same here
         }
 
         //coef_[k] = this_coef[:, 0]
         for (int ii = 0; ii < coef.length; ++ii) {
             this.coef[ii] = thisCoef[ii][0];
         }
+       
         this.dualGap = thisDualGaps[0];
         this.nIter.add(thisNIter.get(0));
 
@@ -564,6 +574,9 @@ public class ElasticNet {
         PreFitResults preFitResults =
             preFit(X2, y2, Xy2, normalize2, fitIntercept2, false);
 
+        //TODO: revisit the code and algorithm to see if the intention is to
+        //   populate these arrays instead of reset them assuming
+        //   that the size remains constant
         X2 = preFitResults.X;
         y2 = preFitResults.y;
         XMean2 = preFitResults.XMean;
@@ -738,7 +751,7 @@ public class ElasticNet {
      * @param nAlphas2
      * @param normalize2
      * @param copyX2
-     * @return
+     * @return 
      */
     private double[] _alphaGrid(double[][] X2, double[] y2,
         double[] Xy2, double l1Ratio2, boolean fitIntercept2,

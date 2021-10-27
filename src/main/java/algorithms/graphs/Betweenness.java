@@ -18,7 +18,26 @@ import java.util.logging.Logger;
 
 /**
  * "Betweenness" is an algorithm to find non-overlapping communities 
- * within an unweighted, undirected network.
+ * within an unweighted, undirected network, and it does so by
+ *  finding the edges that are least likely to be inside a community.
+ * 
+ * Edges that are most frequently in the shortest paths between 2 nodes
+ * have high betweenness scores.
+ * <pre>
+ * e.g. edge BD in Fig 10.3 below from Chapter 10 of
+ * "Mining of Massive Datasets" by Leskovec,  Rajaraman, & Ullman
+ * has a high betweenness score as it lies on the path
+ * from A to any node to the right of D, same for C and B and vice versa.
+ * 
+ *    A-----B-----D--E
+ *     \   /      |\ |
+ *      \ /       |_\|
+ *       C        G  F
+ * 
+ * The term is related to a graph bridge but is not necessarily
+ * an edge which disconnects 2 subgraphs
+ * (see FindAllBridgesDFS.java).
+ * </pre>
  * 
  * <pre>
       for more information, see:

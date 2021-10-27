@@ -15,7 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
+ * encapsulates dendogram layers for each number of communities as
+ * the graph is increasingly partitioned into larger numbers of 
+ * communities.
+ * A dendogram layer is the number of components (a.k.a. communities) 
+ * in graph layer.
+   
  * @author nichole
  */
 public class Dendogram {
@@ -40,6 +45,11 @@ public class Dendogram {
     }
     
     public int createUsingGirvanNewman(int src) {
+        
+        if (originalGraph == null || layers == null) {
+            throw new IllegalArgumentException("instance must be constructed with"
+                    + " adjacency matrix");
+        }
         
         int nV = originalGraph.length;
         

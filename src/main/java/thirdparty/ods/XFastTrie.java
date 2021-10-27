@@ -181,12 +181,15 @@ public class XFastTrie<S extends XFastTrieNode<T>, T>
 		}
        
 		// 2 - remove u from linked list
-		S pred = (u.child[prev] != null) ?
-            (S)u.child[prev] : null;   // predecessor
-		S succ = (u.child[next] != null) ?
-            (S)u.child[next] : null;   // successor
-		pred.child[next] = succ;
-		succ.child[prev] = pred;
+		S pred = (u.child[prev] != null) ? (S)u.child[prev] : null;   // predecessor
+		S succ = (u.child[next] != null) ? (S)u.child[next] : null;   // successor
+		if (pred != null) {
+                    pred.child[next] = succ;
+                }
+                if (succ != null) {
+		    succ.child[prev] = pred;
+                }
+                
 		u.child[next] = u.child[prev] = null;
 		S w = u;
 		// 3 - delete nodes on path to u

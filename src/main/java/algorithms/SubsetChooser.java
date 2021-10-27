@@ -10,7 +10,7 @@ ordered manner.
 The class uses Gosper's hack from
   http://read.seas.harvard.edu/cs207/2012/
 
-* first implemented in project
+* implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
      w/ Copyright (c) Climb With Your Feet
      and using The MIT License (MIT)
