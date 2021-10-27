@@ -555,8 +555,5 @@ public class TSPDynamic {
     // instantiate on the heap:
     NodePtr node = (NodePtr) malloc (sizeof(Node));
 
-    // access members of node through ->
-    node->next = node2;
-}
 */
 }
