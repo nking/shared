@@ -558,3 +558,5 @@ public class TSPDynamic {
     // access members of node through ->
     node->next = node2;
 }
+*/
+}
