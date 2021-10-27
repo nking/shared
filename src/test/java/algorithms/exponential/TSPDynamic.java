@@ -351,9 +351,10 @@ public class TSPDynamic {
     //   with bug fixes here to the method least, and corrections to use
     // the start node.  sent the changes to interviewbit too.
     //NOTE: if implementing in C code and do not have a library with a hash set,
-    //   it would be easier to replace uncompleted set with a linked list
+    //   it would be easier to replace uncompleted set with a doubly linked list
     //   which is easy to make, and then one must use the node back as an argument
     //   so the removal from the uncompleted linked list is O(1).
+    // SEE notes below the "least" method for C programming implementation of DoubleLinkedList
     Set<Integer> uncompleted = null;
     private final int sentinel = Integer.MAX_VALUE;
 
@@ -432,4 +433,130 @@ public class TSPDynamic {
 
         return nc;
     }
+    
+    /*
+    For C programming:
+    ------------------
+
+    the UML for the Node and DoubleLinkedList classes:
+
+        DoubleLinkedList
+    =========================
+       head:Node
+       tail:Node
+       n:int
+      ------------------------
+       +insert(Node node):void
+       +remove(Node node):void
+       +search(int key)
+       +first() : Node
+       +last() : Node
+       +isEmpty() : boolean
+       +size() : int
+      ------------------------
+
+    Node
+    =========================
+       +key:int
+       +next:Node
+       +prev:Node
+      ------------------------
+      +Node(key:int)
+      ------------------------
+
+   Java code:
+     public class DoubleLinkedList {
+        protected Node head = null;
+        protected Node tail = null;
+        protected int n = 0;
+        public DoubleLinkedList() {
+        }
+        // add node to end of double linked list
+        public void insert(Node node) {
+            if (head == null) {
+                assert(tail == null);
+                head = node;
+                node.prev = null;
+                tail = node;
+                node.next = null;
+                n++;
+                return;
+            }
+            assert(tail != null);
+            assert(tail.next == null);
+            tail.next = node;
+            node.prev = tail;
+            node.next = null;
+            n++;
+        }
+
+        public void remove(Node node) {
+            // connect node.prev with node.next
+            if (node.equals(head)) {
+                if (n == 1) {
+                    head = null;
+                    assert(head.equals(tail));
+                    tail = null;
+                } else {
+                    head = head.next;
+                }
+            } else if (node.equals(tail)) {
+                assert(n > 1);
+                tail.prev.next = null;
+                tail = tail.prev;
+          } else {
+                assert(node.prev != null); // node is not head
+                assert(node.next != null); // node is not tail
+                Node p = node.prev;
+                Node n2 = node.next;
+                p.next = n2;
+                n2.prev = p;
+            }
+            n--;
+        }
+        public Node first() {
+            return head;
+        }
+        public Node last() {
+            return tail;
+        }
+        public boolean isEmpty() {
+            return (n == 0);
+        }
+        public int size() {
+            return n;
+        }
+    }
+
+    C Programming:
+    // in C programming, to create an object that has itself as members, use
+    // "forward declaration"
+
+    // typedef'd struct are instantiated on the heap
+    typedef struct Node Node;
+
+    // consider declaring the node pointer (it's held in the function dynamic stack frame):
+    typedef Node * NodePtr;
+
+    struct Node {
+      int key;
+      Node *next;
+      Node *prev;
+    };
+    
+    OR
+    
+    struct Node {
+      int key;
+      NodePtr next;
+      NodePtr prev;
+    };
+
+    // instantiate on the heap:
+    NodePtr node = (NodePtr) malloc (sizeof(Node));
+
+    // access members of node through ->
+    node->next = node2;
+}
+*/
 }
