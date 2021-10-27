@@ -167,7 +167,11 @@ public class TSPDynamic {
     }
 
     /** Solves the traveling salesman problem and caches solution.
-     * NOTE that algorithm can only handle N < 32.
+     * NOTE that algorithm can only handle N less than 32.
+     * 
+     * TODO: should be able to re-order the k-permutations and visits
+        so that the embedded 0 to N loops are over the unvisited vertexes only,
+        hence decreasing the loop iteratively.
      */
     public void solveIteratively() {
         
@@ -203,6 +207,10 @@ public class TSPDynamic {
         //System.out.printf(
             "memo[%d][%d]=\n%s\n", memo.length, memo[0].length, 
             FormatArray.toString(memo, "%.1f")));
+        
+        //TODO: should be able to re-order the k-permutations and visits
+        // so that the embedded 0 to N loops are over the unvisited vertexes only,
+        //    hence decreasing the loop iteratively.
 
         // r is the number of vertexes within n vertexes, in which the subset bits are set to 1.
         for (int r = 3; r <= N; r++) {
