@@ -187,10 +187,10 @@ YFastTrie
         
 <span class="fc" id="L188">        Integer multiplicity = map.get(key);</span>
     
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (multiplicity == null) {</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        if (multiplicity == null) {</span>
 <span class="fc" id="L191">            multiplicity = Integer.valueOf(1);</span>
         } else {
-<span class="fc" id="L193">            multiplicity = Integer.valueOf(1 + multiplicity.intValue());</span>
+<span class="nc" id="L193">            multiplicity = Integer.valueOf(1 + multiplicity.intValue());</span>
         }
         
 <span class="fc" id="L196">        map.put(key, multiplicity);        </span>
@@ -217,11 +217,11 @@ YFastTrie
         
 <span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (multiplicity.intValue() &gt; 0) {</span>
 <span class="fc" id="L219">            multiplicity = Integer.valueOf(multiplicity.intValue() - 1);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">            if (multiplicity.intValue() &gt; 0) {</span>
-<span class="fc" id="L221">                map.put(key, multiplicity);</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">            if (multiplicity.intValue() &gt; 0) {</span>
+<span class="nc" id="L221">                map.put(key, multiplicity);</span>
             }
         }
-<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (multiplicity.intValue() == 0) {</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">        if (multiplicity.intValue() == 0) {</span>
 <span class="fc" id="L225">            map.remove(key);</span>
         }
         
@@ -322,7 +322,7 @@ YFastTrie
             // O(log_2(N/w))
 <span class="fc" id="L323">            Integer multiplicity = map.get(Integer.valueOf(node));</span>
     
-<span class="fc bfc" id="L325" title="All 2 branches covered.">            if (multiplicity == null) {</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">            if (multiplicity == null) {</span>
                 // remove the current repr and assign a new one
                 // delete is O(log_2(w)) + O(w-l)
 <span class="fc" id="L328">                xft.remove(Integer.valueOf(existingRepr));</span>
@@ -489,8 +489,8 @@ YFastTrie
         }
         
 <span class="fc" id="L491">        Integer successorRepr = xft.successor(nodeKey);</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (successorRepr == null) {</span>
-<span class="fc" id="L493">            return -1;</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">        if (successorRepr == null) {</span>
+<span class="nc" id="L493">            return -1;</span>
         }
 
         // the successor representative is then the next value

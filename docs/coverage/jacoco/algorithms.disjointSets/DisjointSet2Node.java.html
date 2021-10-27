@@ -108,11 +108,13 @@ public class DisjointSet2Node&lt;T&gt; {
 <span class="fc" id="L108">            sb.append(data.toString());</span>
         }
 <span class="fc" id="L110">        sb.append(&quot;, &quot;);</span>
-<span class="fc" id="L111">        sb.append(&quot;hashcode=&quot;).append(parent.hashCode());</span>
-<span class="fc" id="L112">        sb.append(&quot;, &quot;);</span>
-<span class="fc" id="L113">        sb.append(&quot;] &quot;);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (parent != null) {</span>
+<span class="fc" id="L112">            sb.append(&quot;hashcode=&quot;).append(parent.hashCode());</span>
+<span class="fc" id="L113">            sb.append(&quot;, &quot;);</span>
+        }
+<span class="fc" id="L115">        sb.append(&quot;] &quot;);</span>
         
-<span class="fc" id="L115">        return sb.toString();</span>
+<span class="fc" id="L117">        return sb.toString();</span>
     }
   
 }

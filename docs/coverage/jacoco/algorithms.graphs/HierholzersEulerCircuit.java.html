@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HierholzersEulerCircuit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">HierholzersEulerCircuit.java</span></div><h1>HierholzersEulerCircuit.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.Stack;
+
+/**
+ Hierholzer’s Algorithm to create a euler circuit from a directed graph.
+  Euler circuit is a path that traverses every edge of a graph, and the path 
+  ends on the starting vertex.
+ * &lt;pre&gt;
+ * The implementation follows from:
+ * https://www.geeksforgeeks.org/hierholzers-algorithm-directed-graph/
+ * written by
+ * https://in.linkedin.com/in/ashutosh-kumar-9527a7105
+ *
+   Geeks For Geeks  has a liberal copyright policy at:
+   https://www.geeksforgeeks.org/copyright-information/?ref=footer
+   an excerpt:
+   You are free to:
+    Share — copy and redistribute the material in any medium or format
+    Adapt — remix, transform, and build upon the material for any purpose.
+
+    Under the following terms:
+
+    Attribution — You must give appropriate credit, provide a link to the 
+      license, and indicate if changes were made. You may do so in any r
+      easonable manner, but not in any way that suggests the licensor endorses 
+      you or your use.
+
+    Hyperlink each article directly back to their user profile page on the source site.
+    * 
+ * &lt;/pre&gt;
+ * @author nichole
+ */
+<span class="fc" id="L41">public class HierholzersEulerCircuit {</span>
+    
+    /**
+     * 
+     * @param g adjacency list of directed graph
+     * @return 
+     */
+    public int[] createCircuit(TIntObjectMap&lt;TIntSet&gt; g) {
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
+<span class="nc" id="L50">            return new int[0];</span>
+        }
+       
+        int i, u, v;
+        
+        // make a copy of g to modify
+<span class="fc" id="L56">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+        TIntSet neighbors, neighbors2;
+<span class="fc" id="L58">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (i = 0; i &lt; g.size(); ++i) {</span>
+<span class="fc" id="L60">            iter.advance();</span>
+<span class="fc" id="L61">            u = iter.key();</span>
+<span class="fc" id="L62">            neighbors = iter.value();</span>
+<span class="fc" id="L63">            neighbors2 = new TIntHashSet(neighbors);</span>
+<span class="fc" id="L64">            g2.put(u, neighbors2);</span>
+        }
+                
+<span class="fc" id="L67">        Stack&lt;Integer&gt; curPath = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L68">        TIntList circuit = new TIntArrayList();</span>
+        
+        // start vertex
+<span class="fc" id="L71">        int curV = 0;</span>
+<span class="fc" id="L72">        curPath.add(curV);</span>
+        
+        int nextV;
+        
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        while (!curPath.isEmpty()) {</span>
+<span class="fc" id="L77">            curV = curPath.peek();</span>
+<span class="fc" id="L78">            neighbors2 = g2.get(curV);</span>
+<span class="pc bpc" id="L79" title="1 of 4 branches missed.">            if (neighbors2 != null &amp;&amp; !neighbors2.isEmpty()) {</span>
+<span class="fc" id="L80">                nextV = neighbors2.iterator().next();</span>
+<span class="fc" id="L81">                neighbors2.remove(nextV);</span>
+<span class="fc" id="L82">                curPath.add(nextV);</span>
+            } else {
+<span class="fc" id="L84">                circuit.add(curPath.pop());</span>
+            }
+        }
+        
+<span class="fc" id="L88">        circuit.reverse();</span>
+        
+<span class="fc" id="L90">        return circuit.toArray();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

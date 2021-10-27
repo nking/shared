@@ -76,5 +76,35 @@ import no.uib.cipr.matrix.DenseMatrix;
 <span class="fc" id="L76">        sb.append(&quot;\n&quot;);</span>
 <span class="fc" id="L77">        return sb.toString();</span>
     }
+
+    public static String toString(int[][] a, String decimalFormat) {
+<span class="fc" id="L81">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L84">                sb.append(String.format(decimalFormat, a[i][j]));</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="fc" id="L86">                    sb.append(&quot;,&quot;);</span>
+                }
+<span class="fc" id="L88">                sb.append(&quot; &quot;);</span>
+            }
+<span class="fc" id="L90">            sb.append(&quot;\n&quot;);</span>
+        }
+<span class="fc" id="L92">        return sb.toString();</span>
+    }
+    
+    public static String toString(float[][] a, String decimalFormat) {
+<span class="nc" id="L96">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="nc" id="L99">                sb.append(String.format(decimalFormat, a[i][j]));</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="nc" id="L101">                    sb.append(&quot;,&quot;);</span>
+                }
+<span class="nc" id="L103">                sb.append(&quot; &quot;);</span>
+            }
+<span class="nc" id="L105">            sb.append(&quot;\n&quot;);</span>
+        }
+<span class="nc" id="L107">        return sb.toString();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
