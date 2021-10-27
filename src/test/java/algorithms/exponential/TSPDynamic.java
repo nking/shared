@@ -206,6 +206,11 @@ public class TSPDynamic {
 
         // r is the number of vertexes within n vertexes, in which the subset bits are set to 1.
         for (int r = 3; r <= N; r++) {
+            // The number of ways to select an ordered sequence
+            // of k items out of n distinct items for a fixed length of k
+            // (a.k.a.  k-permutations of n)
+            // = n! / (n − k)!
+            //https://en.m.wikipedia.org/wiki/Permutation#k-permutations_of_n
             for (int subset : combinations(r, N)) {
                 
                 logger.log(LEVEL, String.format(
@@ -376,6 +381,7 @@ public class TSPDynamic {
         mincost( s2 = ...)
     */
     
+    // 2T(N-1)+1  is Θ(2^n) 
     private void mincost(int city) {
         
         //O(1)
@@ -386,7 +392,7 @@ public class TSPDynamic {
             "%d--->", city));
         tour.add(city);
         
-        // O(N-1)
+        // O(N-nCompleted)...   T(N-1)
         //minTourCost += dist[city][ncity] where ncity is the minimum i in dist[start][i] + dist[city][i]
         int ncity = least(city);
 
