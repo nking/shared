@@ -89,7 +89,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
 
             int comp = value.compareTo(a[compareIdx]);
 
-            if (comp != -1) {
+            if (comp >= 0) {
                 return false;
             }
 

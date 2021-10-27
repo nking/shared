@@ -345,6 +345,10 @@ public class TSPDynamic {
     // https://www.interviewbit.com/blog/travelling-salesman-problem/
     //   with bug fixes here to the method least, and corrections to use
     // the start node.  sent the changes to interviewbit too.
+    //NOTE: if implementing in C code and do not have a library with a hash set,
+    //   it would be easier to replace uncompleted set with a linked list
+    //   which is easy to make, and then one must use the node back as an argument
+    //   so the removal from the uncompleted linked list is O(1).
     Set<Integer> uncompleted = null;
     private final int sentinel = Integer.MAX_VALUE;
 
@@ -374,7 +378,7 @@ public class TSPDynamic {
     
     private void mincost(int city) {
         
-        //O(lg2(N)):
+        //O(1)
         uncompleted.remove(city);
 
         logger.log(LEVEL, String.format(

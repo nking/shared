@@ -255,9 +255,6 @@ public class Misc {
      */
     public int[] weightedGreedy(int[] deadlines, int[] penalties) {
         
-        //deadlines = Arrays.copyOf(deadlines, deadlines.length);
-        //penalties = Arrays.copyOf(penalties, penalties.length);
-        
         int[] d2 = Arrays.copyOf(deadlines, deadlines.length);
         int[] p2 = Arrays.copyOf(penalties, penalties.length);
         
@@ -411,7 +408,7 @@ public class Misc {
         }
     }
 
-     private int[] mergesortIncreasingADecreasingB(int[] a, int[] b) {
+    private int[] mergesortIncreasingADecreasingB(int[] a, int[] b) {
         int[] indexes = new int[a.length];
         int i;
         for (i = 0; i < a.length; ++i) {
