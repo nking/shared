@@ -911,9 +911,28 @@ public class MiscMath0 {
         return new int[]{xMin, xMax, yMin, yMax};
     }
     
+    /**
+     * test for whether n is a power of 2.
+     * @param n a non-negative number.
+     * @return true if is a power of , else false.
+     */
     public static boolean isAPowerOf2(int n) {
-        // n XOR n-1
+        // bitmask test e.g. 128 & 0x7f = 0
         return ((n == 0) || ((n & (n - 1)) == 0));
+    }
+    
+    /**
+     * get fractional part of a.  
+     * e.g. for a = 385.55, fractional part = 0.55.
+     * for a = -385.55, fractional part = -0.55.
+     * @param a 
+     * @return 
+     */
+    public static double getFractionalPart(double a) {
+        if (a < 0) {
+            return -1*(-a % 1);
+        }
+        return a % 1;
     }
     
     /**

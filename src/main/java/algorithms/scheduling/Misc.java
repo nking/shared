@@ -31,16 +31,19 @@ public class Misc {
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
      * </pre>
      * 
-     * @param t duration of task
-     * @param d deadline for task
+     * runtime complexity O(N * log_2(N)).
+     * 
+     * @param duration duration of task
+     * @param deadline deadline for task
      * @param outputStart output array to hold start times for the resulting scheduled index order 
-     * @param outputLate output array to hold lateness for the resulting scheduled index order
+     * @param outputLate output array to hold lateness for the resulting scheduled index order.
+     * if is on time, element will be 0.
      * @return indexes for scheduling order
      */
-    public int[] unweightedIntervalMinimizeLateGreedy(double[] t, double[] d,
+    public int[] unweightedIntervalMinimizeLateGreedy(double[] duration, double[] deadline,
         double[] outputStart, double[] outputLate) {
-        int n = t.length;
-        if (d.length != n) {
+        int n = duration.length;
+        if (deadline.length != n) {
             throw new IllegalArgumentException("d.length must equal t.length");
         }
         if (outputStart.length != n) {
@@ -49,21 +52,21 @@ public class Misc {
         if (outputLate.length != n) {
             throw new IllegalArgumentException("outputLate.length must equal t.length");
         }
-        t = Arrays.copyOf(t, t.length);
-        d = Arrays.copyOf(d, d.length);
+        duration = Arrays.copyOf(duration, duration.length);
+        deadline = Arrays.copyOf(deadline, deadline.length);
         Arrays.fill(outputStart, 0);
         Arrays.fill(outputLate, 0);
         
         //sort tasks by increasing deadline 
-        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(d, t);
+        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(deadline, duration);
         double f_prev = 0; // f is the finish time of previous task
         int i; 
-        for (i = 0; i < t.length; ++i) {
+        for (i = 0; i < duration.length; ++i) {
             //assign task i to start at 
             outputStart[i] = f_prev;  // start next task
-            f_prev = /*f[i] =*/ outputStart[i] + t[i];        // its finish time
+            f_prev = /*f[i] =*/ outputStart[i] + duration[i];  // its finish time
             //lateness[i] = max(0, f[i] - d[i])     // its lateness
-            outputLate[i] = Math.max(0, f_prev - d[i]);
+            outputLate[i] = Math.max(0, f_prev - deadline[i]);
         }
         return indexes;
     }
@@ -78,6 +81,8 @@ public class Misc {
      * The objective is to minimize the maximum lateness over all the tasks.
      * 
      * The algorithm is aka Earliest Finish First (EFF) and Earliest Deadline First (EDF)
+     *    (1) sort tasks by finish time
+     *    (2) iterate over tasks, scheduling each that starts after the previous ended
      * 
      * References:
      * <pre>
@@ -85,6 +90,8 @@ public class Misc {
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
      * </pre>
+     * 
+     * runtime complexity is O(N * log_2(N)).
      * 
      * @param s start times for tasks
      * @param f finish times for tasks
@@ -95,9 +102,9 @@ public class Misc {
         s = Arrays.copyOf(s, s.length);
         f = Arrays.copyOf(f, f.length);
         
-        //sort tasks by increasing finish times 
+        //sort tasks by increasing finish times .  O(N * log_2(N))
         int[] indexes = MiscSorter.mergeBy1stArgThen2nd(f, s);
-        double f_prev = Double.NEGATIVE_INFINITY; // f is the finish time of previous task
+        double f_prev = -1; // f is the finish time of previous task
         int i; 
         int[] scheduled = new int[n];
         int count = 0;
@@ -122,7 +129,7 @@ public class Misc {
      * The objective is to find a set of non-overlapping requests such that sum 
      * of values of the scheduled requests is maximum.
      * 
-     * This code uses dynamic programming and has runtime complexity less than O(n^2).
+     * This code uses dynamic programming and has runtime complexity O(N * log_2(N)).
      * 
      * The code follows the lecture notes of David Mount for CMSC 451 
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
@@ -130,58 +137,59 @@ public class Misc {
      * 
      * @param s interval start times
      * @param f interval finish times
-     * @param v interval weights
+     * @param w interval weights
      * @return indexes of scheduled intervals.
      */
-    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
+    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] w) {
         //interval [si, fi] of start and finish times
         s = Arrays.copyOf(s, s.length);
         f = Arrays.copyOf(f, f.length);
-        v = Arrays.copyOf(v, v.length);
+        w = Arrays.copyOf(w, w.length);
         
         int n = f.length;
         
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
-        int[] origIndexes = sort2(f, s, v);
+        int[] origIndexes = sort2(f, s, w);
         
-        // p is largest index p such that f_p < s_n
-        // p(j) is the largest index such that f_p(j) < s_j
+        // p[i] is the largest index such that f[p(i)] < s[i]
+        //     p[i] is < i
         // runtime complexity is less than O(n^2)
         int[] p = calcP(s, f);
         
         int[] pred = new int[n+1];
         
-        double[] M = new double[n+1];
-        Arrays.fill(M, -1);
-        M[0] = 0;
+        double[] memo = new double[n+1];
+        Arrays.fill(memo, -1);
+        memo[0] = 0;
         int j;
         double leaveWeight, takeWeight;
         // runtime complexity is O(n)
         for (j = 0; j < n; ++j) {
-            leaveWeight = M[j];                // total weight if we leave j
-            takeWeight = v[j] + M[p[j]];         // total weight if we take j
+            leaveWeight = memo[j];                // total weight if we leave j
+            takeWeight = w[j] + memo[p[j]];         // total weight if we take j
         //    System.out.printf("j=%d lw=M[j]=%.2f tw=v[j]+M[p[j]]=%.2f+%.2f=%.2f (where p[j]=%d) ", 
         //        j, leaveWeight, v[j], M[p[j]], takeWeight, p[j]);
             if (leaveWeight > takeWeight) {
-                M[j + 1] = leaveWeight;              // better to leave j
+                memo[j + 1] = leaveWeight;              // better to leave j
                 pred[j+1] = j;                   // previous is j-1
             } else {
-                M[j + 1] = takeWeight;               // better to take j
+                memo[j + 1] = takeWeight;               // better to take j
                 pred[j+1] = p[j];                  // previous is p[j]
             }
         //    System.out.printf("  M[j+1]=%.2f\n", M[j+1]);
         }
          
-        //System.out.printf("M=%s\n", FormatArray.toString(M, "%.3f"));
+        //System.out.printf("memo=%s\n", FormatArray.toString(memo, "%.3f"));
         //System.out.printf("p=%s\n", Arrays.toString(p));
         //System.out.printf("pred=%s\n", Arrays.toString(pred));
         
-        j = pred.length-1;
         int[] sched = new int[j];
         int count = 0;
+        j = pred.length-1;
         while (j > 0) {
             if (pred[j] == p[j-1]) {
+                //System.out.printf("  sched[%d]=%d\n", j, origIndexes[j]);
                 sched[count++] = origIndexes[j];
             }
             j = pred[j];
@@ -196,12 +204,12 @@ public class Misc {
         // find for each s, highest previous index in which f[i-...] < s_i
         int i, j;
         int[] p = new int[f.length+1];
-        //Arrays.fill(p, -1);
         for (i = s.length - 1; i > -1; i--) {
             for (j = i - 1; j > -1; j--) {
-                //System.out.printf("%d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
+                System.out.printf("%d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
                 if (f[j] <= s[i]) {
                     p[i] = j+1;
+                    System.out.printf("   p[%d]=%d\n", i, p[i]);
                     break;
                 }
             }
@@ -244,7 +252,8 @@ public class Misc {
      * the problem of maximizing the sum of penalties for the early tasks
      *  is the same as minimizing the sum of penalties for the late tasks.
      * 
-     * algorithm with r.t. O(n^2):
+     * algorithm with r.t. O(N * log_2(N)):
+     * 
      * (1) Use the Greedy algorithm to find a maximum weight independent set of
      *     tasks A.
      * (2) create an optimal schedule having the tasks in A as its early tasks.
@@ -255,16 +264,15 @@ public class Misc {
      */
     public int[] weightedGreedy(int[] deadlines, int[] penalties) {
         
-        int[] d2 = Arrays.copyOf(deadlines, deadlines.length);
-        int[] p2 = Arrays.copyOf(penalties, penalties.length);
-        
+        //O(N * log_2(N))
         //System.out.println("starting greedy algorithm to find indep sets");
-        int[] indexes2 = greedy(d2, p2);
+        int[] indexes2 = greedy(Arrays.copyOf(deadlines, deadlines.length), 
+            Arrays.copyOf(penalties, penalties.length));
         //System.out.println("greedy algorithm resulting indexes=" + Arrays.toString(indexes2));
         
         // rewrite d2 and p2 to be only the greedy results
-        d2 = new int[indexes2.length];
-        p2 = new int[indexes2.length];
+        int[] d2 = new int[indexes2.length];
+        int[] p2 = new int[indexes2.length];
         int[] i2 = new int[indexes2.length];
         int i;
         for (i = 0; i < d2.length; ++i) {
@@ -273,18 +281,17 @@ public class Misc {
             i2[i] = indexes2[i];
         }
         
-        // sort by increasing deadlines
+        // sort by increasing deadlines. O(N2 * log_2(N2))
         //these indexes are w.r.t. the truncated d2 and p2, that is, i2
         indexes2 = mergesortIncreasingADecreasingB(d2, p2); 
-        //expecting: (2,60), (3,40), (4,70), (4,50), (6,10), (1,30), (4,20)
-                   
-        //System.out.println("sorted by increasing deadline:");
+        
+        int[] scheduled = new int[deadlines.length];
         TIntSet allI = new TIntHashSet();
         for (i = 0; i < deadlines.length; ++i) {
             allI.add(i);
         }
-        int[] scheduled = new int[deadlines.length];
         for (i = 0; i < indexes2.length; ++i) {
+            // transform indexes back to original array indexes
             scheduled[i] = i2[indexes2[i]];
             //System.out.printf("  a%d (%d, %d)\n", 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
@@ -302,11 +309,20 @@ public class Misc {
         return scheduled;
     }
   
+    /**
+     * schedule largest penalties first if they fit before deadline (duration of
+     * each task is a time unit of 1).
+     * runtime complexity is O(N * log_2(N))
+     * @param deadlines
+     * @param penalties
+     * @return 
+     */
     private int[] greedy(int[] deadlines, int[] penalties) {
                
         deadlines = Arrays.copyOf(deadlines, deadlines.length);
         penalties = Arrays.copyOf(penalties, penalties.length);
         
+        //O(N * log_2(N))
         // sort w, m into monotonically decreasing order by penalties w
         int[] origIndexes = sortDecr(penalties, deadlines);
         int i, oIdx;
@@ -328,13 +344,12 @@ public class Misc {
                 //done early
                 a.add(i);
             //    System.out.println("  accept");
-            } else if ((a.size() > 0) && 
-                (deadlines[i] < deadlines[a.last()])) {
+            } else if (!a.isEmpty() && (deadlines[i] < deadlines[a.last()])) {
                 
                 // check whether this increase of start time by 1 unit would push
                 //    out the last item (which is the same last item that we just
                 //    compared in this conditional clause.
-                //    if that were true, do not add this item as it conflicts.
+                //    if that were true, do not add this item because it conflicts.
                 if (deadlines[a.last()] >= (a.size() + 1)) {
                     a.add(i);
             //        System.out.println("  accept");
@@ -345,7 +360,7 @@ public class Misc {
             //    System.out.println("  reject");
             }
         }
-        // rewrite indexes in context of original arrays:
+        // rewrite indexes in context of original array indexes:
         int[] ao = new int[a.size()];
         int count = 0;
         for (Integer ai : a) {
@@ -537,8 +552,7 @@ public class Misc {
     https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
     </pre>
 
-     runtime complexity is between O(n*log_2(n)) and O(n^2), with a worse
-     case of O(n^2).
+     runtime complexity is O(n^2)
      * 
      * Note: can compare this algorithm to the left-edge algorithms which
      * sorts by increasing finish times, then loops over each request
@@ -556,6 +570,7 @@ public class Misc {
      * @return indexes of resources to schedule the requests on.
      */
     public int[] intervalPartitionGreedy(double[] s, double[] f) {     
+        
         double[] s2 = Arrays.copyOf(s, s.length);
         
         /*
@@ -572,6 +587,7 @@ public class Misc {
         for (i = 0; i < f.length; ++i) {
             f2[i] = f[indexes[i]];
         }
+        
         //System.out.println("indexes sorted by start times = " + Arrays.toString(indexes));
         
         // a color for each request
@@ -579,7 +595,7 @@ public class Misc {
         
         TIntSet excl;        
         int color;
-        // runtime complexity < O(n^2), but worse case is O(n^2)
+        // runtime complexity O(n*n/2)
         for (i = 0; i < f2.length; ++i) {
             excl = new TIntHashSet();
             for (j = 0; j < i; ++j) {

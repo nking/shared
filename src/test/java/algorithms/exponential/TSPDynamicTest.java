@@ -20,6 +20,9 @@ public class TSPDynamicTest extends TestCase {
         for (double[] row : distanceMatrix) {
             java.util.Arrays.fill(row, 10000);
         }
+        for (int i = 0; i < n; ++i) {
+            distanceMatrix[i][i] = 0;
+        }
         distanceMatrix[5][0] = 10;
         distanceMatrix[1][5] = 12;
         distanceMatrix[4][1] = 2;
