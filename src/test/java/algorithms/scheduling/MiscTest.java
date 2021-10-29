@@ -132,6 +132,7 @@ public class MiscTest extends TestCase {
     }
     
     public void testIntervalPartitionGreedy() {
+        
         /* Fig 4. from
         lecture 7 notes of David Mount for CMSC 451       
         Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
