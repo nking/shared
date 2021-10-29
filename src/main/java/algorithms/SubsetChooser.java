@@ -31,7 +31,7 @@ This class was implemented in project
               break;
           }
        }
-    results in
+    results in the following 35 numbers
       7 (    111)
      11 (   1011)
      13 (   1101)
