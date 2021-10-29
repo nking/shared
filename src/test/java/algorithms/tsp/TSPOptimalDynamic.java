@@ -1,11 +1,9 @@
-package algorithms.exponential;
+package algorithms.tsp;
 
 import algorithms.util.FormatArray;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,8 +16,10 @@ import java.util.logging.Logger;
  * This dynamic version is instructive, and not to be used for most datasets as the
  * runtime complexity is O(n^2 * 2^n) where n is the number of vertices.
  * 
- * The iterative method is limited to data holding 31 cities or less,
- * and the recursive method is limited to 2^31 -1 cities.
+ * The iterative method is limited to data holding 31 cities or less.
+ * 
+ *  The approximate TSP algorithms are in the curvature scale space project.
+
  * <pre>
  * references:
  * 
