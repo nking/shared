@@ -121,6 +121,8 @@ public class PrimesTest extends TestCase {
         TLongIterator iter;
         long r;
         
+    //TODO: revisit the code and fix this test    
+        
         int count = 0;
         int nTries = 10;
         
