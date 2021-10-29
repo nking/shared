@@ -10,8 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is a greedy solution for TSP and is not always correct
- * (I'll add unit tests for a case).
+ * This is a greedy solution for TSP and is not guaranteed to give the 
+ * optimal solution.
  * 
  * The approximate TSP algorithms are in the curvature scale space project.
  * 
@@ -32,8 +32,7 @@ import java.util.logging.Logger;
  * https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm
  * pp 58 - 
  * 
- * runtime complexity:
- * (will add soon)
+ * The runtime complexity is O(N^2).
  * 
  * </pre>
  * @author nichole

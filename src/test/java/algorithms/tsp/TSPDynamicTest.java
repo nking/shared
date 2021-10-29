@@ -1,8 +1,7 @@
 package algorithms.tsp;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import junit.framework.TestCase;
 
 /**
@@ -12,6 +11,68 @@ import junit.framework.TestCase;
 public class TSPDynamicTest extends TestCase {
     
     public TSPDynamicTest() {
+    }
+    
+    public void testGreedyFail() {
+        int n = 4;
+        double[][] x = new double[4][];
+        x[0] = new double[]{0, 0};
+        x[1] = new double[]{0, 1};
+        x[2] = new double[]{2, 0};
+        x[3] = new double[]{3, 1};
+        
+        // optimal is 0, 1, 3, 2, 0 = 7.41
+        // greedy is 0, 1, 2, 3, 0  = 7.81
+        int i, j;
+        double[] xi, xj;
+        double xd, yd;
+        double[][] dist = new double[4][];
+        for (i = 0; i < n; ++i) {
+            dist[i] = new double[4];
+            xi = x[i];
+            for (j = 0; j < n; ++j) {
+                xj = x[j];
+                xd = (xi[0] - xj[0]);
+                yd = (xi[1] - xj[1]);
+                dist[i][j] = Math.sqrt(xd*xd + yd*yd);
+            }
+        }
+        
+        int startNode = 0;
+        int[] expectedGreedy = new int[]{0, 1, 2, 3, 0};
+        int[] expectedOptimal = new int[]{0, 1, 3, 2, 0};
+        expectedOptimal = new int[]{0, 2, 3, 1, 0};
+        double expectedOptimalCost = 7.41;
+        double expectedGreedyCost = 7.81;
+    
+        List<Integer> tour, tour2;
+        double cost, cost2;
+        
+        TSPOptimalDynamic solver = new TSPOptimalDynamic(startNode, dist);
+        solver.solveIteratively();        
+        tour = solver.getTour();
+        cost = solver.getTourCost();
+        
+        System.out.printf("startNode=%d  optimal: ", startNode);
+        System.out.printf("optimal tour=%s, expected=%s\n ", tour.toString(), Arrays.toString(expectedOptimal));
+        System.out.printf("Tour cost: %.3f, expected=%.3f\n", cost, expectedOptimalCost);
+        
+        TSPGreedy solver2 = new TSPGreedy(startNode, dist);
+        solver2.solveIteratively();        
+        tour2 = solver2.getTour();
+        cost2 = solver2.getTourCost();
+        System.out.printf("startNode=%d  greedy: ", startNode);
+        System.out.printf("greedy tour=%s, expected=%s\n ", tour2.toString(), Arrays.toString(expectedGreedy));
+        System.out.printf("Tour cost: %.3f, expected=%.3f\n", cost2, expectedGreedyCost);
+        
+        assertEquals(expectedOptimal.length, tour.size());
+        assertEquals(expectedGreedy.length, tour2.size());
+        for (i = 0; i < n; ++i) {
+            assertEquals(expectedOptimal[i], tour.get(i).intValue());
+            assertEquals(expectedGreedy[i], tour2.get(i).intValue());
+        }
+        assertTrue(Math.abs(expectedOptimalCost - cost) < 1.e-2);
+        assertTrue(Math.abs(expectedGreedyCost - cost2) < 1.e-2);
     }
     
     public void test1() {
