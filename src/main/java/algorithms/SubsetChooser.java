@@ -218,9 +218,10 @@ public class SubsetChooser {
         if (count > np) {
             return -1;
         }
+        
         long r = x64;
 
-        x64 = nextSubset64(x64);
+        x64 = nextSubset64(r);
 
         return r;
     }
@@ -242,7 +243,7 @@ public class SubsetChooser {
     }
 
     /**
-     * @param x
+     * @param x0
      * @return
      */
     private BigInteger nextSubsetBigInteger(BigInteger x0) {

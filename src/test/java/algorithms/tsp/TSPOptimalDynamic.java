@@ -103,16 +103,68 @@ import java.util.logging.Logger;
  * Then the total time across all subset sizes is 
  * (n-1)*(n-2) * summation_over_k_from_1_to_{n-2}( C(n-3, k-1) )
  * =  (n-1)*(n-2) * 2^(n-3).
- * The runtime complexity is then O(n^2 * 2^n).
- * 
+ * The runtime complexity for Held–Karp algorithm is then O(n^2 * 2^n).
  * The 2nd stage is O(n) and does affect the runtime complexity.
  * 
- * 
- * NOTE that summation_over_k_from_1_to_{n-2}( C(n-3, k-1) )
  * 
  * NOTE that the method below has a larger runtime complexity for now as
  * some of the inner loops need to be edited to visit only the nodes not
  * already in the current solution path.
+ * 
+ * <pre>
+ * NK:
+ * Keeping notes here on looking at bitstring patterns to find ways to 
+ * condense the sums of 3-paths used in the subproblems.
+ * 
+    let start node = 0.  n=5
+    The total number of permutations of a path with fixed start node = 0 and n=5
+    is n!/n = 24.
+
+    for n=127, nPerm = 2.4e+211, so if wanted to store each permutation, indexed,
+    would need to use java's BigInteger as a bitstring or this project's VeryLongBitString.java
+
+    to re-use sub-problems, can determine how many sets of paths of 3 nodes are in
+    the set of n-1 which is (n-1)/3.
+    (sets of size 2 are given by the distance matrix.)
+
+    Store all 3 node combinations, excluding the number 0, for reuse.
+    The number of k-permutations without excluding a node is: C(n,k) = n!/(k!*(n-k)!).
+    For example, 4 nodes, k-permutations size=3:  C(n,k) = n!/(k!*(n-k)!) = 4
+      7 (    111)
+     11 (   1011)
+     13 (   1101)
+     14 (   1110)
+    Excluding the permutations with bit=0 set: use n2=n-1, C(n-1,k) = 1
+     14 (   1110)
+
+    So, one can generate the k=3 permutations of subset of size n, and exclude the 1st bit
+    by generating for n2=n-1, and the left shift by 1 the result.
+    (can use SubsetChooser.java for the permutations)
+
+    To further look at bit patterns to see if memoization can be used, but with
+    condensed intermediate steps to use less storage, one more example:
+
+    For n=10, nPerm=84:
+    as the 3 sequence bitstrings are generated, the inverse bitstring w/ 0 cleared
+    has the set of nodes this bitstring can be added to
+         bitstring    inverse, excl 0
+    14 (0000001110)  (1111110000)
+    22 (0000010110)  (1111101000)  n3=125 can be generated, exclude bit 1, then left shift by 3 to get paths to add this to.
+    26 (0000011010)  (1111100100)  n3=249 can be generated, exclude bits 1,2, then left shift by 2 to get paths to add this to.
+    28 (0000011100)  (1111100000)
+    38 (0000100110)  (1111011000)
+    42 (0000101010)  (1111010100)
+    44 (0000101100)  (1111010000)
+    50 (0000110010)  (1111001100)
+    52 (0000110100)  (1111001000)
+    56 (0000111000)  (1111000100)
+    70 (0001000110)  (1110111000)
+    74 (0001001010)  (1110110100)
+    ...
+
+    pausing here...
+
+ * </pre>
  * 
  * </pre>
  * @author nichole
@@ -219,11 +271,7 @@ public class TSPOptimalDynamic {
 
         // r is the number of vertexes within n vertexes, in which the subset bits are set to 1.
         for (int r = 3; r <= N; r++) {
-            // The number of ways to select an ordered sequence
-            // of k items out of n distinct items for a fixed length of k
-            // (a.k.a.  k-permutations of n)
-            // = n! / (n − k)!
-            //https://en.m.wikipedia.org/wiki/Permutation#k-permutations_of_n
+            
             for (int subset : combinations(r, N)) {
                 
                 logger.log(LEVEL, String.format(
