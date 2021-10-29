@@ -4,17 +4,70 @@ import algorithms.misc.MiscMath0;
 import java.math.BigInteger;
 
 /**
-Class to iterate over every combination of subsets within n objects in an 
+Class to iterate over every combination of sub-sequences within n objects in an 
 ordered manner.
+<pre>
+The number n is the number of distinct items.  
+k is the size of the sub-sequence within the set of n numbers.
+The number of sequences returned is 
+    = n! /(k!*(n − k)!).
 
-The class uses Gosper's hack from
-  http://read.seas.harvard.edu/cs207/2012/
+The class uses Gosper's hack as demonstrated by Eddie Kohler:
+  https://read.seas.harvard.edu/~kohler/class/cs207-s12/lec12.html
 
-* implemented in project
+This class was implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
      w/ Copyright (c) Climb With Your Feet
      and using The MIT License (MIT)
+     and moved to this project.
      
+ Example use: 
+      int n=7; int k=3;
+      SubsetChooser chooser = new SubsetChooser(n, k);
+      long s;
+      while (true) {
+          s = chooser.getNextSubset64Bitstring();
+          if (s == -1) {
+              break;
+          }
+       }
+    results in
+      7 (    111)
+     11 (   1011)
+     13 (   1101)
+     14 (   1110)
+     19 (  10011)
+     21 (  10101)
+     22 (  10110)
+     25 (  11001)
+     26 (  11010)  
+     28 (  11100)  
+     35 ( 100011)  
+     37 ( 100101)  
+     38 ( 100110) 
+     41 ( 101001) 
+     42 ( 101010) 
+     44 ( 101100) 
+     49 ( 110001) 
+     50 ( 110010) 
+     52 ( 110100)
+     56 ( 111000)
+     67 (1000011)
+     69 (1000101)
+     70 (1000110)
+     73 (1001001)
+     74 (1001010)
+     76 (1001100)
+     81 (1010001)
+     82 (1010010)
+     84 (1010100)
+     88 (1011000)
+     97 (1100001)
+     98 (1100010)
+     100 (1100100)
+     104 (1101000)
+     112 (1110000)
+ </pre>
  * @author nichole
  */
 public class SubsetChooser {
@@ -158,6 +211,18 @@ public class SubsetChooser {
         x64 = nextSubset64(x64);
 
         return nValues;
+    }
+    
+    public long getNextSubset64Bitstring() {
+
+        if (count > np) {
+            return -1;
+        }
+        long r = x64;
+
+        x64 = nextSubset64(x64);
+
+        return r;
     }
 
     /**
