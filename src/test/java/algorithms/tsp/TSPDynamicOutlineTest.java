@@ -1,9 +1,6 @@
 package algorithms.tsp;
 
 import algorithms.SubsetChooser;
-import algorithms.misc.Distances;
-import java.util.Arrays;
-import java.util.List;
 import junit.framework.TestCase;
 
 /**

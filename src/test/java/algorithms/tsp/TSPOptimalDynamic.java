@@ -170,7 +170,29 @@ import java.util.logging.Logger;
 
     For now, will consider only the cases for n = 1 + a multiple of 3 to look at
     ways to condense the problem.
-    * 
+    
+    have 84 k=3 sequences and have the unset bits, excluding bit 0
+    
+    note: as each complete path of the(n-1)/3 sections is totaled, compare it to minTotal.
+
+    iterate over the 84 k=3 sequences:
+        have si     and siInv
+        (0000010110)    (1111101000)
+        only add si to permutations of the set bits: 1111101000
+           *each of those is composed of 3-paths already calculated,
+           but as each permutation is generated, and si added to it,
+           need to store that for reuse.
+
+           consider the datastructure needed for storage:               
+               set(bitstring, sum), get(bitstring), contains(bitstring).
+           the bitstring keys might be very large (BigInteger or VeryLongBitString).
+           the number of items might be very large.
+           java language restricts array sizes to (1 &lt; &lt; 31)-1 and that's true for the
+           structures internal to the collections.
+           the total number of permutations being n!/n means can only solve for 13
+           cities if need to store each permutation.
+           will revisit this after outline...
+           
     pausing here...
 
  * </pre>
@@ -243,8 +265,7 @@ public class TSPOptimalDynamic {
         
         if (N > 31) {
             throw new IllegalArgumentException("the dynamic iterative algorithm "
-                + "has a limit of 31 for the number of cities.   Consider the "
-                + "recursive algorithm which has a limit of 2^31 - 1");
+                + "has a limit of 31 for the number of cities.");
         }
 
         if (solverFinished) {
