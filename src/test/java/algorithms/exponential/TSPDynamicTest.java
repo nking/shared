@@ -35,34 +35,47 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour;
         int startNode;
         int expectedCost = 42;
-        TSPDynamic solver;
+        TSPOptimalDynamic solver;
+        TSPGreedy solver2;
+        List<Integer> tour, tour2;
+        double cost, cost2;
         
-        for (int ii = 0; ii < 4; ++ii) {
-            if ((ii & 1) == 0) { // even ii
+        int ni = 2;
+        for (int ii = 0; ii < ni; ++ii) {
+            if (ii < ni/2) {
                 startNode = 0;
-                solver = new TSPDynamic(startNode, distanceMatrix);
-                solver.solveIteratively();
                 expectedTour = expectedTour0;
             } else {
                 startNode = 1;
-                solver = new TSPDynamic(startNode, distanceMatrix);
-                solver.solveRecursively();
                 expectedTour = expectedTour1;
             }
+            solver = new TSPOptimalDynamic(startNode, distanceMatrix);
             solver.solveIteratively();
-            List<Integer> tour = solver.getTour();
-            // Prints: [0, 3, 2, 4, 1, 5, 0]
+            System.out.printf("startNode=%d  solveIteratively: ", startNode);
+            tour = solver.getTour();
             System.out.println("Tour: " + tour);
+            cost = solver.getTourCost();
+            System.out.printf("Tour cost: %.1f, expected=%d\n", cost, expectedCost);
 
-            double cost = solver.getTourCost();
-            // Print: 42.0
-            System.out.println("Tour cost: " + solver.getTourCost());
+            solver2 = new TSPGreedy(startNode, distanceMatrix);
+            solver2.solveRecursively();
+            // symmetric distance matrix, so cycle in other direction also a correct answer
+            System.out.printf("greedy startNode=%d  solveRecursively: ", startNode);
+            tour2 = solver2.getTour();
+            System.out.println("greedy Tour: " + tour2);
+            cost2 = solver2.getTourCost();
+            System.out.printf("greedy Tour cost: %.1f, expected=%d\n", cost2, expectedCost);
 
             assertEquals(expectedTour.length, tour.size());
             assertTrue(Math.abs(expectedCost - cost) < 1e-17);
-
             for (int i = 0; i < expectedTour.length; ++i) {
                 assertEquals(expectedTour[i], tour.get(i).intValue());
+            }
+            
+            assertEquals(expectedTour.length, tour2.size());
+            assertTrue(Math.abs(expectedCost - cost2) < 1e-17);
+            for (int i = 0; i < expectedTour.length; ++i) {
+                assertEquals(expectedTour[i], tour2.get(i).intValue());
             }
         }
     }
@@ -87,39 +100,51 @@ public class TSPDynamicTest extends TestCase {
         //0 1 2 3 4
         //A, E, D, C, B -> 0, 4, 3, 2, 1, 0
         int[] expectedTour0 = new int[]{0, 4, 3, 2, 1, 0};
-        int[] expectedTour1 = new int[]{1, 0, 4, 3, 2, 1};
-        int[] expectedTour12 = new int[]{1, 2, 3, 4, 0, 1};
+        int[] expectedTour1 = new int[]{1, 2, 3, 4, 0, 1};
         int[] expectedTour;
         int startNode;
         int expectedCost = 29;//8+4+2+3+12
-        TSPDynamic solver;
-
-        for (int ii = 0; ii < 4; ++ii) {
-            if ((ii & 1) == 0) { // even ii
+        TSPOptimalDynamic solver;
+        TSPGreedy solver2;
+        List<Integer> tour, tour2;
+        double cost, cost2;
+        
+        int ni = 2;
+        for (int ii = 0; ii < ni; ++ii) {
+            if (ii < ni/2) {
                 startNode = 0;
-                solver = new TSPDynamic(startNode, distanceMatrix);
-                solver.solveIteratively();
                 expectedTour = expectedTour0;
             } else {
                 startNode = 1;
-                solver = new TSPDynamic(startNode, distanceMatrix);
-                solver.solveRecursively();
                 expectedTour = expectedTour1;
-                // symmetric distance matrix, so cycle in other direction also a correct answer
-                expectedTour = expectedTour12;
             }
-
-            List<Integer> tour = solver.getTour();
+            solver = new TSPOptimalDynamic(startNode, distanceMatrix);
+            solver.solveIteratively();
+            System.out.printf("startNode=%d  solveIteratively: ", startNode);
+            tour = solver.getTour();
             System.out.println("Tour: " + tour);
+            cost = solver.getTourCost();
+            System.out.printf("Tour cost: %.1f, expected=%d\n", cost, expectedCost);
 
-            double cost = solver.getTourCost();
-            System.out.println("Tour cost: " + solver.getTourCost());
+            solver2 = new TSPGreedy(startNode, distanceMatrix);
+            solver2.solveRecursively();
+            // symmetric distance matrix, so cycle in other direction also a correct answer
+            System.out.printf("greedy startNode=%d  solveRecursively: ", startNode);
+            tour2 = solver2.getTour();
+            System.out.println("greedy Tour: " + tour2);
+            cost2 = solver2.getTourCost();
+            System.out.printf("greedy Tour cost: %.1f, expected=%d\n", cost2, expectedCost);
 
             assertEquals(expectedTour.length, tour.size());
             assertTrue(Math.abs(expectedCost - cost) < 1e-17);
-
             for (int i = 0; i < expectedTour.length; ++i) {
                 assertEquals(expectedTour[i], tour.get(i).intValue());
+            }
+            
+            assertEquals(expectedTour.length, tour2.size());
+            assertTrue(Math.abs(expectedCost - cost2) < 1e-17);
+            for (int i = 0; i < expectedTour.length; ++i) {
+                assertEquals(expectedTour[i], tour2.get(i).intValue());
             }
         }
         

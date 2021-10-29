@@ -2431,6 +2431,9 @@ public class MatrixUtil {
      * of random values between [0 and 1).
      * The method is implemented from pseudocode in Golub and van Loan 
      * "Matrix Computations".
+     * 
+     * calculates lambda in lambda * v = M * v for some constant eigenvalue lambda.
+     * 
      * NOTE that the number of necessary iterations is dependent upon
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power

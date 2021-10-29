@@ -109,10 +109,15 @@ import java.util.logging.Logger;
  * 
  * 
  * NOTE that summation_over_k_from_1_to_{n-2}( C(n-3, k-1) )
+ * 
+ * NOTE that the method below has a larger runtime complexity for now as
+ * some of the inner loops need to be edited to visit only the nodes not
+ * already in the current solution path.
+ * 
  * </pre>
  * @author nichole
  */
-public class TSPDynamic {
+public class TSPOptimalDynamic {
 
     private final int N, start;
     private final double[][] distance;
@@ -130,11 +135,11 @@ public class TSPDynamic {
      * 
      * @param distance 
      */
-    public TSPDynamic(double[][] distance) {
+    public TSPOptimalDynamic(double[][] distance) {
         this(0, distance);
     }
     
-    public TSPDynamic(int start, double[][] distance) {
+    public TSPOptimalDynamic(int start, double[][] distance) {
         N = distance.length;
 
         if (N <= 2) {
@@ -354,214 +359,4 @@ public class TSPDynamic {
         }
     }
     
-    //===================================
-    // https://www.interviewbit.com/blog/travelling-salesman-problem/
-    //   with bug fixes here to the method least, and corrections to use
-    // the start node.  sent the changes to interviewbit too.
-    //NOTE: if implementing in C code and do not have a library with a hash set,
-    //   it would be easier to replace uncompleted set with a doubly linked list
-    //   which is easy to make, and then one must use the node back as an argument
-    //   so the removal from the uncompleted linked list is O(1).
-    // SEE notes below the "least" method for C programming implementation of DoubleLinkedList
-    Set<Integer> uncompleted = null;
-    private final int sentinel = Integer.MAX_VALUE;
-
-    public void solveRecursively() {
-        // init
-        tour.clear();
-        minTourCost = 0;
-        solverFinished = false;
-        uncompleted = new HashSet<Integer>();
-        for (int i = 0; i < N; ++i) {
-            uncompleted.add(i);
-        }
-        
-        mincost(start);
-
-        solverFinished = true;
-
-        logger.log(LEVEL, String.format(
-        //System.out.printf(
-            "\ntour cost=%.0f\n", minTourCost));
-    }
-    /*
-    mincost(start)
-        mincost(  s1 = min_Arg_i (dist[start][i] + dist[c][i]) )
-        mincost( s2 = ...)
-    */
-    
-    // 2T(N-1)+1  is Θ(2^n) 
-    private void mincost(int city) {
-        
-        //O(1)
-        uncompleted.remove(city);
-
-        logger.log(LEVEL, String.format(
-        //System.out.printf(
-            "%d--->", city));
-        tour.add(city);
-        
-        // O(N-nCompleted)...   T(N-1)
-        //minTourCost += dist[city][ncity] where ncity is the minimum i in dist[start][i] + dist[city][i]
-        int ncity = least(city);
-
-        if (ncity == sentinel) {
-            logger.log(LEVEL, String.format(
-            //System.out.printf(
-                "%d", start));
-            minTourCost += distance[city][start];
-            tour.add(start);
-
-            return;
-        }
-
-        mincost(ncity);
-    }
-
-    private int least(int c) {
-        int nc = sentinel;
-        double min = sentinel;
-        double kmin = sentinel;
-        
-        // using i=0:N is O(N), so changed to loop only over "uncompleted" items
-        //for (i = 0; i < N; i++) {
-        for (int i : uncompleted) {
-            if (distance[c][i] != 0) {
-                if (distance[start][i] + distance[c][i] < min) {
-                    min = distance[start][i] + distance[c][i];
-                    kmin = distance[c][i];
-                    nc = i;
-                }
-            }
-        }
-
-        if (min != sentinel) {
-            minTourCost += kmin;
-        }
-
-        return nc;
-    }
-    
-    /*
-    For C programming:
-    ------------------
-
-    the UML for the Node and DoubleLinkedList classes:
-
-        DoubleLinkedList
-    =========================
-       head:Node
-       tail:Node
-       n:int
-      ------------------------
-       +insert(Node node):void
-       +remove(Node node):void
-       +search(int key)
-       +first() : Node
-       +last() : Node
-       +isEmpty() : boolean
-       +size() : int
-      ------------------------
-
-    Node
-    =========================
-       +key:int
-       +next:Node
-       +prev:Node
-      ------------------------
-      +Node(key:int)
-      ------------------------
-
-   Java code:
-     public class DoubleLinkedList {
-        protected Node head = null;
-        protected Node tail = null;
-        protected int n = 0;
-        public DoubleLinkedList() {
-        }
-        // add node to end of double linked list
-        public void insert(Node node) {
-            if (head == null) {
-                assert(tail == null);
-                head = node;
-                node.prev = null;
-                tail = node;
-                node.next = null;
-                n++;
-                return;
-            }
-            assert(tail != null);
-            assert(tail.next == null);
-            tail.next = node;
-            node.prev = tail;
-            node.next = null;
-            n++;
-        }
-
-        public void remove(Node node) {
-            // connect node.prev with node.next
-            if (node.equals(head)) {
-                if (n == 1) {
-                    head = null;
-                    assert(head.equals(tail));
-                    tail = null;
-                } else {
-                    head = head.next;
-                }
-            } else if (node.equals(tail)) {
-                assert(n > 1);
-                tail.prev.next = null;
-                tail = tail.prev;
-          } else {
-                assert(node.prev != null); // node is not head
-                assert(node.next != null); // node is not tail
-                Node p = node.prev;
-                Node n2 = node.next;
-                p.next = n2;
-                n2.prev = p;
-            }
-            n--;
-        }
-        public Node first() {
-            return head;
-        }
-        public Node last() {
-            return tail;
-        }
-        public boolean isEmpty() {
-            return (n == 0);
-        }
-        public int size() {
-            return n;
-        }
-    }
-
-    C Programming:
-    // in C programming, to create an object that has itself as members, use
-    // "forward declaration"
-
-    // typedef'd struct are instantiated on the heap
-    typedef struct Node Node;
-
-    // consider declaring the node pointer (it's held in the function dynamic stack frame):
-    typedef Node * NodePtr;
-
-    struct Node {
-      int key;
-      Node *next;
-      Node *prev;
-    };
-    
-    OR
-    
-    struct Node {
-      int key;
-      NodePtr next;
-      NodePtr prev;
-    };
-
-    // instantiate on the heap:
-    NodePtr node = (NodePtr) malloc (sizeof(Node));
-
-*/
 }
