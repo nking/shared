@@ -1,4 +1,4 @@
-package algorithms.exponential;
+package algorithms.tsp;
 
 import algorithms.util.FormatArray;
 import java.util.ArrayList;
@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 /**
  * This is a greedy solution for TSP and is not always correct
  * (I'll add unit tests for a case).
+ * 
+ * The approximate TSP algorithms are in the curvature scale space project.
  * 
  * <pre>
  * references:
@@ -90,8 +92,12 @@ public class TSPGreedy {
         return minTourCost;
     }
 
-    //=================
-    public void solveIteratively2() {
+    /**
+     * use a greedy iterative approach to find a TSP solution that is not
+     * guaranteed to be optimal.
+     * The runtime complexity is O(N^2).
+     */
+    public void solveIteratively() {
         // init
         tour.clear();
         minTourCost = 0;
@@ -106,6 +112,7 @@ public class TSPGreedy {
         
         int ncity;
         
+        //N*(N-1)/2.
         while (true) {
         
             //O(1)
@@ -116,7 +123,7 @@ public class TSPGreedy {
                 "%d--->", city));
             tour.add(city);
 
-            // O(N-nCompleted)...
+            // O(N-nCompleted)... 
             ncity = least(city);
 
             if (ncity == sentinel) {
@@ -151,6 +158,11 @@ public class TSPGreedy {
     Set<Integer> uncompleted = null;
     private final int sentinel = Integer.MAX_VALUE;
 
+    /**
+     * use a greedy recursive approach to find a TSP solution that is not
+     * guaranteed to be optimal.
+     * The runtime complexity is Θ(n^2) from a recurrence relation that is T(n–1) + n;
+     */
     public void solveRecursively() {
         // init
         tour.clear();
@@ -162,7 +174,7 @@ public class TSPGreedy {
         for (int i = 0; i < N; ++i) {
             uncompleted.add(i);
         }
-        
+        //T(n–1) + n  = Θ(n^2)
         mincost(start);
 
         solverFinished = true;
@@ -178,11 +190,9 @@ public class TSPGreedy {
     */
     
     private int prev;
-    
-    // 2T(N-1)+1  is Θ(2^n) 
+        
     private void mincost(int city) {
         
-        //O(1)
         uncompleted.remove(city);
 
         logger.log(LEVEL, String.format(

@@ -1,6 +1,8 @@
-package algorithms.exponential;
+package algorithms.tsp;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import junit.framework.TestCase;
 
 /**
