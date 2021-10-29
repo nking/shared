@@ -149,8 +149,8 @@ import java.util.logging.Logger;
     has the set of nodes this bitstring can be added to
          bitstring    inverse, excl 0
     14 (0000001110)  (1111110000)
-    22 (0000010110)  (1111101000)  n3=125 can be generated, exclude bit 1, then left shift by 3 to get paths to add this to.
-    26 (0000011010)  (1111100100)  n3=249 can be generated, exclude bits 1,2, then left shift by 2 to get paths to add this to.
+    22 (0000010110)  (1111101000) perm for n3=125 can be generated, exclude bit 1, then left shift by 3 to get paths to add this to.
+    26 (0000011010)  (1111100100) perm for n3=249 can be generated, exclude bits 1,2, then left shift by 2 to get paths to add this to.
     28 (0000011100)  (1111100000)
     38 (0000100110)  (1111011000)
     42 (0000101010)  (1111010100)
@@ -161,7 +161,16 @@ import java.util.logging.Logger;
     70 (0001000110)  (1110111000)
     74 (0001001010)  (1110110100)
     ...
+    
+    Once all of the 3-node path subsets are generated and stored,
+    one can consider again that each of the complete permutations of paths 
+    is composed of disjoint combinations of (n-1)/3 of the 3-node path subsets,
+    (plus up to 2 nodes if n = 12, we have (n-1)/3 3-node path subsets 
+     + 1 fixed node + 2 free nodes that belong in the permuation).
 
+    For now, will consider only the cases for n = 1 + a multiple of 3 to look at
+    ways to condense the problem.
+    * 
     pausing here...
 
  * </pre>
