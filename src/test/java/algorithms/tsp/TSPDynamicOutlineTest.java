@@ -131,22 +131,30 @@ import junit.framework.TestCase;
        considering recursion patterns:
            int sum = r3(bitstring, sum)
            private int r3(bitstring, sum) {
-               //if possible, use tail recursion in design...(for best use in C++, not java)
+               //if possible, use tail recursion in design...(best for C++, java doesn't use tail recursion for method frames)
                if (noUnsetBits(bitstring) {
-                   return sum;
+                   return sum, bitstring;
                }
-               if (memo.contains(s)) {
-                   return sum + memo.get(s);
+               if (memo.contains(bitstring)) {
+                   return sum + memo.get(s), bitstring;
                }
                ni = number of unset bits
-               subsetchooser = new...
+ pausing here to sketch recursion tree
+               subsetchooser = new...(ni, k)
+               min = Long.POSITIVE_INFINITY;
+               minPath = null;
                while (true) {
                    s = subsetchooser.next();
                    if (s == -1){break;}
                    si = tranform s to bitstring unset indexes
-   pausing here in design... 
-                   r3(si);
+                   result = r3(si);
+                   sum2 = result.sum;
+                   if (sum2 < min) {
+                       min = sum2;
+                       minPath = si; // si == result.path?
+                   }
                }
+               return min, minPath;
            }
 
  * </pre>
