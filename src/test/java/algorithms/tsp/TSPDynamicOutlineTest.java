@@ -96,12 +96,24 @@ import junit.framework.TestCase;
              (without the start node).
           datastructure requirements:
              - need set(key, value), getValue(key), and contains(key), and prefer O(1) or O(small const) for each.
-             - a key for one partial sum would be a bitstring of size nCities - 1 in bits (no need to
-               store the start node as that will be added to beginning and end of path when
-               evaluating).
-             - worse case number of keys to store is the permutation of all but one node: n!/n
-             - a long bitstring is limited to 63 bits
-             - a java array length is limited to signed integer length, 1 &lt&lt 31 -1.
+             - a key for one partial sum would have to hold information on the nodes in
+               the partial path and their order.
+               could consider many ways to do that:
+                 The number of bits needed to represent the number of a node would be math.log(n-1)/math.log(2).
+                 Let w = math.log(n-1)/math.log(2).  then a key as a bitstring representing node and order
+                 would be a variable bit length from 3 nodes = 3*w bits in length up to (n-1)*w bits in length.
+                 Ror example, a 3-node path sum from nodes 2, 3, 1 would be
+                      2       3       1
+                   ------  ------  ------
+                   w bits  w bits  w bits
+
+                 Compression options for the key could be considereed too.
+
+               Note that the start node isn't part of those keys as it will be added into the path at
+               evaulation time.
+             - A worse case number of keys to store is the permutation of all but one node: n!/n.
+             - A long bitstring is limited to 63 bits.
+             - A java array length is limited to signed integer length, 1 &lt&lt 31 -1.
              - so to fit more than 1 &lt&lt 31-1 permutations would need to use the bitstring key
                as a concatenation of more than one path bitstring.
                the java BigInteger or the VeryLongBitString could do so.
@@ -115,9 +127,7 @@ import junit.framework.TestCase;
 
        Will continue from here having chosen (2) to complete the dynamic approach.
        Will also assume that the datastructure for storage exists and will call it memo for now.
-           
-       considering how to track the order of the nodes in the bitstring
-       
+                  
     pausing here...
 
  * </pre>
