@@ -84,10 +84,11 @@ import junit.framework.TestCase;
           (and in that case, one might want to consider designing an algorithm composed of
           as much memoization as possible for the system the code is running on while completing
           the rest of the calculations with recursive brute force approach.  e.g.
-          enough memory to store the 3-node permuations?  6-node permutations?  9-node permutations?
-          then continue each path recursion and compare its total with mintotal and discard it if not mincost).
+          enough memory to store the 3-node permutations?  6-node permutations?  9-node permutations?
+          then continue each path to its end with recursion and compare its total 
+          with mintotal and discard it if not mincost).
       (2) another way to proceed would be to use recursion all the way to the end of a path,
-          but to save al intermediate sums for re-use.
+          and to save all intermediate sums for re-use.
           The sub-problem re-use is then truly the dynamic approach, but requires more memory
           for storage.
 
@@ -101,9 +102,9 @@ import junit.framework.TestCase;
              - worse case number of keys to store is the permutation of all but one node: n!/n
              - a long bitstring is limited to 63 bits
              - a java array length is limited to signed integer length, 1 &lt&lt 31 -1.
-             - so to fit more than 1&lt&lt31-1 permutations would need to use the bitstring key
+             - so to fit more than 1 &lt&lt 31-1 permutations would need to use the bitstring key
                as a concatenation of more than one path bitstring.
-               the java BigInteger or the VeryLongBitString coule do so.
+               the java BigInteger or the VeryLongBitString could do so.
                - also, the values for those keys would need to be referenced in an O(1) manner also if possible.
                  one could use a 2 dimensional array where the 2nd dimension
                  holds the individual values for the keys in the concatenated key.
@@ -113,10 +114,9 @@ import junit.framework.TestCase;
                path sums significantly?
 
        Will continue from here having chosen (2) to complete the dynamic approach.
-       Will also assume that the datastructure for storage exists and will call it memo now.
+       Will also assume that the datastructure for storage exists and will call it memo for now.
            
-       Considering recursion patterns and the cost of regenerating permutations
-       or storing and reusing those with assignment to differnet bits.
+       considering how to track the order of the nodes in the bitstring
        
     pausing here...
 
