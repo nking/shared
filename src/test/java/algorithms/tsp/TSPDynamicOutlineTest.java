@@ -132,12 +132,14 @@ import junit.framework.TestCase;
        
            calculateAndStore3NodePaths();
            r3(bitstring, sum);
-           evaluateMin();
+           return min path(s) and the min cost
            
            private void r3(bitstring, sum) {
                //if possible, use tail recursion in design...(best for C++, java doesn't use tail recursion for method frames)
                inv = inverse(bitstring);
                if (noSetBits(inv) {
+                   compare to min and if smaller or same, store min cost and path (possibly would like to store all min paths)
+                   note that their should be user option to set tolerance in comparison of cost being the same.
                    return;
                }
                if (memo.contains(inv)) {
