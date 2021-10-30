@@ -127,8 +127,27 @@ import junit.framework.TestCase;
 
        Will continue from here having chosen (2) to complete the dynamic approach.
        Will also assume that the datastructure for storage exists and will call it memo for now.
-                  
-    pausing here...
+                 
+       considering recursion patterns:
+           int sum = r3(bitstring, sum)
+           private int r3(bitstring, sum) {
+               //if possible, use tail recursion in design...(for best use in C++, not java)
+               if (noUnsetBits(bitstring) {
+                   return sum;
+               }
+               if (memo.contains(s)) {
+                   return sum + memo.get(s);
+               }
+               ni = number of unset bits
+               subsetchooser = new...
+               while (true) {
+                   s = subsetchooser.next();
+                   if (s == -1){break;}
+                   si = tranform s to bitstring unset indexes
+   pausing here in design... 
+                   r3(si);
+               }
+           }
 
  * </pre>
  * 
