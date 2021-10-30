@@ -147,10 +147,12 @@ import junit.framework.TestCase;
                    sum = sum + memo.get(inv);
                    bitstring2 = concatenate(bitstring, inv);
                    memo.set(bitstring2, sum);
+                   r3(bitstring2); //invoking r3 once more allows the first clause
+                                   // to be the only one handling evaluation for min cost
                    return;
                }
                ni = number set bits in inv
-pausing here to consider when ni is .leq. k (whish is 3).  
+pausing here to consider when ni is .leq. k (which is 3).  
 can add a branch of logic for permuting 2 or 1 nodes and read from dist instead of memo, store results, return.
                subsetchooser = new...(ni, k)
                while (true) {
