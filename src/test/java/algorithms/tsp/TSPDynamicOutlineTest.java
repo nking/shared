@@ -139,7 +139,11 @@ import junit.framework.TestCase;
                    return sum + memo.get(s), bitstring;
                }
                ni = number of unset bits
- pausing here to sketch recursion tree
+ pausing here to sketch recursion tree.
+ not sure want min yet... might make the method
+ return void, store partial sums,
+ and compute min for full paths when path is complete.
+ 
                subsetchooser = new...(ni, k)
                min = Long.POSITIVE_INFINITY;
                minPath = null;
