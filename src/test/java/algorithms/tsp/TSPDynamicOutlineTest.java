@@ -148,6 +148,8 @@ import junit.framework.TestCase;
                    return;
                }
                ni = number set bits in inv
+pausing here to consider when ni is .leq. k (whish is 3).  
+can add a branch of logic for permuting 2 or 1 nodes and read from dist instead of memo, store results, return.
                subsetchooser = new...(ni, k)
                while (true) {
                    s = subsetchooser.next();
@@ -156,6 +158,7 @@ pausing here to sketch recursion tree, and branch logic, then will fill in detai
                    si = tranform s to bitstring unset indexes.  should be 3 bits set
                    bitstring2 = concatenate(bitstring, si);
                    sum2 = sum + memo.get(si);
+                   memo.set(bitstring2, sum2);
                    r3(bitstring2, sum2);
                }
            }
