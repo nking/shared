@@ -129,36 +129,28 @@ import junit.framework.TestCase;
        Will also assume that the datastructure for storage exists and will call it memo for now.
                  
        considering recursion patterns:
-           int sum = r3(bitstring, sum)
-           private int r3(bitstring, sum) {
+           r3(bitstring, sum)
+           private void r3(bitstring, sum) {
                //if possible, use tail recursion in design...(best for C++, java doesn't use tail recursion for method frames)
-               if (noUnsetBits(bitstring) {
-                   return sum, bitstring;
+               bitstring inv = inverse(bitstring);
+               if (noSetBits(inv) {
+                   return;
                }
-               if (memo.contains(bitstring)) {
-                   return sum + memo.get(s), bitstring;
+               if (memo.contains(inv)) {
+                   sum = sum + memo.get(inv);
+                   path = concatenate(bitstring, inv);
+                   memo.set(path, sum);
+                   return;
                }
-               ni = number of unset bits
- pausing here to sketch recursion tree.
- not sure want min yet... might make the method
- return void, store partial sums,
- and compute min for full paths when path is complete.
- 
+               ni = number set bits in inv
                subsetchooser = new...(ni, k)
-               min = Long.POSITIVE_INFINITY;
-               minPath = null;
                while (true) {
                    s = subsetchooser.next();
                    if (s == -1){break;}
                    si = tranform s to bitstring unset indexes
-                   result = r3(si);
-                   sum2 = result.sum;
-                   if (sum2 < min) {
-                       min = sum2;
-                       minPath = si; // si == result.path?
-                   }
+paused here
+                   r3(si);
                }
-               return min, minPath;
            }
 
  * </pre>
