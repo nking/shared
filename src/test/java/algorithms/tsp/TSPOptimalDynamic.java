@@ -175,6 +175,18 @@ import java.util.logging.Logger;
     
     note: as each complete path of the(n-1)/3 sections is totaled, compare it to minTotal.
 
+paused here
+n=10, k=3
+ni = n-1
+for (p = 0; p &lt np-1; ++p) { 0,1 (the subsetchooser needs n>k)
+    subsetchooser(ni, k) 
+    nSetBits = ni-3 
+    store to reuse... see TSPDynamicOutlineTest
+    ni -= 3;    
+}                   
+//nSetBits = n-1-3-3
+//X--> stop before this as n-1-6 is not &gt 6 subsetchooser(n-1-6, k)
+
     iterate over the 84 k=3 sequences:
         have si     and siInv
         (0000010110)    (1111101000)
