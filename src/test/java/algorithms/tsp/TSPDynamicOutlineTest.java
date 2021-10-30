@@ -129,17 +129,22 @@ import junit.framework.TestCase;
        Will also assume that the datastructure for storage exists and will call it memo for now.
                  
        considering recursion patterns:
-           r3(bitstring, sum)
+       
+           calculateAndStore3NodePaths();
+           r3(bitstring, sum);
+           evaluateMin();
+           
            private void r3(bitstring, sum) {
                //if possible, use tail recursion in design...(best for C++, java doesn't use tail recursion for method frames)
-               bitstring inv = inverse(bitstring);
+               inv = inverse(bitstring);
                if (noSetBits(inv) {
                    return;
                }
                if (memo.contains(inv)) {
+                   // assert that all sub-paths of inv were stored
                    sum = sum + memo.get(inv);
-                   path = concatenate(bitstring, inv);
-                   memo.set(path, sum);
+                   bitstring2 = concatenate(bitstring, inv);
+                   memo.set(bitstring2, sum);
                    return;
                }
                ni = number set bits in inv
@@ -147,9 +152,11 @@ import junit.framework.TestCase;
                while (true) {
                    s = subsetchooser.next();
                    if (s == -1){break;}
-                   si = tranform s to bitstring unset indexes
-paused here
-                   r3(si);
+pausing here to sketch recursion tree, and branch logic, then will fill in details
+                   si = tranform s to bitstring unset indexes.  should be 3 bits set
+                   bitstring2 = concatenate(bitstring, si);
+                   sum2 = sum + memo.get(si);
+                   r3(bitstring2, sum2);
                }
            }
 
