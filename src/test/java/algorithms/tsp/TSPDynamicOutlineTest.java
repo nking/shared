@@ -133,13 +133,15 @@ import junit.framework.TestCase;
            calculateAndStore3NodePaths();
            r3(bitstring, sum);
            return min path(s) and the min cost
-           
+
            private void r3(bitstring, sum) {
-               //if possible, use tail recursion in design...(best for C++, java doesn't use tail recursion for method frames)
+               //if possible, use tail recursion in design...
+               //    (best for C++, java doesn't use tail recursion for method frames)
                inv = inverse(bitstring);
                if (noSetBits(inv) {
-                   compare to min and if smaller or same, store min cost and path (possibly would like to store all min paths)
-                   note that their should be user option to set tolerance in comparison of cost being the same.
+                   compare to min and if smaller or same, store min cost and path
+                   (possibly would like to store all min paths).
+                   note that there should be user option to set tolerance in comparison of cost being the same.
                    return;
                }
                if (memo.contains(inv)) {
@@ -152,13 +154,18 @@ import junit.framework.TestCase;
                    return;
                }
                ni = number set bits in inv
-pausing here to consider when ni is .leq. k (which is 3).  
-can add a branch of logic for permuting 2 or 1 nodes and read from dist instead of memo, store results, return.
+               if (ni <= k) {
+                   // assert k = 3.  if that changes from tinkering the assert will alarm that this section will fail
+                   calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
+                   calc the concatenated bit strings and the the path sums
+                   store those in memo
+                   invoke r3 for the concatenated bitstrings each
+                   return;
+               }
                subsetchooser = new...(ni, k)
                while (true) {
                    s = subsetchooser.next();
                    if (s == -1){break;}
-pausing here to sketch recursion tree, and branch logic, then will fill in details
                    si = tranform s to bitstring unset indexes.  should be 3 bits set
                    bitstring2 = concatenate(bitstring, si);
                    sum2 = sum + memo.get(si);
@@ -166,6 +173,8 @@ pausing here to sketch recursion tree, and branch logic, then will fill in detai
                    r3(bitstring2, sum2);
                }
            }
+           
+rewrite in itrative form:
 
  * </pre>
  * 
