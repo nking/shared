@@ -179,7 +179,8 @@ rewrite in itrative form:
            min = Long.POSITIVE_INFINITY;
            minPaths = null;
            for each bitstring in the 3 node paths just calculated {
-               queue = new arraydequeue();
+               queue = new queue;// specialized queue designed for pairs of bitstring keys and sum,
+                                 // that uses same pattern as memo to compress keys to allow more items to be stored
                queue.add(bitstring, sum);
 
                while (!queue.isEmpty()) {
