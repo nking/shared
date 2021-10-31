@@ -155,7 +155,7 @@ import junit.framework.TestCase;
                }
                ni = number set bits in inv
                if (ni <= k) {
-                   // assert k = 3.  if that changes from tinkering the assert will alarm that this section will fail
+                   // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
                    calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
                    calc the concatenated bit strings and the the path sums
                    store those in memo
@@ -175,7 +175,61 @@ import junit.framework.TestCase;
            }
            
 rewrite in itrative form:
+           calculateAndStore3NodePaths();
+           min = Long.POSITIVE_INFINITY;
+           minPaths = null;
+           for each bitstring in the 3 node paths just calculated {
+               queue = new arraydequeue();
+               queue.add(bitstring, sum);
 
+               while (!queue.isEmpty()) {
+
+                   bitstring2, sum2 = queue.pop();
+
+                   inv = inverse(bitstring2);
+                   if (noSetBits(inv) { 
+                       //compare to min and if smaller or same, store min cost and path
+                       //(possibly would like to store all min paths).
+                       //note that there should be user option to set tolerance in comparison of cost being the same.
+                       compareToMinAndStore(bitstring3, sum3);
+                       continue;
+                   }
+                   if (memo.contains(inv)) {
+                       // assert that all sub-paths of inv were stored
+                       sum3 = sum2 + memo.get(inv);
+                       bitstring3 = concatenate(bitstring2, inv);
+                       memo.set(bitstring3, sum3);
+                       compareToMinAndStore(bitstring3, sum3);
+                       continue;
+                   }
+                   ni = number set bits in inv
+                   if (ni <= k) {
+                       // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
+                       calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
+                       calc the concatenated bit strings and the the path sums
+                       store those in memo
+                       invoke r3 for the concatenated bitstrings each
+                       continue;
+                   }
+
+                   subsetchooser = new...(ni, k)
+
+                   while (true) {
+                       s = subsetchooser.next();
+                       if (s == -1){
+                           break;
+                       }
+                       si = tranform s to bitstring2 unset indexes.  should be 3 bits set
+                       bitstring3 = concatenate(bitstring2, si);
+                       sum3 = sum2 + memo.get(si);
+                       memo.set(bitstring3, sum3);
+
+                       store bitstring3, sum3  in queue to be processed
+                   }
+               }
+           }
+    paused here... not finished with edits or design
+    
  * </pre>
  * 
  * @author nichole
