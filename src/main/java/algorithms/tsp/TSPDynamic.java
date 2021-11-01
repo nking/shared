@@ -251,7 +251,7 @@ public class TSPDynamic {
         }
         n = (int)totalNPerm;
                 
-        w = (int)(Math.ceil(Math.log(n-1)/Math.log(2)));
+        w = (int)(Math.ceil(Math.log(dist.length-1)/Math.log(2)));
 
         memo = new long[n][];
         for (int i = 0; i < n; ++i) {
@@ -373,8 +373,8 @@ public class TSPDynamic {
         long end = b + w;
         int s = 0;
         for (b = pathNodeNumber*w, s=0; b < end; ++b, s++) {
-            if ((path & (1 << b)) != 0) { // test bit b in path
-                sum += (b << s);
+            if ((path & (1L << b)) != 0) { // test bit b in path
+                sum += (1L << s);
             }
         }
         return (int)sum;
@@ -409,8 +409,8 @@ public class TSPDynamic {
         long end = b + w;
         int b0;
         for (b = pathNodeNumber*w, b0=0; b < end; ++b, b0++) {
-            if ((base10Node & (1 << b0)) != 0) { // test bit b0 in base10Node
-                bitstring |= (1 << b); // set bit b in bitstring
+            if ((base10Node & (1L << b0)) != 0) { // test bit b0 in base10Node
+                bitstring |= (1L << b); // set bit b in bitstring
             }
         }
         return bitstring;
@@ -424,7 +424,7 @@ public class TSPDynamic {
      */
     protected long concatenate(long path, int nPathNodesSet, int[] base10Nodes) {
         assert(numberOfSetNodes(path) == nPathNodesSet);
-        long path2 = 0;
+        long path2 = path;
         int i, si;
         for (i = 0; i < base10Nodes.length; ++i) {
             si = base10Nodes[i];
@@ -451,13 +451,29 @@ public class TSPDynamic {
         }
     }
 
+    /**
+     * 
+     * @param path a memo bit-string
+     * @return 
+     */
     protected int numberOfUnsetNodes(long path) {
         // composed of w-bit bit-strings
+        int nn = (dist.length - 1) * w;
+        
+        // the first 64-((dist.length-1*w) can be discarded as unused space
+        int nd = 64 - nn;
         int n0 = Long.numberOfLeadingZeros(path);
-        //  e.g. w=3, path=1: 000  000  001; n0=8.  n0/w=2
-        int nUnset = n0/w;
+        assert(n0 >= nd);
+        int nc = n0 - nd;
+        int nUnset = nc/w;
         return nUnset;
     }
+    
+    /**
+     * 
+     * @param path a memo bit-string
+     * @return 
+     */
     protected int numberOfSetNodes(long path) {
         int nUnset = numberOfUnsetNodes(path);
         int nSet = (dist.length - 1) - nUnset;
