@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  * This is a greedy solution for TSP and is not guaranteed to give the 
  * optimal solution.
  * 
+ * This is a corrected version of the InterviewBit code referenced below.
+ * 
  * The approximate TSP algorithms are in the curvature scale space project.
  * 
  * <pre>
