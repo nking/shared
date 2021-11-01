@@ -2,6 +2,8 @@ package algorithms.tsp;
 
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TLongArrayList;
 import java.util.Arrays;
 
 /**
@@ -128,35 +130,25 @@ import java.util.Arrays;
 
        Will continue from here having chosen (2) to complete the dynamic approach.
        Will also assume that the datastructure for storage exists and will call it memo for now.
-                 
+       
        considering recursion patterns:
        
            calculateAndStore3NodePaths();
-           r3(bitstring, sum);
+           int nNodesRemaining = (n-1) - 3;
+           r3(bitstring, sum, nNodesSet);
            return min path(s) and the min cost
 
-           private void r3(bitstring, sum) {
+           private void r3(bitstring, sum, int nNodesRemaining) {
                //if possible, use tail recursion in design...
                //    (best for C++, java doesn't use tail recursion for method frames)
-               inv = inverse(bitstring);
-               if (noSetBits(inv) {
+               if (nNodesRemaining == 0) {
                    add start and end node costs
                    compare to min and if smaller or same, store min cost and path
                    (possibly would like to store all min paths).
                    note that there should be user option to set tolerance in comparison of cost being the same.
                    return;
                }
-               if (memo.contains(inv)) {
-                   // assert that all sub-paths of inv were stored
-                   sum = sum + memo.get(inv);
-                   bitstring2 = concatenate(bitstring, inv);
-                   memo.set(bitstring2, sum);
-                   r3(bitstring2); //invoking r3 once more allows the first clause
-                                   // to be the only one handling evaluation for min cost
-                   return;
-               }
-               ni = number set bits in inv
-               if (ni <= k) {
+               if (nNodesRemaining <= k) {
                    // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
                    calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
                    calc the concatenated bit strings and the the path sums
@@ -164,74 +156,65 @@ import java.util.Arrays;
                    invoke r3 for the concatenated bitstrings each
                    return;
                }
-               subsetchooser = new...(ni, k)
+               int nBitsSet = (n-1) - nNodesRemaining;
+               subsetchooser = new...(nNodesRemaining, k)
                while (true) {
                    s = subsetchooser.next();
                    if (s == -1){break;}
-                   si = tranform s to bitstring unset indexes.  should be 3 bits set
-                   bitstring2 = concatenate(bitstring, si);
-                   sum2 = sum + memo.get(si);
+                   int[] si = tranform s to bitstring unset indexes.  should be 3 bits set
+                   bitstring2 = concatenate(bitstring, nBitsSet, si);
+                   sum2 = sum + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
                    memo.set(bitstring2, sum2);
-                   r3(bitstring2, sum2);
+                   r3(bitstring2, sum2, nNodesRemaining - 3);
                }
            }
            
 rewrite in iterative form:
 
            calculateAndStore3NodePaths();
+           int nNodesRemaining = (n-1) - 3;
            min = Long.POSITIVE_INFINITY;
            minPaths = null;
            for each bitstring in the 3 node paths just calculated {
            
-               stack = new stack;// specialized stack designed for pairs of bitstring keys and sum,
+               stack = new stack;// specialized stack designed for pairs of bitstring keys and sum and nNodesRemaining,
                                  // that uses same pattern as memo to compress keys to allow more items to be stored
                                  
-               stack.add(bitstring, sum);
+               stack.add(bitstring, sum, nNodesRemaining);
 
                while (!stack.isEmpty()) {
 
-                   bitstring2, sum2 = stack.pop();
+                   bitstring2, sum2, nNodesRemaining2 = stack.pop();
 
-                   inv = inverse(bitstring2);
-                   if (noSetBits(inv) { 
+                   if (nNodesRemaining2 == 0) { 
                        //add start and end node costs
                        //compare to min and if smaller or same, store min cost and path
-                       //(possibly would like to store all min paths).
-                       //note that there should be user option to set tolerance in comparison of cost being the same.
-                       compareToMinAndStore(bitstring3, sum3);
+                       compareToMin(bitstring3, sum3);
                        continue;
                    }
-                   if (memo.contains(inv)) {
-                       // assert that all sub-paths of inv were stored
-                       sum3 = sum2 + memo.get(inv);
-                       bitstring3 = concatenate(bitstring2, inv);
-                       memo.set(bitstring3, sum3);
-                       compareToMinAndStore(bitstring3, sum3);
-                       continue;
-                   }
-                   ni = number set bits in inv
-                   if (ni <= k) {
+                   if (nNodesRemaining2 <= k) {
                        // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
                        calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
                        calc the concatenated bit strings and the the path sums
                        store those in memo
-                       invoke r3 for the concatenated bitstrings each
+                       compare each to min
                        continue;
                    }
 
-                   subsetchooser = new...(ni, k)
+                   int nBitsSet = (n-1) - nNodesRemaining2;
+                   subsetchooser = new...(nNodesRemaining2, k)
 
                    while (true) {
                        s = subsetchooser.next();
                        if (s == -1){
                            break;
                        }
-                       si = tranform s to bitstring2 unset indexes.  should be 3 bits set
-                       bitstring3 = concatenate(bitstring2, si);
-                       sum3 = sum2 + memo.get(si);
+                       int[] si = tranform s to bitstring2 unset indexes.  should be 3 bits set
+                       bitstring3 = concatenate(bitstring2, nBitsSet, si);
+                       sum3 = sum2 + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
                        memo.set(bitstring3, sum3);
 
-                       stack.add(bitstring3, sum3);
+                       stack.add(bitstring3, sum3, nNorderRemaining - 3);
                    }
                }
            }
@@ -242,8 +225,8 @@ rewrite in iterative form:
  */
 public class TSPDynamic {
    
-    private double minCost = Double.POSITIVE_INFINITY;
-    private long minPath = -1;
+    private long minCost = Long.MAX_VALUE;
+    private TLongList minPath = new TLongArrayList();
     private final int startNode = 0;
     private final int[][] dist;
     private final long[][] memo;
@@ -276,7 +259,7 @@ public class TSPDynamic {
             Arrays.fill(memo[i], sentinel);
         }
         
-        
+        /*
         //find max n cities for limit of array length
         int nc = 100;
         long wc, nb;
@@ -289,7 +272,8 @@ public class TSPDynamic {
             nb = (Long.MAX_VALUE/wc); // the number of cities one could fit into a long if using wc
             System.out.printf("nc=%d, ns=%d wc=%d nb=%d ns*1e-9=%e\n", nc, c, wc, nb, c*1.e-9);
             nc = (int)Math.round(nc*1.5);
-        }        
+        }
+        */
     }
     
     public void test0() {
@@ -379,7 +363,7 @@ public class TSPDynamic {
      * @param path
      * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
      * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
-     * 2nd node in the final solution which includes the start node).
+     * 2nd node in the final solution for the completed path for the algorithm instance).
      * @return 
      */
     private int getBase10NodeIndex(final long pathNodeNumber, final long path) {
@@ -403,7 +387,7 @@ public class TSPDynamic {
      * @param path
      * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
      * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
-     * 2nd node in the final solution which includes the start node).
+     * 2nd node in the final solution for the completed path for the algorithm instance).
      * @return 
      */
     private long setBits(final int base10Node, final long path, final int pathNodeNumber) {
@@ -419,9 +403,18 @@ public class TSPDynamic {
         return bitstring;
     }
     
-    // method to concatenate a 3 path node
+    /**
+     * set the bits in bit-string path which are set in subPath
+     * @param path
+     * @param base10Nodes base10 indexes of nodes to set.  NOTE: the startNode
+     * should not be in this array.
+     * @return 
+     */
+    /*private long concatenate(long path, int[] base10Nodes) {
+        
+    }*/
     
-    private void compareToMinAndStore(long path, long sum) {
+    private void compareToMin(long path, long sum) {
         int node1 = getBase10NodeIndex(0, path);
         int noden1 = getBase10NodeIndex(dist.length - 2, path);
 
@@ -429,9 +422,12 @@ public class TSPDynamic {
         
         sum += ends;
         
-        if (sum < minCost) {
+        if (sum == minCost) {
+            minPath.add(path);
+        } else if (sum < minCost) {
             minCost = sum;
-            minPath = path;
+            minPath.clear();
+            minPath.add(path);
         }
     }
 }
