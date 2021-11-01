@@ -435,6 +435,7 @@ public class TSPDynamic {
     }
     
     protected void compareToMin(long path, long sum) {
+        assert(numberOfSetNodes(path) == (dist.length-1));
         int node1 = getBase10NodeIndex(0, path);
         int noden1 = getBase10NodeIndex(dist.length - 2, path);
 
@@ -449,6 +450,13 @@ public class TSPDynamic {
             minPath.clear();
             minPath.add(path);
         }
+    }
+    
+    public long getMinCost() {
+        return this.minCost;
+    }
+    public TLongList getMinPaths() {
+        return new TLongArrayList(minPath);
     }
 
     /**

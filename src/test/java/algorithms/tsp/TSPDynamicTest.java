@@ -22,6 +22,10 @@ public class TSPDynamicTest extends TestCase {
         for (int i = 0; i < n; ++i) {
             dist[i] = new int[n];
         }
+        // set 0:4 and 3:0 in dist to 412 and 53:
+        dist[0][4] = 412;
+        dist[3][0] = 53;
+        
         tsp = new TSPDynamic(dist);
     }
     
@@ -84,9 +88,11 @@ public class TSPDynamicTest extends TestCase {
         int[] s53 = new int[]{5, 3};
         long path41253 = tsp.concatenate(path412, nSet412, s53);
         assertEquals(14988, path41253);
+        
+        // set 0:4 and 3:0 in dist to 412 and 53 in setUp:
+        tsp.compareToMin(path41253, 0);
+        long expected = 412 + 53;
+        assertEquals(expected, tsp.getMinCost());
     }
     
-    public void testCompareToMin() {
-    }
-
 }
