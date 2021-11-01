@@ -145,7 +145,7 @@ import java.util.Arrays;
                    add start and end node costs
                    compare to min and if smaller or same, store min cost and path
                    (possibly would like to store all min paths).
-                   note that there should be user option to set tolerance in comparison of cost being the same.
+                   note that there could be user option to set tolerance in comparison of cost being the same.
                    return;
                }
                if (nNodesRemaining <= k) {
@@ -233,7 +233,7 @@ public class TSPDynamic {
     private final long sentinel = Long.MAX_VALUE;
     private final long totalNPerm;
     private final long totalNSubSeq;
-    private final long w; // number of bits a city takes in a path where path is a long bitstring
+    private final int w; // number of bits a city takes in a path where path is a bitstring of type long
     
     public TSPDynamic(int[][] dist) {
         
@@ -241,7 +241,7 @@ public class TSPDynamic {
         int n = dist.length;
         long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
         totalNPerm = nPerm/n;
-        totalNSubSeq = countTotalNumSubSeq(n); // max for n=507 for limit of array length
+        totalNSubSeq = countTotalNumSubSeqInvocations(n); // max for n=507 for limit of array length
         
         if (totalNSubSeq > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("this class can solve for 13 cities at most."
@@ -251,7 +251,7 @@ public class TSPDynamic {
         }
         n = (int)totalNPerm;
                 
-        w = (long)Math.ceil(Math.log(n-1)/Math.log(2));
+        w = (int)(Math.ceil(Math.log(n-1)/Math.log(2)));
 
         memo = new long[n][];
         for (int i = 0; i < n; ++i) {
@@ -284,7 +284,7 @@ public class TSPDynamic {
         
         long nPerm = MiscMath0.factorial(n);
         nPerm = nPerm/n;
-        long nTotalPerm = countTotalNumSubSeq(n);
+        long nTotalPerm = countTotalNumSubSeqInvocations(n);
         System.out.printf("nPerm=%d, nTotalPerm=%d\n", nPerm, nTotalPerm);
         
         
@@ -345,7 +345,7 @@ public class TSPDynamic {
     }
     
     // total number of subchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
-    private long countTotalNumSubSeq(int n) {
+    protected long countTotalNumSubSeqInvocations(int n) {
         int k=3, n2=n;
         long c = 0;
         while (n2 > k) {
@@ -366,7 +366,7 @@ public class TSPDynamic {
      * 2nd node in the final solution for the completed path for the algorithm instance).
      * @return 
      */
-    private int getBase10NodeIndex(final long pathNodeNumber, final long path) {
+    protected int getBase10NodeIndex(final long pathNodeNumber, final long path) {
         // read bits pathNodeNumber*w to pathNodeNumber*w + w
         long sum = 0;
         long b = pathNodeNumber*w;
@@ -381,6 +381,19 @@ public class TSPDynamic {
     }
     
     /**
+     * write the base 10 indexes s into a bit-string in the encoding used by the
+     * memo.
+     * @param s base 10 node indexes in the order to set into the bit-string path.
+     * NOTE that s should not contain the startNode.
+     * @return 
+     */
+    protected long createThe3NodeBitstring(int[] s) {
+        assert(s.length == 3);
+        long path = concatenate(0, 0, s);
+        return path;
+    }
+    
+    /**
      * for the pathNodeNumber which is the order number of the node in the path 
      * (e.g. second node in the path), set the node number to be the base10Node.
      * @param base10Node
@@ -390,7 +403,7 @@ public class TSPDynamic {
      * 2nd node in the final solution for the completed path for the algorithm instance).
      * @return 
      */
-    private long setBits(final int base10Node, final long path, final int pathNodeNumber) {
+    protected long setBits(final int base10Node, final long path, final int pathNodeNumber) {
         long bitstring = path;
         long b = pathNodeNumber*w;
         long end = b + w;
@@ -404,17 +417,24 @@ public class TSPDynamic {
     }
     
     /**
-     * set the bits in bit-string path which are set in subPath
-     * @param path
-     * @param base10Nodes base10 indexes of nodes to set.  NOTE: the startNode
-     * should not be in this array.
-     * @return 
+     * @param path encoded bit-string of ordered path nodes used in the memo.
+     * @param nPathNodesSet the number of nodes currently set in the path
+     * @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
+     * NOTE that s should not contain the startNode.
      */
-    /*private long concatenate(long path, int[] base10Nodes) {
-        
-    }*/
+    protected long concatenate(long path, int nPathNodesSet, int[] base10Nodes) {
+        assert(numberOfSetNodes(path) == nPathNodesSet);
+        long path2 = 0;
+        int i, si;
+        for (i = 0; i < base10Nodes.length; ++i) {
+            si = base10Nodes[i];
+            assert(si != startNode);
+            path2 = setBits(si, path2, nPathNodesSet + i);
+        }
+        return path2;
+    }
     
-    private void compareToMin(long path, long sum) {
+    protected void compareToMin(long path, long sum) {
         int node1 = getBase10NodeIndex(0, path);
         int noden1 = getBase10NodeIndex(dist.length - 2, path);
 
@@ -429,5 +449,18 @@ public class TSPDynamic {
             minPath.clear();
             minPath.add(path);
         }
+    }
+
+    protected int numberOfUnsetNodes(long path) {
+        // composed of w-bit bit-strings
+        int n0 = Long.numberOfLeadingZeros(path);
+        //  e.g. w=3, path=1: 000  000  001; n0=8.  n0/w=2
+        int nUnset = n0/w;
+        return nUnset;
+    }
+    protected int numberOfSetNodes(long path) {
+        int nUnset = numberOfUnsetNodes(path);
+        int nSet = (dist.length - 1) - nUnset;
+        return nSet;
     }
 }
