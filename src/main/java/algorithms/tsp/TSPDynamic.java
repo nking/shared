@@ -162,10 +162,14 @@ import java.util.Arrays;
                    s = subsetchooser.next();
                    if (s == -1){break;}
                    int[] si = tranform s to bitstring unset indexes.  should be 3 bits set
-                   bitstring2 = concatenate(bitstring, nBitsSet, si);
-                   sum2 = sum + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
-                   memo.set(bitstring2, sum2);
-                   r3(bitstring2, sum2, nNodesRemaining - 3);
+                  
+                   then make the 6 mermutations of the 3 set bits
+                   and for each of those:
+                   
+                       bitstring2 = concatenate(bitstring, nBitsSet, si);
+                       sum2 = sum + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
+                       memo.set(bitstring2, sum2);
+                       r3(bitstring2, sum2, nNodesRemaining - 3);
                }
            }
            
@@ -210,11 +214,15 @@ rewrite in iterative form:
                            break;
                        }
                        int[] si = tranform s to bitstring2 unset indexes.  should be 3 bits set
-                       bitstring3 = concatenate(bitstring2, nBitsSet, si);
-                       sum3 = sum2 + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
-                       memo.set(bitstring3, sum3);
+                       
+                       then make the 6 mermutations of the 3 set bits
+                       and for each of those:
+                   
+                           bitstring3 = concatenate(bitstring2, nBitsSet, si);
+                           sum3 = sum2 + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
+                           memo.set(bitstring3, sum3);
 
-                       stack.add(bitstring3, sum3, nNorderRemaining - 3);
+                           stack.add(bitstring3, sum3, nNorderRemaining - 3);
                    }
                }
            }
@@ -226,12 +234,13 @@ rewrite in iterative form:
 public class TSPDynamic {
    
     private long minCost = Long.MAX_VALUE;
-    private TLongList minPath = new TLongArrayList();
+    private final TLongList minPath = new TLongArrayList();
     private final int startNode = 0;
     private final int[][] dist;
     private final long[][] memo;
     private final long sentinel = Long.MAX_VALUE;
     private final long totalNPerm;
+    private final long totalNSubSet;
     private final long totalNSubSeq;
     private final int w; // number of bits a city takes in a path where path is a bitstring of type long
     
@@ -241,7 +250,11 @@ public class TSPDynamic {
         int n = dist.length;
         long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
         totalNPerm = nPerm/n;
-        totalNSubSeq = countTotalNumSubSeqInvocations(n); // max for n=507 for limit of array length
+        totalNSubSet = countTotalNumSubSetInvocations(n); // max for n=338 for limit of array length
+        totalNSubSeq = countTotalNumSubSeqInvocations(n); 
+        
+        System.out.printf("nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n", 
+            totalNPerm, totalNSubSet, totalNSubSeq);
         
         if (totalNSubSeq > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("this class can solve for 13 cities at most."
@@ -264,7 +277,7 @@ public class TSPDynamic {
         int nc = 100;
         long wc, nb;
         while (true) {
-            long c = countTotalNumSubSeq(nc);
+            long c = countTotalNumSubSeqInvocations(nc);
             if (c > Integer.MAX_VALUE) {
                 break;
             }
@@ -274,6 +287,31 @@ public class TSPDynamic {
             nc = (int)Math.round(nc*1.5);
         }
         */
+    }
+    
+    private void reset() {
+        minCost = Long.MAX_VALUE;
+        minPath.clear();
+        for (int i = 0; i < memo.length; ++i) {
+            Arrays.fill(memo[i], sentinel);
+        }
+    }
+    
+    public void solveRecursively() {
+        if (minCost != Long.MAX_VALUE) {
+            reset();
+        }
+        
+        calculateAndStore3NodePaths();
+        
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+    
+    public void solveIteratively() {
+        if (minCost != Long.MAX_VALUE) {
+            reset();
+        }
+        throw new UnsupportedOperationException("not yet implemented");
     }
     
     public void test0() {
@@ -344,12 +382,25 @@ public class TSPDynamic {
         System.out.printf("n=%d count=%d\n", n, c);
     }
     
-    // total number of subchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
+    // total number of subsetchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
     protected long countTotalNumSubSeqInvocations(int n) {
         int k=3, n2=n;
         long c = 0;
         while (n2 > k) {
             c += MiscMath0.computeNDivKTimesNMinusK(n2, k);
+            n2 -= k;
+        }
+        return c;
+    }
+    
+    // total number of k-permutations, that is, n!/(n-k)!.  using the subset chooser
+    //   to find the sets of size 3, then permuting each of those into
+    //   distinct ordered sequences
+    protected long countTotalNumSubSetInvocations(int n) {
+        int k=3, n2=n;
+        long c = 0;
+        while (n2 > k) {
+            c += MiscMath0.computeNDivNMinusK(n2, k);
             n2 -= k;
         }
         return c;
@@ -486,5 +537,20 @@ public class TSPDynamic {
         int nUnset = numberOfUnsetNodes(path);
         int nSet = (dist.length - 1) - nUnset;
         return nSet;
+    }
+
+    protected void calculateAndStore3NodePaths() {
+        int n = dist.length - 1;
+        int k = 3;
+        SubsetChooser chooser = new SubsetChooser(n-1, k);
+        int[] sel = new int[k];
+        int s;
+        while (true) {
+            s = chooser.getNextSubset(sel);
+            if (s == -1) {
+                break;
+            }
+            // then 6 permutations of the 3 selected bits
+        }
     }
 }
