@@ -1,7 +1,8 @@
 package algorithms.tsp;
 
 import algorithms.SubsetChooser;
-import junit.framework.TestCase;
+import algorithms.misc.MiscMath0;
+import java.util.Arrays;
 
 /**
  * * <pre>
@@ -139,6 +140,7 @@ import junit.framework.TestCase;
                //    (best for C++, java doesn't use tail recursion for method frames)
                inv = inverse(bitstring);
                if (noSetBits(inv) {
+                   add start and end node costs
                    compare to min and if smaller or same, store min cost and path
                    (possibly would like to store all min paths).
                    note that there should be user option to set tolerance in comparison of cost being the same.
@@ -174,7 +176,8 @@ import junit.framework.TestCase;
                }
            }
            
-rewrite in itrative form:
+rewrite in iterative form:
+
            calculateAndStore3NodePaths();
            min = Long.POSITIVE_INFINITY;
            minPaths = null;
@@ -191,6 +194,7 @@ rewrite in itrative form:
 
                    inv = inverse(bitstring2);
                    if (noSetBits(inv) { 
+                       //add start and end node costs
                        //compare to min and if smaller or same, store min cost and path
                        //(possibly would like to store all min paths).
                        //note that there should be user option to set tolerance in comparison of cost being the same.
@@ -231,15 +235,61 @@ rewrite in itrative form:
                    }
                }
            }
-    paused here... not finished with edits or design
     
  * </pre>
  * 
  * @author nichole
  */
-public class TSPDynamicOutlineTest extends TestCase {
+public class TSPDynamic {
+   
+    private double minCost = Double.POSITIVE_INFINITY;
+    private long minPath = -1;
+    private final int startNode = 0;
+    private final int[][] dist;
+    private final long[][] memo;
+    private final long sentinel = Long.MAX_VALUE;
+    private final long totalNPerm;
+    private final long totalNSubSeq;
+    private final long w; // number of bits a city takes in a path where path is a long bitstring
     
-    public TSPDynamicOutlineTest() {
+    public TSPDynamic(int[][] dist) {
+        
+        this.dist = dist;
+        int n = dist.length;
+        long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
+        totalNPerm = nPerm/n;
+        totalNSubSeq = countTotalNumSubSeq(n); // max for n=507 for limit of array length
+        
+        if (totalNSubSeq > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("this class can solve for 13 cities at most."
+                + " one could design a datastructure to hold more than (1<<31)-1 items, "
+                + " but the algorithms in this class have exponential runtime complexity,"
+                + " so it would be better to choose a good approximate TSP.");
+        }
+        n = (int)totalNPerm;
+                
+        w = (long)Math.ceil(Math.log(n-1)/Math.log(2));
+
+        memo = new long[n][];
+        for (int i = 0; i < n; ++i) {
+            memo[i] = new long[n];
+            Arrays.fill(memo[i], sentinel);
+        }
+        
+        
+        //find max n cities for limit of array length
+        int nc = 100;
+        long wc, nb;
+        while (true) {
+            long c = countTotalNumSubSeq(nc);
+            if (c > Integer.MAX_VALUE) {
+                break;
+            }
+            wc = (long)Math.ceil(Math.log(nc-1)/Math.log(2)); // 1 city encoding in bits
+            nb = (Long.MAX_VALUE/wc); // the number of cities one could fit into a long if using wc
+            System.out.printf("nc=%d, ns=%d wc=%d nb=%d ns*1e-9=%e\n", nc, c, wc, nb, c*1.e-9);
+            nc = (int)Math.round(nc*1.5);
+        }        
     }
     
     public void test0() {
@@ -247,6 +297,13 @@ public class TSPDynamicOutlineTest extends TestCase {
         //nP = C(n-1,k) for 1 fixed node
         int n = 10;
         int k = 3;
+        
+        long nPerm = MiscMath0.factorial(n);
+        nPerm = nPerm/n;
+        long nTotalPerm = countTotalNumSubSeq(n);
+        System.out.printf("nPerm=%d, nTotalPerm=%d\n", nPerm, nTotalPerm);
+        
+        
         SubsetChooser chooser = new SubsetChooser(n-1, k);
         int c = 0;
         long s, sInv;
@@ -301,5 +358,80 @@ public class TSPDynamicOutlineTest extends TestCase {
             c++;
         }
         System.out.printf("n=%d count=%d\n", n, c);
+    }
+    
+    // total number of subchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
+    private long countTotalNumSubSeq(int n) {
+        int k=3, n2=n;
+        long c = 0;
+        while (n2 > k) {
+            c += MiscMath0.computeNDivKTimesNMinusK(n2, k);
+            n2 -= k;
+        }
+        return c;
+    }
+    
+    /**
+     * given a pathNodeNumber such as 0 being the first node in the path bit-string,
+     * uses path node bit-string length w to read the set bits and 
+     * return the base 10 number (which can be used with the distance matrix 
+     * or in writing the final solution of ordered nodes).
+     * @param path
+     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
+     * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
+     * 2nd node in the final solution which includes the start node).
+     * @return 
+     */
+    private int getBase10NodeIndex(final long pathNodeNumber, final long path) {
+        // read bits pathNodeNumber*w to pathNodeNumber*w + w
+        long sum = 0;
+        long b = pathNodeNumber*w;
+        long end = b + w;
+        int s = 0;
+        for (b = pathNodeNumber*w, s=0; b < end; ++b, s++) {
+            if ((path & (1 << b)) != 0) { // test bit b in path
+                sum += (b << s);
+            }
+        }
+        return (int)sum;
+    }
+    
+    /**
+     * for the pathNodeNumber which is the order number of the node in the path 
+     * (e.g. second node in the path), set the node number to be the base10Node.
+     * @param base10Node
+     * @param path
+     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
+     * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
+     * 2nd node in the final solution which includes the start node).
+     * @return 
+     */
+    private long setBits(final int base10Node, final long path, final int pathNodeNumber) {
+        long bitstring = path;
+        long b = pathNodeNumber*w;
+        long end = b + w;
+        int b0;
+        for (b = pathNodeNumber*w, b0=0; b < end; ++b, b0++) {
+            if ((base10Node & (1 << b0)) != 0) { // test bit b0 in base10Node
+                bitstring |= (1 << b); // set bit b in bitstring
+            }
+        }
+        return bitstring;
+    }
+    
+    // method to concatenate a 3 path node
+    
+    private void compareToMinAndStore(long path, long sum) {
+        int node1 = getBase10NodeIndex(0, path);
+        int noden1 = getBase10NodeIndex(dist.length - 2, path);
+
+        int ends = dist[startNode][node1] + dist[noden1][startNode];
+        
+        sum += ends;
+        
+        if (sum < minCost) {
+            minCost = sum;
+            minPath = path;
+        }
     }
 }
