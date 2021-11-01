@@ -250,6 +250,9 @@ public class TSPDynamic {
         int n = dist.length;
         long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
         totalNPerm = nPerm/n;
+        
+        //TODO: add in the number of permutations for those not in a 3-set, that is,
+        //   the 2 node and 1-node permutations
         totalNSubSet = countTotalNumSubSetInvocations(n); // max for n=338 for limit of array length
         totalNSubSeq = countTotalNumSubSeqInvocations(n); 
         
