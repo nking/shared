@@ -253,8 +253,8 @@ public class TSPDynamic {
         
         //TODO: add in the number of permutations for those not in a 3-set, that is,
         //   the 2 node and 1-node permutations
-        totalNSubSet = countTotalNumSubSetInvocations(n); // max for n=338 for limit of array length
-        totalNSubSeq = countTotalNumSubSeqInvocations(n); 
+        totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length
+        totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); 
         
         System.out.printf("nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n", 
             totalNPerm, totalNSubSet, totalNSubSeq);
