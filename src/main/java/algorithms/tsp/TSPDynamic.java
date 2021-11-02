@@ -1,5 +1,6 @@
 package algorithms.tsp;
 
+import algorithms.Permutations;
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
 import gnu.trove.list.TLongList;
@@ -237,7 +238,8 @@ public class TSPDynamic {
     private final TLongList minPath = new TLongArrayList();
     private final int startNode = 0;
     private final int[][] dist;
-    private final long[][] memo;
+    //TODO: consider other format for memo
+    private final long[] memo;
     private final long sentinel = Long.MAX_VALUE;
     private final long totalNPerm;
     private final long totalNSubSet;
@@ -268,12 +270,9 @@ public class TSPDynamic {
         n = (int)totalNPerm;
                 
         w = (int)(Math.ceil(Math.log(dist.length-1)/Math.log(2)));
-
-        memo = new long[n][];
-        for (int i = 0; i < n; ++i) {
-            memo[i] = new long[n];
-            Arrays.fill(memo[i], sentinel);
-        }
+   
+        memo = new long[n];
+        Arrays.fill(memo, sentinel);
         
         /*
         //find max n cities for limit of array length
@@ -295,9 +294,7 @@ public class TSPDynamic {
     private void reset() {
         minCost = Long.MAX_VALUE;
         minPath.clear();
-        for (int i = 0; i < memo.length; ++i) {
-            Arrays.fill(memo[i], sentinel);
-        }
+        Arrays.fill(memo, sentinel);
     }
     
     public void solveRecursively() {
@@ -547,13 +544,32 @@ public class TSPDynamic {
         int k = 3;
         SubsetChooser chooser = new SubsetChooser(n-1, k);
         int[] sel = new int[k];
-        int s;
+        int s, i;
+        int[][] selPerm = new int[6][k];
+        for (i = 0; i < selPerm.length; ++i) {
+            selPerm[i] = new int[k];
+        }
+        int j, i0, i1;
+        long path, sum;
         while (true) {
             s = chooser.getNextSubset(sel);
             if (s == -1) {
                 break;
             }
-            // then 6 permutations of the 3 selected bits
+            
+            Permutations.permute(sel, selPerm);
+            
+            for (i = 0; i < selPerm.length; ++i) {
+                sum = 0;
+                path = createThe3NodeBitstring(selPerm[i]);
+                for (j = 1; j < 3; ++j) {
+                    i0 = selPerm[i][j-1];
+                    i1 = selPerm[i][j];
+                    sum += dist[i0][i1];
+                }
+                memo[(int)path] = sum;
+            }
         }
     }
+
 }
