@@ -240,7 +240,7 @@ public class TSPDynamic {
     private final TLongList minPath = new TLongArrayList();
     private final int startNode = 0;
     private final int[][] dist;
-    //TODO: consider other format for memo
+    //TODO: consider other formats for memo
     private final long[] memo;
     private final long sentinel = Long.MAX_VALUE;
     private final long totalNPerm;
@@ -307,8 +307,8 @@ public class TSPDynamic {
         calculateAndStore3NodePaths();
         int n = dist.length;
         int nNodesSet = 3;
-        int nNodesRemaining = (n-1) - 3;
-        r3(0, 0, nNodesSet);
+        int nNodesRemaining = (n-1) - nNodesSet;
+        r3(0, 0, nNodesRemaining);
                    
         throw new UnsupportedOperationException("not yet implemented");
     }
