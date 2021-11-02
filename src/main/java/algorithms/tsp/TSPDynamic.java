@@ -3,10 +3,13 @@ package algorithms.tsp;
 import algorithms.Permutations;
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
+import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
+import gnu.trove.map.TLongDoubleMap;
+import gnu.trove.map.hash.TLongDoubleHashMap;
 import java.util.Arrays;
 
 /**
@@ -236,19 +239,19 @@ rewrite in iterative form:
  */
 public class TSPDynamic {
    
-    private long minCost = Long.MAX_VALUE;
+    private double minCost = Double.POSITIVE_INFINITY;
     private final TLongList minPath = new TLongArrayList();
     private final int startNode = 0;
-    private final int[][] dist;
+    private final double[][] dist;
     //TODO: consider other formats for memo
-    private final long[] memo;
-    private final long sentinel = Long.MAX_VALUE;
+    private final TLongDoubleMap memo;
+    private final double sentinel = Double.POSITIVE_INFINITY;
     private final long totalNPerm;
     private final long totalNSubSet;
     private final long totalNSubSeq;
     private final int w; // number of bits a city takes in a path where path is a bitstring of type long
     
-    public TSPDynamic(int[][] dist) {
+    public TSPDynamic(double[][] dist) {
         
         this.dist = dist;
         int n = dist.length;
@@ -270,11 +273,11 @@ public class TSPDynamic {
                 + " so it would be better to choose a good approximate TSP.");
         }
         n = (int)totalNPerm;
-                
-        w = (int)(Math.ceil(Math.log(dist.length-1)/Math.log(2)));
+                        
+        w = (int)(Math.ceil(Math.log(dist.length)/Math.log(2)));
    
-        memo = new long[n];
-        Arrays.fill(memo, sentinel);
+        int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
+        memo = new TLongDoubleHashMap(sz);
         
         /*
         //find max n cities for limit of array length
@@ -294,27 +297,45 @@ public class TSPDynamic {
     }
     
     private void reset() {
-        minCost = Long.MAX_VALUE;
+        minCost = sentinel;
         minPath.clear();
-        Arrays.fill(memo, sentinel);
+        memo.clear();
     }
     
     public void solveRecursively() {
-        if (minCost != Long.MAX_VALUE) {
+        if (minCost != sentinel) {
             reset();
         }
         
-        calculateAndStore3NodePaths();
         int n = dist.length;
         int nNodesSet = 3;
+               
+        // initialize memo with the first 3-node paths to re-use in permuations
+        
+        if (dist.length <= (3 + 1)) {
+            // cannot use subsetchooser, so go straight to permutations
+            initNodePaths();
+            nNodesSet = dist.length - 1;
+        } else {
+            init3NodePaths();
+        }
+        
         int nNodesRemaining = (n-1) - nNodesSet;
-        r3(0, 0, nNodesRemaining);
-                   
-        throw new UnsupportedOperationException("not yet implemented");
+        
+        // visit the 3-path nodes in memo
+        TLongDoubleIterator iter = memo.iterator();
+        long bitstring;
+        double sum;
+        for (int i = 0; i < memo.size(); ++i) {
+            iter.advance();
+            bitstring = iter.key();
+            sum = iter.value();
+            r3(bitstring, sum, nNodesRemaining);
+        }
     }
     
     public void solveIteratively() {
-        if (minCost != Long.MAX_VALUE) {
+        if (minCost != sentinel) {
             reset();
         }
         throw new UnsupportedOperationException("not yet implemented");
@@ -461,13 +482,15 @@ public class TSPDynamic {
      * @return 
      */
     protected long setBits(final int base10Node, final long path, final int pathNodeNumber) {
-        long bitstring = path;
+        long bitstring = path; // 11 10 01
         long b = pathNodeNumber*w;
         long end = b + w;
         int b0;
         for (b = pathNodeNumber*w, b0=0; b < end; ++b, b0++) {
-            if ((base10Node & (1L << b0)) != 0) { // test bit b0 in base10Node
+            if ((base10Node & (1L << b0)) != 0) { // test bit b0 in pathNodeNumber
                 bitstring |= (1L << b); // set bit b in bitstring
+            } else {
+                bitstring &= ~(1L << b);//clear bit
             }
         }
         return bitstring;
@@ -539,6 +562,50 @@ public class TSPDynamic {
     }
     
     /**
+     * read the given bit-string encoded for use with memo, to find the
+     * unset bits and return the nodes as a base10 bit-string that has lost
+     * information about the path node order.
+     * Note that bit 0 is not read as that is the implicit startNode
+     * which is excluded from bit-string operations.
+     * @param bitstring
+     * @param out list to hold the output node indexes 
+     */
+    protected void findSetBitsBase10(long bitstring, TIntList out) {
+        out.clear();
+        long base10nodesSet = findSetBitsBase10(bitstring);
+        // find bits not set from bit 1 to dist.length
+        int b;
+        for (b = 1; b < dist.length; ++b) {
+            if ((base10nodesSet & (1 << b)) != 0) {
+                out.add(b);
+            }
+        }
+    }
+    
+    /**
+     * read path into base10 node numbers, preserving order of path
+     * @param bitstring
+     * @param out 
+     */
+    protected void readPathIntoBase10(long bitstring, TIntList out) {
+        out.clear();
+        
+        int i, b, node, j;
+        int bf = w*(dist.length - 1);
+        for (b = 0; b < bf; b+= w) {
+            node = 0;
+            for (i = b, j=0; i < (b + w); ++i, ++j) {
+                if ((bitstring & (1L << i)) != 0) {
+                    node += (1 << j);
+                }
+            }
+            if (node > 0) {
+                out.add(node);
+            }
+        }
+    }
+    
+    /**
      * @param path encoded bit-string of ordered path nodes used in the memo.
      * @param nPathNodesSet the number of nodes currently set in the path
      * @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
@@ -556,28 +623,52 @@ public class TSPDynamic {
         return path2;
     }
     
-    protected void compareToMin(long path, long sum) {
+    protected void compareToMin(long path, double sum) {
         assert(numberOfSetNodes(path) == (dist.length-1));
+        
         int node1 = getBase10NodeIndex(0, path);
         int noden1 = getBase10NodeIndex(dist.length - 2, path);
 
-        int ends = dist[startNode][node1] + dist[noden1][startNode];
+        double ends = dist[startNode][node1] + dist[noden1][startNode];
         
-        sum += ends;
+        double sum2 = sum + ends;
         
-        if (sum == minCost) {
+        //debug
+        /*TIntList p = new TIntArrayList();
+        readPathIntoBase10(path, p);
+        System.out.printf("final: bs=%s (%s) sum=%.2f sum2=%.2f, min=%.2f\n",
+            Long.toBinaryString(path),
+            Arrays.toString(p.toArray()), sum, sum2, minCost);
+        */
+        // end debug
+        
+        if (sum2 == minCost) {
             minPath.add(path);
-        } else if (sum < minCost) {
-            minCost = sum;
+        } else if (sum2 < minCost) {
+            minCost = sum2;//3, 2, 4, 1, 5
             minPath.clear();
             minPath.add(path);
         }
     }
     
-    public long getMinCost() {
+    public double getMinCost() {
         return this.minCost;
     }
-    public TLongList getMinPaths() {
+    
+    public int getNumberOfMinPaths() {
+        return minPath.size();
+    }
+    
+    public TIntList getMinPath(int idx) {
+        long path = minPath.get(idx);
+        TIntList out = new TIntArrayList();
+        readPathIntoBase10(path, out);
+        out.insert(0, startNode);
+        out.add(startNode);
+        return out;
+    }
+    
+    public TLongList getMinPathBitstrings() {
         return new TLongArrayList(minPath);
     }
 
@@ -609,79 +700,169 @@ public class TSPDynamic {
         int nSet = (dist.length - 1) - nUnset;
         return nSet;
     }
+    
+    /**
+     * initialize memo with permutations for all unset path nodes, where the
+     * number of unset path nodes < 4.
+     */
+    protected void initNodePaths() {
+        assert(memo.isEmpty());
+        
+        int nUnset = dist.length - 1;
+        
+        int i;
+        int[] sel = new int[nUnset];
+        for (i = 1; i <= sel.length; ++i) {
+            sel[i-1] = i;
+        }
+        
+        int nPerm = (int)MiscMath0.factorial(nUnset);
+        
+        final int[][] selPerm = new int[nPerm][nUnset];
+        for (i = 0; i < selPerm.length; ++i) {
+            selPerm[i] = new int[nUnset];
+        }
+        
+        Permutations.permute(sel, selPerm);
+        
+        double sum;
+        long path;
+        int j, i0, i1;
+        for (i = 0; i < selPerm.length; ++i) {
+            sum = 0;
+            
+            //System.out.println("    selPerm=" + Arrays.toString(selPerm[i]));
 
-    protected void calculateAndStore3NodePaths() {
-        int n = dist.length - 1;
+            path = createThe3NodeBitstring(selPerm[i]);
+
+            for (j = 1; j < selPerm[i].length; ++j) {
+                i0 = selPerm[i][j - 1];
+                i1 = selPerm[i][j];
+                sum += dist[i0][i1];
+            }
+            memo.put(path, sum);
+        }
+    }
+
+    /**
+     * initialize memo with permutations for all subsets of 3 path nodes, where the
+     * number of unset path nodes is > 3.
+     */
+    protected void init3NodePaths() {        
+        assert(memo.isEmpty());
+        
         int k = 3;
-        SubsetChooser chooser = new SubsetChooser(n-1, k);
-        int[] sel = new int[k];
+        final int[] sel = new int[k];
+        final int[] sel2 = new int[k];
         int s, i;
-        int[][] selPerm = new int[6][k];
+        final int[][] selPerm = new int[6][k];
         for (i = 0; i < selPerm.length; ++i) {
             selPerm[i] = new int[k];
         }
+        
+        TIntList remaining = new TIntArrayList();
+        findUnsetBitsBase10(0, remaining);
+        //System.out.println("remaining unset=" + remaining.toString());
+
         int j, i0, i1;
         long path, sum;
+        SubsetChooser chooser = new SubsetChooser(dist.length-1, k);
         while (true) {
             s = chooser.getNextSubset(sel);
             if (s == -1) {
                 break;
             }
-            
-            Permutations.permute(sel, selPerm);
+            //System.out.println("sel=" + Arrays.toString(sel));
+            //transform sel to the bitstring unset indexes
+            for (i = 0; i < k; ++i) {
+                sel2[i] = remaining.get(sel[i]);
+            }
+            //System.out.println("    sel2=" + Arrays.toString(sel2));
+
+            Permutations.permute(sel2, selPerm);
             
             for (i = 0; i < selPerm.length; ++i) {
                 sum = 0;
                 path = createThe3NodeBitstring(selPerm[i]);
-                for (j = 1; j < 3; ++j) {
+                
+                for (j = 1; j < k; ++j) {
                     i0 = selPerm[i][j-1];
                     i1 = selPerm[i][j];
                     sum += dist[i0][i1];
                 }
-                memo[(int)path] = sum;
+                memo.put(path, sum);
             }
         }
     }
     
-    private void r3(long bitstring, long sum, int nNodesRemaining) {
+    private void r3(long bitstring, double sum, int nNodesRemaining) {
+        //debug
+        /*
+        TIntList p = new TIntArrayList();
+        readPathIntoBase10(bitstring, p);
+        System.out.printf("bs=%s (%s) sum=%.2f nR=%d\n",
+            Long.toBinaryString(bitstring),
+            Arrays.toString(p.toArray()), sum, nNodesRemaining);
+        */
+        // end debug
+        
         if (nNodesRemaining == 0) {
             compareToMin(bitstring, sum);
             return;
         }
-        int n = dist.length - 1;
+        
         int k = 3;
+        
         TIntList remaining = new TIntArrayList();
         findUnsetBitsBase10(bitstring, remaining);
         assert (nNodesRemaining == remaining.size());
+        int nBitsSet = (dist.length - 1) - nNodesRemaining;
+        
         if (nNodesRemaining <= k) {
             int firstNode = getBase10NodeIndex(0, bitstring);
+            int lastNode = getBase10NodeIndex(nBitsSet-1, bitstring);
+            
             if (nNodesRemaining == 2) {
+                
                 // 2 permutations, add each to the end of the path.
-                long bitstring1 = setBits(remaining.get(0), bitstring, n - 2);
-                bitstring1 = setBits(remaining.get(1), bitstring1, n - 1);
+                long bitstring1 = setBits(remaining.get(0), bitstring, dist.length - 1 - 2);
+                bitstring1 = setBits(remaining.get(1), bitstring1, dist.length - 1 - 1);
 
-                long bitstring2 = setBits(remaining.get(1), bitstring, n - 2);
-                bitstring2 = setBits(remaining.get(0), bitstring2, n - 1);
+                long bitstring2 = setBits(remaining.get(1), bitstring, dist.length - 1 - 2);
+                bitstring2 = setBits(remaining.get(0), bitstring2, dist.length - 1 - 1);
 
-                long sum1 = sum + dist[startNode][firstNode] + dist[remaining.get(1)][startNode];
-                long sum2 = sum + dist[startNode][firstNode] + dist[remaining.get(0)][startNode];
+                double sum1 = sum + dist[lastNode][remaining.get(0)] + 
+                    dist[remaining.get(0)][remaining.get(1)];
+                double sum2 = sum + dist[lastNode][remaining.get(1)] + 
+                    dist[remaining.get(1)][remaining.get(0)];
 
-                memo[(int) bitstring1] = sum1;
-                memo[(int) bitstring2] = sum2;
+                // no need to save these       
+                //memo.put(bitstring1, sum1);
+                //memo.put(bitstring2, sum2);
 
                 r3(bitstring1, sum1, 0);
                 r3(bitstring2, sum2, 0);
             } else {
                 // 1 permutation, meaning, add the node to the end of the path
-                long bitstring1 = setBits(remaining.get(0), bitstring, n - 1);
-                long sum1 = sum + dist[startNode][firstNode] + dist[remaining.get(0)][startNode];
-                memo[(int) bitstring1] = sum1;
+                int node = remaining.get(0);
+                long bitstring1 = setBits(remaining.get(0), 
+                    bitstring, dist.length - 1 - 1);            
+                double sum1 = sum + dist[lastNode][remaining.get(0)];
+                
+                // debug
+                int n1 = numberOfSetNodes(bitstring);
+                int n2 = numberOfSetNodes(bitstring1);
+                boolean t1 = (n1 == nBitsSet);
+                long u2 = findUnsetBitsBase10(bitstring1);
+                
+                // no need to save these       
+                //memo.put(bitstring1, sum1);
                 r3(bitstring1, sum1, 0);
             }
             return;
         }
-
-        int nBitsSet = (dist.length - 1) - nNodesRemaining;
+        
+        int lastNode = getBase10NodeIndex(nBitsSet-1, bitstring);
 
         SubsetChooser chooser = new SubsetChooser(nNodesRemaining, k);
         int[] sel = new int[k];
@@ -690,8 +871,8 @@ public class TSPDynamic {
         for (i = 0; i < selPerm.length; ++i) {
             selPerm[i] = new int[k];
         }
-        int j, i0, i1;
-        long path2, sum2, perm3i;
+        double sum2;
+        long path2, perm3i;
         int[] sel2 = new int[nNodesRemaining];
         while (true) {
             s = chooser.getNextSubset(sel);
@@ -700,26 +881,50 @@ public class TSPDynamic {
             }
             
             //transform sel to the bitstring unset indexes
-            for (i = 0; i < nNodesRemaining; ++i) {
+            for (i = 0; i < k; ++i) {
                 sel2[i] = remaining.get(sel[i]);
             }
-                        
+            
             Permutations.permute(sel2, selPerm);
             
             for (i = 0; i < selPerm.length; ++i) {
                 
                 perm3i = createThe3NodeBitstring(selPerm[i]);
-                assert(memo[(int)perm3i] < sentinel);
+                assert(memo.containsKey(perm3i));
                 
-                sum2 = sum + memo[(int)perm3i];
+                sum2 = sum + dist[lastNode][selPerm[i][0]] + memo.get(perm3i);
                 
                 path2 = concatenate(bitstring, nBitsSet, selPerm[i]);
-                
-                memo[(int)path2] = sum2;
+
+                // no need to store                
+                //memo.put(path2, sum2);
                 
                 r3(path2, sum2, nNodesRemaining - k);
             }
         }         
     }        
 
+    public int getMemoLength() {
+        return memo.size();
+    }
+
+    protected void printMemo() {
+        TLongDoubleIterator iter = memo.iterator();
+        long bitstring;
+        double sum;
+        TIntList p = new TIntArrayList();
+        
+        for (int i = 0; i < memo.size(); ++i) {
+            iter.advance();
+            bitstring = iter.key();
+            sum = iter.value();
+            
+            p.clear();
+            readPathIntoBase10(bitstring, p);
+            
+            System.out.printf("memo: (%s) sum=%.2f min=%.2f\n",
+                Arrays.toString(p.toArray()), sum, minCost);
+        }
+        System.out.flush();
+    }
 }

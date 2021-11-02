@@ -26,9 +26,9 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
         int i, j;
         double[] xi, xj;
         double xd, yd;
-        double[][] dist = new double[4][];
+        double[][] dist = new double[n][];
         for (i = 0; i < n; ++i) {
-            dist[i] = new double[4];
+            dist[i] = new double[n];
             xi = x[i];
             for (j = 0; j < n; ++j) {
                 xj = x[j];
