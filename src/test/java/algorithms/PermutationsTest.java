@@ -48,4 +48,5 @@ public class PermutationsTest extends TestCase {
         }
         assertEquals(6, found.size());
     }
+    
 }

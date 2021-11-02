@@ -3,7 +3,9 @@ package algorithms.tsp;
 import algorithms.Permutations;
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
+import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
 import java.util.Arrays;
 
@@ -303,7 +305,11 @@ public class TSPDynamic {
         }
         
         calculateAndStore3NodePaths();
-        
+        int n = dist.length;
+        int nNodesSet = 3;
+        int nNodesRemaining = (n-1) - 3;
+        r3(0, 0, nNodesSet);
+                   
         throw new UnsupportedOperationException("not yet implemented");
     }
     
@@ -468,6 +474,71 @@ public class TSPDynamic {
     }
     
     /**
+     * read the given bit-string encoded for use with memo, to find the
+     * set bits and return the nodes as a base10 bit-string (without the path order information).
+     * @param bitstring
+     * @return 
+     */
+    protected long findSetBitsBase10(long bitstring) {
+        long base10nodes = 0;
+        int i, b, node, j;
+        int bf = w*(dist.length - 1);
+        for (b = 0; b < bf; b+= w) {
+            node = 0;
+            for (i = b, j=0; i < (b + w); ++i, ++j) {
+                if ((bitstring & (1L << i)) != 0) {
+                    node += (1 << j);
+                }
+            }
+            if (node > 0) {
+                base10nodes |= (1L << node);
+            }
+        }
+        return base10nodes;
+    }
+    
+    /**
+     * read the given bit-string encoded for use with memo, to find the
+     * unset bits and return the nodes as a base10 bit-string.
+     * Note that bit 0 is not read as that is the implicit startNode
+     * which is excluded from bit-string operations.
+     * @param bitstring
+     * @return 
+     */
+    protected long findUnsetBitsBase10(long bitstring) {
+        long base10nodesSet = findSetBitsBase10(bitstring);
+        long base10NotSet = 0;
+        // find bits not set from bit 1 to dist.length
+        int b;
+        for (b = 1; b < dist.length; ++b) {
+            if ((base10nodesSet & (1 << b)) == 0) {
+                base10NotSet |= (1L << b);
+            }
+        }
+        return base10NotSet;
+    }
+    
+    /**
+     * read the given bit-string encoded for use with memo, to find the
+     * unset bits and return the nodes as a base10 bit-string.
+     * Note that bit 0 is not read as that is the implicit startNode
+     * which is excluded from bit-string operations.
+     * @param bitstring
+     * @param out list to hold the output node indexes 
+     */
+    protected void findUnsetBitsBase10(long bitstring, TIntList out) {
+        out.clear();
+        long base10nodesSet = findSetBitsBase10(bitstring);
+        // find bits not set from bit 1 to dist.length
+        int b;
+        for (b = 1; b < dist.length; ++b) {
+            if ((base10nodesSet & (1 << b)) == 0) {
+                out.add(b);
+            }
+        }
+    }
+    
+    /**
      * @param path encoded bit-string of ordered path nodes used in the memo.
      * @param nPathNodesSet the number of nodes currently set in the path
      * @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
@@ -571,5 +642,84 @@ public class TSPDynamic {
             }
         }
     }
+    
+    private void r3(long bitstring, long sum, int nNodesRemaining) {
+        if (nNodesRemaining == 0) {
+            compareToMin(bitstring, sum);
+            return;
+        }
+        int n = dist.length - 1;
+        int k = 3;
+        TIntList remaining = new TIntArrayList();
+        findUnsetBitsBase10(bitstring, remaining);
+        assert (nNodesRemaining == remaining.size());
+        if (nNodesRemaining <= k) {
+            int firstNode = getBase10NodeIndex(0, bitstring);
+            if (nNodesRemaining == 2) {
+                // 2 permutations, add each to the end of the path.
+                long bitstring1 = setBits(remaining.get(0), bitstring, n - 2);
+                bitstring1 = setBits(remaining.get(1), bitstring1, n - 1);
+
+                long bitstring2 = setBits(remaining.get(1), bitstring, n - 2);
+                bitstring2 = setBits(remaining.get(0), bitstring2, n - 1);
+
+                long sum1 = sum + dist[startNode][firstNode] + dist[remaining.get(1)][startNode];
+                long sum2 = sum + dist[startNode][firstNode] + dist[remaining.get(0)][startNode];
+
+                memo[(int) bitstring1] = sum1;
+                memo[(int) bitstring2] = sum2;
+
+                r3(bitstring1, sum1, 0);
+                r3(bitstring2, sum2, 0);
+            } else {
+                // 1 permutation, meaning, add the node to the end of the path
+                long bitstring1 = setBits(remaining.get(0), bitstring, n - 1);
+                long sum1 = sum + dist[startNode][firstNode] + dist[remaining.get(0)][startNode];
+                memo[(int) bitstring1] = sum1;
+                r3(bitstring1, sum1, 0);
+            }
+            return;
+        }
+
+        int nBitsSet = (dist.length - 1) - nNodesRemaining;
+
+        SubsetChooser chooser = new SubsetChooser(nNodesRemaining, k);
+        int[] sel = new int[k];
+        int s, i;
+        int[][] selPerm = new int[6][k];
+        for (i = 0; i < selPerm.length; ++i) {
+            selPerm[i] = new int[k];
+        }
+        int j, i0, i1;
+        long path2, sum2, perm3i;
+        int[] sel2 = new int[nNodesRemaining];
+        while (true) {
+            s = chooser.getNextSubset(sel);
+            if (s == -1) {
+                break;
+            }
+            
+            //transform sel to the bitstring unset indexes
+            for (i = 0; i < nNodesRemaining; ++i) {
+                sel2[i] = remaining.get(sel[i]);
+            }
+                        
+            Permutations.permute(sel2, selPerm);
+            
+            for (i = 0; i < selPerm.length; ++i) {
+                
+                perm3i = createThe3NodeBitstring(selPerm[i]);
+                assert(memo[(int)perm3i] < sentinel);
+                
+                sum2 = sum + memo[(int)perm3i];
+                
+                path2 = concatenate(bitstring, nBitsSet, selPerm[i]);
+                
+                memo[(int)path2] = sum2;
+                
+                r3(path2, sum2, nNodesRemaining - k);
+            }
+        }         
+    }        
 
 }

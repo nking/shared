@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 /**
  *
- * @author nichole
  */
 public class Permutations {
     
@@ -46,6 +45,27 @@ public class Permutations {
         outPermutations[oc] = Arrays.copyOf(set, n);
         oc++;
         
+        /*
+        procedure recursive(k : integer, A : array of any):
+            if k = 0 then {
+                output(A)
+                return;
+            }
+            // Recursively call once for each k
+            for i := 0; i < k; i += 1 do
+                recursive(k - 1, A)
+                // avoid swap when i==k-1
+                if (i < k - 1)
+                    // swap choice dependent on parity of k
+                    if k is even then
+                        swap(A[i], A[k-1])
+                    else
+                        swap(A[0], A[k-1])
+                    end if
+                end if
+            end for        
+        */
+        
         int i = 0;
         int swap;
         while (i < n) {
@@ -63,12 +83,15 @@ public class Permutations {
                 outPermutations[oc] = Arrays.copyOf(set, n);
                 oc++;
                 
-                //Swap has occurred ending the for-loop. Simulate the increment of the for-loop counter
+                //Swap has occurred ending the for-loop. Simulate the increment 
+                //of the for-loop counter
                 c[i] += 1;
-                //Simulate recursive call reaching the base case by bringing the pointer to the base case analog in the array
+                //Simulate recursive call reaching the base case by bringing the 
+                //pointer to the base case analog in the array
                 i = 0;
             } else {
-                //Calling generate(i+1, A) has ended as the for-loop terminated. Reset the state and simulate popping the stack by incrementing the pointer.
+                //Calling generate(i+1, A) has ended as the for-loop terminated. 
+                //Reset the state and simulate popping the stack by incrementing the pointer.
                 c[i] = 0;
                 i++;
             }
