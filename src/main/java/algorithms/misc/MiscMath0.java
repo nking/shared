@@ -1268,7 +1268,7 @@ public class MiscMath0 {
      * @return 
      * @throws ArithmeticException thrown when result is out of range of type long
      */
-    protected static BigInteger computeNDivKTimesNMinusKBigInteger(int n, int k) {
+    public static BigInteger computeNDivKTimesNMinusKBigInteger(int n, int k) {
         
         if (n == k) {
             return BigInteger.ONE;

@@ -5,6 +5,7 @@ import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
+import java.math.BigInteger;
 import java.util.Arrays;
 import junit.framework.TestCase;
 
@@ -425,4 +426,24 @@ public class TSPDynamicTest extends TestCase {
         assertTrue(Arrays.equals(expectedTour0, path0.toArray()));
     }
 
+    public void testCount() {
+        int n = 8;
+        BigInteger c;
+        
+        c = TSPHybridDynamicBruteForce.count0(n);
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        
+        n=14;
+        c = TSPHybridDynamicBruteForce.count0(n);
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        
+        n=29;
+        c = TSPHybridDynamicBruteForce.count0(n);
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        
+        n=731;
+        c = TSPHybridDynamicBruteForce.count0(n);
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        
+    }
 }

@@ -10,6 +10,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.TLongDoubleMap;
 import gnu.trove.map.hash.TLongDoubleHashMap;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -21,7 +22,34 @@ import java.util.Stack;
  * for a dynamic solution to TSP as an exercise in recursion and
  * dynamic programming (not a preferred impl due to the large runtime complexity).
  * 
-
+ <pre>
+ A completely dynamic solution requires a large amount of memory (see statiement below).
+ Here is an outline of one, based upon what I learned from making the hybrid
+ dynamic and brute force approach below:
+ 
+ subset chooser for n, k w/ k=3
+   permutations for k!
+   store each k=3 permutation in memo
+ subset chooser for n, k w/ k=6
+   permutations for k!
+   path should be composed of complete subparts + a connecting edge:
+       p = p3_0 + p3_1 + edge where p3_0 and p3_1 are in memo from k=3 permutations
+   store each k=6 permutation in memo
+ subset chooser for n, k w/ k=12
+   permutations for k!
+   path should be composed of complete subparts + a connecting edge:
+       p = p6_0 + p6_1 + edge where p6_0 and p6_1 are in memo from k=6 permutations
+   store each k=12 permutation in memo
+...
+For the dynamic approach just outlined:
+    n    c             compare to n!
+    8    210           40320
+   14    1.24e6        8.7e10
+   29    1.46e16       8.8e31
+  731    5.58e538      7.7e1778
+ </pre>
+ * 
+<pre>
     let start node = 0.  n=5
     The total number of permutations of a path with fixed start node = 0 and n=5
     is n!/n = 24.
@@ -155,7 +183,7 @@ import java.util.Stack;
                    note that there could be user option to set tolerance in comparison of cost being the same.
                    return;
                }
-               if (nNodesRemaining <= k) {
+               if (nNodesRemaining .leq. k) {
                    // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
                    calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
                    calc the concatenated bit strings and the the path sums
@@ -174,7 +202,7 @@ import java.util.Stack;
                    and for each of those:
                    
                        bitstring2 = concatenate(bitstring, nBitsSet, si);
-                       sum2 = sum + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
+                       sum2 = sum + memo.get(si);  then use a method to convert si to a memo bitstring
                        memo.set(bitstring2, sum2);
                        r3(bitstring2, sum2, nNodesRemaining - 3);
                }
@@ -203,7 +231,7 @@ rewrite in iterative form:
                        compareToMin(bitstring3, sum3);
                        continue;
                    }
-                   if (nNodesRemaining2 <= k) {
+                   if (nNodesRemaining2 .leq. k) {
                        // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
                        calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
                        calc the concatenated bit strings and the the path sums
@@ -226,7 +254,7 @@ rewrite in iterative form:
                        and for each of those:
                    
                            bitstring3 = concatenate(bitstring2, nBitsSet, si);
-                           sum3 = sum2 + memo.get(si); <== edit here.  need a method to convert si to a memo bitstring
+                           sum3 = sum2 + memo.get(si); then use method to convert si to a memo bitstring
                            memo.set(bitstring3, sum3);
 
                            stack.add(bitstring3, sum3, nNorderRemaining - 3);
@@ -238,7 +266,7 @@ rewrite in iterative form:
  * 
  * @author nichole
  */
-public class TSPDynamic {
+public class TSPHybridDynamicBruteForce {
    
     private double minCost = Double.POSITIVE_INFINITY;
     private final TLongList minPath = new TLongArrayList();
@@ -252,7 +280,7 @@ public class TSPDynamic {
     private final long totalNSubSeq;
     private final int w; // number of bits a city takes in a path where path is a bitstring of type long
     
-    public TSPDynamic(double[][] dist) {
+    public TSPHybridDynamicBruteForce(double[][] dist) {
         
         this.dist = dist;
         int n = dist.length;
@@ -537,6 +565,27 @@ public class TSPDynamic {
             n2 -= k;
         }
         return c;
+    }
+    
+    /**
+     * roughly counting k-permutations for a dynamic approach where k is
+     * increased by a factor of 2 each time and begins with k=3.
+     * @param n
+     * @return 
+     */
+    protected static BigInteger count0(int n) {
+        n = n - 1;
+        BigInteger c1, c2, c3;
+        BigInteger c0 = BigInteger.ZERO;
+        int k = 3;
+        while ((n-k) > k) {
+            c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);
+            c2 = MiscMath0.factorialBigInteger(k);
+            c3 = c1.multiply(c2);
+            c0 = c0.add(c3);
+            k *= 2;
+        }
+        return c0;
     }
     
     /**
