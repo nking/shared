@@ -11,6 +11,7 @@ import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.TLongDoubleMap;
 import gnu.trove.map.hash.TLongDoubleHashMap;
 import java.util.Arrays;
+import java.util.Stack;
 
 /**
  * * <pre>
@@ -266,17 +267,18 @@ public class TSPDynamic {
         System.out.printf("nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n", 
             totalNPerm, totalNSubSet, totalNSubSeq);
         
-        if (totalNSubSeq > Integer.MAX_VALUE) {
+        int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
+        
+        /*if (totalNSubSeq > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("this class can solve for 13 cities at most."
                 + " one could design a datastructure to hold more than (1<<31)-1 items, "
                 + " but the algorithms in this class have exponential runtime complexity,"
                 + " so it would be better to choose a good approximate TSP.");
-        }
+        }*/
         n = (int)totalNPerm;
                         
         w = (int)(Math.ceil(Math.log(dist.length)/Math.log(2)));
-   
-        int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
+        
         memo = new TLongDoubleHashMap(sz);
         
         /*
@@ -322,7 +324,7 @@ public class TSPDynamic {
         
         int nNodesRemaining = (n-1) - nNodesSet;
         
-        // visit the 3-path nodes in memo
+        // visit the initial path nodes in memo
         TLongDoubleIterator iter = memo.iterator();
         long bitstring;
         double sum;
@@ -334,11 +336,148 @@ public class TSPDynamic {
         }
     }
     
+    private static class StackP {
+        long bitstring;
+        double sum;
+        int nNodesRemaining;
+        public StackP(long path, double cost, int nRemaining) {
+            this.bitstring = path;
+            this.sum = cost;
+            this.nNodesRemaining = nRemaining;
+        }
+    }
+    
     public void solveIteratively() {
         if (minCost != sentinel) {
             reset();
         }
-        throw new UnsupportedOperationException("not yet implemented");
+        
+        int n = dist.length;
+        int nNodesSet = 3;
+               
+        // initialize memo with the first 3-node paths to re-use in permuations
+        
+        if (dist.length <= (3 + 1)) {
+            // cannot use subsetchooser, so go straight to permutations
+            initNodePaths();
+            nNodesSet = dist.length - 1;
+        } else {
+            init3NodePaths();
+        }
+        
+        int nNodesRemaining = (n-1) - nNodesSet;
+        
+        Stack<StackP> stack = new Stack<StackP>();
+        
+        // visit the initial path nodes in memo
+        TLongDoubleIterator iter = memo.iterator();
+        long bitstring, bitstring2;
+        double sum, sum2;
+        int nNodesRemaining2;
+        StackP currentStackP;
+
+        for (int i = 0; i < memo.size(); ++i) {
+            iter.advance();
+            bitstring = iter.key();
+            sum = iter.value();
+
+            assert (stack.isEmpty());
+
+            stack.add(new StackP(bitstring, sum, nNodesRemaining));
+
+            while (!stack.isEmpty()) {
+
+                currentStackP = stack.pop();
+                bitstring2 = currentStackP.bitstring;
+                sum2 = currentStackP.sum;
+                nNodesRemaining2 = currentStackP.nNodesRemaining;
+                
+                if (nNodesRemaining2 == 0) {
+                    compareToMin(bitstring2, sum2);
+                    continue;
+                }
+                
+                int k = 3;
+                
+                TIntList remaining = new TIntArrayList();
+                findUnsetBitsBase10(bitstring2, remaining);
+                assert (nNodesRemaining2 == remaining.size());
+                int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
+                
+                int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
+                
+                if (nNodesRemaining2 <= k) {
+                    int firstNode = getBase10NodeIndex(0, bitstring2);
+
+                    if (nNodesRemaining2 == 2) {
+                        // 2 permutations, add each to the end of the path.
+                        long bitstring3 = setBits(remaining.get(0), bitstring2, dist.length - 1 - 2);
+                        bitstring3 = setBits(remaining.get(1), bitstring3, dist.length - 1 - 1);
+
+                        long bitstring4 = setBits(remaining.get(1), bitstring2, dist.length - 1 - 2);
+                        bitstring4 = setBits(remaining.get(0), bitstring4, dist.length - 1 - 1);
+
+                        double sum3 = sum + dist[lastNode][remaining.get(0)] + 
+                            dist[remaining.get(0)][remaining.get(1)];
+                        double sum4 = sum + dist[lastNode][remaining.get(1)] + 
+                            dist[remaining.get(1)][remaining.get(0)];
+
+                        stack.add(new StackP(bitstring3, sum3, 0));
+                        stack.add(new StackP(bitstring4, sum4, 0));
+                    } else {
+                        // 1 permutation, meaning, add the node to the end of the path
+                        int node = remaining.get(0);
+                        long bitstring3 = setBits(remaining.get(0),
+                            bitstring2, dist.length - 1 - 1);
+                        double sum3 = sum2 + dist[lastNode][remaining.get(0)];
+
+                        // no need to save these
+                        //memo.put(bitstring1, sum1);
+                        stack.add(new StackP(bitstring3, sum3, 0));
+                    }
+                    continue;
+                }
+                
+                // there are more than 3 nodes not yet set so can use subsetchooser
+                SubsetChooser chooser = new SubsetChooser(nNodesRemaining2, k);
+                int[] sel = new int[k];
+                int s3, i3;
+                int[][] selPerm = new int[6][k];
+                for (i3 = 0; i3 < selPerm.length; ++i3) {
+                    selPerm[i3] = new int[k];
+                }
+                double sum3;
+                long path3, perm3i;
+                int[] sel3 = new int[nNodesRemaining];
+                while (true) {
+                    s3 = chooser.getNextSubset(sel);
+                    if (s3 == -1) {
+                        break;
+                    }
+
+                    //transform sel to the bitstring2 unset indexes
+                    for (i3 = 0; i3 < k; ++i3) {
+                        sel3[i3] = remaining.get(sel[i3]);
+                    }
+
+                    Permutations.permute(sel3, selPerm);
+
+                    for (i3 = 0; i3 < selPerm.length; ++i3) {
+                        
+                        perm3i = createThe3NodeBitstring(selPerm[i3]);
+                        assert(memo.containsKey(perm3i));
+
+                        sum3 = sum2 + dist[lastNode][selPerm[i3][0]] + memo.get(perm3i);
+
+                        path3 = concatenate(bitstring2, nBitsSet2, selPerm[i3]);
+
+                        // no need to store
+                        //memo.put(path2, sum2);
+                        stack.add(new StackP(path3, sum3, nNodesRemaining2 - k));
+                    }
+                }
+            }
+        }    
     }
     
     public void test0() {
