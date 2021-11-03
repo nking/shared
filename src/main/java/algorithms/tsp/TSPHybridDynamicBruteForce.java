@@ -15,13 +15,10 @@ import java.util.Arrays;
 import java.util.Stack;
 
 /**
- * * <pre>
- * 
- * Keeping notes here on looking at bitstring patterns to find ways to 
- * condense the sums of 3-paths used in the subproblems
- * for a dynamic solution to TSP as an exercise in recursion and
- * dynamic programming (not a preferred impl due to the large runtime complexity).
- * 
+ Keeping notes here on looking at bitstring patterns to find ways to 
+ condense the sums of 3-paths used in the subproblems
+ for a dynamic solution to TSP as an exercise in recursion and
+ dynamic programming (not a preferred impl due to the large runtime complexity). 
  <pre>
  A completely dynamic solution requires a large amount of memory (see statiement below).
  Here is an outline of one, based upon what I learned from making the hybrid
@@ -49,9 +46,8 @@ For the dynamic approach just outlined:
   731    5.58e538      7.7e1778
  where n is the number of cities,
  and c is the number of elements one needs to store in a memo datastructure.
- 
  </pre>
- * 
+
 <pre>
     let start node = 0.  n=5
     The total number of permutations of a path with fixed start node = 0 and n=5
