@@ -47,6 +47,9 @@ For the dynamic approach just outlined:
    14    1.24e6        8.7e10
    29    1.46e16       8.8e31
   731    5.58e538      7.7e1778
+ where n is the number of cities,
+ and c is the number of elements one needs to store in a memo datastructure.
+ 
  </pre>
  * 
 <pre>
