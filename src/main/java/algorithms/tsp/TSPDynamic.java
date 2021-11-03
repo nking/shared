@@ -304,6 +304,10 @@ public class TSPDynamic {
         memo.clear();
     }
     
+    /**
+     * this version is still roughly factorial.  its re-use of solving sub-problems
+     * is only for the first 3 nodes.
+     */
     public void solveRecursively() {
         if (minCost != sentinel) {
             reset();
@@ -322,6 +326,8 @@ public class TSPDynamic {
             init3NodePaths();
         }
         
+        cr0 = memo.size();
+        
         int nNodesRemaining = (n-1) - nNodesSet;
         
         // visit the initial path nodes in memo
@@ -334,7 +340,16 @@ public class TSPDynamic {
             sum = iter.value();
             r3(bitstring, sum, nNodesRemaining);
         }
+        //r0=240 n=6
+        //cr0=72 n=5
+        //cr0=12 n=4
+        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);
+        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);
+        System.out.printf("cr0=%d n=%d\n", cr0, dist.length);
+        System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n", 
+            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
+    long cr0;
     
     private static class StackP {
         long bitstring;
@@ -347,6 +362,10 @@ public class TSPDynamic {
         }
     }
     
+    /**
+     * this version is still roughly factorial.  its re-use of solving sub-problems
+     * is only for the first 3 nodes.
+     */
     public void solveIteratively() {
         if (minCost != sentinel) {
             reset();
@@ -356,7 +375,7 @@ public class TSPDynamic {
         int nNodesSet = 3;
                
         // initialize memo with the first 3-node paths to re-use in permuations
-        
+                
         if (dist.length <= (3 + 1)) {
             // cannot use subsetchooser, so go straight to permutations
             initNodePaths();
@@ -365,6 +384,10 @@ public class TSPDynamic {
             init3NodePaths();
         }
         
+        long c0 = memo.size();
+        long c1 = memo.size();
+        long c2 = memo.size();
+  
         int nNodesRemaining = (n-1) - nNodesSet;
         
         Stack<StackP> stack = new Stack<StackP>();
@@ -375,7 +398,7 @@ public class TSPDynamic {
         double sum, sum2;
         int nNodesRemaining2;
         StackP currentStackP;
-
+        
         for (int i = 0; i < memo.size(); ++i) {
             iter.advance();
             bitstring = iter.key();
@@ -386,6 +409,7 @@ public class TSPDynamic {
             stack.add(new StackP(bitstring, sum, nNodesRemaining));
 
             while (!stack.isEmpty()) {
+                c0++;
 
                 currentStackP = stack.pop();
                 bitstring2 = currentStackP.bitstring;
@@ -396,6 +420,8 @@ public class TSPDynamic {
                     compareToMin(bitstring2, sum2);
                     continue;
                 }
+                
+                c1++;
                 
                 int k = 3;
                 
@@ -463,7 +489,7 @@ public class TSPDynamic {
                     Permutations.permute(sel3, selPerm);
 
                     for (i3 = 0; i3 < selPerm.length; ++i3) {
-                        
+                        c2++;
                         perm3i = createThe3NodeBitstring(selPerm[i3]);
                         assert(memo.containsKey(perm3i));
 
@@ -477,77 +503,18 @@ public class TSPDynamic {
                     }
                 }
             }
-        }    
+        } 
+        //c0=240 c1=120 c2=60 n=6
+        //c0=72 c1=48 c2=24 n=5
+        //c0=12 c1=6 c2=6 n=4
+        // if dynamic: O(n^2 * 2^n) 
+        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);
+        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);
+        System.out.printf("c0=%d c1=%d c2=%d n=%d\n", c0, c1, c2, dist.length);
+        System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n", 
+            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
-    
-    public void test0() {
-        
-        //nP = C(n-1,k) for 1 fixed node
-        int n = 10;
-        int k = 3;
-        
-        long nPerm = MiscMath0.factorial(n);
-        nPerm = nPerm/n;
-        long nTotalPerm = countTotalNumSubSeqInvocations(n);
-        System.out.printf("nPerm=%d, nTotalPerm=%d\n", nPerm, nTotalPerm);
-        
-        
-        SubsetChooser chooser = new SubsetChooser(n-1, k);
-        int c = 0;
-        long s, sInv;
-        StringBuilder sb;
-        //https://www.geeksforgeeks.org/program-to-invert-bits-of-a-number-efficiently/
-        long all1s = 1 << (n-1);
-        all1s = all1s|all1s-1;
-        int nSetBits;
-        long tZeros;
-        while (true) {
-            s = chooser.getNextSubset64Bitstring();
-            if (s == -1) {
-                break;
-            }
-            
-            s <<= 1;
-            sb = new StringBuilder(Long.toBinaryString(s));
-            
-            while (sb.length() < n) {
-                sb = sb.insert(0, "0");
-            }
-            
-            sInv = s^all1s;
-            sInv &= ~1; // clear bit 0
-            
-            nSetBits = Long.bitCount(sInv);
-            tZeros = Long.numberOfTrailingZeros(sInv);
-            
-            System.out.printf("%d (%7s)  (%7s) nSetBits=%d tz=%d\n", 
-                s, sb, Long.toBinaryString(sInv), nSetBits, tZeros);
-            
-            // this permutation of nSetBits can be used for all 84 of the first
-            //   3-node paths.
-            //   each use of the permutation can be left shifted by tZeros
-            //   then assigned positions relative to the set bits in sInv
-            //   to get the remaining permutations for this specific si
-            SubsetChooser chooseri = new SubsetChooser(nSetBits,  k);
-            long si;
-            while (true) {
-                si = chooseri.getNextSubset64Bitstring();
-                if (si == -1) {
-                    break;
-                }
-                long s2 = si << tZeros;
-                
-                // the nSetBits in si are to be shifted by tZeros
-                // then converted to the si set bit positions
-                // 
-                
-            }
-            
-            c++;
-        }
-        System.out.printf("n=%d count=%d\n", n, c);
-    }
-    
+   
     // total number of subsetchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
     protected long countTotalNumSubSeqInvocations(int n) {
         int k=3, n2=n;
@@ -935,6 +902,7 @@ public class TSPDynamic {
     }
     
     private void r3(long bitstring, double sum, int nNodesRemaining) {
+        cr0++;
         //debug
         /*
         TIntList p = new TIntArrayList();
@@ -1040,7 +1008,7 @@ public class TSPDynamic {
                 
                 r3(path2, sum2, nNodesRemaining - k);
             }
-        }         
+        }  
     }        
 
     public int getMemoLength() {

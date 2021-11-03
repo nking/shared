@@ -48,7 +48,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
         List<Integer> tour, tour2;
         double cost, cost2;
         
-        TSPOptimalDynamic solver = new TSPOptimalDynamic(startNode, dist);
+        TSPOptimalBruteForce solver = new TSPOptimalBruteForce(startNode, dist);
         solver.solveIteratively();        
         tour = solver.getTour();
         cost = solver.getTourCost();
@@ -98,7 +98,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
         int[] expectedTour;
         int startNode;
         int expectedCost = 42;
-        TSPOptimalDynamic solver;
+        TSPOptimalBruteForce solver;
         TSPGreedy solver2;
         List<Integer> tour, tour2;
         double cost, cost2;
@@ -112,7 +112,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
                 startNode = 1;
                 expectedTour = expectedTour1;
             }
-            solver = new TSPOptimalDynamic(startNode, distanceMatrix);
+            solver = new TSPOptimalBruteForce(startNode, distanceMatrix);
             solver.solveIteratively();
             System.out.printf("startNode=%d  solveIteratively: ", startNode);
             tour = solver.getTour();
@@ -167,7 +167,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
         int[] expectedTour;
         int startNode;
         int expectedCost = 29;//8+4+2+3+12
-        TSPOptimalDynamic solver;
+        TSPOptimalBruteForce solver;
         TSPGreedy solver2;
         List<Integer> tour, tour2;
         double cost, cost2;
@@ -181,7 +181,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
                 startNode = 1;
                 expectedTour = expectedTour1;
             }
-            solver = new TSPOptimalDynamic(startNode, distanceMatrix);
+            solver = new TSPOptimalBruteForce(startNode, distanceMatrix);
             solver.solveIteratively();
             System.out.printf("startNode=%d  solveIteratively: ", startNode);
             tour = solver.getTour();
