@@ -19,7 +19,7 @@ import java.util.Stack;
  condense the sums of 3-paths used in the subproblems
  for a dynamic solution to TSP as an exercise in recursion and
  dynamic programming (not a preferred impl due to the large runtime complexity). 
- <pre>
+<pre>
  A completely dynamic solution requires a large amount of memory (see statiement below).
  Here is an outline of one, based upon what I learned from making the hybrid
  dynamic and brute force approach below:
@@ -46,7 +46,15 @@ For the dynamic approach just outlined:
   731    5.58e538      7.7e1778
  where n is the number of cities,
  and c is the number of elements one needs to store in a memo datastructure.
- </pre>
+ 
+Additionally, the pure dynamic version needs a new implementation of
+Permutations.java because the number of permutations is quickly very large (e.g. 12! is 4.79e8)
+Permutations.java class needs to have either compressed storage
+for the permutations internal to its class
+or use a CyclicBarrier to let each stage of calculation be invoked 
+by the user with a get operation (continue from a wait, then wait again for next get operation).
+
+</pre>
 
 <pre>
     let start node = 0.  n=5
