@@ -1,7 +1,6 @@
 package algorithms.tsp;
 
 import algorithms.misc.MiscMath0;
-import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
@@ -16,7 +15,7 @@ import junit.framework.TestCase;
 public class TSPDynamicTest extends TestCase {
 
     private int n = 6;
-    private TSPDynamic tsp;
+    private TSPHybridDynamicBruteForce tsp;
 
     public TSPDynamicTest(String testName) {
         super(testName);
@@ -33,7 +32,7 @@ public class TSPDynamicTest extends TestCase {
         dist[0][4] = 412;
         dist[3][0] = 53;
 
-        tsp = new TSPDynamic(dist);
+        tsp = new TSPHybridDynamicBruteForce(dist);
     }
 
     public void testSetBits() {
@@ -142,7 +141,7 @@ public class TSPDynamicTest extends TestCase {
         dist2[3][2] = 6;
         dist2[0][3] = 8;
         
-        tsp = new TSPDynamic(dist2);
+        tsp = new TSPHybridDynamicBruteForce(dist2);
         tsp.init3NodePaths();
         
         int sz = (int)MiscMath0.computeNDivNMinusK(dist2.length-1, 3);
@@ -176,7 +175,7 @@ public class TSPDynamicTest extends TestCase {
             }
         }
         
-        tsp = new TSPDynamic(dist);
+        tsp = new TSPHybridDynamicBruteForce(dist);
         tsp.initNodePaths();
         
         int sze = (int)MiscMath0.factorial(dist.length-1);
@@ -209,7 +208,7 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour0 = new int[]{0, 3, 2, 4, 1, 5, 0};
         int[] expectedTour1 = new int[]{1, 5, 0, 3, 2, 4, 1};
         
-        tsp = new TSPDynamic(dist2);
+        tsp = new TSPHybridDynamicBruteForce(dist2);
         tsp.solveRecursively();
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
@@ -257,7 +256,7 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour0 = new int[]{0, 2, 3, 1, 0};
         int[] expectedTour1 = new int[]{0, 1, 3, 2, 0};
         
-        tsp = new TSPDynamic(dist);
+        tsp = new TSPHybridDynamicBruteForce(dist);
         tsp.solveRecursively();
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
@@ -290,7 +289,7 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour;
         double expectedCost = 29;//8+4+2+3+12
         
-        tsp = new TSPDynamic(dist);
+        tsp = new TSPHybridDynamicBruteForce(dist);
         tsp.solveRecursively();
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
@@ -329,7 +328,7 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour0 = new int[]{0, 3, 2, 4, 1, 5, 0};
         int[] expectedTour1 = new int[]{1, 5, 0, 3, 2, 4, 1};
         
-        tsp = new TSPDynamic(dist2);
+        tsp = new TSPHybridDynamicBruteForce(dist2);
         tsp.solveIteratively();
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
@@ -377,7 +376,7 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour0 = new int[]{0, 2, 3, 1, 0};
         int[] expectedTour1 = new int[]{0, 1, 3, 2, 0};
         
-        tsp = new TSPDynamic(dist);
+        tsp = new TSPHybridDynamicBruteForce(dist);
         tsp.solveIteratively();
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
@@ -410,7 +409,7 @@ public class TSPDynamicTest extends TestCase {
         int[] expectedTour;
         double expectedCost = 29;//8+4+2+3+12
         
-        tsp = new TSPDynamic(dist);
+        tsp = new TSPHybridDynamicBruteForce(dist);
         tsp.solveIteratively();
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
@@ -427,6 +426,7 @@ public class TSPDynamicTest extends TestCase {
     }
 
     public void testCount() {
+        
         int n = 8;
         BigInteger c;
         

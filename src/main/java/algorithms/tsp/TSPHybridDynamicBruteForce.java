@@ -51,9 +51,9 @@ Additionally, the pure dynamic version needs a new implementation of
 Permutations.java because the number of permutations is quickly very large (e.g. 12! is 4.79e8)
 Permutations.java class needs to have either compressed storage
 for the permutations internal to its class
-or use a CyclicBarrier to let each stage of calculation be invoked 
+or use a semaphore or CyclicBarrier etc, 
+to let each stage of calculation be invoked 
 by the user with a get operation (continue from a wait, then wait again for next get operation).
-
 </pre>
 
 <pre>
