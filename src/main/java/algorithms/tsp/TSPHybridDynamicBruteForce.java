@@ -272,6 +272,8 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         int nNodesRemaining2;
         StackP currentStackP;
         
+        boolean storeInMemo = false;
+        
         for (int i = 0; i < memo.size(); ++i) {
             iter.advance();
             bitstring = iter.key();
@@ -312,48 +314,8 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
                     
                     continue;
                 }
-                   
-                
-                int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
-          
-                // there are more than 3 nodes not yet set so can use subsetchooser
-                SubsetChooser chooser = new SubsetChooser(nNodesRemaining2, k);
-                int[] sel = new int[k];
-                int s3, i3;
-                int[][] selPerm = new int[6][k];
-                for (i3 = 0; i3 < selPerm.length; ++i3) {
-                    selPerm[i3] = new int[k];
-                }
-                double sum3;
-                long path3, perm3i;
-                int[] sel3 = new int[k];
-                while (true) {
-                    s3 = chooser.getNextSubset(sel);
-                    if (s3 == -1) {
-                        break;
-                    }
-
-                    //transform sel to the bitstring2 unset indexes
-                    for (i3 = 0; i3 < k; ++i3) {
-                        sel3[i3] = remaining.get(sel[i3]);
-                    }
-
-                    Permutations.permute(sel3, selPerm);
-
-                    for (i3 = 0; i3 < selPerm.length; ++i3) {
-                        c2++;
-                        perm3i = createAMemoNodeBitstring(selPerm[i3]);
-                        assert(memo.containsKey(perm3i));
-
-                        sum3 = sum2 + dist[lastNode][selPerm[i3][0]] + memo.get(perm3i);
-
-                        path3 = concatenate(bitstring2, nBitsSet2, selPerm[i3]);
-
-                        // no need to store
-                        //memo.put(path2, sum2);
-                        stack.add(new StackP(path3, sum3, nNodesRemaining2 - k));
-                    }
-                }
+                                
+                createAndStackSubsetPermutations(bitstring2, sum2, nBitsSet2, k, stack, storeInMemo);                
             }
         } 
         //c0=240 c1=120 c2=60 n=6

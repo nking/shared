@@ -98,21 +98,6 @@ public abstract class AbstractTSP {
         
         memo = new TLongDoubleHashMap(sz);
         
-        /*
-        //find max n cities for limit of array length
-        int nc = 100;
-        long wc, nb;
-        while (true) {
-            long c = countTotalNumSubSeqInvocations(nc);
-            if (c > Integer.MAX_VALUE) {
-                break;
-            }
-            wc = (long)Math.ceil(Math.log(nc-1)/Math.log(2)); // 1 city encoding in bits
-            nb = (Long.MAX_VALUE/wc); // the number of cities one could fit into a long if using wc
-            System.out.printf("nc=%d, ns=%d wc=%d nb=%d ns*1e-9=%e\n", nc, c, wc, nb, c*1.e-9);
-            nc = (int)Math.round(nc*1.5);
-        }
-        */
     }
     
     protected void reset() {
@@ -419,14 +404,13 @@ public abstract class AbstractTSP {
         
         createAndStackPermutations(bitstring2, sum2, nBitsSet2, 
             nodes, stack, storeInMemo);
-        
     }
 
     /**
      * initialize memo with permutations for all subsets of 4 path nodes, where the
      * number of unset path nodes is > 4.
      */
-    protected void init4NodePaths() {  
+    protected void init4NodePaths() throws InterruptedException {  
         initKNodePaths(4);
     }
     
@@ -434,34 +418,56 @@ public abstract class AbstractTSP {
      * initialize memo with permutations for all subsets of 3 path nodes, where the
      * number of unset path nodes is > 3.
      */
-    protected void init3NodePaths() {  
+    protected void init3NodePaths() throws InterruptedException {  
         initKNodePaths(3);
     }
     
     /**
      * initialize memo with permutations for all subsets of 3 path nodes, where the
      * number of unset path nodes is > 3.
+     * @param k
      */
-    protected void initKNodePaths(final int k) {        
+    protected void initKNodePaths(final int k) throws InterruptedException {        
         assert(memo.isEmpty());
-                
+        
+        int nNodesSet = 0;
+        Stack<StackP> stack = null;
+        boolean storeInMemo = true;
+        double cost = 0;
+        createAndStackSubsetPermutations(0, cost, nNodesSet, k, stack, storeInMemo);
+    }
+    
+    /**
+     * 
+     * @param bitstring bit-string of ordered path nodes in format for memo key
+     * @param sum the cost of the ordered path thus far
+     * @param nNodesSet the number of nodes set in bitstring
+     * @param k the length of subsets to choose from the unset bits of bitstring
+     * @param stack can be null.  if not null, the permuted path and its cost
+     * are pushed onto the stack.
+     * @param storeInMemo if true, the permuted path and sum are stored in memo
+     */
+    protected void createAndStackSubsetPermutations(long bitstring, double sum, 
+        int nNodesSet, int k, 
+        Stack<StackP> stack, boolean storeInMemo) throws InterruptedException {
+        
+        TIntList remaining = new TIntArrayList();
+        findUnsetBitsBase10(bitstring, remaining);
+        //System.out.println("remaining unset=" + remaining.toString());
+   
         int nPerm = (int)MiscMath0.factorial(k);
         
         final int[] sel = new int[k];
         final int[] sel2 = new int[k];
         int s, i;
-        final int[][] selPerm = new int[nPerm][k];
-        for (i = 0; i < selPerm.length; ++i) {
-            selPerm[i] = new int[k];
-        }
+        int[] selPerm = new int[k];
         
-        TIntList remaining = new TIntArrayList();
-        findUnsetBitsBase10(0, remaining);
-        //System.out.println("remaining unset=" + remaining.toString());
-
+        int lastNode = getBase10NodeIndex(nNodesSet-1, bitstring);
+        
         int j, i0, i1;
-        long path, sum;
-        SubsetChooser chooser = new SubsetChooser(dist.length-1, k);
+        long permi, path2;
+        double sum2;
+        SubsetChooser chooser = new SubsetChooser(remaining.size(), k);
         while (true) {
             s = chooser.getNextSubset(sel);
             if (s == -1) {
@@ -474,18 +480,35 @@ public abstract class AbstractTSP {
             }
             //System.out.println("    sel2=" + Arrays.toString(sel2));
 
-            Permutations.permute(sel2, selPerm);
+            PermutationsWithAwait permutations = new PermutationsWithAwait(sel2);
             
-            for (i = 0; i < selPerm.length; ++i) {
-                sum = 0;
-                path = createAMemoNodeBitstring(selPerm[i]);
-                
-                for (j = 1; j < k; ++j) {
-                    i0 = selPerm[i][j-1];
-                    i1 = selPerm[i][j];
-                    sum += dist[i0][i1];
+            for (i = 0; i < nPerm; ++i) {
+                permutations.getNext(selPerm);
+                sum2 = sum;
+                if (lastNode >= 0) {
+                    sum2 += dist[lastNode][selPerm[0]];
                 }
-                memo.put(path, sum);
+                
+                permi = createAMemoNodeBitstring(selPerm);
+                if (memo.containsKey(permi)) {
+                    sum2 += memo.get(permi);
+                } else {
+                    // add each edge
+                    for (j = 1; j < selPerm.length; ++j) {
+                        i0 = selPerm[j - 1];
+                        i1 = selPerm[j];
+                        sum2 += dist[i0][i1];
+                    }
+                }
+                
+                path2 = concatenate(bitstring, nNodesSet, selPerm);
+                
+                if (storeInMemo) {
+                    memo.put(path2, sum2);
+                }
+                if (stack != null) {
+                    stack.add(new StackP(path2, sum2, remaining.size() - k));
+                }
             }
         }
     }
@@ -591,7 +614,7 @@ public abstract class AbstractTSP {
      * @param bitstring2
      * @param sum2
      * @param nBitsSet2
-     * @param nodes
+     * @param nodes nodes to permute
      * @param stack can be null
      * @param storeInMemo
      * @throws InterruptedException 
@@ -645,7 +668,8 @@ public abstract class AbstractTSP {
             }
 
             if (stack != null) {
-                stack.add(new StackP(path3, sum3, 0));
+                stack.add(new StackP(path3, sum3, 
+                   dist.length - 1 - (nBitsSet2 + nodes.size())));
             }
         }
     }

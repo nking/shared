@@ -127,7 +127,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         assertEquals(2700, path4125);
     }
 
-    public void testCalculateAndStore3NodePaths() {
+    public void testCalculateAndStore3NodePaths() throws InterruptedException {
 
         int n2 = 6;
         double[][] dist2 = new double[n2][n2];
