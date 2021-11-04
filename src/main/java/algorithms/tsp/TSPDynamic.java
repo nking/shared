@@ -35,7 +35,7 @@ need (n-1) > k for each stage.
   goal is to use iterations of k -=3 of subsets and permutations w/ a stack to
      finish complete paths and compare the completed path to minCost.
      
-For the dynamic approach just outlined:
+For the dynamic approach just outlined in the (n-1) > k section:
     n    c             compare to n!
     8    210           40320
    14    1.24e6        8.7e10
