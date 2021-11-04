@@ -8,53 +8,14 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
-import gnu.trove.map.TLongDoubleMap;
-import gnu.trove.map.hash.TLongDoubleHashMap;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Stack;
 
 /**
- Keeping notes here on looking at bitstring patterns to find ways to 
+ Keeping notes here on looking at bit-string patterns to find ways to 
  condense the sums of 3-paths used in the subproblems
  for a dynamic solution to TSP as an exercise in recursion and
  dynamic programming (not a preferred impl due to the large runtime complexity). 
-<pre>
- A completely dynamic solution requires a large amount of memory (see statiement below).
- Here is an outline of one, based upon what I learned from making the hybrid
- dynamic and brute force approach below:
- 
- subset chooser for n, k w/ k=3
-   permutations for k!
-   store each k=3 permutation in memo
- subset chooser for n, k w/ k=6
-   permutations for k!
-   path should be composed of complete subparts + a connecting edge:
-       p = p3_0 + p3_1 + edge where p3_0 and p3_1 are in memo from k=3 permutations
-   store each k=6 permutation in memo
- subset chooser for n, k w/ k=12
-   permutations for k!
-   path should be composed of complete subparts + a connecting edge:
-       p = p6_0 + p6_1 + edge where p6_0 and p6_1 are in memo from k=6 permutations
-   store each k=12 permutation in memo
-...
-For the dynamic approach just outlined:
-    n    c             compare to n!
-    8    210           40320
-   14    1.24e6        8.7e10
-   29    1.46e16       8.8e31
-  731    5.58e538      7.7e1778
- where n is the number of cities,
- and c is the number of elements one needs to store in a memo datastructure.
- 
-Additionally, the pure dynamic version needs a new implementation of
-Permutations.java because the number of permutations is quickly very large (e.g. 12! is 4.79e8)
-Permutations.java class needs to have either compressed storage
-for the permutations internal to its class
-or use a semaphore or CyclicBarrier etc, 
-to let each stage of calculation be invoked 
-by the user with a get operation (continue from a wait, then wait again for next get operation).
-</pre>
 
 <pre>
     let start node = 0.  n=5
@@ -119,60 +80,9 @@ by the user with a get operation (continue from a wait, then wait again for next
 
     at this point, we have generated and stored all 3-node path sums, excluding the start node.
 
-    we could proceeed in many ways:
-      (1) one way would be to use recursion all the way to the end of a path, and add the
-          3-node path sums to each stage, but not save the intermediate stages.
-          the memory requirements would be more manageable.
-          The sub-problem re-use would be only of the 3-node paths though, and could not re-use
-          already summed partial paths longer than the 3-nodes.
-          Note that this pattern is just one level from a brute force approach.
-          (and in that case, one might want to consider designing an algorithm composed of
-          as much memoization as possible for the system the code is running on while completing
-          the rest of the calculations with recursive brute force approach.  e.g.
-          enough memory to store the 3-node permutations?  6-node permutations?  9-node permutations?
-          then continue each path to its end with recursion and compare its total 
-          with mintotal and discard it if not mincost).
-      (2) another way to proceed would be to use recursion all the way to the end of a path,
-          and to save all intermediate sums for re-use.
-          The sub-problem re-use is then truly the dynamic approach, but requires more memory
-          for storage.
+    see AbstractTSP class comments for notes about the keys used for memo.
 
-          The dynamic approach needs to store the partial sums as the path lengthens
-             (without the start node).
-          datastructure requirements:
-             - need set(key, value), getValue(key), and contains(key), and prefer O(1) or O(small const) for each.
-             - a key for one partial sum would have to hold information on the nodes in
-               the partial path and their order.
-               could consider many ways to do that:
-                 The number of bits needed to represent the number of a node would be math.log(n-1)/math.log(2).
-                 Let w = math.log(n-1)/math.log(2).  then a key as a bitstring representing node and order
-                 would be a variable bit length from 3 nodes = 3*w bits in length up to (n-1)*w bits in length.
-                 Ror example, a 3-node path sum from nodes 2, 3, 1 would be
-                      2       3       1
-                   ------  ------  ------
-                   w bits  w bits  w bits
-
-                 Compression options for the key could be considereed too.
-
-               Note that the start node isn't part of those keys as it will be added into the path at
-               evaulation time.
-             - A worse case number of keys to store is the permutation of all but one node: n!/n.
-             - A long bitstring is limited to 63 bits.
-             - A java array length is limited to signed integer length, 1 &lt&lt 31 -1.
-             - so to fit more than 1 &lt&lt 31-1 permutations would need to use the bitstring key
-               as a concatenation of more than one path bitstring.
-               the java BigInteger or the VeryLongBitString could do so.
-               - also, the values for those keys would need to be referenced in an O(1) manner also if possible.
-                 one could use a 2 dimensional array where the 2nd dimension
-                 holds the individual values for the keys in the concatenated key.
-             - would need a wrapper class to manage the integrity of the array of BigInteger or
-               VeryLongBitString and the 2 dimensional array of path sums.
-             - what amount of concatenation of keys would improve the number of storable
-               path sums significantly?
-
-       Will continue from here having chosen (2) to complete the dynamic approach.
-       Will also assume that the datastructure for storage exists and will call it memo for now.
-       
+          
        considering recursion patterns:
        
            calculateAndStore3NodePaths();
@@ -273,70 +183,11 @@ rewrite in iterative form:
  * 
  * @author nichole
  */
-public class TSPHybridDynamicBruteForce {
+public class TSPHybridDynamicBruteForce extends AbstractTSP {
    
-    private double minCost = Double.POSITIVE_INFINITY;
-    private final TLongList minPath = new TLongArrayList();
-    private final int startNode = 0;
-    private final double[][] dist;
-    //TODO: consider other formats for memo
-    private final TLongDoubleMap memo;
-    private final double sentinel = Double.POSITIVE_INFINITY;
-    private final long totalNPerm;
-    private final long totalNSubSet;
-    private final long totalNSubSeq;
-    private final int w; // number of bits a city takes in a path where path is a bitstring of type long
     
     public TSPHybridDynamicBruteForce(double[][] dist) {
-        
-        this.dist = dist;
-        int n = dist.length;
-        long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
-        totalNPerm = nPerm/n;
-        
-        //TODO: add in the number of permutations for those not in a 3-set, that is,
-        //   the 2 node and 1-node permutations
-        totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length
-        totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); 
-        
-        System.out.printf("nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n", 
-            totalNPerm, totalNSubSet, totalNSubSeq);
-        
-        int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
-        
-        /*if (totalNSubSeq > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("this class can solve for 13 cities at most."
-                + " one could design a datastructure to hold more than (1<<31)-1 items, "
-                + " but the algorithms in this class have exponential runtime complexity,"
-                + " so it would be better to choose a good approximate TSP.");
-        }*/
-        n = (int)totalNPerm;
-                        
-        w = (int)(Math.ceil(Math.log(dist.length)/Math.log(2)));
-        
-        memo = new TLongDoubleHashMap(sz);
-        
-        /*
-        //find max n cities for limit of array length
-        int nc = 100;
-        long wc, nb;
-        while (true) {
-            long c = countTotalNumSubSeqInvocations(nc);
-            if (c > Integer.MAX_VALUE) {
-                break;
-            }
-            wc = (long)Math.ceil(Math.log(nc-1)/Math.log(2)); // 1 city encoding in bits
-            nb = (Long.MAX_VALUE/wc); // the number of cities one could fit into a long if using wc
-            System.out.printf("nc=%d, ns=%d wc=%d nb=%d ns*1e-9=%e\n", nc, c, wc, nb, c*1.e-9);
-            nc = (int)Math.round(nc*1.5);
-        }
-        */
-    }
-    
-    private void reset() {
-        minCost = sentinel;
-        minPath.clear();
-        memo.clear();
+        super(dist);
     }
     
     /**
@@ -550,240 +401,6 @@ public class TSPHybridDynamicBruteForce {
             totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
    
-    // total number of subsetchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
-    protected long countTotalNumSubSeqInvocations(int n) {
-        int k=3, n2=n;
-        long c = 0;
-        while (n2 > k) {
-            c += MiscMath0.computeNDivKTimesNMinusK(n2, k);
-            n2 -= k;
-        }
-        return c;
-    }
-    
-    // total number of k-permutations, that is, n!/(n-k)!.  using the subset chooser
-    //   to find the sets of size 3, then permuting each of those into
-    //   distinct ordered sequences
-    protected long countTotalNumSubSetInvocations(int n) {
-        int k=3, n2=n;
-        long c = 0;
-        while (n2 > k) {
-            c += MiscMath0.computeNDivNMinusK(n2, k);
-            n2 -= k;
-        }
-        return c;
-    }
-    
-    /**
-     * roughly counting k-permutations for a dynamic approach where k is
-     * increased by a factor of 2 each time and begins with k=3.
-     * @param n
-     * @return 
-     */
-    protected static BigInteger count0(int n) {
-        n = n - 1;
-        BigInteger c1, c2, c3;
-        BigInteger c0 = BigInteger.ZERO;
-        int k = 3;
-        while ((n-k) > k) {
-            c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);
-            c2 = MiscMath0.factorialBigInteger(k);
-            c3 = c1.multiply(c2);
-            c0 = c0.add(c3);
-            k *= 2;
-        }
-        return c0;
-    }
-    
-    /**
-     * given a pathNodeNumber such as 0 being the first node in the path bit-string,
-     * uses path node bit-string length w to read the set bits and 
-     * return the base 10 number (which can be used with the distance matrix 
-     * or in writing the final solution of ordered nodes).
-     * @param path
-     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
-     * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
-     * 2nd node in the final solution for the completed path for the algorithm instance).
-     * @return 
-     */
-    protected int getBase10NodeIndex(final long pathNodeNumber, final long path) {
-        // read bits pathNodeNumber*w to pathNodeNumber*w + w
-        long sum = 0;
-        long b = pathNodeNumber*w;
-        long end = b + w;
-        int s = 0;
-        for (b = pathNodeNumber*w, s=0; b < end; ++b, s++) {
-            if ((path & (1L << b)) != 0) { // test bit b in path
-                sum += (1L << s);
-            }
-        }
-        return (int)sum;
-    }
-    
-    /**
-     * write the base 10 indexes s into a bit-string in the encoding used by the
-     * memo.
-     * @param s base 10 node indexes in the order to set into the bit-string path.
-     * NOTE that s should not contain the startNode.
-     * @return 
-     */
-    protected long createThe3NodeBitstring(int[] s) {
-        assert(s.length == 3);
-        long path = concatenate(0, 0, s);
-        return path;
-    }
-    
-    /**
-     * for the pathNodeNumber which is the order number of the node in the path 
-     * (e.g. second node in the path), set the node number to be the base10Node.
-     * @param base10Node
-     * @param path
-     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
-     * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
-     * 2nd node in the final solution for the completed path for the algorithm instance).
-     * @return 
-     */
-    protected long setBits(final int base10Node, final long path, final int pathNodeNumber) {
-        long bitstring = path; // 11 10 01
-        long b = pathNodeNumber*w;
-        long end = b + w;
-        int b0;
-        for (b = pathNodeNumber*w, b0=0; b < end; ++b, b0++) {
-            if ((base10Node & (1L << b0)) != 0) { // test bit b0 in pathNodeNumber
-                bitstring |= (1L << b); // set bit b in bitstring
-            } else {
-                bitstring &= ~(1L << b);//clear bit
-            }
-        }
-        return bitstring;
-    }
-    
-    /**
-     * read the given bit-string encoded for use with memo, to find the
-     * set bits and return the nodes as a base10 bit-string (without the path order information).
-     * @param bitstring
-     * @return 
-     */
-    protected long findSetBitsBase10(long bitstring) {
-        long base10nodes = 0;
-        int i, b, node, j;
-        int bf = w*(dist.length - 1);
-        for (b = 0; b < bf; b+= w) {
-            node = 0;
-            for (i = b, j=0; i < (b + w); ++i, ++j) {
-                if ((bitstring & (1L << i)) != 0) {
-                    node += (1 << j);
-                }
-            }
-            if (node > 0) {
-                base10nodes |= (1L << node);
-            }
-        }
-        return base10nodes;
-    }
-    
-    /**
-     * read the given bit-string encoded for use with memo, to find the
-     * unset bits and return the nodes as a base10 bit-string.
-     * Note that bit 0 is not read as that is the implicit startNode
-     * which is excluded from bit-string operations.
-     * @param bitstring
-     * @return 
-     */
-    protected long findUnsetBitsBase10(long bitstring) {
-        long base10nodesSet = findSetBitsBase10(bitstring);
-        long base10NotSet = 0;
-        // find bits not set from bit 1 to dist.length
-        int b;
-        for (b = 1; b < dist.length; ++b) {
-            if ((base10nodesSet & (1 << b)) == 0) {
-                base10NotSet |= (1L << b);
-            }
-        }
-        return base10NotSet;
-    }
-    
-    /**
-     * read the given bit-string encoded for use with memo, to find the
-     * unset bits and return the nodes as a base10 bit-string.
-     * Note that bit 0 is not read as that is the implicit startNode
-     * which is excluded from bit-string operations.
-     * @param bitstring
-     * @param out list to hold the output node indexes 
-     */
-    protected void findUnsetBitsBase10(long bitstring, TIntList out) {
-        out.clear();
-        long base10nodesSet = findSetBitsBase10(bitstring);
-        // find bits not set from bit 1 to dist.length
-        int b;
-        for (b = 1; b < dist.length; ++b) {
-            if ((base10nodesSet & (1 << b)) == 0) {
-                out.add(b);
-            }
-        }
-    }
-    
-    /**
-     * read the given bit-string encoded for use with memo, to find the
-     * unset bits and return the nodes as a base10 bit-string that has lost
-     * information about the path node order.
-     * Note that bit 0 is not read as that is the implicit startNode
-     * which is excluded from bit-string operations.
-     * @param bitstring
-     * @param out list to hold the output node indexes 
-     */
-    protected void findSetBitsBase10(long bitstring, TIntList out) {
-        out.clear();
-        long base10nodesSet = findSetBitsBase10(bitstring);
-        // find bits not set from bit 1 to dist.length
-        int b;
-        for (b = 1; b < dist.length; ++b) {
-            if ((base10nodesSet & (1 << b)) != 0) {
-                out.add(b);
-            }
-        }
-    }
-    
-    /**
-     * read path into base10 node numbers, preserving order of path
-     * @param bitstring
-     * @param out 
-     */
-    protected void readPathIntoBase10(long bitstring, TIntList out) {
-        out.clear();
-        
-        int i, b, node, j;
-        int bf = w*(dist.length - 1);
-        for (b = 0; b < bf; b+= w) {
-            node = 0;
-            for (i = b, j=0; i < (b + w); ++i, ++j) {
-                if ((bitstring & (1L << i)) != 0) {
-                    node += (1 << j);
-                }
-            }
-            if (node > 0) {
-                out.add(node);
-            }
-        }
-    }
-    
-    /**
-     * @param path encoded bit-string of ordered path nodes used in the memo.
-     * @param nPathNodesSet the number of nodes currently set in the path
-     * @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
-     * NOTE that s should not contain the startNode.
-     */
-    protected long concatenate(long path, int nPathNodesSet, int[] base10Nodes) {
-        assert(numberOfSetNodes(path) == nPathNodesSet);
-        long path2 = path;
-        int i, si;
-        for (i = 0; i < base10Nodes.length; ++i) {
-            si = base10Nodes[i];
-            assert(si != startNode);
-            path2 = setBits(si, path2, nPathNodesSet + i);
-        }
-        return path2;
-    }
     
     protected void compareToMin(long path, double sum) {
         assert(numberOfSetNodes(path) == (dist.length-1));
@@ -813,55 +430,11 @@ public class TSPHybridDynamicBruteForce {
         }
     }
     
-    public double getMinCost() {
-        return this.minCost;
-    }
-    
-    public int getNumberOfMinPaths() {
-        return minPath.size();
-    }
-    
-    public TIntList getMinPath(int idx) {
-        long path = minPath.get(idx);
-        TIntList out = new TIntArrayList();
-        readPathIntoBase10(path, out);
-        out.insert(0, startNode);
-        out.add(startNode);
-        return out;
-    }
     
     public TLongList getMinPathBitstrings() {
         return new TLongArrayList(minPath);
     }
 
-    /**
-     * 
-     * @param path a memo bit-string
-     * @return 
-     */
-    protected int numberOfUnsetNodes(long path) {
-        // composed of w-bit bit-strings
-        int nn = (dist.length - 1) * w;
-        
-        // the first 64-((dist.length-1*w) can be discarded as unused space
-        int nd = 64 - nn;
-        int n0 = Long.numberOfLeadingZeros(path);
-        assert(n0 >= nd);
-        int nc = n0 - nd;
-        int nUnset = nc/w;
-        return nUnset;
-    }
-    
-    /**
-     * 
-     * @param path a memo bit-string
-     * @return 
-     */
-    protected int numberOfSetNodes(long path) {
-        int nUnset = numberOfUnsetNodes(path);
-        int nSet = (dist.length - 1) - nUnset;
-        return nSet;
-    }
     
     /**
      * initialize memo with permutations for all unset path nodes, where the
@@ -1067,9 +640,6 @@ public class TSPHybridDynamicBruteForce {
         }  
     }        
 
-    public int getMemoLength() {
-        return memo.size();
-    }
 
     protected void printMemo() {
         TLongDoubleIterator iter = memo.iterator();
