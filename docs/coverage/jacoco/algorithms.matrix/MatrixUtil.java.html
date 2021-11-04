@@ -2431,6 +2431,9 @@ import com.github.fommil.netlib.LAPACK;
      * of random values between [0 and 1).
      * The method is implemented from pseudocode in Golub and van Loan 
      * &quot;Matrix Computations&quot;.
+     * 
+     * calculates lambda in lambda * v = M * v for some constant eigenvalue lambda.
+     * 
      * NOTE that the number of necessary iterations is dependent upon
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near &quot;1&quot; for large matrices and in that case, the power
@@ -2443,44 +2446,44 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static double powerMethod(double[][] a, int nIterations) {
 
-<span class="pc bpc" id="L2446" title="1 of 2 branches missed.">        if (!isPositiveDefinite(a)) {</span>
-<span class="nc" id="L2447">            throw new IllegalArgumentException(&quot;a must be positive definite&quot;);</span>
+<span class="pc bpc" id="L2449" title="1 of 2 branches missed.">        if (!isPositiveDefinite(a)) {</span>
+<span class="nc" id="L2450">            throw new IllegalArgumentException(&quot;a must be positive definite&quot;);</span>
         }
         
         // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
 
-<span class="fc" id="L2452">        int nR = a.length;</span>
-<span class="fc" id="L2453">        double[] v = new double[nR];</span>
+<span class="fc" id="L2455">        int nR = a.length;</span>
+<span class="fc" id="L2456">        double[] v = new double[nR];</span>
         double[] z;
         double norm;
-<span class="fc" id="L2456">        double eig = 0;</span>
+<span class="fc" id="L2459">        double eig = 0;</span>
         int row;
         
-<span class="fc" id="L2459">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L2460">        long seed = System.nanoTime();</span>
+<span class="fc" id="L2462">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L2463">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L2462">        rand.setSeed(seed);</span>
+<span class="fc" id="L2465">        rand.setSeed(seed);</span>
         //avoid orthogonal first guess at v using randomization.
-<span class="fc bfc" id="L2464" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2465">            v[row] = rand.nextDouble();</span>
+<span class="fc bfc" id="L2467" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2468">            v[row] = rand.nextDouble();</span>
         }
             
-<span class="fc bfc" id="L2468" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
+<span class="fc bfc" id="L2471" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
             
-<span class="fc" id="L2470">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
-<span class="fc" id="L2471">            norm = 0;</span>
-<span class="fc bfc" id="L2472" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2473">                norm += (z[row]*z[row]);</span>
+<span class="fc" id="L2473">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
+<span class="fc" id="L2474">            norm = 0;</span>
+<span class="fc bfc" id="L2475" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2476">                norm += (z[row]*z[row]);</span>
             }
-<span class="fc" id="L2475">            norm = Math.sqrt(norm);</span>
-<span class="fc" id="L2476">            eig = norm;</span>
-<span class="fc bfc" id="L2477" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2478">                v[row] = z[row] / eig;</span>
+<span class="fc" id="L2478">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L2479">            eig = norm;</span>
+<span class="fc bfc" id="L2480" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2481">                v[row] = z[row] / eig;</span>
             }
             //System.out.printf(&quot;eig=%.3f\n  v=%s\n  z=%s\n&quot;, eig, Arrays.toString(v),
             //    Arrays.toString(z));
         }
-<span class="fc" id="L2483">        return eig;</span>
+<span class="fc" id="L2486">        return eig;</span>
     }
     
     /**
@@ -2503,50 +2506,50 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double powerMethod(double[][] a, double tolerance, double[] x) {
-<span class="fc" id="L2506">        int nR = a.length;</span>
-<span class="fc" id="L2507">        double[] v = new double[nR];</span>
+<span class="fc" id="L2509">        int nR = a.length;</span>
+<span class="fc" id="L2510">        double[] v = new double[nR];</span>
         double[] z;
         double norm, t;
-<span class="fc" id="L2510">        double eig = 0;</span>
+<span class="fc" id="L2513">        double eig = 0;</span>
         int row, stop;
         
-<span class="fc" id="L2513">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L2514">        long seed = System.nanoTime();</span>
+<span class="fc" id="L2516">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L2517">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L2516">        rand.setSeed(seed);</span>
+<span class="fc" id="L2519">        rand.setSeed(seed);</span>
         //avoid orthogonal first guess at v using randomization.
-<span class="fc bfc" id="L2518" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2519">            v[row] = rand.nextDouble();</span>
+<span class="fc bfc" id="L2521" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2522">            v[row] = rand.nextDouble();</span>
         }
         
-<span class="fc" id="L2522">        int nIter = 0;</span>
+<span class="fc" id="L2525">        int nIter = 0;</span>
         
         while (true) {
                         
-<span class="fc" id="L2526">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
-<span class="fc" id="L2527">            norm = 0;</span>
-<span class="fc bfc" id="L2528" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2529">                norm += (z[row]*z[row]);</span>
+<span class="fc" id="L2529">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
+<span class="fc" id="L2530">            norm = 0;</span>
+<span class="fc bfc" id="L2531" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2532">                norm += (z[row]*z[row]);</span>
             }
-<span class="fc" id="L2531">            norm = Math.sqrt(norm);</span>
-<span class="fc" id="L2532">            eig = norm;</span>
-<span class="fc" id="L2533">            stop = 1;</span>
-<span class="fc bfc" id="L2534" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2535">                t = z[row]/eig;</span>
-<span class="fc bfc" id="L2536" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
-<span class="fc" id="L2537">                    stop = 0;</span>
+<span class="fc" id="L2534">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L2535">            eig = norm;</span>
+<span class="fc" id="L2536">            stop = 1;</span>
+<span class="fc bfc" id="L2537" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2538">                t = z[row]/eig;</span>
+<span class="fc bfc" id="L2539" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
+<span class="fc" id="L2540">                    stop = 0;</span>
                 }
-<span class="fc" id="L2539">                v[row] = z[row] / eig;</span>
+<span class="fc" id="L2542">                v[row] = z[row] / eig;</span>
             }
-<span class="fc bfc" id="L2541" title="All 2 branches covered.">            if (stop == 1) {</span>
-<span class="fc" id="L2542">                break;</span>
+<span class="fc bfc" id="L2544" title="All 2 branches covered.">            if (stop == 1) {</span>
+<span class="fc" id="L2545">                break;</span>
             }
             //System.out.printf(&quot;nIter=%d eig=%.3f\n  v=%s\n  z=%s\n&quot;, nIter, 
             //    eig, Arrays.toString(v), Arrays.toString(z));
-<span class="fc" id="L2546">            nIter++;</span>
+<span class="fc" id="L2549">            nIter++;</span>
         }
-<span class="fc" id="L2548">        System.arraycopy(v, 0, x, 0, v.length);</span>
-<span class="fc" id="L2549">        return eig;</span>
+<span class="fc" id="L2551">        System.arraycopy(v, 0, x, 0, v.length);</span>
+<span class="fc" id="L2552">        return eig;</span>
     }
     
      /**
@@ -2567,8 +2570,8 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double powerMethod(double[][] a, double tolerance) {
-<span class="fc" id="L2570">        double[] x = new double[a.length];</span>
-<span class="fc" id="L2571">        return powerMethod(a, tolerance, x);</span>
+<span class="fc" id="L2573">        double[] x = new double[a.length];</span>
+<span class="fc" id="L2574">        return powerMethod(a, tolerance, x);</span>
     }
     
     /**
@@ -2586,32 +2589,32 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static double[] powerMethodEigenPairs(double[][] a, double tolerance) {
         
-<span class="fc" id="L2589">        double[] x = new double[a.length];</span>
+<span class="fc" id="L2592">        double[] x = new double[a.length];</span>
         double eig;
-<span class="fc" id="L2591">        double[] eigs = new double[a.length];</span>
+<span class="fc" id="L2594">        double[] eigs = new double[a.length];</span>
         double[][] x2, a2;
         
-<span class="fc bfc" id="L2594" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
+<span class="fc bfc" id="L2597" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
             
-<span class="fc" id="L2596">            eigs[nr] = powerMethod(a, tolerance, x);</span>
+<span class="fc" id="L2599">            eigs[nr] = powerMethod(a, tolerance, x);</span>
             
-<span class="fc" id="L2598">            x2 = outerProduct(x, x);</span>
-<span class="fc" id="L2599">            a2 = copy(a);</span>
-<span class="fc bfc" id="L2600" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc bfc" id="L2601" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
-<span class="fc" id="L2602">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
+<span class="fc" id="L2601">            x2 = outerProduct(x, x);</span>
+<span class="fc" id="L2602">            a2 = copy(a);</span>
+<span class="fc bfc" id="L2603" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc bfc" id="L2604" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
+<span class="fc" id="L2605">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
                 }
             }
-<span class="fc" id="L2605">            a = a2;</span>
+<span class="fc" id="L2608">            a = a2;</span>
             
-<span class="fc" id="L2607">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
-<span class="fc" id="L2608">            System.out.println(&quot;  a2=\n&quot;);</span>
-<span class="fc bfc" id="L2609" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc" id="L2610">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
+<span class="fc" id="L2610">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
+<span class="fc" id="L2611">            System.out.println(&quot;  a2=\n&quot;);</span>
+<span class="fc bfc" id="L2612" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc" id="L2613">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
             }
         }
                 
-<span class="fc" id="L2614">        return eigs;</span>
+<span class="fc" id="L2617">        return eigs;</span>
     }
     
     /**
@@ -2624,31 +2627,31 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public double[][] powerOf(double[][] a, int power) throws NotConvergedException {
-<span class="nc bnc" id="L2627" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L2628">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
+<span class="nc bnc" id="L2630" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L2631">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
         }
-<span class="nc" id="L2630">        double eps = 1E-15;</span>
-<span class="nc" id="L2631">        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);</span>
+<span class="nc" id="L2633">        double eps = 1E-15;</span>
+<span class="nc" id="L2634">        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);</span>
         
-<span class="nc" id="L2633">        int rank = 0;</span>
-<span class="nc bnc" id="L2634" title="All 2 branches missed.">        for (double sv : svd.s) {</span>
-<span class="nc bnc" id="L2635" title="All 2 branches missed.">            if (sv &gt; eps) {</span>
-<span class="nc" id="L2636">                rank++;</span>
+<span class="nc" id="L2636">        int rank = 0;</span>
+<span class="nc bnc" id="L2637" title="All 2 branches missed.">        for (double sv : svd.s) {</span>
+<span class="nc bnc" id="L2638" title="All 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="nc" id="L2639">                rank++;</span>
             }
         }
         
-<span class="nc bnc" id="L2640" title="All 2 branches missed.">        if (rank &lt; svd.u.length) {</span>
+<span class="nc bnc" id="L2643" title="All 2 branches missed.">        if (rank &lt; svd.u.length) {</span>
             // this case has eigenvalues that are 0.
             //  det(A - lambda*I) = 0, so is not diagonalizable.
-<span class="nc" id="L2643">            throw new IllegalStateException(&quot;there are eigenvalues with value 0, so matrix a is not diagonalizable&quot;);</span>
+<span class="nc" id="L2646">            throw new IllegalStateException(&quot;there are eigenvalues with value 0, so matrix a is not diagonalizable&quot;);</span>
         }
         
-<span class="nc" id="L2646">        double[] d = new double[a.length];</span>
-<span class="nc bnc" id="L2647" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L2648">            d[i] = Math.pow(svd.s[i], power);</span>
+<span class="nc" id="L2649">        double[] d = new double[a.length];</span>
+<span class="nc bnc" id="L2650" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L2651">            d[i] = Math.pow(svd.s[i], power);</span>
         }
                 
-<span class="nc" id="L2651">        double[][] s = svd.u;</span>
+<span class="nc" id="L2654">        double[][] s = svd.u;</span>
         
         double[][] sInv;
         // check that the eigenvectors are independent.
@@ -2657,11 +2660,11 @@ import com.github.fommil.netlib.LAPACK;
         //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
         //  S*S^-1 = I
         //  S.solve(I, sInv) to get sInv using MTJ:
-<span class="nc" id="L2660">        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);</span>
-<span class="nc" id="L2661">        _sInv = (DenseMatrix) new DenseMatrix(s).solve(</span>
-<span class="nc" id="L2662">             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), </span>
+<span class="nc" id="L2663">        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);</span>
+<span class="nc" id="L2664">        _sInv = (DenseMatrix) new DenseMatrix(s).solve(</span>
+<span class="nc" id="L2665">             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), </span>
              _sInv);
-<span class="nc" id="L2664">        sInv = MatrixUtil.convertToRowMajor(_sInv);</span>
+<span class="nc" id="L2667">        sInv = MatrixUtil.convertToRowMajor(_sInv);</span>
  
         /*
             // check this condition... S not invertible so check math in A = S^-1 * Delta * S
@@ -2673,9 +2676,9 @@ import com.github.fommil.netlib.LAPACK;
         */
         
         // A = S^-1 * delta^power * S
-<span class="nc" id="L2676">        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);</span>
+<span class="nc" id="L2679">        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);</span>
         
-<span class="nc" id="L2678">        return aP;</span>
+<span class="nc" id="L2681">        return aP;</span>
     }
     
     /**
@@ -2695,38 +2698,38 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
         
-<span class="pc bpc" id="L2698" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
-<span class="nc" id="L2699">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
+<span class="pc bpc" id="L2701" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
+<span class="nc" id="L2702">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
         }
                 
-<span class="fc" id="L2702">        int m = a.length;</span>
-<span class="fc" id="L2703">        int n = a[0].length;</span>
+<span class="fc" id="L2705">        int m = a.length;</span>
+<span class="fc" id="L2706">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L2705" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
-<span class="nc" id="L2706">            a = MatrixUtil.transpose(a);</span>
-<span class="nc" id="L2707">            m = a.length;</span>
-<span class="nc" id="L2708">            n = a[0].length;</span>
+<span class="pc bpc" id="L2708" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
+<span class="nc" id="L2709">            a = MatrixUtil.transpose(a);</span>
+<span class="nc" id="L2710">            m = a.length;</span>
+<span class="nc" id="L2711">            n = a[0].length;</span>
         }
         
         // limit for a number to be significant above 0
-<span class="fc" id="L2712">        double eps = 1e-16;</span>
+<span class="fc" id="L2715">        double eps = 1e-16;</span>
         
-<span class="fc" id="L2714">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
-<span class="fc" id="L2715">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
+<span class="fc" id="L2717">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
+<span class="fc" id="L2718">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
         
         // s is an array of size min(m,n)  which is nxn here
-<span class="fc" id="L2718">        double[] s = svd.getS();</span>
+<span class="fc" id="L2721">        double[] s = svd.getS();</span>
         
-<span class="fc" id="L2720">        double[][] sMatrix = new double[n][n];</span>
-<span class="fc bfc" id="L2721" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L2722">            sMatrix[i] = new double[n];</span>
-<span class="fc" id="L2723">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
+<span class="fc" id="L2723">        double[][] sMatrix = new double[n][n];</span>
+<span class="fc bfc" id="L2724" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L2725">            sMatrix[i] = new double[n];</span>
+<span class="fc" id="L2726">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
         }
         
-<span class="fc" id="L2726">        int rank = 0;</span>
-<span class="fc bfc" id="L2727" title="All 2 branches covered.">        for (double sv : s) {</span>
-<span class="pc bpc" id="L2728" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
-<span class="fc" id="L2729">                rank++;</span>
+<span class="fc" id="L2729">        int rank = 0;</span>
+<span class="fc bfc" id="L2730" title="All 2 branches covered.">        for (double sv : s) {</span>
+<span class="pc bpc" id="L2731" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="fc" id="L2732">                rank++;</span>
             }
         }
         // the number of distinct non-zero eigenvalues is rank.
@@ -2764,19 +2767,19 @@ import com.github.fommil.netlib.LAPACK;
         a_r1_c0 * s[0]    a_r1_c1 * s[1]
         a_r2_c0 * s[0]    a_r2_c1 * s[1]
         */
-<span class="fc" id="L2767">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
+<span class="fc" id="L2770">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
         //DenseMatrix u = (DenseMatrix) svd.getU();
         
-<span class="fc" id="L2770">        double[][] _vT = Matrices.getArray(vT);</span>
+<span class="fc" id="L2773">        double[][] _vT = Matrices.getArray(vT);</span>
       
-<span class="fc" id="L2772">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
-<span class="fc" id="L2773">        j = MatrixUtil.multiply(j, _vT);</span>
+<span class="fc" id="L2775">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
+<span class="fc" id="L2776">        j = MatrixUtil.multiply(j, _vT);</span>
         
-<span class="fc" id="L2775">        return j;</span>
+<span class="fc" id="L2778">        return j;</span>
     }
     
     public static boolean isSquare(double[][] a) {
-<span class="pc bpc" id="L2779" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
+<span class="pc bpc" id="L2782" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
     }
     
     /*
@@ -2808,24 +2811,24 @@ import com.github.fommil.netlib.LAPACK;
     */
     
     public static boolean isPositiveSymmetric(double[][] a) {
-<span class="nc bnc" id="L2811" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L2812">            return false;</span>
+<span class="nc bnc" id="L2814" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L2815">            return false;</span>
         }
                         
-<span class="nc" id="L2815">        double tol = 1e-3;</span>
-<span class="nc" id="L2816">        int n = a.length;</span>
+<span class="nc" id="L2818">        double tol = 1e-3;</span>
+<span class="nc" id="L2819">        int n = a.length;</span>
         int i, j;
-<span class="nc bnc" id="L2818" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="nc bnc" id="L2819" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
-<span class="nc bnc" id="L2820" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
-<span class="nc" id="L2821">                    return false;</span>
-                }
-<span class="nc bnc" id="L2823" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
+<span class="nc bnc" id="L2821" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc bnc" id="L2822" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L2823" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
 <span class="nc" id="L2824">                    return false;</span>
+                }
+<span class="nc bnc" id="L2826" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
+<span class="nc" id="L2827">                    return false;</span>
                 }
             }
         }
-<span class="nc" id="L2828">        return true;</span>
+<span class="nc" id="L2831">        return true;</span>
     }
     
     /**
@@ -2863,19 +2866,19 @@ import com.github.fommil.netlib.LAPACK;
          and P = p * b
         */
         
-<span class="fc" id="L2866">        ProjectionResults pr = new ProjectionResults();</span>
+<span class="fc" id="L2869">        ProjectionResults pr = new ProjectionResults();</span>
         
         // A_pseudoinverse = inverse(A^T*A) * A^T 
         // [a[0].length][a.length]
-<span class="fc" id="L2870">        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
+<span class="fc" id="L2873">        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
         
-<span class="fc" id="L2872">        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);</span>
+<span class="fc" id="L2875">        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);</span>
         
-<span class="fc" id="L2874">        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);</span>
+<span class="fc" id="L2877">        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);</span>
         
-<span class="fc" id="L2876">        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);</span>
+<span class="fc" id="L2879">        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);</span>
         
-<span class="fc" id="L2878">        return pr;</span>
+<span class="fc" id="L2881">        return pr;</span>
     }
     
     /**
@@ -2885,8 +2888,8 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static boolean isPositiveDefinite(double[][] a) {
-<span class="pc bpc" id="L2888" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L2889">            return false;</span>
+<span class="pc bpc" id="L2891" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L2892">            return false;</span>
         }
         
         /*
@@ -2903,17 +2906,17 @@ import com.github.fommil.netlib.LAPACK;
 
         */
         // using rule that left upward rooted determinants &gt; 0
-<span class="fc" id="L2906">        int n = a.length;</span>
+<span class="fc" id="L2909">        int n = a.length;</span>
         double[][] sa;
         double det;
-<span class="fc bfc" id="L2909" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L2910">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
-<span class="fc" id="L2911">            det = MatrixUtil.determinant(sa);</span>
-<span class="pc bpc" id="L2912" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
-<span class="nc" id="L2913">                return false;</span>
+<span class="fc bfc" id="L2912" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L2913">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
+<span class="fc" id="L2914">            det = MatrixUtil.determinant(sa);</span>
+<span class="pc bpc" id="L2915" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
+<span class="nc" id="L2916">                return false;</span>
             }
         }
-<span class="fc" id="L2916">        return true;</span>
+<span class="fc" id="L2919">        return true;</span>
     }
     
         /*
@@ -2933,33 +2936,33 @@ import com.github.fommil.netlib.LAPACK;
     */
     public static double[][] createCofactor(double[][] m) {
 
-<span class="fc" id="L2936">        int ncols = m.length;</span>
-<span class="fc" id="L2937">        int nrows = m[0].length;</span>
+<span class="fc" id="L2939">        int ncols = m.length;</span>
+<span class="fc" id="L2940">        int nrows = m[0].length;</span>
 
-<span class="fc" id="L2939">        double[][] cofactor = new double[ncols][nrows];</span>
+<span class="fc" id="L2942">        double[][] cofactor = new double[ncols][nrows];</span>
 
-<span class="fc bfc" id="L2941" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
+<span class="fc bfc" id="L2944" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
             
-<span class="fc" id="L2943">            cofactor[i] = new double[nrows];</span>
+<span class="fc" id="L2946">            cofactor[i] = new double[nrows];</span>
 
-<span class="fc bfc" id="L2945" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
+<span class="fc bfc" id="L2948" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
 
-<span class="fc bfc" id="L2947" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
+<span class="fc bfc" id="L2950" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
 
-<span class="fc bfc" id="L2949" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
+<span class="fc bfc" id="L2952" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
 
-<span class="fc" id="L2951">                double[][] n = copyExcept(m, i, j);</span>
+<span class="fc" id="L2954">                double[][] n = copyExcept(m, i, j);</span>
 
-<span class="fc" id="L2953">                double cfctr = determinant(n);</span>
+<span class="fc" id="L2956">                double cfctr = determinant(n);</span>
 
-<span class="fc bfc" id="L2955" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
-<span class="fc" id="L2956">                    cfctr = -1*cfctr;</span>
+<span class="fc bfc" id="L2958" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
+<span class="fc" id="L2959">                    cfctr = -1*cfctr;</span>
                 }
 
-<span class="fc" id="L2959">                cofactor[i][j] = cfctr;</span>
+<span class="fc" id="L2962">                cofactor[i][j] = cfctr;</span>
             }
          }
-<span class="fc" id="L2962">        return cofactor;</span>
+<span class="fc" id="L2965">        return cofactor;</span>
     }
     
     /**
@@ -2982,15 +2985,15 @@ import com.github.fommil.netlib.LAPACK;
     public static double[][] inverse(double[][] m) {
 
         // create cofactor of matrix:
-<span class="fc" id="L2985">        double[][] cofactor = createCofactor(m);</span>
+<span class="fc" id="L2988">        double[][] cofactor = createCofactor(m);</span>
 
-<span class="fc" id="L2987">        double[][] cofactorTransposed = transpose(cofactor);</span>
+<span class="fc" id="L2990">        double[][] cofactorTransposed = transpose(cofactor);</span>
 
-<span class="fc" id="L2989">        double det = determinant(m);</span>
+<span class="fc" id="L2992">        double det = determinant(m);</span>
 
-<span class="fc" id="L2991">        multiply(cofactorTransposed, 1./det);</span>
+<span class="fc" id="L2994">        multiply(cofactorTransposed, 1./det);</span>
 
-<span class="fc" id="L2993">        return cofactorTransposed;</span>
+<span class="fc" id="L2996">        return cofactorTransposed;</span>
     }
     
     /**
@@ -3003,20 +3006,20 @@ import com.github.fommil.netlib.LAPACK;
      * @return mean of each column as an array of size a[0].length
      */
     public static double[] mean(double[][] a) {
-<span class="fc" id="L3006">        int nSamples = a.length;</span>
-<span class="fc" id="L3007">        int nVariables = a[0].length;</span>
+<span class="fc" id="L3009">        int nSamples = a.length;</span>
+<span class="fc" id="L3010">        int nVariables = a[0].length;</span>
         
         int i, j;
-<span class="fc" id="L3010">        double[] mean = new double[nVariables];</span>
+<span class="fc" id="L3013">        double[] mean = new double[nVariables];</span>
         double sum;
-<span class="fc bfc" id="L3012" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
-<span class="fc" id="L3013">            sum = 0;</span>
-<span class="fc bfc" id="L3014" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc" id="L3015">                sum += (a[i][j]);</span>
+<span class="fc bfc" id="L3015" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
+<span class="fc" id="L3016">            sum = 0;</span>
+<span class="fc bfc" id="L3017" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc" id="L3018">                sum += (a[i][j]);</span>
             }
-<span class="fc" id="L3017">            mean[j] = sum/(double)nSamples;</span>
+<span class="fc" id="L3020">            mean[j] = sum/(double)nSamples;</span>
         }
-<span class="fc" id="L3019">        return mean;</span>
+<span class="fc" id="L3022">        return mean;</span>
     }
     
     /**
@@ -3029,25 +3032,25 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[] standardDeviation(double[][] a) {
-<span class="fc" id="L3032">        int nSamples = a.length;</span>
-<span class="fc" id="L3033">        int nVars = a[0].length;</span>
+<span class="fc" id="L3035">        int nSamples = a.length;</span>
+<span class="fc" id="L3036">        int nVars = a[0].length;</span>
         
-<span class="fc" id="L3035">        double[] c = mean(a);</span>
+<span class="fc" id="L3038">        double[] c = mean(a);</span>
         
-<span class="fc" id="L3037">        double[] out = new double[nVars];</span>
+<span class="fc" id="L3040">        double[] out = new double[nVars];</span>
         int i, d;
         double diff;
-<span class="fc bfc" id="L3040" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L3041" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L3042">                diff = a[i][d] - c[d];</span>
-<span class="fc" id="L3043">                out[d] += (diff*diff);</span>
+<span class="fc bfc" id="L3043" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L3044" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L3045">                diff = a[i][d] - c[d];</span>
+<span class="fc" id="L3046">                out[d] += (diff*diff);</span>
             }
         }
-<span class="fc bfc" id="L3046" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L3047">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); </span>
+<span class="fc bfc" id="L3049" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L3050">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); </span>
         }
         
-<span class="fc" id="L3050">        return out;</span>
+<span class="fc" id="L3053">        return out;</span>
     }
     
     /**
@@ -3058,22 +3061,22 @@ import com.github.fommil.netlib.LAPACK;
      * @return the matrix a - v*I.
      */
     public static double[][] aMinusVectorTimesIdentity(double[][] a, double[] v) {
-<span class="fc" id="L3061">        int n = a.length;</span>
-<span class="pc bpc" id="L3062" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
-<span class="nc" id="L3063">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="fc" id="L3064">        int n = a.length;</span>
+<span class="pc bpc" id="L3065" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
+<span class="nc" id="L3066">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
-<span class="pc bpc" id="L3065" title="1 of 2 branches missed.">        if (n != v.length) {</span>
-<span class="nc" id="L3066">            throw new IllegalArgumentException(&quot;v must be same length as a&quot;);</span>
+<span class="pc bpc" id="L3068" title="1 of 2 branches missed.">        if (n != v.length) {</span>
+<span class="nc" id="L3069">            throw new IllegalArgumentException(&quot;v must be same length as a&quot;);</span>
         }
         
-<span class="fc" id="L3069">        double[][] out = copy(a);</span>
+<span class="fc" id="L3072">        double[][] out = copy(a);</span>
         
         int i;
-<span class="fc bfc" id="L3072" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3073">            out[i][i] -= v[i];</span>
+<span class="fc bfc" id="L3075" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3076">            out[i][i] -= v[i];</span>
         }
         
-<span class="fc" id="L3076">        return out;</span>
+<span class="fc" id="L3079">        return out;</span>
     }
     
     /**
@@ -3084,19 +3087,19 @@ import com.github.fommil.netlib.LAPACK;
      * @return the sum of the diagonal elements of a
      */
     public static double trace(double[][] a) {
-<span class="fc" id="L3087">        int n = a.length;</span>
-<span class="pc bpc" id="L3088" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
-<span class="nc" id="L3089">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="fc" id="L3090">        int n = a.length;</span>
+<span class="pc bpc" id="L3091" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
+<span class="nc" id="L3092">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
         
-<span class="fc" id="L3092">        double sum = 0;</span>
+<span class="fc" id="L3095">        double sum = 0;</span>
         
         int i;
-<span class="fc bfc" id="L3095" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3096">            sum += a[i][i];</span>
+<span class="fc bfc" id="L3098" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3099">            sum += a[i][i];</span>
         }
         
-<span class="fc" id="L3099">        return sum;</span>
+<span class="fc" id="L3102">        return sum;</span>
     }
     
     /**
@@ -3105,16 +3108,16 @@ import com.github.fommil.netlib.LAPACK;
      * @return the sum of the elements of v
      */
     public static double trace(double[] v) {
-<span class="fc" id="L3108">        int n = v.length;</span>
+<span class="fc" id="L3111">        int n = v.length;</span>
         
-<span class="fc" id="L3110">        double sum = 0;</span>
+<span class="fc" id="L3113">        double sum = 0;</span>
         
         int i;
-<span class="fc bfc" id="L3113" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3114">            sum += v[i];</span>
+<span class="fc bfc" id="L3116" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3117">            sum += v[i];</span>
         }
         
-<span class="fc" id="L3117">        return sum;</span>
+<span class="fc" id="L3120">        return sum;</span>
     }
     
     /**
@@ -3124,22 +3127,22 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[][] elementwiseMultiplication(double[][] a, double[][] b) {
-<span class="nc" id="L3127">        int m = a.length;</span>
-<span class="nc" id="L3128">        int n = a[0].length;</span>
+<span class="nc" id="L3130">        int m = a.length;</span>
+<span class="nc" id="L3131">        int n = a[0].length;</span>
         
-<span class="nc bnc" id="L3130" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3131">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3133" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3134">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3135">        double[][] out = new double[m][n];</span>
-<span class="nc bnc" id="L3136" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3137">            out[i] = new double[n];</span>
-<span class="nc bnc" id="L3138" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc" id="L3139">                out[i][j] = a[i][j] * b[i][j];</span>
+<span class="nc" id="L3138">        double[][] out = new double[m][n];</span>
+<span class="nc bnc" id="L3139" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3140">            out[i] = new double[n];</span>
+<span class="nc bnc" id="L3141" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc" id="L3142">                out[i][j] = a[i][j] * b[i][j];</span>
             }
         }
-<span class="nc" id="L3142">        return out;</span>
+<span class="nc" id="L3145">        return out;</span>
     }
     
     /**
@@ -3149,9 +3152,9 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[][] elementwiseAdd(double[][] a, double[][] b) {
-<span class="fc" id="L3152">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
-<span class="fc" id="L3153">        elementwiseAdd(a, b, out);</span>
-<span class="fc" id="L3154">        return out;</span>
+<span class="fc" id="L3155">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
+<span class="fc" id="L3156">        elementwiseAdd(a, b, out);</span>
+<span class="fc" id="L3157">        return out;</span>
     }
     
     /**
@@ -3162,23 +3165,23 @@ import com.github.fommil.netlib.LAPACK;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseAdd(double[][] a, double[][] b, double[][] out) {
-<span class="fc" id="L3165">        int m = a.length;</span>
-<span class="fc" id="L3166">        int n = a[0].length;</span>
+<span class="fc" id="L3168">        int m = a.length;</span>
+<span class="fc" id="L3169">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3168" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3169">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3171" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3172">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L3171" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
-<span class="nc" id="L3172">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3174" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
+<span class="nc" id="L3175">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
         
         int i, j;
-<span class="fc bfc" id="L3176" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L3177" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L3178">                out[i][j] = a[i][j] + b[i][j];</span>
+<span class="fc bfc" id="L3179" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L3180" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L3181">                out[i][j] = a[i][j] + b[i][j];</span>
             }
         }
-<span class="fc" id="L3181">    }</span>
+<span class="fc" id="L3184">    }</span>
     
     /** element-wise subtraction
      * @param a
@@ -3186,9 +3189,9 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[][] elementwiseSubtract(double[][] a, double[][] b) {
-<span class="fc" id="L3189">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
-<span class="fc" id="L3190">        elementwiseSubtract(a, b, out);</span>
-<span class="fc" id="L3191">        return out;</span>
+<span class="fc" id="L3192">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
+<span class="fc" id="L3193">        elementwiseSubtract(a, b, out);</span>
+<span class="fc" id="L3194">        return out;</span>
     }
     
     /**
@@ -3199,23 +3202,23 @@ import com.github.fommil.netlib.LAPACK;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseSubtract(double[][] a, double[][] b, double[][] out) {
-<span class="fc" id="L3202">        int m = a.length;</span>
-<span class="fc" id="L3203">        int n = a[0].length;</span>
+<span class="fc" id="L3205">        int m = a.length;</span>
+<span class="fc" id="L3206">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3205" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3206">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3208" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3209">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L3208" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
-<span class="nc" id="L3209">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3211" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
+<span class="nc" id="L3212">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
         
         int i, j;
-<span class="fc bfc" id="L3213" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L3214" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L3215">                out[i][j] = a[i][j] - b[i][j];</span>
+<span class="fc bfc" id="L3216" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L3217" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L3218">                out[i][j] = a[i][j] - b[i][j];</span>
             }
         }
-<span class="fc" id="L3218">    }</span>
+<span class="fc" id="L3221">    }</span>
     
     /**
      * element-wise subtraction
@@ -3225,20 +3228,20 @@ import com.github.fommil.netlib.LAPACK;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseSubtract(double[] a, double[] b, double[] out) {
-<span class="fc" id="L3228">        int m = a.length;</span>
+<span class="fc" id="L3231">        int m = a.length;</span>
         
-<span class="pc bpc" id="L3230" title="1 of 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3231">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3233" title="1 of 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3234">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L3233" title="1 of 2 branches missed.">        if (out.length != m) {</span>
-<span class="nc" id="L3234">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3236" title="1 of 2 branches missed.">        if (out.length != m) {</span>
+<span class="nc" id="L3237">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
         
         int i;
-<span class="fc bfc" id="L3238" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc" id="L3239">            out[i] = a[i] - b[i];</span>
+<span class="fc bfc" id="L3241" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc" id="L3242">            out[i] = a[i] - b[i];</span>
         }
-<span class="fc" id="L3241">    }</span>
+<span class="fc" id="L3244">    }</span>
     
     /**
      * element-wise multiplication
@@ -3247,18 +3250,18 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[] elementwiseMultiplication(double[] a, double[] b) {
-<span class="nc" id="L3250">        int m = a.length;</span>
+<span class="nc" id="L3253">        int m = a.length;</span>
         
-<span class="nc bnc" id="L3252" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3253">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3255" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3256">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3257">        double[] out = new double[m];</span>
-<span class="nc bnc" id="L3258" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3259">            out[i] = a[i] * b[i];</span>
+<span class="nc" id="L3260">        double[] out = new double[m];</span>
+<span class="nc bnc" id="L3261" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3262">            out[i] = a[i] * b[i];</span>
         }
-<span class="nc" id="L3261">        return out;</span>
+<span class="nc" id="L3264">        return out;</span>
     }
     
     /**
@@ -3268,17 +3271,17 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double dot(double[] a, double[] b) {
-<span class="nc" id="L3271">        int m = a.length;</span>
+<span class="nc" id="L3274">        int m = a.length;</span>
         
-<span class="nc bnc" id="L3273" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3274">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3276" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3277">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
-<span class="nc" id="L3277">        double out = 0;</span>
-<span class="nc bnc" id="L3278" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3279">            out += a[i] * b[i];</span>
+<span class="nc" id="L3280">        double out = 0;</span>
+<span class="nc bnc" id="L3281" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3282">            out += a[i] * b[i];</span>
         }
-<span class="nc" id="L3281">        return out;</span>
+<span class="nc" id="L3284">        return out;</span>
     }
     
     /**
@@ -3288,21 +3291,21 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[][] zeros(int nRows, int nCols) {
-<span class="fc" id="L3291">        double[][] out = new double[nRows][nCols];</span>
-<span class="fc bfc" id="L3292" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L3293">            out[i] = new double[nCols];</span>
+<span class="fc" id="L3294">        double[][] out = new double[nRows][nCols];</span>
+<span class="fc bfc" id="L3295" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L3296">            out[i] = new double[nCols];</span>
             // java, by default, initializes with zeroes
         }
-<span class="fc" id="L3296">        return out;</span>
+<span class="fc" id="L3299">        return out;</span>
     }
     
     public static double[][] createIdentityMatrix(int nRows) {
-<span class="fc" id="L3300">        double[][] out = new double[nRows][nRows];</span>
-<span class="fc bfc" id="L3301" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L3302">            out[i] = new double[nRows];</span>
-<span class="fc" id="L3303">            out[i][i] = 1;</span>
+<span class="fc" id="L3303">        double[][] out = new double[nRows][nRows];</span>
+<span class="fc bfc" id="L3304" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L3305">            out[i] = new double[nRows];</span>
+<span class="fc" id="L3306">            out[i][i] = 1;</span>
         }
-<span class="fc" id="L3305">        return out;</span>
+<span class="fc" id="L3308">        return out;</span>
     }
     
     /**
@@ -3312,22 +3315,22 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[][] elementwiseDivision(double[][] a, double[][] b) {
-<span class="nc" id="L3315">        int m = a.length;</span>
-<span class="nc" id="L3316">        int n = a[0].length;</span>
+<span class="nc" id="L3318">        int m = a.length;</span>
+<span class="nc" id="L3319">        int n = a[0].length;</span>
         
-<span class="nc bnc" id="L3318" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3319">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3321" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3322">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3323">        double[][] out = new double[m][n];</span>
-<span class="nc bnc" id="L3324" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3325">            out[i] = new double[n];</span>
-<span class="nc bnc" id="L3326" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc" id="L3327">                out[i][j] = a[i][j] / b[i][j];</span>
+<span class="nc" id="L3326">        double[][] out = new double[m][n];</span>
+<span class="nc bnc" id="L3327" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3328">            out[i] = new double[n];</span>
+<span class="nc bnc" id="L3329" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc" id="L3330">                out[i][j] = a[i][j] / b[i][j];</span>
             }
         }
-<span class="nc" id="L3330">        return out;</span>
+<span class="nc" id="L3333">        return out;</span>
     }
     
     /**
@@ -3337,18 +3340,18 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[] elementwiseDivision(double[] a, double[] b) {
-<span class="nc" id="L3340">        int m = a.length;</span>
+<span class="nc" id="L3343">        int m = a.length;</span>
         
-<span class="nc bnc" id="L3342" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3343">            throw new IllegalArgumentException(&quot;a and b must have same lengths&quot;);</span>
+<span class="nc bnc" id="L3345" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3346">            throw new IllegalArgumentException(&quot;a and b must have same lengths&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3347">        double[] out = Arrays.copyOf(a, m);</span>
-<span class="nc bnc" id="L3348" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3349">            out[i] /= b[i];</span>
+<span class="nc" id="L3350">        double[] out = Arrays.copyOf(a, m);</span>
+<span class="nc bnc" id="L3351" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3352">            out[i] /= b[i];</span>
         }
-<span class="nc" id="L3351">        return out;</span>
+<span class="nc" id="L3354">        return out;</span>
     }
     
     /**
@@ -3357,24 +3360,24 @@ import com.github.fommil.netlib.LAPACK;
      * @param a 
      */
     public static void flipLR(double[][] a) {
-<span class="fc" id="L3360">        int idxHi = a[0].length - 1;</span>
-<span class="fc" id="L3361">        int idxLo = 0;</span>
-<span class="fc" id="L3362">        int n = idxHi - idxLo + 1;</span>
-<span class="fc" id="L3363">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L3363">        int idxHi = a[0].length - 1;</span>
+<span class="fc" id="L3364">        int idxLo = 0;</span>
+<span class="fc" id="L3365">        int n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L3366">        int end = idxLo + (n/2);</span>
         
         double swap;
         int col, row, idx2;
-<span class="fc" id="L3367">        int count = 0;</span>
-<span class="fc bfc" id="L3368" title="All 2 branches covered.">        for (col = idxLo; col &lt; end; col++) {</span>
-<span class="fc" id="L3369">            idx2 = idxHi - count;</span>
-<span class="fc bfc" id="L3370" title="All 2 branches covered.">            for (row = 0; row &lt; a.length; row++) {</span>
-<span class="fc" id="L3371">                swap = a[row][col];</span>
-<span class="fc" id="L3372">                a[row][col] = a[row][idx2];</span>
-<span class="fc" id="L3373">                a[row][idx2] = swap;</span>
+<span class="fc" id="L3370">        int count = 0;</span>
+<span class="fc bfc" id="L3371" title="All 2 branches covered.">        for (col = idxLo; col &lt; end; col++) {</span>
+<span class="fc" id="L3372">            idx2 = idxHi - count;</span>
+<span class="fc bfc" id="L3373" title="All 2 branches covered.">            for (row = 0; row &lt; a.length; row++) {</span>
+<span class="fc" id="L3374">                swap = a[row][col];</span>
+<span class="fc" id="L3375">                a[row][col] = a[row][idx2];</span>
+<span class="fc" id="L3376">                a[row][idx2] = swap;</span>
             }
-<span class="fc" id="L3375">            count++;</span>
+<span class="fc" id="L3378">            count++;</span>
         }
-<span class="fc" id="L3377">    }</span>
+<span class="fc" id="L3380">    }</span>
     
     /**
      * perform an up-down swap of the rows of a, flipping the matrix
@@ -3382,22 +3385,22 @@ import com.github.fommil.netlib.LAPACK;
      * @param a 
      */
     public static void flipUD(double[][] a) {
-<span class="fc" id="L3385">        int idxHi = a.length - 1;</span>
-<span class="fc" id="L3386">        int idxLo = 0;</span>
-<span class="fc" id="L3387">        int n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L3388">        int idxHi = a.length - 1;</span>
+<span class="fc" id="L3389">        int idxLo = 0;</span>
+<span class="fc" id="L3390">        int n = idxHi - idxLo + 1;</span>
         
-<span class="fc" id="L3389">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L3392">        int end = idxLo + (n/2);</span>
         double[] swap;
-<span class="fc" id="L3391">        int count = 0;</span>
+<span class="fc" id="L3394">        int count = 0;</span>
         int i, idx2;
-<span class="fc bfc" id="L3393" title="All 2 branches covered.">        for (i = idxLo; i &lt; end; i++) {</span>
-<span class="fc" id="L3394">            idx2 = idxHi - count;</span>
-<span class="fc" id="L3395">            swap = a[i];</span>
-<span class="fc" id="L3396">            a[i] = a[idx2];</span>
-<span class="fc" id="L3397">            a[idx2] = swap;</span>
-<span class="fc" id="L3398">            count++;</span>
+<span class="fc bfc" id="L3396" title="All 2 branches covered.">        for (i = idxLo; i &lt; end; i++) {</span>
+<span class="fc" id="L3397">            idx2 = idxHi - count;</span>
+<span class="fc" id="L3398">            swap = a[i];</span>
+<span class="fc" id="L3399">            a[i] = a[idx2];</span>
+<span class="fc" id="L3400">            a[idx2] = swap;</span>
+<span class="fc" id="L3401">            count++;</span>
         }
-<span class="fc" id="L3400">    }</span>
+<span class="fc" id="L3403">    }</span>
     
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
@@ -3408,9 +3411,9 @@ import com.github.fommil.netlib.LAPACK;
      * @return x in equation L*x = b
      */
     public static double[] forwardSubstitution(double[][] lowerTriangular, double[] b) {
-<span class="fc" id="L3411">        double[] outX = new double[b.length];</span>
-<span class="fc" id="L3412">        forwardSubstitution(lowerTriangular, b, outX);</span>
-<span class="fc" id="L3413">        return outX;</span>
+<span class="fc" id="L3414">        double[] outX = new double[b.length];</span>
+<span class="fc" id="L3415">        forwardSubstitution(lowerTriangular, b, outX);</span>
+<span class="fc" id="L3416">        return outX;</span>
     }
     
     /**
@@ -3425,25 +3428,25 @@ import com.github.fommil.netlib.LAPACK;
     public static void forwardSubstitution(double[][] lowerTriangular, double[] b,
         double[] outX) {
         
-<span class="fc" id="L3428">        int m = b.length;</span>
+<span class="fc" id="L3431">        int m = b.length;</span>
         
-<span class="pc bpc" id="L3430" title="1 of 2 branches missed.">        if (lowerTriangular[0].length != m) {</span>
-<span class="nc" id="L3431">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L3433" title="1 of 2 branches missed.">        if (lowerTriangular[0].length != m) {</span>
+<span class="nc" id="L3434">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;lowerTriangular must equal the length of b&quot;);
         }
-<span class="pc bpc" id="L3434" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
-<span class="nc" id="L3435">            throw new IllegalArgumentException(&quot;outX.length must equal the length of b&quot;);</span>
+<span class="pc bpc" id="L3437" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
+<span class="nc" id="L3438">            throw new IllegalArgumentException(&quot;outX.length must equal the length of b&quot;);</span>
         }
                 
         int i, j;
-<span class="fc bfc" id="L3439" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3440">            outX[i] = b[i];</span>
-<span class="fc bfc" id="L3441" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
-<span class="fc" id="L3442">                outX[i] -= (lowerTriangular[i][j] * outX[j]);</span>
+<span class="fc bfc" id="L3442" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3443">            outX[i] = b[i];</span>
+<span class="fc bfc" id="L3444" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
+<span class="fc" id="L3445">                outX[i] -= (lowerTriangular[i][j] * outX[j]);</span>
             }
-<span class="fc" id="L3444">            outX[i] /= lowerTriangular[i][i];</span>
+<span class="fc" id="L3447">            outX[i] /= lowerTriangular[i][i];</span>
         }
-<span class="fc" id="L3446">    }</span>
+<span class="fc" id="L3449">    }</span>
     
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
@@ -3456,25 +3459,25 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static double[] forwardSubstitution(LowerTriangDenseMatrix lowerTriangular, double[] b) {
         
-<span class="fc" id="L3459">        int m = b.length;</span>
+<span class="fc" id="L3462">        int m = b.length;</span>
         
-<span class="pc bpc" id="L3461" title="1 of 2 branches missed.">        if (lowerTriangular.numColumns() != m) {</span>
-<span class="nc" id="L3462">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L3464" title="1 of 2 branches missed.">        if (lowerTriangular.numColumns() != m) {</span>
+<span class="nc" id="L3465">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;lowerTriangular must equal the length of b&quot;);
         }
         
-<span class="fc" id="L3466">        double[] x = new double[b.length];</span>
+<span class="fc" id="L3469">        double[] x = new double[b.length];</span>
                 
         int i, j;
-<span class="fc bfc" id="L3469" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3470">            x[i] = b[i];</span>
-<span class="fc bfc" id="L3471" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
-<span class="fc" id="L3472">                x[i] -= (lowerTriangular.get(i, j) * x[j]);</span>
+<span class="fc bfc" id="L3472" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3473">            x[i] = b[i];</span>
+<span class="fc bfc" id="L3474" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
+<span class="fc" id="L3475">                x[i] -= (lowerTriangular.get(i, j) * x[j]);</span>
             }
-<span class="fc" id="L3474">            x[i] /= lowerTriangular.get(i, i);</span>
+<span class="fc" id="L3477">            x[i] /= lowerTriangular.get(i, i);</span>
         }
         
-<span class="fc" id="L3477">        return x;</span>
+<span class="fc" id="L3480">        return x;</span>
     }
     
     /**
@@ -3496,11 +3499,11 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static double[] backwardSubstitution(double[][] upperTriangular, double[] y) {
         
-<span class="fc" id="L3499">        double[] outX = new double[y.length];</span>
+<span class="fc" id="L3502">        double[] outX = new double[y.length];</span>
         
-<span class="fc" id="L3501">        backwardSubstitution(upperTriangular, y, outX);</span>
+<span class="fc" id="L3504">        backwardSubstitution(upperTriangular, y, outX);</span>
         
-<span class="fc" id="L3503">        return outX;</span>
+<span class="fc" id="L3506">        return outX;</span>
     }
     
     /**
@@ -3522,25 +3525,25 @@ import com.github.fommil.netlib.LAPACK;
     public static void backwardSubstitution(double[][] upperTriangular, double[] y,
         double[] outX) {
         
-<span class="fc" id="L3525">        int m = y.length;</span>
+<span class="fc" id="L3528">        int m = y.length;</span>
         
-<span class="pc bpc" id="L3527" title="1 of 2 branches missed.">        if (upperTriangular[0].length != m) {</span>
-<span class="nc" id="L3528">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L3530" title="1 of 2 branches missed.">        if (upperTriangular[0].length != m) {</span>
+<span class="nc" id="L3531">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;upperTriangular must equal the length of y&quot;);
         }
-<span class="pc bpc" id="L3531" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
-<span class="nc" id="L3532">            throw new IllegalArgumentException(&quot;outX.length must equal the length of y&quot;);</span>
+<span class="pc bpc" id="L3534" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
+<span class="nc" id="L3535">            throw new IllegalArgumentException(&quot;outX.length must equal the length of y&quot;);</span>
         }
                 
         int i, j;
-<span class="fc bfc" id="L3536" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L3537">            outX[i] = y[i];</span>
-<span class="fc bfc" id="L3538" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
-<span class="fc" id="L3539">                outX[i] -= (outX[j]*upperTriangular[i][j]);</span>
+<span class="fc bfc" id="L3539" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L3540">            outX[i] = y[i];</span>
+<span class="fc bfc" id="L3541" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
+<span class="fc" id="L3542">                outX[i] -= (outX[j]*upperTriangular[i][j]);</span>
             }
-<span class="fc" id="L3541">            outX[i] /= upperTriangular[i][i];</span>
+<span class="fc" id="L3544">            outX[i] /= upperTriangular[i][i];</span>
         }        
-<span class="fc" id="L3543">    }</span>
+<span class="fc" id="L3546">    }</span>
     
     /**
      * solves for vector x in the equation U*x = y where 
@@ -3553,39 +3556,39 @@ import com.github.fommil.netlib.LAPACK;
     public static double[] backwardSubstitution(UpperTriangDenseMatrix upperTriangular, 
         double[] y) {
         
-<span class="fc" id="L3556">        int m = y.length;</span>
+<span class="fc" id="L3559">        int m = y.length;</span>
         
-<span class="pc bpc" id="L3558" title="1 of 2 branches missed.">        if (upperTriangular.numColumns() != m) {</span>
-<span class="nc" id="L3559">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L3561" title="1 of 2 branches missed.">        if (upperTriangular.numColumns() != m) {</span>
+<span class="nc" id="L3562">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;upperTriangular must equal the length of y&quot;);
         }
         
-<span class="fc" id="L3563">        double[] x = new double[m];</span>
+<span class="fc" id="L3566">        double[] x = new double[m];</span>
         int i, j;
-<span class="fc bfc" id="L3565" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L3566">            x[i] = y[i];</span>
-<span class="fc bfc" id="L3567" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
-<span class="fc" id="L3568">                x[i] -= (x[j]*upperTriangular.get(i, j));</span>
+<span class="fc bfc" id="L3568" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L3569">            x[i] = y[i];</span>
+<span class="fc bfc" id="L3570" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
+<span class="fc" id="L3571">                x[i] -= (x[j]*upperTriangular.get(i, j));</span>
             }
-<span class="fc" id="L3570">            x[i] /= upperTriangular.get(i, i);</span>
+<span class="fc" id="L3573">            x[i] /= upperTriangular.get(i, i);</span>
         }
-<span class="fc" id="L3572">        return x;</span>
+<span class="fc" id="L3575">        return x;</span>
     }
             
     public static void fill(double[][] a, double value) {
         int i;
-<span class="fc bfc" id="L3577" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L3578">            Arrays.fill(a[i], value);</span>
+<span class="fc bfc" id="L3580" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L3581">            Arrays.fill(a[i], value);</span>
         }
-<span class="fc" id="L3580">    }</span>
+<span class="fc" id="L3583">    }</span>
     
     public static BlockMatrixIsometric transpose(BlockMatrixIsometric a) {
         
-<span class="fc" id="L3584">        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);</span>
+<span class="fc" id="L3587">        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);</span>
         
-<span class="fc" id="L3586">        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());</span>
+<span class="fc" id="L3589">        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());</span>
         
-<span class="fc" id="L3588">        transpose(a.getA(), b.getA());</span>
+<span class="fc" id="L3591">        transpose(a.getA(), b.getA());</span>
         
         /*
         double[][] block = MatrixUtil.zeros(a.getBlockSize0(), a.getBlockSize1());
@@ -3607,7 +3610,7 @@ import com.github.fommil.netlib.LAPACK;
         }
         */
         
-<span class="fc" id="L3610">        return b;</span>
+<span class="fc" id="L3613">        return b;</span>
     }
     
     /**
@@ -3617,16 +3620,16 @@ import com.github.fommil.netlib.LAPACK;
      * @return 
      */
     public static double[] reshapeToVector(double[][] a) {
-<span class="fc" id="L3620">        double[] out = new double[a.length * a[0].length];</span>
-<span class="fc" id="L3621">        int c = 0;</span>
+<span class="fc" id="L3623">        double[] out = new double[a.length * a[0].length];</span>
+<span class="fc" id="L3624">        int c = 0;</span>
         int i, j;
-<span class="fc bfc" id="L3623" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc bfc" id="L3624" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L3625">                out[c] = a[i][j];</span>
-<span class="fc" id="L3626">                c++;</span>
+<span class="fc bfc" id="L3626" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc bfc" id="L3627" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L3628">                out[c] = a[i][j];</span>
+<span class="fc" id="L3629">                c++;</span>
             }
         }
-<span class="fc" id="L3629">        return out;</span>
+<span class="fc" id="L3632">        return out;</span>
     }
      
     /**
@@ -3668,9 +3671,9 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static double[][] calculatePreconditionerFromLUP(double[][] a) throws NotConvergedException {
         
-<span class="nc" id="L3671">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
+<span class="nc" id="L3674">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
         
-<span class="nc" id="L3673">        return lup.u;</span>
+<span class="nc" id="L3676">        return lup.u;</span>
     }
     
     /**
@@ -3709,23 +3712,23 @@ import com.github.fommil.netlib.LAPACK;
      * @throws NotConvergedException 
      */
     public static double[][] calculatePreconditionerFromColumns(double[][] a) throws NotConvergedException {
-<span class="nc" id="L3712">        int m = a.length;</span>
-<span class="nc" id="L3713">        int n = a[0].length;</span>
+<span class="nc" id="L3715">        int m = a.length;</span>
+<span class="nc" id="L3716">        int n = a[0].length;</span>
         /*
         D^(1/2) = diag( sqrt(d_1), ... sqrt(d_n)) where 
         d_j = (||a_j||_2)^2  where a_j is column j of a.
         */
         int j, i;
-<span class="nc" id="L3719">        double[][] diag = MatrixUtil.zeros(n, n);</span>
+<span class="nc" id="L3722">        double[][] diag = MatrixUtil.zeros(n, n);</span>
         
-<span class="nc bnc" id="L3721" title="All 2 branches missed.">        for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc bnc" id="L3722" title="All 2 branches missed.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3723">                diag[j][j] += (a[i][j] + a[i][j]);</span>
+<span class="nc bnc" id="L3724" title="All 2 branches missed.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L3725" title="All 2 branches missed.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3726">                diag[j][j] += (a[i][j] + a[i][j]);</span>
             }
-<span class="nc" id="L3725">            diag[j][j] = Math.sqrt(diag[j][j]);</span>
+<span class="nc" id="L3728">            diag[j][j] = Math.sqrt(diag[j][j]);</span>
         }
         
-<span class="nc" id="L3728">        return diag;</span>
+<span class="nc" id="L3731">        return diag;</span>
     }
     
     /**
@@ -3738,24 +3741,24 @@ import com.github.fommil.netlib.LAPACK;
      */
     public static QH performPolarDecomposition(double[][] a) throws NotConvergedException {
         
-<span class="pc bpc" id="L3741" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3742">            throw new IllegalArgumentException(&quot;a must b a square matrix&quot;);</span>
+<span class="pc bpc" id="L3744" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3745">            throw new IllegalArgumentException(&quot;a must b a square matrix&quot;);</span>
         }
         
-<span class="fc" id="L3745">        SVDProducts svd = performSVD(a);</span>
+<span class="fc" id="L3748">        SVDProducts svd = performSVD(a);</span>
         
-<span class="fc" id="L3747">        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);</span>
+<span class="fc" id="L3750">        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);</span>
         
-<span class="fc" id="L3749">        double[][] v = MatrixUtil.transpose(svd.vT);</span>
+<span class="fc" id="L3752">        double[][] v = MatrixUtil.transpose(svd.vT);</span>
         
-<span class="fc" id="L3751">        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);</span>
-<span class="fc" id="L3752">        h = MatrixUtil.multiply(h, svd.vT);</span>
+<span class="fc" id="L3754">        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);</span>
+<span class="fc" id="L3755">        h = MatrixUtil.multiply(h, svd.vT);</span>
         
-<span class="fc" id="L3754">        QH qh = new QH();</span>
-<span class="fc" id="L3755">        qh.q = q;</span>
-<span class="fc" id="L3756">        qh.h = h;</span>
+<span class="fc" id="L3757">        QH qh = new QH();</span>
+<span class="fc" id="L3758">        qh.q = q;</span>
+<span class="fc" id="L3759">        qh.h = h;</span>
         
-<span class="fc" id="L3758">        return qh;</span>
+<span class="fc" id="L3761">        return qh;</span>
     }
     
     /**

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PermutationsWithAwait.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">PermutationsWithAwait.java</span></div><h1>PermutationsWithAwait.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import java.util.Arrays;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * permute the given set of numbers in a thread that waits for the getNext()
+ * invocation to calculate the next permutation.
+     
+   The permute code is adapted from 
+        from https://en.wikipedia.org/wiki/Heap%27s_algorithm
+   who reference:
+        Sedgewick, Robert. &quot;a talk on Permutation Generation Algorithms
+        http://www.cs.princeton.edu/~rs/talks/perms.pdf
+   
+   The semaphore model is adapted from Chap 12.1 of &quot;Java Concurrency in Practice&quot;
+   by Goetz et al.
+ */
+public class PermutationsWithAwait {
+    
+<span class="fc" id="L23">    private Logger log = null;</span>
+<span class="fc" id="L24">    private Level LEVEL = Level.FINE;</span>
+    
+    private final Semaphore availableItem, computationLock;
+    
+    /**
+     * the current permutation
+     */
+    private final int[] x;
+    
+    //private final BigInteger nPermutations;
+    
+    /**
+     * permute the given set of numbers in a thread that waits for the getNext()
+     * invocation to calculate the next permutation.
+
+       The permute code is adapted from 
+            from https://en.wikipedia.org/wiki/Heap%27s_algorithm
+       who reference:
+            Sedgewick, Robert. &quot;a talk on Permutation Generation Algorithms
+            http://www.cs.princeton.edu/~rs/talks/perms.pdf
+
+       The semaphore model is adapted from Chap 12.1 of &quot;Java Concurrency in Practice&quot;
+       by Goetz et al.
+     * @param set
+     * @throws java.lang.InterruptedException
+     */
+    public PermutationsWithAwait(int[] set) throws InterruptedException {
+        
+        log = Logger.getLogger(this.getClass().getSimpleName());
+        
+        int n = set.length;
+        this.x = new int[n];
+<span class="fc" id="L56">        </span>
+        this.availableItem = new Semaphore(0);
+<span class="fc" id="L58">        this.computationLock = new Semaphore(1);</span>
+        
+<span class="fc" id="L60">        //nPermutations = MiscMath0.factorialBigInteger(n);</span>
+<span class="fc" id="L61">        </span>
+        log.log(LEVEL, &quot;BEFORE computationLock.acquire()&quot;);
+<span class="fc" id="L63">        computationLock.acquire();</span>
+<span class="fc" id="L64">        log.log(LEVEL, &quot;   AFTER computationLock.acquire()&quot;);</span>
+        
+        //output(A)
+        System.arraycopy(set, 0, x, 0, n);
+<span class="fc" id="L68">        //nCurrent = BigInteger.ONE;</span>
+<span class="fc" id="L69">        </span>
+<span class="fc" id="L70">        //log.log(LEVEL, String.format(&quot;*x=%s  nCurr=%s out of nPerm=%s\n&quot;, </span>
+        //   Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
+                 
+<span class="fc" id="L73">        log.log(LEVEL, &quot;BEFORE availableItem.release()&quot;);</span>
+        availableItem.release();
+        log.log(LEVEL, &quot;   AFTER availableItem.release()&quot;);
+        
+        log.log(LEVEL, &quot;starting Permuter&quot;);
+        
+<span class="fc" id="L79">        Thread thread = new Thread(new Permuter(set));</span>
+<span class="fc" id="L80">        thread.start();</span>
+<span class="fc" id="L81">    }</span>
+    
+<span class="fc" id="L83">    /**</span>
+     * get the next permutation of the original set
+<span class="fc" id="L85">     * @param out an output array that will hold the results.  note that out.length</span>
+<span class="fc" id="L86">     * must be the same length as the set used during construction of this object instance.</span>
+<span class="fc" id="L87">     * @throws InterruptedException </span>
+     */
+    public void getNext(int[] out) throws InterruptedException {
+        if (out.length != x.length) {
+            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);
+        }
+        
+        //log.log(LEVEL, &quot;getNext BEFORE availableItem.acquire() nc={0}&quot;, 
+        //    nCurrent.toString());
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        </span>
+<span class="nc" id="L97">        availableItem.acquire();</span>
+        
+        System.arraycopy(x, 0, out, 0, out.length);
+        
+        computationLock.release();
+        
+<span class="fc" id="L103">        //log.log(LEVEL, &quot;  getNext AFTER computationLock.release() nc={0}&quot;, nCurrent.toString());</span>
+    }
+<span class="fc" id="L105">    </span>
+    //TODO: consider using Callable so run can throw an exception
+<span class="fc" id="L107">    private class Permuter implements Runnable {</span>
+        private final int[] set;
+        Permuter(int[] set) {
+<span class="fc" id="L110">           this.set = Arrays.copyOf(set, set.length);</span>
+        }
+
+        @Override
+        public void run() {
+            log.log(LEVEL, &quot;Permuter.run()&quot;);
+            int n = set.length;
+            int[] c = new int[n];
+            int i = 0;
+            int swap;
+            while (i &lt; n) {
+                if (c[i] &lt; i) {
+                    if ((i &amp; 1) != 1) {
+                        // i is even number
+                        swap = set[0];
+                        set[0] = set[i];
+                        set[i] = swap;
+                    } else {
+                        swap = set[c[i]];
+                        set[c[i]] = set[i];
+                        set[i] = swap;
+                    }
+                    
+                    log.log(LEVEL, &quot;BEFORE computationLock.acquire()&quot;);
+                    
+                    try {
+                        computationLock.acquire();
+                    } catch (InterruptedException ex) {
+                        log.log(Level.SEVERE, &quot;unrecoverable error? &quot; + ex.getMessage());
+                        //TODO: change to using Callable so can throw an exception
+                        return;
+                    }
+                    
+                    // output permutation to instance member x
+                    System.arraycopy(set, 0, x, 0, n);
+                    
+                    //nCurrent = nCurrent.add(BigInteger.ONE);                    
+                    
+                    //log.log(LEVEL, String.format(&quot;*x=%s  nCurr=%s out of nPerm=%s\n&quot;, 
+                    //    Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
+                   
+                    availableItem.release();
+                    
+                    //log.log(LEVEL, &quot;   AFTER cavailableItem.release()&quot;);
+                    
+                    //Swap has occurred ending the for-loop. Simulate the increment 
+                    //of the for-loop counter
+                    c[i] += 1;
+                    //Simulate recursive call reaching the base case by bringing the 
+                    //pointer to the base case analog in the array
+                    i = 0;
+                } else {
+                    //Calling generate(i+1, A) has ended as the for-loop terminated. 
+                    //Reset the state and simulate popping the stack by incrementing the pointer.
+                    c[i] = 0;
+                    i++;
+                }
+            }
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

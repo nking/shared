@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Permutations.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">Permutations.java</span></div><h1>Permutations.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import algorithms.misc.MiscMath0;
+import java.util.Arrays;
+
+/**
+ *
+ */
+<span class="nc" id="L9">public class Permutations {</span>
+    
+    /**
+     permute the given set of numbers and store each result in a row of outPermutations.
+     
+        from https://en.wikipedia.org/wiki/Heap%27s_algorithm
+        who reference:
+        Sedgewick, Robert. &quot;a talk on Permutation Generation Algorithms
+        http://www.cs.princeton.edu/~rs/talks/perms.pdf
+     * @param set the set of numbers to generate all permuations for.
+     * NOTE that set.length at most can be 12 due to the limit in the 
+     * length of an array in java (which is outPermutations.length).
+     * other methods can be created upon need.
+     * @param outPermutations        
+    */
+    public static void permute(int[] set, int[][] outPermutations) {
+        
+<span class="fc" id="L26">        long np = MiscMath0.factorial(set.length);</span>
+<span class="fc" id="L27">        int n = set.length;</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (n &gt; 12) {</span>
+<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;set.length must be 12 or less &quot;</span>
+            + &quot; so that factorial(s.ength) can fit in a java array&quot;);
+        }
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (outPermutations.length != np) {</span>
+<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;outPermutations length must be set.length!&quot;);</span>
+        }
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (outPermutations[0].length != n) {</span>
+<span class="nc" id="L36">            throw new IllegalArgumentException(&quot;outPermutations[0].length must be set.length&quot;);</span>
+        }
+        
+<span class="fc" id="L39">        set = Arrays.copyOf(set, n);</span>
+        
+<span class="fc" id="L41">        int[] c = new int[n];</span>
+        
+<span class="fc" id="L43">        int oc = 0;</span>
+        //output(A)
+<span class="fc" id="L45">        outPermutations[oc] = Arrays.copyOf(set, n);</span>
+<span class="fc" id="L46">        oc++;</span>
+        
+        /*
+        procedure recursive(k : integer, A : array of any):
+            if k = 0 then {
+                output(A)
+                return;
+            }
+            // Recursively call once for each k
+            for i := 0; i &lt; k; i += 1 do
+                recursive(k - 1, A)
+                // avoid swap when i==k-1
+                if (i &lt; k - 1)
+                    // swap choice dependent on parity of k
+                    if k is even then
+                        swap(A[i], A[k-1])
+                    else
+                        swap(A[0], A[k-1])
+                    end if
+                end if
+            end for        
+        */
+        
+<span class="fc" id="L69">        int i = 0;</span>
+        int swap;
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">            if (c[i] &lt; i) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">                if ((i &amp; 1) != 1) {</span>
+                    // i is even number
+<span class="fc" id="L75">                    swap = set[0];</span>
+<span class="fc" id="L76">                    set[0] = set[i];</span>
+<span class="fc" id="L77">                    set[i] = swap;</span>
+                } else {
+<span class="fc" id="L79">                    swap = set[c[i]];</span>
+<span class="fc" id="L80">                    set[c[i]] = set[i];</span>
+<span class="fc" id="L81">                    set[i] = swap;</span>
+                }
+<span class="fc" id="L83">                outPermutations[oc] = Arrays.copyOf(set, n);</span>
+<span class="fc" id="L84">                oc++;</span>
+                
+                //Swap has occurred ending the for-loop. Simulate the increment 
+                //of the for-loop counter
+<span class="fc" id="L88">                c[i] += 1;</span>
+                //Simulate recursive call reaching the base case by bringing the 
+                //pointer to the base case analog in the array
+<span class="fc" id="L91">                i = 0;</span>
+            } else {
+                //Calling generate(i+1, A) has ended as the for-loop terminated. 
+                //Reset the state and simulate popping the stack by incrementing the pointer.
+<span class="fc" id="L95">                c[i] = 0;</span>
+<span class="fc" id="L96">                i++;</span>
+            }
+        }
+<span class="fc" id="L99">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
