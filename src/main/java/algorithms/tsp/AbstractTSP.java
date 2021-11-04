@@ -398,11 +398,11 @@ public abstract class AbstractTSP {
         
         long bitstring2 = 0; 
         double sum2 = 0;
-        int nBitsSet2 = 0;
+        int nNodesSet = 0;
         Stack<StackP> stack = null;
         boolean storeInMemo = true;
         
-        createAndStackPermutations(bitstring2, sum2, nBitsSet2, 
+        createAndStackPermutations(bitstring2, sum2, nNodesSet, 
             nodes, stack, storeInMemo);
     }
 
@@ -611,24 +611,25 @@ public abstract class AbstractTSP {
     
     /**
      * 
-     * @param bitstring2
-     * @param sum2
-     * @param nBitsSet2
+     * @param bitstring2 the ordered path nodes in format for memo keys
+     * @param sum2 the cost of the path of the ordered nodes in bitstring2
+     * @param nNodesSet2 the number of nodes set in bitstring2
      * @param nodes nodes to permute
      * @param stack can be null
      * @param storeInMemo
      * @throws InterruptedException 
      */
     protected void createAndStackPermutations(long bitstring2, double sum2, 
-        int nBitsSet2, TIntList nodes, Stack<StackP> stack, boolean storeInMemo) 
+        int nNodesSet2, TIntList nodes, Stack<StackP> stack, boolean storeInMemo) 
         throws InterruptedException {
         
         int nNodes = nodes.size();
         //int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
         //int nBitsSet2 = this.numberOfSetNodes(bitstring2);
                 
-        // note that this will be -1 if (nBitsSet2-1) < 0
-        int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
+        // note that this will be -1 if (nNodesSet2-1) < 0
+        // it's the last node set into bitstring2
+        int lastNode = getBase10NodeIndex(nNodesSet2-1, bitstring2);
 
         int np = (int)MiscMath0.factorial(nNodes);
 
@@ -661,15 +662,15 @@ public abstract class AbstractTSP {
                 }
             }
             
-            path3 = concatenate(bitstring2, nBitsSet2, selPerm);
+            path3 = concatenate(bitstring2, nNodesSet2, selPerm);
             
             if (storeInMemo) {
                 memo.put(path3, sum3);
             }
 
             if (stack != null) {
-                stack.add(new StackP(path3, sum3, 
-                   dist.length - 1 - (nBitsSet2 + nodes.size())));
+                int nRemaining = (dist.length - 1) - (nNodesSet2 + nodes.size());
+                stack.add(new StackP(path3, sum3, nRemaining));
             }
         }
     }

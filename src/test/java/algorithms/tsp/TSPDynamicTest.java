@@ -127,7 +127,7 @@ public class TSPDynamicTest extends TestCase {
         assertEquals(2700, path4125);
     }
 
-    public void testCalculateAndStore3NodePaths() {
+    public void testCalculateAndStore3NodePaths() throws InterruptedException {
 
         int n2 = 6;
         double[][] dist2 = new double[n2][n2];
@@ -191,7 +191,7 @@ public class TSPDynamicTest extends TestCase {
         tsp.printMemo();
     }
     
-    public void est0() throws Exception {
+    public void test0() throws Exception {
 
         int n2 = 6;
         double[][] dist2 = new double[n2][n2];
@@ -227,7 +227,7 @@ public class TSPDynamicTest extends TestCase {
         assertTrue(Arrays.equals(expectedTour0, path0.toArray()));
     }
 
-    public void est1() throws Exception {
+    public void test1() throws Exception {
 
         int n2 = 4;
         double[][] x = new double[n2][];
@@ -274,7 +274,7 @@ public class TSPDynamicTest extends TestCase {
         assertTrue(Arrays.equals(expectedTour0, path0.toArray()));
     }
   
-    public void est2() throws Exception {
+    public void test2() throws Exception {
 
         int n2 = 5;
         double[][] dist = new double[n2][n2];
