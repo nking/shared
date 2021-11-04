@@ -20,7 +20,21 @@ package algorithms.tsp;
        p = p6_0 + p6_1 + edge where p6_0 and p6_1 are in memo from k=6 permutations
    store each k=12 permutation in memo
 ...
+need (n-1) > k for each stage.
 
+  so consider (n-1) > k_prev and (n-1) .leq. k_next, cannot complete the next full
+     permutation, so will finish the end of the paths using subsequences of size 3
+     and without storing the partial results as they would mostly not be re-usable
+     for the decreasing path lengths.  this separate section of iteration is
+     like the brute-force section of TSPHybridDynamicBruteForce.java
+
+  e.g.  consider (n-1) > 12 and (n-1) .leq. 24
+                  n > 13 and n .leq. 25
+  the permutations in between k=13 and k=25 can be handled in blocks of descending k
+
+  goal is to use iterations of k -=3 of subsets and permutations w/ a stack to
+     finish complete paths and compare the completed path to minCost.
+     
 For the dynamic approach just outlined:
     n    c             compare to n!
     8    210           40320
