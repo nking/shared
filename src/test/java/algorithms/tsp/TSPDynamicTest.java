@@ -239,7 +239,7 @@ public class TSPDynamicTest extends TestCase {
         assertTrue(Arrays.equals(expectedTour0, path0.toArray()));
     }
 
-    public void test1() throws Exception {
+    public void test() throws Exception {
 
         int n2 = 4;
         double[][] x = new double[n2][];
@@ -320,7 +320,7 @@ public class TSPDynamicTest extends TestCase {
         assertTrue(Arrays.equals(expectedTour0, path0.toArray()));
     }
 
-    public void estCount() {
+    public void testCount() {
         
         int n = 8;
         BigInteger c;
@@ -344,6 +344,91 @@ public class TSPDynamicTest extends TestCase {
         c = TSPDynamic.count2(n);
         System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
+    }
+
+    public void test10() throws Exception {
+
+        /* Test of traveling salesman approximate tour. 
+         * 
+         * From Cormen et al. chap 35 Approximation Algorithms, 35.2 Traveling-Salesman problem, Fig 35.2
+         * 
+         * 
+         *   6  |---|---|---|---|---|---|---|----
+         *      |   |   |   |   |   |   |   |
+         *   5  |---|--[A]--|--[D]--|---|---|----
+         *      |   |   |   |   |   |   |   |
+         *   4  |---|---|---|---|--[E]--|---|----
+         *      |   |   |   |   |   |   |   |
+         *   3  |---|--[B]--|--[F]--|--[G]--|----
+         *      |   |   |   |   |   |   |   |
+         *   2  |--[C]--|---|---|---|---|---|----
+         *      |   |   |   |   |   |   |   |
+         *   1  |---|---|--[H]--|---|---|---|----
+         *      |   |   |   |   |   |   |   |
+         *   0  |---|---|---|---|---|-------|----
+         *      0   1   2   3   4   5   6   7
+
+         a, b, c,  h, f, g, e, d
+         0  1  2   7  5  6  4  3
+
+         need 9 points to test part of the code, so will add
+         a point called BC in between B and C that won't change
+         the ideal path.
+
+         a, b, bc, c,  h, f, g, e, d, a
+         0, 1, 2,  3,  8, 6, 7, 5, 4, 0
+        */
+        int n2 = 9;
+        double[][] x = new double[n2][];
+        x[0] = new double[]{2, 5};
+        x[1] = new double[]{2, 3};
+        x[2] = new double[]{1.5, 2.5};
+        x[3] = new double[]{1, 2};
+        x[4] = new double[]{4, 5};
+        x[5] = new double[]{5, 4};
+        x[6] = new double[]{4, 3};
+        x[7] = new double[]{6, 3};
+        x[8] = new double[]{3, 1};
+
+        double[][] dist = MatrixUtil.zeros(n2, n2);
+        int i, j;
+        double d, dx, dy, xi, yi, xj, yj;
+        for (i = 0; i < n2; ++i) {
+            xi = x[i][0];
+            yi = x[i][1];
+            for (j = 0; j < n2; ++j) {
+                xj = x[j][0];
+                yj = x[j][1];
+                dx = xi - xj;
+                dy = yi - yj;
+                d = Math.sqrt(dx*dx + dy*dy);
+                dist[i][j] = d;
+            }
+        }
+
+        int[] expectedTour0 = new int[]{0, 1, 2,  3,  8, 6, 7, 5, 4, 0};
+        int[] expectedTour1 = new int[]{0, 4, 5, 7, 6, 8, 3, 2, 1, 0};
+        double expectedCost = 0;
+        int idx0, idx1;
+        for (i = 1; i < expectedTour1.length; ++i) {
+            idx0 = expectedTour1[i-1];
+            idx1 = expectedTour1[i];
+            expectedCost += dist[idx0][idx1];
+        }
+
+        tsp = new TSPDynamic(dist);
+        tsp.solve();
+        double cost = tsp.getMinCost();
+
+        System.out.printf("n=%d) minCost=%.2f, expected=%.2f\n", n2, cost, expectedCost);
+
+        TIntList path0 = tsp.getMinPath(0);
+        System.out.println(path0.toString());
+
+        System.out.flush();
+
+        assertTrue(Math.abs(expectedCost - cost) < 0.01);
+        assertTrue(Arrays.equals(expectedTour1, path0.toArray()));
     }
     
     public void estATT48_15() throws Exception {
