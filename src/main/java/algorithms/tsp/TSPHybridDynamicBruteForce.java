@@ -2,13 +2,11 @@ package algorithms.tsp;
 
 import algorithms.Permutations;
 import algorithms.SubsetChooser;
-import algorithms.misc.MiscMath0;
 import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
-import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -236,18 +234,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
             totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
     long cr0;
-    
-    private static class StackP {
-        long bitstring;
-        double sum;
-        int nNodesRemaining;
-        public StackP(long path, double cost, int nRemaining) {
-            this.bitstring = path;
-            this.sum = cost;
-            this.nNodesRemaining = nRemaining;
-        }
-    }
-    
+   
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes.
@@ -360,7 +347,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
                 }
                 double sum3;
                 long path3, perm3i;
-                int[] sel3 = new int[nNodesRemaining];
+                int[] sel3 = new int[k];
                 while (true) {
                     s3 = chooser.getNextSubset(sel);
                     if (s3 == -1) {
@@ -376,7 +363,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
 
                     for (i3 = 0; i3 < selPerm.length; ++i3) {
                         c2++;
-                        perm3i = createThe3NodeBitstring(selPerm[i3]);
+                        perm3i = createAMemoNodeBitstring(selPerm[i3]);
                         assert(memo.containsKey(perm3i));
 
                         sum3 = sum2 + dist[lastNode][selPerm[i3][0]] + memo.get(perm3i);
@@ -500,7 +487,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
             
             for (i = 0; i < selPerm.length; ++i) {
                 
-                perm3i = createThe3NodeBitstring(selPerm[i]);
+                perm3i = createAMemoNodeBitstring(selPerm[i]);
                 assert(memo.containsKey(perm3i));
                 
                 sum2 = sum + dist[lastNode][selPerm[i][0]] + memo.get(perm3i);

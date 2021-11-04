@@ -65,6 +65,9 @@ public abstract class AbstractTSP {
     protected final int w; // number of bits a city takes in a path where path is a bitstring of type long
 
     public AbstractTSP(double[][] dist) {
+        if (dist.length < 3) {
+            throw new IllegalArgumentException("dist.length must be >= 3");
+        }
         
         this.dist = dist;
         int n = dist.length;
@@ -122,13 +125,36 @@ public abstract class AbstractTSP {
      * @param n
      * @return
      */
-    protected static BigInteger count0(int n) {
+    protected static BigInteger count3(int n) {
         n = n - 1;
         BigInteger c1;
         BigInteger c2;
         BigInteger c3;
         BigInteger c0 = BigInteger.ZERO;
         int k = 3;
+        while ((n - k) > k) {
+            c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);
+            c2 = MiscMath0.factorialBigInteger(k);
+            c3 = c1.multiply(c2);
+            c0 = c0.add(c3);
+            k *= 2;
+        }
+        return c0;
+    }
+    
+    /**
+     * roughly counting k-permutations for a dynamic approach where k is
+     * increased by a factor of 2 each time and begins with k=3.
+     * @param n
+     * @return
+     */
+    protected static BigInteger count2(int n) {
+        n = n - 1;
+        BigInteger c1;
+        BigInteger c2;
+        BigInteger c3;
+        BigInteger c0 = BigInteger.ZERO;
+        int k = 2;
         while ((n - k) > k) {
             c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);
             c2 = MiscMath0.factorialBigInteger(k);
@@ -198,8 +224,7 @@ public abstract class AbstractTSP {
      * NOTE that s should not contain the startNode.
      * @return
      */
-    protected long createThe3NodeBitstring(int[] s) {
-        assert (s.length == 3);
+    protected long createAMemoNodeBitstring(int[] s) {
         long path = concatenate(0, 0, s);
         return path;
     }
@@ -395,7 +420,7 @@ public abstract class AbstractTSP {
             
             //System.out.println("    selPerm=" + Arrays.toString(selPerm[i]));
 
-            path = createThe3NodeBitstring(selPerm[i]);
+            path = createAMemoNodeBitstring(selPerm[i]);
 
             for (j = 1; j < selPerm[i].length; ++j) {
                 i0 = selPerm[i][j - 1];
@@ -407,17 +432,34 @@ public abstract class AbstractTSP {
     }
 
     /**
+     * initialize memo with permutations for all subsets of 4 path nodes, where the
+     * number of unset path nodes is > 4.
+     */
+    protected void init4NodePaths() {  
+        initKNodePaths(4);
+    }
+    
+    /**
      * initialize memo with permutations for all subsets of 3 path nodes, where the
      * number of unset path nodes is > 3.
      */
-    protected void init3NodePaths() {        
+    protected void init3NodePaths() {  
+        initKNodePaths(3);
+    }
+    
+    /**
+     * initialize memo with permutations for all subsets of 3 path nodes, where the
+     * number of unset path nodes is > 3.
+     */
+    protected void initKNodePaths(final int k) {        
         assert(memo.isEmpty());
+                
+        int nPerm = (int)MiscMath0.factorial(k);
         
-        int k = 3;
         final int[] sel = new int[k];
         final int[] sel2 = new int[k];
         int s, i;
-        final int[][] selPerm = new int[6][k];
+        final int[][] selPerm = new int[nPerm][k];
         for (i = 0; i < selPerm.length; ++i) {
             selPerm[i] = new int[k];
         }
@@ -445,7 +487,7 @@ public abstract class AbstractTSP {
             
             for (i = 0; i < selPerm.length; ++i) {
                 sum = 0;
-                path = createThe3NodeBitstring(selPerm[i]);
+                path = createAMemoNodeBitstring(selPerm[i]);
                 
                 for (j = 1; j < k; ++j) {
                     i0 = selPerm[i][j-1];
@@ -552,4 +594,16 @@ public abstract class AbstractTSP {
         }
         System.out.flush();
     }
+     
+    protected static class StackP {
+        long bitstring;
+        double sum;
+        int nNodesRemaining;
+        public StackP(long path, double cost, int nRemaining) {
+            this.bitstring = path;
+            this.sum = cost;
+            this.nNodesRemaining = nRemaining;
+        }
+    }
+    
 }
