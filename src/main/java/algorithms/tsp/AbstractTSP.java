@@ -61,7 +61,7 @@ public abstract class AbstractTSP {
     protected final double[][] dist;
     protected final TLongDoubleMap memo;
     protected final double sentinel = Double.POSITIVE_INFINITY;
-    protected final long totalNPerm;
+    protected final BigInteger totalNPerm;
     protected final long totalNSubSet;
     protected final long totalNSubSeq;
     protected final int w; // number of bits a city takes in a path where path is a bitstring of type long
@@ -73,31 +73,23 @@ public abstract class AbstractTSP {
         
         this.dist = dist;
         int n = dist.length;
-        long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
-        totalNPerm = nPerm/n;
+        
+        BigInteger nPerm = MiscMath0.factorialBigInteger(n); // max for n=13 for limit of array length
+        totalNPerm = nPerm.divide(new BigInteger(Integer.toString(n)));
         
         //TODO: add in the number of permutations for those not in a 3-set, that is,
         //   the 2 node and 1-node permutations
         totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length
         totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); 
         
-        System.out.printf("nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n", 
-            totalNPerm, totalNSubSet, totalNSubSeq);
+        System.out.printf("nPerm=%s, totalNSubSet=%d  totalNSubSeq=%d\n", 
+            totalNPerm.toString(), totalNSubSet, totalNSubSeq);
         
         int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
-        
-        /*if (totalNSubSeq > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("this class can solve for 13 cities at most."
-                + " one could design a datastructure to hold more than (1<<31)-1 items, "
-                + " but the algorithms in this class have exponential runtime complexity,"
-                + " so it would be better to choose a good approximate TSP.");
-        }*/
-        n = (int)totalNPerm;
-                        
+                       
         w = (int)(Math.ceil(Math.log(dist.length)/Math.log(2)));
         
         memo = new TLongDoubleHashMap(sz);
-        
     }
     
     protected void reset() {
@@ -164,9 +156,6 @@ public abstract class AbstractTSP {
         return c;
     }
 
-    // total number of k-permutations, that is, n!/(n-k)!.  using the subset chooser
-    //   to find the sets of size 3, then permuting each of those into
-    //   distinct ordered sequences
     protected long countTotalNumSubSetInvocations(int n) {
         int k = 3;
         int n2 = n;
@@ -674,7 +663,7 @@ public abstract class AbstractTSP {
             }
         }
     }
-
+    
     protected static class StackP {
         long bitstring;
         double sum;

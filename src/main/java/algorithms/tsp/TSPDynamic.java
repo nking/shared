@@ -1,10 +1,5 @@
 package algorithms.tsp;
 
-import algorithms.Permutations;
-import algorithms.PermutationsWithAwait;
-import algorithms.SubsetChooser;
-import algorithms.misc.MiscMath0;
-import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import java.util.Stack;
@@ -114,7 +109,7 @@ public class TSPDynamic extends AbstractTSP {
         Stack<StackP> stackDecr = new Stack<StackP>();
         
         // visit the initial path nodes in memo
-        TLongDoubleIterator iter = memo.iterator();
+        long[] memoKeys = memo.keys();
         long bitstring, bitstring2;
         double sum, sum2;
         int nNodesRemaining2, k2;
@@ -122,10 +117,9 @@ public class TSPDynamic extends AbstractTSP {
         
         boolean storeInMemo = true;
                 
-        for (int i = 0; i < memo.size(); ++i) {
-            iter.advance();
-            bitstring = iter.key();
-            sum = iter.value();
+        for (int i = 0; i < memoKeys.length; ++i) {
+            bitstring = memoKeys[i];
+            sum = memo.get(bitstring);
 
             assert (stack.isEmpty());
 

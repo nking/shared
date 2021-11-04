@@ -1,11 +1,23 @@
 package algorithms.tsp;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
+import algorithms.util.PairInt;
+import algorithms.util.ResourceFinder;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import junit.framework.TestCase;
 
 /**
@@ -308,7 +320,7 @@ public class TSPDynamicTest extends TestCase {
         assertTrue(Arrays.equals(expectedTour0, path0.toArray()));
     }
 
-    public void testCount() {
+    public void estCount() {
         
         int n = 8;
         BigInteger c;
@@ -332,5 +344,229 @@ public class TSPDynamicTest extends TestCase {
         c = TSPDynamic.count2(n);
         System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
+    }
+    
+    public void estATT48_15() throws Exception {
+        
+        TIntList expectedTour = new TIntArrayList();
+        
+        double[][] dist = MatrixUtil.zeros(15, 15);
+        
+        double expectedCost = populateATT48_15_cities(expectedTour, dist);
+        
+        tsp = new TSPDynamic(dist);
+        tsp.solve();
+        double cost = tsp.getMinCost();
+        
+        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+                
+        TIntList path0 = tsp.getMinPath(0);
+        
+        System.out.println("tour=" + path0.toString());
+        System.out.flush();
+        
+        assertTrue(Math.abs(expectedCost - cost) < 0.01);
+        assertTrue(Arrays.equals(expectedTour.toArray(), path0.toArray()));
+    }
+    
+    /**
+     * 
+     * @param expectedBestTour
+     * @param dist
+     * @return The minimal cost is 291
+     * @throws Exception 
+     */
+    private double populateATT48_15_cities(TIntList expectedBestTour, 
+        double dist[][]) throws Exception {
+
+        String dir = 
+            ResourceFinder.findTestResourcesDirectory()
+            + "/att48";
+            
+        readBestTour(dir + "/p01_s.txt", expectedBestTour);
+        
+        readDistance(dir + "/p01_d.txt", dist);
+        
+        return 291.;
+    }
+    
+    private void populateATT48_48_cities(List<PairInt> pointList, 
+        TIntList expectedBestTour, 
+        TIntObjectMap<TIntIntMap> adjCostMap) 
+        throws Exception {
+
+        String dir = 
+            ResourceFinder.findTestResourcesDirectory()
+            + "/att48";
+            
+        readCoords(dir + "/att48_xy.txt", pointList);
+    
+        readBestTour(dir + "/att48_s.txt", 
+            expectedBestTour);
+        
+        readAdjacency(dir + "/att48_d.txt", adjCostMap);
+    }
+
+    private void readCoords(String filePath, 
+        List<PairInt> pointList) throws Exception {
+        
+        FileReader reader = null;
+        BufferedReader in = null;
+        int count = 0;
+        try {
+            in = new BufferedReader(new FileReader(new File(filePath)));
+            
+            String line = in.readLine();
+            
+            while (line != null) {
+                
+                String item1 = line.substring(0, 4).trim();
+                
+                String item2 = line.substring(5).trim();
+                
+                Integer x =
+                    Integer.parseInt(item1);
+                
+                Integer y =
+                    Integer.parseInt(item2);
+                
+                PairInt p = new PairInt(x.intValue(), y.intValue());
+                
+                pointList.add(p);
+                
+                line = in.readLine();
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (reader != null) {
+                reader.close();
+            }
+        }   
+    }
+
+    /**
+     * read expected best tour, transformed to starting index=0
+     * (the file has city indexes that start with 1).
+     * @param filePath
+     * @param expectedBestTour
+     * @throws Exception 
+     */
+    private void readBestTour(String filePath, 
+        TIntList expectedBestTour) throws Exception {
+        
+        FileReader reader = null;
+        BufferedReader in = null;
+        int count = 0;
+        try {
+            in = new BufferedReader(new FileReader(new File(filePath)));
+            
+            String line = in.readLine();
+            
+            while (line != null) {
+                
+                Integer index = Integer.parseInt(line.trim());
+                
+                // change to zero based indexes
+                expectedBestTour.add(
+                    index.intValue() - 1);
+                
+                line = in.readLine();
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (reader != null) {
+                reader.close();
+            }
+        }
+    }
+
+    private void readAdjacency(String filePath, 
+        TIntObjectMap<TIntIntMap> adjCostMap) 
+        throws Exception {
+
+        FileReader reader = null;
+        BufferedReader in = null;
+        int count = 0;
+        try {
+            in = new BufferedReader(new FileReader(new File(filePath)));
+            
+            String line = in.readLine();
+            
+            int i = 0;
+            
+            while (line != null) {
+            
+                TIntIntMap idx2CostMap = new TIntIntHashMap();
+                adjCostMap.put(i, idx2CostMap);
+            
+                String[] items = line.split("\\s+");
+                if (items[0] == null || items[0].equals("")) {
+                    items = Arrays.copyOfRange(items, 1, 
+                        items.length);
+                }
+                
+                for (int j = 0; j < items.length; ++j) {
+                    Integer c = Integer.parseInt(items[j].trim());
+                    if (!c.equals(Integer.valueOf(0))) {
+                        idx2CostMap.put(j, c.intValue());
+                    }
+                }
+                
+                line = in.readLine();
+                ++i;
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (reader != null) {
+                reader.close();
+            }
+        }
+    }
+    
+    private void readDistance(String filePath, double[][] dist) 
+        throws Exception {
+
+        FileReader reader = null;
+        BufferedReader in = null;
+        int count = 0;
+        try {
+            in = new BufferedReader(new FileReader(new File(filePath)));
+            
+            String line = in.readLine();
+            
+            int i = 0;
+            
+            while (line != null) {
+                        
+                String[] items = line.split("\\s+");
+                System.out.printf("items.length=%d", items.length);
+                if (items[0] == null || items[0].equals("")) {
+                    items = Arrays.copyOfRange(items, 1, 
+                        items.length);
+                }
+                System.out.printf("->%d\n", items.length);
+                
+                for (int j = 0; j < items.length; ++j) {
+                    Integer c = Integer.parseInt(items[j].trim());
+                    dist[i][j] = c;
+                }
+                
+                line = in.readLine();
+                ++i;
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (reader != null) {
+                reader.close();
+            }
+        }
     }
 }

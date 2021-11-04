@@ -1,0 +1,6 @@
+https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html
+
+P01 is a set of 15 cities. It is NOT from TSPLIB. 
+The minimal cost is 291
+
+p01_s.txt has the optimal tour to minimize the cost.

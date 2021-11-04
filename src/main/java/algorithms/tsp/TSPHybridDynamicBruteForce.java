@@ -2,7 +2,6 @@ package algorithms.tsp;
 
 import algorithms.Permutations;
 import algorithms.SubsetChooser;
-import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
@@ -215,13 +214,12 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         int nNodesRemaining = (n-1) - nNodesSet;
         
         // visit the initial path nodes in memo
-        TLongDoubleIterator iter = memo.iterator();
+        long[] memoKeys = memo.keys();
         long bitstring;
         double sum;
         for (int i = 0; i < memo.size(); ++i) {
-            iter.advance();
-            bitstring = iter.key();
-            sum = iter.value();
+            bitstring = memoKeys[i];
+            sum = memo.get(bitstring);
             r3(bitstring, sum, nNodesRemaining);
         }
         //r0=240 n=6
@@ -266,7 +264,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         Stack<StackP> stack = new Stack<StackP>();
         
         // visit the initial path nodes in memo
-        TLongDoubleIterator iter = memo.iterator();
+        long[] memoKeys = memo.keys();
         long bitstring, bitstring2;
         double sum, sum2;
         int nNodesRemaining2;
@@ -275,9 +273,8 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         boolean storeInMemo = false;
         
         for (int i = 0; i < memo.size(); ++i) {
-            iter.advance();
-            bitstring = iter.key();
-            sum = iter.value();
+            bitstring = memoKeys[i];
+            sum = memo.get(bitstring);
 
             assert (stack.isEmpty());
 
