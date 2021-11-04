@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPDynamic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.tsp</a> &gt; <span class="el_source">TSPDynamic.java</span></div><h1>TSPDynamic.java</h1><pre class="source lang-java linenums">package algorithms.tsp;
+
+/**
+ &lt;pre&gt;
+ A completely dynamic solution requires a large amount of memory (see statiement below).
+ Here is an outline of one, based upon what I learned from making the hybrid
+ dynamic and brute force class:
+ 
+ subset chooser for n, k w/ k=3
+   permutations for k!
+   store each k=3 permutation in memo
+ subset chooser for n, k w/ k=6
+   permutations for k!
+   path should be composed of complete subparts + a connecting edge:
+       p = p3_0 + p3_1 + edge where p3_0 and p3_1 are in memo from k=3 permutations
+   store each k=6 permutation in memo
+ subset chooser for n, k w/ k=12
+   permutations for k!
+   path should be composed of complete subparts + a connecting edge:
+       p = p6_0 + p6_1 + edge where p6_0 and p6_1 are in memo from k=6 permutations
+   store each k=12 permutation in memo
+...
+
+For the dynamic approach just outlined:
+    n    c             compare to n!
+    8    210           40320
+   14    1.24e6        8.7e10
+   29    1.46e16       8.8e31
+  731    5.58e538      7.7e1778
+ where n is the number of nodes (=dist.length),
+ and c is the number of elements one needs to store in a memo datastructure.
+ 
+&lt;/pre&gt;
+
+see AbstractTSP for details about the keys used for memo.
+
+ * @author nichole
+ */
+public class TSPDynamic extends AbstractTSP {
+    
+    public TSPDynamic(double[][] dist) {
+<span class="nc" id="L42">        super(dist);</span>
+<span class="nc" id="L43">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

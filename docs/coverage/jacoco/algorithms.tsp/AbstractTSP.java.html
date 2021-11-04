@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractTSP.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.tsp</a> &gt; <span class="el_source">AbstractTSP.java</span></div><h1>AbstractTSP.java</h1><pre class="source lang-java linenums">package algorithms.tsp;
+
+import algorithms.Permutations;
+import algorithms.SubsetChooser;
+import algorithms.misc.MiscMath0;
+import gnu.trove.iterator.TLongDoubleIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.array.TLongArrayList;
+import gnu.trove.map.TLongDoubleMap;
+import gnu.trove.map.hash.TLongDoubleHashMap;
+import java.math.BigInteger;
+import java.util.Arrays;
+
+/**
+ *
+ * The dynamic approach needs to store the partial sums as the path lengthens
+     (without the start node).
+    
+  data structure requirements for memo:
+     - need set(key, value), getValue(key), and contains(key), and prefer O(1) or O(small const) for each.
+     - a key for one partial sum would have to hold information on the nodes in
+       the partial path and their order.
+       could consider many ways to do that:
+         The number of bits needed to represent the number of a node would be math.log(n-1)/math.log(2).
+         Let w = math.log(n-1)/math.log(2).  then a key as a bit-string representing node and order
+         would be a variable bit length from 3 nodes = 3*w bits in length up to (n-1)*w bits in length.
+         For example, a 3-node path sum from nodes 2, 3, 1 would be
+              2       3       1
+           ------  ------  ------
+           w bits  w bits  w bits
+
+         Compression options for the key could be considered too.
+
+       Note that the start node isn't part of those keys as it will be added into the path at
+       evaluation time.
+     - A worse case number of keys to store is the permutation of all but one node: n!/n.
+     - A long bit-string is limited to 63 bits.
+     - A java array length is limited to signed integer length, 1 &amp;lt&amp;lt 31 -1.
+     - so to fit more than 1 &amp;lt&amp;lt 31-1 permutations would need to use the bit-string key
+       as a concatenation of more than one path bit-string.
+       the java BigInteger or the VeryLongBitString could do so.
+       - also, the values for those keys would need to be referenced in an O(1) manner also if possible.
+         one could use a 2 dimensional array where the 2nd dimension
+         holds the individual values for the keys in the concatenated key.
+     - would need a wrapper class to manage the integrity of the array of BigInteger or
+       VeryLongBitString and the 2 dimensional array of path sums.
+     - what amount of concatenation of keys would improve the number of storable
+       path sums significantly?
+
+ * @author nichole
+ */
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">public abstract class AbstractTSP {</span>
+
+<span class="fc" id="L56">    protected double minCost = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L57">    protected final TLongList minPath = new TLongArrayList();</span>
+<span class="fc" id="L58">    protected final int startNode = 0;</span>
+    protected final double[][] dist;
+    protected final TLongDoubleMap memo;
+<span class="fc" id="L61">    protected final double sentinel = Double.POSITIVE_INFINITY;</span>
+    protected final long totalNPerm;
+    protected final long totalNSubSet;
+    protected final long totalNSubSeq;
+    protected final int w; // number of bits a city takes in a path where path is a bitstring of type long
+
+<span class="fc" id="L67">    public AbstractTSP(double[][] dist) {</span>
+        
+<span class="fc" id="L69">        this.dist = dist;</span>
+<span class="fc" id="L70">        int n = dist.length;</span>
+<span class="fc" id="L71">        long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length</span>
+<span class="fc" id="L72">        totalNPerm = nPerm/n;</span>
+        
+        //TODO: add in the number of permutations for those not in a 3-set, that is,
+        //   the 2 node and 1-node permutations
+<span class="fc" id="L76">        totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length</span>
+<span class="fc" id="L77">        totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); </span>
+        
+<span class="fc" id="L79">        System.out.printf(&quot;nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n&quot;, </span>
+<span class="fc" id="L80">            totalNPerm, totalNSubSet, totalNSubSeq);</span>
+        
+<span class="fc" id="L82">        int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);</span>
+        
+        /*if (totalNSubSeq &gt; Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(&quot;this class can solve for 13 cities at most.&quot;
+                + &quot; one could design a datastructure to hold more than (1&lt;&lt;31)-1 items, &quot;
+                + &quot; but the algorithms in this class have exponential runtime complexity,&quot;
+                + &quot; so it would be better to choose a good approximate TSP.&quot;);
+        }*/
+<span class="fc" id="L90">        n = (int)totalNPerm;</span>
+                        
+<span class="fc" id="L92">        w = (int)(Math.ceil(Math.log(dist.length)/Math.log(2)));</span>
+        
+<span class="fc" id="L94">        memo = new TLongDoubleHashMap(sz);</span>
+        
+        /*
+        //find max n cities for limit of array length
+        int nc = 100;
+        long wc, nb;
+        while (true) {
+            long c = countTotalNumSubSeqInvocations(nc);
+            if (c &gt; Integer.MAX_VALUE) {
+                break;
+            }
+            wc = (long)Math.ceil(Math.log(nc-1)/Math.log(2)); // 1 city encoding in bits
+            nb = (Long.MAX_VALUE/wc); // the number of cities one could fit into a long if using wc
+            System.out.printf(&quot;nc=%d, ns=%d wc=%d nb=%d ns*1e-9=%e\n&quot;, nc, c, wc, nb, c*1.e-9);
+            nc = (int)Math.round(nc*1.5);
+        }
+        */
+<span class="fc" id="L111">    }</span>
+    
+    protected void reset() {
+<span class="nc" id="L114">        minCost = sentinel;</span>
+<span class="nc" id="L115">        minPath.clear();</span>
+<span class="nc" id="L116">        memo.clear();</span>
+<span class="nc" id="L117">    }</span>
+
+    /**
+     * roughly counting k-permutations for a dynamic approach where k is
+     * increased by a factor of 2 each time and begins with k=3.
+     * @param n
+     * @return
+     */
+    protected static BigInteger count0(int n) {
+<span class="fc" id="L126">        n = n - 1;</span>
+        BigInteger c1;
+        BigInteger c2;
+        BigInteger c3;
+<span class="fc" id="L130">        BigInteger c0 = BigInteger.ZERO;</span>
+<span class="fc" id="L131">        int k = 3;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        while ((n - k) &gt; k) {</span>
+<span class="fc" id="L133">            c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);</span>
+<span class="fc" id="L134">            c2 = MiscMath0.factorialBigInteger(k);</span>
+<span class="fc" id="L135">            c3 = c1.multiply(c2);</span>
+<span class="fc" id="L136">            c0 = c0.add(c3);</span>
+<span class="fc" id="L137">            k *= 2;</span>
+        }
+<span class="fc" id="L139">        return c0;</span>
+    }
+  
+    // total number of subsetchooser invocations.  max n = 507 for count &lt; Integer.MAX_VALUE
+    protected long countTotalNumSubSeqInvocations(int n) {
+<span class="fc" id="L144">        int k = 3;</span>
+<span class="fc" id="L145">        int n2 = n;</span>
+<span class="fc" id="L146">        long c = 0;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        while (n2 &gt; k) {</span>
+<span class="fc" id="L148">            c += MiscMath0.computeNDivKTimesNMinusK(n2, k);</span>
+<span class="fc" id="L149">            n2 -= k;</span>
+        }
+<span class="fc" id="L151">        return c;</span>
+    }
+
+    // total number of k-permutations, that is, n!/(n-k)!.  using the subset chooser
+    //   to find the sets of size 3, then permuting each of those into
+    //   distinct ordered sequences
+    protected long countTotalNumSubSetInvocations(int n) {
+<span class="fc" id="L158">        int k = 3;</span>
+<span class="fc" id="L159">        int n2 = n;</span>
+<span class="fc" id="L160">        long c = 0;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        while (n2 &gt; k) {</span>
+<span class="fc" id="L162">            c += MiscMath0.computeNDivNMinusK(n2, k);</span>
+<span class="fc" id="L163">            n2 -= k;</span>
+        }
+<span class="fc" id="L165">        return c;</span>
+    }
+
+    /**
+     * given a pathNodeNumber such as 0 being the first node in the path bit-string,
+     * uses path node bit-string length w to read the set bits and
+     * return the base 10 number (which can be used with the distance matrix
+     * or in writing the final solution of ordered nodes).
+     * @param path
+     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
+     * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
+     * 2nd node in the final solution for the completed path for the algorithm instance).
+     * @return
+     */
+    protected int getBase10NodeIndex(final long pathNodeNumber, final long path) {
+        // read bits pathNodeNumber*w to pathNodeNumber*w + w
+<span class="fc" id="L181">        long sum = 0;</span>
+<span class="fc" id="L182">        long b = pathNodeNumber * w;</span>
+<span class="fc" id="L183">        long end = b + w;</span>
+<span class="fc" id="L184">        int s = 0;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (b = pathNodeNumber * w, s = 0; b &lt; end; ++b, s++) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">            if ((path &amp; (1L &lt;&lt; b)) != 0) {</span>
+                // test bit b in path
+<span class="fc" id="L188">                sum += (1L &lt;&lt; s);</span>
+            }
+        }
+<span class="fc" id="L191">        return (int) sum;</span>
+    }
+
+    /**
+     * write the base 10 indexes s into a bit-string in the encoding used by the
+     * memo.
+     * @param s base 10 node indexes in the order to set into the bit-string path.
+     * NOTE that s should not contain the startNode.
+     * @return
+     */
+    protected long createThe3NodeBitstring(int[] s) {
+<span class="pc bpc" id="L202" title="3 of 4 branches missed.">        assert (s.length == 3);</span>
+<span class="fc" id="L203">        long path = concatenate(0, 0, s);</span>
+<span class="fc" id="L204">        return path;</span>
+    }
+
+    /**
+     * for the pathNodeNumber which is the order number of the node in the path
+     * (e.g. second node in the path), set the node number to be the base10Node.
+     * @param base10Node
+     * @param path
+     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
+     * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
+     * 2nd node in the final solution for the completed path for the algorithm instance).
+     * @return
+     */
+    protected long setBits(final int base10Node, final long path, final int pathNodeNumber) {
+<span class="fc" id="L218">        long bitstring = path; // 11 10 01</span>
+<span class="fc" id="L219">        long b = pathNodeNumber * w;</span>
+<span class="fc" id="L220">        long end = b + w;</span>
+        int b0;
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (b = pathNodeNumber * w, b0 = 0; b &lt; end; ++b, b0++) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            if ((base10Node &amp; (1L &lt;&lt; b0)) != 0) {</span>
+                // test bit b0 in pathNodeNumber
+<span class="fc" id="L225">                bitstring |= (1L &lt;&lt; b); // set bit b in bitstring</span>
+            } else {
+<span class="fc" id="L227">                bitstring &amp;= ~(1L &lt;&lt; b); //clear bit</span>
+            }
+        }
+<span class="fc" id="L230">        return bitstring;</span>
+    }
+
+    /**
+     * read the given bit-string encoded for use with memo, to find the
+     * set bits and return the nodes as a base10 bit-string (without the path order information).
+     * @param bitstring
+     * @return
+     */
+    protected long findSetBitsBase10(long bitstring) {
+<span class="fc" id="L240">        long base10nodes = 0;</span>
+        int i;
+        int b;
+        int node;
+        int j;
+<span class="fc" id="L245">        int bf = w * (dist.length - 1);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        for (b = 0; b &lt; bf; b += w) {</span>
+<span class="fc" id="L247">            node = 0;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            for (i = b, j = 0; i &lt; (b + w); ++i, ++j) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">                if ((bitstring &amp; (1L &lt;&lt; i)) != 0) {</span>
+<span class="fc" id="L250">                    node += (1 &lt;&lt; j);</span>
+                }
+            }
+<span class="fc bfc" id="L253" title="All 2 branches covered.">            if (node &gt; 0) {</span>
+<span class="fc" id="L254">                base10nodes |= (1L &lt;&lt; node);</span>
+            }
+        }
+<span class="fc" id="L257">        return base10nodes;</span>
+    }
+
+    /**
+     * read the given bit-string encoded for use with memo, to find the
+     * unset bits and return the nodes as a base10 bit-string.
+     * Note that bit 0 is not read as that is the implicit startNode
+     * which is excluded from bit-string operations.
+     * @param bitstring
+     * @return
+     */
+    protected long findUnsetBitsBase10(long bitstring) {
+<span class="fc" id="L269">        long base10nodesSet = findSetBitsBase10(bitstring);</span>
+<span class="fc" id="L270">        long base10NotSet = 0;</span>
+        // find bits not set from bit 1 to dist.length
+        int b;
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (b = 1; b &lt; dist.length; ++b) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            if ((base10nodesSet &amp; (1 &lt;&lt; b)) == 0) {</span>
+<span class="fc" id="L275">                base10NotSet |= (1L &lt;&lt; b);</span>
+            }
+        }
+<span class="fc" id="L278">        return base10NotSet;</span>
+    }
+
+    /**
+     * read the given bit-string encoded for use with memo, to find the
+     * unset bits and return the nodes as a base10 bit-string.
+     * Note that bit 0 is not read as that is the implicit startNode
+     * which is excluded from bit-string operations.
+     * @param bitstring
+     * @param out list to hold the output node indexes
+     */
+    protected void findUnsetBitsBase10(long bitstring, TIntList out) {
+<span class="fc" id="L290">        out.clear();</span>
+<span class="fc" id="L291">        long base10nodesSet = findSetBitsBase10(bitstring);</span>
+        // find bits not set from bit 1 to dist.length
+        int b;
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        for (b = 1; b &lt; dist.length; ++b) {</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">            if ((base10nodesSet &amp; (1 &lt;&lt; b)) == 0) {</span>
+<span class="fc" id="L296">                out.add(b);</span>
+            }
+        }
+<span class="fc" id="L299">    }</span>
+
+    /**
+     * read the given bit-string encoded for use with memo, to find the
+     * unset bits and return the nodes as a base10 bit-string that has lost
+     * information about the path node order.
+     * Note that bit 0 is not read as that is the implicit startNode
+     * which is excluded from bit-string operations.
+     * @param bitstring
+     * @param out list to hold the output node indexes
+     */
+    protected void findSetBitsBase10(long bitstring, TIntList out) {
+<span class="nc" id="L311">        out.clear();</span>
+<span class="nc" id="L312">        long base10nodesSet = findSetBitsBase10(bitstring);</span>
+        // find bits not set from bit 1 to dist.length
+        int b;
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        for (b = 1; b &lt; dist.length; ++b) {</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            if ((base10nodesSet &amp; (1 &lt;&lt; b)) != 0) {</span>
+<span class="nc" id="L317">                out.add(b);</span>
+            }
+        }
+<span class="nc" id="L320">    }</span>
+
+    /**
+     * read path into base10 node numbers, preserving order of path
+     * @param bitstring
+     * @param out
+     */
+    protected void readPathIntoBase10(long bitstring, TIntList out) {
+<span class="fc" id="L328">        out.clear();</span>
+        int i;
+        int b;
+        int node;
+        int j;
+<span class="fc" id="L333">        int bf = w * (dist.length - 1);</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        for (b = 0; b &lt; bf; b += w) {</span>
+<span class="fc" id="L335">            node = 0;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">            for (i = b, j = 0; i &lt; (b + w); ++i, ++j) {</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">                if ((bitstring &amp; (1L &lt;&lt; i)) != 0) {</span>
+<span class="fc" id="L338">                    node += (1 &lt;&lt; j);</span>
+                }
+            }
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            if (node &gt; 0) {</span>
+<span class="fc" id="L342">                out.add(node);</span>
+            }
+        }
+<span class="fc" id="L345">    }</span>
+
+    /**
+     * @param path encoded bit-string of ordered path nodes used in the memo.
+     * @param nPathNodesSet the number of nodes currently set in the path
+     * @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
+     * NOTE that s should not contain the startNode.
+     */
+    protected long concatenate(long path, int nPathNodesSet, int[] base10Nodes) {
+<span class="pc bpc" id="L354" title="3 of 4 branches missed.">        assert (numberOfSetNodes(path) == nPathNodesSet);</span>
+<span class="fc" id="L355">        long path2 = path;</span>
+        int i;
+        int si;
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        for (i = 0; i &lt; base10Nodes.length; ++i) {</span>
+<span class="fc" id="L359">            si = base10Nodes[i];</span>
+<span class="pc bpc" id="L360" title="3 of 4 branches missed.">            assert (si != startNode);</span>
+<span class="fc" id="L361">            path2 = setBits(si, path2, nPathNodesSet + i);</span>
+        }
+<span class="fc" id="L363">        return path2;</span>
+    }
+    
+    /**
+     * initialize memo with permutations for all unset path nodes, where the
+     * number of unset path nodes &lt; 4.
+     */
+    protected void initNodePaths() {
+<span class="pc bpc" id="L371" title="3 of 4 branches missed.">        assert(memo.isEmpty());</span>
+        
+<span class="fc" id="L373">        int nUnset = dist.length - 1;</span>
+        
+        int i;
+<span class="fc" id="L376">        int[] sel = new int[nUnset];</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">        for (i = 1; i &lt;= sel.length; ++i) {</span>
+<span class="fc" id="L378">            sel[i-1] = i;</span>
+        }
+        
+<span class="fc" id="L381">        int nPerm = (int)MiscMath0.factorial(nUnset);</span>
+        
+<span class="fc" id="L383">        final int[][] selPerm = new int[nPerm][nUnset];</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        for (i = 0; i &lt; selPerm.length; ++i) {</span>
+<span class="fc" id="L385">            selPerm[i] = new int[nUnset];</span>
+        }
+        
+<span class="fc" id="L388">        Permutations.permute(sel, selPerm);</span>
+        
+        double sum;
+        long path;
+        int j, i0, i1;
+<span class="fc bfc" id="L393" title="All 2 branches covered.">        for (i = 0; i &lt; selPerm.length; ++i) {</span>
+<span class="fc" id="L394">            sum = 0;</span>
+            
+            //System.out.println(&quot;    selPerm=&quot; + Arrays.toString(selPerm[i]));
+
+<span class="fc" id="L398">            path = createThe3NodeBitstring(selPerm[i]);</span>
+
+<span class="fc bfc" id="L400" title="All 2 branches covered.">            for (j = 1; j &lt; selPerm[i].length; ++j) {</span>
+<span class="fc" id="L401">                i0 = selPerm[i][j - 1];</span>
+<span class="fc" id="L402">                i1 = selPerm[i][j];</span>
+<span class="fc" id="L403">                sum += dist[i0][i1];</span>
+            }
+<span class="fc" id="L405">            memo.put(path, sum);</span>
+        }
+<span class="fc" id="L407">    }</span>
+
+    /**
+     * initialize memo with permutations for all subsets of 3 path nodes, where the
+     * number of unset path nodes is &gt; 3.
+     */
+    protected void init3NodePaths() {        
+<span class="pc bpc" id="L414" title="3 of 4 branches missed.">        assert(memo.isEmpty());</span>
+        
+<span class="fc" id="L416">        int k = 3;</span>
+<span class="fc" id="L417">        final int[] sel = new int[k];</span>
+<span class="fc" id="L418">        final int[] sel2 = new int[k];</span>
+        int s, i;
+<span class="fc" id="L420">        final int[][] selPerm = new int[6][k];</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        for (i = 0; i &lt; selPerm.length; ++i) {</span>
+<span class="fc" id="L422">            selPerm[i] = new int[k];</span>
+        }
+        
+<span class="fc" id="L425">        TIntList remaining = new TIntArrayList();</span>
+<span class="fc" id="L426">        findUnsetBitsBase10(0, remaining);</span>
+        //System.out.println(&quot;remaining unset=&quot; + remaining.toString());
+
+        int j, i0, i1;
+        long path, sum;
+<span class="fc" id="L431">        SubsetChooser chooser = new SubsetChooser(dist.length-1, k);</span>
+        while (true) {
+<span class="fc" id="L433">            s = chooser.getNextSubset(sel);</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">            if (s == -1) {</span>
+<span class="fc" id="L435">                break;</span>
+            }
+            //System.out.println(&quot;sel=&quot; + Arrays.toString(sel));
+            //transform sel to the bitstring unset indexes
+<span class="fc bfc" id="L439" title="All 2 branches covered.">            for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L440">                sel2[i] = remaining.get(sel[i]);</span>
+            }
+            //System.out.println(&quot;    sel2=&quot; + Arrays.toString(sel2));
+
+<span class="fc" id="L444">            Permutations.permute(sel2, selPerm);</span>
+            
+<span class="fc bfc" id="L446" title="All 2 branches covered.">            for (i = 0; i &lt; selPerm.length; ++i) {</span>
+<span class="fc" id="L447">                sum = 0;</span>
+<span class="fc" id="L448">                path = createThe3NodeBitstring(selPerm[i]);</span>
+                
+<span class="fc bfc" id="L450" title="All 2 branches covered.">                for (j = 1; j &lt; k; ++j) {</span>
+<span class="fc" id="L451">                    i0 = selPerm[i][j-1];</span>
+<span class="fc" id="L452">                    i1 = selPerm[i][j];</span>
+<span class="fc" id="L453">                    sum += dist[i0][i1];</span>
+                }
+<span class="fc" id="L455">                memo.put(path, sum);</span>
+            }
+        }
+<span class="fc" id="L458">    }</span>
+
+    protected void compareToMin(long path, double sum) {
+<span class="pc bpc" id="L461" title="3 of 4 branches missed.">        assert (numberOfSetNodes(path) == (dist.length - 1));</span>
+
+<span class="fc" id="L463">        int node1 = getBase10NodeIndex(0, path);</span>
+<span class="fc" id="L464">        int noden1 = getBase10NodeIndex(dist.length - 2, path);</span>
+
+<span class="fc" id="L466">        double ends = dist[startNode][node1] + dist[noden1][startNode];</span>
+
+<span class="fc" id="L468">        double sum2 = sum + ends;</span>
+
+        //debug
+        /*TIntList p = new TIntArrayList();
+        readPathIntoBase10(path, p);
+        System.out.printf(&quot;final: bs=%s (%s) sum=%.2f sum2=%.2f, min=%.2f\n&quot;,
+            Long.toBinaryString(path),
+            Arrays.toString(p.toArray()), sum, sum2, minCost);
+         */
+        // end debug
+<span class="fc bfc" id="L478" title="All 2 branches covered.">        if (sum2 == minCost) {</span>
+<span class="fc" id="L479">            minPath.add(path);</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">        } else if (sum2 &lt; minCost) {</span>
+<span class="fc" id="L481">            minCost = sum2;//3, 2, 4, 1, 5</span>
+<span class="fc" id="L482">            minPath.clear();</span>
+<span class="fc" id="L483">            minPath.add(path);</span>
+        }
+<span class="fc" id="L485">    }</span>
+ 
+    public double getMinCost() {
+<span class="fc" id="L488">        return this.minCost;</span>
+    }
+
+    public int getNumberOfMinPaths() {
+<span class="nc" id="L492">        return minPath.size();</span>
+    }
+
+    public TIntList getMinPath(int idx) {
+<span class="fc" id="L496">        long path = minPath.get(idx);</span>
+<span class="fc" id="L497">        TIntList out = new TIntArrayList();</span>
+<span class="fc" id="L498">        readPathIntoBase10(path, out);</span>
+<span class="fc" id="L499">        out.insert(0, startNode);</span>
+<span class="fc" id="L500">        out.add(startNode);</span>
+<span class="fc" id="L501">        return out;</span>
+    }
+
+    /**
+     *
+     * @param path a memo bit-string
+     * @return
+     */
+    protected int numberOfUnsetNodes(long path) {
+        // composed of w-bit bit-strings
+<span class="fc" id="L511">        int nn = (dist.length - 1) * w;</span>
+        // the first 64-((dist.length-1*w) can be discarded as unused space
+<span class="fc" id="L513">        int nd = 64 - nn;</span>
+<span class="fc" id="L514">        int n0 = Long.numberOfLeadingZeros(path);</span>
+<span class="pc bpc" id="L515" title="3 of 4 branches missed.">        assert (n0 &gt;= nd);</span>
+<span class="fc" id="L516">        int nc = n0 - nd;</span>
+<span class="fc" id="L517">        int nUnset = nc / w;</span>
+<span class="fc" id="L518">        return nUnset;</span>
+    }
+
+    /**
+     *
+     * @param path a memo bit-string
+     * @return
+     */
+    protected int numberOfSetNodes(long path) {
+<span class="fc" id="L527">        int nUnset = numberOfUnsetNodes(path);</span>
+<span class="fc" id="L528">        int nSet = (dist.length - 1) - nUnset;</span>
+<span class="fc" id="L529">        return nSet;</span>
+    }
+
+    public int getMemoLength() {
+<span class="fc" id="L533">        return memo.size();</span>
+    }
+    
+    protected void printMemo() {
+<span class="fc" id="L537">        TLongDoubleIterator iter = memo.iterator();</span>
+        long bitstring;
+        double sum;
+<span class="fc" id="L540">        TIntList p = new TIntArrayList();</span>
+        
+<span class="fc bfc" id="L542" title="All 2 branches covered.">        for (int i = 0; i &lt; memo.size(); ++i) {</span>
+<span class="fc" id="L543">            iter.advance();</span>
+<span class="fc" id="L544">            bitstring = iter.key();</span>
+<span class="fc" id="L545">            sum = iter.value();</span>
+            
+<span class="fc" id="L547">            p.clear();</span>
+<span class="fc" id="L548">            readPathIntoBase10(bitstring, p);</span>
+            
+<span class="fc" id="L550">            System.out.printf(&quot;memo: (%s) sum=%.2f min=%.2f\n&quot;,</span>
+<span class="fc" id="L551">                Arrays.toString(p.toArray()), sum, minCost);</span>
+        }
+<span class="fc" id="L553">        System.out.flush();</span>
+<span class="fc" id="L554">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

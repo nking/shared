@@ -31,41 +31,44 @@ import java.util.TreeSet;
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
      * &lt;/pre&gt;
      * 
-     * @param t duration of task
-     * @param d deadline for task
+     * runtime complexity O(N * log_2(N)).
+     * 
+     * @param duration duration of task
+     * @param deadline deadline for task
      * @param outputStart output array to hold start times for the resulting scheduled index order 
-     * @param outputLate output array to hold lateness for the resulting scheduled index order
+     * @param outputLate output array to hold lateness for the resulting scheduled index order.
+     * if is on time, element will be 0.
      * @return indexes for scheduling order
      */
-    public int[] unweightedIntervalMinimizeLateGreedy(double[] t, double[] d,
+    public int[] unweightedIntervalMinimizeLateGreedy(double[] duration, double[] deadline,
         double[] outputStart, double[] outputLate) {
-<span class="fc" id="L42">        int n = t.length;</span>
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (d.length != n) {</span>
-<span class="nc" id="L44">            throw new IllegalArgumentException(&quot;d.length must equal t.length&quot;);</span>
+<span class="fc" id="L45">        int n = duration.length;</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (deadline.length != n) {</span>
+<span class="nc" id="L47">            throw new IllegalArgumentException(&quot;d.length must equal t.length&quot;);</span>
         }
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (outputStart.length != n) {</span>
-<span class="nc" id="L47">            throw new IllegalArgumentException(&quot;outputStart.length must equal t.length&quot;);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (outputStart.length != n) {</span>
+<span class="nc" id="L50">            throw new IllegalArgumentException(&quot;outputStart.length must equal t.length&quot;);</span>
         }
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (outputLate.length != n) {</span>
-<span class="nc" id="L50">            throw new IllegalArgumentException(&quot;outputLate.length must equal t.length&quot;);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (outputLate.length != n) {</span>
+<span class="nc" id="L53">            throw new IllegalArgumentException(&quot;outputLate.length must equal t.length&quot;);</span>
         }
-<span class="fc" id="L52">        t = Arrays.copyOf(t, t.length);</span>
-<span class="fc" id="L53">        d = Arrays.copyOf(d, d.length);</span>
-<span class="fc" id="L54">        Arrays.fill(outputStart, 0);</span>
-<span class="fc" id="L55">        Arrays.fill(outputLate, 0);</span>
+<span class="fc" id="L55">        duration = Arrays.copyOf(duration, duration.length);</span>
+<span class="fc" id="L56">        deadline = Arrays.copyOf(deadline, deadline.length);</span>
+<span class="fc" id="L57">        Arrays.fill(outputStart, 0);</span>
+<span class="fc" id="L58">        Arrays.fill(outputLate, 0);</span>
         
         //sort tasks by increasing deadline 
-<span class="fc" id="L58">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(d, t);</span>
-<span class="fc" id="L59">        double f_prev = 0; // f is the finish time of previous task</span>
+<span class="fc" id="L61">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(deadline, duration);</span>
+<span class="fc" id="L62">        double f_prev = 0; // f is the finish time of previous task</span>
         int i; 
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (i = 0; i &lt; t.length; ++i) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (i = 0; i &lt; duration.length; ++i) {</span>
             //assign task i to start at 
-<span class="fc" id="L63">            outputStart[i] = f_prev;  // start next task</span>
-<span class="fc" id="L64">            f_prev = /*f[i] =*/ outputStart[i] + t[i];        // its finish time</span>
+<span class="fc" id="L66">            outputStart[i] = f_prev;  // start next task</span>
+<span class="fc" id="L67">            f_prev = /*f[i] =*/ outputStart[i] + duration[i];  // its finish time</span>
             //lateness[i] = max(0, f[i] - d[i])     // its lateness
-<span class="fc" id="L66">            outputLate[i] = Math.max(0, f_prev - d[i]);</span>
+<span class="fc" id="L69">            outputLate[i] = Math.max(0, f_prev - deadline[i]);</span>
         }
-<span class="fc" id="L68">        return indexes;</span>
+<span class="fc" id="L71">        return indexes;</span>
     }
     
     /**
@@ -78,6 +81,8 @@ import java.util.TreeSet;
      * The objective is to minimize the maximum lateness over all the tasks.
      * 
      * The algorithm is aka Earliest Finish First (EFF) and Earliest Deadline First (EDF)
+     *    (1) sort tasks by finish time
+     *    (2) iterate over tasks, scheduling each that starts after the previous ended
      * 
      * References:
      * &lt;pre&gt;
@@ -86,29 +91,31 @@ import java.util.TreeSet;
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
      * &lt;/pre&gt;
      * 
+     * runtime complexity is O(N * log_2(N)).
+     * 
      * @param s start times for tasks
      * @param f finish times for tasks
      * @return indexes for scheduled non-conflicting tasks
      */
     public int[] unweightedIntervalNoConflicts(double[] s, double[] f) {
-<span class="fc" id="L94">        int n = s.length;</span>
-<span class="fc" id="L95">        s = Arrays.copyOf(s, s.length);</span>
-<span class="fc" id="L96">        f = Arrays.copyOf(f, f.length);</span>
+<span class="fc" id="L101">        int n = s.length;</span>
+<span class="fc" id="L102">        s = Arrays.copyOf(s, s.length);</span>
+<span class="fc" id="L103">        f = Arrays.copyOf(f, f.length);</span>
         
-        //sort tasks by increasing finish times 
-<span class="fc" id="L99">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(f, s);</span>
-<span class="fc" id="L100">        double f_prev = Double.NEGATIVE_INFINITY; // f is the finish time of previous task</span>
+        //sort tasks by increasing finish times .  O(N * log_2(N))
+<span class="fc" id="L106">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(f, s);</span>
+<span class="fc" id="L107">        double f_prev = -1; // f is the finish time of previous task</span>
         int i; 
-<span class="fc" id="L102">        int[] scheduled = new int[n];</span>
-<span class="fc" id="L103">        int count = 0;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">            if (s[i] &gt; f_prev) {</span>
-<span class="fc" id="L106">                scheduled[count++] = indexes[i];</span>
-<span class="fc" id="L107">                f_prev = f[i];</span>
+<span class="fc" id="L109">        int[] scheduled = new int[n];</span>
+<span class="fc" id="L110">        int count = 0;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (s[i] &gt; f_prev) {</span>
+<span class="fc" id="L113">                scheduled[count++] = indexes[i];</span>
+<span class="fc" id="L114">                f_prev = f[i];</span>
             }
         }
-<span class="fc" id="L110">        scheduled = Arrays.copyOfRange(scheduled, 0, count);</span>
-<span class="fc" id="L111">        return scheduled;</span>
+<span class="fc" id="L117">        scheduled = Arrays.copyOfRange(scheduled, 0, count);</span>
+<span class="fc" id="L118">        return scheduled;</span>
     }
     
        /**
@@ -122,7 +129,7 @@ import java.util.TreeSet;
      * The objective is to find a set of non-overlapping requests such that sum 
      * of values of the scheduled requests is maximum.
      * 
-     * This code uses dynamic programming and has runtime complexity less than O(n^2).
+     * This code uses dynamic programming and has runtime complexity O(N * log_2(N)).
      * 
      * The code follows the lecture notes of David Mount for CMSC 451 
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
@@ -130,64 +137,65 @@ import java.util.TreeSet;
      * 
      * @param s interval start times
      * @param f interval finish times
-     * @param v interval weights
+     * @param w interval weights
      * @return indexes of scheduled intervals.
      */
-    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
+    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] w) {
         //interval [si, fi] of start and finish times
-<span class="fc" id="L138">        s = Arrays.copyOf(s, s.length);</span>
-<span class="fc" id="L139">        f = Arrays.copyOf(f, f.length);</span>
-<span class="fc" id="L140">        v = Arrays.copyOf(v, v.length);</span>
+<span class="fc" id="L145">        s = Arrays.copyOf(s, s.length);</span>
+<span class="fc" id="L146">        f = Arrays.copyOf(f, f.length);</span>
+<span class="fc" id="L147">        w = Arrays.copyOf(w, w.length);</span>
         
-<span class="fc" id="L142">        int n = f.length;</span>
+<span class="fc" id="L149">        int n = f.length;</span>
         
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
-<span class="fc" id="L146">        int[] origIndexes = sort2(f, s, v);</span>
+<span class="fc" id="L153">        int[] origIndexes = sort2(f, s, w);</span>
         
-        // p is largest index p such that f_p &lt; s_n
-        // p(j) is the largest index such that f_p(j) &lt; s_j
+        // p[i] is the largest index such that f[p(i)] &lt; s[i]
+        //     p[i] is &lt; i
         // runtime complexity is less than O(n^2)
-<span class="fc" id="L151">        int[] p = calcP(s, f);</span>
+<span class="fc" id="L158">        int[] p = calcP(s, f);</span>
         
-<span class="fc" id="L153">        int[] pred = new int[n+1];</span>
+<span class="fc" id="L160">        int[] pred = new int[n+1];</span>
         
-<span class="fc" id="L155">        double[] M = new double[n+1];</span>
-<span class="fc" id="L156">        Arrays.fill(M, -1);</span>
-<span class="fc" id="L157">        M[0] = 0;</span>
+<span class="fc" id="L162">        double[] memo = new double[n+1];</span>
+<span class="fc" id="L163">        Arrays.fill(memo, -1);</span>
+<span class="fc" id="L164">        memo[0] = 0;</span>
         int j;
         double leaveWeight, takeWeight;
         // runtime complexity is O(n)
-<span class="fc bfc" id="L161" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L162">            leaveWeight = M[j];                // total weight if we leave j</span>
-<span class="fc" id="L163">            takeWeight = v[j] + M[p[j]];         // total weight if we take j</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L169">            leaveWeight = memo[j];                // total weight if we leave j</span>
+<span class="fc" id="L170">            takeWeight = w[j] + memo[p[j]];         // total weight if we take j</span>
         //    System.out.printf(&quot;j=%d lw=M[j]=%.2f tw=v[j]+M[p[j]]=%.2f+%.2f=%.2f (where p[j]=%d) &quot;, 
         //        j, leaveWeight, v[j], M[p[j]], takeWeight, p[j]);
-<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (leaveWeight &gt; takeWeight) {</span>
-<span class="fc" id="L167">                M[j + 1] = leaveWeight;              // better to leave j</span>
-<span class="fc" id="L168">                pred[j+1] = j;                   // previous is j-1</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            if (leaveWeight &gt; takeWeight) {</span>
+<span class="fc" id="L174">                memo[j + 1] = leaveWeight;              // better to leave j</span>
+<span class="fc" id="L175">                pred[j+1] = j;                   // previous is j-1</span>
             } else {
-<span class="fc" id="L170">                M[j + 1] = takeWeight;               // better to take j</span>
-<span class="fc" id="L171">                pred[j+1] = p[j];                  // previous is p[j]</span>
+<span class="fc" id="L177">                memo[j + 1] = takeWeight;               // better to take j</span>
+<span class="fc" id="L178">                pred[j+1] = p[j];                  // previous is p[j]</span>
             }
         //    System.out.printf(&quot;  M[j+1]=%.2f\n&quot;, M[j+1]);
         }
          
-        //System.out.printf(&quot;M=%s\n&quot;, FormatArray.toString(M, &quot;%.3f&quot;));
+        //System.out.printf(&quot;memo=%s\n&quot;, FormatArray.toString(memo, &quot;%.3f&quot;));
         //System.out.printf(&quot;p=%s\n&quot;, Arrays.toString(p));
         //System.out.printf(&quot;pred=%s\n&quot;, Arrays.toString(pred));
         
-<span class="fc" id="L180">        j = pred.length-1;</span>
-<span class="fc" id="L181">        int[] sched = new int[j];</span>
-<span class="fc" id="L182">        int count = 0;</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">        while (j &gt; 0) {</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (pred[j] == p[j-1]) {</span>
-<span class="fc" id="L185">                sched[count++] = origIndexes[j];</span>
+<span class="fc" id="L187">        int[] sched = new int[j];</span>
+<span class="fc" id="L188">        int count = 0;</span>
+<span class="fc" id="L189">        j = pred.length-1;</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        while (j &gt; 0) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            if (pred[j] == p[j-1]) {</span>
+                //System.out.printf(&quot;  sched[%d]=%d\n&quot;, j, origIndexes[j]);
+<span class="fc" id="L193">                sched[count++] = origIndexes[j];</span>
             }
-<span class="fc" id="L187">            j = pred[j];</span>
+<span class="fc" id="L195">            j = pred[j];</span>
         }
-<span class="fc" id="L189">        sched = Arrays.copyOfRange(sched, 0, count);</span>
-<span class="fc" id="L190">        return sched;</span>
+<span class="fc" id="L197">        sched = Arrays.copyOfRange(sched, 0, count);</span>
+<span class="fc" id="L198">        return sched;</span>
     }
 
     
@@ -195,18 +203,18 @@ import java.util.TreeSet;
         // iterating from highest index to lowest,
         // find for each s, highest previous index in which f[i-...] &lt; s_i
         int i, j;
-<span class="fc" id="L198">        int[] p = new int[f.length+1];</span>
-        //Arrays.fill(p, -1);
-<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (i = s.length - 1; i &gt; -1; i--) {</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">            for (j = i - 1; j &gt; -1; j--) {</span>
-                //System.out.printf(&quot;%d,%d) f[%d]=%.2f s[%d]=%.2f\n&quot;, i,j, j, f[j], i, s[i]);
-<span class="fc bfc" id="L203" title="All 2 branches covered.">                if (f[j] &lt;= s[i]) {</span>
-<span class="fc" id="L204">                    p[i] = j+1;</span>
-<span class="fc" id="L205">                    break;</span>
+<span class="fc" id="L206">        int[] p = new int[f.length+1];</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        for (i = s.length - 1; i &gt; -1; i--) {</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">            for (j = i - 1; j &gt; -1; j--) {</span>
+<span class="fc" id="L209">                System.out.printf(&quot;%d,%d) f[%d]=%.2f s[%d]=%.2f\n&quot;, i,j, j, f[j], i, s[i]);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">                if (f[j] &lt;= s[i]) {</span>
+<span class="fc" id="L211">                    p[i] = j+1;</span>
+<span class="fc" id="L212">                    System.out.printf(&quot;   p[%d]=%d\n&quot;, i, p[i]);</span>
+<span class="fc" id="L213">                    break;</span>
                 }
             }
         }
-<span class="fc" id="L209">        return p;</span>
+<span class="fc" id="L217">        return p;</span>
     }
     
     /**
@@ -244,7 +252,8 @@ import java.util.TreeSet;
      * the problem of maximizing the sum of penalties for the early tasks
      *  is the same as minimizing the sum of penalties for the late tasks.
      * 
-     * algorithm with r.t. O(n^2):
+     * algorithm with r.t. O(N * log_2(N)):
+     * 
      * (1) Use the Greedy algorithm to find a maximum weight independent set of
      *     tasks A.
      * (2) create an optimal schedule having the tasks in A as its early tasks.
@@ -255,60 +264,67 @@ import java.util.TreeSet;
      */
     public int[] weightedGreedy(int[] deadlines, int[] penalties) {
         
-<span class="fc" id="L258">        int[] d2 = Arrays.copyOf(deadlines, deadlines.length);</span>
-<span class="fc" id="L259">        int[] p2 = Arrays.copyOf(penalties, penalties.length);</span>
-        
+        //O(N * log_2(N))
         //System.out.println(&quot;starting greedy algorithm to find indep sets&quot;);
-<span class="fc" id="L262">        int[] indexes2 = greedy(d2, p2);</span>
+<span class="fc" id="L269">        int[] indexes2 = greedy(Arrays.copyOf(deadlines, deadlines.length), </span>
+<span class="fc" id="L270">            Arrays.copyOf(penalties, penalties.length));</span>
         //System.out.println(&quot;greedy algorithm resulting indexes=&quot; + Arrays.toString(indexes2));
         
         // rewrite d2 and p2 to be only the greedy results
-<span class="fc" id="L266">        d2 = new int[indexes2.length];</span>
-<span class="fc" id="L267">        p2 = new int[indexes2.length];</span>
-<span class="fc" id="L268">        int[] i2 = new int[indexes2.length];</span>
+<span class="fc" id="L274">        int[] d2 = new int[indexes2.length];</span>
+<span class="fc" id="L275">        int[] p2 = new int[indexes2.length];</span>
+<span class="fc" id="L276">        int[] i2 = new int[indexes2.length];</span>
         int i;
-<span class="fc bfc" id="L270" title="All 2 branches covered.">        for (i = 0; i &lt; d2.length; ++i) {</span>
-<span class="fc" id="L271">            d2[i] = deadlines[indexes2[i]];</span>
-<span class="fc" id="L272">            p2[i] = penalties[indexes2[i]];</span>
-<span class="fc" id="L273">            i2[i] = indexes2[i];</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        for (i = 0; i &lt; d2.length; ++i) {</span>
+<span class="fc" id="L279">            d2[i] = deadlines[indexes2[i]];</span>
+<span class="fc" id="L280">            p2[i] = penalties[indexes2[i]];</span>
+<span class="fc" id="L281">            i2[i] = indexes2[i];</span>
         }
         
-        // sort by increasing deadlines
+        // sort by increasing deadlines. O(N2 * log_2(N2))
         //these indexes are w.r.t. the truncated d2 and p2, that is, i2
-<span class="fc" id="L278">        indexes2 = mergesortIncreasingADecreasingB(d2, p2); </span>
-        //expecting: (2,60), (3,40), (4,70), (4,50), (6,10), (1,30), (4,20)
-                   
-        //System.out.println(&quot;sorted by increasing deadline:&quot;);
-<span class="fc" id="L282">        TIntSet allI = new TIntHashSet();</span>
-<span class="fc bfc" id="L283" title="All 2 branches covered.">        for (i = 0; i &lt; deadlines.length; ++i) {</span>
-<span class="fc" id="L284">            allI.add(i);</span>
+<span class="fc" id="L286">        indexes2 = mergesortIncreasingADecreasingB(d2, p2); </span>
+        
+<span class="fc" id="L288">        int[] scheduled = new int[deadlines.length];</span>
+<span class="fc" id="L289">        TIntSet allI = new TIntHashSet();</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        for (i = 0; i &lt; deadlines.length; ++i) {</span>
+<span class="fc" id="L291">            allI.add(i);</span>
         }
-<span class="fc" id="L286">        int[] scheduled = new int[deadlines.length];</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">        for (i = 0; i &lt; indexes2.length; ++i) {</span>
-<span class="fc" id="L288">            scheduled[i] = i2[indexes2[i]];</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        for (i = 0; i &lt; indexes2.length; ++i) {</span>
+            // transform indexes back to original array indexes
+<span class="fc" id="L295">            scheduled[i] = i2[indexes2[i]];</span>
             //System.out.printf(&quot;  a%d (%d, %d)\n&quot;, 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
-<span class="fc" id="L291">            allI.remove(scheduled[i]);</span>
+<span class="fc" id="L298">            allI.remove(scheduled[i]);</span>
         }
         //System.out.println(&quot;appending late tasks in any order:&quot;);
-<span class="fc" id="L294">        TIntIterator iter = allI.iterator();</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L296">            scheduled[i] = iter.next();</span>
+<span class="fc" id="L301">        TIntIterator iter = allI.iterator();</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L303">            scheduled[i] = iter.next();</span>
             //System.out.printf(&quot;  a%d (%d, %d)\n&quot;, 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
-<span class="fc" id="L299">            i++;</span>
+<span class="fc" id="L306">            i++;</span>
         }
         
-<span class="fc" id="L302">        return scheduled;</span>
+<span class="fc" id="L309">        return scheduled;</span>
     }
   
+    /**
+     * schedule largest penalties first if they fit before deadline (duration of
+     * each task is a time unit of 1).
+     * runtime complexity is O(N * log_2(N))
+     * @param deadlines
+     * @param penalties
+     * @return 
+     */
     private int[] greedy(int[] deadlines, int[] penalties) {
                
-<span class="fc" id="L307">        deadlines = Arrays.copyOf(deadlines, deadlines.length);</span>
-<span class="fc" id="L308">        penalties = Arrays.copyOf(penalties, penalties.length);</span>
+<span class="fc" id="L322">        deadlines = Arrays.copyOf(deadlines, deadlines.length);</span>
+<span class="fc" id="L323">        penalties = Arrays.copyOf(penalties, penalties.length);</span>
         
+        //O(N * log_2(N))
         // sort w, m into monotonically decreasing order by penalties w
-<span class="fc" id="L311">        int[] origIndexes = sortDecr(penalties, deadlines);</span>
+<span class="fc" id="L327">        int[] origIndexes = sortDecr(penalties, deadlines);</span>
         int i, oIdx;
         
         /*
@@ -320,23 +336,22 @@ import java.util.TreeSet;
         */
        
         // the schedule of indexes, in a datastructure that sorts upon insert
-<span class="fc" id="L323">        SortedSet&lt;Integer&gt; a = new TreeSet&lt;&gt;();</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">        for(i = 0; i &lt; deadlines.length; ++i) {</span>
-<span class="fc" id="L325">            oIdx = origIndexes[i];</span>
+<span class="fc" id="L339">        SortedSet&lt;Integer&gt; a = new TreeSet&lt;&gt;();</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        for(i = 0; i &lt; deadlines.length; ++i) {</span>
+<span class="fc" id="L341">            oIdx = origIndexes[i];</span>
             //System.out.printf(&quot;a%d f_i=%d, (%d,%d): &quot;, oIdx+1, (a.size()+1), deadlines[i], penalties[i]);
-<span class="fc bfc" id="L327" title="All 2 branches covered.">            if (deadlines[i] &gt;= (a.size()+1)) {</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">            if (deadlines[i] &gt;= (a.size()+1)) {</span>
                 //done early
-<span class="fc" id="L329">                a.add(i);</span>
+<span class="fc" id="L345">                a.add(i);</span>
             //    System.out.println(&quot;  accept&quot;);
-<span class="pc bpc" id="L331" title="1 of 2 branches missed.">            } else if ((a.size() &gt; 0) &amp;&amp; </span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">                (deadlines[i] &lt; deadlines[a.last()])) {</span>
+<span class="pc bpc" id="L347" title="1 of 4 branches missed.">            } else if (!a.isEmpty() &amp;&amp; (deadlines[i] &lt; deadlines[a.last()])) {</span>
                 
                 // check whether this increase of start time by 1 unit would push
                 //    out the last item (which is the same last item that we just
                 //    compared in this conditional clause.
-                //    if that were true, do not add this item as it conflicts.
-<span class="fc bfc" id="L338" title="All 2 branches covered.">                if (deadlines[a.last()] &gt;= (a.size() + 1)) {</span>
-<span class="fc" id="L339">                    a.add(i);</span>
+                //    if that were true, do not add this item because it conflicts.
+<span class="fc bfc" id="L353" title="All 2 branches covered.">                if (deadlines[a.last()] &gt;= (a.size() + 1)) {</span>
+<span class="fc" id="L354">                    a.add(i);</span>
             //        System.out.println(&quot;  accept&quot;);
             //    } else {
             //        System.out.println(&quot;  reject&quot;);
@@ -345,181 +360,181 @@ import java.util.TreeSet;
             //    System.out.println(&quot;  reject&quot;);
             }
         }
-        // rewrite indexes in context of original arrays:
-<span class="fc" id="L349">        int[] ao = new int[a.size()];</span>
-<span class="fc" id="L350">        int count = 0;</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">        for (Integer ai : a) {</span>
-<span class="fc" id="L352">            ao[count++] = origIndexes[ai];</span>
-<span class="fc" id="L353">        }</span>
-<span class="fc" id="L354">        return ao;</span>
+        // rewrite indexes in context of original array indexes:
+<span class="fc" id="L364">        int[] ao = new int[a.size()];</span>
+<span class="fc" id="L365">        int count = 0;</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        for (Integer ai : a) {</span>
+<span class="fc" id="L367">            ao[count++] = origIndexes[ai];</span>
+<span class="fc" id="L368">        }</span>
+<span class="fc" id="L369">        return ao;</span>
     }
 
     private int[] sort2(double[] a, double[] b, double[] c) {
-<span class="fc" id="L358">        int[] oIdxs = new int[a.length];</span>
+<span class="fc" id="L373">        int[] oIdxs = new int[a.length];</span>
         int i;
-<span class="fc bfc" id="L360" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L361">            oIdxs[i] = i;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L376">            oIdxs[i] = i;</span>
         }
-<span class="fc" id="L363">        mergesort(a, oIdxs, 0, a.length - 1);</span>
-<span class="fc" id="L364">        double[] t = new double[b.length];</span>
-<span class="fc bfc" id="L365" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L366">            t[i] = b[oIdxs[i]];</span>
+<span class="fc" id="L378">        mergesort(a, oIdxs, 0, a.length - 1);</span>
+<span class="fc" id="L379">        double[] t = new double[b.length];</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L381">            t[i] = b[oIdxs[i]];</span>
         }
-<span class="fc" id="L368">        System.arraycopy(t, 0, b, 0, b.length);</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L370">            t[i] = c[oIdxs[i]];</span>
+<span class="fc" id="L383">        System.arraycopy(t, 0, b, 0, b.length);</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L385">            t[i] = c[oIdxs[i]];</span>
         }
-<span class="fc" id="L372">        System.arraycopy(t, 0, c, 0, c.length);</span>
-<span class="fc" id="L373">        return oIdxs;</span>
+<span class="fc" id="L387">        System.arraycopy(t, 0, c, 0, c.length);</span>
+<span class="fc" id="L388">        return oIdxs;</span>
     }
     
     private void mergesort(double[] a, int[] b, int idxLo, int idxHi) {
-<span class="fc bfc" id="L377" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
-<span class="fc" id="L378">            int idxMid = (idxLo + idxHi) &gt;&gt; 1;</span>
-<span class="fc" id="L379">            mergesort(a, b, idxLo, idxMid);           </span>
-<span class="fc" id="L380">            mergesort(a, b, idxMid + 1, idxHi);       </span>
-<span class="fc" id="L381">            merge(a, b, idxLo, idxMid, idxHi);</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc" id="L393">            int idxMid = (idxLo + idxHi) &gt;&gt; 1;</span>
+<span class="fc" id="L394">            mergesort(a, b, idxLo, idxMid);           </span>
+<span class="fc" id="L395">            mergesort(a, b, idxMid + 1, idxHi);       </span>
+<span class="fc" id="L396">            merge(a, b, idxLo, idxMid, idxHi);</span>
         }
-<span class="fc" id="L383">    }</span>
+<span class="fc" id="L398">    }</span>
 
     private void merge(double[] a, int[] b, int idxLo, int idxMid, int idxHi) {
-<span class="fc" id="L386">        double[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);</span>
-<span class="fc" id="L387">        double[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); </span>
-<span class="fc" id="L388">        aL[aL.length - 1] = Double.POSITIVE_INFINITY;</span>
-<span class="fc" id="L389">        aR[aR.length - 1] = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L401">        double[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);</span>
+<span class="fc" id="L402">        double[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); </span>
+<span class="fc" id="L403">        aL[aL.length - 1] = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L404">        aR[aR.length - 1] = Double.POSITIVE_INFINITY;</span>
 
-<span class="fc" id="L391">        int[] bL = Arrays.copyOfRange(b, idxLo, idxMid + 2);</span>
-<span class="fc" id="L392">        int[] bR = Arrays.copyOfRange(b, idxMid + 1, idxHi + 2); </span>
-<span class="fc" id="L393">        bL[bL.length - 1] = Integer.MAX_VALUE;</span>
-<span class="fc" id="L394">        bR[bR.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L406">        int[] bL = Arrays.copyOfRange(b, idxLo, idxMid + 2);</span>
+<span class="fc" id="L407">        int[] bR = Arrays.copyOfRange(b, idxMid + 1, idxHi + 2); </span>
+<span class="fc" id="L408">        bL[bL.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L409">        bR[bR.length - 1] = Integer.MAX_VALUE;</span>
         
-<span class="fc" id="L396">        int posL = 0;</span>
-<span class="fc" id="L397">        int posR = 0;</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (int k = idxLo; k &lt;= idxHi; k++) {</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">            if (aL[posL] &lt;= aR[posR]) {</span>
-<span class="fc" id="L400">                a[k] = aL[posL];</span>
-<span class="fc" id="L401">                b[k] = bL[posL];</span>
-<span class="fc" id="L402">                posL++;</span>
+<span class="fc" id="L411">        int posL = 0;</span>
+<span class="fc" id="L412">        int posR = 0;</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        for (int k = idxLo; k &lt;= idxHi; k++) {</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">            if (aL[posL] &lt;= aR[posR]) {</span>
+<span class="fc" id="L415">                a[k] = aL[posL];</span>
+<span class="fc" id="L416">                b[k] = bL[posL];</span>
+<span class="fc" id="L417">                posL++;</span>
             } else {
-<span class="fc" id="L404">                a[k] = aR[posR];</span>
-<span class="fc" id="L405">                b[k] = bR[posR];</span>
-<span class="fc" id="L406">                posR++;</span>
+<span class="fc" id="L419">                a[k] = aR[posR];</span>
+<span class="fc" id="L420">                b[k] = bR[posR];</span>
+<span class="fc" id="L421">                posR++;</span>
             }
         }
-<span class="fc" id="L409">    }</span>
+<span class="fc" id="L424">    }</span>
 
     private int[] mergesortIncreasingADecreasingB(int[] a, int[] b) {
-<span class="fc" id="L412">        int[] indexes = new int[a.length];</span>
+<span class="fc" id="L427">        int[] indexes = new int[a.length];</span>
         int i;
-<span class="fc bfc" id="L414" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L415">            indexes[i] = i;</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L430">            indexes[i] = i;</span>
         }
-<span class="fc" id="L417">        mergesortIncreasingADecreasingB(a, b, indexes, 0, a.length-1);</span>
-<span class="fc" id="L418">        return indexes;</span>
+<span class="fc" id="L432">        mergesortIncreasingADecreasingB(a, b, indexes, 0, a.length-1);</span>
+<span class="fc" id="L433">        return indexes;</span>
     }
 
     private void mergesortIncreasingADecreasingB(int[] a, int[] b, int[] c, int idxLo, int idxHi) {
-<span class="fc bfc" id="L422" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
-<span class="fc" id="L423">            int idxMid = (idxHi + idxLo)/2;</span>
-<span class="fc" id="L424">            mergesortIncreasingADecreasingB(a, b, c, 0, idxMid);</span>
-<span class="fc" id="L425">            mergesortIncreasingADecreasingB(a, b, c, idxMid + 1, idxHi);</span>
-<span class="fc" id="L426">            mergeIncreasingADecreasingB(a, b, c, idxLo, idxMid, idxHi);</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc" id="L438">            int idxMid = (idxHi + idxLo)/2;</span>
+<span class="fc" id="L439">            mergesortIncreasingADecreasingB(a, b, c, 0, idxMid);</span>
+<span class="fc" id="L440">            mergesortIncreasingADecreasingB(a, b, c, idxMid + 1, idxHi);</span>
+<span class="fc" id="L441">            mergeIncreasingADecreasingB(a, b, c, idxLo, idxMid, idxHi);</span>
         }
-<span class="fc" id="L428">    }</span>
+<span class="fc" id="L443">    }</span>
 
     private void mergeIncreasingADecreasingB(int[] a, int[] b, int[] c, 
         int idxLo, int idxMid, int idxHi) {
         
-<span class="fc" id="L433">        int[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);</span>
-<span class="fc" id="L434">        int[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); </span>
-<span class="fc" id="L435">        aL[aL.length - 1] = Integer.MAX_VALUE;</span>
-<span class="fc" id="L436">        aR[aR.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L448">        int[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);</span>
+<span class="fc" id="L449">        int[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); </span>
+<span class="fc" id="L450">        aL[aL.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L451">        aR[aR.length - 1] = Integer.MAX_VALUE;</span>
 
-<span class="fc" id="L438">        int[] bL = Arrays.copyOfRange(b, idxLo, idxMid + 2);</span>
-<span class="fc" id="L439">        int[] bR = Arrays.copyOfRange(b, idxMid + 1, idxHi + 2); </span>
-<span class="fc" id="L440">        bL[bL.length - 1] = Integer.MAX_VALUE;</span>
-<span class="fc" id="L441">        bR[bR.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L453">        int[] bL = Arrays.copyOfRange(b, idxLo, idxMid + 2);</span>
+<span class="fc" id="L454">        int[] bR = Arrays.copyOfRange(b, idxMid + 1, idxHi + 2); </span>
+<span class="fc" id="L455">        bL[bL.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L456">        bR[bR.length - 1] = Integer.MAX_VALUE;</span>
         
-<span class="fc" id="L443">        int[] cL = Arrays.copyOfRange(c, idxLo, idxMid + 2);</span>
-<span class="fc" id="L444">        int[] cR = Arrays.copyOfRange(c, idxMid + 1, idxHi + 2); </span>
-<span class="fc" id="L445">        cL[cL.length - 1] = Integer.MAX_VALUE;</span>
-<span class="fc" id="L446">        cR[cR.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L458">        int[] cL = Arrays.copyOfRange(c, idxLo, idxMid + 2);</span>
+<span class="fc" id="L459">        int[] cR = Arrays.copyOfRange(c, idxMid + 1, idxHi + 2); </span>
+<span class="fc" id="L460">        cL[cL.length - 1] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L461">        cR[cR.length - 1] = Integer.MAX_VALUE;</span>
         
-<span class="fc" id="L448">        int posL = 0;</span>
-<span class="fc" id="L449">        int posR = 0;</span>
-<span class="fc bfc" id="L450" title="All 2 branches covered.">        for (int k = idxLo; k &lt;= idxHi; ++k) {</span>
-<span class="fc bfc" id="L451" title="All 2 branches covered.">            if (aL[posL] &lt; aR[posR]) {</span>
-<span class="fc" id="L452">                a[k] = aL[posL];</span>
-<span class="fc" id="L453">                b[k] = bL[posL];</span>
-<span class="fc" id="L454">                c[k] = cL[posL];</span>
-<span class="fc" id="L455">                posL++;</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">            } else if (aL[posL] &gt; aR[posR]) {</span>
-<span class="fc" id="L457">                a[k] = aR[posR];</span>
-<span class="fc" id="L458">                b[k] = bR[posR];</span>
-<span class="fc" id="L459">                c[k] = cR[posR];</span>
-<span class="fc" id="L460">                posR++;</span>
+<span class="fc" id="L463">        int posL = 0;</span>
+<span class="fc" id="L464">        int posR = 0;</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">        for (int k = idxLo; k &lt;= idxHi; ++k) {</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">            if (aL[posL] &lt; aR[posR]) {</span>
+<span class="fc" id="L467">                a[k] = aL[posL];</span>
+<span class="fc" id="L468">                b[k] = bL[posL];</span>
+<span class="fc" id="L469">                c[k] = cL[posL];</span>
+<span class="fc" id="L470">                posL++;</span>
+<span class="fc bfc" id="L471" title="All 2 branches covered.">            } else if (aL[posL] &gt; aR[posR]) {</span>
+<span class="fc" id="L472">                a[k] = aR[posR];</span>
+<span class="fc" id="L473">                b[k] = bR[posR];</span>
+<span class="fc" id="L474">                c[k] = cR[posR];</span>
+<span class="fc" id="L475">                posR++;</span>
             } else {
                 // they're equal, so break ties by values of b
-<span class="pc bpc" id="L463" title="1 of 2 branches missed.">                if (bL[posL] &gt;= bR[posR]) {</span>
-<span class="fc" id="L464">                    a[k] = aL[posL];</span>
-<span class="fc" id="L465">                    b[k] = bL[posL];</span>
-<span class="fc" id="L466">                    c[k] = cL[posL];</span>
-<span class="fc" id="L467">                    posL++;</span>
+<span class="pc bpc" id="L478" title="1 of 2 branches missed.">                if (bL[posL] &gt;= bR[posR]) {</span>
+<span class="fc" id="L479">                    a[k] = aL[posL];</span>
+<span class="fc" id="L480">                    b[k] = bL[posL];</span>
+<span class="fc" id="L481">                    c[k] = cL[posL];</span>
+<span class="fc" id="L482">                    posL++;</span>
                 } else {
-<span class="nc" id="L469">                    a[k] = aR[posR];</span>
-<span class="nc" id="L470">                    b[k] = bR[posR];</span>
-<span class="nc" id="L471">                    c[k] = cR[posR];</span>
-<span class="nc" id="L472">                    posR++;</span>
+<span class="nc" id="L484">                    a[k] = aR[posR];</span>
+<span class="nc" id="L485">                    b[k] = bR[posR];</span>
+<span class="nc" id="L486">                    c[k] = cR[posR];</span>
+<span class="nc" id="L487">                    posR++;</span>
                 }
             }
         }
-<span class="fc" id="L476">    }</span>
+<span class="fc" id="L491">    }</span>
     
     
     private int[] sortDecr(int[] a, int[] b) {
-<span class="fc" id="L480">        int[] oIdxs = new int[a.length];</span>
-<span class="fc bfc" id="L481" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L482">            oIdxs[i] = i;</span>
+<span class="fc" id="L495">        int[] oIdxs = new int[a.length];</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L497">            oIdxs[i] = i;</span>
         }
-<span class="fc" id="L484">        quicksortDecr(a, oIdxs, 0, a.length - 1);</span>
-<span class="fc" id="L485">        int[] t = new int[b.length];</span>
+<span class="fc" id="L499">        quicksortDecr(a, oIdxs, 0, a.length - 1);</span>
+<span class="fc" id="L500">        int[] t = new int[b.length];</span>
         int i;
-<span class="fc bfc" id="L487" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L488">            t[i] = b[oIdxs[i]];</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L503">            t[i] = b[oIdxs[i]];</span>
         }
-<span class="fc" id="L490">        System.arraycopy(t, 0, b, 0, b.length);</span>
-<span class="fc" id="L491">        return oIdxs;</span>
+<span class="fc" id="L505">        System.arraycopy(t, 0, b, 0, b.length);</span>
+<span class="fc" id="L506">        return oIdxs;</span>
     }
     
     private void quicksortDecr(int[] a, int[] b, int idxLo, int idxHi) {
-<span class="fc bfc" id="L495" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
-<span class="fc" id="L496">            int idxMid = partitionDecr(a, b, idxLo, idxHi);</span>
-<span class="fc" id="L497">            quicksortDecr(a, b, idxLo, idxMid-1);</span>
-<span class="fc" id="L498">            quicksortDecr(a, b, idxMid+1, idxHi);</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc" id="L511">            int idxMid = partitionDecr(a, b, idxLo, idxHi);</span>
+<span class="fc" id="L512">            quicksortDecr(a, b, idxLo, idxMid-1);</span>
+<span class="fc" id="L513">            quicksortDecr(a, b, idxMid+1, idxHi);</span>
         }
-<span class="fc" id="L500">    }</span>
+<span class="fc" id="L515">    }</span>
     private int partitionDecr(int[] a, int[] b, int idxLo, int idxHi) {
-<span class="fc" id="L502">        int xa = a[idxHi];</span>
-<span class="fc" id="L503">        int i = idxLo - 1;  </span>
+<span class="fc" id="L517">        int xa = a[idxHi];</span>
+<span class="fc" id="L518">        int i = idxLo - 1;  </span>
         int swap;
-<span class="fc bfc" id="L505" title="All 2 branches covered.">        for (int j = idxLo; j &lt; idxHi ; j++ ) {</span>
-<span class="pc bpc" id="L506" title="1 of 2 branches missed.">            if (a[j] &gt;= xa) { </span>
-<span class="fc" id="L507">                i++;</span>
-<span class="fc" id="L508">                swap = a[i];</span>
-<span class="fc" id="L509">                a[i] = a[j];</span>
-<span class="fc" id="L510">                a[j] = swap;</span>
-<span class="fc" id="L511">                swap = b[i];</span>
-<span class="fc" id="L512">                b[i] = b[j];</span>
-<span class="fc" id="L513">                b[j] = swap;</span>
+<span class="fc bfc" id="L520" title="All 2 branches covered.">        for (int j = idxLo; j &lt; idxHi ; j++ ) {</span>
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">            if (a[j] &gt;= xa) { </span>
+<span class="fc" id="L522">                i++;</span>
+<span class="fc" id="L523">                swap = a[i];</span>
+<span class="fc" id="L524">                a[i] = a[j];</span>
+<span class="fc" id="L525">                a[j] = swap;</span>
+<span class="fc" id="L526">                swap = b[i];</span>
+<span class="fc" id="L527">                b[i] = b[j];</span>
+<span class="fc" id="L528">                b[j] = swap;</span>
             }
         }
-<span class="fc" id="L516">        swap = a[i + 1];</span>
-<span class="fc" id="L517">        a[i + 1] = a[idxHi];</span>
-<span class="fc" id="L518">        a[idxHi] = swap;</span>
-<span class="fc" id="L519">        swap = b[i + 1];</span>
-<span class="fc" id="L520">        b[i + 1] = b[idxHi];</span>
-<span class="fc" id="L521">        b[idxHi] = swap;</span>
-<span class="fc" id="L522">        return i + 1;</span>
+<span class="fc" id="L531">        swap = a[i + 1];</span>
+<span class="fc" id="L532">        a[i + 1] = a[idxHi];</span>
+<span class="fc" id="L533">        a[idxHi] = swap;</span>
+<span class="fc" id="L534">        swap = b[i + 1];</span>
+<span class="fc" id="L535">        b[i + 1] = b[idxHi];</span>
+<span class="fc" id="L536">        b[idxHi] = swap;</span>
+<span class="fc" id="L537">        return i + 1;</span>
     }
 
     /**
@@ -537,8 +552,7 @@ import java.util.TreeSet;
     https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
     &lt;/pre&gt;
 
-     runtime complexity is between O(n*log_2(n)) and O(n^2), with a worse
-     case of O(n^2).
+     runtime complexity is O(n^2)
      * 
      * Note: can compare this algorithm to the left-edge algorithms which
      * sorts by increasing finish times, then loops over each request
@@ -556,7 +570,8 @@ import java.util.TreeSet;
      * @return indexes of resources to schedule the requests on.
      */
     public int[] intervalPartitionGreedy(double[] s, double[] f) {     
-<span class="fc" id="L559">        double[] s2 = Arrays.copyOf(s, s.length);</span>
+        
+<span class="fc" id="L574">        double[] s2 = Arrays.copyOf(s, s.length);</span>
         
         /*
         (1) sort the requests by increasing order of start times. 
@@ -566,29 +581,30 @@ import java.util.TreeSet;
         
         // runtime complexity O(n)
         //sort requests by increasing start times
-<span class="fc" id="L569">        int[] indexes = MiscSorter.mergeSortIncreasing(s2);</span>
-<span class="fc" id="L570">        double[] f2 = new double[s2.length];</span>
+<span class="fc" id="L584">        int[] indexes = MiscSorter.mergeSortIncreasing(s2);</span>
+<span class="fc" id="L585">        double[] f2 = new double[s2.length];</span>
         int i, j;
-<span class="fc bfc" id="L572" title="All 2 branches covered.">        for (i = 0; i &lt; f.length; ++i) {</span>
-<span class="fc" id="L573">            f2[i] = f[indexes[i]];</span>
+<span class="fc bfc" id="L587" title="All 2 branches covered.">        for (i = 0; i &lt; f.length; ++i) {</span>
+<span class="fc" id="L588">            f2[i] = f[indexes[i]];</span>
         }
+        
         //System.out.println(&quot;indexes sorted by start times = &quot; + Arrays.toString(indexes));
         
         // a color for each request
-<span class="fc" id="L578">        int[] c = new int[s.length];</span>
+<span class="fc" id="L594">        int[] c = new int[s.length];</span>
         
         TIntSet excl;        
         int color;
-        // runtime complexity &lt; O(n^2), but worse case is O(n^2)
-<span class="fc bfc" id="L583" title="All 2 branches covered.">        for (i = 0; i &lt; f2.length; ++i) {</span>
-<span class="fc" id="L584">            excl = new TIntHashSet();</span>
-<span class="fc bfc" id="L585" title="All 2 branches covered.">            for (j = 0; j &lt; i; ++j) {</span>
+        // runtime complexity O(n*n/2)
+<span class="fc bfc" id="L599" title="All 2 branches covered.">        for (i = 0; i &lt; f2.length; ++i) {</span>
+<span class="fc" id="L600">            excl = new TIntHashSet();</span>
+<span class="fc bfc" id="L601" title="All 2 branches covered.">            for (j = 0; j &lt; i; ++j) {</span>
                 //j is always smaller than i so s[j] &lt;= s[i].  
                 //  then order is (sj,fj)  (si,fi)
                 
                 //if ([s[j],f[j]] overlaps [s[i],f[i]]) 
-<span class="fc bfc" id="L590" title="All 2 branches covered.">                if (s2[i] &lt; f2[j]) {</span>
-<span class="fc" id="L591">                    excl.add(c[j]);</span>
+<span class="fc bfc" id="L606" title="All 2 branches covered.">                if (s2[i] &lt; f2[j]) {</span>
+<span class="fc" id="L607">                    excl.add(c[j]);</span>
                     /*System.out.printf(&quot;conflict for i2=%d, j2=%d (s2[%d]&lt;f2[%d])=(%.1f, %.2f)\n&quot;,
                         i, j, i, j, s2[i], f2[i]);
                     System.out.printf(&quot;==&gt; i=%d, j=%d (s2[%d]&lt;f2[%d])=(%.1f, %.2f)\n&quot;,
@@ -598,19 +614,19 @@ import java.util.TreeSet;
                 }
             }
             //Let c be the smallest color NOT in E
-<span class="pc bpc" id="L601" title="1 of 2 branches missed.">            for (color = 0; color &lt; f2.length; ++color) {</span>
-<span class="fc bfc" id="L602" title="All 2 branches covered.">                if (!excl.contains(color)) {</span>
-<span class="fc" id="L603">                    break;</span>
+<span class="pc bpc" id="L617" title="1 of 2 branches missed.">            for (color = 0; color &lt; f2.length; ++color) {</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">                if (!excl.contains(color)) {</span>
+<span class="fc" id="L619">                    break;</span>
                 }
             }
-<span class="fc" id="L606">            c[i] = color;</span>
+<span class="fc" id="L622">            c[i] = color;</span>
         }
         //rewrite c in terms of original indexes of method argument's unsorted (s,f)
-<span class="fc" id="L609">        int[] c2 = new int[f2.length];</span>
-<span class="fc bfc" id="L610" title="All 2 branches covered.">        for (i = 0; i &lt; f2.length; ++i) {</span>
-<span class="fc" id="L611">            c2[indexes[i]] = c[i];</span>
+<span class="fc" id="L625">        int[] c2 = new int[f2.length];</span>
+<span class="fc bfc" id="L626" title="All 2 branches covered.">        for (i = 0; i &lt; f2.length; ++i) {</span>
+<span class="fc" id="L627">            c2[indexes[i]] = c[i];</span>
         }
-<span class="fc" id="L613">        return c2;</span>
+<span class="fc" id="L629">        return c2;</span>
     }
 
 }

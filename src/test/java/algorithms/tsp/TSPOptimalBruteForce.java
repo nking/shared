@@ -12,14 +12,13 @@ import java.util.logging.Logger;
  * The algorithms is NP-Hard, no known
  * polynomial time algorithms exist for TSP, so an approximation such as TSP-Prim's
  * MST should be used or one of the 1.5*optimal algorithms (see wikipedia).
- *
- * This dynamic version is instructive, and not to be used for most datasets as the
- * runtime complexity is O(n^2 * 2^n) where n is the number of vertices.
  * 
+ * This version's runtime complexity is exponential.  It's not solving sub-problems
+ * and re-using the calculations.  memo is used to store best path stages
+ * for each end node, so the algorithm is essentially brute force.
+ *
  * The iterative method is limited to data holding 31 cities or less.
  * 
- *  The approximate TSP algorithms are in the curvature scale space project.
-
  * <pre>
  * references:
  * 
@@ -103,12 +102,9 @@ import java.util.logging.Logger;
  * Then the total time across all subset sizes is 
  * (n-1)*(n-2) * summation_over_k_from_1_to_{n-2}( C(n-3, k-1) )
  * =  (n-1)*(n-2) * 2^(n-3).
- * The runtime complexity is then O(n^2 * 2^n).
- * 
+ * The runtime complexity for Held–Karp algorithm is then O(n^2 * 2^n).
  * The 2nd stage is O(n) and does affect the runtime complexity.
  * 
- * 
- * NOTE that summation_over_k_from_1_to_{n-2}( C(n-3, k-1) )
  * 
  * NOTE that the method below has a larger runtime complexity for now as
  * some of the inner loops need to be edited to visit only the nodes not
@@ -117,7 +113,7 @@ import java.util.logging.Logger;
  * </pre>
  * @author nichole
  */
-public class TSPOptimalDynamic {
+public class TSPOptimalBruteForce {
 
     private final int N, start;
     private final double[][] distance;
@@ -135,11 +131,11 @@ public class TSPOptimalDynamic {
      * 
      * @param distance 
      */
-    public TSPOptimalDynamic(double[][] distance) {
+    public TSPOptimalBruteForce(double[][] distance) {
         this(0, distance);
     }
     
-    public TSPOptimalDynamic(int start, double[][] distance) {
+    public TSPOptimalBruteForce(int start, double[][] distance) {
         N = distance.length;
 
         if (N <= 2) {
@@ -172,23 +168,21 @@ public class TSPOptimalDynamic {
     }
 
     /** Solves the traveling salesman problem and caches solution.
-     * NOTE that algorithm can only handle N less than 32.
+     * NOTE that algorithm is limited to N less than 32.
      * 
-     * TODO: should be able to re-order the k-permutations and visits
-        so that the embedded 0 to N loops are over the unvisited vertexes only,
-        hence decreasing the loop iteratively.
      */
     public void solveIteratively() {
         
         if (N > 31) {
             throw new IllegalArgumentException("the dynamic iterative algorithm "
-                + "has a limit of 31 for the number of cities.   Consider the "
-                + "recursive algorithm which has a limit of 2^31 - 1");
+                + "has a limit of 31 for the number of cities.");
         }
 
         if (solverFinished) {
             return;
         }
+        
+        long c0 = 0;
 
         final int END_STATE = (1 << N) - 1;
         double[][] memo = new double[N][END_STATE + 1];
@@ -205,6 +199,7 @@ public class TSPOptimalDynamic {
             0      1      1            2             3
             0      2      1            4             5
             0      3      1            8             9
+            0      4      1            16            17
             */
              
         }
@@ -213,17 +208,9 @@ public class TSPOptimalDynamic {
             "memo[%d][%d]=\n%s\n", memo.length, memo[0].length, 
             FormatArray.toString(memo, "%.1f")));
         
-        //TODO: should be able to re-order the k-permutations and visits
-        // so that the embedded 0 to N loops are over the unvisited vertexes only,
-        //    hence decreasing the loop iteratively.
-
         // r is the number of vertexes within n vertexes, in which the subset bits are set to 1.
         for (int r = 3; r <= N; r++) {
-            // The number of ways to select an ordered sequence
-            // of k items out of n distinct items for a fixed length of k
-            // (a.k.a.  k-permutations of n)
-            // = n! / (n − k)!
-            //https://en.m.wikipedia.org/wiki/Permutation#k-permutations_of_n
+            
             for (int subset : combinations(r, N)) {
                 
                 logger.log(LEVEL, String.format(
@@ -254,6 +241,7 @@ public class TSPOptimalDynamic {
                     
                     double minDist = Double.POSITIVE_INFINITY;
                     for (int end = 0; end < N; end++) {
+                        c0++;
                         if (end == start || end == next || notIn(end, subset)) {
                             continue;
                         }
@@ -320,6 +308,7 @@ public class TSPOptimalDynamic {
         Collections.reverse(tour);
 
         solverFinished = true;
+        System.out.printf("c0=%d n=%d\n", c0, this.distance.length);
     }
 
     // test bit operation to see if elem is in sbset
