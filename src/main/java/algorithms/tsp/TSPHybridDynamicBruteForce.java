@@ -400,37 +400,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n", 
             totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
-   
-    
-    protected void compareToMin(long path, double sum) {
-        assert(numberOfSetNodes(path) == (dist.length-1));
-        
-        int node1 = getBase10NodeIndex(0, path);
-        int noden1 = getBase10NodeIndex(dist.length - 2, path);
-
-        double ends = dist[startNode][node1] + dist[noden1][startNode];
-        
-        double sum2 = sum + ends;
-        
-        //debug
-        /*TIntList p = new TIntArrayList();
-        readPathIntoBase10(path, p);
-        System.out.printf("final: bs=%s (%s) sum=%.2f sum2=%.2f, min=%.2f\n",
-            Long.toBinaryString(path),
-            Arrays.toString(p.toArray()), sum, sum2, minCost);
-        */
-        // end debug
-        
-        if (sum2 == minCost) {
-            minPath.add(path);
-        } else if (sum2 < minCost) {
-            minCost = sum2;//3, 2, 4, 1, 5
-            minPath.clear();
-            minPath.add(path);
-        }
-    }
-    
-    
+       
     public TLongList getMinPathBitstrings() {
         return new TLongArrayList(minPath);
     }
