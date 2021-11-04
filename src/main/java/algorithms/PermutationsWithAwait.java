@@ -32,12 +32,6 @@ public class PermutationsWithAwait {
     
     //private final BigInteger nPermutations;
     
-    /*
-     * TODO: review volatile w.r.t. BigInteger
-     * 
-     */
-    //private volatile BigInteger nCurrent;
-       
     /**
      * permute the given set of numbers in a thread that waits for the getNext()
      * invocation to calculate the next permutation.
