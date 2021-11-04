@@ -11,7 +11,7 @@ import java.util.Stack;
 
 /**
  <pre>
- A completely dynamic solution requires a large amount of memory (see statiement below).
+ A completely dynamic solution requires a large amount of memory (see statement below).
  Here is an outline of one, based upon what I learned from making the hybrid
  dynamic and brute force class:
  
@@ -136,8 +136,6 @@ public class TSPDynamic extends AbstractTSP {
                 bitstring2 = currentStackP.bitstring;
                 sum2 = currentStackP.sum;
                 nNodesRemaining2 = currentStackP.nNodesRemaining;
-                k2 = dist.length - 1 - nNodesRemaining2;// number of bits in path bitstring2
-                assert(k2 == this.numberOfSetNodes(bitstring2));
                 
                 if (nNodesRemaining2 == 0) {
                     compareToMin(bitstring2, sum2);
@@ -148,7 +146,10 @@ public class TSPDynamic extends AbstractTSP {
                 findUnsetBitsBase10(bitstring2, remaining);
                 assert (nNodesRemaining2 == remaining.size());
                 int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
-                                
+                
+                k2 = nBitsSet2;// number of bits in path bitstring2
+                assert(k2 == this.numberOfSetNodes(bitstring2));
+                             
                 if (nNodesRemaining2 <= k2) {
                     stackDecr.add(new StackP(bitstring2, sum2, nNodesRemaining2));                 
                     continue;
@@ -203,8 +204,69 @@ public class TSPDynamic extends AbstractTSP {
             }
         }
         
+        // for decreasing k, the path composition is still dynamic,
+        //    but there is no need to store the results in memo as they 
+        //    mostly won't be usable by other unfinished paths.
         while (!stackDecr.isEmpty()) {
-            //impl
+            
+            currentStackP = stackDecr.pop();
+            bitstring2 = currentStackP.bitstring;
+            sum2 = currentStackP.sum;
+            nNodesRemaining2 = currentStackP.nNodesRemaining;
+            
+            if (nNodesRemaining2 == 0) {
+                compareToMin(bitstring2, sum2);
+                continue;
+            }
+
+            TIntList remaining = new TIntArrayList();
+            findUnsetBitsBase10(bitstring2, remaining);
+            assert (nNodesRemaining2 == remaining.size());
+            int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
+            
+            k2 = nBitsSet2;// number of bits in path bitstring2
+            assert(k2 == this.numberOfSetNodes(bitstring2));
+            
+            /*
+            k0 = 2
+            
+            k
+            4  
+            8
+            16
+            32
+            case n=18: nNodesRemaining = 18-1 -16 = 1
+            case n=19: nNodesRemaining = 19-1 -16 = 2
+            case n=27: nNodesRemaining = 19-1 -16 = 2
+            case n=33: (n-1) <= 32
+            case n=34: (n-1) <= 32
+                 // for n = 34, nSetBits = 16 is completed above = prevK
+                 //     nNodesRemaining=34-1-16=17; k2=16
+                 // for n = 33, nSetBits = 16 is completed above = prevK
+                 //     nNodesRemaining=33-1-16=16; k2=16
+                 // for n=27, nSetBits=16 as completed above = prevK
+                 //     nNodesRemaining=27-1-16=10; k2=16,8
+                 k2 = prevK;
+                 while ((k2 > k0) && (k2 >= nNodesRemaining)) {
+                     k2 /= k0;
+                 }
+                 // for n=34, k2=16
+                 // for n=33, k2=8
+                 // for n=27, k2=8
+                 if (k2 <= k0) {
+                       handle permutations only (no subsets)
+                       put on stack to be next processed for no remaining unset nodes
+                       continue;
+                 }
+                 subsets + permutations for k2
+                 and can still use memo
+                 the number of set bits is then nSetBits + k2
+                 // for n=34, nSetBits=16, k2=16, nSetBits2= 32
+                 // for n=33, nSetBits=8, k2=16, nSetBits2=24
+                 // for n=27, nSetBits=8, k2=16, nSetBits2=24
+                 no need to store in memo as the partial results aren't used by decreasing length paths
+                 add to stackDecr            
+            */
         }
     }
 }
