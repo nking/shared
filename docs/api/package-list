@@ -17,4 +17,5 @@ algorithms.shortestPaths
 algorithms.signalProcessing
 algorithms.sort
 algorithms.statistics
+algorithms.tsp
 algorithms.util
