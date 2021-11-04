@@ -47,7 +47,7 @@ public class PermutationsWithAwaitTest extends TestCase {
             p.getNext(results[(int)i]);
         }
         
-        System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
+        //System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
         
         int[] r, r2;
         TIntList re2;

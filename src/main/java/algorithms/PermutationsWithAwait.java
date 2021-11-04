@@ -1,7 +1,5 @@
 package algorithms;
 
-import algorithms.misc.MiscMath0;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -32,13 +30,29 @@ public class PermutationsWithAwait {
      */
     private final int[] x;
     
-    private final BigInteger nPermutations;
+    //private final BigInteger nPermutations;
     
-    /**
+    /*
      * TODO: review volatile w.r.t. BigInteger
+     * 
      */
-    private volatile BigInteger nCurrent;
-        
+    //private volatile BigInteger nCurrent;
+       
+    /**
+     * permute the given set of numbers in a thread that waits for the getNext()
+     * invocation to calculate the next permutation.
+
+       The permute code is adapted from 
+            from https://en.wikipedia.org/wiki/Heap%27s_algorithm
+       who reference:
+            Sedgewick, Robert. "a talk on Permutation Generation Algorithms
+            http://www.cs.princeton.edu/~rs/talks/perms.pdf
+
+       The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
+       by Goetz et al.
+     * @param set
+     * @throws java.lang.InterruptedException
+     */
     public PermutationsWithAwait(int[] set) throws InterruptedException {
         
         log = Logger.getLogger(this.getClass().getSimpleName());
@@ -49,7 +63,7 @@ public class PermutationsWithAwait {
         this.availableItem = new Semaphore(0);
         this.computationLock = new Semaphore(1);
         
-        nPermutations = MiscMath0.factorialBigInteger(n);
+        //nPermutations = MiscMath0.factorialBigInteger(n);
         
         log.log(LEVEL, "BEFORE computationLock.acquire()");
         computationLock.acquire();
@@ -57,10 +71,10 @@ public class PermutationsWithAwait {
         
         //output(A)
         System.arraycopy(set, 0, x, 0, n);
-        nCurrent = BigInteger.ONE;
+        //nCurrent = BigInteger.ONE;
         
-        log.log(LEVEL, String.format("*x=%s  nCurr=%s out of nPerm=%s\n", 
-           Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
+        //log.log(LEVEL, String.format("*x=%s  nCurr=%s out of nPerm=%s\n", 
+        //   Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
                  
         log.log(LEVEL, "BEFORE availableItem.release()");
         availableItem.release();
@@ -83,7 +97,8 @@ public class PermutationsWithAwait {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
         
-        log.log(LEVEL, "getNext BEFORE availableItem.acquire() nc={0}", nCurrent.toString());
+        //log.log(LEVEL, "getNext BEFORE availableItem.acquire() nc={0}", 
+        //    nCurrent.toString());
         
         availableItem.acquire();
         
@@ -91,7 +106,7 @@ public class PermutationsWithAwait {
         
         computationLock.release();
         
-        log.log(LEVEL, "  getNext AFTER computationLock.release() nc={0}", nCurrent.toString());
+        //log.log(LEVEL, "  getNext AFTER computationLock.release() nc={0}", nCurrent.toString());
     }
     
     //TODO: consider using Callable so run can throw an exception
@@ -133,14 +148,15 @@ public class PermutationsWithAwait {
                     
                     // output permutation to instance member x
                     System.arraycopy(set, 0, x, 0, n);
-                    nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
-                    log.log(LEVEL, String.format("*x=%s  nCurr=%s out of nPerm=%s\n", 
-                        Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
+                    //nCurrent = nCurrent.add(BigInteger.ONE);                    
+                    
+                    //log.log(LEVEL, String.format("*x=%s  nCurr=%s out of nPerm=%s\n", 
+                    //    Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
                    
                     availableItem.release();
                     
-                    log.log(LEVEL, "   AFTER cavailableItem.release()");
+                    //log.log(LEVEL, "   AFTER cavailableItem.release()");
                     
                     //Swap has occurred ending the for-loop. Simulate the increment 
                     //of the for-loop counter
