@@ -156,7 +156,7 @@ public class TSPDynamicTest extends TestCase {
         assertEquals(sz, tsp.getMemoLength());
     }
     
-    public void testInitNodePaths() {
+    public void testInitNodePaths() throws InterruptedException {
         int n2 = 4;
         double[][] x = new double[n2][];
         x[0] = new double[]{0, 0};

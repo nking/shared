@@ -1,6 +1,7 @@
 package algorithms.tsp;
 
 import algorithms.Permutations;
+import algorithms.PermutationsWithAwait;
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
 import gnu.trove.iterator.TLongDoubleIterator;
@@ -12,6 +13,7 @@ import gnu.trove.map.TLongDoubleMap;
 import gnu.trove.map.hash.TLongDoubleHashMap;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Stack;
 
 /**
  *
@@ -200,9 +202,13 @@ public abstract class AbstractTSP {
      * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
      * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
      * 2nd node in the final solution for the completed path for the algorithm instance).
-     * @return
+     * @return the base10 node number for pathNodeNumber >= 0.
+     * if pathNodeNumber is less than 0, -1 is returned.
      */
     protected int getBase10NodeIndex(final long pathNodeNumber, final long path) {
+        if (pathNodeNumber < 0) {
+            return -1;
+        }
         // read bits pathNodeNumber*w to pathNodeNumber*w + w
         long sum = 0;
         long b = pathNodeNumber * w;
@@ -392,43 +398,28 @@ public abstract class AbstractTSP {
      * initialize memo with permutations for all unset path nodes, where the
      * number of unset path nodes < 4.
      */
-    protected void initNodePaths() {
+    protected void initNodePaths() throws InterruptedException {
         assert(memo.isEmpty());
         
-        int nUnset = dist.length - 1;
+        int nNotSet = dist.length - 1;
         
         int i;
-        int[] sel = new int[nUnset];
+        int[] sel = new int[nNotSet];
         for (i = 1; i <= sel.length; ++i) {
             sel[i-1] = i;
         }
         
-        int nPerm = (int)MiscMath0.factorial(nUnset);
+        TIntList nodes = new TIntArrayList(sel);
         
-        final int[][] selPerm = new int[nPerm][nUnset];
-        for (i = 0; i < selPerm.length; ++i) {
-            selPerm[i] = new int[nUnset];
-        }
+        long bitstring2 = 0; 
+        double sum2 = 0;
+        int nBitsSet2 = 0;
+        Stack<StackP> stack = null;
+        boolean storeInMemo = true;
         
-        Permutations.permute(sel, selPerm);
+        createAndStackPermutations(bitstring2, sum2, nBitsSet2, 
+            nodes, stack, storeInMemo);
         
-        double sum;
-        long path;
-        int j, i0, i1;
-        for (i = 0; i < selPerm.length; ++i) {
-            sum = 0;
-            
-            //System.out.println("    selPerm=" + Arrays.toString(selPerm[i]));
-
-            path = createAMemoNodeBitstring(selPerm[i]);
-
-            for (j = 1; j < selPerm[i].length; ++j) {
-                i0 = selPerm[i][j - 1];
-                i1 = selPerm[i][j];
-                sum += dist[i0][i1];
-            }
-            memo.put(path, sum);
-        }
     }
 
     /**
@@ -594,7 +585,71 @@ public abstract class AbstractTSP {
         }
         System.out.flush();
     }
-     
+    
+    /**
+     * 
+     * @param bitstring2
+     * @param sum2
+     * @param nBitsSet2
+     * @param nodes
+     * @param stack can be null
+     * @param storeInMemo
+     * @throws InterruptedException 
+     */
+    protected void createAndStackPermutations(long bitstring2, double sum2, 
+        int nBitsSet2, TIntList nodes, Stack<StackP> stack, boolean storeInMemo) 
+        throws InterruptedException {
+        
+        int nNodes = nodes.size();
+        //int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
+        //int nBitsSet2 = this.numberOfSetNodes(bitstring2);
+                
+        // note that this will be -1 if (nBitsSet2-1) < 0
+        int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
+
+        int np = (int)MiscMath0.factorial(nNodes);
+
+        int[] selPerm = new int[nNodes];
+            
+        PermutationsWithAwait permutations = new PermutationsWithAwait(nodes.toArray());
+        
+        long permi, path3;
+        double sum3;
+        int i, j, i0, i1;
+        
+        for (i = 0; i < np; ++i) {
+
+            permutations.getNext(selPerm);
+
+            sum3 = sum2;
+            if (lastNode >= 0) {
+                sum3 += dist[lastNode][selPerm[0]];
+            }
+            
+            permi = createAMemoNodeBitstring(selPerm);
+            if (memo.containsKey(permi)) {                            
+                sum3 += memo.get(permi);
+            } else {
+                // add each edge
+                for (j = 1; j < selPerm.length; ++j) {
+                    i0 = selPerm[j - 1];
+                    i1 = selPerm[j];
+                    sum3 += dist[i0][i1];
+                }
+            }
+            
+            path3 = concatenate(bitstring2, nBitsSet2, selPerm);
+            
+            if (storeInMemo) {
+                memo.put(path3, sum3);
+            }
+
+            if (stack != null) {
+                stack.add(new StackP(path3, sum3, 0));
+            }
+        }
+    }
+
     protected static class StackP {
         long bitstring;
         double sum;

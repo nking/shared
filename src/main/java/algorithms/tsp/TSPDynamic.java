@@ -92,6 +92,7 @@ public class TSPDynamic extends AbstractTSP {
         
         int nNodesSet = k;
                  
+        // handle initialization of memo
         if ((dist.length <= (k + 1))) {
             initNodePaths();
             nNodesSet = dist.length - 1;
@@ -226,6 +227,63 @@ public class TSPDynamic extends AbstractTSP {
             
             k2 = nBitsSet2;// number of bits in path bitstring2
             assert(k2 == this.numberOfSetNodes(bitstring2));
+            
+            // find the largest subset multiple of k0 for the number of unset bits
+            while ((k2 > k0) && (k2 >= nNodesRemaining)) {
+                k2 /= k0;
+            }
+            
+            if (k2 <= k0) {
+                createAndStackPermutations(bitstring2, sum2,
+                    nBitsSet2, remaining, stackDecr, false);
+                
+                continue;
+            }
+            
+            int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
+
+            // there are more than 3 nodes not yet set so can use subsetchooser
+            SubsetChooser chooser = new SubsetChooser(nNodesRemaining2, k2);
+            int[] sel = new int[k2];
+            int s3, i3;
+            int np = (int)MiscMath0.factorial(k2);
+
+            int[] selPerm = new int[k2];
+            double sum3;
+            long path3, perm3i;
+            int[] sel3 = new int[k2];
+            PermutationsWithAwait permutations;
+            while (true) {
+                s3 = chooser.getNextSubset(sel);
+                if (s3 == -1) {
+                    break;
+                }
+
+                //transform sel to the bitstring2 unset indexes
+                for (i3 = 0; i3 < k2; ++i3) {
+                    sel3[i3] = remaining.get(sel[i3]);
+                }
+
+                permutations = new PermutationsWithAwait(sel3);
+
+                for (i3 = 0; i3 < np; ++i3) {
+
+                    permutations.getNext(selPerm);
+
+                    perm3i = createAMemoNodeBitstring(selPerm);
+                    assert(memo.containsKey(perm3i));
+
+                    // the number of set bits in path perm3i is the same as 
+                    //    the number of set bits in bitstring2
+                    //    and both are in memo already.
+                    // path3 = bitstring2 + edge + perm31                                
+                    sum3 = sum2 + dist[lastNode][selPerm[0]] + memo.get(perm3i);
+
+                    path3 = concatenate(bitstring2, nBitsSet2, selPerm);
+                        
+                    stackDecr.add(new StackP(path3, sum3, nNodesRemaining2 - k2));
+                }
+            }
             
             /*
             k0 = 2

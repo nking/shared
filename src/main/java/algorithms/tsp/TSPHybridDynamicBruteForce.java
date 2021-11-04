@@ -192,7 +192,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes.
      */
-    public void solveRecursively() {
+    public void solveRecursively() throws InterruptedException {
         if (minCost != sentinel) {
             reset();
         }
@@ -239,7 +239,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes.
      */
-    public void solveIteratively() {
+    public void solveIteratively() throws InterruptedException {
         if (minCost != sentinel) {
             reset();
         }
@@ -300,43 +300,22 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
                 
                 TIntList remaining = new TIntArrayList();
                 findUnsetBitsBase10(bitstring2, remaining);
-                assert (nNodesRemaining2 == remaining.size());
+                
                 int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
                 
-                int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
-                
+                assert (nNodesRemaining2 == remaining.size());
+                               
                 if (nNodesRemaining2 <= k) {
-                    int firstNode = getBase10NodeIndex(0, bitstring2);
-
-                    if (nNodesRemaining2 == 2) {
-                        // 2 permutations, add each to the end of the path.
-                        long bitstring3 = setBits(remaining.get(0), bitstring2, dist.length - 1 - 2);
-                        bitstring3 = setBits(remaining.get(1), bitstring3, dist.length - 1 - 1);
-
-                        long bitstring4 = setBits(remaining.get(1), bitstring2, dist.length - 1 - 2);
-                        bitstring4 = setBits(remaining.get(0), bitstring4, dist.length - 1 - 1);
-
-                        double sum3 = sum + dist[lastNode][remaining.get(0)] + 
-                            dist[remaining.get(0)][remaining.get(1)];
-                        double sum4 = sum + dist[lastNode][remaining.get(1)] + 
-                            dist[remaining.get(1)][remaining.get(0)];
-
-                        stack.add(new StackP(bitstring3, sum3, 0));
-                        stack.add(new StackP(bitstring4, sum4, 0));
-                    } else {
-                        // 1 permutation, meaning, add the node to the end of the path
-                        int node = remaining.get(0);
-                        long bitstring3 = setBits(remaining.get(0),
-                            bitstring2, dist.length - 1 - 1);
-                        double sum3 = sum2 + dist[lastNode][remaining.get(0)];
-
-                        // no need to save these
-                        //memo.put(bitstring1, sum1);
-                        stack.add(new StackP(bitstring3, sum3, 0));
-                    }
+                    
+                    createAndStackPermutations(bitstring2, sum2,
+                        nBitsSet2, remaining, stack, false);
+                    
                     continue;
                 }
+                   
                 
+                int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);
+          
                 // there are more than 3 nodes not yet set so can use subsetchooser
                 SubsetChooser chooser = new SubsetChooser(nNodesRemaining2, k);
                 int[] sel = new int[k];
