@@ -1,6 +1,7 @@
 package algorithms.tsp;
 
 import algorithms.Permutations;
+import algorithms.PermutationsWithAwait;
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
 import gnu.trove.iterator.TLongDoubleIterator;
@@ -12,6 +13,7 @@ import gnu.trove.map.TLongDoubleMap;
 import gnu.trove.map.hash.TLongDoubleHashMap;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Stack;
 
 /**
  *
@@ -46,8 +48,6 @@ import java.util.Arrays;
          holds the individual values for the keys in the concatenated key.
      - would need a wrapper class to manage the integrity of the array of BigInteger or
        VeryLongBitString and the 2 dimensional array of path sums.
-     - what amount of concatenation of keys would improve the number of storable
-       path sums significantly?
 
  * @author nichole
  */
@@ -59,55 +59,35 @@ public abstract class AbstractTSP {
     protected final double[][] dist;
     protected final TLongDoubleMap memo;
     protected final double sentinel = Double.POSITIVE_INFINITY;
-    protected final long totalNPerm;
+    protected final BigInteger totalNPerm;
     protected final long totalNSubSet;
     protected final long totalNSubSeq;
     protected final int w; // number of bits a city takes in a path where path is a bitstring of type long
 
     public AbstractTSP(double[][] dist) {
+        if (dist.length < 3) {
+            throw new IllegalArgumentException("dist.length must be >= 3");
+        }
         
         this.dist = dist;
         int n = dist.length;
-        long nPerm = MiscMath0.factorial(n); // max for n=13 for limit of array length
-        totalNPerm = nPerm/n;
+        
+        BigInteger nPerm = MiscMath0.factorialBigInteger(n); // max for n=13 for limit of array length
+        totalNPerm = nPerm.divide(new BigInteger(Integer.toString(n)));
         
         //TODO: add in the number of permutations for those not in a 3-set, that is,
         //   the 2 node and 1-node permutations
         totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length
         totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); 
         
-        System.out.printf("nPerm=%d, totalNSubSet=%d  totalNSubSeq=%d\n", 
-            totalNPerm, totalNSubSet, totalNSubSeq);
+        System.out.printf("nPerm=%s, totalNSubSet=%d  totalNSubSeq=%d\n", 
+            totalNPerm.toString(), totalNSubSet, totalNSubSeq);
         
         int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
-        
-        /*if (totalNSubSeq > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("this class can solve for 13 cities at most."
-                + " one could design a datastructure to hold more than (1<<31)-1 items, "
-                + " but the algorithms in this class have exponential runtime complexity,"
-                + " so it would be better to choose a good approximate TSP.");
-        }*/
-        n = (int)totalNPerm;
-                        
+                       
         w = (int)(Math.ceil(Math.log(dist.length)/Math.log(2)));
         
         memo = new TLongDoubleHashMap(sz);
-        
-        /*
-        //find max n cities for limit of array length
-        int nc = 100;
-        long wc, nb;
-        while (true) {
-            long c = countTotalNumSubSeqInvocations(nc);
-            if (c > Integer.MAX_VALUE) {
-                break;
-            }
-            wc = (long)Math.ceil(Math.log(nc-1)/Math.log(2)); // 1 city encoding in bits
-            nb = (Long.MAX_VALUE/wc); // the number of cities one could fit into a long if using wc
-            System.out.printf("nc=%d, ns=%d wc=%d nb=%d ns*1e-9=%e\n", nc, c, wc, nb, c*1.e-9);
-            nc = (int)Math.round(nc*1.5);
-        }
-        */
     }
     
     protected void reset() {
@@ -122,13 +102,36 @@ public abstract class AbstractTSP {
      * @param n
      * @return
      */
-    protected static BigInteger count0(int n) {
+    protected static BigInteger count3(int n) {
         n = n - 1;
         BigInteger c1;
         BigInteger c2;
         BigInteger c3;
         BigInteger c0 = BigInteger.ZERO;
         int k = 3;
+        while ((n - k) > k) {
+            c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);
+            c2 = MiscMath0.factorialBigInteger(k);
+            c3 = c1.multiply(c2);
+            c0 = c0.add(c3);
+            k *= 2;
+        }
+        return c0;
+    }
+    
+    /**
+     * roughly counting k-permutations for a dynamic approach where k is
+     * increased by a factor of 2 each time and begins with k=3.
+     * @param n
+     * @return
+     */
+    protected static BigInteger count2(int n) {
+        n = n - 1;
+        BigInteger c1;
+        BigInteger c2;
+        BigInteger c3;
+        BigInteger c0 = BigInteger.ZERO;
+        int k = 2;
         while ((n - k) > k) {
             c1 = MiscMath0.computeNDivKTimesNMinusKBigInteger(n, k);
             c2 = MiscMath0.factorialBigInteger(k);
@@ -151,9 +154,6 @@ public abstract class AbstractTSP {
         return c;
     }
 
-    // total number of k-permutations, that is, n!/(n-k)!.  using the subset chooser
-    //   to find the sets of size 3, then permuting each of those into
-    //   distinct ordered sequences
     protected long countTotalNumSubSetInvocations(int n) {
         int k = 3;
         int n2 = n;
@@ -174,9 +174,13 @@ public abstract class AbstractTSP {
      * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
      * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
      * 2nd node in the final solution for the completed path for the algorithm instance).
-     * @return
+     * @return the base10 node number for pathNodeNumber >= 0.
+     * if pathNodeNumber is less than 0, -1 is returned.
      */
     protected int getBase10NodeIndex(final long pathNodeNumber, final long path) {
+        if (pathNodeNumber < 0) {
+            return -1;
+        }
         // read bits pathNodeNumber*w to pathNodeNumber*w + w
         long sum = 0;
         long b = pathNodeNumber * w;
@@ -198,8 +202,7 @@ public abstract class AbstractTSP {
      * NOTE that s should not contain the startNode.
      * @return
      */
-    protected long createThe3NodeBitstring(int[] s) {
-        assert (s.length == 3);
+    protected long createAMemoNodeBitstring(int[] s) {
         long path = concatenate(0, 0, s);
         return path;
     }
@@ -367,68 +370,91 @@ public abstract class AbstractTSP {
      * initialize memo with permutations for all unset path nodes, where the
      * number of unset path nodes < 4.
      */
-    protected void initNodePaths() {
+    protected void initNodePaths() throws InterruptedException {
         assert(memo.isEmpty());
         
-        int nUnset = dist.length - 1;
+        int nNotSet = dist.length - 1;
         
         int i;
-        int[] sel = new int[nUnset];
+        int[] sel = new int[nNotSet];
         for (i = 1; i <= sel.length; ++i) {
             sel[i-1] = i;
         }
         
-        int nPerm = (int)MiscMath0.factorial(nUnset);
+        TIntList nodes = new TIntArrayList(sel);
         
-        final int[][] selPerm = new int[nPerm][nUnset];
-        for (i = 0; i < selPerm.length; ++i) {
-            selPerm[i] = new int[nUnset];
-        }
+        long bitstring2 = 0; 
+        double sum2 = 0;
+        int nNodesSet = 0;
+        Stack<StackP> stack = null;
+        boolean storeInMemo = true;
         
-        Permutations.permute(sel, selPerm);
-        
-        double sum;
-        long path;
-        int j, i0, i1;
-        for (i = 0; i < selPerm.length; ++i) {
-            sum = 0;
-            
-            //System.out.println("    selPerm=" + Arrays.toString(selPerm[i]));
-
-            path = createThe3NodeBitstring(selPerm[i]);
-
-            for (j = 1; j < selPerm[i].length; ++j) {
-                i0 = selPerm[i][j - 1];
-                i1 = selPerm[i][j];
-                sum += dist[i0][i1];
-            }
-            memo.put(path, sum);
-        }
+        createAndStackPermutations(bitstring2, sum2, nNodesSet, 
+            nodes, stack, storeInMemo);
     }
 
+    /**
+     * initialize memo with permutations for all subsets of 4 path nodes, where the
+     * number of unset path nodes is > 4.
+     */
+    protected void init4NodePaths() throws InterruptedException {  
+        initKNodePaths(4);
+    }
+    
     /**
      * initialize memo with permutations for all subsets of 3 path nodes, where the
      * number of unset path nodes is > 3.
      */
-    protected void init3NodePaths() {        
+    protected void init3NodePaths() throws InterruptedException {  
+        initKNodePaths(3);
+    }
+    
+    /**
+     * initialize memo with permutations for all subsets of 3 path nodes, where the
+     * number of unset path nodes is > 3.
+     * @param k
+     */
+    protected void initKNodePaths(final int k) throws InterruptedException {        
         assert(memo.isEmpty());
         
-        int k = 3;
+        int nNodesSet = 0;
+        Stack<StackP> stack = null;
+        boolean storeInMemo = true;
+        double cost = 0;
+        createAndStackSubsetPermutations(0, cost, nNodesSet, k, stack, storeInMemo);
+    }
+    
+    /**
+     * 
+     * @param bitstring bit-string of ordered path nodes in format for memo key
+     * @param sum the cost of the ordered path thus far
+     * @param nNodesSet the number of nodes set in bitstring
+     * @param k the length of subsets to choose from the unset bits of bitstring
+     * @param stack can be null.  if not null, the permuted path and its cost
+     * are pushed onto the stack.
+     * @param storeInMemo if true, the permuted path and sum are stored in memo
+     */
+    protected void createAndStackSubsetPermutations(long bitstring, double sum, 
+        int nNodesSet, int k, 
+        Stack<StackP> stack, boolean storeInMemo) throws InterruptedException {
+        
+        TIntList remaining = new TIntArrayList();
+        findUnsetBitsBase10(bitstring, remaining);
+        //System.out.println("remaining unset=" + remaining.toString());
+   
+        int nPerm = (int)MiscMath0.factorial(k);
+        
         final int[] sel = new int[k];
         final int[] sel2 = new int[k];
         int s, i;
-        final int[][] selPerm = new int[6][k];
-        for (i = 0; i < selPerm.length; ++i) {
-            selPerm[i] = new int[k];
-        }
+        int[] selPerm = new int[k];
         
-        TIntList remaining = new TIntArrayList();
-        findUnsetBitsBase10(0, remaining);
-        //System.out.println("remaining unset=" + remaining.toString());
-
+        int lastNode = getBase10NodeIndex(nNodesSet-1, bitstring);
+        
         int j, i0, i1;
-        long path, sum;
-        SubsetChooser chooser = new SubsetChooser(dist.length-1, k);
+        long permi, path2;
+        double sum2;
+        SubsetChooser chooser = new SubsetChooser(remaining.size(), k);
         while (true) {
             s = chooser.getNextSubset(sel);
             if (s == -1) {
@@ -441,18 +467,35 @@ public abstract class AbstractTSP {
             }
             //System.out.println("    sel2=" + Arrays.toString(sel2));
 
-            Permutations.permute(sel2, selPerm);
+            PermutationsWithAwait permutations = new PermutationsWithAwait(sel2);
             
-            for (i = 0; i < selPerm.length; ++i) {
-                sum = 0;
-                path = createThe3NodeBitstring(selPerm[i]);
-                
-                for (j = 1; j < k; ++j) {
-                    i0 = selPerm[i][j-1];
-                    i1 = selPerm[i][j];
-                    sum += dist[i0][i1];
+            for (i = 0; i < nPerm; ++i) {
+                permutations.getNext(selPerm);
+                sum2 = sum;
+                if (lastNode >= 0) {
+                    sum2 += dist[lastNode][selPerm[0]];
                 }
-                memo.put(path, sum);
+                
+                permi = createAMemoNodeBitstring(selPerm);
+                if (memo.containsKey(permi)) {
+                    sum2 += memo.get(permi);
+                } else {
+                    // add each edge
+                    for (j = 1; j < selPerm.length; ++j) {
+                        i0 = selPerm[j - 1];
+                        i1 = selPerm[j];
+                        sum2 += dist[i0][i1];
+                    }
+                }
+                
+                path2 = concatenate(bitstring, nNodesSet, selPerm);
+                
+                if (storeInMemo) {
+                    memo.put(path2, sum2);
+                }
+                if (stack != null) {
+                    stack.add(new StackP(path2, sum2, remaining.size() - k));
+                }
             }
         }
     }
@@ -552,4 +595,82 @@ public abstract class AbstractTSP {
         }
         System.out.flush();
     }
+    
+    /**
+     * 
+     * @param bitstring2 the ordered path nodes in format for memo keys
+     * @param sum2 the cost of the path of the ordered nodes in bitstring2
+     * @param nNodesSet2 the number of nodes set in bitstring2
+     * @param nodes nodes to permute
+     * @param stack can be null
+     * @param storeInMemo
+     * @throws InterruptedException 
+     */
+    protected void createAndStackPermutations(long bitstring2, double sum2, 
+        int nNodesSet2, TIntList nodes, Stack<StackP> stack, boolean storeInMemo) 
+        throws InterruptedException {
+        
+        int nNodes = nodes.size();
+        //int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
+        //int nBitsSet2 = this.numberOfSetNodes(bitstring2);
+                
+        // note that this will be -1 if (nNodesSet2-1) < 0
+        // it's the last node set into bitstring2
+        int lastNode = getBase10NodeIndex(nNodesSet2-1, bitstring2);
+
+        int np = (int)MiscMath0.factorial(nNodes);
+
+        int[] selPerm = new int[nNodes];
+            
+        PermutationsWithAwait permutations = new PermutationsWithAwait(nodes.toArray());
+        
+        long permi, path3;
+        double sum3;
+        int i, j, i0, i1;
+        
+        for (i = 0; i < np; ++i) {
+
+            permutations.getNext(selPerm);
+
+            sum3 = sum2;
+            if (lastNode >= 0) {
+                sum3 += dist[lastNode][selPerm[0]];
+            }
+            
+            permi = createAMemoNodeBitstring(selPerm);
+            if (memo.containsKey(permi)) {                            
+                sum3 += memo.get(permi);
+            } else {
+                // add each edge
+                for (j = 1; j < selPerm.length; ++j) {
+                    i0 = selPerm[j - 1];
+                    i1 = selPerm[j];
+                    sum3 += dist[i0][i1];
+                }
+            }
+            
+            path3 = concatenate(bitstring2, nNodesSet2, selPerm);
+            
+            if (storeInMemo) {
+                memo.put(path3, sum3);
+            }
+
+            if (stack != null) {
+                int nRemaining = (dist.length - 1) - (nNodesSet2 + nodes.size());
+                stack.add(new StackP(path3, sum3, nRemaining));
+            }
+        }
+    }
+    
+    protected static class StackP {
+        long bitstring;
+        double sum;
+        int nNodesRemaining;
+        public StackP(long path, double cost, int nRemaining) {
+            this.bitstring = path;
+            this.sum = cost;
+            this.nNodesRemaining = nRemaining;
+        }
+    }
+    
 }

@@ -225,6 +225,10 @@
             <formatter type="plain" usefile="true"/>
             <jvmarg value="-XX:-UseSplitVerifier" />
             <jvmarg value="-enableassertions" />
+            <!--
+            <jvmarg value="-Xmx2048m" />
+            <jvmarg value="-XX:MaxPermSize=512m" />
+            -->
             <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
             <test name="${test}" fork="yes" haltonfailure="yes">
                 <formatter type="plain" usefile="false"/>

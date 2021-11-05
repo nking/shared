@@ -99,8 +99,8 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc bfc" id="L99" title="All 2 branches covered.">                if (m == Math.abs(n)) {</span>
 <span class="fc" id="L100">                    break;</span>
                 }
-<span class="pc bpc" id="L102" title="1 of 4 branches missed.">                if (useEdits &amp;&amp; m &gt; Math.abs(n)) {</span>
-<span class="fc" id="L103">                    return new TLongHashSet();</span>
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">                if (useEdits &amp;&amp; m &gt; Math.abs(n)) {</span>
+<span class="nc" id="L103">                    return new TLongHashSet();</span>
                     /*while (m &gt; n &amp;&amp; !factors.isEmpty()) {
                         long rm = max(factors);
                         factors.remove(rm);
