@@ -248,7 +248,7 @@ public class StandardizationTest extends TestCase {
         int i, it, nc0, nc1, nc;
         
         for (it = 0; it < nIter; ++it) {
-            nData = sr.nextInt(1023) + 1;
+            nData = sr.nextInt(1023) + 5;
             nDimensions = sr.nextInt(nData / 4) + 1;
 
             data = new double[nData * nDimensions];
@@ -322,7 +322,7 @@ public class StandardizationTest extends TestCase {
         int i, j, it, nc0, nc1, nc;
         
         for (it = 0; it < nIter; ++it) {
-            nData = sr.nextInt(1023) + 1;
+            nData = sr.nextInt(1023) + 5;
             nDimensions = sr.nextInt(nData / 4) + 1;
 
             data = new double[nData][nDimensions];
