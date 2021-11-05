@@ -2,13 +2,10 @@
 
 import algorithms.Permutations;
 import algorithms.SubsetChooser;
-import algorithms.misc.MiscMath0;
-import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
-import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -183,230 +180,158 @@ rewrite in iterative form:
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">public class TSPHybridDynamicBruteForce extends AbstractTSP {</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">public class TSPHybridDynamicBruteForce extends AbstractTSP {</span>
    
     
     public TSPHybridDynamicBruteForce(double[][] dist) {
-<span class="fc" id="L190">        super(dist);</span>
-<span class="fc" id="L191">    }</span>
+<span class="fc" id="L187">        super(dist);</span>
+<span class="fc" id="L188">    }</span>
     
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes.
      */
-    public void solveRecursively() {
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (minCost != sentinel) {</span>
-<span class="nc" id="L199">            reset();</span>
+    public void solveRecursively() throws InterruptedException {
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (minCost != sentinel) {</span>
+<span class="nc" id="L196">            reset();</span>
         }
         
-<span class="fc" id="L202">        int n = dist.length;</span>
-<span class="fc" id="L203">        int nNodesSet = 3;</span>
+<span class="fc" id="L199">        int n = dist.length;</span>
+<span class="fc" id="L200">        int nNodesSet = 3;</span>
                
         // initialize memo with the first 3-node paths to re-use in permuations
         
-<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (dist.length &lt;= (3 + 1)) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (dist.length &lt;= (3 + 1)) {</span>
             // cannot use subsetchooser, so go straight to permutations
-<span class="fc" id="L209">            initNodePaths();</span>
-<span class="fc" id="L210">            nNodesSet = dist.length - 1;</span>
+<span class="fc" id="L206">            initNodePaths();</span>
+<span class="fc" id="L207">            nNodesSet = dist.length - 1;</span>
         } else {
-<span class="fc" id="L212">            init3NodePaths();</span>
+<span class="fc" id="L209">            init3NodePaths();</span>
         }
         
-<span class="fc" id="L215">        cr0 = memo.size();</span>
+<span class="fc" id="L212">        cr0 = memo.size();</span>
         
-<span class="fc" id="L217">        int nNodesRemaining = (n-1) - nNodesSet;</span>
+<span class="fc" id="L214">        int nNodesRemaining = (n-1) - nNodesSet;</span>
         
         // visit the initial path nodes in memo
-<span class="fc" id="L220">        TLongDoubleIterator iter = memo.iterator();</span>
+<span class="fc" id="L217">        long[] memoKeys = memo.keys();</span>
         long bitstring;
         double sum;
-<span class="fc bfc" id="L223" title="All 2 branches covered.">        for (int i = 0; i &lt; memo.size(); ++i) {</span>
-<span class="fc" id="L224">            iter.advance();</span>
-<span class="fc" id="L225">            bitstring = iter.key();</span>
-<span class="fc" id="L226">            sum = iter.value();</span>
-<span class="fc" id="L227">            r3(bitstring, sum, nNodesRemaining);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        for (int i = 0; i &lt; memo.size(); ++i) {</span>
+<span class="fc" id="L221">            bitstring = memoKeys[i];</span>
+<span class="fc" id="L222">            sum = memo.get(bitstring);</span>
+<span class="fc" id="L223">            r3(bitstring, sum, nNodesRemaining);</span>
         }
         //r0=240 n=6
         //cr0=72 n=5
         //cr0=12 n=4
-<span class="fc" id="L232">        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);</span>
-<span class="fc" id="L233">        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);</span>
-<span class="fc" id="L234">        System.out.printf(&quot;cr0=%d n=%d\n&quot;, cr0, dist.length);</span>
-<span class="fc" id="L235">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n&quot;, </span>
-<span class="fc" id="L236">            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);</span>
-<span class="fc" id="L237">    }</span>
+<span class="fc" id="L228">        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);</span>
+<span class="fc" id="L229">        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);</span>
+<span class="fc" id="L230">        System.out.printf(&quot;cr0=%d n=%d\n&quot;, cr0, dist.length);</span>
+<span class="fc" id="L231">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n&quot;, </span>
+<span class="fc" id="L232">            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);</span>
+<span class="fc" id="L233">    }</span>
     long cr0;
-    
-    private static class StackP {
-        long bitstring;
-        double sum;
-        int nNodesRemaining;
-        public StackP(long path, double cost, int nRemaining) {
-            this.bitstring = path;
-            this.sum = cost;
-            this.nNodesRemaining = nRemaining;
-        }
-    }
-    
+   
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes.
      */
-    public void solveIteratively() {
-<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (minCost != sentinel) {</span>
-<span class="nc" id="L257">            reset();</span>
+    public void solveIteratively() throws InterruptedException {
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (minCost != sentinel) {</span>
+<span class="nc" id="L242">            reset();</span>
         }
         
-<span class="fc" id="L260">        int n = dist.length;</span>
-<span class="fc" id="L261">        int nNodesSet = 3;</span>
+<span class="fc" id="L245">        int n = dist.length;</span>
+<span class="fc" id="L246">        int nNodesSet = 3;</span>
                
         // initialize memo with the first 3-node paths to re-use in permuations
                 
-<span class="fc bfc" id="L265" title="All 2 branches covered.">        if (dist.length &lt;= (3 + 1)) {</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (dist.length &lt;= (3 + 1)) {</span>
             // cannot use subsetchooser, so go straight to permutations
-<span class="fc" id="L267">            initNodePaths();</span>
-<span class="fc" id="L268">            nNodesSet = dist.length - 1;</span>
+<span class="fc" id="L252">            initNodePaths();</span>
+<span class="fc" id="L253">            nNodesSet = dist.length - 1;</span>
         } else {
-<span class="fc" id="L270">            init3NodePaths();</span>
+<span class="fc" id="L255">            init3NodePaths();</span>
         }
         
-<span class="fc" id="L273">        long c0 = memo.size();</span>
-<span class="fc" id="L274">        long c1 = memo.size();</span>
-<span class="fc" id="L275">        long c2 = memo.size();</span>
+<span class="fc" id="L258">        long c0 = memo.size();</span>
+<span class="fc" id="L259">        long c1 = memo.size();</span>
+<span class="fc" id="L260">        long c2 = memo.size();</span>
   
-<span class="fc" id="L277">        int nNodesRemaining = (n-1) - nNodesSet;</span>
+<span class="fc" id="L262">        int nNodesRemaining = (n-1) - nNodesSet;</span>
         
-<span class="fc" id="L279">        Stack&lt;StackP&gt; stack = new Stack&lt;StackP&gt;();</span>
+<span class="fc" id="L264">        Stack&lt;StackP&gt; stack = new Stack&lt;StackP&gt;();</span>
         
         // visit the initial path nodes in memo
-<span class="fc" id="L282">        TLongDoubleIterator iter = memo.iterator();</span>
+<span class="fc" id="L267">        long[] memoKeys = memo.keys();</span>
         long bitstring, bitstring2;
         double sum, sum2;
         int nNodesRemaining2;
         StackP currentStackP;
         
-<span class="fc bfc" id="L288" title="All 2 branches covered.">        for (int i = 0; i &lt; memo.size(); ++i) {</span>
-<span class="fc" id="L289">            iter.advance();</span>
-<span class="fc" id="L290">            bitstring = iter.key();</span>
-<span class="fc" id="L291">            sum = iter.value();</span>
+<span class="fc" id="L273">        boolean storeInMemo = false;</span>
+        
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        for (int i = 0; i &lt; memo.size(); ++i) {</span>
+<span class="fc" id="L276">            bitstring = memoKeys[i];</span>
+<span class="fc" id="L277">            sum = memo.get(bitstring);</span>
 
-<span class="pc bpc" id="L293" title="3 of 4 branches missed.">            assert (stack.isEmpty());</span>
+<span class="pc bpc" id="L279" title="3 of 4 branches missed.">            assert (stack.isEmpty());</span>
 
-<span class="fc" id="L295">            stack.add(new StackP(bitstring, sum, nNodesRemaining));</span>
+<span class="fc" id="L281">            stack.add(new StackP(bitstring, sum, nNodesRemaining));</span>
 
-<span class="fc bfc" id="L297" title="All 2 branches covered.">            while (!stack.isEmpty()) {</span>
-<span class="fc" id="L298">                c0++;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">            while (!stack.isEmpty()) {</span>
+<span class="fc" id="L284">                c0++;</span>
 
-<span class="fc" id="L300">                currentStackP = stack.pop();</span>
-<span class="fc" id="L301">                bitstring2 = currentStackP.bitstring;</span>
-<span class="fc" id="L302">                sum2 = currentStackP.sum;</span>
-<span class="fc" id="L303">                nNodesRemaining2 = currentStackP.nNodesRemaining;</span>
+<span class="fc" id="L286">                currentStackP = stack.pop();</span>
+<span class="fc" id="L287">                bitstring2 = currentStackP.bitstring;</span>
+<span class="fc" id="L288">                sum2 = currentStackP.sum;</span>
+<span class="fc" id="L289">                nNodesRemaining2 = currentStackP.nNodesRemaining;</span>
                 
-<span class="fc bfc" id="L305" title="All 2 branches covered.">                if (nNodesRemaining2 == 0) {</span>
-<span class="fc" id="L306">                    compareToMin(bitstring2, sum2);</span>
-<span class="fc" id="L307">                    continue;</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                if (nNodesRemaining2 == 0) {</span>
+<span class="fc" id="L292">                    compareToMin(bitstring2, sum2);</span>
+<span class="fc" id="L293">                    continue;</span>
                 }
                 
-<span class="fc" id="L310">                c1++;</span>
+<span class="fc" id="L296">                c1++;</span>
                 
-<span class="fc" id="L312">                int k = 3;</span>
+<span class="fc" id="L298">                int k = 3;</span>
                 
-<span class="fc" id="L314">                TIntList remaining = new TIntArrayList();</span>
-<span class="fc" id="L315">                findUnsetBitsBase10(bitstring2, remaining);</span>
-<span class="pc bpc" id="L316" title="3 of 4 branches missed.">                assert (nNodesRemaining2 == remaining.size());</span>
-<span class="fc" id="L317">                int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;</span>
+<span class="fc" id="L300">                TIntList remaining = new TIntArrayList();</span>
+<span class="fc" id="L301">                findUnsetBitsBase10(bitstring2, remaining);</span>
                 
-<span class="fc" id="L319">                int lastNode = getBase10NodeIndex(nBitsSet2-1, bitstring2);</span>
+<span class="fc" id="L303">                int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;</span>
                 
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">                if (nNodesRemaining2 &lt;= k) {</span>
-<span class="fc" id="L322">                    int firstNode = getBase10NodeIndex(0, bitstring2);</span>
-
-<span class="fc bfc" id="L324" title="All 2 branches covered.">                    if (nNodesRemaining2 == 2) {</span>
-                        // 2 permutations, add each to the end of the path.
-<span class="fc" id="L326">                        long bitstring3 = setBits(remaining.get(0), bitstring2, dist.length - 1 - 2);</span>
-<span class="fc" id="L327">                        bitstring3 = setBits(remaining.get(1), bitstring3, dist.length - 1 - 1);</span>
-
-<span class="fc" id="L329">                        long bitstring4 = setBits(remaining.get(1), bitstring2, dist.length - 1 - 2);</span>
-<span class="fc" id="L330">                        bitstring4 = setBits(remaining.get(0), bitstring4, dist.length - 1 - 1);</span>
-
-<span class="fc" id="L332">                        double sum3 = sum + dist[lastNode][remaining.get(0)] + </span>
-<span class="fc" id="L333">                            dist[remaining.get(0)][remaining.get(1)];</span>
-<span class="fc" id="L334">                        double sum4 = sum + dist[lastNode][remaining.get(1)] + </span>
-<span class="fc" id="L335">                            dist[remaining.get(1)][remaining.get(0)];</span>
-
-<span class="fc" id="L337">                        stack.add(new StackP(bitstring3, sum3, 0));</span>
-<span class="fc" id="L338">                        stack.add(new StackP(bitstring4, sum4, 0));</span>
-<span class="fc" id="L339">                    } else {</span>
-                        // 1 permutation, meaning, add the node to the end of the path
-<span class="fc" id="L341">                        int node = remaining.get(0);</span>
-<span class="fc" id="L342">                        long bitstring3 = setBits(remaining.get(0),</span>
-                            bitstring2, dist.length - 1 - 1);
-<span class="fc" id="L344">                        double sum3 = sum2 + dist[lastNode][remaining.get(0)];</span>
-
-                        // no need to save these
-                        //memo.put(bitstring1, sum1);
-<span class="fc" id="L348">                        stack.add(new StackP(bitstring3, sum3, 0));</span>
-                    }
-<span class="fc" id="L350">                    continue;</span>
+<span class="pc bpc" id="L305" title="3 of 4 branches missed.">                assert (nNodesRemaining2 == remaining.size());</span>
+                               
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">                if (nNodesRemaining2 &lt;= k) {</span>
+                    
+<span class="fc" id="L309">                    createAndStackPermutations(bitstring2, sum2,</span>
+                        nBitsSet2, remaining, stack, false);
+                    
+<span class="fc" id="L312">                    continue;</span>
                 }
-                
-                // there are more than 3 nodes not yet set so can use subsetchooser
-<span class="nc" id="L354">                SubsetChooser chooser = new SubsetChooser(nNodesRemaining2, k);</span>
-<span class="nc" id="L355">                int[] sel = new int[k];</span>
-                int s3, i3;
-<span class="nc" id="L357">                int[][] selPerm = new int[6][k];</span>
-<span class="nc bnc" id="L358" title="All 2 branches missed.">                for (i3 = 0; i3 &lt; selPerm.length; ++i3) {</span>
-<span class="nc" id="L359">                    selPerm[i3] = new int[k];</span>
-                }
-                double sum3;
-                long path3, perm3i;
-<span class="nc" id="L363">                int[] sel3 = new int[nNodesRemaining];</span>
-                while (true) {
-<span class="nc" id="L365">                    s3 = chooser.getNextSubset(sel);</span>
-<span class="nc bnc" id="L366" title="All 2 branches missed.">                    if (s3 == -1) {</span>
-<span class="nc" id="L367">                        break;</span>
-                    }
-
-                    //transform sel to the bitstring2 unset indexes
-<span class="nc bnc" id="L371" title="All 2 branches missed.">                    for (i3 = 0; i3 &lt; k; ++i3) {</span>
-<span class="nc" id="L372">                        sel3[i3] = remaining.get(sel[i3]);</span>
-                    }
-
-<span class="nc" id="L375">                    Permutations.permute(sel3, selPerm);</span>
-
-<span class="nc bnc" id="L377" title="All 2 branches missed.">                    for (i3 = 0; i3 &lt; selPerm.length; ++i3) {</span>
-<span class="nc" id="L378">                        c2++;</span>
-<span class="nc" id="L379">                        perm3i = createThe3NodeBitstring(selPerm[i3]);</span>
-<span class="nc bnc" id="L380" title="All 4 branches missed.">                        assert(memo.containsKey(perm3i));</span>
-
-<span class="nc" id="L382">                        sum3 = sum2 + dist[lastNode][selPerm[i3][0]] + memo.get(perm3i);</span>
-
-<span class="nc" id="L384">                        path3 = concatenate(bitstring2, nBitsSet2, selPerm[i3]);</span>
-
-                        // no need to store
-                        //memo.put(path2, sum2);
-<span class="nc" id="L388">                        stack.add(new StackP(path3, sum3, nNodesRemaining2 - k));</span>
-                    }
-                }
-<span class="nc" id="L391">            }</span>
+                                
+<span class="nc" id="L315">                createAndStackSubsetPermutations(bitstring2, sum2, nBitsSet2, k, stack, storeInMemo);                </span>
+<span class="nc" id="L316">            }</span>
         } 
         //c0=240 c1=120 c2=60 n=6
         //c0=72 c1=48 c2=24 n=5
         //c0=12 c1=6 c2=6 n=4
         // if dynamic: O(n^2 * 2^n) 
-<span class="fc" id="L397">        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);</span>
-<span class="fc" id="L398">        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);</span>
-<span class="fc" id="L399">        System.out.printf(&quot;c0=%d c1=%d c2=%d n=%d\n&quot;, c0, c1, c2, dist.length);</span>
-<span class="fc" id="L400">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n&quot;, </span>
-<span class="fc" id="L401">            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);</span>
-<span class="fc" id="L402">    }</span>
+<span class="fc" id="L322">        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);</span>
+<span class="fc" id="L323">        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);</span>
+<span class="fc" id="L324">        System.out.printf(&quot;c0=%d c1=%d c2=%d n=%d\n&quot;, c0, c1, c2, dist.length);</span>
+<span class="fc" id="L325">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n&quot;, </span>
+<span class="fc" id="L326">            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);</span>
+<span class="fc" id="L327">    }</span>
        
     public TLongList getMinPathBitstrings() {
-<span class="fc" id="L405">        return new TLongArrayList(minPath);</span>
+<span class="fc" id="L330">        return new TLongArrayList(minPath);</span>
     }
     
     private void r3(long bitstring, double sum, int nNodesRemaining) {
-<span class="fc" id="L409">        cr0++;</span>
+<span class="fc" id="L334">        cr0++;</span>
         //debug
         /*
         TIntList p = new TIntArrayList();
@@ -417,103 +342,103 @@ rewrite in iterative form:
         */
         // end debug
         
-<span class="fc bfc" id="L420" title="All 2 branches covered.">        if (nNodesRemaining == 0) {</span>
-<span class="fc" id="L421">            compareToMin(bitstring, sum);</span>
-<span class="fc" id="L422">            return;</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if (nNodesRemaining == 0) {</span>
+<span class="fc" id="L346">            compareToMin(bitstring, sum);</span>
+<span class="fc" id="L347">            return;</span>
         }
         
-<span class="fc" id="L425">        int k = 3;</span>
+<span class="fc" id="L350">        int k = 3;</span>
         
-<span class="fc" id="L427">        TIntList remaining = new TIntArrayList();</span>
-<span class="fc" id="L428">        findUnsetBitsBase10(bitstring, remaining);</span>
-<span class="pc bpc" id="L429" title="3 of 4 branches missed.">        assert (nNodesRemaining == remaining.size());</span>
-<span class="fc" id="L430">        int nBitsSet = (dist.length - 1) - nNodesRemaining;</span>
+<span class="fc" id="L352">        TIntList remaining = new TIntArrayList();</span>
+<span class="fc" id="L353">        findUnsetBitsBase10(bitstring, remaining);</span>
+<span class="pc bpc" id="L354" title="3 of 4 branches missed.">        assert (nNodesRemaining == remaining.size());</span>
+<span class="fc" id="L355">        int nBitsSet = (dist.length - 1) - nNodesRemaining;</span>
         
-<span class="pc bpc" id="L432" title="1 of 2 branches missed.">        if (nNodesRemaining &lt;= k) {</span>
-<span class="fc" id="L433">            int firstNode = getBase10NodeIndex(0, bitstring);</span>
-<span class="fc" id="L434">            int lastNode = getBase10NodeIndex(nBitsSet-1, bitstring);</span>
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (nNodesRemaining &lt;= k) {</span>
+<span class="fc" id="L358">            int firstNode = getBase10NodeIndex(0, bitstring);</span>
+<span class="fc" id="L359">            int lastNode = getBase10NodeIndex(nBitsSet-1, bitstring);</span>
             
-<span class="fc bfc" id="L436" title="All 2 branches covered.">            if (nNodesRemaining == 2) {</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">            if (nNodesRemaining == 2) {</span>
                 
                 // 2 permutations, add each to the end of the path.
-<span class="fc" id="L439">                long bitstring1 = setBits(remaining.get(0), bitstring, dist.length - 1 - 2);</span>
-<span class="fc" id="L440">                bitstring1 = setBits(remaining.get(1), bitstring1, dist.length - 1 - 1);</span>
+<span class="fc" id="L364">                long bitstring1 = setBits(remaining.get(0), bitstring, dist.length - 1 - 2);</span>
+<span class="fc" id="L365">                bitstring1 = setBits(remaining.get(1), bitstring1, dist.length - 1 - 1);</span>
 
-<span class="fc" id="L442">                long bitstring2 = setBits(remaining.get(1), bitstring, dist.length - 1 - 2);</span>
-<span class="fc" id="L443">                bitstring2 = setBits(remaining.get(0), bitstring2, dist.length - 1 - 1);</span>
+<span class="fc" id="L367">                long bitstring2 = setBits(remaining.get(1), bitstring, dist.length - 1 - 2);</span>
+<span class="fc" id="L368">                bitstring2 = setBits(remaining.get(0), bitstring2, dist.length - 1 - 1);</span>
 
-<span class="fc" id="L445">                double sum1 = sum + dist[lastNode][remaining.get(0)] + </span>
-<span class="fc" id="L446">                    dist[remaining.get(0)][remaining.get(1)];</span>
-<span class="fc" id="L447">                double sum2 = sum + dist[lastNode][remaining.get(1)] + </span>
-<span class="fc" id="L448">                    dist[remaining.get(1)][remaining.get(0)];</span>
+<span class="fc" id="L370">                double sum1 = sum + dist[lastNode][remaining.get(0)] + </span>
+<span class="fc" id="L371">                    dist[remaining.get(0)][remaining.get(1)];</span>
+<span class="fc" id="L372">                double sum2 = sum + dist[lastNode][remaining.get(1)] + </span>
+<span class="fc" id="L373">                    dist[remaining.get(1)][remaining.get(0)];</span>
 
                 // no need to save these       
                 //memo.put(bitstring1, sum1);
                 //memo.put(bitstring2, sum2);
 
-<span class="fc" id="L454">                r3(bitstring1, sum1, 0);</span>
-<span class="fc" id="L455">                r3(bitstring2, sum2, 0);</span>
-<span class="fc" id="L456">            } else {</span>
+<span class="fc" id="L379">                r3(bitstring1, sum1, 0);</span>
+<span class="fc" id="L380">                r3(bitstring2, sum2, 0);</span>
+<span class="fc" id="L381">            } else {</span>
                 // 1 permutation, meaning, add the node to the end of the path
-<span class="fc" id="L458">                int node = remaining.get(0);</span>
-<span class="fc" id="L459">                long bitstring1 = setBits(remaining.get(0), </span>
+<span class="fc" id="L383">                int node = remaining.get(0);</span>
+<span class="fc" id="L384">                long bitstring1 = setBits(remaining.get(0), </span>
                     bitstring, dist.length - 1 - 1);            
-<span class="fc" id="L461">                double sum1 = sum + dist[lastNode][remaining.get(0)];</span>
+<span class="fc" id="L386">                double sum1 = sum + dist[lastNode][remaining.get(0)];</span>
                 
                 // debug
-<span class="fc" id="L464">                int n1 = numberOfSetNodes(bitstring);</span>
-<span class="fc" id="L465">                int n2 = numberOfSetNodes(bitstring1);</span>
-<span class="pc bpc" id="L466" title="1 of 2 branches missed.">                boolean t1 = (n1 == nBitsSet);</span>
-<span class="fc" id="L467">                long u2 = findUnsetBitsBase10(bitstring1);</span>
+<span class="fc" id="L389">                int n1 = numberOfSetNodes(bitstring);</span>
+<span class="fc" id="L390">                int n2 = numberOfSetNodes(bitstring1);</span>
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">                boolean t1 = (n1 == nBitsSet);</span>
+<span class="fc" id="L392">                long u2 = findUnsetBitsBase10(bitstring1);</span>
                 
                 // no need to save these       
                 //memo.put(bitstring1, sum1);
-<span class="fc" id="L471">                r3(bitstring1, sum1, 0);</span>
+<span class="fc" id="L396">                r3(bitstring1, sum1, 0);</span>
             }
-<span class="fc" id="L473">            return;</span>
+<span class="fc" id="L398">            return;</span>
         }
         
-<span class="nc" id="L476">        int lastNode = getBase10NodeIndex(nBitsSet-1, bitstring);</span>
+<span class="nc" id="L401">        int lastNode = getBase10NodeIndex(nBitsSet-1, bitstring);</span>
 
-<span class="nc" id="L478">        SubsetChooser chooser = new SubsetChooser(nNodesRemaining, k);</span>
-<span class="nc" id="L479">        int[] sel = new int[k];</span>
+<span class="nc" id="L403">        SubsetChooser chooser = new SubsetChooser(nNodesRemaining, k);</span>
+<span class="nc" id="L404">        int[] sel = new int[k];</span>
         int s, i;
-<span class="nc" id="L481">        int[][] selPerm = new int[6][k];</span>
-<span class="nc bnc" id="L482" title="All 2 branches missed.">        for (i = 0; i &lt; selPerm.length; ++i) {</span>
-<span class="nc" id="L483">            selPerm[i] = new int[k];</span>
+<span class="nc" id="L406">        int[][] selPerm = new int[6][k];</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        for (i = 0; i &lt; selPerm.length; ++i) {</span>
+<span class="nc" id="L408">            selPerm[i] = new int[k];</span>
         }
         double sum2;
         long path2, perm3i;
-<span class="nc" id="L487">        int[] sel2 = new int[nNodesRemaining];</span>
+<span class="nc" id="L412">        int[] sel2 = new int[nNodesRemaining];</span>
         while (true) {
-<span class="nc" id="L489">            s = chooser.getNextSubset(sel);</span>
-<span class="nc bnc" id="L490" title="All 2 branches missed.">            if (s == -1) {</span>
-<span class="nc" id="L491">                break;</span>
+<span class="nc" id="L414">            s = chooser.getNextSubset(sel);</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">            if (s == -1) {</span>
+<span class="nc" id="L416">                break;</span>
             }
             
             //transform sel to the bitstring unset indexes
-<span class="nc bnc" id="L495" title="All 2 branches missed.">            for (i = 0; i &lt; k; ++i) {</span>
-<span class="nc" id="L496">                sel2[i] = remaining.get(sel[i]);</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">            for (i = 0; i &lt; k; ++i) {</span>
+<span class="nc" id="L421">                sel2[i] = remaining.get(sel[i]);</span>
             }
             
-<span class="nc" id="L499">            Permutations.permute(sel2, selPerm);</span>
+<span class="nc" id="L424">            Permutations.permute(sel2, selPerm);</span>
             
-<span class="nc bnc" id="L501" title="All 2 branches missed.">            for (i = 0; i &lt; selPerm.length; ++i) {</span>
+<span class="nc bnc" id="L426" title="All 2 branches missed.">            for (i = 0; i &lt; selPerm.length; ++i) {</span>
                 
-<span class="nc" id="L503">                perm3i = createThe3NodeBitstring(selPerm[i]);</span>
-<span class="nc bnc" id="L504" title="All 4 branches missed.">                assert(memo.containsKey(perm3i));</span>
+<span class="nc" id="L428">                perm3i = createAMemoNodeBitstring(selPerm[i]);</span>
+<span class="nc bnc" id="L429" title="All 4 branches missed.">                assert(memo.containsKey(perm3i));</span>
                 
-<span class="nc" id="L506">                sum2 = sum + dist[lastNode][selPerm[i][0]] + memo.get(perm3i);</span>
+<span class="nc" id="L431">                sum2 = sum + dist[lastNode][selPerm[i][0]] + memo.get(perm3i);</span>
                 
-<span class="nc" id="L508">                path2 = concatenate(bitstring, nBitsSet, selPerm[i]);</span>
+<span class="nc" id="L433">                path2 = concatenate(bitstring, nBitsSet, selPerm[i]);</span>
 
                 // no need to store                
                 //memo.put(path2, sum2);
                 
-<span class="nc" id="L513">                r3(path2, sum2, nNodesRemaining - k);</span>
+<span class="nc" id="L438">                r3(path2, sum2, nNodesRemaining - k);</span>
             }
         }  
-<span class="nc" id="L516">    }        </span>
+<span class="nc" id="L441">    }        </span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
