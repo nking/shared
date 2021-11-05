@@ -1,6 +1,5 @@
 package algorithms.tsp;
 
-import algorithms.Permutations;
 import algorithms.PermutationsWithAwait;
 import algorithms.SubsetChooser;
 import algorithms.misc.MiscMath0;
