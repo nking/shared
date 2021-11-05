@@ -37,8 +37,11 @@ public class PermutationsWithAwait {
             Sedgewick, Robert. "a talk on Permutation Generation Algorithms
             http://www.cs.princeton.edu/~rs/talks/perms.pdf
 
-       The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
-       by Goetz et al.
+       The semaphore model with 1 permit is adapted from Chap 12.1 of 
+       "Java Concurrency in Practice" by Goetz et al.
+       Alternatively, could use a ReentrantLock and 2 Conditions (see Chap 14.4
+       Listing 14.11).
+       
      * @param set
      * @throws java.lang.InterruptedException
      */
