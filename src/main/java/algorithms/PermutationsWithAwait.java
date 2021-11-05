@@ -2,8 +2,6 @@ package algorithms;
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * permute the given set of numbers in a thread that waits for the getNext()
@@ -19,9 +17,6 @@ import java.util.logging.Logger;
    by Goetz et al.
  */
 public class PermutationsWithAwait {
-    
-    private Logger log = null;
-    private Level LEVEL = Level.FINE;
     
     private final Semaphore availableItem, computationLock;
     
@@ -48,9 +43,7 @@ public class PermutationsWithAwait {
      * @throws java.lang.InterruptedException
      */
     public PermutationsWithAwait(int[] set) throws InterruptedException {
-        
-        log = Logger.getLogger(this.getClass().getSimpleName());
-        
+                
         int n = set.length;
         this.x = new int[n];
         
@@ -59,23 +52,14 @@ public class PermutationsWithAwait {
         
         //nPermutations = MiscMath0.factorialBigInteger(n);
         
-        log.log(LEVEL, "BEFORE computationLock.acquire()");
         computationLock.acquire();
-        log.log(LEVEL, "   AFTER computationLock.acquire()");
         
         //output(A)
         System.arraycopy(set, 0, x, 0, n);
         //nCurrent = BigInteger.ONE;
         
-        //log.log(LEVEL, String.format("*x=%s  nCurr=%s out of nPerm=%s\n", 
-        //   Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
-                 
-        log.log(LEVEL, "BEFORE availableItem.release()");
         availableItem.release();
-        log.log(LEVEL, "   AFTER availableItem.release()");
-        
-        log.log(LEVEL, "starting Permuter");
-        
+                
         Thread thread = new Thread(new Permuter(set));
         thread.start();
     }
@@ -91,16 +75,11 @@ public class PermutationsWithAwait {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
         
-        //log.log(LEVEL, "getNext BEFORE availableItem.acquire() nc={0}", 
-        //    nCurrent.toString());
-        
         availableItem.acquire();
         
         System.arraycopy(x, 0, out, 0, out.length);
         
-        computationLock.release();
-        
-        //log.log(LEVEL, "  getNext AFTER computationLock.release() nc={0}", nCurrent.toString());
+        computationLock.release();        
     }
     
     //TODO: consider using Callable so run can throw an exception
@@ -112,7 +91,6 @@ public class PermutationsWithAwait {
 
         @Override
         public void run() {
-            log.log(LEVEL, "Permuter.run()");
             int n = set.length;
             int[] c = new int[n];
             int i = 0;
@@ -129,14 +107,12 @@ public class PermutationsWithAwait {
                         set[c[i]] = set[i];
                         set[i] = swap;
                     }
-                    
-                    log.log(LEVEL, "BEFORE computationLock.acquire()");
-                    
+                                        
                     try {
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
-                        log.log(Level.SEVERE, "unrecoverable error? " + ex.getMessage());
                         //TODO: change to using Callable so can throw an exception
+                        //or use an exit() here
                         return;
                     }
                     
@@ -145,13 +121,8 @@ public class PermutationsWithAwait {
                     
                     //nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
-                    //log.log(LEVEL, String.format("*x=%s  nCurr=%s out of nPerm=%s\n", 
-                    //    Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
-                   
                     availableItem.release();
-                    
-                    //log.log(LEVEL, "   AFTER cavailableItem.release()");
-                    
+                                        
                     //Swap has occurred ending the for-loop. Simulate the increment 
                     //of the for-loop counter
                     c[i] += 1;
