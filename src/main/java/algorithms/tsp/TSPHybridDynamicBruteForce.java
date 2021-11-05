@@ -10,7 +10,7 @@ import java.util.Stack;
 
 /**
  Keeping notes here on looking at bit-string patterns to find ways to 
- condense the sums of 3-paths used in the subproblems
+ compress the sums of 3-paths used in the subproblems
  for a dynamic solution to TSP as an exercise in recursion and
  dynamic programming (not a preferred impl due to the large runtime complexity). 
 
@@ -21,8 +21,9 @@ import java.util.Stack;
 
     for n=127, nPerm = 2.4e+211, so if wanted to store each permutation, indexed,
     would need to use java's BigInteger as a bitstring or this project's VeryLongBitString.java
+    (Not pursuing this or hash function options at this time).
 
-    to re-use sub-problems, can determine how many sets of paths of 3 nodes are in
+    To re-use solved sub-problems, can determine how many sets of paths of 3 nodes are in
     the set of n-1 which is (n-1)/3.
     (sets of size 2 are given by the distance matrix.)
 
@@ -38,28 +39,8 @@ import java.util.Stack;
 
     So, one can generate the k=3 permutations of subset of size n, and exclude the 1st bit
     by generating for n2=n-1, and the left shift by 1 the result.
-    (can use SubsetChooser.java for the permutations)
+    (can use SubsetChooser.java and one of the 2 Permutation*.java classes).)
 
-    To further look at bit patterns to see if memoization can be used, but with
-    condensed intermediate steps to use less storage, one more example:
-
-    For n=10, nPerm=84:
-    as the 3 sequence bitstrings are generated, the inverse bitstring w/ 0 cleared
-    has the set of nodes this bitstring can be added to
-         bitstring    inverse, excl 0
-    14 (0000001110)  (1111110000)
-    22 (0000010110)  (1111101000) perm for n3=125 can be generated, exclude bit 1, then left shift by 3 to get paths to add this to.
-    26 (0000011010)  (1111100100) perm for n3=249 can be generated, exclude bits 1,2, then left shift by 2 to get paths to add this to.
-    28 (0000011100)  (1111100000)
-    38 (0000100110)  (1111011000)
-    42 (0000101010)  (1111010100)
-    44 (0000101100)  (1111010000)
-    50 (0000110010)  (1111001100)
-    52 (0000110100)  (1111001000)
-    56 (0000111000)  (1111000100)
-    70 (0001000110)  (1110111000)
-    74 (0001001010)  (1110110100)
-    ...
     n=10, k=3 => count = 84
 
     Once all of the 3-node path subsets are generated and stored,
@@ -68,114 +49,16 @@ import java.util.Stack;
     (plus up to 2 nodes.  e.g. if n = 12, we have (n-1)/3 3-node path subsets
      + 1 fixed node + 2 free nodes that belong in the permuation).
 
-    For now, will consider only the cases for n = 1 + a multiple of 3 to look at
-    ways to condense the problem.
-
-    for the n=10 exaple, we have 84 k=3 sequences and have the unset bits, excluding bit 0
-
-    note: as each complete path of the (n-1)/3 sections is totaled, compare it to minTotal.
-
-    at this point, we have generated and stored all 3-node path sums, excluding the start node.
+    This code uses memoization for all 3-node combinations, then for each of those in
+    memo, it uses brute force for the remaining path building where the brute force
+    approach continues to use subsets and permutations and cost sums to complete
+    each path and compare it to the min cost without further storing partial results in memo..
 
     see AbstractTSP class comments for notes about the keys used for memo.
-
           
-       considering recursion patterns:
-       
-           calculateAndStore3NodePaths();
-           int nNodesRemaining = (n-1) - 3;
-           r3(bitstring, sum, nNodesSet);
-           return min path(s) and the min cost
-
-           private void r3(bitstring, sum, int nNodesRemaining) {
-               //if possible, use tail recursion in design...
-               //    (best for C++, java doesn't use tail recursion for method frames)
-               if (nNodesRemaining == 0) {
-                   add start and end node costs
-                   compare to min and if smaller or same, store min cost and path
-                   (possibly would like to store all min paths).
-                   note that there could be user option to set tolerance in comparison of cost being the same.
-                   return;
-               }
-               if (nNodesRemaining .leq. k) {
-                   // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
-                   calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
-                   calc the concatenated bit strings and the the path sums
-                   store those in memo
-                   invoke r3 for the concatenated bitstrings each
-                   return;
-               }
-               int nBitsSet = (n-1) - nNodesRemaining;
-               subsetchooser = new...(nNodesRemaining, k)
-               while (true) {
-                   s = subsetchooser.next();
-                   if (s == -1){break;}
-                   int[] si = tranform s to bitstring unset indexes.  should be 3 bits set
-                  
-                   then make the 6 mermutations of the 3 set bits
-                   and for each of those:
-                   
-                       bitstring2 = concatenate(bitstring, nBitsSet, si);
-                       sum2 = sum + memo.get(si);  then use a method to convert si to a memo bitstring
-                       memo.set(bitstring2, sum2);
-                       r3(bitstring2, sum2, nNodesRemaining - 3);
-               }
-           }
+    This class contains a recursive and non-recursive version of the same hybrid dynamic and brute
+    force algorithm.
            
-rewrite in iterative form:
-
-           calculateAndStore3NodePaths();
-           int nNodesRemaining = (n-1) - 3;
-           min = Long.POSITIVE_INFINITY;
-           minPaths = null;
-           for each bitstring in the 3 node paths just calculated {
-           
-               stack = new stack;// specialized stack designed for pairs of bitstring keys and sum and nNodesRemaining,
-                                 // that uses same pattern as memo to compress keys to allow more items to be stored
-                                 
-               stack.add(bitstring, sum, nNodesRemaining);
-
-               while (!stack.isEmpty()) {
-
-                   bitstring2, sum2, nNodesRemaining2 = stack.pop();
-
-                   if (nNodesRemaining2 == 0) { 
-                       //add start and end node costs
-                       //compare to min and if smaller or same, store min cost and path
-                       compareToMin(bitstring3, sum3);
-                       continue;
-                   }
-                   if (nNodesRemaining2 .leq. k) {
-                       // assert k = 3.  if that changes from tinkering, the assert will alarm that this section will fail.
-                       calculate the 1 or 2 permutations of those remaining 1 or 2 nodes
-                       calc the concatenated bit strings and the the path sums
-                       store those in memo
-                       compare each to min
-                       continue;
-                   }
-
-                   int nBitsSet = (n-1) - nNodesRemaining2;
-                   subsetchooser = new...(nNodesRemaining2, k)
-
-                   while (true) {
-                       s = subsetchooser.next();
-                       if (s == -1){
-                           break;
-                       }
-                       int[] si = tranform s to bitstring2 unset indexes.  should be 3 bits set
-                       
-                       then make the 6 mermutations of the 3 set bits
-                       and for each of those:
-                   
-                           bitstring3 = concatenate(bitstring2, nBitsSet, si);
-                           sum3 = sum2 + memo.get(si); then use method to convert si to a memo bitstring
-                           memo.set(bitstring3, sum3);
-
-                           stack.add(bitstring3, sum3, nNorderRemaining - 3);
-                   }
-               }
-           }
-    
  * </pre>
  * 
  * @author nichole
@@ -189,7 +72,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
     
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
-     * is only for the first 3 nodes.
+     * is only for the first 3 nodes in each path.
      */
     public void solveRecursively() throws InterruptedException {
         if (minCost != sentinel) {
@@ -235,7 +118,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
    
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
-     * is only for the first 3 nodes.
+     * is only for the first 3 nodes in each path.
      */
     public void solveIteratively() throws InterruptedException {
         if (minCost != sentinel) {

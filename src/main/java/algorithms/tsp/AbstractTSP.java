@@ -48,8 +48,6 @@ import java.util.Stack;
          holds the individual values for the keys in the concatenated key.
      - would need a wrapper class to manage the integrity of the array of BigInteger or
        VeryLongBitString and the 2 dimensional array of path sums.
-     - what amount of concatenation of keys would improve the number of storable
-       path sums significantly?
 
  * @author nichole
  */
