@@ -111,9 +111,7 @@ public class PermutationsWithAwait {
                     try {
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
-                        //TODO: change to using Callable so can throw an exception
-                        //or use an exit() here
-                        return;
+                        Thread.currentThread().interrupt();
                     }
                     
                     // output permutation to instance member x
