@@ -65,7 +65,7 @@ public class TSPPrimsMSTTest extends TestCase {
         //level 2   [2] [3]       [5] [6]
         // process node sees 0,1,2,3,4,5,6
 
-        then pre-order trversal as a tour:
+        then pre-order traversal as a tour:
         a, b, c, b, h, b, a, d, e, f, e, g, e, d, a
         removing vertexes already encountered:
         a, b, c,  h, d, e, f, g,

@@ -1,8 +1,8 @@
 package algorithms.graphs;
 
 import algorithms.misc.MinMaxPeakFinder;
-import algorithms.util.PairInt;
 import algorithms.util.ResourceFinder;
+import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;

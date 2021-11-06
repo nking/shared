@@ -32,6 +32,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * NOT READY FOR USE.  Possibly needs to be adapted for graphs that do not have a vertex
+ * numbered 0.
+ * 
  * A solver for the min-cost, unbalanced, weighted bipartite
  * assignment problem that uses weight scaling
  * to solve the perfect and imperfect
@@ -263,6 +266,9 @@ public class MinCostUnbalancedAssignment {
     */
 
     /**
+     * NOT READY FOR USE.  Possibly needs adjustments for graphs not containing
+     * a node numbered 0.
+     * 
      * match the left and right vertices in graph g by
      * minimum cost assignment and return the mappings.
      * 
@@ -1917,19 +1923,19 @@ Matchings in G are integral flows in N_G
             TIntSet yInEdges = new TIntHashSet();
             boolean lessThan1 = false;
             
-            TObjectIntIterator<PairInt> iter2 
-                = g.getEdgeWeights().iterator();
-            for (int i = g.getEdgeWeights().size(); i-- > 0;) {
+            TObjectIntIterator<PairInt> iter2 = g.getEdgeWeights().iterator();
+            for (int i = 0; i < g.getEdgeWeights().size(); ++i) {
                 iter2.advance();
                 PairInt p = iter2.key();
                 if (iter2.value() < 1) {
                     errors.append(
-                    " edge wriths should be larger than 0.");
+                    " edge weights should be larger than 0.");
+                    lessThan1 = true;
                 }
                 xInEdges.add(p.getX());
                 yInEdges.add(p.getY());
             }
-            if (!lessThan1) {
+            if (lessThan1) {
                 if (g.getNLeft() > xInEdges.size() || g.getNRight() > yInEdges.size()) {
                     errors.append(" every vertex in g must have at least one edge.");
                 }

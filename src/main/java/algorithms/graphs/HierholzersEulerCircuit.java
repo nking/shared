@@ -49,8 +49,24 @@ public class HierholzersEulerCircuit {
         if (g.isEmpty()) {
             return new int[0];
         }
+        int startNode = 0;
+        // OR, in the case that 0 is not connected
+        //startNode = g.keySet().iterator().next();
+        
+        return createCircuit(g, startNode);
+    }
+    /**
+     * 
+     * @param g adjacency list of directed graph
+     * @param startNode
+     * @return 
+     */
+    public int[] createCircuit(TIntObjectMap<TIntSet> g, int startNode) {
+        if (g.isEmpty()) {
+            return new int[0];
+        }
        
-        int i, u, v;
+        int i, u;
         
         // make a copy of g to modify
         TIntObjectIterator<TIntSet> iter = g.iterator();
@@ -68,7 +84,8 @@ public class HierholzersEulerCircuit {
         TIntList circuit = new TIntArrayList();
         
         // start vertex
-        int curV = 0;
+        int curV = startNode;
+        
         curPath.add(curV);
         
         int nextV;
