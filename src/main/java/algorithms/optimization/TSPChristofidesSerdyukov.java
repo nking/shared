@@ -1,13 +1,18 @@
 package algorithms.optimization;
 
 import algorithms.graphs.HierholzersEulerCircuit;
+import algorithms.msts.KruskalsMinimumSpanningTree;
 import algorithms.msts.PrimsMST;
+import algorithms.tsp.TSPPrimsMST;
 import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -50,7 +55,7 @@ import thirdparty.HungarianAlgorithm;
  * @author nichole
  */
 public class TSPChristofidesSerdyukov {
-    
+        
     public int[] approxTSPTour(final int nVertexes, final TIntObjectMap<TIntIntMap> adjCostMap) {
         
         //(1) T = mst(G)
@@ -185,7 +190,7 @@ public class TSPChristofidesSerdyukov {
     }
 
     protected Map<Integer, LinkedList<Integer>> buildMST(TIntObjectMap<TIntIntMap> adjCostMap) {
-        
+                
         // finding the max cost in the graph G needed for a trie used in Prim's MST
         int maxCost = PrimsMST.maxEdgeCost(adjCostMap);
         
@@ -195,9 +200,24 @@ public class TSPChristofidesSerdyukov {
         
         //(1) T = mst(G)
         Map<Integer, LinkedList<Integer>> mstTree = prims.makeTreeFromPrev();
+        //print(mstTree);
+        
+        //TIntList treeWalk = prims.getPreorderIndexes();
+        //System.out.printf("treeWalk=%s\n", Arrays.toString(treeWalk.toArray()));
         
         return mstTree;
     }
+    
+    /*
+    protected Map<Integer, LinkedList<Double>> buildMST2(TIntObjectMap<TIntDoubleMap> adjCostMap) {
+
+        SimpleLinkedListNode[] graph, TObjectDoubleMap<PairInt> edgeWeights;
+        
+        TIntObjectMap<SimpleLinkedListNode> mst = KruskalsMinimumSpanningTree.mst(
+            graph, edgeWeights);
+        
+        return mstTree;
+    }*/
 
     /**
      * perfect min-cost bipartite matchings of the subgraph of G induced by the
@@ -305,5 +325,20 @@ public class TSPChristofidesSerdyukov {
             sum += assoc.get(v);
         }
         return sum;
+    }
+
+    private void print(Map<Integer, LinkedList<Integer>> mstTree) {
+        Iterator<Integer> intIter = mstTree.keySet().iterator();
+        Iterator<Integer> intIter2;
+        int u, v;
+        System.out.println("MST:");
+        while (intIter.hasNext()) {
+            u = intIter.next();
+            intIter2 = mstTree.get(u).iterator();
+            while (intIter2.hasNext()) {
+                v = intIter2.next();
+                System.out.printf("%d:%d\n", u, v);
+            }
+        }
     }
 }
