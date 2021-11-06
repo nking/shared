@@ -302,7 +302,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
         for (i = 0; i < nVertexes; ++i) {
             neighbors = new TIntIntHashMap();
             for (j = 0; j < nVertexes; ++j) {
-                neighbors.put(j, (int)Math.round(dist[i][j]));
+                neighbors.put(j, (int)Math.ceil(dist[i][j]));
             }
             adjCostMap.put(i, neighbors);
         }
@@ -343,7 +343,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
         for (i = 0; i < nVertexes; ++i) {
             neighbors = new TIntIntHashMap();
             for (j = 0; j < nVertexes; ++j) {
-                neighbors.put(j, (int)Math.round(dist[i][j]));
+                neighbors.put(j, (int)Math.ceil(dist[i][j]));
             }
             adjCostMap.put(i, neighbors);
         }
