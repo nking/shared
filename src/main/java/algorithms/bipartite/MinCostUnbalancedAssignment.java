@@ -32,9 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * NOT READY FOR USE.  Possibly needs to be adapted for graphs that do not have a vertex
- * numbered 0.
- * 
  * A solver for the min-cost, unbalanced, weighted bipartite
  * assignment problem that uses weight scaling
  * to solve the perfect and imperfect
@@ -266,14 +263,15 @@ public class MinCostUnbalancedAssignment {
     */
 
     /**
-     * NOT READY FOR USE.  Possibly needs adjustments for graphs not containing
-     * a node numbered 0.
-     * 
      * match the left and right vertices in graph g by
      * minimum cost assignment and return the mappings.
      * 
      * @param g bipartite graph with integer weights having
-     * values greater than zero.
+     * values greater than zero.  Also note that the graph g has to be constructed to have
+       node numbers 0 up to the numbers of left and right nodes defined in the Graph g.
+       TODO: create a static utility method in this class to rewrite edge weight vertex numbers
+       for that format if needed and another static method to tranform the  vertex numbers back
+       to the orginal reference frame.
      * @return map of indexes of left nodes matched to indexes of
      * right nodes
      */

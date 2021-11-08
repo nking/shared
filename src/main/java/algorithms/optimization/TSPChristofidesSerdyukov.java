@@ -26,7 +26,6 @@ import java.util.Map;
 import thirdparty.HungarianAlgorithm;
 
 /**
- * NOT READY FOR USE
  * An approximate solution to the Traveling Salesman Problem.
  * It is an approximation algorithm that guarantees that its solutions will be 
  * within a factor of 3/2 of the optimal solution length, and is named after 
@@ -43,7 +42,7 @@ import thirdparty.HungarianAlgorithm;
     (2) O = the vertices in T w/ odd degree.  in the subgraph O, connect all 
             vertices to one another.
     (3) M = min weight perfect matching in O
-        ==> can use Hungarian algorithm
+        ==> can use Hungarian algorithm or MinCostUnbalancedAssignment.java
     (4) H = connected multigraph from combining the edges of M and T, such that
         each vertex has even degree.
         (a multigraph may have more than 1 edge between same 2 end nodes).
@@ -56,6 +55,15 @@ import thirdparty.HungarianAlgorithm;
  */
 public class TSPChristofidesSerdyukov {
         
+    /**
+     * find a Hamiltonian tour of the given graph (simple cycle including all vertexes) 
+     * that is 3/2 - approximate for minimum total cost.
+     * @param nVertexes
+     * @param adjCostMap
+     * @return the Hamiltonian cycle within a factor of no more than 1.5 of the
+     * optimal tour's minimum cost.  the array returned contains the vertex numbers
+     * from the adjacency cost map.
+     */
     public int[] approxTSPTour(final int nVertexes, final TIntObjectMap<TIntIntMap> adjCostMap) {
         
         //(1) T = mst(G)
