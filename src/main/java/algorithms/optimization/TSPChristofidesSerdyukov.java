@@ -36,6 +36,14 @@ import thirdparty.HungarianAlgorithm;
  * https://en.m.wikipedia.org/wiki/Christofides_algorithm
  * 
  * <pre>
+ * k-approximation:
+    for minimization problems, cost function c():
+         c(approxSoln)/c(OPT) .leq. k
+    for maximimization problems:
+         c(approxSoln)/c(OPT) .geq. k
+ * </pre>
+ * 
+ * <pre>
  * (1) T=MST(G) where G is a complete graph with vertices v and non-negative edge weights w.
         (a complete graph is an undirected graph w/ edge between every pair of nodes)
         ==> can use PrimsMST
