@@ -48,7 +48,9 @@ public class TSPPrimsMST {
      * between 0 and nVertexes - 1.
      *
      * @param nVertexes
-     * @param adjCostMap key = vertex index1, 
+     * @param adjCostMap an adjacency map which upholds the triangle inequality.
+     * The map format is:
+     * key = vertex index1, 
      *   value = map with key = index2 and value = 
      *   cost for edge index1 to index2. 
      */

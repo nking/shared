@@ -64,10 +64,11 @@ import thirdparty.HungarianAlgorithm;
 public class TSPChristofidesSerdyukov {
         
     /**
-     * find a Hamiltonian tour of the given graph (simple cycle including all vertexes) 
+     * find a Hamiltonian tour of the given graph (simple cycle including all vertexes once) 
      * that is 3/2 - approximate for minimum total cost.
      * @param nVertexes
-     * @param adjCostMap
+     * @param adjCostMap a graph represented as an adjacency cost map which obeys
+     * the triangle inequality.x
      * @return the Hamiltonian cycle within a factor of no more than 1.5 of the
      * optimal tour's minimum cost.  the array returned contains the vertex numbers
      * from the adjacency cost map.

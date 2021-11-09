@@ -68,6 +68,10 @@ see AbstractTSP for details about the keys used for memo.
  */
 public class TSPDynamic extends AbstractTSP {
     
+    /**
+     * 
+     * @param dist the distance matrix of a graph which obeys the triangle inequality.
+     */
     public TSPDynamic(double[][] dist) {
         super(dist);
     }
