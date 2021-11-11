@@ -39,13 +39,13 @@ public class LinearProgrammingTest extends TestCase {
         SlackForm slackForm = new SlackForm(nIndices, bIndices, a, b, c, v);
         
         double[] x = slackForm.computeBasicSolution();
-        double[] xExpected = new double[]{0,0,0,30,24,36};
-        assertEquals(xExpected.length, x.length);
+        double[] expectedX = new double[]{0,0,0,30,24,36};
+        assertEquals(expectedX.length, x.length);
         
         int i;
         double diff, tol=1e-7;
-        for (i = 0; i < xExpected.length; ++i) {
-            diff = Math.abs(xExpected[i] - x[i]);
+        for (i = 0; i < expectedX.length; ++i) {
+            diff = Math.abs(expectedX[i] - x[i]);
             assertTrue(diff < tol);
         }
         
@@ -57,7 +57,11 @@ public class LinearProgrammingTest extends TestCase {
         LinearProgramming lp = new LinearProgramming();
         SlackForm slackForm2 = lp.pivot(slackForm, lIdx, eIdx);
         
+        x = slackForm2.computeBasicSolution();
+        double z = slackForm2.evaluateObjective();
+        
         double expectedV = 27;
+        double expectedZ = 27;
         double[] expectedB = new double[]{9.000, 21.000, 6.000};
         double[] expectedC = new double[]{0.250, 0.500, -0.750};
         int[] expectedBIndices = new int[]{0, 3, 4};
@@ -66,6 +70,7 @@ public class LinearProgrammingTest extends TestCase {
         expectedA[0] = new double[]{0.250, 0.500, 0.250};
         expectedA[1] = new double[]{0.750, 2.500, -0.250};
         expectedA[2] = new double[]{1.500, 4.000, -0.500};
+        expectedX = new double[]{9,0,0,21,6,0};
         
         assertTrue(Math.abs(expectedV - slackForm2.v) < tol);
         assertEquals(expectedB.length, slackForm2.b.length);
@@ -74,6 +79,7 @@ public class LinearProgrammingTest extends TestCase {
         assertEquals(expectedNIndices.length, slackForm2.nIndices.length);
         assertEquals(expectedA.length, slackForm2.a.length);
         assertEquals(expectedA[0].length, slackForm2.a[0].length);
+        assertEquals(expectedX.length, x.length);
         
         for (i = 0; i < expectedB.length; ++i) {
             diff = Math.abs(expectedB[i] - slackForm2.b[i]);
@@ -96,5 +102,10 @@ public class LinearProgrammingTest extends TestCase {
                 assertTrue(diff < tol);
             }
         }
+        for (i = 0; i < expectedC.length; ++i) {
+            diff = Math.abs(expectedX[i] - x[i]);
+            assertTrue(diff < tol);
+        }
+        assertTrue(Math.abs(expectedZ - z) < tol);
     }
 }

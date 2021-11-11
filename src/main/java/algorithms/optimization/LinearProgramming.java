@@ -72,12 +72,109 @@ Simplext Method:
        The optimal solution is the feasible solution which maximizes the objective.
 
        An unbounded solution has feasible solution, but does not have finite optimal objective.
-       
-       
+      
+ * </pre>
+ * <pre>
+ * More regarding the Simplex Method runtime complexity:
+ * From wikipedia: http://en.wikipedia.org/wiki/Simplex_algorithm
+ * 
+ * '...Analyzing and quantifying the observation that the simplex algorithm is 
+ * efficient in practice, even though it has exponential worst-case complexity, 
+ * has led to the development of other measures of complexity. The simplex 
+ * algorithm has polyxnomial-time average-case complexity under various 
+ * probability distributions, with the precise average-case performance of the 
+ * simplex algorithm depending on the choice of a probability distribution for 
+ * the random matrices.   Another approach to studying "typical phenomena" uses 
+ * Baire category theory from general topology, and to show that (topologically) 
+ * "most" matrices can be solved by the simplex algorithm in a polynomial number 
+ * of steps. Another method to analyze the performance of the simplex algorithm 
+ * studies the behavior of worst-case scenarios under small perturbation – are 
+ * worst-case scenarios stable under a small change (in the sense of structural 
+ * stability), or do they become tractable?   Formally, this method uses random 
+ * problems to which is added a Gaussian random vector 
+ * ("smoothed complexity")....'
  * </pre>
  * @author nichole
  */
 public class LinearProgramming {
+    
+    /**
+        given a linear program in Standard Form if the problem is unfeasible, 
+        this method returns null, else it
+        returns a slack form for which a basic solution is feasible.
+     * <pre>
+     * The method is implemented from pseudocode in Section 29.3 of Cormen et al.
+     * </pre>
+     * @param standForm
+     * @return 
+     */
+    protected SlackForm initialzeSimplex(StandardForm standForm) {
+        
+        int m = standForm.bIndices.length;
+        int n = standForm.nIndices.length;
+        
+        int i;
+        int lIdx = findMinIndex(standForm.b);
+        
+        //is the inital basic soltuion feasible?
+        if (lIdx > -1 && standForm.b[lIdx] >= 0) {
+            int[] nIndices = new int[n];
+            int[] bIndices = new int[m];
+            //nIndices = [1,2,...n]. NOTE: using 0-based indexes instead
+            for (i = 1; i < n; ++i) {
+                nIndices[i] = i;
+            }
+            //bIndices = [n+1,n+2,...n+m]. NOTE: using 0-based indexes instead
+            for (i = 1; i < m; ++i) {
+                bIndices[i] = n+i;
+            }
+            
+            SlackForm slackForm = new SlackForm(nIndices, bIndices, 
+                standForm.a, standForm.b, standForm.c, standForm.v);
+            
+            return slackForm;
+        }
+               
+        /*
+        L is in standard Form.
+        L_aux is an alternation for n+1 variables", following eqns (29.109) - (29.111)
+        
+        maximize: -x0
+        subject to: summation_j=1:n(a_i_j*x_j) - x0 <= b_i for i=1:m
+                    x_j >= 0 for j=1:n     
+        
+        set all RHS x's to 0
+        
+        when z==v, the summation_j_in_nIndices(c_j*x_j) is 0
+        
+        */
+        
+        double[] xHat = new double[m + n + 1];
+        System.arraycopy(xHat, 0, standForm.computeBasicSolution(), 1, m + n);
+        double eval = standForm.evaluateObjective();
+                
+        /*
+        Form L_aux by adding -x0 to the LHS of each equation
+            and setting the objective function to -x0
+        
+        let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
+        
+        //L_aux has n+1 nonbasic variables and m basic variables
+        (N, B, A, b, c, v) = pivot((N, B, A, b, c, v, ell, 0)
+        
+        //the basic solution is now feasible for L_aux
+        iterate the while loop of lines 7-11 of the SIMPLEX method
+            until an optimal solution to L_aux is found
+        
+        if the basic solution sets xHat0 to 0
+            then return the final slack form with x0 removed and the original
+               objective function restored.
+        else
+            return "unfeasible"        
+        */
+        
+        throw new UnsupportedOperationException("not yet implemented");
+    }
 
     /**
         given a slack form and the indices for a leaving and entering variable,
@@ -95,7 +192,7 @@ public class LinearProgramming {
      * nonbasic variable in the constraint, on the rhs (so it's an index in nIndices).
      * @return 
      */
-    public SlackForm pivot(SlackForm slackForm, int lIdx /*m*/, int eIdx /*n*/) {
+    protected SlackForm pivot(SlackForm slackForm, int lIdx /*m*/, int eIdx /*n*/) {
         
         int m = slackForm.bIndices.length;
         int n = slackForm.nIndices.length;
@@ -186,18 +283,18 @@ public class LinearProgramming {
             }            
         } 
         
-        //re-order LHS by sorted nHatIndices
-        sortLHS(nHatIndices, cHat, aHat);
+        //re-order RHS by sorted nHatIndices
+        sortRHS(nHatIndices, cHat, aHat);
         
-        //re-order RHS by sorted bHatIndices
-        sortRHS(bHatIndices, bHat, aHat);
+        //re-order LHS by sorted bHatIndices
+        sortLHS(bHatIndices, bHat, aHat);
         
         SlackForm out = new SlackForm(nHatIndices, bHatIndices, aHat, bHat, cHat, vHat);
                 
         return out;
     }
 
-    protected void sortLHS(int[] nHatIndices, double[] cHat, double[][] aHat) {
+    protected void sortRHS(int[] nHatIndices, double[] cHat, double[][] aHat) {
         int[] idxs = new int[nHatIndices.length];
         int i;
         for (i = 1; i < nHatIndices.length; ++i) {
@@ -219,7 +316,7 @@ public class LinearProgramming {
         }
     }
 
-    protected void sortRHS(int[] bHatIndices, double[] bHat, double[][] aHat) {
+    protected void sortLHS(int[] bHatIndices, double[] bHat, double[][] aHat) {
         int[] idxs = new int[bHatIndices.length];
         int i;
         for (i = 1; i < bHatIndices.length; ++i) {
@@ -236,6 +333,26 @@ public class LinearProgramming {
             bHat[i] = b[idx];
             System.arraycopy(a[idx], 0, aHat[i], 0, a[idx].length);
         }        
+    }
+
+    /**
+     * finds the smallest value in b and returns its index;  if b.length is 0
+     * or if b contains only Double.POSITIVE_INFINITY, -1 is returned.
+     * @param b an array of double numbers.
+     * @return returns the index of the smallest value in b, but if b.length is 0
+     * or if b contains only Double.POSITIVE_INFINITY, -1 is returned.
+     */
+    protected int findMinIndex(double[] b) {
+        int minIdx = -1;
+        double min = Double.POSITIVE_INFINITY;
+        int i;
+        for (i = 0; i < b.length; ++i) {
+            if (b[i] < min) {
+                min = b[i];
+                minIdx = i;
+            }
+        }
+        return minIdx;
     }
     
     /**
@@ -367,11 +484,11 @@ public class LinearProgramming {
             if (x == null) {
                 throw new IllegalStateException("x has not been calculated to evaluate");
             }
-            double sum = 0;
+            double sum = v;
             int i, idx;
             for (i = 0; i < nIndices.length; ++i) {
                 idx = nIndices[i];
-                sum += c[idx]*x[idx];
+                sum += c[i]*x[idx];
             }
             return sum;
         }
