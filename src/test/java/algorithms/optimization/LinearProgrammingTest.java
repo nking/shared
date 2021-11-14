@@ -1,6 +1,9 @@
 package algorithms.optimization;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming.SlackForm;
+import algorithms.optimization.LinearProgramming.StandardForm;
+import java.util.Arrays;
 import junit.framework.TestCase;
 
 /**
@@ -14,19 +17,29 @@ public class LinearProgrammingTest extends TestCase {
     }
     
     public void testPivot() {
+        
         /*
         following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
         
         except changing to "zero based" integer indexes on x, etc.
         
-        Slack Form example:
+        Example of a linear program in Standard Form:
+          maximize 3*x1 + x2 + 2*x3
+          subject to:
+                   x1 + x2 + 3*x3 .leq. 30
+                   2*x1 + 2*x2 + 5*x3 .leq. 24
+                   4*x1 + x2 + 2*x3 .leq. 36
+                   x1, x2, x3 .geq. 0
+        
+        converted to Slack Form:
              maximize 3*x0 + x1 + 2*x2
              subject to:
                   x3 = 30 -   x0 -   x1 - 3*x2
                   x4 = 24 - 2*x0 - 2*x1 - 5*x2
                   x5 = 36 - 4*x0 -   x1 - 2*x2
                   x0, x1, x2, x3, x4, x5 .geq. 0
-        */        
+        */
+        
         int[] bIndices = new int[]{3, 4, 5};
         int[] nIndices = new int[]{0, 1, 2};
         double[][] a = new double[3][];
@@ -52,13 +65,16 @@ public class LinearProgrammingTest extends TestCase {
         // entering variable is the nonbasic.  use x1.  its index is nIndices is eIdx = 0
         // the leaving variable is the basic and that x6 (smallest soln when set x1 to 0).
         //     lIdx = 2 in bIndices for leaving variable x6.
-        int lIdx = 2;
         int eIdx = 0;
+        int lIdx = 2;
         LinearProgramming lp = new LinearProgramming();
         SlackForm slackForm2 = lp.pivot(slackForm, lIdx, eIdx);
         
         x = slackForm2.computeBasicSolution();
         double z = slackForm2.evaluateObjective();
+        
+        System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
+            eIdx, lIdx, slackForm2.toString());
         
         double expectedV = 27;
         double expectedZ = 27;
@@ -72,6 +88,241 @@ public class LinearProgrammingTest extends TestCase {
         expectedA[2] = new double[]{1.500, 4.000, -0.500};
         expectedX = new double[]{9,0,0,21,6,0};
         
+        assertExpected(tol, slackForm2, expectedV, expectedZ,
+            expectedB, expectedC,
+            expectedA, expectedBIndices, expectedNIndices, expectedX);
+        
+        //==========
+        //result of entering var = x3 (eIdx=2) and leaving var=x5 (lIdx=2)
+        slackForm = new SlackForm(expectedNIndices, expectedBIndices, expectedA, 
+            expectedB, expectedC, expectedV);
+        eIdx = 1;//x3
+        lIdx = 2;//x5
+        slackForm2 = lp.pivot(slackForm, lIdx, eIdx);
+        x = slackForm2.computeBasicSolution();
+        z = slackForm2.evaluateObjective();
+        
+        System.out.printf("pivoted eIdx=%d, lIdx=%d obj=%.4f"
+            + " slackForm=\n%s\n", 
+            eIdx, lIdx, slackForm2.evaluateObjective(), slackForm2.toString());
+        
+        expectedV = 111/4.;//27.75
+        expectedZ = 111/4.;
+        expectedB = new double[]{8.25, 1.5, 17.25};
+        expectedC = new double[]{1./16, -1./8, -11./16};
+        expectedBIndices = new int[]{1-1, 3-1, 4-1};
+        expectedNIndices = new int[]{2-1, 5-1, 6-1};
+        expectedA = new double[3][];
+        expectedA[0] = new double[]{1./16, -1./8, 5./16};
+        expectedA[1] = new double[]{3./8, 1./4, -1./8};
+        expectedA[2] = new double[]{-3./16, -5./8, 1./16};
+        expectedX = new double[]{8.25, 0, 1.5, 17.25, 0, 0};
+        
+        assertExpected(tol, slackForm2, expectedV, expectedZ,
+            expectedB, expectedC,
+            expectedA, expectedBIndices, expectedNIndices, expectedX);
+        
+        //==========
+        //result of entering var = x2 (eIdx=1) and leaving var=x3 (lIdx=1)
+        slackForm = new SlackForm(expectedNIndices, expectedBIndices, expectedA, 
+            expectedB, expectedC, expectedV);
+        eIdx = 0;
+        lIdx = 1;
+        slackForm2 = lp.pivot(slackForm, lIdx, eIdx);
+        x = slackForm2.computeBasicSolution();
+        z = slackForm2.evaluateObjective();
+        
+        System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
+            eIdx, lIdx, slackForm2.toString());
+        
+        expectedV = 28;
+        expectedZ = 28;
+        expectedB = new double[]{8, 4, 18};
+        expectedC = new double[]{-1./6, -1./6, -2./3};
+        expectedBIndices = new int[]{1-1, 2-1, 4-1};
+        expectedNIndices = new int[]{3-1, 5-1, 6-1};
+        expectedA = new double[3][];
+        expectedA[0] = new double[]{-1./6, -1./6, 1./3};
+        expectedA[1] = new double[]{8./3, 2./3, -1./3};
+        expectedA[2] = new double[]{1./2, -1./2, 0};
+        expectedX = new double[]{8, 4, 0, 18,0,0};
+        
+        assertExpected(tol, slackForm2, expectedV, expectedZ,
+            expectedB, expectedC,
+            expectedA, expectedBIndices, expectedNIndices, expectedX);
+    }
+    
+    public void estSolveUsingSimplexMethod() {
+        /*
+        following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
+        
+        except changing to "zero based" integer indexes on x, etc.
+        
+        Example of a linear program in Standard Form:
+          maximize 3*x1 + x2 + 2*x3
+          subject to:
+                     x1 + x2 + 3*x3 .leq. 30
+                   2*x1 + 2*x2 + 5*x3 .leq. 24
+                   4*x1 + x2 + 2*x3 .leq. 36
+                   x1, x2, x3 .geq. 0
+        */
+        double[] b = new double[]{30, 24, 36}; /*m*/
+        double[] c = new double[]{3, 1, 2}; /*n*/
+        double[][] a = new double[3][]; /*mxn*/
+        a[0] = new double[]{1, 1, 3};
+        a[1] = new double[]{2, 2, 5};
+        a[2] = new double[]{4, 1, 2};
+        
+        double v = 0;
+        
+        StandardForm standForm = new LinearProgramming.StandardForm(
+            a, b, c, v);
+        
+        long seed = System.nanoTime();
+        LinearProgramming lp = new LinearProgramming(seed);       
+        
+        SlackForm soln = lp.solveUsingSimplexMethod(standForm);
+        
+        System.out.printf("result=\n%s\n", soln.toString());
+        
+        
+        double[] expectedX = new double[]{8, 4, 0, 18, 0, 0};
+        double expectedZ = 28;
+        
+        assertNotNull(soln.x);
+        assertEquals(expectedX.length, soln.x.length);
+        
+        int i;
+        double diff, tol=1e-7;
+        for (i = 0; i < expectedX.length; ++i) {
+            diff = Math.abs(expectedX[i] - soln.x[i]);
+            assertTrue(diff < tol);
+        }
+        assertTrue(Math.abs(expectedZ - soln.evaluateObjective()) < tol);
+        
+        /*
+        xHat1,xHat2,xHat3,xHat4,xHat5,xHat6=(8, 4, 0, 18,0,0))
+
+         Since we know iterations are finished:
+          The original variables x1, x2, x3 are (8, 4, 0),
+          so z = 3*8 + 1*4 + 2*0 = 28 is optimal.
+
+          The slack variables tell us the amount of slack in each of the original inequalities
+          in the Standard Form:
+           constraints in Standard Form:
+              x1 + x2 + 3*x3 .leq. 30  <== 8 + 4 * 0 .leq. 30  (slack var x4=18 which is 30-12)
+              2*x1 + 2*x2 + 5*x3 .leq. 24
+              4*x1 + x2 + 2*x3 .leq. 36
+              x1, x2, x3 .geq. 0
+        */
+    }
+    
+    public void testConvert() {
+        /*
+        sample from https://walkccc.me/CLRS/Chap29/29.3/
+                Linear Program in Standard Form:
+                maximize: 18x1 + 12.5x2
+                subject to:
+                            x1 + x2 .leq. 20
+                            x1      .leq. 12
+                                 x2 .leq. 16
+                            x1,x2 .geq. 0
+        
+                Converted to Linear Program in Slack Form:
+                maximize: 18x1 + 12.5x2
+                subject to:
+                            x3 = 20 - x1 - x2
+                            x4 = 12 - x1
+                            x5 = 16 - x2
+                            x1,x2,x3, x4, x5 .geq. 0
+        */
+        int n = 2;
+        int m = 3;
+        double[] c = new double[]{18, 12.5};
+        double[] b = new double[]{20, 12, 16};
+        int[] nIndices = new int[]{0, 1};
+        double v = 0;
+        double[][] a = new double[m][];
+        a[0] = new double[]{1, 1};
+        a[1] = new double[]{1, 0};
+        a[2] = new double[]{0, 1};
+        
+        double[] cExpected = Arrays.copyOf(c, c.length);
+        double[] bExpected = Arrays.copyOf(b, b.length);
+        int[] nIndicesExpected = Arrays.copyOf(nIndices, nIndices.length);
+        int[] bIndicesExpected = new int[]{2, 3, 4};
+        double vExpected = 0;
+        double[][] aExpected = MatrixUtil.copy(a);
+        
+        StandardForm standForm = new StandardForm(a, b, c, v);
+        SlackForm slackForm = LinearProgramming.convert(standForm);
+        
+        double diff, tol=1e-7;
+        int i;
+        assertEquals(bIndicesExpected.length,  slackForm.bIndices.length);
+        assertTrue(Arrays.equals(bIndicesExpected, slackForm.bIndices));
+        assertEquals(nIndicesExpected.length,  slackForm.nIndices.length);
+        assertTrue(Arrays.equals(nIndicesExpected, slackForm.nIndices));
+        
+        assertEquals(cExpected.length, slackForm.c.length);
+        assertEquals(bExpected.length, slackForm.b.length);
+        assertEquals(aExpected.length, slackForm.a.length);
+        assertEquals(aExpected[0].length, slackForm.a[0].length);
+        
+        for (i = 0; i < cExpected.length; ++i) {
+            diff = Math.abs(cExpected[i] - slackForm.c[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < bExpected.length; ++i) {
+            diff = Math.abs(bExpected[i] - slackForm.b[i]);
+            assertTrue(diff < tol);
+        }
+        int j;
+        for (i = 0; i < aExpected.length; ++i) {
+            for (j = 0; j < aExpected[i].length; ++j) {
+                diff = Math.abs(aExpected[i][j] - slackForm.a[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        diff = Math.abs(vExpected - slackForm.v);
+        assertTrue(diff < tol);
+    }
+    
+    public void est2() {
+        /*
+        sample from https://walkccc.me/CLRS/Chap29/29.3/
+                Linear Program in Standard Form:
+                maximize: 18x1 + 12.5x2
+                subject to:
+                            x1 + x2 .leq. 20
+                            x1      .leq. 12
+                                 x2 .leq. 16
+                            x1,x2,x3 .geq. 0
+        
+                Converted to Linear Program in Slack Form:
+                maximize: 18x1 + 12.5x2
+                subject to:
+                            x3 = 20 - x1 - x2
+                            x4 = 12 - x1
+                            x5 = 16 - x2
+                            x1,x2,x3, x4, x5, x6.geq. 0
+            Solution is (12,8,0,0,8) and has a value of 316.
+        
+            Going back to the standard form we started with, we just disregard 
+            the values of x_3 through x5 and have the solution that x_1 = 12
+             and x_2 = 8.
+            We can check that this is both feasible and has the objective 316
+        */
+    }
+
+    private void assertExpected(double tol,
+        SlackForm slackForm2, double expectedV, 
+        double expectedZ,
+        double[] expectedB, double[] expectedC, double[][] expectedA, 
+        int[] expectedBIndices, int[] expectedNIndices, double[] expectedX) {
+        
+        int i;
+        double diff;
         assertTrue(Math.abs(expectedV - slackForm2.v) < tol);
         assertEquals(expectedB.length, slackForm2.b.length);
         assertEquals(expectedC.length, slackForm2.c.length);
@@ -79,7 +330,7 @@ public class LinearProgrammingTest extends TestCase {
         assertEquals(expectedNIndices.length, slackForm2.nIndices.length);
         assertEquals(expectedA.length, slackForm2.a.length);
         assertEquals(expectedA[0].length, slackForm2.a[0].length);
-        assertEquals(expectedX.length, x.length);
+        assertEquals(expectedX.length, slackForm2.x.length);
         
         for (i = 0; i < expectedB.length; ++i) {
             diff = Math.abs(expectedB[i] - slackForm2.b[i]);
@@ -96,16 +347,17 @@ public class LinearProgrammingTest extends TestCase {
             assertEquals(expectedNIndices[i], slackForm2.nIndices[i]);
         }
         int j;
-        for (i = 0; i < a.length; ++i) {
-            for (j = 0; j < a[i].length; ++j) {
+        for (i = 0; i < slackForm2.a.length; ++i) {
+            for (j = 0; j < slackForm2.a[i].length; ++j) {
                 diff = Math.abs(expectedA[i][j] - slackForm2.a[i][j]);
                 assertTrue(diff < tol);
             }
         }
-        for (i = 0; i < expectedC.length; ++i) {
-            diff = Math.abs(expectedX[i] - x[i]);
+        for (i = 0; i < expectedX.length; ++i) {
+            diff = Math.abs(expectedX[i] - slackForm2.x[i]);
             assertTrue(diff < tol);
         }
-        assertTrue(Math.abs(expectedZ - z) < tol);
+        diff = Math.abs(expectedZ - slackForm2.evaluateObjective());
+        assertTrue(diff < tol);
     }
 }
