@@ -432,68 +432,49 @@ public class LinearProgramming {
         double eVarCoeff = slackForm.a[lIdx][eIdx];
         
         //compute the coefficients of the equation of the new basic variable x_entering.
-        // bHat[eIdx] =  b[lIdx]/a[lIdx][eIdx]
-        bHat[lIdx] = slackForm.b[lIdx]/eVarCoeff; //checked
+        bHat[lIdx] = slackForm.b[lIdx]/eVarCoeff;
         
         double[][] aHat = MatrixUtil.zeros(slackForm.a.length, slackForm.a[0].length);
         
-        int j, jX;
+        int j;
         
         for (j = 0; j < slackForm.nIndices.length; ++j) {
             if (j == eIdx) {
                 continue;
             }
-            jX = slackForm.nIndices[j];
-            //aHat[eIdx][j] = slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx];
-            aHat[lIdx][j] = slackForm.a[lIdx][j]/eVarCoeff; // checked
+            aHat[lIdx][j] = slackForm.a[lIdx][j]/eVarCoeff;
         }
-        //aHat[eIdx][lIdx] = 1./slackForm.a[lIdx][eIdx];
-        aHat[lIdx][eIdx] = 1./eVarCoeff; // checked
+        aHat[lIdx][eIdx] = 1./eVarCoeff; 
         
         // compute the coefficients of the remaining constraints
-        int i, iX;
+        int i;
         
         for (i = 0; i < slackForm.bIndices.length; ++i) {
             if (i == lIdx) {
                 continue;
-            }
-            iX = slackForm.bIndices[i];
-            
-            //bHat[i] = slackForm.b[i] - slackForm.a[i][eIdx] * bHat[eIdx];
-            bHat[i] = slackForm.b[i] - slackForm.a[i][eIdx] * bHat[lIdx]; //checked
+            }            
+            bHat[i] = slackForm.b[i] - slackForm.a[i][eIdx] * bHat[lIdx];
             for (j = 0; j < slackForm.nIndices.length; ++j) {
                 if (j == eIdx) {
                     continue;
                 }
-                //jX = slackForm.nIndices[j];
-                       
-                //aHat[i][j] = slackForm.a[i][j] - slackForm.a[i][eIdx]*aHat[eIdx][j];
-                //aHat[i][j] = slackForm.a[i][j] - slackForm.a[i][eIdx]*aHat[lIdx][j];
                 aHat[i][j] = slackForm.a[i][j] - 
-                    (slackForm.a[i][eIdx]*(slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx])); //checked
+                    (slackForm.a[i][eIdx]*(slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx]));
             }
-            //aHat[i][lIdx] = - slackForm.a[i][eIdx]*aHat[eIdx][lIdx];
-            //aHat[i][eIdx] = - slackForm.a[i][eIdx]*aHat[lIdx][eIdx];
-            aHat[i][eIdx] = - slackForm.a[i][eIdx]/slackForm.a[lIdx][eIdx]; //checked
+            aHat[i][eIdx] = - slackForm.a[i][eIdx]/slackForm.a[lIdx][eIdx];
         }
        
         //compute the objective function
-        //double vHat = slackForm.v + slackForm.c[eIdx] * bHat[eIdx];
-        double vHat = slackForm.v + slackForm.c[eIdx] * bHat[lIdx]; //checked
+        double vHat = slackForm.v + slackForm.c[eIdx] * bHat[lIdx];
         double[] cHat = new double[slackForm.c.length]; /*n*/
         for (j = 0; j < slackForm.nIndices.length; ++j) {
             if (j == eIdx) {
                 continue;
             }
-            jX = slackForm.nIndices[j];
-            //cHat[j] = slackForm.c[j] - slackForm.c[eIdx] * aHat[eIdx][j];
-            //cHat[j] = slackForm.c[j] - slackForm.c[eIdx] * aHat[lIdx][j];
             cHat[j] = slackForm.c[j] - 
-                (slackForm.c[eIdx]*( slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx])); //checked
+                (slackForm.c[eIdx]*( slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx]));
         }
-        //cHat[lIdx] = -slackForm.c[eIdx] * aHat[eIdx][lIdx];
-        //cHat[eIdx] = -slackForm.c[eIdx] * aHat[lIdx][eIdx];
-        cHat[eIdx] = - slackForm.c[eIdx]/slackForm.a[lIdx][eIdx]; //checked
+        cHat[eIdx] = - slackForm.c[eIdx]/slackForm.a[lIdx][eIdx]; 
               
         //compute new sets of basic and nonbasic variables
         int[] nHatIndices = new int[slackForm.nIndices.length];
