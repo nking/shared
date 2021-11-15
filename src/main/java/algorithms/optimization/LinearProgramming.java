@@ -527,7 +527,7 @@ public class LinearProgramming {
             idx = idxs[i];
             cHat[i] = c[idx];
             // columns of a get re-ordered
-            for (row = 0; row < aHat[i].length; ++row) {
+            for (row = 0; row < aHat.length; ++row) {
                 aHat[row][i] = a[row][idx];
             }
         }
