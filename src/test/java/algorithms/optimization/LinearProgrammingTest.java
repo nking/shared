@@ -286,6 +286,24 @@ public class LinearProgrammingTest extends TestCase {
                 assertTrue(diff < tol);
             }
         }
+        
+        SlackForm slackForm = LinearProgramming.convertConstraints(standForm);
+        System.out.printf("standForm=\n%s\n", standForm.toString());
+        System.out.printf("slackForm=\n%s\n", slackForm.toString());
+        
+        // slackform b should be same as original linear problem
+        assertEquals(b.length, slackForm.b.length);
+        assertEquals(a.length, slackForm.a.length);
+        for (i = 0; i < b.length; ++i) {
+            diff = Math.abs(b[i] - slackForm.b[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < a.length; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                diff = Math.abs(a[i][j] - slackForm.a[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
     }
     
     public void testConvertConstraints() {

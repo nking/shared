@@ -741,7 +741,7 @@ public class LinearProgramming {
      * in the matrix 'a'.
      * @param standForm a linear program with an objective of maximization,
        subject to constraints that are inequality constraints of the form .leq.
-       and nonnegativity constraints on x.
+       and non-negativity constraints on x.
        
      * @return 
      */
@@ -753,8 +753,7 @@ public class LinearProgramming {
                             Find numbers x1,...xn:
             objective ->    maximize summation_j=1:n(cj*xj)
             constraints ->   subject to: summation_j=1:n(aij*xj) .leq. bi for i=1:m
-            constraints ->   xj .geq. 0 for j=1:n
-                             the later is a nonnegativity constraint
+            non-negativity constraints ->   xj .geq. 0 for j=1:n
 
             OR expressed more compactly:
               A = (aij) =  mXn matrix
@@ -776,10 +775,48 @@ public class LinearProgramming {
         double[] cHat = Arrays.copyOf(standForm.c, standForm.c.length);
         assert(cHat.length == n);
         
+        // removing redundant constraints
+        int i, i2, j;
+        double[] aRow, aRow2;
+        boolean same;
+        for (i = aHat.length - 1; i >= 0; i--) {
+            aRow = aHat[i];
+            for (i2 = i - 1; i2 >= 0; i2--) {
+                aRow2 = aHat[i2];
+                // if b's are same, ignoring signs, compare the rest of the constraint
+                if (Math.abs(bHat[i] - bHat[i2]) < eps) {
+                    same = true;
+                    for (j = 0; j < aHat[i].length; ++j) {
+                        if (Math.abs(aRow[j] - aRow2[j]) > eps) {
+                            same = false;
+                            break;
+                        }
+                    }
+                } else if (Math.abs(bHat[i] + bHat[i2]) < eps) {
+                    same = true;
+                    for (j = 0; j < aHat[i].length; ++j) {
+                        if (Math.abs(aRow[j] + aRow2[j]) > eps) {
+                            same = false;
+                            break;
+                        }
+                    }
+                } else {
+                    same = false;
+                }
+                if (same) {
+                    bHat = removeElement(bHat, i);
+                    aHat = removeRow(aHat, i);
+                    break;
+                }
+            } 
+        }
+        
+        m = bHat.length;
+                   
         // writing in 0-based indexes, the x index of non-basic and basic variables
         int[] nHatIndices = new int[n]; 
         int[] bHatIndices = new int[m];
-        int i;
+        
         for (i = 0; i < n; ++i) {
             nHatIndices[i] = i;
         }
@@ -954,6 +991,30 @@ public class LinearProgramming {
             assert(a2[i].length == n);
         }
         return a2;
+    }
+    
+    private static double[] removeElement(double[] b, int idx) {
+        double[] out = new double[b.length - 1];
+        int i, i2 = 0;
+        for (i = 0; i < b.length; ++i) {
+            if (i != idx) {
+                out[i2] = b[i];
+                i2++;
+            }
+        }
+        return out;
+    }
+
+    private static double[][] removeRow(double[][] a, int rowIdx) {
+        double[][] out = new double[a.length - 1][];
+        int i, i2 = 0;
+        for (i = 0; i < a.length; ++i) {
+            if (i != rowIdx) {
+                out[i2] = Arrays.copyOf(a[i], a[i].length);
+                i2++;
+            }
+        }
+        return out;
     }
     
     private static String print(List<TDoubleList> a) {
