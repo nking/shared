@@ -5,9 +5,15 @@ import algorithms.misc.Misc0;
 import algorithms.optimization.LinearProgramming.SlackForm.STATE;
 import algorithms.sort.MiscSorter;
 import algorithms.util.FormatArray;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -105,6 +111,12 @@ public class LinearProgramming {
     
     private final Random rand = Misc0.getSecureRandom();
     
+    /**
+     * machine precision used in evaluating whether a double is different
+     * from another double.
+     */
+    private static double eps = 1e-11;
+    
     public LinearProgramming() {
         this(System.nanoTime());
     }
@@ -142,28 +154,29 @@ public class LinearProgramming {
       
         SlackForm slackForm = initializeSimplex(standForm);
         
-        System.out.printf("initialized:\n%s\n", slackForm.toString());
+        //System.out.printf("initialized:\n%s\n", slackForm.toString());
         
         if (!slackForm.state.equals(STATE.FEASIBLE) && !slackForm.state.equals(STATE.OPTIMAL)) {
-            System.out.println(slackForm.state.name());
+            System.out.println("exiting: " + slackForm.state.name());
             return slackForm;
         }
         
         //lines 2-11 of the SIMPLEX method of Cormen et al. Chap 29.:
+        
+        // the j's in N w/ c_j > 0
         TIntSet positiveCIndexes = findPositiveCIndexes(slackForm);
         
         double[] delta = new double[slackForm.b.length];
+        
+        //choose eIdx from the j's in N w/ c_j > 0
         int eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);
         
         int lIdx = -1, i;
         double minDelta; // lIdx is chosen with this
         
-        // the signs of matrix a, affecting
-        int debug = 0;
-        
         //choose index lIdx in bIndices that minimizes delta[i]
         while (eIdx > -1) {
-              
+                 
             minDelta = Double.POSITIVE_INFINITY; // lIdx is chosen with this
             
             /*
@@ -176,9 +189,7 @@ public class LinearProgramming {
             */
             
             for (i = 0; i < delta.length; ++i) {
-                //bIdx = slackForm2.bIndices[i]; used with x
                 if (standForm.a[i][eIdx] > 0) {
-                    //delta[i] = standForm.b[i]/standForm.a[i][eIdx];
                     delta[i] = standForm.b[i]/standForm.a[i][eIdx];
                     if (delta[i] < minDelta) {
                         minDelta = delta[i];
@@ -190,7 +201,7 @@ public class LinearProgramming {
             }
             
             if (Double.isInfinite(minDelta)) {
-                System.out.println("UNBOUNDED");
+                System.out.println("exit: UNBOUNDED");
                 slackForm.state = STATE.UNBOUNDED;
                 return slackForm;
             }
@@ -198,19 +209,16 @@ public class LinearProgramming {
             
             slackForm = pivot(slackForm, lIdx, eIdx);
             
-            //debug
             slackForm.computeBasicSolution();
             double z = slackForm.evaluateObjective();
             
-            System.out.printf("after pivot of eIdx=%d lIdx=%d, z=%.3f:\n%s\n", 
-                eIdx, lIdx, z, slackForm.toString());
+            //System.out.printf("after pivot of eIdx=%d lIdx=%d, z=%.3f:\n%s\n", 
+            //    eIdx, lIdx, z, slackForm.toString());
                         
             positiveCIndexes = findPositiveCIndexes(slackForm);
-            
-            debug++;
-            
+                        
             eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);            
-            System.out.printf("remaining cIndexes=\n%s\n", positiveCIndexes.toString());
+            //System.out.printf("remaining cIndexes=\n%s\n", positiveCIndexes.toString());
         }
         
         // lines 12-16
@@ -242,17 +250,15 @@ public class LinearProgramming {
      */
     protected SlackForm initializeSimplex(StandardForm standForm) {
         
-        SlackForm _slackForm = convert(standForm);
-        System.out.printf("init: convert=\n%s\n", _slackForm.toString());
+        SlackForm _slackForm = convertConstraints(standForm);
+        //System.out.printf("init: convert=\n%s\n", _slackForm.toString());
                 
         int m = _slackForm.b.length;
         int n = _slackForm.nIndices.length;
         
         int i;
         int lIdx = findMinIndex(_slackForm.b);
-        
-        System.out.printf("lIdx=%d\n", lIdx);
-        
+                
         //is the initial basic solution feasible?
         if (lIdx > -1 && _slackForm.b[lIdx] >= 0) {
             int[] nIndices = new int[n];
@@ -379,7 +385,7 @@ public class LinearProgramming {
         }
         
         xBasicSoln = slackFormAux.computeBasicSolution();
-        if (Math.abs(xBasicSoln[0]) > 1e-7) {
+        if (Math.abs(xBasicSoln[0]) > eps) {
             slackFormAux.state = STATE.UNFEASIBLE;
             return slackFormAux;
         }
@@ -567,6 +573,174 @@ public class LinearProgramming {
     }
     
     /**
+     * NOT YET TESTED.
+     * Give a linear program L whose objective is minimization or maximization.
+     * and which has constraints that are .leq., .eq., or .geq. the 
+     * constants in b, convert L into standard form.
+     * Standard form has a maximization objective, nonnegative constraints
+     * on all x_j's, and constraints which are all .leq. b_i's.
+     <pre>
+       Example Linear Program for minimization from Cormen et al., Chap 29.
+             minimize:
+               -2*x1 + 3*x2
+             subject to constraints:
+                  x1 +   x2  .eq. 7
+                  x1 - 2*x2 .leq. 4
+             nonnegativity constraints:
+                  x1        .geq. 0
+       Converted to a Standard Form:
+              maximize:
+                2*x1 - 3*x2 + 3*x3
+              subject to constraints: 
+                  x1 +   x2 - x3 .leq. 7
+                 -x1 -   x2 + x3 .leq. -7
+                  x1 - 2*x2 + 2*x3 .leq. 4
+              nonnegativity constraints:
+                  x1, x2, and x3 .geq. 0
+     </pre>
+     * @param a constraint coefficients
+     * @param b the constants in each constraint.
+     * @param c objective coefficients
+     * @param constraintComparisons an index of size c.length containing indicators
+     * for whether the constraint is .leq., .eq., or .geq..
+     * -1 is used for .leq., 0 for .eq. and +1 for .geq.
+     * <pre>
+     * e.g. constraints:
+     *    x1 +   x2  .eq. 7
+     *    x1 - 2*x2 .leq. 4
+     * would have constraintComparisons = [0, -1]
+     * </pre>
+     * @param isMaximization true if the linear program goal is to maximize the objective,
+     * else false if the goal is to minimize the objective.
+     * @param nonnegativityConstraints indicates whether x_j has a non-negativity
+     * constraint
+     * @return 
+     */
+    public static StandardForm convertLinearProgramToStandardForm(
+        boolean isMaximization,
+        double[][] a, double[] b, double[] c,
+        int[] constraintComparisons, boolean[] nonnegativityConstraints) {
+                
+        int m = a.length;
+        int n = c.length;
+        if (constraintComparisons.length != m) {
+            throw new IllegalArgumentException("constraintComparisons.length "
+            + " must be equal to a.length");
+        }
+        if (a[0].length != n) {
+            throw new IllegalArgumentException("c.length "
+            + " must be equal to a[0].length");
+        }
+        if (a.length < 1) {
+            throw new IllegalArgumentException("a.length must be > 0 ");
+        }
+        if (c.length < 1) {
+            throw new IllegalArgumentException("c.length must be > 0 ");
+        }
+        if (nonnegativityConstraints.length != n) {
+            throw new IllegalArgumentException("nonnegativityConstraints.length "
+            + " must be equal to c.length");
+        }
+                
+        // handle the minimization to maximization
+        c = Arrays.copyOf(c, c.length);
+        if (!isMaximization) {
+            MatrixUtil.multiply(c, -1.);
+        }
+        
+        // rewrite datastructures as arrays for now to make book-keeping easier 
+        //    at the expense of potentially inefficient array expansion.
+        // TODO: loop through nonnegativityConstraints to count the 
+        //       number of needed columns and loop through constraintComparisons
+        //       to count the number of needed rows,
+        //       then replace these with arrays.
+        List<TDoubleList> a2 = copy(a);
+        TDoubleList b2 = copy(b);
+        TDoubleList c2 = copy(c);
+        TIntList ac2 = copy(constraintComparisons);
+        
+        // handle the each variable missing a non-negative constraint
+        //    by replacing it with 2 non-negative variables
+        // === NOTE this section only expands along j, no new rows added to a ====
+        int j, i;
+        int nn = 0;// number of missing non-negative constraints
+        for (j = 0; j < nonnegativityConstraints.length; ++j) {
+            if (!nonnegativityConstraints[j]) {
+                //replace the x variable by 2 non-negative variables
+                
+                //handle c by appending a new variable at the end of the constraint with - coefficient of current
+                c2.add(-c[j]);
+                
+                //handle the expansion in each constraint (row of a)
+                for (i = 0; i < a.length; ++i) {
+                    if (Math.abs(a[i][j]) > eps) {// x_j is not 0 for this constraint, so replace it with 2
+                        a2.get(i).add(-a[i][j]);
+                    } else {
+                        // add a 0 for the new variable
+                        a2.get(i).add(0);
+                    }
+                }
+                nn++;
+            }
+        }
+        assert(a2.size() == a.length);
+        assert(c2.size() == (c.length + nn));
+        assert(ac2.size() == constraintComparisons.length);
+        assert(b2.size() == b.length);
+        assert(a2.get(0).size() == a[0].length + nn);
+        
+        /*
+        maximize   2*x1 -3*x2
+        subject to x1 + x2 = 7
+                   x1 - 2*x2 .leq. 4
+                   x1 .geq. 0
+        maximize  2*x1 - 3*x2' + 3*x2"
+        subject to x1 + x2' - x2" = 7
+                   x1 - 2*x2' + 2*x2" .leq. 4
+                      x1, x2', and x2" .geq. 0
+        */
+
+        // handle the constraints: .eq. and .geq.
+        int m2 = 0;
+        TDoubleList aRow, aRow2;
+        for (i = 0; i < a.length; ++i) {
+            switch (constraintComparisons[i]) {
+                case -1: {
+                    // an .leq. constraint is in standard form
+                    break;
+                }
+                case 1: {
+                    //convert .geq. to .leq. by multiplying the row of a by -1 and b[i] by -1
+                    aRow = a2.get(i);
+                    for (j = 0; j < aRow.size(); ++j) {
+                        aRow.replace(j, -1.*aRow.get(j));
+                    }
+                    b2.replace(i, -1.*b2.get(i));
+                    break;
+                }
+                default: {
+                    //convert equalities to 2 .leq. constraints
+                    // the first conversion uses the same coefficients in a2[i] and b[i] so no need to change.
+                    // the second conversion uses -1 times the coefficients in a2[i] and b[i] and gets inserted at end of both
+                    aRow = a2.get(i);
+                    aRow2 = new TDoubleArrayList(aRow.size());
+                    for (j = 0; j < aRow.size(); ++j) {
+                        aRow2.add(-1.*aRow.get(j));
+                    }
+                    a2.add(aRow2);
+                    b2.add(-1.*b2.get(i));
+                    break;
+                }
+            }
+        }
+        
+        double[][] a3 = copy(a2);
+         
+        StandardForm standForm = new StandardForm(a3, b2.toArray(), c2.toArray(), 0);
+        return standForm;
+    }
+   
+    /**
      * given a standard form containing .leq. inequalities expressed by 
      * standForm.a and standForm.b, convert the problem to a SlackForm
      * of equality constraints and their slack variables.
@@ -581,7 +755,7 @@ public class LinearProgramming {
        
      * @return 
      */
-    public static SlackForm convert(StandardForm standForm) {
+    public static SlackForm convertConstraints(StandardForm standForm) {
         /*
           Standard Form:
               real numbers: c1...cn; b1,...bm; and aij for a=1:m and j=1:n.
@@ -642,7 +816,7 @@ public class LinearProgramming {
     */
     private SlackForm createAuxiliarySlackForm(StandardForm standForm) {
         
-        SlackForm slackForm = convert(standForm);
+        SlackForm slackForm = convertConstraints(standForm);
         
         int m = slackForm.b.length;
         int n = slackForm.c.length;
@@ -765,6 +939,38 @@ public class LinearProgramming {
             }
         }
         return cs;
+    }
+    
+    private static List<TDoubleList> copy(double[][] a) {
+        int m = a.length;
+        int n = a[0].length;
+        List<TDoubleList> a2 = new ArrayList<TDoubleList>(m);
+        int i;
+        for (i = 0; i < m; ++i) {
+            a2.add(new TDoubleArrayList(Arrays.copyOf(a[i], a[i].length)));
+        }
+        return a2;
+    }
+    
+    private static double[][] copy(List<TDoubleList> a) {
+        int m = a.size();
+        int n = a.get(0).size();
+        double[][] a2 = new double[m][];
+        int i;
+        for (i = 0; i < m; ++i) {
+            a2[i] = a.get(i).toArray();
+        }
+        return a2;
+    }
+        
+    private static TDoubleList copy(double[] b) {
+        TDoubleList b2 = new TDoubleArrayList(Arrays.copyOf(b, b.length));
+        return b2;
+    }
+    
+    private static TIntList copy(int[] cc) {
+        TIntList cc2 = new TIntArrayList(Arrays.copyOf(cc, cc.length));
+        return cc2;
     }
     
     /**
@@ -1126,10 +1332,10 @@ public class LinearProgramming {
             
             sb.append("b=").append(FormatArray.toString(b, "%.3f")).append("\n");
             sb.append(String.format("a=\n%s", FormatArray.toString(a, "%.3f")));
-            sb.append("nIndices=").append(Arrays.toString(nIndices)).append("\n");
             if (x != null) {
                 sb.append("x=").append(FormatArray.toString(x, "%.3f")).append("\n");
             }
+            sb.append("nIndices=").append(Arrays.toString(nIndices)).append("\n");
             return sb.toString();
         }
     }

@@ -16,7 +16,7 @@ public class LinearProgrammingTest extends TestCase {
         super(testName);
     }
     
-    public void testPivot() {
+    public void estPivot() {
         
         /*
         following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
@@ -152,7 +152,7 @@ public class LinearProgrammingTest extends TestCase {
             expectedA, expectedBIndices, expectedNIndices, expectedX);
     }
     
-    public void estSolveUsingSimplexMethod() {
+    public void testSolveUsingSimplexMethod() {
         /*
         following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
         
@@ -217,7 +217,36 @@ public class LinearProgrammingTest extends TestCase {
         */
     }
     
-    public void testConvert() {
+    public void test() {
+        
+        /*
+        Example that is not yet in Standard Form:
+           minimize -2*x1 + 3*x2
+           subject to x1 + x2 = 7
+                      x1 - 2*x2 .leq. 4
+                      x1 .geq. 0
+        Converted to Standard Form:
+           maximize  2*x1 - 3*x2 + 3*x3
+               subject to x1 + x2 - x3 .leq. 7
+                          -x1 - x2 + x3 .leq. -7
+                          x1 - 2*x2 + 2*x3 .leq. 4
+                          x1, x2, and x3 .geq. 0
+        */
+        
+        double[][] a = new double[2][];
+        a[0] = new double[]{1, 1};
+        a[1] = new double[]{1, -2};
+        double[] b = new double[]{4, 4};
+        double[] c = new double[]{-2, 3};
+        int[] constraintComparisons = new int[]{0, -1};
+        boolean isMaximization = false;
+    
+        StandardForm sf = LinearProgramming.convertLinearProgramToStandardForm(
+            a, b, c, constraintComparisons, isMaximization);
+        
+    }
+    
+    public void estConvertConstraints() {
         /*
         sample from https://walkccc.me/CLRS/Chap29/29.3/
                 Linear Program in Standard Form:
@@ -255,7 +284,7 @@ public class LinearProgrammingTest extends TestCase {
         double[][] aExpected = MatrixUtil.copy(a);
         
         StandardForm standForm = new StandardForm(a, b, c, v);
-        SlackForm slackForm = LinearProgramming.convert(standForm);
+        SlackForm slackForm = LinearProgramming.convertConstraints(standForm);
         
         double diff, tol=1e-7;
         int i;
