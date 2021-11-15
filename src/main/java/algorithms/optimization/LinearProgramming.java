@@ -2,6 +2,7 @@ package algorithms.optimization;
 
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Misc0;
+import algorithms.misc.MiscMath0;
 import algorithms.optimization.LinearProgramming.SlackForm.STATE;
 import algorithms.sort.MiscSorter;
 import algorithms.util.FormatArray;
@@ -105,10 +106,75 @@ Simplext Method:
  * problems to which is added a Gaussian random vector 
  * ("smoothed complexity")....'
  * </pre>
+ * 
+ * NOTE: some Simplex algorithms use a matrix composed of the objective function 
+ * (c, v) and the constraints (a, b) in a format called the "tableau". 
+ * The tableau format varies in some implementations.
+ <pre>
+     |  1  (-1*objective function coefficients)         0         |
+     |  0  (constraint 1 coefficients)      (constraint 1 bound)  |
+     |  0   ... through all constraints          ...              |
+     
+   
+ notes from Linear Programming, CSE 6331 Algorithms Steve Lai:
+ 
+ Another form frequently used for Standard Form tableau:
+        |  x1         x2         ...        xn  |
+  ------|---------------------------------------|------------
+    y1  |  a11        a12      ...      a1n     |  .leq. b1
+    y2  |  a21        a22      ...      a2n     |  .leq. b2
+    ... |  ...        ...      ...      ...     |  ...
+    ym  |  am1        am2      ...      amn     |  .leq. bm
+  ------|---------------------------------------|-------------
+        |.geq. c1    .geq. c2          .geq. cn |
+</pre>
+   The written text of the equations is "Dictionary" form.
+ <pre>
+ The original linear program before transformations is called "primal".
+ 
+ Regarding duality:
+ 
+ A Primal Standard Form LP:
+     max: c^T*x
+     subject to: A*x .leq. b and x .geq. 0
+ A Primal Minimization LP:
+     min: y^T*b
+     subject to: y^T*A .geq. c^T and y .geq. 0
+     
+Example:
+   A Primal Standard Form LP  |  Dual Minimization LP
+      max: x1 + x2            |    min: 4*y1 + 12*y2 + y3
+      subject to:             |    subject to:
+        x1 + 2*x2 .leq. 4     |      y1 + 4*y2 - y3 .geq. 1
+      4*x1 + 2*x2 .leq. 12    |     2*y1+ 2*y2 + y3 .geq. 1
+       -x1 +   x2 .leq. 1     |
+      x1, x2 .geq. 0          |    y1, y2, y3 .geq. 0
+ 
+        |  x1          x2 |
+  ------|----------------------------
+    y1  |  1           2  | .leq. 4
+    y2  |  4           2  | .leq. 12
+  ------|-----------------|----------
+        |.geq. 1  .geq. 1 |
+ </pre>
+ The number of basic solutions is at most C(m+n, m).
+ <pre>
+ Basic feasible solutions are extreme points
+     A set C is said to be convex if for all points x1, x2 in C 
+         we have lambda*x1 + (1 - lambda)*x2 in C for all 0 .leq. lambda .leq. 1.
+     A point x in a convex set C is called an extreme point if there exist no 
+         x1, x2 in C, x1 != x2 , and 0 .lt. lambda .lt. 1,
+         such that x = lambda*x1 + (1 - lambda)*x2.
+     The feasible region of an LP is a convex set.
+     Basic feasible solutions of an LP (in the equality form)
+         are extreme points of the feasible region.
+     If the LP is feasible bounded, then at least one
+         optimum solution occurs at an extreme point.
+ </pre>
  * @author nichole
  */
 public class LinearProgramming {
-    
+
     private final Random rand = Misc0.getSecureRandom();
     
     /**
@@ -154,13 +220,13 @@ public class LinearProgramming {
       
         SlackForm slackForm = initializeSimplex(standForm);
         
-        //System.out.printf("initialized:\n%s\n", slackForm.toString());
+        System.out.printf("initialized:\n%s\n", slackForm.toString());
         
         if (!slackForm.state.equals(STATE.FEASIBLE) && !slackForm.state.equals(STATE.OPTIMAL)) {
             System.out.println("exiting: " + slackForm.state.name());
             return slackForm;
         }
-        
+                
         //lines 2-11 of the SIMPLEX method of Cormen et al. Chap 29.:
         
         // the j's in N w/ c_j > 0
@@ -173,6 +239,8 @@ public class LinearProgramming {
         
         int lIdx = -1, i;
         double minDelta; // lIdx is chosen with this
+        
+        // iterate until all c's are positive.  b's should be positive too.
         
         //choose index lIdx in bIndices that minimizes delta[i]
         while (eIdx > -1) {
@@ -189,8 +257,8 @@ public class LinearProgramming {
             */
             
             for (i = 0; i < delta.length; ++i) {
-                if (standForm.a[i][eIdx] > 0) {
-                    delta[i] = standForm.b[i]/standForm.a[i][eIdx];
+                if (slackForm.a[i][eIdx] > 0) {
+                    delta[i] = slackForm.b[i]/slackForm.a[i][eIdx];
                     if (delta[i] < minDelta) {
                         minDelta = delta[i];
                         lIdx = i;
@@ -200,13 +268,15 @@ public class LinearProgramming {
                 }
             }
             
+            //System.out.printf("eIdx=%d lIdx=%d minDelta=%.3f\n", eIdx, lIdx, minDelta);
+            
             if (Double.isInfinite(minDelta)) {
                 System.out.println("exit: UNBOUNDED");
                 slackForm.state = STATE.UNBOUNDED;
                 return slackForm;
             }
             assert(lIdx != -1);
-            
+           
             slackForm = pivot(slackForm, lIdx, eIdx);
             
             slackForm.computeBasicSolution();
@@ -251,7 +321,7 @@ public class LinearProgramming {
     protected SlackForm initializeSimplex(StandardForm standForm) {
         
         SlackForm _slackForm = convertConstraints(standForm);
-        //System.out.printf("init: convert=\n%s\n", _slackForm.toString());
+        //System.out.printf("init: convert to slackForm =\n%s\n", _slackForm.toString());
                 
         int m = _slackForm.b.length;
         int n = _slackForm.nIndices.length;
@@ -295,10 +365,11 @@ public class LinearProgramming {
             set all RHS x's to 0.
             when z==v, the summation_j_in_nIndices(c_j*x_j) is 0.
         */
+        
         //let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
         SlackForm slackFormAux = createAuxiliarySlackForm(standForm);
         
-        System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
+        //System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
         
         //L_aux has n+1 nonbasic variables and m basic variables
         //(N, B, A, b, c, v) = pivot((N, B, A, b, c, v, lIdx, 0)
@@ -307,11 +378,11 @@ public class LinearProgramming {
         //the basic solution is now feasible for L_aux
         double[] xBasicSoln = slackFormAux.computeBasicSolution();
         
-        System.out.printf("init: L_aux after pivot=\n%s\n", slackFormAux.toString());
+        //System.out.printf("init: L_aux after pivot=\n%s\n", slackFormAux.toString());
         
         boolean isFeasible = slackFormAux.isFeasible();
-        System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
-        System.out.println("   isFeasible=" + isFeasible);
+        //System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
+        //System.out.println("   isFeasible=" + isFeasible);
         slackFormAux.state = STATE.FEASIBLE;
          
         /*        
@@ -366,7 +437,7 @@ public class LinearProgramming {
                 }
             }
             
-            System.out.printf("init: eIdx=%d lIdx=%d\n", eIdx, lIdx);
+            //System.out.printf("init: eIdx=%d lIdx=%d\n", eIdx, lIdx);
             
             if (Double.isInfinite(minDelta)) {
                 slackFormAux.state = STATE.UNBOUNDED;
@@ -375,13 +446,13 @@ public class LinearProgramming {
             
             slackFormAux = pivot(slackFormAux, lIdx, eIdx);
             
-            System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
+            //System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
                         
             positiveCIndexes = findPositiveCIndexes(slackFormAux);
             
             eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
             
-            System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
+            //System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
         }
         
         xBasicSoln = slackFormAux.computeBasicSolution();
@@ -396,8 +467,8 @@ public class LinearProgramming {
         SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux);
         optimal.state = STATE.FEASIBLE;
         
-        System.out.printf("init: slack form =\n%s\n", slackFormAux.toString());
-        System.out.printf("init: optimal =\n%s\n", optimal.toString());
+        //System.out.printf("init: slack form =\n%s\n", slackFormAux.toString());
+        //System.out.printf("init: optimal =\n%s\n", optimal.toString());
         
         return optimal;
     }
@@ -415,7 +486,7 @@ public class LinearProgramming {
      * @param lIdx the leaving index of x. the "leaving variable" is the basic 
      * variable in the constraint, on the lhs (so it's an index in bIndices).
      * @param eIdx the exiting index of x.  the "entering variable" is the 
-     * nonbasic variable in the constraint, on the rhs (so it's an index in nIndices).
+     * non-basic variable in the constraint, on the rhs (so it's an index in nIndices).
      * @return 
      */
     protected SlackForm pivot(SlackForm slackForm, int lIdx /*m*/, int eIdx /*n*/) {
@@ -512,6 +583,7 @@ public class LinearProgramming {
     }
 
     protected void sortRHS(int[] nHatIndices, double[] cHat, double[][] aHat) {
+        
         int[] idxs = new int[nHatIndices.length];
         int i;
         for (i = 1; i < nHatIndices.length; ++i) {
@@ -689,7 +761,11 @@ public class LinearProgramming {
         assert(ac2.size() == constraintComparisons.length);
         assert(b2.size() == b.length);
         assert(a2.get(0).size() == a[0].length + nn);
-                
+           
+        //System.out.printf("a0=\n%s\n", FormatArray.toString(a,  "%.3f"));
+        //System.out.printf("a2=\n%s\n", print(a2));
+        //System.out.printf("b0=\n%s\n", FormatArray.toString(b,  "%.3f"));
+
         // handle the constraints: .eq. and .geq.
         int m2 = 0;
         TDoubleList aRow, aRow2;
@@ -724,6 +800,9 @@ public class LinearProgramming {
             }
         }
         
+        //System.out.printf("a2=\n%s\n", print(a2));
+        //System.out.printf("b=\n%s\n", FormatArray.toString(b2.toArray(),  "%.3f"));
+
         double[][] a3 = copy(a2);
          
         StandardForm standForm = new StandardForm(a3, b2.toArray(), c2.toArray(), 0);
