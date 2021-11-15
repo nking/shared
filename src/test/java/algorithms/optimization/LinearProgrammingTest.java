@@ -16,7 +16,7 @@ public class LinearProgrammingTest extends TestCase {
         super(testName);
     }
     
-    public void estPivot() {
+    public void testPivot() {
         
         /*
         following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
@@ -217,7 +217,7 @@ public class LinearProgrammingTest extends TestCase {
         */
     }
     
-    public void test() {
+    public void testConvertLinearProgramToStandardForm() {
         
         /*
         Example that is not yet in Standard Form:
@@ -228,25 +228,67 @@ public class LinearProgrammingTest extends TestCase {
         Converted to Standard Form:
            maximize  2*x1 - 3*x2 + 3*x3
                subject to x1 + x2 - x3 .leq. 7
-                          -x1 - x2 + x3 .leq. -7
                           x1 - 2*x2 + 2*x3 .leq. 4
+                          -x1 - x2 + x3 .leq. -7
                           x1, x2, and x3 .geq. 0
         */
         
         double[][] a = new double[2][];
         a[0] = new double[]{1, 1};
         a[1] = new double[]{1, -2};
-        double[] b = new double[]{4, 4};
+        double[] b = new double[]{7, 4};
         double[] c = new double[]{-2, 3};
         int[] constraintComparisons = new int[]{0, -1};
         boolean isMaximization = false;
+        boolean[] nonnegativityConstraints = new boolean[]{true, false};
     
-        StandardForm sf = LinearProgramming.convertLinearProgramToStandardForm(
-            a, b, c, constraintComparisons, isMaximization);
+        StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
+            isMaximization, a, b, c, 
+            constraintComparisons, nonnegativityConstraints);
         
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
+        /*
+        maximize  2*x1 - 3*x2 + 3*x3
+        subject to 
+        x1 + x2 - x3 .leq. 7
+        x1 - 2*x2 + 2*x3 .leq. 4
+        -x1 - x2 + x3 .leq. -7
+        x1, x2, and x3 .geq. 0
+        */
+        double[][] expectedA = new double[3][];
+        expectedA[0] = new double[]{1, 1, -1};
+        expectedA[1] = new double[]{1, -2, 2};
+        expectedA[2] = new double[]{-1, -1, 1};
+        double[] expectedB = new double[]{7, 4, -7};
+        double[] expectedC = new double[]{2,-3, 3};
+        double expectedV = 0;
+        
+        assertEquals(expectedA.length, standForm.a.length);
+        assertEquals(expectedA[0].length, standForm.a[0].length);
+        assertEquals(expectedB.length, standForm.b.length);
+        assertEquals(expectedC.length, standForm.c.length);
+        
+        int i, j;
+        double diff, tol=1e-7;
+        for (i = 0; i < expectedB.length; ++i) {
+            diff = Math.abs(expectedB[i] - standForm.b[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < expectedC.length; ++i) {
+            diff = Math.abs(expectedC[i] - standForm.c[i]);
+            assertTrue(diff < tol);
+        }
+        diff = Math.abs(expectedV - standForm.v);
+        assertTrue(diff < tol);
+        for (i = 0; i < expectedA.length; ++i) {
+            for (j = 0; j < expectedA[i].length; ++j) {
+                diff = Math.abs(expectedA[i][j] - standForm.a[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
     }
     
-    public void estConvertConstraints() {
+    public void testConvertConstraints() {
         /*
         sample from https://walkccc.me/CLRS/Chap29/29.3/
                 Linear Program in Standard Form:

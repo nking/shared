@@ -573,12 +573,13 @@ public class LinearProgramming {
     }
     
     /**
-     * NOT YET TESTED.
      * Give a linear program L whose objective is minimization or maximization.
      * and which has constraints that are .leq., .eq., or .geq. the 
      * constants in b, convert L into standard form.
      * Standard form has a maximization objective, nonnegative constraints
      * on all x_j's, and constraints which are all .leq. b_i's.
+     * The program implements material from Section 29.1 of Cormen et al.
+     * "Introduction to Algorithms"
      <pre>
        Example Linear Program for minimization from Cormen et al., Chap 29.
              minimize:
@@ -688,18 +689,7 @@ public class LinearProgramming {
         assert(ac2.size() == constraintComparisons.length);
         assert(b2.size() == b.length);
         assert(a2.get(0).size() == a[0].length + nn);
-        
-        /*
-        maximize   2*x1 -3*x2
-        subject to x1 + x2 = 7
-                   x1 - 2*x2 .leq. 4
-                   x1 .geq. 0
-        maximize  2*x1 - 3*x2' + 3*x2"
-        subject to x1 + x2' - x2" = 7
-                   x1 - 2*x2' + 2*x2" .leq. 4
-                      x1, x2', and x2" .geq. 0
-        */
-
+                
         // handle the constraints: .eq. and .geq.
         int m2 = 0;
         TDoubleList aRow, aRow2;
@@ -775,7 +765,7 @@ public class LinearProgramming {
             constraints ->   subject to: A*x .leq. b
                              x .leq. 0
         */
-        int n = standForm.nIndices.length;
+        int n = standForm.c.length;
         int m = standForm.b.length;
         
         double[][] aHat = MatrixUtil.copy(standForm.a);
@@ -786,12 +776,13 @@ public class LinearProgramming {
         double[] cHat = Arrays.copyOf(standForm.c, standForm.c.length);
         assert(cHat.length == n);
         
-        int[] nHatIndices = Arrays.copyOf(standForm.nIndices, standForm.nIndices.length);
-        assert(nHatIndices.length == n);
-        
-        // writing in 0-based indexes, the x index of new slack variables
+        // writing in 0-based indexes, the x index of non-basic and basic variables
+        int[] nHatIndices = new int[n]; 
         int[] bHatIndices = new int[m];
         int i;
+        for (i = 0; i < n; ++i) {
+            nHatIndices[i] = i;
+        }
         for (i = 0; i < m; ++i) {
             bHatIndices[i] = n + i;
         }
@@ -948,6 +939,7 @@ public class LinearProgramming {
         int i;
         for (i = 0; i < m; ++i) {
             a2.add(new TDoubleArrayList(Arrays.copyOf(a[i], a[i].length)));
+            assert(a2.get(i).size() == n);
         }
         return a2;
     }
@@ -959,8 +951,20 @@ public class LinearProgramming {
         int i;
         for (i = 0; i < m; ++i) {
             a2[i] = a.get(i).toArray();
+            assert(a2[i].length == n);
         }
         return a2;
+    }
+    
+    private static String print(List<TDoubleList> a) {
+        StringBuilder sb = new StringBuilder();
+        int m = a.size();
+        int n = a.get(0).size();
+        int i;
+        for (i = 0; i < m; ++i) {
+            sb.append(FormatArray.toString(a.get(i).toArray(), "%.3f")).append("\n");
+        }
+        return sb.toString();
     }
         
     private static TDoubleList copy(double[] b) {
@@ -1043,31 +1047,14 @@ public class LinearProgramming {
          */
         @Override
         public double[] computeBasicSolution() {
-            /*
-            following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
-
-             Example of a linear program in Standard Form:
-              maximize 3*x1 + x2 + 2*x3
-              subject to:
-                       x1 + x2 + 3*x3 .leq. 30
-                       2*x1 + 2*x2 + 5*x3 .leq. 24
-                       4*x1 + x2 + 2*x3 .leq. 36
-                       x1, x2, x3 .geq. 0
-
-                int[] bIndices = new int[]{-1,-1,-1}; or 3,4,5 ?
-                double[] b = new double[]{30, 24, 36}; 
-                int[] nIndices = new int[]{0, 1, 2}; 
-                double[] c = new double[]{3, 1, 2}; 
-                double[][] a = new double[3][]; 
-                a[0] = new double[]{1, 1, 3};
-                a[1] = new double[]{2, 2, 5};
-                a[2] = new double[]{4, 1, 2};
-            */  
+            //following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
             double[] xt = new double[a.length + b.length];
             int i;
             for (i = 0; i < b.length; ++i) {
                 //x_i = b_i - summation_j_in_nIndices(a_i_j*x_j) for i in bIndices
                 // setting rhs x to 0
+                // in standard form, x is only the non-basic variables, no basic variables,
+                //   so can use the index i.
                 xt[i] = b[i];
             }
             this.x = xt;
@@ -1080,6 +1067,12 @@ public class LinearProgramming {
      * maximization of a linear function subject to linear *equalities*
      */
     public static class SlackForm extends FormTuple {
+        
+        /**
+         * denotes the indices of the nonbasic variables (rhs vars).
+         * nIndices.length = n.
+         */
+        int[] nIndices;
         
         /**
          * denotes the indices of the basic variables (lhs vars).
@@ -1223,6 +1216,7 @@ public class LinearProgramming {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(super.toString());
+            sb.append("nIndices=").append(Arrays.toString(nIndices)).append("\n");
             sb.append("bIndices=").append(Arrays.toString(bIndices)).append("\n");
             if (state != null) {
                 sb.append("STATE=").append(state.name()).append("\n");
@@ -1261,13 +1255,7 @@ public class LinearProgramming {
          * an n-dimensional vector
          */
         double[] c;
-        
-        /**
-         * denotes the indices of the nonbasic variables (rhs vars).
-         * nIndices.length = n.
-         */
-        int[] nIndices;
-        
+       
         /**
          * an n-dimensional vector
          */
@@ -1280,8 +1268,8 @@ public class LinearProgramming {
         
         /**         
          * @param a mXn matrix of constraint coefficients.   Careful with the signs
-         * of the values. see eqn (29.43) of Cormen et al.  
-         * <pre> x_i = b_i - summation_j_in_nIndices(a_i_j*x_j) for i in bIndices. </pre>
+         * of the values for the SlackForm. see eqn (29.43) of Cormen et al.  
+         * <pre> x_i = b_i - summation_j(a_i_j*x_j) for i in bIndices. </pre>
          * @param b m-dimensional vector of constraint inequalities
          * @param c n-dimensional vector of objective coefficients.
          * @param v an optional term sometimes present in the objective.  can be 0 if no v is used.
@@ -1298,10 +1286,6 @@ public class LinearProgramming {
             this.c = Arrays.copyOf(c, c.length);
             this.v = v;
             
-            this.nIndices = new int[n];
-            for (int i = 1; i < n; ++i) {
-                nIndices[i] = i;
-            }
         }
         
         /**
@@ -1335,7 +1319,6 @@ public class LinearProgramming {
             if (x != null) {
                 sb.append("x=").append(FormatArray.toString(x, "%.3f")).append("\n");
             }
-            sb.append("nIndices=").append(Arrays.toString(nIndices)).append("\n");
             return sb.toString();
         }
     }
