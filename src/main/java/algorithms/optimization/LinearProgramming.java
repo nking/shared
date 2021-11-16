@@ -946,7 +946,7 @@ public class LinearProgramming {
         int i, j;
         
         double minBForPosA = Double.POSITIVE_INFINITY;
-        double x0 = 0;
+        
         for (i = 0; i < slackForm.b.length; ++i) {
             if (slackForm.b[i] < 0) {
                 boolean allPosA = true;
@@ -963,11 +963,13 @@ public class LinearProgramming {
                 }
             }
         }
+        
+        double x0 = 0;
         if (minBForPosA < 0) {
             x0 = -minBForPosA;
         }
                                 
-        //also see pg 57 and pg 58 of Matousek
+        //also see end of Section 5.6, pg 57 and pg 58 of Matousek & Gartner "Undegstanding and Using Linear Programming"
         
         //double[] xHat = new double[m + n + 1];
         //System.arraycopy(xBasicSoln, 0, xHat, 1, m + n);
