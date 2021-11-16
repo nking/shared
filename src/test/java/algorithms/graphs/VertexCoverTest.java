@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.optimization.LinearProgramming;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
@@ -59,5 +60,41 @@ public class VertexCoverTest extends TestCase {
         assertEquals(expected.size(), cover.size());
         assertTrue(expected.containsAll(cover.toArray()));
     }
+
+    /**
+     * Test of copy method, of class VertexCover.
+     */
+    public void testCopy() {
+        
+    }
+
+    /**
+     * Test of reverse method, of class VertexCover.
+     */
+    public void testReverse() {
+        
+    }
+
+    /**
+     * Test of createLinearProgramInStandardForm method, of class VertexCover.
+     */
+    public void testCreateLinearProgramInStandardForm() {
+        
+    }
+
+    /**
+     * Test of extractEdges method, of class VertexCover.
+     */
+    public void testExtractEdges() {
+        
+    }
     
+    
+    /**
+     * Test of approxWeighted method, of class VertexCover.
+     */
+    public void testApproxWeighted() {
+        
+    }
+
 }
