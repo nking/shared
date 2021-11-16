@@ -55,7 +55,7 @@ algebraic solution: write the linear program in slack form which express the equ
         involves making a basic variable nonbasic and a nonbasic variable basic using
         "pivot" operations.
         
-Simplext Method:
+Simplex Method:
       Notation:  variables x1, x2, ... xn
                  a realization of the variables: xHat0, xHat1, ...xHatn
       `
