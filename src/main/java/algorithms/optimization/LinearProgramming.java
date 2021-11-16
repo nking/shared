@@ -918,8 +918,8 @@ public class LinearProgramming {
                     x_j >= 0 for j=1:n  
     
         If all of b_i are non-negative, then the minimum x0 for a feasible solution is x0=0.
-        If any of b_i are negative, then the minimum x0 for a feasible solution is 
-            the smallest b_i:
+        If any of b_i are negative (and all of the constraint's 'a' coefficients are
+        non-negative), then the minimum x0 for a feasible solution is the smallest b_i:
             e.g. 
              a11*x1 + a12*x2 - x0 <= -10
              a21*x1          - x0 <= -5
