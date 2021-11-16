@@ -943,11 +943,28 @@ public class LinearProgramming {
         int m = slackForm.b.length;
         int n = slackForm.c.length;
                 
-  // editing for case when a constract has negative a coefficients and negative b      
-        double minB = MiscMath0.findMin(standForm.b);
+        int i, j;
+        
+        double minBForPosA = Double.POSITIVE_INFINITY;
         double x0 = 0;
-        if (minB < 0) {
-            x0 = -minB;
+        for (i = 0; i < slackForm.b.length; ++i) {
+            if (slackForm.b[i] < 0) {
+                boolean allPosA = true;
+                for (j = 0; j < slackForm.a[i].length; ++j) {
+                    if (slackForm.a[i][j] < 0) {
+                        allPosA = false;
+                        break;
+                    }
+                }
+                if (allPosA) {
+                    if (slackForm.b[i] < minBForPosA) {
+                        minBForPosA = slackForm.b[i];
+                    }
+                }
+            }
+        }
+        if (minBForPosA < 0) {
+            x0 = -minBForPosA;
         }
                                 
         //also see pg 57 and pg 58 of Matousek
@@ -957,7 +974,6 @@ public class LinearProgramming {
         //xHat[0] = x0;
         
         int[] nHatIndices = new int[n + 1];
-        int i;
         for (i = 1; i < n; ++i) {
             nHatIndices[i] = slackForm.nIndices[i-1] + 1;
         }
