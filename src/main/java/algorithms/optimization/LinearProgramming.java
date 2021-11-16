@@ -925,11 +925,14 @@ public class LinearProgramming {
              a21*x1          - x0 <= -5
                       a22*x2 - x0 <= 2
               if x1,x2=0, then x0=10 which is non-negative
+              but if any of the coefficients of 'a' are negative in the
+                constraint with a negative b, then the non-basic variables in
+                that constraint (the other x's) can be > 0 and x0 can be 0.
     
     Sect 29.5 of Cormen et al., method INITIALIZE-SIMPLEX(A, b,c)
     line 4:   form L_AUX by adding -x0 to the LHS of each equation and setting the
               objective function to -x0.
-    </pre>
+    </pre>    
     */
     protected SlackForm createAuxiliarySlackForm(StandardForm standForm) {
         
@@ -940,6 +943,7 @@ public class LinearProgramming {
         int m = slackForm.b.length;
         int n = slackForm.c.length;
                 
+  // editing for case when a constract has negative a coefficients and negative b      
         double minB = MiscMath0.findMin(standForm.b);
         double x0 = 0;
         if (minB < 0) {
