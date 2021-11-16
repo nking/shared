@@ -351,9 +351,7 @@ public class LinearProgramming {
         }
         
         // arrive here if any of b[i] were negative in the slack form
-        
-        // ==== this area of the code is not yet tested =========
-               
+                       
         /*
         L is in Standard Form.
         Slack Form L_aux is an alteration of L for n+1 variables", following eqns (29.109) - (29.111)
@@ -369,7 +367,10 @@ public class LinearProgramming {
         //let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
         SlackForm slackFormAux = createAuxiliarySlackForm(standForm);
         
-        //System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
+        System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
+        
+        System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
+            0, slackFormAux.nIndices[0], lIdx, slackFormAux.bIndices[lIdx]);
         
         //L_aux has n+1 nonbasic variables and m basic variables
         //(N, B, A, b, c, v) = pivot((N, B, A, b, c, v, lIdx, 0)
@@ -378,11 +379,12 @@ public class LinearProgramming {
         //the basic solution is now feasible for L_aux
         double[] xBasicSoln = slackFormAux.computeBasicSolution();
         
-        //System.out.printf("init: L_aux after pivot=\n%s\n", slackFormAux.toString());
+        System.out.printf("init: L_aux after pivot=\n%s\n",
+            slackFormAux.toString());
         
         boolean isFeasible = slackFormAux.isFeasible();
-        //System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
-        //System.out.println("   isFeasible=" + isFeasible);
+        System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
+        System.out.println("   isFeasible=" + isFeasible);
         slackFormAux.state = STATE.FEASIBLE;
          
         /*        
@@ -413,7 +415,11 @@ public class LinearProgramming {
             slackForm2 = pivot(N, B, A, b, c, v, lIdx, eIdx);
         
         */
+        
         TIntSet positiveCIndexes = findPositiveCIndexes(slackFormAux);
+        
+        System.out.printf("posIndexes of C=%s\n", Arrays.toString(positiveCIndexes.toArray()));
+        
         double[] delta = new double[slackFormAux.bIndices.length];
         int eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
         
@@ -437,7 +443,8 @@ public class LinearProgramming {
                 }
             }
             
-            //System.out.printf("init: eIdx=%d lIdx=%d\n", eIdx, lIdx);
+            System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
+                eIdx, slackFormAux.nIndices[eIdx], lIdx, slackFormAux.bIndices[lIdx]);
             
             if (Double.isInfinite(minDelta)) {
                 slackFormAux.state = STATE.UNBOUNDED;
@@ -446,13 +453,13 @@ public class LinearProgramming {
             
             slackFormAux = pivot(slackFormAux, lIdx, eIdx);
             
-            //System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
+            System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
                         
             positiveCIndexes = findPositiveCIndexes(slackFormAux);
             
             eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
             
-            //System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
+            System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
         }
         
         xBasicSoln = slackFormAux.computeBasicSolution();
@@ -460,15 +467,21 @@ public class LinearProgramming {
             slackFormAux.state = STATE.UNFEASIBLE;
             return slackFormAux;
         }
-        
+                
         slackFormAux.state = STATE.OPTIMAL;
         
         // remove x0 and restore original objective function
         SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux);
+        double[] x = optimal.computeBasicSolution();
+        System.out.printf("init: after truncation\n%s\n", optimal.toString());
+        
+        System.out.printf("init: optimal isFeasible=%b\n%s\n", 
+            optimal.isFeasible(), optimal.toString());
+        
         optimal.state = STATE.FEASIBLE;
         
         //System.out.printf("init: slack form =\n%s\n", slackFormAux.toString());
-        //System.out.printf("init: optimal =\n%s\n", optimal.toString());
+        
         
         return optimal;
     }
@@ -645,7 +658,7 @@ public class LinearProgramming {
     }
     
     /**
-     * Give a linear program L whose objective is minimization or maximization.
+     * Given a linear program L whose objective is minimization or maximization.
      * and which has constraints that are .leq., .eq., or .geq. the 
      * constants in b, convert L into standard form.
      * Standard form has a maximization objective, nonnegative constraints
@@ -940,11 +953,14 @@ public class LinearProgramming {
         
         SlackForm slackForm = convertConstraints(standForm);
         
+        System.out.printf("SlackForm=%S\n", slackForm.toString());
+        
         int m = slackForm.b.length;
         int n = slackForm.c.length;
                 
         int i, j;
         
+        /*
         double minBForPosA = Double.POSITIVE_INFINITY;
         
         for (i = 0; i < slackForm.b.length; ++i) {
@@ -968,38 +984,37 @@ public class LinearProgramming {
         if (minBForPosA < 0) {
             x0 = -minBForPosA;
         }
+        */
                                 
         //also see end of Section 5.6, pg 57 and pg 58 of Matousek & Gartner "Undegstanding and Using Linear Programming"
         
         //double[] xHat = new double[m + n + 1];
         //System.arraycopy(xBasicSoln, 0, xHat, 1, m + n);
-        //xHat[0] = x0;
-        
+               
         int[] nHatIndices = new int[n + 1];
-        for (i = 1; i < n; ++i) {
-            nHatIndices[i] = slackForm.nIndices[i-1] + 1;
+        for (i = 1; i < nHatIndices.length; ++i) {
+            nHatIndices[i] = slackForm.nIndices[i - 1] + 1;
+        }
+        int[] bHatIndices = Arrays.copyOf(slackForm.bIndices, m);
+        for (i = 0; i < m; ++i) {
+            bHatIndices[i]++;
         }
         
         double[] cHat = new double[n + 1];
-        for (i = 1; i < n; ++i) {
-            cHat[i] = slackForm.c[i-1];
-        }
-        cHat[0] = -x0;
-        
-        int[] bHatIndices = Arrays.copyOf(slackForm.bIndices, m);
-        
+        cHat[0] = -1;
+                
         double[] bHat = Arrays.copyOf(slackForm.b, m);
         
         double[][] aHat = new double[m][];//mX(n+1)
         for (i = 0; i < m; ++i) {
             aHat[i] = new double[n+1];
             System.arraycopy(slackForm.a[i], 0, aHat[i], 1, n);
-            aHat[i][0] = -x0;
+            aHat[i][0] = -1;
         }
         
-        double[] xBasicSoln = slackForm.computeBasicSolution();
-        double eval = slackForm.evaluateObjective();
-        double vHat = eval;
+        //double[] xBasicSoln = slackForm.computeBasicSolution();
+        //double eval = slackForm.evaluateObjective();
+        double vHat = 0;//eval;
         
         SlackForm slackForm2 = new SlackForm(nHatIndices, bHatIndices, 
             aHat, bHat, cHat, vHat);
@@ -1007,42 +1022,58 @@ public class LinearProgramming {
         return slackForm2;
     }
     
+    // remove x0 and restore original objective function
     private SlackForm truncateAuxiliarySlackForm(SlackForm slackFormAux) {
         
         int m = slackFormAux.bIndices.length;
         int n = slackFormAux.nIndices.length;
         
-        int i;
-        
-        double[] xBasicSoln = slackFormAux.computeBasicSolution();
-                        
-        //also see pg 57 and pg 58 of Matousek
-        
-        double[] xHat = new double[m + n - 1];
-        System.arraycopy(xBasicSoln, 1, xHat, 0, m + n - 1);
-        double eval = slackFormAux.evaluateObjective();
-        double vHat = eval;
-        int[] nHatIndices = new int[n - 1];
+        int i, i2 = 0;
+        int[] nHatIndices = new int[slackFormAux.nIndices.length - 1];
         for (i = 0; i < n; ++i) {
-            nHatIndices[i] = slackFormAux.nIndices[i+1] + 1;
+            if (slackFormAux.nIndices[i] != 0) {
+                nHatIndices[i2] = slackFormAux.nIndices[i] - 1;
+                i2++;
+            }
+        }
+        int[] bHatIndices = new int[slackFormAux.bIndices.length];
+        for (i = 0; i < m; ++i) {
+            bHatIndices[i] = slackFormAux.bIndices[i] - 1;
         }
         
-        double[] cHat = new double[n - 1];
-        for (i = 0; i < n; ++i) {
-            cHat[i] = slackFormAux.c[i+1];
-        }
-        
-        int[] bHatIndices = Arrays.copyOf(slackFormAux.bIndices, m);
-        double[] bHat = Arrays.copyOf(slackFormAux.b, m);
+        double[] bHat = Arrays.copyOf(slackFormAux.b, slackFormAux.b.length);
         
         double[][] aHat = new double[m][];//mX(n-1)
+        int j;
         for (i = 0; i < m; ++i) {
             aHat[i] = new double[n-1];
-            System.arraycopy(slackFormAux.a[i], 1, aHat[i], 0, n-1);
+            i2 = 0;
+            for (j = 0; j < n; ++j) {
+                if (slackFormAux.nIndices[j] != 0) {
+                    aHat[i][i2] = slackFormAux.a[i][j];
+                    i2++;
+                }
+            }
         }
         
+        /*
+        x2 =  4/5  +  x1/5  +  x4/5 
+        x3 = 14/5  - 9x1/5  +  x4/5 
+                      |
+        x = 0, 4/5, 14/5, 0
+        
+        
+                                            
+        z = -4/5 + 9x1 - x4/5 
+        */
+        
+        // calc objective
+        double[] cHat = new double[n - 1];
+        
+        in progress
+        
         SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, 
-            aHat, bHat, cHat, vHat);
+            aHat, bHat, cHat, 0);
          
         return slackForm;
     }

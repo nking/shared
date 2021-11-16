@@ -245,7 +245,76 @@ public class LinearProgrammingTest extends TestCase {
         assertTrue(Math.abs(eval - 0) < 1e-11);
     }
     
-    public void testConvertLinearProgramToStandardForm() {
+    public void testAuxiliary2() {
+        /*
+        Standard Form:
+           maximize  2*x1 - x2
+               subject to 2*x1 -   x2  .leq.  2
+                            x1 - 5*x2  .leq.  -4
+                          x1, x2 .geq. 0
+        */
+        double[][] a = new double[2][];
+        a[0] = new double[]{2, -1};
+        a[1] = new double[]{1, -5};
+        double[] b = new double[]{2, -4};
+        double[] c = new double[]{2, -1};
+        double v = 0;
+        StandardForm standForm = new StandardForm(a, b, c, v);
+        
+        LinearProgramming lp = new LinearProgramming();
+        SlackForm initSlackForm = lp.createAuxiliarySlackForm(standForm);
+        double[] xBasicSoln = initSlackForm.computeBasicSolution();
+        double eval = initSlackForm.evaluateObjective();
+        boolean isFeasible = initSlackForm.isFeasible();
+        System.out.printf("createAuxiliarySlackForm=\n%s\n", initSlackForm.toString());
+        System.out.printf("eval=%.3f isFeasible=%b\n", eval, isFeasible);
+        assertTrue(Math.abs(eval - 0) < 1e-11);
+        
+        double[][] expectedA = new double[2][];
+        expectedA[0] = new double[]{-1, 2, -1};
+        expectedA[1] = new double[]{-1, 1, -5};
+        double[] expectedB = new double[]{2, -4};
+        double[] expectedC = new double[]{-1, 0, 0};
+        double expectedV = 0;
+        double[] expectedX = new double[]{0.000, 0.000, 0.000, 2.000, -4.000};
+        int[] expectedNIndices = new int[]{0, 1, 2};
+        int[] expectedBIndices = new int[]{3, 4};
+        boolean expectedIsFeasible = false;
+        assertEquals(expectedA.length, initSlackForm.a.length);
+        assertEquals(expectedA[0].length, initSlackForm.a[0].length);
+        assertEquals(expectedB.length, initSlackForm.b.length);
+        assertEquals(expectedC.length, initSlackForm.c.length);
+        assertEquals(expectedNIndices.length, initSlackForm.nIndices.length);
+        assertEquals(expectedBIndices.length, initSlackForm.bIndices.length);
+        assertTrue(Arrays.equals(expectedBIndices, initSlackForm.bIndices));
+        assertTrue(Arrays.equals(expectedNIndices, initSlackForm.nIndices));
+        double diff, tol = 1e-7;
+        int i, j;
+        for (i = 0; i < expectedA.length; ++i) {
+            for (j = 0; j < expectedA[i].length; ++j) {
+                diff = Math.abs(expectedA[i][j] - initSlackForm.a[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        for (i = 0; i < expectedC.length; ++i) {
+            diff = Math.abs(expectedC[i] - initSlackForm.c[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < expectedB.length; ++i) {
+            diff = Math.abs(expectedB[i] - initSlackForm.b[i]);
+            assertTrue(diff < tol);
+        }
+        assertEquals(expectedIsFeasible, isFeasible);
+        diff = Math.abs(expectedV - initSlackForm.v);
+        assertTrue(diff < tol);
+        for (i = 0; i < expectedX.length; ++i) {
+            diff = Math.abs(expectedX[i] - initSlackForm.x[i]);
+            assertTrue(diff < tol);
+        }
+        
+        //=======
+        SlackForm slackForm = lp.initializeSimplex(standForm);
+    }
         
         /*
         Example that is not yet in Standard Form:
