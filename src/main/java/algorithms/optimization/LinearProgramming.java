@@ -139,8 +139,8 @@ Simplext Method:
      subject to: A*x .leq. b and x .geq. 0
  A Primal Minimization LP:
      min: y^T*b
-     subject to: y^T*A .geq. c^T and y .geq. 0
-     
+     subject to: y^T*A .geq. c^T and y .geq. 0    
+
 Example:
    A Primal Standard Form LP  |  Dual Minimization LP
       max: x1 + x2            |    min: 4*y1 + 12*y2 + y3
@@ -240,7 +240,7 @@ public class LinearProgramming {
         int lIdx = -1, i;
         double minDelta; // lIdx is chosen with this
         
-        // iterate until all c's are positive.  b's should be positive too.
+        // iterate until all c's are positive
         
         //choose index lIdx in bIndices that minimizes delta[i]
         while (eIdx > -1) {
@@ -349,6 +349,10 @@ public class LinearProgramming {
             
             return slackForm;
         }
+        
+        // arrive here if any of b[i] were negative in the slack form
+        
+        // ==== this area of the code is not yet tested =========
                
         /*
         L is in Standard Form.
@@ -360,10 +364,6 @@ public class LinearProgramming {
         
         Form L_aux by adding -x0 to the LHS of each equation
             and setting the objective function to -x0
-        
-        This should accomplish that:
-            set all RHS x's to 0.
-            when z==v, the summation_j_in_nIndices(c_j*x_j) is 0.
         */
         
         //let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
@@ -912,33 +912,48 @@ public class LinearProgramming {
     /*
         L is in standard Form.
         L_aux adds an artificial variable x0, following eqns (29.109) - (29.111)
-        
-        maximize: -x0
+    <pre>    
+        maximize: -x0  (which is the same as minimize x0)
         subject to: summation_j=1:n(a_i_j*x_j) - x0 <= b_i for i=1:m
-                    x_j >= 0 for j=1:n     
-        
-        This should accomplish that:
-            set all RHS x's to 0.
-            when z==v, the summation_j_in_nIndices(c_j*x_j) is 0.
+                    x_j >= 0 for j=1:n  
+    
+        If all of b_i are non-negative, then the minimum x0 for a feasible solution is x0=0.
+        If any of b_i are negative, then the minimum x0 for a feasible solution is 
+            the smallest b_i:
+            e.g. 
+             a11*x1 + a12*x2 - x0 <= -10
+             a21*x1          - x0 <= -5
+                      a22*x2 - x0 <= 2
+              if x1,x2=0, then x0=10 which is non-negative
+    
+    Sect 29.5 of Cormen et al., method INITIALIZE-SIMPLEX(A, b,c)
+    line 4:   form L_AUX by adding -x0 to the LHS of each equation and setting the
+              objective function to -x0.
+    </pre>
     */
-    private SlackForm createAuxiliarySlackForm(StandardForm standForm) {
+    protected SlackForm createAuxiliarySlackForm(StandardForm standForm) {
+        
+        System.out.printf("createAuxiliarySlackForm\n");
         
         SlackForm slackForm = convertConstraints(standForm);
         
         int m = slackForm.b.length;
         int n = slackForm.c.length;
-        
-        int i;
-        
-        double[] xBasicSoln = slackForm.computeBasicSolution();
-                        
+                
+        double minB = MiscMath0.findMin(standForm.b);
+        double x0 = 0;
+        if (minB < 0) {
+            x0 = -minB;
+        }
+                                
         //also see pg 57 and pg 58 of Matousek
         
-        double[] xHat = new double[m + n + 1];
-        System.arraycopy(xBasicSoln, 0, xHat, 1, m + n);
-        double eval = slackForm.evaluateObjective();
-        double vHat = eval;
+        //double[] xHat = new double[m + n + 1];
+        //System.arraycopy(xBasicSoln, 0, xHat, 1, m + n);
+        //xHat[0] = x0;
+        
         int[] nHatIndices = new int[n + 1];
+        int i;
         for (i = 1; i < n; ++i) {
             nHatIndices[i] = slackForm.nIndices[i-1] + 1;
         }
@@ -947,6 +962,7 @@ public class LinearProgramming {
         for (i = 1; i < n; ++i) {
             cHat[i] = slackForm.c[i-1];
         }
+        cHat[0] = -x0;
         
         int[] bHatIndices = Arrays.copyOf(slackForm.bIndices, m);
         
@@ -956,7 +972,12 @@ public class LinearProgramming {
         for (i = 0; i < m; ++i) {
             aHat[i] = new double[n+1];
             System.arraycopy(slackForm.a[i], 0, aHat[i], 1, n);
+            aHat[i][0] = -x0;
         }
+        
+        double[] xBasicSoln = slackForm.computeBasicSolution();
+        double eval = slackForm.evaluateObjective();
+        double vHat = eval;
         
         SlackForm slackForm2 = new SlackForm(nHatIndices, bHatIndices, 
             aHat, bHat, cHat, vHat);

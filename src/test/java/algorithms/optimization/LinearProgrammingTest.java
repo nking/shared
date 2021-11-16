@@ -73,8 +73,8 @@ public class LinearProgrammingTest extends TestCase {
         x = slackForm2.computeBasicSolution();
         double z = slackForm2.evaluateObjective();
         
-        System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
-            eIdx, lIdx, slackForm2.toString());
+        //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
+        //    eIdx, lIdx, slackForm2.toString());
         
         double expectedV = 27;
         double expectedZ = 27;
@@ -102,9 +102,9 @@ public class LinearProgrammingTest extends TestCase {
         x = slackForm2.computeBasicSolution();
         z = slackForm2.evaluateObjective();
         
-        System.out.printf("pivoted eIdx=%d, lIdx=%d obj=%.4f"
-            + " slackForm=\n%s\n", 
-            eIdx, lIdx, slackForm2.evaluateObjective(), slackForm2.toString());
+        //System.out.printf("pivoted eIdx=%d, lIdx=%d obj=%.4f"
+        //    + " slackForm=\n%s\n", 
+        //    eIdx, lIdx, slackForm2.evaluateObjective(), slackForm2.toString());
         
         expectedV = 111/4.;//27.75
         expectedZ = 111/4.;
@@ -132,8 +132,8 @@ public class LinearProgrammingTest extends TestCase {
         x = slackForm2.computeBasicSolution();
         z = slackForm2.evaluateObjective();
         
-        System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
-            eIdx, lIdx, slackForm2.toString());
+        //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
+        //    eIdx, lIdx, slackForm2.toString());
         
         expectedV = 28;
         expectedZ = 28;
@@ -183,7 +183,7 @@ public class LinearProgrammingTest extends TestCase {
         
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("result=\n%s\n", soln.toString());
+        //System.out.printf("result=\n%s\n", soln.toString());
         
         
         double[] expectedX = new double[]{8, 4, 0, 18, 0, 0};
@@ -215,6 +215,34 @@ public class LinearProgrammingTest extends TestCase {
               4*x1 + x2 + 2*x3 .leq. 36
               x1, x2, x3 .geq. 0
         */
+    }
+    
+    public void testAuxiliary() {
+        /*
+        Standard Form:
+           maximize  2*x1 - 3*x2 + 3*x3
+               subject to x1 +   x2 -   x3 .leq.  7
+                          x1 - 2*x2 + 2*x3 .leq.  4
+                          -x1 -  x2 +   x3 .leq. -7
+                          x1, x2, and x3 .geq. 0
+        */
+        double[][] a = new double[3][];
+        a[0] = new double[]{-1, -1, 1};
+        a[1] = new double[]{-1, 2, -2};
+        a[2] = new double[]{1, 1, -1};
+        double[] b = new double[]{7, 4, -7};
+        double[] c = new double[]{2, -3, 3};
+        double v = 0;
+        StandardForm standForm = new StandardForm(a, b, c, v);
+        
+        LinearProgramming lp = new LinearProgramming();
+        SlackForm initSlackForm = lp.createAuxiliarySlackForm(standForm);
+        double[] xBasicSoln = initSlackForm.computeBasicSolution();
+        double eval = initSlackForm.evaluateObjective();
+        double vHat = eval;
+        //System.out.printf("createAuxiliarySlackForm=\n%s\n", initSlackForm.toString());
+        //System.out.printf("eval=%.3f\n", eval);
+        assertTrue(Math.abs(eval - 0) < 1e-11);
     }
     
     public void testConvertLinearProgramToStandardForm() {
@@ -288,8 +316,8 @@ public class LinearProgrammingTest extends TestCase {
         }
         
         SlackForm slackForm = LinearProgramming.convertConstraints(standForm);
-        System.out.printf("standForm=\n%s\n", standForm.toString());
-        System.out.printf("slackForm=\n%s\n", slackForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
+        //System.out.printf("slackForm=\n%s\n", slackForm.toString());
         
         // slackform b should be same as original linear problem
         assertEquals(b.length, slackForm.b.length);
@@ -411,12 +439,13 @@ public class LinearProgrammingTest extends TestCase {
         StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
             isMaximization, a, b, c, constraintComparisons, nonnegativityConstraints);
         
-        System.out.printf("standForm=\n%s\n", standForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
         
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("soln=\n%s\n", soln.toString());
-        System.out.printf("z=%.3f\n", soln.evaluateObjective());
+        //System.out.printf("soln=\n%s\n", soln.toString());
+        //System.out.printf("z=%.3f\n", soln.evaluateObjective());
+        
         /*
         v=16.000
         c=-1.000, -3.000, -4.000, -1.000, 0.000, -4.000, -1.000 
@@ -503,12 +532,13 @@ public class LinearProgrammingTest extends TestCase {
         StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
             isMaximization, a, b, c, constraintComparisons, nonnegativityConstraints);
         
-        System.out.printf("standForm=\n%s\n", standForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
         
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("soln=\n%s\n", soln.toString());
-        System.out.printf("z=%.3f\n", soln.evaluateObjective());
+        //System.out.printf("soln=\n%s\n", soln.toString());
+        //System.out.printf("z=%.3f\n", soln.evaluateObjective());
+        
         /*
         [junit] soln=
         [junit] v=16.000
