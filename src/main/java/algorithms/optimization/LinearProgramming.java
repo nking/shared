@@ -2,7 +2,6 @@ package algorithms.optimization;
 
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Misc0;
-import algorithms.misc.MiscMath0;
 import algorithms.optimization.LinearProgramming.SlackForm.STATE;
 import algorithms.sort.MiscSorter;
 import algorithms.util.FormatArray;
@@ -222,7 +221,7 @@ public class LinearProgramming {
       
         SlackForm slackForm = initializeSimplex(standForm);
         
-        System.out.printf("initialized:\n%s\n", slackForm.toString());
+        //System.out.printf("initialized:\n%s\n", slackForm.toString());
         
         if (!slackForm.state.equals(STATE.FEASIBLE) && !slackForm.state.equals(STATE.OPTIMAL)) {
             System.out.println("exiting: " + slackForm.state.name());
@@ -369,10 +368,10 @@ public class LinearProgramming {
         //let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
         SlackForm slackFormAux = createAuxiliarySlackForm(standForm);
         
-        System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
+        //System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
         
-        System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
-            0, slackFormAux.nIndices[0], lIdx, slackFormAux.bIndices[lIdx]);
+        //System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
+        //    0, slackFormAux.nIndices[0], lIdx, slackFormAux.bIndices[lIdx]);
         
         //L_aux has n+1 nonbasic variables and m basic variables
         //(N, B, A, b, c, v) = pivot((N, B, A, b, c, v, lIdx, 0)
@@ -381,12 +380,12 @@ public class LinearProgramming {
         //the basic solution is now feasible for L_aux
         double[] xBasicSoln = slackFormAux.computeBasicSolution();
         
-        System.out.printf("init: L_aux after pivot=\n%s\n",
-            slackFormAux.toString());
+        //System.out.printf("init: L_aux after pivot=\n%s\n",
+        //    slackFormAux.toString());
         
         boolean isFeasible = slackFormAux.isFeasible();
-        System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
-        System.out.println("   isFeasible=" + isFeasible);
+        //System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
+        //System.out.println("   isFeasible=" + isFeasible);
         slackFormAux.state = STATE.FEASIBLE;
          
         /*        
@@ -420,7 +419,7 @@ public class LinearProgramming {
         
         TIntSet positiveCIndexes = findPositiveCIndexes(slackFormAux);
         
-        System.out.printf("posIndexes of C=%s\n", Arrays.toString(positiveCIndexes.toArray()));
+        //System.out.printf("posIndexes of C=%s\n", Arrays.toString(positiveCIndexes.toArray()));
         
         double[] delta = new double[slackFormAux.bIndices.length];
         int eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
@@ -445,8 +444,8 @@ public class LinearProgramming {
                 }
             }
             
-            System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
-                eIdx, slackFormAux.nIndices[eIdx], lIdx, slackFormAux.bIndices[lIdx]);
+            //System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
+            //    eIdx, slackFormAux.nIndices[eIdx], lIdx, slackFormAux.bIndices[lIdx]);
             
             if (Double.isInfinite(minDelta)) {
                 slackFormAux.state = STATE.UNBOUNDED;
@@ -455,13 +454,13 @@ public class LinearProgramming {
             
             slackFormAux = pivot(slackFormAux, lIdx, eIdx);
             
-            System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
+            //System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
                         
             positiveCIndexes = findPositiveCIndexes(slackFormAux);
             
             eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
             
-            System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
+            //System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
         }
         
         xBasicSoln = slackFormAux.computeBasicSolution();
@@ -476,15 +475,14 @@ public class LinearProgramming {
         SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux,
             standForm);
         double[] x = optimal.computeBasicSolution();
-        System.out.printf("init: after truncation\n%s\n", optimal.toString());
+        //System.out.printf("init: after truncation\n%s\n", optimal.toString());
         
-        System.out.printf("init: optimal isFeasible=%b\n%s\n", 
-            optimal.isFeasible(), optimal.toString());
+        //System.out.printf("init: optimal isFeasible=%b\n%s\n", 
+        //    optimal.isFeasible(), optimal.toString());
         
         optimal.state = STATE.OPTIMAL;
         
         //System.out.printf("init: slack form =\n%s\n", slackFormAux.toString());
-        
         
         return optimal;
     }
@@ -952,11 +950,11 @@ public class LinearProgramming {
     */
     protected SlackForm createAuxiliarySlackForm(StandardForm standForm) {
         
-        System.out.printf("createAuxiliarySlackForm\n");
+        //System.out.printf("createAuxiliarySlackForm\n");
         
         SlackForm slackForm = convertConstraints(standForm);
         
-        System.out.printf("SlackForm=%S\n", slackForm.toString());
+        //System.out.printf("SlackForm=%S\n", slackForm.toString());
         
         int m = slackForm.b.length;
         int n = slackForm.c.length;
@@ -1347,13 +1345,13 @@ public class LinearProgramming {
          * denotes the indices of the nonbasic variables (rhs vars).
          * nIndices.length = n.
          */
-        int[] nIndices;
+        public int[] nIndices;
         
         /**
          * denotes the indices of the basic variables (lhs vars).
          * bIndices.length = m.
          */
-        final int[] bIndices;
+        public final int[] bIndices;
         
         public static enum STATE {
             UNBOUNDED, UNFEASIBLE, FEASIBLE, OPTIMAL;
@@ -1519,27 +1517,27 @@ public class LinearProgramming {
         /**
          * mXn matrix
          */
-        double[][] a;
+        public double[][] a;
         
         /**
          * an m-dimensional vector
          */
-        double[] b;
+        public double[] b;
         
         /**
          * an n-dimensional vector
          */
-        double[] c;
+        public double[] c;
        
         /**
          * an n-dimensional vector
          */
-        double[] x = null;
+        public double[] x = null;
         
         /**
          * an optional term v is sometimes present in the objective
          */
-        double v = 0;
+        public double v = 0;
         
         /**         
          * @param a mXn matrix of constraint coefficients.   Careful with the signs

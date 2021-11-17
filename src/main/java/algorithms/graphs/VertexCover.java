@@ -3,13 +3,10 @@ package algorithms.graphs;
 import algorithms.optimization.LinearProgramming;
 import algorithms.optimization.LinearProgramming.SlackForm;
 import algorithms.optimization.LinearProgramming.StandardForm;
-import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -116,9 +113,9 @@ public class VertexCover {
     }
     
     /**
-     * find a minimum weighted vertex cover for a weighted undirected graph.  
-     * this can be a 2-approximate algorithm
-     * if the linear programming implementation used has polynomial runtime.
+     * find a minimum weighted vertex cover for a weighted undirected graph  
+     * using a 2-approximate algorithm
+     *(though the linear programming implementation used does not have polynomial runtime).
      *
      * A vertex cover is a subset of a graph's vertices which represents at least one vertex 
      * from every edge in the full graph.  The given vertexes have weights
@@ -132,7 +129,7 @@ public class VertexCover {
      * @param weights the weights of each vertex
      * @return the minimum weighted vertex cover for graph G represented by adjMap with vertex weights.
      */
-    public TIntSet approxWeighted(TIntObjectMap<TIntSet> adjMap, double[] weights) {
+    public TIntSet approx2Weighted(TIntObjectMap<TIntSet> adjMap, double[] weights) {
         
         /*
         for the linear program:
@@ -157,7 +154,7 @@ public class VertexCover {
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         double[] x = soln.computeBasicSolution();
         
-        System.out.printf("x=%s\n", FormatArray.toString(x, "%.3f"));
+        //System.out.printf("x=%s\n", FormatArray.toString(x, "%.3f"));
         
         TIntSet c = new TIntHashSet();
         int i;
@@ -243,19 +240,17 @@ public class VertexCover {
             a[i] = new double[nV];
             a[i][u] = 1;
             a[i][v] = 1;
-            b[i] = 1;
         }
         int i2;
         for (i = 0, i2=nE; i < nV; ++i, ++i2) {
             a[i2] = new double[nV];
             a[i2][i] = 1;
-            b[i2] = 1;
         }
         
         boolean isMaximization = false;
         int[] constraintComparisons = new int[nE + nV];
-        Arrays.fill(constraintComparisons, 1, 0, nE);
-        Arrays.fill(constraintComparisons, -1, nE, nV);
+        Arrays.fill(constraintComparisons, 0, nE, 1);
+        Arrays.fill(constraintComparisons, nE, nV, -1);
         boolean[] nonnegativityConstraints = new boolean[nV];
         Arrays.fill(nonnegativityConstraints, true);
         
@@ -263,8 +258,8 @@ public class VertexCover {
             .convertLinearProgramToStandardForm(isMaximization, a, b, c, 
             constraintComparisons, nonnegativityConstraints);
         
-        System.out.printf("graph as Linear Program in standare form=\n%s\n", standForm.toString());
-        
+        //System.out.printf("graph as Linear Program in standard form=\n%s\n", standForm.toString());
+
         return standForm;
     }
 
