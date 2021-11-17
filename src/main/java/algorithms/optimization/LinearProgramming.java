@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 /**
  * A program to find the optimal values of x if possible given
@@ -471,7 +473,8 @@ public class LinearProgramming {
         slackFormAux.state = STATE.OPTIMAL;
         
         // remove x0 and restore original objective function
-        SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux);
+        SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux,
+            standForm);
         double[] x = optimal.computeBasicSolution();
         System.out.printf("init: after truncation\n%s\n", optimal.toString());
         
@@ -1023,7 +1026,8 @@ public class LinearProgramming {
     }
     
     // remove x0 and restore original objective function
-    private SlackForm truncateAuxiliarySlackForm(SlackForm slackFormAux) {
+    private SlackForm truncateAuxiliarySlackForm(SlackForm slackFormAux,
+        StandardForm origForm) {
         
         int m = slackFormAux.bIndices.length;
         int n = slackFormAux.nIndices.length;
@@ -1057,24 +1061,81 @@ public class LinearProgramming {
         }
         
         /*
-        x2 =  4/5  +  x1/5  +  x4/5 
-        x3 = 14/5  - 9x1/5  +  x4/5 
-                      |
-        x = 0, 4/5, 14/5, 0
+        line 11: create a slack form for L  for which basic soln is feasible.
+        to do so, delete x0 terms from constraints and restore the orig
+        obj func for L.
+        the orig obj func may contain both basic and nonbasic vars.
+        therefore in the obj func we replace each basic var by the RHS of its assoc constraint.
         
+        e.g.
+            L_aux
+                x2 =  4/5 -  x0/5 +  x1/5  +  x4/5 
+                x3 = 14/5 + 4x0/5 - 9x1/5  +  x4/5 
+            truncated L_aux
+                x2 =  4/5 +  x1/5  +  x4/5   NOTE: x2 is x[1[ and x3 is x[2] etc for 0-based indexes
+                x3 = 14/5 - 9x1/5  +  x4/5
+                nIndices=[0, 3] <-- 0-based indexes
+                bIndices=[1, 2] <-- 0-based indexes
         
-                                            
-        z = -4/5 + 9x1 - x4/5 
+            orig obj func = 2x1 - x2
+                          = 2x1 - (4/5 + x1/5 + x4/5)
+                          = -4/5 + 9x1/5 -x4/5
         */
+        TIntSet nHatIdxs = new TIntHashSet(nHatIndices);
+        // orig c indexes are 0 thru origC.length-1
+        TIntIntMap bHatIdxMap = new TIntIntHashMap();
+        int idx;
+        for (i = 0; i < bHatIndices.length; ++i) {
+            idx = bHatIndices[i];
+            bHatIdxMap.put(idx, i);
+        }
         
-        // calc objective
-        double[] cHat = new double[n - 1];
+        TIntIntMap nHatIdxMap = new TIntIntHashMap();
+        for (i = 0; i < nHatIndices.length; ++i) {
+            idx = nHatIndices[i];
+            nHatIdxMap.put(idx, i);
+        }
         
-        in progress
+        double cCoeff;
+        int jIdx, jj;
+        double vHat = origForm.v;
+        double tmp;
+        double[] cHat = new double[origForm.c.length];
+        double[] aHatRow;
+        double bHatI;
+        for (i = 0; i < origForm.c.length; ++i) {
+            if (nHatIdxs.contains(i)) { //i=1
+                cHat[i] = origForm.c[i];
+            }
+        }
+        // any orig c indexes not in nHatIdxs need to be rewritten using the basic constraint
+        for (i = 0; i < origForm.c.length; ++i) {
+            if (!nHatIdxs.contains(i)) {
+                cCoeff = origForm.c[i];
+                //find the row for index in bindices
+                assert(bHatIdxMap.containsKey(i));
+                j = bHatIdxMap.get(i);
+                
+                aHatRow = aHat[j]; 
+                bHatI = bHat[j]; 
+                
+                vHat += (cCoeff * bHatI);
+                
+                for (jj = 0; jj < aHatRow.length; ++jj) {
+                    jIdx = nHatIndices[jj];
+                    assert(nHatIdxMap.containsKey(jIdx));
+                    jIdx = nHatIdxMap.get(jIdx);
+                    tmp = cCoeff * -aHatRow[jj];
+                    cHat[jIdx] += tmp;
+                }
+            }
+        }        
         
         SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, 
-            aHat, bHat, cHat, 0);
-         
+            aHat, bHat, cHat, vHat);
+        
+        //System.out.printf("truncated=\n%s\n", slackForm.toString());
+        
         return slackForm;
     }
 
