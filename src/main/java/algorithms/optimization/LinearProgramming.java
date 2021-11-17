@@ -481,7 +481,7 @@ public class LinearProgramming {
         System.out.printf("init: optimal isFeasible=%b\n%s\n", 
             optimal.isFeasible(), optimal.toString());
         
-        optimal.state = STATE.FEASIBLE;
+        optimal.state = STATE.OPTIMAL;
         
         //System.out.printf("init: slack form =\n%s\n", slackFormAux.toString());
         

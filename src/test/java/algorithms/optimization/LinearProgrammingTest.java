@@ -313,8 +313,54 @@ public class LinearProgrammingTest extends TestCase {
         }
         
         //=======
-        SlackForm slackForm = lp.initializeSimplex(standForm);
+        SlackForm soln = lp.initializeSimplex(standForm);
+        soln.computeBasicSolution();
+        System.out.printf("soln=\n%s\n", soln.toString());
+        
+        expectedV = -4./5.;
+        expectedC = new double[]{1.800, -0.200};
+        expectedB = new double[]{0.800, 2.800};
+        expectedA = new double[2][];
+        expectedA[0] = new double[]{-0.200, -0.200};
+        expectedA[1] = new double[]{1.800, -0.200};
+        expectedX = new double[]{0.000, 0.800, 2.800, 0.000};
+        expectedNIndices = new int[]{0, 3};
+        expectedNIndices = new int[]{1, 2};
+        
+        assertEquals(2, soln.nIndices.length);
+        assertEquals(expectedBIndices.length, soln.bIndices.length);
+    
+        assertEquals(expectedC.length, soln.c.length);
+        assertEquals(expectedB.length, soln.b.length);
+        assertEquals(expectedA.length, soln.a.length);
+        assertEquals(expectedA[0].length, soln.a[0].length);
+        assertEquals(expectedX.length, soln.x.length);
+        
+        assertTrue(Math.abs(expectedV - soln.v) < tol);
+        assertTrue(Arrays.equals(new int[]{0, 3}, soln.nIndices));
+        assertTrue(Arrays.equals(new int[]{1, 2}, soln.bIndices));
+        
+        for (i = 0; i < expectedC.length; ++i) {
+            diff = Math.abs(expectedC[i] - soln.c[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < expectedB.length; ++i) {
+            diff = Math.abs(expectedB[i] - soln.b[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < expectedX.length; ++i) {
+            diff = Math.abs(expectedX[i] - soln.x[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < expectedA.length; ++i) {
+            for (j = 0; j < expectedA[i].length; ++j) {
+                diff = Math.abs(expectedA[i][j] - soln.a[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
     }
+    
+    public void testConvertLinearProgramToStandardForm() {
         
         /*
         Example that is not yet in Standard Form:
