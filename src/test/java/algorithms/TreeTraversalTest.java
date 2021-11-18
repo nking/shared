@@ -149,7 +149,7 @@ public class TreeTraversalTest extends TestCase {
                 stack.add(node);
                 node = node.left;
             } else {
-                node = stack.pop(); 
+                node = stack.pop();
                 if (node.right == null) {
                     while (node.right == null && 
                         node.parent != null && !stack.isEmpty() && (stack.peek().data == node.parent.data)) {
@@ -198,6 +198,8 @@ public class TreeTraversalTest extends TestCase {
            3  4      5  6
          7  
      </pre>
+     this is actually bottom-up post-order iterative while recursive
+     is top-down.
      */
     public void postorderIterative(Node node) {
         Stack<Node> stack = new Stack<>();
@@ -249,6 +251,7 @@ public class TreeTraversalTest extends TestCase {
     /**
      * implemented as post-order traversal but using a queue for the first
      * stack.
+     * adapted from https://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/?ref=gcse 
      <pre>
        e.g.
                0
