@@ -1,6 +1,9 @@
 package algorithms;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -59,9 +62,9 @@ public class TreeTraversalTest extends TestCase {
      */
     public void inorderRecursive(Node root) {
         if (root != null) {
-            preorderRecursive(root.left);
-            System.out.println(root.data);
-            preorderRecursive(root.right);
+            inorderRecursive(root.left);
+            System.out.printf("%d, ", root.data);
+            inorderRecursive(root.right);
         }
     }
 
@@ -80,8 +83,8 @@ public class TreeTraversalTest extends TestCase {
      */
     public void postorderRecursive(Node root) {
         if (root != null) {
-            preorderRecursive(root.left);
-            preorderRecursive(root.right);
+            postorderRecursive(root.left);
+            postorderRecursive(root.right);
             System.out.println(root.data);
         }
     }
@@ -112,7 +115,7 @@ public class TreeTraversalTest extends TestCase {
         }
         System.out.println();
     }
-
+    
     /**
      * left subtree, root, right subtree
      <pre>
@@ -123,12 +126,14 @@ public class TreeTraversalTest extends TestCase {
          7     10     8      11
                         9   12 13
                         
-     recursive visits: 1, 3, 7, 4, 10, 0, 2, 5, 8, 9, 6, 11, 12, 13
-     iterative visits: 1, 3, 7, 4, 10, 0, 2, 5, 8, 9, 6, 11, 12, 13
+     recursive visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
+     iterative visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
      */
     public void inorderIterative(Node node) {
-        /*Stack<Node> stack = new Stack<>();
+        Stack<Node> stack = new Stack<>();
+        int c = 0;
         while (!stack.isEmpty() || node != null) {
+            c++;
             if (node != null) {
                 stack.push(node);
                 node = node.left;
@@ -138,57 +143,61 @@ public class TreeTraversalTest extends TestCase {
                 node = node.right;
             }
         }
-        System.out.println();
-        */
-        Stack<Node> stack = new Stack<>();
-        Stack<Node> stackL = new Stack<>();
-        Stack<Node> stackR = new Stack<>();
-        System.out.println();
-        while (!stack.isEmpty() || node != null) {
-            if (node != null) {
-                stack.add(node);
-                node = node.left;
-            } else {
-                node = stack.pop();
-                if (node.right == null) {
-                    while (node.right == null && 
-                        node.parent != null && !stack.isEmpty() && (stack.peek().data == node.parent.data)) {
-                        stackL.add(node);
-                        node = stack.pop();
-                        if (node.right != null) {
-                            break;
-                        }
-                    }
-                } else if (node.left == null) {
-                    while (node.left == null && 
-                        node.parent != null && !stack.isEmpty() && (stack.peek().data == node.parent.data)) {
-                        stackR.add(node);
-                        node = stack.pop();
-                        if (node.left != null) {
-                            break;
-                        }
-                    }
-                }
-                System.out.printf("%d, ", node.data);
-                while (!stackL.isEmpty()) {
-                    Node n2 = stackL.pop();
-                    System.out.printf("%d, ", n2.data);
-                }
-                if (!stackR.isEmpty()) {
-                    if (node.right != null) {
-                        stack.add(node.right);
-                    }
-                    while (!stackR.isEmpty()) {
-                        node = stackR.pop();
-                        System.out.printf("%d, ", node.data);
-                    }
-                }
-                node = node.right;
-            }
-        }
+        System.out.printf("  nCalls=%d", c);
         System.out.println();
     }
 
+    static class Snapshot {
+        final Node node;
+        int stage;
+        public Snapshot(Node node, int stage) {
+            this.node = node;
+            this.stage = stage;
+        }
+    }
+    /*
+                0
+            1           2
+           3  4      5     6
+         7     10     8      11
+                        9   12 13
+         */
+    public void inorderIterative2(Node node) {        
+        // recursion to iteration: 
+        //    https://www.codeproject.com/Articles/418776/How-to-replace-recursive-functions-using-stack-and
+        Stack<Snapshot> s = new Stack<Snapshot>();
+        s.push(new Snapshot(node, 0));
+        int c = 0;
+        Snapshot currentSnapshot;
+        while (!s.isEmpty()) {
+            c++;
+            currentSnapshot = s.pop();
+            // 2 recursive function calls, so 3 stages
+            if (currentSnapshot.node != null) {
+                switch(currentSnapshot.stage) {
+                    case 0: {
+                        currentSnapshot.stage++;
+                        s.push(currentSnapshot);
+                        s.push(new Snapshot(currentSnapshot.node.left, 0));                        
+                        break;
+                    }
+                    case 1: {
+                       System.out.printf("%d, ", currentSnapshot.node.data);                        
+                        currentSnapshot.stage++;
+                        s.push(currentSnapshot);
+                        break; 
+                    }
+                    case 2:{
+                        s.push(new Snapshot(currentSnapshot.node.right, 0));
+                        break;
+                    }
+                }
+            }
+        }
+        System.out.printf("  nCalls=%d", c);
+        System.out.println();
+    }
+    
     /**
      * left subtree, right subtree, root
      <pre>
@@ -200,6 +209,8 @@ public class TreeTraversalTest extends TestCase {
      </pre>
      this is actually bottom-up post-order iterative while recursive
      is top-down.
+     TODO:  read this and convert here:
+         https://www.cs.odu.edu/~zeil/cs361/latest/Public/recursionConversion/index.html
      */
     public void postorderIterative(Node node) {
         Stack<Node> stack = new Stack<>();
@@ -429,8 +440,9 @@ public class TreeTraversalTest extends TestCase {
         preorderIterative(nodes[0]);
         
         System.out.println("in-order:");
-        inorderRecursive(nodes[0]);
+        inorderRecursive(nodes[0]); System.out.println();
         inorderIterative(nodes[0]);
+        inorderIterative2(nodes[0]);
 
         System.out.println("post-order:");
         postorderRecursive(nodes[0]);
@@ -441,6 +453,7 @@ public class TreeTraversalTest extends TestCase {
 
         System.out.println("reverse-level-order:");
         reverseLevelOrderIterative(nodes[0]);
+
     }
 
 }
