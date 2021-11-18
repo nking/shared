@@ -1,10 +1,6 @@
 package algorithms;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 import junit.framework.TestCase;
@@ -50,23 +46,25 @@ public class TreeTraversalTest extends TestCase {
     /**
      * left subtree, root, right subtree
      <pre>
-       e.g.
-                 0
-            1         2
-           3  4      5  6
-         7  
-        
-      visits: 1, 3, 7, 4, 0, 2, 5, 6
+                0
+            1           2
+           3  4      5     6
+         7     10     8      11
+                        9   12 13
+                        
+     visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
      </pre>
      * @param root
      */
     public void inorderRecursive(Node root) {
+        cc++;
         if (root != null) {
             inorderRecursive(root.left);
             System.out.printf("%d, ", root.data);
             inorderRecursive(root.right);
         }
     }
+    private int cc = 0;
 
     /**
      * left subtree, right subtree, root
@@ -92,13 +90,13 @@ public class TreeTraversalTest extends TestCase {
     /**
      * root, left subtree, right subtree
      <pre>
-       e.g.
-               0
-            1         2
-           3  4      5  6
-         7  
-        
-     visits: 0, 1, 3, 7, 4, 2, 5, 6
+                0
+            1           2
+           3  4      5     6
+         7     10     8      11
+                        9   12 13
+                        
+     visits: 0, 1, 3, 7, 4, 10, 2, 5, 8, 9, 6, 11, 12, 13
      </pre>
      */
     public void preorderIterative(Node node) {
@@ -440,7 +438,8 @@ public class TreeTraversalTest extends TestCase {
         preorderIterative(nodes[0]);
         
         System.out.println("in-order:");
-        inorderRecursive(nodes[0]); System.out.println();
+        cc=0;
+        inorderRecursive(nodes[0]); System.out.println(" nCalls=" + cc);
         inorderIterative(nodes[0]);
         inorderIterative2(nodes[0]);
 
