@@ -35,7 +35,7 @@ public class VertexCover {
      <pre>
      implemented from pseudocode in lecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
-        VII. Approximation Algorithms: Covering PRoblmes
+        VII. Approximation Algorithms: Covering Problems
       https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/vertexcover.pdf
       who reference Cormen et al. "Introduction to Algorithms"
      </pre>
