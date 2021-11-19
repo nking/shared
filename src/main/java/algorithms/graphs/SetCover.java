@@ -28,15 +28,16 @@ import java.util.List;
 public class SetCover {
     
     /**
-     * solve or the minimum weighted set cover using an approximation algorithm
+     * find a minimum weighted set cover using an approximation algorithm
      * of 2*log_2(n) where n is the number of vertexes in the final
-     * cover (== the unique number in all of sets).
+     * cover (== weights.length).
      *
      * @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each item.
+     * @param weights the weights of each set in sets.
      * @return the list of indexes of sets which comprise the cover, that is the
-     * minimum subset of sets that together include all numbers 0 through weights.length -1, inclusive.
+     * indexes of the minimum subset of sets that together include all numbers 
+     * 0 through weights.length -1, inclusive.
      */
     public TIntList weightedApprox2LgN(List<TIntSet> sets, double[] weights) {
         /*
