@@ -1,14 +1,10 @@
 package algorithms.graphs;
 
-import algorithms.optimization.LinearProgramming;
+import algorithms.NAryTreeNode;
 import algorithms.optimization.LinearProgramming.StandardForm;
 import algorithms.util.PairInt;
-import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -28,6 +24,58 @@ public class VertexCoverTest extends TestCase {
     
     public VertexCoverTest(String testName) {
         super(testName);
+    }
+    
+    public void testExact() {
+        
+        /*
+        implemented from pseudocode in lecture slides of Principal lecturer: Dr Thomas Sauerwald
+        Advanced Algorithms, University of Cambridge.
+        VII. Approximation Algorithms: Covering PRoblmes
+           https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/vertexcover.pdf
+           who reference Cormen et al. "Introduction to Algorithms"
+        
+                                *0
+                        *1                2
+                  3                              *4
+            *5        *6                        7  8  *9
+         10 11 12    13 14                             15
+        */
+        
+        int n = 16;
+        NAryTreeNode[] nodes = new NAryTreeNode[n];
+        int i;
+        for (i = 0; i < n; ++i) {
+            nodes[i] = new NAryTreeNode(i);
+        }
+        nodes[0].addChild(nodes[1]);
+        nodes[1].addChild(nodes[3]);
+        nodes[3].addChild(nodes[5]);
+        nodes[3].addChild(nodes[6]);
+        nodes[5].addChild(nodes[10]);
+        nodes[5].addChild(nodes[11]);
+        nodes[5].addChild(nodes[12]);
+        nodes[6].addChild(nodes[13]);
+        nodes[6].addChild(nodes[14]);
+        
+        nodes[0].addChild(nodes[2]);
+        nodes[2].addChild(nodes[4]);
+        nodes[4].addChild(nodes[7]);
+        nodes[4].addChild(nodes[8]);
+        nodes[4].addChild(nodes[9]);
+        nodes[9].addChild(nodes[15]);
+        
+        TIntSet expected = new TIntHashSet(new int[]{0, 1, 4, 5, 6, 9});
+       
+        VertexCover vc = new VertexCover();
+        System.out.println("vertex cover");
+        Set<NAryTreeNode> cover = vc.exact(nodes[0]);
+        for (NAryTreeNode node : cover) {
+            System.out.printf("%d ", node.getData());
+            assertTrue(expected.remove(node.getData()));
+        }
+        System.out.println();
+        assertTrue(expected.isEmpty());
     }
     
     /**
@@ -282,8 +330,8 @@ public class VertexCoverTest extends TestCase {
         VertexCover vc = new VertexCover();
         TIntSet v = vc.approx2Weighted(adjMap, weights);
         
-        //System.out.printf("weighted cover=%s\n", Arrays.toString(v.toArray()));
-        if (v.contains(vectorMap.get("C"))) {
+        System.out.printf("weighted cover=%s\n", Arrays.toString(v.toArray()));
+        while (v.contains(vectorMap.get("C"))) {
             // LinearProgramming is using random picks of "entering" indexes in pivot, so try again
             v = vc.approx2Weighted(adjMap, weights);
         }

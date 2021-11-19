@@ -1,5 +1,8 @@
 package algorithms.graphs;
 
+import algorithms.TreeTraversal;
+import algorithms.DoublyLinkedList;
+import algorithms.NAryTreeNode;
 import algorithms.optimization.LinearProgramming;
 import algorithms.optimization.LinearProgramming.SlackForm;
 import algorithms.optimization.LinearProgramming.StandardForm;
@@ -25,6 +28,82 @@ import java.util.Set;
  * @author nichole
  */
 public class VertexCover {
+    
+    /**
+     * for a binary tree, find an optimal vertex cover which does not include any leaves.
+     * runtime complexity is O(|V|).
+     <pre>
+     implemented from pseudocode in lecture slides of Principal lecturer: Dr Thomas Sauerwald
+        Advanced Algorithms, University of Cambridge.
+        VII. Approximation Algorithms: Covering PRoblmes
+      https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/vertexcover.pdf
+      who reference Cormen et al. "Introduction to Algorithms"
+     </pre>
+     * @param root a binary tree root with properties left, right, parent, and data
+     * where left and right are the children of a node.
+     * NOTE: for the current implementation, the tree is altered by this code,
+     * so give this method a copy of the tree if need to preserve an unmodified version.
+     * TODO: make a copy method for NAryTreeNode.
+     * @return 
+     */
+    public Set<NAryTreeNode> exact(NAryTreeNode root) {
+        
+        /*
+        There exists an optimal vertex cover which does not include any leaves.
+        VERTEX-COVER-TREES(G)
+            C=∅ 
+            while there exists leaves in G 
+                Add all parents of leaves to C
+                Remove all leaves and their parents from G 
+            return C
+        */
+                
+        TreeTraversal tt = new TreeTraversal();
+        DoublyLinkedList<NAryTreeNode> revLevelOrder = tt.getReverseLevelOrderIterative2(root);
+        Set<NAryTreeNode> c = new HashSet<NAryTreeNode>();
+        if (revLevelOrder.size() < 1) {
+            return c;
+        }
+        Set<NAryTreeNode> children;
+        NAryTreeNode node;
+        int i = 0;
+        while (!revLevelOrder.isEmpty()) {
+            node = revLevelOrder.peekFirst();
+            //System.out.println("visiting " + node.getData());
+            if (node.getParent() != null) {
+                if (node.getChildren().isEmpty() && !c.contains(node.getParent())) {
+                    // this is a leaf node.  
+                    // add it's parent to set C
+                    c.add(node.getParent());
+                    //System.out.println("  *C.add==" + node.getParent().getData());
+                    //  remove node and parent from LinkedList
+                    //System.out.println("  unlink parent=" + node.getParent().getData());
+                    revLevelOrder.unlink(node.getParent());
+                    children = node.getParent().getChildren();
+                    // remove children of parent
+                    for (NAryTreeNode child : children) {
+                        //System.out.println("  unlink child=" + child.getData());
+                        if (!c.contains(child)) {
+                            revLevelOrder.unlink(child);
+                        }
+                    }
+                    // remove parent from it's parent's children
+                    if (node.getParent().getParent() != null) {
+                        children = node.getParent().getParent().getChildren();
+                        children.remove(node.getParent());
+                    }
+                } else {
+                    //System.out.println("  unlink " + node.getData());
+                    revLevelOrder.unlink(node);
+                }
+            } else if (revLevelOrder.size() == 1) {
+                c.add(node);
+                //System.out.println("  unlink root " + node.getData());
+                revLevelOrder.unlink(node);
+            }
+        }
+        return c;
+    }
     
     /**
      * find a vertex cover that is 2-approximate, that is no more than 2 times
