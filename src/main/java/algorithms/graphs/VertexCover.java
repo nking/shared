@@ -222,9 +222,9 @@ public class VertexCover {
                 summation_v_in_V( w(v)*x(v)
             subject to:
                 x(u) + x(v) >= 1 for each (u,v) in E
-                x(v) <= 1 for each v in V
-            non-negativity constraints:
-                x(v) >= 0 for each v in V
+                x(v) <= 1 for each v in V ----\
+            non-negativity constraints:        \ these 2 rules are derived from x(v) ∈ [0,1]
+                x(v) >= 0 for each v in V ----/
         
         for the weighted vc:
             compute optimal x from linear programming.
