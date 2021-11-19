@@ -39,8 +39,7 @@ public class VertexCover {
       https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/vertexcover.pdf
       who reference Cormen et al. "Introduction to Algorithms"
      </pre>
-     * @param root a binary tree root with properties left, right, parent, and data
-     * where left and right are the children of a node.
+     * @param root a n-ary tree root.
      * NOTE: for the current implementation, the tree is altered by this code,
      * so give this method a copy of the tree if need to preserve an unmodified version.
      * TODO: make a copy method for NAryTreeNode.
