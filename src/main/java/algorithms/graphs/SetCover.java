@@ -29,7 +29,7 @@ public class SetCover {
     
     /**
      * find a minimum weighted set cover using an approximation algorithm
-     * of 2*log_2(n) where n is the number of vertexes in the final
+     * of 2*log_e(n) where n is the number of vertexes in the final
      * cover (== weights.length).
      *
      * @param sets a list of sets for which each set contains integers from the range
@@ -62,7 +62,7 @@ public class SetCover {
             // c is the cost for each set in F
             compute y, an optimal solution to the linear program
             C = empty set
-            repeat 2*log2(n) times
+            repeat 2*ln(n) times
                 for each S in F
                     let C = C union S with probabilty y(S)
             return C
