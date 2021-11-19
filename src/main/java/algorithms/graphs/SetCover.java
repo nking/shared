@@ -1,6 +1,11 @@
 package algorithms.graphs;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
@@ -23,11 +28,12 @@ public class SetCover {
      * solve or the minimum weighted set cover using an approximation algorithm
      * of 2*log_2(n) where n is the number of vertexes in the final
      * cover (== the unique number in all of sets).
+     * @param x the items which must be present in the final cover
      * @param sets
      * @param weights
-     * @return 
+     * @return the list of indexes of sets which comprise the cover.
      */
-    public TIntSet weighted(List<TIntSet> sets, double[] weights) {
+    public TIntList weightedApprox2LgN(TIntSet x, List<TIntSet> sets, double[] weights) {
         /*
         material from ecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
@@ -45,7 +51,7 @@ public class SetCover {
                 y(S) >= 0 for each S in sets ----/
         
         for the weighted set cover w/ LP(X, F, c):
-            // where X belongs to at least 1 subset in F
+            // where each x in X belongs to at least 1 subset in F
             // F is the list of subsets to choose from when building the cover
             // c is the cost for each set in F
             compute y, an optimal solution to the linear program
@@ -55,6 +61,7 @@ public class SetCover {
                     let C = C union S with probabilty y(S)
             return C
         */
+        
         throw new UnsupportedOperationException("not yet implemented");
     }
     
@@ -63,52 +70,68 @@ public class SetCover {
      * as large as the optimal set cover
      * (e.g., for n=100, this would be up to 6.64 times as large as the optimal solution).
      * This is a greedy approach.
+     * The runtime complexity is polynomial.
      * <pre>
      * The algorithm implements pseudocode from
      *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
+     * and Cormen et al "Introduction to Algorithms" chap 35.3.
      * </pre>
+     * @param sets
+     * @return the list of indexes of sets which comprise the cover.
      */
-    public TIntSet approxLgN(List<TIntSet> sets) {
+    public TIntList approxLgN(List<TIntSet> sets) {
         
         // make a copy of the sets to edit it
-        List<TIntSet> s = copy(sets);
-                
-        TIntSet c = new TIntHashSet();
+        TIntObjectMap<TIntSet> setsMap = copy(sets);
+        TIntObjectIterator<TIntSet> iter;
+        
+        TIntList c = new TIntArrayList();
         
         TIntSet si, siMaxN = null;        
-        int maxN, i, n, maxNIdx = -1;
-        while (!s.isEmpty()) {
+        int maxN, i, n, maxNIdx = -1, idx;
+        TIntList rm = new TIntArrayList();
+        while (!setsMap.isEmpty()) {
             maxN = Integer.MIN_VALUE;
-            for (i = 0; i < s.size(); ++i) {
-                si = s.get(i);
+            iter = setsMap.iterator();
+            for (i = 0; i < setsMap.size(); ++i) {
+                iter.advance();
+                si = iter.value();
+                idx = iter.key();
                 n = si.size();
+                //System.out.printf("   idx=%d (%s) n=%d\n", idx, si.toString(), n);
                 if (n > 0 && n > maxN) {
                     maxN = n;
-                    maxNIdx = i;
+                    maxNIdx = idx;
                 }
             }
             if (maxN == Integer.MIN_VALUE) {
                 break;
             }
-            siMaxN = s.get(maxNIdx);
-            c.addAll(siMaxN);
-            s.remove(maxNIdx);
+            siMaxN = setsMap.remove(maxNIdx);
+            //System.out.printf("max idx=%d (%s)\n", maxNIdx, siMaxN.toString());
+            c.add(maxNIdx);
             
-            // remove siMaxN from each set in s
-            for (i = s.size() - 1; i >= 0; i--) {
-                si = s.get(i);
+            // remove siMaxN from each set in s.  and store the empty sets as indexes to remove after use of iterator
+            iter = setsMap.iterator();
+            for (i = 0; i < setsMap.size(); ++i) {
+                iter.advance();
+                si = iter.value();
                 si.removeAll(siMaxN);
                 if (si.isEmpty()) {
-                    s.remove(i);
+                    rm.add(iter.key());
                 }
             }
+            for (i = 0; i < rm.size(); ++i) {
+                setsMap.remove(rm.get(i));
+            }
+            rm.clear();
         }
         
         return c;
     }
 
-    protected List<TIntSet> copy(List<TIntSet> s) {
-        List<TIntSet> c = new ArrayList<TIntSet>(s.size());
+    protected TIntObjectMap<TIntSet> copy(List<TIntSet> s) {
+        TIntObjectMap<TIntSet> c = new TIntObjectHashMap<TIntSet>(s.size());
         int i;
         TIntSet cSet, si;
         TIntIterator iter;
@@ -119,7 +142,7 @@ public class SetCover {
             while (iter.hasNext()){
                 cSet.add(iter.next());
             }
-            c.add(cSet);
+            c.put(i, cSet);
         }
         return c;
     }
