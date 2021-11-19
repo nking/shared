@@ -30,7 +30,7 @@ import java.util.Set;
 public class VertexCover {
     
     /**
-     * for a binary tree, find an optimal vertex cover which does not include any leaves.
+     * for a tree, find an exact vertex cover which does not include any leaves.
      * runtime complexity is O(|V|).
      <pre>
      implemented from pseudocode in lecture slides of Principal lecturer: Dr Thomas Sauerwald
