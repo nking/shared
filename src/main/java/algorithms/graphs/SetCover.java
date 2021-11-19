@@ -20,6 +20,45 @@ import java.util.List;
 public class SetCover {
     
     /**
+     * solve or the minimum weighted set cover using an approximation algorithm
+     * of 2*log_2(n) where n is the number of vertexes in the final
+     * cover (== the unique number in all of sets).
+     * @param sets
+     * @param weights
+     * @return 
+     */
+    public TIntSet weighted(List<TIntSet> sets, double[] weights) {
+        /*
+        material from ecture slides of Principal lecturer: Dr Thomas Sauerwald
+        Advanced Algorithms, University of Cambridge.
+        VII. Approximation Algorithms: Randomisation and Rounding
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/materials.html
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/rand.pdf
+        
+        for the linear program:
+            minimize: 
+                summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
+            subject to:
+                summation_S_in_sets : x in S ( y(S) ) >= 1
+                y(S) <= 1 for each S in sets ----\
+            non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
+                y(S) >= 0 for each S in sets ----/
+        
+        for the weighted set cover w/ LP(X, F, c):
+            // where X belongs to at least 1 subset in F
+            // F is the list of subsets to choose from when building the cover
+            // c is the cost for each set in F
+            compute y, an optimal solution to the linear program
+            C = empty set
+            repeat 2*log2(n) times
+                for each S in F
+                    let C = C union S with probabilty y(S)
+            return C
+        */
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+    
+    /**
      * find a set cover that is O(log-n)-approx, that is no more than O(log-n) times
      * as large as the optimal set cover
      * (e.g., for n=100, this would be up to 6.64 times as large as the optimal solution).
