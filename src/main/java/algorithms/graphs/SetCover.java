@@ -1,5 +1,7 @@
 package algorithms.graphs;
 
+import algorithms.optimization.LinearProgramming;
+import algorithms.util.FormatArray;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TIntList;
@@ -9,6 +11,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,12 +31,14 @@ public class SetCover {
      * solve or the minimum weighted set cover using an approximation algorithm
      * of 2*log_2(n) where n is the number of vertexes in the final
      * cover (== the unique number in all of sets).
-     * @param x the items which must be present in the final cover
-     * @param sets
-     * @param weights
-     * @return the list of indexes of sets which comprise the cover.
+     *
+     * @param sets a list of sets for which each set contains integers from the range
+     * 0 through weights.length - 1, inclusive.
+     * @param weights the weights of each item.
+     * @return the list of indexes of sets which comprise the cover, that is the
+     * minimum subset of sets that together include all numbers 0 through weights.length -1, inclusive.
      */
-    public TIntList weightedApprox2LgN(TIntSet x, List<TIntSet> sets, double[] weights) {
+    public TIntList weightedApprox2LgN(List<TIntSet> sets, double[] weights) {
         /*
         material from ecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
@@ -61,6 +66,16 @@ public class SetCover {
                     let C = C union S with probabilty y(S)
             return C
         */
+        
+        int nX = weights.length;
+        
+        LinearProgramming.StandardForm standForm = 
+            createLinearProgramInStandardForm(nX, sets, weights);
+        LinearProgramming lp = new LinearProgramming();
+        LinearProgramming.SlackForm soln = lp.solveUsingSimplexMethod(standForm);
+        double[] y = soln.computeBasicSolution();
+        
+        System.out.printf("y=%s\n", FormatArray.toString(y, "%.3f"));
         
         throw new UnsupportedOperationException("not yet implemented");
     }
@@ -145,6 +160,71 @@ public class SetCover {
             c.put(i, cSet);
         }
         return c;
+    }
+
+    private LinearProgramming.StandardForm createLinearProgramInStandardForm(
+        int nX, List<TIntSet> sets, double[] weights) {
+        
+        /*
+        the 'a' matrix will have rows that represent each x 0 through nX-1
+        while the columns will represent whether the set within sets contains
+        that integer x.
+        
+        e.g.  List<TIntSet> sets = [ {0, 2, 3}, {1, 2} ];
+              nX = 4
+              would create:
+              
+              a = | x=0 row | = | 1  0 | because 0 is in sets[0] but not in sets[1]
+                  | x=1 row |   | 0  1 |  ...    1 ...
+                  | x=2 row |   | 1  1 |  ...    2 ...
+                  | x=3 row |   | 1  0 |  ...    1 ...
+        
+        minimize: 
+                summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
+            subject to:
+                summation_S_in_sets : x in S ( y(S) ) >= 1
+                y(S) <= 1 for each S in sets ----\
+            non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
+                y(S) >= 0 for each S in sets ----/
+        */
+        
+        int nS = sets.size();
+        
+        double[] c = Arrays.copyOf(weights, weights.length);
+        double[] b = new double[nX + nS];
+        Arrays.fill(b, 1);
+        
+        double[][] a = new double[nX + nS][nS];
+        int i, j;
+        for (i = 0; i < nX; ++i) {
+            a[i] = new double[nS];
+            for (j = 0; j < sets.size(); ++j) {
+                if (sets.get(j).contains(i)) {
+                    a[i][j] = 1;
+                }
+            }
+        }
+        int i2;
+        for (i = 0, i2=nX; i < nS; ++i, ++i2) {
+            a[i2] = new double[nS];
+            a[i2][i] = 1;
+        }
+        
+        boolean isMaximization = false;
+        int[] constraintComparisons = new int[nX + nS];
+        Arrays.fill(constraintComparisons, 0, nX, 1);
+        Arrays.fill(constraintComparisons, nX, nS, -1);
+        
+        boolean[] nonnegativityConstraints = new boolean[nS];
+        Arrays.fill(nonnegativityConstraints, true);
+        
+        LinearProgramming.StandardForm standForm = LinearProgramming
+            .convertLinearProgramToStandardForm(isMaximization, a, b, c, 
+            constraintComparisons, nonnegativityConstraints);
+        
+        System.out.printf("approx set cover as Linear Program in standard form=\n%s\n", standForm.toString());
+
+        return standForm;
     }
 
 }
