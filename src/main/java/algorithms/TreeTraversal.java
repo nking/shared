@@ -255,8 +255,9 @@ public class TreeTraversal {
     }
 
     /**
+     * get the reverse level-order traversal of tree node.
      * implemented as post-order traversal but using a queue for the first
-     * stack.
+     * stack:
      * adapted from https://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/?ref=gcse 
      <pre>
        e.g.
@@ -291,8 +292,14 @@ public class TreeTraversal {
     }
     
     /**
+     * given a tree represented by node, return a doubly-linked list of nodes
+     * visited in a reverse level-order traversal.
      * 
-     * @param node
+     * @param node the tree to be traversed from bottom up to this node using
+     * reverse level-order traversal.
+     * NOTE that any next and prev links in the tree are overwritten by the
+     * DoublyLinkedList, so if those need to be preserved, give this method
+     * node.copyTree() instead.
      * @return a double-linked list of nodes in reverse level order traversal.
      */
     public DoublyLinkedList<NAryTreeNode> getReverseLevelOrderIterative2(NAryTreeNode node) {
@@ -303,7 +310,6 @@ public class TreeTraversal {
         Stack<NAryTreeNode> stack2 = new Stack<>();
         queue.add(node);
         
-        int i;
         Set<NAryTreeNode> children;
         
         while (!queue.isEmpty()) {
@@ -317,6 +323,35 @@ public class TreeTraversal {
         while (!stack2.isEmpty()) {
             node = stack2.pop();
             out.add(node);
+        }
+        return out;
+    }
+    
+    /**
+     * a.k.a. breadth first traversal
+     <pre>
+       e.g.
+               0
+            1           2
+           3  4      5     6
+         7     10     8      11
+                        9   12 13
+                       
+     0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
+     </pre>
+     * @param node
+     */
+    public DoublyLinkedList<NAryTreeNode> getLevelOrderIterative(NAryTreeNode node) {
+        Queue<NAryTreeNode> queue = new ArrayDeque<>();
+        DoublyLinkedList<NAryTreeNode> out = new DoublyLinkedList<NAryTreeNode>();
+        Set<NAryTreeNode> children;
+        while (node != null) {
+            out.add(node);
+            children = node.getChildren();
+            for (NAryTreeNode child : children) {
+                queue.add(child);
+            }
+            node = queue.poll(); // returns null if empty
         }
         return out;
     }

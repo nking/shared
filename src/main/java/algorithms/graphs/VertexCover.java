@@ -39,13 +39,20 @@ public class VertexCover {
       https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/vertexcover.pdf
       who reference Cormen et al. "Introduction to Algorithms"
      </pre>
+     Note that a copy of the tree is made internally (excluding prev and next attributes)
+     * and the copied nodes are returned in a Set.  At this time, the identity
+     * of each NAryTreeNode in the original root and copied root will not be
+     * the same, so only the data properties should be used for identity in the returned set.
      * @param root a n-ary tree root.
-     * NOTE: for the current implementation, the tree is altered by this code,
-     * so give this method a copy of the tree if need to preserve an unmodified version.
-     * TODO: make a copy method for NAryTreeNode.
-     * @return 
+     * @return an exact vertex cover of the tree, excluding leaves.
+     * Note that a copy of the tree is made internally (excluding prev and next attributes)
+     * and the copied nodes are returned in a Set.  At this time, the identity
+     * of each NAryTreeNode in the original root and copied root will not be
+     * the same, so only the data properties should be used for identity in the returned set.
      */
     public Set<NAryTreeNode> exact(NAryTreeNode root) {
+        
+        root = NAryTreeNode.copyTree(root);
         
         /*
         There exists an optimal vertex cover which does not include any leaves.
