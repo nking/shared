@@ -28,18 +28,21 @@ import java.util.List;
 public class SetCover {
     
     /**
-     * find a minimum weighted set cover using an approximation algorithm
+     * find a minimum weighted set cover using a randomized rounding approximation algorithm
      * of 2*log_e(n) where n is the number of vertexes in the final
-     * cover (== weights.length).
-     *
+     * cover (== nU).
+     * The cost of the sets in the cover is minimized.
+     * The problem is NP-complete.
+     * @param nU the number of items in U which compose the integers in sets,
+     * from 0 to nU-1, inclusive.
      * @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
      * @param weights the weights of each set in sets.
      * @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
-     * 0 through weights.length -1, inclusive.
+     * 0 through nU-1, inclusive.
      */
-    public TIntList weightedApprox2LgN(List<TIntSet> sets, double[] weights) {
+    public TIntList weightedApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
         /*
         material from ecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
@@ -66,12 +69,25 @@ public class SetCover {
                 for each S in F
                     let C = C union S with probabilty y(S)
             return C
+        
+        NOTE: n is weight.length
+        
+        misc notes about randomized picking of set S given probability y(S):
+            http://theory.stanford.edu/~trevisan/cs261/lecture08.pdf
+            probability ≥ 1 − 1/e that at least one subset S covers an element u in U (U=[0:nU-1, incl]).
+            For each iteration of the while loop, there is a probability at most 
+                1/e that element u in U is not covered by the sets added to C 
+                in that iteration.
+            The probability that u is not covered after ln |U| + k iterations 
+               is then at most = (i/|U|(*e^(-k)).
+            So then The probability that, after ln|U|+k iterations, there is
+              an element that is not covered, is at most the sum over all u 
+              of the probability that u is not covered, which is at most e^(−k)
+        NOTE: nU = |U|
         */
-        
-        int nX = weights.length;
-        
+                
         LinearProgramming.StandardForm standForm = 
-            createLinearProgramInStandardForm(nX, sets, weights);
+            createLinearProgramInStandardForm(nU, sets, weights);
         LinearProgramming lp = new LinearProgramming();
         LinearProgramming.SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         double[] y = soln.computeBasicSolution();
