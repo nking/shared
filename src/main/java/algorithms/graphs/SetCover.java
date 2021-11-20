@@ -33,8 +33,8 @@ public class SetCover {
      * cover (== nU).
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U which compose the integers in sets,
-     * from 0 to nU-1, inclusive.
+     * @param nU the number of items in U. U is the universe of elements in sets.
+     * items in U are the sequential range of integers from 0 to nU-1.
      * @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
      * @param weights the weights of each set in sets.
@@ -84,6 +84,16 @@ public class SetCover {
               an element that is not covered, is at most the sum over all u 
               of the probability that u is not covered, which is at most e^(−k)
         NOTE: nU = |U|
+        
+        can compare this cost O(log n)*OPT_LP  to a greedy weighted set cover H_d*OPT_LP where H_d is harmonic series ~ 0.5+ln(d)
+        Augmented Greedy Algorithm of weighted Set Cover: Covered = ∅;
+            while Covered ̸= U do
+                j ← argmin_k( w_k / |S_k ∩ Uncovered| )
+                if i is uncovered and i ∈ S_j, set pi = Covered = Covered ∪ S_j;
+                   A = A ∪ {j}.
+            end while;
+        Output sets in A as cover
+        
         */
                 
         LinearProgramming.StandardForm standForm = 
