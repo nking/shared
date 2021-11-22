@@ -226,18 +226,27 @@ public class VertexCoverTest extends TestCase {
         TObjectIntMap<String> vectorMap = new TObjectIntHashMap<String>();  
         TIntObjectMap<TIntSet> adjMap = new TIntObjectHashMap<TIntSet>();
         double[] weights = getGraph1(adjMap, vectorMap);
-        
+      
         VertexCover vc = new VertexCover();
         StandardForm standForm = vc.createLinearProgramInStandardForm(adjMap, weights);
         
-        //System.out.printf("standForm=\n%s\n", standForm.toString());
+        System.out.printf("standForm=\n%s\n", standForm.toString());
+        /*
+         minimize: 
+                summation_v_in_V( w(v)*x(v) )
+            subject to:
+                x(u) + x(v) >= 1 for each (u,v) in E
+                x(v) <= 1 for each v in V
+            non-negativity constraints:
+                x(v) >= 0 for each v in V
+        */
         
         double diff, tol = 1e-7;
         double expectedV = 0;
-        double[] expectedC = new double[]{-4, -3, -3, -1, -2};
+        double[] expectedC = new double[]{-4,  -3, -3, -1, -2};
         double[] expectedB = new double[]{-1.000, -1.000, -1.000, -1.000, -1.000, 
-            1.000, 1.000, 1.000, 1.000, 1.000, -1.000, -1.000, -1.000, -1.000, -1.000};
-        double[][] expectedA = new double[15][];
+            1.000, 1.000, 1.000, 1.000, 1.000};
+        double[][] expectedA = new double[10][];
         expectedA[0] = new double[]{-1.000, 0.000, 0.000, 0.000, -1.000};
         expectedA[1] = new double[]{0.000, 0.000, -1.000, -1.000, 0.000};
         expectedA[2] = new double[]{0.000, -1.000, 0.000, -1.000, 0.000};
@@ -248,11 +257,12 @@ public class VertexCoverTest extends TestCase {
         expectedA[7] = new double[]{0.000, 0.000, 1.000, 0.000, 0.000};
         expectedA[8] = new double[]{0.000, 0.000, 0.000, 1.000, 0.000};
         expectedA[9] = new double[]{0.000, 0.000, 0.000, 0.000, 1.000};
-        expectedA[10] = new double[]{-1.000, 0.000, 0.000, 0.000, 0.000};
-        expectedA[11] = new double[]{0.000, -1.000, 0.000, 0.000, 0.000};
-        expectedA[12] = new double[]{0.000, 0.000, -1.000, 0.000, 0.000};
-        expectedA[13] = new double[]{0.000, 0.000, 0.000, -1.000, 0.000};
-        expectedA[14] = new double[]{0.000, 0.000, 0.000, 0.000, -1.000};
+        // the non-negativity constraints are implicit, not present in the a matrix
+        //expectedA[10] = new double[]{-1.000, 0.000, 0.000, 0.000, 0.000};
+        //expectedA[11] = new double[]{0.000, -1.000, 0.000, 0.000, 0.000};
+        //expectedA[12] = new double[]{0.000, 0.000, -1.000, 0.000, 0.000};
+        //expectedA[13] = new double[]{0.000, 0.000, 0.000, -1.000, 0.000};
+        //expectedA[14] = new double[]{0.000, 0.000, 0.000, 0.000, -1.000};
     
         assertExpected(tol, standForm, expectedV, expectedB, expectedC, 
             expectedA);

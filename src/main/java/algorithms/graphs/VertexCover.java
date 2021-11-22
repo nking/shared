@@ -335,7 +335,7 @@ public class VertexCover {
         boolean isMaximization = false;
         int[] constraintComparisons = new int[nE + nV];
         Arrays.fill(constraintComparisons, 0, nE, 1);
-        Arrays.fill(constraintComparisons, nE, nV, -1);
+        Arrays.fill(constraintComparisons, nE, nE+nV, -1);
         boolean[] nonnegativityConstraints = new boolean[nV];
         Arrays.fill(nonnegativityConstraints, true);
         

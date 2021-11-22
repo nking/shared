@@ -44,7 +44,7 @@ public class SetCover {
      */
     public TIntList weightedApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
         /*
-        material from ecture slides of Principal lecturer: Dr Thomas Sauerwald
+        material from lecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
         VII. Approximation Algorithms: Randomisation and Rounding
         https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/materials.html
@@ -189,7 +189,7 @@ public class SetCover {
         return c;
     }
 
-    private LinearProgramming.StandardForm createLinearProgramInStandardForm(
+    protected static LinearProgramming.StandardForm createLinearProgramInStandardForm(
         int nX, List<TIntSet> sets, double[] weights) {
         
         /*
@@ -240,7 +240,7 @@ public class SetCover {
         boolean isMaximization = false;
         int[] constraintComparisons = new int[nX + nS];
         Arrays.fill(constraintComparisons, 0, nX, 1);
-        Arrays.fill(constraintComparisons, nX, nS, -1);
+        Arrays.fill(constraintComparisons, nX, nX+nS, -1);
         
         boolean[] nonnegativityConstraints = new boolean[nS];
         Arrays.fill(nonnegativityConstraints, true);

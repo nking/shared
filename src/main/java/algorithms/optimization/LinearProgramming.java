@@ -781,7 +781,6 @@ public class LinearProgramming {
         //System.out.printf("b0=\n%s\n", FormatArray.toString(b,  "%.3f"));
 
         // handle the constraints: .eq. and .geq.
-        int m2 = 0;
         TDoubleList aRow, aRow2;
         for (i = 0; i < a.length; ++i) {
             switch (constraintComparisons[i]) {
