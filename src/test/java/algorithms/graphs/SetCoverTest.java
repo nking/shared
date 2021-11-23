@@ -112,7 +112,10 @@ public class SetCoverTest extends TestCase {
             System.out.printf("%.3f, ", x[lpSoln.bIndices[i]]);
         }
         System.out.println();
-            
+        
+        System.out.printf("primal x=%s\n", FormatArray.toString(lpSoln.calculatePrimalX(), "%.3f"));
+        System.out.printf("dual y=%s\n", FormatArray.toString(lpSoln.calculateDualY(), "%.3f"));
+
         /*assertEquals(expectedYs.length, ys.length);
         
         double diff, tol = 1e-7;

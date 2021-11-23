@@ -1446,6 +1446,15 @@ public class LinearProgramming {
             return sum;
         }
         
+        public double[] calculatePrimalX() {
+            double[] x = this.computeBasicSolution();
+            return Arrays.copyOf(x, c.length);
+        }
+        public double[] calculateDualY() {
+            double[] y = computeBasicDualSolution();
+            return Arrays.copyOfRange(y, y.length - b.length, y.length);
+        }
+        
         public double evaluateDualObjective() {
             double[] y = computeBasicDualSolution();
             int i;

@@ -17,7 +17,7 @@ public class LinearProgrammingTest extends TestCase {
         super(testName);
     }
     
-    public void testPivot() {
+    public void estPivot() {
         
         /*
         following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
@@ -154,7 +154,7 @@ public class LinearProgrammingTest extends TestCase {
             expectedA, expectedBIndices, expectedNIndices, expectedX);
     }
     
-    public void testSolveUsingSimplexMethod() {
+    public void estSolveUsingSimplexMethod() {
         /*
         following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
         
@@ -221,7 +221,7 @@ public class LinearProgrammingTest extends TestCase {
         */
     }
     
-    public void testAuxiliary() {
+    public void estAuxiliary() {
         /*
         Standard Form:
            maximize  2*x1 - 3*x2 + 3*x3
@@ -249,7 +249,7 @@ public class LinearProgrammingTest extends TestCase {
         assertTrue(Math.abs(eval - 0) < 1e-11);
     }
     
-    public void testAuxiliary2() {
+    public void estAuxiliary2() {
         /*
         Standard Form:
            maximize  2*x1 - x2
@@ -367,7 +367,7 @@ public class LinearProgrammingTest extends TestCase {
         }
     }
     
-    public void testConvertLinearProgramToStandardForm() {
+    public void estConvertLinearProgramToStandardForm() {
         
         /*
         Example that is not yet in Standard Form:
@@ -456,7 +456,7 @@ public class LinearProgrammingTest extends TestCase {
         }
     }
     
-    public void testConvertConstraints() {
+    public void estConvertConstraints() {
         /*
         sample from https://walkccc.me/CLRS/Chap29/29.3/
                 Linear Program in Standard Form:
@@ -527,7 +527,7 @@ public class LinearProgrammingTest extends TestCase {
         assertTrue(diff < tol);
     }
     
-    public void testSolveUsingSimplexMethod2() {
+    public void estSolveUsingSimplexMethod2() {
         System.out.println("testSolveUsingSimplexMethod2");
         /*
         example from "Operations Research. Linear Programming",
@@ -611,7 +611,7 @@ public class LinearProgrammingTest extends TestCase {
     z = 3.33
     */
     
-    public void testSolveUsingSimplexMethod3() {
+    public void estSolveUsingSimplexMethod3() {
         System.out.println("testSolveUsingSimplexMethod3");
         /*
         example from "Operations Research. Linear Programming",
@@ -740,7 +740,7 @@ public class LinearProgrammingTest extends TestCase {
         assertTrue(diff < tol);
     }
     
-    public void testSolveDual0() {
+    public void estSolveDual0() {
         /*
         eqns (29.86) - (29.90) of Cormen et al. "Introduction to Algorithms"       
         */
@@ -841,5 +841,130 @@ public class LinearProgrammingTest extends TestCase {
         double tol = 1e-7;
         assertTrue(Math.abs(objPrimal - expectedObj) < tol);
         assertTrue(Math.abs(objPrimal - objDual) < tol);
+    }
+    
+    public void testSolveDual2() {
+        /*
+        example from Sect 6.1 of "Linear Programming" by Matousek & Gartner 2007
+        
+        Primal:
+            maximize:
+               2*x1 + 3*x2
+            subject to:
+               4*x1 + 8*x2 .leq. 12
+               2*x1 +   x2 .leq. 3
+               3*x1 + 2*x2 .leq. 4
+            non-negative constraints: x1, x2 .geq. 0
+
+        Dual:
+            minimize:
+               12*y1 + 3*y2 + 4*y3
+            subject to:
+               4*y1 + 2*y2 + 3*y3 .geq. 2
+               8*y1 +   y2 + 2*y2 .geq. 3
+            non-negative constraints: y1, y2, y3 .geq. 0
+        
+        optimal objective function eval z = 4.75
+        optimal y = (5/16, 0, 1/4) 
+        optimal x = (1/2, 5/4)
+        
+        Primal solution:
+            nIndices=[2, 4]
+            bIndices=[0, 1, 3]
+            primal obj=4.750
+            x=0.500, 1.250, 0.000, 0.750, 0.000 
+            primal dual obj=-4.750
+            y=0.000, 0.000, 0.313, 0.000, 0.250
+        Dual solution:
+            nIndices=[0, 1, 4]
+            bIndices=[2, 3]
+            dual primal obj=0.000
+            x=0.000, 0.000, 1.500, 2.500, 0.000 
+            dual obj=-0.000
+            y=12.000, 3.000, 0.000, 0.000, 4.000 
+        */
+        
+        double[] c = new double[]{2, 3};
+        double[] b = new double[]{12, 3, 4};
+        double[][] a = new double[3][];
+        a[0] = new double[]{4, 8};
+        a[1] = new double[]{2, 1};
+        a[2] = new double[]{3, 2};
+        
+        int[] constraintComparisons = new int[]{-1, -1, -1};
+        boolean isMaximization = true;
+        boolean[] nonnegativityConstraints = new boolean[]{true, true};
+    
+        StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
+            isMaximization, a, b, c, 
+            constraintComparisons, nonnegativityConstraints);
+        
+        LinearProgramming lp = new LinearProgramming();
+        SlackForm solnPrimal = lp.solveUsingSimplexMethod(standForm);
+        
+        System.out.printf("\n*primal slack=\n%s\n", solnPrimal.toString());
+
+        double expectedObj = 4.75;
+        double[] expectedY = new double[]{.5/1.6, 0., 1./4.};
+        double[] expectedX = new double[]{1./2., 5./4.};
+        
+        double[] x = solnPrimal.computeBasicSolution();
+        double objPrimal = solnPrimal.evaluateObjective();
+        double[] yPrimal = solnPrimal.computeBasicDualSolution();
+        double objPrimalDual = solnPrimal.evaluateDualObjective();
+        
+        System.out.printf("primal obj=%.3f\n   x=%s\n", objPrimal, FormatArray.toString(x, "%.3f"));
+        System.out.printf("primal dual obj=%.3f\n   y=%s\n", objPrimalDual, FormatArray.toString(yPrimal, "%.4f"));
+        System.out.printf("primal x=%s\n", FormatArray.toString(solnPrimal.calculatePrimalX(), "%.3f"));
+        System.out.printf("dual y=%s\n", FormatArray.toString(solnPrimal.calculateDualY(), "%.3f"));
+        
+        double tol = 1e-7;
+        
+        double[] cD = new double[]{12, 3, 4};
+        double[] bD = new double[]{2, 3};
+        double[][] aD = new double[2][];
+        aD[0] = new double[]{4, 2, 3};
+        aD[1] = new double[]{8, 1, 2};
+        
+        int[] constraintComparisonsD = new int[]{1, 1};
+        boolean isMaximizationD = false;
+        boolean[] nonnegativityConstraintsD = new boolean[]{true, true, true};
+    
+        StandardForm standFormD = LinearProgramming.convertLinearProgramToStandardForm(
+            isMaximizationD, aD, bD, cD, 
+            constraintComparisonsD, nonnegativityConstraintsD);
+        SlackForm solnDual = lp.solveUsingSimplexMethod(standFormD);
+        
+        System.out.printf("\n*dual slack=\n%s\n", solnDual.toString());
+                
+        double[] xDualPrimal = solnDual.computeBasicSolution();
+        double objDualPrimal = solnDual.evaluateObjective();
+        double[] yDual = solnDual.computeBasicDualSolution();
+        double objDual = solnDual.evaluateDualObjective();
+        
+        System.out.printf("dual primal obj=%.3f\n   x=%s\n", objDualPrimal, FormatArray.toString(xDualPrimal, "%.4f"));
+        System.out.printf("dual obj=%.3f\n   y=%s\n", objDual, FormatArray.toString(yDual, "%.4f"));
+
+        System.out.printf("Expected:\n  obj=%.4f\n  x=%s\n  y=%s\n", 
+            expectedObj, FormatArray.toString(expectedX, "%.4f"),
+            FormatArray.toString(expectedY, "%.4f"));
+        
+        assertTrue(Math.abs(expectedObj - objPrimal) < tol);
+        assertTrue(Math.abs(expectedObj - -objPrimalDual) < tol);
+
+        double[] primalX = solnPrimal.calculatePrimalX(); 
+        double[] dualY = solnPrimal.calculateDualY();
+        assertEquals(expectedX.length, primalX.length);
+        assertEquals(expectedY.length, dualY.length);
+        int i;
+        double diff;
+        for (i = 0; i < expectedX.length; ++i) {
+            diff = Math.abs(expectedX[i] - primalX[i]);
+            assertTrue(diff < tol);
+        }
+        for (i = 0; i < expectedY.length; ++i) {
+            diff = Math.abs(expectedY[i] - dualY[i]);
+            assertTrue(diff < tol);
+        }
     }
 }
