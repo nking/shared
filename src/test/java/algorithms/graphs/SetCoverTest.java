@@ -138,4 +138,15 @@ public class SetCoverTest extends TestCase {
         
     }
     
+    /*
+    test sets from
+    http://people.brunel.ac.uk/~mastjjb/jeb/orlib/scpinfo.html
+    http://people.brunel.ac.uk/~mastjjb/jeb/orlib/files/
+    Found the test set reference from google search result: the thesis 
+    "Algorithms for NP-hard Optimization Problems and Cluster Analysis",
+    Li, 2017 (see Table 1.2 1nd 1.3)
+    
+    scpe1 has 500 sets and 50 items with opt=5
+    */
+    
 }
