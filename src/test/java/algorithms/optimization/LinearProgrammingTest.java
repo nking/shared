@@ -3,6 +3,7 @@ package algorithms.optimization;
 import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming.SlackForm;
 import algorithms.optimization.LinearProgramming.StandardForm;
+import algorithms.util.FormatArray;
 import java.util.Arrays;
 import junit.framework.TestCase;
 
@@ -72,6 +73,7 @@ public class LinearProgrammingTest extends TestCase {
         
         x = slackForm2.computeBasicSolution();
         double z = slackForm2.evaluateObjective();
+        double[] x2 = slackForm2.computeBasicSolution();
         
         //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
         //    eIdx, lIdx, slackForm2.toString());
@@ -88,7 +90,7 @@ public class LinearProgrammingTest extends TestCase {
         expectedA[2] = new double[]{1.500, 4.000, -0.500};
         expectedX = new double[]{9,0,0,21,6,0};
         
-        assertExpected(tol, slackForm2, expectedV, expectedZ,
+        assertExpected(tol, slackForm2, x2, expectedV, expectedZ,
             expectedB, expectedC,
             expectedA, expectedBIndices, expectedNIndices, expectedX);
         
@@ -118,7 +120,7 @@ public class LinearProgrammingTest extends TestCase {
         expectedA[2] = new double[]{-3./16, -5./8, 1./16};
         expectedX = new double[]{8.25, 0, 1.5, 17.25, 0, 0};
         
-        assertExpected(tol, slackForm2, expectedV, expectedZ,
+        assertExpected(tol, slackForm2, x, expectedV, expectedZ,
             expectedB, expectedC,
             expectedA, expectedBIndices, expectedNIndices, expectedX);
         
@@ -147,7 +149,7 @@ public class LinearProgrammingTest extends TestCase {
         expectedA[2] = new double[]{1./2, -1./2, 0};
         expectedX = new double[]{8, 4, 0, 18,0,0};
         
-        assertExpected(tol, slackForm2, expectedV, expectedZ,
+        assertExpected(tol, slackForm2, x, expectedV, expectedZ,
             expectedB, expectedC,
             expectedA, expectedBIndices, expectedNIndices, expectedX);
     }
@@ -189,13 +191,15 @@ public class LinearProgrammingTest extends TestCase {
         double[] expectedX = new double[]{8, 4, 0, 18, 0, 0};
         double expectedZ = 28;
         
-        assertNotNull(soln.x);
-        assertEquals(expectedX.length, soln.x.length);
+        double[] x = soln.computeBasicSolution();
+        
+        assertNotNull(x);
+        assertEquals(expectedX.length, x.length);
         
         int i;
         double diff, tol=1e-7;
         for (i = 0; i < expectedX.length; ++i) {
-            diff = Math.abs(expectedX[i] - soln.x[i]);
+            diff = Math.abs(expectedX[i] - x[i]);
             assertTrue(diff < tol);
         }
         assertTrue(Math.abs(expectedZ - soln.evaluateObjective()) < tol);
@@ -304,17 +308,20 @@ public class LinearProgrammingTest extends TestCase {
             diff = Math.abs(expectedB[i] - initSlackForm.b[i]);
             assertTrue(diff < tol);
         }
+        double[] x = initSlackForm.computeBasicSolution();
+        assertEquals(expectedX.length, x.length);
         assertEquals(expectedIsFeasible, isFeasible);
         diff = Math.abs(expectedV - initSlackForm.v);
         assertTrue(diff < tol);
         for (i = 0; i < expectedX.length; ++i) {
-            diff = Math.abs(expectedX[i] - initSlackForm.x[i]);
+            diff = Math.abs(expectedX[i] - x[i]);
             assertTrue(diff < tol);
         }
         
         //=======
         SlackForm soln = lp.initializeSimplex(standForm);
-        soln.computeBasicSolution();
+        x = soln.computeBasicSolution();
+        
         System.out.printf("soln=\n%s\n", soln.toString());
         
         expectedV = -4./5.;
@@ -334,7 +341,7 @@ public class LinearProgrammingTest extends TestCase {
         assertEquals(expectedB.length, soln.b.length);
         assertEquals(expectedA.length, soln.a.length);
         assertEquals(expectedA[0].length, soln.a[0].length);
-        assertEquals(expectedX.length, soln.x.length);
+        assertEquals(expectedX.length, x.length);
         
         assertTrue(Math.abs(expectedV - soln.v) < tol);
         assertTrue(Arrays.equals(new int[]{0, 3}, soln.nIndices));
@@ -349,7 +356,7 @@ public class LinearProgrammingTest extends TestCase {
             assertTrue(diff < tol);
         }
         for (i = 0; i < expectedX.length; ++i) {
-            diff = Math.abs(expectedX[i] - soln.x[i]);
+            diff = Math.abs(expectedX[i] - x[i]);
             assertTrue(diff < tol);
         }
         for (i = 0; i < expectedA.length; ++i) {
@@ -687,7 +694,8 @@ public class LinearProgrammingTest extends TestCase {
     }
 
     private void assertExpected(double tol,
-        SlackForm slackForm2, double expectedV, 
+        SlackForm slackForm2, double[] x,
+        double expectedV, 
         double expectedZ,
         double[] expectedB, double[] expectedC, double[][] expectedA, 
         int[] expectedBIndices, int[] expectedNIndices, double[] expectedX) {
@@ -701,7 +709,7 @@ public class LinearProgrammingTest extends TestCase {
         assertEquals(expectedNIndices.length, slackForm2.nIndices.length);
         assertEquals(expectedA.length, slackForm2.a.length);
         assertEquals(expectedA[0].length, slackForm2.a[0].length);
-        assertEquals(expectedX.length, slackForm2.x.length);
+        assertEquals(expectedX.length, x.length);
         
         for (i = 0; i < expectedB.length; ++i) {
             diff = Math.abs(expectedB[i] - slackForm2.b[i]);
@@ -725,10 +733,113 @@ public class LinearProgrammingTest extends TestCase {
             }
         }
         for (i = 0; i < expectedX.length; ++i) {
-            diff = Math.abs(expectedX[i] - slackForm2.x[i]);
+            diff = Math.abs(expectedX[i] - x[i]);
             assertTrue(diff < tol);
         }
         diff = Math.abs(expectedZ - slackForm2.evaluateObjective());
         assertTrue(diff < tol);
+    }
+    
+    public void testSolveDual0() {
+        /*
+        eqns (29.86) - (29.90) of Cormen et al. "Introduction to Algorithms"       
+        */
+        
+        double[] c = new double[]{30, 24, 36};
+        double[] b = new double[]{3, 1, 2};
+        double[][] a = new double[3][];
+        a[0] = new double[]{1, 2, 4};
+        a[1] = new double[]{1, 2, 1};
+        a[2] = new double[]{3, 5, 2};
+        
+        int[] constraintComparisons = new int[]{1, 1, 1};
+        boolean isMaximization = false;
+        boolean[] nonnegativityConstraints = new boolean[]{true, true, true};
+    
+        StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
+            isMaximization, a, b, c, 
+            constraintComparisons, nonnegativityConstraints);
+        LinearProgramming lp = new LinearProgramming();
+        SlackForm solnPrimal = lp.solveUsingSimplexMethod(standForm);
+        
+        System.out.printf("primal slack=\n%s\n", solnPrimal.toString());
+
+        double expectedObj = 28;
+        
+        double[] x = solnPrimal.computeBasicSolution();
+        double objPrimal = solnPrimal.evaluateObjective();
+        double[] y = solnPrimal.computeBasicDualSolution();
+        double objDual = solnPrimal.evaluateDualObjective();
+        
+        System.out.printf("primal obj=%.3f\n   x=%s\n", objPrimal, FormatArray.toString(x, "%.3f"));
+                
+        System.out.printf("dual obj=%.3f\n   y=%s\n", objDual, FormatArray.toString(y, "%.3f"));
+
+        double tol = 1e-7;
+        //assertTrue(Math.abs(objPrimal - expectedObj) < tol);
+        //assertTrue(Math.abs(objPrimal - objDual) < tol);
+    }
+    
+    public void estSolveDual1() {
+        /*
+        adapted from lecture slides of Ten H. Lai, C.S.E Dept, OSU
+        CSE 6331: Algorithms (Spring 2018)
+        http://web.cse.ohio-state.edu/~lai.1/6331/7-LP.pdf        
+        */
+        
+        double[] c = new double[]{1, 1, 2};
+        double[] b = new double[]{3, 2, 1};
+        double[][] a = new double[3][];
+        a[0] = new double[]{0, 1, 2};
+        a[1] = new double[]{-1, 0, 3};
+        a[2] = new double[]{2, 1, 1};
+        
+        int[] constraintComparisons = new int[]{-1, -1, -1};
+        boolean isMaximization = true;
+        boolean[] nonnegativityConstraints = new boolean[]{true, true, true};
+    
+        StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
+            isMaximization, a, b, c, 
+            constraintComparisons, nonnegativityConstraints);
+        LinearProgramming lp = new LinearProgramming();
+        SlackForm solnPrimal = lp.solveUsingSimplexMethod(standForm);
+        
+        //=====
+        double[] cD = new double[]{3, 2, 1};
+        double[] bD = new double[]{1, 1, 2};
+        double[][] aD = new double[3][];
+        aD[0] = new double[]{0, -1, 2};
+        aD[1] = new double[]{1, 0, 1};
+        aD[2] = new double[]{2, 3, 1};
+        
+        int[] constraintComparisonsD = new int[]{1, 1, 1};
+        boolean isMaximizationD = false;
+        boolean[] nonnegativityConstraintsD = new boolean[]{true, true, true};
+    
+        StandardForm dualStandForm = LinearProgramming
+            .convertLinearProgramToStandardForm(
+            isMaximizationD, aD, bD, cD, 
+            constraintComparisonsD, nonnegativityConstraintsD);
+        
+        SlackForm solnDual = lp.solveUsingSimplexMethod(dualStandForm);
+        
+        System.out.printf("primal slack=\n%s\n", solnPrimal.toString());
+                
+        System.out.printf("dual slack=\n%s\n", solnDual.toString());
+
+        double expectedObj = 5./3.;
+        
+        double[] x = solnPrimal.computeBasicSolution();
+        double objPrimal = solnPrimal.evaluateObjective();
+        double[] y = solnDual.computeBasicDualSolution();
+        double objDual = solnDual.evaluateDualObjective();
+        
+        System.out.printf("primal obj=%.3f, x=%s\n", objPrimal, FormatArray.toString(x, "%.3f"));
+                
+        System.out.printf("dual obj=%.3f, y=%s\n", objDual, FormatArray.toString(y, "%.3f"));
+
+        double tol = 1e-7;
+        assertTrue(Math.abs(objPrimal - expectedObj) < tol);
+        assertTrue(Math.abs(objPrimal - objDual) < tol);
     }
 }

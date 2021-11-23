@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming;
 import algorithms.util.FormatArray;
 import gnu.trove.iterator.TIntIterator;
@@ -65,13 +66,11 @@ public class SetCover {
             // c is the cost for each set in F
             compute y, an optimal solution to the linear program
             C = empty set
-            repeat 2*ln(n) times
+            repeat 2*ln(nU) times
                 for each S in F
                     let C = C union S with probabilty y(S)
             return C
-        
-        NOTE: n is weight.length
-        
+                
         misc notes about randomized picking of set S given probability y(S):
             http://theory.stanford.edu/~trevisan/cs261/lecture08.pdf
             probability ≥ 1 − 1/e that at least one subset S covers an element u in U (U=[0:nU-1, incl]).
@@ -85,7 +84,8 @@ public class SetCover {
               of the probability that u is not covered, which is at most e^(−k)
         NOTE: nU = |U|
         
-        can compare this cost O(log n)*OPT_LP  to a greedy weighted set cover H_d*OPT_LP where H_d is harmonic series ~ 0.5+ln(d)
+        can compare this cost O(log n)*OPT_LP  to a greedy weighted set cover H_d*OPT_LP 
+        where H_d is harmonic series ~ 0.5+ln(d)
         Augmented Greedy Algorithm of weighted Set Cover: Covered = ∅;
             while Covered ̸= U do
                 j ← argmin_k( w_k / |S_k ∩ Uncovered| )
@@ -99,10 +99,9 @@ public class SetCover {
         LinearProgramming.StandardForm standForm = 
             createLinearProgramInStandardForm(nU, sets, weights);
         LinearProgramming lp = new LinearProgramming();
-        LinearProgramming.SlackForm soln = lp.solveUsingSimplexMethod(standForm);
-        double[] y = soln.computeBasicSolution();
-        
-        System.out.printf("y=%s\n", FormatArray.toString(y, "%.3f"));
+        LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
+        double[] ys = lpSoln.computeBasicDualSolution();
+        System.out.printf("ys=%s\n", FormatArray.toString(ys, "%.3f"));
         
         throw new UnsupportedOperationException("not yet implemented");
     }
@@ -193,6 +192,7 @@ public class SetCover {
         int nX, List<TIntSet> sets, double[] weights) {
         
         /*
+        For the primal:
         the 'a' matrix will have rows that represent each x 0 through nX-1
         while the columns will represent whether the set within sets contains
         that integer x.
@@ -205,6 +205,7 @@ public class SetCover {
                   | x=1 row |   | 0  1 |  ...    1 ...
                   | x=2 row |   | 1  1 |  ...    2 ...
                   | x=3 row |   | 1  0 |  ...    1 ...
+                  | 2nd set of constraints |
         
         minimize: 
                 summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
@@ -213,6 +214,10 @@ public class SetCover {
                 y(S) <= 1 for each S in sets ----\
             non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
                 y(S) >= 0 for each S in sets ----/
+
+        a length is nU + nS.  a[0] length is nS.
+        
+        solves for y.         
         */
         
         int nS = sets.size();
@@ -236,7 +241,7 @@ public class SetCover {
             a[i2] = new double[nS];
             a[i2][i] = 1;
         }
-        
+                
         boolean isMaximization = false;
         int[] constraintComparisons = new int[nX + nS];
         Arrays.fill(constraintComparisons, 0, nX, 1);
@@ -249,9 +254,9 @@ public class SetCover {
             .convertLinearProgramToStandardForm(isMaximization, a, b, c, 
             constraintComparisons, nonnegativityConstraints);
         
-        System.out.printf("approx set cover as Linear Program in standard form=\n%s\n", standForm.toString());
+        System.out.printf("Linear Program in standard form=\n%s\n", standForm.toString());
 
         return standForm;
     }
-
+    
 }

@@ -1,10 +1,12 @@
 package algorithms.graphs;
 
 import algorithms.optimization.LinearProgramming;
+import algorithms.util.FormatArray;
 import gnu.trove.list.TIntList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;
 
@@ -26,7 +28,7 @@ public class SetCoverTest extends TestCase {
      6  7  8
      9  10 11
      */
-    public void testApproxLgN() {
+    public void estApproxLgN() {
         /*
         from Section 35.3 of Cormen at al. "Introduction to Comptuer Algorithms"
         */
@@ -80,12 +82,44 @@ public class SetCoverTest extends TestCase {
         
         int nU = 12;
         
-        // expcting y = all 0.5's excepting for S5 where it is '1'
+        // expecting y = all 0.5's excepting for S5 where it is '1'
+        double[] expectedYs = new double[n];
+        Arrays.fill(expectedYs, 0.5);
+        expectedYs[4] = 1;
+        
         LinearProgramming.StandardForm standForm = 
             SetCover.createLinearProgramInStandardForm(nU, sets, weights);
+        LinearProgramming lp = new LinearProgramming();
+        LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("stand=\n%s\n", standForm.toString());
+        System.out.printf("lp-soln=\n%s\n", lpSoln.toString());
+        /*
+        for matrix a formed as [nU X sets.size()], 
+           the objective is summation over i_(from 0 to sets.size()-1) of (a_i_j * y_i)
+        */
+        double[] x = lpSoln.computeBasicSolution();
+        double[] ys = lpSoln.computeBasicDualSolution();
         
+        System.out.printf("x=%s\n", FormatArray.toString(x, "%.3f"));
+        System.out.printf("ys=%s\n", FormatArray.toString(ys, "%.3f"));
+        System.out.printf("y_n=\n");
+        for (i = 0; i < lpSoln.nIndices.length; ++i) {
+            System.out.printf("%.3f, ", ys[lpSoln.nIndices[i]]);
+        }
+        System.out.println();
+        System.out.printf("x_b=\n");
+        for (i = 0; i < lpSoln.bIndices.length; ++i) {
+            System.out.printf("%.3f, ", x[lpSoln.bIndices[i]]);
+        }
+        System.out.println();
+            
+        /*assertEquals(expectedYs.length, ys.length);
+        
+        double diff, tol = 1e-7;
+        for (i = 0; i < expectedYs.length; ++i) {
+            diff = Math.abs(expectedYs[i] - ys[i]);
+            assertTrue(diff < tol);
+        }*/
     }
     
 }

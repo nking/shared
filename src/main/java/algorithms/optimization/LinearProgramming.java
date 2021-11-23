@@ -661,7 +661,7 @@ public class LinearProgramming {
     /**
      * Given a linear program L whose objective is minimization or maximization.
      * and which has constraints that are .leq., .eq., or .geq. the 
-     * constants in b, convert L into standard form.
+     * constants in b, convert L into standard maximum form.
      * Standard form has a maximization objective, nonnegative constraints
      * on all x_j's, and constraints which are all .leq. b_i's.
      * The program implements material from Section 29.1 of Cormen et al.
@@ -1266,9 +1266,7 @@ public class LinearProgramming {
          */
         @Override
         public double evaluateObjective() {
-            if (x == null) {
-                throw new IllegalStateException("x has not been calculated to evaluate");
-            }
+            double[] x = this.computeBasicSolution();
             double sum = v;
             int i;
             for (i = 0; i < c.length; ++i) {
@@ -1286,9 +1284,7 @@ public class LinearProgramming {
                 xj .geq. 0 for j=1:n
                   the later is a nonnegativity constraint
             */
-            if (x == null) {
-                throw new IllegalStateException("x cannot be null.  calculate a basic solution first");
-            }
+            double[] x = this.computeBasicSolution();
             int m = b.length;
             int n = c.length;
             int i, j;
@@ -1329,8 +1325,7 @@ public class LinearProgramming {
                 //   so can use the index i.
                 xt[i] = b[i];
             }
-            this.x = xt;
-            return Arrays.copyOf(x, x.length);
+            return xt;
         }
         
     }
@@ -1410,9 +1405,7 @@ public class LinearProgramming {
                 xj .geq. 0 for j=1:n
                   the later is a nonnegativity constraint
             */
-            if (x == null) {
-                throw new IllegalStateException("x cannot be null.  calculate a basic solution first");
-            }
+            double[] x = this.computeBasicSolution();
             int m = b.length;
             int n = c.length;
             int i, j, idxJ;
@@ -1443,9 +1436,7 @@ public class LinearProgramming {
          */
         @Override
         public double evaluateObjective() {
-            if (x == null) {
-                throw new IllegalStateException("x has not been calculated to evaluate");
-            }
+            double[] x = this.computeBasicSolution();
             double sum = v;
             int i, idx;
             for (i = 0; i < nIndices.length; ++i) {
@@ -1455,6 +1446,31 @@ public class LinearProgramming {
             return sum;
         }
         
+        public double evaluateDualObjective() {
+            double[] y = computeBasicDualSolution();
+            int i;
+            
+            /*System.out.printf("evaluateDualObjective: y=%s\n",
+                FormatArray.toString(y, "%.3f"));
+            System.out.printf("y_n=\n");
+            for (i = 0; i < nIndices.length; ++i) {
+                System.out.printf("%.3f, ", y[nIndices[i]]);
+            }
+            System.out.println();
+            System.out.printf("y_b=\n");
+            for (i = 0; i < bIndices.length; ++i) {
+                System.out.printf("%.3f, ", y[bIndices[i]]);
+            }
+            System.out.println();*/
+            
+            double sum = v;
+            for (i = 0; i < bIndices.length; ++i) {
+                sum += -b[i]*y[bIndices[i]];
+            }
+            return -sum;
+        }
+        
+      
         /**
          * using the present forms, sets all rhs x's to 0 to solve for the lhs x's.
          * The x vector is returned.
@@ -1474,15 +1490,33 @@ public class LinearProgramming {
                       x1, x2, x3, x4, x5, x6 .geq. 0
             */  
             double[] xt = new double[nIndices.length + bIndices.length];
-            int ii, i;
-            for (ii = 0; ii < bIndices.length; ++ii) {
-                i = bIndices[ii];
+            int i, idx;
+            for (i = 0; i < bIndices.length; ++i) {
+                idx = bIndices[i];
                 //x_i = b_i - summation_j_in_nIndices(a_i_j*x_j) for i in bIndices
                 // setting rhs x to 0
-                xt[i] = b[ii];
+                xt[idx] = b[i];
             }
-            this.x = xt;
-            return Arrays.copyOf(x, x.length);
+            return xt;
+        }
+        
+        /**
+         * @return 
+         */
+        public double[] computeBasicDualSolution() {
+            
+            // dual b is primal slack -c from this instance
+            //  see eqn (29.91) of Cormen et al. "Introduction to Algorithms"
+            
+            double[] y = new double[nIndices.length + bIndices.length];
+            int i, idx;
+            for (i = 0; i < nIndices.length; ++i) {
+                idx = nIndices[i];
+                //x_i = b_i - summation_j_in_nIndices(a_i_j*x_j) for i in bIndices
+                // setting rhs x to 0
+                y[idx] = -c[i];
+            }
+            return y;
         }
         
         @Override
@@ -1528,11 +1562,6 @@ public class LinearProgramming {
          */
         public double[] c;
        
-        /**
-         * an n-dimensional vector
-         */
-        public double[] x = null;
-        
         /**
          * an optional term v is sometimes present in the objective
          */
@@ -1588,9 +1617,6 @@ public class LinearProgramming {
             
             sb.append("b=").append(FormatArray.toString(b, "%.3f")).append("\n");
             sb.append(String.format("a=\n%s", FormatArray.toString(a, "%.3f")));
-            if (x != null) {
-                sb.append("x=").append(FormatArray.toString(x, "%.3f")).append("\n");
-            }
             return sb.toString();
         }
     }
