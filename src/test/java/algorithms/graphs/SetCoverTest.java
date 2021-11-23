@@ -113,16 +113,29 @@ public class SetCoverTest extends TestCase {
         }
         System.out.println();
         
-        System.out.printf("primal x=%s\n", FormatArray.toString(lpSoln.calculatePrimalX(), "%.3f"));
-        System.out.printf("dual y=%s\n", FormatArray.toString(lpSoln.calculateDualY(), "%.3f"));
-
-        /*assertEquals(expectedYs.length, ys.length);
+        double expectedZ = 8.5;
         
-        double diff, tol = 1e-7;
+        double[] primalX = lpSoln.calculatePrimalX();
+        double[] dualY = lpSoln.calculateDualY();
+        System.out.printf("primal x=%s\n", FormatArray.toString(primalX, "%.3f"));
+        System.out.printf("dual y=%s\n", FormatArray.toString(dualY, "%.3f"));
+        System.out.printf("obj=%.4f, %.4f\n", lpSoln.evaluateObjective(),
+            lpSoln.evaluateDualObjective());
+
+        assertEquals(expectedYs.length, primalX.length);
+        
+        // the random picking of entering variable in the pivot of LinearProgramming,
+        //     occassiionally gives a solution which is not optimal.        
+        /*double diff, tol = 1e-7;
         for (i = 0; i < expectedYs.length; ++i) {
-            diff = Math.abs(expectedYs[i] - ys[i]);
+            diff = Math.abs(expectedYs[i] - primalX[i]);
             assertTrue(diff < tol);
         }*/
+        SetCover sc = new SetCover();
+        TIntSet cover = sc.weightedApprox2LgN(nU, sets, weights);
+        System.out.printf("cover=%s\n", Arrays.toString(cover.toArray()));
+        // all sets except sets[4]
+        
     }
     
 }

@@ -214,6 +214,10 @@ public class LinearProgramming {
            An unbounded solution has feasible solution, but does not have finite optimal objective.
       
      </pre>
+       NOTE: the random picking of the entering variable in the pivot of LinearProgramming,
+       occasionally leads to a solution which is not optimal.
+       TODO: consider a pattern for try again or at least document it for the user.
+        
      * @param standForm
      * @return 
      */

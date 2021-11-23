@@ -1,6 +1,7 @@
 package algorithms.graphs;
 
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.Misc0;
 import algorithms.optimization.LinearProgramming;
 import algorithms.util.FormatArray;
 import gnu.trove.iterator.TIntIterator;
@@ -14,6 +15,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  A set cover is the smallest vertex cover of a graph,
@@ -27,6 +29,25 @@ import java.util.List;
  * @author nichole
  */
 public class SetCover {
+    
+    private final Random rand = Misc0.getSecureRandom();
+    
+    /**
+     * machine precision used in evaluating whether a double is different
+     * from another double.
+     */
+    private static double eps = 1e-11;
+    
+    public SetCover() {
+        this(System.nanoTime());
+    }
+    
+    public SetCover(long randomSeed) {
+        //seed = 180328550254112L;
+        System.out.println("seed=" + randomSeed);
+        System.out.flush();
+        rand.setSeed(randomSeed);
+    }
     
     /**
      * find a minimum weighted set cover using a randomized rounding approximation algorithm
@@ -43,7 +64,7 @@ public class SetCover {
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
-    public TIntList weightedApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
+    public TIntSet weightedApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
         /*
         material from lecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
@@ -100,10 +121,47 @@ public class SetCover {
             createLinearProgramInStandardForm(nU, sets, weights);
         LinearProgramming lp = new LinearProgramming();
         LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
-        double[] ys = lpSoln.computeBasicDualSolution();
-        System.out.printf("ys=%s\n", FormatArray.toString(ys, "%.3f"));
+        double[] primalX = lpSoln.calculatePrimalX();
+        double[] dualY = lpSoln.calculateDualY();
+        System.out.printf("primalX=%s\n", FormatArray.toString(primalX, "%.3f"));
+        System.out.printf("dualY=%s\n", FormatArray.toString(dualY, "%.3f"));
         
-        throw new UnsupportedOperationException("not yet implemented");
+        // TODO: consider visiting the sets ordered by highest probability, 
+        //      though this is increasingly not the probability of the remaining 
+        //      members summed.
+          
+        int i;
+        TIntSet indexes = new TIntHashSet();
+        for (i = 0; i < sets.size(); ++i) {
+            indexes.add(i);
+        }
+        TIntIterator iter;
+        TIntSet rm = new TIntHashSet();
+        double r;
+        
+        TIntSet c = new TIntHashSet();
+        int nMax = (int)Math.ceil(2*Math.log(nU));
+        int idx;
+        for (i = 0; i < nMax; ++i) {
+            iter = indexes.iterator();
+            while (iter.hasNext()) {
+                idx = iter.next();
+                r = rand.nextDouble();
+                if (r >= primalX[idx]) {
+                    c.add(idx);
+                    rm.add(idx);
+                }
+            }
+            iter = rm.iterator();
+            while (iter.hasNext()) {
+                idx = iter.next();
+                indexes.remove(idx);
+            }
+            if (c.size() == nU) {
+                break;
+            }
+        }
+        return c;
     }
     
     /**
