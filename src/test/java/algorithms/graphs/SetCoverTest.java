@@ -1,10 +1,13 @@
 package algorithms.graphs;
 
 import algorithms.optimization.LinearProgramming;
+import algorithms.optimization.ORSetCoverReader;
 import algorithms.util.FormatArray;
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +59,7 @@ public class SetCoverTest extends TestCase {
         assertTrue(setCoverIndexes.containsAll(expected0) || setCoverIndexes.containsAll(expected1));
     }
 
-    public void testWeightedApprox2LgN() {
+    public void estSetWeightedApprox2LgN() {
         /*
         from Section 35.3 of Cormen at al. "Introduction to Comptuer Algorithms"
         and
@@ -88,7 +91,7 @@ public class SetCoverTest extends TestCase {
         expectedYs[4] = 1;
         
         LinearProgramming.StandardForm standForm = 
-            SetCover.createLinearProgramInStandardForm(nU, sets, weights);
+            SetCover.createLinearProgramInStandardFormForWeightedSets(nU, sets, weights);
         LinearProgramming lp = new LinearProgramming();
         LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
         
@@ -132,7 +135,7 @@ public class SetCoverTest extends TestCase {
             assertTrue(diff < tol);
         }*/
         SetCover sc = new SetCover();
-        TIntSet cover = sc.weightedApprox2LgN(nU, sets, weights);
+        TIntSet cover = sc.weightedSetsApprox2LgN(nU, sets, weights);
         System.out.printf("cover=%s\n", Arrays.toString(cover.toArray()));
         // all sets except sets[4]
         
@@ -146,7 +149,48 @@ public class SetCoverTest extends TestCase {
     "Algorithms for NP-hard Optimization Problems and Cluster Analysis",
     Li, 2017 (see Table 1.2 1nd 1.3)
     
-    scpe1 has 500 sets and 50 items with opt=5
+    scpe1 has 500 sets (= num columns n) 
+    and 50 items (=num rows m) with opt=5.  
+    all columns have same weight.
+    
+    scp41.txt has 1000 sets and 200 items.
+    the column weights are not all the same.
     */
+    
+    public void testElementWeightedSetCover() throws IOException {
+        
+        String filename = "scp41.txt";
+        
+        //[nSets, nItems]
+        int[] mn = ORSetCoverReader.getSCPDatasetNumberOfRowsCols(filename);
+        
+        int nSets = mn[0];
+        int nU = mn[1];
+        
+        List<TIntSet> sets = new ArrayList<TIntSet>(nSets);
+        double[] uWeights = new double[nU];
+        
+        ORSetCoverReader.getSCPDataset(filename, sets, uWeights);
+
+        double[] sWeights = SetCover.calcSetWeightsFromElementWeights(nU, sets, uWeights);
+        
+        double expectedZ = ORSetCoverReader.getSCPDatasetZ(filename);
+        
+        SetCover sc = new SetCover();
+        
+        TIntSet cover = sc.weightedElementsApprox2LgN(nU, sets, uWeights);
+    
+        double sum = 0;
+        TIntIterator iter = cover.iterator();
+        int idx;
+        while (iter.hasNext()) {
+            idx = iter.next();
+            sum += sWeights[idx];
+        }
+        System.out.printf("cover sum=%.3f, expected=%.3f\n", sum, expectedZ);
+        System.out.printf("cover size=%d\n", cover.size());
+        System.out.printf("cover=%s\n", Arrays.toString(cover.toArray()));
+        
+    }
     
 }

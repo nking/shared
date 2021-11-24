@@ -1,6 +1,5 @@
 package algorithms.graphs;
 
-import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Misc0;
 import algorithms.optimization.LinearProgramming;
 import algorithms.util.FormatArray;
@@ -12,7 +11,6 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -53,6 +51,29 @@ public class SetCover {
      * find a minimum weighted set cover using a randomized rounding approximation algorithm
      * of 2*log_e(n) where n is the number of vertexes in the final
      * cover (== nU).
+     * TODO: revisit this for element weights.
+     * The cost of the sets in the cover is minimized.
+     * The problem is NP-complete.
+     * @param nU the number of items in U. U is the universe of elements in sets.
+     * items in U are the sequential range of integers from 0 to nU-1.
+     * @param sets a list of sets for which each set contains integers from the range
+     * 0 through weights.length - 1, inclusive.
+     * @param weights the weights of each element.
+     * @return the list of indexes of sets which comprise the cover, that is the
+     * indexes of the minimum subset of sets that together include all numbers 
+     * 0 through nU-1, inclusive.
+     */
+    public TIntSet weightedElementsApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
+        
+        double[] sWeights = calcSetWeightsFromElementWeights(nU, sets, weights);
+
+        return weightedSetsApprox2LgN(nU, sets, sWeights);
+    }
+        
+    /**
+     * find a minimum weighted set cover using a randomized rounding approximation algorithm
+     * of 2*log_e(n) where n is the number of vertexes in the final
+     * cover (== nU).
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
      * @param nU the number of items in U. U is the universe of elements in sets.
@@ -64,7 +85,7 @@ public class SetCover {
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
-    public TIntSet weightedApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
+    public TIntSet weightedSetsApprox2LgN(int nU, List<TIntSet> sets, double[] weights) {
         /*
         material from lecture slides of Principal lecturer: Dr Thomas Sauerwald
         Advanced Algorithms, University of Cambridge.
@@ -118,7 +139,7 @@ public class SetCover {
         */
                 
         LinearProgramming.StandardForm standForm = 
-            createLinearProgramInStandardForm(nU, sets, weights);
+            createLinearProgramInStandardFormForWeightedSets(nU, sets, weights);
         LinearProgramming lp = new LinearProgramming();
         LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
         double[] primalX = lpSoln.calculatePrimalX();
@@ -126,6 +147,81 @@ public class SetCover {
         System.out.printf("primalX=%s\n", FormatArray.toString(primalX, "%.3f"));
         System.out.printf("dualY=%s\n", FormatArray.toString(dualY, "%.3f"));
         
+        return weightedApprox2LgN(nU, sets, weights, primalX);
+    }
+    
+    /**
+     * find a minimum weighted set cover using a randomized rounding approximation algorithm
+     * of 2*log_e(n) where n is the number of vertexes in the final
+     * cover (== nU).
+     * The cost of the sets in the cover is minimized.
+     * The problem is NP-complete.
+     * @param nU the number of items in U. U is the universe of elements in sets.
+     * items in U are the sequential range of integers from 0 to nU-1.
+     * @param sets a list of sets for which each set contains integers from the range
+     * 0 through weights.length - 1, inclusive.
+     * @param weights the weights of each set in sets.
+     * @param yProbabilities coefficients of the optimal solution to LinearProgram
+     * for the given sets and weights.
+     * @return the list of indexes of sets which comprise the cover, that is the
+     * indexes of the minimum subset of sets that together include all numbers 
+     * 0 through nU-1, inclusive.
+     */
+    private TIntSet weightedApprox2LgN(int nU, List<TIntSet> sets, 
+        double[] weights, double[] yProbabilities) {
+        
+        /*
+        material from lecture slides of Principal lecturer: Dr Thomas Sauerwald
+        Advanced Algorithms, University of Cambridge.
+        VII. Approximation Algorithms: Randomisation and Rounding
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/materials.html
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/rand.pdf
+        
+        for the linear program:
+            minimize: 
+                summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
+            subject to:
+                summation_S_in_sets : x in S ( y(S) ) >= 1
+                y(S) <= 1 for each S in sets ----\
+            non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
+                y(S) >= 0 for each S in sets ----/
+        
+        for the weighted set cover w/ LP(X, F, c):
+            // where each x in X belongs to at least 1 subset in F
+            // F is the list of subsets to choose from when building the cover
+            // c is the cost for each set in F
+            compute y, an optimal solution to the linear program
+            C = empty set
+            repeat 2*ln(nU) times
+                for each S in F
+                    let C = C union S with probabilty y(S)
+            return C
+                
+        misc notes about randomized picking of set S given probability y(S):
+            http://theory.stanford.edu/~trevisan/cs261/lecture08.pdf
+            probability ≥ 1 − 1/e that at least one subset S covers an element u in U (U=[0:nU-1, incl]).
+            For each iteration of the while loop, there is a probability at most 
+                1/e that element u in U is not covered by the sets added to C 
+                in that iteration.
+            The probability that u is not covered after ln |U| + k iterations 
+               is then at most = (i/|U|(*e^(-k)).
+            So then The probability that, after ln|U|+k iterations, there is
+              an element that is not covered, is at most the sum over all u 
+              of the probability that u is not covered, which is at most e^(−k)
+        NOTE: nU = |U|
+        
+        can compare this cost O(log n)*OPT_LP  to a greedy weighted set cover H_d*OPT_LP 
+        where H_d is harmonic series ~ 0.5+ln(d)
+        Augmented Greedy Algorithm of weighted Set Cover: Covered = ∅;
+            while Covered ̸= U do
+                j ← argmin_k( w_k / |S_k ∩ Uncovered| )
+                if i is uncovered and i ∈ S_j, set pi = Covered = Covered ∪ S_j;
+                   A = A ∪ {j}.
+            end while;
+        Output sets in A as cover
+        
+        */
+               
         // TODO: consider visiting the sets ordered by highest probability, 
         //      though this is increasingly not the probability of the remaining 
         //      members summed.
@@ -147,7 +243,7 @@ public class SetCover {
             while (iter.hasNext()) {
                 idx = iter.next();
                 r = rand.nextDouble();
-                if (r >= primalX[idx]) {
+                if (r >= yProbabilities[idx]) {
                     c.add(idx);
                     rm.add(idx);
                 }
@@ -246,7 +342,8 @@ public class SetCover {
         return c;
     }
 
-    protected static LinearProgramming.StandardForm createLinearProgramInStandardForm(
+    protected static LinearProgramming.StandardForm 
+        createLinearProgramInStandardFormForWeightedSets(
         int nX, List<TIntSet> sets, double[] weights) {
         
         /*
@@ -315,6 +412,26 @@ public class SetCover {
         System.out.printf("Linear Program in standard form=\n%s\n", standForm.toString());
 
         return standForm;
+    }
+
+    public static double[] calcSetWeightsFromElementWeights(int nU,
+        List<TIntSet> sets, double[] weights) {
+        double[] weightsSets = new double[sets.size()];
+        int i, idx;
+        TIntSet set;
+        TIntIterator iter;
+        double sum = 0;
+        for (i = 0; i < sets.size(); ++i) {
+            set = sets.get(i);
+            iter = set.iterator();
+            sum = 0;
+            while (iter.hasNext()) {
+                idx = iter.next();
+                sum += weights[idx];
+            }
+            weightsSets[i] = sum;
+        }
+        return weightsSets;
     }
     
 }
