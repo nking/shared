@@ -29,6 +29,14 @@ import java.util.Stack;
 
    then moved to this shared library project which has the same copyright
 
+   A note on recursion from lecture notes of 
+   CS473: Fundamental Algorithms (Spring 2011)
+   https://courses.engr.illinois.edu/cs473/sp2011/Lectures/09_lec.pdf
+   An iterative algorithm B obtained from a recursive algorithm A for a problem Π 
+   does the following: for each instance I of Π, it computes a topological sort 
+   of G(I) and evaluates sub-problems according to the topological ordering.
+   In some cases (not all) the computation of an optimal solution reduces to a 
+   shortest/longest path in DAG G(I).
 * 
  * @author nichole
  */

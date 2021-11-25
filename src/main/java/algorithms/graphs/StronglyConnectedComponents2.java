@@ -37,10 +37,10 @@ public class StronglyConnectedComponents2 {
         /*
         1) call DFS(g) to compute finishing times f[u] for each vertex u
         2) compute g^T (where g^T is g with edges reversed)
-        3) call DFS(g^T) in but in the main loop of DFS, consider the vertices in
-            order of decreasing f[u] (as computed in line (1))
+        3) call DFS(g^T) but in the main loop of DFS, consider the vertices in
+           order of decreasing f[u] (as computed in line (1))
         4) output the vertices of each tree in the depth first forest formed in
-           line (3) as a seperate strongly connected component.
+           line (3) as a separate strongly connected component.
         */
         DFS dfs = new DFS(connected);
         dfs.walk();

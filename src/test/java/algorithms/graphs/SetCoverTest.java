@@ -31,7 +31,7 @@ public class SetCoverTest extends TestCase {
      6  7  8
      9  10 11
      */
-    public void estApproxLgN() {
+    public void testApproxLgN() {
         /*
         from Section 35.3 of Cormen at al. "Introduction to Comptuer Algorithms"
         */
@@ -59,7 +59,7 @@ public class SetCoverTest extends TestCase {
         assertTrue(setCoverIndexes.containsAll(expected0) || setCoverIndexes.containsAll(expected1));
     }
 
-    public void estSetWeightedApprox2LgN() {
+    public void testSetWeightedApprox2LgN() {
         /*
         from Section 35.3 of Cormen at al. "Introduction to Comptuer Algorithms"
         and
@@ -157,7 +157,7 @@ public class SetCoverTest extends TestCase {
     the column weights are not all the same.
     */
     
-    public void testElementWeightedSetCover() throws IOException {
+    public void estElementWeightedSetCover() throws IOException {
         
         String filename = "scp41.txt";
         

@@ -8,7 +8,7 @@ import algorithms.util.SimpleLinkedListNode;
  * a directed edge uv to vertices u and v results in u before v in a linear
  * ordering.
  *   - call DFS(G) to compute finish times for each vertex v, f[v]
- *   - as each vertex is finished, insert it onto from of a linkedlist
+ *   - as each vertex is finished, insert it into front of a linkedlist
  *   - return linked list of vertices
  * 
  * http://en.wikipedia.org/wiki/Topological_sorting
