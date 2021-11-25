@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BinaryTreeNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">BinaryTreeNode.java</span></div><h1>BinaryTreeNode.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import algorithms.DoublyLinkedList.DoublyLinkedNode;
+
+/**
+ *
+ * @author nichole
+ */
+public class BinaryTreeNode extends DoublyLinkedNode {
+
+    private int data;
+    private BinaryTreeNode left;
+    private BinaryTreeNode right;
+    private BinaryTreeNode parent;
+
+<span class="fc" id="L16">    public BinaryTreeNode(int data) {</span>
+<span class="fc" id="L17">        this.data = data;</span>
+<span class="fc" id="L18">    }</span>
+
+    public String toString() {
+<span class="nc" id="L21">        return Integer.toString(getData());</span>
+    }
+
+    /**
+     * @return the data
+     */
+    public int getData() {
+<span class="fc" id="L28">        return data;</span>
+    }
+
+    /**
+     * @return the left
+     */
+    public BinaryTreeNode getLeft() {
+<span class="fc" id="L35">        return left;</span>
+    }
+
+    /**
+     * @return the right
+     */
+    public BinaryTreeNode getRight() {
+<span class="fc" id="L42">        return right;</span>
+    }
+
+    /**
+     * @return the parent
+     */
+    public BinaryTreeNode getParent() {
+<span class="nc" id="L49">        return parent;</span>
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(int data) {
+<span class="nc" id="L56">        this.data = data;</span>
+<span class="nc" id="L57">    }</span>
+
+    /**
+     * @param left the left to set
+     */
+    public void setLeft(BinaryTreeNode left) {
+<span class="fc" id="L63">        this.left = left;</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * @param right the right to set
+     */
+    public void setRight(BinaryTreeNode right) {
+<span class="fc" id="L70">        this.right = right;</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * @param parent the parent to set
+     */
+    public void setParent(BinaryTreeNode parent) {
+<span class="fc" id="L77">        this.parent = parent;</span>
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

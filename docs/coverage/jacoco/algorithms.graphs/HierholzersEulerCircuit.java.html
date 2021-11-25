@@ -49,45 +49,62 @@ import java.util.Stack;
 <span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
 <span class="nc" id="L50">            return new int[0];</span>
         }
+<span class="fc" id="L52">        int startNode = 0;</span>
+        // OR, in the case that 0 is not connected
+        //startNode = g.keySet().iterator().next();
+        
+<span class="fc" id="L56">        return createCircuit(g, startNode);</span>
+    }
+    /**
+     * 
+     * @param g adjacency list of directed graph
+     * @param startNode
+     * @return 
+     */
+    public int[] createCircuit(TIntObjectMap&lt;TIntSet&gt; g, int startNode) {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
+<span class="nc" id="L66">            return new int[0];</span>
+        }
        
-        int i, u, v;
+        int i, u;
         
         // make a copy of g to modify
-<span class="fc" id="L56">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+<span class="fc" id="L72">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
         TIntSet neighbors, neighbors2;
-<span class="fc" id="L58">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (i = 0; i &lt; g.size(); ++i) {</span>
-<span class="fc" id="L60">            iter.advance();</span>
-<span class="fc" id="L61">            u = iter.key();</span>
-<span class="fc" id="L62">            neighbors = iter.value();</span>
-<span class="fc" id="L63">            neighbors2 = new TIntHashSet(neighbors);</span>
-<span class="fc" id="L64">            g2.put(u, neighbors2);</span>
+<span class="fc" id="L74">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (i = 0; i &lt; g.size(); ++i) {</span>
+<span class="fc" id="L76">            iter.advance();</span>
+<span class="fc" id="L77">            u = iter.key();</span>
+<span class="fc" id="L78">            neighbors = iter.value();</span>
+<span class="fc" id="L79">            neighbors2 = new TIntHashSet(neighbors);</span>
+<span class="fc" id="L80">            g2.put(u, neighbors2);</span>
         }
                 
-<span class="fc" id="L67">        Stack&lt;Integer&gt; curPath = new Stack&lt;Integer&gt;();</span>
-<span class="fc" id="L68">        TIntList circuit = new TIntArrayList();</span>
+<span class="fc" id="L83">        Stack&lt;Integer&gt; curPath = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L84">        TIntList circuit = new TIntArrayList();</span>
         
         // start vertex
-<span class="fc" id="L71">        int curV = 0;</span>
-<span class="fc" id="L72">        curPath.add(curV);</span>
+<span class="fc" id="L87">        int curV = startNode;</span>
+        
+<span class="fc" id="L89">        curPath.add(curV);</span>
         
         int nextV;
         
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        while (!curPath.isEmpty()) {</span>
-<span class="fc" id="L77">            curV = curPath.peek();</span>
-<span class="fc" id="L78">            neighbors2 = g2.get(curV);</span>
-<span class="pc bpc" id="L79" title="1 of 4 branches missed.">            if (neighbors2 != null &amp;&amp; !neighbors2.isEmpty()) {</span>
-<span class="fc" id="L80">                nextV = neighbors2.iterator().next();</span>
-<span class="fc" id="L81">                neighbors2.remove(nextV);</span>
-<span class="fc" id="L82">                curPath.add(nextV);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        while (!curPath.isEmpty()) {</span>
+<span class="fc" id="L94">            curV = curPath.peek();</span>
+<span class="fc" id="L95">            neighbors2 = g2.get(curV);</span>
+<span class="fc bfc" id="L96" title="All 4 branches covered.">            if (neighbors2 != null &amp;&amp; !neighbors2.isEmpty()) {</span>
+<span class="fc" id="L97">                nextV = neighbors2.iterator().next();</span>
+<span class="fc" id="L98">                neighbors2.remove(nextV);</span>
+<span class="fc" id="L99">                curPath.add(nextV);</span>
             } else {
-<span class="fc" id="L84">                circuit.add(curPath.pop());</span>
+<span class="fc" id="L101">                circuit.add(curPath.pop());</span>
             }
         }
         
-<span class="fc" id="L88">        circuit.reverse();</span>
+<span class="fc" id="L105">        circuit.reverse();</span>
         
-<span class="fc" id="L90">        return circuit.toArray();</span>
+<span class="fc" id="L107">        return circuit.toArray();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

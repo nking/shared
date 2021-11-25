@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SetCover.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">SetCover.java</span></div><h1>SetCover.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.misc.Misc0;
+import algorithms.optimization.LinearProgramming;
+import algorithms.util.FormatArray;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+/**
+ A set cover is the smallest vertex cover of a graph,
+ where a vertex cover is is a subset of a graph's vertices which represents at 
+ * least one vertex from every edge in the full graph
+ * 
+ * optimal vertex cover is np-hard (non-deterministic polynomial class
+   problems at least as hard as the hardest problems in NP.  No known polynomial
+   time algorithm, but one can guess a single solution and verify it.)    
+
+ * @author nichole
+ */
+public class SetCover {
+    
+<span class="fc" id="L31">    private final Random rand = Misc0.getSecureRandom();</span>
+    
+    /**
+     * machine precision used in evaluating whether a double is different
+     * from another double.
+     */
+<span class="fc" id="L37">    private static double eps = 1e-11;</span>
+    
+    public SetCover() {
+<span class="fc" id="L40">        this(System.nanoTime());</span>
+<span class="fc" id="L41">    }</span>
+    
+<span class="fc" id="L43">    public SetCover(long randomSeed) {</span>
+        //seed = 180328550254112L;
+<span class="fc" id="L45">        System.out.println(&quot;seed=&quot; + randomSeed);</span>
+<span class="fc" id="L46">        System.out.flush();</span>
+<span class="fc" id="L47">        rand.setSeed(randomSeed);</span>
+<span class="fc" id="L48">    }</span>
+    
+    /**
+     * find a minimum weighted set cover using a randomized rounding approximation algorithm
+     * of 2*log_e(n) where n is the number of vertexes in the final
+     * cover (== nU).
+     * TODO: revisit this for element weights.
+     * The cost of the sets in the cover is minimized.
+     * The problem is NP-complete.
+     * @param nU the number of items in U. U is the universe of elements in sets.
+     * items in U are the sequential range of integers from 0 to nU-1.
+     * @param sets a list of sets for which each set contains integers from the range
+     * 0 through weights.length - 1, inclusive.
+     * @param weights the weights of each element.
+     * @return the list of indexes of sets which comprise the cover, that is the
+     * indexes of the minimum subset of sets that together include all numbers 
+     * 0 through nU-1, inclusive.
+     */
+    public TIntSet weightedElementsApprox2LgN(int nU, List&lt;TIntSet&gt; sets, double[] weights) {
+        
+<span class="nc" id="L68">        double[] sWeights = calcSetWeightsFromElementWeights(nU, sets, weights);</span>
+
+<span class="nc" id="L70">        return weightedSetsApprox2LgN(nU, sets, sWeights);</span>
+    }
+        
+    /**
+     * find a minimum weighted set cover using a randomized rounding approximation algorithm
+     * of 2*log_e(n) where n is the number of vertexes in the final
+     * cover (== nU).
+     * The cost of the sets in the cover is minimized.
+     * The problem is NP-complete.
+     * @param nU the number of items in U. U is the universe of elements in sets.
+     * items in U are the sequential range of integers from 0 to nU-1.
+     * @param sets a list of sets for which each set contains integers from the range
+     * 0 through weights.length - 1, inclusive.
+     * @param weights the weights of each set in sets.
+     * @return the list of indexes of sets which comprise the cover, that is the
+     * indexes of the minimum subset of sets that together include all numbers 
+     * 0 through nU-1, inclusive.
+     */
+    public TIntSet weightedSetsApprox2LgN(int nU, List&lt;TIntSet&gt; sets, double[] weights) {
+        /*
+        material from lecture slides of Principal lecturer: Dr Thomas Sauerwald
+        Advanced Algorithms, University of Cambridge.
+        VII. Approximation Algorithms: Randomisation and Rounding
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/materials.html
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/rand.pdf
+        
+        for the linear program:
+            minimize: 
+                summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
+            subject to:
+                summation_S_in_sets : x in S ( y(S) ) &gt;= 1
+                y(S) &lt;= 1 for each S in sets ----\
+            non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
+                y(S) &gt;= 0 for each S in sets ----/
+        
+        for the weighted set cover w/ LP(X, F, c):
+            // where each x in X belongs to at least 1 subset in F
+            // F is the list of subsets to choose from when building the cover
+            // c is the cost for each set in F
+            compute y, an optimal solution to the linear program
+            C = empty set
+            repeat 2*ln(nU) times
+                for each S in F
+                    let C = C union S with probabilty y(S)
+            return C
+                
+        misc notes about randomized picking of set S given probability y(S):
+            http://theory.stanford.edu/~trevisan/cs261/lecture08.pdf
+            probability ≥ 1 − 1/e that at least one subset S covers an element u in U (U=[0:nU-1, incl]).
+            For each iteration of the while loop, there is a probability at most 
+                1/e that element u in U is not covered by the sets added to C 
+                in that iteration.
+            The probability that u is not covered after ln |U| + k iterations 
+               is then at most = (i/|U|(*e^(-k)).
+            So then The probability that, after ln|U|+k iterations, there is
+              an element that is not covered, is at most the sum over all u 
+              of the probability that u is not covered, which is at most e^(−k)
+        NOTE: nU = |U|
+        
+        can compare this cost O(log n)*OPT_LP  to a greedy weighted set cover H_d*OPT_LP 
+        where H_d is harmonic series ~ 0.5+ln(d)
+        Augmented Greedy Algorithm of weighted Set Cover: Covered = ∅;
+            while Covered ̸= U do
+                j ← argmin_k( w_k / |S_k ∩ Uncovered| )
+                if i is uncovered and i ∈ S_j, set pi = Covered = Covered ∪ S_j;
+                   A = A ∪ {j}.
+            end while;
+        Output sets in A as cover
+        
+        */
+                
+<span class="fc" id="L141">        LinearProgramming.StandardForm standForm = </span>
+<span class="fc" id="L142">            createLinearProgramInStandardFormForWeightedSets(nU, sets, weights);</span>
+<span class="fc" id="L143">        LinearProgramming lp = new LinearProgramming();</span>
+<span class="fc" id="L144">        LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);</span>
+<span class="fc" id="L145">        double[] primalX = lpSoln.calculatePrimalX();</span>
+<span class="fc" id="L146">        double[] dualY = lpSoln.calculateDualY();</span>
+<span class="fc" id="L147">        System.out.printf(&quot;primalX=%s\n&quot;, FormatArray.toString(primalX, &quot;%.3f&quot;));</span>
+<span class="fc" id="L148">        System.out.printf(&quot;dualY=%s\n&quot;, FormatArray.toString(dualY, &quot;%.3f&quot;));</span>
+        
+<span class="fc" id="L150">        return weightedApprox2LgN(nU, sets, weights, primalX);</span>
+    }
+    
+    /**
+     * find a minimum weighted set cover using a randomized rounding approximation algorithm
+     * of 2*log_e(n) where n is the number of vertexes in the final
+     * cover (== nU).
+     * The cost of the sets in the cover is minimized.
+     * The problem is NP-complete.
+     * @param nU the number of items in U. U is the universe of elements in sets.
+     * items in U are the sequential range of integers from 0 to nU-1.
+     * @param sets a list of sets for which each set contains integers from the range
+     * 0 through weights.length - 1, inclusive.
+     * @param weights the weights of each set in sets.
+     * @param yProbabilities coefficients of the optimal solution to LinearProgram
+     * for the given sets and weights.
+     * @return the list of indexes of sets which comprise the cover, that is the
+     * indexes of the minimum subset of sets that together include all numbers 
+     * 0 through nU-1, inclusive.
+     */
+    private TIntSet weightedApprox2LgN(int nU, List&lt;TIntSet&gt; sets, 
+        double[] weights, double[] yProbabilities) {
+        
+        /*
+        material from lecture slides of Principal lecturer: Dr Thomas Sauerwald
+        Advanced Algorithms, University of Cambridge.
+        VII. Approximation Algorithms: Randomisation and Rounding
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/materials.html
+        https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/rand.pdf
+        
+        for the linear program:
+            minimize: 
+                summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
+            subject to:
+                summation_S_in_sets : x in S ( y(S) ) &gt;= 1
+                y(S) &lt;= 1 for each S in sets ----\
+            non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
+                y(S) &gt;= 0 for each S in sets ----/
+        
+        for the weighted set cover w/ LP(X, F, c):
+            // where each x in X belongs to at least 1 subset in F
+            // F is the list of subsets to choose from when building the cover
+            // c is the cost for each set in F
+            compute y, an optimal solution to the linear program
+            C = empty set
+            repeat 2*ln(nU) times
+                for each S in F
+                    let C = C union S with probabilty y(S)
+            return C
+                
+        misc notes about randomized picking of set S given probability y(S):
+            http://theory.stanford.edu/~trevisan/cs261/lecture08.pdf
+            probability ≥ 1 − 1/e that at least one subset S covers an element u in U (U=[0:nU-1, incl]).
+            For each iteration of the while loop, there is a probability at most 
+                1/e that element u in U is not covered by the sets added to C 
+                in that iteration.
+            The probability that u is not covered after ln |U| + k iterations 
+               is then at most = (i/|U|(*e^(-k)).
+            So then The probability that, after ln|U|+k iterations, there is
+              an element that is not covered, is at most the sum over all u 
+              of the probability that u is not covered, which is at most e^(−k)
+        NOTE: nU = |U|
+        
+        can compare this cost O(log n)*OPT_LP  to a greedy weighted set cover H_d*OPT_LP 
+        where H_d is harmonic series ~ 0.5+ln(d)
+        Augmented Greedy Algorithm of weighted Set Cover: Covered = ∅;
+            while Covered ̸= U do
+                j ← argmin_k( w_k / |S_k ∩ Uncovered| )
+                if i is uncovered and i ∈ S_j, set pi = Covered = Covered ∪ S_j;
+                   A = A ∪ {j}.
+            end while;
+        Output sets in A as cover
+        
+        */
+               
+        // TODO: consider visiting the sets ordered by highest probability, 
+        //      though this is increasingly not the probability of the remaining 
+        //      members summed.
+          
+        int i;
+<span class="fc" id="L230">        TIntSet indexes = new TIntHashSet();</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        for (i = 0; i &lt; sets.size(); ++i) {</span>
+<span class="fc" id="L232">            indexes.add(i);</span>
+        }
+        TIntIterator iter;
+<span class="fc" id="L235">        TIntSet rm = new TIntHashSet();</span>
+        double r;
+        
+<span class="fc" id="L238">        TIntSet c = new TIntHashSet();</span>
+<span class="fc" id="L239">        int nMax = (int)Math.ceil(2*Math.log(nU));</span>
+        int idx;
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        for (i = 0; i &lt; nMax; ++i) {</span>
+<span class="fc" id="L242">            iter = indexes.iterator();</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L244">                idx = iter.next();</span>
+<span class="fc" id="L245">                r = rand.nextDouble();</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">                if (r &gt;= yProbabilities[idx]) {</span>
+<span class="fc" id="L247">                    c.add(idx);</span>
+<span class="fc" id="L248">                    rm.add(idx);</span>
+                }
+            }
+<span class="fc" id="L251">            iter = rm.iterator();</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L253">                idx = iter.next();</span>
+<span class="fc" id="L254">                indexes.remove(idx);</span>
+            }
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">            if (c.size() == nU) {</span>
+<span class="nc" id="L257">                break;</span>
+            }
+        }
+<span class="fc" id="L260">        return c;</span>
+    }
+    
+    /**
+     * find a set cover that is O(log-n)-approx, that is no more than O(log-n) times
+     * as large as the optimal set cover
+     * (e.g., for n=100, this would be up to 6.64 times as large as the optimal solution).
+     * This is a greedy approach.
+     * The runtime complexity is polynomial.
+     * &lt;pre&gt;
+     * The algorithm implements pseudocode from
+     *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
+     * and Cormen et al &quot;Introduction to Algorithms&quot; chap 35.3.
+     * &lt;/pre&gt;
+     * @param sets
+     * @return the list of indexes of sets which comprise the cover.
+     */
+    public TIntList approxLgN(List&lt;TIntSet&gt; sets) {
+        
+        // make a copy of the sets to edit it
+<span class="fc" id="L280">        TIntObjectMap&lt;TIntSet&gt; setsMap = copy(sets);</span>
+        TIntObjectIterator&lt;TIntSet&gt; iter;
+        
+<span class="fc" id="L283">        TIntList c = new TIntArrayList();</span>
+        
+<span class="fc" id="L285">        TIntSet si, siMaxN = null;        </span>
+<span class="fc" id="L286">        int maxN, i, n, maxNIdx = -1, idx;</span>
+<span class="fc" id="L287">        TIntList rm = new TIntArrayList();</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        while (!setsMap.isEmpty()) {</span>
+<span class="fc" id="L289">            maxN = Integer.MIN_VALUE;</span>
+<span class="fc" id="L290">            iter = setsMap.iterator();</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            for (i = 0; i &lt; setsMap.size(); ++i) {</span>
+<span class="fc" id="L292">                iter.advance();</span>
+<span class="fc" id="L293">                si = iter.value();</span>
+<span class="fc" id="L294">                idx = iter.key();</span>
+<span class="fc" id="L295">                n = si.size();</span>
+                //System.out.printf(&quot;   idx=%d (%s) n=%d\n&quot;, idx, si.toString(), n);
+<span class="pc bpc" id="L297" title="1 of 4 branches missed.">                if (n &gt; 0 &amp;&amp; n &gt; maxN) {</span>
+<span class="fc" id="L298">                    maxN = n;</span>
+<span class="fc" id="L299">                    maxNIdx = idx;</span>
+                }
+            }
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">            if (maxN == Integer.MIN_VALUE) {</span>
+<span class="nc" id="L303">                break;</span>
+            }
+<span class="fc" id="L305">            siMaxN = setsMap.remove(maxNIdx);</span>
+            //System.out.printf(&quot;max idx=%d (%s)\n&quot;, maxNIdx, siMaxN.toString());
+<span class="fc" id="L307">            c.add(maxNIdx);</span>
+            
+            // remove siMaxN from each set in s.  and store the empty sets as indexes to remove after use of iterator
+<span class="fc" id="L310">            iter = setsMap.iterator();</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">            for (i = 0; i &lt; setsMap.size(); ++i) {</span>
+<span class="fc" id="L312">                iter.advance();</span>
+<span class="fc" id="L313">                si = iter.value();</span>
+<span class="fc" id="L314">                si.removeAll(siMaxN);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">                if (si.isEmpty()) {</span>
+<span class="fc" id="L316">                    rm.add(iter.key());</span>
+                }
+            }
+<span class="fc bfc" id="L319" title="All 2 branches covered.">            for (i = 0; i &lt; rm.size(); ++i) {</span>
+<span class="fc" id="L320">                setsMap.remove(rm.get(i));</span>
+            }
+<span class="fc" id="L322">            rm.clear();</span>
+        }
+        
+<span class="fc" id="L325">        return c;</span>
+    }
+
+    protected TIntObjectMap&lt;TIntSet&gt; copy(List&lt;TIntSet&gt; s) {
+<span class="fc" id="L329">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;(s.size());</span>
+        int i;
+        TIntSet cSet, si;
+        TIntIterator iter;
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        for (i = 0; i &lt; s.size(); ++i) {</span>
+<span class="fc" id="L334">            cSet = new TIntHashSet();</span>
+<span class="fc" id="L335">            si = s.get(i);</span>
+<span class="fc" id="L336">            iter = si.iterator();</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">            while (iter.hasNext()){</span>
+<span class="fc" id="L338">                cSet.add(iter.next());</span>
+            }
+<span class="fc" id="L340">            c.put(i, cSet);</span>
+        }
+<span class="fc" id="L342">        return c;</span>
+    }
+
+    protected static LinearProgramming.StandardForm 
+        createLinearProgramInStandardFormForWeightedSets(
+        int nX, List&lt;TIntSet&gt; sets, double[] weights) {
+        
+        /*
+        For the primal:
+        the 'a' matrix will have rows that represent each x 0 through nX-1
+        while the columns will represent whether the set within sets contains
+        that integer x.
+        
+        e.g.  List&lt;TIntSet&gt; sets = [ {0, 2, 3}, {1, 2} ];
+              nX = 4
+              would create:
+              
+              a = | x=0 row | = | 1  0 | because 0 is in sets[0] but not in sets[1]
+                  | x=1 row |   | 0  1 |  ...    1 ...
+                  | x=2 row |   | 1  1 |  ...    2 ...
+                  | x=3 row |   | 1  0 |  ...    1 ...
+                  | 2nd set of constraints |
+        
+        minimize: 
+                summation_S_in_Cover( c(S) ) = summation_S_in_sets( c(S)*y(S) )
+            subject to:
+                summation_S_in_sets : x in S ( y(S) ) &gt;= 1
+                y(S) &lt;= 1 for each S in sets ----\
+            non-negativity constraints:           \ these 2 rules are derived from y(S) ∈ [0,1]
+                y(S) &gt;= 0 for each S in sets ----/
+
+        a length is nU + nS.  a[0] length is nS.
+        
+        solves for y.         
+        */
+        
+<span class="fc" id="L378">        int nS = sets.size();</span>
+        
+<span class="fc" id="L380">        double[] c = Arrays.copyOf(weights, weights.length);</span>
+<span class="fc" id="L381">        double[] b = new double[nX + nS];</span>
+<span class="fc" id="L382">        Arrays.fill(b, 1);</span>
+        
+<span class="fc" id="L384">        double[][] a = new double[nX + nS][nS];</span>
+        int i, j;
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        for (i = 0; i &lt; nX; ++i) {</span>
+<span class="fc" id="L387">            a[i] = new double[nS];</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">            for (j = 0; j &lt; sets.size(); ++j) {</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">                if (sets.get(j).contains(i)) {</span>
+<span class="fc" id="L390">                    a[i][j] = 1;</span>
+                }
+            }
+        }
+        int i2;
+<span class="fc bfc" id="L395" title="All 2 branches covered.">        for (i = 0, i2=nX; i &lt; nS; ++i, ++i2) {</span>
+<span class="fc" id="L396">            a[i2] = new double[nS];</span>
+<span class="fc" id="L397">            a[i2][i] = 1;</span>
+        }
+                
+<span class="fc" id="L400">        boolean isMaximization = false;</span>
+<span class="fc" id="L401">        int[] constraintComparisons = new int[nX + nS];</span>
+<span class="fc" id="L402">        Arrays.fill(constraintComparisons, 0, nX, 1);</span>
+<span class="fc" id="L403">        Arrays.fill(constraintComparisons, nX, nX+nS, -1);</span>
+        
+<span class="fc" id="L405">        boolean[] nonnegativityConstraints = new boolean[nS];</span>
+<span class="fc" id="L406">        Arrays.fill(nonnegativityConstraints, true);</span>
+        
+<span class="fc" id="L408">        LinearProgramming.StandardForm standForm = LinearProgramming</span>
+<span class="fc" id="L409">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
+            constraintComparisons, nonnegativityConstraints);
+        
+<span class="fc" id="L412">        System.out.printf(&quot;Linear Program in standard form=\n%s\n&quot;, standForm.toString());</span>
+
+<span class="fc" id="L414">        return standForm;</span>
+    }
+
+    public static double[] calcSetWeightsFromElementWeights(int nU,
+        List&lt;TIntSet&gt; sets, double[] weights) {
+<span class="nc" id="L419">        double[] weightsSets = new double[sets.size()];</span>
+        int i, idx;
+        TIntSet set;
+        TIntIterator iter;
+<span class="nc" id="L423">        double sum = 0;</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        for (i = 0; i &lt; sets.size(); ++i) {</span>
+<span class="nc" id="L425">            set = sets.get(i);</span>
+<span class="nc" id="L426">            iter = set.iterator();</span>
+<span class="nc" id="L427">            sum = 0;</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">            while (iter.hasNext()) {</span>
+<span class="nc" id="L429">                idx = iter.next();</span>
+<span class="nc" id="L430">                sum += weights[idx];</span>
+            }
+<span class="nc" id="L432">            weightsSets[i] = sum;</span>
+        }
+<span class="nc" id="L434">        return weightsSets;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

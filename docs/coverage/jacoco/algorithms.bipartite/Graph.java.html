@@ -41,20 +41,20 @@ public class Graph {
      * map of edge weights with key = pairint of left index and right index and
      * value being the edge weight.
      */
-<span class="nc" id="L44">    private TObjectIntHashMap&lt;PairInt&gt; edgeWeights</span>
+<span class="fc" id="L44">    private TObjectIntHashMap&lt;PairInt&gt; edgeWeights</span>
         = new TObjectIntHashMap&lt;PairInt&gt;();
 
-<span class="nc" id="L47">    private TObjectIntHashMap&lt;PairInt&gt; sourceEdgeWeights = null;</span>
-<span class="nc" id="L48">    private TObjectIntHashMap&lt;PairInt&gt; sinkEdgeWeights = null;</span>
+<span class="fc" id="L47">    private TObjectIntHashMap&lt;PairInt&gt; sourceEdgeWeights = null;</span>
+<span class="fc" id="L48">    private TObjectIntHashMap&lt;PairInt&gt; sinkEdgeWeights = null;</span>
 
     public Graph(int nLeftVertices, int nRightVertices,
         TObjectIntMap&lt;PairInt&gt; theEdgeWeights, 
-<span class="nc" id="L52">        boolean createSourceAndSinkEdges) {</span>
+<span class="fc" id="L52">        boolean createSourceAndSinkEdges) {</span>
         
-<span class="nc" id="L54">        this.nLeft = nLeftVertices;</span>
-<span class="nc" id="L55">        this.nRight = nRightVertices;</span>
+<span class="fc" id="L54">        this.nLeft = nLeftVertices;</span>
+<span class="fc" id="L55">        this.nRight = nRightVertices;</span>
         
-<span class="nc" id="L57">        edgeWeights.putAll(theEdgeWeights);</span>
+<span class="fc" id="L57">        edgeWeights.putAll(theEdgeWeights);</span>
         
         /*
         For each vertex x in X, there is a left-dummy arc |- -&gt; x, 
@@ -66,44 +66,44 @@ public class Graph {
            y to the sink node -| and of cost zero: 
            c(y, -|) := 0.            
         */
-<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (createSourceAndSinkEdges) {</span>
-<span class="nc" id="L70">            this.sourceNode = nLeft;</span>
-<span class="nc" id="L71">            this.sinkNode = nRight;</span>
-<span class="nc" id="L72">            sourceEdgeWeights = new TObjectIntHashMap&lt;PairInt&gt;();</span>
-<span class="nc" id="L73">            sinkEdgeWeights = new TObjectIntHashMap&lt;PairInt&gt;();</span>
-<span class="nc bnc" id="L74" title="All 2 branches missed.">            for (int i = 0; i &lt; nLeft; ++i) {</span>
-<span class="nc" id="L75">                PairInt p = new PairInt(sourceNode, i);</span>
-<span class="nc" id="L76">                sourceEdgeWeights.put(p, 0);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (createSourceAndSinkEdges) {</span>
+<span class="fc" id="L70">            this.sourceNode = nLeft;</span>
+<span class="fc" id="L71">            this.sinkNode = nRight;</span>
+<span class="fc" id="L72">            sourceEdgeWeights = new TObjectIntHashMap&lt;PairInt&gt;();</span>
+<span class="fc" id="L73">            sinkEdgeWeights = new TObjectIntHashMap&lt;PairInt&gt;();</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            for (int i = 0; i &lt; nLeft; ++i) {</span>
+<span class="fc" id="L75">                PairInt p = new PairInt(sourceNode, i);</span>
+<span class="fc" id="L76">                sourceEdgeWeights.put(p, 0);</span>
             }
-<span class="nc bnc" id="L78" title="All 2 branches missed.">            for (int i = 0; i &lt; nLeft; ++i) {</span>
-<span class="nc" id="L79">                PairInt p = new PairInt(i, sinkNode);</span>
-<span class="nc" id="L80">                 sinkEdgeWeights.put(p, 0);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            for (int i = 0; i &lt; nLeft; ++i) {</span>
+<span class="fc" id="L79">                PairInt p = new PairInt(i, sinkNode);</span>
+<span class="fc" id="L80">                 sinkEdgeWeights.put(p, 0);</span>
             }
         } else {
-<span class="nc" id="L83">            this.sourceNode = -1;</span>
-<span class="nc" id="L84">            this.sinkNode = -1;</span>
+<span class="fc" id="L83">            this.sourceNode = -1;</span>
+<span class="fc" id="L84">            this.sinkNode = -1;</span>
         }
-<span class="nc" id="L86">    }</span>
+<span class="fc" id="L86">    }</span>
     
     /**
      * @return the number of left vertices
      */
     public int getNLeft() {
-<span class="nc" id="L92">        return nLeft;</span>
+<span class="fc" id="L92">        return nLeft;</span>
     }
 
     /**
      * @return the number of right vertices
      */
     public int getNRight() {
-<span class="nc" id="L99">        return nRight;</span>
+<span class="fc" id="L99">        return nRight;</span>
     }
 
     /**
      * @return the edgeWeights
      */
     public TObjectIntHashMap&lt;PairInt&gt; getEdgeWeights() {
-<span class="nc" id="L106">        return edgeWeights;</span>
+<span class="fc" id="L106">        return edgeWeights;</span>
     }
 
     /**
@@ -124,7 +124,7 @@ public class Graph {
      * @return the sourceNode
      */
     public int getSourceNode() {
-<span class="nc" id="L127">        return sourceNode;</span>
+<span class="fc" id="L127">        return sourceNode;</span>
     }
 
     /**

@@ -461,9 +461,9 @@ public class NodeMap extends TLongIntHash implements
         int value, int nodeColor, int nodeSize, int index ) {
         
 <span class="fc" id="L463">        boolean isNewMapping = true;</span>
-<span class="fc bfc" id="L464" title="All 2 branches covered.">        if ( index &lt; 0 ) {</span>
-<span class="fc" id="L465">            index = -index -1;</span>
-<span class="fc" id="L466">            isNewMapping = false;</span>
+<span class="pc bpc" id="L464" title="1 of 2 branches missed.">        if ( index &lt; 0 ) {</span>
+<span class="nc" id="L465">            index = -index -1;</span>
+<span class="nc" id="L466">            isNewMapping = false;</span>
         }
 <span class="fc" id="L468">        _parents[index] = parent;</span>
 <span class="fc" id="L469">        _lefts[index] = left;</span>
@@ -472,7 +472,7 @@ public class NodeMap extends TLongIntHash implements
 <span class="fc" id="L472">        _colors[index] = nodeColor;</span>
 <span class="fc" id="L473">        _sizes[index] = nodeSize;</span>
 
-<span class="fc bfc" id="L475" title="All 2 branches covered.">        if (isNewMapping) {</span>
+<span class="pc bpc" id="L475" title="1 of 2 branches missed.">        if (isNewMapping) {</span>
             // a method in THash to expand and rehash if needed
 <span class="fc" id="L477">            postInsertHook( consumeFreeSlot );</span>
         }

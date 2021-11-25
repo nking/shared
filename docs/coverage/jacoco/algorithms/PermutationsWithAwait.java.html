@@ -2,8 +2,6 @@
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * permute the given set of numbers in a thread that waits for the getNext()
@@ -19,9 +17,6 @@ import java.util.logging.Logger;
    by Goetz et al.
  */
 public class PermutationsWithAwait {
-    
-<span class="fc" id="L23">    private Logger log = null;</span>
-<span class="fc" id="L24">    private Level LEVEL = Level.FINE;</span>
     
     private final Semaphore availableItem, computationLock;
     
@@ -42,43 +37,35 @@ public class PermutationsWithAwait {
             Sedgewick, Robert. &quot;a talk on Permutation Generation Algorithms
             http://www.cs.princeton.edu/~rs/talks/perms.pdf
 
-       The semaphore model is adapted from Chap 12.1 of &quot;Java Concurrency in Practice&quot;
-       by Goetz et al.
+       The semaphore model with 1 permit is adapted from Chap 12.1 of 
+       &quot;Java Concurrency in Practice&quot; by Goetz et al.
+       Alternatively, could use a ReentrantLock and 2 Conditions (see Chap 14.4
+       Listing 14.11).
+       
      * @param set
      * @throws java.lang.InterruptedException
      */
-<span class="fc" id="L50">    public PermutationsWithAwait(int[] set) throws InterruptedException {</span>
+<span class="fc" id="L48">    public PermutationsWithAwait(int[] set) throws InterruptedException {</span>
+                
+<span class="fc" id="L50">        int n = set.length;</span>
+<span class="fc" id="L51">        this.x = new int[n];</span>
         
-<span class="fc" id="L52">        log = Logger.getLogger(this.getClass().getSimpleName());</span>
-        
-<span class="fc" id="L54">        int n = set.length;</span>
-<span class="fc" id="L55">        this.x = new int[n];</span>
-        
-<span class="fc" id="L57">        this.availableItem = new Semaphore(0);</span>
-<span class="fc" id="L58">        this.computationLock = new Semaphore(1);</span>
+<span class="fc" id="L53">        this.availableItem = new Semaphore(0);</span>
+<span class="fc" id="L54">        this.computationLock = new Semaphore(1);</span>
         
         //nPermutations = MiscMath0.factorialBigInteger(n);
         
-<span class="fc" id="L62">        log.log(LEVEL, &quot;BEFORE computationLock.acquire()&quot;);</span>
-<span class="fc" id="L63">        computationLock.acquire();</span>
-<span class="fc" id="L64">        log.log(LEVEL, &quot;   AFTER computationLock.acquire()&quot;);</span>
+<span class="fc" id="L58">        computationLock.acquire();</span>
         
         //output(A)
-<span class="fc" id="L67">        System.arraycopy(set, 0, x, 0, n);</span>
+<span class="fc" id="L61">        System.arraycopy(set, 0, x, 0, n);</span>
         //nCurrent = BigInteger.ONE;
         
-        //log.log(LEVEL, String.format(&quot;*x=%s  nCurr=%s out of nPerm=%s\n&quot;, 
-        //   Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
-                 
-<span class="fc" id="L73">        log.log(LEVEL, &quot;BEFORE availableItem.release()&quot;);</span>
-<span class="fc" id="L74">        availableItem.release();</span>
-<span class="fc" id="L75">        log.log(LEVEL, &quot;   AFTER availableItem.release()&quot;);</span>
-        
-<span class="fc" id="L77">        log.log(LEVEL, &quot;starting Permuter&quot;);</span>
-        
-<span class="fc" id="L79">        Thread thread = new Thread(new Permuter(set));</span>
-<span class="fc" id="L80">        thread.start();</span>
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L64">        availableItem.release();</span>
+                
+<span class="fc" id="L66">        Thread thread = new Thread(new Permuter(set));</span>
+<span class="fc" id="L67">        thread.start();</span>
+<span class="fc" id="L68">    }</span>
     
     /**
      * get the next permutation of the original set
@@ -87,21 +74,16 @@ public class PermutationsWithAwait {
      * @throws InterruptedException 
      */
     public void getNext(int[] out) throws InterruptedException {
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (out.length != x.length) {</span>
-<span class="nc" id="L91">            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (out.length != x.length) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);</span>
         }
         
-        //log.log(LEVEL, &quot;getNext BEFORE availableItem.acquire() nc={0}&quot;, 
-        //    nCurrent.toString());
+<span class="fc" id="L81">        availableItem.acquire();</span>
         
-<span class="fc" id="L97">        availableItem.acquire();</span>
+<span class="fc" id="L83">        System.arraycopy(x, 0, out, 0, out.length);</span>
         
-<span class="fc" id="L99">        System.arraycopy(x, 0, out, 0, out.length);</span>
-        
-<span class="fc" id="L101">        computationLock.release();</span>
-        
-        //log.log(LEVEL, &quot;  getNext AFTER computationLock.release() nc={0}&quot;, nCurrent.toString());
-<span class="fc" id="L104">    }</span>
+<span class="fc" id="L85">        computationLock.release();        </span>
+<span class="fc" id="L86">    }</span>
     
     //TODO: consider using Callable so run can throw an exception
     private class Permuter implements Runnable {
@@ -112,7 +94,6 @@ public class PermutationsWithAwait {
 
         @Override
         public void run() {
-            log.log(LEVEL, &quot;Permuter.run()&quot;);
             int n = set.length;
             int[] c = new int[n];
             int i = 0;
@@ -129,15 +110,11 @@ public class PermutationsWithAwait {
                         set[c[i]] = set[i];
                         set[i] = swap;
                     }
-                    
-                    log.log(LEVEL, &quot;BEFORE computationLock.acquire()&quot;);
-                    
+                                        
                     try {
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
-                        log.log(Level.SEVERE, &quot;unrecoverable error? &quot; + ex.getMessage());
-                        //TODO: change to using Callable so can throw an exception
-                        return;
+                        Thread.currentThread().interrupt();
                     }
                     
                     // output permutation to instance member x
@@ -145,13 +122,8 @@ public class PermutationsWithAwait {
                     
                     //nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
-                    //log.log(LEVEL, String.format(&quot;*x=%s  nCurr=%s out of nPerm=%s\n&quot;, 
-                    //    Arrays.toString(x), nCurrent.toString(), nPermutations.toString()));
-                   
                     availableItem.release();
-                    
-                    //log.log(LEVEL, &quot;   AFTER cavailableItem.release()&quot;);
-                    
+                                        
                     //Swap has occurred ending the for-loop. Simulate the increment 
                     //of the for-loop counter
                     c[i] += 1;
