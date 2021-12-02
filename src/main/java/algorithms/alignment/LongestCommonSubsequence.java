@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.alignment;
 
 import algorithms.util.PairIntArray;
 import java.util.Arrays;

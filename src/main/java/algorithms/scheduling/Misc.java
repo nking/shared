@@ -206,10 +206,10 @@ public class Misc {
         int[] p = new int[f.length+1];
         for (i = s.length - 1; i > -1; i--) {
             for (j = i - 1; j > -1; j--) {
-                System.out.printf("%d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
+                //System.out.printf("%d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
                 if (f[j] <= s[i]) {
                     p[i] = j+1;
-                    System.out.printf("   p[%d]=%d\n", i, p[i]);
+                    //System.out.printf("   p[%d]=%d\n", i, p[i]);
                     break;
                 }
             }
