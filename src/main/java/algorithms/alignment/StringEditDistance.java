@@ -16,7 +16,7 @@ import java.util.Arrays;
       https://www.researchgate.net/publication/3820090_An_Efficient_Uniform-Cost_Normalized_Edit_Distance_Algorithm
  * 
  * NOTE: the alignment algorithms could be sped up to a runtime of O(N^2/log^2(N))
- * where N is max of string lengths, bu using
+ * where N is max of string lengths, by using
  * Arlazarov, Dinic, Kronrod, Faradzev Four Russian algorithm.
  * 
  * NOTE also that the linear space algorithms can be improved by using
@@ -47,6 +47,9 @@ public class StringEditDistance {
      * see also https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
      * and
      * Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
+     * 
+     * Other methods for comparing string similarity are Jaccard similarity, 
+     * Jaro-Winkler distance, and dynamic time warping. 
      * 
      * @param a string to edit
      * @param b target string to change a into.

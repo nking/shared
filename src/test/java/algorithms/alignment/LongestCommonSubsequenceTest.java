@@ -1,6 +1,5 @@
 package algorithms.alignment;
 
-import algorithms.LongestCommonSubsequence;
 import java.util.Arrays;
 import junit.framework.TestCase;
 

@@ -1,6 +1,5 @@
 package algorithms.alignment;
 
-import algorithms.StringEditDistance;
 import algorithms.util.PairIntArray;
 import gnu.trove.list.TCharList;
 import java.util.Arrays;
@@ -16,7 +15,11 @@ public class StringEditDistanceTest extends TestCase {
     String a = "rosettacode";   // 6 matches, m=11
     String b = "raisethysword"; // n=13
     int nExpected = 8;
-        
+       
+    String c = "actactagattacttacggatcaggtactttagaggcttgcaacca";
+    String d = "";
+    String localAlignedD = "";
+    String globalAlignedD = "";
  
     public StringEditDistanceTest() {
     }
