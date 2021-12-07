@@ -2,6 +2,7 @@ Hungarian algorithm:
     finds in a weighted bipartite graph, a matching of a given size, in which the 
     sum of weights of the edges is minimum.
     a.k.a. Maximum Weighted Maximum Cardinality Bipartite Matching
+**revisit this: the runtime complexity might be the tarjan revision of it:
     runtime complexity O(mn + n^2(log n)), where n := |X| = |Y | and m := |E|
     thirdparty.algorithm.HungarianAlgorithm.java
 
