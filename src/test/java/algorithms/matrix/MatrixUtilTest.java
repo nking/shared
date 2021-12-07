@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.DenseCholesky;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.LowerSymmDenseMatrix;
@@ -1447,5 +1446,20 @@ public class MatrixUtilTest extends TestCase {
              assertTrue(Math.abs(expected[i]-b[i]) < eps);
          }
          assertTrue(Arrays.equals(new double[]{1, 2, 3, 4}, a));
+     }
+     
+     public void testMultisetUnorderedIntersection() {
+         
+         int[] a = new int[]{39, 10, 59, 29, 3, 4, 5, 11, 11, 45, 23};
+         int[] b = new int[]{39, 39, 50, 91, 12, 11, 5, 4, 3, 4, 5, 11, 11, 54, 32};
+         int[] expectedC = new int[]{3, 4, 5, 11, 11, 39};
+         
+         int[] c = MatrixUtil.multisetUnorderedIntersection(a, b);
+         
+         assertEquals(expectedC.length, c.length);
+         int i;
+         for (i = 0; i < expectedC.length; ++i) {
+             assertEquals(expectedC[i], c[i]);
+         }
      }
 }

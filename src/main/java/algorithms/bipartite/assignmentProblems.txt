@@ -1,0 +1,26 @@
+Hungarian algorithm:
+    finds in a weighted bipartite graph, a matching of a given size, in which the 
+    sum of weights of the edges is minimum.
+    a.k.a. Maximum Weighted Maximum Cardinality Bipartite Matching
+    runtime complexity O(mn + n^2(log n)), where n := |X| = |Y | and m := |E|
+    thirdparty.algorithm.HungarianAlgorithm.java
+
+Jonker–Volgenant
+    A solver for the min-cost, balanced, weighted bipartite assignment problem
+    runtime complexity O(n^3), where n := |X| = |Y | and m := |E|
+
+Min-cost unbalanced assignment:
+    A solver for the min-cost, unbalanced, weighted bipartite
+    assignment problem that uses weight scaling
+    to solve the perfect and imperfect
+    assignment problems, but not incremental
+    O(m * sqrt(n) * log(n * C)) 
+       where m is the number of edges (a.k.a. arcs) in the graph,
+       n is the maximum number of nodes in the two graphs to be matched,
+       C is a constant greater than or equal to the maximum 
+       edge weight and is greater than or equal to 1.
+    algorithms.bipartite.MinCostInbalancedAssignment.java
+
+HopcroftKarp:
+    finds a maximum matching in an unweighted bipartite graph.
+    runtime complexity is O(sqrt(|V|) * |E|)

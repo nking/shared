@@ -21,6 +21,8 @@ import no.uib.cipr.matrix.QRP;
 import no.uib.cipr.matrix.SVD;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 import com.github.fommil.netlib.LAPACK;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 
 /**
  
@@ -3777,5 +3779,54 @@ public class MatrixUtil {
          * symmetric positive definite.
          */
         public double[][] h;
+    }
+    
+    /**
+     * given 2 non-decreasing ordered sequences of numbers, find their intersection.
+     * The method is called multiset because the sequences may contain more than
+     * one element having the same value... the method is used for multisets as multi-sequences.
+     * The runtime complexity is O(max(a.length, b.length).
+     * @param orderedA an increasing sequence of numbers (i.e. ascending sorted). 
+     * @param orderedB an increasing sequence of numbers (i.e. sorted by non-decreasing order)
+     * @return 
+     */
+    public static int[] multisetIntersection(int[] orderedA, int[] orderedB) {
+        
+        int[] a = Arrays.copyOf(orderedA, orderedA.length);
+        int[] b = Arrays.copyOf(orderedB, orderedB.length);
+        TIntList c = new TIntArrayList();
+        
+        int i = 0, j = 0;
+        while (i < a.length && j < b.length) {
+            if (a[i] == b[j]) {
+                c.add(a[i]);
+                i++; 
+                j++;
+            } else if (a[i] < b[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return c.toArray();
+    }
+    
+    /**
+     * given 2 sequences of numbers, find their intersection.
+     * The method is called multiset because the sequences may contain more than
+     * one element having the same value... the method is used for multisets as multi-sequences.
+     * The runtime complexity is O(N*log_2(N)) where N is max(a.length, b.length).
+     * @param a a sequence of numbers 
+     * @param b a sequence of numbers
+     * @return 
+     */
+    public static int[] multisetUnorderedIntersection(int[] a, int[] b) {
+        
+        a = Arrays.copyOf(a, a.length);
+        b = Arrays.copyOf(b, b.length);
+        Arrays.sort(a);
+        Arrays.sort(b);
+        
+        return multisetIntersection(a, b);
     }
 }

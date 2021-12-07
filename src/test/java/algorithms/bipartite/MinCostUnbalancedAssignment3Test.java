@@ -253,7 +253,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
         return g;
     }
     
-    private Graph getTestGraph0() {
+    public static Graph getTestGraph0() {
         
         TObjectIntMap<PairInt> weights 
             = new TObjectIntHashMap<PairInt>();
@@ -317,7 +317,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
         return g;
     }
     
-    private Graph getTestGraph1(int size, int maxCost,
+    public static Graph getTestGraph1(int size, int maxCost,
         SecureRandom sr) throws NoSuchAlgorithmException {
         
         /*
@@ -383,7 +383,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
         return g;
     }
     
-    private float[][] convert(Graph g) {
+    public static float[][] convert(Graph g) {
         
         int n1 = g.getNLeft();
         int n2 = g.getNRight();
@@ -403,6 +403,19 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
         }
         
         return cost;
+    }
+    
+    public static double[][] convert(float[][] m) {
+        
+        double[][] out = new double[m.length][];
+        int i, j;
+        for (i = 0; i < m.length; ++i) {
+            out[i] = new double[m[i].length];
+            for (j = 0; j < m[i].length; ++j) {
+                out[i][j] = m[i][j];
+            }
+        }
+        return out;
     }
     
     private Graph getTestGraph2(int size, int maxCost, SecureRandom sr) throws 
@@ -428,7 +441,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
         return g;
     }
     
-    private Graph getTestGraph3(SecureRandom sr, int size, int maxCost) 
+    public static Graph getTestGraph3(SecureRandom sr, int size, int maxCost) 
             throws NoSuchAlgorithmException {
         
         /*
