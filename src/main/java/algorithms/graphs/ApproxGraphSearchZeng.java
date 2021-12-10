@@ -180,7 +180,8 @@ public class ApproxGraphSearchZeng {
         int[][] pA2PT = MatrixUtil.multiply(p,
             MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));
         
-        double term2 = 0.5*MatrixUtil.lp1Norm(pA2PT);
+        double term2 = 0.5*MatrixUtil.lp1Norm(
+            MatrixUtil.elementwiseSubtract(a1, pA2PT));
         
         throw new UnsupportedOperationException("not yet implemented");
     }

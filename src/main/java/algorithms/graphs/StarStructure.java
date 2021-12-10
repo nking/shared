@@ -21,7 +21,8 @@ implementing a star structure and related methods following the
    August 2009 pp 25–36
    https://doi.org/10.14778/1687627.1687631
 </pre>
-* Additionally have added consideration for edge labels to the edit distance costs.
+* Additionally have added edge labels and modifications to the edit distance 
+* costs for them.
  * @author nichole
  */
 public class StarStructure {

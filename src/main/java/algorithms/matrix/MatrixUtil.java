@@ -3403,6 +3403,32 @@ public class MatrixUtil {
      * element-wise subtraction
      * @param a
      * @param b
+     * @return the results of element-wise subtraction, a - b.
+     */
+    public static int[][] elementwiseSubtract(int[][] a, int[][] b) {
+        int m = a.length;
+        int n = a[0].length;
+        
+        if (b.length != m || b[0].length != n) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        int[][] out = new int[m][];
+        
+        int i, j;
+        for (i = 0; i < out.length; ++i) {
+            out[i] = new int[n];
+            for (j = 0; j < out[i].length; ++j) {
+                out[i][j] = a[i][j] - b[i][j];
+            }
+        }
+        return out;
+    }
+    
+    /**
+     * element-wise subtraction
+     * @param a
+     * @param b
      * @param out the results of element wise subtraction, a - b. Note that it
      * is safe to provide out as the same object as input argument a or b.
      */

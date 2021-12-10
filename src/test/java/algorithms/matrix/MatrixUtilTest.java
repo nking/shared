@@ -1544,19 +1544,87 @@ public class MatrixUtilTest extends TestCase {
     public void testElementwiseMultiplication() {
         
         int[][] a = new int[3][];
-        a[0] = new int[]{};
-        a[1] = new int[]{};
-        a[2] = new int[]{};
+        a[0] = new int[]{1, 1, 1};
+        a[1] = new int[]{2, 2, 2};
+        a[2] = new int[]{3, 3, 3};
         
         int[][] b = new int[3][];
-        b[0] = new int[]{};
-        b[1] = new int[]{};
-        b[2] = new int[]{};
+        b[0] = new int[]{10, 20, 30};
+        b[1] = new int[]{10, 20, 30};
+        b[2] = new int[]{10, 20, 30};
         
         int[][] expected = new int[3][];
-        expected[0] = new int[]{};
-        expected[1] = new int[]{};
-        expected[2] = new int[]{};
+        expected[0] = new int[]{10, 20, 30};
+        expected[1] = new int[]{20, 40, 60};
+        expected[2] = new int[]{30, 60, 90};
         
+        int[][] r = MatrixUtil.elementwiseMultiplication(a, b);
+        assertEquals(expected.length, r.length);
+        assertEquals(expected[0].length, r[0].length);
+        
+        int i, j;
+        for (i = 0; i < r.length; ++i) {
+            for (j = 0; j < r[i].length; ++j) {
+                assertEquals(expected[i][j], r[i][j]);
+            }
+        }
+    }
+    
+    public void testElementwiseMultiplicationDouble() {
+        
+        double[][] a = new double[3][];
+        a[0] = new double[]{1, 1, 1};
+        a[1] = new double[]{2, 2, 2};
+        a[2] = new double[]{3, 3, 3};
+        
+        double[][] b = new double[3][];
+        b[0] = new double[]{10, 20, 30};
+        b[1] = new double[]{10, 20, 30};
+        b[2] = new double[]{10, 20, 30};
+        
+        double[][] expected = new double[3][];
+        expected[0] = new double[]{10, 20, 30};
+        expected[1] = new double[]{20, 40, 60};
+        expected[2] = new double[]{30, 60, 90};
+        
+        double[][] r = MatrixUtil.elementwiseMultiplication(a, b);
+        assertEquals(expected.length, r.length);
+        assertEquals(expected[0].length, r[0].length);
+        
+        int i, j;
+        for (i = 0; i < r.length; ++i) {
+            for (j = 0; j < r[i].length; ++j) {
+                assertEquals(expected[i][j], r[i][j]);
+            }
+        }
+    }
+    
+    public void testElementwiseSubtractInt() {
+        
+        int[][] a = new int[3][];
+        a[0] = new int[]{1, 1, 1};
+        a[1] = new int[]{2, 2, 2};
+        a[2] = new int[]{3, 3, 3};
+        
+        int[][] b = new int[3][];
+        b[0] = new int[]{10, 20, 30};
+        b[1] = new int[]{10, 20, 30};
+        b[2] = new int[]{10, 20, 30};
+        
+        int[][] expected = new int[3][];
+        expected[0] = new int[]{1-10, 1-20, 1-30};
+        expected[1] = new int[]{2-10, 2-20, 2-30};
+        expected[2] = new int[]{3-10, 3-20, 3-30};
+        
+        int[][] r = MatrixUtil.elementwiseSubtract(a, b);
+        assertEquals(expected.length, r.length);
+        assertEquals(expected[0].length, r[0].length);
+        
+        int i, j;
+        for (i = 0; i < r.length; ++i) {
+            for (j = 0; j < r[i].length; ++j) {
+                assertEquals(expected[i][j], r[i][j]);
+            }
+        }
     }
 }
