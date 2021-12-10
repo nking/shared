@@ -84,6 +84,7 @@ public class ApproxGraphSearchZeng {
         int[][] a1, a2;
         StarStructure s;
         Graph g;
+        boolean swappedSG;
         int i, k, rIdx;
         for (int ii = 0; ii < db.size(); ++ii) {
             dbi = db.get(ii);
@@ -101,6 +102,9 @@ public class ApproxGraphSearchZeng {
                 StarStructure[] tmp = sg1;
                 sg1 = sg2;
                 sg2 = tmp;
+                swappedSG = true;
+            } else {
+                swappedSG = false;
             }
             if (sg1.length > sg2.length) {
                 k = sg1.length - sg2.length;
@@ -180,6 +184,22 @@ public class ApproxGraphSearchZeng {
      */
     protected double suboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
         int[][] a1, int[][] a2, int[] assignments) {
+        
+        /*
+        from "Efficiently Computing Graph Similarity and Graph Connectivity" by
+            Xing Feng, 2013
+        
+         graph q is isomorphic to another graph g if there exists a bijective 
+         mapping f from V(q) to V(g) such that 
+            (1) l(v) = l(f(v)) for each v ∈ V(q), 
+            (2) (v,v′) is in E(q) if and only if (f(v),f(v′)) is in E(g), 
+                 ∀v,v′ ∈ V(q), and (3) moreover l(v,v′)=l(f(v), f(v′)) 
+                 for each (v, v′) ∈ E(q).
+        
+        For point (2) add costs here.
+        In refinement, point (2) should be addressed also to edit the permutations
+        so that edge mappings are consistent too when possible.
+        */
         
         int[][] p = createP(assignments);
         
@@ -377,30 +397,37 @@ public class ApproxGraphSearchZeng {
         */
         
         /*
+        /*
+        from "Efficiently Computing Graph Similarity and Graph Connectivity" by
+            Xing Feng, 2013
+        
+         graph q is isomorphic to another graph g if there exists a bijective 
+         mapping f from V(q) to V(g) such that 
+            (1) l(v) = l(f(v)) for each v ∈ V(q), 
+            (2) (v,v′) is in E(q) if and only if (f(v),f(v′)) is in E(g), 
+                 ∀v,v′ ∈ V(q), and (3) moreover l(v,v′)=l(f(v), f(v′)) 
+                 for each (v, v′) ∈ E(q).
+        
+        For point (2) the changes to the bipartite assignments should attempt 
+        to include consistent edge mappings too when possible.
+        
         how to choose the pair for the statement "for any pair (ui, uj) ∈ V (g)"?
-        Also need to avoid repeating same pairs of changes.
+        
+        Also need to avoid repeating same pairs of changes.  This is guaranteed
+        by the loop exit when the new assignment edit distance does not improve, but
+        would like to avoid repeating a change that would knowingly cause an exit
+        when significant potential improvements still exist.
         
         distM holds the cost matrix for bipartite assignments of vertexes in sg1 to sg2.
-                
+        
         one could use the current assignments and distM to find the pair of matchings
         to swap at each iteration.
            (1) the 2 highest cost matches (excluding the eps vertices)?
            (2) consider the reachability of the pair vertexes to one another? 
-           (3)
-        
-        To implement (1):
-           we have n vertexes.
-           for each vertex, store the maximum value in the row for the vertix in distM.
-           order the vertexes in non-decreasing order of the maxima.
-          
-           SubsetChooser can be used to define subsets in an ordered manner.
-           For example, n = 4 nodes, k=3:  C(n,k) = n!/(k!*(n-k)!) = 4
-              7 (    111)
-             11 (   1011)
-             13 (   1101)
-             14 (   1110)
-                       ^ first bit in the subset results will represent the
-                         first item in the maxima ordered vertex indexes.
+           (3) consider bipartite matching that includes adjacency, and has
+               ability to use branching and back-tracking for optimal or approx mapping.
+           (4)
+              
         */
         /*
         int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);
@@ -419,7 +446,7 @@ public class ApproxGraphSearchZeng {
         */
         throw new UnsupportedOperationException("not yet implemented");
     }
-    
+
     /*
     let C be an n×n label matrix, 
         where Ci,j = 1 if l_g(vi) = l_h(uj) (vi ∈ V(g), uj ∈ V(h)),
