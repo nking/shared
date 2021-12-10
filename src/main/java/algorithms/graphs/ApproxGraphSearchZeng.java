@@ -7,6 +7,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.set.TIntSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import thirdparty.graphMatchingToolkit.algorithms.VolgenantJonker;
 
@@ -80,6 +81,7 @@ public class ApproxGraphSearchZeng {
         Graph dbi;
         StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);
         StarStructure[] sg1, sg2;
+        int[][] a1, a2;
         StarStructure s;
         Graph g;
         int i, k, rIdx;
@@ -89,7 +91,10 @@ public class ApproxGraphSearchZeng {
             sg1 = StarStructure.copy(sQ);
             sg2 = StarStructure.createStarStructureMultiset(dbi);
             
-            // normalize sq1 and sg2 to have same cardinality for bipartite vertex assigments
+            a1 = createAdjacencyMatrix(sg1);
+            a2 = createAdjacencyMatrix(sg2);
+
+            // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
             
             // order so that sg1.length >= sg2.length
             if (sg1.length < sg2.length) {
@@ -127,7 +132,19 @@ public class ApproxGraphSearchZeng {
                 continue;
             }
             
+            double tau = suboptimalEditDistance(sg1, sg2, a1, a2, assign);
+            if (tau <= w) {
+                results.add(dbi);
+                continue;
+            }
             
+            int[] refinedAssign = Arrays.copyOf(assign, assign.length);
+            double rho = refinedSuboptimalEditDistance(sg1, sg2, a1, a2, refinedAssign, tau, distM);
+            if (rho <= w) {
+                results.add(dbi);
+                continue;
+            }
+                        
         } // end loop over db graphs
         
         throw new UnsupportedOperationException("not yet implemented");
@@ -153,21 +170,22 @@ public class ApproxGraphSearchZeng {
      * Section 4.3 of Zeng et al. 2009.
      * NOTE: this method has not been revised to include edge labels.
      * TODO: revise to include edge labels.
-     * @param sg1
-     * @param sg2
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param a1 adjacency matrix for graph g1
+     * @param a2 adjacency matrix for graph g2
      @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
      * @return 
      */
     protected double suboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
-        int[] assignments) {
-        
-        int[][] a1 = createAdjacencyMatrix(sg1);
-        int[][] a2 = createAdjacencyMatrix(sg2);
+        int[][] a1, int[][] a2, int[] assignments) {
         
         int[][] p = createP(assignments);
         
         int[][] c = createLabelMatrix(sg1, sg2, assignments);
+        assert(c.length == p.length);
+        assert(c[0].length == p[0].length);
         
         /*
         C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
@@ -183,14 +201,22 @@ public class ApproxGraphSearchZeng {
         double term2 = 0.5*MatrixUtil.lp1Norm(
             MatrixUtil.elementwiseSubtract(a1, pA2PT));
         
-        throw new UnsupportedOperationException("not yet implemented");
+        double term1 = 0;
+        int i, j;
+        for (i = 0; i < c.length; ++i) {
+            for (j = 0; j < c[i].length; ++j) {
+                term1 += c[i][j] * p[i][j];
+            }
+        }
+        
+        return term1 + term2;
     }
     
     /**
      * calculate Lm(g1, g2) = μ(g1, g2) / max{4, [max{δ(g1), δ(g2)} + 1]}
      * following Sect 4.2.2 of Zeng et al. 2009.
-     * @param sg1
-     * @param sg2
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
      * @param mappingDist mapping distance calculated using Definition 4.3 in
      * Section 4.2.1 in Zeng et al. 2009.
      * @return 
@@ -221,8 +247,8 @@ public class ApproxGraphSearchZeng {
      * The distance ζ between S_1 and S_2 is the summation of the edit distance
      * over an assignment of vertexes solved by bipartite matching of the
      * vertex labels.
-     * @param sg1
-     * @param sg2
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
      * @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
      * @return 
@@ -242,6 +268,11 @@ public class ApproxGraphSearchZeng {
         return sum;
     }
 
+    /**
+     * find the maximum degree of a vertex for the graph g.
+     * @param sg
+     * @return 
+     */
     private int maxDegree(StarStructure[] sg) {
         int max = 0, deg;
         for (int i = 0; i < sg.length; ++i) {
@@ -310,6 +341,70 @@ public class ApproxGraphSearchZeng {
             }
         }
         return c;
+    }
+
+    /**
+     * calculates the refined suboptimal edit distance by swapping the 
+     * vertex assignments and calculating the
+     * suboptimal distance, keeping the permuted assignments that result in
+     * the smallest edit distance.
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param a1 adjacency matrix for graph g1
+     * @param a2 adjacency matrix for graph g2
+     * @param refinedAssign input initial vertex assignments and output
+     * refined vertex assignments.
+     * @param tau the sub-optimal edit distance the given sub-optimal edit distance C(g,h,P) where
+     * P is formed from the given assignments in refinedAssign.
+     * @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
+     * @return
+     */
+    protected double refinedSuboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
+        int[][] a1, int[][] a2, int[] refinedAssign, double tau, double[][] distM) {
+        /*
+        dist ← C(g,h,P);
+        min ← dist;
+        for any pair (ui, uj) ∈ V (g) {
+            get P′ based on ui and uj; 
+            if min > C(g,h,P′) {
+                min ← C(g,h,P′);
+                Pmin ←P′;
+            }
+        }
+        if min < dist then
+            min ← Refine(g, h, Pmin )
+        return min;
+        */
+        
+        /*
+        how to choose the pair for the statement "for any pair (ui, uj) ∈ V (g)"?
+        Also need to avoid repeating same pairs of changes.
+        
+        distM holds the cost matrix for bipartite assignments of vertexes in sg1 to sg2.
+                
+        one could use the current assignments and distM to find the pair of matchings
+        to swap at each iteration.
+           (1) the 2 highest cost matches (excluding the eps vertices)?
+           (2) consider the reachability of the pair vertexes to one another? 
+           (3)
+        */
+        
+        /*
+        int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);
+        double dist;
+        double min = tau;
+        do {
+            dist = tau;
+            change assign
+            calc tau
+            if (min > tau) {
+                min = tau; 
+                System.arraycopy(assign, 0, refinedAssign, 0, assign.length);
+            }
+        } while (min < dist);
+        return min;
+        */
+        throw new UnsupportedOperationException("not yet implemented");
     }
     
     /*
