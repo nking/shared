@@ -354,7 +354,7 @@ public class ApproxGraphSearchZeng {
      * @param a2 adjacency matrix for graph g2
      * @param refinedAssign input initial vertex assignments and output
      * refined vertex assignments.
-     * @param tau the sub-optimal edit distance the given sub-optimal edit distance C(g,h,P) where
+     * @param tau the sub-optimal edit distance C(g,h,P) where
      * P is formed from the given assignments in refinedAssign.
      * @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
      * @return
@@ -387,8 +387,21 @@ public class ApproxGraphSearchZeng {
            (1) the 2 highest cost matches (excluding the eps vertices)?
            (2) consider the reachability of the pair vertexes to one another? 
            (3)
-        */
         
+        To implement (1):
+           we have n vertexes.
+           for each vertex, store the maximum value in the row for the vertix in distM.
+           order the vertexes in non-decreasing order of the maxima.
+          
+           SubsetChooser can be used to define subsets in an ordered manner.
+           For example, n = 4 nodes, k=3:  C(n,k) = n!/(k!*(n-k)!) = 4
+              7 (    111)
+             11 (   1011)
+             13 (   1101)
+             14 (   1110)
+                       ^ first bit in the subset results will represent the
+                         first item in the maxima ordered vertex indexes.
+        */
         /*
         int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);
         double dist;
