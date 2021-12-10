@@ -1461,5 +1461,102 @@ public class MatrixUtilTest extends TestCase {
          for (i = 0; i < expectedC.length; ++i) {
              assertEquals(expectedC[i], c[i]);
          }
-     }
+    }
+   
+    public void testMultiplyInt() {
+
+        int[][] a = new int[3][2];
+        a[0] = new int[]{1, 2};
+        a[1] = new int[]{2, 3};
+        a[2] = new int[]{3, 4};
+
+        int[][] b = new int[2][1];
+        b[0] = new int[]{4};
+        b[1] = new int[]{3};
+
+        int[][] expected = new int[3][1];
+        expected[0] = new int[]{10};
+        expected[1] = new int[]{17};
+        expected[2] = new int[]{24};
+
+        int[][] result = MatrixUtil.multiply(a, b);
+        assertEquals(expected.length, result.length);
+        assertEquals(expected[0].length, result[0].length);
+        int i, j;
+        for (i = 0; i < expected.length; ++i) {
+            for (j = 0; j < expected[i].length; ++j) {
+                assertEquals(expected[i][j], result[i][j]);
+            }
+        }
+    }
+    
+    public void testTransposeInt() {
+        int[][] bb = new int[2][];
+        bb[0] = new int[]{100, 101, 1};
+        bb[1] = new int[]{200, 201, 1};
+
+        int[][] expected = new int[3][];
+        expected[0] = new int[]{100, 200};
+        expected[1] = new int[]{101, 201};
+        expected[2] = new int[]{1, 1};
+
+        int i, j;
+        int[][] cc = MatrixUtil.transpose(bb);
+        assertEquals(expected.length, cc.length);
+        assertEquals(expected[0].length, cc[0].length);
+        for (i = 0; i < cc.length; i++) {
+            for (j = 0; j < cc[i].length; j++) {
+                assertTrue(expected[i][j] == cc[i][j]);
+            }
+        }
+    }
+    
+    public void testIsOrthogonal() {
+        int[][] a = new int[3][];
+        a[0] = new int[]{0, -1, 0};
+        a[1] = new int[]{1, 0, 0};
+        a[2] = new int[]{0, 0, -1};
+        
+        assertTrue(MatrixUtil.isOrthogonal(a));
+        
+    }
+    
+    public void testIsAPerumutation() {
+        int[][] a = new int[4][];
+        a[0] = new int[]{0, 0, 0, 1};
+        a[1] = new int[]{0, 0, 1, 0};
+        a[2] = new int[]{1, 0, 0, 0};
+        a[3] = new int[]{0, 1, 0, 0};
+        assertTrue(MatrixUtil.isAPermutationMatrix(a));
+    }
+    
+    public void testLp1Norm() {
+        int[][] a = new int[3][];
+        a[0] = new int[]{10, 1000, 100};
+        a[1] = new int[]{20, 2000, 200};
+        a[2] = new int[]{30, 3000, 30};
+        // max column is the 2nd
+        int expected = 1000 + 2000 + 3000;
+        int lp1Norm = MatrixUtil.lp1Norm(a);
+        assertEquals(expected, lp1Norm);
+    }
+    
+    public void testElementwiseMultiplication() {
+        
+        int[][] a = new int[3][];
+        a[0] = new int[]{};
+        a[1] = new int[]{};
+        a[2] = new int[]{};
+        
+        int[][] b = new int[3][];
+        b[0] = new int[]{};
+        b[1] = new int[]{};
+        b[2] = new int[]{};
+        
+        int[][] expected = new int[3][];
+        expected[0] = new int[]{};
+        expected[1] = new int[]{};
+        expected[2] = new int[]{};
+        
+    }
 }

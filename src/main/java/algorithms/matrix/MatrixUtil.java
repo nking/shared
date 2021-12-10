@@ -17,12 +17,19 @@ import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.MatrixEntry;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.QR;
-import no.uib.cipr.matrix.QRP;
 import no.uib.cipr.matrix.SVD;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
-import com.github.fommil.netlib.LAPACK;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
  
@@ -421,6 +428,102 @@ public class MatrixUtil {
         }
     }
     
+    /**
+     * multiply matrix m by matrix n
+     * @param m tow dimensional array in row major format
+     * @param n two dimensional array in row major format
+     * @return out the results of multiplication of m by n.  the matrix should be size mrows X ncols.
+     */
+    public static int[][] multiply(int[][] m, int[][] n) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        
+        int mrows = m.length;
+
+        int mcols = m[0].length;
+
+        int nrows = n.length;
+        
+        int ncols = n[0].length;
+        
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                "the number of columns in m (=" + mcols + ") "
+                + " must equal the number of rows in n (=" + nrows + ")");
+        }
+        
+        int[][] out = new int[mrows][];
+        int mrow, ncol;
+        for (mrow = 0; mrow < mrows; mrow++) {
+            out[mrow] = new int[ncols];
+        }
+        
+        for (mrow = 0; mrow < mrows; mrow++) {
+            for (ncol = 0; ncol < ncols; ncol++) {
+                int sum = 0;                
+                for (int mcol = 0; mcol < mcols; mcol++) {
+                    sum += (m[mrow][mcol] * n[mcol][ncol]);                    
+                }
+                out[mrow][ncol] = sum;
+            }            
+        }
+        return out;
+    }
+    
+    public static boolean isOrthogonal(int[][] a) {
+        
+        int[][] aT = MatrixUtil.transpose(a);
+        
+        int[][] prod;
+        int i, n;
+        for (int k = 0; k < 2; ++k) {
+            if (k == 0) {
+                prod = MatrixUtil.multiply(a, aT);
+            } else {
+                prod = MatrixUtil.multiply(aT, a);
+            }
+            n = prod.length;
+            assert(n == prod[0].length);
+            for (i = 0; i < n; ++i) {
+                if (prod[i][i] != 1) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    public static boolean isAPermutationMatrix(int[][] a) {
+        
+        int i, j;
+        int sum = 0;
+        for (i = 0; i < a.length; ++i) {
+            sum = 0;
+            for (j = 0; j < a[i].length; ++j) {
+                sum += a[i][j];
+            }
+            if (sum != 1) {
+                return false;
+            }
+        }
+        for (j = 0; j < a[0].length; ++j) {
+            sum = 0;
+            for (i = 0; i < a.length; ++i) {
+                sum += a[i][j];
+            }
+            if (sum != 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
    
     public static double[][] createATransposedTimesA(double[][] a) {
 
@@ -1020,6 +1123,29 @@ public class MatrixUtil {
         
         for (int i = 0; i < mRows; i++) {
             for (int j = 0; j < mCols; j++) {
+                t[j][i] = m[i][j];
+            }
+        }
+        
+        return t;
+    }
+    
+    public static int[][] transpose(int[][] m) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        
+        int mRows = m.length;
+        int mCols = m[0].length;
+        
+        int[][] t = new int[mCols][];
+        for (int i = 0; i < mCols; i++) {
+            t[i] = new int[mRows];
+        }
+        int i, j;
+        for (i = 0; i < mRows; i++) {
+            for (j = 0; j < mCols; j++) {
                 t[j][i] = m[i][j];
             }
         }
@@ -2190,6 +2316,32 @@ public class MatrixUtil {
     }
     
     /**
+    following the convention used by Matlab
+    <pre>
+    https://www.mathworks.com/help/matlab/ref/norm.html#bvhji30-3
+
+    For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
+    ||X||_1 = max sum for an arg j where (0.lte.j.lte.n-1) sum_(i=0 to n-1) ( |a[i][j] )
+    </pre>
+    @param a
+    @return the maximum absolute column sum of the matrix
+    */
+    public static int lp1Norm(int[][] a) {
+        int maxSum = Integer.MIN_VALUE;
+        int i, j, sum;
+        for (j = 0; j < a[0].length; ++j) {
+            sum = 0;
+            for (i = 0; i < a.length; ++i) {
+                sum += Math.abs(a[i][j]);
+            }
+            if (sum > maxSum) {
+                maxSum = sum;
+            }
+        }
+        return maxSum;
+    }
+    
+    /**
      * calculate the Frobenius Norm of matrix a.
      * It's the square root of the sum of squares of each element.
      * It can also be calculated as the square root of the
@@ -3148,6 +3300,31 @@ public class MatrixUtil {
     }
     
     /**
+     * element-wise multiplication
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static int[][] elementwiseMultiplication(int[][] a, int[][] b) {
+        int m = a.length;
+        int n = a[0].length;
+        
+        if (b.length != m || b[0].length != n) {
+            throw new IllegalArgumentException("a and b must have same dimensions");
+        }
+        
+        int j;
+        int[][] out = new int[m][n];
+        for (int i = 0; i < m; ++i) {
+            out[i] = new int[n];
+            for (j = 0; j < n; ++j) {
+                out[i][j] = a[i][j] * b[i][j];
+            }
+        }
+        return out;
+    }
+    
+    /**
      * element-wise addition
      * @param a
      * @param b
@@ -3792,17 +3969,15 @@ public class MatrixUtil {
      */
     public static int[] multisetIntersection(int[] orderedA, int[] orderedB) {
         
-        int[] a = Arrays.copyOf(orderedA, orderedA.length);
-        int[] b = Arrays.copyOf(orderedB, orderedB.length);
         TIntList c = new TIntArrayList();
         
         int i = 0, j = 0;
-        while (i < a.length && j < b.length) {
-            if (a[i] == b[j]) {
-                c.add(a[i]);
+        while (i < orderedA.length && j < orderedB.length) {
+            if (orderedA[i] == orderedB[j]) {
+                c.add(orderedA[i]);
                 i++; 
                 j++;
-            } else if (a[i] < b[j]) {
+            } else if (orderedA[i] < orderedB[j]) {
                 i++;
             } else {
                 j++;
@@ -3828,5 +4003,40 @@ public class MatrixUtil {
         Arrays.sort(b);
         
         return multisetIntersection(a, b);
+    }
+    
+    public static TIntObjectMap<TIntSet> copy(TIntObjectMap<TIntSet> a) {
+        TIntObjectMap<TIntSet> c = new TIntObjectHashMap<TIntSet>();
+        TIntObjectIterator<TIntSet> iter = a.iterator();
+        TIntSet set, cSet;
+        TIntIterator iter2;
+        int i, key;
+        for (i = 0; i < a.size(); ++i) {
+            iter.advance();
+            
+            key = iter.key();
+            set = iter.value();
+            
+            cSet = new TIntHashSet();
+            
+            iter2 = set.iterator();
+            
+            while (iter2.hasNext()) {
+                cSet.add(iter2.next());
+            }
+            c.put(key, cSet);
+        }
+        return c;
+    }
+    
+    public static TIntIntMap copy(TIntIntMap a) {
+        TIntIntMap c = new TIntIntHashMap();
+        TIntIntIterator iter = a.iterator();
+        int i;
+        for (i = 0; i < a.size(); ++i) {
+            iter.advance();
+            c.put(iter.key(), iter.value());
+        }
+        return c;
     }
 }

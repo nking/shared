@@ -8,6 +8,8 @@ package thirdparty.graphMatchingToolkit.algorithms;
  * "A Shortest Augmenting Path Algorithm for Dense and Sparse Linear Assignment
  * Problems," Computing 38, 325-340, 1987
  *
+ * minimum cost balanced bipartite matching.
+ * 
     code is from https://github.com/dzambon/graph-matching-toolkit/blob/master/src/algorithms/VolgenantJonker.java
     K. Riesen, S. Emmenegger and H. Bunke. 
     A Novel Software Toolkit for Graph Edit Distance Computation.. 

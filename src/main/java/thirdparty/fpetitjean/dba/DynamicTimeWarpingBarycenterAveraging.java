@@ -28,7 +28,6 @@ package thirdparty.fpetitjean.dba;
  *
  * source code is available at:
  * https://github.com/fpetitjean/DBA/blob/master/DBA.java
- * https://github.com/dzambon/graph-matching-toolkit/tree/master/src/algorithms
  * 
  * license is available at:
  * https://github.com/fpetitjean/DBA/blob/master/LICENSE
