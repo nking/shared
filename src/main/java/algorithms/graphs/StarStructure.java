@@ -7,7 +7,9 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import java.util.Arrays;
@@ -43,6 +45,13 @@ public class StarStructure {
     public int[] eLabels;
     /** the original indexes in V[i] of vLabels before sorting*/
     public int[] origVIndexes;
+    /*
+    vLabels[0] refers to graph g.vLabels[ origVIndexes[0] ]
+    if have an original V index and want to find the star structure index for
+    its vLabels or eLabels, use this mapping.
+    key = original vIndex, value = local star structure vLabel or eLabel index
+    */
+    public TIntIntMap reverseOrigVIndexes;
     
     private StarStructure(){};
     public StarStructure(Graph g, int rootIndex) {
@@ -92,6 +101,10 @@ public class StarStructure {
         this.vLabels = vLabels;
         this.eLabels = eLabels;
         this.origVIndexes = vIndexes;
+        this.reverseOrigVIndexes = new TIntIntHashMap();
+        for (int i = 0; i < origVIndexes.length; ++i) {
+            reverseOrigVIndexes.put(origVIndexes[i], i);
+        }
     }
     
     /**

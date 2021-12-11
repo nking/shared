@@ -8,7 +8,9 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.set.TIntSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import thirdparty.graphMatchingToolkit.algorithms.VolgenantJonker;
 
 /**
@@ -81,7 +83,9 @@ public class ApproxGraphSearchZeng {
         Graph dbi;
         StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);
         StarStructure[] sg1, sg2;
-        int[][] a1, a2;
+        //int[][] a1, a2;
+        // each edge pair is ordered so that u < v.  the pair v->u won't be in the set.
+        Set<PairInt> e1 = getEdges(sQ), e2;
         StarStructure s;
         Graph g;
         boolean swappedSG;
@@ -92,8 +96,11 @@ public class ApproxGraphSearchZeng {
             sg1 = StarStructure.copy(sQ);
             sg2 = StarStructure.createStarStructureMultiset(dbi);
             
-            a1 = createAdjacencyMatrix(sg1);
-            a2 = createAdjacencyMatrix(sg2);
+            //a1 = createAdjacencyMatrix(sg1);
+            //a2 = createAdjacencyMatrix(sg2);
+            
+            // each edge pair is ordered so that u < v.  the pair v->u won't be in the set.
+            e2 = getEdges(sg2);
 
             // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
             
@@ -136,14 +143,14 @@ public class ApproxGraphSearchZeng {
                 continue;
             }
             
-            double tau = suboptimalEditDistance(sg1, sg2, a1, a2, assign);
+            double tau = suboptimalEditDistance(sg1, sg2, e1, e2, assign);
             if (tau <= w) {
                 results.add(dbi);
                 continue;
             }
             
             int[] refinedAssign = Arrays.copyOf(assign, assign.length);
-            double rho = refinedSuboptimalEditDistance(sg1, sg2, a1, a2, refinedAssign, tau, distM);
+            double rho = refinedSuboptimalEditDistance(sg1, sg2, e1, e2, refinedAssign, tau, distM);
             if (rho <= w) {
                 results.add(dbi);
                 continue;
@@ -170,51 +177,39 @@ public class ApproxGraphSearchZeng {
     }
     
     /**
-     * calculate compute τ(g,h) as C(g, h, P) 
-     * Section 4.3 of Zeng et al. 2009.
-     * NOTE: this method has not been revised to include edge labels.
-     * TODO: revise to include edge labels.
+     * calculate compute τ(g,h) as C(g, h, P)
+      <pre>
+      references:
+      Section 4.3 of Zeng et al. 2009.
+      and
+      Chapter 3., pg 45, Algorithm 1 of Feng 2017, PHD Thesis in CSE, UNSW, AU,
+      "Efficiently Computing Graph Similarity and Graph Connectivity"
+     </pre>
      * @param sg1 star structures for graph g1
      * @param sg2 star structures for graph g2
-     * @param a1 adjacency matrix for graph g1
-     * @param a2 adjacency matrix for graph g2
+     * @param e1 edges in graph g1. each PairInt is ordered so that u .lt. v.
+     * @param e2 edges in graph g2. each PairInt is ordered so that u .lt. v.
      @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
      * @return 
      */
     protected double suboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
-        int[][] a1, int[][] a2, int[] assignments) {
+        Set<PairInt> e1, Set<PairInt> e2, int[] assignments) {
         
         /*
-        from "Efficiently Computing Graph Similarity and Graph Connectivity" by
-            Xing Feng, 2013
-        
-         graph q is isomorphic to another graph g if there exists a bijective 
-         mapping f from V(q) to V(g) such that 
-            (1) l(v) = l(f(v)) for each v ∈ V(q), 
-            (2) (v,v′) is in E(q) if and only if (f(v),f(v′)) is in E(g), 
-                 ∀v,v′ ∈ V(q), and (3) moreover l(v,v′)=l(f(v), f(v′)) 
-                 for each (v, v′) ∈ E(q).
-        
-        For point (2) add costs here.
-        In refinement, point (2) should be addressed also to edit the permutations
-        so that edge mappings are consistent too when possible.
-        */
-        
+        // this section commented out implements Zeng et al. 2009 which has vertex edits but not edge edits
         int[][] p = createP(assignments);
         
         int[][] c = createLabelMatrix(sg1, sg2, assignments);
         assert(c.length == p.length);
         assert(c[0].length == p[0].length);
         
-        /*
-        C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
-                      + (1/2) || a1 - P*a2*P^T ||_1
-        
-        Assuming that the L1-norm here is the same convention as MatLab:
-            For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
-            ||X||_1 = max sum for an arg j where (0<=j<=n-1) sum_(i=0 to n-1) ( |a[i][j] )
-        */
+        //C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
+        //              + (1/2) || a1 - P*a2*P^T ||_1
+        //
+        //Assuming that the L1-norm here is the same convention as MatLab:
+        //    For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
+        //    ||X||_1 = max sum for an arg j where (0<=j<=n-1) sum_(i=0 to n-1) ( |a[i][j] )
         int[][] pA2PT = MatrixUtil.multiply(p,
             MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));
         
@@ -230,6 +225,51 @@ public class ApproxGraphSearchZeng {
         }
         
         return term1 + term2;
+        */
+        
+        int n = sg1.length;
+        int cost = 0;
+        
+        // vertex relabeling
+        int i, j;
+        for (i = 0; i < assignments.length; ++i) {
+            j = assignments[i];
+            if (sg1[i].rootLabel == sg2[j].rootLabel) {
+                cost++;
+            }
+        }
+        int i2, j2;
+        PairInt edge2;
+        // Edge deletion or relabeling
+        for (PairInt edge1 : e1) {
+            /*
+            for each edge (v,v′) in q do
+                if edge (f(v), f(v′)) is not in g or l(v,v′) != l(f(v), f(v′)) cost++;
+            */
+            i = edge1.getX();
+            i2 = edge1.getY();
+            j = assignments[i];
+            j2 = assignments[j];
+            if (j < j2) {
+                edge2 = new PairInt(j, j2);
+            } else {
+                edge2 = new PairInt(j2, j);
+            }
+            int edgeLabel1 = sg1[i].eLabels[sg1[i].reverseOrigVIndexes.get(i2)];
+            int edgeLabel2 = sg2[j].eLabels[sg2[j].reverseOrigVIndexes.get(j2)];
+            if (!e2.contains(edge2)) {
+                cost++;
+            } else if (edgeLabel1 != edgeLabel2) {
+                cost++;
+            }
+        }
+        //TODO: revisit this.  the only edge inserts are the eps normalization inserts which have no cost
+        // Edge insertion
+        /*
+        for each edge (u,u′) in g
+            if edge(f'(u),f'(u′)) is not in q cost++;
+        */
+        return cost;
     }
     
     /**
@@ -320,6 +360,26 @@ public class ApproxGraphSearchZeng {
         }
         return a;
     }
+    
+    private Set<PairInt> getEdges(StarStructure[] s) {
+        int nV = s.length;
+        Set<PairInt> edges = new HashSet<PairInt>();
+        StarStructure si;
+        int uIdx, vIdx, j;
+        for (int i = 0; i < nV; ++i) {
+            si = s[i];
+            uIdx = si.rootIdx;
+            for (j = 0; j < si.vLabels.length; ++j) {
+                vIdx = si.origVIndexes[j];
+                if (uIdx < vIdx) {
+                    edges.add(new PairInt(uIdx, vIdx));
+                } else {
+                    edges.add(new PairInt(vIdx, uIdx));
+                }
+            }
+        }
+        return edges;
+    }
 
     private int[][] createP(int[] assignments) {
         int n = assignments.length;
@@ -370,8 +430,8 @@ public class ApproxGraphSearchZeng {
      * the smallest edit distance.
      * @param sg1 star structures for graph g1
      * @param sg2 star structures for graph g2
-     * @param a1 adjacency matrix for graph g1
-     * @param a2 adjacency matrix for graph g2
+     * @param e1
+     * @param e2
      * @param refinedAssign input initial vertex assignments and output
      * refined vertex assignments.
      * @param tau the sub-optimal edit distance C(g,h,P) where
@@ -380,7 +440,7 @@ public class ApproxGraphSearchZeng {
      * @return
      */
     protected double refinedSuboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
-        int[][] a1, int[][] a2, int[] refinedAssign, double tau, double[][] distM) {
+        Set<PairInt> e1, Set<PairInt> e2, int[] refinedAssign, double tau, double[][] distM) {
         /*
         dist ← C(g,h,P);
         min ← dist;
@@ -397,7 +457,6 @@ public class ApproxGraphSearchZeng {
         */
         
         /*
-        /*
         from "Efficiently Computing Graph Similarity and Graph Connectivity" by
             Xing Feng, 2013
         
@@ -411,7 +470,7 @@ public class ApproxGraphSearchZeng {
         For point (2) the changes to the bipartite assignments should attempt 
         to include consistent edge mappings too when possible.
         
-        how to choose the pair for the statement "for any pair (ui, uj) ∈ V (g)"?
+        How to choose the pair for the statement "for any pair (ui, uj) ∈ V (g)"?
         
         Also need to avoid repeating same pairs of changes.  This is guaranteed
         by the loop exit when the new assignment edit distance does not improve, but
