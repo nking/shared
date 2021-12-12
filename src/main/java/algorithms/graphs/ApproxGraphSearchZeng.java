@@ -226,38 +226,28 @@ public class ApproxGraphSearchZeng {
         Set<PairInt> e1, Set<PairInt> e2, int[] assignments) {
         
         /*
-        // this section commented out implements Zeng et al. 2009 which has vertex edits but not edge edits
-        int[][] p = createP(assignments);
-        
-        int[][] c = createLabelMatrix(sg1, sg2, assignments);
-        assert(c.length == p.length);
-        assert(c[0].length == p[0].length);
-        
-        //C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
-        //              + (1/2) || a1 - P*a2*P^T ||_1
-        //
-        //Assuming that the L1-norm here is the same convention as MatLab:
-        //    For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
-        //    ||X||_1 = max sum for an arg j where (0<=j<=n-1) sum_(i=0 to n-1) ( |a[i][j] )
-        int[][] pA2PT = MatrixUtil.multiply(p,
-            MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));
-        
-        double term2 = 0.5*MatrixUtil.lp1Norm(
-            MatrixUtil.elementwiseSubtract(a1, pA2PT));
-        
-        double term1 = 0;
-        int i, j;
-        for (i = 0; i < c.length; ++i) {
-            for (j = 0; j < c[i].length; ++j) {
-                term1 += c[i][j] * p[i][j];
-            }
-        }
-        
-        return term1 + term2;
+        Efficiently Computing Graph Similarity and Graph Connectivity
+        by Xing Feng, 2017, PhD Thesis, CSE, UNSW, AU
+        Chapter 3. Graph Edit Distance Computation, pg 45
+        Algorithm 1: EditorialCost
+        Input: Graphs q and g, and a mapping f from V(q) to V(g)
+        Output: Editorial cost δ_f(q, g)
+        int cost = 0;
+        // vertex relabeling
+        for each vertex v in q do
+            if l(v)!=l(f(v)) cost++;
+        // Edge deletion or relabeling
+        for each edge (v,v′) in q do
+            if edge (f(v), f(v′)) is not in g or l(v,v′) != l(f(v), f(v′)) cost++;
+        // Edge insertion
+        for each edge (u,u′) in g
+            if edge(f'(u),f'(u′)) is not in q cost++;
         */
         
         int n = sg1.length;
         int cost = 0;
+        
+        int[] revAssign = reverseAssignment(assignments);
         
         // vertex relabeling
         int i, j;
@@ -286,18 +276,26 @@ public class ApproxGraphSearchZeng {
             }
             int edgeLabel1 = sg1[i].eLabels[sg1[i].reverseOrigVIndexes.get(i2)];
             int edgeLabel2 = sg2[j].eLabels[sg2[j].reverseOrigVIndexes.get(j2)];
-            if (!e2.contains(edge2)) {
-                cost++;
-            } else if (edgeLabel1 != edgeLabel2) {
+            if (!e2.contains(edge2) || (edgeLabel1 != edgeLabel2)) {
                 cost++;
             }
         }
- //TODO: revisit this.  the only edge inserts are the eps normalization inserts which have no cost
         // Edge insertion
-        /*
-        for each edge (u,u′) in g
-            if edge(f'(u),f'(u′)) is not in q cost++;
-        */
+        PairInt edge1;
+        for (PairInt edge : e2) {
+            j = edge.getX();
+            j2 = edge.getY();
+            i = revAssign[j];
+            i2 = revAssign[j2];
+            if (i < i2) {
+                edge1 = new PairInt(i, 12);
+            } else {
+                edge1 = new PairInt(i2, i);
+            }
+            if (!e1.contains(edge1)) {
+                cost++;
+            }
+        }
         return cost;
     }
     
