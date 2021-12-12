@@ -143,6 +143,45 @@ public class StarStructure {
     }
     
     /**
+     * for the graph model with vertex labeling, but no edge labeling,
+     * calculate the edit distance between star structures s1 and s2.
+     * Lemma 4.1
+     * @param s1
+     * @param s2
+     * @return edit distance for transforming s1 into s2.  the cost includes
+     * vertex insert, delete, and substitutions, and edge substitutions.
+     */
+    public static int calculateEditDistanceV(StarStructure s1, StarStructure s2) {
+        /*
+            lambda(s1, s2) = T(r1, t2) + d(L1, L2)
+              where T(r1, r2) = 0 if label(r1)==label(r2), else = 1
+                       d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
+                       where psi(L) is the multiset of vertex labels on L
+                       where M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
+                       (M(L1,L2) is the cost of substitution of vertices).
+               lambda(s1, s2) = T(r1, t2) + d(L1, L2)
+        */
+        int t = 0;
+        //T(r1, t2)
+        if (s1.rootLabel != s2.rootLabel) {
+            t++;
+        }
+        
+        int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);
+       
+        int pL1 = s1.vLabels.length;
+        int pL2 = s2.vLabels.length;
+        
+        //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
+        int mL1L2 = Math.max(pL1, pL2) - inters.length;
+        //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
+        int dL1L2 = Math.abs(pL1 - pL2) + mL1L2;
+        int editDist = t + dL1L2;
+
+        return editDist;        
+    }
+    
+    /**
      * calculating d(L1, L2) + d(L1E, L2E)
      * @param s1
      * @param s2
@@ -277,6 +316,32 @@ public class StarStructure {
                 s2 = sg2[j];
                 assert(s2.rootIdx == j);
                 dist[i][j] = calculateEditDistance(s1, s2);
+            }
+        }
+        return dist;
+    }
+    
+    /**for the graph model with vertex labeling, but no edge labeling,
+     * create edit distance matrix for S(g_1) to S(g_2) from 
+    StarStructure.calculateEditDistance
+     * @param sg1
+     * @param sg2
+     * @return 
+    */
+    public static double[][] createDistanceMatrixV(StarStructure[] sg1, StarStructure[] sg2) {
+        int m = sg1.length;
+        int n = sg2.length;
+        double[][] dist = new double[m][];
+        int i, j;
+        StarStructure s1, s2;
+        for (i = 0; i < m; ++i) {
+            dist[i] = new double[n];
+            s1 = sg1[i];
+            assert(s1.rootIdx == i);
+            for (j = 0; j < n; ++j) {
+                s2 = sg2[j];
+                assert(s2.rootIdx == j);
+                dist[i][j] = calculateEditDistanceV(s1, s2);
             }
         }
         return dist;
