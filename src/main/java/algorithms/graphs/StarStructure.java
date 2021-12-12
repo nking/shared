@@ -43,12 +43,11 @@ public class StarStructure {
     public int[] vLabels; 
     /** root -> V[i] edge labels, sorted by the vLabel sorting*/
     public int[] eLabels;
-    /** the original indexes in V[i] of vLabels before sorting*/
+    /** the indexes w.r.t. the graph's vertexes, which is the indexes of the
+     * array of star structures. the original indexes in V[i] are 
+     * the indexes of vLabels before re-ordered by sorting */
     public int[] origVIndexes;
-    /*
-    vLabels[0] refers to graph g.vLabels[ origVIndexes[0] ]
-    if have an original V index and want to find the star structure index for
-    its vLabels or eLabels, use this mapping.
+    /**
     key = original vIndex, value = local star structure vLabel or eLabel index
     */
     public TIntIntMap reverseOrigVIndexes;
