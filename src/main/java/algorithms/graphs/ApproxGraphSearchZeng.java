@@ -1,6 +1,8 @@
 package algorithms.graphs;
 
+import algorithms.PermutationsWithAwait;
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
@@ -71,7 +73,7 @@ public class ApproxGraphSearchZeng {
      * @return graphs all db_i in db s.t. db_i is the same as the query graph q
      * within a graph edit distance threshold w
      */
-    public List<Graph> approxFullSearch(Graph q, List<Graph> db, int w) {
+    public List<Graph> approxFullSearch(Graph q, List<Graph> db, int w) throws InterruptedException {
         
         /*
         for each graph g ∈ D do 
@@ -178,16 +180,15 @@ public class ApproxGraphSearchZeng {
                 results.add(dbi);
                 continue;
             }
-            
-            /*
-            if λ(g, q) ≤ w { 
-                report g as a result;
-            }
-            */
-                        
+           
+            // exponential runtime complexity:
+            lambda = optimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau, distM);
+            if (lambda <= w) {
+                results.add(dbi);
+            }       
         } // end loop over db graphs
         
-        throw new UnsupportedOperationException("not yet implemented");
+        return results;
     }
     
     /**
@@ -609,7 +610,57 @@ public class ApproxGraphSearchZeng {
                 }
             }
         }
-        return tau;
+        return min;
+    }
+    
+    /**
+     * calculates the optimal edit distance by permuting the vertex assignments
+     * to find the one which results in the minimum C(g, h, P).  
+     * (see section 4.3 of Zeng et al. 2009).
+     * the runtime complexity is n!.
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param e1
+     * @param e2
+     * @param a1 adjacency matrix for graph g1
+     * @param a2 adjacency matrix for graph g2
+     * @param refinedAssign input initial vertex assignments and output
+     * refined vertex assignments.
+     * @param tau the sub-optimal edit distance C(g,h,P) where
+     * P is formed from the given assignments in refinedAssign.
+     * @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
+     * @return
+     * @throws java.lang.InterruptedException exception thrown if thread is 
+     * interrupted.  The permutation code is running in a separate thread using
+     * a semaphore model to pause and continue execution.
+     */
+    protected double optimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
+        Set<PairInt> e1, Set<PairInt> e2, int[][] a1, int[][] a2,
+        int[] refinedAssign, double tau, double[][] distM) throws InterruptedException {
+                
+        int[] assign = new int[refinedAssign.length];
+        double min = tau;
+        
+        PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));
+        
+        long np = MiscMath0.factorial(refinedAssign.length);
+        
+        for (long i = 0; i < np; ++i) {
+            
+            perm.getNext(assign);
+            
+            if (this.edgesAreLabeled) {
+                tau = suboptimalEditDistance(sg1, sg2, e1, e2, assign);
+            } else {
+                tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);
+            }
+            
+            if (tau < min) {
+                min = tau;
+                System.arraycopy(assign, 0, refinedAssign, 0, assign.length);
+            }
+        }
+        return min;
     }
 
     protected int[] reverseAssignment(int[] assign) {

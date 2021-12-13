@@ -6,15 +6,16 @@ import java.util.concurrent.Semaphore;
 /**
  * permute the given set of numbers in a thread that waits for the getNext()
  * invocation to calculate the next permutation.
-     
+   <pre>
    The permute code is adapted from 
         from https://en.wikipedia.org/wiki/Heap%27s_algorithm
-   who reference:
+   which further references:
         Sedgewick, Robert. "a talk on Permutation Generation Algorithms
         http://www.cs.princeton.edu/~rs/talks/perms.pdf
    
    The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
    by Goetz et al.
+   </pre>
  */
 public class PermutationsWithAwait {
     
@@ -31,23 +32,23 @@ public class PermutationsWithAwait {
      * permute the given set of numbers in a thread that waits for the getNext()
      * invocation to calculate the next permutation.
 
+       <pre>
        The permute code is adapted from 
             from https://en.wikipedia.org/wiki/Heap%27s_algorithm
-       who reference:
+       which further references:
             Sedgewick, Robert. "a talk on Permutation Generation Algorithms
             http://www.cs.princeton.edu/~rs/talks/perms.pdf
 
-       The semaphore model with 1 permit is adapted from Chap 12.1 of 
-       "Java Concurrency in Practice" by Goetz et al.
-       Alternatively, could use a ReentrantLock and 2 Conditions (see Chap 14.4
-       Listing 14.11).
+       The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
+       by Goetz et al.
+       </pre>
        
-     * @param set
+     * @param seq
      * @throws java.lang.InterruptedException
      */
-    public PermutationsWithAwait(int[] set) throws InterruptedException {
+    public PermutationsWithAwait(int[] seq) throws InterruptedException {
                 
-        int n = set.length;
+        int n = seq.length;
         this.x = new int[n];
         
         this.availableItem = new Semaphore(0);
@@ -58,12 +59,12 @@ public class PermutationsWithAwait {
         computationLock.acquire();
         
         //output(A)
-        System.arraycopy(set, 0, x, 0, n);
+        System.arraycopy(seq, 0, x, 0, n);
         //nCurrent = BigInteger.ONE;
         
         availableItem.release();
                 
-        Thread thread = new Thread(new Permuter(set));
+        Thread thread = new Thread(new Permuter(seq));
         thread.start();
     }
     
@@ -87,14 +88,14 @@ public class PermutationsWithAwait {
     
     //TODO: consider using Callable so run can throw an exception
     private class Permuter implements Runnable {
-        private final int[] set;
-        Permuter(int[] set) {
-           this.set = Arrays.copyOf(set, set.length);
+        private final int[] s;
+        Permuter(int[] seq) {
+           this.s = Arrays.copyOf(seq, seq.length);
         }
 
         @Override
         public void run() {
-            int n = set.length;
+            int n = s.length;
             int[] c = new int[n];
             int i = 0;
             int swap;
@@ -102,13 +103,13 @@ public class PermutationsWithAwait {
                 if (c[i] < i) {
                     if ((i & 1) != 1) {
                         // i is even number
-                        swap = set[0];
-                        set[0] = set[i];
-                        set[i] = swap;
+                        swap = s[0];
+                        s[0] = s[i];
+                        s[i] = swap;
                     } else {
-                        swap = set[c[i]];
-                        set[c[i]] = set[i];
-                        set[i] = swap;
+                        swap = s[c[i]];
+                        s[c[i]] = s[i];
+                        s[i] = swap;
                     }
                                         
                     try {
@@ -118,7 +119,7 @@ public class PermutationsWithAwait {
                     }
                     
                     // output permutation to instance member x
-                    System.arraycopy(set, 0, x, 0, n);
+                    System.arraycopy(s, 0, x, 0, n);
                     
                     //nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
