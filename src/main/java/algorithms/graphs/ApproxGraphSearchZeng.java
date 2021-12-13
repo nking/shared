@@ -182,10 +182,10 @@ public class ApproxGraphSearchZeng {
             }
            
             // exponential runtime complexity:
-            lambda = optimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau, distM);
+            lambda = optimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau);
             if (lambda <= w) {
                 results.add(dbi);
-            }       
+            }
         } // end loop over db graphs
         
         return results;
@@ -202,6 +202,28 @@ public class ApproxGraphSearchZeng {
      * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
      */
     public List<Graph> approxSubSearch(Graph q, List<Graph> db, int w) {
+        
+        /*
+        AppSub inherently supports both two kinds of subgraph search, i.e., 
+        traditional subgraph search[37] and containment search[9].
+        
+        Lemma 2.2 g1 is subgraph isomorphic to g2 iff λ(g1, g2) = (|E2| − |E1|) + (|V2| − |V1|).
+        
+        λ′(s1, s2 ) = T′(s1, s2 ) + d(L1, L2) (+ d(L1E´, L2E) if edge labels in graph)
+           where T′(s1,s2)= {2+|L1|+|L2| if l(r1)̸=l(r2) }
+                            {0, otherwise               }
+           This is impl in StarStructure.calculateEditDistanceNoRelabeling()
+        
+        A graph g1 is said to be θ-subgraph isomorphic to g2 if there exists a 
+            graph g3 s.t. g3⊑g2 and λ′(g1, g3)≤θ.
+        
+        if g1 is a θ-subgraph of g2, λ′(g1, g2) ≤ L + 2θ
+            where L = |E2| − |E1| + |V2| − |V1|,
+        
+        Therefore if L′_m(g1, g2) > L + 2θ, g2 can be safely filtered.
+        
+        
+        */
         
         throw new UnsupportedOperationException("not yet implemented");
     }
@@ -628,7 +650,6 @@ public class ApproxGraphSearchZeng {
      * refined vertex assignments.
      * @param tau the sub-optimal edit distance C(g,h,P) where
      * P is formed from the given assignments in refinedAssign.
-     * @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
      * @return
      * @throws java.lang.InterruptedException exception thrown if thread is 
      * interrupted.  The permutation code is running in a separate thread using
@@ -636,7 +657,7 @@ public class ApproxGraphSearchZeng {
      */
     protected double optimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
         Set<PairInt> e1, Set<PairInt> e2, int[][] a1, int[][] a2,
-        int[] refinedAssign, double tau, double[][] distM) throws InterruptedException {
+        int[] refinedAssign, double tau) throws InterruptedException {
                 
         int[] assign = new int[refinedAssign.length];
         double min = tau;
