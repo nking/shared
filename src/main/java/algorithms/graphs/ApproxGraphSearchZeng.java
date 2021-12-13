@@ -113,9 +113,6 @@ public class ApproxGraphSearchZeng {
             sg1 = StarStructure.copy(sQ);
             sg2 = StarStructure.createStarStructureMultiset(dbi);
             
-            a1 = createAdjacencyMatrix(sg1);
-            a2 = createAdjacencyMatrix(sg2);
-            
             // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
             
             // order so that sg1.length >= sg2.length
@@ -142,6 +139,9 @@ public class ApproxGraphSearchZeng {
                 sg2 = _sg2;
             }
             assert (sg1.length == sg2.length);
+            
+            a1 = createAdjacencyMatrix(sg1);
+            a2 = createAdjacencyMatrix(sg2);
             
             e1 = getEdges(sg1);
             e2 = getEdges(sg2);
@@ -220,10 +220,88 @@ public class ApproxGraphSearchZeng {
         if g1 is a θ-subgraph of g2, λ′(g1, g2) ≤ L + 2θ
             where L = |E2| − |E1| + |V2| − |V1|,
         
-        Therefore if L′_m(g1, g2) > L + 2θ, g2 can be safely filtered.
-        
-        
+        Therefore if L′_m(g1, g2) > L + 2θ, g2 can be safely filtered.        
         */
+        
+        List<Graph> results = new ArrayList<Graph>();
+        
+        Graph dbi;
+        StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);
+        StarStructure[] sg1, sg2;
+        int[][] a1, a2;
+        double[][] distM;
+        double lM, tau, rho, lambda;
+        int[] refinedAssign;
+        StarStructure s;
+        Set<PairInt> e1, e2;
+        Graph g;
+        boolean swappedSG;
+        int i, k, rIdx;
+        for (int ii = 0; ii < db.size(); ++ii) {
+            dbi = db.get(ii);
+            
+            sg1 = StarStructure.copy(sQ);
+            sg2 = StarStructure.createStarStructureMultiset(dbi);
+            
+            // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
+            
+            // order so that sg1.length >= sg2.length
+            if (sg1.length < sg2.length) {
+                StarStructure[] tmp = sg1;
+                sg1 = sg2;
+                sg2 = tmp;
+                swappedSG = true;
+            } else {
+                swappedSG = false;
+            }
+            if (sg1.length > sg2.length) {
+                k = sg1.length - sg2.length;
+                //insert k vertices to sg2 and set their labels to eps
+                StarStructure[] _sg2 = new StarStructure[sg1.length];
+                System.arraycopy(sg2, 0, _sg2, 0, sg2.length);
+                
+                for (i = 0; i < k; ++i) {
+                    rIdx = sg1.length + i;
+                    s = new StarStructure(rIdx, StarStructure.eps,
+                            new int[0], new int[0], new int[0]);
+                    _sg2[sg2.length + i] = s;
+                }
+                sg2 = _sg2;
+            }
+            assert (sg1.length == sg2.length);
+            
+            a1 = createAdjacencyMatrix(sg1);
+            a2 = createAdjacencyMatrix(sg2);
+            
+            e1 = getEdges(sg1);
+            e2 = getEdges(sg2);
+                        
+            // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
+            if (this.edgesAreLabeled) {
+                distM = StarStructure.createDistanceMatrixNoRelabelingV(sg1, sg2);
+            } else {
+                distM = StarStructure.createDistanceMatrixNoRelabeling(sg1, sg2);
+            }
+            VolgenantJonker vj = new VolgenantJonker();
+            double cost = vj.computeAssignment(distM);
+            int[] assign = vj.getAssignment();
+   
+            int mappingDist = mappingDistance(sg1, sg2, assign);
+            
+            lM = lowerBoundEditDistance(sg1, sg2, mappingDist);
+            
+            int l = Math.abs(e2.size() - e1.size()) + Math.abs(q.vLabels.size() - dbi.vLabels.size());
+            
+            //L′_m(g1, g2) > L + 2θ can filter out g2
+            if (lM > (l + 2*w)) {
+                continue;
+            }
+            
+            //TODO: paused here
+                    
+        } // end loop over db graphs
+        
+        return results;
         
         throw new UnsupportedOperationException("not yet implemented");
     }

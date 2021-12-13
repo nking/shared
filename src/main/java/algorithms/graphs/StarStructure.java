@@ -294,9 +294,39 @@ public class StarStructure {
 
         return editDist;        
     }
+    
+    /**
+     * for the graph model with vertex labeling, but no edge labeling, calculate
+     * the edit distance for use with sub-graph search.
+     * section 5.2.1 of Zeng et al. 2009.
+     * @param s1
+     * @param s2
+     * @return 
+     */
+    public static int calculateEditDistanceNoRelabelingV(StarStructure s1, StarStructure s2) {
+        int t = 0;
+        //T'(r1, t2)
+        if (s1.rootLabel != s2.rootLabel) {
+            t = 2 + s1.vLabels.length + s2.vLabels.length;
+        }
+        
+        int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);
+       
+        int pL1 = s1.vLabels.length;
+        int pL2 = s2.vLabels.length;
+        
+        //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
+        int mL1L2 = Math.max(pL1, pL2) - inters.length;
+        //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
+        int dL1L2 = Math.abs(pL1 - pL2) + mL1L2;
+        int editDist = t + dL1L2;
+
+        return editDist;                
+    }
 
     /**create edit distance matrix for S(g_1) to S(g_2) from 
-    StarStructure.calculateEditDistance
+    StarStructure.calculateEditDistance.
+    * for use with approx full-graph search and graphs with vertex and edge labels.
      * @param sg1
      * @param sg2
      * @return 
@@ -322,7 +352,8 @@ public class StarStructure {
     
     /**for the graph model with vertex labeling, but no edge labeling,
      * create edit distance matrix for S(g_1) to S(g_2) from 
-    StarStructure.calculateEditDistance
+    StarStructure.calculateEditDistance.
+    * for use with approx full-graph search and graphs with vertex labels and no edge labels.
      * @param sg1
      * @param sg2
      * @return 
@@ -346,6 +377,58 @@ public class StarStructure {
         return dist;
     }
 
+    /**create edit distance matrix for S(g_1) to S(g_2) for use with
+     * approx sub-graph search and graphs with vertex and edge labels.
+     * @param sg1
+     * @param sg2
+     * @return 
+    */
+    public static double[][] createDistanceMatrixNoRelabeling(StarStructure[] sg1, StarStructure[] sg2) {
+        int m = sg1.length;
+        int n = sg2.length;
+        double[][] dist = new double[m][];
+        int i, j;
+        StarStructure s1, s2;
+        for (i = 0; i < m; ++i) {
+            dist[i] = new double[n];
+            s1 = sg1[i];
+            assert(s1.rootIdx == i);
+            for (j = 0; j < n; ++j) {
+                s2 = sg2[j];
+                assert(s2.rootIdx == j);
+                dist[i][j] = calculateEditDistanceNoRelabeling(s1, s2);
+            }
+        }
+        return dist;
+    }
+    
+    /**for the graph model with vertex labeling, but no edge labeling,
+     * create edit distance matrix for S(g_1) to S(g_2) from 
+    StarStructure.calculateEditDistance.
+    * for use with approx sub-graph search and graphs with vertex labels, but no edge labels.
+     * @param sg1
+     * @param sg2
+     * @return 
+    */
+    public static double[][] createDistanceMatrixNoRelabelingV(StarStructure[] sg1, StarStructure[] sg2) {
+        int m = sg1.length;
+        int n = sg2.length;
+        double[][] dist = new double[m][];
+        int i, j;
+        StarStructure s1, s2;
+        for (i = 0; i < m; ++i) {
+            dist[i] = new double[n];
+            s1 = sg1[i];
+            assert(s1.rootIdx == i);
+            for (j = 0; j < n; ++j) {
+                s2 = sg2[j];
+                assert(s2.rootIdx == j);
+                dist[i][j] = calculateEditDistanceNoRelabelingV(s1, s2);
+            }
+        }
+        return dist;
+    }
+    
     /**create multi-set of |V| star structures from graph g with |V| vertices
      * @param g graph holding adjacency map, vertex labels, and edge labels.
      * Note that g must use vertices 0 through g.vLabels.size() - 1, inclusive.
