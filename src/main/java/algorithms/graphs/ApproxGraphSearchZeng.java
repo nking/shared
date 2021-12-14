@@ -220,7 +220,16 @@ public class ApproxGraphSearchZeng {
      * filter out the graphs in db which have a larger edit distance from the
      * query than expected by the lower bound on the edit distance plus the
      * subgraph isomorphic edit distance.
-     * The returned list of filtered graphs can be input for
+     * The method implements the description of the APPSUB algorithm from 
+     * Zeng et al. 2009.
+     * <pre> 
+     * Comparing Stars: On Approximating Graph Edit Distance
+       Zeng, Tung, Wang, Feng, & Zhou 2009, 
+       Proceedings of the VLDB Endowment, Volume 2, Issue 1,
+       August 2009 pp 25–36
+       https://doi.org/10.14778/1687627.1687631
+    </pre>
+     * The returned list of filtered graphs can be input for an
      * approx subgraph search, subgraph similarity search,
         exact subgraph search, inexact or error-correcting graph isomorphism
         search, etc.
