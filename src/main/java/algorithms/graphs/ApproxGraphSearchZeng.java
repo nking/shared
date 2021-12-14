@@ -192,6 +192,17 @@ public class ApproxGraphSearchZeng {
     }
     
     /**
+     * NOT YET IMPLEMENTED.
+     * considering many algorithms still.
+     * 
+     * interesting:
+     * <pre>
+     * inexact graph matching method with subgraph indexing:
+     * T. E. Choe, H. Deng, F. Guo, M. W. Lee and N. Haering, 
+     * "Semantic Video-to-Video Search Using Sub-graph Grouping and Matching," 
+     * 2013 IEEE International Conference on Computer Vision Workshops, 
+     * 2013, pp. 787-794, doi: 10.1109/ICCVW.2013.108.
+     * </pre>
      retrieve all the super-graphs of a given query graph Q from a 
        graph database D = (D_1,D_2,...D_n).
        It finds all the graphs db_i(i=1,2,…,m.lt.n) such that Q is a subgraph 
@@ -202,6 +213,23 @@ public class ApproxGraphSearchZeng {
      * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
      */
     public List<Graph> approxSubSearch(Graph q, List<Graph> db, int w) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+    
+    /**
+     * filter out the graphs in db which have a larger edit distance from the
+     * query than expected by the lower bound on the edit distance plus the
+     * subgraph isomorphic edit distance.
+     * The returned list of filtered graphs can be input for
+     * approx subgraph search, subgraph similarity search,
+        exact subgraph search, inexact or error-correcting graph isomorphism
+        search, etc.
+     * @param q the query graph
+     * @param db list of graphs in a database
+     * @param w graph edit distance threshold
+     * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
+     */
+    public List<Graph> approxSubSearchFilter(Graph q, List<Graph> db, int w) {
         
         /*
         AppSub inherently supports both two kinds of subgraph search, i.e., 
@@ -209,13 +237,13 @@ public class ApproxGraphSearchZeng {
         
         Lemma 2.2 g1 is subgraph isomorphic to g2 iff λ(g1, g2) = (|E2| − |E1|) + (|V2| − |V1|).
         
-        λ′(s1, s2 ) = T′(s1, s2 ) + d(L1, L2) (+ d(L1E´, L2E) if edge labels in graph)
+        λ′(s1, s2 ) = T′(s1, s2 ) + d(L1, L2) (+ d(L1E´, L2E) if there are edge labels are in the graph model)
            where T′(s1,s2)= {2+|L1|+|L2| if l(r1)̸=l(r2) }
                             {0, otherwise               }
-           This is impl in StarStructure.calculateEditDistanceNoRelabeling()
+           This is implemented in StarStructure.calculateEditDistanceNoRelabeling()
         
         A graph g1 is said to be θ-subgraph isomorphic to g2 if there exists a 
-            graph g3 s.t. g3⊑g2 and λ′(g1, g3)≤θ.
+            graph g3 s.t. g3 ⊑ g2 and λ′(g1, g3) ≤ θ.
         
         if g1 is a θ-subgraph of g2, λ′(g1, g2) ≤ L + 2θ
             where L = |E2| − |E1| + |V2| − |V1|,
@@ -239,11 +267,14 @@ public class ApproxGraphSearchZeng {
         int i, k, rIdx;
         for (int ii = 0; ii < db.size(); ++ii) {
             dbi = db.get(ii);
-            
+                        
             sg1 = StarStructure.copy(sQ);
             sg2 = StarStructure.createStarStructureMultiset(dbi);
             
             // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
+            
+            //TODO: expect dbi > q for sub-graph searches?
+            //   if so, the re-ordering here is unnecessary
             
             // order so that sg1.length >= sg2.length
             if (sg1.length < sg2.length) {
@@ -297,13 +328,22 @@ public class ApproxGraphSearchZeng {
                 continue;
             }
             
-            //TODO: paused here
-                    
+            results.add(dbi);
+            
+            // return filtered results for user to then make
+            //   approx subgraph search, subgraph similarity search,
+            //   exact subgraph search,
+            //   inexact or error-correcting graph isomorphisms
+            
+            // the subgraph isomorphism problem is NP-complete
+            
+            //TODO: follow-up on edge relaxation in Grafil ([35], Yan et al.)
+            //    Yan, F. Zhu, P. S. Yu, and J. Han. 
+            // Feature-based similarity search in graph structures. ACM TODS, 31(4), 2006
+              
         } // end loop over db graphs
         
-        return results;
-        
-        throw new UnsupportedOperationException("not yet implemented");
+        return results;        
     }
     
     /**

@@ -25,6 +25,14 @@ implementing a star structure and related methods following the
 </pre>
 * Additionally have added edge labels and modifications to the edit distance 
 * costs for them.
+* 
+* For use with attributed graphs.
+* 
+* Fernandez & Valiente 2001:
+* Attributed relational graphs, introduced in 􏶵Tsai and Fu, 1979), extend the
+* notion of labeled graph by allowing the value of several attributes as labels 
+* of vertices and edges.
+* 
  * @author nichole
  */
 public class StarStructure {
@@ -469,5 +477,21 @@ public class StarStructure {
             Arrays.copyOf(vLabels, vLabels.length), 
             Arrays.copyOf(eLabels, eLabels.length), 
             Arrays.copyOf(origVIndexes, origVIndexes.length));
+    }
+    
+    /**
+     * calculate the sum of the degree of the vertices which are adjacent to 
+     * vertex v, i.e., support (v) = s(v) = ∑ d(u).
+     * @param sg the graph as an array of star structures.
+     * @param vIdx the index of vertex v in the star structure array sg.
+     * @return 
+     */
+    public static int calculateSupport(StarStructure[] sg, int vIdx) {
+        int s = 0, jIdx;
+        for (int j = 0; j < sg[vIdx].vLabels.length; ++j) {
+            jIdx = sg[vIdx].origVIndexes[j];
+            s += sg[jIdx].vLabels.length;
+        }
+        return s;
     }
 }
