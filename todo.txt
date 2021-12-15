@@ -33,3 +33,5 @@
 
 -- https://adrianulbona.github.io/hmm/
 
+-- browse 
+   M. R. Henzinger, T. A. Henzinger and P. W. Kopke, "Computing simulations on finite and infinite graphs," Proceedings of IEEE 36th Annual Foundations of Computer Science, 1995, pp. 453-462, doi: 10.1109/SFCS.1995.492576.

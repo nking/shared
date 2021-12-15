@@ -202,7 +202,44 @@ public class ApproxGraphSearchZeng {
      * "Semantic Video-to-Video Search Using Sub-graph Grouping and Matching," 
      * 2013 IEEE International Conference on Computer Vision Workshops, 
      * 2013, pp. 787-794, doi: 10.1109/ICCVW.2013.108.
+     * 
+     * Graph Pattern Matching: From Intractable to Polynomial Time, 
+     * Fan et al. 2010
+     * The 36th International Conference on Very Large Data Bases, September 13-17, 
+     * 2010, Singapore.  Proceedings of the VLDB Endowment, Vol. 3, No. 1
+     * In a variety of applications one wants to inspect the connectivity of a 
+     * pair of nodes via a path of an arbitrary length [10, 16, 29] or with a 
+     * bound on the number of hops.
+     * 
+     * browsing these:
+     * Fard, A., Nisar, M.U., Ramaswamy, L., Miller, J.A., Saltz, M.: A distributed vertex-centric approach for pattern matching in massive graphs. In: BigData, pp 403–411 (2013)
+
+       Foggia, P., Percannella, G., Vento, M.: Graph matching and learning in pattern recognition in the last 10 years. Int. J. Pattern Recognit. Artif. Intell. 28(1), 1450001 (2014)
+
+       Gallagher, B.: Matching structure and semantics: A survey on graph-based pattern matching. In: AAAI FS-06-02, pp 45–53 (2006)
+
+       Khan, A., Wu, Y., Aggarwal, C.C., Yan, X.: NeMa: Fast graph search with label similarity. PVLDB
+6(3), 181–192 (2013)
+       
+       Liu,G.,Zheng,K.,Wang,Y.,Orgun,M.A.,Liu,A.,Zhao,L.,Zhou,X.:Multi-constrainedgraphpattern matching in large-scale contextual social graphs. In: ICDE, pp 351–362 (2015)
+       
+       Ma, S., Cao, Y., Fan, W., Huai, J., Wo, T.: Capturing topology in graph pattern matching. PVLDB 5(4),
+310–321 (2011)
+* 
+*      Tabei, Y., Tsuda, K.: Kernel-based similarity search in massive graph databases with wavelet trees. In:
+SDM, pp 154–163 (2011)
+* 
+*      Wang, X., Smalter, A.M., Huan, J., Lushington, G.H.: G-hash: towards fast kernel-based similarity search in large graph databases. In: EDBT, pp 472–480 (2009)
+* 
+*      Yan, X., Yu, P.S., Han, J.: Substructure similarity search in graph databases. In: SIGMOD, pp 766–777
+(2005)
+* 
+*      Zhang, S., Yang, J., Jin, W.: SAPPER: Subgraph indexing and approximate matching in large graphs. PVLDB 3(1), 1185–1194 (2010
+* 
+*      Zou,L.,Chen,L.,O ̈zsu,M.T.:Distance-join:Patternmatchqueryinalargegraphdatabase.PVLDB 2(1), 886–897 (2009)
+* 
      * </pre>
+     * 
      retrieve all the super-graphs of a given query graph Q from a 
        graph database D = (D_1,D_2,...D_n).
        It finds all the graphs db_i(i=1,2,…,m.lt.n) such that Q is a subgraph 
