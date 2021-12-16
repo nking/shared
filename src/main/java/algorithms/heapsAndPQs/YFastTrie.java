@@ -347,7 +347,7 @@ YFastTrie
      * of bins and number of items per bin.
      * 
      * @param node
-     * @return 
+     * @return returns node if found, else -1
      */
     public int find(int node) {
                 
