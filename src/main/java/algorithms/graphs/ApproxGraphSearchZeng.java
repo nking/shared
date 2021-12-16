@@ -34,6 +34,11 @@ full graph search: find all graphs D_i in D s.t. D_i is the same as the query gr
 similarity search: find all graphs D_i in D s.t. D_i is similar to the
    query graph Q within a user-specified threshold based on some similarity measures.
  
+ in pattern recognition, GED is called graph matching.
+in information theory, GED is seeking the matched configuration of vertices
+   that has maximum a posteriori probability w.r.t. the available vertex
+   attribute information.
+   * 
  * @author nichole
  */
 public class ApproxGraphSearchZeng {
