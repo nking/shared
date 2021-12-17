@@ -176,7 +176,7 @@ public class DegeneracyOrderingMatulaBeck {
                 }
                 reverseBucketMap.put(v, nV);
                 
-                System.out.printf("bM key=%d, val=%d, max=%d\n", nV, v, maxDegree);
+                //System.out.printf("bM key=%d, val=%d, max=%d\n", nV, v, maxDegree);
             }
             
             bucketQueue = new YFastTrie(1 + (int)Math.ceil(Math.log(maxDegree)/Math.log(2)) );
@@ -185,7 +185,7 @@ public class DegeneracyOrderingMatulaBeck {
                 iter.advance();
                 nV = iter.key();
                 bucketQueue.add(nV);
-                System.out.printf("bQ key=%d\n", nV);
+                //System.out.printf("bQ key=%d\n", nV);
             }
         }
         

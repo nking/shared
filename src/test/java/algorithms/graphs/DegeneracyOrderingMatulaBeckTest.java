@@ -41,7 +41,7 @@ public class DegeneracyOrderingMatulaBeckTest extends TestCase {
         return g;
     }
     
-    public void estBucketQueue() {
+    public void testBucketQueue() {
         // from https://en.m.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
         
         TIntObjectMap<TIntSet> g = getG0();
