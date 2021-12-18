@@ -46,7 +46,25 @@ public class StarStructureTest extends TestCase {
             StarStructure.createStarStructureMultiset(dbs.get(0)), 4);
         assertEquals(4+3+3, s4);
         
-        System.out.printf("GED=%d\n", ged);
+        // ==== test a few properties of copy
+        StarStructure[] stars2 = StarStructure.copy(stars);
+        assertEquals(stars.length, stars2.length);
+        
+        ged = StarStructure.calculateEditDistanceV(stars2[0], stars2[1]);
+        assertEquals(0, ged);
+        ged = StarStructure.calculateEditDistance(stars2[0], stars2[1]);
+        assertEquals(0, ged);
+        
+        ged = StarStructure.calculateEditDistanceV(stars2[0], stars2[8]);
+        assertEquals(1, ged);
+        ged = StarStructure.calculateEditDistance(stars2[0], stars2[8]);
+        assertEquals(1, ged);
+        
+        s3 = StarStructure.calculateSupport(stars2, 3);
+        assertEquals(6, s3);
+        s4 = StarStructure.calculateSupport(stars2, 4);
+        assertEquals(3+3+3, s4);
+        
     }
 
     /**
