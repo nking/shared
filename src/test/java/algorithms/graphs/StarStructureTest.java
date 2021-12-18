@@ -1,0 +1,134 @@
+package algorithms.graphs;
+
+import algorithms.graphs.ApproxGraphSearchZeng.Graph;
+import java.util.ArrayList;
+import java.util.List;
+import junit.framework.TestCase;
+
+/**
+ *
+ * @author nichole
+ */
+public class StarStructureTest extends TestCase {
+    
+    public StarStructureTest(String testName) {
+        super(testName);
+    }
+    
+    public void test0() {
+        
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG0(dbs);
+        int nV = 14; // dB has 15, q has 14
+        
+        StarStructure[] stars = StarStructure.createStarStructureMultiset(q);
+
+        assertEquals(nV, stars.length);
+        
+        int ged;
+        
+        ged = StarStructure.calculateEditDistanceV(stars[0], stars[1]);
+        assertEquals(0, ged);
+        ged = StarStructure.calculateEditDistance(stars[0], stars[1]);
+        assertEquals(0, ged);
+        
+        ged = StarStructure.calculateEditDistanceV(stars[0], stars[8]);
+        assertEquals(1, ged);
+        ged = StarStructure.calculateEditDistance(stars[0], stars[8]);
+        assertEquals(1, ged);
+        
+        System.out.printf("GED=%d\n", ged);
+    }
+
+    /**
+     * Test of sortAndSet method, of class StarStructure.
+     */
+    public void testSortAndSet() {
+        
+    }
+
+    /**
+     * Test of calculateEditDistance method, of class StarStructure.
+     */
+    public void testCalculateEditDistance() {
+        
+    }
+
+    /**
+     * Test of calculateEditDistanceV method, of class StarStructure.
+     */
+    public void testCalculateEditDistanceV() {
+        
+    }
+
+    /**
+     * Test of calculateEditDistanceNoRelabeling method, of class StarStructure.
+     */
+    public void testCalculateEditDistanceNoRelabeling() {
+        
+    }
+
+    /**
+     * Test of calculateEditDistanceNoRelabelingV method, of class StarStructure.
+     */
+    public void testCalculateEditDistanceNoRelabelingV() {
+        
+    }
+
+    /**
+     * Test of createDistanceMatrix method, of class StarStructure.
+     */
+    public void testCreateDistanceMatrix() {
+        
+    }
+
+    /**
+     * Test of createDistanceMatrixV method, of class StarStructure.
+     */
+    public void testCreateDistanceMatrixV() {
+        
+    }
+
+    /**
+     * Test of createDistanceMatrixNoRelabeling method, of class StarStructure.
+     */
+    public void testCreateDistanceMatrixNoRelabeling() {
+        
+    }
+
+    /**
+     * Test of createDistanceMatrixNoRelabelingV method, of class StarStructure.
+     */
+    public void testCreateDistanceMatrixNoRelabelingV() {
+        
+    }
+
+    /**
+     * Test of createStarStructureMultiset method, of class StarStructure.
+     */
+    public void testCreateStarStructureMultiset() {
+        
+    }
+
+    /**
+     * Test of copy method, of class StarStructure.
+     */
+    public void testCopy_StarStructureArr() {
+        
+    }
+
+    /**
+     * Test of copy method, of class StarStructure.
+     */
+    public void testCopy_0args() {
+        
+    }
+
+    /**
+     * Test of calculateSupport method, of class StarStructure.
+     */
+    public void testCalculateSupport() {
+        
+    }
+    
+}

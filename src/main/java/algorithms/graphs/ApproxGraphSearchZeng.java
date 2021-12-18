@@ -79,6 +79,7 @@ public class ApproxGraphSearchZeng {
      * within a graph edit distance threshold w
      */
     public List<Graph> approxFullSearch(Graph q, List<Graph> db, int w) throws InterruptedException {
+        //TODO: return List<Result>
         
         /*
         for each graph g ∈ D do 
@@ -895,4 +896,17 @@ SDM, pp 154–163 (2011)
             this.adjMap = adjMap;
         }        
     }
+    
+    public static class Result {
+        
+        /**
+         * the graph node assignment w.r.t. the query graph
+         */
+        public int[] assignment;
+        
+        public int dbGraphIndex;
+        
+        public double editCost;
+    }
+
 }

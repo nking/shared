@@ -285,6 +285,32 @@
         </junit>
     </target>
 
+    <target name="debugTest2" if="junit.present" depends="debug,JUnit,compileTests">
+        <record name="${logfile}" append="yes" loglevel="info"/>
+        <fail unless="test">
+            Set class to test.  example: -Dtest=algorithms.compression.huffman.HuffmanTest
+        </fail>
+        <junit fork="yes" showoutput="true" filtertrace="off">
+            
+            <!--<jvmarg value="-ea"/>-->
+            <assertions enablesystemassertions="true">
+                <enable/>
+            </assertions>
+
+            <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y -XX:-UseSplitVerifier"/>
+ 
+            <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
+            
+            <classpath>
+                <pathelement location="${tests.out.dir}"/>
+                <path refid="test.classpath"/>
+            </classpath>
+            <test name="${test}" fork="yes" haltonfailure="yes">
+                <formatter type="plain" usefile="false"/>
+            </test>
+        </junit>
+    </target>
+
     <!-- set junit.present property -->
     <target name="JUnit">
         <available property="junit.present" classname="junit.framework.TestCase" >

@@ -142,7 +142,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         eLabelsQ.remove(new PairInt(13, 14));
         eLabelsQ.remove(new PairInt(14, 13));
         
-        Graph q = new Graph(adjMapDB, vLabelsDB, eLabelsDB);
+        Graph q = new Graph(adjMapQ, vLabelsQ, eLabelsQ);
         
         outputDB.add(db);
         return q;

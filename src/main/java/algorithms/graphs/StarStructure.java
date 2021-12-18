@@ -61,6 +61,12 @@ public class StarStructure {
     public TIntIntMap reverseOrigVIndexes;
     
     private StarStructure(){};
+    /**
+     * convert the graph vertex rootIndex and it's immediate neighbors into
+     * a star structure.
+     * @param g
+     * @param rootIndex the vertex index in g that will be the root of the star structure.
+     */
     public StarStructure(Graph g, int rootIndex) {
         init(g, rootIndex);
     }
@@ -230,16 +236,28 @@ public class StarStructure {
         // map value is list of the s2 edge values for the index j
         TIntObjectMap<TIntList> s2InterMap = new TIntObjectHashMap<TIntList>();
         
-        int i = 0, j = 0, nVIntersect = 0;
+        // 2 more maps to count multiplicity of edge labels
+        TIntIntMap s1InterCountMap = new TIntIntHashMap();
+        TIntIntMap s2InterCountMap = new TIntIntHashMap();
+        
+        int i = 0, j = 0, nVIntersect = 0, c;
         while (i < s1.vLabels.length && j < s2.vLabels.length) {
             if (s1.vLabels[i] == s2.vLabels[j]) {
                 if (!s1InterMap.containsKey(s1.vLabels[i])) {
                     s1InterMap.put(s1.vLabels[i], new TIntArrayList());
-                    s2InterMap.put(s1.vLabels[i], new TIntArrayList());
+                    s2InterMap.put(s2.vLabels[j], new TIntArrayList());
                 }
                 s1InterMap.get(s1.vLabels[i]).add(s1.eLabels[i]);
-                s2InterMap.get(s2.vLabels[i]).add(s2.eLabels[j]);
-                //vIntersect.add(s1.vLabels[i]);
+                s2InterMap.get(s2.vLabels[j]).add(s2.eLabels[j]);
+                
+                // count multiplicity of edges:
+                c = s1InterCountMap.containsKey(s1.eLabels[i]) ? 
+                    s1InterCountMap.get(s1.eLabels[i]) : 0;
+                s1InterCountMap.put(s1.eLabels[i], c + 1);
+                c = s2InterCountMap.containsKey(s2.eLabels[j]) ? 
+                    s2InterCountMap.get(s2.eLabels[j]) : 0;
+                s2InterCountMap.put(s2.eLabels[j], c + 1);
+                
                 nVIntersect++;
                 i++; 
                 j++;
@@ -258,7 +276,15 @@ public class StarStructure {
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
         int dL1L2 = Math.abs(pL1 - pL2) + mL1L2;
         
-        // further assign edges and count those that match
+        /*
+        for the edges that are in the vertex intersection (in s*InterMap),
+            will calc dist using the intersection of those edges amoung themseleves.
+        for the edges not in the vertex intersection,
+            will calc dist using edge label intersection as is done with vertexes.
+        the total dist of those two methods will be <= the number of edges.
+        */
+        
+        // assign edges int the vertex intersection and count those that match
         TIntObjectIterator<TIntList> iter1 = s1InterMap.iterator();
         int[] s1InterE, s2InterE;
         int[] interE;
@@ -274,10 +300,48 @@ public class StarStructure {
             nEIntersect += interE.length;
         }
         
-        //M(L1E,L2E) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
-        int mL1EL2E = Math.max(pL1, pL2) - nEIntersect;
-        //d(L1E, L2E) = ||L1|-|L2|| + M(L1, L2)
-        int dL1EL2E = Math.abs(pL1 - pL2) + mL1EL2E;
+        int n2 = s1.eLabels.length - nVIntersect;
+        if (n2 > 0) {
+            j = 0;
+            int[] s1NotInterE = new int[n2];
+            for (i = 0; i < s1.eLabels.length; ++i) {
+                if (s1InterCountMap.containsKey(s1.eLabels[i])) {
+                    c = s1InterCountMap.get(s1.eLabels[i]);
+                    c--;
+                    if (c == 0) {
+                        s1InterCountMap.remove(s1.eLabels[i]);
+                    } else {
+                        s1InterCountMap.put(s1.eLabels[i], c);
+                    }
+                    continue;
+                }
+                s1NotInterE[j] = s1.eLabels[i];
+                j++;
+            }
+            j = 0;
+            int[] s2NotInterE = new int[s2.eLabels.length - nVIntersect];
+            for (i = 0; i < s2.eLabels.length; ++i) {
+                if (s2InterCountMap.containsKey(s2.eLabels[i])) {
+                    c = s2InterCountMap.get(s2.eLabels[i]);
+                    c--;
+                    if (c == 0) {
+                        s2InterCountMap.remove(s2.eLabels[i]);
+                    } else {
+                        s2InterCountMap.put(s2.eLabels[i], c);
+                    }
+                    continue;
+                }
+                s2NotInterE[j] = s2.eLabels[i];
+                j++;
+            }
+            int[] intersE2 = MatrixUtil.multisetUnorderedIntersection(s1NotInterE, s2NotInterE);
+
+            nEIntersect += intersE2.length;
+        }
+        
+        int mL1L2E = Math.max(pL1, pL2) - nEIntersect;
+
+        int dL1EL2E = Math.abs(pL1 - pL2) + mL1L2E;
         
         return dL1L2 + dL1EL2E;        
     }
@@ -446,7 +510,6 @@ public class StarStructure {
         int n = g.vLabels.size();
         StarStructure[] out = new StarStructure[n];
         int i, vertexIdx;
-        StarStructure s;
         TIntObjectIterator<TIntSet> iter = g.adjMap.iterator();
         for (i = 0; i < n; ++i) {
             iter.advance();
@@ -456,8 +519,7 @@ public class StarStructure {
                         + " with g.vLabels.  g must use vertices 0 through "
                         + "g.vLabels.size() - 1, inclusive.");
             }
-            s = new StarStructure(g, vertexIdx);
-            out[vertexIdx] = s;
+            out[vertexIdx] = new StarStructure(g, vertexIdx);
         }
         return out;
     }
