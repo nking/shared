@@ -6,9 +6,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * In computer science, the Bron–Kerbosch algorithm is an enumeration algorithm 
