@@ -37,6 +37,15 @@ public class StarStructureTest extends TestCase {
         ged = StarStructure.calculateEditDistance(stars[0], stars[8]);
         assertEquals(1, ged);
         
+        int s3 = StarStructure.calculateSupport(stars, 3);
+        assertEquals(6, s3);
+        int s4 = StarStructure.calculateSupport(stars, 4);
+        assertEquals(3+3+3, s4);
+        
+        s4 = StarStructure.calculateSupport(
+            StarStructure.createStarStructureMultiset(dbs.get(0)), 4);
+        assertEquals(4+3+3, s4);
+        
         System.out.printf("GED=%d\n", ged);
     }
 
