@@ -217,6 +217,11 @@ public class ApproxGraphSearchZeng {
      * bound on the number of hops.
      * 
      * browsing these:
+     * 
+     * Tu et al. 2020, "Inexact Attributed Subgraph Matching"
+     * 
+     * https://github.com/lihuiliullh/GFinder-Proj
+     * 
      * Fard, A., Nisar, M.U., Ramaswamy, L., Miller, J.A., Saltz, M.: A distributed vertex-centric approach for pattern matching in massive graphs. In: BigData, pp 403–411 (2013)
 
        Foggia, P., Percannella, G., Vento, M.: Graph matching and learning in pattern recognition in the last 10 years. Int. J. Pattern Recognit. Artif. Intell. 28(1), 1450001 (2014)
