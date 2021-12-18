@@ -68,27 +68,6 @@ public class StarStructureTest extends TestCase {
     }
 
     /**
-     * Test of sortAndSet method, of class StarStructure.
-     */
-    public void testSortAndSet() {
-        
-    }
-
-    /**
-     * Test of calculateEditDistance method, of class StarStructure.
-     */
-    public void testCalculateEditDistance() {
-        
-    }
-
-    /**
-     * Test of calculateEditDistanceV method, of class StarStructure.
-     */
-    public void testCalculateEditDistanceV() {
-        
-    }
-
-    /**
      * Test of calculateEditDistanceNoRelabeling method, of class StarStructure.
      */
     public void testCalculateEditDistanceNoRelabeling() {
@@ -130,32 +109,4 @@ public class StarStructureTest extends TestCase {
         
     }
 
-    /**
-     * Test of createStarStructureMultiset method, of class StarStructure.
-     */
-    public void testCreateStarStructureMultiset() {
-        
-    }
-
-    /**
-     * Test of copy method, of class StarStructure.
-     */
-    public void testCopy_StarStructureArr() {
-        
-    }
-
-    /**
-     * Test of copy method, of class StarStructure.
-     */
-    public void testCopy_0args() {
-        
-    }
-
-    /**
-     * Test of calculateSupport method, of class StarStructure.
-     */
-    public void testCalculateSupport() {
-        
-    }
-    
 }
