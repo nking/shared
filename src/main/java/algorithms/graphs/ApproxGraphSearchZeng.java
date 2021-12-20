@@ -7,13 +7,14 @@ import algorithms.util.PairInt;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import thirdparty.graphMatchingToolkit.algorithms.VolgenantJonker;
+import thirdparty.HungarianAlgorithm;
 
 /**
  implementing subgraph and full-graph query methods following the
@@ -112,6 +113,7 @@ public class ApproxGraphSearchZeng {
         Set<PairInt> e1, e2;
         Graph g;
         boolean swappedSG;
+        Norm norm;
         int i, k, rIdx;
         for (int ii = 0; ii < db.size(); ++ii) {
             dbi = db.get(ii);
@@ -120,31 +122,10 @@ public class ApproxGraphSearchZeng {
             sg2 = StarStructure.createStarStructureMultiset(dbi);
             
             // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
-            
-            // order so that sg1.length >= sg2.length
-            if (sg1.length < sg2.length) {
-                StarStructure[] tmp = sg1;
-                sg1 = sg2;
-                sg2 = tmp;
-                swappedSG = true;
-            } else {
-                swappedSG = false;
-            }
-            if (sg1.length > sg2.length) {
-                k = sg1.length - sg2.length;
-                //insert k vertices to sg2 and set their labels to eps
-                StarStructure[] _sg2 = new StarStructure[sg1.length];
-                System.arraycopy(sg2, 0, _sg2, 0, sg2.length);
-                
-                for (i = 0; i < k; ++i) {
-                    rIdx = sg1.length + i;
-                    s = new StarStructure(rIdx, StarStructure.eps,
-                            new int[0], new int[0], new int[0]);
-                    _sg2[sg2.length + i] = s;
-                }
-                sg2 = _sg2;
-            }
-            assert (sg1.length == sg2.length);
+            norm = normalize(sg1, sg2);
+            sg1 = norm.sg1;
+            sg2 = norm.sg2;
+            swappedSG = norm.swapped;
             
             a1 = createAdjacencyMatrix(sg1);
             a2 = createAdjacencyMatrix(sg2);
@@ -158,9 +139,7 @@ public class ApproxGraphSearchZeng {
             } else {
                 distM = StarStructure.createDistanceMatrix(sg1, sg2);
             }
-            VolgenantJonker vj = new VolgenantJonker();
-            double cost = vj.computeAssignment(distM);
-            int[] assign = vj.getAssignment();
+            int[] assign = balancedBipartiteAssignment(distM);
    
             int mappingDist = mappingDistance(sg1, sg2, assign);
             
@@ -320,6 +299,7 @@ SDM, pp 154–163 (2011)
         StarStructure s;
         Set<PairInt> e1, e2;
         Graph g;
+        Norm norm;
         boolean swappedSG;
         int i, k, rIdx;
         for (int ii = 0; ii < db.size(); ++ii) {
@@ -329,34 +309,13 @@ SDM, pp 154–163 (2011)
             sg2 = StarStructure.createStarStructureMultiset(dbi);
             
             // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
+            norm = normalize(sg1, sg2);
+            sg1 = norm.sg1;
+            sg2 = norm.sg2;
+            swappedSG = norm.swapped;
             
             //TODO: expect dbi > q for sub-graph searches?
             //   if so, the re-ordering here is unnecessary
-            
-            // order so that sg1.length >= sg2.length
-            if (sg1.length < sg2.length) {
-                StarStructure[] tmp = sg1;
-                sg1 = sg2;
-                sg2 = tmp;
-                swappedSG = true;
-            } else {
-                swappedSG = false;
-            }
-            if (sg1.length > sg2.length) {
-                k = sg1.length - sg2.length;
-                //insert k vertices to sg2 and set their labels to eps
-                StarStructure[] _sg2 = new StarStructure[sg1.length];
-                System.arraycopy(sg2, 0, _sg2, 0, sg2.length);
-                
-                for (i = 0; i < k; ++i) {
-                    rIdx = sg1.length + i;
-                    s = new StarStructure(rIdx, StarStructure.eps,
-                            new int[0], new int[0], new int[0]);
-                    _sg2[sg2.length + i] = s;
-                }
-                sg2 = _sg2;
-            }
-            assert (sg1.length == sg2.length);
             
             a1 = createAdjacencyMatrix(sg1);
             a2 = createAdjacencyMatrix(sg2);
@@ -370,9 +329,7 @@ SDM, pp 154–163 (2011)
             } else {
                 distM = StarStructure.createDistanceMatrixNoRelabeling(sg1, sg2);
             }
-            VolgenantJonker vj = new VolgenantJonker();
-            double cost = vj.computeAssignment(distM);
-            int[] assign = vj.getAssignment();
+            int[] assign = balancedBipartiteAssignment(distM);
    
             int mappingDist = mappingDistance(sg1, sg2, assign);
             
@@ -445,7 +402,7 @@ SDM, pp 154–163 (2011)
         int n = sg1.length;
         int cost = 0;
         
-        int[] revAssign = reverseAssignment(assignments);
+        TIntIntMap revAssign = reverseAssignment(assignments);
         
         // vertex relabeling
         int i, j;
@@ -483,8 +440,8 @@ SDM, pp 154–163 (2011)
         for (PairInt edge : e2) {
             j = edge.getX();
             j2 = edge.getY();
-            i = revAssign[j];
-            i2 = revAssign[j2];
+            i = revAssign.get(j);
+            i2 = revAssign.get(j2);
             if (i < i2) {
                 edge1 = new PairInt(i, 12);
             } else {
@@ -760,7 +717,7 @@ SDM, pp 154–163 (2011)
         */
                  
         int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);
-        int[] revAssign = reverseAssignment(assign);
+        TIntIntMap revAssign = reverseAssignment(assign);
         double min = tau;
         
         int iV1, iV2, jV1, jV2, iV3, jV1Adj, jj;
@@ -782,7 +739,7 @@ SDM, pp 154–163 (2011)
             jV1AdjIdxs = sg2[jV1].origVIndexes;
             for (jj = 0; jj < jV1AdjIdxs.length; ++jj) {
                 jV1Adj = jV1AdjIdxs[jj];
-                iV3 = revAssign[jV1Adj];
+                iV3 = revAssign.get(jV1Adj);
                 
                 // tentative changes to assign
                 //V1_i2 <—>  V2_j_adj, V1_i3 <—> V2_j2
@@ -798,8 +755,8 @@ SDM, pp 154–163 (2011)
                 if (tau < min) {
                    min = tau;
                    System.arraycopy(assign, 0, refinedAssign, 0, assign.length);
-                   revAssign[jV1Adj] = iV2;
-                   revAssign[jV2] = iV3;
+                   revAssign.put(jV1Adj, iV2);
+                   revAssign.put(jV2, iV3);
                    break;
                 } else {
                    //restore assign to latest refineAssign
@@ -859,12 +816,59 @@ SDM, pp 154–163 (2011)
         return min;
     }
 
-    protected int[] reverseAssignment(int[] assign) {
-        int[] r = new int[assign.length];
+    protected TIntIntMap reverseAssignment(int[] assign) {
+        TIntIntMap r = new TIntIntHashMap();
         for (int i = 0; i < assign.length; ++i) {
-            r[assign[i]] = i;
+            r.put(assign[i], i);
         }
         return r;
+    }
+
+    static Norm normalize(StarStructure[] sg1, StarStructure[] sg2) {
+        Norm norm = new Norm();
+        // order so that sg1.length >= sg2.length
+        if (sg1.length < sg2.length) {
+            StarStructure[] tmp = sg1;
+            sg1 = sg2;
+            sg2 = tmp;
+            norm.swapped = true;
+        } else {
+            norm.swapped = false;
+        }
+        StarStructure s;
+        int k, i, rIdx;
+        if (sg1.length > sg2.length) {
+            k = sg1.length - sg2.length;
+            //insert k vertices to sg2 and set their labels to eps
+            StarStructure[] _sg2 = new StarStructure[sg1.length];
+            System.arraycopy(sg2, 0, _sg2, 0, sg2.length);
+
+            for (i = 0; i < k; ++i) {
+                rIdx = sg1.length - 1 + i;
+                s = new StarStructure(rIdx, StarStructure.eps,
+                    new int[0], new int[0], new int[0]);
+                _sg2[sg2.length + i] = s;
+            }
+            sg2 = _sg2;
+        }
+        assert (sg1.length == sg2.length);
+        norm.sg1 = sg1;
+        norm.sg2 = sg2;
+        return norm;
+    }
+
+    static int[] balancedBipartiteAssignment(double[][] distM) {
+        HungarianAlgorithm ha = new HungarianAlgorithm();
+        int[][] hAssign = ha.computeAssignments(MatrixUtil.convertToFloat(distM));
+        assert(hAssign.length == distM.length);
+        int[] assign = new int[distM.length];
+        int i1, i2, i; 
+        for (i = 0; i < hAssign.length; ++i) {
+            i1 = hAssign[i][0];
+            i2 = hAssign[i][1];
+            assign[i1] = i2;
+        }
+        return assign;
     }
 
     /*
@@ -909,4 +913,9 @@ SDM, pp 154–163 (2011)
         public double editCost;
     }
 
+    static class Norm {
+        StarStructure[] sg1;
+        StarStructure[] sg2;
+        boolean swapped;
+    }
 }
