@@ -3,6 +3,7 @@ package algorithms.graphs;
 import algorithms.graphs.ApproxGraphSearchZeng.Graph;
 import java.util.ArrayList;
 import java.util.List;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
@@ -65,6 +66,18 @@ public class StarStructureTest extends TestCase {
         s4 = StarStructure.calculateSupport(stars2, 4);
         assertEquals(3+3+3, s4);
         
+        StarStructure[] starDB = StarStructure.createStarStructureMultiset(dbs.get(0));
+        assertEquals(nV+1, starDB.length);
+        ApproxGraphSearchZeng.Norm norm = ApproxGraphSearchZeng.normalize(stars, starDB);
+        stars = norm.sg1;
+        starDB = norm.sg2;
+        boolean swapped = norm.swapped;
+        ged = StarStructure.calculateEditDistanceV(stars[14], starDB[14]);
+        System.out.printf("ged=%d\n", ged);
+        assertEquals(2, ged);
+        ged = StarStructure.calculateEditDistance(stars[14], starDB[14]);
+        System.out.printf("ged=%d\n", ged);
+        assertEquals(4, ged);
     }
 
     /**

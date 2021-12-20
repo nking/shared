@@ -142,6 +142,9 @@ public class StarStructure {
                lambda(s1, s2) = T(r1, t2) + d(L1, L2) + d(L1E, L2E)
             where d(L1E, L2E) = max( |psi(L1E)|, |psi(L2E)| ) - | intersection of psi(L1E) with psi(L2E) |        
         */
+        
+        // see Zeng et al. 4.2.2, points 1-3
+        
         int t = 0;
         //T(r1, t2)
         if (s1.rootLabel != s2.rootLabel) {
@@ -174,6 +177,7 @@ public class StarStructure {
                        (M(L1,L2) is the cost of substitution of vertices).
                lambda(s1, s2) = T(r1, t2) + d(L1, L2)
         */
+        
         int t = 0;
         //T(r1, t2)
         if (s1.rootLabel != s2.rootLabel) {
@@ -182,15 +186,15 @@ public class StarStructure {
         
         int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);
        
-        int pL1 = s1.vLabels.length;
-        int pL2 = s2.vLabels.length;
+        int pL1 = s1.eLabels.length;
+        int pL2 = s2.eLabels.length;
         
         //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
         int mL1L2 = Math.max(pL1, pL2) - inters.length;
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
-        int dL1L2 = Math.abs(pL1 - pL2) + mL1L2;
+        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2; 
         int editDist = t + dL1L2;
-
+        
         return editDist;        
     }
     
@@ -199,7 +203,8 @@ public class StarStructure {
      * @param s1
      * @param s2
      * @return edit distance for transforming s1 into s2.  the cost includes
-     * vertex insert, delete, and substitutions, and edge substitutions.
+     * vertex insert, delete, and substitutions, and edge substitutions where
+     * all operations cost +1.
      */
     private static int calculateEditDistanceL1L2(StarStructure s1, StarStructure s2) {
         /*
@@ -274,7 +279,7 @@ public class StarStructure {
         //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
         int mL1L2 = Math.max(pL1, pL2) - nVIntersect;
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
-        int dL1L2 = Math.abs(pL1 - pL2) + mL1L2;
+        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2;
         
         /*
         for the edges that are in the vertex intersection (in s*InterMap),
@@ -341,7 +346,7 @@ public class StarStructure {
         
         int mL1L2E = Math.max(pL1, pL2) - nEIntersect;
 
-        int dL1EL2E = Math.abs(pL1 - pL2) + mL1L2E;
+        int dL1EL2E = /*Math.abs(pL1 - pL2)*/ + mL1L2E;
         
         return dL1L2 + dL1EL2E;        
     }

@@ -135,9 +135,9 @@ public class ApproxGraphSearchZeng {
             
             // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
             if (this.edgesAreLabeled) {
-                distM = StarStructure.createDistanceMatrixV(sg1, sg2);
-            } else {
                 distM = StarStructure.createDistanceMatrix(sg1, sg2);
+            } else {
+                distM = StarStructure.createDistanceMatrixV(sg1, sg2);
             }
             int[] assign = balancedBipartiteAssignment(distM);
    
@@ -325,9 +325,9 @@ SDM, pp 154–163 (2011)
                         
             // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
             if (this.edgesAreLabeled) {
-                distM = StarStructure.createDistanceMatrixNoRelabelingV(sg1, sg2);
-            } else {
                 distM = StarStructure.createDistanceMatrixNoRelabeling(sg1, sg2);
+            } else {
+                distM = StarStructure.createDistanceMatrixNoRelabelingV(sg1, sg2);
             }
             int[] assign = balancedBipartiteAssignment(distM);
    
@@ -550,16 +550,18 @@ SDM, pp 154–163 (2011)
         int[] assignments) {
                                
         // usign the assignments, sum the edit distances.
-        int sum = 0, i;
+        int sum = 0, i, d;
         StarStructure s1, s2;
         for (i = 0; i < assignments.length; ++i) {
             s1 = sg1[i];
             s2 = sg2[assignments[i]];
             if (this.edgesAreLabeled) {
-                sum += StarStructure.calculateEditDistanceV(s1, s2);
+                d = StarStructure.calculateEditDistance(s1, s2);
             } else {
-                sum += StarStructure.calculateEditDistance(s1, s2);
+                d = StarStructure.calculateEditDistanceV(s1, s2);
             }
+            sum += d;
+            //System.out.printf("i=%d ed=%d sum=%d\n", i, d, sum);
         }
         
         return sum;

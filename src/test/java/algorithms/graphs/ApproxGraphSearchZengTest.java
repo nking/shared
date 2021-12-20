@@ -1,6 +1,7 @@
 package algorithms.graphs;
 
 import algorithms.graphs.ApproxGraphSearchZeng.Graph;
+import algorithms.graphs.ApproxGraphSearchZeng.Norm;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
@@ -13,8 +14,10 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
@@ -148,10 +151,179 @@ public class ApproxGraphSearchZengTest extends TestCase {
         return q;
     }
 
-    /**
-     * Test of approxFullSearch method, of class ApproxGraphSearchZeng.
-     */
+    public void testReverseAssignment() {
+        int[] a = new int[]{3,4,5};
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        TIntIntMap r = ags.reverseAssignment(a);
+        TIntIntMap expected = new TIntIntHashMap();
+        expected.put(3, 0);
+        expected.put(4, 1);
+        expected.put(5, 2);
+        assertEquals(expected.size(), r.size());
+        TIntIntIterator iter = r.iterator();
+        int k, v;
+        while (iter.hasNext()) {
+            iter.advance();
+            k = iter.key();
+            v = iter.value();
+            assertEquals(expected.get(k), v);
+            expected.remove(k);
+        }
+        assertTrue(expected.isEmpty());
+    }
+    
     public void testApproxFullSearch() throws Exception {
+        
+        //L_M <= lambda <= rho <= tau
+        
+        
+    }
+
+    public void testMappingDistance() {
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG0(dbs);
+        int nV = 14; // dB has 15, q has 14
+        
+        StarStructure[] stars = StarStructure.createStarStructureMultiset(q);
+        assertEquals(nV, stars.length);
+        
+        StarStructure[] starDB = StarStructure.createStarStructureMultiset(dbs.get(0));
+        assertEquals(nV+1, starDB.length);
+        
+        int mDist, mDist2;
+        int[] expectedAssignments, assignments;
+        int i;
+        assignments = new int[nV];
+        for (i = 0; i < assignments.length; ++i) {
+            assignments[i] = i;
+        }
+
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        
+        ags.setEdgesAreLabeled(false);
+        //4·k1 + 1·k2 + (max{degree(g1),degree(g2)}+1)·k3
+        //for edge ins/del cost = 1 instead, we have 2*k1 instead of 4*k1
+        //2·k1 + 1·k2 + 2*(max{degree(g1),degree(g2)}+1)·k3; expected total=2*0 + 1*1 + 0*(max degree) = 1
+        //k1 edge insertion/deletion operations, 
+        //k2 vertex insertion/deletion operations 
+        //k3 vertex relabellings
+        //i=13 sum=1  :  k1=0,k2=1,k3=0
+        mDist = ags.mappingDistance(stars, starDB, assignments);
+        /*System.out.printf("not normalized: mapping dist=%d\n", mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+            stars[13].rootLabel, starDB[13].rootLabel);
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+            stars[13].vLabels.length, starDB[13].vLabels.length);
+        System.out.printf("label(q[14])=__, label(db[14])=%d\n", 
+            starDB[14].rootLabel);
+        System.out.printf("deg(q[14])=__, deg(db[14])=%d\n", 
+            starDB[14].vLabels.length);
+        System.out.printf("nQ=%d  nDB=%d\n", stars.length, starDB.length);*/
+        assertEquals(1, mDist);
+        
+        ags.setEdgesAreLabeled(true);
+        //4·k1 + 1·k2 + 1*(max{degree(g1),degree(g2)}+1)·k3
+        //for edge ins/del cost = 1 instead, we have 2*k1 instead of 4*k1
+        //2·k1 + 1·k2 + 1*(max{degree(g1),degree(g2)}+1)·k3; expected total=2*1 + 0*1 + 0*1(max degree) = 2
+        //k1 edge insertion/deletion operations, 
+        //k2 vertex insertion/deletion operations 
+        //k3 vertex relabellings
+        //i=13 ed=2 
+        mDist = ags.mappingDistance(stars, starDB, assignments);
+        /*System.out.printf("not normalized: edges, mapping dist=%d\n", mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+            stars[13].rootLabel, starDB[13].rootLabel);
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+            stars[13].vLabels.length, starDB[13].vLabels.length);
+        System.out.printf("label(q[14])=__, label(db[14])=%d\n", 
+            starDB[14].rootLabel);
+        System.out.printf("deg(q[14])=__, deg(db[14])=%d\n", 
+            starDB[14].vLabels.length);
+        System.out.printf("nQ=%d  nDB=%d\n", stars.length, starDB.length);*/
+        assertEquals(2, mDist);
+        
+        Norm norm = ApproxGraphSearchZeng.normalize(stars, starDB);
+        stars = norm.sg1;
+        starDB = norm.sg2;
+        boolean swapped = norm.swapped;
+        
+        expectedAssignments = new int[nV+1];
+        // graphs are identical except for vertex=13
+        for (i = 0; i < expectedAssignments.length; ++i) {
+            expectedAssignments[i] = i;
+        }
+        
+        double[][] distM;
+        //distM = StarStructure.createDistanceMatrixV(stars, starDB);
+        distM = StarStructure.createDistanceMatrix(stars, starDB);
+        assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
+        assertTrue(Arrays.equals(expectedAssignments, assignments));
+        
+        
+        ags.setEdgesAreLabeled(false);
+        //4·k1 + 1·k2 + (max{degree(g1),degree(g2)}+1)·k3
+        //for edge ins/del cost = 1 instead, we have 2*k1 instead of 4*k1
+        //2·k1 + 1·k2 + 1*(max{degree(g1),degree(g2)}+1)·k3;  expected total=2*0 + 1*0 + 1*1(max degree=3)=3
+        //k1 edge insertion/deletion operations, 
+        //k2 vertex insertion/deletion operations 
+        //k3 vertex relabellings
+        //i=13 ed=1  : nVMismatched=1  =>  1*nVMismatched = 1
+        //i=14 ed=2  : nVMismatched=1 + 1 vertex relabelling = 2
+        mDist = ags.mappingDistance(stars, starDB, assignments);
+        /*System.out.printf("normalized: mapping dist=%d\n", mDist);
+        System.out.printf("swapped=%b, mapping dist=%d\n", swapped, mDist);
+        System.out.printf("swapped=%b, mapping dist=%d\n", swapped, mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+            stars[13].rootLabel, starDB[13].rootLabel);
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+            stars[13].vLabels.length, starDB[13].vLabels.length);
+        System.out.printf("label(q[14])=%d, label(db[14])=%d\n", 
+            stars[14].rootLabel, starDB[14].rootLabel);
+        System.out.printf("deg(q[14])=%d, deg(db[14])=%d\n", 
+            stars[14].vLabels.length, starDB[14].vLabels.length);*/
+        assertEquals(3, mDist);
+        
+        ags.setEdgesAreLabeled(true);
+        //for edge ins/del cost = 1 instead, we have 2*k1 instead of 4*k1
+        //2·k1 + 1·k2 + 1*(max{degree(g1),degree(g2)}+1)·k3; expected total= 2*1 + 1*0 + 1*1*(max degree=3) = 5
+        //i=13 ed=2 
+        //i=14 ed=3, sum=5
+        //4·k1 + 1·k2 + 2.*(max{degree(g1), degree(g2)}+1)·k3
+        //k1 edge insertion/deletion operations, 
+        //k2 vertex insertion/deletion operations 
+        //k3 vertex relabellings
+        mDist = ags.mappingDistance(stars, starDB, assignments);
+        /*System.out.printf("swapped=%b,has  edges, mapping dist=%d\n", swapped, mDist);
+        System.out.printf("swapped=%b, has edges, mapping dist=%d\n", swapped, mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+            stars[13].rootLabel, starDB[13].rootLabel);
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+            stars[13].vLabels.length, starDB[13].vLabels.length);
+        System.out.printf("label(q[14])=%d, label(db[14])=%d\n", 
+            stars[14].rootLabel, starDB[14].rootLabel);
+        System.out.printf("deg(q[14])=%d, deg(db[14])=%d\n", 
+            stars[14].vLabels.length, starDB[14].vLabels.length);*/
+        assertEquals(5, mDist);
+    }
+    
+    public void estLowerBoundEditDistance() {
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG0(dbs);
+        int nV = 14; // dB has 15, q has 14
+        
+        StarStructure[] stars = StarStructure.createStarStructureMultiset(q);
+        assertEquals(nV, stars.length);
+        
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        double lM = ags.lowerBoundEditDistance(stars, stars, 0);
+        
+    }
+
+    public void testRefinedSuboptimalEditDistance() {
+        
+    }
+
+    public void testOptimalEditDistance() throws Exception {
         
     }
 
@@ -171,26 +343,6 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
     }
 
-    public void testLowerBoundEditDistance() {
-        
-    }
-
-    public void testMappingDistance() {
-        
-    }
-
-    public void testRefinedSuboptimalEditDistance() {
-        
-    }
-
-    public void testOptimalEditDistance() throws Exception {
-        
-    }
-
-    public void testReverseAssignment() {
-        
-    }
-    
     private static TIntObjectMap<TIntSet> copy(TIntObjectMap<TIntSet> a) {
         TIntObjectMap<TIntSet> c = new TIntObjectHashMap<TIntSet>();
         
