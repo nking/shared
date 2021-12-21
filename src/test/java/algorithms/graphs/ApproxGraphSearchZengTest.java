@@ -17,6 +17,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
@@ -179,7 +180,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
     }
 
-    public void testMappingDistance() {
+    public void estMappingDistance() {
         List<Graph> dbs = new ArrayList<Graph>();
         Graph q = ApproxGraphSearchZengTest.getG0(dbs);
         int nV = 14; // dB has 15, q has 14
@@ -306,7 +307,8 @@ public class ApproxGraphSearchZengTest extends TestCase {
         assertEquals(5, mDist);
     }
     
-    public void estLowerBoundEditDistance() {
+    public void testLowerBoundEditDistance() {
+        
         List<Graph> dbs = new ArrayList<Graph>();
         Graph q = ApproxGraphSearchZengTest.getG0(dbs);
         int nV = 14; // dB has 15, q has 14
@@ -315,11 +317,111 @@ public class ApproxGraphSearchZengTest extends TestCase {
         assertEquals(nV, stars.length);
         
         ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
-        double lM = ags.lowerBoundEditDistance(stars, stars, 0);
         
+        StarStructure[] starDB = StarStructure.createStarStructureMultiset(dbs.get(0));
+        assertEquals(nV+1, starDB.length);
+        
+        int[] expectedAssignments, assignments;
+        int i, mDist;
+        double lM;
+        
+        assignments = new int[stars.length];
+        // graphs are identical except for vertex=13
+        for (i = 0; i < assignments.length; ++i) {
+            assignments[i] = i;
+        }
+        mDist = ags.mappingDistance(stars, stars, assignments);
+        lM = ags.lowerBoundEditDistance(stars, stars, mDist);
+        
+        System.out.printf("same graphs: L_M=%.4f\n", lM);
+        
+        
+        Norm norm = ApproxGraphSearchZeng.normalize(stars, starDB);
+        stars = norm.sg1;
+        starDB = norm.sg2;
+        boolean swapped = norm.swapped;
+        
+        expectedAssignments = new int[nV+1];
+        // graphs are identical except for vertex=13
+        for (i = 0; i < expectedAssignments.length; ++i) {
+            expectedAssignments[i] = i;
+        }
+        double[][] distM;
+        //distM = StarStructure.createDistanceMatrixV(stars, starDB);
+        distM = StarStructure.createDistanceMatrix(stars, starDB);
+        assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
+        assertTrue(Arrays.equals(expectedAssignments, assignments));
+        
+        mDist = ags.mappingDistance(stars, starDB, assignments);
+        lM = ags.lowerBoundEditDistance(stars, starDB, mDist);
+        System.out.printf("V labels only: L_M=%.4f\n", lM);
+        
+        ags.setEdgesAreLabeled(true);
+        mDist = ags.mappingDistance(stars, starDB, assignments);
+        lM = ags.lowerBoundEditDistance(stars, starDB, mDist);
+        System.out.printf("V and E labeled: L_M=%.4f\n", lM);        
     }
-
-    public void testRefinedSuboptimalEditDistance() {
+    
+    public void testSuboptimalAndRefinedEditDistance() {
+        // tau
+        
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG0(dbs);
+        int nV = 14; // dB has 15, q has 14
+        
+        int[] expectedAssignments, assignments, refinedAssign;
+        int i, mDist;
+        double tau, rho;
+        boolean useEdges = false;
+        double[][] distM;
+        int[][] a1, a2;
+        Set<PairInt> e1, e2;
+        
+        StarStructure[] stars = StarStructure.createStarStructureMultiset(q);
+        assertEquals(nV, stars.length);
+                
+        StarStructure[] starDB = StarStructure.createStarStructureMultiset(dbs.get(0));
+        assertEquals(nV+1, starDB.length);
+           
+        Norm norm = ApproxGraphSearchZeng.normalize(stars, starDB);
+        stars = norm.sg1;
+        starDB = norm.sg2;
+        boolean swapped = norm.swapped;
+        
+        a1 = ApproxGraphSearchZeng.createAdjacencyMatrix(stars);
+        a2 = ApproxGraphSearchZeng.createAdjacencyMatrix(starDB);
+        
+        e1 = ApproxGraphSearchZeng.getEdges(stars);
+        e2 = ApproxGraphSearchZeng.getEdges(starDB);
+        
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        ags.setEdgesAreLabeled(useEdges);
+        distM = StarStructure.createDistanceMatrix(stars, stars);
+        assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
+        tau = ags.suboptimalEditDistanceV(stars, stars, a1, a1, assignments);
+        System.out.printf("normalized, same graphs, suboptimal: tau=%.4f\n", tau);
+        
+        refinedAssign = Arrays.copyOf(assignments, assignments.length);
+        rho = ags.refinedSuboptimalEditDistance(stars, stars, e1, e1, a1, a1, refinedAssign, tau, distM);
+        System.out.printf("normalized, same graphs, refined suboptimal: rho=%.4f\n", rho);
+        
+        ags.setEdgesAreLabeled(useEdges);
+        distM = StarStructure.createDistanceMatrix(stars, starDB);
+        assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
+        tau = ags.suboptimalEditDistanceV(stars, starDB, a1, a2, assignments);
+        System.out.printf("normalized, suboptimal: tau=%.4f\n", tau);
+        
+        ags.setEdgesAreLabeled(true);
+        distM = StarStructure.createDistanceMatrix(stars, starDB);
+        assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
+        tau = ags.suboptimalEditDistance(stars, starDB, e1, e2, assignments);
+        System.out.printf("normalized, edges, suboptimal: tau=%.4f\n", tau);
+        
+        System.out.println("expecting L_M <= lambda <= rho <= tau");
+        //L_M <= lambda <= rho <= tau
+        
+        refinedAssign = Arrays.copyOf(assignments, assignments.length);
+        rho = ags.refinedSuboptimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau, distM);
         
     }
 
@@ -332,14 +434,6 @@ public class ApproxGraphSearchZengTest extends TestCase {
     }
 
     public void testApproxSubSearchFilter() {
-        
-    }
-
-    public void testSuboptimalEditDistance() {
-        
-    }
-
-    public void testSuboptimalEditDistanceV() {
         
     }
 

@@ -412,7 +412,7 @@ SDM, pp 154–163 (2011)
                 cost++;
             }
         }
-        int i2, j2;
+        int i2, j2, i1r, j1r;
         PairInt edge2;
         // Edge deletion or relabeling
         for (PairInt edge1 : e1) {
@@ -423,16 +423,24 @@ SDM, pp 154–163 (2011)
             i = edge1.getX();
             i2 = edge1.getY();
             j = assignments[i];
-            j2 = assignments[j];
+            j2 = assignments[i2];
             if (j < j2) {
                 edge2 = new PairInt(j, j2);
             } else {
                 edge2 = new PairInt(j2, j);
             }
-            int edgeLabel1 = sg1[i].eLabels[sg1[i].reverseOrigVIndexes.get(i2)];
-            int edgeLabel2 = sg2[j].eLabels[sg2[j].reverseOrigVIndexes.get(j2)];
-            if (!e2.contains(edge2) || (edgeLabel1 != edgeLabel2)) {
+            i1r = sg1[i].reverseOrigVIndexes.get(i2);
+            j1r = sg2[j].reverseOrigVIndexes.get(j2);
+            if (!e2.contains(edge2)) {
                 cost++;
+            } else if (i1r >= sg1[i].eLabels.length||j1r >= sg2[j].eLabels.length) {
+                cost++;
+            } else {
+                int edgeLabel1 = sg1[i].eLabels[i1r];
+                int edgeLabel2 = sg2[j].eLabels[j1r];
+                if (!e2.contains(edge2) || (edgeLabel1 != edgeLabel2)) {
+                    cost++;
+                }
             }
         }
         // Edge insertion
@@ -475,7 +483,7 @@ SDM, pp 154–163 (2011)
     protected double suboptimalEditDistanceV(StarStructure[] sg1, StarStructure[] sg2,
         int[][] a1, int[][] a2, int[] assignments) {
         
-        // this section commented out implements Zeng et al. 2009 which has vertex edits but not edge edits
+        // Zeng et al. 2009 which has vertex edits but not edge edits
         int[][] p = createP(assignments);
         
         int[][] c = createLabelMatrix(sg1, sg2, assignments);
@@ -583,7 +591,7 @@ SDM, pp 154–163 (2011)
         return max;
     }
 
-    private int[][] createAdjacencyMatrix(StarStructure[] s) {
+    static int[][] createAdjacencyMatrix(StarStructure[] s) {
         int nV = s.length;
         int[][] a = new int[nV][];
         StarStructure si;
@@ -600,7 +608,7 @@ SDM, pp 154–163 (2011)
         return a;
     }
     
-    private Set<PairInt> getEdges(StarStructure[] s) {
+    static Set<PairInt> getEdges(StarStructure[] s) {
         int nV = s.length;
         Set<PairInt> edges = new HashSet<PairInt>();
         StarStructure si;
