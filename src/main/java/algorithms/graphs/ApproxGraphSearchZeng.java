@@ -9,6 +9,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -806,9 +807,9 @@ SDM, pp 154–163 (2011)
         
         PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));
         
-        long np = MiscMath0.factorial(refinedAssign.length);
+        BigInteger np = MiscMath0.factorialBigInteger(refinedAssign.length);
         
-        for (long i = 0; i < np; ++i) {
+        while (np.compareTo(BigInteger.ZERO) > 0) {
             
             perm.getNext(assign);
             
@@ -822,7 +823,10 @@ SDM, pp 154–163 (2011)
                 min = tau;
                 System.arraycopy(assign, 0, refinedAssign, 0, assign.length);
             }
+            
+            np = np.subtract(BigInteger.ONE);
         }
+        
         return min;
     }
 

@@ -362,7 +362,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         System.out.printf("V and E labeled: L_M=%.4f\n", lM);        
     }
     
-    public void testSuboptimalAndRefinedEditDistance() {
+    public void testSuboptimalAndRefinedEditDistance() throws InterruptedException {
         // tau
         
         List<Graph> dbs = new ArrayList<Graph>();
@@ -371,7 +371,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
         int[] expectedAssignments, assignments, refinedAssign;
         int i, mDist;
-        double tau, rho;
+        double tau, rho, lambda;
         boolean useEdges = false;
         double[][] distM;
         int[][] a1, a2;
@@ -405,11 +405,23 @@ public class ApproxGraphSearchZengTest extends TestCase {
         rho = ags.refinedSuboptimalEditDistance(stars, stars, e1, e1, a1, a1, refinedAssign, tau, distM);
         System.out.printf("normalized, same graphs, refined suboptimal: rho=%.4f\n", rho);
         
+        //lambda = ags.optimalEditDistance(stars, stars, e1, e1, a1, a1, refinedAssign, tau);
+        //System.out.printf("normalized, same graphs, optimal: lambda=%.4f\n", lambda);
+        
+        
         ags.setEdgesAreLabeled(useEdges);
         distM = StarStructure.createDistanceMatrix(stars, starDB);
         assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
         tau = ags.suboptimalEditDistanceV(stars, starDB, a1, a2, assignments);
         System.out.printf("normalized, suboptimal: tau=%.4f\n", tau);
+        
+        refinedAssign = Arrays.copyOf(assignments, assignments.length);
+        rho = ags.refinedSuboptimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau, distM);
+        System.out.printf("normalized, refined suboptimal: rho=%.4f\n", rho);
+
+        //lambda = ags.optimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau);
+        //System.out.printf("normalized, optimal: lambda=%.4f\n", lambda);
+        
         
         ags.setEdgesAreLabeled(true);
         distM = StarStructure.createDistanceMatrix(stars, starDB);
@@ -417,11 +429,15 @@ public class ApproxGraphSearchZengTest extends TestCase {
         tau = ags.suboptimalEditDistance(stars, starDB, e1, e2, assignments);
         System.out.printf("normalized, edges, suboptimal: tau=%.4f\n", tau);
         
-        System.out.println("expecting L_M <= lambda <= rho <= tau");
-        //L_M <= lambda <= rho <= tau
-        
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
         rho = ags.refinedSuboptimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau, distM);
+        System.out.printf("normalized, edges, refined suboptimal: rho=%.4f\n", rho);
+
+        //lambda = ags.optimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau);
+        //System.out.printf("normalized, edges, optimal: lambda=%.4f\n", lambda);
+        
+        System.out.println("expecting L_M <= lambda <= rho <= tau");
+        //L_M <= lambda <= rho <= tau
         
     }
 
