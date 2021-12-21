@@ -77,11 +77,17 @@ public class ApproxGraphSearchZeng {
      * @param q the query graph
      * @param db list of graphs in a database
      * @param w graph edit distance threshold for the matches in the search
+     * @param useAsFilterWithoutOptimal if true, the algorithm will return
+     * db graphs that passed the bounds of graph edit distances within the 
+     * given threshold w and the algorithm will not execute the exponential
+     * optimal algorithm.  if false, the algorithm will run the filters
+     * and then the optimal graph search and return the results.
      * @return graphs all db_i in db s.t. db_i is the same as the query graph q
      * within a graph edit distance threshold w
+     * @throws java.lang.InterruptedException
      */
-    public List<Graph> approxFullSearch(Graph q, List<Graph> db, int w) throws InterruptedException {
-        //TODO: return List<Result>
+    public List<Result> approxFullSearch(Graph q, List<Graph> db, int w,
+         boolean useAsFilterWithoutOptimal) throws InterruptedException {
         
         /*
         for each graph g ∈ D do 
@@ -101,7 +107,7 @@ public class ApproxGraphSearchZeng {
             }
         */
         
-        List<Graph> results = new ArrayList<Graph>();
+        List<Result> results = new ArrayList<Result>();
         
         Graph dbi;
         StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);
@@ -156,21 +162,25 @@ public class ApproxGraphSearchZeng {
                 tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);
             }
             if (tau <= w) {
-                results.add(dbi);
+                results.add(new Result(ii, Result.BOUND.SUBOPTIMAL, assign, tau));
                 continue;
             }
             
             refinedAssign = Arrays.copyOf(assign, assign.length);
             rho = refinedSuboptimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau, distM);
             if (rho <= w) {
-                results.add(dbi);
+                results.add(new Result(ii, Result.BOUND.REFINED_SUBOPTIMAL, assign, rho));
                 continue;
             }
            
-            // exponential runtime complexity:
-            lambda = optimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau);
-            if (lambda <= w) {
-                results.add(dbi);
+            if (useAsFilterWithoutOptimal){
+                // exponential runtime complexity:
+                lambda = optimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau);
+                if (lambda <= w) {
+                    results.add(new Result(ii, Result.BOUND.OPTIMAL, assign, lambda));
+                }
+            } else {
+                results.add(new Result(ii, Result.BOUND.LOWER, assign, lM));
             }
         } // end loop over db graphs
         
@@ -917,14 +927,28 @@ SDM, pp 154–163 (2011)
     
     public static class Result {
         
+        public static enum BOUND {
+            LOWER, SUBOPTIMAL, REFINED_SUBOPTIMAL, OPTIMAL
+        }
+        
         /**
          * the graph node assignment w.r.t. the query graph
          */
-        public int[] assignment;
+        public final int[] assignment;
         
-        public int dbGraphIndex;
+        public final int dbGraphIndex;
         
-        public double editCost;
+        public final double editCost;
+        
+        public final BOUND bound;
+        
+        public Result(int dbGraphIndex, BOUND bound, int[] assign, double editCost) {
+            this.bound = bound;
+            this.dbGraphIndex = dbGraphIndex;
+            this.assignment = Arrays.copyOf(assign, assign.length);
+            this.editCost = editCost;
+        }
+        
     }
 
     static class Norm {
