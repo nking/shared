@@ -72,7 +72,7 @@ public class ApproxGraphSearchZeng {
     The method attempts to avoid the expensive graph edit distance computation 
     by filtering out graphs that definitely will not be in the answer set.
     The best-case runtime complexity is Θ(n^3), while the worse is exponential 
-    * in terms of n for the exact search, where n is the number of vertices.
+    * in terms of n for the optimal search, where n is the number of vertices.
     * This method implements Algorithm 3 of the paper.
      * @param q the query graph
      * @param db list of graphs in a database
@@ -411,7 +411,9 @@ SDM, pp 154–163 (2011)
         */
         
         int n = sg1.length;
-        int cost = 0;
+        int costVSubst = 0;
+        int costEDelSubst = 0;
+        int costEIns = 0;
         
         TIntIntMap revAssign = reverseAssignment(assignments);
         
@@ -419,8 +421,8 @@ SDM, pp 154–163 (2011)
         int i, j;
         for (i = 0; i < assignments.length; ++i) {
             j = assignments[i];
-            if (sg1[i].rootLabel == sg2[j].rootLabel) {
-                cost++;
+            if (sg1[i].rootLabel != sg2[j].rootLabel) {
+                costVSubst++;
             }
         }
         int i2, j2, i1r, j1r;
@@ -443,14 +445,14 @@ SDM, pp 154–163 (2011)
             i1r = sg1[i].reverseOrigVIndexes.get(i2);
             j1r = sg2[j].reverseOrigVIndexes.get(j2);
             if (!e2.contains(edge2)) {
-                cost++;
+                costEDelSubst++;
             } else if (i1r >= sg1[i].eLabels.length||j1r >= sg2[j].eLabels.length) {
-                cost++;
+                costEDelSubst++;
             } else {
                 int edgeLabel1 = sg1[i].eLabels[i1r];
                 int edgeLabel2 = sg2[j].eLabels[j1r];
                 if (!e2.contains(edge2) || (edgeLabel1 != edgeLabel2)) {
-                    cost++;
+                    costEDelSubst++;
                 }
             }
         }
@@ -467,9 +469,13 @@ SDM, pp 154–163 (2011)
                 edge1 = new PairInt(i2, i);
             }
             if (!e1.contains(edge1)) {
-                cost++;
+                costEIns++;
             }
         }
+        int cost = costVSubst + costEDelSubst + costEIns;
+        System.out.printf("costs vSubst=%d, eDelSubst=%d, eIns=%d ==> c=%d\n",
+            costVSubst, costEDelSubst, costEIns, cost);
+        
         return cost;
     }
     
@@ -495,7 +501,7 @@ SDM, pp 154–163 (2011)
         int[][] a1, int[][] a2, int[] assignments) {
         
         // Zeng et al. 2009 which has vertex edits but not edge edits
-        int[][] p = createP(assignments);
+        int[][] p = MatrixUtil.createPermutationMatrix(assignments);
         
         int[][] c = createLabelMatrix(sg1, sg2, assignments);
         assert(c.length == p.length);
@@ -513,6 +519,8 @@ SDM, pp 154–163 (2011)
         double term2 = 0.5*MatrixUtil.lp1Norm(
             MatrixUtil.elementwiseSubtract(a1, pA2PT));
         
+        //this is a large term, summed from labels being equal.
+        //origins are  BLP paper  by Justice & Hero, eqn(18).
         double term1 = 0;
         int i, j;
         for (i = 0; i < c.length; ++i) {
@@ -520,6 +528,8 @@ SDM, pp 154–163 (2011)
                 term1 += c[i][j] * p[i][j];
             }
         }
+        
+        //System.out.printf("term1=%.2f term2=%.2f\n", term1, term2);
         
         return term1 + term2;
     }
@@ -639,20 +649,6 @@ SDM, pp 154–163 (2011)
         return edges;
     }
 
-    private int[][] createP(int[] assignments) {
-        int n = assignments.length;
-        int[][] p = new int[n][];
-        int i;
-        for (i = 0; i < n; ++i) {
-            p[i] = new int[n];
-        }
-        for (i = 0; i < n; ++i) {
-            p[i][assignments[i]] = 1;
-        }
-        assert(MatrixUtil.isAPermutationMatrix(p));
-        return p;
-    }
-
     /**
      * create the label matrix C used in Section 3.1 in eqn (1) of 
      * Zeng et al. 2009.
@@ -671,11 +667,15 @@ SDM, pp 154–163 (2011)
         int i, j;
         for (i = 0; i < sg1.length; ++i) {
             c[i] = new int[sg2.length];
+            //NLK, changing the fill values from 0 to 1 because the non-matches will cost 1
+            Arrays.fill(c[i], 1);
         }
         for (i = 0; i < assignments.length; ++i) {
             j = assignments[i];
             if (sg1[i].rootLabel == sg2[j].rootLabel) {
-                c[i][j] = 1;
+                //NLK, changing to not penalize if vertex labels match
+                //c[i][j] = 1;
+                c[i][j] = 0;
             }
         }
         return c;

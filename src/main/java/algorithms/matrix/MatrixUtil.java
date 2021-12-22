@@ -125,6 +125,39 @@ public class MatrixUtil {
     }
     
     /**
+     * multiply matrix m by vector n
+     * @param m two dimensional array in row major format
+     * @param n one dimensional array
+     * @return vector of length m.length
+     */
+    public static double[] multiplyMatrixByColumnVector(double[][] m, int[] n) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        
+        int mcols = m[0].length;
+
+        int mrows = m.length;
+
+        int ncols = n.length;
+        
+        if (mcols != ncols) {
+            throw new IllegalArgumentException(
+                "the number of columns in m must equal the length of n");
+        }
+        
+        double[] c = new double[mrows];
+
+        multiplyMatrixByColumnVector(m, n, c);
+
+        return c;
+    }
+    
+    /**
      * multiply matrix m by vector n and return results in given vector out
      * @param m two dimensional array in row major format
      * @param n one dimensional array
@@ -142,6 +175,53 @@ public class MatrixUtil {
         // identity check
         if (n.toString().equals(out.toString())) {
             throw new IllegalArgumentException("n cannot be the same as out");
+        }
+        
+        int mcols = m[0].length;
+
+        int mrows = m.length;
+
+        int ncols = n.length;
+        
+        if (mcols != ncols) {
+            throw new IllegalArgumentException(
+                "the number of columns in m must equal the length of n");
+        }
+        if (mrows != out.length) {
+            throw new IllegalArgumentException(
+                "out.length must equal m.length");
+        }
+        
+        Arrays.fill(out, 0);
+        
+        int cCol = 0;
+        
+        for (int row = 0; row < mrows; row++) {                        
+            for (int col = 0; col < mcols; col++) {
+                out[cCol] += (m[row][col] * n[col]);
+            }
+            cCol++;        
+        }
+    }
+    
+    /**
+     * multiply matrix m by vector n and return results in given vector out
+     * @param m two dimensional array in row major format
+     * @param n one dimensional array
+     * @param out vector of length m.length to return results in
+     */
+    public static void multiplyMatrixByColumnVector(double[][] m, int[] n,
+        double[] out) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        // identity check
+        if (m.toString().equals(out.toString())) {
+            throw new IllegalArgumentException("m cannot be the same as out");
         }
         
         int mcols = m[0].length;
@@ -374,6 +454,80 @@ public class MatrixUtil {
     
     /**
      * multiply matrix m by matrix n
+     * @param m two dimensional array in row major format
+     * @param n two dimensional array in row major format
+     * @return multiplication of m by n.  resulting matrix is size mrows X ncols.
+     */
+    public static double[][] multiply(double[][] m, int[][] n) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        
+        int mrows = m.length;
+
+        int mcols = m[0].length;
+
+        int nrows = n.length;
+        
+        int ncols = n[0].length;
+        
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                "the number of columns in m (=" + mcols + ") "
+                + " must equal the number of rows in n (=" + nrows + ")");
+        }
+        
+        // mrows X ncols
+        double[][] c = MatrixUtil.zeros(mrows, ncols);
+        
+        multiply(m, n, c);
+
+        return c;
+    }
+    
+     /**
+     * multiply matrix m by matrix n
+     * @param m two dimensional array in row major format
+     * @param n two dimensional array in row major format
+     * @return multiplication of m by n.  resulting matrix is size mrows X ncols.
+     */
+    public static double[][] multiply(int[][] m, double[][] n) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        
+        int mrows = m.length;
+
+        int mcols = m[0].length;
+
+        int nrows = n.length;
+        
+        int ncols = n[0].length;
+        
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                "the number of columns in m (=" + mcols + ") "
+                + " must equal the number of rows in n (=" + nrows + ")");
+        }
+        
+        // mrows X ncols
+        double[][] c = MatrixUtil.zeros(mrows, ncols);
+        
+        multiply(m, n, c);
+
+        return c;
+    }
+    
+    /**
+     * multiply matrix m by matrix n
      * @param m tow dimensional array in row major format
      * @param n two dimensional array in row major format
      * @param out the results of multiplication of m by n.  the matrix should be size mrows X ncols.
@@ -388,6 +542,118 @@ public class MatrixUtil {
         }
         // identity check:
         if (out.toString().equals(m.toString()) || out.toString().equals(n.toString())) {
+            throw new IllegalArgumentException("out must be a different object than n and m");
+        }
+        
+        int mrows = m.length;
+
+        int mcols = m[0].length;
+
+        int nrows = n.length;
+        
+        int ncols = n[0].length;
+        
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                "the number of columns in m (=" + mcols + ") "
+                + " must equal the number of rows in n (=" + nrows + ")");
+        }
+        
+        if (out.length != mrows || out[0].length != ncols) {
+            throw new IllegalArgumentException("out must be [m.length X n[0].length]");
+        }
+        
+        /*
+        a b c      p0 p1 p2
+        d e f      p3 p4 p5
+                   p6 p7 p8        
+        a*p0 + b*p3 + c*p6    a*p1 + b*p4 + c*p7    a*p2 + b*p5 + c*p8
+        d*p0 + d*p3 + e*p6    d*p1 + d*p4 + e*p7    d*p2 + e*p5 + f*p8
+        */
+        
+        for (int mrow = 0; mrow < mrows; mrow++) {
+            for (int ncol = 0; ncol < ncols; ncol++) {
+                double sum = 0;                
+                for (int mcol = 0; mcol < mcols; mcol++) {
+                    sum += (m[mrow][mcol] * n[mcol][ncol]);                    
+                }
+                out[mrow][ncol] = sum;
+            }            
+        }
+    }
+    
+    /**
+     * multiply matrix m by matrix n
+     * @param m tow dimensional array in row major format
+     * @param n two dimensional array in row major format
+     * @param out the results of multiplication of m by n.  the matrix should be size mrows X ncols.
+     */
+    public static void multiply(double[][] m, int[][] n, double[][] out) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        // identity check:
+        if (out.toString().equals(m.toString())) {
+            throw new IllegalArgumentException("out must be a different object than n and m");
+        }
+        
+        int mrows = m.length;
+
+        int mcols = m[0].length;
+
+        int nrows = n.length;
+        
+        int ncols = n[0].length;
+        
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                "the number of columns in m (=" + mcols + ") "
+                + " must equal the number of rows in n (=" + nrows + ")");
+        }
+        
+        if (out.length != mrows || out[0].length != ncols) {
+            throw new IllegalArgumentException("out must be [m.length X n[0].length]");
+        }
+        
+        /*
+        a b c      p0 p1 p2
+        d e f      p3 p4 p5
+                   p6 p7 p8        
+        a*p0 + b*p3 + c*p6    a*p1 + b*p4 + c*p7    a*p2 + b*p5 + c*p8
+        d*p0 + d*p3 + e*p6    d*p1 + d*p4 + e*p7    d*p2 + e*p5 + f*p8
+        */
+        
+        for (int mrow = 0; mrow < mrows; mrow++) {
+            for (int ncol = 0; ncol < ncols; ncol++) {
+                double sum = 0;                
+                for (int mcol = 0; mcol < mcols; mcol++) {
+                    sum += (m[mrow][mcol] * n[mcol][ncol]);                    
+                }
+                out[mrow][ncol] = sum;
+            }            
+        }
+    }
+    
+    /**
+     * multiply matrix m by matrix n
+     * @param m tow dimensional array in row major format
+     * @param n two dimensional array in row major format
+     * @param out the results of multiplication of m by n.  the matrix should be size mrows X ncols.
+     */
+    public static void multiply(int[][] m, double[][] n, double[][] out) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+        // identity check:
+        if (out.toString().equals(n.toString())) {
             throw new IllegalArgumentException("out must be a different object than n and m");
         }
         
@@ -4077,4 +4343,37 @@ public class MatrixUtil {
         }
         return c;
     }
+    public static double[][] convertIntToDouble(int[][] a) {
+        double[][] c = new double[a.length][];
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            c[i] = new double[a[0].length];
+            for (j = 0; j < a[0].length; ++j) {
+                c[i][j] = a[i][j];
+            }
+        }
+        return c;
+    }
+    
+    /**
+     * create a permutation matrix given the vector of permuted element indexes.
+     * Usage: pre-multiplying, P*A, results in permuting the rows of A.
+     * post-multiplying, A*P, results in permuting the columns of A.
+     * @param assignments the permutation vector.
+     * @return 
+     */
+    public static int[][] createPermutationMatrix(int[] assignments) {
+        int n = assignments.length;
+        int[][] p = new int[n][];
+        int i;
+        for (i = 0; i < n; ++i) {
+            p[i] = new int[n];
+        }
+        for (i = 0; i < n; ++i) {
+            p[i][assignments[i]] = 1;
+        }
+        assert(MatrixUtil.isAPermutationMatrix(p));
+        return p;
+    }
+    
 }

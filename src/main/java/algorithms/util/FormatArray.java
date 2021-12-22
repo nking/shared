@@ -21,6 +21,18 @@ public class FormatArray {
         return sb.toString();
     }
     
+    public static String toString(int[] a, String format) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < a.length; ++i) {
+            sb.append(String.format(format, a[i]));
+            if (i < (a.length - 1)) {
+                sb.append(",");
+            }
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+    
     public static String toString(boolean[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {

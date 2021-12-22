@@ -2,6 +2,8 @@ package algorithms.graphs;
 
 import algorithms.graphs.ApproxGraphSearchZeng.Graph;
 import algorithms.graphs.ApproxGraphSearchZeng.Norm;
+import algorithms.matrix.MatrixUtil;
+import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
+import no.uib.cipr.matrix.NotConvergedException;
 
 /**
  *
@@ -362,6 +365,45 @@ public class ApproxGraphSearchZengTest extends TestCase {
         System.out.printf("V and E labeled: L_M=%.4f\n", lM);        
     }
     
+    public void estSuboptimalCP() {
+        //Table 1 of Justice & Hero
+        
+        int eps = Integer.MIN_VALUE;
+        int[] vLabelsA = new int[]{(int)'a', (int)'b', (int)'b', eps, eps};
+        int[] vLabelsB = new int[]{(int)'b', eps, (int)'b', (int)'a', eps};
+        int[] assign = new int[]{4-1, 1-1, 3-1, 5-1, 2-1};// subtractng 1 to make 0-based indexes
+        int[][] P = MatrixUtil.createPermutationMatrix(assign);
+        
+        int i, j;
+        int[][] c = new int[vLabelsA.length][];
+        for (i = 0; i < P.length; ++i) {
+            c[i] = new int[P[i].length];
+            //NLK, changing the fill values from 0 to 1 because the non-matches will cost 1
+            Arrays.fill(c[i], 1);
+        }
+        
+        for (i = 0; i < assign.length; ++i) {
+            j = assign[i];
+            if (vLabelsA[i] == vLabelsB[j]) {
+                //NLK, changing to not penalize if vertex labels match
+                //c[i][j] = 1;
+                c[i][j] = 0;
+            }
+        }
+        
+        // this is the optimal permutation and has equal mapped vertex attributes.
+        //   if term1 is truly an edit cost it should equal 0.
+        double term1 = 0;
+        for (i = 0; i < c.length; ++i) {
+            for (j = 0; j < c[i].length; ++j) {
+                term1 += c[i][j] * P[i][j];
+            }
+        }
+        
+        System.out.printf("term1=%.2f\n", term1);
+        
+    }
+    
     public void testSuboptimalAndRefinedEditDistance() throws InterruptedException {
         // tau
         
@@ -393,7 +435,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
         e1 = ApproxGraphSearchZeng.getEdges(stars);
         e2 = ApproxGraphSearchZeng.getEdges(starDB);
-        
+                
         ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
         ags.setEdgesAreLabeled(useEdges);
         distM = StarStructure.createDistanceMatrix(stars, stars);

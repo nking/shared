@@ -1488,6 +1488,56 @@ public class MatrixUtilTest extends TestCase {
                 assertEquals(expected[i][j], result[i][j]);
             }
         }
+        
+        //----
+        double[][] a2 = new double[3][2];
+        a2[0] = new double[]{1, 2};
+        a2[1] = new double[]{2, 3};
+        a2[2] = new double[]{3, 4};
+        
+        double[][] b2 = new double[2][1];
+        b2[0] = new double[]{4};
+        b2[1] = new double[]{3};
+        
+        double diff, tol=1e-7;
+        double[][] result2 = MatrixUtil.multiply(a2, b);
+        assertEquals(expected.length, result.length);
+        assertEquals(expected[0].length, result[0].length);
+        for (i = 0; i < expected.length; ++i) {
+            for (j = 0; j < expected[i].length; ++j) {
+                diff = Math.abs(expected[i][j] - result2[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+        result2 = MatrixUtil.multiply(a, b2);
+        assertEquals(expected.length, result.length);
+        assertEquals(expected[0].length, result[0].length);
+        for (i = 0; i < expected.length; ++i) {
+            for (j = 0; j < expected[i].length; ++j) {
+                diff = Math.abs(expected[i][j] - result2[i][j]);
+                assertTrue(diff < tol);
+            }
+        }
+    }
+    
+    public void testPermutationMatrix() {
+        
+        int[] p0 = new int[]{4-1,1-1,3-1,5-1,2-1};
+        int[][] p = MatrixUtil.createPermutationMatrix(p0);
+        
+        int[][] expected = new int[5][];
+        expected[0] = new int[]{0, 0, 0, 1, 0};
+        expected[1] = new int[]{1, 0, 0, 0, 0};
+        expected[2] = new int[]{0, 0, 1, 0, 0};
+        expected[3] = new int[]{0, 0, 0, 0, 1};
+        expected[4] = new int[]{0, 1, 0, 0, 0};
+        
+        assertEquals(expected.length, p.length);
+        int i;
+        for (i = 0; i < expected.length; ++i) {
+            assertEquals(expected[i].length, p[i].length);
+            assertTrue(Arrays.equals(expected[i], p[i]));
+        }
     }
     
     public void testTransposeInt() {
