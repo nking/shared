@@ -55,11 +55,7 @@ public class StarStructure {
      * array of star structures. the original indexes in V[i] are 
      * the indexes of vLabels before re-ordered by sorting */
     public int[] origVIndexes;
-    /**
-    key = original vIndex, value = local star structure vLabel or eLabel index
-    */
-    public TIntIntMap reverseOrigVIndexes;
-    
+   
     private StarStructure(){};
     /**
      * convert the graph vertex rootIndex and it's immediate neighbors into
@@ -114,10 +110,6 @@ public class StarStructure {
         this.vLabels = vLabels;
         this.eLabels = eLabels;
         this.origVIndexes = vIndexes;
-        this.reverseOrigVIndexes = new TIntIntHashMap();
-        for (int i = 0; i < origVIndexes.length; ++i) {
-            reverseOrigVIndexes.put(origVIndexes[i], i);
-        }
     }
     
     /**
