@@ -4,6 +4,7 @@ import algorithms.PermutationsWithAwait;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
+import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
@@ -117,7 +118,6 @@ public class ApproxGraphSearchZeng {
         double lM, tau, rho, lambda;
         int[] refinedAssign;
         StarStructure s;
-        Set<PairInt> e1, e2;
         Graph g;
         boolean swappedSG;
         Norm norm;
@@ -137,9 +137,6 @@ public class ApproxGraphSearchZeng {
             a1 = createAdjacencyMatrix(sg1);
             a2 = createAdjacencyMatrix(sg2);
             
-            e1 = getEdges(sg1);
-            e2 = getEdges(sg2);
-            
             // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
             if (this.edgesAreLabeled) {
                 distM = StarStructure.createDistanceMatrix(sg1, sg2);
@@ -157,7 +154,11 @@ public class ApproxGraphSearchZeng {
             }
             
             if (this.edgesAreLabeled) {
-                tau = suboptimalEditDistance(sg1, sg2, e1, e2, assign);
+                if (swappedSG) {
+                    tau = suboptimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, assign);
+                } else {
+                    tau = suboptimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, assign);
+                }
             } else {
                 tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);
             }
@@ -167,7 +168,11 @@ public class ApproxGraphSearchZeng {
             }
             
             refinedAssign = Arrays.copyOf(assign, assign.length);
-            rho = refinedSuboptimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau, distM);
+            if (swappedSG) {
+                rho = refinedSuboptimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, a1, a2, refinedAssign, tau, distM);
+            } else {
+                rho = refinedSuboptimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, a1, a2, refinedAssign, tau, distM);
+            }
             if (rho <= w) {
                 results.add(new Result(ii, Result.BOUND.REFINED_SUBOPTIMAL, assign, rho));
                 continue;
@@ -175,7 +180,11 @@ public class ApproxGraphSearchZeng {
            
             if (useAsFilterWithoutOptimal){
                 // exponential runtime complexity:
-                lambda = optimalEditDistance(sg1, sg2, e1, e2, a1, a2, refinedAssign, tau);
+                if (swappedSG) {
+                    lambda = optimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, a1, a2, refinedAssign, tau);
+                } else {
+                    lambda = optimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, a1, a2, refinedAssign, tau);
+                }
                 if (lambda <= w) {
                     results.add(new Result(ii, Result.BOUND.OPTIMAL, assign, lambda));
                 }
@@ -308,7 +317,6 @@ SDM, pp 154–163 (2011)
         double lM, tau, rho, lambda;
         int[] refinedAssign;
         StarStructure s;
-        Set<PairInt> e1, e2;
         Graph g;
         Norm norm;
         boolean swappedSG;
@@ -331,9 +339,6 @@ SDM, pp 154–163 (2011)
             a1 = createAdjacencyMatrix(sg1);
             a2 = createAdjacencyMatrix(sg2);
             
-            e1 = getEdges(sg1);
-            e2 = getEdges(sg2);
-                        
             // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
             if (this.edgesAreLabeled) {
                 distM = StarStructure.createDistanceMatrixNoRelabeling(sg1, sg2);
@@ -346,7 +351,7 @@ SDM, pp 154–163 (2011)
             
             lM = lowerBoundEditDistance(sg1, sg2, mappingDist);
             
-            int l = Math.abs(e2.size() - e1.size()) + Math.abs(q.vLabels.size() - dbi.vLabels.size());
+            int l = Math.abs(q.eLabels.size() - dbi.eLabels.size()) + Math.abs(q.vLabels.size() - dbi.vLabels.size());
             
             //L′_m(g1, g2) > L + 2θ can filter out g2
             if (lM > (l + 2*w)) {
@@ -382,14 +387,15 @@ SDM, pp 154–163 (2011)
      </pre>
      * @param sg1 star structures for graph g1
      * @param sg2 star structures for graph g2
-     * @param e1 edges in graph g1. each PairInt is ordered so that u .lt. v.
-     * @param e2 edges in graph g2. each PairInt is ordered so that u .lt. v.
+     * @param e1Labels map having key = edge in graph g1, value = edge label
+     * @param e2Labels map having key = edge in graph g2, value = edge label
      @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
      * @return 
      */
     protected double suboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
-        Set<PairInt> e1, Set<PairInt> e2, int[] assignments) {
+        TObjectIntMap<PairInt> e1Labels, TObjectIntMap<PairInt> e2Labels,
+        int[] assignments) {
         
         /*
         Efficiently Computing Graph Similarity and Graph Connectivity
@@ -414,9 +420,7 @@ SDM, pp 154–163 (2011)
         int costVSubst = 0;
         int costEDelSubst = 0;
         int costEIns = 0;
-        
-        TIntIntMap revAssign = reverseAssignment(assignments);
-        
+                
         // vertex relabeling
         int i, j;
         for (i = 0; i < assignments.length; ++i) {
@@ -428,7 +432,8 @@ SDM, pp 154–163 (2011)
         int i2, j2, i1r, j1r;
         PairInt edge2;
         // Edge deletion or relabeling
-        for (PairInt edge1 : e1) {
+        int e2Label;
+        for (PairInt edge1 : e1Labels.keySet()) {
             /*
             for each edge (v,v′) in q do
                 if edge (f(v), f(v′)) is not in g or l(v,v′) != l(f(v), f(v′)) cost++;
@@ -437,39 +442,49 @@ SDM, pp 154–163 (2011)
             i2 = edge1.getY();
             j = assignments[i];
             j2 = assignments[i2];
-            if (j < j2) {
-                edge2 = new PairInt(j, j2);
-            } else {
+            edge2 = new PairInt(j, j2);
+            if (e2Labels.containsKey(edge2)) {
+                e2Label = e2Labels.get(edge2);
+            } else if (e2Labels.containsKey(new PairInt(j2, j))) {
                 edge2 = new PairInt(j2, j);
-            }
-            i1r = sg1[i].reverseOrigVIndexes.get(i2);
-            j1r = sg2[j].reverseOrigVIndexes.get(j2);
-            if (!e2.contains(edge2)) {
-                costEDelSubst++;
-            } else if (i1r >= sg1[i].eLabels.length||j1r >= sg2[j].eLabels.length) {
-                costEDelSubst++;
+                e2Label = e2Labels.get(edge2);
             } else {
-                int edgeLabel1 = sg1[i].eLabels[i1r];
-                int edgeLabel2 = sg2[j].eLabels[j1r];
-                if (!e2.contains(edge2) || (edgeLabel1 != edgeLabel2)) {
-                    costEDelSubst++;
-                }
+                costEDelSubst++;
+                continue;
+            }
+            if (e1Labels.get(edge1) != e2Label) {
+                costEDelSubst++;
             }
         }
-//TODO: fix error(s) here
+        
+        TIntIntMap revAssign = reverseAssignment(assignments);
+
         // Edge insertion
+        //for each edge (u,u′) in g
+        //    if edge(f'(u),f'(u′)) is not in q cost++;
+        TObjectIntIterator<PairInt> iter = e2Labels.iterator();
         PairInt edge1;
-        for (PairInt edge : e2) {
-            j = edge.getX();
-            j2 = edge.getY();
+        int e1Label;
+        while (iter.hasNext()) {
+            iter.advance();
+            edge2 = iter.key();
+            e2Label = iter.value();
+            j = edge2.getX();
+            j2 = edge2.getY();
             i = revAssign.get(j);
             i2 = revAssign.get(j2);
-            if (i < i2) {
-                edge1 = new PairInt(i, 12);
-            } else {
+            
+            edge1 = new PairInt(i, i2);
+            if (e1Labels.containsKey(edge1)) {
+                e1Label = e1Labels.get(edge1);
+            } else if (e1Labels.containsKey(new PairInt(i2, i))) {
                 edge1 = new PairInt(i2, i);
+                e1Label = e1Labels.get(edge1);
+            } else {
+                costEIns++;
+                continue;
             }
-            if (!e1.contains(edge1)) {
+            if (e1Label != e2Label) {
                 costEIns++;
             }
         }
@@ -689,8 +704,8 @@ SDM, pp 154–163 (2011)
      * the smallest edit distance.
      * @param sg1 star structures for graph g1
      * @param sg2 star structures for graph g2
-     * @param e1
-     * @param e2
+     * @param e1Labels map having key = edge in graph g1, value = edge label
+     * @param e2Labels map having key = edge in graph g2, value = edge label
      * @param a1 adjacency matrix for graph g1
      * @param a2 adjacency matrix for graph g2
      * @param refinedAssign input initial vertex assignments and output
@@ -701,7 +716,7 @@ SDM, pp 154–163 (2011)
      * @return
      */
     protected double refinedSuboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
-        Set<PairInt> e1, Set<PairInt> e2, int[][] a1, int[][] a2,
+        TObjectIntMap<PairInt> e1Labels, TObjectIntMap<PairInt> e2Labels, int[][] a1, int[][] a2,
         int[] refinedAssign, double tau, double[][] distM) {
         /*
         dist ← C(g,h,P);
@@ -743,21 +758,18 @@ SDM, pp 154–163 (2011)
         double min = tau;
         
         int iV1, iV2, jV1, jV2, iV3, jV1Adj, jj;
-        PairInt pV;
         int[] jV1AdjIdxs;
-        for (PairInt edge1 : e1) {
+        for (PairInt edge1 : e1Labels.keySet()) {
             iV1 = edge1.getX();
             iV2 = edge1.getY();
             jV1 = assign[iV1];
             jV2 = assign[iV2];
-            if (jV1 < jV2) {
-                pV = new PairInt(jV1, jV2);
-            } else {
-                pV = new PairInt(jV2, jV1);
-            }
-            if (e2.contains(pV)) {
+            
+            if (e2Labels.containsKey(new PairInt(jV1, jV2)) ||
+                e2Labels.containsKey(new PairInt(jV2, jV1))) {
                 continue;
             }
+            
             jV1AdjIdxs = sg2[jV1].origVIndexes;
             for (jj = 0; jj < jV1AdjIdxs.length; ++jj) {
                 jV1Adj = jV1AdjIdxs[jj];
@@ -769,7 +781,7 @@ SDM, pp 154–163 (2011)
                 assign[iV3] = jV2;
                 
                 if (this.edgesAreLabeled) {
-                    tau = suboptimalEditDistance(sg1, sg2, e1, e2, assign);
+                    tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);
                 } else {
                     tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);
                 }
@@ -796,8 +808,8 @@ SDM, pp 154–163 (2011)
      * the runtime complexity is n!.
      * @param sg1 star structures for graph g1
      * @param sg2 star structures for graph g2
-     * @param e1
-     * @param e2
+     * @param e1Labels map having key = edge in graph g1, value = edge label
+     * @param e2Labels map having key = edge in graph g2, value = edge label
      * @param a1 adjacency matrix for graph g1
      * @param a2 adjacency matrix for graph g2
      * @param refinedAssign input initial vertex assignments and output
@@ -810,7 +822,7 @@ SDM, pp 154–163 (2011)
      * a semaphore model to pause and continue execution.
      */
     protected double optimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
-        Set<PairInt> e1, Set<PairInt> e2, int[][] a1, int[][] a2,
+        TObjectIntMap<PairInt> e1Labels, TObjectIntMap<PairInt> e2Labels, int[][] a1, int[][] a2,
         int[] refinedAssign, double tau) throws InterruptedException {
                 
         int[] assign = new int[refinedAssign.length];
@@ -825,7 +837,7 @@ SDM, pp 154–163 (2011)
             perm.getNext(assign);
             
             if (this.edgesAreLabeled) {
-                tau = suboptimalEditDistance(sg1, sg2, e1, e2, assign);
+                tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);
             } else {
                 tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);
             }

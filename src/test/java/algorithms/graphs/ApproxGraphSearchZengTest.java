@@ -444,7 +444,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         System.out.printf("normalized, same graphs, suboptimal: tau=%.4f\n", tau);
         
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
-        rho = ags.refinedSuboptimalEditDistance(stars, stars, e1, e1, a1, a1, refinedAssign, tau, distM);
+        rho = ags.refinedSuboptimalEditDistance(stars, stars, q.eLabels, q.eLabels, a1, a1, refinedAssign, tau, distM);
         System.out.printf("normalized, same graphs, refined suboptimal: rho=%.4f\n", rho);
         
         //lambda = ags.optimalEditDistance(stars, stars, e1, e1, a1, a1, refinedAssign, tau);
@@ -458,7 +458,11 @@ public class ApproxGraphSearchZengTest extends TestCase {
         System.out.printf("normalized, suboptimal: tau=%.4f\n", tau);
         
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
-        rho = ags.refinedSuboptimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau, distM);
+        if (swapped) {
+            rho = ags.refinedSuboptimalEditDistance(stars, starDB, dbs.get(0).eLabels, q.eLabels, a1, a2, refinedAssign, tau, distM);
+        } else {
+            rho = ags.refinedSuboptimalEditDistance(stars, starDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau, distM);
+        }
         System.out.printf("normalized, refined suboptimal: rho=%.4f\n", rho);
 
         //lambda = ags.optimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau);
@@ -468,11 +472,21 @@ public class ApproxGraphSearchZengTest extends TestCase {
         ags.setEdgesAreLabeled(true);
         distM = StarStructure.createDistanceMatrix(stars, starDB);
         assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
-        tau = ags.suboptimalEditDistance(stars, starDB, e1, e2, assignments);
+        if (swapped) {
+            tau = ags.suboptimalEditDistance(stars, starDB, dbs.get(0).eLabels, q.eLabels, assignments);
+        } else {
+            tau = ags.suboptimalEditDistance(stars, starDB, q.eLabels, dbs.get(0).eLabels, assignments);
+        }
+        
         System.out.printf("normalized, edges, suboptimal: tau=%.4f\n", tau);
         
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
-        rho = ags.refinedSuboptimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau, distM);
+        if (swapped) {
+            rho = ags.refinedSuboptimalEditDistance(stars, starDB, dbs.get(0).eLabels, q.eLabels, a1, a2, refinedAssign, tau, distM);
+        } else {
+            rho = ags.refinedSuboptimalEditDistance(stars, starDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau, distM);
+        }
+        
         System.out.printf("normalized, edges, refined suboptimal: rho=%.4f\n", rho);
 
         //lambda = ags.optimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau);
