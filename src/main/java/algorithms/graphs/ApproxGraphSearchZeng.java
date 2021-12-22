@@ -488,9 +488,13 @@ SDM, pp 154–163 (2011)
                 costEIns++;
             }
         }
-        int cost = costVSubst + costEDelSubst + costEIns;
-        System.out.printf("costs vSubst=%d, eDelSubst=%d, eIns=%d ==> c=%d\n",
-            costVSubst, costEDelSubst, costEIns, cost);
+        
+        //int cost = costVSubst + costEDelSubst + costEIns;
+        // or use the maximum for edges to not count them twice
+        int cost = costVSubst + Math.max(costEDelSubst, costEIns);
+        
+        //System.out.printf("costs vSubst=%d, eDelSubst=%d, eIns=%d ==> c=%d\n",
+        //    costVSubst, costEDelSubst, costEIns, cost);
         
         return cost;
     }
