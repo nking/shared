@@ -34,127 +34,6 @@ public class ApproxGraphSearchZengTest extends TestCase {
         super(testName);
     }
     
-    /**
-     * get the example graph of similar compounds from
-     * Fig 3.b of 
-     * Fast processing of graph queries on a large database of small and medium-sized data graphs,
-       Dipali Pal, Praveen Rao, Vasil Slavov, Anas Katib,
-       Journal of Computer and System Sciences, Volume 82, Issue 6, 2016, Pages 1112-1143,
-       https://doi.org/10.1016/j.jcss.2016.04.002.
-    
-     * @param outputDB list of graphs representing the database
-     * @return graph representing the query graph
-     */
-    public static Graph getG0(List<Graph> outputDB) {
-        
-        TIntObjectMap<TIntSet> adjMapDB;
-        TIntIntMap vLabelsDB;
-        TObjectIntMap<PairInt> eLabelsDB;
-        int nDB = 15, i;
-        adjMapDB = new TIntObjectHashMap<TIntSet>();
-        for (i = 0; i < nDB; ++i) {
-            adjMapDB.put(i, new TIntHashSet());
-        }
-        adjMapDB.get(0).add(3);
-        adjMapDB.get(1).add(3);
-        adjMapDB.get(2).add(3);
-        adjMapDB.get(3).add(0);
-        adjMapDB.get(3).add(1);
-        adjMapDB.get(3).add(2);
-        adjMapDB.get(3).add(4);
-        adjMapDB.get(4).add(3);
-        adjMapDB.get(4).add(5);
-        adjMapDB.get(4).add(13);
-        adjMapDB.get(5).add(4);
-        adjMapDB.get(5).add(6);
-        adjMapDB.get(5).add(7);
-        adjMapDB.get(6).add(5);
-        adjMapDB.get(7).add(5);
-        adjMapDB.get(7).add(8);
-        adjMapDB.get(7).add(10);
-        adjMapDB.get(8).add(7);
-        adjMapDB.get(9).add(10);
-        adjMapDB.get(10).add(7);
-        adjMapDB.get(10).add(9);
-        adjMapDB.get(10).add(11);
-        adjMapDB.get(11).add(10);
-        adjMapDB.get(11).add(12);
-        adjMapDB.get(11).add(13);
-        adjMapDB.get(12).add(11);
-        adjMapDB.get(13).add(4);
-        adjMapDB.get(13).add(11);
-        adjMapDB.get(13).add(14);
-        adjMapDB.get(14).add(13);
-        
-        vLabelsDB = new TIntIntHashMap();
-        vLabelsDB.put(0, (int)'h');
-        vLabelsDB.put(1, (int)'h');
-        vLabelsDB.put(2, (int)'h');
-        vLabelsDB.put(3, (int)'c');
-        vLabelsDB.put(4, (int)'c');
-        vLabelsDB.put(5, (int)'c');
-        vLabelsDB.put(6, (int)'o');
-        vLabelsDB.put(7, (int)'n');
-        vLabelsDB.put(8, (int)'h');
-        vLabelsDB.put(9, (int)'o');
-        vLabelsDB.put(10, (int)'c');
-        vLabelsDB.put(11, (int)'n');
-        vLabelsDB.put(12, (int)'h');
-        vLabelsDB.put(13, (int)'c');
-        vLabelsDB.put(14, (int)'h');
-        
-        eLabelsDB = new TObjectIntHashMap<PairInt>();
-        eLabelsDB.put(new PairInt(0, 3), (int)'s');
-        eLabelsDB.put(new PairInt(1, 3), (int)'s');
-        eLabelsDB.put(new PairInt(2, 3), (int)'s');
-        eLabelsDB.put(new PairInt(3, 0), (int)'s');
-        eLabelsDB.put(new PairInt(3, 1), (int)'s');
-        eLabelsDB.put(new PairInt(3, 2), (int)'s');
-        eLabelsDB.put(new PairInt(3, 4), (int)'s');
-        eLabelsDB.put(new PairInt(4, 3), (int)'s');
-        eLabelsDB.put(new PairInt(4, 5), (int)'s');
-        eLabelsDB.put(new PairInt(4, 13), (int)'d');
-        eLabelsDB.put(new PairInt(5, 4), (int)'s');
-        eLabelsDB.put(new PairInt(5, 6), (int)'d');
-        eLabelsDB.put(new PairInt(5, 7), (int)'s');
-        eLabelsDB.put(new PairInt(6, 5), (int)'d');
-        eLabelsDB.put(new PairInt(7, 5), (int)'s');
-        eLabelsDB.put(new PairInt(7, 8), (int)'s');
-        eLabelsDB.put(new PairInt(7, 10), (int)'s');
-        eLabelsDB.put(new PairInt(8, 7), (int)'s');
-        eLabelsDB.put(new PairInt(9, 10), (int)'d');
-        eLabelsDB.put(new PairInt(10, 9), (int)'d');
-        eLabelsDB.put(new PairInt(10, 7), (int)'s');
-        eLabelsDB.put(new PairInt(10, 11), (int)'s');
-        eLabelsDB.put(new PairInt(11, 10), (int)'s');
-        eLabelsDB.put(new PairInt(11, 12), (int)'s');
-        eLabelsDB.put(new PairInt(11, 13), (int)'s');
-        eLabelsDB.put(new PairInt(12, 11), (int)'s');
-        eLabelsDB.put(new PairInt(13, 4), (int)'d');
-        eLabelsDB.put(new PairInt(13, 11), (int)'s');
-        eLabelsDB.put(new PairInt(13, 14), (int)'s');
-        eLabelsDB.put(new PairInt(14, 13), (int)'s');
-        
-        
-        Graph db = new Graph(adjMapDB, vLabelsDB, eLabelsDB);
-       
-        TIntObjectMap<TIntSet> adjMapQ = copy(adjMapDB);
-        adjMapQ.get(13).remove(14);
-        adjMapQ.remove(14);
-        
-        TIntIntMap vLabelsQ = copy(vLabelsDB);
-        vLabelsQ.remove(14);
-        
-        TObjectIntMap<PairInt> eLabelsQ = copy(eLabelsDB);
-        eLabelsQ.remove(new PairInt(13, 14));
-        eLabelsQ.remove(new PairInt(14, 13));
-        
-        Graph q = new Graph(adjMapQ, vLabelsQ, eLabelsQ);
-        
-        outputDB.add(db);
-        return q;
-    }
-
     public void testReverseAssignment() {
         int[] a = new int[]{3,4,5};
         ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
@@ -417,7 +296,6 @@ public class ApproxGraphSearchZengTest extends TestCase {
         boolean useEdges = false;
         double[][] distM;
         int[][] a1, a2;
-        Set<PairInt> e1, e2;
         
         StarStructure[] stars = StarStructure.createStarStructureMultiset(q);
         assertEquals(nV, stars.length);
@@ -432,10 +310,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
         a1 = ApproxGraphSearchZeng.createAdjacencyMatrix(stars);
         a2 = ApproxGraphSearchZeng.createAdjacencyMatrix(starDB);
-        
-        e1 = ApproxGraphSearchZeng.getEdges(stars);
-        e2 = ApproxGraphSearchZeng.getEdges(starDB);
-                
+                        
         ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
         ags.setEdgesAreLabeled(useEdges);
         distM = StarStructure.createDistanceMatrix(stars, stars);
@@ -498,7 +373,85 @@ public class ApproxGraphSearchZengTest extends TestCase {
     }
 
     public void testOptimalEditDistance() throws Exception {
+        System.out.println("\ntestOptimalEditDistance");
+        //example graphs from Figure 1 of
+        //A Coding Method for Efficient Subgraph Querying on Vertex- and Edge-Labeled Graphs
+        //Zhu et al, May 2014 PLoS ONE 9(5):e97178
+        //DOI:10.1371/journal.pone.0097178
         
+        // 4!=24, 5!=120, so using a small test graph
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG1(dbs);
+        int nQ = 5;
+        
+        // inserting query at beginning to make sure edit costs are 0
+        dbs.add(0, q);
+        
+        //int nD1 = 5;
+        //int nD2 = 4;
+        //int nD3 = 5;
+        //int nD4 = 5;
+        
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        
+        // q and db.get(2) should be closest.
+        // q and db.get(3) quick look suggests might be the furthest
+        
+        int i, mappingDist;
+        double lM, tau, rho, lambda;
+        
+        double[][] distM;
+        boolean swapped;
+        int[][] a1, a2;
+        int[] assignments, refinedAssign;
+        StarStructure[] stars, starsDB;
+        Graph g;
+        System.out.println("expecting L_M <= lambda <= rho <= tau");
+        //L_M <= lambda <= rho <= tau
+        for (i = 0; i < dbs.size(); ++i) {
+            for (boolean useEdges : new boolean[]{false, true}) {
+                g = dbs.get(i);
+
+                stars = StarStructure.createStarStructureMultiset(q);
+                assertEquals(nQ, stars.length);
+
+                starsDB = StarStructure.createStarStructureMultiset(g);
+                assertEquals(g.vLabels.size(), starsDB.length);
+
+                Norm norm = ApproxGraphSearchZeng.normalize(stars, starsDB);
+                stars = norm.sg1;
+                starsDB = norm.sg2;
+                swapped = norm.swapped;
+
+                a1 = ApproxGraphSearchZeng.createAdjacencyMatrix(stars);
+                a2 = ApproxGraphSearchZeng.createAdjacencyMatrix(starsDB);
+
+                ags.setEdgesAreLabeled(useEdges);
+                distM = StarStructure.createDistanceMatrix(stars, starsDB);
+                assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
+
+                mappingDist = ags.mappingDistance(stars, starsDB, assignments);
+
+                lM = ags.lowerBoundEditDistance(stars, starsDB, mappingDist);
+
+                tau = ags.suboptimalEditDistanceV(stars, starsDB, a1, a2, assignments);
+
+                refinedAssign = Arrays.copyOf(assignments, assignments.length);
+                if (swapped) {
+                    rho = ags.refinedSuboptimalEditDistance(stars, starsDB, dbs.get(0).eLabels, q.eLabels, a1, a2, refinedAssign, tau, distM);
+                    lambda = ags.optimalEditDistance(stars, starsDB, dbs.get(0).eLabels, q.eLabels, a1, a2, refinedAssign, tau);  
+                } else {
+                    rho = ags.refinedSuboptimalEditDistance(stars, starsDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau, distM);
+                    lambda = ags.optimalEditDistance(stars, starsDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau);  
+                }
+
+                System.out.printf("normalized, edges=%b, i=%d:\n   lM(lower)=%.2f, "
+                    + "lambda(opt)=%.2f, rho(refSubOpt)=%.2f, tau(subOpt)=%.2f\n", 
+                    useEdges, i, lM, lambda, rho, tau);                
+            }
+        }
+        System.out.println("expecting L_M <= lambda <= rho <= tau");
+        //L_M <= lambda <= rho <= tau
     }
 
     public void testApproxSubSearch() {
@@ -552,4 +505,313 @@ public class ApproxGraphSearchZengTest extends TestCase {
         return c;
     }
     
+    /**
+     * get the example graph of similar compounds from
+     * Fig 3.b of 
+     * Fast processing of graph queries on a large database of small and medium-sized data graphs,
+       Dipali Pal, Praveen Rao, Vasil Slavov, Anas Katib,
+       Journal of Computer and System Sciences, Volume 82, Issue 6, 2016, Pages 1112-1143,
+       https://doi.org/10.1016/j.jcss.2016.04.002.
+    
+     * @param outputDB list of graphs representing the database
+     * @return graph representing the query graph
+     */
+    public static Graph getG0(List<Graph> outputDB) {
+        
+        TIntObjectMap<TIntSet> adjMapDB;
+        TIntIntMap vLabelsDB;
+        TObjectIntMap<PairInt> eLabelsDB;
+        int nDB = 15, i;
+        adjMapDB = new TIntObjectHashMap<TIntSet>();
+        for (i = 0; i < nDB; ++i) {
+            adjMapDB.put(i, new TIntHashSet());
+        }
+        adjMapDB.get(0).add(3);
+        adjMapDB.get(1).add(3);
+        adjMapDB.get(2).add(3);
+        adjMapDB.get(3).add(0);
+        adjMapDB.get(3).add(1);
+        adjMapDB.get(3).add(2);
+        adjMapDB.get(3).add(4);
+        adjMapDB.get(4).add(3);
+        adjMapDB.get(4).add(5);
+        adjMapDB.get(4).add(13);
+        adjMapDB.get(5).add(4);
+        adjMapDB.get(5).add(6);
+        adjMapDB.get(5).add(7);
+        adjMapDB.get(6).add(5);
+        adjMapDB.get(7).add(5);
+        adjMapDB.get(7).add(8);
+        adjMapDB.get(7).add(10);
+        adjMapDB.get(8).add(7);
+        adjMapDB.get(9).add(10);
+        adjMapDB.get(10).add(7);
+        adjMapDB.get(10).add(9);
+        adjMapDB.get(10).add(11);
+        adjMapDB.get(11).add(10);
+        adjMapDB.get(11).add(12);
+        adjMapDB.get(11).add(13);
+        adjMapDB.get(12).add(11);
+        adjMapDB.get(13).add(4);
+        adjMapDB.get(13).add(11);
+        adjMapDB.get(13).add(14);
+        adjMapDB.get(14).add(13);
+        
+        vLabelsDB = new TIntIntHashMap();
+        vLabelsDB.put(0, (int)'h');
+        vLabelsDB.put(1, (int)'h');
+        vLabelsDB.put(2, (int)'h');
+        vLabelsDB.put(3, (int)'c');
+        vLabelsDB.put(4, (int)'c');
+        vLabelsDB.put(5, (int)'c');
+        vLabelsDB.put(6, (int)'o');
+        vLabelsDB.put(7, (int)'n');
+        vLabelsDB.put(8, (int)'h');
+        vLabelsDB.put(9, (int)'o');
+        vLabelsDB.put(10, (int)'c');
+        vLabelsDB.put(11, (int)'n');
+        vLabelsDB.put(12, (int)'h');
+        vLabelsDB.put(13, (int)'c');
+        vLabelsDB.put(14, (int)'h');
+        
+        eLabelsDB = new TObjectIntHashMap<PairInt>();
+        eLabelsDB.put(new PairInt(0, 3), (int)'s');
+        eLabelsDB.put(new PairInt(1, 3), (int)'s');
+        eLabelsDB.put(new PairInt(2, 3), (int)'s');
+        eLabelsDB.put(new PairInt(3, 0), (int)'s');
+        eLabelsDB.put(new PairInt(3, 1), (int)'s');
+        eLabelsDB.put(new PairInt(3, 2), (int)'s');
+        eLabelsDB.put(new PairInt(3, 4), (int)'s');
+        eLabelsDB.put(new PairInt(4, 3), (int)'s');
+        eLabelsDB.put(new PairInt(4, 5), (int)'s');
+        eLabelsDB.put(new PairInt(4, 13), (int)'d');
+        eLabelsDB.put(new PairInt(5, 4), (int)'s');
+        eLabelsDB.put(new PairInt(5, 6), (int)'d');
+        eLabelsDB.put(new PairInt(5, 7), (int)'s');
+        eLabelsDB.put(new PairInt(6, 5), (int)'d');
+        eLabelsDB.put(new PairInt(7, 5), (int)'s');
+        eLabelsDB.put(new PairInt(7, 8), (int)'s');
+        eLabelsDB.put(new PairInt(7, 10), (int)'s');
+        eLabelsDB.put(new PairInt(8, 7), (int)'s');
+        eLabelsDB.put(new PairInt(9, 10), (int)'d');
+        eLabelsDB.put(new PairInt(10, 9), (int)'d');
+        eLabelsDB.put(new PairInt(10, 7), (int)'s');
+        eLabelsDB.put(new PairInt(10, 11), (int)'s');
+        eLabelsDB.put(new PairInt(11, 10), (int)'s');
+        eLabelsDB.put(new PairInt(11, 12), (int)'s');
+        eLabelsDB.put(new PairInt(11, 13), (int)'s');
+        eLabelsDB.put(new PairInt(12, 11), (int)'s');
+        eLabelsDB.put(new PairInt(13, 4), (int)'d');
+        eLabelsDB.put(new PairInt(13, 11), (int)'s');
+        eLabelsDB.put(new PairInt(13, 14), (int)'s');
+        eLabelsDB.put(new PairInt(14, 13), (int)'s');
+        
+        
+        Graph db = new Graph(adjMapDB, vLabelsDB, eLabelsDB);
+       
+        TIntObjectMap<TIntSet> adjMapQ = copy(adjMapDB);
+        adjMapQ.get(13).remove(14);
+        adjMapQ.remove(14);
+        
+        TIntIntMap vLabelsQ = copy(vLabelsDB);
+        vLabelsQ.remove(14);
+        
+        TObjectIntMap<PairInt> eLabelsQ = copy(eLabelsDB);
+        eLabelsQ.remove(new PairInt(13, 14));
+        eLabelsQ.remove(new PairInt(14, 13));
+        
+        Graph q = new Graph(adjMapQ, vLabelsQ, eLabelsQ);
+        
+        outputDB.add(db);
+        return q;
+    }
+    
+    /**
+     * get the example graphs from Figure 1 of
+     * A Coding Method for Efficient Subgraph Querying on Vertex- and Edge-Labeled Graphs
+       Zhu et al, May 2014 PLoS ONE 9(5):e97178
+       DOI:10.1371/journal.pone.0097178
+    
+     * @param outputDB list of graphs representing the database
+     * @return graph representing the query graph
+     */
+    public static Graph getG1(List<Graph> outputDB) {
+        
+        int nQ = 5;
+        int nD1 = 5;
+        int nD2 = 4;
+        int nD3 = 5;
+        int nD4 = 5;
+        int i;
+        
+        TIntObjectMap<TIntSet> adjMapQ;
+        TIntIntMap vLabelsQ;
+        TObjectIntMap<PairInt> eLabelsQ;
+        adjMapQ = new TIntObjectHashMap<TIntSet>();
+        for (i = 0; i < nQ; ++i) {
+            adjMapQ.put(i, new TIntHashSet());
+        }
+        adjMapQ.get(0).add(1);
+        adjMapQ.get(1).add(0);
+        adjMapQ.get(1).add(2);
+        adjMapQ.get(2).add(1);
+        adjMapQ.get(2).add(3);
+        adjMapQ.get(2).add(4);
+        adjMapQ.get(3).add(2);
+        adjMapQ.get(4).add(2);
+        
+        vLabelsQ = new TIntIntHashMap();
+        vLabelsQ.put(0, (int)'D');
+        vLabelsQ.put(1, (int)'B');
+        vLabelsQ.put(2, (int)'A');
+        vLabelsQ.put(3, (int)'C');
+        vLabelsQ.put(4, (int)'C');
+        
+        eLabelsQ = new TObjectIntHashMap<PairInt>();
+        eLabelsQ.put(new PairInt(0, 1), (int)'b');
+        eLabelsQ.put(new PairInt(1, 2), (int)'a');
+        eLabelsQ.put(new PairInt(2, 3), (int)'a');
+        eLabelsQ.put(new PairInt(2, 4), (int)'c');
+        
+        Graph q = new Graph(adjMapQ, vLabelsQ, eLabelsQ);
+       
+        // ---D4--------
+        TIntObjectMap<TIntSet> adjMapD4 = new TIntObjectHashMap<TIntSet>();
+        TIntIntMap vLabelsD4;
+        TObjectIntMap<PairInt> eLabelsD4;
+        for (i = 0; i < nD4; ++i) {
+            adjMapD4.put(i, new TIntHashSet());
+        }
+        adjMapD4.get(0).add(1);
+        adjMapD4.get(0).add(2);
+        adjMapD4.get(0).add(3);
+        adjMapD4.get(0).add(4);
+        adjMapD4.get(1).add(0);
+        adjMapD4.get(2).add(0);
+        adjMapD4.get(3).add(0);
+        adjMapD4.get(4).add(0);
+        
+        vLabelsD4 = new TIntIntHashMap();
+        vLabelsD4.put(0, (int)'B');
+        vLabelsD4.put(1, (int)'A');
+        vLabelsD4.put(2, (int)'C');
+        vLabelsD4.put(3, (int)'D');
+        vLabelsD4.put(4, (int)'C');
+        
+        eLabelsD4 = new TObjectIntHashMap<PairInt>();
+        eLabelsD4.put(new PairInt(0, 1), (int)'a');
+        eLabelsD4.put(new PairInt(0, 2), (int)'c');
+        eLabelsD4.put(new PairInt(0, 3), (int)'b');
+        eLabelsD4.put(new PairInt(0, 4), (int)'a');
+        
+        Graph d4 = new Graph(adjMapD4, vLabelsD4, eLabelsD4);
+        
+        // ---D3--------
+        TIntObjectMap<TIntSet> adjMapD3 = new TIntObjectHashMap<TIntSet>();
+        TIntIntMap vLabelsD3;
+        TObjectIntMap<PairInt> eLabelsD3;
+        for (i = 0; i < nD3; ++i) {
+            adjMapD3.put(i, new TIntHashSet());
+        }
+        adjMapD3.get(0).add(1);
+        adjMapD3.get(1).add(0);
+        adjMapD3.get(1).add(2);
+        adjMapD3.get(1).add(3);
+        adjMapD3.get(2).add(1);
+        adjMapD3.get(2).add(3);
+        adjMapD3.get(2).add(4);
+        adjMapD3.get(3).add(1);
+        adjMapD3.get(3).add(2);
+        adjMapD3.get(4).add(2);
+        
+        vLabelsD3 = new TIntIntHashMap();
+        vLabelsD3.put(0, (int)'C');
+        vLabelsD3.put(1, (int)'A');
+        vLabelsD3.put(2, (int)'B');
+        vLabelsD3.put(3, (int)'C');
+        vLabelsD3.put(4, (int)'D');
+        
+        eLabelsD3 = new TObjectIntHashMap<PairInt>();
+        eLabelsD3.put(new PairInt(0, 1), (int)'a');
+        eLabelsD3.put(new PairInt(1, 2), (int)'a');
+        eLabelsD3.put(new PairInt(1, 3), (int)'c');
+        eLabelsD3.put(new PairInt(2, 3), (int)'c');
+        eLabelsD3.put(new PairInt(2, 4), (int)'b');
+        
+        Graph d3 = new Graph(adjMapD3, vLabelsD3, eLabelsD3);
+        
+        // ---D2--------
+        TIntObjectMap<TIntSet> adjMapD2 = new TIntObjectHashMap<TIntSet>();
+        TIntIntMap vLabelsD2;
+        TObjectIntMap<PairInt> eLabelsD2;
+        for (i = 0; i < nD2; ++i) {
+            adjMapD2.put(i, new TIntHashSet());
+        }
+        adjMapD2.get(0).add(1);
+        adjMapD2.get(0).add(2);
+        adjMapD2.get(0).add(3);
+        adjMapD2.get(1).add(0);
+        adjMapD2.get(1).add(3);
+        adjMapD2.get(2).add(0);
+        adjMapD2.get(2).add(3);
+        adjMapD2.get(3).add(0);
+        adjMapD2.get(3).add(1);
+        adjMapD2.get(3).add(2);
+        
+        vLabelsD2 = new TIntIntHashMap();
+        vLabelsD2.put(0, (int)'C');
+        vLabelsD2.put(1, (int)'D');
+        vLabelsD2.put(2, (int)'A');
+        vLabelsD2.put(3, (int)'B');
+        
+        eLabelsD2 = new TObjectIntHashMap<PairInt>();
+        eLabelsD2.put(new PairInt(0, 1), (int)'b');
+        eLabelsD2.put(new PairInt(0, 2), (int)'a');
+        eLabelsD2.put(new PairInt(0, 3), (int)'a');
+        eLabelsD2.put(new PairInt(1, 3), (int)'b');
+        eLabelsD2.put(new PairInt(2, 3), (int)'c');
+        
+        Graph d2 = new Graph(adjMapD2, vLabelsD2, eLabelsD2);
+        
+        // ---D1--------
+        TIntObjectMap<TIntSet> adjMapD1 = new TIntObjectHashMap<TIntSet>();
+        TIntIntMap vLabelsD1;
+        TObjectIntMap<PairInt> eLabelsD1;
+        for (i = 0; i < nD1; ++i) {
+            adjMapD1.put(i, new TIntHashSet());
+        }
+        adjMapD1.get(0).add(1);
+        adjMapD1.get(0).add(2);
+        adjMapD1.get(1).add(0);
+        adjMapD1.get(1).add(2);
+        adjMapD1.get(1).add(3);
+        adjMapD1.get(2).add(0);
+        adjMapD1.get(2).add(1);
+        adjMapD1.get(2).add(4);
+        adjMapD1.get(3).add(1);
+        adjMapD1.get(4).add(2);
+        
+        vLabelsD1 = new TIntIntHashMap();
+        vLabelsD1.put(0, (int)'A');
+        vLabelsD1.put(1, (int)'B');
+        vLabelsD1.put(2, (int)'C');
+        vLabelsD1.put(3, (int)'C');
+        vLabelsD1.put(4, (int)'D');
+        
+        eLabelsD1 = new TObjectIntHashMap<PairInt>();
+        eLabelsD1.put(new PairInt(0, 1), (int)'a');
+        eLabelsD1.put(new PairInt(0, 2), (int)'a');
+        eLabelsD1.put(new PairInt(1, 2), (int)'b');
+        eLabelsD1.put(new PairInt(1, 3), (int)'b');
+        eLabelsD1.put(new PairInt(2, 4), (int)'b');
+        
+        Graph d1 = new Graph(adjMapD1, vLabelsD1, eLabelsD1);
+        
+        outputDB.add(d1);
+        outputDB.add(d2);
+        outputDB.add(d3);
+        outputDB.add(d4);
+        
+        return q;
+    }
 }
