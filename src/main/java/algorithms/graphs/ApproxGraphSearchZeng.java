@@ -836,10 +836,7 @@ SDM, pp 154–163 (2011)
         
         PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));
         
-        BigInteger zero = BigInteger.ZERO;
-        BigInteger one = BigInteger.ONE;
-        BigInteger np = MiscMath0.factorialBigInteger(refinedAssign.length);
-        while (np.compareTo(zero) > 0) {
+        while (perm.hasNext()) {
             
             perm.getNext(assign);
                         
@@ -852,9 +849,7 @@ SDM, pp 154–163 (2011)
             if (tau < min) {
                 min = tau;
                 System.arraycopy(assign, 0, refinedAssign, 0, assign.length);
-            }
-            
-            np = np.subtract(one);            
+            }            
         }
         
         return min;

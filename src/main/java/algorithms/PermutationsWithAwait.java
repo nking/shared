@@ -76,6 +76,10 @@ public class PermutationsWithAwait {
         thread.start();
     }
     
+    public boolean hasNext() {
+        return !finished.get();
+    }
+    
     /**
      * get the next permutation of the original set
      * @param out an output array that will hold the results.  note that out.length
