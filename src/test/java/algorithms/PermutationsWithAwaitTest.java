@@ -42,10 +42,12 @@ public class PermutationsWithAwaitTest extends TestCase {
         }
         
         PermutationsWithAwait p = new PermutationsWithAwait(set);
+        assertTrue(p.hasNext());
         
         for (i = 0; i < np; ++i) {
             p.getNext(results[(int)i]);
         }
+        assertFalse(p.hasNext());
         
         //System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
         

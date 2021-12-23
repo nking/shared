@@ -76,6 +76,11 @@ public class PermutationsWithAwait {
         thread.start();
     }
     
+    /**
+     * check whether all permutations have been returned in getNext() invocations.
+     * @return true if all permutations have been returned in getNext() invocations,
+     * else false if there are more permutations to be returned by the getNext() argument.
+     */
     public boolean hasNext() {
         return !finished.get();
     }
