@@ -387,7 +387,7 @@ public class StarStructure {
         //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
         int mL1L2 = Math.max(pL1, pL2) - inters.length;
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
-        int dL1L2 = Math.abs(pL1 - pL2) + mL1L2;
+        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2;
         int editDist = t + dL1L2;
 
         return editDist;                

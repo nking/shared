@@ -4,12 +4,17 @@ import algorithms.PermutationsWithAwait;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,11 +204,24 @@ public class ApproxGraphSearchZeng {
     }
     
     /**
-     * NOT YET IMPLEMENTED.
-     * considering many algorithms still.
-     * 
-     * interesting:
+     * perform a lower-bound filter for sub-graph search, then an approx similarity
+     * sub-graph search if requested.
+     * sub-graph search retrieves all the super-graphs of a given query graph Q from a 
+       graph database db = (db_0, db_1, ...db_n-1).
+       It finds all the graphs db_i(i=0,1,2,…,m-1.lt.n-1) such that Q is a subgraph 
+       of db_i.  It also finds db_i that are subgraphs of Q.
+     * The method implements the description of the APPSUB algorithm from 
+     * Zeng et al. 2009.
+      <pre> 
+      Comparing Stars: On Approximating Graph Edit Distance
+       Zeng, Tung, Wang, Feng, & Zhou 2009, 
+       Proceedings of the VLDB Endowment, Volume 2, Issue 1,
+       August 2009 pp 25–36
+       https://doi.org/10.14778/1687627.1687631
+    </pre>
+     still browsing these for the sub-graph search after the lower bound filter.
      * <pre>
+     * 
      * inexact graph matching method with subgraph indexing:
      * T. E. Choe, H. Deng, F. Guo, M. W. Lee and N. Haering, 
      * "Semantic Video-to-Video Search Using Sub-graph Grouping and Matching," 
@@ -217,9 +235,7 @@ public class ApproxGraphSearchZeng {
      * In a variety of applications one wants to inspect the connectivity of a 
      * pair of nodes via a path of an arbitrary length [10, 16, 29] or with a 
      * bound on the number of hops.
-     * 
-     * browsing these:
-     * 
+     *      * 
      * Tu et al. 2020, "Inexact Attributed Subgraph Matching"
      * 
      * https://github.com/lihuiliullh/GFinder-Proj
@@ -251,43 +267,21 @@ SDM, pp 154–163 (2011)
 *      Zou,L.,Chen,L.,O ̈zsu,M.T.:Distance-join:Patternmatchqueryinalargegraphdatabase.PVLDB 2(1), 886–897 (2009)
 * 
      * </pre>
-     * 
-     retrieve all the super-graphs of a given query graph Q from a 
-       graph database D = (D_1,D_2,...D_n).
-       It finds all the graphs db_i(i=1,2,…,m.lt.n) such that Q is a subgraph 
-       of db_i.  It also finds db_i that are subgraphs of Q.
+  
      * @param q the query graph
      * @param db list of graphs in a database
-     * @param w graph edit distance threshold
+     * @param w graph edit distance threshold used in the search when comparing
+     * the query with each database graph.
+     * the total threshold for the lower bound is abs(|V_q|-|V_db_i|) + abs(|E_q|-|E_db_i|) + 2*w.
+     * @param useAsFilterWithoutOptimal if true, the algorithm will return
+     * db graphs that passed the bounds of graph edit distances within the 
+     * given threshold w and the algorithm will not execute the exponential
+     * optimal algorithm.  if false, the algorithm will run the filters
+     * and then the optimal graph search and return the results.
      * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
      */
-    public List<Graph> approxSubSearch(Graph q, List<Graph> db, int w) {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-    
-    /**
-     * filter out the graphs in db which have a larger edit distance from the
-     * query than expected by the lower bound on the edit distance plus the
-     * subgraph isomorphic edit distance.
-     * The method implements the description of the APPSUB algorithm from 
-     * Zeng et al. 2009.
-     * <pre> 
-     * Comparing Stars: On Approximating Graph Edit Distance
-       Zeng, Tung, Wang, Feng, & Zhou 2009, 
-       Proceedings of the VLDB Endowment, Volume 2, Issue 1,
-       August 2009 pp 25–36
-       https://doi.org/10.14778/1687627.1687631
-    </pre>
-     * The returned list of filtered graphs can be input for an
-     * approx subgraph search, subgraph similarity search,
-        exact subgraph search, inexact or error-correcting graph isomorphism
-        search, etc.
-     * @param q the query graph
-     * @param db list of graphs in a database
-     * @param w graph edit distance threshold
-     * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
-     */
-    public List<Graph> approxSubSearchFilter(Graph q, List<Graph> db, int w) {
+    public List<Result> approxSubSearch(Graph q, List<Graph> db, double w,
+        boolean useAsFilterWithoutOptimal) {
         
         /*
         AppSub inherently supports both two kinds of subgraph search, i.e., 
@@ -309,20 +303,15 @@ SDM, pp 154–163 (2011)
         Therefore if L′_m(g1, g2) > L + 2θ, g2 can be safely filtered.        
         */
         
-        List<Graph> results = new ArrayList<Graph>();
+        List<Result> results = new ArrayList<Result>();
         
         Graph dbi;
         StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);
         StarStructure[] sg1, sg2;
-        int[][] a1, a2;
         double[][] distM;
-        double lM, tau, rho, lambda;
-        int[] refinedAssign;
-        StarStructure s;
-        Graph g;
+        double lM, w2;
         Norm norm;
         boolean swappedSG;
-        int i, k, rIdx;
         for (int ii = 0; ii < db.size(); ++ii) {
             dbi = db.get(ii);
                         
@@ -334,13 +323,7 @@ SDM, pp 154–163 (2011)
             sg1 = norm.sg1;
             sg2 = norm.sg2;
             swappedSG = norm.swapped;
-            
-            //TODO: expect dbi > q for sub-graph searches?
-            //   if so, the re-ordering here is unnecessary
-            
-            a1 = createAdjacencyMatrix(sg1);
-            a2 = createAdjacencyMatrix(sg2);
-            
+                
             // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
             if (this.edgesAreLabeled) {
                 distM = StarStructure.createDistanceMatrixNoRelabeling(sg1, sg2);
@@ -353,26 +336,24 @@ SDM, pp 154–163 (2011)
             
             lM = lowerBoundEditDistance(sg1, sg2, mappingDist);
             
-            int l = Math.abs(q.eLabels.size() - dbi.eLabels.size()) + Math.abs(q.vLabels.size() - dbi.vLabels.size());
+            int l = Math.abs(q.eLabels.size() - dbi.eLabels.size()) 
+                + Math.abs(q.vLabels.size() - dbi.vLabels.size());
+            
+            w2 = l + 2*w;
+            System.out.printf("i=%d lM=%.3f w2=%.3f\n", ii, lM, w2);
             
             //L′_m(g1, g2) > L + 2θ can filter out g2
-            if (lM > (l + 2*w)) {
+            if (lM > w2) {
                 continue;
             }
             
-            results.add(dbi);
+            if (useAsFilterWithoutOptimal) {
+                results.add(new Result(ii, Result.BOUND.LOWER, assign, lM));
+                continue;
+            }
             
-            // return filtered results for user to then make
-            //   approx subgraph search, subgraph similarity search,
-            //   exact subgraph search,
-            //   inexact or error-correcting graph isomorphisms
+            throw new UnsupportedOperationException("not yet implemented");
             
-            // the subgraph isomorphism problem is NP-complete
-            
-            //TODO: follow-up on edge relaxation in Grafil ([35], Yan et al.)
-            //    Yan, F. Zhu, P. S. Yu, and J. Han. 
-            // Feature-based similarity search in graph structures. ACM TODS, 31(4), 2006
-              
         } // end loop over db graphs
         
         return results;        
@@ -883,10 +864,10 @@ SDM, pp 154–163 (2011)
             System.arraycopy(sg2, 0, _sg2, 0, sg2.length);
 
             for (i = 0; i < k; ++i) {
-                rIdx = sg1.length - 1 + i;
+                rIdx = sg2.length + i;
                 s = new StarStructure(rIdx, StarStructure.eps,
                     new int[0], new int[0], new int[0]);
-                _sg2[sg2.length + i] = s;
+                _sg2[rIdx] = s;
             }
             sg2 = _sg2;
         }
@@ -937,7 +918,55 @@ SDM, pp 154–163 (2011)
             this.vLabels = vLabels;
             this.eLabels = eLabels;
             this.adjMap = adjMap;
-        }        
+        }
+        
+        private static TObjectIntMap<PairInt> copy(TObjectIntMap<PairInt> a) {
+            TObjectIntMap<PairInt> c = new TObjectIntHashMap<PairInt>();
+
+            TObjectIntIterator<PairInt> iter = a.iterator();
+            PairInt p;
+            int v;
+            while (iter.hasNext()) {
+                iter.advance();
+                p = iter.key();
+                v = iter.value();
+                c.put(p.copy(), v);
+            }
+
+            return c;
+        }
+        
+        public static Graph copy(Graph g) {
+            return new Graph(Graph.copy(g.adjMap), Graph.copy(g.vLabels),
+                Graph.copy(g.eLabels));
+        }
+        
+        private static TIntObjectMap<TIntSet> copy(TIntObjectMap<TIntSet> a) {
+            TIntObjectMap<TIntSet> c = new TIntObjectHashMap<TIntSet>();
+
+            TIntObjectIterator<TIntSet> iter = a.iterator();
+            int k;
+            TIntSet v;
+            while (iter.hasNext()) {
+                iter.advance();
+                k = iter.key();
+                v = iter.value();
+                c.put(k, new TIntHashSet(v));
+            }
+
+            return c;
+        }
+
+        private static TIntIntMap copy(TIntIntMap a) {
+            TIntIntMap c = new TIntIntHashMap();
+
+            TIntIntIterator iter = a.iterator();
+            while (iter.hasNext()) {
+                iter.advance();
+                c.put(iter.key(), iter.value());
+            }
+            return c;
+        }
     }
     
     public static class Result {

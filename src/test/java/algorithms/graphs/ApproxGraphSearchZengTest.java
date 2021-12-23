@@ -82,7 +82,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
     }
 
-    public void estMappingDistance() {
+    public void testMappingDistance() {
         List<Graph> dbs = new ArrayList<Graph>();
         Graph q = ApproxGraphSearchZengTest.getG0(dbs);
         int nV = 14; // dB has 15, q has 14
@@ -264,7 +264,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         System.out.printf("V and E labeled: L_M=%.4f\n", lM);        
     }
     
-    public void estSuboptimalCP() {
+    public void testSuboptimalCP() {
         //Table 1 of Justice & Hero
         
         int eps = Integer.MIN_VALUE;
@@ -474,11 +474,58 @@ public class ApproxGraphSearchZengTest extends TestCase {
         //L_M <= lambda <= rho <= tau
     }
 
-    public void testApproxSubSearch() {
+    public void testApproxSubSearch() throws Exception {
         
-    }
-
-    public void testApproxSubSearchFilter() {
+        System.out.println("testApproxSubSearch()");
+                
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG1(dbs);
+        
+        // adding a copy of D3 Figure 1 but with 2 extra vertexes and labels.
+        // 7! = 5040
+        Graph d3c = Graph.copy(dbs.get(2));
+        d3c.adjMap.get(4).add(5);
+        d3c.adjMap.put(5, new TIntHashSet());
+        d3c.adjMap.get(5).add(4);
+        d3c.adjMap.get(5).add(6);
+        d3c.adjMap.put(6, new TIntHashSet());
+        d3c.adjMap.get(6).add(5);
+        d3c.vLabels.put(5, (int)'E');
+        d3c.vLabels.put(6, (int)'F');
+        d3c.eLabels.put(new PairInt(4, 5), 'd');
+        d3c.eLabels.put(new PairInt(5, 6), 'e');
+        dbs.add(d3c);
+        
+        // adding q to the database graph also to check that a perfect match is also found and has edit dist = 0.
+        dbs.add(0, q);
+        
+        boolean useAsFilterWithoutOptimal = true;
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        ags.setEdgesAreLabeled(true);
+        
+        double w = 0.5;
+        
+        List<Result> results = ags.approxSubSearch(q, dbs, w, 
+            useAsFilterWithoutOptimal);
+        
+        // expecting to have kept 0, 3, 5
+        
+        assertEquals(3, results.size());
+        
+        assertEquals(0, results.get(0).dbGraphIndex);
+        assertEquals(3, results.get(1).dbGraphIndex);
+        assertEquals(5, results.get(2).dbGraphIndex);
+        
+        int[] assignExpected0 = new int[]{0, 1, 2, 3, 4};
+        int[] assignExpected3 = new int[]{4, 2, 1, 0, 3};
+        int[] assignExpected5 = new int[]{4, 2, 1, 0, 3, 5, 6};
+        //                                3, 2, 1, 4, 0, 5, 6
+        
+        for (int i = 0; i < results.size(); ++i) {
+            System.out.printf("result(%d=dbi%d) assign=%s\n", 
+                i, results.get(i).dbGraphIndex, Arrays.toString(results.get(i).assignment));
+        }
+       // assertTrue(Arrays.equals(assignExpected, assignResult));
         
     }
 
