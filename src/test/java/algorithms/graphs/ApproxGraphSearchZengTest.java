@@ -4,7 +4,6 @@ import algorithms.graphs.ApproxGraphSearchZeng.Graph;
 import algorithms.graphs.ApproxGraphSearchZeng.Norm;
 import algorithms.graphs.ApproxGraphSearchZeng.Result;
 import algorithms.matrix.MatrixUtil;
-import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
@@ -20,10 +19,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.NotConvergedException;
 
 /**
  *
