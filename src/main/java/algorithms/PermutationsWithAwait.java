@@ -27,6 +27,9 @@ public class PermutationsWithAwait {
      */
     private final int[] x;
     
+    /**
+     * becomes true when the run-loop has ended for the permuter thread
+     */
     private AtomicBoolean finished;
     
     //private final BigInteger nPermutations;
@@ -150,7 +153,6 @@ public class PermutationsWithAwait {
                 }
             }
             permDone.set(true);
-            System.out.println("finished permutations, exiting runloop");
         }
     }
 }
