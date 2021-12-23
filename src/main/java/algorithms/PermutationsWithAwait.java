@@ -2,6 +2,7 @@ package algorithms;
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * permute the given set of numbers in a thread that waits for the getNext()
@@ -25,6 +26,8 @@ public class PermutationsWithAwait {
      * the current permutation
      */
     private final int[] x;
+    
+    private AtomicBoolean finished;
     
     //private final BigInteger nPermutations;
     
@@ -63,8 +66,10 @@ public class PermutationsWithAwait {
         //nCurrent = BigInteger.ONE;
         
         availableItem.release();
+        
+        finished = new AtomicBoolean(false);
                 
-        Thread thread = new Thread(new Permuter(seq));
+        Thread thread = new Thread(new Permuter(seq, finished));
         thread.start();
     }
     
@@ -79,6 +84,10 @@ public class PermutationsWithAwait {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
         
+        if (finished.get()) {
+            return;
+        }
+                
         availableItem.acquire();
         
         System.arraycopy(x, 0, out, 0, out.length);
@@ -89,8 +98,10 @@ public class PermutationsWithAwait {
     //TODO: consider using Callable so run can throw an exception
     private class Permuter implements Runnable {
         private final int[] s;
-        Permuter(int[] seq) {
+        final AtomicBoolean permDone;
+        Permuter(int[] seq, AtomicBoolean permDone) {
            this.s = Arrays.copyOf(seq, seq.length);
+           this.permDone = permDone;
         }
 
         @Override
@@ -138,6 +149,8 @@ public class PermutationsWithAwait {
                     i++;
                 }
             }
+            permDone.set(true);
+            System.out.println("finished permutations, exiting runloop");
         }
     }
 }
