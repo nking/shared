@@ -77,7 +77,9 @@ public class ApproxGraphSearchZeng {
     * This method implements Algorithm 3 of the paper.
      * @param q the query graph
      * @param db list of graphs in a database
-     * @param w graph edit distance threshold for the matches in the search
+     * @param w graph edit distance threshold for the matches in the search.
+     * the lower bound, sub-optimal, refined sub-optimal, and optimal
+     * costs are less than or equal to w.
      * @param useAsFilterWithoutOptimal if true, the algorithm will return
      * db graphs that passed the bounds of graph edit distances within the 
      * given threshold w and the algorithm will not execute the exponential
@@ -87,7 +89,7 @@ public class ApproxGraphSearchZeng {
      * within a graph edit distance threshold w
      * @throws java.lang.InterruptedException
      */
-    public List<Result> approxFullSearch(Graph q, List<Graph> db, int w,
+    public List<Result> approxFullSearch(Graph q, List<Graph> db, double w,
          boolean useAsFilterWithoutOptimal) throws InterruptedException {
         
         /*
@@ -178,7 +180,7 @@ public class ApproxGraphSearchZeng {
                 continue;
             }
            
-            if (useAsFilterWithoutOptimal){
+            if (!useAsFilterWithoutOptimal){
                 // exponential runtime complexity:
                 if (swappedSG) {
                     lambda = optimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, a1, a2, refinedAssign, tau);
@@ -186,7 +188,7 @@ public class ApproxGraphSearchZeng {
                     lambda = optimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, a1, a2, refinedAssign, tau);
                 }
                 if (lambda <= w) {
-                    results.add(new Result(ii, Result.BOUND.OPTIMAL, assign, lambda));
+                    results.add(new Result(ii, Result.BOUND.OPTIMAL, refinedAssign, lambda));
                 }
             } else {
                 results.add(new Result(ii, Result.BOUND.LOWER, assign, lM));
@@ -756,7 +758,7 @@ SDM, pp 154–163 (2011)
              V1_i3 <—> V2_j2
            consistent hanges need to be made to the reverse assign array also.
         */
-                 
+                         
         int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);
         TIntIntMap revAssign = reverseAssignment(assign);
         double min = tau;
@@ -834,12 +836,13 @@ SDM, pp 154–163 (2011)
         
         PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));
         
+        BigInteger zero = BigInteger.ZERO;
+        BigInteger one = BigInteger.ONE;
         BigInteger np = MiscMath0.factorialBigInteger(refinedAssign.length);
-        
-        while (np.compareTo(BigInteger.ZERO) > 0) {
+        while (np.compareTo(zero) > 0) {
             
             perm.getNext(assign);
-            
+                        
             if (this.edgesAreLabeled) {
                 tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);
             } else {
@@ -851,7 +854,7 @@ SDM, pp 154–163 (2011)
                 System.arraycopy(assign, 0, refinedAssign, 0, assign.length);
             }
             
-            np = np.subtract(BigInteger.ONE);
+            np = np.subtract(one);            
         }
         
         return min;

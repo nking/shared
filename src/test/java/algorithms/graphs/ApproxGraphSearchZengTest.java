@@ -2,6 +2,7 @@ package algorithms.graphs;
 
 import algorithms.graphs.ApproxGraphSearchZeng.Graph;
 import algorithms.graphs.ApproxGraphSearchZeng.Norm;
+import algorithms.graphs.ApproxGraphSearchZeng.Result;
 import algorithms.matrix.MatrixUtil;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
@@ -56,9 +57,31 @@ public class ApproxGraphSearchZengTest extends TestCase {
     }
     
     public void testApproxFullSearch() throws Exception {
+                
+        List<Graph> dbs = new ArrayList<Graph>();
+        Graph q = ApproxGraphSearchZengTest.getG1(dbs);
         
-        //L_M <= lambda <= rho <= tau
+        boolean useAsFilterWithoutOptimal = false;
+        ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
+        ags.setEdgesAreLabeled(true);
         
+        
+        double w = 1.5;
+        
+        List<Result> results = ags.approxFullSearch(q, dbs, w, 
+            useAsFilterWithoutOptimal);
+        
+        assertEquals(1, results.size());
+        
+        assertEquals(2, results.get(0).dbGraphIndex);
+        
+        int[] assignExpected = new int[]{4, 2, 1, 0, 3};
+        
+        int[] assignResult = results.get(0).assignment;
+        
+        System.out.printf("result assign=%s\n", Arrays.toString(assignResult));
+        
+        assertTrue(Arrays.equals(assignExpected, assignResult));
         
     }
 
@@ -394,12 +417,12 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
         ApproxGraphSearchZeng ags = new ApproxGraphSearchZeng();
         
-        // q and db.get(2) should be closest.
-        // q and db.get(3) quick look suggests might be the furthest
+        // q and db.get(3) should be closest.
         
         int i, mappingDist;
         double lM, tau, rho, lambda;
         
+        List<Result> results;
         double[][] distM;
         boolean swapped;
         int[][] a1, a2;
@@ -408,8 +431,8 @@ public class ApproxGraphSearchZengTest extends TestCase {
         Graph g;
         System.out.println("expecting L_M <= lambda <= rho <= tau");
         //L_M <= lambda <= rho <= tau
-        for (i = 0; i < dbs.size(); ++i) {
-            for (boolean useEdges : new boolean[]{false, true}) {
+        for (boolean useEdges : new boolean[]{false, true}) {
+            for (i = 0; i < dbs.size(); ++i) {
                 g = dbs.get(i);
 
                 stars = StarStructure.createStarStructureMultiset(q);
@@ -447,7 +470,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
 
                 System.out.printf("normalized, edges=%b, i=%d:\n   lM(lower)=%.2f, "
                     + "lambda(opt)=%.2f, rho(refSubOpt)=%.2f, tau(subOpt)=%.2f\n", 
-                    useEdges, i, lM, lambda, rho, tau);                
+                    useEdges, i, lM, lambda, rho, tau);  
             }
         }
         System.out.println("expecting L_M <= lambda <= rho <= tau");
