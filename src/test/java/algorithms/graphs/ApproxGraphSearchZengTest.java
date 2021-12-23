@@ -525,7 +525,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
             System.out.printf("result(%d=dbi%d) assign=%s\n", 
                 i, results.get(i).dbGraphIndex, Arrays.toString(results.get(i).assignment));
         }
-       // assertTrue(Arrays.equals(assignExpected, assignResult));
+        // assertTrue(Arrays.equals(assignExpected, assignResult));
         
     }
 

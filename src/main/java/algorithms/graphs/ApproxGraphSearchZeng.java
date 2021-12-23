@@ -219,6 +219,8 @@ public class ApproxGraphSearchZeng {
        August 2009 pp 25–36
        https://doi.org/10.14778/1687627.1687631
     </pre>
+     from https://en.wikipedia.org/wiki/Subgraph_isomorphism_problem
+     Subgraph isomorphism is a generalization of both the maximum clique problem and the problem of testing whether a graph contains a Hamiltonian cycle, and is therefore NP-complete. However certain other cases of subgraph isomorphism may be solved in polynomial time.
      still browsing these for the sub-graph search after the lower bound filter.
      * <pre>
      * 
@@ -352,7 +354,10 @@ SDM, pp 154–163 (2011)
                 continue;
             }
             
-            throw new UnsupportedOperationException("not yet implemented");
+            throw new UnsupportedOperationException("not yet implemented.  "
+                + " meanwhile, considering the following implemented java projects: "
+                + " https://github.com/jgrapht/jgrapht/blob/master/docs/guide-templates/VertexAndEdgeTypes.md"
+                + " https://github.com/pmoris/miles-subgraph-miner");
             
         } // end loop over db graphs
         

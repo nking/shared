@@ -17,6 +17,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
    The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
    by Goetz et al.
    </pre>
+   <pre>
+   Example invocation and an outline of the internal use of the 2 semaphores and 1 AtomicBoolean:
+       int[] seq = new int[]{1,2,3}; int[] perm = new int[3];
+       PermutationsWithAwait p = new PermutationsWithAwait(seq);
+       p.getNext(perm);
+      
+       invokes these operations:
+         constructor: availableItem = new Semaphore(0);
+                      computationLock = new Semaphore(1);
+                      computationLock.acquire(); //Acquires a permit, returns immed if avail and decr nAvailPermits by 1
+                      availableItem.release(); //Releases a permit, incr nAvailPermits by +1
+                      finished = new AtomicBoolean(false);
+         PermThread:  computationLock.acquire(); // wait for computationLock.release() or thread interruption by another thread
+         getNext():   if finished==true, return
+                      availableItem.acquire(); // acquire or wait for availableItem.release() or thread interruption by another thread
+                      copy data to out var
+                      computationLock.release(); // Releases a permit, incr nAvailPermits by +1
+         PermThread:  computationLock is acquired now that permit is available
+                      data computation
+                      availableItem.release(); // Releases a permit, incr nAvailPermits by +1
+   </pre>
  */
 public class PermutationsWithAwait {
     
@@ -136,6 +157,8 @@ public class PermutationsWithAwait {
                     }
                                         
                     try {
+                        //Acquires a permit from this semaphore, blocking until one is
+                        //available, or the thread is {@linkplain Thread#interrupt interrupted}.
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
@@ -146,6 +169,10 @@ public class PermutationsWithAwait {
                     
                     //nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
+                    //Releases a permit, increasing the number of available permits by
+                    //one to the semaphore.  If any threads are trying to acquire a permit, then one is
+                    //selected and given the permit that was just released.  That thread
+                    //is (re)enabled for thread scheduling purposes.
                     availableItem.release();
                                         
                     //Swap has occurred ending the for-loop. Simulate the increment 
