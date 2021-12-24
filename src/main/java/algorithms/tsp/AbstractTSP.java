@@ -359,7 +359,7 @@ public abstract class AbstractTSP {
         int si;
         for (i = 0; i < base10Nodes.length; ++i) {
             si = base10Nodes[i];
-            assert (si != startNode);
+//            assert (si != startNode);
             path2 = setBits(si, path2, nPathNodesSet + i);
         }
         return path2;
@@ -500,7 +500,7 @@ public abstract class AbstractTSP {
     }
 
     protected void compareToMin(long path, double sum) {
-        assert (numberOfSetNodes(path) == (dist.length - 1));
+//        assert (numberOfSetNodes(path) == (dist.length - 1));
 
         int node1 = getBase10NodeIndex(0, path);
         int noden1 = getBase10NodeIndex(dist.length - 2, path);

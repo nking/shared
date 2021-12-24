@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
        invokes these operations:
          constructor: availableItem = new Semaphore(0);
                       computationLock = new Semaphore(1);
-                      computationLock.acquire(); //Acquires a permit, returns immed if avail and decr nAvailPermits by 1
+                      computationLock.acquire(); //Acquires a permit, returns immed
                       availableItem.release(); //Releases a permit, incr nAvailPermits by +1
                       finished = new AtomicBoolean(false);
          PermThread:  computationLock.acquire(); // wait for computationLock.release() or thread interruption by another thread
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
                       availableItem.acquire(); // acquire or wait for availableItem.release() or thread interruption by another thread
                       copy data to out var
                       computationLock.release(); // Releases a permit, incr nAvailPermits by +1
-         PermThread:  computationLock is acquired now that permit is available
+         PermThread:  computationLock.acquire() // acquire or wait for computationLock.release() or thread interruption by another thread
                       data computation
                       availableItem.release(); // Releases a permit, incr nAvailPermits by +1
                       if permutations are done, sets finished = true
@@ -140,7 +140,7 @@ public class PermutationsWithAwait {
 
         @Override
         public void run() {
-            int n = s.length;
+            final int n = s.length;
             int[] c = new int[n];
             int i = 0;
             int swap;
@@ -159,7 +159,7 @@ public class PermutationsWithAwait {
                                         
                     try {
                         //Acquires a permit from this semaphore, blocking until one is
-                        //available, or the thread is {@linkplain Thread#interrupt interrupted}.
+                        //available, or the thread is interrupted.
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
@@ -182,6 +182,7 @@ public class PermutationsWithAwait {
                     //Simulate recursive call reaching the base case by bringing the 
                     //pointer to the base case analog in the array
                     i = 0;
+                    
                 } else {
                     //Calling generate(i+1, A) has ended as the for-loop terminated. 
                     //Reset the state and simulate popping the stack by incrementing the pointer.
