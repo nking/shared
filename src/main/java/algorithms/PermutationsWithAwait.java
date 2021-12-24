@@ -2,6 +2,7 @@ package algorithms;
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
          PermThread:  computationLock is acquired now that permit is available
                       data computation
                       availableItem.release(); // Releases a permit, incr nAvailPermits by +1
+                      if permutations are done, sets finished = true
    </pre>
  */
 public class PermutationsWithAwait {
@@ -120,11 +122,10 @@ public class PermutationsWithAwait {
         if (finished.get()) {
             return;
         }
-                
-        availableItem.acquire();
+        availableItem.tryAcquire(2, TimeUnit.SECONDS);
         
         System.arraycopy(x, 0, out, 0, out.length);
-        
+       
         computationLock.release();        
     }
     
