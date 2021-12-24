@@ -354,10 +354,12 @@ SDM, pp 154–163 (2011)
                 continue;
             }
             
-            throw new UnsupportedOperationException("not yet implemented.  "
+            throw new UnsupportedOperationException("the filter is implemented, "
+                + "but the approx subgraph search is not yet implemented.  "
                 + " meanwhile, considering the following implemented java projects: "
                 + " https://github.com/jgrapht/jgrapht/blob/master/docs/guide-templates/VertexAndEdgeTypes.md"
-                + " https://github.com/pmoris/miles-subgraph-miner");
+                + " https://github.com/pmoris/miles-subgraph-miner"
+                + " There are C++ approx subgraph search implementations for large graphs also.");
             
         } // end loop over db graphs
         
