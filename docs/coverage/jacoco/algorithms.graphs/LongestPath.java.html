@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LongestPath.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">LongestPath.java</span></div><h1>LongestPath.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TObjectDoubleIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
+
+/**
+ * In graph theory and theoretical computer science, the longest path problem 
+ is the problem of finding a simple path of maximum length in a given graph. 
+ A path is called simple if it does not have any repeated vertices; the length 
+ of a path may either be measured by its number of edges, or (in weighted graphs) 
+ by the sum of the weights of its edges.
+
+ The problem is NP-hard and the decision version of the problem, which asks 
+ whether a path exists of at least some given length, is NP-complete.
+
+there is  a linear time approx solution for directed acyclic graphs, which has 
+important applications in finding the critical path in scheduling problems.
+
+proof of NP-hardness:
+      reduction from Hamiltonian path problem (i.e. a cycle that includes all vertices once).
+      Decision version: if input graph G has a path of k or more edges.
+      
+ * @author nichole
+ */
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">public class LongestPath {</span>
+    
+    /**
+     * given a DAG, find the longest simple path of maximum length where lengths
+     * are given by the edge weights in graph g.
+     * &lt;pre&gt;
+     * https://en.m.wikipedia.org/wiki/Longest_path_problem
+     * &lt;/pre&gt;
+     * runtime complexity is O(|V| + |E|).
+     *
+     * @param g input weighted DAG where key = a directed edge of vertexes (u,v)
+     * and key = weight of the key edge where the weights are non-negative).
+     * @return vertex indexes of longest path through the DAG.
+     */
+    public static int[] solve(TObjectDoubleMap&lt;PairInt&gt; g) {
+        // convert g to an adjacency list where every vertex has an entry even if empty.
+        // key = vertex
+<span class="fc" id="L52">        SimpleLinkedListNode[] nodes = convert(g);</span>
+       
+        //O(V + E)
+<span class="fc" id="L55">        TopologicalSort ts = new TopologicalSort(nodes);</span>
+                
+<span class="fc" id="L57">        int[] tsIdxs = ts.sort();</span>
+        
+<span class="fc" id="L59">        return solve(g, nodes, tsIdxs, tsIdxs[0]);</span>
+    }
+    
+    /**
+     * given a DAG, find the longest simple path of maximum length from the
+     * given start vertex to any other vertex.
+     * &lt;pre&gt;
+     * https://en.m.wikipedia.org/wiki/Longest_path_problem
+     * &lt;/pre&gt;
+     * runtime complexity is O(|V| + |E|)
+     *
+     * @param g input weighted DAG where key = a directed edge of vertexes (u,v)
+     * and key = weight of the key edge where the weights are non-negative).
+     * @param srcIdx the graph vertex index for the start (a.k.a. source) node.
+     * @return vertex indexes of longest path through the DAG.
+     */
+    public static int[] solve(TObjectDoubleMap&lt;PairInt&gt; g, int srcIdx) {
+        
+        // convert g to an adjacency list where every vertex has an entry even if empty.
+        // key = vertex
+<span class="fc" id="L79">        SimpleLinkedListNode[] nodes = convert(g);</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (nodes.length &lt;= srcIdx) {</span>
+<span class="nc" id="L81">            throw new IllegalArgumentException(&quot;index srcIdx was not found in g&quot;);</span>
+        }
+        
+        //O(V + E)
+<span class="fc" id="L85">        TopologicalSort ts = new TopologicalSort(nodes);</span>
+                
+<span class="fc" id="L87">        int[] tsIdxs = ts.sort();</span>
+        
+<span class="fc" id="L89">        return solve(g, nodes, tsIdxs, srcIdx);</span>
+    }
+    
+    /**
+     * given a DAG, find the longest simple path of maximum length from the
+     * given start vertex to any other vertex.
+     * &lt;pre&gt;
+     * https://en.m.wikipedia.org/wiki/Longest_path_problem
+     * &lt;/pre&gt;
+     *
+     * @param g input weighted DAG where key = a directed edge of vertexes (u,v)
+     * and key = weight of the key edge where the weights are non-negative).
+     * @param nodes an adjacency list extracted from graph g.
+     * @param tsIdxs the topologically sorted vertexes of graph g.
+     * @param srcIdx the graph vertex index for the start (a.k.a. source) node.
+     * @return vertex indexes of longest path through the DAG.
+     */
+    static int[] solve(TObjectDoubleMap&lt;PairInt&gt; g, 
+        SimpleLinkedListNode[] nodes, int[] tsIdxs, int srcIdx) {
+        
+        /*
+        Find a topological ordering of the given DAG.
+          For each vertex v of the DAG, in the topological ordering,
+             compute the length of the longest path ending at v by looking at its
+             incoming neighbors and adding one to the maximum length recorded for
+             those neighbors.
+             If v has no incoming neighbors, set the length of the longest path
+             ending at v to zero. In either case, record this number so that
+             later steps of the algorithm can access it.
+         Once this has been done, the longest path in the whole DAG may be obtained
+             by starting at the vertex v with the largest recorded value,
+             then repeatedly stepping backwards to its incoming neighbor with the
+             largest recorded value, and reversing the sequence of vertices found in this way.
+        */
+        
+        
+        // find srcIdx in tsIdxs
+<span class="fc" id="L126">        int sIdx = -1;</span>
+        int i;
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        for (i = 0; i &lt; tsIdxs.length; ++i) {</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            if (tsIdxs[i] == srcIdx) {</span>
+<span class="fc" id="L130">                sIdx = i;</span>
+<span class="fc" id="L131">                break;</span>
+            }
+        }
+        //System.out.printf(&quot;srcIdx=%d, sIdx=%d, ts=%s\n&quot;, srcIdx, sIdx, Arrays.toString(tsIdxs));
+<span class="pc bpc" id="L135" title="3 of 4 branches missed.">        assert(sIdx &gt; -1);</span>
+        
+<span class="fc" id="L137">        double[] dist = new double[nodes.length];</span>
+<span class="fc" id="L138">        int[] prev = new int[nodes.length];</span>
+<span class="fc" id="L139">        Arrays.fill(prev, -1);</span>
+        
+        // for pred, fill in the map as progress from v 
+<span class="fc" id="L142">        TIntObjectMap&lt;TIntSet&gt; prevMap = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        
+<span class="fc" id="L144">        double maxDistS = Double.NEGATIVE_INFINITY, distV, wUV, d;</span>
+<span class="fc" id="L145">        int maxDistIdx = -1;</span>
+        SimpleLinkedListNode nhbr;
+        int v, v2, u;
+        TIntSet set;
+        TIntIterator iter;
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        for (i = sIdx; i &lt; tsIdxs.length; ++i) {</span>
+            
+<span class="fc" id="L152">            v = tsIdxs[i];</span>
+            
+            // add u to prevMap for the next v in tsIdxs to use
+<span class="fc" id="L155">            nhbr = nodes[v];</span>
+<span class="fc bfc" id="L156" title="All 4 branches covered.">            while (nhbr != null &amp;&amp; nhbr.getKey() != -1) {</span>
+<span class="fc" id="L157">                v2 = nhbr.getKey();</span>
+<span class="fc" id="L158">                set = prevMap.get(v2);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                if (set == null) {</span>
+<span class="fc" id="L160">                    set = new TIntHashSet();</span>
+<span class="fc" id="L161">                    prevMap.put(v2, set);</span>
+                }
+<span class="fc" id="L163">                set.add(v);</span>
+<span class="fc" id="L164">                nhbr = nhbr.getNext();</span>
+            }
+            
+<span class="fc" id="L167">            distV = Double.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L168">            set = prevMap.get(v);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (set != null) {</span>
+<span class="fc" id="L170">                iter = set.iterator();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L172">                    u = iter.next();</span>
+<span class="fc" id="L173">                    wUV = g.get(new PairInt(u, v));</span>
+<span class="pc bpc" id="L174" title="3 of 4 branches missed.">                    assert(g.containsKey(new PairInt(u, v)));</span>
+<span class="fc" id="L175">                    d = dist[u] + wUV;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">                    if (d &gt; distV) {</span>
+<span class="fc" id="L177">                        distV = d;</span>
+<span class="fc" id="L178">                        prev[v] = u;</span>
+                    }
+                }
+            }
+            
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (distV == Double.NEGATIVE_INFINITY) {</span>
+<span class="fc" id="L184">                distV = 0;</span>
+            }
+<span class="fc" id="L186">            dist[v] = distV;</span>
+            
+<span class="fc bfc" id="L188" title="All 2 branches covered.">            if (distV &gt; maxDistS) {</span>
+<span class="fc" id="L189">                maxDistS = distV;</span>
+<span class="fc" id="L190">                maxDistIdx = v;</span>
+            }
+        }
+        
+        //System.out.printf(&quot;src=%d  maxDist=%.3f  maxDistIdx=%d\n&quot;, srcIdx, maxDistS, maxDistIdx);
+        //System.out.printf(&quot;dist=%s\n&quot;, FormatArray.toString(dist, &quot;%.3f&quot;));
+        //System.out.printf(&quot;pred=%s\n&quot;, Arrays.toString(prev));
+        
+        // back track from maxS to S then reverse the nodes and return that
+<span class="fc" id="L199">        TIntList path = new TIntArrayList();</span>
+<span class="fc" id="L200">        int idx = maxDistIdx;//4-&gt;3-&gt;7</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        while (idx &gt; -1) {</span>
+<span class="fc" id="L202">            path.add(idx);</span>
+<span class="fc" id="L203">            idx = prev[idx];</span>
+        }
+<span class="fc" id="L205">        path.reverse();</span>
+<span class="fc" id="L206">        return path.toArray();</span>
+    }
+
+    static SimpleLinkedListNode[] convert(TObjectDoubleMap&lt;PairInt&gt; g) {
+        
+        PairInt p;
+        
+        // count vertexes
+<span class="fc" id="L214">        TIntSet vs = new TIntHashSet();</span>
+<span class="fc" id="L215">        TObjectDoubleIterator&lt;PairInt&gt; iter = g.iterator();</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L217">            iter.advance();</span>
+<span class="fc" id="L218">            p = iter.key();</span>
+<span class="fc" id="L219">            vs.add(p.getX());</span>
+<span class="fc" id="L220">            vs.add(p.getY());</span>
+        }
+        
+<span class="fc" id="L223">        int n = vs.size();</span>
+        int i;
+        // initialize output
+<span class="fc" id="L226">        SimpleLinkedListNode[] nodes = new SimpleLinkedListNode[n];</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L228">            nodes[i] = new SimpleLinkedListNode();</span>
+        }
+        
+        SimpleLinkedListNode node;
+<span class="fc" id="L232">        iter = g.iterator();</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L234">            iter.advance();</span>
+<span class="fc" id="L235">            p = iter.key();</span>
+<span class="fc" id="L236">            nodes[p.getX()].insert(p.getY());</span>
+        }
+        
+<span class="fc" id="L239">        return nodes;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

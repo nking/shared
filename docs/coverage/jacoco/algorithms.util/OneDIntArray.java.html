@@ -10,9 +10,9 @@ import java.util.Arrays;
  */
 public class OneDIntArray {
     public int[] a;
-<span class="nc" id="L13">    public OneDIntArray(int[] t) {</span>
-<span class="nc" id="L14">        a = t;</span>
-<span class="nc" id="L15">    }</span>
+<span class="fc" id="L13">    public OneDIntArray(int[] t) {</span>
+<span class="fc" id="L14">        a = t;</span>
+<span class="fc" id="L15">    }</span>
     
     @Override
     public boolean equals(Object obj) {
@@ -28,13 +28,13 @@ public class OneDIntArray {
     @Override
     public int hashCode() {
         
-<span class="nc" id="L31">        int hash = fnvHashCode();</span>
+<span class="fc" id="L31">        int hash = fnvHashCode();</span>
 
-<span class="nc" id="L33">        return hash;</span>
+<span class="fc" id="L33">        return hash;</span>
     }
 
-<span class="nc" id="L36">    protected static int fnv321aInit = 0x811c9dc5;</span>
-<span class="nc" id="L37">    protected static int fnv32Prime = 0x01000193;</span>
+<span class="fc" id="L36">    protected static int fnv321aInit = 0x811c9dc5;</span>
+<span class="fc" id="L37">    protected static int fnv32Prime = 0x01000193;</span>
 
     protected int fnvHashCode() {
 
@@ -48,18 +48,18 @@ public class OneDIntArray {
          * Public domain:  http://www.isthe.com/chongo/src/fnv/hash_32a.c
          */
 
-<span class="nc" id="L51">        int sum = fnv321aInit;</span>
+<span class="fc" id="L51">        int sum = fnv321aInit;</span>
         
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
 
             // xor the bottom with the current octet.
-<span class="nc" id="L56">            sum ^= a[i];</span>
+<span class="fc" id="L56">            sum ^= a[i];</span>
 
             // multiply by the 32 bit FNV magic prime mod 2^32
-<span class="nc" id="L59">            sum *= fnv32Prime;</span>
+<span class="fc" id="L59">            sum *= fnv32Prime;</span>
         }
         
-<span class="nc" id="L62">        return sum;</span>
+<span class="fc" id="L62">        return sum;</span>
     }
 
     @Override

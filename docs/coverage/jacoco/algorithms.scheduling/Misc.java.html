@@ -206,10 +206,10 @@ import java.util.TreeSet;
 <span class="fc" id="L206">        int[] p = new int[f.length+1];</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">        for (i = s.length - 1; i &gt; -1; i--) {</span>
 <span class="fc bfc" id="L208" title="All 2 branches covered.">            for (j = i - 1; j &gt; -1; j--) {</span>
-<span class="fc" id="L209">                System.out.printf(&quot;%d,%d) f[%d]=%.2f s[%d]=%.2f\n&quot;, i,j, j, f[j], i, s[i]);</span>
+                //System.out.printf(&quot;%d,%d) f[%d]=%.2f s[%d]=%.2f\n&quot;, i,j, j, f[j], i, s[i]);
 <span class="fc bfc" id="L210" title="All 2 branches covered.">                if (f[j] &lt;= s[i]) {</span>
 <span class="fc" id="L211">                    p[i] = j+1;</span>
-<span class="fc" id="L212">                    System.out.printf(&quot;   p[%d]=%d\n&quot;, i, p[i]);</span>
+                    //System.out.printf(&quot;   p[%d]=%d\n&quot;, i, p[i]);
 <span class="fc" id="L213">                    break;</span>
                 }
             }

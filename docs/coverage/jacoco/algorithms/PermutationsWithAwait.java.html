@@ -2,19 +2,44 @@
 
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * permute the given set of numbers in a thread that waits for the getNext()
  * invocation to calculate the next permutation.
-     
+   &lt;pre&gt;
    The permute code is adapted from 
         from https://en.wikipedia.org/wiki/Heap%27s_algorithm
-   who reference:
+   which further references:
         Sedgewick, Robert. &quot;a talk on Permutation Generation Algorithms
         http://www.cs.princeton.edu/~rs/talks/perms.pdf
    
    The semaphore model is adapted from Chap 12.1 of &quot;Java Concurrency in Practice&quot;
    by Goetz et al.
+   &lt;/pre&gt;
+   &lt;pre&gt;
+   Example invocation and an outline of the internal use of the 2 semaphores and 1 AtomicBoolean:
+       int[] seq = new int[]{1,2,3}; int[] perm = new int[3];
+       PermutationsWithAwait p = new PermutationsWithAwait(seq);
+       p.getNext(perm);
+      
+       invokes these operations:
+         constructor: availableItem = new Semaphore(0);
+                      computationLock = new Semaphore(1);
+                      computationLock.acquire(); //Acquires a permit, returns immed if avail and decr nAvailPermits by 1
+                      availableItem.release(); //Releases a permit, incr nAvailPermits by +1
+                      finished = new AtomicBoolean(false);
+         PermThread:  computationLock.acquire(); // wait for computationLock.release() or thread interruption by another thread
+         getNext():   if finished==true, return
+                      availableItem.acquire(); // acquire or wait for availableItem.release() or thread interruption by another thread
+                      copy data to out var
+                      computationLock.release(); // Releases a permit, incr nAvailPermits by +1
+         PermThread:  computationLock is acquired now that permit is available
+                      data computation
+                      availableItem.release(); // Releases a permit, incr nAvailPermits by +1
+                      if permutations are done, sets finished = true
+   &lt;/pre&gt;
  */
 public class PermutationsWithAwait {
     
@@ -25,47 +50,63 @@ public class PermutationsWithAwait {
      */
     private final int[] x;
     
+    /**
+     * becomes true when the run-loop has ended for the permuter thread
+     */
+    private AtomicBoolean finished;
+    
     //private final BigInteger nPermutations;
     
     /**
      * permute the given set of numbers in a thread that waits for the getNext()
      * invocation to calculate the next permutation.
 
+       &lt;pre&gt;
        The permute code is adapted from 
             from https://en.wikipedia.org/wiki/Heap%27s_algorithm
-       who reference:
+       which further references:
             Sedgewick, Robert. &quot;a talk on Permutation Generation Algorithms
             http://www.cs.princeton.edu/~rs/talks/perms.pdf
 
-       The semaphore model with 1 permit is adapted from Chap 12.1 of 
-       &quot;Java Concurrency in Practice&quot; by Goetz et al.
-       Alternatively, could use a ReentrantLock and 2 Conditions (see Chap 14.4
-       Listing 14.11).
+       The semaphore model is adapted from Chap 12.1 of &quot;Java Concurrency in Practice&quot;
+       by Goetz et al.
+       &lt;/pre&gt;
        
-     * @param set
+     * @param seq
      * @throws java.lang.InterruptedException
      */
-<span class="fc" id="L48">    public PermutationsWithAwait(int[] set) throws InterruptedException {</span>
+<span class="fc" id="L78">    public PermutationsWithAwait(int[] seq) throws InterruptedException {</span>
                 
-<span class="fc" id="L50">        int n = set.length;</span>
-<span class="fc" id="L51">        this.x = new int[n];</span>
+<span class="fc" id="L80">        int n = seq.length;</span>
+<span class="fc" id="L81">        this.x = new int[n];</span>
         
-<span class="fc" id="L53">        this.availableItem = new Semaphore(0);</span>
-<span class="fc" id="L54">        this.computationLock = new Semaphore(1);</span>
+<span class="fc" id="L83">        this.availableItem = new Semaphore(0);</span>
+<span class="fc" id="L84">        this.computationLock = new Semaphore(1);</span>
         
         //nPermutations = MiscMath0.factorialBigInteger(n);
         
-<span class="fc" id="L58">        computationLock.acquire();</span>
+<span class="fc" id="L88">        computationLock.acquire();</span>
         
         //output(A)
-<span class="fc" id="L61">        System.arraycopy(set, 0, x, 0, n);</span>
+<span class="fc" id="L91">        System.arraycopy(seq, 0, x, 0, n);</span>
         //nCurrent = BigInteger.ONE;
         
-<span class="fc" id="L64">        availableItem.release();</span>
+<span class="fc" id="L94">        availableItem.release();</span>
+        
+<span class="fc" id="L96">        finished = new AtomicBoolean(false);</span>
                 
-<span class="fc" id="L66">        Thread thread = new Thread(new Permuter(set));</span>
-<span class="fc" id="L67">        thread.start();</span>
-<span class="fc" id="L68">    }</span>
+<span class="fc" id="L98">        Thread thread = new Thread(new Permuter(seq, finished));</span>
+<span class="fc" id="L99">        thread.start();</span>
+<span class="fc" id="L100">    }</span>
+    
+    /**
+     * check whether all permutations have been returned in getNext() invocations.
+     * @return true if all permutations have been returned in getNext() invocations,
+     * else false if there are more permutations to be returned by the getNext() argument.
+     */
+    public boolean hasNext() {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        return !finished.get();</span>
+    }
     
     /**
      * get the next permutation of the original set
@@ -74,27 +115,32 @@ public class PermutationsWithAwait {
      * @throws InterruptedException 
      */
     public void getNext(int[] out) throws InterruptedException {
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (out.length != x.length) {</span>
-<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (out.length != x.length) {</span>
+<span class="nc" id="L119">            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);</span>
         }
         
-<span class="fc" id="L81">        availableItem.acquire();</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (finished.get()) {</span>
+<span class="fc" id="L123">            return;</span>
+        }
+<span class="fc" id="L125">        availableItem.tryAcquire(2, TimeUnit.SECONDS);</span>
         
-<span class="fc" id="L83">        System.arraycopy(x, 0, out, 0, out.length);</span>
-        
-<span class="fc" id="L85">        computationLock.release();        </span>
-<span class="fc" id="L86">    }</span>
+<span class="fc" id="L127">        System.arraycopy(x, 0, out, 0, out.length);</span>
+       
+<span class="fc" id="L129">        computationLock.release();        </span>
+<span class="fc" id="L130">    }</span>
     
     //TODO: consider using Callable so run can throw an exception
     private class Permuter implements Runnable {
-        private final int[] set;
-        Permuter(int[] set) {
-           this.set = Arrays.copyOf(set, set.length);
+        private final int[] s;
+        final AtomicBoolean permDone;
+        Permuter(int[] seq, AtomicBoolean permDone) {
+           this.s = Arrays.copyOf(seq, seq.length);
+           this.permDone = permDone;
         }
 
         @Override
         public void run() {
-            int n = set.length;
+            int n = s.length;
             int[] c = new int[n];
             int i = 0;
             int swap;
@@ -102,26 +148,32 @@ public class PermutationsWithAwait {
                 if (c[i] &lt; i) {
                     if ((i &amp; 1) != 1) {
                         // i is even number
-                        swap = set[0];
-                        set[0] = set[i];
-                        set[i] = swap;
+                        swap = s[0];
+                        s[0] = s[i];
+                        s[i] = swap;
                     } else {
-                        swap = set[c[i]];
-                        set[c[i]] = set[i];
-                        set[i] = swap;
+                        swap = s[c[i]];
+                        s[c[i]] = s[i];
+                        s[i] = swap;
                     }
                                         
                     try {
+                        //Acquires a permit from this semaphore, blocking until one is
+                        //available, or the thread is {@linkplain Thread#interrupt interrupted}.
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
                     }
                     
                     // output permutation to instance member x
-                    System.arraycopy(set, 0, x, 0, n);
+                    System.arraycopy(s, 0, x, 0, n);
                     
                     //nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
+                    //Releases a permit, increasing the number of available permits by
+                    //one to the semaphore.  If any threads are trying to acquire a permit, then one is
+                    //selected and given the permit that was just released.  That thread
+                    //is (re)enabled for thread scheduling purposes.
                     availableItem.release();
                                         
                     //Swap has occurred ending the for-loop. Simulate the increment 
@@ -130,6 +182,7 @@ public class PermutationsWithAwait {
                     //Simulate recursive call reaching the base case by bringing the 
                     //pointer to the base case analog in the array
                     i = 0;
+                    
                 } else {
                     //Calling generate(i+1, A) has ended as the for-loop terminated. 
                     //Reset the state and simulate popping the stack by incrementing the pointer.
@@ -137,6 +190,7 @@ public class PermutationsWithAwait {
                     i++;
                 }
             }
+            permDone.set(true);
         }
     }
 }

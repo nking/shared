@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DegeneracyOrderingMatulaBeck.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">DegeneracyOrderingMatulaBeck.java</span></div><h1>DegeneracyOrderingMatulaBeck.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.heapsAndPQs.YFastTrie;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
+
+/**
+ *In graph theory, a k-degenerate graph is an undirected graph in which every 
+ * subgraph has a vertex of degree at most k: that is, some vertex in the 
+ * subgraph touches k or fewer of the subgraph's edges. The degeneracy of a 
+ * graph is the smallest value of k for which it is k-degenerate. 
+ * The degeneracy of a graph is a measure of how sparse it is, and is within 
+ * a constant factor of other sparsity measures such as the arboricity of a 
+ * graph.
+
+Degeneracy is also known as the k-core number, width, and linkage, and 
+* is essentially the same as the coloring number or Szekeres-Wilf number 
+* (named after Szekeres and Wilf (1968)). k-degenerate graphs have also been 
+* called k-inductive graphs. The degeneracy of a graph may be computed in 
+* linear time by an algorithm that repeatedly removes minimum-degree vertices.
+* The connected components that are left after all vertices of degree less than 
+* k have been removed are called the k-cores of the graph and the degeneracy of 
+* a graph is the largest value k such that it has a k-core.
+* 
+ * As Matula &amp; Beck (1983) describe, it is possible to find a vertex ordering 
+ * of a finite graph G that optimizes the coloring number of the ordering, in 
+ * linear time, by using a bucket queue to repeatedly find and remove the vertex 
+ * of smallest degree. 
+ * &lt;pre&gt;
+ * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
+ * &lt;/pre&gt;
+ * @author nichole
+ */
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">public class DegeneracyOrderingMatulaBeck {</span>
+    
+    /**
+     * following
+     * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
+     * 
+     * runtime complexity is O(|V| + |E|).
+     * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
+     * set of indexes of vertexes for the neighbors of the key.  note: the method
+     * expects that the adjacency map has a key for every vertex listed in the values.
+     * @param out output array of size |V|
+     * @return the degeneracy of the graph.
+     */
+    public static int findDegeneracyOrder(TIntObjectMap&lt;TIntSet&gt; adjMap, int[] out) {
+                
+<span class="fc" id="L56">        int n = adjMap.size(), i;</span>
+        
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (out.length != n) {</span>
+<span class="nc" id="L59">            throw new IllegalArgumentException(&quot;expecting the the number of vertexes&quot;</span>
+                + &quot; is adjMap.size() and that out.length==adjMap.size()&quot;);
+        }
+        
+        // making a bucket queue with a YFastTrie and a HashMap        
+        // where YFastTrie key = the degree of a vertex.  and the bucketMap holds key=degree, value=vertex indexes
+        // (YFastTrie needs to know the max degree to set word size).
+        
+        // ---- initialize bucket ------
+<span class="fc" id="L68">        BucketQueue bQ = new BucketQueue(adjMap);</span>
+        
+        TIntSet bucket, adj;
+        
+        // initialize output vertex list to -1 for debugging
+<span class="fc" id="L73">        Arrays.fill(out, -1);</span>
+        // keep a set of values of out
+<span class="fc" id="L75">        TIntSet outSet = new TIntHashSet(n);</span>
+        
+        TIntIterator iter2, iter3;
+        
+        // the degree k
+<span class="fc" id="L80">        int v, k = 0, j = 0, w, nW, x;</span>
+<span class="pc bpc" id="L81" title="1 of 4 branches missed.">        while (j &lt; n &amp;&amp; !bQ.isEmpty()) {</span>
+            
+            // this handles check for null or empty bucket.
+            //   note that the internal bucketMap size is out of sync w/ bucketQueue size until remove is invoked
+<span class="fc" id="L85">            i = bQ.extractMinimum();</span>
+            
+<span class="fc" id="L87">            k = Math.max(k, i);</span>
+            
+<span class="pc bpc" id="L89" title="3 of 4 branches missed.">            assert(!outSet.contains(i));</span>
+            
+<span class="fc" id="L91">            bucket = bQ.getBucket(i);</span>
+            
+<span class="fc" id="L93">            v = bucket.iterator().next();</span>
+            // add V to out and remove from bucket in bucketMap.  bucketQueue has been updated already.
+<span class="fc" id="L95">            outSet.add(v);</span>
+<span class="fc" id="L96">            out[n-j-1] = v;</span>
+<span class="fc" id="L97">            bQ.remove(i, v, bucket);</span>
+            
+            //System.out.printf(&quot;out=%s\n&quot;, Arrays.toString(out));
+              
+            // for each neighbor w of v that is not already in L
+<span class="fc" id="L102">            adj = adjMap.get(v);</span>
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">            if (adj == null || adj.isEmpty()) {</span>
+<span class="nc" id="L104">                j++;</span>
+<span class="nc" id="L105">                continue;</span>
+            }
+            
+<span class="fc" id="L108">            iter2 = adj.iterator();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L110">                w = iter2.next();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                if (outSet.contains(w)) {</span>
+<span class="fc" id="L112">                    continue;</span>
+                }
+                // user should have created adjMap with a key for every vertex
+<span class="pc bpc" id="L115" title="3 of 4 branches missed.">                assert(adjMap.containsKey(w));</span>
+                // count neighbors of w not already in L
+<span class="fc" id="L117">                nW = 0;</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">                if (adjMap.get(w).size() &gt; 0) {</span>
+<span class="fc" id="L119">                    iter3 = adjMap.get(w).iterator();</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">                    while (iter3.hasNext()) {</span>
+<span class="fc" id="L121">                        x = iter3.next();</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                        if (!outSet.contains(x)) {</span>
+<span class="fc" id="L123">                            nW++;</span>
+                        }
+                    }
+                }
+<span class="fc" id="L127">                nW--;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">                if (nW &lt; 0) {</span>
+                    //System.out.printf(&quot;vertex w=%d has nW=%d.  bucket size=%d\n&quot;,
+                    //    w, nW, bQ.size());
+                    //w should remain in bQ until it becomes v
+                } else {
+                    // move w from current bucket to bucket dW if dW&gt;=0
+<span class="fc" id="L134">                    bQ.moveItem(w, nW);</span>
+                }
+                
+            }
+<span class="fc" id="L138">            j++;</span>
+        }
+<span class="fc" id="L140">        return k;</span>
+    }
+    
+    static class BucketQueue {
+        
+        protected final TIntObjectMap&lt;TIntSet&gt; bucketMap = new TIntObjectHashMap&lt;TIntSet&gt;();
+        
+        // needed in the move operation for neigbhors of v
+        protected final TIntIntMap reverseBucketMap = new TIntIntHashMap();
+        
+        protected final YFastTrie bucketQueue;
+        
+        public BucketQueue(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+        
+            int n = adjMap.size();
+            
+            TIntSet bucket, adj;
+            TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();
+            int i, v, nV, maxDegree = 0;
+            for (i = 0; i &lt; n; ++i) {
+                iter.advance();
+                v = iter.key();
+                adj = iter.value();
+                if (adj == null) {
+                    nV = 0;
+                } else {
+                    nV = adj.size();
+                }
+                bucket = bucketMap.get(nV);
+                if (bucket == null) {
+                    bucket = new TIntHashSet();
+                    bucketMap.put(nV, bucket);
+                }
+                bucket.add(v);
+                if (nV &gt; maxDegree) {
+                    maxDegree = nV;
+                }
+                reverseBucketMap.put(v, nV);
+                
+                //System.out.printf(&quot;bM key=%d, val=%d, max=%d\n&quot;, nV, v, maxDegree);
+            }
+            
+            bucketQueue = new YFastTrie(1 + (int)Math.ceil(Math.log(maxDegree)/Math.log(2)) );
+            iter = bucketMap.iterator();
+            for (i = 0; i &lt; bucketMap.size(); ++i) {
+                iter.advance();
+                nV = iter.key();
+                bucketQueue.add(nV);
+                //System.out.printf(&quot;bQ key=%d\n&quot;, nV);
+            }
+        }
+        
+        public boolean isEmpty() {
+            return (bucketQueue.size() == 0);
+        }
+
+        public int minimum() {
+            return bucketQueue.minimum();
+        }
+        
+        public int size() {
+            return bucketQueue.size();
+        }
+        
+        /**
+         * extract the minimum from the internal priority queue called bucketQueue.
+         * note that the internal bucketMap size is out of sync w/ bucketQueue 
+         * size until remove is invoked.
+         * @return 
+         */
+        public int extractMinimum() {
+            if (bucketQueue.size() == 0) {
+                throw new IllegalStateException(&quot;bucket queue is empty&quot;);
+            }
+            int min = bucketQueue.minimum();
+            TIntSet bucket = bucketMap.get(min);
+            if (bucket == null || bucket.isEmpty()) {
+                throw new IllegalStateException(&quot;programming error: bucket is null or empty&quot;);
+            }
+            if (bucket.size() &gt; 1) {
+                return min;
+            }
+            return bucketQueue.extractMinimum();
+        }
+
+        /**
+         * find whether the bucket queue contains the degree key i.
+         * @param i
+         * @return 
+         */
+        public boolean contains(int i) {
+            return bucketMap.containsKey(i);
+        }
+        
+        /**
+         * find whether the bucket queue contains the vertex v.
+         * @param v
+         * @return 
+         */
+        public boolean containsVertex(int v) {
+            return reverseBucketMap.containsKey(v);
+        }
+
+        public TIntSet getBucket(int i) {            
+            return bucketMap.get(i);
+        }
+       
+        /**
+         * remove value v from the bucket queue for key k.  this method also
+         * removes key entries in bucketMap and bucketQueue if the bucket empties.
+         * @param k
+         * @param v 
+         */
+        public void remove(int k, int v) {
+            TIntSet bucket = getBucket(k);
+            remove(k, v, bucket);
+        }
+        
+        public void remove(int k, int v, TIntSet bucket) {
+            if (bucket == null || bucket.isEmpty()) {
+                throw new IllegalStateException(&quot;programming error: bucket is null or empty&quot;);
+            }
+            bucket.remove(v);
+            if (bucket.isEmpty()) {
+                bucketMap.remove(k);
+                bucketQueue.remove(k);
+                reverseBucketMap.remove(v);
+            }
+        }
+
+        /**
+         * 
+         * @param item
+         * @param fromDBucket the bucket degree number to remove item from
+         * @param toDBucket the bucket degree number to add item to
+         */
+        public void moveItem(int item, int fromDBucket, int toDBucket) {
+            
+            if (fromDBucket == toDBucket) {
+                throw new IllegalArgumentException(&quot;fromDBucket cannot equal toDBucket&quot;);
+            }
+            
+            TIntSet bucket = bucketMap.get(fromDBucket);
+            
+            if (bucket == null || !bucket.contains(item)) {
+                throw new IllegalStateException(&quot;bucket &quot; + fromDBucket + 
+                    &quot; is empty, so cannot remove &quot; + item + &quot; from it&quot;);
+            }
+            
+            // remove from current bucket 
+            bucket.remove(item);
+            if (bucket.isEmpty()) {
+                // remove bucket from bucketQueue
+                bucketQueue.remove(fromDBucket);
+                bucketMap.remove(fromDBucket);
+            }
+            
+            // add to new bucket queue
+            bucket = bucketMap.get(toDBucket);
+            if (bucket == null) {
+                assert(bucketQueue.find(toDBucket) == -1);
+                if (bucket == null) {
+                    bucket = new TIntHashSet();
+                    bucketMap.put(toDBucket, bucket);
+                }
+                bucketQueue.add(toDBucket);
+            }
+            bucket.add(item);
+            reverseBucketMap.put(item, toDBucket);
+            assert(bucketQueue.find(toDBucket) &gt; -1);
+        }
+        
+        /**
+         * remove item from current bucket that its in, and move it to toDBucket.
+         * @param item
+         * @param toDBucket the bucket degree number to add item to
+         */
+        public void moveItem(int item, int toDBucket) {
+            int fromDBucket = reverseBucketMap.get(item);
+            moveItem(item, fromDBucket, toDBucket);
+        }
+        
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

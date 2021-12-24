@@ -6,7 +6,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 
 /**
  * the geometric median:
-   a.k.a. spatial median.
+   a.k.a. spatial median, 1-median, Euclidean minisum point, and Torricelli point.
    the weighted version is a.k.a. L1-median (though it uses the euclidean distance)
    and the multivariate L1 -median (L1 -MM).
    

@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApproxGraphSearchZeng.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">ApproxGraphSearchZeng.java</span></div><h1>ApproxGraphSearchZeng.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.PermutationsWithAwait;
+import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
+import algorithms.util.PairInt;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import thirdparty.HungarianAlgorithm;
+
+/**
+ implementing subgraph and full-graph query methods following the
+ algorithms presented as pseudocode in 
+ &lt;pre&gt; Comparing Stars: On Approximating Graph Edit Distance
+   Zeng, Tung, Wang, Feng, &amp; Zhou 2009, 
+   Proceedings of the VLDB Endowment, Volume 2, Issue 1,
+   August 2009 pp 25–36
+   https://doi.org/10.14778/1687627.1687631
+&lt;/pre&gt;
+subgraph search: retrieve all the super-graphs of a given query graph Q from a 
+   graph database D = (D_1,D_2,...D_n).
+   It finds all the graphs D_i(i=1,2,…,m.lt.n) such that Q is a subgraph 
+   of D_i.  It also finds D_i that are subgraphs of Q.
+ 
+full graph search: find all graphs D_i in D s.t. D_i is the same as the query graph Q.
+
+similarity search: find all graphs D_i in D s.t. D_i is similar to the
+   query graph Q within a user-specified threshold based on some similarity measures.
+ 
+ in pattern recognition, GED is called graph matching.
+in information theory, GED is seeking the matched configuration of vertices
+   that has maximum a posteriori probability w.r.t. the available vertex
+   attribute information.
+   * 
+ * @author nichole
+ */
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">public class ApproxGraphSearchZeng {</span>
+    
+    /**
+     * property used in calculating the edit distance.  if edgesAreLabeled = true,
+     * the cost of edge insert, delete, and substitutions are added.
+     */
+<span class="fc" id="L58">    private boolean edgesAreLabeled = false;</span>
+    /**
+     * set the property edgesAreLabeled to true or false (default is false),
+     * to add the cost of edge insert, delete, and substitutions into edit distances.
+     */
+    public void setEdgesAreLabeled(boolean labeled) {
+<span class="fc" id="L64">        this.edgesAreLabeled = labeled;</span>
+<span class="fc" id="L65">    }</span>
+    
+    /**
+     * find all graphs db_i in db s.t. db_i is the same as the query graph q
+     * within a graph edit distance threshold w.
+     * implementing full-graph query method following the
+     algorithms presented as pseudocode in 
+     &lt;pre&gt; Comparing Stars: On Approximating Graph Edit Distance
+       Zeng, Tung, Wang, Feng, &amp; Zhou 2009, 
+       Proceedings of the VLDB Endowment, Volume 2, Issue 1,
+       August 2009 pp 25–36
+       https://doi.org/10.14778/1687627.1687631
+    &lt;/pre&gt;
+    The method attempts to avoid the expensive graph edit distance computation 
+    by filtering out graphs that definitely will not be in the answer set.
+    The best-case runtime complexity is Θ(n^3), while the worse is exponential 
+    * in terms of n for the optimal search, where n is the number of vertices.
+    * This method implements Algorithm 3 of the paper.
+     * @param q the query graph
+     * @param db list of graphs in a database
+     * @param w graph edit distance threshold for the matches in the search.
+     * the lower bound, sub-optimal, refined sub-optimal, and optimal
+     * costs are less than or equal to w.
+     * @param useAsFilterWithoutOptimal if true, the algorithm will return
+     * db graphs that passed the bounds of graph edit distances within the 
+     * given threshold w and the algorithm will not execute the exponential
+     * optimal algorithm.  if false, the algorithm will run the filters
+     * and then the optimal graph search and return the results.
+     * @return graphs all db_i in db s.t. db_i is the same as the query graph q
+     * within a graph edit distance threshold w
+     * @throws java.lang.InterruptedException
+     */
+    public List&lt;Result&gt; approxFullSearch(Graph q, List&lt;Graph&gt; db, double w,
+         boolean useAsFilterWithoutOptimal) throws InterruptedException {
+        
+        /*
+        for each graph g ∈ D do 
+            if L_m(g,q) &gt; w {  // Lm(g1, g2) is the lower bound of λ(g1, g2)
+                continue;
+            }
+            if τ(g,q) ≤ w {   // τ(g1,g2) is the suboptimal value of λ(g1, g2)
+                report g as a result;
+                continue;
+            }
+            if ρ(g,q) ≤ w {  // ρ(g1, g2) is the refined suboptimal value λ(g1, g2)
+                report g as a result;
+                continue; 
+            }
+            if λ(g, q) ≤ w { 
+                report g as a result;
+            }
+        */
+        
+<span class="fc" id="L118">        List&lt;Result&gt; results = new ArrayList&lt;Result&gt;();</span>
+        
+        Graph dbi;
+<span class="fc" id="L121">        StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);</span>
+        StarStructure[] sg1, sg2;
+        int[][] a1, a2;
+        double[][] distM;
+        double lM, tau, rho, lambda;
+        int[] refinedAssign;
+        StarStructure s;
+        Graph g;
+        boolean swappedSG;
+        Norm norm;
+        int i, k, rIdx;
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int ii = 0; ii &lt; db.size(); ++ii) {</span>
+<span class="fc" id="L133">            dbi = db.get(ii);</span>
+            
+<span class="fc" id="L135">            sg1 = StarStructure.copy(sQ);</span>
+<span class="fc" id="L136">            sg2 = StarStructure.createStarStructureMultiset(dbi);</span>
+            
+            // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
+<span class="fc" id="L139">            norm = normalize(sg1, sg2);</span>
+<span class="fc" id="L140">            sg1 = norm.sg1;</span>
+<span class="fc" id="L141">            sg2 = norm.sg2;</span>
+<span class="fc" id="L142">            swappedSG = norm.swapped;</span>
+            
+<span class="fc" id="L144">            a1 = createAdjacencyMatrix(sg1);</span>
+<span class="fc" id="L145">            a2 = createAdjacencyMatrix(sg2);</span>
+            
+            // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L149">                distM = StarStructure.createDistanceMatrix(sg1, sg2);</span>
+            } else {
+<span class="nc" id="L151">                distM = StarStructure.createDistanceMatrixV(sg1, sg2);</span>
+            }
+<span class="fc" id="L153">            int[] assign = balancedBipartiteAssignment(distM);</span>
+   
+<span class="fc" id="L155">            int mappingDist = mappingDistance(sg1, sg2, assign);</span>
+            
+<span class="fc" id="L157">            lM = lowerBoundEditDistance(sg1, sg2, mappingDist);</span>
+            
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (lM &gt; w) {</span>
+<span class="fc" id="L160">                continue;</span>
+            }
+            
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">            if (this.edgesAreLabeled) {</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">                if (swappedSG) {</span>
+<span class="nc" id="L165">                    tau = suboptimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, assign);</span>
+                } else {
+<span class="fc" id="L167">                    tau = suboptimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, assign);</span>
+                }
+            } else {
+<span class="nc" id="L170">                tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
+            }
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">            if (tau &lt;= w) {</span>
+<span class="nc" id="L173">                results.add(new Result(ii, Result.BOUND.SUBOPTIMAL, assign, tau));</span>
+<span class="nc" id="L174">                continue;</span>
+            }
+            
+<span class="fc" id="L177">            refinedAssign = Arrays.copyOf(assign, assign.length);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">            if (swappedSG) {</span>
+<span class="nc" id="L179">                rho = refinedSuboptimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, a1, a2, refinedAssign, tau, distM);</span>
+            } else {
+<span class="fc" id="L181">                rho = refinedSuboptimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, a1, a2, refinedAssign, tau, distM);</span>
+            }
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">            if (rho &lt;= w) {</span>
+<span class="nc" id="L184">                results.add(new Result(ii, Result.BOUND.REFINED_SUBOPTIMAL, assign, rho));</span>
+<span class="nc" id="L185">                continue;</span>
+            }
+           
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">            if (!useAsFilterWithoutOptimal){</span>
+                // exponential runtime complexity:
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">                if (swappedSG) {</span>
+<span class="nc" id="L191">                    lambda = optimalEditDistance(sg1, sg2, dbi.eLabels, q.eLabels, a1, a2, refinedAssign, tau);</span>
+                } else {
+<span class="fc" id="L193">                    lambda = optimalEditDistance(sg1, sg2, q.eLabels, dbi.eLabels, a1, a2, refinedAssign, tau);</span>
+                }
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">                if (lambda &lt;= w) {</span>
+<span class="fc" id="L196">                    results.add(new Result(ii, Result.BOUND.OPTIMAL, refinedAssign, lambda));</span>
+                }
+            } else {
+<span class="nc" id="L199">                results.add(new Result(ii, Result.BOUND.LOWER, assign, lM));</span>
+            }
+        } // end loop over db graphs
+        
+<span class="fc" id="L203">        return results;</span>
+    }
+    
+    /**
+     * perform a lower-bound filter for sub-graph search, then an approx similarity
+     * sub-graph search if requested.
+     * sub-graph search retrieves all the super-graphs of a given query graph Q from a 
+       graph database db = (db_0, db_1, ...db_n-1).
+       It finds all the graphs db_i(i=0,1,2,…,m-1.lt.n-1) such that Q is a subgraph 
+       of db_i.  It also finds db_i that are subgraphs of Q.
+     * The method implements the description of the APPSUB algorithm from 
+     * Zeng et al. 2009.
+      &lt;pre&gt; 
+      Comparing Stars: On Approximating Graph Edit Distance
+       Zeng, Tung, Wang, Feng, &amp; Zhou 2009, 
+       Proceedings of the VLDB Endowment, Volume 2, Issue 1,
+       August 2009 pp 25–36
+       https://doi.org/10.14778/1687627.1687631
+    &lt;/pre&gt;
+     from https://en.wikipedia.org/wiki/Subgraph_isomorphism_problem
+     Subgraph isomorphism is a generalization of both the maximum clique problem and the problem of testing whether a graph contains a Hamiltonian cycle, and is therefore NP-complete. However certain other cases of subgraph isomorphism may be solved in polynomial time.
+     still browsing these for the sub-graph search after the lower bound filter.
+     * &lt;pre&gt;
+     * 
+     * inexact graph matching method with subgraph indexing:
+     * T. E. Choe, H. Deng, F. Guo, M. W. Lee and N. Haering, 
+     * &quot;Semantic Video-to-Video Search Using Sub-graph Grouping and Matching,&quot; 
+     * 2013 IEEE International Conference on Computer Vision Workshops, 
+     * 2013, pp. 787-794, doi: 10.1109/ICCVW.2013.108.
+     * 
+     * Graph Pattern Matching: From Intractable to Polynomial Time, 
+     * Fan et al. 2010
+     * The 36th International Conference on Very Large Data Bases, September 13-17, 
+     * 2010, Singapore.  Proceedings of the VLDB Endowment, Vol. 3, No. 1
+     * In a variety of applications one wants to inspect the connectivity of a 
+     * pair of nodes via a path of an arbitrary length [10, 16, 29] or with a 
+     * bound on the number of hops.
+     *      * 
+     * Tu et al. 2020, &quot;Inexact Attributed Subgraph Matching&quot;
+     * 
+     * https://github.com/lihuiliullh/GFinder-Proj
+     * 
+     * Fard, A., Nisar, M.U., Ramaswamy, L., Miller, J.A., Saltz, M.: A distributed vertex-centric approach for pattern matching in massive graphs. In: BigData, pp 403–411 (2013)
+
+       Foggia, P., Percannella, G., Vento, M.: Graph matching and learning in pattern recognition in the last 10 years. Int. J. Pattern Recognit. Artif. Intell. 28(1), 1450001 (2014)
+
+       Gallagher, B.: Matching structure and semantics: A survey on graph-based pattern matching. In: AAAI FS-06-02, pp 45–53 (2006)
+
+       Khan, A., Wu, Y., Aggarwal, C.C., Yan, X.: NeMa: Fast graph search with label similarity. PVLDB
+6(3), 181–192 (2013)
+       
+       Liu,G.,Zheng,K.,Wang,Y.,Orgun,M.A.,Liu,A.,Zhao,L.,Zhou,X.:Multi-constrainedgraphpattern matching in large-scale contextual social graphs. In: ICDE, pp 351–362 (2015)
+       
+       Ma, S., Cao, Y., Fan, W., Huai, J., Wo, T.: Capturing topology in graph pattern matching. PVLDB 5(4),
+310–321 (2011)
+* 
+*      Tabei, Y., Tsuda, K.: Kernel-based similarity search in massive graph databases with wavelet trees. In:
+SDM, pp 154–163 (2011)
+* 
+*      Wang, X., Smalter, A.M., Huan, J., Lushington, G.H.: G-hash: towards fast kernel-based similarity search in large graph databases. In: EDBT, pp 472–480 (2009)
+* 
+*      Yan, X., Yu, P.S., Han, J.: Substructure similarity search in graph databases. In: SIGMOD, pp 766–777
+(2005)
+* 
+*      Zhang, S., Yang, J., Jin, W.: SAPPER: Subgraph indexing and approximate matching in large graphs. PVLDB 3(1), 1185–1194 (2010
+* 
+*      Zou,L.,Chen,L.,O ̈zsu,M.T.:Distance-join:Patternmatchqueryinalargegraphdatabase.PVLDB 2(1), 886–897 (2009)
+* 
+     * &lt;/pre&gt;
+  
+     * @param q the query graph
+     * @param db list of graphs in a database
+     * @param w graph edit distance threshold used in the search when comparing
+     * the query with each database graph.
+     * the total threshold for the lower bound is abs(|V_q|-|V_db_i|) + abs(|E_q|-|E_db_i|) + 2*w.
+     * @param useAsFilterWithoutOptimal if true, the algorithm will return
+     * db graphs that passed the bounds of graph edit distances within the 
+     * given threshold w and the algorithm will not execute the exponential
+     * optimal algorithm.  if false, the algorithm will run the filters
+     * and then the optimal graph search and return the results.
+     * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
+     */
+    public List&lt;Result&gt; approxSubSearch(Graph q, List&lt;Graph&gt; db, double w,
+        boolean useAsFilterWithoutOptimal) {
+        
+        /*
+        AppSub inherently supports both two kinds of subgraph search, i.e., 
+        traditional subgraph search[37] and containment search[9].
+        
+        Lemma 2.2 g1 is subgraph isomorphic to g2 iff λ(g1, g2) = (|E2| − |E1|) + (|V2| − |V1|).
+        
+        λ′(s1, s2 ) = T′(s1, s2 ) + d(L1, L2) (+ d(L1E´, L2E) if there are edge labels are in the graph model)
+           where T′(s1,s2)= {2+|L1|+|L2| if l(r1)̸=l(r2) }
+                            {0, otherwise               }
+           This is implemented in StarStructure.calculateEditDistanceNoRelabeling()
+        
+        A graph g1 is said to be θ-subgraph isomorphic to g2 if there exists a 
+            graph g3 s.t. g3 ⊑ g2 and λ′(g1, g3) ≤ θ.
+        
+        if g1 is a θ-subgraph of g2, λ′(g1, g2) ≤ L + 2θ
+            where L = |E2| − |E1| + |V2| − |V1|,
+        
+        Therefore if L′_m(g1, g2) &gt; L + 2θ, g2 can be safely filtered.        
+        */
+        
+<span class="fc" id="L308">        List&lt;Result&gt; results = new ArrayList&lt;Result&gt;();</span>
+        
+        Graph dbi;
+<span class="fc" id="L311">        StarStructure[] sQ = StarStructure.createStarStructureMultiset(q);</span>
+        StarStructure[] sg1, sg2;
+        double[][] distM;
+        double lM, w2;
+        Norm norm;
+        boolean swappedSG;
+<span class="fc bfc" id="L317" title="All 2 branches covered.">        for (int ii = 0; ii &lt; db.size(); ++ii) {</span>
+<span class="fc" id="L318">            dbi = db.get(ii);</span>
+                        
+<span class="fc" id="L320">            sg1 = StarStructure.copy(sQ);</span>
+<span class="fc" id="L321">            sg2 = StarStructure.createStarStructureMultiset(dbi);</span>
+            
+            // normalize sq1 and sg2 to have same cardinality for bipartite vertex assignments
+<span class="fc" id="L324">            norm = normalize(sg1, sg2);</span>
+<span class="fc" id="L325">            sg1 = norm.sg1;</span>
+<span class="fc" id="L326">            sg2 = norm.sg2;</span>
+<span class="fc" id="L327">            swappedSG = norm.swapped;</span>
+                
+            // create cost matrix for bipartite assignments of vertexes in sg1 to sg2
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">            if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L331">                distM = StarStructure.createDistanceMatrixNoRelabeling(sg1, sg2);</span>
+            } else {
+<span class="nc" id="L333">                distM = StarStructure.createDistanceMatrixNoRelabelingV(sg1, sg2);</span>
+            }
+<span class="fc" id="L335">            int[] assign = balancedBipartiteAssignment(distM);</span>
+   
+<span class="fc" id="L337">            int mappingDist = mappingDistance(sg1, sg2, assign);</span>
+            
+<span class="fc" id="L339">            lM = lowerBoundEditDistance(sg1, sg2, mappingDist);</span>
+            
+<span class="fc" id="L341">            int l = Math.abs(q.eLabels.size() - dbi.eLabels.size()) </span>
+<span class="fc" id="L342">                + Math.abs(q.vLabels.size() - dbi.vLabels.size());</span>
+            
+<span class="fc" id="L344">            w2 = l + 2*w;</span>
+<span class="fc" id="L345">            System.out.printf(&quot;i=%d lM=%.3f w2=%.3f\n&quot;, ii, lM, w2);</span>
+            
+            //L′_m(g1, g2) &gt; L + 2θ can filter out g2
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            if (lM &gt; w2) {</span>
+<span class="fc" id="L349">                continue;</span>
+            }
+            
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">            if (useAsFilterWithoutOptimal) {</span>
+<span class="fc" id="L353">                results.add(new Result(ii, Result.BOUND.LOWER, assign, lM));</span>
+<span class="fc" id="L354">                continue;</span>
+            }
+            
+<span class="nc" id="L357">            throw new UnsupportedOperationException(&quot;the filter is implemented, &quot;</span>
+                + &quot;but the approx subgraph search is not yet implemented.  &quot;
+                + &quot; meanwhile, considering the following implemented java projects: &quot;
+                + &quot; https://github.com/jgrapht/jgrapht/blob/master/docs/guide-templates/VertexAndEdgeTypes.md&quot;
+                + &quot; https://github.com/pmoris/miles-subgraph-miner&quot;
+                + &quot; There are C++ approx subgraph search implementations for large graphs also.&quot;);
+            
+        } // end loop over db graphs
+        
+<span class="fc" id="L366">        return results;        </span>
+    }
+    
+    /**
+     * calculate compute τ(g,h) as C(g, h, P)
+      &lt;pre&gt;
+      references:
+      Section 4.3 of Zeng et al. 2009.
+      and
+      Chapter 3., pg 45, Algorithm 1 of Feng 2017, PHD Thesis in CSE, UNSW, AU,
+      &quot;Efficiently Computing Graph Similarity and Graph Connectivity&quot;
+     &lt;/pre&gt;
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param e1Labels map having key = edge in graph g1, value = edge label
+     * @param e2Labels map having key = edge in graph g2, value = edge label
+     @param assignments array of bipartite assignments.
+     * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
+     * @return 
+     */
+    protected double suboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
+        TObjectIntMap&lt;PairInt&gt; e1Labels, TObjectIntMap&lt;PairInt&gt; e2Labels,
+        int[] assignments) {
+        
+        /*
+        Efficiently Computing Graph Similarity and Graph Connectivity
+        by Xing Feng, 2017, PhD Thesis, CSE, UNSW, AU
+        Chapter 3. Graph Edit Distance Computation, pg 45
+        Algorithm 1: EditorialCost
+        Input: Graphs q and g, and a mapping f from V(q) to V(g)
+        Output: Editorial cost δ_f(q, g)
+        int cost = 0;
+        // vertex relabeling
+        for each vertex v in q do
+            if l(v)!=l(f(v)) cost++;
+        // Edge deletion or relabeling
+        for each edge (v,v′) in q do
+            if edge (f(v), f(v′)) is not in g or l(v,v′) != l(f(v), f(v′)) cost++;
+        // Edge insertion
+        for each edge (u,u′) in g
+            if edge(f'(u),f'(u′)) is not in q cost++;
+        */
+        
+<span class="fc" id="L409">        int n = sg1.length;</span>
+<span class="fc" id="L410">        int costVSubst = 0;</span>
+<span class="fc" id="L411">        int costEDelSubst = 0;</span>
+<span class="fc" id="L412">        int costEIns = 0;</span>
+                
+        // vertex relabeling
+        int i, j;
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
+<span class="fc" id="L417">            j = assignments[i];</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">            if (sg1[i].rootLabel != sg2[j].rootLabel) {</span>
+<span class="fc" id="L419">                costVSubst++;</span>
+            }
+        }
+        int i2, j2, i1r, j1r;
+        PairInt edge2;
+        // Edge deletion or relabeling
+        int e2Label;
+<span class="fc bfc" id="L426" title="All 2 branches covered.">        for (PairInt edge1 : e1Labels.keySet()) {</span>
+            /*
+            for each edge (v,v′) in q do
+                if edge (f(v), f(v′)) is not in g or l(v,v′) != l(f(v), f(v′)) cost++;
+            */
+<span class="fc" id="L431">            i = edge1.getX();</span>
+<span class="fc" id="L432">            i2 = edge1.getY();</span>
+<span class="fc" id="L433">            j = assignments[i];</span>
+<span class="fc" id="L434">            j2 = assignments[i2];</span>
+<span class="fc" id="L435">            edge2 = new PairInt(j, j2);</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">            if (e2Labels.containsKey(edge2)) {</span>
+<span class="fc" id="L437">                e2Label = e2Labels.get(edge2);</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">            } else if (e2Labels.containsKey(new PairInt(j2, j))) {</span>
+<span class="fc" id="L439">                edge2 = new PairInt(j2, j);</span>
+<span class="fc" id="L440">                e2Label = e2Labels.get(edge2);</span>
+            } else {
+<span class="fc" id="L442">                costEDelSubst++;</span>
+<span class="fc" id="L443">                continue;</span>
+            }
+<span class="fc bfc" id="L445" title="All 2 branches covered.">            if (e1Labels.get(edge1) != e2Label) {</span>
+<span class="fc" id="L446">                costEDelSubst++;</span>
+            }
+<span class="fc" id="L448">        }</span>
+        
+<span class="fc" id="L450">        TIntIntMap revAssign = reverseAssignment(assignments);</span>
+
+        // Edge insertion
+        //for each edge (u,u′) in g
+        //    if edge(f'(u),f'(u′)) is not in q cost++;
+<span class="fc" id="L455">        TObjectIntIterator&lt;PairInt&gt; iter = e2Labels.iterator();</span>
+        PairInt edge1;
+        int e1Label;
+<span class="fc bfc" id="L458" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L459">            iter.advance();</span>
+<span class="fc" id="L460">            edge2 = iter.key();</span>
+<span class="fc" id="L461">            e2Label = iter.value();</span>
+<span class="fc" id="L462">            j = edge2.getX();</span>
+<span class="fc" id="L463">            j2 = edge2.getY();</span>
+<span class="fc" id="L464">            i = revAssign.get(j);</span>
+<span class="fc" id="L465">            i2 = revAssign.get(j2);</span>
+            
+<span class="fc" id="L467">            edge1 = new PairInt(i, i2);</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">            if (e1Labels.containsKey(edge1)) {</span>
+<span class="fc" id="L469">                e1Label = e1Labels.get(edge1);</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">            } else if (e1Labels.containsKey(new PairInt(i2, i))) {</span>
+<span class="fc" id="L471">                edge1 = new PairInt(i2, i);</span>
+<span class="fc" id="L472">                e1Label = e1Labels.get(edge1);</span>
+            } else {
+<span class="fc" id="L474">                costEIns++;</span>
+<span class="fc" id="L475">                continue;</span>
+            }
+<span class="fc bfc" id="L477" title="All 2 branches covered.">            if (e1Label != e2Label) {</span>
+<span class="fc" id="L478">                costEIns++;</span>
+            }
+        }
+        
+        //int cost = costVSubst + costEDelSubst + costEIns;
+        // or use the maximum for edges to not count them twice
+<span class="fc" id="L484">        int cost = costVSubst + Math.max(costEDelSubst, costEIns);</span>
+        
+        //System.out.printf(&quot;costs vSubst=%d, eDelSubst=%d, eIns=%d ==&gt; c=%d\n&quot;,
+        //    costVSubst, costEDelSubst, costEIns, cost);
+        
+<span class="fc" id="L489">        return cost;</span>
+    }
+    
+    /**
+     * calculate compute τ(g,h) as C(g, h, P) for the graphs with vertex labeling
+     * but no edge labeling
+      &lt;pre&gt;
+      references:
+      Section 4.3 of Zeng et al. 2009.
+      and
+      Chapter 3., pg 45, Algorithm 1 of Feng 2017, PHD Thesis in CSE, UNSW, AU,
+      &quot;Efficiently Computing Graph Similarity and Graph Connectivity&quot;
+     &lt;/pre&gt;
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param a1 adjacency matrix for graph g1
+     * @param a2 adjacency matrix for graph g2
+     @param assignments array of bipartite assignments.
+     * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
+     * @return 
+     */
+    protected double suboptimalEditDistanceV(StarStructure[] sg1, StarStructure[] sg2,
+        int[][] a1, int[][] a2, int[] assignments) {
+        
+        // Zeng et al. 2009 which has vertex edits but not edge edits
+<span class="fc" id="L514">        int[][] p = MatrixUtil.createPermutationMatrix(assignments);</span>
+        
+<span class="fc" id="L516">        int[][] c = createLabelMatrix(sg1, sg2, assignments);</span>
+<span class="pc bpc" id="L517" title="3 of 4 branches missed.">        assert(c.length == p.length);</span>
+<span class="pc bpc" id="L518" title="3 of 4 branches missed.">        assert(c[0].length == p[0].length);</span>
+        
+        //C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
+        //              + (1/2) || a1 - P*a2*P^T ||_1
+        //
+        //Assuming that the L1-norm here is the same convention as MatLab:
+        //    For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
+        //    ||X||_1 = max sum for an arg j where (0&lt;=j&lt;=n-1) sum_(i=0 to n-1) ( |a[i][j] )
+<span class="fc" id="L526">        int[][] pA2PT = MatrixUtil.multiply(p,</span>
+<span class="fc" id="L527">            MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));</span>
+        
+<span class="fc" id="L529">        double term2 = 0.5*MatrixUtil.lp1Norm(</span>
+<span class="fc" id="L530">            MatrixUtil.elementwiseSubtract(a1, pA2PT));</span>
+        
+        //this is a large term, summed from labels being equal.
+        //origins are  BLP paper  by Justice &amp; Hero, eqn(18).
+<span class="fc" id="L534">        double term1 = 0;</span>
+        int i, j;
+<span class="fc bfc" id="L536" title="All 2 branches covered.">        for (i = 0; i &lt; c.length; ++i) {</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">            for (j = 0; j &lt; c[i].length; ++j) {</span>
+<span class="fc" id="L538">                term1 += c[i][j] * p[i][j];</span>
+            }
+        }
+        
+        //System.out.printf(&quot;term1=%.2f term2=%.2f\n&quot;, term1, term2);
+        
+<span class="fc" id="L544">        return term1 + term2;</span>
+    }
+    
+    /**
+     * calculate Lm(g1, g2) = μ(g1, g2) / max{4, [max{δ(g1), δ(g2)} + 1]}
+     * following Sect 4.2.2 of Zeng et al. 2009.
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param mappingDist mapping distance calculated using Definition 4.3 in
+     * Section 4.2.1 in Zeng et al. 2009.
+     * @return 
+     */
+    protected double lowerBoundEditDistance(StarStructure[] sg1, StarStructure[] sg2,
+        int mappingDist) {
+        
+        /*
+        μ(g1, g2) = mapping distance
+        
+        δ(g) = max_{v∈V(g)}deg(v)
+        
+        Lm(g1, g2) = μ(g1, g2) / max{4, [max{δ(g1), δ(g2)} + 1]}
+        */
+<span class="fc" id="L566">        int maxDeg1 = maxDegree(sg1);</span>
+<span class="fc" id="L567">        int maxDeg2 = maxDegree(sg2);</span>
+<span class="fc" id="L568">        double denom = Math.max(maxDeg1, maxDeg2) + 1;</span>
+        
+<span class="fc" id="L570">        double lM = mappingDist/denom;</span>
+        
+<span class="fc" id="L572">        return lM;</span>
+    }
+    
+    /**
+     * Given two multi-sets of star structures S1 and S2,
+     * normalize them to create the same cardinality, 
+     * and assume P :S1→S2 is a bijection. 
+     * The distance ζ between S_1 and S_2 is the summation of the edit distance
+     * over an assignment of vertexes solved by bipartite matching of the
+     * vertex labels.
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param assignments array of bipartite assignments.
+     * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
+     * @return 
+     */
+    protected int mappingDistance(StarStructure[] sg1, StarStructure[] sg2,
+        int[] assignments) {
+                               
+        // usign the assignments, sum the edit distances.
+<span class="fc" id="L592">        int sum = 0, i, d;</span>
+        StarStructure s1, s2;
+<span class="fc bfc" id="L594" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
+<span class="fc" id="L595">            s1 = sg1[i];</span>
+<span class="fc" id="L596">            s2 = sg2[assignments[i]];</span>
+<span class="fc bfc" id="L597" title="All 2 branches covered.">            if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L598">                d = StarStructure.calculateEditDistance(s1, s2);</span>
+            } else {
+<span class="fc" id="L600">                d = StarStructure.calculateEditDistanceV(s1, s2);</span>
+            }
+<span class="fc" id="L602">            sum += d;</span>
+            //System.out.printf(&quot;i=%d ed=%d sum=%d\n&quot;, i, d, sum);
+        }
+        
+<span class="fc" id="L606">        return sum;</span>
+    }
+
+    /**
+     * find the maximum degree of a vertex for the graph g.
+     * @param sg
+     * @return 
+     */
+    private int maxDegree(StarStructure[] sg) {
+<span class="fc" id="L615">        int max = 0, deg;</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">        for (int i = 0; i &lt; sg.length; ++i) {</span>
+<span class="fc" id="L617">            deg = sg[i].vLabels.length;</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">            if (deg &gt; max) {</span>
+<span class="fc" id="L619">                max = deg;</span>
+            }
+        }
+<span class="fc" id="L622">        return max;</span>
+    }
+
+    static int[][] createAdjacencyMatrix(StarStructure[] s) {
+<span class="fc" id="L626">        int nV = s.length;</span>
+<span class="fc" id="L627">        int[][] a = new int[nV][];</span>
+        StarStructure si;
+        int uIdx, vIdx, j;
+<span class="fc bfc" id="L630" title="All 2 branches covered.">        for (int i = 0; i &lt; nV; ++i) {</span>
+<span class="fc" id="L631">            a[i] = new int[nV];</span>
+<span class="fc" id="L632">            si = s[i];</span>
+<span class="fc" id="L633">            uIdx = si.rootIdx;</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">            for (j = 0; j &lt; si.vLabels.length; ++j) {</span>
+<span class="fc" id="L635">                vIdx = si.origVIndexes[j];</span>
+<span class="fc" id="L636">                a[uIdx][vIdx] = 1;</span>
+            }
+        }
+<span class="fc" id="L639">        return a;</span>
+    }
+    
+    static Set&lt;PairInt&gt; getEdges(StarStructure[] s) {
+<span class="nc" id="L643">        int nV = s.length;</span>
+<span class="nc" id="L644">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
+        StarStructure si;
+        int uIdx, vIdx, j;
+<span class="nc bnc" id="L647" title="All 2 branches missed.">        for (int i = 0; i &lt; nV; ++i) {</span>
+<span class="nc" id="L648">            si = s[i];</span>
+<span class="nc" id="L649">            uIdx = si.rootIdx;</span>
+<span class="nc bnc" id="L650" title="All 2 branches missed.">            for (j = 0; j &lt; si.vLabels.length; ++j) {</span>
+<span class="nc" id="L651">                vIdx = si.origVIndexes[j];</span>
+<span class="nc bnc" id="L652" title="All 2 branches missed.">                if (uIdx &lt; vIdx) {</span>
+<span class="nc" id="L653">                    edges.add(new PairInt(uIdx, vIdx));</span>
+                } else {
+<span class="nc" id="L655">                    edges.add(new PairInt(vIdx, uIdx));</span>
+                }
+            }
+        }
+<span class="nc" id="L659">        return edges;</span>
+    }
+
+    /**
+     * create the label matrix C used in Section 3.1 in eqn (1) of 
+     * Zeng et al. 2009.
+     * C_i,j = 1 if l_g(vi) = l_h(uj)(vi ∈ V(g), uj ∈ V(h)), 
+     *       otherwise C_i,j = 0.
+     * TODO: revise to include consideration for edge labels.
+     * @param sg1
+     * @param sg2
+     * @param assignments
+     * @return 
+     */
+    private int[][] createLabelMatrix(StarStructure[] sg1, StarStructure[] sg2, 
+        int[] assignments) {
+        //Ci,j = 1 if l_g(vi) = l_h(uj)(vi ∈ V(g),uj ∈ V(h)), otherwise Ci,j = 0
+<span class="fc" id="L676">        int[][] c = new int[sg1.length][];</span>
+        int i, j;
+<span class="fc bfc" id="L678" title="All 2 branches covered.">        for (i = 0; i &lt; sg1.length; ++i) {</span>
+<span class="fc" id="L679">            c[i] = new int[sg2.length];</span>
+            //NLK, changing the fill values from 0 to 1 because the non-matches will cost 1
+<span class="fc" id="L681">            Arrays.fill(c[i], 1);</span>
+        }
+<span class="fc bfc" id="L683" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
+<span class="fc" id="L684">            j = assignments[i];</span>
+<span class="fc bfc" id="L685" title="All 2 branches covered.">            if (sg1[i].rootLabel == sg2[j].rootLabel) {</span>
+                //NLK, changing to not penalize if vertex labels match
+                //c[i][j] = 1;
+<span class="fc" id="L688">                c[i][j] = 0;</span>
+            }
+        }
+<span class="fc" id="L691">        return c;</span>
+    }
+
+    /**
+     * calculates the refined suboptimal edit distance by swapping the 
+     * vertex assignments and calculating the
+     * suboptimal distance, keeping the permuted assignments that result in
+     * the smallest edit distance.
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param e1Labels map having key = edge in graph g1, value = edge label
+     * @param e2Labels map having key = edge in graph g2, value = edge label
+     * @param a1 adjacency matrix for graph g1
+     * @param a2 adjacency matrix for graph g2
+     * @param refinedAssign input initial vertex assignments and output
+     * refined vertex assignments.
+     * @param tau the sub-optimal edit distance C(g,h,P) where
+     * P is formed from the given assignments in refinedAssign.
+     * @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
+     * @return
+     */
+    protected double refinedSuboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
+        TObjectIntMap&lt;PairInt&gt; e1Labels, TObjectIntMap&lt;PairInt&gt; e2Labels, int[][] a1, int[][] a2,
+        int[] refinedAssign, double tau, double[][] distM) {
+        /*
+        dist ← C(g,h,P);
+        min ← dist;
+        for any pair (ui, uj) ∈ V (g) {
+            get P′ based on ui and uj; 
+            if min &gt; C(g,h,P′) {
+                min ← C(g,h,P′);
+                Pmin ←P′;
+            }
+        }
+        if min &lt; dist then
+            min ← Refine(g, h, Pmin )
+        return min;
+        */
+        
+        /*
+        How to choose the pair for the statement &quot;for any pair (ui, uj) ∈ V (g)&quot;?
+        
+        distM holds the cost matrix for bipartite assignments of vertexes in sg1 to sg2.
+        
+        what swap in assign has best chance of decreasing the graph edit cost?
+        one case is an edge in sg1 which is mapped to 2 vertexes in sg2 which 
+           are not an edge.
+           v1_i in sg1 maps to v2_j in sg2.
+           v1_i2 in sg1 maps to v2_j2 in sg2.
+           v1_i is adjacent to v1_i2.
+           v1_j is not adjacent to v2_j2.
+           goal is to find a vertex in sg2 adjacent to v2_j.
+           that v2_j_adj vertex in sg2 maps in reverse to v1_i3.
+           new assignments:
+             V1_i2 &lt;—&gt;  V2_j_adj
+             V1_i3 &lt;—&gt; V2_j2
+           consistent hanges need to be made to the reverse assign array also.
+        */
+                         
+<span class="fc" id="L750">        int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);</span>
+<span class="fc" id="L751">        TIntIntMap revAssign = reverseAssignment(assign);</span>
+<span class="fc" id="L752">        double min = tau;</span>
+        
+        int iV1, iV2, jV1, jV2, iV3, jV1Adj, jj;
+        int[] jV1AdjIdxs;
+<span class="fc bfc" id="L756" title="All 2 branches covered.">        for (PairInt edge1 : e1Labels.keySet()) {</span>
+<span class="fc" id="L757">            iV1 = edge1.getX();</span>
+<span class="fc" id="L758">            iV2 = edge1.getY();</span>
+<span class="fc" id="L759">            jV1 = assign[iV1];</span>
+<span class="fc" id="L760">            jV2 = assign[iV2];</span>
+            
+<span class="fc bfc" id="L762" title="All 2 branches covered.">            if (e2Labels.containsKey(new PairInt(jV1, jV2)) ||</span>
+<span class="fc bfc" id="L763" title="All 2 branches covered.">                e2Labels.containsKey(new PairInt(jV2, jV1))) {</span>
+<span class="fc" id="L764">                continue;</span>
+            }
+            
+<span class="fc" id="L767">            jV1AdjIdxs = sg2[jV1].origVIndexes;</span>
+<span class="fc bfc" id="L768" title="All 2 branches covered.">            for (jj = 0; jj &lt; jV1AdjIdxs.length; ++jj) {</span>
+<span class="fc" id="L769">                jV1Adj = jV1AdjIdxs[jj];</span>
+<span class="fc" id="L770">                iV3 = revAssign.get(jV1Adj);</span>
+                
+                // tentative changes to assign
+                //V1_i2 &lt;—&gt;  V2_j_adj, V1_i3 &lt;—&gt; V2_j2
+<span class="fc" id="L774">                assign[iV2] = jV1Adj;</span>
+<span class="fc" id="L775">                assign[iV3] = jV2;</span>
+                
+<span class="fc bfc" id="L777" title="All 2 branches covered.">                if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L778">                    tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);</span>
+                } else {
+<span class="fc" id="L780">                    tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
+                }
+                
+<span class="pc bpc" id="L783" title="1 of 2 branches missed.">                if (tau &lt; min) {</span>
+<span class="nc" id="L784">                   min = tau;</span>
+<span class="nc" id="L785">                   System.arraycopy(assign, 0, refinedAssign, 0, assign.length);</span>
+<span class="nc" id="L786">                   revAssign.put(jV1Adj, iV2);</span>
+<span class="nc" id="L787">                   revAssign.put(jV2, iV3);</span>
+<span class="nc" id="L788">                   break;</span>
+                } else {
+                   //restore assign to latest refineAssign
+<span class="fc" id="L791">                   System.arraycopy(refinedAssign, 0, assign, 0, assign.length);</span>
+                }
+            }
+<span class="fc" id="L794">        }</span>
+<span class="fc" id="L795">        return min;</span>
+    }
+    
+    /**
+     * calculates the optimal edit distance by permuting the vertex assignments
+     * to find the one which results in the minimum C(g, h, P).  
+     * (see section 4.3 of Zeng et al. 2009).
+     * the runtime complexity is n!.
+     * @param sg1 star structures for graph g1
+     * @param sg2 star structures for graph g2
+     * @param e1Labels map having key = edge in graph g1, value = edge label
+     * @param e2Labels map having key = edge in graph g2, value = edge label
+     * @param a1 adjacency matrix for graph g1
+     * @param a2 adjacency matrix for graph g2
+     * @param refinedAssign input initial vertex assignments and output
+     * refined vertex assignments.
+     * @param tau the sub-optimal edit distance C(g,h,P) where
+     * P is formed from the given assignments in refinedAssign.
+     * @return
+     * @throws java.lang.InterruptedException exception thrown if thread is 
+     * interrupted.  The permutation code is running in a separate thread using
+     * a semaphore model to pause and continue execution.
+     */
+    protected double optimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
+        TObjectIntMap&lt;PairInt&gt; e1Labels, TObjectIntMap&lt;PairInt&gt; e2Labels, int[][] a1, int[][] a2,
+        int[] refinedAssign, double tau) throws InterruptedException {
+                
+<span class="fc" id="L822">        int[] assign = new int[refinedAssign.length];</span>
+<span class="fc" id="L823">        double min = tau;</span>
+        
+<span class="fc" id="L825">        PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));</span>
+        
+<span class="fc bfc" id="L827" title="All 2 branches covered.">        while (perm.hasNext()) {</span>
+            
+<span class="fc" id="L829">            perm.getNext(assign);</span>
+                        
+<span class="fc bfc" id="L831" title="All 2 branches covered.">            if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L832">                tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);</span>
+            } else {
+<span class="fc" id="L834">                tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
+            }
+            
+<span class="fc bfc" id="L837" title="All 2 branches covered.">            if (tau &lt; min) {</span>
+<span class="fc" id="L838">                min = tau;</span>
+<span class="fc" id="L839">                System.arraycopy(assign, 0, refinedAssign, 0, assign.length);</span>
+            }            
+        }
+        
+<span class="fc" id="L843">        return min;</span>
+    }
+
+    protected TIntIntMap reverseAssignment(int[] assign) {
+<span class="fc" id="L847">        TIntIntMap r = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L848" title="All 2 branches covered.">        for (int i = 0; i &lt; assign.length; ++i) {</span>
+<span class="fc" id="L849">            r.put(assign[i], i);</span>
+        }
+<span class="fc" id="L851">        return r;</span>
+    }
+
+    static Norm normalize(StarStructure[] sg1, StarStructure[] sg2) {
+<span class="fc" id="L855">        Norm norm = new Norm();</span>
+        // order so that sg1.length &gt;= sg2.length
+<span class="fc bfc" id="L857" title="All 2 branches covered.">        if (sg1.length &lt; sg2.length) {</span>
+<span class="fc" id="L858">            StarStructure[] tmp = sg1;</span>
+<span class="fc" id="L859">            sg1 = sg2;</span>
+<span class="fc" id="L860">            sg2 = tmp;</span>
+<span class="fc" id="L861">            norm.swapped = true;</span>
+<span class="fc" id="L862">        } else {</span>
+<span class="fc" id="L863">            norm.swapped = false;</span>
+        }
+        StarStructure s;
+        int k, i, rIdx;
+<span class="fc bfc" id="L867" title="All 2 branches covered.">        if (sg1.length &gt; sg2.length) {</span>
+<span class="fc" id="L868">            k = sg1.length - sg2.length;</span>
+            //insert k vertices to sg2 and set their labels to eps
+<span class="fc" id="L870">            StarStructure[] _sg2 = new StarStructure[sg1.length];</span>
+<span class="fc" id="L871">            System.arraycopy(sg2, 0, _sg2, 0, sg2.length);</span>
+
+<span class="fc bfc" id="L873" title="All 2 branches covered.">            for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L874">                rIdx = sg2.length + i;</span>
+<span class="fc" id="L875">                s = new StarStructure(rIdx, StarStructure.eps,</span>
+                    new int[0], new int[0], new int[0]);
+<span class="fc" id="L877">                _sg2[rIdx] = s;</span>
+            }
+<span class="fc" id="L879">            sg2 = _sg2;</span>
+        }
+<span class="pc bpc" id="L881" title="3 of 4 branches missed.">        assert (sg1.length == sg2.length);</span>
+<span class="fc" id="L882">        norm.sg1 = sg1;</span>
+<span class="fc" id="L883">        norm.sg2 = sg2;</span>
+<span class="fc" id="L884">        return norm;</span>
+    }
+
+    static int[] balancedBipartiteAssignment(double[][] distM) {
+<span class="fc" id="L888">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
+<span class="fc" id="L889">        int[][] hAssign = ha.computeAssignments(MatrixUtil.convertToFloat(distM));</span>
+<span class="pc bpc" id="L890" title="3 of 4 branches missed.">        assert(hAssign.length == distM.length);</span>
+<span class="fc" id="L891">        int[] assign = new int[distM.length];</span>
+        int i1, i2, i; 
+<span class="fc bfc" id="L893" title="All 2 branches covered.">        for (i = 0; i &lt; hAssign.length; ++i) {</span>
+<span class="fc" id="L894">            i1 = hAssign[i][0];</span>
+<span class="fc" id="L895">            i2 = hAssign[i][1];</span>
+<span class="fc" id="L896">            assign[i1] = i2;</span>
+        }
+<span class="fc" id="L898">        return assign;</span>
+    }
+
+    /*
+    let C be an n×n label matrix, 
+        where Ci,j = 1 if l_g(vi) = l_h(uj) (vi ∈ V(g), uj ∈ V(h)),
+         otherwiseCi,j =0. 
+    Next, let P be an orthogonal matrix having the property P P T =P T P =I 
+    where I is the identity matrix. For each per-
+    */
+    
+    /**
+     * an undirected attributed graph
+     */
+    public static class Graph {
+        public final TIntIntMap vLabels;
+        public final TObjectIntMap&lt;PairInt&gt; eLabels;
+        public final TIntObjectMap&lt;TIntSet&gt; adjMap;
+        /**
+         * construct a graph instance using given data structures.  Note that this
+         * method copies by reference and does not copy by value into new
+         * data structures (can use MatrixUtil.copy() methods).
+         * @param adjMap
+         * @param vLabels
+         * @param eLabels 
+         */
+        public Graph(TIntObjectMap&lt;TIntSet&gt; adjMap, TIntIntMap vLabels, TObjectIntMap&lt;PairInt&gt; eLabels) {
+            this.vLabels = vLabels;
+            this.eLabels = eLabels;
+            this.adjMap = adjMap;
+        }
+        
+        private static TObjectIntMap&lt;PairInt&gt; copy(TObjectIntMap&lt;PairInt&gt; a) {
+            TObjectIntMap&lt;PairInt&gt; c = new TObjectIntHashMap&lt;PairInt&gt;();
+
+            TObjectIntIterator&lt;PairInt&gt; iter = a.iterator();
+            PairInt p;
+            int v;
+            while (iter.hasNext()) {
+                iter.advance();
+                p = iter.key();
+                v = iter.value();
+                c.put(p.copy(), v);
+            }
+
+            return c;
+        }
+        
+        public static Graph copy(Graph g) {
+            return new Graph(Graph.copy(g.adjMap), Graph.copy(g.vLabels),
+                Graph.copy(g.eLabels));
+        }
+        
+        private static TIntObjectMap&lt;TIntSet&gt; copy(TIntObjectMap&lt;TIntSet&gt; a) {
+            TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();
+
+            TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();
+            int k;
+            TIntSet v;
+            while (iter.hasNext()) {
+                iter.advance();
+                k = iter.key();
+                v = iter.value();
+                c.put(k, new TIntHashSet(v));
+            }
+
+            return c;
+        }
+
+        private static TIntIntMap copy(TIntIntMap a) {
+            TIntIntMap c = new TIntIntHashMap();
+
+            TIntIntIterator iter = a.iterator();
+            while (iter.hasNext()) {
+                iter.advance();
+                c.put(iter.key(), iter.value());
+            }
+            return c;
+        }
+    }
+    
+    public static class Result {
+        
+        public static enum BOUND {
+            LOWER, SUBOPTIMAL, REFINED_SUBOPTIMAL, OPTIMAL
+        }
+        
+        /**
+         * the graph node assignment w.r.t. the query graph
+         */
+        public final int[] assignment;
+        
+        public final int dbGraphIndex;
+        
+        public final double editCost;
+        
+        public final BOUND bound;
+        
+        public Result(int dbGraphIndex, BOUND bound, int[] assign, double editCost) {
+            this.bound = bound;
+            this.dbGraphIndex = dbGraphIndex;
+            this.assignment = Arrays.copyOf(assign, assign.length);
+            this.editCost = editCost;
+        }
+        
+    }
+
+    static class Norm {
+        StarStructure[] sg1;
+        StarStructure[] sg2;
+        boolean swapped;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

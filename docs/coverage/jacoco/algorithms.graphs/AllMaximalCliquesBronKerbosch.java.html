@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AllMaximalCliquesBronKerbosch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">AllMaximalCliquesBronKerbosch.java</span></div><h1>AllMaximalCliquesBronKerbosch.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * In computer science, the Bron–Kerbosch algorithm is an enumeration algorithm 
+ * for finding all maximal cliques in an undirected graph. That is, it lists all 
+ * subsets of vertices with the two properties that each pair of vertices in 
+ * one of the listed subsets is connected by an edge, and no listed subset can 
+ * have any additional vertices added to it while preserving its complete 
+ * connectivity. The Bron–Kerbosch algorithm was designed by Dutch scientists 
+ * Coenraad Bron and Joep Kerbosch, who published its description in 1973.
+ * https://en.m.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+ * 
+ * 
+ * @author nichole
+ */
+public class AllMaximalCliquesBronKerbosch {
+    
+    private final TIntObjectMap&lt;TIntSet&gt; adjMap;
+    
+    /**
+     * 
+     * @param adjMap adjacency map for an undirected graph. 
+     */
+<span class="fc" id="L32">    public AllMaximalCliquesBronKerbosch(TIntObjectMap&lt;TIntSet&gt; adjMap) {</span>
+<span class="fc" id="L33">        this.adjMap = adjMap;</span>
+<span class="fc" id="L34">    }</span>
+    
+    /*
+    algorithm BronKerbosch2(R, P, X) is
+    if P and X are both empty then
+        report R as a maximal clique
+    choose a pivot vertex u in P ⋃ X
+    for each vertex v in P \ N(u) do
+        BronKerbosch2(R ⋃ {v}, P ⋂ N(v), X ⋂ N(v))
+        P := P \ {v}
+        X := X ⋃ {v}
+    
+    algorithm BronKerbosch3(G) is
+    P = V(G)
+    R = X = empty
+    for each vertex v in a degeneracy ordering of G do
+        BronKerbosch2({v}, P ⋂ N(v), X ⋂ N(v))
+        P := P \ {v}
+        X := X ⋃ {v}
+    */
+    
+    /**
+     * find all maximal cliques in an undirected graph.
+     * The worse case runtime complexity is O(3^(n/3)) which is from
+     *  Moon &amp; Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
+     * &lt;pre&gt;
+     * references https://en.m.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+     * algorithm BronKerbosch3(G)
+     * &lt;/pre&gt;
+     * 
+     * @return 
+     */
+    public List&lt;TIntSet&gt; bronKerBosch() {
+        
+        /*
+        P = V(G)
+        R = X = empty
+        for each vertex v in a degeneracy ordering of G do
+            BronKerbosch2({v}, P ⋂ N(v), X ⋂ N(v))
+            P := P \ {v}
+            X := X ⋃ {v}
+        */
+        
+        // maximal cliques
+<span class="fc" id="L78">        List&lt;TIntSet&gt; mc = new ArrayList&lt;TIntSet&gt;();</span>
+                
+<span class="fc" id="L80">        TIntSet p = extractVertexes(adjMap);</span>
+<span class="fc" id="L81">        TIntSet r = new TIntHashSet();</span>
+<span class="fc" id="L82">        TIntSet x = new TIntHashSet();</span>
+        
+        TIntSet p2, r2, x2;
+        
+<span class="fc" id="L86">        int[] dOrdering = new int[p.size()];</span>
+<span class="fc" id="L87">        DegeneracyOrderingMatulaBeck.findDegeneracyOrder(adjMap, dOrdering);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (int v : dOrdering) {</span>
+
+<span class="fc" id="L90">            r2 = new TIntHashSet(1);</span>
+<span class="fc" id="L91">            r2.add(v);</span>
+<span class="fc" id="L92">            p2 = intersection(p, adjMap.get(v));</span>
+<span class="fc" id="L93">            x2 = intersection(x, adjMap.get(v));</span>
+                    
+<span class="fc" id="L95">            bronKerBosch(r2, p2, x2, mc);</span>
+<span class="fc" id="L96">            p.remove(v);</span>
+<span class="fc" id="L97">            x.add(v);</span>
+        }
+        
+<span class="fc" id="L100">        return mc;</span>
+    }
+        
+    /**
+     * find all maximal cliques in an undirected graph.
+     * The worse case runtime complexity is O(3^(n/3)) which is from
+     *  Moon &amp; Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
+     * 
+     * @param r
+     * @param p
+     * @param x
+     * @param results array to add results to 
+     */
+    public void bronKerBosch(TIntSet r, TIntSet p, TIntSet x, List&lt;TIntSet&gt; results) {
+<span class="fc bfc" id="L114" title="All 4 branches covered.">        if (p.isEmpty() &amp;&amp; x.isEmpty()) {</span>
+            // r is a maximal clique
+<span class="fc" id="L116">            results.add(r);</span>
+<span class="fc" id="L117">            return;</span>
+        }
+<span class="fc" id="L119">        TIntSet px = new TIntHashSet(p);</span>
+<span class="fc" id="L120">        px.addAll(x);</span>
+
+        //choose a pivot vertex u in P ⋃ X
+<span class="fc" id="L123">        int u = px.iterator().next();</span>
+        
+        //P \ N(u)
+<span class="fc" id="L126">        TIntSet pDiffNU = difference(p, adjMap.get(u));</span>
+
+<span class="fc" id="L128">        TIntIterator iter = pDiffNU.iterator();</span>
+        int v;
+        TIntSet r2, p2, x2;
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L132">            v = iter.next();</span>
+<span class="fc" id="L133">            r2 = new TIntHashSet(r);</span>
+<span class="fc" id="L134">            r2.add(v);</span>
+<span class="fc" id="L135">            p2 = intersection(p, adjMap.get(v));</span>
+<span class="fc" id="L136">            x2 = intersection(x, adjMap.get(v));</span>
+<span class="fc" id="L137">            bronKerBosch(r2, p2, x2, results);</span>
+<span class="fc" id="L138">            p.remove(v);</span>
+<span class="fc" id="L139">            x.add(v);</span>
+        }
+<span class="fc" id="L141">    }</span>
+    
+    protected TIntSet intersection(TIntSet a, TIntSet b) {
+        //  (0,1,2,3)  {1,2,4}  C=A-B=0,3  A-C=1,2
+<span class="fc" id="L145">        TIntSet c = new TIntHashSet(a);</span>
+<span class="fc" id="L146">        TIntSet out = new TIntHashSet(a);</span>
+<span class="fc" id="L147">        c.removeAll(b);</span>
+<span class="fc" id="L148">        out.removeAll(c);</span>
+<span class="fc" id="L149">        return out;</span>
+    }
+    
+    private TIntSet extractVertexes(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+<span class="fc" id="L153">        TIntSet vs = new TIntHashSet(adjMap.size());</span>
+<span class="fc" id="L154">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+        TIntIterator iter2;
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L157">            iter.advance();</span>
+<span class="fc" id="L158">            vs.add(iter.key());</span>
+            // all vertexes should be a key too, so no need to visit adjacent
+            /*iter2 = iter.value().iterator();
+            while (iter2.hasNext()) {
+                vs.add(iter2.next());
+            }*/
+        }
+<span class="fc" id="L165">        return vs;</span>
+    }
+
+    //P \ N(u)
+    private TIntSet difference(TIntSet p, TIntSet minus) {
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (p == null) {</span>
+<span class="nc" id="L171">            throw new IllegalArgumentException(&quot;p cannot be null&quot;);</span>
+        }
+<span class="fc" id="L173">        TIntSet d = new TIntHashSet(p);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        if (minus != null) {</span>
+<span class="fc" id="L175">            d.removeAll(minus);</span>
+        }
+<span class="fc" id="L177">        return d;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

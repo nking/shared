@@ -425,14 +425,14 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L425">                    goal = (int)Math.ceil(closestDistPlusTol);</span>
 <span class="fc" id="L426">                    yLow = estimateLowBound(y, goal); </span>
                 }
-<span class="pc bpc" id="L428" title="1 of 4 branches missed.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
+<span class="fc bfc" id="L428" title="All 4 branches covered.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L429">                    closestIndexes.add(p2);</span>
                 }
 <span class="fc bfc" id="L431" title="All 4 branches covered.">                if ((s2 != -1) &amp;&amp; ds2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L432">                    closestIndexes.add(s2);</span>
                 }
 <span class="fc bfc" id="L434" title="All 2 branches covered.">            } else if (dMin &lt;= closestDistPlusTol) {</span>
-<span class="fc bfc" id="L435" title="All 4 branches covered.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
+<span class="pc bpc" id="L435" title="1 of 4 branches missed.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L436">                    closestIndexes.add(p2);</span>
                 }
 <span class="fc bfc" id="L438" title="All 4 branches covered.">                if ((s2 != -1) &amp;&amp; ds2 &lt;= closestDistPlusTol) {</span>
@@ -779,7 +779,7 @@ public class NearestNeighbor2DLong {
 <span class="nc" id="L779">                    goal = dMax;</span>
                 }
 <span class="fc" id="L781">                yLow = estimateLowBound(y, goal);</span>
-<span class="pc bpc" id="L782" title="2 of 6 branches missed.">            } else if (dp2 == closestDist &amp;&amp; (dp2 != Double.MAX_VALUE)</span>
+<span class="pc bpc" id="L782" title="1 of 6 branches missed.">            } else if (dp2 == closestDist &amp;&amp; (dp2 != Double.MAX_VALUE)</span>
                 &amp;&amp; (dp2 &lt;= dMax)) {               
 <span class="fc" id="L784">                closestIndexes.add(p2);</span>
 <span class="fc bfc" id="L785" title="All 2 branches covered.">                if (dp2 == ds2) {</span>

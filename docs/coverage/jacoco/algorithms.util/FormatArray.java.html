@@ -21,10 +21,10 @@ import no.uib.cipr.matrix.DenseMatrix;
 <span class="fc" id="L21">        return sb.toString();</span>
     }
     
-    public static String toString(boolean[] a, String decimalFormat) {
+    public static String toString(int[] a, String format) {
 <span class="nc" id="L25">        StringBuilder sb = new StringBuilder();</span>
 <span class="nc bnc" id="L26" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L27">            sb.append(String.format(decimalFormat, a[i]));</span>
+<span class="nc" id="L27">            sb.append(String.format(format, a[i]));</span>
 <span class="nc bnc" id="L28" title="All 2 branches missed.">            if (i &lt; (a.length - 1)) {</span>
 <span class="nc" id="L29">                sb.append(&quot;,&quot;);</span>
             }
@@ -33,78 +33,90 @@ import no.uib.cipr.matrix.DenseMatrix;
 <span class="nc" id="L33">        return sb.toString();</span>
     }
     
-    public static String toString(double[][] a, String decimalFormat) {
-<span class="fc" id="L37">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="fc" id="L40">                sb.append(String.format(decimalFormat, a[i][j]));</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">                if (j &lt; (a[i].length - 1)) {</span>
-<span class="fc" id="L42">                    sb.append(&quot;,&quot;);</span>
-                }
-<span class="fc" id="L44">                sb.append(&quot; &quot;);</span>
+    public static String toString(boolean[] a, String decimalFormat) {
+<span class="nc" id="L37">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L39">            sb.append(String.format(decimalFormat, a[i]));</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            if (i &lt; (a.length - 1)) {</span>
+<span class="nc" id="L41">                sb.append(&quot;,&quot;);</span>
             }
-<span class="fc" id="L46">            sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L43">            sb.append(&quot; &quot;);</span>
         }
-<span class="fc" id="L48">        return sb.toString();</span>
+<span class="nc" id="L45">        return sb.toString();</span>
+    }
+    
+    public static String toString(double[][] a, String decimalFormat) {
+<span class="fc" id="L49">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L52">                sb.append(String.format(decimalFormat, a[i][j]));</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="fc" id="L54">                    sb.append(&quot;,&quot;);</span>
+                }
+<span class="fc" id="L56">                sb.append(&quot; &quot;);</span>
+            }
+<span class="fc" id="L58">            sb.append(&quot;\n&quot;);</span>
+        }
+<span class="fc" id="L60">        return sb.toString();</span>
     }
     
     public static String toString(DenseMatrix a, String decimalFormat) {
-<span class="nc" id="L52">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        for (int i = 0; i &lt; a.numRows(); ++i) {</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">            for (int j = 0; j &lt; a.numColumns(); ++j) {</span>
-<span class="nc" id="L55">                sb.append(String.format(decimalFormat, a.get(i, j)));</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">                if (j &lt; (a.numColumns() - 1)) {</span>
-<span class="nc" id="L57">                    sb.append(&quot;,&quot;);</span>
+<span class="nc" id="L64">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        for (int i = 0; i &lt; a.numRows(); ++i) {</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            for (int j = 0; j &lt; a.numColumns(); ++j) {</span>
+<span class="nc" id="L67">                sb.append(String.format(decimalFormat, a.get(i, j)));</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                if (j &lt; (a.numColumns() - 1)) {</span>
+<span class="nc" id="L69">                    sb.append(&quot;,&quot;);</span>
                 }
-<span class="nc" id="L59">                sb.append(&quot; &quot;);</span>
+<span class="nc" id="L71">                sb.append(&quot; &quot;);</span>
             }
-<span class="nc" id="L61">            sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L73">            sb.append(&quot;\n&quot;);</span>
         }
-<span class="nc" id="L63">        return sb.toString();</span>
+<span class="nc" id="L75">        return sb.toString();</span>
     }
     
     public static String toString(Complex[] a, String decimalFormat) {
-<span class="fc" id="L67">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L69">            sb.append(&quot;(&quot;).append(String.format(decimalFormat, a[i].re()))</span>
-<span class="fc" id="L70">            .append(&quot;, &quot;).append(String.format(decimalFormat, a[i].im()))</span>
-<span class="fc" id="L71">            .append(&quot;j)&quot;);</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">            if (i &lt; a.length - 1) {</span>
-<span class="fc" id="L73">                sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L79">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L81">            sb.append(&quot;(&quot;).append(String.format(decimalFormat, a[i].re()))</span>
+<span class="fc" id="L82">            .append(&quot;, &quot;).append(String.format(decimalFormat, a[i].im()))</span>
+<span class="fc" id="L83">            .append(&quot;j)&quot;);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (i &lt; a.length - 1) {</span>
+<span class="fc" id="L85">                sb.append(&quot;, &quot;);</span>
             }
         }
-<span class="fc" id="L76">        sb.append(&quot;\n&quot;);</span>
-<span class="fc" id="L77">        return sb.toString();</span>
+<span class="fc" id="L88">        sb.append(&quot;\n&quot;);</span>
+<span class="fc" id="L89">        return sb.toString();</span>
     }
 
     public static String toString(int[][] a, String decimalFormat) {
-<span class="fc" id="L81">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="fc" id="L84">                sb.append(String.format(decimalFormat, a[i][j]));</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">                if (j &lt; (a[i].length - 1)) {</span>
-<span class="fc" id="L86">                    sb.append(&quot;,&quot;);</span>
+<span class="fc" id="L93">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L96">                sb.append(String.format(decimalFormat, a[i][j]));</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="fc" id="L98">                    sb.append(&quot;,&quot;);</span>
                 }
-<span class="fc" id="L88">                sb.append(&quot; &quot;);</span>
+<span class="fc" id="L100">                sb.append(&quot; &quot;);</span>
             }
-<span class="fc" id="L90">            sb.append(&quot;\n&quot;);</span>
+<span class="fc" id="L102">            sb.append(&quot;\n&quot;);</span>
         }
-<span class="fc" id="L92">        return sb.toString();</span>
+<span class="fc" id="L104">        return sb.toString();</span>
     }
     
     public static String toString(float[][] a, String decimalFormat) {
-<span class="nc" id="L96">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="nc" id="L99">                sb.append(String.format(decimalFormat, a[i][j]));</span>
-<span class="nc bnc" id="L100" title="All 2 branches missed.">                if (j &lt; (a[i].length - 1)) {</span>
-<span class="nc" id="L101">                    sb.append(&quot;,&quot;);</span>
+<span class="nc" id="L108">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="nc" id="L111">                sb.append(String.format(decimalFormat, a[i][j]));</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="nc" id="L113">                    sb.append(&quot;,&quot;);</span>
                 }
-<span class="nc" id="L103">                sb.append(&quot; &quot;);</span>
+<span class="nc" id="L115">                sb.append(&quot; &quot;);</span>
             }
-<span class="nc" id="L105">            sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L117">            sb.append(&quot;\n&quot;);</span>
         }
-<span class="nc" id="L107">        return sb.toString();</span>
+<span class="nc" id="L119">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

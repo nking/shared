@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamicTimeWarpingBarycenterAveraging.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.fpetitjean.dba</a> &gt; <span class="el_source">DynamicTimeWarpingBarycenterAveraging.java</span></div><h1>DynamicTimeWarpingBarycenterAveraging.java</h1><pre class="source lang-java linenums">package thirdparty.fpetitjean.dba;
+
+/**
+ * Dynamic Time Warping (DTW) Barycenter Averaging
+ * is used to globally aligning temporal sequences of different speeds and measure their similarity.
+ * 
+ * code from publication
+ * &lt;pre&gt;
+ * &quot;A global averaging method for dynamic time warping, with applications to clustering&quot;
+    Petitjean, Ketterlin, &amp; Gancarski 
+    Pattern recognition, 2011 - Elsevier
+ * &lt;/pre&gt;
+ * 
+ * *****************************************************************************
+ * Copyright (C) 2018 Francois PETITJEAN
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ *
+ * source code is available at:
+ * https://github.com/fpetitjean/DBA/blob/master/DBA.java
+ * 
+ * license is available at:
+ * https://github.com/fpetitjean/DBA/blob/master/LICENSE
+ *****************************************************************************
+ */
+import algorithms.util.FormatArray;
+import static java.lang.Math.sqrt;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+/**
+ * This toy class show the use of DBA.
+ *
+ * @author Francois Petitjean
+ */
+<span class="nc" id="L48">public class DynamicTimeWarpingBarycenterAveraging {</span>
+
+    static final long serialVersionUID = 1L;
+
+    private final static int NIL = -1;
+    private final static int DIAGONAL = 0;
+    private final static int LEFT = 1;
+    private final static int UP = 2;
+
+    // encoding that 0 =&gt; (-1,-1), 1 =&gt; (0,-1), 2=&gt; (-1,0)
+<span class="fc" id="L58">    private final static int[] moveI = {-1, 0, -1};</span>
+<span class="fc" id="L59">    private final static int[] moveJ = {-1, -1, 0};</span>
+
+    /**
+     * Performs the DBA averaging by first finding the median over a sample,
+     * then doing n iterations of the update.
+     *
+     * @param sequences set of sequences to average
+     * @param nIterations the number of iterations to run it for (default 15)
+     */
+    public static double[] performDBA(double[][] sequences, int nIterations) {
+
+<span class="fc" id="L70">        int maxLength = 0;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int i = 0; i &lt; sequences.length; i++) {</span>
+            // java allows jagged arrays
+<span class="fc" id="L73">            maxLength = Math.max(maxLength, sequences[i].length);</span>
+        }
+<span class="fc" id="L75">        double[][] costMatrix = new double[maxLength][maxLength];</span>
+<span class="fc" id="L76">        int[][] pathMatrix = new int[maxLength][maxLength];</span>
+        
+        //NLK: since calc medoid is at most 50*(sequence.length * sequence.length * sequences[i].length)
+        //     which is at most 50*(N^3), could replace this with geometric median using
+        //     DTW for the distance metric.
+        //     see algorithms.optimization.GeometricMedian
+<span class="fc" id="L82">        int medoidIndex = approximateMedoidIndex(sequences, costMatrix);</span>
+        
+<span class="fc" id="L84">        double[] center = Arrays.copyOf(sequences[medoidIndex], sequences[medoidIndex].length);</span>
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; i++) {</span>
+<span class="fc" id="L87">            System.out.println(&quot;center=&quot; + Arrays.toString(center));</span>
+<span class="fc" id="L88">            center = DBAUpdate(center, sequences, costMatrix, pathMatrix);</span>
+        }
+<span class="fc" id="L90">        return center;</span>
+    }
+
+    /**
+     * Performs the DBA averaging by first finding the median over a sample,
+     * then doing n iterations of the update
+     *
+     * @param sequences set of sequences to average
+     */
+    public static double[] performDBA(double[][] sequences) {
+<span class="nc" id="L100">        return performDBA(sequences, 15);</span>
+    }
+
+    /**
+     * 
+     * @param sequences input array of rows of sequences
+     * @param mat output array to hold cost matrices
+     * @return 
+     */
+    private static int approximateMedoidIndex(double[][] sequences, double[][] mat) {
+        /*
+         * we are finding the medoid, as this can take a bit of time, if
+         * there is more than 50 time series, we sample 50 as possible
+         * medoid candidates
+         */
+<span class="fc" id="L115">        ArrayList&lt;Integer&gt; allIndices = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; sequences.length; i++) {</span>
+<span class="fc" id="L117">            allIndices.add(i);</span>
+        }
+<span class="fc" id="L119">        Collections.shuffle(allIndices);</span>
+<span class="fc" id="L120">        ArrayList&lt;Integer&gt; medianIndices = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L121" title="1 of 4 branches missed.">        for (int i = 0; i &lt; sequences.length &amp;&amp; i &lt; 50; i++) {</span>
+<span class="fc" id="L122">            medianIndices.add(allIndices.get(i));</span>
+        }
+
+<span class="fc" id="L125">        int indexMedoid = -1;</span>
+<span class="fc" id="L126">        double lowestSoS = Double.MAX_VALUE;</span>
+
+        //NLK: runtime complexity is at most 50*(sequence.length * sequence.length * sequences[i].length)
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int medianCandidateIndex : medianIndices) {</span>
+<span class="fc" id="L130">            double[] possibleMedoid = sequences[medianCandidateIndex];</span>
+            // NLK: runtime complexity is sequence.length * sequence.length * sequences[i].length
+<span class="fc" id="L132">            double tmpSoS = sumOfSquares(possibleMedoid, sequences, mat);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (tmpSoS &lt; lowestSoS) {</span>
+<span class="fc" id="L134">                indexMedoid = medianCandidateIndex;</span>
+<span class="fc" id="L135">                lowestSoS = tmpSoS;</span>
+            }
+<span class="fc" id="L137">        }</span>
+<span class="fc" id="L138">        return indexMedoid;</span>
+    }
+
+    private static double sumOfSquares(double[] sequence, double[][] sequences, double[][] mat) {
+<span class="fc" id="L142">        double sos = 0.0;</span>
+        // NLK: runtime complexity is sequence.length * sequence.length * sequences[i].length
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int i = 0; i &lt; sequences.length; i++) {</span>
+            // NLK: runtime complexity is S.length * T.length
+<span class="fc" id="L146">            double dist = DTW(sequence, sequences[i], mat);</span>
+<span class="fc" id="L147">            sos += dist * dist;</span>
+        }
+<span class="fc" id="L149">        return sos;</span>
+    }
+
+    /**
+     * calculate dynamic time warping similarity measure.
+     * @param S
+     * @param T
+     * @param costMatrix
+     * @return 
+     */
+    public static double DTW(double[] S, double[] T, double[][] costMatrix) {
+        int i, j;
+<span class="fc" id="L161">        costMatrix[0][0] = squaredDistance(S[0], T[0]);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (i = 1; i &lt; S.length; i++) {</span>
+<span class="fc" id="L163">            costMatrix[i][0] = costMatrix[i - 1][0] + squaredDistance(S[i], T[0]);</span>
+        }
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (j = 1; j &lt; T.length; j++) {</span>
+<span class="fc" id="L166">            costMatrix[0][j] = costMatrix[0][j - 1] + squaredDistance(S[0], T[j]);</span>
+        }
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (i = 1; i &lt; S.length; i++) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            for (j = 1; j &lt; T.length; j++) {</span>
+<span class="fc" id="L170">                costMatrix[i][j] = Min3(costMatrix[i - 1][j - 1], costMatrix[i][j - 1], costMatrix[i - 1][j])</span>
+<span class="fc" id="L171">                        + squaredDistance(S[i], T[j]);</span>
+            }
+        }
+
+<span class="fc" id="L175">        return sqrt(costMatrix[S.length - 1][T.length - 1]);</span>
+    }
+
+    private static double[] DBAUpdate(double[] C, double[][] sequences, double[][] costMatrix, int[][] pathMatrix) {
+<span class="fc" id="L179">        double[] updatedMean = new double[C.length];</span>
+<span class="fc" id="L180">        int[] nElementsForMean = new int[C.length];</span>
+
+        int i, j, move;
+<span class="fc" id="L183">        double res = 0.0;</span>
+<span class="fc" id="L184">        int centerLength = C.length;</span>
+        int seqLength;
+
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        for (double[] T : sequences) {</span>
+<span class="fc" id="L188">            seqLength = T.length;</span>
+
+<span class="fc" id="L190">            costMatrix[0][0] = squaredDistance(C[0], T[0]);</span>
+<span class="fc" id="L191">            pathMatrix[0][0] = DynamicTimeWarpingBarycenterAveraging.NIL;</span>
+
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            for (i = 1; i &lt; centerLength; i++) {</span>
+<span class="fc" id="L194">                costMatrix[i][0] = costMatrix[i - 1][0] + squaredDistance(C[i], T[0]);</span>
+<span class="fc" id="L195">                pathMatrix[i][0] = DynamicTimeWarpingBarycenterAveraging.UP;</span>
+            }
+<span class="fc bfc" id="L197" title="All 2 branches covered.">            for (j = 1; j &lt; seqLength; j++) {</span>
+<span class="fc" id="L198">                costMatrix[0][j] = costMatrix[0][j - 1] + squaredDistance(T[j], C[0]);</span>
+<span class="fc" id="L199">                pathMatrix[0][j] = DynamicTimeWarpingBarycenterAveraging.LEFT;</span>
+            }
+
+<span class="fc bfc" id="L202" title="All 2 branches covered.">            for (i = 1; i &lt; centerLength; i++) {</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                for (j = 1; j &lt; seqLength; j++) {</span>
+<span class="fc" id="L204">                    double diag = costMatrix[i - 1][j - 1], left = costMatrix[i][j - 1], top = costMatrix[i - 1][j];</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">                    if (diag &lt;= left) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                        if (diag &lt;= top) {</span>
+<span class="fc" id="L207">                            res = diag;</span>
+<span class="fc" id="L208">                            move = DIAGONAL;</span>
+                        } else {
+<span class="fc" id="L210">                            res = top;</span>
+<span class="fc" id="L211">                            move = UP;</span>
+                        }
+                    } else {
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">                        if (left &lt;= top) {</span>
+<span class="fc" id="L215">                            res = left;</span>
+<span class="fc" id="L216">                            move = LEFT;</span>
+                        } else {
+<span class="nc" id="L218">                            res = top;</span>
+<span class="nc" id="L219">                            move = UP;</span>
+                        }
+                    }
+
+<span class="fc" id="L223">                    pathMatrix[i][j] = move;</span>
+<span class="fc" id="L224">                    res = costMatrix[i + moveI[move]][j + moveJ[move]];</span>
+<span class="fc" id="L225">                    costMatrix[i][j] = res + squaredDistance(C[i], T[j]);</span>
+                }
+            }
+
+<span class="fc" id="L229">            i = centerLength - 1;</span>
+<span class="fc" id="L230">            j = seqLength - 1;</span>
+            
+            //NLK: if making a version of this algorithm to use geometric median instead of geometric mean
+            //  used here, would need to change this too (though might revise the iteration over each sequence too).
+<span class="fc bfc" id="L234" title="All 2 branches covered.">            while (pathMatrix[i][j] != DynamicTimeWarpingBarycenterAveraging.NIL) {</span>
+<span class="fc" id="L235">                updatedMean[i] += T[j];</span>
+<span class="fc" id="L236">                nElementsForMean[i]++;</span>
+<span class="fc" id="L237">                move = pathMatrix[i][j];</span>
+<span class="fc" id="L238">                i += moveI[move];</span>
+<span class="fc" id="L239">                j += moveJ[move];</span>
+            }
+            /*assert (i != 0 || j != 0);
+            updatedMean[i] += T[j];
+            nElementsForMean[i]++;*/
+<span class="pc bpc" id="L244" title="2 of 4 branches missed.">            if (i != 0 || j != 0) {</span>
+<span class="nc" id="L245">                updatedMean[i] += T[j];</span>
+<span class="nc" id="L246">                nElementsForMean[i]++;</span>
+            }
+        }
+
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (int t = 0; t &lt; centerLength; t++) {</span>
+<span class="fc" id="L251">            updatedMean[t] /= nElementsForMean[t];</span>
+        }
+
+<span class="fc" id="L254">        return updatedMean;</span>
+
+    }
+
+    private static double Min3(final double a, final double b, final double c) {
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        if (a &lt; b) {</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">            if (a &lt; c) {</span>
+<span class="fc" id="L261">                return a;</span>
+            } else {
+<span class="fc" id="L263">                return c;</span>
+            }
+        } else {
+<span class="fc bfc" id="L266" title="All 2 branches covered.">            if (b &lt; c) {</span>
+<span class="fc" id="L267">                return b;</span>
+            } else {
+<span class="fc" id="L269">                return c;</span>
+            }
+        }
+    }
+
+    private static int ArgMin3(final double a, final double b, final double c) {
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        if (a &lt; b) {</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">            if (a &lt; c) {</span>
+<span class="nc" id="L277">                return 0;</span>
+            } else {
+<span class="nc" id="L279">                return 2;</span>
+            }
+        } else {
+<span class="nc bnc" id="L282" title="All 2 branches missed.">            if (b &lt; c) {</span>
+<span class="nc" id="L283">                return 1;</span>
+            } else {
+<span class="nc" id="L285">                return 2;</span>
+            }
+        }
+    }
+
+    private static double squaredDistance(double a, double b) {
+<span class="fc" id="L291">        double diff = a - b;</span>
+<span class="fc" id="L292">        return diff * diff;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -359,7 +359,7 @@ import java.util.Stack;
         int si;
 <span class="fc bfc" id="L360" title="All 2 branches covered.">        for (i = 0; i &lt; base10Nodes.length; ++i) {</span>
 <span class="fc" id="L361">            si = base10Nodes[i];</span>
-<span class="pc bpc" id="L362" title="3 of 4 branches missed.">            assert (si != startNode);</span>
+//            assert (si != startNode);
 <span class="fc" id="L363">            path2 = setBits(si, path2, nPathNodesSet + i);</span>
         }
 <span class="fc" id="L365">        return path2;</span>
@@ -476,8 +476,8 @@ import java.util.Stack;
                 }
                 
 <span class="fc" id="L478">                permi = createAMemoNodeBitstring(selPerm);</span>
-<span class="pc bpc" id="L479" title="1 of 2 branches missed.">                if (memo.containsKey(permi)) {</span>
-<span class="nc" id="L480">                    sum2 += memo.get(permi);</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">                if (memo.containsKey(permi)) {</span>
+<span class="fc" id="L480">                    sum2 += memo.get(permi);</span>
                 } else {
                     // add each edge
 <span class="fc bfc" id="L483" title="All 2 branches covered.">                    for (j = 1; j &lt; selPerm.length; ++j) {</span>
@@ -500,7 +500,7 @@ import java.util.Stack;
 <span class="fc" id="L500">    }</span>
 
     protected void compareToMin(long path, double sum) {
-<span class="pc bpc" id="L503" title="3 of 4 branches missed.">        assert (numberOfSetNodes(path) == (dist.length - 1));</span>
+//        assert (numberOfSetNodes(path) == (dist.length - 1));
 
 <span class="fc" id="L505">        int node1 = getBase10NodeIndex(0, path);</span>
 <span class="fc" id="L506">        int noden1 = getBase10NodeIndex(dist.length - 2, path);</span>
