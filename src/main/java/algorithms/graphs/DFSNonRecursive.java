@@ -40,7 +40,7 @@ import java.util.Stack;
 * 
  * @author nichole
  */
-public class DFSIterative {
+public class DFSNonRecursive {
     /**
      * adjacency matrix with connected i->j indicated by the index and each
      *    node in the linked list, respectively.
@@ -68,7 +68,7 @@ public class DFSIterative {
 
     private int time;
 
-    public DFSIterative() {
+    public DFSNonRecursive() {
         
     }
 

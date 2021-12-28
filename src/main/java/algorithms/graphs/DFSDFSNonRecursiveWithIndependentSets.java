@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 
  * @author nichole
  */
-public class DFSIterativeWithIndependentSets {
+public class DFSDFSNonRecursiveWithIndependentSets {
     /**
      * adjacency matrix with connected i->j indicated by the index and each
      *    node in the linked list, respectively.
@@ -88,7 +88,7 @@ public class DFSIterativeWithIndependentSets {
     
     private Level logLevel = Level.FINE;
 
-    public DFSIterativeWithIndependentSets() {
+    public DFSDFSNonRecursiveWithIndependentSets() {
         
     }
 

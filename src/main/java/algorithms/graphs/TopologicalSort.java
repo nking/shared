@@ -65,7 +65,7 @@ public class TopologicalSort {
          
          //DFS dfs = new DFS(this.directedEdges);
          //dfs.walk();
-         DFSIterative dfs = new DFSIterative();
+         DFSNonRecursive dfs = new DFSNonRecursive();
          dfs.walk(directedEdges);
          int[] fIdxs = dfs.getOrderedEndIndexes();
          
