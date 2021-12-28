@@ -75,4 +75,46 @@ public class CuthillMcKeeTest extends TestCase {
             Arrays.equals(expRCM1, rcmIdxs) || Arrays.equals(expRCM2, rcmIdxs)
             || Arrays.equals(expRCM3, rcmIdxs));
     }
+    
+    public void test2() {
+        // test is from https://www.boost.org/doc/libs/1_37_0/libs/graph/example/cuthill_mckee_ordering.cpp
+        Set<PairInt> gE = new HashSet<PairInt>();
+        gE.add(new PairInt(0,3));
+        gE.add(new PairInt(0,5));
+        gE.add(new PairInt(1,2)); //  2 has 1 in, 2 out
+        gE.add(new PairInt(1,4)); //  4 has 2 in, 1 out
+        gE.add(new PairInt(1,6));
+        gE.add(new PairInt(1,9));
+        gE.add(new PairInt(2,3)); //
+        gE.add(new PairInt(2,4)); //
+        gE.add(new PairInt(3,5));
+        gE.add(new PairInt(3,8));
+        gE.add(new PairInt(4,6));
+        gE.add(new PairInt(5,6));
+        gE.add(new PairInt(5,7));
+        gE.add(new PairInt(6,7));
+        
+        /*
+        Sample Output
+          original bandwidth: 8
+          Reverse Cuthill-McKee ordering starting at: 6
+            8 3 0 9 2 5 1 4 7 6 
+            bandwidth: 4
+          Reverse Cuthill-McKee ordering starting at: 0
+            9 1 4 6 7 2 8 5 3 0 
+            bandwidth: 4
+          Reverse Cuthill-McKee ordering:
+            0 8 5 7 3 6 4 2 1 9 
+            bandwidth: 4
+        */
+        
+        int[] expected = new int[]{0, 8, 5, 7, 3, 6, 2, 4, 1, 9};
+        
+        int[] rcmIdxs = CuthillMcKee.rcm(gE);
+        //        0, 8, 5, 7, 3, 6, 2, 4, 1, 9
+        
+        System.out.printf("r=%s\n", Arrays.toString(rcmIdxs));
+        
+        assertTrue(Arrays.equals(expected, rcmIdxs));
+    }
 }
