@@ -1,5 +1,7 @@
 package algorithms.graphs;
 
+import algorithms.misc.MiscMath0;
+import algorithms.scheduling.Misc;
 import algorithms.sort.MiscSorter;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;
@@ -18,12 +20,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- The Reverse Cuthill-McKee (RCM) is an algorithm to reduce the bandwidth of a
- symmetric matrix (remember that an adjacency matrix for an undirected graph
- is symmetric).   The reduction of the bandwidth of a matrix
- reduces storage and computational costs.
+The Reverse Cuthill-McKee (RCM) is an algorithm to reduce the bandwidth of a
+symmetric matrix (remember that an adjacency matrix for an undirected graph
+is symmetric).   The reduction of the bandwidth of a matrix
+reduces storage and computational costs.
  
- From "The Reverse Cuthill-McKee Algorithm in Distributed-Memory"
+From "The Reverse Cuthill-McKee Algorithm in Distributed-Memory"
 2016 Azad, Jacquelin, Buluc & Ng
  
 Since obtaining a reordering to minimize bandwidth is an NP-complete problem, 
@@ -32,10 +34,36 @@ Reverse Cuthill-McKee (RCM), and Sloan’s algorithms [4], [5], [6].
 This paper solely focuses on the RCM algorithm [5] because, 
 with careful algorithm design, it is amenable to 
 massive distributed-memory parallelism – the primary topic of interest of this paper.
-* 
+
+TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
  * @author nichole
  */
-public class ReverseCuthillMcKeeIndexing {
+public class CuthillMcKee {
+    
+    /**
+     * given the adjacency map as pairs of edges, calculate the
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * <pre>
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc & Ng
+
+     * </pre>
+     * @param gE undirected adjacency graph
+     * @return 
+     */
+    public static int[] cuthillMcKeeOrdering(Set<PairInt> gE) {
+        
+        TIntObjectMap<TIntSet> adjMap = createSymmetricAdjMap(gE);
+        
+        return cuthillMcKeeOrdering(adjMap);
+    }
     
     /**
      * given the adjacency map as pairs of edges, calculate the reverse
@@ -59,11 +87,15 @@ public class ReverseCuthillMcKeeIndexing {
         
         TIntObjectMap<TIntSet> adjMap = createSymmetricAdjMap(gE);
         
-        return rcm(adjMap);
+        int[] c = cuthillMcKeeOrdering(adjMap);
+       
+        MiscMath0.reverse(c);
+        
+        return c;
     }
     
     /**
-     * given the adjacency map of an undirected graph, calculate the reverse
+     * given the adjacency map of an undirected graph, calculate the
      * Cuthill-McKee ordering.
      * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
      * of vertices and |E| is the number of edges where an edge is counted
@@ -81,6 +113,33 @@ public class ReverseCuthillMcKeeIndexing {
      * @return 
      */
     public static int[] rcm(TIntObjectMap<TIntSet> adjMap) {
+        
+        int[] c = cuthillMcKeeOrdering(adjMap);
+        
+        MiscMath0.reverse(c);
+        
+        return c;
+    }
+    
+    /**
+     * given the adjacency map of an undirected graph, calculate the
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * <pre>
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc & Ng
+
+     * </pre>
+     * @param adjMap undirected adjacency graph
+     * @return 
+     */
+    public static int[] cuthillMcKeeOrdering(TIntObjectMap<TIntSet> adjMap) {
                 
         // peripheral vertex = vertex with lowest degree
         Set<PairInt> unique = uniqueEdges(adjMap);
@@ -164,8 +223,38 @@ public class ReverseCuthillMcKeeIndexing {
      * @return 
      */
     public static int[] rcm(int[][] a) {
+        
         TIntObjectMap<TIntSet> adjMap = createSymmetricAdjMap(a);
-        return rcm(adjMap);
+        
+        int[] c = cuthillMcKeeOrdering(adjMap);
+        
+        MiscMath0.reverse(c);
+        
+        return c;
+    }
+    
+    /**
+     given the adjacency matrix of an undirected graph (a is symmetric), calculate the reverse
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * <pre>
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc & Ng
+
+     * </pre>
+     * @param a symmetric adjacency matrix where entry a[i][j] > 0 indicates an edge
+     * between vertexes i and j and the graph is undirected.
+     * @return 
+     */
+    public static int[] cuthillMcKeeOrdering(int[][] a) {
+        TIntObjectMap<TIntSet> adjMap = createSymmetricAdjMap(a);
+        return cuthillMcKeeOrdering(adjMap);
     }
     
     /**

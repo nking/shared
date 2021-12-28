@@ -116,7 +116,7 @@ public class DFSTest extends TestCase {
                 fIdxs = dfs.getOrderedEndIndexes();
             } else if (j == 1) {
 
-                DFSIterative dfs2 = new DFSIterative();
+                DFSNonRecursive dfs2 = new DFSNonRecursive();
                 dfs2.walk(connected);
 
                 dIdxs = dfs2.getOrderedBeginIndexes();
@@ -137,7 +137,7 @@ public class DFSTest extends TestCase {
 
                 assertEquals(2, dfs3.getIndependentSets().size());
             } else if (j == 3) {
-                DFSIterativeWithIndependentSets dfs4 = new DFSIterativeWithIndependentSets();
+                DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
                 dfs4.walk(connected);
                 assertEquals(2, dfs4.getIndependentSets().size());
             }
@@ -202,7 +202,7 @@ public class DFSTest extends TestCase {
                 assertEquals(1, dfs3.getIndependentSets().size());
 
             } else if (j == 1) {
-                DFSIterativeWithIndependentSets dfs4 = new DFSIterativeWithIndependentSets();
+                DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
                 dfs4.walk(directedEdges);
                 assertEquals(1, dfs4.getIndependentSets().size());
 
@@ -224,7 +224,7 @@ public class DFSTest extends TestCase {
                 Logger.getLogger(getClass().getSimpleName()).info("ITERATIVE:");
 
             } else if (j == 3) {
-                DFSIterative dfs2 = new DFSIterative();
+                DFSNonRecursive dfs2 = new DFSNonRecursive();
                 dfs2.walk(directedEdges);
 
                 dIdxs = dfs2.getOrderedBeginIndexes();
@@ -329,7 +329,7 @@ public class DFSTest extends TestCase {
 
             } else if (j == 1) {
 
-                DFSIterativeWithIndependentSets dfs4 = new DFSIterativeWithIndependentSets();
+                DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
                 dfs4.walk(connected);
                 assertEquals(2, dfs4.getIndependentSets().size());
             } else if (j == 2) {
@@ -350,7 +350,7 @@ public class DFSTest extends TestCase {
             } else if (j == 3) {
 
                 Logger.getLogger(getClass().getSimpleName()).info("iterative:");
-                DFSIterative dfs2 = new DFSIterative();
+                DFSNonRecursive dfs2 = new DFSNonRecursive();
                 dfs2.walk(connected);
 
                 dIdxs = dfs2.getOrderedBeginIndexes();
@@ -439,7 +439,7 @@ public class DFSTest extends TestCase {
                 
         assertEquals(1, dfs3.getIndependentSets().size());
     
-        DFSIterativeWithIndependentSets dfs4 = new DFSIterativeWithIndependentSets();
+        DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
         dfs4.walk(connected);
         assertEquals(1, dfs4.getIndependentSets().size());
     }

@@ -1500,4 +1500,23 @@ public class MiscMath0 {
         return Math.log(z + Math.sqrt(z*z + 1));
     }
     
+    public static void reverse(int[] a) {
+        
+        int n = a.length;
+        
+        if (n < 2) {
+            return;
+        }
+                
+        int end = n >> 1;
+        int swap, i2;
+        // 0 1 2 3 4
+        for (int i = 0; i < end; i++) {
+            i2 = n - i - 1;
+            swap = a[i];
+            a[i] = a[i2];
+            a[i2] = swap;
+        }
+    }
+    
 }

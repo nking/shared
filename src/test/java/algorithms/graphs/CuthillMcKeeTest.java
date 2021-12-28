@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,9 +11,9 @@ import junit.framework.TestCase;
  *
  * @author nichole
  */
-public class ReverseCuthillMcKeeIndexingTest extends TestCase {
+public class CuthillMcKeeTest extends TestCase {
     
-    public ReverseCuthillMcKeeIndexingTest(String testName) {
+    public CuthillMcKeeTest(String testName) {
         super(testName);
     }
     
@@ -33,14 +34,23 @@ public class ReverseCuthillMcKeeIndexingTest extends TestCase {
         
         int[] expected0 = new int[]{2-1, 1-1, 4-1, 3-1, 5-1, 6-1};
         int[] expected1 = new int[]{2-1, 1-1, 4-1, 3-1, 6-1, 5-1};
-        int[] expected2 = new int[]{4-1, 1-1, 2-1, 3-1, 6-1, 5-1};//
+        int[] expected2 = new int[]{4-1, 1-1, 2-1, 3-1, 6-1, 5-1};
         int[] expected3 = new int[]{4-1, 1-1, 2-1, 3-1, 5-1, 6-1};
         
-        int[] rcmIdxs = ReverseCuthillMcKeeIndexing.rcm(gE);
+        int[] expRCM0 = Arrays.copyOf(expected0, expected0.length);
+        int[] expRCM1 = Arrays.copyOf(expected1, expected1.length);
+        int[] expRCM2 = Arrays.copyOf(expected2, expected2.length);
+        int[] expRCM3 = Arrays.copyOf(expected3, expected3.length);
+        MiscMath0.reverse(expRCM0);
+        MiscMath0.reverse(expRCM1);
+        MiscMath0.reverse(expRCM2);
+        MiscMath0.reverse(expRCM3);
+        
+        int[] rcmIdxs = CuthillMcKee.rcm(gE);
 
-        assertTrue(Arrays.equals(expected0, rcmIdxs) ||
-            Arrays.equals(expected1, rcmIdxs) || Arrays.equals(expected2, rcmIdxs)
-            || Arrays.equals(expected3, rcmIdxs));
+        assertTrue(Arrays.equals(expRCM0, rcmIdxs) ||
+            Arrays.equals(expRCM1, rcmIdxs) || Arrays.equals(expRCM2, rcmIdxs)
+            || Arrays.equals(expRCM3, rcmIdxs));
         
         int[][] a = new int[6][6];
         int i;
@@ -59,10 +69,10 @@ public class ReverseCuthillMcKeeIndexingTest extends TestCase {
         a[5][2] = 1;
         a[4][5] = 1;
         a[5][4] = 1;
-        rcmIdxs = ReverseCuthillMcKeeIndexing.rcm(gE);
+        rcmIdxs = CuthillMcKee.rcm(gE);
         
-        assertTrue(Arrays.equals(expected0, rcmIdxs) ||
-            Arrays.equals(expected1, rcmIdxs) || Arrays.equals(expected2, rcmIdxs)
-            || Arrays.equals(expected3, rcmIdxs));
+        assertTrue(Arrays.equals(expRCM0, rcmIdxs) ||
+            Arrays.equals(expRCM1, rcmIdxs) || Arrays.equals(expRCM2, rcmIdxs)
+            || Arrays.equals(expRCM3, rcmIdxs));
     }
 }
