@@ -170,9 +170,19 @@ public class CuthillMcKee {
         TIntIterator iter;
         int nIdx, i;
         // runtime complexity is O(|V| + |E|*log_2(|E|)
-        while (!q.isEmpty()) {
+        while (!q.isEmpty() && outSet.size() < n) {
             
-            pIdx = q.poll();
+            if (q.isEmpty()) {
+                // find minimum degree vertex which is not in outSet
+                pIdx = findMinDegreeVertex(vertexDegreeMap, outSet);
+                assert(pIdx > -1);
+                out[oIdx] = pIdx;
+                revOut[pIdx] = oIdx;
+                outSet.add(pIdx);
+                oIdx++;
+            } else {
+                pIdx = q.poll();
+            }
             
             adj.clear();
                         
@@ -315,6 +325,25 @@ public class CuthillMcKee {
         int minV = -1;
         while (iter.hasNext()) {
             iter.advance();
+            if (iter.value() < minD) {
+                minV = iter.key();
+                minD = iter.value();
+            }
+        }
+        return minV;
+    }
+    
+    static int findMinDegreeVertex(TIntIntMap vertexDegreeMap, TIntSet outSet) {
+        TIntIntIterator iter = vertexDegreeMap.iterator();
+        int minD = Integer.MAX_VALUE;
+        int minV = -1;
+        int v;
+        while (iter.hasNext()) {
+            iter.advance();
+            v = iter.key();
+            if (outSet.contains(v)) {
+                continue;
+            }
             if (iter.value() < minD) {
                 minV = iter.key();
                 minD = iter.value();
