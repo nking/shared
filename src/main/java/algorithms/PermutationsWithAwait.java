@@ -129,7 +129,6 @@ public class PermutationsWithAwait {
         computationLock.release();        
     }
     
-    //TODO: consider using Callable so run can throw an exception
     private class Permuter implements Runnable {
         private final int[] s;
         final AtomicBoolean permDone;

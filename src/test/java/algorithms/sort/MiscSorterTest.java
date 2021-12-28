@@ -177,9 +177,9 @@ public class MiscSorterTest extends TestCase {
         y[6] =  42;
         x[7] =  20;
         y[7] =  50;
-        x[9] =  30;
+        x[9] =  30; //(30, 53)
         y[9] =  53;
-        x[8] =  50;
+        x[8] =  50; //(50, 53)
         y[8] =  53;
 
         x[10] =  60;
@@ -188,7 +188,6 @@ public class MiscSorterTest extends TestCase {
         y[11] =  60;
         x[12] =  23;
         y[12] =  93;
-
 
         int[] ex = Arrays.copyOf(x, x.length);
     	int[] ey = Arrays.copyOf(y, y.length);
@@ -201,13 +200,13 @@ public class MiscSorterTest extends TestCase {
         ey[8] =  y[9];
         ex[9] =  x[8];
         ey[9] =  y[8];
-
+        
     	MiscSorter.sortBy1stArgThen2nd(y, x);
     	assertTrue(x.length == ex.length);
 
     	for (int i=0; i < ex.length; i++) {
-            assertTrue( Math.abs(ex[i] - x[i]) < 0.01);
-            assertTrue( Math.abs(ey[i] - y[i]) < 0.01);
+            assertEquals( ex[i], x[i]);
+            assertEquals( ey[i], y[i]);
         }
     	
     	boolean caughtException = true;
@@ -236,6 +235,57 @@ public class MiscSorterTest extends TestCase {
             caughtException = true;
         }
         assertTrue(caughtException);
+        
+        // ========= test for sortBy1stArgThen2nd(int[] a1, int[] a2, int[] a3)
+        
+        int[] idxs = new int[13];
+        for (int i = 0; i < idxs.length; ++i) {
+            idxs[i] = i;
+        }
+        int[] exIdx = Arrays.copyOf(idxs, idxs.length);
+        exIdx[4] = 5;
+        exIdx[5] = 4;
+        exIdx[8] = 9;
+        exIdx[9] = 8;
+
+        x[0] =  25;
+        y[0] =  10;
+        x[1] = 105;
+        y[1] =  20;
+        x[2] = 100;
+        y[2] =  30;
+        x[3] =  5;
+        y[3] =  32;
+        x[5] =  90;
+        y[5] =  40;
+
+        x[4] = 112;
+        y[4] =  40;
+        x[6] =  40;
+        y[6] =  42;
+        x[7] =  20;
+        y[7] =  50;
+        x[9] =  30;
+        y[9] =  53;
+        x[8] =  50;
+        y[8] =  53;
+
+        x[10] =  60;
+        y[10] =  60;
+        x[11] =  70;
+        y[11] =  60;
+        x[12] =  23;
+        y[12] =  93;
+        
+        MiscSorter.sortBy1stArgThen2nd(y, x, idxs);
+        assertTrue(x.length == ex.length);
+
+    	for (int i=0; i < ex.length; i++) {
+            assertEquals(ex[i], x[i]);
+            assertEquals(ey[i], y[i]);
+            assertEquals(exIdx[i], idxs[i]);
+        }
+        
     }
     
     public void testSortByFirstArgument_1() {
