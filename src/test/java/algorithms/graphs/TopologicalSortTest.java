@@ -150,10 +150,6 @@ public class TopologicalSortTest extends TestCase {
 
         //assertTrue(Arrays.equals(expResult, result));
         
-        DFSWithIndependentSets dfs3 = new DFSWithIndependentSets();
-        dfs3.walk(connected);
-        System.out.println(dfs3.printIndependentSets());
-        
     }
    
     public void testSort2() {

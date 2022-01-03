@@ -20,7 +20,7 @@ import java.util.Random;
  where a vertex cover is is a subset of a graph's vertices which represents at 
  * least one vertex from every edge in the full graph
  * 
- * optimal vertex cover is np-hard (non-deterministic polynomial class
+ * optimal vertex cover is np-hard - non-deterministic polynomial class
    problems at least as hard as the hardest problems in NP.  No known polynomial
    time algorithm, but one can guess a single solution and verify it.)    
 

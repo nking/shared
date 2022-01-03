@@ -354,6 +354,8 @@ SDM, pp 154–163 (2011)
                 continue;
             }
             
+            // an exponential exact solution would be to use subsets of the
+            //   graph dbi of size q then solve using full graph (which uses filters and then optimal solution which is all permutations).
             throw new UnsupportedOperationException("the filter is implemented, "
                 + "but the approx subgraph search is not yet implemented.  "
                 + " meanwhile, considering the following implemented java projects: "

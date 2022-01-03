@@ -41,7 +41,7 @@ public class DFSTest extends TestCase {
 
         Logger.getLogger(getClass().getSimpleName()).info("test0");
 
-        for (int j = 0; j < 4; ++j) {
+        for (int j = 0; j < 2; ++j) {
 
             // constructing test from Cormen et al.'s "Introduction to Algorithms"
             SimpleLinkedListNode[] connected = new SimpleLinkedListNode[9];
@@ -121,26 +121,7 @@ public class DFSTest extends TestCase {
 
                 dIdxs = dfs2.getOrderedBeginIndexes();
                 fIdxs = dfs2.getOrderedEndIndexes();
-            } else if (j == 2) {
-                DFSWithIndependentSets dfs3 = new DFSWithIndependentSets();
-                dfs3.walk(connected);
-
-                dIdxs = dfs3.getOrderedBeginIndexes();
-                fIdxs = dfs3.getOrderedEndIndexes();
-
-                Logger.getLogger(getClass().getSimpleName()).info("dTimes=" + Arrays.toString(dfs3.getTd()));
-                Logger.getLogger(getClass().getSimpleName()).info("fTimes=" + Arrays.toString(dfs3.getTf()));
-                Logger.getLogger(getClass().getSimpleName()).info("dIndexes=" + Arrays.toString(dIdxs));
-                Logger.getLogger(getClass().getSimpleName()).info("fIndexes=" + Arrays.toString(fIdxs));
-
-                Logger.getLogger(getClass().getSimpleName()).info(dfs3.printIndependentSets());
-
-                assertEquals(2, dfs3.getIndependentSets().size());
-            } else if (j == 3) {
-                DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
-                dfs4.walk(connected);
-                assertEquals(2, dfs4.getIndependentSets().size());
-            }
+            } 
         }
     }
 
@@ -164,7 +145,7 @@ public class DFSTest extends TestCase {
             4, 1, 3, 0, 
             5, 2
          */
-        for (int j = 0; j < 4; ++j) {
+        for (int j = 2; j < 4; ++j) {
             SimpleLinkedListNode[] directedEdges = new SimpleLinkedListNode[6];
             directedEdges[0] = new SimpleLinkedListNode(1); // edge from 0:1
             directedEdges[0].insert(3);                   // edge 0:3
@@ -187,26 +168,7 @@ public class DFSTest extends TestCase {
             expectedNodes1.add(5);
             expectedNodes1.add(2);
 
-            if (j == 0) {
-                DFSWithIndependentSets dfs3 = new DFSWithIndependentSets();
-                dfs3.walk(directedEdges);
-                dIdxs = dfs3.getOrderedBeginIndexes();
-                fIdxs = dfs3.getOrderedEndIndexes();
-
-                Logger.getLogger(getClass().getSimpleName()).info("dTimes=" + Arrays.toString(dfs3.getTd()));
-                Logger.getLogger(getClass().getSimpleName()).info("fTimes=" + Arrays.toString(dfs3.getTf()));
-                Logger.getLogger(getClass().getSimpleName()).info("dIndexes=" + Arrays.toString(dIdxs));
-                Logger.getLogger(getClass().getSimpleName()).info("fIndexes=" + Arrays.toString(fIdxs));
-                Logger.getLogger(getClass().getSimpleName()).info(dfs3.printIndependentSets());
-
-                assertEquals(1, dfs3.getIndependentSets().size());
-
-            } else if (j == 1) {
-                DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
-                dfs4.walk(directedEdges);
-                assertEquals(1, dfs4.getIndependentSets().size());
-
-            } else if (j == 2) {
+            if (j == 2) {
                 DFS dfs = new DFS(directedEdges);
                 dfs.walk();
 
@@ -273,7 +235,7 @@ public class DFSTest extends TestCase {
         
         */
         
-        for (int j = 0; j < 4; ++j) {
+        for (int j = 2; j < 4; ++j) {
         Map<String, Integer> objs = new HashMap<String, Integer>();
         objs.put("shirt", 0);      // belt, tie
         objs.put("belt", 1);       // jacket
@@ -313,26 +275,7 @@ public class DFSTest extends TestCase {
         int[] dIdxs;
         int[] fIdxs;
 
-            if (j == 0) {
-                DFSWithIndependentSets dfs3 = new DFSWithIndependentSets();
-                dfs3.walk(connected);
-                dIdxs = dfs3.getOrderedBeginIndexes();
-                fIdxs = dfs3.getOrderedEndIndexes();
-
-                Logger.getLogger(getClass().getSimpleName()).info("dTimes=" + Arrays.toString(dfs3.getTd()));
-                Logger.getLogger(getClass().getSimpleName()).info("fTimes=" + Arrays.toString(dfs3.getTf()));
-                Logger.getLogger(getClass().getSimpleName()).info("dIndexes=" + Arrays.toString(dIdxs));
-                Logger.getLogger(getClass().getSimpleName()).info("fIndexes=" + Arrays.toString(fIdxs));
-                Logger.getLogger(getClass().getSimpleName()).info(dfs3.printIndependentSets());
-                
-                assertEquals(2, dfs3.getIndependentSets().size());
-
-            } else if (j == 1) {
-
-                DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
-                dfs4.walk(connected);
-                assertEquals(2, dfs4.getIndependentSets().size());
-            } else if (j == 2) {
+            if (j == 2) {
                 Logger.getLogger(getClass().getSimpleName()).info("recursive:");
                 DFS dfs = new DFS(connected);
                 dfs.walk();
@@ -366,81 +309,4 @@ public class DFSTest extends TestCase {
         }
     }
     
-    public void testSort_SimpleDAG() {
-        if (!testSort_SimpleDAG) {
-            return;
-        }
-
-        Logger.getLogger(getClass().getSimpleName()).info("testSort_SimpleDAG");
-        
-        // constructing tests from MIT open courseware
-        // network_optimization/MIT15_082JF10_av03.pdf
-        
-        SimpleLinkedListNode[] connected = new SimpleLinkedListNode[8];
-
-        /*              <5> --------> <0>
-         *            >  |       >     |
-         *         .     V   .         V
-         *      <4> --> <1>           <7> ---> <2>
-         *      >  .                 >        .>
-         *     .     .            .      .
-         *    .         >      .   .
-         *  <6> ------> <3> .
-         */
-        /*
-        expected=[6, 4, 3, 5, 1, 0, 7, 2]
-        result=  [6, 4, 5, 3, 1, 0, 7, 2]
-        6 4 5
-        3
-        1
-        0 7 2
-        
-        dTimes=[1, 2, 3, 7, 9, 11, 12, 15]
-        fTimes=[4, 5, 6, 8, 10, 13, 14, 16]
-        dIndexes=[0, 7, 2, 1, 3, 4, 5, 6]
-        fIndexes=[2, 7, 0, 1, 3, 5, 4, 6]
-        parent=5; set=7, 6, 5, 4, 3, 2, 1, 0, 
-        */
-        
-        for (int i = 0; i < 8; ++i) {
-            connected[i] = new SimpleLinkedListNode();
-        }
-        
-        connected[0].insert(7);
-
-        connected[1].insert(0);
-
-        connected[3].insert(2);
-        connected[3].insert(7);
-
-        connected[4].insert(1);
-        connected[4].insert(5);
-        connected[4].insert(3);
-
-        connected[5].insert(0);
-        connected[5].insert(1);
-
-        connected[6].insert(3);
-        connected[6].insert(4);
-
-        connected[7].insert(2);
-
-           
-        DFSWithIndependentSets dfs3 = new DFSWithIndependentSets();
-        dfs3.walk(connected);
-        int[] dIdxs = dfs3.getOrderedBeginIndexes();
-        int[] fIdxs = dfs3.getOrderedEndIndexes();
-        
-        Logger.getLogger(getClass().getSimpleName()).info("dTimes=" + Arrays.toString(dfs3.getTd()));
-        Logger.getLogger(getClass().getSimpleName()).info("fTimes=" + Arrays.toString(dfs3.getTf()));
-        Logger.getLogger(getClass().getSimpleName()).info("dIndexes=" + Arrays.toString(dIdxs));
-        Logger.getLogger(getClass().getSimpleName()).info("fIndexes=" + Arrays.toString(fIdxs));
-        Logger.getLogger(getClass().getSimpleName()).info(dfs3.printIndependentSets());
-                
-        assertEquals(1, dfs3.getIndependentSets().size());
-    
-        DFSNonRecursiveWithIndependentSets dfs4 = new DFSNonRecursiveWithIndependentSets();
-        dfs4.walk(connected);
-        assertEquals(1, dfs4.getIndependentSets().size());
-    }
 }
