@@ -211,7 +211,8 @@ public class MaximalIndependentSets {
             while (iterV.hasNext()) {
                 v = iterV.next();
                 d = gP.get(v).size();
-                pV = 1./(2.*d);
+                //pV = 1./(2.*d);
+                pV = 1./d;
                 
                 r = rand.nextDouble();
                 System.out.printf("r=%.4f, pV=%.4f\n", r, pV);
