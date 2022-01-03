@@ -74,14 +74,16 @@ public class SetCoverTest extends TestCase {
         for (i = 0; i < n; ++i) {
             sets.add(new TIntHashSet());
         }
-        sets.get(0).addAll(new int[]{0, 1, 2, 3, 4, 5});//S1
+        sets.get(0).addAll(new int[]{0, 1, 2, 3, 4, 5});//S1 
         sets.get(1).addAll(new int[]{4, 5, 7, 8});      //S2
-        sets.get(2).addAll(new int[]{0, 3, 6, 9});      //S3
+        sets.get(2).addAll(new int[]{0, 3, 6, 9});      //S3 
         sets.get(3).addAll(new int[]{1, 4, 6, 7, 10});  //S4
-        sets.get(4).addAll(new int[]{2, 5, 8, 11});     //S5
+        sets.get(4).addAll(new int[]{2, 5, 8, 11});     //S5  
         sets.get(5).addAll(new int[]{9, 10});           //S6
         
         double[] weights = new double[]{2, 3, 3, 5, 1, 2};
+        // 4,3,2,0 cost=1+5+3+2=11
+        // opt=1,2,3  cost=3+3+5=11
         
         int nU = 12;
         
@@ -137,8 +139,24 @@ public class SetCoverTest extends TestCase {
         SetCover sc = new SetCover();
         TIntSet cover = sc.weightedSetsApprox2LgN(nU, sets, weights);
         System.out.printf("cover=%s\n", Arrays.toString(cover.toArray()));
-        // all sets except sets[4]
-        
+
+        // 4,3,2,0    cost=1+5+3+2=11
+        // opt=1,2,3  cost=3+3+5=11      
+        int[] optimalCover = new int[]{1,2,3};
+        TIntIterator iter = cover.iterator();
+        int c = 0;
+        while (iter.hasNext()) {
+            c += weights[iter.next()];
+        }
+        int oc = 0;
+        for (i = 0; i < optimalCover.length; ++i) {
+            oc += weights[optimalCover[i]];
+        }
+        double nOptC = optimalCover.length;
+        double nC = cover.size();
+        double lnN = Math.log(nU);
+        //System.out.printf("%.3f/%.3f=%.3f, ln(%d)=%.3f\n", nC, nOptC, (nC/nOptC), nU, lnN);
+        assertTrue((nC/nOptC) < lnN);
     }
     
     /*

@@ -16,14 +16,23 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ Given a set of elements {1,2,...,n}{1,2,...,n} (called the universe) 
+ * and a collection S of m sets whose union equals the universe, 
+ * the set cover problem is to identify the smallest sub-collection of 
+ * S whose union equals the universe. For example, consider the universe 
+ * U={1,2,3,4,5} and the collection of sets S={1,2,3},{2,4},{3,4},{4,5}.
+ * Clearly the union of S is U. However, we can cover all of the elements 
+ * with the following, smaller number of sets: {1,2,3},{4,5}.
+ 
+ Set Cover is one of Karp's 21 NP-complete problems shown to be NP-complete in 1972.
+  
  A set cover is the smallest vertex cover of a graph,
- where a vertex cover is is a subset of a graph's vertices which represents at 
+ where a vertex cover is a subset of a graph's vertices which represents at 
  * least one vertex from every edge in the full graph
  * 
- * optimal vertex cover is np-hard - non-deterministic polynomial class
-   problems at least as hard as the hardest problems in NP.  No known polynomial
-   time algorithm, but one can guess a single solution and verify it.)    
-
+ * <pre>
+ * https://en.m.wikipedia.org/wiki/Set_cover_problem
+ * </pre>
  * @author nichole
  */
 public class SetCover {
@@ -243,7 +252,8 @@ public class SetCover {
             while (iter.hasNext()) {
                 idx = iter.next();
                 r = rand.nextDouble();
-                if (r >= yProbabilities[idx]) {
+                //System.out.printf("%d) r=%.3f, yP[%d]=%.3f\n", i, r, idx, yProbabilities[idx]);              
+                if (r <= yProbabilities[idx]) {
                     c.add(idx);
                     rm.add(idx);
                 }
@@ -409,7 +419,7 @@ public class SetCover {
             .convertLinearProgramToStandardForm(isMaximization, a, b, c, 
             constraintComparisons, nonnegativityConstraints);
         
-        System.out.printf("Linear Program in standard form=\n%s\n", standForm.toString());
+        //System.out.printf("Linear Program in standard form=\n%s\n", standForm.toString());
 
         return standForm;
     }
