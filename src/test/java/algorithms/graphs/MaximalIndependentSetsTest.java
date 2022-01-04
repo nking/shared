@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.TIntObjectMap;
@@ -85,6 +86,8 @@ public class MaximalIndependentSetsTest extends TestCase {
         
         TIntObjectMap<TIntSet> adj = getTestGraphCube();
         
+        int nV = adj.size();
+       
         /*
         matched: [0, 4]
         matched: [1, 2]
@@ -135,6 +138,15 @@ public class MaximalIndependentSetsTest extends TestCase {
         int[] o2;
         for (TIntSet mi : mis) {
             System.out.printf("maximum: %s\n", Arrays.toString(mi.toArray()));
+            assertTrue(expectedM.contains(mi));
+        }
+        
+        mis = MaximalIndependentSets.findAllMaximum2(adj, adj.size());
+        
+        assertEquals(expectedM.size(), mis.size());
+        
+        for (TIntSet mi : mis) {
+            System.out.printf("maximum2: %s\n", Arrays.toString(mi.toArray()));
             assertTrue(expectedM.contains(mi));
         }
     }

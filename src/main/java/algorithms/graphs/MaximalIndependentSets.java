@@ -326,7 +326,7 @@ public class MaximalIndependentSets {
      * find all maximum independent sets for the given directed graph represented
      * by adjMap.
      * The method internally builds a bipartite graph and then aggregates the
-     * matching sets of vertices into the minimum number of independent sets.
+     * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
      * @param adjMap directed graph G as an adjacency map
      * @param nV the number of vertexes
@@ -383,15 +383,90 @@ public class MaximalIndependentSets {
         
         for (i = 0; i < matched.length; ++i) {
             System.out.printf("matched: %s\n", Arrays.toString(matched[i]));
+            if (matched[i][0] < 0 || matched[i][1] < 0) {
+                continue;
+            }
             if (!(adjMap.containsKey(matched[i][0]) && adjMap.get(matched[i][0]).contains(matched[i][1])) 
               && !(adjMap.containsKey(matched[i][1]) && adjMap.get(matched[i][1]).contains(matched[i][0]))){
                 s.add(new TIntHashSet(matched[i]));
             }
         }
         
+        // -- runtime complexity is O(n) for forming mis --
+        return findAllMaximum(s, adjMap);
+    }
+    
+    /**
+     * find all maximum independent sets for the given directed graph represented
+     * by adjMap.
+     * The method internally builds the complement graph of G, then
+     * the maximum matching bipartite graph and then aggregates the
+     * matching sets of vertices into independent sets of maximum size.
+     * runtime complexity is:
+     * @param adjMap directed graph G as an adjacency map
+     * @param nV the number of vertexes
+     * @return returns a list of all maximum independent sets.  note that a
+     * complete graph will return an empty list.
+     */
+    public static List<TIntSet> findAllMaximum2(TIntObjectMap<TIntSet> adjMap, int nV) {
+                                
+        // === build a cost matrix with all inf's excepting the complement graph's
+        //     edges which are set to 1 ======
+        
+        // --- runtime complexity of graph complement is O(|V|^2) ---
+        Set<PairInt> comp = Complement.graphComplement(adjMap);
+        float[][] matrix = new float[nV][];
+        int i;
+        int j;
+        for (i = 0; i < nV; ++i) {
+            matrix[i] = new float[nV];
+            Arrays.fill(matrix[i], Float.POSITIVE_INFINITY);
+        }
+        for (PairInt p : comp) {
+            if (p.getX() == p.getY()) {
+                continue;
+            }
+            matrix[p.getX()][p.getY()] = 1;
+        }
+        HungarianAlgorithm ha = new HungarianAlgorithm();
+        int[][] matched = ha.computeAssignments(matrix);
+        
+        // === assert that each matched is an independent set and add it to a set of independent sets called s ======
+
+        Set<TIntSet> s = new HashSet<TIntSet>();
+        for (i = 0; i < matched.length; ++i) {
+            System.out.printf("c matched: %s\n", Arrays.toString(matched[i]));
+            if (matched[i][0] < 0 || matched[i][1] < 0) {
+                continue;
+            }
+            if (!(adjMap.containsKey(matched[i][0]) && adjMap.get(matched[i][0]).contains(matched[i][1])) 
+              && !(adjMap.containsKey(matched[i][1]) && adjMap.get(matched[i][1]).contains(matched[i][0]))){
+                s.add(new TIntHashSet(matched[i]));
+            }
+        }
+        
+        // -- runtime complexity is O(n) for forming mis --
+        return findAllMaximum(s, adjMap);
+    }
+    
+    /**
+     * find all maximum independent sets for the given directed graph represented
+     * by adjMap.
+     * The method internally builds a bipartite graph and then aggregates the
+     * matching sets of vertices into independent sets of maximum size.
+     * runtime complexity is:
+     * @param adjMap directed graph G as an adjacency map
+     * @return returns a list of all maximum independent sets.  note that a
+     * complete graph will return an empty list.
+     */
+    static List<TIntSet> findAllMaximum(Set<TIntSet> s, TIntObjectMap<TIntSet> adjMap) {
+        
         if (s.isEmpty()) {
             return new ArrayList<TIntSet>();
         }
+        
+        int u, v, j;
+        TIntIterator iter2;
         
         // -- runtime complexity is O(n) for forming mis --
         
