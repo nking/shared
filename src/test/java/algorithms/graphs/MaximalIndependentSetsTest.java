@@ -79,70 +79,11 @@ public class MaximalIndependentSetsTest extends TestCase {
         assertTrue(found);
     }
     
-    public void testMaximalWithBipartite() {
+    public void testMaximumWithBipartite() {
         
-        System.out.println("testMaximalWithBipartite");
+        System.out.println("testMaximumWithBipartite");
         
         TIntObjectMap<TIntSet> adj = getTestGraphCube();
-        
-        int nV = adj.size();
-        
-        // === build a cost matrix with all 1's excepting the diagonal and existing edges
-        //     which are set to infinity ======
-        
-        float[][] matrix = new float[nV][];
-        int i;
-        int j;
-        for (i = 0; i < nV; ++i) {
-            matrix[i] = new float[nV];
-            Arrays.fill(matrix[i], 1);
-            matrix[i][i] = Float.POSITIVE_INFINITY;
-        }
-        TIntObjectIterator<TIntSet> iter = adj.iterator();
-        TIntSet set;
-        TIntIterator iter2;
-        int u;
-        int v;
-        while (iter.hasNext()) {
-            iter.advance();
-            u = iter.key();
-            set = iter.value();
-            if (set == null || set.isEmpty()) {
-                continue;
-            }
-            iter2 = set.iterator();
-            while (iter2.hasNext()) {
-                v = iter2.next();
-                matrix[u][v] = Float.POSITIVE_INFINITY;
-            }
-        }
-        
-        //TOOD: consider cases where bipartite doesn't produce MIS.
-        //      e.g. complete graphs?  every item in matrix would be infinity, so
-        //       one would need to either to put responsiblity onto the user of graph not
-        //       being complete, or assert the condition at start of method, or let
-        //       bipartite proceed and then check that each matched pair is
-        //       an independent set.  the later is useful for all graphs and
-        //       only adds a linear runtime complexity to the algorithm.)
-                        
-        HungarianAlgorithm ha = new HungarianAlgorithm();
-        int[][] matched = ha.computeAssignments(matrix);
-        
-        // === assert that each matched is an independent set and add it to a set of independent sets called s ======
-
-        Set<TIntSet> s = new HashSet<TIntSet>();
-        
-        for (i = 0; i < matched.length; ++i) {
-            System.out.printf("matched: %s\n", Arrays.toString(matched[i]));
-            if (!(adj.containsKey(matched[i][0]) && adj.get(matched[i][0]).contains(matched[i][1])) 
-              && !(adj.containsKey(matched[i][1]) && adj.get(matched[i][1]).contains(matched[i][0]))){
-                s.add(new TIntHashSet(matched[i]));
-            }
-        }
-        
-        if (s.isEmpty()) {
-            // return null
-        }
         
         /*
         matched: [0, 4]
@@ -173,54 +114,28 @@ public class MaximalIndependentSetsTest extends TestCase {
         runtime: 2*1 + 2*2 + 2*4 + 2*6 = 2 + 24 = 2 + summation(2*(2*i) from i=1 to n-1)
         so is O(n)
         
-        the maximal independent sets are
+        the maximum maximal independent sets are
         {0, 4, 5, 7} <-- maximum
-        {1, 2, 6, 3} <-- maximum
+        {1, 2, 3, 6} <-- maximum
         {0, 6}
         {2, 7}
         {1, 5}
         {4, 3}
         */
         
-        // find compatible
-        boolean notAdded;
-        boolean hasEdge;
-        TIntSet m;
-        int nMIS;
-        List<TIntSet> mis = new ArrayList<TIntSet>();
-        TIntIterator iter3;
-        for (TIntSet si : s) {
-            notAdded = true;
-            nMIS = mis.size();
-            for (j = 0; j < nMIS; ++j) {
-                m = mis.get(j);
-                // check whether any element of m, along with si elements, is an edge in graph G represented by adjMap
-                hasEdge = false;
-                iter2 = m.iterator();
-                while (iter2.hasNext()) {
-                    v = iter2.next();
-                    iter3 = si.iterator();
-                    while (!hasEdge && iter3.hasNext()) {
-                        u = iter3.next();
-                        if ((adj.containsKey(u) && adj.get(u).contains(v))
-                        || (adj.containsKey(v) && adj.get(v).contains(u))) {
-                            hasEdge = true;
-                            break;
-                        }
-                    }
-                }
-                if (!hasEdge) {
-                    m.addAll(si);
-                    notAdded = false;
-                }
-            }
-            if (notAdded) {
-                mis.add(new TIntHashSet(si));
-            }
-        }
+        List<TIntSet> expectedM = new ArrayList<TIntSet>();
+        expectedM.add(new TIntHashSet(new int[]{0, 4, 5, 7}));
+        expectedM.add(new TIntHashSet(new int[]{1, 2, 3, 6}));
         
+        List<TIntSet> mis = MaximalIndependentSets.findAllMaximum(adj, adj.size());
+        
+        assertEquals(expectedM.size(), mis.size());
+        
+        int[] o1;
+        int[] o2;
         for (TIntSet mi : mis) {
             System.out.printf("maximum: %s\n", Arrays.toString(mi.toArray()));
+            assertTrue(expectedM.contains(mi));
         }
     }
 

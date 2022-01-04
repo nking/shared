@@ -14,8 +14,11 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import thirdparty.HungarianAlgorithm;
 
 /**
  *
@@ -317,6 +320,135 @@ public class MaximalIndependentSets {
         }
         
         return indep;
+    }
+    
+    /**
+     * find all maximum independent sets for the given directed graph represented
+     * by adjMap.
+     * The method internally builds a bipartite graph and then aggregates the
+     * matching sets of vertices into the minimum number of independent sets.
+     * runtime complexity is:
+     * @param adjMap directed graph G as an adjacency map
+     * @param nV the number of vertexes
+     * @return returns a list of all maximum independent sets.  note that a
+     * complete graph will return an empty list.
+     */
+    public static List<TIntSet> findAllMaximum(TIntObjectMap<TIntSet> adjMap, int nV) {
+                                
+        // === build a cost matrix with all 1's excepting the diagonal and existing edges
+        //     which are set to infinity ======
+        
+        float[][] matrix = new float[nV][];
+        int i;
+        int j;
+        for (i = 0; i < nV; ++i) {
+            matrix[i] = new float[nV];
+            Arrays.fill(matrix[i], 1);
+            matrix[i][i] = Float.POSITIVE_INFINITY;
+        }
+        TIntObjectIterator<TIntSet> iter = adjMap.iterator();
+        TIntSet set;
+        TIntIterator iter2;
+        int u;
+        int v;
+        while (iter.hasNext()) {
+            iter.advance();
+            u = iter.key();
+            set = iter.value();
+            if (set == null || set.isEmpty()) {
+                continue;
+            }
+            iter2 = set.iterator();
+            while (iter2.hasNext()) {
+                v = iter2.next();
+                matrix[u][v] = Float.POSITIVE_INFINITY;
+            }
+        }
+        
+        //TOOD: consider cases where bipartite doesn't produce MIS.
+        //      e.g. complete graphs?  every item in matrix would be infinity, so
+        //       one would need to either to put responsiblity onto the user of graph not
+        //       being complete, or assert the condition at start of method, or let
+        //       bipartite proceed and then check that each matched pair is
+        //       an independent set.  the later is useful for all graphs and
+        //       only adds a linear runtime complexity to the algorithm.)
+                        
+        // -- runtime complexity for bipartite matching is 
+        HungarianAlgorithm ha = new HungarianAlgorithm();
+        int[][] matched = ha.computeAssignments(matrix);
+        
+        // === assert that each matched is an independent set and add it to a set of independent sets called s ======
+
+        Set<TIntSet> s = new HashSet<TIntSet>();
+        
+        for (i = 0; i < matched.length; ++i) {
+            System.out.printf("matched: %s\n", Arrays.toString(matched[i]));
+            if (!(adjMap.containsKey(matched[i][0]) && adjMap.get(matched[i][0]).contains(matched[i][1])) 
+              && !(adjMap.containsKey(matched[i][1]) && adjMap.get(matched[i][1]).contains(matched[i][0]))){
+                s.add(new TIntHashSet(matched[i]));
+            }
+        }
+        
+        if (s.isEmpty()) {
+            return new ArrayList<TIntSet>();
+        }
+        
+        // -- runtime complexity is O(n) for forming mis --
+        
+        //compatible sets: iterate over each set s to add to existing or m set start new                
+        boolean notAdded;
+        boolean hasEdge;
+        TIntSet m;
+        int nMIS;
+        List<TIntSet> mis = new ArrayList<TIntSet>();
+        TIntIterator iter3;
+        for (TIntSet si : s) {
+            notAdded = true;
+            nMIS = mis.size();
+            for (j = 0; j < nMIS; ++j) {
+                m = mis.get(j);
+                // check whether any element of m, along with si elements, is an edge in graph G represented by adj
+                hasEdge = false;
+                iter2 = m.iterator();
+                while (iter2.hasNext()) {
+                    v = iter2.next();
+                    iter3 = si.iterator();
+                    while (!hasEdge && iter3.hasNext()) {
+                        u = iter3.next();
+                        if ((adjMap.containsKey(u) && adjMap.get(u).contains(v))
+                        || (adjMap.containsKey(v) && adjMap.get(v).contains(u))) {
+                            hasEdge = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasEdge) {
+                    m.addAll(si);
+                    notAdded = false;
+                }
+            }
+            if (notAdded) {
+                mis.add(new TIntHashSet(si));
+            }
+        }
+        
+        // keep only the maximum size maximal sets
+        
+        int maxN = 0;
+        for (j = 0; j < mis.size(); ++j) {
+            m = mis.get(j);
+            if (m.size() > maxN) {
+                maxN = m.size();
+            }
+        }
+        for (j = mis.size() - 1; j > 0; j--) {
+            m = mis.get(j);
+            if (m.size() != maxN) {
+                mis.remove(j);
+            }
+        }        
+        
+        return mis;
     }
 
     static TIntObjectMap<TIntSet> extractInOut(TIntObjectMap<TIntSet> adjMap) {
