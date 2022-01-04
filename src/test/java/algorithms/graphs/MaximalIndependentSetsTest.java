@@ -87,6 +87,9 @@ public class MaximalIndependentSetsTest extends TestCase {
         
         int nV = adj.size();
         
+        // === build a cost matrix with all 1's excepting the diagonal and existing edges
+        //     which are set to infinity ======
+        
         float[][] matrix = new float[nV][];
         int i;
         int j;
@@ -113,15 +116,6 @@ public class MaximalIndependentSetsTest extends TestCase {
                 matrix[u][v] = Float.POSITIVE_INFINITY;
             }
         }
-                
-        HungarianAlgorithm ha = new HungarianAlgorithm();
-        
-        Set<TIntSet> s = new HashSet<TIntSet>();
-        int[][] matched = ha.computeAssignments(matrix);
-        for (i = 0; i < matched.length; ++i) {
-            System.out.printf("matched: %s\n", Arrays.toString(matched[i]));
-            s.add(new TIntHashSet(matched[i]));
-        }
         
         //TOOD: consider cases where bipartite doesn't produce MIS.
         //      e.g. complete graphs?  every item in matrix would be infinity, so
@@ -130,6 +124,25 @@ public class MaximalIndependentSetsTest extends TestCase {
         //       bipartite proceed and then check that each matched pair is
         //       an independent set.  the later is useful for all graphs and
         //       only adds a linear runtime complexity to the algorithm.)
+                        
+        HungarianAlgorithm ha = new HungarianAlgorithm();
+        int[][] matched = ha.computeAssignments(matrix);
+        
+        // === assert that each matched is an independent set and add it to a set of independent sets called s ======
+
+        Set<TIntSet> s = new HashSet<TIntSet>();
+        
+        for (i = 0; i < matched.length; ++i) {
+            System.out.printf("matched: %s\n", Arrays.toString(matched[i]));
+            if (!(adj.containsKey(matched[i][0]) && adj.get(matched[i][0]).contains(matched[i][1])) 
+              && !(adj.containsKey(matched[i][1]) && adj.get(matched[i][1]).contains(matched[i][0]))){
+                s.add(new TIntHashSet(matched[i]));
+            }
+        }
+        
+        if (s.isEmpty()) {
+            // return null
+        }
         
         /*
         matched: [0, 4]
@@ -171,18 +184,43 @@ public class MaximalIndependentSetsTest extends TestCase {
         
         // find compatible
         boolean notAdded;
+        boolean hasEdge;
         TIntSet m;
+        int nMIS;
         List<TIntSet> mis = new ArrayList<TIntSet>();
+        TIntIterator iter3;
         for (TIntSet si : s) {
             notAdded = true;
-            for (j = 0; j < mis.size(); ++j) {
-                m = mis.get(i);
+            nMIS = mis.size();
+            for (j = 0; j < nMIS; ++j) {
+                m = mis.get(j);
                 // check whether any element of m, along with si elements, is an edge in graph G represented by adjMap
-        //paused here
+                hasEdge = false;
+                iter2 = m.iterator();
+                while (iter2.hasNext()) {
+                    v = iter2.next();
+                    iter3 = si.iterator();
+                    while (!hasEdge && iter3.hasNext()) {
+                        u = iter3.next();
+                        if ((adj.containsKey(u) && adj.get(u).contains(v))
+                        || (adj.containsKey(v) && adj.get(v).contains(u))) {
+                            hasEdge = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasEdge) {
+                    m.addAll(si);
+                    notAdded = false;
+                }
             }
             if (notAdded) {
                 mis.add(new TIntHashSet(si));
             }
+        }
+        
+        for (TIntSet mi : mis) {
+            System.out.printf("maximum: %s\n", Arrays.toString(mi.toArray()));
         }
     }
 
