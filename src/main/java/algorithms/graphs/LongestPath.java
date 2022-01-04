@@ -121,7 +121,6 @@ public class LongestPath {
              largest recorded value, and reversing the sequence of vertices found in this way.
         */
         
-        
         // find srcIdx in tsIdxs
         int sIdx = -1;
         int i;
@@ -161,6 +160,7 @@ public class LongestPath {
                     prevMap.put(v2, set);
                 }
                 set.add(v);
+                
                 nhbr = nhbr.getNext();
             }
             
@@ -197,7 +197,7 @@ public class LongestPath {
         
         // back track from maxS to S then reverse the nodes and return that
         TIntList path = new TIntArrayList();
-        int idx = maxDistIdx;//4->3->7
+        int idx = maxDistIdx;
         while (idx > -1) {
             path.add(idx);
             idx = prev[idx];
