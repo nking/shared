@@ -1880,6 +1880,47 @@ public class MatrixUtil {
         }
         return rank;
     }
+
+    /**
+     * given a map called adj having keys and values for each key, 
+     * create a map where the keys are adj.values and the
+     * values are the keys of adj.values.
+     * @param adj
+     * @return 
+     */
+    public static TIntObjectMap<TIntSet> createReverseMap(TIntObjectMap<TIntSet> adj) {
+        TIntObjectMap<TIntSet> r = new TIntObjectHashMap<TIntSet>();
+        
+        TIntObjectIterator<TIntSet> iter = adj.iterator();
+        TIntIterator iterV;
+        TIntSet vSet, rVSet;
+        int u, v;
+        while (iter.hasNext()) {
+            iter.advance();
+            
+            u = iter.key();
+            vSet = iter.value();
+            
+            if (vSet == null || vSet.isEmpty()) {
+                continue;
+            }
+            
+            iterV = vSet.iterator();
+            while (iterV.hasNext()) {
+                v = iterV.next();
+                
+                rVSet = r.get(v);
+                
+                if (rVSet == null) {
+                    rVSet = new TIntHashSet();
+                    r.put(v, rVSet);
+                }
+                rVSet.add(u);
+            }
+        }
+        
+        return r;
+    }
     
     /**
      * class to hold the results of the Singular Value Decomposition

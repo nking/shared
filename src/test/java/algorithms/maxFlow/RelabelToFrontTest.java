@@ -48,8 +48,8 @@ public class RelabelToFrontTest extends TestCase {
         cap.put(new PairInt(3, 1), 7);
         cap.put(new PairInt(3, 4), 10);
         
-        RelabelToFront rtf = new RelabelToFront(adj, cap, srcIdx, sinkIdx);
+        //RelabelToFront rtf = new RelabelToFront(adj, cap, srcIdx, sinkIdx);
         
-        add flow to rtf.TObjectDoubleMap<PairInt> to mimic test state
+        //add flow to rtf.TObjectDoubleMap<PairInt> to mimic test state
     }
 }

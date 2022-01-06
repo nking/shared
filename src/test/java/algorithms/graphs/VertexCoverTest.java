@@ -1,6 +1,7 @@
 package algorithms.graphs;
 
 import algorithms.NAryTreeNode;
+import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming.StandardForm;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIterator;
@@ -189,7 +190,7 @@ public class VertexCoverTest extends TestCase {
         expectedReverseEdges.add(new PairInt(vectorMap.get("D"), vectorMap.get("C")));
         
         VertexCover vc = new VertexCover();        
-        TIntObjectMap<TIntSet> r = vc.reverse(adjMap);
+        TIntObjectMap<TIntSet> r = MatrixUtil.createReverseMap(adjMap);
 
         TIntObjectIterator<TIntSet> iter = r.iterator();
         TIntSet set;

@@ -14,7 +14,6 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
 
 /**
@@ -47,9 +46,21 @@ public class RelabelToFront {
     
     /** rewrite graph adjacency into a map of a key which is the index of vertex u and the values which 
      are the neighbors of vertex u in ordered lists to be accessed by indexes.
-     the neighbors are the edges into u and out of u.  
+     the neighbors are the edges into u and out of u aggregated into a single 
+     sequential list. 
     */
     protected final TIntObjectMap<TIntList> uNMap;
+    
+    /**
+     * a reference to the adjacency map representing the original graph G.
+     * It is the edges out of a vertex.
+     */
+    protected final TIntObjectMap<TIntSet> adj;
+    
+    /**
+     * an adjacency map of the edges into a vertex
+     */
+    protected final TIntObjectMap<TIntSet> revAdj;
     
     /** the indexes are the U vertex numbers.  the values are the current neighbor 
     index (which is vertex v index).
@@ -76,7 +87,11 @@ public class RelabelToFront {
     public RelabelToFront(TIntObjectMap<TIntSet> adj, 
         TObjectDoubleMap<PairInt> cap, int srcIdx, int sinkIdx) {
         
+        this.adj = adj;
+        
         this.uNMap = createAdjLists(adj);
+        
+        this.revAdj = createMapIntoVertices(adj);
         
         this.ell = constructL();
         
@@ -113,48 +128,126 @@ public class RelabelToFront {
         
         while (u != null) {
             
-            dischargeLoop(u.vertex);
+            dischargeLoop(u);
+            
+            // u may now be at the front of the list (modified in dischargeLoop), 
+            //    and in that case, the next u is the 2nd in the list ell.
             
             u = (VertexNode) u.next;
         }
+        
+        throw new UnsupportedOperationException("not yet implemented");
     }
     
     /**
      * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
      * @param u
      * @param v
-     * @return 
+     * @return the residual capacity
      */
     double calculateResidualCapacity(int u, int v) {
-        
+        return calculateResidualCapacity(new PairInt(u, v));
+    }
+    
+    /**
+     * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
+     * @param p edge (u, v)
+     * @return the residual capacity
+     */
+    double calculateResidualCapacity(PairInt p) {
+        if (this.adj.containsKey(p.getX()) &&
+            this.adj.get(p.getX()).contains(p.getY())) {
+            // is an edge in G.E
+            double cUV = this.c.get(p);
+            double fUV = this.f.get(p);
+            return cUV - fUV;
+        } else if (this.revAdj.containsKey(p.getY()) &&
+            this.revAdj.get(p.getY()).contains(p.getX())) {
+            return this.f.get(new PairInt(p.getY(), p.getX()));
+        } else {
+            // is not an edge in G.E
+            return 0;
+        }
     }
 
-    /**
+    /*
      * min(c_f(u, v)) where (u,v) are in path p
      * @param p
      * @return 
-     */
-    double calculateResidualCapacity(PairInt[] p) {
-        
+    double calculateMinResidualCapacity(PairInt[] p) {
+        double min = Double.POSITIVE_INFINITY;
+        double r;
+        for (PairInt pi : p) {
+            r = calculateResidualCapacity(pi);
+            if (r < min) {
+                min = r;
+            }
+        }
+        return min;
     }
+    */
 
     /**
-     * sum flow into u - sum of flow out of u.
+     * sum(flow into u) - sum(flow out of u).
       capacity constraint: for all (u,v) in E, 0 .lte. f(u,v) .lte. c(u,v).
-      resid network: E_f={(u,v) pairs of V in which c_f(u,v) > 0;  
+      residual network: E_f={(u,v) pairs of V in which c_f(u,v) > 0;  
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
      * @param u
-     * @param v
      * @return 
      */
-    double calculateExcessFlow(int u, int v) {
-        
+    double calculateExcessFlow(int u) {
+        double sumToU = calculateSumOfFlow(u, this.revAdj.get(u));
+        double sumFromU = calculateSumOfFlow(u, this.adj.get(u));
+        return sumToU - sumFromU;
+    }
+    
+    /**
+     * sum(flow into u) - sum(flow out of u).
+      capacity constraint: for all (u,v) in E, 0 .lte. f(u,v) .lte. c(u,v).
+      residual network: E_f={(u,v) pairs of V in which c_f(u,v) > 0;  
+          the pairs can be existing edges in E or their reversals.
+      f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
+      note that p is an augmenting path in G_f
+     * @param u
+     * @param v the neighbors of u
+     * @return 
+     */
+    double calculateSumOfFlow(int u, TIntSet v) {
+        if (u == srcIdx) {
+            return 0;
+        }
+        PairInt p;
+        double sum = 0;
+        TIntIterator iter = v.iterator();
+        while (iter.hasNext()) {
+            p = new PairInt(u, iter.next());
+            assert(this.f.containsKey(p));
+            sum += this.f.get(p);
+        }
+        return sum;
     }
 
-    void dischargeLoop(int vertex) {
+    /**
+     * @param uNode
+     */
+    void dischargeLoop(VertexNode uNode) {
+        /*
+        old-height = u.h
+        discharge(u);
+        if (u.h > old-height)
+            move u to the front of the list L
+        */
         
+        int u = uNode.vertex;
+        
+        double oH = h[u];
+        discharge(u);
+        if (h[u] > oH) {
+            ell.unlink(uNode);
+            ell.addFirst(uNode);
+        } 
     }
 
     private DoublyLinkedList<VertexNode> constructL() {
@@ -234,7 +327,6 @@ public class RelabelToFront {
         */
         
         TIntObjectIterator<TIntList> iter = uNMap.iterator();
-        TIntList nhbrList;
         int v, v2;
         int i;
         //for each vertex v in G.V, set h and e to 0
@@ -243,27 +335,39 @@ public class RelabelToFront {
             v = iter.key();
             h[v] = 0;
             eF[v] = 0;
+        }
             
-            // for each edge (u, v) in G.E, set f to 0
-            nhbrList = iter.value();
-            if (nhbrList == null || nhbrList.isEmpty()) {
+        // for each edge (u, v) in G.E, set f to 0
+        //TODO: consider whether to set (v, u) to 0 also
+        TIntObjectIterator<TIntSet> iter2 = adj.iterator();
+        TIntSet nhbrSet;
+        TIntIterator iter3;
+        while (iter2.hasNext()) {
+            iter2.advance();
+            v = iter2.key();
+            
+            nhbrSet = iter2.value();
+            if (nhbrSet == null || nhbrSet.isEmpty()) {
                 continue;
             }
-            for (i = 0; i < nhbrList.size(); ++i) {
-                v2 = nhbrList.get(i);
+            iter3 = nhbrSet.iterator();
+            while (iter3.hasNext()) {
+                v2 = iter3.next();
                 eF[v2] = 0;
             }
         }
         
         h[srcIdx] = uNMap.size();
-        nhbrList = uNMap.get(srcIdx);
-        if (nhbrList == null) {
-            throw new IllegalStateException("uNMap must have an entry for the srcIdx");
+        
+        nhbrSet = adj.get(srcIdx);
+        if (nhbrSet == null) {
+            throw new IllegalStateException("adj must have an entry for the srcIdx");
         }
         PairInt p;
         double cSV;
-        for (i = 0; i < nhbrList.size(); ++i) {
-            v = nhbrList.get(i);
+        iter3 = nhbrSet.iterator();
+        while (iter3.hasNext()) {
+            v = iter3.next();
             p = new PairInt(srcIdx, v);
             cSV = this.c.get(p);
             
@@ -313,6 +417,112 @@ public class RelabelToFront {
         }
         
         return out;
+    }
+
+    TIntObjectMap<TIntSet> createMapIntoVertices(TIntObjectMap<TIntSet> adj) {
+        return MatrixUtil.createReverseMap(adj);
+    }
+    
+    /**
+     * if u is overflowing and all neighbors in E_f are not downhill from u,
+     * relabel increases the height of u to be 1 plus the minimum of the
+     * heights of the neighbors of u that are in E_f.
+     * @throws java.lang.IllegalArgumentException throws exception if a neighbor
+     * of u is eligible for a push operation.
+     * @param u
+     */
+    void relabel(int u) {
+        if (u == srcIdx || u == sinkIdx) {
+            throw new IllegalArgumentException("u cannot be srcIdx or sinkIdx");
+        }
+        
+        TIntList vs = uNMap.get(u);
+        int v;
+        double cf;
+        int minH = Integer.MAX_VALUE;
+        for (int i = 0; i < vs.size(); ++i) {
+            v = vs.get(i);
+            cf = calculateResidualCapacity(u, v);
+            if (cf <= 0) {
+                continue;
+            }
+            // edge is in E_f
+            if (this.h[u] > this.h[v]) { // or more specifically if h.u == (h.v + 1) ?
+                // v is downhill from u so can receive a push, making relabel invalid
+                throw new IllegalStateException("cannot relabel because there is a "
+                    + "neighboring vertex eligible for a push");
+            }
+            // calculate minimum of heights of u neighbors in E_f
+            if (this.h[v] < minH) {
+                minH = this.h[v];
+            }
+        }
+        
+        assert(minH < Integer.MAX_VALUE);
+        
+        this.h[u] = minH + 1;        
+    }
+    
+    /**
+     * The basic operation PUSH(u,v) applies if u is an overflowing vertex, 
+     * c_f(u,v) > 0, and h.u = h.v + 1.
+     * @param u
+     * @param v 
+     * @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
+     * not a positive number or h.u != (h.v + 1).
+     */
+    void push(int u,int v) {
+        
+        assert(uNMap.containsKey(u) && uNMap.get(u).contains(v));
+        
+        double cf = calculateResidualCapacity(u, v);
+        if (cf <= 0) {
+            throw new IllegalStateException("cannot push because c_f("+u+","+v+
+                ")=" + cf + " which is not positive"); 
+        }
+        if (this.h[u] != (this.h[v] + 1)) {
+            throw new IllegalStateException("cannot push because "+u+".h != ("+v+
+                ".h + 1)"); 
+        }
+        double delta = Math.min(eF[u], cf);
+        if (adj.containsKey(u) && adj.get(u).contains(v)) {
+            PairInt p = new PairInt(u, v);
+            double fUV = f.get(p) + delta;
+            f.put(p, fUV);
+        } else {
+            double fVU = 0;
+            PairInt p = new PairInt(v, u);
+            if (f.containsKey(p)) {
+                fVU = f.get(p);
+            }
+            fVU -= delta;
+            f.put(p, fVU);
+        }
+        this.eF[u] -= delta;
+        this.eF[v] += delta;
+    }
+    
+    void discharge(int u) {
+        
+        TIntList uNList = uNMap.get(u);
+        if (uNList == null) {
+            throw new IllegalStateException("vertex " + u + " has no neighbors");
+        }
+        int v;
+        while (eF[u] > 0) {
+            v = this.currNU[u];
+            if (v >= uNList.size()) {
+                relabel(u);
+                this.currNU[u] = 0;
+                continue;
+            }
+            double cf = calculateResidualCapacity(u, v);
+            if (cf > 0 && (h[u] == (h[v] + 1))) {
+                push(u, v);
+            } else {
+                this.currNU[u]++;
+            }
+        }
     }
 
     public static class MaxFlowResults {

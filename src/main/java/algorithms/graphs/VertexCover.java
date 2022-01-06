@@ -3,6 +3,7 @@ package algorithms.graphs;
 import algorithms.TreeTraversal;
 import algorithms.DoublyLinkedList;
 import algorithms.NAryTreeNode;
+import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming;
 import algorithms.optimization.LinearProgramming.SlackForm;
 import algorithms.optimization.LinearProgramming.StandardForm;
@@ -135,7 +136,7 @@ public class VertexCover {
         
         // make a reverse mapping of the graph in order to find edges incident
         //    on to a given vertex.
-        TIntObjectMap<TIntSet> reverseMap = reverse(adjMap);
+        TIntObjectMap<TIntSet> reverseMap = MatrixUtil.createReverseMap(adjMap);
         
         //TIntIntMap c = new TIntIntHashMap();
         TIntSet c = new TIntHashSet();
@@ -264,35 +265,6 @@ public class VertexCover {
             c.put(k, new TIntHashSet(v.toArray()));
         }
         return c;
-    }
-
-    protected TIntObjectMap<TIntSet> reverse(TIntObjectMap<TIntSet> adjMap) {
-        
-        TIntObjectMap<TIntSet> r = new TIntObjectHashMap<TIntSet>();
-        
-        TIntObjectIterator<TIntSet> iter = adjMap.iterator();
-        TIntIterator iterV;
-        TIntSet vSet, rVSet;
-        int u, v;
-        while (iter.hasNext()) {
-            iter.advance();
-            u = iter.key();
-            vSet = iter.value();
-            
-            if (vSet != null && !vSet.isEmpty()) {
-                iterV = vSet.iterator();
-                while (iterV.hasNext()) {
-                    v = iterV.next();
-                    rVSet = r.get(v);
-                    if (rVSet == null) {
-                        rVSet = new TIntHashSet();
-                        r.put(v, rVSet);
-                    }
-                    rVSet.add(u);
-                }
-            }
-        }
-        return r;
     }
 
     protected StandardForm createLinearProgramInStandardForm(

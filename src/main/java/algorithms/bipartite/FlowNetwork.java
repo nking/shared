@@ -1,11 +1,13 @@
 package algorithms.bipartite;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -927,8 +929,7 @@ public class FlowNetwork {
     public void getDeficitRightIndexes(TIntSet deficit) {
 
         // key = right, values = left
-        TIntObjectHashMap<TIntSet> revMap = 
-            createReverseMapOfForwardArcs();
+        TIntObjectMap<TIntSet> revMap = MatrixUtil.createReverseMap(forwardArcs);
         
         for (int i = 0; i < nRight; ++i) {
                         
@@ -1144,34 +1145,6 @@ public class FlowNetwork {
                 "Error in algorithm.  not expecting"
                 + " a fractional flow");
         }
-    }
-
-    private TIntObjectHashMap<TIntSet> createReverseMapOfForwardArcs() {
-        
-        //key=right   values=left
-        TIntObjectHashMap<TIntSet> revMap 
-              = new TIntObjectHashMap<TIntSet>();
-
-        TIntObjectIterator<TIntSet> iter2 = forwardArcs.iterator();
-        for (int ii = forwardArcs.size(); ii-- > 0;) {
-            iter2.advance();
-            int leftIdx = iter2.key();
-            TIntSet rightIdxs = iter2.value();
-            TIntIterator iter3 = rightIdxs.iterator();
-            while (iter3.hasNext()) {
-                int rightIdx = iter3.next();
-                TIntSet leftIdxs;
-                if (!revMap.containsKey(rightIdx)) {
-                    leftIdxs = new TIntHashSet();
-                    revMap.put(rightIdx, leftIdxs);
-                } else {
-                    leftIdxs = revMap.get(rightIdx);
-                } 
-                leftIdxs.add(leftIdx);
-            }
-        }
-        
-        return revMap;
     }
         
     public int calculateNumberOfSaturatedArcs() {
