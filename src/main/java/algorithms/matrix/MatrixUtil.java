@@ -4,6 +4,7 @@ import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.misc.Misc0;
 import algorithms.util.FormatArray;
+import algorithms.util.PairInt;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -22,12 +23,15 @@ import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.iterator.TObjectDoubleIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -4319,6 +4323,65 @@ public class MatrixUtil {
             c.put(key, cSet);
         }
         return c;
+    }
+    
+    public static TObjectDoubleMap<PairInt> copy(TObjectDoubleMap<PairInt> a) {
+        
+        TObjectDoubleMap<PairInt> out = new TObjectDoubleHashMap<PairInt>();
+        
+        TObjectDoubleIterator<PairInt> iter = a.iterator();
+        PairInt p;
+        int i;
+        for (i = 0; i < a.size(); ++i) {
+            iter.advance();
+            p = iter.key();
+            out.put(p.copy(), iter.value());
+        }
+        
+        return out;
+    }
+    
+    /**
+     * create a symmetric adjacency map from a
+     * @param a
+     * @return 
+     */
+    public static TIntObjectMap<TIntSet> copyToSymmetricMap(TIntObjectMap<TIntSet> a) {
+        TIntObjectMap<TIntSet> out = new TIntObjectHashMap<TIntSet>();
+        
+        TIntObjectIterator<TIntSet> iter = a.iterator();
+        TIntSet set, uSet, vSet;
+        TIntIterator iter2;
+        
+        int i, u, v;
+        for (i = 0; i < a.size(); ++i) {
+            iter.advance();
+            
+            u = iter.key();
+            set = iter.value();
+            
+            uSet = out.get(u);
+            if (uSet == null) {
+                uSet = new TIntHashSet();
+                out.put(u, uSet);
+            }
+            
+            iter2 = set.iterator();
+            while (iter2.hasNext()) {
+                v = iter2.next();
+                
+                uSet.add(v);
+                
+                vSet = out.get(v);
+                if (vSet == null) {
+                    vSet = new TIntHashSet();
+                    out.put(v, vSet);
+                }
+                vSet.add(u);
+            }
+        }
+        
+        return out;
     }
     
     public static TIntIntMap copy(TIntIntMap a) {

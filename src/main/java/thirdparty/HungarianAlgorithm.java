@@ -14,6 +14,8 @@ import java.util.*;
  * 
  * An implementation of the classic hungarian algorithm for the assignment
  * problem.
+ * 
+ * This implementation runtime complexity, roughly looks like O(|V|^4).
 
    Hungarian method can solve the assignment problem in
     O(mn + n^2(log n)), where n := |X| = |Y | and m := |E|
@@ -67,15 +69,18 @@ public class HungarianAlgorithm {
         // while still an unassigned column
         while (!allAreCovered(coveredCols)) {
 
+            // runtime complexity is matrix.length^2
             int[] primedZero = primeSomeUncoveredZero(matrix, primesByRow,
                 coveredRows, coveredCols);
 
             boolean changed = true;
 
+            
             while (primedZero == null) {
                 // keep making more zeroes until we find something that we can 
                 // prime (i.e. a zero that is uncovered)
 
+                // runtime complexity is matrix.length^2
                 changed = makeMoreZeroes(matrix, coveredRows, coveredCols);
 
                 if (!changed) {
@@ -237,6 +242,7 @@ public class HungarianAlgorithm {
      * first possible assignable column for a row and returns int[]{assignable
      * row index, assignable column index}.
      *
+     * runtime complexity is |V|^2 which is matrix.length^2
      * @param matrix
      * @param primesByRow
      * @param coveredRows
