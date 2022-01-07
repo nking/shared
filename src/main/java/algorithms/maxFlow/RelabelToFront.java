@@ -130,17 +130,12 @@ public class RelabelToFront {
         
         VertexNode u = ell.peekFirst();
         
-        // terminate after finish list.  since L is a doubly linked, look for u==tail at end of loop
         while (u != null) {
             
             dischargeLoop(u);
             
             // u may now be at the front of the list (modified in dischargeLoop), 
             //    and in that case, the next u is the 2nd in the list ell.
-            
-            if (u.equals(ell.peekLast())) {
-                break;
-            }
             
             u = (VertexNode) u.next;
         }
@@ -453,17 +448,12 @@ public class RelabelToFront {
     private void initUNeighborListPointers() {
         VertexNode u = ell.peekFirst();
         int uIdx;
-        // terminate after finish list.  since L is a doubly linked, look for u==tail at end of loop
         while (u != null) {
             uIdx = u.vertex;
             if (uNMap.containsKey(uIdx) && !uNMap.get(uIdx).isEmpty()) {
                 this.currNU[uIdx] = 0;
             } else {
                 this.currNU[uIdx] = -1;
-            }
-            
-            if (u.equals(ell.peekLast())) {
-                break;
             }
             
             u = (VertexNode) u.next;
@@ -522,7 +512,7 @@ public class RelabelToFront {
         
         System.out.printf("u=%d\n", u);
         
-        System.out.printf("  for V_f=");
+        System.out.printf("  for V_f: ");
         int v;
         double cF;
         int minH = Integer.MAX_VALUE;
@@ -534,7 +524,8 @@ public class RelabelToFront {
                 continue;
             }
             // edge is in E_f
-            if (this.h[u] > this.h[v]) { // or more specifically if h.u == (h.v + 1) ?
+            // h[v] >= h[u] for h to increase by at least 1
+            if (this.h[u] > this.h[v]) {
                 // v is downhill from u so can receive a push, making relabel invalid
                 throw new IllegalStateException("cannot relabel because there is a "
                     + "neighboring vertex eligible for a push");
@@ -596,10 +587,17 @@ public class RelabelToFront {
             }
             fVU -= delta;
             f.put(p, fVU);
-            System.out.printf("  ==> %.3e\n", fVU);
+            System.out.printf("  ==> %.3e for v,u \n", fVU);
         }
         this.eF[u] -= delta;
         this.eF[v] += delta;
+        //DEBUG
+        if (Math.abs(this.eF[u]) <1e-7) {
+            System.out.printf("      removes %d from E_f\n", u);
+        }
+        if (Math.abs(this.eF[v]) <1e-7) {
+            System.out.printf("      removes %d from E_f\n", v);
+        }
     }
     
     protected void discharge(int u) {

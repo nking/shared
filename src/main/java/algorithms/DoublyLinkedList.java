@@ -3,7 +3,8 @@ package algorithms;
 import algorithms.DoublyLinkedList.DoublyLinkedNode;
 
 /**
- *
+ * implementation of a doubly linked list.  note that it is not a circularly
+ * linked list.  specifically, list.head.prev == null and list.tail.next == null.
  * @author nichole
  * @param <T> node type that is or extends DoublyLinkedNode
  */
