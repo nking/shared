@@ -128,15 +128,19 @@ public class RelabelToFront {
     
     public MaxFlowResults findMaxFlow() {
         
-           
         VertexNode u = ell.peekFirst();
         
+        // terminate after finish list.  since L is a doubly linked, look for u==tail at end of loop
         while (u != null) {
             
             dischargeLoop(u);
             
             // u may now be at the front of the list (modified in dischargeLoop), 
             //    and in that case, the next u is the 2nd in the list ell.
+            
+            if (u.equals(ell.peekLast())) {
+                break;
+            }
             
             u = (VertexNode) u.next;
         }
@@ -449,6 +453,7 @@ public class RelabelToFront {
     private void initUNeighborListPointers() {
         VertexNode u = ell.peekFirst();
         int uIdx;
+        // terminate after finish list.  since L is a doubly linked, look for u==tail at end of loop
         while (u != null) {
             uIdx = u.vertex;
             if (uNMap.containsKey(uIdx) && !uNMap.get(uIdx).isEmpty()) {
@@ -456,6 +461,11 @@ public class RelabelToFront {
             } else {
                 this.currNU[uIdx] = -1;
             }
+            
+            if (u.equals(ell.peekLast())) {
+                break;
+            }
+            
             u = (VertexNode) u.next;
         }
     }

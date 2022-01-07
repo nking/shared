@@ -68,12 +68,20 @@ public class RelabelToFrontTest extends TestCase {
         assertEquals(1, rTF.ell.peekFirst().vertex);
         assertEquals(2, ((VertexNode)rTF.ell.peekFirst().next).vertex);
         assertEquals(3, ((VertexNode)rTF.ell.peekFirst().next.next).vertex);
+        // assert
         
         int count = 0;
         VertexNode uNode = rTF.ell.peekFirst();
         while (uNode != null) {
             
             System.out.printf("count=%d\n", count);
+            
+            // assert that all nodes befor u in L have excess==0
+            VertexNode pNode = (VertexNode) uNode.prev;
+            while (pNode != null) {
+                assertTrue(Math.abs(rTF.eF[pNode.vertex]) < 1e-7);
+                pNode = (VertexNode) pNode.prev;
+            }
             
             rTF.dischargeLoop(uNode);
                         
