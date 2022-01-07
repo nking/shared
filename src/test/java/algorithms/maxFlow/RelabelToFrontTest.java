@@ -1,5 +1,6 @@
 package algorithms.maxFlow;
 
+import algorithms.VertexNode;
 import algorithms.util.PairInt;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectDoubleMap;
@@ -48,8 +49,150 @@ public class RelabelToFrontTest extends TestCase {
         cap.put(new PairInt(3, 1), 7);
         cap.put(new PairInt(3, 4), 10);
         
-        //RelabelToFront rtf = new RelabelToFront(adj, cap, srcIdx, sinkIdx);
+        RelabelToFront rTF = new RelabelToFront(adj, cap, srcIdx, sinkIdx);
+        System.out.println("rTF initialized");
+        rTF.print();
         
-        //add flow to rtf.TObjectDoubleMap<PairInt> to mimic test state
+        assertEquals(-26., rTF.eF[0]);
+        assertEquals(12., rTF.eF[1]);
+        assertEquals(14., rTF.eF[2]);
+        assertEquals(0., rTF.eF[3]);
+        assertEquals(0., rTF.eF[4]);
+        assertEquals(5, rTF.h[0]);
+        assertEquals(0, rTF.h[1]);
+        assertEquals(0, rTF.h[2]);
+        assertEquals(0, rTF.h[3]);
+        assertEquals(0, rTF.h[4]);
+        
+        // test expects initial L=1,2,3
+        assertEquals(1, rTF.ell.peekFirst().vertex);
+        assertEquals(2, ((VertexNode)rTF.ell.peekFirst().next).vertex);
+        assertEquals(3, ((VertexNode)rTF.ell.peekFirst().next.next).vertex);
+        
+        int count = 0;
+        VertexNode uNode = rTF.ell.peekFirst();
+        while (uNode != null) {
+            
+            System.out.printf("count=%d\n", count);
+            
+            rTF.dischargeLoop(uNode);
+                        
+            switch(count) {
+                case 0: {
+                    //asserting Fig 26.10(b)
+                    assertEquals(-26., rTF.eF[0]);
+                    assertEquals(0., rTF.eF[1]);
+                    assertEquals(19., rTF.eF[2]);
+                    assertEquals(0., rTF.eF[3]);
+                    assertEquals(7., rTF.eF[4]);
+                    PairInt p = new PairInt(0, 1);
+                    assertEquals(12., rTF.f.get(p));
+                    assertEquals(12., rTF.c.get(p));
+                    p = new PairInt(0, 2);
+                    assertEquals(14., rTF.f.get(p));
+                    assertEquals(14., rTF.c.get(p));
+                    p = new PairInt(1, 2);
+                    assertEquals(5., rTF.f.get(p));
+                    assertEquals(5., rTF.c.get(p));
+                    p = new PairInt(1, 4);
+                    assertEquals(7., rTF.f.get(p));
+                    assertEquals(16., rTF.c.get(p));
+                    p = new PairInt(2, 3);
+                    assertEquals(8., rTF.c.get(p));
+                    p = new PairInt(3, 1);
+                    assertEquals(7., rTF.c.get(p));
+                    p = new PairInt(3, 4);
+                    assertEquals(10., rTF.c.get(p));
+                    break;
+                }
+                case 1: {
+                    //asserting Fig 26.10(c)
+                    assertEquals(-20., rTF.eF[0]);
+                    assertEquals(5., rTF.eF[1]);
+                    assertEquals(0., rTF.eF[2]);
+                    assertEquals(8., rTF.eF[3]);
+                    assertEquals(7., rTF.eF[4]);
+                    PairInt p = new PairInt(0, 1);
+                    assertEquals(12., rTF.f.get(p));
+                    assertEquals(12., rTF.c.get(p));
+                    p = new PairInt(0, 2);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(14., rTF.c.get(p));
+                    p = new PairInt(1, 2);
+                    assertEquals(5., rTF.c.get(p));
+                    p = new PairInt(1, 4);
+                    assertEquals(7., rTF.f.get(p));
+                    assertEquals(16., rTF.c.get(p));
+                    p = new PairInt(2, 3);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(8., rTF.c.get(p));
+                    p = new PairInt(3, 1);
+                    assertEquals(7., rTF.c.get(p));
+                    p = new PairInt(3, 4);
+                    assertEquals(10., rTF.c.get(p));
+                    break;
+                }
+                case 2: {
+                    //asserting Fig 26.10(d)
+                    assertEquals(-20., rTF.eF[0]);
+                    assertEquals(0., rTF.eF[1]);
+                    assertEquals(0., rTF.eF[2]);
+                    assertEquals(8., rTF.eF[3]);
+                    assertEquals(12., rTF.eF[4]);
+                    PairInt p = new PairInt(0, 1);
+                    assertEquals(12., rTF.f.get(p));
+                    assertEquals(12., rTF.c.get(p));
+                    p = new PairInt(0, 2);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(14., rTF.c.get(p));
+                    p = new PairInt(1, 2);
+                    assertEquals(5., rTF.c.get(p));
+                    p = new PairInt(1, 4);
+                    assertEquals(12., rTF.f.get(p));
+                    assertEquals(16., rTF.c.get(p));
+                    p = new PairInt(2, 3);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(8., rTF.c.get(p));
+                    p = new PairInt(3, 1);
+                    assertEquals(7., rTF.c.get(p));
+                    p = new PairInt(3, 4);
+                    assertEquals(10., rTF.c.get(p));
+                    break;
+                }
+                case 3: {
+                    //asserting Fig 26.10(e)
+                    assertEquals(-20., rTF.eF[0]);
+                    assertEquals(0., rTF.eF[1]);
+                    assertEquals(0., rTF.eF[2]);
+                    assertEquals(0., rTF.eF[3]);
+                    assertEquals(20., rTF.eF[4]);
+                    PairInt p = new PairInt(0, 1);
+                    assertEquals(12., rTF.f.get(p));
+                    assertEquals(12., rTF.c.get(p));
+                    p = new PairInt(0, 2);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(14., rTF.c.get(p));
+                    p = new PairInt(1, 2);
+                    assertEquals(5., rTF.c.get(p));
+                    p = new PairInt(1, 4);
+                    assertEquals(12., rTF.f.get(p));
+                    assertEquals(16., rTF.c.get(p));
+                    p = new PairInt(2, 3);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(8., rTF.c.get(p));
+                    p = new PairInt(3, 1);
+                    assertEquals(7., rTF.c.get(p));
+                    p = new PairInt(3, 4);
+                    assertEquals(8., rTF.f.get(p));
+                    assertEquals(10., rTF.c.get(p));
+                    break;
+                }
+                default:
+                    break;
+            }
+            
+            uNode = (VertexNode) uNode.next;
+            count++;
+        }
     }
 }

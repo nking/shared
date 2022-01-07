@@ -2,6 +2,10 @@ package algorithms.matrix;
 
 import algorithms.matrix.MatrixUtil.ProjectionResults;
 import algorithms.util.FormatArray;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
@@ -1676,5 +1680,28 @@ public class MatrixUtilTest extends TestCase {
                 assertEquals(expected[i][j], r[i][j]);
             }
         }
+    }
+    
+    public void testCreateReverseMap() {
+        TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
+        map.put(0, new TIntHashSet(new int[]{1, 2}));
+        map.put(3, new TIntHashSet(new int[]{2}));
+        
+        /*
+        expected results:
+        key    values
+        1      0
+        2      0, 3
+        */
+        TIntObjectMap<TIntSet> revMap = MatrixUtil.createReverseMap(map);
+        assertEquals(2, revMap.size());
+        
+        assertTrue(revMap.containsKey(1));
+        assertTrue(revMap.containsKey(2));
+        assertEquals(1, revMap.get(1).size());
+        assertTrue(revMap.get(1).contains(0));
+        assertEquals(2, revMap.get(2).size());
+        assertTrue(revMap.get(2).contains(0));
+        assertTrue(revMap.get(2).contains(3));
     }
 }

@@ -3,6 +3,7 @@ package algorithms.maxFlow;
 import algorithms.DoublyLinkedList;
 import algorithms.VertexNode;
 import algorithms.matrix.MatrixUtil;
+import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
@@ -77,7 +78,7 @@ public class RelabelToFront {
     /** height of nodes */
     protected final int[] h;
     
-    /** excess flow for a node: flow in exceeds flow out.  vertex s should have -inf.*/
+    /** excess flow for a node: flow in exceeds flow out.*/
     protected final double[] eF;
     
     protected final int srcIdx;
@@ -87,6 +88,9 @@ public class RelabelToFront {
     public RelabelToFront(TIntObjectMap<TIntSet> adj, 
         TObjectDoubleMap<PairInt> cap, int srcIdx, int sinkIdx) {
         
+        this.srcIdx = srcIdx;
+        this.sinkIdx = sinkIdx;
+        
         this.adj = adj;
         
         this.uNMap = createAdjLists(adj);
@@ -95,16 +99,16 @@ public class RelabelToFront {
         
         this.ell = constructL();
         
-        assert(uNMap.size() == ell.size());
+        assert(uNMap.size() == (ell.size() + 2));
         
         this.c = MatrixUtil.copy(cap);
         
         if (srcIdx < 0 || !uNMap.containsKey(srcIdx)) {
-            throw new IllegalArgumentException("srcIdx must be an index in adj");
+            throw new IllegalArgumentException("srcIdx must be a key in adj");
         }
-        
-        this.srcIdx = srcIdx;
-        this.sinkIdx = sinkIdx;
+        if (sinkIdx < 0 || !uNMap.containsKey(sinkIdx)) {
+            throw new IllegalArgumentException("sinkIdx must be a value in adj");
+        }
         
         int nV = uNMap.size();
         this.currNU = new int[nV];
@@ -116,14 +120,15 @@ public class RelabelToFront {
         
         this.eF = new double[nV];
         Arrays.fill(this.eF, Double.NEGATIVE_INFINITY);
-    }
-    
-    public MaxFlowResults findMaxFlow() {
         
         initPreFlow();
                 
         initUNeighborListPointers();
-                
+    }
+    
+    public MaxFlowResults findMaxFlow() {
+        
+           
         VertexNode u = ell.peekFirst();
         
         while (u != null) {
@@ -136,7 +141,13 @@ public class RelabelToFront {
             u = (VertexNode) u.next;
         }
         
-        throw new UnsupportedOperationException("not yet implemented");
+        MaxFlowResults r = new MaxFlowResults();
+        r.srcIdx = this.srcIdx;
+        r.sinkIdx = this.sinkIdx;
+        r.flow = this.f.get(new PairInt(srcIdx, sinkIdx));
+        r.edgeFlows = MatrixUtil.copy(this.f);
+        
+        return r;
     }
     
     /**
@@ -145,7 +156,7 @@ public class RelabelToFront {
      * @param v
      * @return the residual capacity
      */
-    double calculateResidualCapacity(int u, int v) {
+    protected double calculateResidualCapacity(int u, int v) {
         return calculateResidualCapacity(new PairInt(u, v));
     }
     
@@ -154,7 +165,8 @@ public class RelabelToFront {
      * @param p edge (u, v)
      * @return the residual capacity
      */
-    double calculateResidualCapacity(PairInt p) {
+    protected double calculateResidualCapacity(PairInt p) {
+        
         if (this.adj.containsKey(p.getX()) &&
             this.adj.get(p.getX()).contains(p.getY())) {
             // is an edge in G.E
@@ -168,6 +180,43 @@ public class RelabelToFront {
             // is not an edge in G.E
             return 0;
         }
+    }
+    
+    protected void printF() {
+         TObjectDoubleIterator<PairInt> iter = f.iterator();
+         PairInt p;
+         double fP;
+         while (iter.hasNext()) {
+             iter.advance();
+             p = iter.key();
+             fP = iter.value();
+             System.out.printf("f%s = %.3e\n", p.toString(), fP);
+         }
+    }
+    
+    protected void print() {
+        printF();
+        printC();
+        printE();
+        printH();
+    }
+    protected void printC() {
+         TObjectDoubleIterator<PairInt> iter = c.iterator();
+         PairInt p;
+         double cP;
+         while (iter.hasNext()) {
+             iter.advance();
+             p = iter.key();
+             cP = iter.value();
+             System.out.printf("c%s = %.3e\n", p.toString(), cP);
+         }
+    }
+    
+    protected void printE() {
+         System.out.printf("e=%s\n", FormatArray.toString(eF, "%.3e"));
+    }
+    protected void printH() {
+         System.out.printf("h=%s\n", Arrays.toString(h));
     }
 
     /*
@@ -197,7 +246,7 @@ public class RelabelToFront {
      * @param u
      * @return 
      */
-    double calculateExcessFlow(int u) {
+    protected double calculateExcessFlow(int u) {
         double sumToU = calculateSumOfFlow(u, this.revAdj.get(u));
         double sumFromU = calculateSumOfFlow(u, this.adj.get(u));
         return sumToU - sumFromU;
@@ -214,7 +263,7 @@ public class RelabelToFront {
      * @param v the neighbors of u
      * @return 
      */
-    double calculateSumOfFlow(int u, TIntSet v) {
+    protected double calculateSumOfFlow(int u, TIntSet v) {
         if (u == srcIdx) {
             return 0;
         }
@@ -232,7 +281,7 @@ public class RelabelToFront {
     /**
      * @param uNode
      */
-    void dischargeLoop(VertexNode uNode) {
+    protected void dischargeLoop(VertexNode uNode) {
         /*
         old-height = u.h
         discharge(u);
@@ -270,7 +319,7 @@ public class RelabelToFront {
                 continue;
             }
             vNode = new VertexNode(u);
-            vList.add(vNode);
+            vList.addFirst(vNode);
         }
         
         return vList;
@@ -307,10 +356,25 @@ public class RelabelToFront {
             }
         }
         
+        //TODO: use a design pattern to inject this only for tests.
+        //    e.g. aspects can follow the method with byte code enhancement
+        //    that adds this after method completes.
+        //this loop is only used in tests to reverse the order in each nhbrList
+        TIntObjectIterator<TIntList> iter3 = adjLists.iterator();
+        TIntObjectMap<TIntList> out = new TIntObjectHashMap<TIntList>();
+        while (iter3.hasNext()) {
+            iter3.advance();
+            u = iter3.key();
+            nhbrList = iter3.value();
+            nhbrList.reverse();
+            out.put(u, nhbrList);
+        }
+        adjLists = out;
+        
         return adjLists;
     }
 
-    void initPreFlow() {
+    private void initPreFlow() {
         if (uNMap == null) {
             throw new IllegalStateException("uNMap cannot be null");
         }
@@ -419,7 +483,7 @@ public class RelabelToFront {
         return out;
     }
 
-    TIntObjectMap<TIntSet> createMapIntoVertices(TIntObjectMap<TIntSet> adj) {
+    protected TIntObjectMap<TIntSet> createMapIntoVertices(TIntObjectMap<TIntSet> adj) {
         return MatrixUtil.createReverseMap(adj);
     }
     
@@ -431,19 +495,32 @@ public class RelabelToFront {
      * of u is eligible for a push operation.
      * @param u
      */
-    void relabel(int u) {
+    protected void relabel(int u) {
         if (u == srcIdx || u == sinkIdx) {
             throw new IllegalArgumentException("u cannot be srcIdx or sinkIdx");
         }
         
         TIntList vs = uNMap.get(u);
+        
+        System.out.printf("relabel(%d).  N=%s\n", u, Arrays.toString(vs.toArray()));
+        
+        //DEBUG
+            printF();
+            printC();
+            printE();
+            printH();
+        
+        System.out.printf("u=%d\n", u);
+        
+        System.out.printf("  for V_f=");
         int v;
-        double cf;
+        double cF;
         int minH = Integer.MAX_VALUE;
         for (int i = 0; i < vs.size(); ++i) {
             v = vs.get(i);
-            cf = calculateResidualCapacity(u, v);
-            if (cf <= 0) {
+            cF = calculateResidualCapacity(u, v);
+            if (cF == 0) {
+                // not an edge in G.E
                 continue;
             }
             // edge is in E_f
@@ -452,10 +529,19 @@ public class RelabelToFront {
                 throw new IllegalStateException("cannot relabel because there is a "
                     + "neighboring vertex eligible for a push");
             }
+            System.out.printf("h[%d]=%d, ", v, this.h[v]);
             // calculate minimum of heights of u neighbors in E_f
             if (this.h[v] < minH) {
                 minH = this.h[v];
             }
+        }
+        System.out.printf("\n");        
+        System.out.printf("  minH=%d\n", minH);
+        
+        //DEBUG
+        if (!(minH < Integer.MAX_VALUE)) {
+            System.out.printf("ERROR in relabel(%d).  N=%s\n",
+                u, Arrays.toString(vs.toArray()));
         }
         
         assert(minH < Integer.MAX_VALUE);
@@ -471,7 +557,9 @@ public class RelabelToFront {
      * @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
      * not a positive number or h.u != (h.v + 1).
      */
-    void push(int u,int v) {
+    protected void push(int u, int v) {
+        
+        System.out.printf("push(%d, %d)\n", u, v);
         
         assert(uNMap.containsKey(u) && uNMap.get(u).contains(v));
         
@@ -488,6 +576,7 @@ public class RelabelToFront {
         if (adj.containsKey(u) && adj.get(u).contains(v)) {
             PairInt p = new PairInt(u, v);
             double fUV = f.get(p) + delta;
+            System.out.printf("  ==> %.3e\n", fUV);
             f.put(p, fUV);
         } else {
             double fVU = 0;
@@ -497,25 +586,29 @@ public class RelabelToFront {
             }
             fVU -= delta;
             f.put(p, fVU);
+            System.out.printf("  ==> %.3e\n", fVU);
         }
         this.eF[u] -= delta;
         this.eF[v] += delta;
     }
     
-    void discharge(int u) {
+    protected void discharge(int u) {
+        
+        System.out.printf("discharge(%d)\n", u);
         
         TIntList uNList = uNMap.get(u);
         if (uNList == null) {
             throw new IllegalStateException("vertex " + u + " has no neighbors");
         }
-        int v;
+        int uNListIdx, v;
         while (eF[u] > 0) {
-            v = this.currNU[u];
-            if (v >= uNList.size()) {
+            uNListIdx = this.currNU[u];
+            if (uNListIdx >= uNList.size()) {
                 relabel(u);
                 this.currNU[u] = 0;
                 continue;
             }
+            v = uNList.get(uNListIdx);
             double cf = calculateResidualCapacity(u, v);
             if (cf > 0 && (h[u] == (h[v] + 1))) {
                 push(u, v);
@@ -526,6 +619,9 @@ public class RelabelToFront {
     }
 
     public static class MaxFlowResults {
-        
+        public TObjectDoubleMap<PairInt> edgeFlows;
+        public int srcIdx;
+        public int sinkIdx;
+        public double flow;
     }
 }
