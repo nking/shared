@@ -627,13 +627,14 @@ public class RelabelToFront {
         }
         int uNListIdx, v;
         int nIter = 0;
+        int nReset = 0;
         double cF;
         boolean inE;
         while (eF[u] > 0) {
             
  //TODO:           
  //  if have tried all neighbors in E_f and could not push,
- //  then push to backedges (those !inE) until excess is 0
+ //  then push to downhill back-edges (those !inE) until excess is 0
             
             System.out.printf("  u.n iter=%d u.n.curr[%d]=%d  eF[%d]=%.3e\n", nIter, u, this.currNU[u], u, eF[u]);
             
@@ -643,9 +644,23 @@ public class RelabelToFront {
                 this.currNU[u] = 0;
                 System.out.printf("returning to discharge(%d)\n", u);
                 nIter++;
+                nReset++;
                 continue;
             }
             v = uNList.get(uNListIdx);
+            
+            //case starting at idx=0
+            //   n = uNList.size() = 5  
+            //   nI=0, idx=0, ...
+            //   nI=5, idx=5 (out of bounds) => nI=6, nR=1 
+            //   idx=0  and we want to check only backedges:   nReset>0 && (nIter > (nReset*n)
+            //   
+            // case starting at idx=1
+            //   n = uNList.size() = 5  
+            //   nI=0, idx=1, ... 
+            //   nI=4, idx=5 (out of bounds) => nI=5, nR=1
+            //   nI=5, idx=0, nR=1
+            //   nI=6, idx=1, nR=1 and we want to check only backedges:  nReset>0 && (nIter > (nReset*n)
             
             //if (this.h[u] <= this.h[v]) {
             if (this.h[u] != (this.h[v] + 1)) {
@@ -670,6 +685,7 @@ public class RelabelToFront {
             nIter++;
             
             if (nIter > 2*uNMap.size()) {
+                //DEBUG exit while adding ability to push to back-edges
                 System.out.flush();
                 System.exit(1);
             }
