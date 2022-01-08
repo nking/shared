@@ -97,6 +97,7 @@ public class RelabelToFront {
         
         this.revAdj = createMapIntoVertices(adj);
         
+        // contains V - {src, sink}
         this.ell = constructL();
         
         assert(uNMap.size() == (ell.size() + 2));
@@ -114,17 +115,20 @@ public class RelabelToFront {
         this.currNU = new int[nV];
         Arrays.fill(this.currNU, -1);
         
+        // initalized to 0
+        this.h = new int[nV];
+        this.eF = new double[nV];
+        
+        // initalized to 0
         this.f = initFlow();
         
-        this.h = new int[nV];
-        
-        this.eF = new double[nV];
-        Arrays.fill(this.eF, Double.NEGATIVE_INFINITY);
-        
         initPreFlow();
+        
+        System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);
                 
         initUNeighborListPointers();
     }
+    
     
     public MaxFlowResults findMaxFlow() {
         
@@ -145,6 +149,8 @@ public class RelabelToFront {
         r.sinkIdx = this.sinkIdx;
         r.flow = this.f.get(new PairInt(srcIdx, sinkIdx));
         r.edgeFlows = MatrixUtil.copy(this.f);
+        
+        assertZeroExcess();
         
         return r;
     }
@@ -198,6 +204,7 @@ public class RelabelToFront {
         printC();
         printE();
         printH();
+        printCurrN();
     }
     protected void printC() {
          TObjectDoubleIterator<PairInt> iter = c.iterator();
@@ -216,6 +223,9 @@ public class RelabelToFront {
     }
     protected void printH() {
          System.out.printf("h=%s\n", Arrays.toString(h));
+    }
+    protected void printCurrN() {
+         System.out.printf("u.currentN=%s\n", Arrays.toString(currNU));
     }
 
     /*
@@ -298,6 +308,10 @@ public class RelabelToFront {
         } 
     }
 
+    /**
+     * construct a linked list of all vertexes except src and sink
+     * @return 
+     */
     private DoublyLinkedList<VertexNode> constructL() {
         
         if (uNMap == null) {
@@ -377,10 +391,10 @@ public class RelabelToFront {
         if (uNMap == null) {
             throw new IllegalStateException("uNMap cannot be null");
         }
-        /*for each vertex v in G.V
+        /*for each vertex v in G.V   (already handled in constructor)
              v.h = 0;
              v.e = 0;
-          for each edge (u, v) in G.E
+          for each edge (u, v) in G.E (already handled in constructor)
              (u,v).f = 0
           s.h = |G.V|
           for each vertex v in s.Adj
@@ -389,46 +403,16 @@ public class RelabelToFront {
             s.e = s.e - c(s,v)
         */
         
-        TIntObjectIterator<TIntList> iter = uNMap.iterator();
-        int v, v2;
-        int i;
-        //for each vertex v in G.V, set h and e to 0
-        while (iter.hasNext()) {
-            iter.advance();
-            v = iter.key();
-            h[v] = 0;
-            eF[v] = 0;
-        }
-            
-        // for each edge (u, v) in G.E, set f to 0
-        //TODO: consider whether to set (v, u) to 0 also
-        TIntObjectIterator<TIntSet> iter2 = adj.iterator();
-        TIntSet nhbrSet;
-        TIntIterator iter3;
-        while (iter2.hasNext()) {
-            iter2.advance();
-            v = iter2.key();
-            
-            nhbrSet = iter2.value();
-            if (nhbrSet == null || nhbrSet.isEmpty()) {
-                continue;
-            }
-            iter3 = nhbrSet.iterator();
-            while (iter3.hasNext()) {
-                v2 = iter3.next();
-                eF[v2] = 0;
-            }
-        }
-        
         h[srcIdx] = uNMap.size();
         
-        nhbrSet = adj.get(srcIdx);
+        TIntSet nhbrSet = adj.get(srcIdx);
         if (nhbrSet == null) {
             throw new IllegalStateException("adj must have an entry for the srcIdx");
         }
         PairInt p;
         double cSV;
-        iter3 = nhbrSet.iterator();
+        int v;
+        TIntIterator iter3 = nhbrSet.iterator();
         while (iter3.hasNext()) {
             v = iter3.next();
             p = new PairInt(srcIdx, v);
@@ -477,6 +461,7 @@ public class RelabelToFront {
         while (iter.hasNext()) {
             iter.advance();
             p = iter.key();
+            // initalize to 0
             out.put(p.copy(), 0);
         }
         
@@ -503,41 +488,62 @@ public class RelabelToFront {
         TIntList vs = uNMap.get(u);
         
         System.out.printf("relabel(%d).  N=%s\n", u, Arrays.toString(vs.toArray()));
-        
-        //DEBUG
-            printF();
-            printC();
-            printE();
-            printH();
-        
-        System.out.printf("u=%d\n", u);
-        
+        print();
         System.out.printf("  for V_f: ");
         int v;
         double cF;
+        boolean inE;
         int minH = Integer.MAX_VALUE;
         for (int i = 0; i < vs.size(); ++i) {
             v = vs.get(i);
-            cF = calculateResidualCapacity(u, v);
-            if (cF == 0) {
-                // not an edge in G.E
+            
+            inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
+            
+            System.out.printf("  inE=%b h[%d]=%d  h[%d]=%d\n", inE, u, h[u], v, h[v]);
+            
+            // Lemma 26.16
+            if (inE && (this.h[u] > this.h[v])) {
+                //not an edge in E_f
                 continue;
             }
-            // edge is in E_f
-            // h[v] >= h[u] for h to increase by at least 1
-            if (this.h[u] > this.h[v]) {
-                // v is downhill from u so can receive a push, making relabel invalid
-                throw new IllegalStateException("cannot relabel because there is a "
-                    + "neighboring vertex eligible for a push");
+            
+            // Lemma 26.16
+            // residual edge (w, u) that enters u requires h[w] <= h[u] + 1
+            // w=v  u=u
+            if (!inE && !(this.h[v] <= (this.h[u] + 1))) {
+                //not an inflowing edge in E_f
+                continue;
+            }   
+            
+            // can find minH only among unsaturated edges, that is, cF > 0
+            
+            // inadmissible if edge is not in E_f, so checking here
+            
+            if (inE) {
+                cF = calculateResidualCapacity(u, v);
+                                
+                if (Math.abs(cF) < 1e-7) {
+                    // not an edge in G.E
+                    continue;
+                }
             }
+            
+            // edge is in E_f
+            
             System.out.printf("h[%d]=%d, ", v, this.h[v]);
             // calculate minimum of heights of u neighbors in E_f
             if (this.h[v] < minH) {
                 minH = this.h[v];
             }
         }
+        
+        this.h[u] = minH + 1;
+        
+        //Lemma 26.20
+        assert(h[u] <= (2*uNMap.size() - 1));
+        
         System.out.printf("\n");        
-        System.out.printf("  minH=%d\n", minH);
+        System.out.printf("  minH=%d,  h=%s\n", minH, u, Arrays.toString(h));
         
         //DEBUG
         if (!(minH < Integer.MAX_VALUE)) {
@@ -545,9 +551,7 @@ public class RelabelToFront {
                 u, Arrays.toString(vs.toArray()));
         }
         
-        assert(minH < Integer.MAX_VALUE);
-        
-        this.h[u] = minH + 1;        
+        assert(minH < Integer.MAX_VALUE);     
     }
     
     /**
@@ -561,9 +565,7 @@ public class RelabelToFront {
     protected void push(int u, int v) {
         
         System.out.printf("push(%d, %d)\n", u, v);
-        
-        assert(uNMap.containsKey(u) && uNMap.get(u).contains(v));
-        
+                
         double cf = calculateResidualCapacity(u, v);
         if (cf <= 0) {
             throw new IllegalStateException("cannot push because c_f("+u+","+v+
@@ -577,8 +579,14 @@ public class RelabelToFront {
         if (adj.containsKey(u) && adj.get(u).contains(v)) {
             PairInt p = new PairInt(u, v);
             double fUV = f.get(p) + delta;
-            System.out.printf("  ==> %.3e\n", fUV);
             f.put(p, fUV);
+            
+            //DEBUG
+            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e\n", u, v, fUV, u, v, c.get(p));
+            if (Math.abs(c.get(p) - fUV) < 1e-7) {
+                System.out.printf("     saturated\n");
+            }
+            
         } else {
             double fVU = 0;
             PairInt p = new PairInt(v, u);
@@ -587,11 +595,15 @@ public class RelabelToFront {
             }
             fVU -= delta;
             f.put(p, fVU);
-            System.out.printf("  ==> %.3e for v,u \n", fVU);
+            
+            //DEBUG
+            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e for v,u\n", v, u, fVU, v, u, c.get(p));
         }
         this.eF[u] -= delta;
         this.eF[v] += delta;
         //DEBUG
+        System.out.printf("  eF[%d]=%.3e, eF[%d]=%.3e\n", u, eF[u], v, eF[v]);
+        
         if (Math.abs(this.eF[u]) <1e-7) {
             System.out.printf("      removes %d from E_f\n", u);
         }
@@ -602,27 +614,80 @@ public class RelabelToFront {
     
     protected void discharge(int u) {
         
-        System.out.printf("discharge(%d)\n", u);
+        System.out.printf("u=%d\n", u);
+        
+        //DEBUG
+        print();
+                
+        System.out.printf("discharge(%d)  excess=%.3e\n", u, eF[u]);
         
         TIntList uNList = uNMap.get(u);
         if (uNList == null) {
             throw new IllegalStateException("vertex " + u + " has no neighbors");
         }
         int uNListIdx, v;
+        int nIter = 0;
+        double cF;
+        boolean inE;
         while (eF[u] > 0) {
+            
+ //TODO:           
+ //  if have tried all neighbors in E_f and could not push,
+ //  then push to backedges (those !inE) until excess is 0
+            
+            System.out.printf("  u.n iter=%d u.n.curr[%d]=%d  eF[%d]=%.3e\n", nIter, u, this.currNU[u], u, eF[u]);
+            
             uNListIdx = this.currNU[u];
             if (uNListIdx >= uNList.size()) {
                 relabel(u);
                 this.currNU[u] = 0;
+                System.out.printf("returning to discharge(%d)\n", u);
+                nIter++;
                 continue;
             }
             v = uNList.get(uNListIdx);
-            double cf = calculateResidualCapacity(u, v);
-            if (cf > 0 && (h[u] == (h[v] + 1))) {
+            
+            //if (this.h[u] <= this.h[v]) {
+            if (this.h[u] != (this.h[v] + 1)) {
+                // not eligible for a push
+                System.out.printf("    h[%d]=%d, h[%d]=%d\n", u, h[u], v, h[v]);
+                this.currNU[u]++;
+                nIter++;
+                continue;
+            }
+                        
+            inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
+            cF = calculateResidualCapacity(u, v);
+            
+            if (cF > 0) {
+                System.out.printf("    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
                 push(u, v);
             } else {
+                System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
                 this.currNU[u]++;
             }
+            
+            nIter++;
+            
+            if (nIter > 2*uNMap.size()) {
+                System.out.flush();
+                System.exit(1);
+            }
+        }
+    }
+
+    /**
+     * assert each  vertex in V - {s,t} has an excess of 0
+     */
+    private void assertZeroExcess() {
+        
+        VertexNode u = ell.peekFirst();
+        
+        while (u != null) {
+            
+            assert(Math.abs(this.eF[u.vertex]) < 1e-7);
+            
+            u = (VertexNode) u.next;
         }
     }
 

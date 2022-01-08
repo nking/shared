@@ -74,7 +74,13 @@ public class RelabelToFrontTest extends TestCase {
         VertexNode uNode = rTF.ell.peekFirst();
         while (uNode != null) {
             
-            System.out.printf("\ncount=%d\n", count);
+            if (count == 0) {
+                System.out.printf("\ncount=%d  start of Fig 26.10(a)\n", count);
+            } else if (count == 1) {
+                System.out.printf("\ncount=%d  start of Fig 26.10(b) details are in Fig 26.9(a)\n", count);
+            } else {
+                System.out.printf("\ncount=%d\n", count);
+            }
             
             // assert that all nodes befor u in L have excess==0
             VertexNode pNode = (VertexNode) uNode.prev;
