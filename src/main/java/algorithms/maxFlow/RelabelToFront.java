@@ -502,23 +502,10 @@ public class RelabelToFront {
             System.out.printf("  inE=%b h[%d]=%d  h[%d]=%d\n", inE, u, h[u], v, h[v]);
             
             // Lemma 26.16
-            if (inE && (this.h[u] > this.h[v])) {
-                //not an edge in E_f
+            if (this.h[v] < this.h[u]) {
                 continue;
             }
-            
-            // Lemma 26.16
-            // residual edge (w, u) that enters u requires h[w] <= h[u] + 1
-            // w=v  u=u
-            if (!inE && !(this.h[v] <= (this.h[u] + 1))) {
-                //not an inflowing edge in E_f
-                continue;
-            }   
-            
-            // can find minH only among unsaturated edges, that is, cF > 0
-            
-            // inadmissible if edge is not in E_f, so checking here
-            
+                                    
             if (inE) {
                 cF = calculateResidualCapacity(u, v);
                                 
