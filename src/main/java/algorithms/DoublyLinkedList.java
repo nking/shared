@@ -9,7 +9,7 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
  * @param <T> node type that is or extends DoublyLinkedNode
  */
 public class DoublyLinkedList<T extends DoublyLinkedNode> {
-    
+
     public static class DoublyLinkedNode {
         public DoublyLinkedNode next = null;
         public DoublyLinkedNode prev = null;
@@ -195,6 +195,13 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
      */
     public T peekLast() {
         return tail;
+    }
+    
+    
+    public void clear() {
+        head = null;
+        tail = null;
+        n = 0;
     }
     
     public int size() {

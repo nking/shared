@@ -89,7 +89,7 @@ public class RelabelToFront {
         
         this.uNMap = createAdjLists(adj);
         
-        this.revAdj = createMapIntoVertices(adj);
+        this.revAdj = createIncomingEdgesVertexMap(adj);
         
         // contains V - {src, sink}
         this.ell = constructL();
@@ -116,9 +116,8 @@ public class RelabelToFront {
         
         initPreFlow();
         
-        System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);                
+        //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);                
     }
-    
     
     public MaxFlowResults findMaxFlow() {
         
@@ -137,7 +136,7 @@ public class RelabelToFront {
         MaxFlowResults r = new MaxFlowResults();
         r.srcIdx = this.srcIdx;
         r.sinkIdx = this.sinkIdx;
-        r.flow = this.f.get(new PairInt(srcIdx, sinkIdx));
+        r.flow = this.eF[sinkIdx];
         r.edgeFlows = MatrixUtil.copy(this.f);
         
         assertZeroExcess();
@@ -178,7 +177,10 @@ public class RelabelToFront {
     }
     
     protected void printF() {
-         TObjectDoubleIterator<PairInt> iter = f.iterator();
+        printF(f);
+    }
+    protected static void printF(TObjectDoubleMap<PairInt> flow) {
+         TObjectDoubleIterator<PairInt> iter = flow.iterator();
          PairInt p;
          double fP;
          while (iter.hasNext()) {
@@ -195,6 +197,7 @@ public class RelabelToFront {
         printE();
         printH();
     }
+    
     protected void printC() {
          TObjectDoubleIterator<PairInt> iter = c.iterator();
          PairInt p;
@@ -210,26 +213,10 @@ public class RelabelToFront {
     protected void printE() {
          System.out.printf("e=%s\n", FormatArray.toString(eF, "%.3e"));
     }
+    
     protected void printH() {
          System.out.printf("h=%s\n", Arrays.toString(h));
     }
-
-    /*
-     * min(c_f(u, v)) where (u,v) are in path p
-     * @param p
-     * @return 
-    double calculateMinResidualCapacity(PairInt[] p) {
-        double min = Double.POSITIVE_INFINITY;
-        double r;
-        for (PairInt pi : p) {
-            r = calculateResidualCapacity(pi);
-            if (r < min) {
-                min = r;
-            }
-        }
-        return min;
-    }
-    */
 
     /**
      * sum(flow into u) - sum(flow out of u).
@@ -439,7 +426,7 @@ public class RelabelToFront {
         return out;
     }
 
-    protected TIntObjectMap<TIntSet> createMapIntoVertices(TIntObjectMap<TIntSet> adj) {
+    protected TIntObjectMap<TIntSet> createIncomingEdgesVertexMap(TIntObjectMap<TIntSet> adj) {
         return MatrixUtil.createReverseMap(adj);
     }
     
@@ -459,9 +446,10 @@ public class RelabelToFront {
         
         TIntList vs = uNMap.get(u);
         
-        System.out.printf("relabel(%d).  N=%s\n", u, Arrays.toString(vs.toArray()));
+        /*System.out.printf("relabel(%d).  N=%s\n", u, Arrays.toString(vs.toArray()));
         print();
-        System.out.printf("  for V_f: ");
+        System.out.printf("  for V_f: ");*/
+        
         int v;
         double cF;
         boolean inE;
@@ -471,7 +459,7 @@ public class RelabelToFront {
             
             inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
             
-            System.out.printf("  inE=%b h[%d]=%d  h[%d]=%d\n", inE, u, h[u], v, h[v]);
+            //System.out.printf("  inE=%b h[%d]=%d  h[%d]=%d\n", inE, u, h[u], v, h[v]);
             
             // Lemma 26.16
             if (this.h[v] < this.h[u]) {
@@ -489,7 +477,8 @@ public class RelabelToFront {
             
             // edge is in E_f
             
-            System.out.printf("h[%d]=%d, ", v, this.h[v]);
+            //System.out.printf("h[%d]=%d, ", v, this.h[v]);
+            
             // calculate minimum of heights of u neighbors in E_f
             if (this.h[v] < minH) {
                 minH = this.h[v];
@@ -501,14 +490,13 @@ public class RelabelToFront {
         //Lemma 26.20
         assert(h[u] <= (2*uNMap.size() - 1));
         
-        System.out.printf("\n");        
-        System.out.printf("  minH=%d,  h=%s\n", minH, u, Arrays.toString(h));
-        
         //DEBUG
+        /*System.out.printf("\n");        
+        System.out.printf("  minH=%d,  h=%s\n", minH, u, Arrays.toString(h));        
         if (!(minH < Integer.MAX_VALUE)) {
             System.out.printf("ERROR in relabel(%d).  N=%s\n",
                 u, Arrays.toString(vs.toArray()));
-        }
+        }*/
         
         assert(minH < Integer.MAX_VALUE);     
     }
@@ -523,7 +511,7 @@ public class RelabelToFront {
      */
     protected void push(int u, int v) {
         
-        System.out.printf("push(%d, %d)\n", u, v);
+        //System.out.printf("push(%d, %d)\n", u, v);
         
         boolean inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
         
@@ -546,11 +534,11 @@ public class RelabelToFront {
             f.put(p, fUV);
             
             //DEBUG
-            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e\n", 
+            /*System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e\n", 
                 u, v, fUV, u, v, c.get(p), delta);
             if (Math.abs(c.get(p) - fUV) < 1e-7) {
                 System.out.printf("     saturated\n");
-            }
+            }*/
             
         } else {
             double fVU = 0;
@@ -560,16 +548,25 @@ public class RelabelToFront {
             }
             // edit to algorithm, similar to residual capacity for back-edge
             delta = Math.min(eF[u], fVU);
+            
+            /*
+            // make sure doesn't exceed edge capacity:
+            double cVU = c.get(p);
+            if ((fVU + delta) > cVU) {
+                delta = cVU - fVU;
+            }*/
+            
             fVU -= delta;
             f.put(p, fVU);
                         
             //DEBUG
-            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u\n", 
-                v, u, fVU, v, u, c.get(p), delta);
+            //System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u\n", 
+            //    v, u, fVU, v, u, c.get(p), delta);
         }
         this.eF[u] -= delta;
         this.eF[v] += delta;
         
+        /*
         //DEBUG
         System.out.printf("  eF[%d]=%.3e, eF[%d]=%.3e\n", u, eF[u], v, eF[v]);
         
@@ -578,17 +575,15 @@ public class RelabelToFront {
         }
         if (Math.abs(this.eF[v]) <1e-7) {
             System.out.printf("      removes %d from E_f\n", v);
-        }
+        }*/
     }
     
     protected void discharge(int u) {
-        
-        System.out.printf("u=%d\n", u);
-        
-        //DEBUG
-        print();
-                
+
+        /*//DEBUG        
+        print();                
         System.out.printf("discharge(%d)  excess=%.3e\n", u, eF[u]);
+        */
         
         TIntList uNList = uNMap.get(u);
         if (uNList == null) {
@@ -604,38 +599,31 @@ public class RelabelToFront {
         int currNIdx = 0;
         TIntList currNList;
         
-        //TODO: change backEdgeIdxs to a more efficient datastructure to remove from top with O(1), such as a queue or linkedlist
-        TIntList backEdgeIdxs = new TIntArrayList();
+        DoublyLinkedList<VertexNode> backEdgeIdxs = new DoublyLinkedList<VertexNode>();
         
         while (eF[u] > 0) {
-            
-            System.out.printf("  nIter=%d eF[%d]=%.3e\n", nIter, u, eF[u]);
-            
+                        
             currNList = neighborHeightMap.get(h[u] - 1);
             
+            /*
             //DEBUG
+            System.out.printf("  nIter=%d eF[%d]=%.3e\n", nIter, u, eF[u]);
             if (currNList != null) {
                 System.out.printf("  [%d].N=%s u.h=%d [h-1].currNList=%s\n", u, Arrays.toString(uNList.toArray()),
                     h[u], Arrays.toString(currNList.toArray()));
-            }
+            }*/
                         
             if (currNList == null || currNIdx >= currNList.size()) {
                 
                 if (!backEdgeIdxs.isEmpty()) {
                     
-                    // for a height:
-                    // push to back-edges only if there were no eligible forward,
-                    // or even if there were eligible forward, but the back-edge pushes
-                    //   should be after the forward?
-                    
-                    // push to the back-edges.
-                    //TODO: change backEdgeIdxs to a more efficient datastructure to remove from top with O(1), such as a queue or linkedlist
-                    currNIdx = backEdgeIdxs.removeAt(0);
+                    // for a height, push to the back-edges.
+                    currNIdx = backEdgeIdxs.removeFirst().vertex;
                     
                     v = currNList.get(currNIdx);
                     
-                    System.out.printf("    <-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false\n", 
-                        u, v, calculateResidualCapacity(u, v), u, h[u], v, h[v]);
+                    //System.out.printf("    <-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false\n", 
+                    //    u, v, calculateResidualCapacity(u, v), u, h[u], v, h[v]);
                     
                     push(u, v);
                     
@@ -653,7 +641,7 @@ public class RelabelToFront {
                 
                 backEdgeIdxs.clear();
                 
-                System.out.printf("    after relabel returning to discharge(%d).  reset u.currN\n", u);
+                //System.out.printf("    after relabel returning to discharge(%d).  reset u.currN\n", u);
                 
                 nIter++;
                 
@@ -668,27 +656,26 @@ public class RelabelToFront {
             
             if (cF > 0) {
                 
-                System.out.printf("    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
+                //System.out.printf("    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
                 
                 push(u, v);
                 
             } else if (!inE && cF <= 0) {
                 
-                backEdgeIdxs.add(currNIdx);
+                backEdgeIdxs.add(new VertexNode(currNIdx));
                 
-                System.out.printf("did not push to reverse edge for v=%d cF=%.3e"
-                    + " currNList=%s\n",
-                    v, cF, Arrays.toString(currNList.toArray()));
+                //System.out.printf("did not push to reverse edge for v=%d cF=%.3e"
+                //    + " currNList=%s\n",
+                //    v, cF, Arrays.toString(currNList.toArray()));
                 
                 currNIdx++;
                 
             } else {
-                System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN\n", u, v, cF, u, h[u], v, h[v], inE);
+                //System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN\n", u, v, cF, u, h[u], v, h[v], inE);
                 currNIdx++;
             }
             
             nIter++;
-            
         }
     }
 
@@ -732,5 +719,12 @@ public class RelabelToFront {
         public int srcIdx;
         public int sinkIdx;
         public double flow;
+        public void print() {
+            if (edgeFlows != null) {
+                System.out.printf("max flow=%.3e from src=%d to sink=%d\n", 
+                    flow, srcIdx, sinkIdx);
+                printF(edgeFlows);
+            }
+        }
     }
 }

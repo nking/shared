@@ -1,6 +1,7 @@
 package algorithms.maxFlow;
 
 import algorithms.VertexNode;
+import algorithms.maxFlow.RelabelToFront.MaxFlowResults;
 import algorithms.util.PairInt;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectDoubleMap;
@@ -50,8 +51,8 @@ public class RelabelToFrontTest extends TestCase {
         cap.put(new PairInt(3, 4), 10);
         
         RelabelToFront rTF = new RelabelToFront(adj, cap, srcIdx, sinkIdx);
-        System.out.println("rTF initialized");
-        rTF.print();
+        //System.out.println("rTF initialized");
+        //rTF.print();
         
         assertEquals(-26., rTF.eF[0]);
         assertEquals(12., rTF.eF[1]);
@@ -74,13 +75,13 @@ public class RelabelToFrontTest extends TestCase {
         VertexNode uNode = rTF.ell.peekFirst();
         while (uNode != null) {
             
-            if (count == 0) {
+            /*if (count == 0) {
                 System.out.printf("\ncount=%d  start of Fig 26.10(a)\n", count);
             } else if (count == 1) {
                 System.out.printf("\ncount=%d  start of Fig 26.10(b) details are in Fig 26.9(a)\n", count);
             } else {
                 System.out.printf("\ncount=%d\n", count);
-            }
+            }*/
             
             // assert that all nodes befor u in L have excess==0
             VertexNode pNode = (VertexNode) uNode.prev;
@@ -208,5 +209,11 @@ public class RelabelToFrontTest extends TestCase {
             uNode = (VertexNode) uNode.next;
             count++;
         }
+        
+        // =========
+        rTF = new RelabelToFront(adj, cap, srcIdx, sinkIdx);
+        MaxFlowResults results = rTF.findMaxFlow();
+        //results.print();
+        assertTrue(Math.abs(results.flow - 20) < 1e-7);
     }
 }
