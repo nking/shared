@@ -62,13 +62,7 @@ public class RelabelToFront {
      * an adjacency map of the edges into a vertex
      */
     protected final TIntObjectMap<TIntSet> revAdj;
-    
-    /** the indexes are the U vertex numbers.  the values are the current neighbor 
-    index (which is vertex v index).
-    if there are no neighbors for vertex U, the value is -1.
-    */
-    protected final int[] currNU;
-    
+     
     /** capacity of edges.  only positive entries are present.  no entries have .lte. 0 */
     protected final TObjectDoubleMap<PairInt> c;
     
@@ -112,8 +106,6 @@ public class RelabelToFront {
         }
         
         int nV = uNMap.size();
-        this.currNU = new int[nV];
-        Arrays.fill(this.currNU, -1);
         
         // initalized to 0
         this.h = new int[nV];
@@ -124,9 +116,7 @@ public class RelabelToFront {
         
         initPreFlow();
         
-        System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);
-                
-        initUNeighborListPointers();
+        System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);                
     }
     
     
@@ -204,7 +194,6 @@ public class RelabelToFront {
         printC();
         printE();
         printH();
-        printCurrN();
     }
     protected void printC() {
          TObjectDoubleIterator<PairInt> iter = c.iterator();
@@ -223,9 +212,6 @@ public class RelabelToFront {
     }
     protected void printH() {
          System.out.printf("h=%s\n", Arrays.toString(h));
-    }
-    protected void printCurrN() {
-         System.out.printf("u.currentN=%s\n", Arrays.toString(currNU));
     }
 
     /*
@@ -429,21 +415,6 @@ public class RelabelToFront {
     
     }
     
-    private void initUNeighborListPointers() {
-        VertexNode u = ell.peekFirst();
-        int uIdx;
-        while (u != null) {
-            uIdx = u.vertex;
-            if (uNMap.containsKey(uIdx) && !uNMap.get(uIdx).isEmpty()) {
-                this.currNU[uIdx] = 0;
-            } else {
-                this.currNU[uIdx] = -1;
-            }
-            
-            u = (VertexNode) u.next;
-        }
-    }
-
     /**
      * initialize flow to 0 for every edge in capacity map
      * @return 
@@ -481,6 +452,7 @@ public class RelabelToFront {
      * @param u
      */
     protected void relabel(int u) {
+        
         if (u == srcIdx || u == sinkIdx) {
             throw new IllegalArgumentException("u cannot be srcIdx or sinkIdx");
         }
@@ -552,24 +524,30 @@ public class RelabelToFront {
     protected void push(int u, int v) {
         
         System.out.printf("push(%d, %d)\n", u, v);
-                
-        double cf = calculateResidualCapacity(u, v);
-        if (cf <= 0) {
-            throw new IllegalStateException("cannot push because c_f("+u+","+v+
-                ")=" + cf + " which is not positive"); 
-        }
+        
+        boolean inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
+        
         if (this.h[u] != (this.h[v] + 1)) {
             throw new IllegalStateException("cannot push because "+u+".h != ("+v+
                 ".h + 1)"); 
         }
-        double delta = Math.min(eF[u], cf);
-        if (adj.containsKey(u) && adj.get(u).contains(v)) {
+        
+        double cf = calculateResidualCapacity(u, v);
+        if (inE && cf <= 0) {
+            throw new IllegalStateException("cannot push because c_f("+u+","+v+
+                ")=" + cf + " which is not positive"); 
+        }
+        
+        double delta;
+        if (inE) {
+            delta = Math.min(eF[u], cf);
             PairInt p = new PairInt(u, v);
             double fUV = f.get(p) + delta;
             f.put(p, fUV);
             
             //DEBUG
-            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e\n", u, v, fUV, u, v, c.get(p));
+            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e\n", 
+                u, v, fUV, u, v, c.get(p), delta);
             if (Math.abs(c.get(p) - fUV) < 1e-7) {
                 System.out.printf("     saturated\n");
             }
@@ -580,14 +558,18 @@ public class RelabelToFront {
             if (f.containsKey(p)) {
                 fVU = f.get(p);
             }
+            // edit to algorithm, similar to residual capacity for back-edge
+            delta = Math.min(eF[u], fVU);
             fVU -= delta;
             f.put(p, fVU);
-            
+                        
             //DEBUG
-            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e for v,u\n", v, u, fVU, v, u, c.get(p));
+            System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u\n", 
+                v, u, fVU, v, u, c.get(p), delta);
         }
         this.eF[u] -= delta;
         this.eF[v] += delta;
+        
         //DEBUG
         System.out.printf("  eF[%d]=%.3e, eF[%d]=%.3e\n", u, eF[u], v, eF[v]);
         
@@ -612,70 +594,101 @@ public class RelabelToFront {
         if (uNList == null) {
             throw new IllegalStateException("vertex " + u + " has no neighbors");
         }
-        int uNListIdx, v;
-        int nIter = 0;
-        int nReset = 0;
+        int v;
+        int nIter = 1;
         double cF;
         boolean inE;
+                
+        TIntObjectMap<TIntList> neighborHeightMap = createNeighborHeightMap(uNList);
+        
+        int currNIdx = 0;
+        TIntList currNList;
+        
+        //TODO: change backEdgeIdxs to a more efficient datastructure to remove from top with O(1), such as a queue or linkedlist
+        TIntList backEdgeIdxs = new TIntArrayList();
+        
         while (eF[u] > 0) {
             
- //TODO:           
- //  if have tried all neighbors in E_f and could not push,
- //  then push to downhill back-edges (those !inE) until excess is 0
+            System.out.printf("  nIter=%d eF[%d]=%.3e\n", nIter, u, eF[u]);
             
-            System.out.printf("  u.n iter=%d u.n.curr[%d]=%d  eF[%d]=%.3e\n", nIter, u, this.currNU[u], u, eF[u]);
+            currNList = neighborHeightMap.get(h[u] - 1);
             
-            uNListIdx = this.currNU[u];
-            if (uNListIdx >= uNList.size()) {
-                relabel(u);
-                this.currNU[u] = 0;
-                System.out.printf("returning to discharge(%d)\n", u);
-                nIter++;
-                nReset++;
-                continue;
-            }
-            v = uNList.get(uNListIdx);
-            
-            //case starting at idx=0
-            //   n = uNList.size() = 5  
-            //   nI=0, idx=0, ...
-            //   nI=5, idx=5 (out of bounds) => nI=6, nR=1 
-            //   idx=0  and we want to check only backedges:   nReset>0 && (nIter > (nReset*n)
-            //   
-            // case starting at idx=1
-            //   n = uNList.size() = 5  
-            //   nI=0, idx=1, ... 
-            //   nI=4, idx=5 (out of bounds) => nI=5, nR=1
-            //   nI=5, idx=0, nR=1
-            //   nI=6, idx=1, nR=1 and we want to check only backedges:  nReset>0 && (nIter > (nReset*n)
-            
-            //if (this.h[u] <= this.h[v]) {
-            if (this.h[u] != (this.h[v] + 1)) {
-                // not eligible for a push
-                System.out.printf("    h[%d]=%d, h[%d]=%d\n", u, h[u], v, h[v]);
-                this.currNU[u]++;
-                nIter++;
-                continue;
+            //DEBUG
+            if (currNList != null) {
+                System.out.printf("  [%d].N=%s u.h=%d [h-1].currNList=%s\n", u, Arrays.toString(uNList.toArray()),
+                    h[u], Arrays.toString(currNList.toArray()));
             }
                         
+            if (currNList == null || currNIdx >= currNList.size()) {
+                
+                if (!backEdgeIdxs.isEmpty()) {
+                    
+                    // for a height:
+                    // push to back-edges only if there were no eligible forward,
+                    // or even if there were eligible forward, but the back-edge pushes
+                    //   should be after the forward?
+                    
+                    // push to the back-edges.
+                    //TODO: change backEdgeIdxs to a more efficient datastructure to remove from top with O(1), such as a queue or linkedlist
+                    currNIdx = backEdgeIdxs.removeAt(0);
+                    
+                    v = currNList.get(currNIdx);
+                    
+                    System.out.printf("    <-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false\n", 
+                        u, v, calculateResidualCapacity(u, v), u, h[u], v, h[v]);
+                    
+                    push(u, v);
+                    
+                    // set to a value that results in the v=nil condition above
+                    currNIdx = currNList.size();
+                    
+                    nIter++;
+                    
+                    continue;
+                }
+                
+                relabel(u);
+                
+                currNIdx = 0;
+                
+                backEdgeIdxs.clear();
+                
+                System.out.printf("    after relabel returning to discharge(%d).  reset u.currN\n", u);
+                
+                nIter++;
+                
+                continue;
+            }
+            
+            v = currNList.get(currNIdx);
+            
             inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
+                        
             cF = calculateResidualCapacity(u, v);
             
             if (cF > 0) {
+                
                 System.out.printf("    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
+                
                 push(u, v);
+                
+            } else if (!inE && cF <= 0) {
+                
+                backEdgeIdxs.add(currNIdx);
+                
+                System.out.printf("did not push to reverse edge for v=%d cF=%.3e"
+                    + " currNList=%s\n",
+                    v, cF, Arrays.toString(currNList.toArray()));
+                
+                currNIdx++;
+                
             } else {
-                System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
-                this.currNU[u]++;
+                System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN\n", u, v, cF, u, h[u], v, h[v], inE);
+                currNIdx++;
             }
             
             nIter++;
             
-            if (nIter > 2*uNMap.size()) {
-                //DEBUG exit while adding ability to push to back-edges
-                System.out.flush();
-                System.exit(1);
-            }
         }
     }
 
@@ -692,6 +705,26 @@ public class RelabelToFront {
             
             u = (VertexNode) u.next;
         }
+    }
+
+    private TIntObjectMap<TIntList> createNeighborHeightMap(TIntList list) {
+        
+        TIntObjectMap<TIntList> map = new TIntObjectHashMap<TIntList>();
+        
+        int v;
+        int h;
+        TIntList mList;
+        for (int i = 0; i < list.size(); ++i) {
+            v = list.get(i);
+            h = this.h[v];
+            mList = map.get(h);
+            if (mList == null) {
+                mList = new TIntArrayList();
+                map.put(h, mList);
+            }
+            mList.add(v);
+        }
+        return map;
     }
 
     public static class MaxFlowResults {
