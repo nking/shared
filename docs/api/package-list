@@ -9,6 +9,7 @@ algorithms.graphs
 algorithms.heapsAndPQs
 algorithms.imageProcessing
 algorithms.matrix
+algorithms.maxFlow
 algorithms.misc
 algorithms.msts
 algorithms.optimization
