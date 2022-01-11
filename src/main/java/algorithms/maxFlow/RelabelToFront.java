@@ -15,6 +15,7 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
 
 /**
@@ -32,13 +33,35 @@ import java.util.Arrays;
  * we can ship material from the source to the sink without violating any 
  * capacity constraints.
  * 
- * Relabel-To-Front is a maximum flow algorithm.
+ * Relabel-To-Front is a maximum flow algorithm that begins with an
+ * initialization of creating
+ * a unchanging height of |V| for the source vertex and a unchanging height of 
+ * 0 for the sink vertex, and modifiable heights of 0 for the vertexes in between
+ * the source and sink.  The algorithm starts by sending flow from the 
+ * source to each of its neighboring vertexes - the amount of flow is equal
+ * to the capacity for the edge.  The goal for each vertex (except source and sink)
+ * is to have 0 excess
+ * flow (where the excess flow is the sum of incoming flow to a vertex minus the
+ * sum of outgoing flow from the same vertex).  
+ * The method for a vertex to reduce its excess flow to 0 is
+ * called discharge and it's responsibilities are to invoke push of flow to
+ * eligible neighbors, else relabel its height and continue to push and relabel
+ * until the excess flow is 0.
+ * At completion, the source vertex excess flow is -|flow| as it has given
+ * that flow to the network, and the sink excess flow = the flow.  All other
+ * vertexes will have excess flow=0.
  * 
  * runtime complexity is O(|V|^3).
  * 
  * @author nichole
  */
 public class RelabelToFront {
+    
+    /**
+     * represents a generous machine precision in comparisons to 0.
+     * this could be reduced to 1e-11 or be a number the user can set.
+     */
+    protected final double eps = 1e-7;
     
     /** list of vertexes of G (minus source and sink) in any order, minus srcIdx and sinkIdx 
     modifications such as move node to front are O(1) for a doubly-linked list
@@ -119,6 +142,52 @@ public class RelabelToFront {
         //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);                
     }
     
+    /**
+     * 
+     * @param adj graph as an adjacency matrix.  the elements in the matrix are
+     * the edge capacities.
+     * @param srcIdx
+     * @param sinkIdx 
+     */
+    public RelabelToFront(double[][] adj, int srcIdx, int sinkIdx) {
+        
+        this.srcIdx = srcIdx;
+        this.sinkIdx = sinkIdx;
+        
+        this.adj = createOutgoingEdgesVertexMap(adj);
+        
+        this.uNMap = createAdjLists(this.adj);
+        
+        this.revAdj = createIncomingEdgesVertexMap(this.adj);
+        
+        // contains V - {src, sink}
+        this.ell = constructL();
+        
+        assert(uNMap.size() == (ell.size() + 2));
+        
+        this.c = createCapacityMap(adj);
+        
+        if (srcIdx < 0 || !uNMap.containsKey(srcIdx)) {
+            throw new IllegalArgumentException("srcIdx must be a key in adj");
+        }
+        if (sinkIdx < 0 || !uNMap.containsKey(sinkIdx)) {
+            throw new IllegalArgumentException("sinkIdx must be a value in adj");
+        }
+        
+        int nV = uNMap.size();
+        
+        // initalized to 0
+        this.h = new int[nV];
+        this.eF = new double[nV];
+        
+        // initalized to 0
+        this.f = initFlow();
+        
+        initPreFlow();
+        
+        //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);                
+    }
+    
     public MaxFlowResults findMaxFlow() {
         
         VertexNode u = ell.peekFirst();
@@ -138,6 +207,8 @@ public class RelabelToFront {
         r.sinkIdx = this.sinkIdx;
         r.flow = this.eF[sinkIdx];
         r.edgeFlows = MatrixUtil.copy(this.f);
+        
+        //print();
         
         assertZeroExcess();
         
@@ -179,6 +250,7 @@ public class RelabelToFront {
     protected void printF() {
         printF(f);
     }
+    
     protected static void printF(TObjectDoubleMap<PairInt> flow) {
          TObjectDoubleIterator<PairInt> iter = flow.iterator();
          PairInt p;
@@ -549,14 +621,10 @@ public class RelabelToFront {
             // edit to algorithm, similar to residual capacity for back-edge
             delta = Math.min(eF[u], fVU);
             
-            /*
-            // make sure doesn't exceed edge capacity:
-            double cVU = c.get(p);
-            if ((fVU + delta) > cVU) {
-                delta = cVU - fVU;
-            }*/
-            
             fVU -= delta;
+            
+            assert(fVU <= c.get(p));
+            
             f.put(p, fVU);
                         
             //DEBUG
@@ -711,6 +779,52 @@ public class RelabelToFront {
             }
             mList.add(v);
         }
+        return map;
+    }
+
+    private TIntObjectMap<TIntSet> createOutgoingEdgesVertexMap(double[][] adj) {
+        
+        TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
+        int u;
+        int v;
+        TIntSet set;
+        for (u = 0; u < adj.length; ++u) {
+            
+            set = map.get(u);
+            if (set == null) {
+                set = new TIntHashSet();
+                map.put(u, set);
+            }
+            
+            for (v = 0; v < adj[u].length; ++v) {
+                if (Math.abs(adj[u][v]) > eps) {
+                    set.add(v);
+                }
+            }
+            
+            if (set.isEmpty()) {
+                map.remove(u);
+            }
+        }
+        
+        return map;
+    }
+
+    private TObjectDoubleMap<PairInt> createCapacityMap(double[][] adjM) {
+        
+        TObjectDoubleMap<PairInt> map = new TObjectDoubleHashMap<PairInt>();
+        
+        int u;
+        int v;
+        PairInt p;
+        for (u = 0; u < adjM.length; ++u) {
+            for (v = 0; v < adjM[u].length; ++v) {
+                if (Math.abs(adjM[u][v]) > eps) {
+                    map.put(new PairInt(u, v), adjM[u][v]);
+                }
+            }
+        }
+        
         return map;
     }
 

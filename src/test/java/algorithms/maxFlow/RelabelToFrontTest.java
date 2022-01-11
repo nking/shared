@@ -216,4 +216,58 @@ public class RelabelToFrontTest extends TestCase {
         //results.print();
         assertTrue(Math.abs(results.flow - 20) < 1e-7);
     }
+    
+    public void test2() {
+        // Figure 26.10 from Cormen et al. Introduction to Algorithms"
+        
+        // testing matrix argument
+        
+        int nV = 5;
+        
+        double[][] g = new double[nV][];
+        int u;
+        
+        for (u = 0; u < nV; ++u) {
+            g[u] = new double[nV];
+        }
+        
+        g[0][1] = 12;
+        g[0][2] = 14;
+        g[1][2] = 5;
+        g[1][4] = 16;
+        g[2][3] = 8;
+        g[3][1] = 7;
+        g[3][4] = 10;
+        
+        int srcIdx = 0;
+        int sinkIdx = nV - 1;
+        
+        RelabelToFront rTF = new RelabelToFront(g, srcIdx, sinkIdx);
+        MaxFlowResults results = rTF.findMaxFlow();
+        //results.print();
+        assertTrue(Math.abs(results.flow - 20) < 1e-7);
+        
+        // add a source and sink w/ inf edge capacities
+        //System.out.println("\nadding artifical src and sink");
+        srcIdx = nV;
+        sinkIdx = nV + 1;
+        g = new double[nV+2][];
+        for (u = 0; u < nV+2; ++u) {
+            g[u] = new double[nV+2];
+        }
+        g[0][1] = 12;
+        g[0][2] = 14;
+        g[1][2] = 5;
+        g[1][4] = 16;
+        g[2][3] = 8;
+        g[3][1] = 7;
+        g[3][4] = 10;
+        double inf = 26; // sum of outgoing capacities of srcIdx neighbors = g[0][1] + g[0][2]
+        g[srcIdx][0] = inf;
+        g[4][sinkIdx] = inf;
+        
+        rTF = new RelabelToFront(g, srcIdx, sinkIdx);
+        results = rTF.findMaxFlow();
+        //results.print();
+    }
 }
