@@ -137,7 +137,7 @@ public class LongestPath {
         int[] prev = new int[nodes.length];
         Arrays.fill(prev, -1);
         
-        // for pred, fill in the map as progress from v 
+        // for predecessor, fill in the map as progress from v 
         TIntObjectMap<TIntSet> prevMap = new TIntObjectHashMap<TIntSet>();
         
         double maxDistS = Double.NEGATIVE_INFINITY, distV, wUV, d;
@@ -154,6 +154,7 @@ public class LongestPath {
             nhbr = nodes[v];
             while (nhbr != null && nhbr.getKey() != -1) {
                 v2 = nhbr.getKey();
+                
                 set = prevMap.get(v2);
                 if (set == null) {
                     set = new TIntHashSet();
