@@ -345,7 +345,7 @@ public class NearestNeighbor2DLong {
                 (dp2 &lt;= closestDistPlusTol)) {
 <span class="fc" id="L346">                closestIndexes.add(predecessor);</span>
             }
-<span class="fc bfc" id="L348" title="All 4 branches covered.">            if ((successor != -1) &amp;&amp;</span>
+<span class="pc bpc" id="L348" title="1 of 4 branches missed.">            if ((successor != -1) &amp;&amp;</span>
                 (ds2 &lt;= closestDistPlusTol)) {
 <span class="fc" id="L350">                closestIndexes.add(successor);</span>
             }
@@ -432,7 +432,7 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L432">                    closestIndexes.add(s2);</span>
                 }
 <span class="fc bfc" id="L434" title="All 2 branches covered.">            } else if (dMin &lt;= closestDistPlusTol) {</span>
-<span class="pc bpc" id="L435" title="1 of 4 branches missed.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
+<span class="fc bfc" id="L435" title="All 4 branches covered.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L436">                    closestIndexes.add(p2);</span>
                 }
 <span class="fc bfc" id="L438" title="All 4 branches covered.">                if ((s2 != -1) &amp;&amp; ds2 &lt;= closestDistPlusTol) {</span>
@@ -456,8 +456,8 @@ public class NearestNeighbor2DLong {
         //System.out.println(&quot;p=&quot; + p2 + &quot; s=&quot; + s2);
         
         // successor searches to higher bounds
-<span class="fc bfc" id="L459" title="All 2 branches covered.">        if (successor == -1) {</span>
-<span class="fc" id="L460">            yCurrent = Integer.MAX_VALUE;</span>
+<span class="pc bpc" id="L459" title="1 of 2 branches missed.">        if (successor == -1) {</span>
+<span class="nc" id="L460">            yCurrent = Integer.MAX_VALUE;</span>
         } else {
 <span class="fc" id="L462">            int sr = getRow(successor);</span>
 <span class="fc bfc" id="L463" title="All 2 branches covered.">            if (sr &gt; y) {</span>
@@ -803,8 +803,8 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L803">        }</span>
         
         // successor searches to higher bounds
-<span class="fc bfc" id="L806" title="All 2 branches covered.">        if (successor == -1) {</span>
-<span class="fc" id="L807">            yCurrent = Integer.MAX_VALUE;</span>
+<span class="pc bpc" id="L806" title="1 of 2 branches missed.">        if (successor == -1) {</span>
+<span class="nc" id="L807">            yCurrent = Integer.MAX_VALUE;</span>
         } else {
 <span class="fc" id="L809">            int sr = getRow(successor);</span>
 <span class="fc bfc" id="L810" title="All 2 branches covered.">            if (sr &gt; y) {</span>

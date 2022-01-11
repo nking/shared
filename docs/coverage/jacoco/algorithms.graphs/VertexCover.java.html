@@ -3,6 +3,7 @@
 import algorithms.TreeTraversal;
 import algorithms.DoublyLinkedList;
 import algorithms.NAryTreeNode;
+import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming;
 import algorithms.optimization.LinearProgramming.SlackForm;
 import algorithms.optimization.LinearProgramming.StandardForm;
@@ -27,7 +28,7 @@ import java.util.Set;
 
  * @author nichole
  */
-<span class="fc" id="L30">public class VertexCover {</span>
+<span class="fc" id="L31">public class VertexCover {</span>
     
     /**
      * for a tree, find an exact vertex cover which does not include any leaves.
@@ -52,7 +53,7 @@ import java.util.Set;
      */
     public Set&lt;NAryTreeNode&gt; exact(NAryTreeNode root) {
         
-<span class="fc" id="L55">        root = NAryTreeNode.copyTree(root);</span>
+<span class="fc" id="L56">        root = NAryTreeNode.copyTree(root);</span>
         
         /*
         There exists an optimal vertex cover which does not include any leaves.
@@ -64,51 +65,51 @@ import java.util.Set;
             return C
         */
                 
-<span class="fc" id="L67">        TreeTraversal tt = new TreeTraversal();</span>
-<span class="fc" id="L68">        DoublyLinkedList&lt;NAryTreeNode&gt; revLevelOrder = tt.getReverseLevelOrderIterative2(root);</span>
-<span class="fc" id="L69">        Set&lt;NAryTreeNode&gt; c = new HashSet&lt;NAryTreeNode&gt;();</span>
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (revLevelOrder.size() &lt; 1) {</span>
-<span class="nc" id="L71">            return c;</span>
+<span class="fc" id="L68">        TreeTraversal tt = new TreeTraversal();</span>
+<span class="fc" id="L69">        DoublyLinkedList&lt;NAryTreeNode&gt; revLevelOrder = tt.getReverseLevelOrderIterative2(root);</span>
+<span class="fc" id="L70">        Set&lt;NAryTreeNode&gt; c = new HashSet&lt;NAryTreeNode&gt;();</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (revLevelOrder.size() &lt; 1) {</span>
+<span class="nc" id="L72">            return c;</span>
         }
         Set&lt;NAryTreeNode&gt; children;
         NAryTreeNode node;
-<span class="fc" id="L75">        int i = 0;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        while (!revLevelOrder.isEmpty()) {</span>
-<span class="fc" id="L77">            node = revLevelOrder.peekFirst();</span>
+<span class="fc" id="L76">        int i = 0;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        while (!revLevelOrder.isEmpty()) {</span>
+<span class="fc" id="L78">            node = revLevelOrder.peekFirst();</span>
             //System.out.println(&quot;visiting &quot; + node.getData());
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (node.getParent() != null) {</span>
-<span class="pc bpc" id="L80" title="2 of 4 branches missed.">                if (node.getChildren().isEmpty() &amp;&amp; !c.contains(node.getParent())) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            if (node.getParent() != null) {</span>
+<span class="pc bpc" id="L81" title="2 of 4 branches missed.">                if (node.getChildren().isEmpty() &amp;&amp; !c.contains(node.getParent())) {</span>
                     // this is a leaf node.  
                     // add it's parent to set C
-<span class="fc" id="L83">                    c.add(node.getParent());</span>
+<span class="fc" id="L84">                    c.add(node.getParent());</span>
                     //System.out.println(&quot;  *C.add==&quot; + node.getParent().getData());
                     //  remove node and parent from LinkedList
                     //System.out.println(&quot;  unlink parent=&quot; + node.getParent().getData());
-<span class="fc" id="L87">                    revLevelOrder.unlink(node.getParent());</span>
-<span class="fc" id="L88">                    children = node.getParent().getChildren();</span>
+<span class="fc" id="L88">                    revLevelOrder.unlink(node.getParent());</span>
+<span class="fc" id="L89">                    children = node.getParent().getChildren();</span>
                     // remove children of parent
-<span class="fc bfc" id="L90" title="All 2 branches covered.">                    for (NAryTreeNode child : children) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                    for (NAryTreeNode child : children) {</span>
                         //System.out.println(&quot;  unlink child=&quot; + child.getData());
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">                        if (!c.contains(child)) {</span>
-<span class="fc" id="L93">                            revLevelOrder.unlink(child);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">                        if (!c.contains(child)) {</span>
+<span class="fc" id="L94">                            revLevelOrder.unlink(child);</span>
                         }
-<span class="fc" id="L95">                    }</span>
+<span class="fc" id="L96">                    }</span>
                     // remove parent from it's parent's children
-<span class="fc bfc" id="L97" title="All 2 branches covered.">                    if (node.getParent().getParent() != null) {</span>
-<span class="fc" id="L98">                        children = node.getParent().getParent().getChildren();</span>
-<span class="fc" id="L99">                        children.remove(node.getParent());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                    if (node.getParent().getParent() != null) {</span>
+<span class="fc" id="L99">                        children = node.getParent().getParent().getChildren();</span>
+<span class="fc" id="L100">                        children.remove(node.getParent());</span>
                     }
                 } else {
                     //System.out.println(&quot;  unlink &quot; + node.getData());
-<span class="nc" id="L103">                    revLevelOrder.unlink(node);</span>
+<span class="nc" id="L104">                    revLevelOrder.unlink(node);</span>
                 }
-<span class="nc bnc" id="L105" title="All 2 branches missed.">            } else if (revLevelOrder.size() == 1) {</span>
-<span class="nc" id="L106">                c.add(node);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            } else if (revLevelOrder.size() == 1) {</span>
+<span class="nc" id="L107">                c.add(node);</span>
                 //System.out.println(&quot;  unlink root &quot; + node.getData());
-<span class="nc" id="L108">                revLevelOrder.unlink(node);</span>
+<span class="nc" id="L109">                revLevelOrder.unlink(node);</span>
             }
         }
-<span class="fc" id="L111">        return c;</span>
+<span class="fc" id="L112">        return c;</span>
     }
     
     /**
@@ -131,48 +132,48 @@ import java.util.Set;
     public TIntSet approx2(TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
         // make a copy of the graph to edit it
-<span class="fc" id="L134">        TIntObjectMap&lt;TIntSet&gt; g = copy(adjMap);</span>
+<span class="fc" id="L135">        TIntObjectMap&lt;TIntSet&gt; g = copy(adjMap);</span>
         
         // make a reverse mapping of the graph in order to find edges incident
         //    on to a given vertex.
-<span class="fc" id="L138">        TIntObjectMap&lt;TIntSet&gt; reverseMap = reverse(adjMap);</span>
+<span class="fc" id="L139">        TIntObjectMap&lt;TIntSet&gt; reverseMap = MatrixUtil.createReverseMap(adjMap);</span>
         
         //TIntIntMap c = new TIntIntHashMap();
-<span class="fc" id="L141">        TIntSet c = new TIntHashSet();</span>
+<span class="fc" id="L142">        TIntSet c = new TIntHashSet();</span>
         
         int u, v, incident;
         TIntSet uEdges, revEdgesU, revEdgesV;
         TIntIterator iter;
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        while (!g.isEmpty()) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        while (!g.isEmpty()) {</span>
             //(1) select an edge e = (u,v) of G
-<span class="fc" id="L148">            u = g.keySet().iterator().next();</span>
-<span class="fc" id="L149">            uEdges = g.get(u);</span>
-<span class="pc bpc" id="L150" title="2 of 4 branches missed.">            if (uEdges == null || uEdges.isEmpty()) {</span>
-<span class="nc" id="L151">                g.remove(u);</span>
-<span class="nc" id="L152">                continue;</span>
+<span class="fc" id="L149">            u = g.keySet().iterator().next();</span>
+<span class="fc" id="L150">            uEdges = g.get(u);</span>
+<span class="pc bpc" id="L151" title="2 of 4 branches missed.">            if (uEdges == null || uEdges.isEmpty()) {</span>
+<span class="nc" id="L152">                g.remove(u);</span>
+<span class="nc" id="L153">                continue;</span>
             }
-<span class="fc" id="L154">            v = uEdges.iterator().next();</span>
+<span class="fc" id="L155">            v = uEdges.iterator().next();</span>
             
             //(2) add vertices u and v to C
-<span class="fc" id="L157">            c.add(u);</span>
-<span class="fc" id="L158">            c.add(v);</span>
+<span class="fc" id="L158">            c.add(u);</span>
+<span class="fc" id="L159">            c.add(v);</span>
             
             // remove all edges u-&gt;other
-<span class="fc" id="L161">            g.remove(u);</span>
+<span class="fc" id="L162">            g.remove(u);</span>
             // remove all edges v-&gt;other
-<span class="fc" id="L163">            g.remove(v);</span>
+<span class="fc" id="L164">            g.remove(v);</span>
 
             // remove all edges other-&gt;u
             //   can use reverse map to find those links                        
-<span class="fc" id="L167">            revEdgesU = reverseMap.get(u);</span>
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">            if (revEdgesU != null) {</span>
-<span class="fc" id="L169">                iter = revEdgesU.iterator();</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
-<span class="fc" id="L171">                    incident = iter.next();</span>
-<span class="pc bpc" id="L172" title="1 of 4 branches missed.">                    if (g.containsKey(incident) &amp;&amp; g.get(incident).contains(u)) {</span>
-<span class="fc" id="L173">                        g.get(incident).remove(u);</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">                        if (g.get(incident).isEmpty()) {</span>
-<span class="fc" id="L175">                            g.remove(incident);</span>
+<span class="fc" id="L168">            revEdgesU = reverseMap.get(u);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (revEdgesU != null) {</span>
+<span class="fc" id="L170">                iter = revEdgesU.iterator();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L172">                    incident = iter.next();</span>
+<span class="pc bpc" id="L173" title="1 of 4 branches missed.">                    if (g.containsKey(incident) &amp;&amp; g.get(incident).contains(u)) {</span>
+<span class="fc" id="L174">                        g.get(incident).remove(u);</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">                        if (g.get(incident).isEmpty()) {</span>
+<span class="fc" id="L176">                            g.remove(incident);</span>
                         }
                     }
                 }
@@ -180,21 +181,21 @@ import java.util.Set;
             
             // remove all edges other-&gt;v
             //   can use reverse map to find those links
-<span class="fc" id="L183">            revEdgesV = reverseMap.get(v);</span>
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            if (revEdgesV != null) {</span>
-<span class="fc" id="L185">                iter = revEdgesV.iterator();</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
-<span class="fc" id="L187">                    incident = iter.next();</span>
-<span class="pc bpc" id="L188" title="1 of 4 branches missed.">                    if (g.containsKey(incident) &amp;&amp; g.get(incident).contains(v)) {</span>
-<span class="fc" id="L189">                        g.get(incident).remove(v);</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">                        if (g.get(incident).isEmpty()) {</span>
-<span class="fc" id="L191">                            g.remove(incident);</span>
+<span class="fc" id="L184">            revEdgesV = reverseMap.get(v);</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">            if (revEdgesV != null) {</span>
+<span class="fc" id="L186">                iter = revEdgesV.iterator();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L188">                    incident = iter.next();</span>
+<span class="pc bpc" id="L189" title="1 of 4 branches missed.">                    if (g.containsKey(incident) &amp;&amp; g.get(incident).contains(v)) {</span>
+<span class="fc" id="L190">                        g.get(incident).remove(v);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">                        if (g.get(incident).isEmpty()) {</span>
+<span class="fc" id="L192">                            g.remove(incident);</span>
                         }
                     }
                 }
             }
         }       
-<span class="fc" id="L197">        return c;</span>
+<span class="fc" id="L198">        return c;</span>
     }
     
     /**
@@ -234,65 +235,36 @@ import java.util.Set;
                     add v to C
         */
         
-<span class="fc" id="L237">        StandardForm standForm = createLinearProgramInStandardForm(adjMap, weights);</span>
-<span class="fc" id="L238">        LinearProgramming lp = new LinearProgramming();</span>
-<span class="fc" id="L239">        SlackForm soln = lp.solveUsingSimplexMethod(standForm);</span>
-<span class="fc" id="L240">        double[] x = soln.computeBasicSolution();</span>
+<span class="fc" id="L238">        StandardForm standForm = createLinearProgramInStandardForm(adjMap, weights);</span>
+<span class="fc" id="L239">        LinearProgramming lp = new LinearProgramming();</span>
+<span class="fc" id="L240">        SlackForm soln = lp.solveUsingSimplexMethod(standForm);</span>
+<span class="fc" id="L241">        double[] x = soln.computeBasicSolution();</span>
         
         //System.out.printf(&quot;x=%s\n&quot;, FormatArray.toString(x, &quot;%.3f&quot;));
         
-<span class="fc" id="L244">        TIntSet c = new TIntHashSet();</span>
+<span class="fc" id="L245">        TIntSet c = new TIntHashSet();</span>
         int i;
-<span class="fc bfc" id="L246" title="All 2 branches covered.">        for (i = 0; i &lt; weights.length; ++i) {</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">            if (x[i] &gt;= 0.5) {</span>
-<span class="fc" id="L248">                c.add(i);</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        for (i = 0; i &lt; weights.length; ++i) {</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            if (x[i] &gt;= 0.5) {</span>
+<span class="fc" id="L249">                c.add(i);</span>
             }
         }
-<span class="fc" id="L251">        return c;</span>
+<span class="fc" id="L252">        return c;</span>
     }
 
     protected TIntObjectMap&lt;TIntSet&gt; copy(TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
-<span class="fc" id="L256">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-<span class="fc" id="L257">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L257">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L258">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
         TIntSet v;
         int k;
-<span class="fc bfc" id="L260" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L261">            iter.advance();</span>
-<span class="fc" id="L262">            k = iter.key();</span>
-<span class="fc" id="L263">            v = iter.value();</span>
-<span class="fc" id="L264">            c.put(k, new TIntHashSet(v.toArray()));</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L262">            iter.advance();</span>
+<span class="fc" id="L263">            k = iter.key();</span>
+<span class="fc" id="L264">            v = iter.value();</span>
+<span class="fc" id="L265">            c.put(k, new TIntHashSet(v.toArray()));</span>
         }
-<span class="fc" id="L266">        return c;</span>
-    }
-
-    protected TIntObjectMap&lt;TIntSet&gt; reverse(TIntObjectMap&lt;TIntSet&gt; adjMap) {
-        
-<span class="fc" id="L271">        TIntObjectMap&lt;TIntSet&gt; r = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-        
-<span class="fc" id="L273">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
-        TIntIterator iterV;
-        TIntSet vSet, rVSet;
-        int u, v;
-<span class="fc bfc" id="L277" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L278">            iter.advance();</span>
-<span class="fc" id="L279">            u = iter.key();</span>
-<span class="fc" id="L280">            vSet = iter.value();</span>
-            
-<span class="pc bpc" id="L282" title="1 of 4 branches missed.">            if (vSet != null &amp;&amp; !vSet.isEmpty()) {</span>
-<span class="fc" id="L283">                iterV = vSet.iterator();</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">                while (iterV.hasNext()) {</span>
-<span class="fc" id="L285">                    v = iterV.next();</span>
-<span class="fc" id="L286">                    rVSet = r.get(v);</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">                    if (rVSet == null) {</span>
-<span class="fc" id="L288">                        rVSet = new TIntHashSet();</span>
-<span class="fc" id="L289">                        r.put(v, rVSet);</span>
-                    }
-<span class="fc" id="L291">                    rVSet.add(u);</span>
-                }
-            }
-        }
-<span class="fc" id="L295">        return r;</span>
+<span class="fc" id="L267">        return c;</span>
     }
 
     protected StandardForm createLinearProgramInStandardForm(
@@ -307,45 +279,45 @@ import java.util.Set;
             non-negativity constraints:
                 x(v) &gt;= 0 for each v in V
         */
-<span class="fc" id="L310">        double[] c = Arrays.copyOf(weights, weights.length);</span>
+<span class="fc" id="L282">        double[] c = Arrays.copyOf(weights, weights.length);</span>
         
         // rows are pairs of u, v, e.g. edges[0][0] = u, edges[0][1] = v
-<span class="fc" id="L313">        int[][] edges = extractEdges(adjMap);</span>
-<span class="fc" id="L314">        int nE = edges.length;</span>
-<span class="fc" id="L315">        int nV = weights.length;</span>
+<span class="fc" id="L285">        int[][] edges = extractEdges(adjMap);</span>
+<span class="fc" id="L286">        int nE = edges.length;</span>
+<span class="fc" id="L287">        int nV = weights.length;</span>
         
-<span class="fc" id="L317">        double[][] a = new double[nE + nV][nV];</span>
-<span class="fc" id="L318">        double[] b = new double[nE + nV];</span>
-<span class="fc" id="L319">        Arrays.fill(b, 1);</span>
+<span class="fc" id="L289">        double[][] a = new double[nE + nV][nV];</span>
+<span class="fc" id="L290">        double[] b = new double[nE + nV];</span>
+<span class="fc" id="L291">        Arrays.fill(b, 1);</span>
         
         int i, u, v;
-<span class="fc bfc" id="L322" title="All 2 branches covered.">        for (i = 0; i &lt; nE; ++i) {</span>
-<span class="fc" id="L323">            u = edges[i][0];</span>
-<span class="fc" id="L324">            v = edges[i][1];</span>
-<span class="fc" id="L325">            a[i] = new double[nV];</span>
-<span class="fc" id="L326">            a[i][u] = 1;</span>
-<span class="fc" id="L327">            a[i][v] = 1;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        for (i = 0; i &lt; nE; ++i) {</span>
+<span class="fc" id="L295">            u = edges[i][0];</span>
+<span class="fc" id="L296">            v = edges[i][1];</span>
+<span class="fc" id="L297">            a[i] = new double[nV];</span>
+<span class="fc" id="L298">            a[i][u] = 1;</span>
+<span class="fc" id="L299">            a[i][v] = 1;</span>
         }
         int i2;
-<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (i = 0, i2=nE; i &lt; nV; ++i, ++i2) {</span>
-<span class="fc" id="L331">            a[i2] = new double[nV];</span>
-<span class="fc" id="L332">            a[i2][i] = 1;</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        for (i = 0, i2=nE; i &lt; nV; ++i, ++i2) {</span>
+<span class="fc" id="L303">            a[i2] = new double[nV];</span>
+<span class="fc" id="L304">            a[i2][i] = 1;</span>
         }
         
-<span class="fc" id="L335">        boolean isMaximization = false;</span>
-<span class="fc" id="L336">        int[] constraintComparisons = new int[nE + nV];</span>
-<span class="fc" id="L337">        Arrays.fill(constraintComparisons, 0, nE, 1);</span>
-<span class="fc" id="L338">        Arrays.fill(constraintComparisons, nE, nE+nV, -1);</span>
-<span class="fc" id="L339">        boolean[] nonnegativityConstraints = new boolean[nV];</span>
-<span class="fc" id="L340">        Arrays.fill(nonnegativityConstraints, true);</span>
+<span class="fc" id="L307">        boolean isMaximization = false;</span>
+<span class="fc" id="L308">        int[] constraintComparisons = new int[nE + nV];</span>
+<span class="fc" id="L309">        Arrays.fill(constraintComparisons, 0, nE, 1);</span>
+<span class="fc" id="L310">        Arrays.fill(constraintComparisons, nE, nE+nV, -1);</span>
+<span class="fc" id="L311">        boolean[] nonnegativityConstraints = new boolean[nV];</span>
+<span class="fc" id="L312">        Arrays.fill(nonnegativityConstraints, true);</span>
         
-<span class="fc" id="L342">        StandardForm standForm = LinearProgramming</span>
-<span class="fc" id="L343">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
+<span class="fc" id="L314">        StandardForm standForm = LinearProgramming</span>
+<span class="fc" id="L315">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
             constraintComparisons, nonnegativityConstraints);
         
         //System.out.printf(&quot;graph as Linear Program in standard form=\n%s\n&quot;, standForm.toString());
 
-<span class="fc" id="L348">        return standForm;</span>
+<span class="fc" id="L320">        return standForm;</span>
     }
 
     /**
@@ -355,38 +327,38 @@ import java.util.Set;
      * @return two dimensional array of the edges.
      */
     protected int[][] extractEdges(TIntObjectMap&lt;TIntSet&gt; adjMap) {
-<span class="fc" id="L358">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
+<span class="fc" id="L330">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
         int u, v, i, k, k2;
         PairInt p;
         
-<span class="fc" id="L362">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L334">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
         TIntIterator iter2;
         TIntSet adj;
-<span class="fc bfc" id="L365" title="All 2 branches covered.">        for (i = 0; i &lt; adjMap.size(); ++i) {</span>
-<span class="fc" id="L366">            iter.advance();</span>
-<span class="fc" id="L367">            adj = iter.value();</span>
-<span class="pc bpc" id="L368" title="1 of 4 branches missed.">            if (adj == null || adj.isEmpty()) {</span>
-<span class="fc" id="L369">                continue;</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">        for (i = 0; i &lt; adjMap.size(); ++i) {</span>
+<span class="fc" id="L338">            iter.advance();</span>
+<span class="fc" id="L339">            adj = iter.value();</span>
+<span class="pc bpc" id="L340" title="1 of 4 branches missed.">            if (adj == null || adj.isEmpty()) {</span>
+<span class="fc" id="L341">                continue;</span>
             }
-<span class="fc" id="L371">            k = iter.key();</span>
-<span class="fc" id="L372">            iter2 = adj.iterator();</span>
-<span class="fc bfc" id="L373" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L374">                k2 = iter2.next();</span>
-<span class="pc bpc" id="L375" title="1 of 2 branches missed.">                if (k2 &lt; k) {</span>
-<span class="nc" id="L376">                    p = new PairInt(k2, k);</span>
+<span class="fc" id="L343">            k = iter.key();</span>
+<span class="fc" id="L344">            iter2 = adj.iterator();</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L346">                k2 = iter2.next();</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">                if (k2 &lt; k) {</span>
+<span class="nc" id="L348">                    p = new PairInt(k2, k);</span>
                 } else {
-<span class="fc" id="L378">                    p = new PairInt(k, k2);</span>
+<span class="fc" id="L350">                    p = new PairInt(k, k2);</span>
                 }
-<span class="fc" id="L380">                edges.add(p);</span>
+<span class="fc" id="L352">                edges.add(p);</span>
             }
         }
-<span class="fc" id="L383">        int[][] out = new int[edges.size()][];</span>
-<span class="fc" id="L384">        i = 0;</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">        for (PairInt p2 : edges) {</span>
-<span class="fc" id="L386">            out[i] = new int[]{p2.getX(), p2.getY()};</span>
-<span class="fc" id="L387">            i++;</span>
-<span class="fc" id="L388">        }</span>
-<span class="fc" id="L389">        return out;</span>
+<span class="fc" id="L355">        int[][] out = new int[edges.size()][];</span>
+<span class="fc" id="L356">        i = 0;</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        for (PairInt p2 : edges) {</span>
+<span class="fc" id="L358">            out[i] = new int[]{p2.getX(), p2.getY()};</span>
+<span class="fc" id="L359">            i++;</span>
+<span class="fc" id="L360">        }</span>
+<span class="fc" id="L361">        return out;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

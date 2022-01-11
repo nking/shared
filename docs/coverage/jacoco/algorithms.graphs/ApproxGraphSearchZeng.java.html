@@ -354,7 +354,9 @@ SDM, pp 154–163 (2011)
 <span class="fc" id="L354">                continue;</span>
             }
             
-<span class="nc" id="L357">            throw new UnsupportedOperationException(&quot;the filter is implemented, &quot;</span>
+            // an exponential exact solution would be to use subsets of the
+            //   graph dbi of size q then solve using full graph (which uses filters and then optimal solution which is all permutations).
+<span class="nc" id="L359">            throw new UnsupportedOperationException(&quot;the filter is implemented, &quot;</span>
                 + &quot;but the approx subgraph search is not yet implemented.  &quot;
                 + &quot; meanwhile, considering the following implemented java projects: &quot;
                 + &quot; https://github.com/jgrapht/jgrapht/blob/master/docs/guide-templates/VertexAndEdgeTypes.md&quot;
@@ -363,7 +365,7 @@ SDM, pp 154–163 (2011)
             
         } // end loop over db graphs
         
-<span class="fc" id="L366">        return results;        </span>
+<span class="fc" id="L368">        return results;        </span>
     }
     
     /**
@@ -406,87 +408,87 @@ SDM, pp 154–163 (2011)
             if edge(f'(u),f'(u′)) is not in q cost++;
         */
         
-<span class="fc" id="L409">        int n = sg1.length;</span>
-<span class="fc" id="L410">        int costVSubst = 0;</span>
-<span class="fc" id="L411">        int costEDelSubst = 0;</span>
-<span class="fc" id="L412">        int costEIns = 0;</span>
+<span class="fc" id="L411">        int n = sg1.length;</span>
+<span class="fc" id="L412">        int costVSubst = 0;</span>
+<span class="fc" id="L413">        int costEDelSubst = 0;</span>
+<span class="fc" id="L414">        int costEIns = 0;</span>
                 
         // vertex relabeling
         int i, j;
-<span class="fc bfc" id="L416" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
-<span class="fc" id="L417">            j = assignments[i];</span>
-<span class="fc bfc" id="L418" title="All 2 branches covered.">            if (sg1[i].rootLabel != sg2[j].rootLabel) {</span>
-<span class="fc" id="L419">                costVSubst++;</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
+<span class="fc" id="L419">            j = assignments[i];</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">            if (sg1[i].rootLabel != sg2[j].rootLabel) {</span>
+<span class="fc" id="L421">                costVSubst++;</span>
             }
         }
         int i2, j2, i1r, j1r;
         PairInt edge2;
         // Edge deletion or relabeling
         int e2Label;
-<span class="fc bfc" id="L426" title="All 2 branches covered.">        for (PairInt edge1 : e1Labels.keySet()) {</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">        for (PairInt edge1 : e1Labels.keySet()) {</span>
             /*
             for each edge (v,v′) in q do
                 if edge (f(v), f(v′)) is not in g or l(v,v′) != l(f(v), f(v′)) cost++;
             */
-<span class="fc" id="L431">            i = edge1.getX();</span>
-<span class="fc" id="L432">            i2 = edge1.getY();</span>
-<span class="fc" id="L433">            j = assignments[i];</span>
-<span class="fc" id="L434">            j2 = assignments[i2];</span>
-<span class="fc" id="L435">            edge2 = new PairInt(j, j2);</span>
-<span class="fc bfc" id="L436" title="All 2 branches covered.">            if (e2Labels.containsKey(edge2)) {</span>
-<span class="fc" id="L437">                e2Label = e2Labels.get(edge2);</span>
-<span class="fc bfc" id="L438" title="All 2 branches covered.">            } else if (e2Labels.containsKey(new PairInt(j2, j))) {</span>
-<span class="fc" id="L439">                edge2 = new PairInt(j2, j);</span>
-<span class="fc" id="L440">                e2Label = e2Labels.get(edge2);</span>
+<span class="fc" id="L433">            i = edge1.getX();</span>
+<span class="fc" id="L434">            i2 = edge1.getY();</span>
+<span class="fc" id="L435">            j = assignments[i];</span>
+<span class="fc" id="L436">            j2 = assignments[i2];</span>
+<span class="fc" id="L437">            edge2 = new PairInt(j, j2);</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">            if (e2Labels.containsKey(edge2)) {</span>
+<span class="fc" id="L439">                e2Label = e2Labels.get(edge2);</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">            } else if (e2Labels.containsKey(new PairInt(j2, j))) {</span>
+<span class="fc" id="L441">                edge2 = new PairInt(j2, j);</span>
+<span class="fc" id="L442">                e2Label = e2Labels.get(edge2);</span>
             } else {
-<span class="fc" id="L442">                costEDelSubst++;</span>
-<span class="fc" id="L443">                continue;</span>
+<span class="fc" id="L444">                costEDelSubst++;</span>
+<span class="fc" id="L445">                continue;</span>
             }
-<span class="fc bfc" id="L445" title="All 2 branches covered.">            if (e1Labels.get(edge1) != e2Label) {</span>
-<span class="fc" id="L446">                costEDelSubst++;</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">            if (e1Labels.get(edge1) != e2Label) {</span>
+<span class="fc" id="L448">                costEDelSubst++;</span>
             }
-<span class="fc" id="L448">        }</span>
+<span class="fc" id="L450">        }</span>
         
-<span class="fc" id="L450">        TIntIntMap revAssign = reverseAssignment(assignments);</span>
+<span class="fc" id="L452">        TIntIntMap revAssign = reverseAssignment(assignments);</span>
 
         // Edge insertion
         //for each edge (u,u′) in g
         //    if edge(f'(u),f'(u′)) is not in q cost++;
-<span class="fc" id="L455">        TObjectIntIterator&lt;PairInt&gt; iter = e2Labels.iterator();</span>
+<span class="fc" id="L457">        TObjectIntIterator&lt;PairInt&gt; iter = e2Labels.iterator();</span>
         PairInt edge1;
         int e1Label;
-<span class="fc bfc" id="L458" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L459">            iter.advance();</span>
-<span class="fc" id="L460">            edge2 = iter.key();</span>
-<span class="fc" id="L461">            e2Label = iter.value();</span>
-<span class="fc" id="L462">            j = edge2.getX();</span>
-<span class="fc" id="L463">            j2 = edge2.getY();</span>
-<span class="fc" id="L464">            i = revAssign.get(j);</span>
-<span class="fc" id="L465">            i2 = revAssign.get(j2);</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L461">            iter.advance();</span>
+<span class="fc" id="L462">            edge2 = iter.key();</span>
+<span class="fc" id="L463">            e2Label = iter.value();</span>
+<span class="fc" id="L464">            j = edge2.getX();</span>
+<span class="fc" id="L465">            j2 = edge2.getY();</span>
+<span class="fc" id="L466">            i = revAssign.get(j);</span>
+<span class="fc" id="L467">            i2 = revAssign.get(j2);</span>
             
-<span class="fc" id="L467">            edge1 = new PairInt(i, i2);</span>
-<span class="fc bfc" id="L468" title="All 2 branches covered.">            if (e1Labels.containsKey(edge1)) {</span>
-<span class="fc" id="L469">                e1Label = e1Labels.get(edge1);</span>
-<span class="fc bfc" id="L470" title="All 2 branches covered.">            } else if (e1Labels.containsKey(new PairInt(i2, i))) {</span>
-<span class="fc" id="L471">                edge1 = new PairInt(i2, i);</span>
-<span class="fc" id="L472">                e1Label = e1Labels.get(edge1);</span>
+<span class="fc" id="L469">            edge1 = new PairInt(i, i2);</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (e1Labels.containsKey(edge1)) {</span>
+<span class="fc" id="L471">                e1Label = e1Labels.get(edge1);</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">            } else if (e1Labels.containsKey(new PairInt(i2, i))) {</span>
+<span class="fc" id="L473">                edge1 = new PairInt(i2, i);</span>
+<span class="fc" id="L474">                e1Label = e1Labels.get(edge1);</span>
             } else {
-<span class="fc" id="L474">                costEIns++;</span>
-<span class="fc" id="L475">                continue;</span>
+<span class="fc" id="L476">                costEIns++;</span>
+<span class="fc" id="L477">                continue;</span>
             }
-<span class="fc bfc" id="L477" title="All 2 branches covered.">            if (e1Label != e2Label) {</span>
-<span class="fc" id="L478">                costEIns++;</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">            if (e1Label != e2Label) {</span>
+<span class="fc" id="L480">                costEIns++;</span>
             }
         }
         
         //int cost = costVSubst + costEDelSubst + costEIns;
         // or use the maximum for edges to not count them twice
-<span class="fc" id="L484">        int cost = costVSubst + Math.max(costEDelSubst, costEIns);</span>
+<span class="fc" id="L486">        int cost = costVSubst + Math.max(costEDelSubst, costEIns);</span>
         
         //System.out.printf(&quot;costs vSubst=%d, eDelSubst=%d, eIns=%d ==&gt; c=%d\n&quot;,
         //    costVSubst, costEDelSubst, costEIns, cost);
         
-<span class="fc" id="L489">        return cost;</span>
+<span class="fc" id="L491">        return cost;</span>
     }
     
     /**
@@ -511,11 +513,11 @@ SDM, pp 154–163 (2011)
         int[][] a1, int[][] a2, int[] assignments) {
         
         // Zeng et al. 2009 which has vertex edits but not edge edits
-<span class="fc" id="L514">        int[][] p = MatrixUtil.createPermutationMatrix(assignments);</span>
+<span class="fc" id="L516">        int[][] p = MatrixUtil.createPermutationMatrix(assignments);</span>
         
-<span class="fc" id="L516">        int[][] c = createLabelMatrix(sg1, sg2, assignments);</span>
-<span class="pc bpc" id="L517" title="3 of 4 branches missed.">        assert(c.length == p.length);</span>
-<span class="pc bpc" id="L518" title="3 of 4 branches missed.">        assert(c[0].length == p[0].length);</span>
+<span class="fc" id="L518">        int[][] c = createLabelMatrix(sg1, sg2, assignments);</span>
+<span class="pc bpc" id="L519" title="3 of 4 branches missed.">        assert(c.length == p.length);</span>
+<span class="pc bpc" id="L520" title="3 of 4 branches missed.">        assert(c[0].length == p[0].length);</span>
         
         //C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
         //              + (1/2) || a1 - P*a2*P^T ||_1
@@ -523,25 +525,25 @@ SDM, pp 154–163 (2011)
         //Assuming that the L1-norm here is the same convention as MatLab:
         //    For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
         //    ||X||_1 = max sum for an arg j where (0&lt;=j&lt;=n-1) sum_(i=0 to n-1) ( |a[i][j] )
-<span class="fc" id="L526">        int[][] pA2PT = MatrixUtil.multiply(p,</span>
-<span class="fc" id="L527">            MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));</span>
+<span class="fc" id="L528">        int[][] pA2PT = MatrixUtil.multiply(p,</span>
+<span class="fc" id="L529">            MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));</span>
         
-<span class="fc" id="L529">        double term2 = 0.5*MatrixUtil.lp1Norm(</span>
-<span class="fc" id="L530">            MatrixUtil.elementwiseSubtract(a1, pA2PT));</span>
+<span class="fc" id="L531">        double term2 = 0.5*MatrixUtil.lp1Norm(</span>
+<span class="fc" id="L532">            MatrixUtil.elementwiseSubtract(a1, pA2PT));</span>
         
         //this is a large term, summed from labels being equal.
         //origins are  BLP paper  by Justice &amp; Hero, eqn(18).
-<span class="fc" id="L534">        double term1 = 0;</span>
+<span class="fc" id="L536">        double term1 = 0;</span>
         int i, j;
-<span class="fc bfc" id="L536" title="All 2 branches covered.">        for (i = 0; i &lt; c.length; ++i) {</span>
-<span class="fc bfc" id="L537" title="All 2 branches covered.">            for (j = 0; j &lt; c[i].length; ++j) {</span>
-<span class="fc" id="L538">                term1 += c[i][j] * p[i][j];</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">        for (i = 0; i &lt; c.length; ++i) {</span>
+<span class="fc bfc" id="L539" title="All 2 branches covered.">            for (j = 0; j &lt; c[i].length; ++j) {</span>
+<span class="fc" id="L540">                term1 += c[i][j] * p[i][j];</span>
             }
         }
         
         //System.out.printf(&quot;term1=%.2f term2=%.2f\n&quot;, term1, term2);
         
-<span class="fc" id="L544">        return term1 + term2;</span>
+<span class="fc" id="L546">        return term1 + term2;</span>
     }
     
     /**
@@ -563,13 +565,13 @@ SDM, pp 154–163 (2011)
         
         Lm(g1, g2) = μ(g1, g2) / max{4, [max{δ(g1), δ(g2)} + 1]}
         */
-<span class="fc" id="L566">        int maxDeg1 = maxDegree(sg1);</span>
-<span class="fc" id="L567">        int maxDeg2 = maxDegree(sg2);</span>
-<span class="fc" id="L568">        double denom = Math.max(maxDeg1, maxDeg2) + 1;</span>
+<span class="fc" id="L568">        int maxDeg1 = maxDegree(sg1);</span>
+<span class="fc" id="L569">        int maxDeg2 = maxDegree(sg2);</span>
+<span class="fc" id="L570">        double denom = Math.max(maxDeg1, maxDeg2) + 1;</span>
         
-<span class="fc" id="L570">        double lM = mappingDist/denom;</span>
+<span class="fc" id="L572">        double lM = mappingDist/denom;</span>
         
-<span class="fc" id="L572">        return lM;</span>
+<span class="fc" id="L574">        return lM;</span>
     }
     
     /**
@@ -589,21 +591,21 @@ SDM, pp 154–163 (2011)
         int[] assignments) {
                                
         // usign the assignments, sum the edit distances.
-<span class="fc" id="L592">        int sum = 0, i, d;</span>
+<span class="fc" id="L594">        int sum = 0, i, d;</span>
         StarStructure s1, s2;
-<span class="fc bfc" id="L594" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
-<span class="fc" id="L595">            s1 = sg1[i];</span>
-<span class="fc" id="L596">            s2 = sg2[assignments[i]];</span>
-<span class="fc bfc" id="L597" title="All 2 branches covered.">            if (this.edgesAreLabeled) {</span>
-<span class="fc" id="L598">                d = StarStructure.calculateEditDistance(s1, s2);</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
+<span class="fc" id="L597">            s1 = sg1[i];</span>
+<span class="fc" id="L598">            s2 = sg2[assignments[i]];</span>
+<span class="fc bfc" id="L599" title="All 2 branches covered.">            if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L600">                d = StarStructure.calculateEditDistance(s1, s2);</span>
             } else {
-<span class="fc" id="L600">                d = StarStructure.calculateEditDistanceV(s1, s2);</span>
+<span class="fc" id="L602">                d = StarStructure.calculateEditDistanceV(s1, s2);</span>
             }
-<span class="fc" id="L602">            sum += d;</span>
+<span class="fc" id="L604">            sum += d;</span>
             //System.out.printf(&quot;i=%d ed=%d sum=%d\n&quot;, i, d, sum);
         }
         
-<span class="fc" id="L606">        return sum;</span>
+<span class="fc" id="L608">        return sum;</span>
     }
 
     /**
@@ -612,51 +614,51 @@ SDM, pp 154–163 (2011)
      * @return 
      */
     private int maxDegree(StarStructure[] sg) {
-<span class="fc" id="L615">        int max = 0, deg;</span>
-<span class="fc bfc" id="L616" title="All 2 branches covered.">        for (int i = 0; i &lt; sg.length; ++i) {</span>
-<span class="fc" id="L617">            deg = sg[i].vLabels.length;</span>
-<span class="fc bfc" id="L618" title="All 2 branches covered.">            if (deg &gt; max) {</span>
-<span class="fc" id="L619">                max = deg;</span>
+<span class="fc" id="L617">        int max = 0, deg;</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">        for (int i = 0; i &lt; sg.length; ++i) {</span>
+<span class="fc" id="L619">            deg = sg[i].vLabels.length;</span>
+<span class="fc bfc" id="L620" title="All 2 branches covered.">            if (deg &gt; max) {</span>
+<span class="fc" id="L621">                max = deg;</span>
             }
         }
-<span class="fc" id="L622">        return max;</span>
+<span class="fc" id="L624">        return max;</span>
     }
 
     static int[][] createAdjacencyMatrix(StarStructure[] s) {
-<span class="fc" id="L626">        int nV = s.length;</span>
-<span class="fc" id="L627">        int[][] a = new int[nV][];</span>
+<span class="fc" id="L628">        int nV = s.length;</span>
+<span class="fc" id="L629">        int[][] a = new int[nV][];</span>
         StarStructure si;
         int uIdx, vIdx, j;
-<span class="fc bfc" id="L630" title="All 2 branches covered.">        for (int i = 0; i &lt; nV; ++i) {</span>
-<span class="fc" id="L631">            a[i] = new int[nV];</span>
-<span class="fc" id="L632">            si = s[i];</span>
-<span class="fc" id="L633">            uIdx = si.rootIdx;</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">            for (j = 0; j &lt; si.vLabels.length; ++j) {</span>
-<span class="fc" id="L635">                vIdx = si.origVIndexes[j];</span>
-<span class="fc" id="L636">                a[uIdx][vIdx] = 1;</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">        for (int i = 0; i &lt; nV; ++i) {</span>
+<span class="fc" id="L633">            a[i] = new int[nV];</span>
+<span class="fc" id="L634">            si = s[i];</span>
+<span class="fc" id="L635">            uIdx = si.rootIdx;</span>
+<span class="fc bfc" id="L636" title="All 2 branches covered.">            for (j = 0; j &lt; si.vLabels.length; ++j) {</span>
+<span class="fc" id="L637">                vIdx = si.origVIndexes[j];</span>
+<span class="fc" id="L638">                a[uIdx][vIdx] = 1;</span>
             }
         }
-<span class="fc" id="L639">        return a;</span>
+<span class="fc" id="L641">        return a;</span>
     }
     
     static Set&lt;PairInt&gt; getEdges(StarStructure[] s) {
-<span class="nc" id="L643">        int nV = s.length;</span>
-<span class="nc" id="L644">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
+<span class="nc" id="L645">        int nV = s.length;</span>
+<span class="nc" id="L646">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
         StarStructure si;
         int uIdx, vIdx, j;
-<span class="nc bnc" id="L647" title="All 2 branches missed.">        for (int i = 0; i &lt; nV; ++i) {</span>
-<span class="nc" id="L648">            si = s[i];</span>
-<span class="nc" id="L649">            uIdx = si.rootIdx;</span>
-<span class="nc bnc" id="L650" title="All 2 branches missed.">            for (j = 0; j &lt; si.vLabels.length; ++j) {</span>
-<span class="nc" id="L651">                vIdx = si.origVIndexes[j];</span>
-<span class="nc bnc" id="L652" title="All 2 branches missed.">                if (uIdx &lt; vIdx) {</span>
-<span class="nc" id="L653">                    edges.add(new PairInt(uIdx, vIdx));</span>
+<span class="nc bnc" id="L649" title="All 2 branches missed.">        for (int i = 0; i &lt; nV; ++i) {</span>
+<span class="nc" id="L650">            si = s[i];</span>
+<span class="nc" id="L651">            uIdx = si.rootIdx;</span>
+<span class="nc bnc" id="L652" title="All 2 branches missed.">            for (j = 0; j &lt; si.vLabels.length; ++j) {</span>
+<span class="nc" id="L653">                vIdx = si.origVIndexes[j];</span>
+<span class="nc bnc" id="L654" title="All 2 branches missed.">                if (uIdx &lt; vIdx) {</span>
+<span class="nc" id="L655">                    edges.add(new PairInt(uIdx, vIdx));</span>
                 } else {
-<span class="nc" id="L655">                    edges.add(new PairInt(vIdx, uIdx));</span>
+<span class="nc" id="L657">                    edges.add(new PairInt(vIdx, uIdx));</span>
                 }
             }
         }
-<span class="nc" id="L659">        return edges;</span>
+<span class="nc" id="L661">        return edges;</span>
     }
 
     /**
@@ -673,22 +675,22 @@ SDM, pp 154–163 (2011)
     private int[][] createLabelMatrix(StarStructure[] sg1, StarStructure[] sg2, 
         int[] assignments) {
         //Ci,j = 1 if l_g(vi) = l_h(uj)(vi ∈ V(g),uj ∈ V(h)), otherwise Ci,j = 0
-<span class="fc" id="L676">        int[][] c = new int[sg1.length][];</span>
+<span class="fc" id="L678">        int[][] c = new int[sg1.length][];</span>
         int i, j;
-<span class="fc bfc" id="L678" title="All 2 branches covered.">        for (i = 0; i &lt; sg1.length; ++i) {</span>
-<span class="fc" id="L679">            c[i] = new int[sg2.length];</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">        for (i = 0; i &lt; sg1.length; ++i) {</span>
+<span class="fc" id="L681">            c[i] = new int[sg2.length];</span>
             //NLK, changing the fill values from 0 to 1 because the non-matches will cost 1
-<span class="fc" id="L681">            Arrays.fill(c[i], 1);</span>
+<span class="fc" id="L683">            Arrays.fill(c[i], 1);</span>
         }
-<span class="fc bfc" id="L683" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
-<span class="fc" id="L684">            j = assignments[i];</span>
-<span class="fc bfc" id="L685" title="All 2 branches covered.">            if (sg1[i].rootLabel == sg2[j].rootLabel) {</span>
+<span class="fc bfc" id="L685" title="All 2 branches covered.">        for (i = 0; i &lt; assignments.length; ++i) {</span>
+<span class="fc" id="L686">            j = assignments[i];</span>
+<span class="fc bfc" id="L687" title="All 2 branches covered.">            if (sg1[i].rootLabel == sg2[j].rootLabel) {</span>
                 //NLK, changing to not penalize if vertex labels match
                 //c[i][j] = 1;
-<span class="fc" id="L688">                c[i][j] = 0;</span>
+<span class="fc" id="L690">                c[i][j] = 0;</span>
             }
         }
-<span class="fc" id="L691">        return c;</span>
+<span class="fc" id="L693">        return c;</span>
     }
 
     /**
@@ -747,52 +749,52 @@ SDM, pp 154–163 (2011)
            consistent hanges need to be made to the reverse assign array also.
         */
                          
-<span class="fc" id="L750">        int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);</span>
-<span class="fc" id="L751">        TIntIntMap revAssign = reverseAssignment(assign);</span>
-<span class="fc" id="L752">        double min = tau;</span>
+<span class="fc" id="L752">        int[] assign = Arrays.copyOf(refinedAssign, refinedAssign.length);</span>
+<span class="fc" id="L753">        TIntIntMap revAssign = reverseAssignment(assign);</span>
+<span class="fc" id="L754">        double min = tau;</span>
         
         int iV1, iV2, jV1, jV2, iV3, jV1Adj, jj;
         int[] jV1AdjIdxs;
-<span class="fc bfc" id="L756" title="All 2 branches covered.">        for (PairInt edge1 : e1Labels.keySet()) {</span>
-<span class="fc" id="L757">            iV1 = edge1.getX();</span>
-<span class="fc" id="L758">            iV2 = edge1.getY();</span>
-<span class="fc" id="L759">            jV1 = assign[iV1];</span>
-<span class="fc" id="L760">            jV2 = assign[iV2];</span>
+<span class="fc bfc" id="L758" title="All 2 branches covered.">        for (PairInt edge1 : e1Labels.keySet()) {</span>
+<span class="fc" id="L759">            iV1 = edge1.getX();</span>
+<span class="fc" id="L760">            iV2 = edge1.getY();</span>
+<span class="fc" id="L761">            jV1 = assign[iV1];</span>
+<span class="fc" id="L762">            jV2 = assign[iV2];</span>
             
-<span class="fc bfc" id="L762" title="All 2 branches covered.">            if (e2Labels.containsKey(new PairInt(jV1, jV2)) ||</span>
-<span class="fc bfc" id="L763" title="All 2 branches covered.">                e2Labels.containsKey(new PairInt(jV2, jV1))) {</span>
-<span class="fc" id="L764">                continue;</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">            if (e2Labels.containsKey(new PairInt(jV1, jV2)) ||</span>
+<span class="fc bfc" id="L765" title="All 2 branches covered.">                e2Labels.containsKey(new PairInt(jV2, jV1))) {</span>
+<span class="fc" id="L766">                continue;</span>
             }
             
-<span class="fc" id="L767">            jV1AdjIdxs = sg2[jV1].origVIndexes;</span>
-<span class="fc bfc" id="L768" title="All 2 branches covered.">            for (jj = 0; jj &lt; jV1AdjIdxs.length; ++jj) {</span>
-<span class="fc" id="L769">                jV1Adj = jV1AdjIdxs[jj];</span>
-<span class="fc" id="L770">                iV3 = revAssign.get(jV1Adj);</span>
+<span class="fc" id="L769">            jV1AdjIdxs = sg2[jV1].origVIndexes;</span>
+<span class="fc bfc" id="L770" title="All 2 branches covered.">            for (jj = 0; jj &lt; jV1AdjIdxs.length; ++jj) {</span>
+<span class="fc" id="L771">                jV1Adj = jV1AdjIdxs[jj];</span>
+<span class="fc" id="L772">                iV3 = revAssign.get(jV1Adj);</span>
                 
                 // tentative changes to assign
                 //V1_i2 &lt;—&gt;  V2_j_adj, V1_i3 &lt;—&gt; V2_j2
-<span class="fc" id="L774">                assign[iV2] = jV1Adj;</span>
-<span class="fc" id="L775">                assign[iV3] = jV2;</span>
+<span class="fc" id="L776">                assign[iV2] = jV1Adj;</span>
+<span class="fc" id="L777">                assign[iV3] = jV2;</span>
                 
-<span class="fc bfc" id="L777" title="All 2 branches covered.">                if (this.edgesAreLabeled) {</span>
-<span class="fc" id="L778">                    tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);</span>
+<span class="fc bfc" id="L779" title="All 2 branches covered.">                if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L780">                    tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);</span>
                 } else {
-<span class="fc" id="L780">                    tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
+<span class="fc" id="L782">                    tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
                 }
                 
-<span class="pc bpc" id="L783" title="1 of 2 branches missed.">                if (tau &lt; min) {</span>
-<span class="nc" id="L784">                   min = tau;</span>
-<span class="nc" id="L785">                   System.arraycopy(assign, 0, refinedAssign, 0, assign.length);</span>
-<span class="nc" id="L786">                   revAssign.put(jV1Adj, iV2);</span>
-<span class="nc" id="L787">                   revAssign.put(jV2, iV3);</span>
-<span class="nc" id="L788">                   break;</span>
+<span class="pc bpc" id="L785" title="1 of 2 branches missed.">                if (tau &lt; min) {</span>
+<span class="nc" id="L786">                   min = tau;</span>
+<span class="nc" id="L787">                   System.arraycopy(assign, 0, refinedAssign, 0, assign.length);</span>
+<span class="nc" id="L788">                   revAssign.put(jV1Adj, iV2);</span>
+<span class="nc" id="L789">                   revAssign.put(jV2, iV3);</span>
+<span class="nc" id="L790">                   break;</span>
                 } else {
                    //restore assign to latest refineAssign
-<span class="fc" id="L791">                   System.arraycopy(refinedAssign, 0, assign, 0, assign.length);</span>
+<span class="fc" id="L793">                   System.arraycopy(refinedAssign, 0, assign, 0, assign.length);</span>
                 }
             }
-<span class="fc" id="L794">        }</span>
-<span class="fc" id="L795">        return min;</span>
+<span class="fc" id="L796">        }</span>
+<span class="fc" id="L797">        return min;</span>
     }
     
     /**
@@ -819,83 +821,83 @@ SDM, pp 154–163 (2011)
         TObjectIntMap&lt;PairInt&gt; e1Labels, TObjectIntMap&lt;PairInt&gt; e2Labels, int[][] a1, int[][] a2,
         int[] refinedAssign, double tau) throws InterruptedException {
                 
-<span class="fc" id="L822">        int[] assign = new int[refinedAssign.length];</span>
-<span class="fc" id="L823">        double min = tau;</span>
+<span class="fc" id="L824">        int[] assign = new int[refinedAssign.length];</span>
+<span class="fc" id="L825">        double min = tau;</span>
         
-<span class="fc" id="L825">        PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));</span>
+<span class="fc" id="L827">        PermutationsWithAwait perm = new PermutationsWithAwait(Arrays.copyOf(refinedAssign, refinedAssign.length));</span>
         
-<span class="fc bfc" id="L827" title="All 2 branches covered.">        while (perm.hasNext()) {</span>
+<span class="fc bfc" id="L829" title="All 2 branches covered.">        while (perm.hasNext()) {</span>
             
-<span class="fc" id="L829">            perm.getNext(assign);</span>
+<span class="fc" id="L831">            perm.getNext(assign);</span>
                         
-<span class="fc bfc" id="L831" title="All 2 branches covered.">            if (this.edgesAreLabeled) {</span>
-<span class="fc" id="L832">                tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);</span>
+<span class="fc bfc" id="L833" title="All 2 branches covered.">            if (this.edgesAreLabeled) {</span>
+<span class="fc" id="L834">                tau = suboptimalEditDistance(sg1, sg2, e1Labels, e2Labels, assign);</span>
             } else {
-<span class="fc" id="L834">                tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
+<span class="fc" id="L836">                tau = suboptimalEditDistanceV(sg1, sg2, a1, a2, assign);</span>
             }
             
-<span class="fc bfc" id="L837" title="All 2 branches covered.">            if (tau &lt; min) {</span>
-<span class="fc" id="L838">                min = tau;</span>
-<span class="fc" id="L839">                System.arraycopy(assign, 0, refinedAssign, 0, assign.length);</span>
+<span class="fc bfc" id="L839" title="All 2 branches covered.">            if (tau &lt; min) {</span>
+<span class="fc" id="L840">                min = tau;</span>
+<span class="fc" id="L841">                System.arraycopy(assign, 0, refinedAssign, 0, assign.length);</span>
             }            
         }
         
-<span class="fc" id="L843">        return min;</span>
+<span class="fc" id="L845">        return min;</span>
     }
 
     protected TIntIntMap reverseAssignment(int[] assign) {
-<span class="fc" id="L847">        TIntIntMap r = new TIntIntHashMap();</span>
-<span class="fc bfc" id="L848" title="All 2 branches covered.">        for (int i = 0; i &lt; assign.length; ++i) {</span>
-<span class="fc" id="L849">            r.put(assign[i], i);</span>
+<span class="fc" id="L849">        TIntIntMap r = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L850" title="All 2 branches covered.">        for (int i = 0; i &lt; assign.length; ++i) {</span>
+<span class="fc" id="L851">            r.put(assign[i], i);</span>
         }
-<span class="fc" id="L851">        return r;</span>
+<span class="fc" id="L853">        return r;</span>
     }
 
     static Norm normalize(StarStructure[] sg1, StarStructure[] sg2) {
-<span class="fc" id="L855">        Norm norm = new Norm();</span>
+<span class="fc" id="L857">        Norm norm = new Norm();</span>
         // order so that sg1.length &gt;= sg2.length
-<span class="fc bfc" id="L857" title="All 2 branches covered.">        if (sg1.length &lt; sg2.length) {</span>
-<span class="fc" id="L858">            StarStructure[] tmp = sg1;</span>
-<span class="fc" id="L859">            sg1 = sg2;</span>
-<span class="fc" id="L860">            sg2 = tmp;</span>
-<span class="fc" id="L861">            norm.swapped = true;</span>
-<span class="fc" id="L862">        } else {</span>
-<span class="fc" id="L863">            norm.swapped = false;</span>
+<span class="fc bfc" id="L859" title="All 2 branches covered.">        if (sg1.length &lt; sg2.length) {</span>
+<span class="fc" id="L860">            StarStructure[] tmp = sg1;</span>
+<span class="fc" id="L861">            sg1 = sg2;</span>
+<span class="fc" id="L862">            sg2 = tmp;</span>
+<span class="fc" id="L863">            norm.swapped = true;</span>
+<span class="fc" id="L864">        } else {</span>
+<span class="fc" id="L865">            norm.swapped = false;</span>
         }
         StarStructure s;
         int k, i, rIdx;
-<span class="fc bfc" id="L867" title="All 2 branches covered.">        if (sg1.length &gt; sg2.length) {</span>
-<span class="fc" id="L868">            k = sg1.length - sg2.length;</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">        if (sg1.length &gt; sg2.length) {</span>
+<span class="fc" id="L870">            k = sg1.length - sg2.length;</span>
             //insert k vertices to sg2 and set their labels to eps
-<span class="fc" id="L870">            StarStructure[] _sg2 = new StarStructure[sg1.length];</span>
-<span class="fc" id="L871">            System.arraycopy(sg2, 0, _sg2, 0, sg2.length);</span>
+<span class="fc" id="L872">            StarStructure[] _sg2 = new StarStructure[sg1.length];</span>
+<span class="fc" id="L873">            System.arraycopy(sg2, 0, _sg2, 0, sg2.length);</span>
 
-<span class="fc bfc" id="L873" title="All 2 branches covered.">            for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L874">                rIdx = sg2.length + i;</span>
-<span class="fc" id="L875">                s = new StarStructure(rIdx, StarStructure.eps,</span>
+<span class="fc bfc" id="L875" title="All 2 branches covered.">            for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L876">                rIdx = sg2.length + i;</span>
+<span class="fc" id="L877">                s = new StarStructure(rIdx, StarStructure.eps,</span>
                     new int[0], new int[0], new int[0]);
-<span class="fc" id="L877">                _sg2[rIdx] = s;</span>
+<span class="fc" id="L879">                _sg2[rIdx] = s;</span>
             }
-<span class="fc" id="L879">            sg2 = _sg2;</span>
+<span class="fc" id="L881">            sg2 = _sg2;</span>
         }
-<span class="pc bpc" id="L881" title="3 of 4 branches missed.">        assert (sg1.length == sg2.length);</span>
-<span class="fc" id="L882">        norm.sg1 = sg1;</span>
-<span class="fc" id="L883">        norm.sg2 = sg2;</span>
-<span class="fc" id="L884">        return norm;</span>
+<span class="pc bpc" id="L883" title="3 of 4 branches missed.">        assert (sg1.length == sg2.length);</span>
+<span class="fc" id="L884">        norm.sg1 = sg1;</span>
+<span class="fc" id="L885">        norm.sg2 = sg2;</span>
+<span class="fc" id="L886">        return norm;</span>
     }
 
     static int[] balancedBipartiteAssignment(double[][] distM) {
-<span class="fc" id="L888">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
-<span class="fc" id="L889">        int[][] hAssign = ha.computeAssignments(MatrixUtil.convertToFloat(distM));</span>
-<span class="pc bpc" id="L890" title="3 of 4 branches missed.">        assert(hAssign.length == distM.length);</span>
-<span class="fc" id="L891">        int[] assign = new int[distM.length];</span>
+<span class="fc" id="L890">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
+<span class="fc" id="L891">        int[][] hAssign = ha.computeAssignments(MatrixUtil.convertToFloat(distM));</span>
+<span class="pc bpc" id="L892" title="3 of 4 branches missed.">        assert(hAssign.length == distM.length);</span>
+<span class="fc" id="L893">        int[] assign = new int[distM.length];</span>
         int i1, i2, i; 
-<span class="fc bfc" id="L893" title="All 2 branches covered.">        for (i = 0; i &lt; hAssign.length; ++i) {</span>
-<span class="fc" id="L894">            i1 = hAssign[i][0];</span>
-<span class="fc" id="L895">            i2 = hAssign[i][1];</span>
-<span class="fc" id="L896">            assign[i1] = i2;</span>
+<span class="fc bfc" id="L895" title="All 2 branches covered.">        for (i = 0; i &lt; hAssign.length; ++i) {</span>
+<span class="fc" id="L896">            i1 = hAssign[i][0];</span>
+<span class="fc" id="L897">            i2 = hAssign[i][1];</span>
+<span class="fc" id="L898">            assign[i1] = i2;</span>
         }
-<span class="fc" id="L898">        return assign;</span>
+<span class="fc" id="L900">        return assign;</span>
     }
 
     /*

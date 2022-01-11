@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RelabelToFront.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.maxFlow</a> &gt; <span class="el_source">RelabelToFront.java</span></div><h1>RelabelToFront.java</h1><pre class="source lang-java linenums">package algorithms.maxFlow;
+
+import algorithms.DoublyLinkedList;
+import algorithms.VertexNode;
+import algorithms.matrix.MatrixUtil;
+import algorithms.util.FormatArray;
+import algorithms.util.PairInt;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.iterator.TObjectDoubleIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.Arrays;
+
+/**
+ * &lt;pre&gt;
+ * reference:
+ * chap 26, and specifically 26.5 of Cormen, Leiserson, Rivest, &amp; Stein &quot;Introduction to Algorithms&quot;.
+ * &lt;/pre&gt;
+ * 
+ * we can interpret a directed graph as a “flow network” and use it to answer 
+ * questions about material flows.  a material coursing through a system from 
+ * a source, where the material is produced, to a sink, where it is consumed
+ * is produced and consumed at the same steady rate.
+ * 
+ * In the maximum-flow problem, we wish to compute the greatest rate at which 
+ * we can ship material from the source to the sink without violating any 
+ * capacity constraints.
+ * 
+ * Relabel-To-Front is a maximum flow algorithm that begins with an
+ * initialization of creating
+ * a unchanging height of |V| for the source vertex and a unchanging height of 
+ * 0 for the sink vertex, and modifiable heights of 0 for the vertexes in between
+ * the source and sink.  The algorithm starts by sending flow from the 
+ * source to each of its neighboring vertexes - the amount of flow is equal
+ * to the capacity for the edge.  The goal for each vertex (except source and sink)
+ * is to have 0 excess
+ * flow (where the excess flow is the sum of incoming flow to a vertex minus the
+ * sum of outgoing flow from the same vertex).  
+ * The method for a vertex to reduce its excess flow to 0 is
+ * called discharge and it's responsibilities are to invoke push of flow to
+ * eligible neighbors, else relabel its height and continue to push and relabel
+ * until the excess flow is 0.
+ * At completion, the source vertex excess flow is -|flow| as it has given
+ * that flow to the network, and the sink excess flow = the flow.  All other
+ * vertexes will have excess flow=0.
+ * 
+ * runtime complexity is O(|V|^3).
+ * 
+ * @author nichole
+ */
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">public class RelabelToFront {</span>
+    
+    /**
+     * represents a generous machine precision in comparisons to 0.
+     * this could be reduced to 1e-11 or be a number the user can set.
+     */
+<span class="fc" id="L64">    protected final double eps = 1e-7;</span>
+    
+    /** list of vertexes of G (minus source and sink) in any order, minus srcIdx and sinkIdx 
+    modifications such as move node to front are O(1) for a doubly-linked list
+    */
+    protected final DoublyLinkedList&lt;VertexNode&gt; ell;
+    
+    /** rewrite graph adjacency into a map of a key which is the index of vertex u and the values which 
+     are the neighbors of vertex u in ordered lists to be accessed by indexes.
+     the neighbors are the edges into u and out of u aggregated into a single 
+     sequential list. 
+    */
+    protected final TIntObjectMap&lt;TIntList&gt; uNMap;
+    
+    /**
+     * a reference to the adjacency map representing the original graph G.
+     * It is the edges out of a vertex.
+     */
+    protected final TIntObjectMap&lt;TIntSet&gt; adj;
+    
+    /**
+     * an adjacency map of the edges into a vertex
+     */
+    protected final TIntObjectMap&lt;TIntSet&gt; revAdj;
+     
+    /** capacity of edges.  only positive entries are present.  no entries have .lte. 0 */
+    protected final TObjectDoubleMap&lt;PairInt&gt; c;
+    
+    /** flow of edges*/
+    protected final TObjectDoubleMap&lt;PairInt&gt; f;
+    
+    /** height of nodes */
+    protected final int[] h;
+    
+    /** excess flow for a node: flow in exceeds flow out.*/
+    protected final double[] eF;
+    
+    protected final int srcIdx;
+    
+    protected final int sinkIdx;
+
+    public RelabelToFront(TIntObjectMap&lt;TIntSet&gt; adj, 
+<span class="fc" id="L106">        TObjectDoubleMap&lt;PairInt&gt; cap, int srcIdx, int sinkIdx) {</span>
+        
+<span class="fc" id="L108">        this.srcIdx = srcIdx;</span>
+<span class="fc" id="L109">        this.sinkIdx = sinkIdx;</span>
+        
+<span class="fc" id="L111">        this.adj = adj;</span>
+        
+<span class="fc" id="L113">        this.uNMap = createAdjLists(adj);</span>
+        
+<span class="fc" id="L115">        this.revAdj = createIncomingEdgesVertexMap(adj);</span>
+        
+        // contains V - {src, sink}
+<span class="fc" id="L118">        this.ell = constructL();</span>
+        
+<span class="pc bpc" id="L120" title="3 of 4 branches missed.">        assert(uNMap.size() == (ell.size() + 2));</span>
+        
+<span class="fc" id="L122">        this.c = MatrixUtil.copy(cap);</span>
+        
+<span class="pc bpc" id="L124" title="2 of 4 branches missed.">        if (srcIdx &lt; 0 || !uNMap.containsKey(srcIdx)) {</span>
+<span class="nc" id="L125">            throw new IllegalArgumentException(&quot;srcIdx must be a key in adj&quot;);</span>
+        }
+<span class="pc bpc" id="L127" title="2 of 4 branches missed.">        if (sinkIdx &lt; 0 || !uNMap.containsKey(sinkIdx)) {</span>
+<span class="nc" id="L128">            throw new IllegalArgumentException(&quot;sinkIdx must be a value in adj&quot;);</span>
+        }
+        
+<span class="fc" id="L131">        int nV = uNMap.size();</span>
+        
+        // initalized to 0
+<span class="fc" id="L134">        this.h = new int[nV];</span>
+<span class="fc" id="L135">        this.eF = new double[nV];</span>
+        
+        // initalized to 0
+<span class="fc" id="L138">        this.f = initFlow();</span>
+        
+<span class="fc" id="L140">        initPreFlow();</span>
+        
+        //System.out.printf(&quot;after initPreFlow excess[srcIdx]=%.3e = -|f*|\n&quot;, eF[srcIdx]);                
+<span class="fc" id="L143">    }</span>
+    
+    /**
+     * 
+     * @param adj graph as an adjacency matrix.  the elements in the matrix are
+     * the edge capacities.
+     * @param srcIdx
+     * @param sinkIdx 
+     */
+<span class="fc" id="L152">    public RelabelToFront(double[][] adj, int srcIdx, int sinkIdx) {</span>
+        
+<span class="fc" id="L154">        this.srcIdx = srcIdx;</span>
+<span class="fc" id="L155">        this.sinkIdx = sinkIdx;</span>
+        
+<span class="fc" id="L157">        this.adj = createOutgoingEdgesVertexMap(adj);</span>
+        
+<span class="fc" id="L159">        this.uNMap = createAdjLists(this.adj);</span>
+        
+<span class="fc" id="L161">        this.revAdj = createIncomingEdgesVertexMap(this.adj);</span>
+        
+        // contains V - {src, sink}
+<span class="fc" id="L164">        this.ell = constructL();</span>
+        
+<span class="pc bpc" id="L166" title="3 of 4 branches missed.">        assert(uNMap.size() == (ell.size() + 2));</span>
+        
+<span class="fc" id="L168">        this.c = createCapacityMap(adj);</span>
+        
+<span class="pc bpc" id="L170" title="2 of 4 branches missed.">        if (srcIdx &lt; 0 || !uNMap.containsKey(srcIdx)) {</span>
+<span class="nc" id="L171">            throw new IllegalArgumentException(&quot;srcIdx must be a key in adj&quot;);</span>
+        }
+<span class="pc bpc" id="L173" title="2 of 4 branches missed.">        if (sinkIdx &lt; 0 || !uNMap.containsKey(sinkIdx)) {</span>
+<span class="nc" id="L174">            throw new IllegalArgumentException(&quot;sinkIdx must be a value in adj&quot;);</span>
+        }
+        
+<span class="fc" id="L177">        int nV = uNMap.size();</span>
+        
+        // initalized to 0
+<span class="fc" id="L180">        this.h = new int[nV];</span>
+<span class="fc" id="L181">        this.eF = new double[nV];</span>
+        
+        // initalized to 0
+<span class="fc" id="L184">        this.f = initFlow();</span>
+        
+<span class="fc" id="L186">        initPreFlow();</span>
+        
+        //System.out.printf(&quot;after initPreFlow excess[srcIdx]=%.3e = -|f*|\n&quot;, eF[srcIdx]);                
+<span class="fc" id="L189">    }</span>
+    
+    public MaxFlowResults findMaxFlow() {
+        
+<span class="fc" id="L193">        VertexNode u = ell.peekFirst();</span>
+        
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        while (u != null) {</span>
+            
+<span class="fc" id="L197">            dischargeLoop(u);</span>
+            
+            // u may now be at the front of the list (modified in dischargeLoop), 
+            //    and in that case, the next u is the 2nd in the list ell.
+            
+<span class="fc" id="L202">            u = (VertexNode) u.next;</span>
+        }
+        
+<span class="fc" id="L205">        MaxFlowResults r = new MaxFlowResults();</span>
+<span class="fc" id="L206">        r.srcIdx = this.srcIdx;</span>
+<span class="fc" id="L207">        r.sinkIdx = this.sinkIdx;</span>
+<span class="fc" id="L208">        r.flow = this.eF[sinkIdx];</span>
+<span class="fc" id="L209">        r.edgeFlows = MatrixUtil.copy(this.f);</span>
+        
+        //print();
+        
+<span class="fc" id="L213">        assertZeroExcess();</span>
+        
+<span class="fc" id="L215">        return r;</span>
+    }
+    
+    /**
+     * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
+     * @param u
+     * @param v
+     * @return the residual capacity
+     */
+    protected double calculateResidualCapacity(int u, int v) {
+<span class="fc" id="L225">        return calculateResidualCapacity(new PairInt(u, v));</span>
+    }
+    
+    /**
+     * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
+     * @param p edge (u, v)
+     * @return the residual capacity
+     */
+    protected double calculateResidualCapacity(PairInt p) {
+        
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">        if (this.adj.containsKey(p.getX()) &amp;&amp;</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">            this.adj.get(p.getX()).contains(p.getY())) {</span>
+            // is an edge in G.E
+<span class="fc" id="L238">            double cUV = this.c.get(p);</span>
+<span class="fc" id="L239">            double fUV = this.f.get(p);</span>
+<span class="fc" id="L240">            return cUV - fUV;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        } else if (this.revAdj.containsKey(p.getY()) &amp;&amp;</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">            this.revAdj.get(p.getY()).contains(p.getX())) {</span>
+<span class="nc" id="L243">            return this.f.get(new PairInt(p.getY(), p.getX()));</span>
+        } else {
+            // is not an edge in G.E
+<span class="fc" id="L246">            return 0;</span>
+        }
+    }
+    
+    protected void printF() {
+<span class="nc" id="L251">        printF(f);</span>
+<span class="nc" id="L252">    }</span>
+    
+    protected static void printF(TObjectDoubleMap&lt;PairInt&gt; flow) {
+<span class="nc" id="L255">         TObjectDoubleIterator&lt;PairInt&gt; iter = flow.iterator();</span>
+         PairInt p;
+         double fP;
+<span class="nc bnc" id="L258" title="All 2 branches missed.">         while (iter.hasNext()) {</span>
+<span class="nc" id="L259">             iter.advance();</span>
+<span class="nc" id="L260">             p = iter.key();</span>
+<span class="nc" id="L261">             fP = iter.value();</span>
+<span class="nc" id="L262">             System.out.printf(&quot;f%s = %.3e\n&quot;, p.toString(), fP);</span>
+         }
+<span class="nc" id="L264">    }</span>
+    
+    protected void print() {
+<span class="nc" id="L267">        printF();</span>
+<span class="nc" id="L268">        printC();</span>
+<span class="nc" id="L269">        printE();</span>
+<span class="nc" id="L270">        printH();</span>
+<span class="nc" id="L271">    }</span>
+    
+    protected void printC() {
+<span class="nc" id="L274">         TObjectDoubleIterator&lt;PairInt&gt; iter = c.iterator();</span>
+         PairInt p;
+         double cP;
+<span class="nc bnc" id="L277" title="All 2 branches missed.">         while (iter.hasNext()) {</span>
+<span class="nc" id="L278">             iter.advance();</span>
+<span class="nc" id="L279">             p = iter.key();</span>
+<span class="nc" id="L280">             cP = iter.value();</span>
+<span class="nc" id="L281">             System.out.printf(&quot;c%s = %.3e\n&quot;, p.toString(), cP);</span>
+         }
+<span class="nc" id="L283">    }</span>
+    
+    protected void printE() {
+<span class="nc" id="L286">         System.out.printf(&quot;e=%s\n&quot;, FormatArray.toString(eF, &quot;%.3e&quot;));</span>
+<span class="nc" id="L287">    }</span>
+    
+    protected void printH() {
+<span class="nc" id="L290">         System.out.printf(&quot;h=%s\n&quot;, Arrays.toString(h));</span>
+<span class="nc" id="L291">    }</span>
+
+    /**
+     * sum(flow into u) - sum(flow out of u).
+      capacity constraint: for all (u,v) in E, 0 .lte. f(u,v) .lte. c(u,v).
+      residual network: E_f={(u,v) pairs of V in which c_f(u,v) &gt; 0;  
+          the pairs can be existing edges in E or their reversals.
+      f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
+      note that p is an augmenting path in G_f
+     * @param u
+     * @return 
+     */
+    protected double calculateExcessFlow(int u) {
+<span class="nc" id="L304">        double sumToU = calculateSumOfFlow(u, this.revAdj.get(u));</span>
+<span class="nc" id="L305">        double sumFromU = calculateSumOfFlow(u, this.adj.get(u));</span>
+<span class="nc" id="L306">        return sumToU - sumFromU;</span>
+    }
+    
+    /**
+     * sum(flow into u) - sum(flow out of u).
+      capacity constraint: for all (u,v) in E, 0 .lte. f(u,v) .lte. c(u,v).
+      residual network: E_f={(u,v) pairs of V in which c_f(u,v) &gt; 0;  
+          the pairs can be existing edges in E or their reversals.
+      f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
+      note that p is an augmenting path in G_f
+     * @param u
+     * @param v the neighbors of u
+     * @return 
+     */
+    protected double calculateSumOfFlow(int u, TIntSet v) {
+<span class="nc bnc" id="L321" title="All 2 branches missed.">        if (u == srcIdx) {</span>
+<span class="nc" id="L322">            return 0;</span>
+        }
+        PairInt p;
+<span class="nc" id="L325">        double sum = 0;</span>
+<span class="nc" id="L326">        TIntIterator iter = v.iterator();</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L328">            p = new PairInt(u, iter.next());</span>
+<span class="nc bnc" id="L329" title="All 4 branches missed.">            assert(this.f.containsKey(p));</span>
+<span class="nc" id="L330">            sum += this.f.get(p);</span>
+        }
+<span class="nc" id="L332">        return sum;</span>
+    }
+
+    /**
+     * @param uNode
+     */
+    protected void dischargeLoop(VertexNode uNode) {
+        /*
+        old-height = u.h
+        discharge(u);
+        if (u.h &gt; old-height)
+            move u to the front of the list L
+        */
+        
+<span class="fc" id="L346">        int u = uNode.vertex;</span>
+        
+<span class="fc" id="L348">        double oH = h[u];</span>
+<span class="fc" id="L349">        discharge(u);</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        if (h[u] &gt; oH) {</span>
+<span class="fc" id="L351">            ell.unlink(uNode);</span>
+<span class="fc" id="L352">            ell.addFirst(uNode);</span>
+        } 
+<span class="fc" id="L354">    }</span>
+
+    /**
+     * construct a linked list of all vertexes except src and sink
+     * @return 
+     */
+    private DoublyLinkedList&lt;VertexNode&gt; constructL() {
+        
+<span class="pc bpc" id="L362" title="1 of 2 branches missed.">        if (uNMap == null) {</span>
+<span class="nc" id="L363">            throw new IllegalStateException(&quot;uNMap cannot be null&quot;);</span>
+        }
+        
+<span class="fc" id="L366">        DoublyLinkedList&lt;VertexNode&gt; vList = new DoublyLinkedList&lt;VertexNode&gt;();</span>
+        
+        int u;
+        VertexNode vNode;
+        
+        // uNMap has all vertexes as keys
+<span class="fc" id="L372">        TIntObjectIterator&lt;TIntList&gt; iter = uNMap.iterator();</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L374">            iter.advance();</span>
+<span class="fc" id="L375">            u = iter.key();</span>
+<span class="fc bfc" id="L376" title="All 4 branches covered.">            if (u == srcIdx || u == sinkIdx) {</span>
+<span class="fc" id="L377">                continue;</span>
+            }
+<span class="fc" id="L379">            vNode = new VertexNode(u);</span>
+<span class="fc" id="L380">            vList.addFirst(vNode);</span>
+        }
+        
+<span class="fc" id="L383">        return vList;</span>
+    }
+    
+    private TIntObjectMap&lt;TIntList&gt; createAdjLists(TIntObjectMap&lt;TIntSet&gt; adj) {
+        
+<span class="fc" id="L388">        adj = MatrixUtil.copyToSymmetricMap(adj);</span>
+        
+<span class="fc" id="L390">        TIntObjectMap&lt;TIntList&gt; adjLists = new TIntObjectHashMap&lt;TIntList&gt;();</span>
+        
+        TIntIterator iter2;
+        TIntSet uSet;
+        int u;
+        int v;
+        TIntList nhbrList;
+        
+<span class="fc" id="L398">        TIntObjectIterator&lt;TIntSet&gt; iter = adj.iterator();</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L400">            iter.advance();</span>
+<span class="fc" id="L401">            u = iter.key();</span>
+            
+<span class="fc" id="L403">            nhbrList = new TIntArrayList();</span>
+<span class="fc" id="L404">            adjLists.put(u, nhbrList);</span>
+            
+<span class="fc" id="L406">            uSet = iter.value();</span>
+<span class="pc bpc" id="L407" title="2 of 4 branches missed.">            if (uSet == null || uSet.isEmpty()) {</span>
+<span class="nc" id="L408">                continue;</span>
+            }
+<span class="fc" id="L410">            iter2 = uSet.iterator();</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L412">                v = iter2.next();</span>
+<span class="fc" id="L413">                nhbrList.add(v);</span>
+            }
+        }
+        
+        //TODO: use a design pattern to inject this only for tests.
+        //    e.g. aspects can follow the method with byte code enhancement
+        //    that adds this after method completes.
+        //this loop is only used in tests to reverse the order in each nhbrList
+<span class="fc" id="L421">        TIntObjectIterator&lt;TIntList&gt; iter3 = adjLists.iterator();</span>
+<span class="fc" id="L422">        TIntObjectMap&lt;TIntList&gt; out = new TIntObjectHashMap&lt;TIntList&gt;();</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">        while (iter3.hasNext()) {</span>
+<span class="fc" id="L424">            iter3.advance();</span>
+<span class="fc" id="L425">            u = iter3.key();</span>
+<span class="fc" id="L426">            nhbrList = iter3.value();</span>
+<span class="fc" id="L427">            nhbrList.reverse();</span>
+<span class="fc" id="L428">            out.put(u, nhbrList);</span>
+        }
+<span class="fc" id="L430">        adjLists = out;</span>
+        
+<span class="fc" id="L432">        return adjLists;</span>
+    }
+
+    private void initPreFlow() {
+<span class="pc bpc" id="L436" title="1 of 2 branches missed.">        if (uNMap == null) {</span>
+<span class="nc" id="L437">            throw new IllegalStateException(&quot;uNMap cannot be null&quot;);</span>
+        }
+        /*for each vertex v in G.V   (already handled in constructor)
+             v.h = 0;
+             v.e = 0;
+          for each edge (u, v) in G.E (already handled in constructor)
+             (u,v).f = 0
+          s.h = |G.V|
+          for each vertex v in s.Adj
+            (s,v).f = c(s,v);
+            v.e = c(s,v)
+            s.e = s.e - c(s,v)
+        */
+        
+<span class="fc" id="L451">        h[srcIdx] = uNMap.size();</span>
+        
+<span class="fc" id="L453">        TIntSet nhbrSet = adj.get(srcIdx);</span>
+<span class="pc bpc" id="L454" title="1 of 2 branches missed.">        if (nhbrSet == null) {</span>
+<span class="nc" id="L455">            throw new IllegalStateException(&quot;adj must have an entry for the srcIdx&quot;);</span>
+        }
+        PairInt p;
+        double cSV;
+        int v;
+<span class="fc" id="L460">        TIntIterator iter3 = nhbrSet.iterator();</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">        while (iter3.hasNext()) {</span>
+<span class="fc" id="L462">            v = iter3.next();</span>
+<span class="fc" id="L463">            p = new PairInt(srcIdx, v);</span>
+<span class="fc" id="L464">            cSV = this.c.get(p);</span>
+            
+            //(s,v).f = c(s,v);
+<span class="fc" id="L467">            this.f.put(p, cSV);</span>
+            
+            //v.e = c(s,v)
+<span class="fc" id="L470">            this.eF[v] = cSV;</span>
+            //s.e = s.e - c(s,v)
+<span class="fc" id="L472">            this.eF[srcIdx] -= cSV;</span>
+        }
+    
+<span class="fc" id="L475">    }</span>
+    
+    /**
+     * initialize flow to 0 for every edge in capacity map
+     * @return 
+     */
+    private TObjectDoubleMap&lt;PairInt&gt; initFlow() {
+        
+<span class="pc bpc" id="L483" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L484">            throw new IllegalStateException(&quot;c cannot be null&quot;);</span>
+        }
+        
+<span class="fc" id="L487">        TObjectDoubleMap&lt;PairInt&gt; out = new TObjectDoubleHashMap&lt;PairInt&gt;();</span>
+        
+<span class="fc" id="L489">        TObjectDoubleIterator&lt;PairInt&gt; iter = c.iterator();</span>
+        PairInt p;
+<span class="fc bfc" id="L491" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L492">            iter.advance();</span>
+<span class="fc" id="L493">            p = iter.key();</span>
+            // initalize to 0
+<span class="fc" id="L495">            out.put(p.copy(), 0);</span>
+        }
+        
+<span class="fc" id="L498">        return out;</span>
+    }
+
+    protected TIntObjectMap&lt;TIntSet&gt; createIncomingEdgesVertexMap(TIntObjectMap&lt;TIntSet&gt; adj) {
+<span class="fc" id="L502">        return MatrixUtil.createReverseMap(adj);</span>
+    }
+    
+    /**
+     * if u is overflowing and all neighbors in E_f are not downhill from u,
+     * relabel increases the height of u to be 1 plus the minimum of the
+     * heights of the neighbors of u that are in E_f.
+     * @throws java.lang.IllegalArgumentException throws exception if a neighbor
+     * of u is eligible for a push operation.
+     * @param u
+     */
+    protected void relabel(int u) {
+        
+<span class="pc bpc" id="L515" title="2 of 4 branches missed.">        if (u == srcIdx || u == sinkIdx) {</span>
+<span class="nc" id="L516">            throw new IllegalArgumentException(&quot;u cannot be srcIdx or sinkIdx&quot;);</span>
+        }
+        
+<span class="fc" id="L519">        TIntList vs = uNMap.get(u);</span>
+        
+        /*System.out.printf(&quot;relabel(%d).  N=%s\n&quot;, u, Arrays.toString(vs.toArray()));
+        print();
+        System.out.printf(&quot;  for V_f: &quot;);*/
+        
+        int v;
+        double cF;
+        boolean inE;
+<span class="fc" id="L528">        int minH = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">        for (int i = 0; i &lt; vs.size(); ++i) {</span>
+<span class="fc" id="L530">            v = vs.get(i);</span>
+            
+<span class="pc bpc" id="L532" title="1 of 4 branches missed.">            inE = this.adj.containsKey(u) &amp;&amp; this.adj.get(u).contains(v);</span>
+            
+            //System.out.printf(&quot;  inE=%b h[%d]=%d  h[%d]=%d\n&quot;, inE, u, h[u], v, h[v]);
+            
+            // Lemma 26.16
+<span class="fc bfc" id="L537" title="All 2 branches covered.">            if (this.h[v] &lt; this.h[u]) {</span>
+<span class="fc" id="L538">                continue;</span>
+            }
+                                    
+<span class="fc bfc" id="L541" title="All 2 branches covered.">            if (inE) {</span>
+<span class="fc" id="L542">                cF = calculateResidualCapacity(u, v);</span>
+                                
+<span class="fc bfc" id="L544" title="All 2 branches covered.">                if (Math.abs(cF) &lt; 1e-7) {</span>
+                    // not an edge in G.E
+<span class="fc" id="L546">                    continue;</span>
+                }
+            }
+            
+            // edge is in E_f
+            
+            //System.out.printf(&quot;h[%d]=%d, &quot;, v, this.h[v]);
+            
+            // calculate minimum of heights of u neighbors in E_f
+<span class="fc bfc" id="L555" title="All 2 branches covered.">            if (this.h[v] &lt; minH) {</span>
+<span class="fc" id="L556">                minH = this.h[v];</span>
+            }
+        }
+        
+<span class="fc" id="L560">        this.h[u] = minH + 1;</span>
+        
+        //Lemma 26.20
+<span class="pc bpc" id="L563" title="3 of 4 branches missed.">        assert(h[u] &lt;= (2*uNMap.size() - 1));</span>
+        
+        //DEBUG
+        /*System.out.printf(&quot;\n&quot;);        
+        System.out.printf(&quot;  minH=%d,  h=%s\n&quot;, minH, u, Arrays.toString(h));        
+        if (!(minH &lt; Integer.MAX_VALUE)) {
+            System.out.printf(&quot;ERROR in relabel(%d).  N=%s\n&quot;,
+                u, Arrays.toString(vs.toArray()));
+        }*/
+        
+<span class="pc bpc" id="L573" title="3 of 4 branches missed.">        assert(minH &lt; Integer.MAX_VALUE);     </span>
+<span class="fc" id="L574">    }</span>
+    
+    /**
+     * The basic operation PUSH(u,v) applies if u is an overflowing vertex, 
+     * c_f(u,v) &gt; 0, and h.u = h.v + 1.
+     * @param u
+     * @param v 
+     * @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
+     * not a positive number or h.u != (h.v + 1).
+     */
+    protected void push(int u, int v) {
+        
+        //System.out.printf(&quot;push(%d, %d)\n&quot;, u, v);
+        
+<span class="pc bpc" id="L588" title="1 of 4 branches missed.">        boolean inE = this.adj.containsKey(u) &amp;&amp; this.adj.get(u).contains(v);</span>
+        
+<span class="pc bpc" id="L590" title="1 of 2 branches missed.">        if (this.h[u] != (this.h[v] + 1)) {</span>
+<span class="nc" id="L591">            throw new IllegalStateException(&quot;cannot push because &quot;+u+&quot;.h != (&quot;+v+</span>
+                &quot;.h + 1)&quot;); 
+        }
+        
+<span class="fc" id="L595">        double cf = calculateResidualCapacity(u, v);</span>
+<span class="pc bpc" id="L596" title="1 of 4 branches missed.">        if (inE &amp;&amp; cf &lt;= 0) {</span>
+<span class="nc" id="L597">            throw new IllegalStateException(&quot;cannot push because c_f(&quot;+u+&quot;,&quot;+v+</span>
+                &quot;)=&quot; + cf + &quot; which is not positive&quot;); 
+        }
+        
+        double delta;
+<span class="fc bfc" id="L602" title="All 2 branches covered.">        if (inE) {</span>
+<span class="fc" id="L603">            delta = Math.min(eF[u], cf);</span>
+<span class="fc" id="L604">            PairInt p = new PairInt(u, v);</span>
+<span class="fc" id="L605">            double fUV = f.get(p) + delta;</span>
+<span class="fc" id="L606">            f.put(p, fUV);</span>
+            
+            //DEBUG
+            /*System.out.printf(&quot;  ==&gt; f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e\n&quot;, 
+                u, v, fUV, u, v, c.get(p), delta);
+            if (Math.abs(c.get(p) - fUV) &lt; 1e-7) {
+                System.out.printf(&quot;     saturated\n&quot;);
+            }*/
+            
+<span class="fc" id="L615">        } else {</span>
+<span class="fc" id="L616">            double fVU = 0;</span>
+<span class="fc" id="L617">            PairInt p = new PairInt(v, u);</span>
+<span class="pc bpc" id="L618" title="1 of 2 branches missed.">            if (f.containsKey(p)) {</span>
+<span class="fc" id="L619">                fVU = f.get(p);</span>
+            }
+            // edit to algorithm, similar to residual capacity for back-edge
+<span class="fc" id="L622">            delta = Math.min(eF[u], fVU);</span>
+            
+<span class="fc" id="L624">            fVU -= delta;</span>
+            
+<span class="pc bpc" id="L626" title="3 of 4 branches missed.">            assert(fVU &lt;= c.get(p));</span>
+            
+<span class="fc" id="L628">            f.put(p, fVU);</span>
+                        
+            //DEBUG
+            //System.out.printf(&quot;  ==&gt; f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u\n&quot;, 
+            //    v, u, fVU, v, u, c.get(p), delta);
+        }
+<span class="fc" id="L634">        this.eF[u] -= delta;</span>
+<span class="fc" id="L635">        this.eF[v] += delta;</span>
+        
+        /*
+        //DEBUG
+        System.out.printf(&quot;  eF[%d]=%.3e, eF[%d]=%.3e\n&quot;, u, eF[u], v, eF[v]);
+        
+        if (Math.abs(this.eF[u]) &lt;1e-7) {
+            System.out.printf(&quot;      removes %d from E_f\n&quot;, u);
+        }
+        if (Math.abs(this.eF[v]) &lt;1e-7) {
+            System.out.printf(&quot;      removes %d from E_f\n&quot;, v);
+        }*/
+<span class="fc" id="L647">    }</span>
+    
+    protected void discharge(int u) {
+
+        /*//DEBUG        
+        print();                
+        System.out.printf(&quot;discharge(%d)  excess=%.3e\n&quot;, u, eF[u]);
+        */
+        
+<span class="fc" id="L656">        TIntList uNList = uNMap.get(u);</span>
+<span class="pc bpc" id="L657" title="1 of 2 branches missed.">        if (uNList == null) {</span>
+<span class="nc" id="L658">            throw new IllegalStateException(&quot;vertex &quot; + u + &quot; has no neighbors&quot;);</span>
+        }
+        int v;
+<span class="fc" id="L661">        int nIter = 1;</span>
+        double cF;
+        boolean inE;
+                
+<span class="fc" id="L665">        TIntObjectMap&lt;TIntList&gt; neighborHeightMap = createNeighborHeightMap(uNList);</span>
+        
+<span class="fc" id="L667">        int currNIdx = 0;</span>
+        TIntList currNList;
+        
+<span class="fc" id="L670">        DoublyLinkedList&lt;VertexNode&gt; backEdgeIdxs = new DoublyLinkedList&lt;VertexNode&gt;();</span>
+        
+<span class="fc bfc" id="L672" title="All 2 branches covered.">        while (eF[u] &gt; 0) {</span>
+                        
+<span class="fc" id="L674">            currNList = neighborHeightMap.get(h[u] - 1);</span>
+            
+            /*
+            //DEBUG
+            System.out.printf(&quot;  nIter=%d eF[%d]=%.3e\n&quot;, nIter, u, eF[u]);
+            if (currNList != null) {
+                System.out.printf(&quot;  [%d].N=%s u.h=%d [h-1].currNList=%s\n&quot;, u, Arrays.toString(uNList.toArray()),
+                    h[u], Arrays.toString(currNList.toArray()));
+            }*/
+                        
+<span class="fc bfc" id="L684" title="All 4 branches covered.">            if (currNList == null || currNIdx &gt;= currNList.size()) {</span>
+                
+<span class="fc bfc" id="L686" title="All 2 branches covered.">                if (!backEdgeIdxs.isEmpty()) {</span>
+                    
+                    // for a height, push to the back-edges.
+<span class="fc" id="L689">                    currNIdx = backEdgeIdxs.removeFirst().vertex;</span>
+                    
+<span class="fc" id="L691">                    v = currNList.get(currNIdx);</span>
+                    
+                    //System.out.printf(&quot;    &lt;-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false\n&quot;, 
+                    //    u, v, calculateResidualCapacity(u, v), u, h[u], v, h[v]);
+                    
+<span class="fc" id="L696">                    push(u, v);</span>
+                    
+                    // set to a value that results in the v=nil condition above
+<span class="fc" id="L699">                    currNIdx = currNList.size();</span>
+                    
+<span class="fc" id="L701">                    nIter++;</span>
+                    
+<span class="fc" id="L703">                    continue;</span>
+                }
+                
+<span class="fc" id="L706">                relabel(u);</span>
+                
+<span class="fc" id="L708">                currNIdx = 0;</span>
+                
+<span class="fc" id="L710">                backEdgeIdxs.clear();</span>
+                
+                //System.out.printf(&quot;    after relabel returning to discharge(%d).  reset u.currN\n&quot;, u);
+                
+<span class="fc" id="L714">                nIter++;</span>
+                
+<span class="fc" id="L716">                continue;</span>
+            }
+            
+<span class="fc" id="L719">            v = currNList.get(currNIdx);</span>
+            
+<span class="pc bpc" id="L721" title="1 of 4 branches missed.">            inE = this.adj.containsKey(u) &amp;&amp; this.adj.get(u).contains(v);</span>
+                        
+<span class="fc" id="L723">            cF = calculateResidualCapacity(u, v);</span>
+            
+<span class="fc bfc" id="L725" title="All 2 branches covered.">            if (cF &gt; 0) {</span>
+                
+                //System.out.printf(&quot;    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n&quot;, u, v, cF, u, h[u], v, h[v], inE);
+                
+<span class="fc" id="L729">                push(u, v);</span>
+                
+<span class="pc bpc" id="L731" title="1 of 4 branches missed.">            } else if (!inE &amp;&amp; cF &lt;= 0) {</span>
+                
+<span class="fc" id="L733">                backEdgeIdxs.add(new VertexNode(currNIdx));</span>
+                
+                //System.out.printf(&quot;did not push to reverse edge for v=%d cF=%.3e&quot;
+                //    + &quot; currNList=%s\n&quot;,
+                //    v, cF, Arrays.toString(currNList.toArray()));
+                
+<span class="fc" id="L739">                currNIdx++;</span>
+                
+            } else {
+                //System.out.printf(&quot;    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN\n&quot;, u, v, cF, u, h[u], v, h[v], inE);
+<span class="fc" id="L743">                currNIdx++;</span>
+            }
+            
+<span class="fc" id="L746">            nIter++;</span>
+        }
+<span class="fc" id="L748">    }</span>
+
+    /**
+     * assert each  vertex in V - {s,t} has an excess of 0
+     */
+    private void assertZeroExcess() {
+        
+<span class="fc" id="L755">        VertexNode u = ell.peekFirst();</span>
+        
+<span class="fc bfc" id="L757" title="All 2 branches covered.">        while (u != null) {</span>
+            
+<span class="pc bpc" id="L759" title="3 of 4 branches missed.">            assert(Math.abs(this.eF[u.vertex]) &lt; 1e-7);</span>
+            
+<span class="fc" id="L761">            u = (VertexNode) u.next;</span>
+        }
+<span class="fc" id="L763">    }</span>
+
+    private TIntObjectMap&lt;TIntList&gt; createNeighborHeightMap(TIntList list) {
+        
+<span class="fc" id="L767">        TIntObjectMap&lt;TIntList&gt; map = new TIntObjectHashMap&lt;TIntList&gt;();</span>
+        
+        int v;
+        int h;
+        TIntList mList;
+<span class="fc bfc" id="L772" title="All 2 branches covered.">        for (int i = 0; i &lt; list.size(); ++i) {</span>
+<span class="fc" id="L773">            v = list.get(i);</span>
+<span class="fc" id="L774">            h = this.h[v];</span>
+<span class="fc" id="L775">            mList = map.get(h);</span>
+<span class="fc bfc" id="L776" title="All 2 branches covered.">            if (mList == null) {</span>
+<span class="fc" id="L777">                mList = new TIntArrayList();</span>
+<span class="fc" id="L778">                map.put(h, mList);</span>
+            }
+<span class="fc" id="L780">            mList.add(v);</span>
+        }
+<span class="fc" id="L782">        return map;</span>
+    }
+
+    private TIntObjectMap&lt;TIntSet&gt; createOutgoingEdgesVertexMap(double[][] adj) {
+        
+<span class="fc" id="L787">        TIntObjectMap&lt;TIntSet&gt; map = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        int u;
+        int v;
+        TIntSet set;
+<span class="fc bfc" id="L791" title="All 2 branches covered.">        for (u = 0; u &lt; adj.length; ++u) {</span>
+            
+<span class="fc" id="L793">            set = map.get(u);</span>
+<span class="pc bpc" id="L794" title="1 of 2 branches missed.">            if (set == null) {</span>
+<span class="fc" id="L795">                set = new TIntHashSet();</span>
+<span class="fc" id="L796">                map.put(u, set);</span>
+            }
+            
+<span class="fc bfc" id="L799" title="All 2 branches covered.">            for (v = 0; v &lt; adj[u].length; ++v) {</span>
+<span class="fc bfc" id="L800" title="All 2 branches covered.">                if (Math.abs(adj[u][v]) &gt; eps) {</span>
+<span class="fc" id="L801">                    set.add(v);</span>
+                }
+            }
+            
+<span class="fc bfc" id="L805" title="All 2 branches covered.">            if (set.isEmpty()) {</span>
+<span class="fc" id="L806">                map.remove(u);</span>
+            }
+        }
+        
+<span class="fc" id="L810">        return map;</span>
+    }
+
+    private TObjectDoubleMap&lt;PairInt&gt; createCapacityMap(double[][] adjM) {
+        
+<span class="fc" id="L815">        TObjectDoubleMap&lt;PairInt&gt; map = new TObjectDoubleHashMap&lt;PairInt&gt;();</span>
+        
+        int u;
+        int v;
+        PairInt p;
+<span class="fc bfc" id="L820" title="All 2 branches covered.">        for (u = 0; u &lt; adjM.length; ++u) {</span>
+<span class="fc bfc" id="L821" title="All 2 branches covered.">            for (v = 0; v &lt; adjM[u].length; ++v) {</span>
+<span class="fc bfc" id="L822" title="All 2 branches covered.">                if (Math.abs(adjM[u][v]) &gt; eps) {</span>
+<span class="fc" id="L823">                    map.put(new PairInt(u, v), adjM[u][v]);</span>
+                }
+            }
+        }
+        
+<span class="fc" id="L828">        return map;</span>
+    }
+
+    public static class MaxFlowResults {
+        public TObjectDoubleMap&lt;PairInt&gt; edgeFlows;
+        public int srcIdx;
+        public int sinkIdx;
+        public double flow;
+        public void print() {
+            if (edgeFlows != null) {
+                System.out.printf(&quot;max flow=%.3e from src=%d to sink=%d\n&quot;, 
+                    flow, srcIdx, sinkIdx);
+                printF(edgeFlows);
+            }
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

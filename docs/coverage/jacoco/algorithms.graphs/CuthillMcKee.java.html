@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CuthillMcKee.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">CuthillMcKee.java</span></div><h1>CuthillMcKee.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.misc.MiscMath0;
+import algorithms.sort.MiscSorter;
+import algorithms.util.PairInt;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+The Reverse Cuthill-McKee (RCM) is an algorithm to reduce the bandwidth of a
+symmetric matrix (remember that an adjacency matrix for an undirected graph
+is symmetric).   The reduction of the bandwidth of a matrix
+reduces storage and computational costs.
+ 
+From &quot;The Reverse Cuthill-McKee Algorithm in Distributed-Memory&quot;
+2016 Azad, Jacquelin, Buluc &amp; Ng
+ 
+Since obtaining a reordering to minimize bandwidth is an NP-complete problem, 
+various heuristics are used in practice such as Cuthill-McKee, 
+Reverse Cuthill-McKee (RCM), and Sloan’s algorithms [4], [5], [6]. 
+This paper solely focuses on the RCM algorithm [5] because, 
+with careful algorithm design, it is amenable to 
+massive distributed-memory parallelism – the primary topic of interest of this paper.
+
+TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
+ * @author nichole
+ */
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">public class CuthillMcKee {</span>
+    
+    /**
+     * given the adjacency map as pairs of edges, calculate the
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * &lt;pre&gt;
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc &amp; Ng
+
+     * &lt;/pre&gt;
+     * @param gE undirected adjacency graph
+     * @return 
+     */
+    public static int[] cuthillMcKeeOrdering(Set&lt;PairInt&gt; gE) {
+        
+<span class="nc" id="L62">        TIntObjectMap&lt;TIntSet&gt; adjMap = createSymmetricAdjMap(gE);</span>
+        
+<span class="nc" id="L64">        return cuthillMcKeeOrdering(adjMap);</span>
+    }
+    
+    /**
+     * given the adjacency map as pairs of edges, calculate the reverse
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * &lt;pre&gt;
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc &amp; Ng
+
+     * &lt;/pre&gt;
+     * @param gE undirected adjacency graph
+     * @return 
+     */
+    public static int[] rcm(Set&lt;PairInt&gt; gE) {
+        
+<span class="fc" id="L87">        TIntObjectMap&lt;TIntSet&gt; adjMap = createSymmetricAdjMap(gE);</span>
+        
+<span class="fc" id="L89">        int[] c = cuthillMcKeeOrdering(adjMap);</span>
+       
+<span class="fc" id="L91">        MiscMath0.reverse(c);</span>
+        
+<span class="fc" id="L93">        return c;</span>
+    }
+    
+    /**
+     * given the adjacency map of an undirected graph, calculate the
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * &lt;pre&gt;
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc &amp; Ng
+
+     * &lt;/pre&gt;
+     * @param adjMap undirected adjacency graph
+     * @return 
+     */
+    public static int[] rcm(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+        
+<span class="nc" id="L116">        int[] c = cuthillMcKeeOrdering(adjMap);</span>
+        
+<span class="nc" id="L118">        MiscMath0.reverse(c);</span>
+        
+<span class="nc" id="L120">        return c;</span>
+    }
+    
+    /**
+     * given the adjacency map of an undirected graph, calculate the
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * &lt;pre&gt;
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc &amp; Ng
+
+     * &lt;/pre&gt;
+     * @param adjMap undirected adjacency graph
+     * @return 
+     */
+    public static int[] cuthillMcKeeOrdering(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+                
+        // peripheral vertex = vertex with lowest degree
+<span class="fc" id="L144">        Set&lt;PairInt&gt; unique = uniqueEdges(adjMap);</span>
+<span class="fc" id="L145">        TIntIntMap vertexDegreeMap = createVertexDegreeMap(unique);</span>
+<span class="fc" id="L146">        int n = vertexDegreeMap.size();</span>
+        //int m = unique.size();
+        
+<span class="fc" id="L149">        int pIdx = findMinDegreeVertex(vertexDegreeMap);</span>
+        
+<span class="fc" id="L151">        int[] out = new int[n];</span>
+<span class="fc" id="L152">        TIntSet outSet = new TIntHashSet();</span>
+<span class="fc" id="L153">        int oIdx = 0;</span>
+<span class="fc" id="L154">        out[oIdx] = pIdx;        </span>
+<span class="fc" id="L155">        outSet.add(out[oIdx]);</span>
+        
+        // reversed out for use in sort by earliest predecessor 
+<span class="fc" id="L158">        int[] revOut = new int[n];</span>
+<span class="fc" id="L159">        revOut[pIdx] = -1;</span>
+        
+<span class="fc" id="L161">        oIdx++;</span>
+        
+<span class="fc" id="L163">        ArrayDeque&lt;Integer&gt; q = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L164">        q.add(pIdx);</span>
+        
+        TIntSet nhbrs;
+<span class="fc" id="L167">        TIntList adj = new TIntArrayList();</span>
+        int[] adjSorted;
+        TIntIterator iter;
+        int nIdx, i;
+        // runtime complexity is O(|V| + |E|*log_2(|E|)
+<span class="pc bpc" id="L172" title="1 of 4 branches missed.">        while (!q.isEmpty() &amp;&amp; outSet.size() &lt; n) {</span>
+            
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">            if (q.isEmpty()) {</span>
+                // find minimum degree vertex which is not in outSet
+<span class="nc" id="L176">                pIdx = findMinDegreeVertex(vertexDegreeMap, outSet);</span>
+<span class="nc bnc" id="L177" title="All 4 branches missed.">                assert(pIdx &gt; -1);</span>
+<span class="nc" id="L178">                out[oIdx] = pIdx;</span>
+<span class="nc" id="L179">                revOut[pIdx] = oIdx;</span>
+<span class="nc" id="L180">                outSet.add(pIdx);</span>
+<span class="nc" id="L181">                oIdx++;</span>
+            } else {
+<span class="fc" id="L183">                pIdx = q.poll();</span>
+            }
+            
+<span class="fc" id="L186">            adj.clear();</span>
+                        
+            // gather neighbors that aren't in outSet and sort them by
+            //  their revOut values w/ ties broken by smallest vertex degree
+<span class="fc" id="L190">            nhbrs = adjMap.get(pIdx);</span>
+<span class="fc" id="L191">            iter = nhbrs.iterator();</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L193">                nIdx = iter.next();</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">                if (!outSet.contains(nIdx)) {</span>
+<span class="fc" id="L195">                    adj.add(nIdx);</span>
+                }
+            }
+<span class="fc bfc" id="L198" title="All 2 branches covered.">            if (adj.isEmpty()) {</span>
+<span class="fc" id="L199">                continue;</span>
+            }
+<span class="fc" id="L201">            adjSorted = sort(adj, revOut, vertexDegreeMap);</span>
+            
+<span class="fc bfc" id="L203" title="All 2 branches covered.">            for (i = 0; i &lt; adjSorted.length; ++i) {</span>
+<span class="fc" id="L204">                out[oIdx] = adjSorted[i];</span>
+<span class="fc" id="L205">                revOut[adjSorted[i]] = oIdx;</span>
+<span class="fc" id="L206">                outSet.add(adjSorted[i]);</span>
+<span class="fc" id="L207">                q.add(adjSorted[i]);</span>
+<span class="fc" id="L208">                oIdx++;</span>
+            }
+        }
+        
+<span class="fc" id="L212">        return out;</span>
+    }
+        
+    /**
+     given the adjacency matrix of an undirected graph (a is symmetric), calculate the reverse
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * &lt;pre&gt;
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc &amp; Ng
+
+     * &lt;/pre&gt;
+     * @param a symmetric adjacency matrix where entry a[i][j] &gt; 0 indicates an edge
+     * between vertexes i and j and the graph is undirected.
+     * @return 
+     */
+    public static int[] rcm(int[][] a) {
+        
+<span class="nc" id="L236">        TIntObjectMap&lt;TIntSet&gt; adjMap = createSymmetricAdjMap(a);</span>
+        
+<span class="nc" id="L238">        int[] c = cuthillMcKeeOrdering(adjMap);</span>
+        
+<span class="nc" id="L240">        MiscMath0.reverse(c);</span>
+        
+<span class="nc" id="L242">        return c;</span>
+    }
+    
+    /**
+     given the adjacency matrix of an undirected graph (a is symmetric), calculate the reverse
+     * Cuthill-McKee ordering.
+     * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
+     * of vertices and |E| is the number of edges where an edge is counted
+     * once.
+     * &lt;pre&gt;
+     * references:
+     * 
+     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     * 
+     * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
+       2016 Azad, Jacquelin, Buluc &amp; Ng
+
+     * &lt;/pre&gt;
+     * @param a symmetric adjacency matrix where entry a[i][j] &gt; 0 indicates an edge
+     * between vertexes i and j and the graph is undirected.
+     * @return 
+     */
+    public static int[] cuthillMcKeeOrdering(int[][] a) {
+<span class="nc" id="L265">        TIntObjectMap&lt;TIntSet&gt; adjMap = createSymmetricAdjMap(a);</span>
+<span class="nc" id="L266">        return cuthillMcKeeOrdering(adjMap);</span>
+    }
+    
+    /**
+     * rewrite the adjacency map edges where for all (u, v) to pairs such that u is less than v
+     * (u and v are vertex indexes).  The rewriting is to avoid double counting
+     * in other methods.
+     * @param adjMap
+     * @return 
+     */
+    static Set&lt;PairInt&gt; uniqueEdges(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+    
+<span class="fc" id="L278">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+        
+<span class="fc" id="L280">        Set&lt;PairInt&gt; out = new HashSet&lt;PairInt&gt;();</span>
+        int u, v;
+        TIntSet set;
+        TIntIterator iter2;
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L285">            iter.advance();</span>
+<span class="fc" id="L286">            u = iter.key();</span>
+<span class="fc" id="L287">            set = iter.value();</span>
+<span class="fc" id="L288">            iter2 = set.iterator();</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L290">                v = iter2.next();</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                if (u &lt; v) {</span>
+<span class="fc" id="L292">                    out.add(new PairInt(u, v));</span>
+                } else {
+<span class="fc" id="L294">                    out.add(new PairInt(v, u));</span>
+                }
+            }
+        }
+<span class="fc" id="L298">        return out;</span>
+    }
+    
+    static TIntIntMap createVertexDegreeMap(Set&lt;PairInt&gt; gE) {
+        int u, v;
+<span class="fc" id="L303">        TIntIntMap vertexDegreeMap = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">        for (PairInt uv : gE) {</span>
+<span class="fc" id="L305">            u = uv.getX();</span>
+<span class="fc" id="L306">            v = uv.getY();</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">            if (vertexDegreeMap.containsKey(u)) {</span>
+<span class="fc" id="L308">                vertexDegreeMap.put(u, vertexDegreeMap.get(u) + 1);</span>
+            } else {
+<span class="fc" id="L310">                vertexDegreeMap.put(u, 1);</span>
+            }
+<span class="fc bfc" id="L312" title="All 2 branches covered.">            if (vertexDegreeMap.containsKey(v)) {</span>
+<span class="fc" id="L313">                vertexDegreeMap.put(v, vertexDegreeMap.get(v) + 1);</span>
+            } else {
+<span class="fc" id="L315">                vertexDegreeMap.put(v, 1);</span>
+            }
+<span class="fc" id="L317">        }</span>
+<span class="fc" id="L318">        return vertexDegreeMap;</span>
+    }
+    
+    static int findMinDegreeVertex(TIntIntMap vertexDegreeMap) {
+<span class="fc" id="L322">        TIntIntIterator iter = vertexDegreeMap.iterator();</span>
+<span class="fc" id="L323">        int minD = Integer.MAX_VALUE;</span>
+<span class="fc" id="L324">        int minV = -1;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L326">            iter.advance();</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">            if (iter.value() &lt; minD) {</span>
+<span class="fc" id="L328">                minV = iter.key();</span>
+<span class="fc" id="L329">                minD = iter.value();</span>
+            }
+        }
+<span class="fc" id="L332">        return minV;</span>
+    }
+    
+    static int findMinDegreeVertex(TIntIntMap vertexDegreeMap, TIntSet outSet) {
+<span class="nc" id="L336">        TIntIntIterator iter = vertexDegreeMap.iterator();</span>
+<span class="nc" id="L337">        int minD = Integer.MAX_VALUE;</span>
+<span class="nc" id="L338">        int minV = -1;</span>
+        int v;
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L341">            iter.advance();</span>
+<span class="nc" id="L342">            v = iter.key();</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">            if (outSet.contains(v)) {</span>
+<span class="nc" id="L344">                continue;</span>
+            }
+<span class="nc bnc" id="L346" title="All 2 branches missed.">            if (iter.value() &lt; minD) {</span>
+<span class="nc" id="L347">                minV = iter.key();</span>
+<span class="nc" id="L348">                minD = iter.value();</span>
+            }
+        }
+<span class="nc" id="L351">        return minV;</span>
+    }
+
+    static TIntObjectMap&lt;TIntSet&gt; createSymmetricAdjMap(Set&lt;PairInt&gt; gE) {
+        
+<span class="fc" id="L356">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        
+        int u, v;
+        TIntSet set;
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        for (PairInt uv : gE) {</span>
+<span class="fc" id="L361">            u = uv.getX();</span>
+<span class="fc" id="L362">            v = uv.getY();</span>
+            
+<span class="fc" id="L364">            set = out.get(u);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">            if (set == null) {</span>
+<span class="fc" id="L366">                set = new TIntHashSet();</span>
+<span class="fc" id="L367">                out.put(u, set);</span>
+            }
+<span class="fc" id="L369">            set.add(v);</span>
+            
+<span class="fc" id="L371">            set = out.get(v);</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">            if (set == null) {</span>
+<span class="fc" id="L373">                set = new TIntHashSet();</span>
+<span class="fc" id="L374">                out.put(v, set);</span>
+            }
+<span class="fc" id="L376">            set.add(u);</span>
+<span class="fc" id="L377">        }</span>
+        
+<span class="fc" id="L379">        return out;</span>
+    }
+
+    static int[] sort(TIntList adj, int[] revOut, TIntIntMap vertexDegreeMap) {
+        //sort by smallest revOut values w/ ties broken by smallest vertex degree
+<span class="fc" id="L384">        int[] a = new int[adj.size()];</span>
+<span class="fc" id="L385">        int[] b = new int[adj.size()];</span>
+<span class="fc" id="L386">        int[] idxs = new int[adj.size()];</span>
+        int i, v;
+<span class="fc bfc" id="L388" title="All 2 branches covered.">        for (i = 0; i &lt; adj.size(); ++i) {</span>
+<span class="fc" id="L389">            v = adj.get(i);</span>
+<span class="fc" id="L390">            a[i] = revOut[v];</span>
+<span class="fc" id="L391">            b[i] = vertexDegreeMap.get(v);</span>
+<span class="fc" id="L392">            idxs[i] = i;</span>
+        }
+        
+<span class="fc" id="L395">        MiscSorter.sortBy1stArgThen2nd(a, b, idxs);</span>
+        
+<span class="fc" id="L397">        int[] out = new int[idxs.length];</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (i = 0; i &lt; idxs.length; ++i) {</span>
+<span class="fc" id="L399">            out[i] = adj.get(idxs[i]);</span>
+        }
+        
+<span class="fc" id="L402">        return out;</span>
+    }
+
+    static TIntObjectMap&lt;TIntSet&gt; createSymmetricAdjMap(int[][] a) {
+        
+<span class="nc" id="L407">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        
+        TIntSet set;
+        int u, v;
+<span class="nc bnc" id="L411" title="All 2 branches missed.">        for (u = 0; u &lt; a.length; ++u) {</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">            for (v = 0; v &lt; a[u].length; ++v) {</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">                if (a[u][v] &lt; 1) {</span>
+<span class="nc" id="L414">                    continue;</span>
+                }
+<span class="nc" id="L416">                set = out.get(u);</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">                if (set == null) {</span>
+<span class="nc" id="L418">                    set = new TIntHashSet();</span>
+<span class="nc" id="L419">                    out.put(u, set);</span>
+                }
+<span class="nc" id="L421">                set.add(v);</span>
+
+<span class="nc" id="L423">                set = out.get(v);</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">                if (set == null) {</span>
+<span class="nc" id="L425">                    set = new TIntHashSet();</span>
+<span class="nc" id="L426">                    out.put(v, set);</span>
+                }
+<span class="nc" id="L428">                set.add(u);</span>
+            }
+        }
+<span class="nc" id="L431">        return out;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

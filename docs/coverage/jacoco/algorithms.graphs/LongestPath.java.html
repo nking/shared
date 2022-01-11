@@ -121,73 +121,74 @@ proof of NP-hardness:
              largest recorded value, and reversing the sequence of vertices found in this way.
         */
         
-        
         // find srcIdx in tsIdxs
-<span class="fc" id="L126">        int sIdx = -1;</span>
+<span class="fc" id="L125">        int sIdx = -1;</span>
         int i;
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        for (i = 0; i &lt; tsIdxs.length; ++i) {</span>
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            if (tsIdxs[i] == srcIdx) {</span>
-<span class="fc" id="L130">                sIdx = i;</span>
-<span class="fc" id="L131">                break;</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        for (i = 0; i &lt; tsIdxs.length; ++i) {</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">            if (tsIdxs[i] == srcIdx) {</span>
+<span class="fc" id="L129">                sIdx = i;</span>
+<span class="fc" id="L130">                break;</span>
             }
         }
         //System.out.printf(&quot;srcIdx=%d, sIdx=%d, ts=%s\n&quot;, srcIdx, sIdx, Arrays.toString(tsIdxs));
-<span class="pc bpc" id="L135" title="3 of 4 branches missed.">        assert(sIdx &gt; -1);</span>
+<span class="pc bpc" id="L134" title="3 of 4 branches missed.">        assert(sIdx &gt; -1);</span>
         
-<span class="fc" id="L137">        double[] dist = new double[nodes.length];</span>
-<span class="fc" id="L138">        int[] prev = new int[nodes.length];</span>
-<span class="fc" id="L139">        Arrays.fill(prev, -1);</span>
+<span class="fc" id="L136">        double[] dist = new double[nodes.length];</span>
+<span class="fc" id="L137">        int[] prev = new int[nodes.length];</span>
+<span class="fc" id="L138">        Arrays.fill(prev, -1);</span>
         
-        // for pred, fill in the map as progress from v 
-<span class="fc" id="L142">        TIntObjectMap&lt;TIntSet&gt; prevMap = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        // for predecessor, fill in the map as progress from v 
+<span class="fc" id="L141">        TIntObjectMap&lt;TIntSet&gt; prevMap = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
-<span class="fc" id="L144">        double maxDistS = Double.NEGATIVE_INFINITY, distV, wUV, d;</span>
-<span class="fc" id="L145">        int maxDistIdx = -1;</span>
+<span class="fc" id="L143">        double maxDistS = Double.NEGATIVE_INFINITY, distV, wUV, d;</span>
+<span class="fc" id="L144">        int maxDistIdx = -1;</span>
         SimpleLinkedListNode nhbr;
         int v, v2, u;
         TIntSet set;
         TIntIterator iter;
-<span class="fc bfc" id="L150" title="All 2 branches covered.">        for (i = sIdx; i &lt; tsIdxs.length; ++i) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        for (i = sIdx; i &lt; tsIdxs.length; ++i) {</span>
             
-<span class="fc" id="L152">            v = tsIdxs[i];</span>
+<span class="fc" id="L151">            v = tsIdxs[i];</span>
             
             // add u to prevMap for the next v in tsIdxs to use
-<span class="fc" id="L155">            nhbr = nodes[v];</span>
-<span class="fc bfc" id="L156" title="All 4 branches covered.">            while (nhbr != null &amp;&amp; nhbr.getKey() != -1) {</span>
-<span class="fc" id="L157">                v2 = nhbr.getKey();</span>
+<span class="fc" id="L154">            nhbr = nodes[v];</span>
+<span class="fc bfc" id="L155" title="All 4 branches covered.">            while (nhbr != null &amp;&amp; nhbr.getKey() != -1) {</span>
+<span class="fc" id="L156">                v2 = nhbr.getKey();</span>
+                
 <span class="fc" id="L158">                set = prevMap.get(v2);</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">                if (set == null) {</span>
 <span class="fc" id="L160">                    set = new TIntHashSet();</span>
 <span class="fc" id="L161">                    prevMap.put(v2, set);</span>
                 }
 <span class="fc" id="L163">                set.add(v);</span>
-<span class="fc" id="L164">                nhbr = nhbr.getNext();</span>
+                
+<span class="fc" id="L165">                nhbr = nhbr.getNext();</span>
             }
             
-<span class="fc" id="L167">            distV = Double.NEGATIVE_INFINITY;</span>
-<span class="fc" id="L168">            set = prevMap.get(v);</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (set != null) {</span>
-<span class="fc" id="L170">                iter = set.iterator();</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
-<span class="fc" id="L172">                    u = iter.next();</span>
-<span class="fc" id="L173">                    wUV = g.get(new PairInt(u, v));</span>
-<span class="pc bpc" id="L174" title="3 of 4 branches missed.">                    assert(g.containsKey(new PairInt(u, v)));</span>
-<span class="fc" id="L175">                    d = dist[u] + wUV;</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">                    if (d &gt; distV) {</span>
-<span class="fc" id="L177">                        distV = d;</span>
-<span class="fc" id="L178">                        prev[v] = u;</span>
+<span class="fc" id="L168">            distV = Double.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L169">            set = prevMap.get(v);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            if (set != null) {</span>
+<span class="fc" id="L171">                iter = set.iterator();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L173">                    u = iter.next();</span>
+<span class="fc" id="L174">                    wUV = g.get(new PairInt(u, v));</span>
+<span class="pc bpc" id="L175" title="3 of 4 branches missed.">                    assert(g.containsKey(new PairInt(u, v)));</span>
+<span class="fc" id="L176">                    d = dist[u] + wUV;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">                    if (d &gt; distV) {</span>
+<span class="fc" id="L178">                        distV = d;</span>
+<span class="fc" id="L179">                        prev[v] = u;</span>
                     }
                 }
             }
             
-<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (distV == Double.NEGATIVE_INFINITY) {</span>
-<span class="fc" id="L184">                distV = 0;</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (distV == Double.NEGATIVE_INFINITY) {</span>
+<span class="fc" id="L185">                distV = 0;</span>
             }
-<span class="fc" id="L186">            dist[v] = distV;</span>
+<span class="fc" id="L187">            dist[v] = distV;</span>
             
-<span class="fc bfc" id="L188" title="All 2 branches covered.">            if (distV &gt; maxDistS) {</span>
-<span class="fc" id="L189">                maxDistS = distV;</span>
-<span class="fc" id="L190">                maxDistIdx = v;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            if (distV &gt; maxDistS) {</span>
+<span class="fc" id="L190">                maxDistS = distV;</span>
+<span class="fc" id="L191">                maxDistIdx = v;</span>
             }
         }
         
@@ -196,14 +197,14 @@ proof of NP-hardness:
         //System.out.printf(&quot;pred=%s\n&quot;, Arrays.toString(prev));
         
         // back track from maxS to S then reverse the nodes and return that
-<span class="fc" id="L199">        TIntList path = new TIntArrayList();</span>
-<span class="fc" id="L200">        int idx = maxDistIdx;//4-&gt;3-&gt;7</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">        while (idx &gt; -1) {</span>
-<span class="fc" id="L202">            path.add(idx);</span>
-<span class="fc" id="L203">            idx = prev[idx];</span>
+<span class="fc" id="L200">        TIntList path = new TIntArrayList();</span>
+<span class="fc" id="L201">        int idx = maxDistIdx;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        while (idx &gt; -1) {</span>
+<span class="fc" id="L203">            path.add(idx);</span>
+<span class="fc" id="L204">            idx = prev[idx];</span>
         }
-<span class="fc" id="L205">        path.reverse();</span>
-<span class="fc" id="L206">        return path.toArray();</span>
+<span class="fc" id="L206">        path.reverse();</span>
+<span class="fc" id="L207">        return path.toArray();</span>
     }
 
     static SimpleLinkedListNode[] convert(TObjectDoubleMap&lt;PairInt&gt; g) {
@@ -211,32 +212,32 @@ proof of NP-hardness:
         PairInt p;
         
         // count vertexes
-<span class="fc" id="L214">        TIntSet vs = new TIntHashSet();</span>
-<span class="fc" id="L215">        TObjectDoubleIterator&lt;PairInt&gt; iter = g.iterator();</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L217">            iter.advance();</span>
-<span class="fc" id="L218">            p = iter.key();</span>
-<span class="fc" id="L219">            vs.add(p.getX());</span>
-<span class="fc" id="L220">            vs.add(p.getY());</span>
+<span class="fc" id="L215">        TIntSet vs = new TIntHashSet();</span>
+<span class="fc" id="L216">        TObjectDoubleIterator&lt;PairInt&gt; iter = g.iterator();</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L218">            iter.advance();</span>
+<span class="fc" id="L219">            p = iter.key();</span>
+<span class="fc" id="L220">            vs.add(p.getX());</span>
+<span class="fc" id="L221">            vs.add(p.getY());</span>
         }
         
-<span class="fc" id="L223">        int n = vs.size();</span>
+<span class="fc" id="L224">        int n = vs.size();</span>
         int i;
         // initialize output
-<span class="fc" id="L226">        SimpleLinkedListNode[] nodes = new SimpleLinkedListNode[n];</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L228">            nodes[i] = new SimpleLinkedListNode();</span>
+<span class="fc" id="L227">        SimpleLinkedListNode[] nodes = new SimpleLinkedListNode[n];</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L229">            nodes[i] = new SimpleLinkedListNode();</span>
         }
         
         SimpleLinkedListNode node;
-<span class="fc" id="L232">        iter = g.iterator();</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L234">            iter.advance();</span>
-<span class="fc" id="L235">            p = iter.key();</span>
-<span class="fc" id="L236">            nodes[p.getX()].insert(p.getY());</span>
+<span class="fc" id="L233">        iter = g.iterator();</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L235">            iter.advance();</span>
+<span class="fc" id="L236">            p = iter.key();</span>
+<span class="fc" id="L237">            nodes[p.getX()].insert(p.getY());</span>
         }
         
-<span class="fc" id="L239">        return nodes;</span>
+<span class="fc" id="L240">        return nodes;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
