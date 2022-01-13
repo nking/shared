@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Primes {
     
     /**
-     * integer factorization following Pollard-Rho algorithm in Cormen et al. 
+     * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
      * "Introduction to Algorithms".  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
      * 
