@@ -122,7 +122,7 @@ public class GreatestCommonDenominator {
      * 
      * extended euclid 
      * 
-     * if a > b > 0, runtime complexity is O(log_2(b)).
+     * if a .gt. b .geq. 0, runtime complexity is O(log_2(b)).
      * 
      * @param a
      * @param b

@@ -207,10 +207,13 @@ public class MaximalIndependentSets {
             */
             
             //NOTE: this could be revised to use paralell spawn and sync comments
+            // or the parallel concurrency keyword in comments
             // as is used in the dynamic multithreading parallelism model.
-            // (see Chap 27 of Cormen et al. "Introduction to Algorithms" who
-            //  reference Cilk, Cilk++ [71], OpenMP, Task Parallel Library, 
-            //  and Threading Building Blocks
+            // (see Chap 27 of Cormen et al. "Introduction to Algorithms" whose
+            // multithreaded pseudocode and programming model were heavily 
+            // influenced by the Cilk project at MIT and the Cilk++ extensions 
+            // to C++ distributed by Cilk Arts, Inc, OpenMP, Task Parallel Library, 
+            // and Threading Building Blocks)
             
             /*
             if implementing (2):
