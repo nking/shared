@@ -1,9 +1,6 @@
 package algorithms;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -316,6 +313,9 @@ public class TreeTraversal {
             node = queue.remove();//retrieves first in list
             stack2.push(node);
             children = node.getChildren();
+            if (children == null) {
+                continue;
+            }
             for (NAryTreeNode child : children) {
                 queue.add(child);
             }
@@ -348,6 +348,9 @@ public class TreeTraversal {
         while (node != null) {
             out.add(node);
             children = node.getChildren();
+            if (children == null) {
+                continue;
+            }
             for (NAryTreeNode child : children) {
                 queue.add(child);
             }

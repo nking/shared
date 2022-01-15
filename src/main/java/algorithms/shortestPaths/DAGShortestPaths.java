@@ -100,6 +100,7 @@ public class DAGShortestPaths {
        
         TopologicalSort ts = new TopologicalSort(g);
         
+        //Runtime complexity for ts.sort() is O(V + E).
         int[] sortedVertexes = ts.sort();
                 
         for (int u : sortedVertexes) {

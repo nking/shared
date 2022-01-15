@@ -251,7 +251,8 @@ public class DisjointForest<T> {
         DisjointForest<Integer> forest = new DisjointForest<>();
         
         TIntObjectMap<DisjointSet2Node<Integer>> vertexMap = new TIntObjectHashMap<>();
-        DisjointSet2Node<Integer> uVertex, vVertex;
+        
+        DisjointSet2Node<Integer> uVertex;
         
         for (int u = 0; u < adjList.length; ++u) {
             uVertex = new DisjointSet2Node<>(u);
@@ -259,14 +260,19 @@ public class DisjointForest<T> {
             forest.makeSet(uVertex);
         }
         
-        for (int u = 0; u < adjList.length; ++u) {
+        DisjointSet2Node<Integer> vVertex;
+        
+        int u;
+        int v;
+        SimpleLinkedListNode vNode;
+        for (u = 0; u < adjList.length; ++u) {
             
             uVertex = vertexMap.get(u);
             
-            SimpleLinkedListNode vNode = adjList[u];
+            vNode = adjList[u];
             while (vNode != null && vNode.getKey() != -1) {
                 
-                int v = vNode.getKey();
+                v = vNode.getKey();
                 
                 vVertex = vertexMap.get(v);
                 

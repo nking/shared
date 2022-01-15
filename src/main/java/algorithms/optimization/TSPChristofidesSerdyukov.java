@@ -88,7 +88,7 @@ public class TSPChristofidesSerdyukov {
         
         //(3) O is subgraph of G induced by the vertices in oddDVertexes.
         //    make perfect min-cost matching from it
-        // format: [nMatcings][2]
+        // format: [nMatchings][2]
         int[][] m = bipartiteMinCostMatchingFromSubgraph(oddDVertexes, adjCostMap);
                 
         //(4) H is the union of graphs T and M
@@ -109,7 +109,7 @@ public class TSPChristofidesSerdyukov {
             }
         }
         t2.add(t2.get(0));
-        int[] _t2 = t2.toArray();
+        //int[] _t2 = t2.toArray();
         return t2.toArray();
     }
     
@@ -208,7 +208,7 @@ public class TSPChristofidesSerdyukov {
 
     protected Map<Integer, LinkedList<Integer>> buildMST(TIntObjectMap<TIntIntMap> adjCostMap) {
                 
-        // finding the max cost in the graph G needed for a trie used in Prim's MST
+        // finding the max cost in the graph G.  the value is needed for a bit length used by a trie in Prim's MST
         int maxCost = PrimsMST.maxEdgeCost(adjCostMap);
         
         PrimsMST prims = new PrimsMST();

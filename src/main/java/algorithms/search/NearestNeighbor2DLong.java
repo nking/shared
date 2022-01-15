@@ -203,9 +203,9 @@ public class NearestNeighbor2DLong {
     }
     
     protected int getCol(long internalIndex) {
-        int row = (int)(internalIndex/width);
-        int col = (int)(internalIndex - ((long)row * width));
-        return col;
+        //int row = (int)(internalIndex/width);
+        //int col = (int)(internalIndex - ((long)row * width));
+        return (int)(internalIndex % width);
     }
     
     /**

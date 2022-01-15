@@ -19,7 +19,7 @@ import java.util.Stack;
    worst case space needed: O(|V|)
 
    implemented using recursion following Cormen et al. "Introduction To Algorithms"
-   then re-factored to iterative by using a stack following advice in 
+   then re-factored to non-recursive by using a stack, following advice in 
    https://www.codeproject.com/Articles/418776/How-to-replace-recursive-functions-using-stack-and
 
    first implemented in project

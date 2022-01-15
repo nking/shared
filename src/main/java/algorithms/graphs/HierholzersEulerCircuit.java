@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.matrix.MatrixUtil;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -55,6 +56,7 @@ public class HierholzersEulerCircuit {
         
         return createCircuit(g, startNode);
     }
+    
     /**
      * 
      * @param g adjacency list of directed graph
@@ -65,30 +67,19 @@ public class HierholzersEulerCircuit {
         if (g.isEmpty()) {
             return new int[0];
         }
-       
-        int i, u;
-        
+               
         // make a copy of g to modify
-        TIntObjectIterator<TIntSet> iter = g.iterator();
-        TIntSet neighbors, neighbors2;
-        TIntObjectMap<TIntSet> g2 = new TIntObjectHashMap<TIntSet>();
-        for (i = 0; i < g.size(); ++i) {
-            iter.advance();
-            u = iter.key();
-            neighbors = iter.value();
-            neighbors2 = new TIntHashSet(neighbors);
-            g2.put(u, neighbors2);
-        }
-                
+        TIntObjectMap<TIntSet> g2 = MatrixUtil.copy(g);
+          
         Stack<Integer> curPath = new Stack<Integer>();
         TIntList circuit = new TIntArrayList();
         
         // start vertex
         int curV = startNode;
-        
         curPath.add(curV);
         
         int nextV;
+        TIntSet neighbors2;
         
         while (!curPath.isEmpty()) {
             curV = curPath.peek();

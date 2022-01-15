@@ -54,8 +54,8 @@ public class TopologicalSort {
     
     /**
      * 
-     * implemented following Cormen et al. "Introduction To Algorithms"
-     * 
+     * implemented following Cormen et al. "Introduction To Algorithms".
+     * Runtime complexity is <em>O(V + E)</em>.
      * @return indexes ordered by finish time of traversal
      */
     public int[] sort() {

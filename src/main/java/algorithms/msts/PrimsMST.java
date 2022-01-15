@@ -77,6 +77,24 @@ public class PrimsMST {
         
         int maxNumberOfBits = (int)Math.ceil(Math.log(sentinel)/Math.log(2));
         
+        /*NOTE: if need to use jdk/jse classes for a priority queue
+        PriorityQueue<Integer> has 
+           enqueuing, dequeuing, offer, poll, remove() and add : O(log(n)) complexity;
+           remove(Object) and contains(Object) are linear time complexity; 
+           peek, element, and size are constant time complexity.
+        To have more than one object with the same key, should create a Node
+        class that implements Comparable.
+        */
+        
+        /*
+        MinHeapForRT2012 uses a YFastTrie wrapper if there is enough memory,
+        else uses a Fibonacci Heap wrapper.
+        The YFastTrie has 
+           O(log log(M)) operations including successor and predecessor 
+           where M is M is the number of bits of the maximum value in the domain.
+        The Fibonacci Heap has O(1) operations excepting extractMin which is 
+           O(lg_2(N_nodes)).
+        */
         MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel,
             nVertexes, maxNumberOfBits);
    
@@ -98,13 +116,19 @@ public class PrimsMST {
             nodes.add(v);
         }
         
+        int uIdx;
+        HeapNode u;
+        int vIdx;
+        int cost;
+        long distV;
+                
         //O(|V|)
         while (heap.getNumberOfNodes() > 0) {
 
             // O(log_2 log_2(w_bits)) or O(log_2(|V|))
-            HeapNode u = heap.extractMin(); 
+            u = heap.extractMin(); 
            
-            int uIdx = ((Integer)u.getData()).intValue();
+            uIdx = ((Integer)u.getData());
             inQ[uIdx] = false;
             
             TIntIntMap adjMap0 = adjCostMap.get(uIdx);
@@ -114,10 +138,11 @@ public class PrimsMST {
             
             TIntIntIterator iter = adjMap0.iterator();
             for (int i = 0; i < adjMap0.size(); ++i) {
-                iter.advance();                 
-                int vIdx = iter.key();
-                int cost = iter.value();
-                long distV = nodes.get(vIdx).getKey();
+                iter.advance();
+                
+                vIdx = iter.key();
+                cost = iter.value();
+                distV = nodes.get(vIdx).getKey();
                
                 if (inQ[vIdx] && (cost < distV)) {
                     prev[vIdx] = uIdx;
@@ -181,6 +206,7 @@ public class PrimsMST {
         int root = findRoot();
         return getPreorderIndexes(root);
     }
+    // left subtree, root, right subtree
     private TIntList getPreorderIndexes(int root) {
         TIntList out = new TIntArrayList();
         Map<Integer, LinkedList<Integer>> tree = makeTreeFromPrev();
