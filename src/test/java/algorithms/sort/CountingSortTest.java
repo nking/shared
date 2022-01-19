@@ -13,7 +13,7 @@ public class CountingSortTest extends TestCase {
         
         int[] a = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
         
-        int[] b = CountingSort.sort(a, 5);
+        int[] b = CountingSort.sort(a);
         
         int[] expected = new int[]{0, 0, 2, 2, 3, 3, 3, 5};
         
@@ -25,7 +25,7 @@ public class CountingSortTest extends TestCase {
         int[] a = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
         int[] b = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
         
-        CountingSort.sort(a, b, 5);
+        CountingSort.sort(a, b);
         
         int[] expected = new int[]{0, 0, 2, 2, 3, 3, 3, 5};
         
@@ -38,29 +38,14 @@ public class CountingSortTest extends TestCase {
         int[] a = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
         int[] b = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
         
-        CountingSort.sortByDecr(a, b, 5);
+        CountingSort.sortByDecr(a, b);
         
         int[] expected = new int[]{5, 3, 3, 3, 2, 2, 0, 0};
         
         assertTrue(Arrays.equals(expected, a));
         assertTrue(Arrays.equals(expected, b));
     }
-    
-    public void testsort2_obj() throws Exception {
-        
-        int[] a = new int[]{2, 5, 3, 0, 2, 3, 0, 3};
-        Integer[] b = new Integer[]{2, 5, 3, 0, 2, 3, 0, 3};
-        
-        CountingSort.sort(a, b, 5);
-        
-        int[] expected = new int[]{0, 0, 2, 2, 3, 3, 3, 5};
-        
-        assertTrue(Arrays.equals(expected, a));
-        for (int i = 0; i < b.length; ++i) {
-            assertEquals(expected[i], b[i].intValue());
-        }
-    }
-    
+   
     public void testsort3() throws Exception {
         
         // use more than 46340 random numbers whose value is higher than
@@ -92,7 +77,7 @@ public class CountingSortTest extends TestCase {
             }
         }
         
-        int[] b = CountingSort.sort(a, max);
+        int[] b = CountingSort.sort(a);
         
         Collections.sort(list);
         

@@ -3,16 +3,13 @@ package algorithms.sort;
 import java.util.Arrays;
 
 /**
- * a sort for integers in range 0 to k that has an O(N) runtime at the expense 
- * of space where N is the maximum of (size of array to be sorted, maximum value in array).
+ * a sort for integers.  runtime complexity Math.max(n, max(a) - min(a))
  * <pre>
- * To use this algorithm:
- *    (1) numbers must be positive.
- *    (2) the maximum number in the array should probably not be much greater
- *        than 10,000,000 unless the jvm settings for maximum stack size
- *        are increased.  An internal long array of size maximum of array values
- *        is constructed and that consumes memory which also affects
- *        performance for max &gt; 10,000,000.
+ * To use this algorithm: the maximum number in the array should probably not 
+ * be much greater than 1e7 unless the jvm settings for maximum stack size
+ * are increased.  An internal long array of size maximum of array values
+ * is constructed and that consumes memory which also affects
+ * performance for max &gt; 11e7.
  * 
  * implemented from Cormen et al. "Introduction to Algorithms"
 
@@ -30,147 +27,97 @@ import java.util.Arrays;
 public class CountingSort {
     
     /**
-     * sort the members of a with values less than max and return as an
-     * ordered array.
+     * sort the members of a
      * <pre>
-     * Note that the numbers have to be positive, so if negative numbers are
-     * in the array, the invoker needs to add a number to bring the values
-     * to &gt; == 0 and then subtract that after the sort.
+     * runtime complexity: Math.max(n, max(a) - min(a))
      * </pre>
      * @param a
-     * @param max 
      * @return  
      */
-    public static int[] sort(int[] a, int max) {
+    public static int[] sort(int[] a) {
 
-        if (a == null) {
-            throw new IllegalArgumentException("a cannot be null");
-        }
-        if (max <= 0) {
-            throw new IllegalArgumentException("max must be > 0");
-        }
-        
-        if (a.length < 2) {
-            return Arrays.copyOf(a, a.length);
-        }
-        
-        long[] c = new long[max + 1];
-
-        // c holds frequency of each number by index, e.g. c[0] holds the number of 0's in a
-        for (int i = 0; i < a.length; i++) {
-            
-            int idx = a[i];
-            
-            c[idx]++;
-        }
-                
-        // cumulative sum to end of array c.  the last item in c holds the 
-        // total number of items in 'a' less than or equal to max
-        for (int i = 1; i < c.length; i++) {
-            c[i] = c[i] + c[i - 1];
-        }
-        
-        //System.out.println("a=" + Arrays.toString(a));
-        //System.out.println("c=" + Arrays.toString(c));
-        
-        int[] b = new int[a.length];
-                
-        // use the order imposed by c to write the values of a into b.  c holds
-        // frequency, that is place markers too so that is updated as b is written
-        for (int i = (a.length - 1); i > -1; i--) {
-            
-            int aIdx = a[i];
-
-            c[aIdx]--;
-            int cfa = (int)c[aIdx];
-            b[cfa] = aIdx;
-        
-            //System.out.println("  " + i + ")" + " c=" + Arrays.toString(c));
-            //System.out.println("  " + i + ")" + " b=" + Arrays.toString(b));
-        }
+        int[] b = Arrays.copyOf(a, a.length);
+        int[] idxs = sortAndReturnIndexes(b);
         
         return b;
     }
     
     /**
-     * sort the members of a with values less than max and apply the same
-     * changes of item position to b.
+     * sort the members of a and return the original indexes.
      * <pre>
-     * Note that the numbers have to be positive, so if negative numbers are
-     * in the array, the invoker needs to add a number to bring the values
-     * to &gte; == 0 and then subtract that after the sort.
+     * runtime complexity: Math.max(n, max(a) - min(a))
      * </pre>
-     * @param a
-     * @param b
-     * @param max 
+     * @param a input and output array a
+     * @return the original indexes of a, sorted
      */
-    public static void sort(int[] a, int[] b, int max) {
+    public static int[] sortAndReturnIndexes(final int[] a) {
 
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
         }
-        if (b == null) {
-            throw new IllegalArgumentException("b cannot be null");
-        }
-        if (a.length != b.length) {
-            throw new IllegalArgumentException(
-            "the lengths of a and b must be the same");
-        }
-        if (max <= 0) {
-            throw new IllegalArgumentException("max must be > 0");
-        }
         if (a.length < 2) {
-            return;
+            return Arrays.copyOf(a, a.length);
         }
         
-        long[] c = new long[max + 1];
+        // shift range of a to non-negative numbers, starting at 0.
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        int i;
+        for (i = 0; i < a.length; ++i) {
+            if (a[i] > max) {
+                max = a[i];
+            }
+            if (a[i] < min) {
+                min = a[i];
+            }
+        }
+        int[] a2 = Arrays.copyOf(a, a.length);
+        for (i = 0; i < a2.length; ++i) {
+           a2[i] -= min;
+        }
+        
+        long[] c = new long[max - min + 1];
 
         // c holds frequency of each number by index, e.g. c[0] holds the number of 0's in a
-        for (int i = 0; i < a.length; i++) {
-            
-            int idx = a[i];
-            
-            c[idx]++;
+        for (i = 0; i < a2.length; i++) {
+            c[a2[i]]++;
         }
                 
         // cumulative sum to end of array c.  the last item in c holds the 
         // total number of items in 'a' less than or equal to max
-        for (int i = 1; i < c.length; i++) {
-            c[i] = c[i] + c[i - 1];
+        for (i = 1; i < c.length; i++) {
+            c[i] += c[i - 1];
         }
         
-        int[] aa = new int[a.length];
-        int[] bb = new int[a.length];
+        int[] b = new int[a.length];
+        
+        int[] idxs = new int[a.length];
+        Arrays.fill(idxs, -1);
                 
-        // use the order imposed by c to write the values of a into aa.  c holds
-        // frequency, that is place markers too so that is updated as aa is written
-        for (int i = (a.length - 1); i > -1; i--) {
-            
-            int aIdx = a[i];
-                        
-            c[aIdx]--;
-            int cfa = (int)c[aIdx];
-            aa[cfa] = aIdx;
-            bb[cfa] = b[i];
+        // use the order imposed by c to write the values of a into b.  c holds
+        // frequency, that is place markers too so that is updated as b is written
+        int aI;
+        for (i = (a2.length - 1); i > -1; i--) {
+            aI = a2[i];
+            c[aI]--;
+            b[(int)c[aI]] = aI + min;
+            idxs[(int)c[aI]] = i;
         }
-
-        System.arraycopy(aa, 0, a, 0, a.length);
-        System.arraycopy(bb, 0, b, 0, b.length);
+        
+        System.arraycopy(b, 0, a, 0, a.length);
+        
+        return idxs;
     }
     
     /**
-     * apply a descending sort to the members of a with values less than max 
-     * and apply the same changes of item position to b.
-     * <pre>
-     * Note that the numbers have to be positive, so if negative numbers are
-     * in the array, the invoker needs to add a number to bring the values
-     * to &gte; == 0 and then subtract that after the sort.
-     * </pre>
+     * sort the members of a and apply the same
+     * changes of item position to b.
+     * runtime complexity: Math.max(n, max(a) - min(a))
+     * 
      * @param a
      * @param b
-     * @param maxValueInA max value in a 
      */
-    public static void sortByDecr(int[] a, int[] b, int maxValueInA) {
+    public static void sort(final int[] a, final int[] b) {
 
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
@@ -182,55 +129,32 @@ public class CountingSort {
             throw new IllegalArgumentException(
             "the lengths of a and b must be the same");
         }
-        if (maxValueInA <= 0) {
-            throw new IllegalArgumentException("max must be > 0");
-        }
         if (a.length < 2) {
             return;
         }
         
-        long[] c = new long[maxValueInA + 1];
-
-        // c holds frequency of each number by index, e.g. c[0] holds the number of 0's in a
-        for (int i = 0; i < a.length; i++) {
-            
-            int idx = a[i];
-            
-            c[idx]++;
-        }
-                
-        // cumulative sum to end of array c.  the last item in c holds the 
-        // total number of items in 'a' less than or equal to max
-        for (int i = 1; i < c.length; i++) {
-            c[i] = c[i] + c[i - 1];
-        }
+        int[] a2 = Arrays.copyOf(a, a.length);
+        int[] idxs = sortAndReturnIndexes(a2);
         
-        int[] aa = new int[a.length];
-        int[] bb = new int[a.length];
-                
-        int n = a.length;
-        
-        // use the order imposed by c to write the values of a into aa.  c holds
-        // frequency, that is place markers too so that is updated as aa is written
-        for (int i = (n - 1); i > -1; i--) {
-            
-            int aIdx = a[i];
-                        
-            c[aIdx]--;
-            int cfa = (int)c[aIdx];
-            
-            int ii = n - cfa  - 1;
-            
-            aa[ii] = aIdx;
-            bb[ii] = b[i];
+        int[] b2 = new int[a.length];
+        for (int i = 0; i < b.length; ++i) {
+            b2[i] = b[idxs[i]];
         }
 
-        System.arraycopy(aa, 0, a, 0, a.length);
-        System.arraycopy(bb, 0, b, 0, b.length);
+        System.arraycopy(a2, 0, a, 0, a.length);
+        System.arraycopy(b2, 0, b, 0, b.length);
     }
+    
+    /**
+     * apply a descending sort to the members of a
+     * and apply the same changes of item position to b.
+     * runtime complexity: Math.max(n, max(a) - min(a))
+     * 
+     * @param a
+     * @param b
+     */
+    public static void sortByDecr(final int[] a, final int[] b) {
 
-    public static void sort(int[] a, Object[] b, int maxA) {
-        
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
         }
@@ -241,45 +165,34 @@ public class CountingSort {
             throw new IllegalArgumentException(
             "the lengths of a and b must be the same");
         }
-        if (maxA <= 0) {
-            throw new IllegalArgumentException("maxA must be > 0");
-        }
         if (a.length < 2) {
             return;
         }
         
-        long[] c = new long[maxA + 1];
-
-        // c holds frequency of each number by index, e.g. c[0] holds the number of 0's in a
-        for (int i = 0; i < a.length; i++) {
-            
-            int idx = a[i];
-            
-            c[idx]++;
-        }
-                
-        // cumulative sum to end of array c.  the last item in c holds the 
-        // total number of items in 'a' less than or equal to max
-        for (int i = 1; i < c.length; i++) {
-            c[i] = c[i] + c[i - 1];
+        int[] a2 = Arrays.copyOf(a, a.length);
+        int[] idxs = sortAndReturnIndexes(a2);        
+        int[] b2 = new int[a.length];
+        int i;
+        for (i = 0; i < b.length; ++i) {
+            b2[i] = b[idxs[i]];
         }
         
-        int[] aa = new int[a.length];
-        Object[] bb = new Object[a.length];
-                
-        // use the order imposed by c to write the values of a into aa.  c holds
-        // frequency, that is place markers too so that is updated as aa is written
-        for (int i = (a.length - 1); i > -1; i--) {
-            
-            int aIdx = a[i];
-                        
-            c[aIdx]--;
-            int cfa = (int)c[aIdx];
-            aa[cfa] = aIdx;
-            bb[cfa] = b[i];
+        // reverse
+        int n2 = a2.length >> 1;
+        int i2 = a2.length - 1;
+        int swap;
+        for (i = 0; i < n2; ++i) {
+            swap = a2[i];
+            a2[i] = a2[i2];
+            a2[i2] = swap;
+            swap = b2[i];
+            b2[i] = b2[i2];
+            b2[i2] = swap;
+            i2--;
         }
 
-        System.arraycopy(aa, 0, a, 0, a.length);
-        System.arraycopy(bb, 0, b, 0, b.length);
+        System.arraycopy(a2, 0, a, 0, a.length);
+        System.arraycopy(b2, 0, b, 0, b.length);
     }
+
 }

@@ -1051,7 +1051,7 @@ public class Histogram {
         if (nlg2n < vMax || (vMax > 100000)) {
             MiscSorter.sortByDecr(v, c);
         } else if (v.length > 1) {
-            CountingSort.sortByDecr(v, c, vMax);
+            CountingSort.sortByDecr(v, c);
         }
         
         PairIntArray p = new PairIntArray();

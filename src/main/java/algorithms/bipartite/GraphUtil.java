@@ -64,7 +64,7 @@ public class GraphUtil {
         if (nlg2n < max) {
             Arrays.sort(sortedValues);
         } else {
-            sortedValues = CountingSort.sort(sortedValues, max);
+            sortedValues = CountingSort.sort(sortedValues);
         }
         
         count = 1;

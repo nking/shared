@@ -565,7 +565,7 @@ public class MiscMath0 {
             }
         }
         
-        CountingSort.sortByDecr(c, idxs, maxC);
+        CountingSort.sortByDecr(c, idxs);
         
         indexes.clear();
         
