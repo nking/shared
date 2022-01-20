@@ -43,3 +43,8 @@
 -- browse:
    Exactly Solving the Maximum Weight Independent Set Problem on Large Real-World Graphs
    Lamm et al. 2018, https://arxiv.org/abs/1810.10834
+ 
+   Hopfield network
+
+   "Narrow sieves for parameterized paths and packings", Bjorklund et al. 2010
+
