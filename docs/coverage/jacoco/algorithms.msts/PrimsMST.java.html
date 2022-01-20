@@ -77,95 +77,120 @@ import java.util.Stack;
         
 <span class="fc" id="L78">        int maxNumberOfBits = (int)Math.ceil(Math.log(sentinel)/Math.log(2));</span>
         
-<span class="fc" id="L80">        MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel,</span>
+        /*NOTE: if need to use jdk/jse classes for a priority queue
+        PriorityQueue&lt;Integer&gt; has 
+           enqueuing, dequeuing, offer, poll, remove() and add : O(log(n)) complexity;
+           remove(Object) and contains(Object) are linear time complexity; 
+           peek, element, and size are constant time complexity.
+        To have more than one object with the same key, should create a Node
+        class that implements Comparable.
+        */
+        
+        /*
+        MinHeapForRT2012 uses a YFastTrie wrapper if there is enough memory,
+        else uses a Fibonacci Heap wrapper.
+        The YFastTrie has 
+           O(log log(M)) operations including successor and predecessor 
+           where M is M is the number of bits of the maximum value in the domain.
+        The Fibonacci Heap has O(1) operations excepting extractMin which is 
+           O(lg_2(N_nodes)).
+        */
+<span class="fc" id="L98">        MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel,</span>
             nVertexes, maxNumberOfBits);
    
         // extra data structure needed to hold references to the nodes to be
         //     able to read the nodes still in the queue.
-<span class="fc" id="L85">        List&lt;HeapNode&gt; nodes = new ArrayList&lt;HeapNode&gt;();</span>
+<span class="fc" id="L103">        List&lt;HeapNode&gt; nodes = new ArrayList&lt;HeapNode&gt;();</span>
 
         // initialize heap by adding all nodes
-<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (int i = 0; i &lt; nVertexes; i++) {</span>
-<span class="fc" id="L89">            HeapNode v = new HeapNode();</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (i == 0) {</span>
-<span class="fc" id="L91">                v.setKey(0);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int i = 0; i &lt; nVertexes; i++) {</span>
+<span class="fc" id="L107">            HeapNode v = new HeapNode();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (i == 0) {</span>
+<span class="fc" id="L109">                v.setKey(0);</span>
             } else {
-<span class="fc" id="L93">                v.setKey(sentinel);</span>
+<span class="fc" id="L111">                v.setKey(sentinel);</span>
             }
             // i is the index in nodes list in inQ array
-<span class="fc" id="L96">            v.setData(Integer.valueOf(i)); </span>
-<span class="fc" id="L97">            heap.insert(v);</span>
-<span class="fc" id="L98">            nodes.add(v);</span>
+<span class="fc" id="L114">            v.setData(Integer.valueOf(i)); </span>
+<span class="fc" id="L115">            heap.insert(v);</span>
+<span class="fc" id="L116">            nodes.add(v);</span>
         }
         
+        int uIdx;
+        HeapNode u;
+        int vIdx;
+        int cost;
+        long distV;
+                
         //O(|V|)
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
 
             // O(log_2 log_2(w_bits)) or O(log_2(|V|))
-<span class="fc" id="L105">            HeapNode u = heap.extractMin(); </span>
+<span class="fc" id="L129">            u = heap.extractMin(); </span>
            
-<span class="fc" id="L107">            int uIdx = ((Integer)u.getData()).intValue();</span>
-<span class="fc" id="L108">            inQ[uIdx] = false;</span>
+<span class="fc" id="L131">            uIdx = ((Integer)u.getData());</span>
+<span class="fc" id="L132">            inQ[uIdx] = false;</span>
             
-<span class="fc" id="L110">            TIntIntMap adjMap0 = adjCostMap.get(uIdx);</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (adjMap0 == null) {</span>
-<span class="nc" id="L112">                continue;</span>
+<span class="fc" id="L134">            TIntIntMap adjMap0 = adjCostMap.get(uIdx);</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">            if (adjMap0 == null) {</span>
+<span class="nc" id="L136">                continue;</span>
             }
             
-<span class="fc" id="L115">            TIntIntIterator iter = adjMap0.iterator();</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">            for (int i = 0; i &lt; adjMap0.size(); ++i) {</span>
-<span class="fc" id="L117">                iter.advance();                 </span>
-<span class="fc" id="L118">                int vIdx = iter.key();</span>
-<span class="fc" id="L119">                int cost = iter.value();</span>
-<span class="fc" id="L120">                long distV = nodes.get(vIdx).getKey();</span>
+<span class="fc" id="L139">            TIntIntIterator iter = adjMap0.iterator();</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            for (int i = 0; i &lt; adjMap0.size(); ++i) {</span>
+<span class="fc" id="L141">                iter.advance();</span>
+                
+<span class="fc" id="L143">                vIdx = iter.key();</span>
+<span class="fc" id="L144">                cost = iter.value();</span>
+<span class="fc" id="L145">                distV = nodes.get(vIdx).getKey();</span>
                
-<span class="fc bfc" id="L122" title="All 4 branches covered.">                if (inQ[vIdx] &amp;&amp; (cost &lt; distV)) {</span>
-<span class="fc" id="L123">                    prev[vIdx] = uIdx;</span>
-<span class="fc" id="L124">                    heap.decreaseKey(nodes.get(vIdx), cost); </span>
+<span class="fc bfc" id="L147" title="All 4 branches covered.">                if (inQ[vIdx] &amp;&amp; (cost &lt; distV)) {</span>
+<span class="fc" id="L148">                    prev[vIdx] = uIdx;</span>
+<span class="fc" id="L149">                    heap.decreaseKey(nodes.get(vIdx), cost); </span>
                 }
             }
-<span class="fc" id="L127">        }</span>
+<span class="fc" id="L152">        }</span>
         
         //System.out.println(Arrays.toString(prev));
-<span class="fc" id="L130">    }</span>
+<span class="fc" id="L155">    }</span>
     
     public int[] getPredeccessorArray() {
-<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (prev == null) {</span>
-<span class="nc" id="L134">            return null;</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (prev == null) {</span>
+<span class="nc" id="L159">            return null;</span>
         }
-<span class="nc" id="L136">        return Arrays.copyOf(prev, prev.length);</span>
+<span class="nc" id="L161">        return Arrays.copyOf(prev, prev.length);</span>
     }
     
     public int findRoot() {
         // in prev array, since all vertices are connected, all except one
         // should have a predecessor.
-<span class="fc" id="L142">        int root = -1;</span>
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        for (int i = 0; i &lt; prev.length; ++i) {</span>
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">            if (prev[i] == -1) {</span>
-<span class="fc" id="L145">                root = i;</span>
-<span class="fc" id="L146">                break;</span>
+<span class="fc" id="L167">        int root = -1;</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        for (int i = 0; i &lt; prev.length; ++i) {</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (prev[i] == -1) {</span>
+<span class="fc" id="L170">                root = i;</span>
+<span class="fc" id="L171">                break;</span>
             }
         }
-<span class="fc" id="L149">        return root;</span>
+<span class="fc" id="L174">        return root;</span>
     }
     
     public Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; makeTreeFromPrev() {
-<span class="fc" id="L153">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = new HashMap&lt;Integer, LinkedList&lt;Integer&gt;&gt;();</span>
+<span class="fc" id="L178">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = new HashMap&lt;Integer, LinkedList&lt;Integer&gt;&gt;();</span>
         int parent;
         LinkedList&lt;Integer&gt; children;
-<span class="fc bfc" id="L156" title="All 2 branches covered.">        for (int child = 0; child &lt; prev.length; ++child) {</span>
-<span class="fc" id="L157">            parent = prev[child];</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">            if (parent == -1) {</span>
-<span class="fc" id="L159">                continue;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (int child = 0; child &lt; prev.length; ++child) {</span>
+<span class="fc" id="L182">            parent = prev[child];</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (parent == -1) {</span>
+<span class="fc" id="L184">                continue;</span>
             }
-<span class="fc" id="L161">            children = tree.get(parent);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">            if (children == null) {</span>
-<span class="fc" id="L163">                children = new LinkedList&lt;Integer&gt;();</span>
-<span class="fc" id="L164">                tree.put(parent, children);</span>
+<span class="fc" id="L186">            children = tree.get(parent);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (children == null) {</span>
+<span class="fc" id="L188">                children = new LinkedList&lt;Integer&gt;();</span>
+<span class="fc" id="L189">                tree.put(parent, children);</span>
             }
-<span class="fc" id="L166">            children.add(child);</span>
+<span class="fc" id="L191">            children.add(child);</span>
         }
-<span class="fc" id="L168">        return tree;</span>
+<span class="fc" id="L193">        return tree;</span>
     }
     
     /**
@@ -175,53 +200,54 @@ import java.util.Stack;
      * @return 
      */
     public TIntList getPreorderIndexes() {
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (prev == null) {</span>
-<span class="nc" id="L179">            return null;</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (prev == null) {</span>
+<span class="nc" id="L204">            return null;</span>
         }
-<span class="fc" id="L181">        int root = findRoot();</span>
-<span class="fc" id="L182">        return getPreorderIndexes(root);</span>
+<span class="fc" id="L206">        int root = findRoot();</span>
+<span class="fc" id="L207">        return getPreorderIndexes(root);</span>
     }
+    // left subtree, root, right subtree
     private TIntList getPreorderIndexes(int root) {
-<span class="fc" id="L185">        TIntList out = new TIntArrayList();</span>
-<span class="fc" id="L186">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = makeTreeFromPrev();</span>
-<span class="fc" id="L187">        int node = root;</span>
+<span class="fc" id="L211">        TIntList out = new TIntArrayList();</span>
+<span class="fc" id="L212">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = makeTreeFromPrev();</span>
+<span class="fc" id="L213">        int node = root;</span>
         int pNode;
-<span class="fc" id="L189">        Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();</span>
-<span class="fc" id="L190">        stack.add(node);</span>
+<span class="fc" id="L215">        Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L216">        stack.add(node);</span>
         // removing the tree nodes as they are used
         LinkedList&lt;Integer&gt; children;
-<span class="fc bfc" id="L193" title="All 4 branches covered.">        while (!stack.isEmpty() || node != -1) {</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (node != -1) {</span>
-<span class="fc" id="L195">                out.add(node);</span>
-<span class="fc" id="L196">                stack.push(node);</span>
-<span class="fc" id="L197">                pNode = node;</span>
-<span class="fc" id="L198">                children = tree.get(pNode);</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">                if (children != null) {</span>
-<span class="fc" id="L200">                    node = children.removeFirst();</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
-<span class="fc" id="L202">                        tree.remove(pNode);</span>
+<span class="fc bfc" id="L219" title="All 4 branches covered.">        while (!stack.isEmpty() || node != -1) {</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">            if (node != -1) {</span>
+<span class="fc" id="L221">                out.add(node);</span>
+<span class="fc" id="L222">                stack.push(node);</span>
+<span class="fc" id="L223">                pNode = node;</span>
+<span class="fc" id="L224">                children = tree.get(pNode);</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">                if (children != null) {</span>
+<span class="fc" id="L226">                    node = children.removeFirst();</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
+<span class="fc" id="L228">                        tree.remove(pNode);</span>
                     }
                 } else {
-<span class="fc" id="L205">                    node = - 1;</span>
+<span class="fc" id="L231">                    node = - 1;</span>
                 }
             } else {
-<span class="fc" id="L208">                node = stack.pop();// discard as it's already in out</span>
+<span class="fc" id="L234">                node = stack.pop();// discard as it's already in out</span>
                 // get next node from tree.
                 // since it might be n-ary tree, will keep taking from front of list
                 //    though there's no reason to choose first over last
-<span class="fc" id="L212">                pNode = node;</span>
-<span class="fc" id="L213">                children = tree.get(pNode);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">                if (children != null) {</span>
-<span class="fc" id="L215">                    node = children.removeFirst();</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
-<span class="fc" id="L217">                        tree.remove(pNode);</span>
+<span class="fc" id="L238">                pNode = node;</span>
+<span class="fc" id="L239">                children = tree.get(pNode);</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">                if (children != null) {</span>
+<span class="fc" id="L241">                    node = children.removeFirst();</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
+<span class="fc" id="L243">                        tree.remove(pNode);</span>
                     }
                 } else {
-<span class="fc" id="L220">                    node = - 1;</span>
+<span class="fc" id="L246">                    node = - 1;</span>
                 }
             }
         }
-<span class="fc" id="L224">        return out;</span>
+<span class="fc" id="L250">        return out;</span>
     }
     
     /**
@@ -231,26 +257,26 @@ import java.util.Stack;
      * @return maximum cost found in adjCostMap
      */
     public static int maxEdgeCost(TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
-<span class="fc" id="L234">        int max = Integer.MIN_VALUE;</span>
-<span class="fc" id="L235">        TIntObjectIterator&lt;TIntIntMap&gt; iter = adjCostMap.iterator();</span>
+<span class="fc" id="L260">        int max = Integer.MIN_VALUE;</span>
+<span class="fc" id="L261">        TIntObjectIterator&lt;TIntIntMap&gt; iter = adjCostMap.iterator();</span>
         int i, j, idx1, idx2, c;
         TIntIntIterator iter2;
         TIntIntMap map;
-<span class="fc bfc" id="L239" title="All 2 branches covered.">        for (i = 0; i &lt; adjCostMap.size(); ++i) {</span>
-<span class="fc" id="L240">            iter.advance();</span>
-<span class="fc" id="L241">            idx1 = iter.key();</span>
-<span class="fc" id="L242">            map = iter.value();</span>
-<span class="fc" id="L243">            iter2 = map.iterator();            </span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">            for (j = 0; j &lt; map.size(); ++j) {</span>
-<span class="fc" id="L245">                iter2.advance();</span>
-<span class="fc" id="L246">                idx2 = iter2.key();</span>
-<span class="fc" id="L247">                c = iter2.value();</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">                if (c &gt; max) {</span>
-<span class="fc" id="L249">                    max = c;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        for (i = 0; i &lt; adjCostMap.size(); ++i) {</span>
+<span class="fc" id="L266">            iter.advance();</span>
+<span class="fc" id="L267">            idx1 = iter.key();</span>
+<span class="fc" id="L268">            map = iter.value();</span>
+<span class="fc" id="L269">            iter2 = map.iterator();            </span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">            for (j = 0; j &lt; map.size(); ++j) {</span>
+<span class="fc" id="L271">                iter2.advance();</span>
+<span class="fc" id="L272">                idx2 = iter2.key();</span>
+<span class="fc" id="L273">                c = iter2.value();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">                if (c &gt; max) {</span>
+<span class="fc" id="L275">                    max = c;</span>
                 }
             }
         }
-<span class="fc" id="L253">        return max;</span>
+<span class="fc" id="L279">        return max;</span>
     }    
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

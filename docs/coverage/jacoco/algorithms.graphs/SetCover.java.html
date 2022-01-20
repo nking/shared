@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- Given a set of elements {1,2,...,n}{1,2,...,n} (called the universe) 
+ Given a set of elements {1,2,...,n} (called the universe) 
  * and a collection S of m sets whose union equals the universe, 
  * the set cover problem is to identify the smallest sub-collection of 
  * S whose union equals the universe. For example, consider the universe 

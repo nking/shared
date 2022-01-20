@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HierholzersEulerCircuit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">HierholzersEulerCircuit.java</span></div><h1>HierholzersEulerCircuit.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
 
+import algorithms.matrix.MatrixUtil;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -38,7 +39,7 @@ import java.util.Stack;
  * &lt;/pre&gt;
  * @author nichole
  */
-<span class="fc" id="L41">public class HierholzersEulerCircuit {</span>
+<span class="fc" id="L42">public class HierholzersEulerCircuit {</span>
     
     /**
      * 
@@ -46,15 +47,16 @@ import java.util.Stack;
      * @return 
      */
     public int[] createCircuit(TIntObjectMap&lt;TIntSet&gt; g) {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
-<span class="nc" id="L50">            return new int[0];</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
+<span class="nc" id="L51">            return new int[0];</span>
         }
-<span class="fc" id="L52">        int startNode = 0;</span>
+<span class="fc" id="L53">        int startNode = 0;</span>
         // OR, in the case that 0 is not connected
         //startNode = g.keySet().iterator().next();
         
-<span class="fc" id="L56">        return createCircuit(g, startNode);</span>
+<span class="fc" id="L57">        return createCircuit(g, startNode);</span>
     }
+    
     /**
      * 
      * @param g adjacency list of directed graph
@@ -62,49 +64,38 @@ import java.util.Stack;
      * @return 
      */
     public int[] createCircuit(TIntObjectMap&lt;TIntSet&gt; g, int startNode) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
-<span class="nc" id="L66">            return new int[0];</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
+<span class="nc" id="L68">            return new int[0];</span>
         }
-       
-        int i, u;
-        
+               
         // make a copy of g to modify
-<span class="fc" id="L72">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
-        TIntSet neighbors, neighbors2;
-<span class="fc" id="L74">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (i = 0; i &lt; g.size(); ++i) {</span>
-<span class="fc" id="L76">            iter.advance();</span>
-<span class="fc" id="L77">            u = iter.key();</span>
-<span class="fc" id="L78">            neighbors = iter.value();</span>
-<span class="fc" id="L79">            neighbors2 = new TIntHashSet(neighbors);</span>
-<span class="fc" id="L80">            g2.put(u, neighbors2);</span>
-        }
-                
-<span class="fc" id="L83">        Stack&lt;Integer&gt; curPath = new Stack&lt;Integer&gt;();</span>
-<span class="fc" id="L84">        TIntList circuit = new TIntArrayList();</span>
+<span class="fc" id="L72">        TIntObjectMap&lt;TIntSet&gt; g2 = MatrixUtil.copy(g);</span>
+          
+<span class="fc" id="L74">        Stack&lt;Integer&gt; curPath = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L75">        TIntList circuit = new TIntArrayList();</span>
         
         // start vertex
-<span class="fc" id="L87">        int curV = startNode;</span>
-        
-<span class="fc" id="L89">        curPath.add(curV);</span>
+<span class="fc" id="L78">        int curV = startNode;</span>
+<span class="fc" id="L79">        curPath.add(curV);</span>
         
         int nextV;
+        TIntSet neighbors2;
         
-<span class="fc bfc" id="L93" title="All 2 branches covered.">        while (!curPath.isEmpty()) {</span>
-<span class="fc" id="L94">            curV = curPath.peek();</span>
-<span class="fc" id="L95">            neighbors2 = g2.get(curV);</span>
-<span class="fc bfc" id="L96" title="All 4 branches covered.">            if (neighbors2 != null &amp;&amp; !neighbors2.isEmpty()) {</span>
-<span class="fc" id="L97">                nextV = neighbors2.iterator().next();</span>
-<span class="fc" id="L98">                neighbors2.remove(nextV);</span>
-<span class="fc" id="L99">                curPath.add(nextV);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        while (!curPath.isEmpty()) {</span>
+<span class="fc" id="L85">            curV = curPath.peek();</span>
+<span class="fc" id="L86">            neighbors2 = g2.get(curV);</span>
+<span class="fc bfc" id="L87" title="All 4 branches covered.">            if (neighbors2 != null &amp;&amp; !neighbors2.isEmpty()) {</span>
+<span class="fc" id="L88">                nextV = neighbors2.iterator().next();</span>
+<span class="fc" id="L89">                neighbors2.remove(nextV);</span>
+<span class="fc" id="L90">                curPath.add(nextV);</span>
             } else {
-<span class="fc" id="L101">                circuit.add(curPath.pop());</span>
+<span class="fc" id="L92">                circuit.add(curPath.pop());</span>
             }
         }
         
-<span class="fc" id="L105">        circuit.reverse();</span>
+<span class="fc" id="L96">        circuit.reverse();</span>
         
-<span class="fc" id="L107">        return circuit.toArray();</span>
+<span class="fc" id="L98">        return circuit.toArray();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

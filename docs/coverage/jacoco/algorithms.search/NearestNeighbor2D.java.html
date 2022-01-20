@@ -197,9 +197,9 @@ public class NearestNeighbor2D {
     }
     
     protected int getCol(int internalIndex) {
-<span class="fc" id="L200">        int row = (internalIndex/width);</span>
-<span class="fc" id="L201">        int col = (internalIndex - (row * width));</span>
-<span class="fc" id="L202">        return col;</span>
+        //int row = (internalIndex/width);
+        //int col = (internalIndex - (row * width));
+<span class="fc" id="L202">        return internalIndex % width;</span>
     }
     
     /**

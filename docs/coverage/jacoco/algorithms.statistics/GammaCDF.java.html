@@ -84,8 +84,8 @@
             System.out.flush();*/
             
 <span class="fc bfc" id="L86" title="All 2 branches covered.">            if (diffP &gt; 0) {</span>
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">                if (Math.abs(xHigh - x) &lt; tolX) {</span>
-<span class="nc" id="L88">                    xHigh -= delta;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">                if (Math.abs(xHigh - x) &lt; tolX) {</span>
+<span class="fc" id="L88">                    xHigh -= delta;</span>
                 } else {
 <span class="fc" id="L90">                    xHigh = x;</span>
                 }
@@ -105,14 +105,14 @@
 <span class="fc" id="L105">        delta = Math.min(xHigh - x, x - xLow);</span>
 <span class="fc" id="L106">        delta /= 2;</span>
         
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if ((x + delta) &lt; xHigh) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if ((x + delta) &lt; xHigh) {</span>
 <span class="pc bpc" id="L109" title="1 of 2 branches missed.">            if (Math.abs(cdf(x + delta, shape, scale) - alpha) &lt; diffP) {</span>
 <span class="nc" id="L110">                minX = x + delta;</span>
             }
         }
 <span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if ((x - delta) &gt;= 0) {</span>
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            if ( Math.abs(cdf(x - delta, shape, scale) - alpha) &lt; diffP) {</span>
-<span class="nc" id="L115">                minX = x - delta;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if ( Math.abs(cdf(x - delta, shape, scale) - alpha) &lt; diffP) {</span>
+<span class="fc" id="L115">                minX = x - delta;</span>
             }
         }
         

@@ -4343,27 +4343,27 @@ import gnu.trove.set.hash.TIntHashSet;
     }
     
     public static TIntObjectMap&lt;TIntSet&gt; copy(TIntObjectMap&lt;TIntSet&gt; a) {
-<span class="nc" id="L4346">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-<span class="nc" id="L4347">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
+<span class="fc" id="L4346">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L4347">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
         TIntSet set, cSet;
         TIntIterator iter2;
         int i, key;
-<span class="nc bnc" id="L4351" title="All 2 branches missed.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="nc" id="L4352">            iter.advance();</span>
+<span class="fc bfc" id="L4351" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L4352">            iter.advance();</span>
             
-<span class="nc" id="L4354">            key = iter.key();</span>
-<span class="nc" id="L4355">            set = iter.value();</span>
+<span class="fc" id="L4354">            key = iter.key();</span>
+<span class="fc" id="L4355">            set = iter.value();</span>
             
-<span class="nc" id="L4357">            cSet = new TIntHashSet();</span>
+<span class="fc" id="L4357">            cSet = new TIntHashSet();</span>
             
-<span class="nc" id="L4359">            iter2 = set.iterator();</span>
+<span class="fc" id="L4359">            iter2 = set.iterator();</span>
             
-<span class="nc bnc" id="L4361" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L4362">                cSet.add(iter2.next());</span>
+<span class="fc bfc" id="L4361" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L4362">                cSet.add(iter2.next());</span>
             }
-<span class="nc" id="L4364">            c.put(key, cSet);</span>
+<span class="fc" id="L4364">            c.put(key, cSet);</span>
         }
-<span class="nc" id="L4366">        return c;</span>
+<span class="fc" id="L4366">        return c;</span>
     }
     
     public static TObjectDoubleMap&lt;PairInt&gt; copy(TObjectDoubleMap&lt;PairInt&gt; a) {

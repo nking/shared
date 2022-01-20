@@ -88,7 +88,7 @@ import thirdparty.HungarianAlgorithm;
         
         //(3) O is subgraph of G induced by the vertices in oddDVertexes.
         //    make perfect min-cost matching from it
-        // format: [nMatcings][2]
+        // format: [nMatchings][2]
 <span class="fc" id="L92">        int[][] m = bipartiteMinCostMatchingFromSubgraph(oddDVertexes, adjCostMap);</span>
                 
         //(4) H is the union of graphs T and M
@@ -109,7 +109,7 @@ import thirdparty.HungarianAlgorithm;
             }
         }
 <span class="fc" id="L111">        t2.add(t2.get(0));</span>
-<span class="fc" id="L112">        int[] _t2 = t2.toArray();</span>
+        //int[] _t2 = t2.toArray();
 <span class="fc" id="L113">        return t2.toArray();</span>
     }
     
@@ -208,7 +208,7 @@ import thirdparty.HungarianAlgorithm;
 
     protected Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; buildMST(TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
                 
-        // finding the max cost in the graph G needed for a trie used in Prim's MST
+        // finding the max cost in the graph G.  the value is needed for a bit length used by a trie in Prim's MST
 <span class="fc" id="L212">        int maxCost = PrimsMST.maxEdgeCost(adjCostMap);</span>
         
 <span class="fc" id="L214">        PrimsMST prims = new PrimsMST();</span>

@@ -297,16 +297,16 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L297">            j = selectedRowIdxs[i];</span>
 <span class="pc bpc" id="L298" title="5 of 6 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
             
-<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!freq.containsKey(j)) {</span>
-<span class="fc" id="L301">                continue;</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">            if (!freq.containsKey(j)) {</span>
+<span class="nc" id="L301">                continue;</span>
             }
             
 <span class="fc" id="L304">            d = freq.get(j);</span>
             
 <span class="fc" id="L306">            factor = 1./Math.sqrt(k * rowPDF[j]);</span>
             
-<span class="fc bfc" id="L308" title="All 2 branches covered.">            if (d &gt; 1) {</span>
-<span class="fc" id="L309">                factor *= Math.sqrt(d);</span>
+<span class="pc bpc" id="L308" title="1 of 2 branches missed.">            if (d &gt; 1) {</span>
+<span class="nc" id="L309">                factor *= Math.sqrt(d);</span>
             }
             
             //extract row j from a and multiply each item by factor
