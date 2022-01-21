@@ -28,6 +28,7 @@ import java.util.Arrays;
           adjacency matrix, searching          O(V^2)
           binary heap and adjacency list       O((V + E) lg2 V) = O(E lg2 V)
           Fibonacci heap and adjacency list    O(E + V lg2 V) 
+          YFastTrie and adjacency list         O(E + V)
      
       Prim's algorithm:
      
@@ -69,7 +70,7 @@ import java.util.Arrays;
 public class PrimsMinimumSpanningTree<T> {
     
     /**
-     * find a minimum spanning tree using Kruskal's algorithm.
+     * find a minimum spanning tree using Prim's algorithm.
      * @param graph an adjacency list for the graph, where the index of the array
      * is the vertex number and the keys within each vertex's list node are the
      * vertex on the other end of an edge.
@@ -85,34 +86,38 @@ public class PrimsMinimumSpanningTree<T> {
         /* MST-Prim(G, w, r):
          * 
          * for each u in V[G]
-         *     do key[u] = inf
-         *         pi[u] = nil
-         * key[r] = 0
+         *     do d[u] = inf
+         *         prev[u] = nil
+         * d[r] = 0
          * Q = V[G]
          * while (Q != 0)
          *     do u = extractMin(Q)
          *         for each v in Adj[u]
-         *             do if v is in Q and w(u,v) < key[v]
-         *                 then pi[v] = u
-         *                     key[v] = w(u,v)
+         *             do if v is in Q and w(u,v) < d[v]
+         *                 then prev[v] = u
+         *                     d[v] = w(u,v)
          */
         
+        //max(weights) is needed to estimate maximum number of bits needed by trie
         int maxValue = findMax(edgeWeights);
         int sentinel = maxValue;
         if (maxValue < Integer.MAX_VALUE) {
             sentinel = maxValue + 1;
         }
+        int maxNBits = (int)Math.ceil(Math.log(sentinel/Math.log(2)));
+         
         int nE = edgeWeights.size();
         int nV = graph.length;
-        int maxNBits = (int)Math.ceil(Math.log(sentinel/Math.log(2)));
         
-        int[] key = new int[nV];
-        int[] pi = new int[nV];
-        Arrays.fill(key, sentinel);
-        Arrays.fill(pi, -1);
+        int[] d = new int[nV];
+        Arrays.fill(d, sentinel);
+        
+        int[] prev = new int[nV];
+        Arrays.fill(prev, -1);
+        
         HeapNode[] nodes = new HeapNode[nV];
         
-        key[r] = 0;
+        d[r] = 0;
         
         HeapNode node;
         PairInt uv;
@@ -121,28 +126,34 @@ public class PrimsMinimumSpanningTree<T> {
         //int maxValue, int approxN, int maxNumberOfBits
         MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel, nV, maxNBits);
         for (int v = 0; v < nV; ++v) {
-            node = new HeapNode(key[v]);
+            node = new HeapNode(d[v]);
             node.setData(Integer.valueOf(v));
             heap.insert(node);
             nodes[v] = node;
         }
         
+        HeapNode uNode;
+        int u;
+        SimpleLinkedListNode vNode;
+        int v;
+        int wUV;
+        
         // worse case O((|V| + |E|)*(lg_2 lg_2 (maxNBits)))
         while (heap.getNumberOfNodes() > 0) {
             
             //essentially O(small constant of lg_2 lg_2 (maxNBits))
-            HeapNode uNode = heap.extractMin();
+            uNode = heap.extractMin();
             
-            int u = (Integer)uNode.getData();
+            u = (Integer)uNode.getData();
             
             // null the entry in nodes so it isn't used in decrease key
             nodes[u] = null;
             
-            SimpleLinkedListNode vNode = graph[u];
+            vNode = graph[u];
                         
             while (vNode != null && vNode.getKey() != -1) {
             
-                int v = vNode.getKey();
+                v = vNode.getKey();
                 
                 uv = new PairInt(u, v);
                 
@@ -156,11 +167,12 @@ public class PrimsMinimumSpanningTree<T> {
                     continue;
                 }
                 
-                int wUV = edgeWeights.get(uv);
-                                
-                if (wUV < key[v]) {
-                    pi[v] = u;
-                    key[v] = wUV;
+                wUV = edgeWeights.get(uv);
+                
+                //compare d[v] to only wUV instead of dijkstra's d[u] + wUV                
+                if (wUV < d[v]) {
+                    prev[v] = u;
+                    d[v] = wUV;
                     //essentially O(small constant of lg_2 lg_2 (maxNBits))
                     heap.decreaseKey(nodes[v], wUV);
                 }
@@ -169,19 +181,21 @@ public class PrimsMinimumSpanningTree<T> {
             }
         }
         
+        // read predecessors to add edges to tree 'a'
+        
         int nMSTEdges = 0;
         long sum = 0;
         TIntObjectMap<SimpleLinkedListNode> a = new TIntObjectHashMap<SimpleLinkedListNode>();
-        for (int v = 0; v < nV; ++v) {
-            if (pi[v] > -1) {
-                if (a.containsKey(pi[v])) {
-                    a.get(pi[v]).insert(v);
+        for (v = 0; v < nV; ++v) {
+            if (prev[v] > -1) {
+                if (a.containsKey(prev[v])) {
+                    a.get(prev[v]).insert(v);
                 } else {
-                    a.put(pi[v], new SimpleLinkedListNode(v));
+                    a.put(prev[v], new SimpleLinkedListNode(v));
                 }
                 //System.out.printf("adding %d to %d\n", pi[v], v);
                 nMSTEdges++;
-                PairInt uv2 = new PairInt(pi[v], v);
+                PairInt uv2 = new PairInt(prev[v], v);
                 sum += edgeWeights.get(uv2);
             }
         }

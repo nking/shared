@@ -1,0 +1,45 @@
+for other projects which contain more polymorphism, I use jdepend.
+
+in this project, I occasionally used static analysis tools such as
+FindBugs.
+
+javancss looks useful for cyclomatic complexity 
+
+
+https://www.cqse.eu/en/news/blog/mccabe-cyclomatic-complexity/
+recommends these metrics w/ caveats on misuse of cyclomatic complexity:
+ -- the length of a method. 
+ -- nesting depth
+ -- checks for specific quirks of the languages
+    (e.g. you might want to discourage nesting of lambda expressions, or loops within switch statements.)
+
+
+
+from wikipedia:
+http://en.wikipedia.org/wiki/Cyclomatic_complexity
+Cyclomatic complexity (or conditional complexity)
+    describes the overall complexity of code by looking at the number of linearly independent 
+    paths through the code. 
+    -- generate control flow graph of the program
+       -- each Node is an indivisible group of commands
+       -- a directed edge represents that a 2nd Node can be executed immediately after the 1st
+
+    If the exit points do not connect back to the entrance points:
+       M = E - N + 2*P
+          where M is the cyclomatic complexity
+          E is number of edges in graph
+          N is number of nodes in graph
+          P is number of connected components (= exit nodes)
+
+    For strongly connected control flow graph:
+       M = E - N + P
+       a.k.a. the first Betti number
+
+  Recommendations for upper limit of the complexity?
+    NISTa Structured Testing methodology suggests 10
+
+  What test coverage is necessary as a function of cyclomatic complexity?
+    -- M is an upper bound on number of test cases necessary to achieve "branch coverage"
+    -- branch coverage < cyclomatic complexity < number of paths 
+    -- Note that when strong dependencies are present, that is the results of one
+       affect the path through another, the number of tests necessary is more like a permutation of the paths

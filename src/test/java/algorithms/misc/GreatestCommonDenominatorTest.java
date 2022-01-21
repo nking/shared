@@ -47,6 +47,9 @@ public class GreatestCommonDenominatorTest extends TestCase {
         int expResult = 3;
         int result = GreatestCommonDenominator.euclid(a, b);
         assertTrue(expResult == result);
+        
+        result = GreatestCommonDenominator.euclid(b, a);
+        assertTrue(expResult == result);
     }
 
     public void testExtendedEuclid() {

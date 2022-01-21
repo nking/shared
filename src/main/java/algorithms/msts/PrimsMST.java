@@ -208,19 +208,28 @@ public class PrimsMST {
     }
     // left subtree, root, right subtree
     private TIntList getPreorderIndexes(int root) {
+        
         TIntList out = new TIntArrayList();
+        
         Map<Integer, LinkedList<Integer>> tree = makeTreeFromPrev();
+        
         int node = root;
         int pNode;
         Stack<Integer> stack = new Stack<Integer>();
         stack.add(node);
+        
         // removing the tree nodes as they are used
         LinkedList<Integer> children;
+        
         while (!stack.isEmpty() || node != -1) {
             if (node != -1) {
+                
                 out.add(node);
+                
                 stack.push(node);
+                
                 pNode = node;
+                
                 children = tree.get(pNode);
                 if (children != null) {
                     node = children.removeFirst();
@@ -232,6 +241,7 @@ public class PrimsMST {
                 }
             } else {
                 node = stack.pop();// discard as it's already in out
+                
                 // get next node from tree.
                 // since it might be n-ary tree, will keep taking from front of list
                 //    though there's no reason to choose first over last

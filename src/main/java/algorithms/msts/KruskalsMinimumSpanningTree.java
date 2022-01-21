@@ -72,6 +72,7 @@ public class KruskalsMinimumSpanningTree {
         PairInt[] w = sortWeightsNonDecreasing(edgeWeights);
         
         TIntObjectMap<SimpleLinkedListNode> a = new TIntObjectHashMap<>();
+        
         DisjointSet2Node<Integer> aUV;
         long sum = 0;
         int nMSTEdges = 0;

@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Arrays;
 import algorithms.sort.MiscSorter;
+import gnu.trove.list.array.TIntArrayList;
 import java.math.RoundingMode;
 
 /**
@@ -919,6 +920,24 @@ public class MiscMath0 {
     public static boolean isAPowerOf2(int n) {
         // bitmask test e.g. 128 & 0x7f = 0
         return ((n == 0) || ((n & (n - 1)) == 0));
+    }
+    
+    /**
+     * convert integer a to the given base. 
+     * java.lang.Integer already has radix toString operations,
+     * so this is just here for convenience.
+     * @param a
+     * @param base
+     * @return 
+     */
+    public static String convertToBase(int a, int base) {
+        StringBuilder sb = new StringBuilder();
+        while (a > 0) {
+            sb.append(Integer.toString(a % base));
+            a /= base;
+        }
+        sb.reverse();
+        return sb.toString();
     }
     
     /**

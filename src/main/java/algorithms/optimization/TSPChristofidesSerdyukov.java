@@ -1,22 +1,14 @@
 package algorithms.optimization;
 
 import algorithms.graphs.HierholzersEulerCircuit;
-import algorithms.msts.KruskalsMinimumSpanningTree;
 import algorithms.msts.PrimsMST;
-import algorithms.tsp.TSPPrimsMST;
-import algorithms.util.PairInt;
-import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectDoubleMap;
-import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
