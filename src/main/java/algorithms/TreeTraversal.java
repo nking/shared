@@ -1,5 +1,6 @@
 package algorithms;
 
+import algorithms.heapsAndPQs.HeapNode;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Set;
@@ -250,6 +251,46 @@ public class TreeTraversal {
         }
         System.out.println();
     }
+    
+    public static void printLevelOrder(HeapNode node) {
+        
+        Queue<HeapNode> queue = new ArrayDeque<>();
+        Queue<Integer> nodeLevel = new ArrayDeque<>();
+        Queue<Long> nodeParent = new ArrayDeque<>();
+        Queue<Character> leftOrRight = new ArrayDeque<>();
+        
+        Integer level = Integer.valueOf(0);
+        Character lOrR = '-';
+        Long parent = -1L;
+        
+        while (node != null) {
+            
+            System.out.printf("L=%d, [%d, %s], %s of key %d\n", 
+                level, node.getKey(), node.getData() != null ?
+                ((Integer)node.getData()).toString() : "-",
+                lOrR, parent);
+            
+            level = Integer.valueOf(level + 1);
+            
+            if (node.getLeft() != null) {
+                queue.add(node.getLeft());
+                nodeLevel.add(level);
+                nodeParent.add(node.getKey());
+                leftOrRight.add('L');
+            }
+            if (node.getRight() != null) {
+                queue.add(node.getRight());
+                nodeLevel.add(level);
+                nodeParent.add(node.getKey());
+                leftOrRight.add('R');
+            }
+            node = queue.poll(); // returns null if empty
+            level = nodeLevel.poll();
+            lOrR = leftOrRight.poll();
+            parent = nodeParent.poll();
+        }
+    }
+
 
     /**
      * get the reverse level-order traversal of tree node.

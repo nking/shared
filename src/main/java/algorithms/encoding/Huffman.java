@@ -1,10 +1,14 @@
 package algorithms.encoding;
 
+import algorithms.TreeTraversal;
+import algorithms.VeryLongBitString;
 import algorithms.bipartite.YFastTrieWrapper;
 import algorithms.heapsAndPQs.HeapNode;
+import algorithms.misc.MiscMath0;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -57,11 +61,80 @@ import java.util.Queue;
  * @author nichole
  */
 public class Huffman {
-    
-    public static class HuffmanEncoding {
 
-        public HeapNode encodedTree;
-        public TIntIntMap freqMap;
+    public static class HuffmanEncoding {
+        
+        /**
+         * The symbol code tree:
+         * the values in the leaf nodes as datum are the code point for decoded letters.
+         * To use the tree with the encoded bit-string: start from the root
+         * node, and read the first bit in the bit-string.  A '0' in the bit-string
+         * means follow the left node while a '1' in the bit-string means
+         * follow the right node.  When one reaches a leaf, that is the
+         * letter that has just been decoded, so write it.  Continue reading the bit-string
+         * but begin the traversal from the root node again.
+         */
+        public HeapNode symbolTree = null;
+        
+        /**
+         * a map with key=code point of a letter in the alphabet to encode,
+         * and the value for the key is the number of times the letter
+         * occurs in the text to be encoded.
+         * This can be used to build the symbol code tree,
+         */
+        public TIntIntMap freqMap = null;
+        
+        /**
+         * the encoded text.  when reading, start from bit 0.
+         */
+        public VeryLongBitString encoded = null;
+        
+        public void print() {
+            System.out.println("freqMap:");
+            if (freqMap != null) {
+                printMap(freqMap);
+            }
+
+            System.out.println("symbolTree:");
+            if (symbolTree != null) {
+                TreeTraversal.printLevelOrder(symbolTree);
+            }
+            
+            System.out.println("encoded bitstring:");
+            if (encoded != null) {
+                System.out.println(encoded.toString());
+            }
+        }
+    }
+    
+    protected static class EncodingSymbols {
+        
+        /**
+         * The symbol code tree:
+         * the values in the leaf nodes as datum are the code point for original uncoded letters
+         * while the keys are the bit-strings for the encodings.
+         * Note that the nodes which are not leaves (that is not encoded alphabet)
+         * will have null for their data property.
+         */
+        HeapNode symbolTree = null;
+        
+        /**
+         * keys are the code-points for the original un-coded text.
+         * values for the keys are the bit-strings for the encodings.
+         */
+        TIntIntMap codeSymbolMap = null;
+        
+        public void print() {
+            System.out.println("codeSymbolMap:");
+            if (codeSymbolMap != null) {
+                printMap(codeSymbolMap);
+            }
+
+            System.out.println("symbolTree:");
+            if (symbolTree != null) {
+                TreeTraversal.printLevelOrder(symbolTree);
+            }
+        }
     }
 
     /**
@@ -94,13 +167,26 @@ public class Huffman {
             sumF += fP;
         }
 
-        // key = code point, value = binary symbol
-        TIntIntMap symbolTree = buildSymbolCodeTree(f, sumF);
-
-        // encode using symbolTree
-        throw new UnsupportedOperationException("not yet complete");
+        EncodingSymbols symbols = buildSymbolCodeTree(f, sumF);
+        
+        // encode c         
+        VeryLongBitString encoded = encode(c, symbols.codeSymbolMap);
+        
+        HuffmanEncoding h = new HuffmanEncoding();
+        h.symbolTree = symbols.symbolTree;
+        h.freqMap = f;
+        h.encoded = encoded;
+        
+        return h;
     }
 
+    /**
+     * @param f map with key=code-point, value=frequency of code-point in 
+     * original text.
+     * @param sumF the sum of all frequencies in f.  it's used to assign
+     * a maximum bit-length needed by an internal YFastTrie data structure.
+     * @return 
+     */
     protected HeapNode buildFrequencyCodeTree(TIntIntMap f, int sumF) {
         
         int n = f.size();
@@ -130,19 +216,52 @@ public class Huffman {
             nodeZ.setLeft(q.extractMin());
             nodeZ.setRight(q.extractMin());
             nodeZ.setKey(nodeZ.getLeft().getKey() + nodeZ.getRight().getKey());
+            
+            System.out.printf("X=%d, Y=%d, Z=%d\n", nodeZ.getLeft().getKey(),
+                nodeZ.getRight().getKey(), nodeZ.getKey());
+            
             q.insert(nodeZ);
         }
+        
+        // NLK: there is a possible violation of unique prefix code for all
+        // a path from root to leaf that is all left nodes and longer than 1.
+        //TODO: repair tree for this case
+        if (true) {
+            throw new UnsupportedOperationException("not yet finished");
+        }
+        
 
         assert (q.getNumberOfNodes() == 1);
 
         HeapNode t = q.extractMin();
 
+        //debug        
+        System.out.println("check here:");
+        TreeTraversal.printLevelOrder(t);
+
         return t;
     }
-
-    protected TIntIntMap buildSymbolCodeTree(TIntIntMap f, int sumF) {
+    
+    /**
+     * 
+     * @param f map with key=code-point, value=frequency of code-point in 
+     * original text.
+     * @param sumF the sum of all frequencies in f.  it's used to assign
+     * a maximum bit-length needed by an internal YFastTrie data structure.
+     * @return 
+     */
+    protected EncodingSymbols buildSymbolCodeTree(TIntIntMap f, int sumF) {
+        
+        System.out.println("freqMap:");
+        printMap(f);   
+        
 
         HeapNode t = buildFrequencyCodeTree(f, sumF);
+        
+        
+        System.out.println("freq code tree:");
+        TreeTraversal.printLevelOrder(t);
+        
 
         TIntIntMap symbolCodeMap = new TIntIntHashMap();
 
@@ -174,18 +293,140 @@ public class Huffman {
             }
             node = queue.poll(); // returns null if empty
         }
+        
+        EncodingSymbols eS = new EncodingSymbols();
+        eS.symbolTree = t;
+        eS.codeSymbolMap = symbolCodeMap;
+        
+        eS.print();
 
-        return symbolCodeMap;
+        return eS;
+    }
+    
+    private long count(String c, TIntIntMap codeSymbolMap) {
+        long nBits = 0;
+        int cP;
+        int s;
+        for (int i = 0; i < c.length(); ++i) {
+            cP = c.codePointAt(i);
+            s = codeSymbolMap.get(cP);
+            nBits += MiscMath0.numberOfBits(s);
+        }
+        return nBits;
     }
 
+    /**
+     * encode the text c, given the code symbol map.
+     * @param c uncoded text to be encoded.
+     * @param codeSymbolMap map with key = alphabet code point, value = 
+     * bit-string symbol.
+     * @return returns the encoding of text 'c', stored as a VeryLongBitString.
+     */
+    VeryLongBitString encode(String c, TIntIntMap codeSymbolMap) {
+        
+        // count the number of bits the encoded string will be.
+        // this is needed to construct the VeryLongBitString.
+        long nE = count(c, codeSymbolMap);
+        
+        //NOTE: could use java's BigInteger, but that creates a new BigInteger 
+        //      for every modifying operation such as setBit().
+        VeryLongBitString encoded = new VeryLongBitString(nE);
+       
+        /*
+        network data is usually passed as big endian
+            example integer: 0A0B0C0D
+
+                       Big        Little 
+                       Endian:    Endian:
+            memory
+            address
+                a     0A           0D
+              a+1     0B           0C
+              a+2     0C           0B
+              a+3     0D           0A
+        */
+         
+        int cP;
+        int s;
+        long b = 0;
+        long b2;
+        int nB;
+        for (int i = 0; i < c.length(); ++i) {
+            cP = c.codePointAt(i);
+            s = codeSymbolMap.get(cP);
+            
+            nB = MiscMath0.numberOfBits(s);
+            
+            // set bits, reversing them from b to b+nB for the bit-string tree path
+            // _ _ _ _ _ _  b=0, nB=3   7 6 5 4 3 2 1 0
+            //              s=100: write s[0] to  c[(b+nB-1)]
+            b2 = b + nB - 1;
+            while (nB > 0) {
+                if ((s & 1) == 1) {
+                    encoded.setBit(b2);
+                }
+                s >>= 1;
+                ++b;
+                --nB;
+                --b2;
+            }
+        }
+        
+        return encoded;
+    }
+    
     /**
      * decode the Huffman encoded tree. runtime complexity is O(N) where N is
      * the number of characters in the original text.
      *
-     * @param h the Huffman encoded text and the symbol code map
+     * @param symbolTree the symbol code map
+     * @param encoded text
      * @return returns the decoded text.
      */
-    public String decompress(HuffmanEncoding h) {
-        throw new UnsupportedOperationException("not yet complete");
+    public String decompress(HeapNode symbolTree, VeryLongBitString encoded) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        HeapNode node = symbolTree;
+             
+        if (node == null) {
+            return "";
+        }
+        
+        long n = encoded.getInstantiatedBitSize();
+        long i;
+        int cP;
+        for (i = 0; i < n; ++i) {
+            if (node.getLeft() == null && node.getRight() == null) {
+                
+                // this is a leaf node, so we have a letter in the decoded alphabet now
+                cP = (Integer)node.getData();
+                
+                sb.append(Character.toChars(cP));
+                node = symbolTree;
+            }
+            
+            if (encoded.isSet(i)) {
+                node = node.getRight();
+            } else {
+                node = node.getLeft();
+            }
+        }
+        
+        if (node != null && node.getData() != null) {
+            cP = (Integer)node.getData();
+            sb.append(Character.toChars(cP));
+        }
+        
+        return sb.toString();
     }
+    
+    private static void printMap(TIntIntMap f) {
+        TIntIntIterator iter = f.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            System.out.printf("key=%d, v=%d\n", iter.key(), iter.value());
+        }
+    }
+
 }
