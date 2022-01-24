@@ -223,9 +223,14 @@ public class Huffman {
             q.insert(nodeZ);
         }
         
-        // NLK: there is a possible violation of unique prefix code for all
+        // NLK: there is a possible violation of unique prefix code for
         // a path from root to leaf that is all left nodes and longer than 1.
         //TODO: repair tree for this case
+        //considering a rotate-right operation for each node on the
+        //     all left path from root to leaf excepting the root and the
+        //     leaf.
+        //     the height of the tree potentially increases by that number of
+        //     rotate right operations
         if (true) {
             throw new UnsupportedOperationException("not yet finished");
         }
