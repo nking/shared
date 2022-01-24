@@ -22,11 +22,6 @@ public class HuffmanTest extends TestCase {
      */
     public void testBuildFrequencyCodeTree() {
         
-        if (true) {
-            // TODO: remove when method is finished
-            return;
-        }
-        
         // Fig 16.4 from Cormen et al. "Introduction to Algorithms"
         
         System.out.println("buildFrequencyCodeTree");
@@ -111,12 +106,14 @@ public class HuffmanTest extends TestCase {
         assertTrue(uncoded.equals(decoded));
         
         HuffmanEncoding he = h.compress(uncoded);
+        System.out.printf("encoded=%s;  path=%s\n", he.encoded.toString(),
+            new StringBuilder(he.encoded.toString()).reverse().toString());
         decoded = h.decompress(he.symbolTree, he.encoded);
         System.out.println(" compress, decompress =" + decoded);
-        
+        assertTrue(uncoded.equals(decoded));
     }
     
-    public void estCompressDecompress() {
+    public void testCompressDecompress() {
         
         // from wikipedia https://en.wikipedia.org/wiki/Photophone
         String uncoded = "The photophone is a telecommunications device that "
@@ -132,6 +129,8 @@ public class HuffmanTest extends TestCase {
         String decoded = h.decompress(he.symbolTree, he.encoded);
         
         System.out.println("decoded=" + decoded);
+        
+        assertTrue(uncoded.equals(decoded));
         
     }
 

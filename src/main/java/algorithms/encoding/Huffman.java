@@ -217,33 +217,15 @@ public class Huffman {
             nodeZ.setRight(q.extractMin());
             nodeZ.setKey(nodeZ.getLeft().getKey() + nodeZ.getRight().getKey());
             
-            System.out.printf("X=%d, Y=%d, Z=%d\n", nodeZ.getLeft().getKey(),
-                nodeZ.getRight().getKey(), nodeZ.getKey());
-            
             q.insert(nodeZ);
         }
         
-        // NLK: there is a possible violation of unique prefix code for
-        // a path from root to leaf that is all left nodes and longer than 1.
-        //TODO: repair tree for this case
-        //considering a rotate-right operation for each node on the
-        //     all left path from root to leaf excepting the root and the
-        //     leaf.
-        //     the height of the tree potentially increases by that number of
-        //     rotate right operations
-        if (true) {
-            throw new UnsupportedOperationException("not yet finished");
-        }
-        
-
         assert (q.getNumberOfNodes() == 1);
 
         HeapNode t = q.extractMin();
-
-        //debug        
-        System.out.println("check here:");
-        TreeTraversal.printLevelOrder(t);
-
+        
+        t = repairToUniqueIfNeeded(t);
+        
         return t;
     }
     
@@ -257,15 +239,15 @@ public class Huffman {
      */
     protected EncodingSymbols buildSymbolCodeTree(TIntIntMap f, int sumF) {
         
-        System.out.println("freqMap:");
-        printMap(f);   
+        //System.out.println("freqMap:");
+        //printMap(f);   
         
 
         HeapNode t = buildFrequencyCodeTree(f, sumF);
         
         
-        System.out.println("freq code tree:");
-        TreeTraversal.printLevelOrder(t);
+        //System.out.println("freq code tree:");
+        //TreeTraversal.printLevelOrder(t);
         
 
         TIntIntMap symbolCodeMap = new TIntIntHashMap();
@@ -303,7 +285,7 @@ public class Huffman {
         eS.symbolTree = t;
         eS.codeSymbolMap = symbolCodeMap;
         
-        eS.print();
+        //eS.print();
 
         return eS;
     }
@@ -424,6 +406,43 @@ public class Huffman {
         }
         
         return sb.toString();
+    }
+    
+    private HeapNode repairToUniqueIfNeeded(HeapNode t) {
+        
+        //System.out.println("\nrepairToUniqueIfNeeded:");
+        //    TreeTraversal.printLevelOrder(t);
+            
+        // there is a possible violation of unique prefix code for
+        // a path from root to leaf that is all left nodes and longer than 1.
+        // can remove the all left path leaf
+        // add a new root node to top of the tree t and assign the existing tree to its right
+        // assign the leaf to the new root's left 
+        
+        if (!(t.getLeft() != null && t.getLeft().getLeft() != null)) {
+            return t;
+        }
+       
+        HeapNode p = t;
+        HeapNode leaf = p.getLeft();
+                
+        while (leaf.getLeft() != null) {
+            p = leaf;
+            leaf = leaf.getLeft();
+        }
+        
+        //System.out.printf("remove leaf=(%d,%d), p=(%d,%d)\n", 
+        //    leaf.getKey(), (Integer)leaf.getData(), p.getKey(), (Integer)p.getData());
+        p.setLeft(null);
+        
+        HeapNode r = new HeapNode(t.getKey() - 1);
+        r.setRight(t);
+        r.setLeft(leaf);
+        
+        //System.out.println("repaired tree:");
+        //TreeTraversal.printLevelOrder(r);
+        
+        return r;
     }
     
     private static void printMap(TIntIntMap f) {
