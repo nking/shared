@@ -1,0 +1,112 @@
+parallel sorting notes
+----------------------
+
+unsorted distribution of n keys over p processors. 
+
+Histogram Sort is highly scalable and efficient according to
+Solomonik & Kale who have made an improved version.
+
+Chap 27 Sorting Network of Cormen et al. Introduction to Algorithms
+  bitonic sorter is a comparison network operating on a bitonic 
+  sequence which uses half cleaners.
+
+  from 
+  E. Solomonik and L. V. Kalé, 
+  "Highly scalable parallel sorting," 
+  2010 IEEE International Symposium on Parallel & Distributed Processing 
+  (IPDPS), 2010, pp. 1-12, doi: 10.1109/IPDPS.2010.5470406.
+
+ ** Bitonic Sort can be generalized for n/p > 1, with a complexity of Θ(n lg2 n). 
+  Adaptive Bitonic Sorting, a modification of Bitonic Sort, avoids unnecessary 
+  comparisons, which results in an improved, optimal complexity of Θ(n lg n) [5].
+    Unfortunately, each step of Bitonic Sort requires movement of data between 
+  pairs of processors. Like most merge-based algorithms, Bitonic Sort can perform 
+  very well when n/p (where n is the total number of keys and p is the number of 
+  processors) is small, since it operates in-place and effectively combines messages. 
+  On the other hand, its performance quickly degrades as n/p becomes large, which 
+  is the much more realistic scenario for typical scientific applications. 
+  The major drawback of Bitonic Sort on modern architectures is that it moves 
+  the data Θ(lg p) times.
+
+
+  We begin with an unknown, unsorted distribution of n keys over p processors. 
+
+The algorithm has to sort and move the keys to the appropriate processor
+so that they are in globally sorted order. 
+A globally sorted order implies that every key on processor k is larger 
+than every key on processor k − 1. 
+
+Further, at the end of execution, the number of keys stored on any processor 
+should not be larger than some threshold value (n/p) + t_thresh 
+(dictated by the memory availability or desired final distribution).
+
+The majority of parallel sorting algorithms can be classified as either 
+merge-based or splitter-based. 
+
+   NOTE, merge-based parallel sorting algorithms are not a good choice 
+when n/p ≫ 1, because they suffer from heavy use of communication and 
+difficulty of load balancing.
+
+** ChaNGa [1]
+   Pritish Jetley, Filippo Gioachin, Celso Mendes, Laxmikant V. Kale, and Thomas R. Quinn. 
+   Massively Parallel Cosmological Simulations with ChaNGa. 
+   In Proceedings of IEEE International Parallel and Distributed 
+   Processing Symposium 2008, 2008.
+
+   is an n-body Barnes-Hut tree-based gravity code.  It's an example of a 
+   highly parallel scientific code that uses sorting every iteration.
+   J. E. Barnes and P. Hut. 
+   A hierarchical O(NlogN) force calculation algorithm. 
+   Nature, 324, 1986.
+
+** Sample Sort
+   article refers to 
+      [7] W.D. Fraser and A.C. McKellar. 
+          Samplesort : A sampling approach to minimal storage tree sorting. 
+          Journal of the Association for Computing Machinery, 17(3), July 1970.
+      [8] J.S Huang and Y.C Chow. 
+          Parallel sorting and data partitioning by sampling. 
+          In Proc. Seventh International Computer Software and Applications 
+          Conference, November 1983.
+
+    This algorithm acquires a sample of data of size s from each processor, 
+    then combines the samples on a single processor.
+    This processor then produces p − 1 splitters from the sp-sized combined 
+    sample and broadcasts them to all other processors. The splitters allow 
+    each processor to send each key to the correct final destination immediately. 
+    Some implementations of Sample Sort also perform localized load balancing 
+    between neighboring processors after the all-to-all. 
+
+    Though attractive for its simplicity, 
+    --> Sample Sort is problematic for scaling beyond a few thousand processors 
+    on modern machines. The algorithm requires that a combined sample p(p − 1) 
+    keys be merged on one processor, which becomes an unachievable task since it 
+    demands Θ(p^2) memory and work on a single processor. 
+    For example, on 16,384 processors, the combined sample of 64-bit keys would 
+    require 16 GB of memory.
+
+** Sorting by Random Sampling
+   The technique is not wholly reliable and can result in severe load imbalance, 
+   especially on a larger amount of processors.
+
+** Radix Sort
+   The performance of the sort can be expressed as Θ(b*n/p), where b is the number 
+   of bits in a key.
+
+   The main drawback to parallel Radix Sort is that it requires multiple 
+   iterations of costly all-to-all data exchanges. The cache efficiency of this 
+   algorithm can also be comparatively weak.
+   In Radix Sort, at every iteration any given key might be moved to any bucket 
+   (there are 64 thousand of these for a 16-bit radix (2^16=65536)), 
+   completely independent of the destination of the previously indexed key. 
+   However, Thearling et al. [12] propose a clever scheme for improving the 
+   cache efficiency during the counting stage.
+
+   e.g. for string of size 10MB, number of bits is ceil(math.log(1e7)/math.log(2))=24
+
+** Histogram Sort
+   it has the essential quality of only moving the actual data once, combined 
+   with an efficient method for dealing with uneven distributions. 
+   In fact, Histogram Sort is unique in its ability to reliably achieve a 
+   defined level of load balance.
+
