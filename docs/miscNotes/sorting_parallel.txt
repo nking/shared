@@ -11,6 +11,11 @@ one solution is to use MapReduce in the available computing environment.
         large scale data sets using HiBench
     https://journalofbigdata.springeropen.com/articles/10.1186/s40537-020-00388-5
 
+    Dean & Ghemwat 2008, "MapReduce: Simplified Data Processing on Large Clusters"
+       at Google, MapReduce minimizes use of network bandwidth by writing map, 
+       and intermediate files on same computer or cluster if not same computer.
+       The filesystem was GFS, and is now Colossus with an RPC interface.
+
 Histogram Sort is highly scalable and efficient according to
 Solomonik & Kale who have made an improved version.
    see Histogram Sort with Sampling
