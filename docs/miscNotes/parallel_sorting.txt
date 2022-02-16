@@ -5,6 +5,11 @@ unsorted distribution of n keys over p processors.
 
 Histogram Sort is highly scalable and efficient according to
 Solomonik & Kale who have made an improved version.
+   see Histogram Sort with Sampling
+    Harsh, Kale & Solomonik
+    SPAA '19: The 31st ACM Symposium on Parallelism in Algorithms and ArchitecturesJune 2019 
+    Pages 201–212https://doi.org/10.1145/3323165.3323184
+    https://arxiv.org/pdf/1803.01237.pdf
 
 Chap 27 Sorting Network of Cormen et al. Introduction to Algorithms
   bitonic sorter is a comparison network operating on a bitonic 
