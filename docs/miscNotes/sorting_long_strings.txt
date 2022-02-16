@@ -12,3 +12,12 @@ and Bingmann, Eberle, & Sanders
    which has pseudocode
 
 
+A URL-matching algorithm for HTTP stream fields
+"A multi-pattern hash-binary hybrid algorithm for URL matching in the HTTP protocol"
+Zeng et al. 2017
+PLoS One. 2017; 12(4): e0175500.
+Published online 2017 Apr 11. doi: 10.1371/journal.pone.0175500
+PMCID: PMC5388485
+PMID: 28399157
+
+
