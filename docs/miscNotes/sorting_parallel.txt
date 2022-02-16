@@ -1,7 +1,10 @@
 parallel sorting notes
 ----------------------
 
-unsorted distribution of n keys over p processors. 
+goal: to sort an unsorted distribution of n keys over p processors. 
+
+
+one solution is to use MapReduce in the available computing environment.
 
 Histogram Sort is highly scalable and efficient according to
 Solomonik & Kale who have made an improved version.
@@ -32,6 +35,13 @@ Chap 27 Sorting Network of Cormen et al. Introduction to Algorithms
   is the much more realistic scenario for typical scientific applications. 
   The major drawback of Bitonic Sort on modern architectures is that it moves 
   the data Θ(lg p) times.
+
+  This paper uses Bitonic Sort:
+   S. -W. Jun, S. Xu and Arvind, 
+   "Terabyte Sort on FPGA-Accelerated Flash Storage," 
+   2017 IEEE 25th Annual International Symposium on Field-Programmable Custom 
+   Computing Machines (FCCM), 2017, pp. 17-24, doi: 10.1109/FCCM.2017.53.
+   https://ieeexplore.ieee.org/abstract/document/7966638
 
 
   We begin with an unknown, unsorted distribution of n keys over p processors. 

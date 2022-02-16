@@ -1,1 +1,12 @@
 in progress...
+
+notes from 
+Bingmann, T., Eberle, A. & Sanders, P. 
+Engineering Parallel String Sorting. 
+Algorithmica 77, 235–286 (2017). 
+https://doi.org/10.1007/s00453-015-0071-1
+https://publikationen.bibliothek.kit.edu/1000050654/15925403
+
+
+
+
