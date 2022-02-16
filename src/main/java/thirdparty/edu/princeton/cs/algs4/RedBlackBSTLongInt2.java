@@ -55,7 +55,8 @@ import java.util.Stack;
  * NOTE: this implementation of the long-int Red Black tree uses the least
  * amount of memory of all versions by replacing the tree structure of linked
  * lists of nodes as objects with associative arrays that use primitive 
- * arrays internally.
+ * arrays internally.  Reducing the Red Black tree space used was necessary for building the
+ * YFastTrie.
  * 
  * 
  *  The {@code BST} class represents an ordered symbol table of generic

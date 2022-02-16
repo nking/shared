@@ -169,7 +169,7 @@ public class PrimsMinimumSpanningTree<T> {
                 
                 wUV = edgeWeights.get(uv);
                 
-                //compare d[v] to only wUV instead of dijkstra's d[u] + wUV                
+                //compare d[v] to only wUV instead of dijkstra's (d[u] + wUV)             
                 if (wUV < d[v]) {
                     prev[v] = u;
                     d[v] = wUV;

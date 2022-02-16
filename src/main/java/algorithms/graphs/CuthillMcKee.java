@@ -35,7 +35,7 @@ with careful algorithm design, it is amenable to
 massive distributed-memory parallelism – the primary topic of interest of this paper.
 
 TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
- * @author nichole
+@author nichole
  */
 public class CuthillMcKee {
     

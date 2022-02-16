@@ -12,6 +12,16 @@ import java.util.logging.Logger;
  * pattern by default if the VM has enough memory, else
  * uses a Fibonacci Heap.
  * All operations for the "YFastTrie" are constant time.
+
+    <pre>
+     prefer to use YFastTrie as all operations are essentially
+     O(log_2 log_2(w)) where w is the bit length of largest integer to store in trie.
+     in contrast Min-Heap/PriorityQueue and Fibonacci have these trade-offs
+                                 FibHeap             MinHeap/PQ
+      extractMin()           O(1)                  O(1)
+      insert()                   O(1)                  O(log_2(n))
+      decreaseKey()       O(log_2(n))        O(log_2(n))
+    </pre>
  * 
  * The Fibonacci Heap has O(1) operations excepting
  * extractMin which is O(lg_2(N_nodes)).

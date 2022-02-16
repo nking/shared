@@ -8,7 +8,10 @@ import java.util.Arrays;
 /**
  * Find all bridges using DFS.
  * 
- * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming that u is the parent of v) there is no back edge within v’s subtree that leads to a vertex whose discovery time is strictly smaller than v’s discovery time.
+ * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming 
+ * that u is the parent of v) there is no back edge within v’s subtree that 
+ * leads to a vertex whose discovery time is strictly smaller than v’s 
+ * discovery time.
  * 
    definitions:
    Bridge is any edge whose removal results in a disconnected graph.
@@ -113,10 +116,9 @@ public class FindAllBridgesDFS {
         }
         PairIntArray b = new PairIntArray();
         for (v = 0; v < g.length; v++) {
-            u = predecessor[v];
-            if (u != -1 && (td[v] == tdLow[v])) {
+            if ((td[v] == tdLow[v]) && predecessor[v] != -1) {
                 // found a bridge
-                b.add(u, v);
+                b.add(predecessor[v], v);
             }
         }
         return b;

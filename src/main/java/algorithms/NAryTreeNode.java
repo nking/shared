@@ -13,7 +13,7 @@ import java.util.Set;
 public class NAryTreeNode extends DoublyLinkedNode {
 
     private int data;
-    private Set<NAryTreeNode> children = new HashSet<NAryTreeNode>();
+    private final Set<NAryTreeNode> children = new HashSet<NAryTreeNode>();
     private NAryTreeNode parent;
 
     public NAryTreeNode(int data) {

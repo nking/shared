@@ -3004,7 +3004,7 @@ public class MatrixUtil {
                 if (Math.abs(v[row] - t) > tolerance) {
                     stop = 0;
                 }
-                v[row] = z[row] / eig;
+                v[row] = t;
             }
             if (stop == 1) {
                 break;

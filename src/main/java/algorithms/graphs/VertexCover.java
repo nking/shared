@@ -79,17 +79,15 @@ public class VertexCover {
             //System.out.println("visiting " + node.getData());
             if (node.getParent() != null) {
                 if (node.getChildren().isEmpty() && !c.contains(node.getParent())) {
-                    // this is a leaf node.  
+                    // this is a leaf node
+                    
                     // add it's parent to set C
                     c.add(node.getParent());
-                    //System.out.println("  *C.add==" + node.getParent().getData());
-                    //  remove node and parent from LinkedList
-                    //System.out.println("  unlink parent=" + node.getParent().getData());
+                    
+                    //  remove node and parent from LinkedList (G)
                     revLevelOrder.unlink(node.getParent());
                     children = node.getParent().getChildren();
-                    // remove children of parent
                     for (NAryTreeNode child : children) {
-                        //System.out.println("  unlink child=" + child.getData());
                         if (!c.contains(child)) {
                             revLevelOrder.unlink(child);
                         }

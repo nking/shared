@@ -12,7 +12,8 @@ import java.util.Arrays;
  * (impl is Tarjan's algorithm).
  * 
  * Directed graphs are said to be strongly connected if every vertex is 
- * reachable from every other vertex.
+ * reachable from every other vertex and there is a path in each 
+ * direction between each pair of vertices of the graph.
  * 
  * @author nichole
  */

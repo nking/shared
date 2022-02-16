@@ -62,7 +62,7 @@ public class StronglyConnectedComponents {
     /**
      * index numbers the nodes consecutively in the order in which they are discovered
      */
-    private int[] index;
+    private int[] td;
     
     /**
     lowLink represents the smallest index of any node known to be reachable 
@@ -102,8 +102,8 @@ public class StronglyConnectedComponents {
         
         g = Arrays.copyOf(graph, graph.length);
         lowLink = new int[g.length];
-        index = new int[g.length];
-        Arrays.fill(index, -1);
+        td = new int[g.length];
+        Arrays.fill(td, -1);
         Arrays.fill(lowLink, -1);
         onStack = new int[g.length];
         scc = new ArrayList<SimpleLinkedListNode>();
@@ -120,7 +120,7 @@ public class StronglyConnectedComponents {
     
     private void strongConnect(int v) {
         
-        index[v] = time;
+        td[v] = time;
         lowLink[v] = time;
         time++;
         
@@ -133,21 +133,21 @@ public class StronglyConnectedComponents {
         while (wNode != null && wNode.getKey() != -1) {
             int w = wNode.getKey();
             log.log(logLevel, "    w=" + toString(w));            
-            if (index[w] == -1) {
+            if (td[w] == -1) {
                 // Successor w has not yet been visited; recurse on it
                 strongConnect(w);
-                lowLink[v] = (lowLink[v] <= lowLink[w]) ? lowLink[v] : lowLink[w];
+                lowLink[v] = Math.min(lowLink[v], lowLink[w]);  // update Low[v]
             } else if (onStack[w] == 1) {
                 // w is in stack S and hence in the current SCC
                 // If w is not on stack, then (v, w) is a cross-edge in the 
                 // DFS tree and must be ignored.
-                lowLink[v] = (lowLink[v] <= index[w]) ? lowLink[v] : index[w];
+                lowLink[v] = Math.min(lowLink[v], td[w]);  // update Low[v]
             }
             wNode = wNode.getNext();
         }
         
         // If v is a root node, pop the stack and generate an SCC
-        if (lowLink[v] == index[v] && inSCC[v] == 0) {
+        if (lowLink[v] == td[v] && inSCC[v] == 0) {
             log.log(logLevel, "    START scc " + v);
             SimpleLinkedListNode sccNode = new SimpleLinkedListNode();
             scc.add(sccNode);
@@ -184,7 +184,7 @@ public class StronglyConnectedComponents {
         
         StringBuilder sb = new StringBuilder();
         sb.append("node=").append(node).append(", lowLink=").append(lowLink[node])
-            .append(", index=").append(index[node])
+            .append(", index=").append(td[node])
             .append(", onStack=").append(onStack[node])
             .append(" (time=").append(time).append(");");
         return sb.toString();

@@ -198,7 +198,7 @@ public class Misc {
         return sched;
     }
 
-    
+    // s and f are sorted by ascending order of f before passed to this method
     private int[] calcP(double[] s, double[] f) {
         // iterating from highest index to lowest,
         // find for each s, highest previous index in which f[i-...] < s_i

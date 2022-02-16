@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * a sort for integers.  runtime complexity Math.max(n, max(a) - min(a))
  * <pre>
- * To use this algorithm: the maximum number in the array should probably not 
+ * To use this algorithm: the range of the numbers in the array should probably not 
  * be much greater than 1e7 unless the jvm settings for maximum stack size
  * are increased.  An internal long array of size maximum of array values
  * is constructed and that consumes memory which also affects
