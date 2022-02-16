@@ -103,6 +103,7 @@ difficulty of load balancing.
    cache efficiency during the counting stage.
 
    e.g. for string of size 10MB, number of bits is ceil(math.log(1e7)/math.log(2))=24
+   hence 1.7E7 buckets.
 
 ** Histogram Sort
    it has the essential quality of only moving the actual data once, combined 
