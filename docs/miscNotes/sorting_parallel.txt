@@ -5,6 +5,11 @@ goal: to sort an unsorted distribution of n keys over p processors.
 
 
 one solution is to use MapReduce in the available computing environment.
+    from 2008: https://perspectives.mvdirona.com/2008/07/hadoop-wins-terasort/
+    and: Ahmed et al. 2020
+    A comprehensive performance analysis of Apache Hadoop and Apache Spark for 
+        large scale data sets using HiBench
+    https://journalofbigdata.springeropen.com/articles/10.1186/s40537-020-00388-5
 
 Histogram Sort is highly scalable and efficient according to
 Solomonik & Kale who have made an improved version.
