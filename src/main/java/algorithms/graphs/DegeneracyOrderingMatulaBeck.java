@@ -142,11 +142,20 @@ public class DegeneracyOrderingMatulaBeck {
     
     static class BucketQueue {
         
+        // key = degree of a vertex, value = set of vertexes with degree given by key.
         protected final TIntObjectMap<TIntSet> bucketMap = new TIntObjectHashMap<TIntSet>();
         
-        // needed in the move operation for neigbhors of v
+        // needed in the move operation for neighbors of v
+        // key = vertex index,  value = degree of vertex (== # of neighbors)
         protected final TIntIntMap reverseBucketMap = new TIntIntHashMap();
         
+        // holds the degrees of vertexes, uniquely, and in a datastructure with
+        // operations successor, predecessor, min, max, etc.
+        // NOTE that the operations are O(log_2(w)) where w is the bitlength of the
+        // largest value to be inserted into the trie.
+        // If the number of items to be inserted, n, is small such that log_2(n) < log_2(w),
+        // then a SortedSet would be a better datastructure here for the bucketQueue.
+        // TODO: add that check and ability to use either data structure here.
         protected final YFastTrie bucketQueue;
         
         public BucketQueue(TIntObjectMap<TIntSet> adjMap) {
