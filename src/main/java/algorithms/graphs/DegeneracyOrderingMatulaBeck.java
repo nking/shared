@@ -35,6 +35,12 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  * of a finite graph G that optimizes the coloring number of the ordering, in 
  * linear time, by using a bucket queue to repeatedly find and remove the vertex 
  * of smallest degree. 
+ * 
+ * <pre>
+ * if |V| is less than the maximum degree of any vertex, 
+ *   the runtime complexity is O( (|V| + |E|) * log_2(|V|))
+ * else 
+ *   the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
  * <pre>
  * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
  * </pre>
@@ -46,7 +52,13 @@ public class DegeneracyOrderingMatulaBeck {
      * following
      * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
      * 
-     * runtime complexity is O(|V| + |E|).
+      <pre>
+        if |V| is less than the maximum degree of any vertex, 
+          the runtime complexity is O( (|V| + |E|) * log_2(|V|))
+        else 
+          the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
+      <pre>
+ 
      * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
      * set of indexes of vertexes for the neighbors of the key.  note: the method
      * expects that the adjacency map has a key for every vertex listed in the values.
@@ -70,9 +82,11 @@ public class DegeneracyOrderingMatulaBeck {
         
         if (n < maxDegree) {
             // use a sorted map to create the bucket
+            // runtime complexity is O(|V|*log_2(|V|))
             bQ = new SBucketQueue(adjMap);
         } else {
             // use a YFastTrie and HashMap to create the bucket
+            // runtime complexity is O(|V|*log_2(w)) where q=maxDegree
             bQ = new TBucketQueue(adjMap);
         }
         
@@ -85,8 +99,11 @@ public class DegeneracyOrderingMatulaBeck {
         
         TIntIterator iter2, iter3;
         
-        
-        // runtime complexity of each iteration is O(log_2(maxDegree)) or O(log_2(n))
+        // while loop: runtime complexity of each iteration is O(log_2(maxDegree)) or O(log_2(n))
+        // and the loop visits each vertex and it's neighbors which are not
+        // yet in the output set = |V| + |E| iterations.
+        // if using a SBucketQueue, the runtime complexity is O( (|V| + |E|) * log_2(|V|))
+        // if using a TBucketQueue, the runtime complexity is O( (|V| + |E|) * log_2(w)) where w is maxDegree
         
         // the degree k
         int v, k = 0, j = 0, w, nW, x;
@@ -392,14 +409,11 @@ public class DegeneracyOrderingMatulaBeck {
           ...
         }
         </pre>
-        If a TIntObjectMap<TIntSet> bucketMap were used as it is in TBucketQueue
+        If a TIntObjectMap<TIntSet> bucketMap were used as it is in TBucketQueue,
         its fast O(1) getBucket does not affect the runtime complexity, and so
         the values it would have held can be placed in a SortedMap instead.
         */
-                
-// key = degree of a vertex, value = set of vertexes with degree given by key.
-//protected final TIntObjectMap<TIntSet> bucketMap = new TIntObjectHashMap<TIntSet>();
-
+        
         // needed in the move operation for neighbors of v
         // key = vertex index,  value = degree of vertex (== # of neighbors)
         protected final TIntIntMap reverseBucketMap = new TIntIntHashMap();
