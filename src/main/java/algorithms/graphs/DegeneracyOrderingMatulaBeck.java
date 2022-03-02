@@ -10,6 +10,8 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  *In graph theory, a k-degenerate graph is an undirected graph in which every 
@@ -60,12 +62,19 @@ public class DegeneracyOrderingMatulaBeck {
                 + " is adjMap.size() and that out.length==adjMap.size()");
         }
         
-        // making a bucket queue with a YFastTrie and a HashMap        
-        // where YFastTrie key = the degree of a vertex.  and the bucketMap holds key=degree, value=vertex indexes
-        // (YFastTrie needs to know the max degree to set word size).
+        IBucketQueue bQ;
         
-        // ---- initialize bucket ------
-        BucketQueue bQ = new BucketQueue(adjMap);
+        int maxDegree = calculateMaxDegree(adjMap);
+        
+        System.out.printf("maxDegree=%d, n=%d\n", maxDegree, n);
+        
+        if (n < maxDegree) {
+            // use a sorted map to create the bucket
+            bQ = new SBucketQueue(adjMap);
+        } else {
+            // use a YFastTrie and HashMap to create the bucket
+            bQ = new TBucketQueue(adjMap);
+        }
         
         TIntSet bucket, adj;
         
@@ -76,13 +85,16 @@ public class DegeneracyOrderingMatulaBeck {
         
         TIntIterator iter2, iter3;
         
+        
+        // runtime complexity of each iteration is O(log_2(maxDegree)) or O(log_2(n))
+        
         // the degree k
         int v, k = 0, j = 0, w, nW, x;
         while (j < n && !bQ.isEmpty()) {
             
             // this handles check for null or empty bucket.
             //   note that the internal bucketMap size is out of sync w/ bucketQueue size until remove is invoked
-            i = bQ.extractMinimum();
+            i = bQ.extractMinimumPt1();
             
             k = Math.max(k, i);
             
@@ -140,7 +152,30 @@ public class DegeneracyOrderingMatulaBeck {
         return k;
     }
     
-    static class BucketQueue {
+    protected static int calculateMaxDegree(TIntObjectMap<TIntSet> adjMap) {
+        
+        int n = adjMap.size();
+
+        TIntSet adj;
+        TIntObjectIterator<TIntSet> iter = adjMap.iterator();
+        int i, v, nV, maxDegree = 0;
+        for (i = 0; i < n; ++i) {
+            iter.advance();
+            v = iter.key();
+            adj = iter.value();
+            if (adj == null) {
+                nV = 0;
+            } else {
+                nV = adj.size();
+            }
+            if (nV > maxDegree) {
+                maxDegree = nV;
+            }
+        }
+        return maxDegree;
+    }
+   
+    static class TBucketQueue implements IBucketQueue {
         
         // key = degree of a vertex, value = set of vertexes with degree given by key.
         protected final TIntObjectMap<TIntSet> bucketMap = new TIntObjectHashMap<TIntSet>();
@@ -151,14 +186,9 @@ public class DegeneracyOrderingMatulaBeck {
         
         // holds the degrees of vertexes, uniquely, and in a datastructure with
         // operations successor, predecessor, min, max, etc.
-        // NOTE that the operations are O(log_2(w)) where w is the bitlength of the
-        // largest value to be inserted into the trie.
-        // If the number of items to be inserted, n, is small such that log_2(n) < log_2(w),
-        // then a SortedSet would be a better datastructure here for the bucketQueue.
-        // TODO: add that check and ability to use either data structure here.
         protected final YFastTrie bucketQueue;
         
-        public BucketQueue(TIntObjectMap<TIntSet> adjMap) {
+        public TBucketQueue(TIntObjectMap<TIntSet> adjMap) {
         
             int n = adjMap.size();
             
@@ -198,14 +228,17 @@ public class DegeneracyOrderingMatulaBeck {
             }
         }
         
+        @Override
         public boolean isEmpty() {
             return (bucketQueue.size() == 0);
         }
 
+        @Override
         public int minimum() {
             return bucketQueue.minimum();
         }
         
+        @Override
         public int size() {
             return bucketQueue.size();
         }
@@ -216,7 +249,8 @@ public class DegeneracyOrderingMatulaBeck {
          * size until remove is invoked.
          * @return 
          */
-        public int extractMinimum() {
+        @Override
+        public int extractMinimumPt1() {
             if (bucketQueue.size() == 0) {
                 throw new IllegalStateException("bucket queue is empty");
             }
@@ -236,6 +270,7 @@ public class DegeneracyOrderingMatulaBeck {
          * @param i
          * @return 
          */
+        @Override
         public boolean contains(int i) {
             return bucketMap.containsKey(i);
         }
@@ -245,10 +280,12 @@ public class DegeneracyOrderingMatulaBeck {
          * @param v
          * @return 
          */
+        @Override
         public boolean containsVertex(int v) {
             return reverseBucketMap.containsKey(v);
         }
 
+        @Override
         public TIntSet getBucket(int i) {            
             return bucketMap.get(i);
         }
@@ -259,11 +296,13 @@ public class DegeneracyOrderingMatulaBeck {
          * @param k
          * @param v 
          */
+        @Override
         public void remove(int k, int v) {
             TIntSet bucket = getBucket(k);
             remove(k, v, bucket);
         }
         
+        @Override
         public void remove(int k, int v, TIntSet bucket) {
             if (bucket == null || bucket.isEmpty()) {
                 throw new IllegalStateException("programming error: bucket is null or empty");
@@ -282,6 +321,7 @@ public class DegeneracyOrderingMatulaBeck {
          * @param fromDBucket the bucket degree number to remove item from
          * @param toDBucket the bucket degree number to add item to
          */
+        @Override
         public void moveItem(int item, int fromDBucket, int toDBucket) {
             
             if (fromDBucket == toDBucket) {
@@ -307,12 +347,13 @@ public class DegeneracyOrderingMatulaBeck {
             bucket = bucketMap.get(toDBucket);
             if (bucket == null) {
                 assert(bucketQueue.find(toDBucket) == -1);
-                if (bucket == null) {
-                    bucket = new TIntHashSet();
-                    bucketMap.put(toDBucket, bucket);
-                }
+                bucket = new TIntHashSet();
+                bucketMap.put(toDBucket, bucket);
                 bucketQueue.add(toDBucket);
+            } else {
+                assert(bucketQueue.find(toDBucket) != -1);
             }
+            
             bucket.add(item);
             reverseBucketMap.put(item, toDBucket);
             assert(bucketQueue.find(toDBucket) > -1);
@@ -323,10 +364,273 @@ public class DegeneracyOrderingMatulaBeck {
          * @param item
          * @param toDBucket the bucket degree number to add item to
          */
+        @Override
         public void moveItem(int item, int toDBucket) {
             int fromDBucket = reverseBucketMap.get(item);
             moveItem(item, fromDBucket, toDBucket);
         }
         
+    }
+    
+    static class SBucketQueue implements IBucketQueue {
+        
+        /* 
+        this datastructure is used in findDegeneracyOrder() in a single iterating
+        clause, and so the limiting runtime complexity is the largest of the
+        bucket runtime operations.
+        
+        a SortedSet is the main bucket queue choice when n < maxValue.
+        
+        Here are the IBucketQueue operation invoked in findDegeneracyOrder():
+        <pre>
+        while (j < n && !bQ.isEmpty()) {
+           extractMinimum();
+           bQ.getBucket();
+           bucket.iterator().next();
+           bQ.remove();
+           bQ.moveItem(w, nW);
+          ...
+        }
+        </pre>
+        If a TIntObjectMap<TIntSet> bucketMap were used as it is in TBucketQueue
+        its fast O(1) getBucket does not affect the runtime complexity, and so
+        the values it would have held can be placed in a SortedMap instead.
+        */
+                
+// key = degree of a vertex, value = set of vertexes with degree given by key.
+//protected final TIntObjectMap<TIntSet> bucketMap = new TIntObjectHashMap<TIntSet>();
+
+        // needed in the move operation for neighbors of v
+        // key = vertex index,  value = degree of vertex (== # of neighbors)
+        protected final TIntIntMap reverseBucketMap = new TIntIntHashMap();
+        
+        // holds the degrees of vertexes, uniquely, and in a datastructure with
+        // operations successor, predecessor, min, max, etc.
+        protected final SortedMap<Integer, TIntSet> bucketQueue = new TreeMap<>();
+        
+        public SBucketQueue(TIntObjectMap<TIntSet> adjMap) {
+        
+            int n = adjMap.size();
+            
+            TIntSet adj;
+            TIntSet bucket;
+            TIntObjectIterator<TIntSet> iter = adjMap.iterator();
+            int i;
+            int v;
+            int nV;
+            int maxDegree = 0;
+            for (i = 0; i < n; ++i) {
+                iter.advance();
+                v = iter.key();
+                adj = iter.value();
+                if (adj == null) {
+                    nV = 0;
+                } else {
+                    nV = adj.size();
+                }
+                bucket = bucketQueue.get(nV);
+                if (bucket == null) {
+                    bucket = new TIntHashSet();
+                    bucketQueue.put(nV, bucket);
+                }
+                bucket.add(v);
+                if (nV > maxDegree) {
+                    maxDegree = nV;
+                }
+                reverseBucketMap.put(v, nV);
+                
+                //System.out.printf("bM key=%d, val=%d, max=%d\n", nV, v, maxDegree);
+            }
+        }
+        
+        @Override
+        public boolean isEmpty() {
+            return bucketQueue.isEmpty();
+        }
+
+        @Override
+        public int minimum() {
+            return bucketQueue.firstKey();
+        }
+        
+        @Override
+        public int size() {
+            return bucketQueue.size();
+        }
+        
+        /**
+         * this is purely a minimum() invocation.  The invoker uses remove 
+         * afterwards to remove the entry from the bucket values.
+         * @return 
+         */
+        @Override
+        public int extractMinimumPt1() {
+            return minimum();
+        }
+
+        /**
+         * find whether the bucket queue contains the degree key i.
+         * @param i
+         * @return 
+         */
+        @Override
+        public boolean contains(int i) {
+            return bucketQueue.containsKey(i);
+        }
+        
+        /**
+         * find whether the bucket queue contains the vertex v.
+         * @param v
+         * @return 
+         */
+        @Override
+        public boolean containsVertex(int v) {
+            return reverseBucketMap.containsKey(v);
+        }
+
+        @Override
+        public TIntSet getBucket(int i) {            
+            return bucketQueue.get(i);
+        }
+       
+        /**
+         * remove value v from the bucket queue for key k.  this method also
+         * removes key entries in bucketMap and bucketQueue if the bucket empties.
+         * @param k
+         * @param v 
+         */
+        @Override
+        public void remove(int k, int v) {
+            TIntSet bucket = getBucket(k);
+            remove(k, v, bucket);
+        }
+        
+        @Override
+        public void remove(int k, int v, TIntSet bucket) {
+            if (bucket == null || bucket.isEmpty()) {
+                throw new IllegalStateException("programming error: bucket is null or empty");
+            }
+            bucket.remove(v);
+            if (bucket.isEmpty()) {
+                bucketQueue.remove(k);
+                reverseBucketMap.remove(v);
+            }
+        }
+
+        /**
+         * 
+         * @param item
+         * @param fromDBucket the bucket degree number to remove item from
+         * @param toDBucket the bucket degree number to add item to
+         */
+        @Override
+        public void moveItem(int item, int fromDBucket, int toDBucket) {
+            
+            if (fromDBucket == toDBucket) {
+                throw new IllegalArgumentException("fromDBucket cannot equal toDBucket");
+            }
+            
+            TIntSet bucket = bucketQueue.get(fromDBucket);
+            
+            if (bucket == null || !bucket.contains(item)) {
+                throw new IllegalStateException("bucket " + fromDBucket + 
+                    " is empty, so cannot remove " + item + " from it");
+            }
+            
+            // remove from current bucket 
+            bucket.remove(item);
+            if (bucket.isEmpty()) {
+                // remove bucket from bucketQueue
+                bucketQueue.remove(fromDBucket);
+            }
+            
+            // add to new bucket queue
+            bucket = bucketQueue.get(toDBucket);
+            if (bucket == null) {
+                bucket = new TIntHashSet();
+                bucketQueue.put(toDBucket, bucket);
+            }
+            assert(!bucketQueue.get(toDBucket).contains(item));
+            bucket.add(item);
+            reverseBucketMap.put(item, toDBucket);
+        }
+        
+        /**
+         * remove item from current bucket that its in, and move it to toDBucket.
+         * @param item
+         * @param toDBucket the bucket degree number to add item to
+         */
+        @Override
+        public void moveItem(int item, int toDBucket) {
+            int fromDBucket = reverseBucketMap.get(item);
+            moveItem(item, fromDBucket, toDBucket);
+        }
+        
+    }
+    
+    static interface IBucketQueue {
+
+        /**
+         * find whether the bucket queue contains the degree key i.
+         *
+         * @param i
+         * @return
+         */
+        boolean contains(int i);
+
+        /**
+         * find whether the bucket queue contains the vertex v.
+         *
+         * @param v
+         * @return
+         */
+        boolean containsVertex(int v);
+
+        /**
+         * extract the minimum from the internal priority queue called
+         * bucketQueue. note that the internal bucketMap size is out of sync w/
+         * bucketQueue size until remove is invoked.
+         *
+         * @return
+         */
+        int extractMinimumPt1();
+
+        TIntSet getBucket(int i);
+
+        boolean isEmpty();
+
+        int minimum();
+
+        /**
+         *
+         * @param item
+         * @param fromDBucket the bucket degree number to remove item from
+         * @param toDBucket the bucket degree number to add item to
+         */
+        void moveItem(int item, int fromDBucket, int toDBucket);
+
+        /**
+         * remove item from current bucket that its in, and move it to
+         * toDBucket.
+         *
+         * @param item
+         * @param toDBucket the bucket degree number to add item to
+         */
+        void moveItem(int item, int toDBucket);
+
+        /**
+         * remove value v from the bucket queue for key k. this method also
+         * removes key entries in bucketMap and bucketQueue if the bucket
+         * empties.
+         *
+         * @param k
+         * @param v
+         */
+        void remove(int k, int v);
+
+        void remove(int k, int v, TIntSet bucket);
+
+        int size();
+
     }
 }
