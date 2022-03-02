@@ -39,8 +39,10 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  * <pre>
  * if |V| is less than the maximum degree of any vertex, 
  *   the runtime complexity is O( (|V| + |E|) * log_2(|V|))
- * else 
- *   the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
+ * else {
+     the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
+     which is essentially O((|V| + |E|))
+   }
  * <pre>
  * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
  * </pre>
@@ -55,8 +57,10 @@ public class DegeneracyOrderingMatulaBeck {
       <pre>
         if |V| is less than the maximum degree of any vertex, 
           the runtime complexity is O( (|V| + |E|) * log_2(|V|))
-        else 
+        else {
           the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
+          which is essentially O((|V| + |E|))
+        }
       <pre>
  
      * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
