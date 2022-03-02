@@ -72,7 +72,7 @@ public class YFastTrie {
         and those are stored
         in the XFastTrie of this YFastTrie.
       - because the XFastTrie only holds w xft values,
-        the space complexity is reduced.
+        the space complexity is reduced. 
 -------------------------------
 YFastTrie
 
@@ -115,11 +115,22 @@ YFastTrie
                 + " wBits=" + wBits);
         }
         maxC = (1 << w) - 1;
-                        
+
+        // for the runtime complexity of operations to be 
+        // math.log( math.log(maxC)/math.log(2))/math.log(2)
+        // each balanced binary search tree is size
+        //   n = binSz = math.log(maxC)/math.log(2)
+        //
+        // therefore, splitting maxC numbers so that each bin size is n
+        // requires nBins = maxC / n
+
+        // e.g. given w = 31 bits, then maxC = 2.15E9, n = 31(==w), nBins=7E7
+        // e.g. given w = 16 bits, then maxC = 65535, n = 16(==w), nBins=4.1E3
+
         binSz = w;
-        
+
         nBins = (int)Math.ceil((double)maxC/(double)binSz);
-      
+        
         System.out.println("nBins=" + nBins + "  rt of ops=" +
             (Math.log(binSz)/Math.log(2)));
         
@@ -133,9 +144,15 @@ YFastTrie
             }
         };
         
+        // xft operations have runtime complexity O(log_2(w)) 
+        //      w/ large space complexity of O(n * w), hence reducing n here: 
         xft = new XFastTrie<XFastTrieNode<Integer>, Integer>(clsNode, it, w);
     }
     
+    /** construct with default maximum size of numbers to store being Integer.MAX_VALUE.
+    The operations for this instance will have runtime complexity 
+    O(log_2(31)) = O(5).
+    */
     public YFastTrie() {
         
         this.w = 30;
@@ -162,6 +179,7 @@ YFastTrie
         xft = new XFastTrie<XFastTrieNode<Integer>, Integer>(clsNode, it, w);
     }
     
+    // runtime complexity is O(1)
     protected TreeMap<Integer, Integer> getTreeMap(int index) {
         Integer key = Integer.valueOf(index);
         TreeMap<Integer, Integer> map = rbs.get(key);
@@ -173,18 +191,20 @@ YFastTrie
     }
 
     /**
-     * 
+     * runtime complexity is O(log_2(wBits))
      * @param node
      * @param index 
      */
     private void addToRBTree(int node, int index) {
         
+        // runtime complexity is O(1)
         TreeMap<Integer, Integer> map = getTreeMap(index);
         
         assert(map != null);
         
         Integer key = Integer.valueOf(node);
         
+        // runtime complexity is O(log_2(w))
         Integer multiplicity = map.get(key);
     
         if (multiplicity == null) {
@@ -197,7 +217,7 @@ YFastTrie
     }
     
     /**
-     * 
+     * runtime complexity is O(log_2(wBits))
      * @param node
      * @param index 
      */
@@ -229,11 +249,7 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
+     * runtime complexity is roughly O(log_2(wBits)).
      * @param node a number >= 0 and having bit length 
      * less than or equal to w.
      * @return 
@@ -250,8 +266,10 @@ YFastTrie
         
         int index = node/binSz;
         
+        //O(1) to find the repr
         int existingRepr = xftReps.get(index);
                 
+        // worse case runtime here is O(log_2(w)) + O(l-w), else is 0
         if (!xftReps.containsKey(index)) {
             // insert is O(log_2(w)) + O(l-w)
             xft.add(Integer.valueOf(node));
@@ -264,6 +282,7 @@ YFastTrie
             xftReps.put(index, node);
         }
                 
+        // runtime complexity here is
         addToRBTree(node, index);
         
         n++;
@@ -272,10 +291,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return 
@@ -341,10 +357,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return returns node if found, else -1
@@ -372,10 +385,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return value preceding node, else -1 if there is not one
@@ -433,10 +443,7 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return 
@@ -498,12 +505,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * runtime complexity is O(log_2(w)) 
+     * runtime complexity is roughly O(log_2(wBits)).
      * @return minimum, else -1 if empty
      */
     public int minimum() {
@@ -520,10 +522,7 @@ YFastTrie
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @return maximum, else -1 if empty
      */
@@ -551,12 +550,7 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * TODO: calc runtime complexity again
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @return minumum, else -1 if empty
      */
@@ -576,13 +570,7 @@ YFastTrie
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * TODO: calc runtime complexity again
-     * 
+     * runtime complexity is roughly O(log_2(wBits)).
      * @return maximum, else -1 if empty
      */
     public int extractMaximum() {
@@ -599,6 +587,10 @@ YFastTrie
         return max;
     }
     
+    /**
+    get the number of items stored in the trie.  runtime complexity is O(1).
+    @return number of items in the trie.
+    */
     public int size() {
         return n;
     }

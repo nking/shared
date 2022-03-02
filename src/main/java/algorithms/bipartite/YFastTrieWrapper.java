@@ -132,9 +132,8 @@ public class YFastTrieWrapper {
     }
     
     /**
-     * runtime complexity is O(10) or better. It is dependent on the bit length 
-     * of the largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(w)) where w is the bitlength of the
+       maximum value stored in the trie, set at construction time.
      * @param node 
      */
     public void remove(HeapNode node) {

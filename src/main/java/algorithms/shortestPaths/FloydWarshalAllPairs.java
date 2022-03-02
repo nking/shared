@@ -39,7 +39,9 @@ public class FloydWarshalAllPairs {
     
     /**
      * find the shortest paths between pairs of vertexes.
-     * @param w
+     * @param w a square matrix of w[i][j] where each entry is the edge 
+       weight if any between i and j.  It has values 0 if i==j and inf 
+       where there is no connection.
      */
     public void findShortestPaths(int[][] w) {
                 
@@ -80,23 +82,17 @@ public class FloydWarshalAllPairs {
             
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    boolean setPrev = true;                    
-                    if (i == j) {
-                        setPrev = false;
-                    }
-                    
                     int s0 = dist[i][j];
                     int s1 = dist[i][k] + dist[k][j];
                                  
                     if (i == j) {
                         dist[i][j] = 0;
-                    } else if ((s0 <= s1) || ((dist[i][k] == Integer.MAX_VALUE) || (dist[k][j] == Integer.MAX_VALUE))) {
+                    } else if ((s0 <= s1) || ((dist[i][k] == Integer.MAX_VALUE) 
+                        || (dist[k][j] == Integer.MAX_VALUE))) {
                         dist[i][j] = s0;
                     } else {
                         dist[i][j] = s1;
-                        if (setPrev) {
-                            prev[i][j] = prev[k][j];
-                        }
+                        prev[i][j] = prev[k][j];
                     } 
                 }
             }

@@ -251,10 +251,10 @@ public class MinHeapForRT2012 {
     }
     
      /**
+     remove the node from the min-priority queue.
      If using a FibonacciHeap, the runtime complexity is O(log_2(n)).
-     If using YFT, runtime complexity is O(10) or better. It is dependent on the bit length 
-     * of the largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     If using YFT, runtime complexity is O(log_2(w)) where w is the bitlength
+     of the maximum value storable in the trie set at construction time.
      */
     public void remove(HeapNode node) {
     
@@ -269,7 +269,7 @@ public class MinHeapForRT2012 {
     }
      
     /**
-     * remove from Fibonacci heap
+     * remove from Fibonacci heap.
      * runtime complexity is O(lg_2(n))
      * @param node 
      */
