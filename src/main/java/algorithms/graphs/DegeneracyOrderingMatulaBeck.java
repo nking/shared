@@ -46,6 +46,14 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  * <pre>
  * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
  * </pre>
+ * 
+ * NOTE:  for an undirected graph that is a simple undirected not a multigraph, 
+        the maximum possible number of edges |E|_max = C(|V|, 2) 
+        and the max possible degree of a vertex = |V|-1,
+        and in that case |V| will not be less than a number whose maximum is |V|-1.
+   The alternative bucket queue for the multigraph possibility remains in this 
+   class, though unused, for future exploration of multigraphs. 
+   * 
  * @author nichole
  */
 public class DegeneracyOrderingMatulaBeck {
@@ -55,12 +63,9 @@ public class DegeneracyOrderingMatulaBeck {
      * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
      * 
       <pre>
-        if |V| is less than the maximum degree of any vertex, 
-          the runtime complexity is O( (|V| + |E|) * log_2(|V|))
-        else {
-          the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
+        the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
           which is essentially O((|V| + |E|))
-        }
+        
       <pre>
  
      * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
@@ -84,15 +89,9 @@ public class DegeneracyOrderingMatulaBeck {
         
         System.out.printf("maxDegree=%d, n=%d\n", maxDegree, n);
         
-        if (n < maxDegree) {
-            // use a sorted map to create the bucket
-            // runtime complexity is O(|V|*log_2(|V|))
-            bQ = new SBucketQueue(adjMap);
-        } else {
-            // use a YFastTrie and HashMap to create the bucket
-            // runtime complexity is O(|V|*log_2(w)) where q=maxDegree
-            bQ = new TBucketQueue(adjMap);
-        }
+        // use a YFastTrie and HashMap to create the bucket queue
+        // runtime complexity is O(|V|*log_2(w)) where q=maxDegree
+        bQ = new TBucketQueue(adjMap);
         
         TIntSet bucket, adj;
         
