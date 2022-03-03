@@ -47,13 +47,13 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
  * </pre>
  * 
- * NOTE:  for an undirected graph that is a simple undirected not a multigraph, 
+ * NOTE:  for an undirected graph that is a simple undirected graph not a multigraph, 
         the maximum possible number of edges |E|_max = C(|V|, 2) 
         and the max possible degree of a vertex = |V|-1,
         and in that case |V| will not be less than a number whose maximum is |V|-1.
    The alternative bucket queue for the multigraph possibility remains in this 
    class, though unused, for future exploration of multigraphs. 
-   * 
+   
  * @author nichole
  */
 public class DegeneracyOrderingMatulaBeck {

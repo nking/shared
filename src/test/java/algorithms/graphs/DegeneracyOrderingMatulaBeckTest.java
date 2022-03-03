@@ -8,6 +8,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import junit.framework.TestCase;
 
 /**
@@ -46,7 +47,6 @@ public class DegeneracyOrderingMatulaBeckTest extends TestCase {
         // from https://en.m.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
         
         TIntObjectMap<TIntSet> g = getG0();
-        int n = g.size();
         
         IBucketQueue bQ;
         
