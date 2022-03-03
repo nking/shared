@@ -1,13 +1,10 @@
 package algorithms.graphs;
 
 import algorithms.matrix.MatrixUtil;
-import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import java.util.Stack;
 
 /**
@@ -30,9 +27,8 @@ import java.util.Stack;
     Under the following terms:
 
     Attribution — You must give appropriate credit, provide a link to the 
-      license, and indicate if changes were made. You may do so in any r
-      easonable manner, but not in any way that suggests the licensor endorses 
-      you or your use.
+      license, and indicate if changes were made. You may do so in any reasonable manner, 
+      but not in any way that suggests the licensor endorses you or your use.
 
     Hyperlink each article directly back to their user profile page on the source site.
     * 
@@ -42,7 +38,9 @@ import java.util.Stack;
 public class HierholzersEulerCircuit {
     
     /**
-     * 
+     create a euler circuit from a directed graph.
+     Euler circuit is a path that traverses every edge of a graph, and the path 
+     ends on the starting vertex.
      * @param g adjacency list of directed graph
      * @return 
      */
@@ -58,7 +56,9 @@ public class HierholzersEulerCircuit {
     }
     
     /**
-     * 
+     create a euler circuit from a directed graph.
+     Euler circuit is a path that traverses every edge of a graph, and the path 
+     ends on the starting vertex.
      * @param g adjacency list of directed graph
      * @param startNode
      * @return 
@@ -80,7 +80,7 @@ public class HierholzersEulerCircuit {
         
         int nextV;
         TIntSet neighbors2;
-        
+       
         while (!curPath.isEmpty()) {
             curV = curPath.peek();
             neighbors2 = g2.get(curV);

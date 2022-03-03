@@ -92,6 +92,7 @@ public class LongestPath {
     /**
      * given a DAG, find the longest simple path of maximum length from the
      * given start vertex to any other vertex.
+     * runtime complexity is O(V + E).
      * <pre>
      * https://en.m.wikipedia.org/wiki/Longest_path_problem
      * </pre>
@@ -115,7 +116,7 @@ public class LongestPath {
              If v has no incoming neighbors, set the length of the longest path
              ending at v to zero. In either case, record this number so that
              later steps of the algorithm can access it.
-         Once this has been done, the longest path in the whole DAG may be obtained
+          Once this has been done, the longest path in the whole DAG may be obtained
              by starting at the vertex v with the largest recorded value,
              then repeatedly stepping backwards to its incoming neighbor with the
              largest recorded value, and reversing the sequence of vertices found in this way.

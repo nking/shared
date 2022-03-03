@@ -80,6 +80,7 @@ public class Modularity {
      * we will get Q = 0. value approaching the maximum, Q = 1, indicate strong
      * community structure [50]. values tend to be 0.3 to 0.7 and higher values
      * are rare.
+     * NOTE: communities are disjoint sets for Girvan-Newman 2002 and 2004
      *
      * @param originalAdjacencyList
      * @param layer the results of an iteration of the girvan-newman algorithm
@@ -93,8 +94,6 @@ public class Modularity {
     public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
         originalAdjacencyList, double nEdges) {
         
-        // NOTE: communities are disjoint sets for Girvan-Newman 2002 and 2004
-       
         /*
         modularity Q =  Tr e - ||e^2||
            where ||e^2|| is the sum of the square of elements of matrix e.
