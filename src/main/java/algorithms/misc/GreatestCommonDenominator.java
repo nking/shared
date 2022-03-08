@@ -27,7 +27,7 @@ public class GreatestCommonDenominator {
         int t;
         while (b != 0) {
             t = b;
-            b = a % b;
+            b = Math.floorMod(a, b);//a % b;
             a = t;
         }
         return Math.max(a, -a);
@@ -46,22 +46,24 @@ public class GreatestCommonDenominator {
         long t;
         while (b != 0) {
             t = b;
-            b = a % b;
+            b = Math.floorMod(a, b);//a % b;
             a = t;
         }
         return Math.max(a, -a);
     }
     
     /**
-     * solves the equation a * x = b mod n to
-     * find the smallest gcd for which a*x + b*y = d where d is a
-     * gcd of number n.
+     * solves for x in the equation a * x = b mod n (which is actually (a*x)%n=b)
+     * where d is the gcd of number n and d|b (that is, d divides b).
+     * finds the smallest gcd for which a*x + b*y = d.
+     * The equation may have zero, one, or more than one such solution.
+     * performs O(lg n + gcd(a, n)) arith-metic operations.
      * @param a
      * @param b
      * @param n
      * @return 
      */
-    public static long gcdModularLinearEqnSolver(long a, long b, long n) {
+    public static long[] gcdModularLinearEqnSolver(long a, long b, long n) {
         
         /*
         https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity
@@ -80,22 +82,20 @@ public class GreatestCommonDenominator {
         
         long min = Long.MAX_VALUE;
         
-        long[] d_xp_yp = extendedEuclid(a, n);
-        if ((d_xp_yp[0] != 0) || d_xp_yp[2] != 0) {
-            long d = d_xp_yp[0];
-            long x0 = d_xp_yp[1] * (b/d) % n;
-            for (int i = 0; i < d; ++i) {
-                
-                long x1 = (x0 + i*(n/d)) % n;
-                
-                //System.out.println(" " + d);
-                
-                if (d > 0 && d < min) {
-                    min = d;
-                }
-            }
+        long[] dXY = extendedEuclid(a, n);
+        long d = dXY[0];
+        if (d == 0L || ((b % d) != 0)) {
+            return new long[]{min};
         }
-        return min;
+        long m = dXY[1] * (b / d);
+        // use the floor modulo operator instead of the default truncated which is '%'
+        long x0 = Math.floorMod(m, n);
+        long[] s = new long[(int)d];
+        
+        for (int i = 0; i < d; ++i) {
+            s[i] = (x0 + i * (n / d)) % n;
+        }
+        return s;
     }
     
     public static int modularExponentiation(int a, int b, int n) {
@@ -104,10 +104,10 @@ public class GreatestCommonDenominator {
         int nbits = MiscMath0.numberOfBits(b);
         for (int i = nbits - 1; i >= 0; --i) {
             c *= 2;
-            d = (d*d) % n;
+            d = Math.floorMod(d*d, n);//(d*d) % n;
             if ((b & (1 << i)) != 0) {
                 c++;
-                d = (d*a) % n;
+                d = Math.floorMod(d*a, n);;//(d*a) % n;
             }
         }
         return d;
@@ -120,28 +120,36 @@ public class GreatestCommonDenominator {
 
     /**
      * 
-     * extended euclid 
+     * extended euclid returns d, x, and y where
+     * d = gcd(a, b) = a*x + b*y where x and y may be zero or negative.
+     * x and y are useful for forming multiplicative inverses.
      * 
      * if a .gt. b .geq. 0, runtime complexity is O(log_2(b)).
      * 
      * @param a
      * @param b
-     * @return 
+     * @return returns d, x, and y where
+     * d = gcd(a, b) = a*x + b*y where x and y may be zero or negative.
+     * x and y are useful for forming multiplicative inverses.
+     * 
      */
     public static long[] extendedEuclid(long a, long b) {
         if (b == 0) {
             return new long[]{a, 1, 0};
         }
         
-        long[] dxy_p = extendedEuclid(b, a % b);
+        long[] dxyP = extendedEuclid(b, a % b);
         
         long t = (long)Math.floor((double)a/(double)b);
-        long r = dxy_p[1] - t*dxy_p[2];
+        long r = dxyP[1] - t*dxyP[2];
         
         //System.out.format("  a=%d b=%d floor(a/b)=%d  euclid(a,a mod b)=%s\n", 
-        //    a, b, t, Arrays.toString(dxy_p));
+        //    a, b, t, Arrays.toString(dxyP));
         
-        return new long[] {dxy_p[0], dxy_p[2], r};
+        //d' = bx' + (a mod b)y'
+        //   = ay' + b(x' - ⎣a/b⎦y')
+                
+        return new long[] {dxyP[0], dxyP[2], r};
     }
     
 }

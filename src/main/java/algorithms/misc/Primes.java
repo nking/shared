@@ -29,7 +29,7 @@ public class Primes {
      * @throws java.security.NoSuchAlgorithmException 
      */
     public static TLongSet pollardRhoFactorization(final long n) throws NoSuchAlgorithmException {
-        
+                
         ThreadLocalRandom rand = ThreadLocalRandom.current();
         
         boolean useEdits = true;
@@ -41,9 +41,9 @@ public class Primes {
         
         long i = 1;
         
-        long x_latest = rand.nextLong(n - 1);
+        long x1 = rand.nextLong(n - 1);
 
-        long y = x_latest;
+        long y = x1;
         long k = 2;
         long[] dxy;
         
@@ -59,20 +59,20 @@ public class Primes {
             //System.out.printf("  n=%d i=%d) x_latest=%d\n", n, i, x_latest);  System.out.flush();
             
             i++;
-            x_latest = ((x_latest * x_latest) - 1) % n;
+            x1 = Math.floorMod((x1 * x1) - 1, n);//((x1 * x1) - 1) % n;
             
-            long tmp = y - x_latest;
+            long tmp = y - x1;
             
             // break condition: check for complete cycle
             if (pairs.containsKey(y)) {
-                if (pairs.get(y).contains(x_latest)) {
+                if (pairs.get(y).contains(x1)) {
                     break;
                 } else {
-                    pairs.get(y).add(x_latest);
+                    pairs.get(y).add(x1);
                 }
             } else {
                 pairsV = new TLongHashSet();
-                pairsV.add(x_latest);
+                pairsV.add(x1);
                 pairs.put(y, pairsV);
             }
                         
@@ -110,7 +110,7 @@ public class Primes {
             }
                         
             if (i == k) {
-                y = x_latest;
+                y = x1;
                 k *= 2;
             }            
         }
@@ -148,12 +148,26 @@ public class Primes {
     /**
      * using the Miller-Rabin algorithm uses s random tries to determine whether
      * n is definitely a composite number or possibly is prime.
-     * implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
-     * @param n
+     * The probability that the Miller-Rabin algorithm errs in the result
+     * possibly prime is at most 2^(-s) where is any odd integer greater than 2.
+     * e.g. 2^(-10) = 1E-3, 2^(-100) ~ 1E30
+     * <pre>
+     * reference: Chap 31 of Cormen et al. Introduction to Algorithms.
+     * </pre>
+     * @param n number to test for primality
      * @param s number of random tries to use
      * @return 
      */
     public static boolean probablyPrime(long n, int s) {
+        
+        if ((n & 1) == 0) {
+            // even numbers are composites of 2
+            return false;
+        }
+        
+        if (n < 4) {
+            return true;
+        }
         
         ThreadLocalRandom rand = ThreadLocalRandom.current();
         long a;
@@ -169,11 +183,22 @@ public class Primes {
     }
 
     /*** implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
-     * @param n
-     * @return 
+     * tests whether number n might be composite (hence not prime) using the
+     * number a.
+     * witness is a more effective extension of the test 
+     * <pre>
+     * a^(n-1) != 1 (mod n)
+     * </pre>
+     * @param a number in the range [1, n-1] inclusive, that is a random number 
+     * which may prove that n is a composite number, and hence not prime
+     * @param n the number being tested for primality
+     * @param rand
+     * @return true when n is composite, hence definitely not prime
      */
     static boolean witness(long a, long n, ThreadLocalRandom rand) {
-                
+        
+  //TODO: correct this one      
+        
         // a^(n-1) = (a^u)^(2^t)
         
         /*
@@ -220,7 +245,7 @@ public class Primes {
         
         for (i = 1; i < t; ++i) {
             xim = x[i - 1];
-            x[i] = (xim*xim) % n;
+            x[i] = Math.floorMod(xim*xim, n);//(xim*xim) % n;
             if (x[i] == 1 && xim != 1 && xim != (n-1)) {
                 return true;
             }
@@ -229,6 +254,52 @@ public class Primes {
             return true;
         }
         return false;
+    }
+    
+    public static long naivePrimeGenerator(int bitlength) {
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
+        return naivePrimeGenerator(bitlength, rand);
+    }
+    
+    /**
+     * generate a prime, naively.
+     * <pre>
+     * Reference:
+     * Joye, Paillier, & Vaudenay "Efficient Generation of Prime Numbers"
+     * </pre>
+     * @param bitLength
+     * @param rand
+     * @return 
+     */
+    public static long naivePrimeGenerator(int bitLength, ThreadLocalRandom rand) {
+        if (bitLength < 2) {
+            throw new IllegalStateException("bitLength must be > 1");
+        }
+        // generate a random n-bit odd number and test it for primality and return
+        //    when true.
+        //    the expected number of iterations is bitLength * log_2(2)/2 = 0.347*bitLength
+        // it should find a 32 bit number in 11 iterations.
+        int s = 10; // can increase to 100 for very high accuracy
+        int maxIter = (int) Math.ceil(0.347 * bitLength);
+        int nIter = 0;
+        long q;
+        do {
+            q = generateRandomOdd(bitLength, rand);
+            nIter++;
+        } while ( !probablyPrime(q, s));
+        
+        System.out.printf("nIter=%d, max expected=%d prime=%d\n", nIter, maxIter, q);
+        
+        return q;
+    }
+    
+    static long generateRandomOdd(int bitlength, ThreadLocalRandom rand) {
+        // for bit length n=3:  [(1<<(n-1)), (1<<n)-1 ] 4 thru 7, '100' thru '111'
+        long q = rand.nextLong((1<<(bitlength - 1)), (1 << bitlength) - 1) ;
+        System.out.printf("bitlength=%d rand=%d\n", bitlength, q);
+        q <<= 1L;
+        q |= 1;
+        return q;
     }
 
     private static long multiply(TLongSet factors) {

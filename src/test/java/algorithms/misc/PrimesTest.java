@@ -188,12 +188,36 @@ public class PrimesTest extends TestCase {
     public void testRabinMiller() throws Exception {
         
         ThreadLocalRandom rand = ThreadLocalRandom.current();
-        int number = 3;
-        int nTries = 10;
-        boolean ans = Primes.witness(2, number, rand);
-        assertTrue(ans);
         
-        boolean ans0 = Primes.probablyPrime(number, nTries);
-        assertTrue(ans0);
+        // carmichael number 561 = 3*11*17
+        // carmichael number 41041 = 7*11*13*41
+        // carmichael number 62745 = 3*5*47*89
+        // carmichael number 825265 = 5*7*17*19*73
+        
+        // test carmichael number as they are composite, not prime but some primality tests pass for them
+        long n = 561; // = 3*11*17
+        long a = 7;
+        assertTrue(Primes.witness(a, n, rand));
+        assertFalse(Primes.probablyPrime(n, 10));
+        System.out.printf("pollardRhoFactorization(%d)=%s\n",
+            n, Arrays.toString(Primes.pollardRhoFactorization(n).toArray()));
+        
+        n = 3;
+        int nTries = 10;
+        assertFalse(Primes.witness(2, n, rand));
+        
+        assertTrue(Primes.probablyPrime(n, nTries));
+        
+        n = 7;
+        assertTrue(Primes.probablyPrime(n, nTries));
+    }
+    
+    public void estNaivePrimeGenerator() {
+        
+        long p;
+        for (int bitLength = 3; bitLength < 5; ++bitLength) {
+            p = Primes.naivePrimeGenerator(bitLength);
+            System.out.flush();
+        }
     }
 }

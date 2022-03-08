@@ -50,9 +50,17 @@ public class GreatestCommonDenominatorTest extends TestCase {
         
         result = GreatestCommonDenominator.euclid(b, a);
         assertTrue(expResult == result);
+        
+        a = 561;
+        b = 21;
+        expResult = 3;
+        //561 = 3*11*17:
+        result = GreatestCommonDenominator.euclid(a, b);
+        assertTrue(expResult == result);
     }
 
     public void testExtendedEuclid() {
+        //from CLRS Fig 31.1 (Cormen et al. Introduction to Algorithms)
         System.out.println("testExtendedEuclid");
         long a = 99;
         long b = 78;
@@ -79,6 +87,44 @@ public class GreatestCommonDenominatorTest extends TestCase {
         result = GreatestCommonDenominator.extendedEuclid(3, 0);
         expResult = new long[]{3, 1, 0};
         assertTrue( Arrays.equals(expResult, result));
+        
+        
     }
 
+    public void testZStarGenerator() {
+        int z0;
+        int a;
+        int k = 1;
+        int n = 7;//15;
+        int euclid;
+        int euclid1;
+        long[] dxy;
+        long axny;
+        for (a = 0; a < n; ++a) {
+            z0 = ((a + k*n) % n);
+            euclid = GreatestCommonDenominator.euclid(a, n);
+            euclid1 = GreatestCommonDenominator.euclid(z0, n);
+            dxy = GreatestCommonDenominator.extendedEuclid(a, n);
+            axny = a*dxy[1] + n*dxy[2];
+            System.out.printf("a=%d, z=%d, gcd=(%d,%d) (gcd, x, y) = (%s) a*x+n*y=%d\n", 
+                a, z0, euclid, euclid1, 
+                Arrays.toString(dxy), axny);
+        }
+    }
+    
+    public void testGcdModularLinearEqnSolver() {
+        // example form Cormen et al. Introuduction to Algorithms, Sect 31.4
+        long a = 14;
+        long b = 30;
+        long n = 100;
+        
+        long[] dXY = GreatestCommonDenominator.extendedEuclid(a, n);
+        assertEquals(2L, dXY[0]);
+        assertEquals(-7L, dXY[1]);
+        assertEquals(1L, dXY[2]);
+                
+        long[] s = GreatestCommonDenominator.gcdModularLinearEqnSolver(a, b, n);
+        assertEquals(95L, s[0]);
+        assertEquals(45L, s[1]);
+    }
 }

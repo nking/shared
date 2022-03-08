@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package algorithms;
 
 import java.util.LinkedHashMap;
@@ -39,6 +34,12 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
             throw new IllegalArgumentException("for the Least Recently Accessed Cache, need accessOrder=true");
         }
         this.initialCapacity = initialCapacity;
+    }
+    
+    public LRUCache(Map<? extends K, ? extends V> m) {
+        super(3, 0.75f, accessOrder);
+        this.initialCapacity = 3;
+        putAll(m);
     }
     
     @Override
