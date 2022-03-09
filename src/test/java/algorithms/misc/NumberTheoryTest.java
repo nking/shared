@@ -219,6 +219,6 @@ public class NumberTheoryTest extends TestCase {
         BigInteger mDecryp2 = cPowD.mod(new BigInteger(Integer.toString(n)));
         System.out.printf("biginteger: m=%d, P(m)=%s, S(P(m))=%s\n", m, c.toString(), 
             mDecryp2.toString());
-        assertEquals(Integer.toString(m), cPowD);
+        assertEquals(Integer.toString(m), mDecryp2.toString());
     }
 }

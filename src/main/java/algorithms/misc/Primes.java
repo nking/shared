@@ -154,11 +154,15 @@ public class Primes {
      * <pre>
      * reference: Chap 31 of Cormen et al. Introduction to Algorithms.
      * </pre>
-     * @param n number to test for primality
-     * @param s number of random tries to use
+     * @param n number to test for primality, must be odd and > 2.
+     * @param s number of randomly chosen base numbers to try
      * @return 
      */
     public static boolean probablyPrime(long n, int s) {
+        
+        if (n < 3) {
+            throw new IllegalArgumentException("n must be > 2");
+        }
         
         if ((n & 1) == 0) {
             // even numbers are composites of 2
@@ -170,12 +174,15 @@ public class Primes {
         }
         
         ThreadLocalRandom rand = ThreadLocalRandom.current();
+        
         long a;
         int j;
         
         for (j = 0; j < s; ++j) {
+            // 1 <= a <= (n-1)
             a = rand.nextLong(1, n-1);
             if (witness(a, n, rand)) {
+                // a is definitely composite
                 return false;
             }
         }
@@ -183,22 +190,20 @@ public class Primes {
     }
 
     /*** implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
-     * tests whether number n might be composite (hence not prime) using the
-     * number a.
+     * tests whether number n is composite (hence not prime) using the
+     * number a or possibly prime.
      * witness is a more effective extension of the test 
      * <pre>
-     * a^(n-1) != 1 (mod n)
+     * a^(n-1) ≢ 1 (mod n)
      * </pre>
      * @param a number in the range [1, n-1] inclusive, that is a random number 
      * which may prove that n is a composite number, and hence not prime
-     * @param n the number being tested for primality
+     * @param n the number being tested for primality.  must be odd and > 2.
      * @param rand
-     * @return true when n is composite, hence definitely not prime
+     * @return true when n is composite, else false when n is possibly prime.
      */
     static boolean witness(long a, long n, ThreadLocalRandom rand) {
-        
-  //TODO: correct this one      
-        
+                
         // a^(n-1) = (a^u)^(2^t)
         
         /*
@@ -214,43 +219,26 @@ public class Primes {
         return false
         */
         
-        
-        /* let n-1 = 2^t * u   where t>=1 and u is odd
-        
-        also, t < n
-        
-        2^t = (n-1)/u
-        log_2( 2^t ) = t = log_2( (n-1)/u )
-        
-        u = (n-1)/(2^t)
-        */
-        // randomly choose t as 1 <= t <= (n-1), but use a maximum value of integer
-        //    if n is a long larger than 31 bits
-        int t = 1;
-        long u = 1;
-        
-        do {
-            if (n > Integer.MAX_VALUE) {
-                t = rand.nextInt(1, Integer.MAX_VALUE - 1);
-            } else {
-                t = rand.nextInt(1, (int)n - 1);
-            }
-            u = (n - 1)/((long)Math.pow(2, t));
-        } while ((u & 1) == 0);
-        
+        int t = (int)(Math.floor( Math.log(n-1)/Math.log(2) ));
+        long u = (n-1)/(1<<t);
+        System.out.printf("n=%d, t=%d, u=%d\n", n, t, u);
+                        
         long[] x = new long[t + 1];
         int i;
-        long xim;
-        x[0] = MiscMath0.modularExponentiation(a, u, n);
         
-        for (i = 1; i < t; ++i) {
-            xim = x[i - 1];
-            x[i] = Math.floorMod(xim*xim, n);//(xim*xim) % n;
-            if (x[i] == 1 && xim != 1 && xim != (n-1)) {
+        // compute x0 = a^u mod n
+        x[0] = NumberTheory.modularExponentiation(a, u, n);
+        
+        for (i = 1; i <= t; ++i) {
+            x[i] = Math.floorMod(x[i - 1]*x[i - 1], n);
+            if (x[i] == 1 && x[i - 1] != 1 && x[i - 1] != (n-1)) {
+                // x[i-1] is a nontrivial square root of 1, modulo n.
+                // n is composite.
                 return true;
             }
         }
-        if (x[t - 1] != 1){
+        if (x[t] != 1){
+            //x_t ≢ (a^(n-1)) (mod n) != 1
             return true;
         }
         return false;
@@ -323,4 +311,39 @@ public class Primes {
         }
         return m;
     }
+    
+    /**
+     * estimate the number of primes less than or equal to n.
+     * uses Theorem 31.37 (Prime number theorem) of Cormen et al.
+     * Introduction to Algorithms.
+     * The method is off by less than 6% at n = 1E9.
+     * @param n
+     * @return 
+     */
+    public static int numberOfPrimes(int n) {
+        return (int)Math.floor((double)n/Math.log(n));
+    }
+    
+     
+    /**
+     * assuming that the platform word size is either 32 bit or 64 bit, return the
+     * largest prime less than the word size
+     * @return 
+     */
+    public static long getLargestPrimeForPlatformWordSize() {
+        // see http://en.wikipedia.org/wiki/Mersenne_prime
+        // for 32 bit  2147483647 which is a Mersenne prime
+        // for 62 bit  2305843009213693951
+        //     64 bits 9223372036854775783
+        String arch = System.getProperty("sun.arch.data.model");
+
+        boolean is32Bit = ((arch != null) && arch.equals("64")) ? false : true;
+        
+        if (is32Bit) {
+            return 2147483647l;
+        } else {
+            return 9223372036854775783l;
+        }
+    }
+    
 }

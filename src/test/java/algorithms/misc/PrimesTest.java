@@ -29,7 +29,7 @@ public class PrimesTest extends TestCase {
         expected.add(Long.valueOf(19));
         expected.add(Long.valueOf(73));
         
-        assertTrue(check(n, expected));
+        assertTrue(checkPollardRhoFactorization(n, expected));
        
         //----
         n = 825;
@@ -40,14 +40,14 @@ public class PrimesTest extends TestCase {
         expected.add(Long.valueOf(5));
         expected.add(Long.valueOf(3));
         
-        assertTrue(check2(n, expected));
+        assertTrue(checkPollardRhoFactorization2(n, expected));
         
         //---
         n = 197;
         expected = new TLongHashSet();
         //expected.add(Long.valueOf(197));
         
-        assertTrue(check(n, expected));
+        assertTrue(checkPollardRhoFactorization(n, expected));
        
     }
     
@@ -116,7 +116,7 @@ public class PrimesTest extends TestCase {
      * @return
      * @throws NoSuchAlgorithmException 
      */
-    private boolean check(long n, TLongSet expected) throws NoSuchAlgorithmException {
+    private boolean checkPollardRhoFactorization(long n, TLongSet expected) throws NoSuchAlgorithmException {
         TLongSet result;
         TLongIterator iter;
         long r;
@@ -157,7 +157,7 @@ public class PrimesTest extends TestCase {
      * @return
      * @throws NoSuchAlgorithmException 
      */
-    private boolean check2(long n, TLongSet expected) throws NoSuchAlgorithmException {
+    private boolean checkPollardRhoFactorization2(long n, TLongSet expected) throws NoSuchAlgorithmException {
         TLongSet result;
         TLongIterator iter;
         long r;
@@ -185,31 +185,32 @@ public class PrimesTest extends TestCase {
         return false;
     }
     
-    public void testRabinMiller() throws Exception {
+    public void testWitnessAndMillerRabin() throws Exception {
         
         ThreadLocalRandom rand = ThreadLocalRandom.current();
-        
+                
         // carmichael number 561 = 3*11*17
         // carmichael number 41041 = 7*11*13*41
         // carmichael number 62745 = 3*5*47*89
         // carmichael number 825265 = 5*7*17*19*73
         
-        // test carmichael number as they are composite, not prime but some primality tests pass for them
-        long n = 561; // = 3*11*17
-        long a = 7;
-        assertTrue(Primes.witness(a, n, rand));
-        assertFalse(Primes.probablyPrime(n, 10));
-        System.out.printf("pollardRhoFactorization(%d)=%s\n",
-            n, Arrays.toString(Primes.pollardRhoFactorization(n).toArray()));
+        long a = 7;  // [1, n-1]
+        int s = 10;
         
-        n = 3;
-        int nTries = 10;
-        assertFalse(Primes.witness(2, n, rand));
+        // test carmichael number as they are composite, not prime
+        long[] car = new long[]{561, 41041, 62745, 825265};
+        for (long n : car) {
+            
+            a = rand.nextLong(1, n-1);
+            
+            // witness might fail invoked singly, but has low probability to
+            // fail when invoked several times in the Miller-Rabin probablyPrime
+            assertTrue(Primes.witness(a, n, rand) || !Primes.probablyPrime(n, s));
+          
+            System.out.printf("pollardRhoFactorization(%d)=%s\n",
+               n, Arrays.toString(Primes.pollardRhoFactorization(n).toArray()));
+        } 
         
-        assertTrue(Primes.probablyPrime(n, nTries));
-        
-        n = 7;
-        assertTrue(Primes.probablyPrime(n, nTries));
     }
     
     public void estNaivePrimeGenerator() {

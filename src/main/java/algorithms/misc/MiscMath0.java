@@ -1451,55 +1451,7 @@ public class MiscMath0 {
         int r = MultiplyDeBruijnBitPosition[idx];
         return r + 1;
     }
-    
-    /**
-     * calculate (a^b) mod n using repeated squaring.
-     * algorithm is from Cormen et al. "Introduction to Algorithms"
-     * @param a
-     * @param b
-     * @param n
-     * @return 
-     */
-    public static long modularExponentiation(long a, long b, long n) {
-        // d modulo n = d - n*math.floor(d/n)
-        long c = 0;
-        long d = 1;
-        int i;
-        int nBits = MiscMath0.numberOfBits(b);
-        for (i = nBits; i >= 0; i--) {
-            c *= 2;
-            d = (d*d) % n;
-            // bit set test
-            if ((b  & (1L << i)) != 0) {
-                c++;
-                d = (d*a) % n;
-            }
-        }
-        
-        return d;
-    }
-
-    /**
-     * assuming that the platform word size is either 32 bit or 64 bit, return the
-     * largest prime less than the word size
-     * @return 
-     */
-    public static long getLargestPrimeForPlatformWordSize() {
-        // see http://en.wikipedia.org/wiki/Mersenne_prime
-        // for 32 bit  2147483647 which is a Mersenne prime
-        // for 62 bit  2305843009213693951
-        //     64 bits 9223372036854775783
-        String arch = System.getProperty("sun.arch.data.model");
-
-        boolean is32Bit = ((arch != null) && arch.equals("64")) ? false : true;
-        
-        if (is32Bit) {
-            return 2147483647l;
-        } else {
-            return 9223372036854775783l;
-        }
-    }
-    
+   
     /**
      * http://en.wikipedia.org/wiki/Mersenne_prime
      * @param powerOf2

@@ -136,6 +136,41 @@ public class NumberTheory {
         return d;
     }
     
+    /**
+     * calculate a^b mod n.
+     * <pre>
+     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen et al. Introduction
+     * to Algorithms (a.k.a. CLRS).
+     * </pre>
+     * @param a non-negative integer
+     * @param b non-negative integer
+     * @param n positive integer
+     * @return 
+     */
+    public static long modularExponentiation(long a, long b, long n) {
+        
+        if (a == 0) {
+            return 0;
+        }
+        if (b == 0 && a < n) {
+            return a;
+        }
+        int c = 0;
+        long d = 1;
+        int k = MiscMath0.numberOfBits(b);
+        long mask = 1 << (k - 1);
+        for (int i = k - 1; i >= 0; --i) {
+            c *= 2;
+            d = Math.floorMod(d*d, n);//(d*d) % n;
+            if ((b & mask) != 0) {
+                c++;
+                d = Math.floorMod(d*a, n);//(d*a) % n;
+            } 
+            mask >>= 1;
+        }
+        return d;
+    }
+    
     /*
     r.t. complexity of multiplying 2 n bit numbers is
          O(n log n log log n).
