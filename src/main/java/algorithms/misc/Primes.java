@@ -6,6 +6,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -18,6 +19,8 @@ public class Primes {
      * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
      * "Introduction to Algorithms".  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
+     * "the algorithms is only a heuristic, neither its running time nor its success 
+     * is guaranteed, although the procedure is highly effective in practice."
      * 
      * NOTE: for factoring large numbers, may want to implement:
      * "Factoring integers with the number field sieve"
@@ -29,96 +32,65 @@ public class Primes {
      * @throws java.security.NoSuchAlgorithmException 
      */
     public static TLongSet pollardRhoFactorization(final long n) throws NoSuchAlgorithmException {
-                
-    //TODO: correcting
-    
+                    
         ThreadLocalRandom rand = ThreadLocalRandom.current();
-        
-        boolean useEdits = true;
-        
-        TLongSet factors = new TLongHashSet();
-        
-        /* only the most recent value of x_i needs to be retained, so to reduce
-        space, will only keep x_latest and x_latest_index. */
         
         long i = 1;
         
-        long x1 = rand.nextLong(n - 1);
-
+        long x1 = rand.nextLong(2, n - 1);
+        
+        long x2;
+        
         long y = x1;
+        
         long k = 2;
-        long[] dxy;
         
-        long maxIter = (long)Math.ceil(Math.pow(n, 0.25));
-        long m, r, dabs;
+        long xCycle = -1;
         
-        // store y and x_latest pairs and break when cycle returns
-        TLongObjectMap<TLongSet> pairs = new TLongObjectHashMap<TLongSet>();
-        TLongSet pairsV;
+        // first prime expected to be found within n^(1/4) steps:
+        long maxI = (long)Math.ceil(Math.pow(n, 0.25));
         
+        TLongSet factors = new TLongHashSet(); 
+        
+        long d;
+                
+        System.out.printf("i=%d xi=%d\n", i, x1);
+                
         while (true) {
             
-            //System.out.printf("  n=%d i=%d) x_latest=%d\n", n, i, x_latest);  System.out.flush();
+            ++i;
             
-            i++;
-            x1 = Math.floorMod((x1 * x1) - 1, n);//((x1 * x1) - 1) % n;
+            x2 = Math.floorMod(x1*x1 - 1, n);
             
-            long tmp = y - x1;
-            
-            // break condition: check for complete cycle
-            if (pairs.containsKey(y)) {
-                if (pairs.get(y).contains(x1)) {
-                    break;
-                } else {
-                    pairs.get(y).add(x1);
-                }
-            } else {
-                pairsV = new TLongHashSet();
-                pairsV.add(x1);
-                pairs.put(y, pairsV);
+            if (x2 == xCycle) {
+                break;
             }
-                        
-            dxy = NumberTheory.extendedEuclid(tmp, n);
-            //long d = NumberTheory.euclid(tmp, n);
-            dabs = Math.abs(dxy[0]);
             
-            //System.out.printf("    y=%d, x_latest=%d, EE(%d,%d)=%s\n", 
-            //    y, x_latest, tmp, n, Arrays.toString(dxy));  System.out.flush();
+            d = NumberTheory.extendedEuclid(y - x2, n)[0];
+            d = Math.abs(d);
             
-            if ((dabs != 1) && (dabs != Math.abs(n))) {
-                factors.add(dabs);
-                //System.out.printf(" * store %d (size=%d)\n", dabs, factors.size());
-                
-                // break condition: check for factoring >= n
-                
-                m = multiply(factors);
-
-                /*if(!factors.isEmpty()) {
-                    System.out.printf("   %s=> m=%d (n=%d x_latest=%d)\n", 
-                        Arrays.toString(factors.toArray()), m, n, x_latest);
-                    System.out.flush();
-                }*/
-                if (m == Math.abs(n)) {
-                    break;
-                }
-                if (useEdits && m > Math.abs(n)) {
-                    return new TLongHashSet();
-                    /*while (m > n && !factors.isEmpty()) {
-                        long rm = max(factors);
-                        factors.remove(rm);
-                        m = multiply(factors);
-                    }*/
+            System.out.printf("i=%d x2=%d, d=(%d,%d) xc=%d\n", 
+                i, x2, d, NumberTheory.euclid(y-x2, n), xCycle);
+                   
+            if ((d != 1) && (d != n) && !factors.contains(d)) {
+                factors.add(d);
+                if (xCycle == -1) {
+                    xCycle = x1;
                 }
             }
-                        
+            
             if (i == k) {
-                y = x1;
+                y = x2;
                 k *= 2;
-            }            
-        }
-        //System.out.printf("  i=%d  n^(1/4)=%d\n", i, maxIter);
-        //System.out.flush();
-
+            }
+            
+            x1 = x2;
+                        
+            if (i > maxI*maxI) {
+                break;
+            }
+        };
+        
         return factors;
     }
     
@@ -152,8 +124,16 @@ public class Primes {
      * n is definitely a composite number or possibly is prime.
      * The probability that the Miller-Rabin algorithm errs in the result
      * possibly prime is at most 2^(-s) where is any odd integer greater than 2.
-     * e.g. 2^(-10) = 1E-3, 2^(-100) ~ 1E30
+     * The return false indicates n is a composite and the result is definite.
+     * e.g. 2^(-10) = 1E-3; 2^(-100) ~ 1E-30.
+     * The probability that n is prime, given that MILLER-RABIN has returned PRIME
+     * is Pr{A|B} which is the alternate form of Bayes’s theorem (equation (C.18)).
      * <pre>
+     * Pr{A|B} ≈ 1/(1 + ((2^(-s)) * (ln(n) - 1))).
+     * Pr{A|B} does not exceed 1/2 until s > log_2(log(n)-1).
+     * so choose s ≥ log_2(log(n)-1) = math.log(beta/1.443)/math.log(2)
+     * where beta is the bitlength of n.
+     * 
      * reference: Chap 31 of Cormen et al. Introduction to Algorithms.
      * </pre>
      * @param n number to test for primality, must be odd and > 2.
@@ -205,28 +185,15 @@ public class Primes {
      * @return true when n is composite, else false when n is possibly prime.
      */
     static boolean witness(long a, long n, ThreadLocalRandom rand) {
-                
-        // a^(n-1) = (a^u)^(2^t)
-        
-        /*
-        let n -1 = u*2^t 
-            where u is odd and t >= 1
-        x_0 = modularExponentiation(a, u, n)
-        for (i = 1 to t
-            x_i = (x_(i-1))^2 mod n
-            if (x_i == 1 and x_(i-1) != 1 and x_(i-1) != (n-1)) 
-                return true
-        if (x_i != 1
-            return true
-        return false
-        */
-        
+                        
         int t = (int)(Math.floor( Math.log(n-1)/Math.log(2) ));
         long u = (n-1)/(1<<t);
         System.out.printf("n=%d, t=%d, u=%d\n", n, t, u);
                         
         long[] x = new long[t + 1];
         int i;
+        
+        // X = <a^u, a^(2u), a^(2^(2u)),...a^(2^(tu))> (all computations are performed modulo n).
         
         // compute x0 = a^u mod n
         x[0] = NumberTheory.modularExponentiation(a, u, n);

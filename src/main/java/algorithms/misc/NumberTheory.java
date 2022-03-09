@@ -46,7 +46,7 @@ public class NumberTheory {
         long t;
         while (b != 0) {
             t = b;
-            b = Math.floorMod(a, b);//a % b;
+            b = Math.floorMod(a, b);
             a = t;
         }
         return Math.max(a, -a);
@@ -201,12 +201,6 @@ public class NumberTheory {
         long t = (long)Math.floor((double)a/(double)b);
         long r = dxyP[1] - t*dxyP[2];
         
-        //System.out.format("  a=%d b=%d floor(a/b)=%d  euclid(a,a mod b)=%s\n", 
-        //    a, b, t, Arrays.toString(dxyP));
-        
-        //d' = bx' + (a mod b)y'
-        //   = ay' + b(x' - ⎣a/b⎦y')
-                
         return new long[] {dxyP[0], dxyP[2], r};
     }
     
