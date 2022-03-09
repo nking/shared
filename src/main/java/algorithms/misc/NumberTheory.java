@@ -12,7 +12,7 @@ package algorithms.misc;
    
  * @author nichole
  */
-public class GreatestCommonDenominator {
+public class NumberTheory {
 
     /**
      * return the greatest common denominator of the 2 integers.
@@ -53,13 +53,16 @@ public class GreatestCommonDenominator {
     }
     
     /**
-     * solves for x in the equation a * x = b mod n (which is actually (a*x)%n=b)
+     * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) mod n = b)
      * where d is the gcd of number n and d|b (that is, d divides b).
      * finds the smallest gcd for which a*x + b*y = d.
      * The equation may have zero, one, or more than one such solution.
-     * performs O(lg n + gcd(a, n)) arith-metic operations.
-     * @param a
-     * @param b
+     * performs O(lg n + gcd(a, n)) arithmetic operations.
+     * <pre>
+     * Section 31.4, Cormen et al. Introduction to Computer Algorithms.
+     * </pre>
+     * @param a positive number greater than 0
+     * @param b positive number greater than 0
      * @param n
      * @return 
      */
@@ -98,17 +101,37 @@ public class GreatestCommonDenominator {
         return s;
     }
     
+    /**
+     * calculate a^b mod n.
+     * <pre>
+     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen et al. Introduction
+     * to Algorithms (a.k.a. CLRS).
+     * </pre>
+     * @param a non-negative integer
+     * @param b non-negative integer
+     * @param n positive integer
+     * @return 
+     */
     public static int modularExponentiation(int a, int b, int n) {
+        
+        if (a == 0) {
+            return 0;
+        }
+        if (b == 0 && a < n) {
+            return a;
+        }
         int c = 0;
         int d = 1;
-        int nbits = MiscMath0.numberOfBits(b);
-        for (int i = nbits - 1; i >= 0; --i) {
+        int k = MiscMath0.numberOfBits(b);
+        int mask = 1 << (k - 1);
+        for (int i = k - 1; i >= 0; --i) {
             c *= 2;
             d = Math.floorMod(d*d, n);//(d*d) % n;
-            if ((b & (1 << i)) != 0) {
+            if ((b & mask) != 0) {
                 c++;
-                d = Math.floorMod(d*a, n);;//(d*a) % n;
-            }
+                d = Math.floorMod(d*a, n);//(d*a) % n;
+            } 
+            mask >>= 1;
         }
         return d;
     }

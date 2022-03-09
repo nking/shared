@@ -69,43 +69,43 @@ public class PrimesTest extends TestCase {
         long[] r;
         long a, b;
         a = n; b = 75;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 75;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 55;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 55;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 15;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 15;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 5;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 5;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 3;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 3;
-        r = GreatestCommonDenominator.extendedEuclid(a, b);
+        r = NumberTheory.extendedEuclid(a, b);
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
     }
 

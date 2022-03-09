@@ -76,8 +76,8 @@ public class Primes {
                 pairs.put(y, pairsV);
             }
                         
-            dxy = GreatestCommonDenominator.extendedEuclid(tmp, n);
-            //long d = GreatestCommonDenominator.euclid(tmp, n);
+            dxy = NumberTheory.extendedEuclid(tmp, n);
+            //long d = NumberTheory.euclid(tmp, n);
             dabs = Math.abs(dxy[0]);
             
             //System.out.printf("    y=%d, x_latest=%d, EE(%d,%d)=%s\n", 
