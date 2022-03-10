@@ -35,9 +35,9 @@ public class Primes {
     }
     
     /**
-     * find the prime factors of the integer factorization of n using
+     * find prime factors of the integer factorization of n using
      * the Pollard-Rho algorithm and repeating on factors until they're
-     * prime.
+     * prime.  it should return at least 1 prime.
      * 
      * @param n
      * @param rand

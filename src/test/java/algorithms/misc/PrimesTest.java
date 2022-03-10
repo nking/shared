@@ -188,12 +188,12 @@ public class PrimesTest extends TestCase {
         
     }
     
-    public void estNaivePrimeGenerator() {
+    public void testNaivePrimeGenerator() {
         
         long p;
         for (int bitLength = 3; bitLength < 5; ++bitLength) {
             p = Primes.naivePrimeGenerator(bitLength);
-            System.out.flush();
+            
         }
     }
 }

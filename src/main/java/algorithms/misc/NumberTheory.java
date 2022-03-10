@@ -204,4 +204,26 @@ public class NumberTheory {
         return new long[] {dxyP[0], dxyP[2], r};
     }
     
+    /**
+     * the least common multiple, lowest common multiple, or smallest common 
+     * multiple of two integers a and b, usually denoted by lcm(a, b), 
+     * is the smallest positive integer that is divisible by both a and b.
+     * <pre>
+     * reference:
+     * https://en.m.wikipedia.org/wiki/Least_common_multiple
+     * </pre>
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static long leastCommonMultiple(long a, long b) {
+        if (a == 0 && b == 0) {
+            throw new IllegalArgumentException("a and b cannot both be0");
+        }
+        
+        long m = Math.abs(a * b);
+        long gcd = extendedEuclid(a, b)[0];
+        
+        return m/gcd;
+    }
 }

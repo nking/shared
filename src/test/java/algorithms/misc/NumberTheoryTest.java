@@ -221,4 +221,12 @@ public class NumberTheoryTest extends TestCase {
             mDecryp2.toString());
         assertEquals(Integer.toString(m), mDecryp2.toString());
     }
+    
+    public void testLCM() {
+        //https://en.m.wikipedia.org/wiki/Lowest_common_denominator
+        
+        assertEquals(6, NumberTheory.leastCommonMultiple(2, 3));
+        
+        assertEquals(36, NumberTheory.leastCommonMultiple(12, 18));
+    }
 }
