@@ -2,6 +2,12 @@
 
 -- consider implementing a 3D voronoi
 
+-- implement perfect hashing one day. not currently needed.
+   openjdk has an implementation of
+   "A Practical Minimal Perfect Hashing Method" - Fabiano C. Botelho1,
+   Yoshiharu Kohayakawa, and Nivio Ziviani, 2005 
+   in PerfectHashBuilder.java 
+
 -- consider refactoring the code for permutations (Shuffle), combinations
    and partitions to place in one package/directory.
 

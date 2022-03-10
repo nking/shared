@@ -151,8 +151,11 @@ public class NumberTheoryTest extends TestCase {
     }
     
     public void testRSA() {
-        // following Section 31.7
+        // following Section 31.7 of Cormen et al. Introduction to Algorithms (CLRS)
         // exercise 31.7-1
+        
+        // NOTE: see also https://en.wikipedia.org/wiki/Paillier_cryptosystem
+        
         int p = 11;
         int q = 29;
         int n = p*q;//319
