@@ -1,6 +1,8 @@
 package algorithms.misc;
 
 import gnu.trove.iterator.TLongIterator;
+import gnu.trove.list.TLongList;
+import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
@@ -16,6 +18,78 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Primes {
     
     /**
+     * find the prime factors of the integer factorization of n using
+     * the Pollard-Rho algorithm and repeating on factors until they're
+     * prime.
+     * 
+     * @param n
+     * @return
+     * @throws NoSuchAlgorithmException 
+     */
+    public static TLongSet findPrimeFactors(final long n) 
+        throws NoSuchAlgorithmException {
+        
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
+        
+        return findPrimeFactors(n, rand);
+    }
+    
+    /**
+     * find the prime factors of the integer factorization of n using
+     * the Pollard-Rho algorithm and repeating on factors until they're
+     * prime.
+     * 
+     * @param n
+     * @param rand
+     * @return returns at least one prime factor of n
+     * @throws NoSuchAlgorithmException 
+     */
+    public static TLongSet findPrimeFactors(final long n, ThreadLocalRandom rand) 
+        throws NoSuchAlgorithmException {
+        
+        int s = 10;
+        
+        TLongSet factors = pollardRhoFactorization(n, rand);
+        TLongList factorsList = new TLongArrayList(factors);
+        
+        TLongSet primeFactors = new TLongHashSet();
+        
+        TLongSet factors2;
+        
+        long factor;
+        
+        long factor2;
+        
+        TLongIterator iter;
+        
+        int i = 0;
+        
+        while (i < factorsList.size()) {
+            factor = factorsList.get(i);
+            ++i;
+            if (probablyPrime(factor, s)) {
+                primeFactors.add(factor);
+                continue;
+            }
+                        
+            factors2 = pollardRhoFactorization(factor, rand);
+            iter = factors2.iterator();
+            while (iter.hasNext()) {
+                factor2 = iter.next();
+                if (probablyPrime(factor2, s)) {
+                    primeFactors.add(factor2);
+                    continue;
+                }
+                if (!factors.contains(factor2)) {
+                    factorsList.add(factor2);
+                }
+            }
+        }
+                
+        return primeFactors;
+    }
+    
+    /**
      * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
      * "Introduction to Algorithms".  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
@@ -27,6 +101,10 @@ public class Primes {
         J. P. Buhler,  H. W. Lenstra, Jr., Carl Pomerance
      * http://www.math.leidenuniv.nl/~hwl/PUBLICATIONS/1993e/art.pdf
      * 
+     * NOTE: the method returns numbers that are factors, but not prime also.
+     * One can use probablyPrime to test for primality and use
+     * pollardRhoFactorization() on the non-prime factor.
+     * 
      * @param n
      * @return 
      * @throws java.security.NoSuchAlgorithmException 
@@ -35,6 +113,33 @@ public class Primes {
                     
         ThreadLocalRandom rand = ThreadLocalRandom.current();
         
+        return pollardRhoFactorization(n, rand);
+    }
+    
+    /**
+     * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
+     * "Introduction to Algorithms".  Usually can find at least one small integer
+     * that divides the number n.  The runtime is usually O(n^1/4).
+     * "the algorithms is only a heuristic, neither its running time nor its success 
+     * is guaranteed, although the procedure is highly effective in practice."
+     * 
+     * NOTE: for factoring large numbers, may want to implement:
+     * "Factoring integers with the number field sieve"
+        J. P. Buhler,  H. W. Lenstra, Jr., Carl Pomerance
+     * http://www.math.leidenuniv.nl/~hwl/PUBLICATIONS/1993e/art.pdf
+     * 
+     * NOTE: the method returns numbers that are factors, but not prime also.
+     * One can use probablyPrime to test for primality and use
+     * pollardRhoFactorization() on the non-prime factor.
+     * 
+     * @param n
+     * @param rand
+     * @return 
+     * @throws java.security.NoSuchAlgorithmException 
+     */
+    public static TLongSet pollardRhoFactorization(final long n, ThreadLocalRandom rand) 
+        throws NoSuchAlgorithmException {
+                            
         long i = 1;
         
         long x1 = rand.nextLong(2, n - 1);
@@ -54,7 +159,7 @@ public class Primes {
         
         long d;
                 
-        System.out.printf("i=%d xi=%d\n", i, x1);
+        //System.out.printf("i=%d xi=%d\n", i, x1);
                 
         while (true) {
             
@@ -69,8 +174,8 @@ public class Primes {
             d = NumberTheory.extendedEuclid(y - x2, n)[0];
             d = Math.abs(d);
             
-            System.out.printf("i=%d x2=%d, d=(%d,%d) xc=%d\n", 
-                i, x2, d, NumberTheory.euclid(y-x2, n), xCycle);
+            //System.out.printf("i=%d x2=%d, d=(%d,%d) xc=%d\n", 
+            //    i, x2, d, NumberTheory.euclid(y-x2, n), xCycle);
                    
             if ((d != 1) && (d != n) && !factors.contains(d)) {
                 factors.add(d);
@@ -185,11 +290,40 @@ public class Primes {
      * @return true when n is composite, else false when n is possibly prime.
      */
     static boolean witness(long a, long n, ThreadLocalRandom rand) {
+        
+        if ((n & 1) == 0 || n < 3) {
+            throw new IllegalArgumentException("n must be odd and > 2");
+        }
+               
+        //n - 1 = 2^t*u where t >=1 and u is an odd integer
+        // n-1/u is an integer 
+        // ((n-1)/u) = 2^t
+        // t = math.log( (n-1)/u )/math.log(2)
+        
+        long u = 1;
+        int t = 1;
+        int div;
                         
-        int t = (int)(Math.floor( Math.log(n-1)/Math.log(2) ));
-        long u = (n-1)/(1<<t);
-        System.out.printf("n=%d, t=%d, u=%d\n", n, t, u);
-                        
+        for (long i = 3; i < n; i+=2) {
+            if (Math.floorMod(n - 1, i) == 0) {
+                u = i;
+                div = (int)((n-1)/u);
+                if (MiscMath0.isAPowerOf2(div)) {
+                    t = (int)(Math.log( (n-1)/u )/Math.log(2));
+                    assert(t > 0);
+                    break;
+                }
+            }
+        }
+        
+        if (u == 1 && t == 1) {
+            // keep u=1
+            t = (int)(Math.log(n-1)/Math.log(2));
+        }
+        //System.out.printf("(1<<t)*u=%d, (n-1)=%d, n=%d t=%d u=%d\n", (1<<t)*u, n-1, n, t, u);
+        
+        assert( (1<<t)*u == (n-1));
+                
         long[] x = new long[t + 1];
         int i;
         

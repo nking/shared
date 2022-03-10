@@ -1,7 +1,6 @@
 
 package algorithms.misc;
 
-import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.security.NoSuchAlgorithmException;
@@ -26,26 +25,38 @@ public class PrimesTest extends TestCase {
         long n;
         long[] expected;
         TLongSet result;
-        long[] sorted;
-        
+        TLongSet resultPrimes;
+        boolean found;
         
         n = 1387;
         expected = new long[]{19, 73};
         result = Primes.pollardRhoFactorization(n);
-        sorted = result.toArray();
-        Arrays.sort(sorted);
-        System.out.println("\n1387: " + Arrays.toString(sorted));
-       // assertTrue(Arrays.equals(expected, sorted));
-       
+        resultPrimes = Primes.findPrimeFactors(n);
+        System.out.println("\n1387: " + Arrays.toString(result.toArray()));
+        System.out.println("\n1387: " + Arrays.toString(resultPrimes.toArray()));
+        found = false;
+        for (long x : expected) {
+            if (result.contains(x)) {
+                found = true;
+            }
+        }
+        //assertTrue(found);
+               
         //----
         n = 825;
         //  prime answer using LCDs = 11, 5, 3
         expected = new long[]{3, 5, 11};
         result = Primes.pollardRhoFactorization(n);
-        sorted = result.toArray();
-        Arrays.sort(sorted);
-        System.out.println("\n825: " + Arrays.toString(sorted));
-       // assertTrue(Arrays.equals(expected, sorted));
+        resultPrimes = Primes.findPrimeFactors(n);
+        System.out.println("\n825: " + Arrays.toString(result.toArray()));
+        System.out.println("\n825: " + Arrays.toString(resultPrimes.toArray()));
+        found = false;
+        for (long x : expected) {
+            if (result.contains(x)) {
+                found = true;
+            }
+        }
+        //assertTrue(found);
     }
     
     public void estEE() throws NoSuchAlgorithmException {
@@ -106,7 +117,7 @@ public class PrimesTest extends TestCase {
         System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
     }
     
-    public void estMillerRabin() throws Exception {
+    public void testMillerRabin() throws Exception {
         long n = 561;
         int t = 4;
         int u = 35;
@@ -143,9 +154,13 @@ public class PrimesTest extends TestCase {
         assertTrue(Arrays.equals(new long[]{241, 298, 166, 67, 1}, x));
         assertTrue(c1);
         assertFalse(c2);
+        
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
+        boolean composite = Primes.witness(7, n, rand);
+        assertTrue(composite);
     }
     
-    public void estWitnessAndMillerRabin() throws Exception {
+    public void testWitnessAndMillerRabin() throws Exception {
         
         ThreadLocalRandom rand = ThreadLocalRandom.current();
                 
