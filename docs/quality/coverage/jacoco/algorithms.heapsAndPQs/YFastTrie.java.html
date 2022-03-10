@@ -72,7 +72,7 @@ import thirdparty.ods.XFastTrieNode;
         and those are stored
         in the XFastTrie of this YFastTrie.
       - because the XFastTrie only holds w xft values,
-        the space complexity is reduced.
+        the space complexity is reduced. 
 -------------------------------
 YFastTrie
 
@@ -115,496 +115,488 @@ YFastTrie
                 + &quot; wBits=&quot; + wBits);
         }
 <span class="fc" id="L117">        maxC = (1 &lt;&lt; w) - 1;</span>
-                        
-<span class="fc" id="L119">        binSz = w;</span>
+
+        // for the runtime complexity of operations to be 
+        // math.log( math.log(maxC)/math.log(2))/math.log(2)
+        // each balanced binary search tree is size
+        //   n = binSz = math.log(maxC)/math.log(2)
+        //
+        // therefore, splitting maxC numbers so that each bin size is n
+        // requires nBins = maxC / n
+
+        // e.g. given w = 31 bits, then maxC = 2.15E9, n = 31(==w), nBins=7E7
+        // e.g. given w = 16 bits, then maxC = 65535, n = 16(==w), nBins=4.1E3
+
+<span class="fc" id="L130">        binSz = w;</span>
+
+<span class="fc" id="L132">        nBins = (int)Math.ceil((double)maxC/(double)binSz);</span>
         
-<span class="fc" id="L121">        nBins = (int)Math.ceil((double)maxC/(double)binSz);</span>
-      
-<span class="fc" id="L123">        System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +</span>
-<span class="fc" id="L124">            (Math.log(binSz)/Math.log(2)));</span>
+<span class="fc" id="L134">        System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +</span>
+<span class="fc" id="L135">            (Math.log(binSz)/Math.log(2)));</span>
         
-<span class="fc" id="L126">        rbs = new TIntObjectHashMap&lt;TreeMap&lt;Integer, Integer&gt;&gt;();</span>
+<span class="fc" id="L137">        rbs = new TIntObjectHashMap&lt;TreeMap&lt;Integer, Integer&gt;&gt;();</span>
          
-<span class="fc" id="L128">        XFastTrieNode&lt;Integer&gt; clsNode = new XFastTrieNode&lt;Integer&gt;();</span>
-<span class="fc" id="L129">        Integerizer&lt;Integer&gt; it = new Integerizer&lt;Integer&gt;() {</span>
+<span class="fc" id="L139">        XFastTrieNode&lt;Integer&gt; clsNode = new XFastTrieNode&lt;Integer&gt;();</span>
+<span class="fc" id="L140">        Integerizer&lt;Integer&gt; it = new Integerizer&lt;Integer&gt;() {</span>
             @Override
             public int intValue(Integer x) {
                 return x;
             }
         };
         
-<span class="fc" id="L136">        xft = new XFastTrie&lt;XFastTrieNode&lt;Integer&gt;, Integer&gt;(clsNode, it, w);</span>
-<span class="fc" id="L137">    }</span>
+        // xft operations have runtime complexity O(log_2(w)) 
+        //      w/ large space complexity of O(n * w), hence reducing n here: 
+<span class="fc" id="L149">        xft = new XFastTrie&lt;XFastTrieNode&lt;Integer&gt;, Integer&gt;(clsNode, it, w);</span>
+<span class="fc" id="L150">    }</span>
     
-<span class="fc" id="L139">    public YFastTrie() {</span>
+    /** construct with default maximum size of numbers to store being Integer.MAX_VALUE.
+    The operations for this instance will have runtime complexity 
+    O(log_2(31)) = O(5).
+    */
+<span class="fc" id="L156">    public YFastTrie() {</span>
         
-<span class="fc" id="L141">        this.w = 30;</span>
+<span class="fc" id="L158">        this.w = 30;</span>
         
-<span class="fc" id="L143">        maxC = (1 &lt;&lt; w) - 1;</span>
+<span class="fc" id="L160">        maxC = (1 &lt;&lt; w) - 1;</span>
                                 
-<span class="fc" id="L145">        binSz = w;</span>
+<span class="fc" id="L162">        binSz = w;</span>
         
-<span class="fc" id="L147">        nBins = (int)Math.ceil((double)maxC/(double)binSz);</span>
+<span class="fc" id="L164">        nBins = (int)Math.ceil((double)maxC/(double)binSz);</span>
                 
-<span class="fc" id="L149">        System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +</span>
-<span class="fc" id="L150">            (Math.log(binSz)/Math.log(2)));</span>
+<span class="fc" id="L166">        System.out.println(&quot;nBins=&quot; + nBins + &quot;  rt of ops=&quot; +</span>
+<span class="fc" id="L167">            (Math.log(binSz)/Math.log(2)));</span>
         
-<span class="fc" id="L152">        rbs = new TIntObjectHashMap&lt;TreeMap&lt;Integer, Integer&gt;&gt;();</span>
+<span class="fc" id="L169">        rbs = new TIntObjectHashMap&lt;TreeMap&lt;Integer, Integer&gt;&gt;();</span>
         
-<span class="fc" id="L154">        XFastTrieNode&lt;Integer&gt; clsNode = new XFastTrieNode&lt;Integer&gt;();</span>
-<span class="fc" id="L155">        Integerizer&lt;Integer&gt; it = new Integerizer&lt;Integer&gt;() {</span>
+<span class="fc" id="L171">        XFastTrieNode&lt;Integer&gt; clsNode = new XFastTrieNode&lt;Integer&gt;();</span>
+<span class="fc" id="L172">        Integerizer&lt;Integer&gt; it = new Integerizer&lt;Integer&gt;() {</span>
             @Override
             public int intValue(Integer x) {
                 return x;
             }
         };
         
-<span class="fc" id="L162">        xft = new XFastTrie&lt;XFastTrieNode&lt;Integer&gt;, Integer&gt;(clsNode, it, w);</span>
-<span class="fc" id="L163">    }</span>
+<span class="fc" id="L179">        xft = new XFastTrie&lt;XFastTrieNode&lt;Integer&gt;, Integer&gt;(clsNode, it, w);</span>
+<span class="fc" id="L180">    }</span>
     
+    // runtime complexity is O(1)
     protected TreeMap&lt;Integer, Integer&gt; getTreeMap(int index) {
-<span class="fc" id="L166">        Integer key = Integer.valueOf(index);</span>
-<span class="fc" id="L167">        TreeMap&lt;Integer, Integer&gt; map = rbs.get(key);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (map == null) {</span>
-<span class="fc" id="L169">            map = new TreeMap&lt;Integer, Integer&gt;();</span>
-<span class="fc" id="L170">            rbs.put(key, map);</span>
+<span class="fc" id="L184">        Integer key = Integer.valueOf(index);</span>
+<span class="fc" id="L185">        TreeMap&lt;Integer, Integer&gt; map = rbs.get(key);</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (map == null) {</span>
+<span class="fc" id="L187">            map = new TreeMap&lt;Integer, Integer&gt;();</span>
+<span class="fc" id="L188">            rbs.put(key, map);</span>
         }
-<span class="fc" id="L172">        return map;</span>
+<span class="fc" id="L190">        return map;</span>
     }
 
     /**
-     * 
+     * runtime complexity is O(log_2(wBits))
      * @param node
      * @param index 
      */
     private void addToRBTree(int node, int index) {
         
-<span class="fc" id="L182">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
+        // runtime complexity is O(1)
+<span class="fc" id="L201">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L184" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bpc" id="L203" title="3 of 4 branches missed.">        assert(map != null);</span>
         
-<span class="fc" id="L186">        Integer key = Integer.valueOf(node);</span>
+<span class="fc" id="L205">        Integer key = Integer.valueOf(node);</span>
         
-<span class="fc" id="L188">        Integer multiplicity = map.get(key);</span>
+        // runtime complexity is O(log_2(w))
+<span class="fc" id="L208">        Integer multiplicity = map.get(key);</span>
     
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (multiplicity == null) {</span>
-<span class="fc" id="L191">            multiplicity = Integer.valueOf(1);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (multiplicity == null) {</span>
+<span class="fc" id="L211">            multiplicity = Integer.valueOf(1);</span>
         } else {
-<span class="fc" id="L193">            multiplicity = Integer.valueOf(1 + multiplicity.intValue());</span>
+<span class="fc" id="L213">            multiplicity = Integer.valueOf(1 + multiplicity.intValue());</span>
         }
         
-<span class="fc" id="L196">        map.put(key, multiplicity);        </span>
-<span class="fc" id="L197">    }</span>
+<span class="fc" id="L216">        map.put(key, multiplicity);        </span>
+<span class="fc" id="L217">    }</span>
     
     /**
-     * 
+     * runtime complexity is O(log_2(wBits))
      * @param node
      * @param index 
      */
     private boolean deleteFromRBTree(int node, int index) {
                 
-<span class="fc" id="L206">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
+<span class="fc" id="L226">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L208" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bpc" id="L228" title="3 of 4 branches missed.">        assert(map != null);</span>
         
-<span class="fc" id="L210">        Integer key = Integer.valueOf(node);</span>
+<span class="fc" id="L230">        Integer key = Integer.valueOf(node);</span>
 
-<span class="fc" id="L212">        Integer multiplicity = map.get(key);</span>
+<span class="fc" id="L232">        Integer multiplicity = map.get(key);</span>
     
-<span class="fc bfc" id="L214" title="All 2 branches covered.">        if (multiplicity == null) {</span>
-<span class="fc" id="L215">            return false;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (multiplicity == null) {</span>
+<span class="fc" id="L235">            return false;</span>
         }
         
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (multiplicity.intValue() &gt; 0) {</span>
-<span class="fc" id="L219">            multiplicity = Integer.valueOf(multiplicity.intValue() - 1);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">            if (multiplicity.intValue() &gt; 0) {</span>
-<span class="fc" id="L221">                map.put(key, multiplicity);</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        if (multiplicity.intValue() &gt; 0) {</span>
+<span class="fc" id="L239">            multiplicity = Integer.valueOf(multiplicity.intValue() - 1);</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">            if (multiplicity.intValue() &gt; 0) {</span>
+<span class="fc" id="L241">                map.put(key, multiplicity);</span>
             }
         }
-<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (multiplicity.intValue() == 0) {</span>
-<span class="fc" id="L225">            map.remove(key);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (multiplicity.intValue() == 0) {</span>
+<span class="fc" id="L245">            map.remove(key);</span>
         }
         
-<span class="fc" id="L228">        return true;</span>
+<span class="fc" id="L248">        return true;</span>
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
+     * runtime complexity is roughly O(log_2(wBits)).
      * @param node a number &gt;= 0 and having bit length 
      * less than or equal to w.
      * @return 
      */
     public boolean add(int node) {
 
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L244">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L260">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L247">            throw new IllegalArgumentException(&quot;node.key must &quot;</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L263">            throw new IllegalArgumentException(&quot;node.key must &quot;</span>
                 + &quot;be less than &quot; + maxC + &quot; node=&quot; + node);
         }
         
-<span class="fc" id="L251">        int index = node/binSz;</span>
+<span class="fc" id="L267">        int index = node/binSz;</span>
         
-<span class="fc" id="L253">        int existingRepr = xftReps.get(index);</span>
+        //O(1) to find the repr
+<span class="fc" id="L270">        int existingRepr = xftReps.get(index);</span>
                 
-<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (!xftReps.containsKey(index)) {</span>
+        // worse case runtime here is O(log_2(w)) + O(l-w), else is 0
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (!xftReps.containsKey(index)) {</span>
             // insert is O(log_2(w)) + O(l-w)
-<span class="fc" id="L257">            xft.add(Integer.valueOf(node));</span>
-<span class="fc" id="L258">            xftReps.put(index, node);</span>
-<span class="fc bfc" id="L259" title="All 2 branches covered.">        } else if (node &lt; existingRepr) {</span>
+<span class="fc" id="L275">            xft.add(Integer.valueOf(node));</span>
+<span class="fc" id="L276">            xftReps.put(index, node);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        } else if (node &lt; existingRepr) {</span>
             // delete is O(log_2(w)) + O(l-w)
             // insert is O(log_2(w)) + O(l-w)
-<span class="fc" id="L262">            xft.remove(Integer.valueOf(existingRepr));</span>
-<span class="fc" id="L263">            xft.add(Integer.valueOf(node));</span>
-<span class="fc" id="L264">            xftReps.put(index, node);</span>
+<span class="fc" id="L280">            xft.remove(Integer.valueOf(existingRepr));</span>
+<span class="fc" id="L281">            xft.add(Integer.valueOf(node));</span>
+<span class="fc" id="L282">            xftReps.put(index, node);</span>
         }
                 
-<span class="fc" id="L267">        addToRBTree(node, index);</span>
+        // runtime complexity here is
+<span class="fc" id="L286">        addToRBTree(node, index);</span>
         
-<span class="fc" id="L269">        n++;</span>
+<span class="fc" id="L288">        n++;</span>
         
-<span class="fc" id="L271">        return true;</span>
+<span class="fc" id="L290">        return true;</span>
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return 
      */
     public boolean remove(int node) {
         
-<span class="pc bpc" id="L285" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L286">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L302">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L289">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L305">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
         
-<span class="fc" id="L293">        int index = node/binSz;</span>
+<span class="fc" id="L309">        int index = node/binSz;</span>
                 
-<span class="fc" id="L295">        boolean removed = deleteFromRBTree(node, index);</span>
+<span class="fc" id="L311">        boolean removed = deleteFromRBTree(node, index);</span>
                 
-<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (!removed) {</span>
-<span class="fc" id="L298">            return false;</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (!removed) {</span>
+<span class="fc" id="L314">            return false;</span>
         }
         
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (!xftReps.containsKey(index)) {</span>
-<span class="nc" id="L302">            return false;</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">        if (!xftReps.containsKey(index)) {</span>
+<span class="nc" id="L318">            return false;</span>
         }
         
-<span class="fc" id="L305">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
+<span class="fc" id="L321">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
       
-<span class="fc" id="L307">        int existingRepr = xftReps.get(index);</span>
+<span class="fc" id="L323">        int existingRepr = xftReps.get(index);</span>
       
-<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (map.isEmpty()) {</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        if (map.isEmpty()) {</span>
             // just deleted the last item so remove from rbs
             // delete is O(log_2(w)) + O(w-l)
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">            if (xftReps.containsKey(index)) {</span>
-<span class="fc" id="L313">                xft.remove(Integer.valueOf(existingRepr));</span>
-<span class="fc" id="L314">                xftReps.remove(index);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">            if (xftReps.containsKey(index)) {</span>
+<span class="fc" id="L329">                xft.remove(Integer.valueOf(existingRepr));</span>
+<span class="fc" id="L330">                xftReps.remove(index);</span>
             }
-<span class="fc bfc" id="L316" title="All 2 branches covered.">        } else if (node == existingRepr) {</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        } else if (node == existingRepr) {</span>
             
             //existingRepr is maintained as the minimum in the bin,
             //   so if a node w/ this value is removed and the multiplicity
             //      was 1, need to assign a new repr
             
             // O(log_2(N/w))
-<span class="fc" id="L323">            Integer multiplicity = map.get(Integer.valueOf(node));</span>
+<span class="fc" id="L339">            Integer multiplicity = map.get(Integer.valueOf(node));</span>
     
-<span class="fc bfc" id="L325" title="All 2 branches covered.">            if (multiplicity == null) {</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            if (multiplicity == null) {</span>
                 // remove the current repr and assign a new one
                 // delete is O(log_2(w)) + O(w-l)
-<span class="fc" id="L328">                xft.remove(Integer.valueOf(existingRepr));</span>
-<span class="fc" id="L329">                xftReps.remove(index);</span>
+<span class="fc" id="L344">                xft.remove(Integer.valueOf(existingRepr));</span>
+<span class="fc" id="L345">                xftReps.remove(index);</span>
             
                 // O(log_2(N/w))
-<span class="fc" id="L332">                Entry&lt;Integer, Integer&gt; minEntry = map.firstEntry(); </span>
-<span class="fc" id="L333">                xft.add(minEntry.getKey());</span>
-<span class="fc" id="L334">                xftReps.put(index, minEntry.getKey()); </span>
+<span class="fc" id="L348">                Entry&lt;Integer, Integer&gt; minEntry = map.firstEntry(); </span>
+<span class="fc" id="L349">                xft.add(minEntry.getKey());</span>
+<span class="fc" id="L350">                xftReps.put(index, minEntry.getKey()); </span>
             }            
         }
         
-<span class="fc" id="L338">        n--;</span>
+<span class="fc" id="L354">        n--;</span>
         
-<span class="fc" id="L340">        return true;</span>
+<span class="fc" id="L356">        return true;</span>
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return returns node if found, else -1
      */
     public int find(int node) {
                 
-<span class="pc bpc" id="L354" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L355">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L368">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L358">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L371">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC + &quot;. node=&quot; + node);
         }
                 
-<span class="fc" id="L362">        int index = node/binSz;</span>
+<span class="fc" id="L375">        int index = node/binSz;</span>
                 
-<span class="fc" id="L364">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
+<span class="fc" id="L377">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="fc" id="L366">        Integer multiplicity = map.get(Integer.valueOf(node));</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (multiplicity == null) {</span>
-<span class="fc" id="L368">            return -1;</span>
+<span class="fc" id="L379">        Integer multiplicity = map.get(Integer.valueOf(node));</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">        if (multiplicity == null) {</span>
+<span class="fc" id="L381">            return -1;</span>
         }
         
-<span class="fc" id="L371">        return node;</span>
+<span class="fc" id="L384">        return node;</span>
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return value preceding node, else -1 if there is not one
      */
     public int predecessor(int node) {
     
-<span class="pc bpc" id="L385" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L386">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L396">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L388" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L389">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L398" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L399">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
         
-<span class="fc" id="L393">        Integer nodeKey = Integer.valueOf(node);</span>
+<span class="fc" id="L403">        Integer nodeKey = Integer.valueOf(node);</span>
         
-<span class="fc" id="L395">        int nodeIndex = node/binSz;</span>
+<span class="fc" id="L405">        int nodeIndex = node/binSz;</span>
         
         // the repr is stored in xft and it is always the minium for the bin
-<span class="fc bfc" id="L398" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
         
         /*
         if the node is not a minima, the answer is in
            the node's map if its size is larger &gt; 1
         */
         
-<span class="fc" id="L405">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(nodeIndex);</span>
+<span class="fc" id="L415">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(nodeIndex);</span>
         
-<span class="fc bfc" id="L407" title="All 4 branches covered.">        if (!isAMinimum &amp;&amp; (map.size() &gt; 1)) {</span>
-<span class="fc" id="L408">            Entry&lt;Integer, Integer&gt; pred = map.lowerEntry(nodeKey);</span>
-<span class="pc bpc" id="L409" title="1 of 2 branches missed.">            if (pred != null) {</span>
-<span class="fc" id="L410">                return pred.getKey().intValue();</span>
+<span class="fc bfc" id="L417" title="All 4 branches covered.">        if (!isAMinimum &amp;&amp; (map.size() &gt; 1)) {</span>
+<span class="fc" id="L418">            Entry&lt;Integer, Integer&gt; pred = map.lowerEntry(nodeKey);</span>
+<span class="pc bpc" id="L419" title="1 of 2 branches missed.">            if (pred != null) {</span>
+<span class="fc" id="L420">                return pred.getKey().intValue();</span>
             }
         }
        
         // else, predeccessor is in the closest bin &lt; nodeIndex that has
         //    items in it.
                 
-<span class="fc" id="L417">        Integer prev = xft.predecessor(nodeKey);</span>
-<span class="fc bfc" id="L418" title="All 2 branches covered.">        if (prev == null) {</span>
-<span class="fc" id="L419">            return -1;</span>
+<span class="fc" id="L427">        Integer prev = xft.predecessor(nodeKey);</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">        if (prev == null) {</span>
+<span class="fc" id="L429">            return -1;</span>
         }
         
-<span class="fc" id="L422">        int prev0Index = prev.intValue()/binSz;</span>
+<span class="fc" id="L432">        int prev0Index = prev.intValue()/binSz;</span>
             
-<span class="fc" id="L424">        map = getTreeMap(prev0Index);</span>
+<span class="fc" id="L434">        map = getTreeMap(prev0Index);</span>
                 
-<span class="fc" id="L426">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
+<span class="fc" id="L436">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
                
-<span class="pc bpc" id="L428" title="1 of 2 branches missed.">        if (lastItem == null) {</span>
-<span class="nc" id="L429">            return -1;</span>
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">        if (lastItem == null) {</span>
+<span class="nc" id="L439">            return -1;</span>
         }
         
-<span class="fc" id="L432">        return lastItem.getKey();</span>
+<span class="fc" id="L442">        return lastItem.getKey();</span>
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @param node
      * @return 
      */
     public int successor(int node) {
                 
-<span class="pc bpc" id="L446" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
-<span class="nc" id="L447">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L453" title="1 of 2 branches missed.">        if (node &lt; 0) {</span>
+<span class="nc" id="L454">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be greater than or equal to 0&quot;);
-<span class="pc bpc" id="L449" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
-<span class="nc" id="L450">            throw new IllegalArgumentException(&quot;node must &quot;</span>
+<span class="pc bpc" id="L456" title="1 of 2 branches missed.">        } else if (node &gt; maxC) {</span>
+<span class="nc" id="L457">            throw new IllegalArgumentException(&quot;node must &quot;</span>
                 + &quot;be less than &quot; + maxC);
         }
         
-<span class="fc" id="L454">        Integer nodeKey = Integer.valueOf(node);</span>
+<span class="fc" id="L461">        Integer nodeKey = Integer.valueOf(node);</span>
         
-<span class="fc" id="L456">        int nodeIndex = node/binSz;</span>
+<span class="fc" id="L463">        int nodeIndex = node/binSz;</span>
         
-<span class="fc bfc" id="L458" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">        boolean isAMinimum = xft.find(nodeKey) != null;</span>
         
-<span class="fc" id="L460">        TreeMap&lt;Integer, Integer&gt; nodeMap = getTreeMap(nodeIndex);</span>
+<span class="fc" id="L467">        TreeMap&lt;Integer, Integer&gt; nodeMap = getTreeMap(nodeIndex);</span>
         
-<span class="fc bfc" id="L462" title="All 2 branches covered.">        if (isAMinimum) {</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">        if (isAMinimum) {</span>
             // if tree size &gt; 1, the next key is the successor
             // else, the xft sucessor to nodeIndex is the successor
             
-<span class="pc bpc" id="L466" title="1 of 2 branches missed.">            if (nodeMap.size() &gt; 1) {</span>
-<span class="fc" id="L467">                Entry&lt;Integer, Integer&gt; successor = nodeMap.higherEntry(nodeKey);</span>
-<span class="pc bpc" id="L468" title="3 of 4 branches missed.">                assert(successor != null);</span>
-<span class="fc" id="L469">                return successor.getKey();</span>
+<span class="pc bpc" id="L473" title="1 of 2 branches missed.">            if (nodeMap.size() &gt; 1) {</span>
+<span class="fc" id="L474">                Entry&lt;Integer, Integer&gt; successor = nodeMap.higherEntry(nodeKey);</span>
+<span class="pc bpc" id="L475" title="3 of 4 branches missed.">                assert(successor != null);</span>
+<span class="fc" id="L476">                return successor.getKey();</span>
             }
             
-<span class="nc" id="L472">            Integer successorRepr = xft.successor(nodeKey);</span>
-<span class="nc bnc" id="L473" title="All 2 branches missed.">            if (successorRepr == null) {</span>
-<span class="nc" id="L474">                return -1;</span>
+<span class="nc" id="L479">            Integer successorRepr = xft.successor(nodeKey);</span>
+<span class="nc bnc" id="L480" title="All 2 branches missed.">            if (successorRepr == null) {</span>
+<span class="nc" id="L481">                return -1;</span>
             }
             
             // the successor representative is then the next value
-<span class="nc" id="L478">            return successorRepr;</span>
+<span class="nc" id="L485">            return successorRepr;</span>
         }
         
         // else, the node is not a repr
         //   if there is a tree successor to the node, that is the successor
         //   else, the xft successor to nodeIndex is the successor
                     
-<span class="fc" id="L485">        Entry&lt;Integer, Integer&gt; sEntry = nodeMap.higherEntry(nodeKey);</span>
+<span class="fc" id="L492">        Entry&lt;Integer, Integer&gt; sEntry = nodeMap.higherEntry(nodeKey);</span>
         
-<span class="fc bfc" id="L487" title="All 2 branches covered.">        if (sEntry != null) {</span>
-<span class="fc" id="L488">            return sEntry.getKey();</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">        if (sEntry != null) {</span>
+<span class="fc" id="L495">            return sEntry.getKey();</span>
         }
         
-<span class="fc" id="L491">        Integer successorRepr = xft.successor(nodeKey);</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (successorRepr == null) {</span>
-<span class="fc" id="L493">            return -1;</span>
+<span class="fc" id="L498">        Integer successorRepr = xft.successor(nodeKey);</span>
+<span class="pc bpc" id="L499" title="1 of 2 branches missed.">        if (successorRepr == null) {</span>
+<span class="nc" id="L500">            return -1;</span>
         }
 
         // the successor representative is then the next value
-<span class="fc" id="L497">        return successorRepr;</span>
+<span class="fc" id="L504">        return successorRepr;</span>
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * runtime complexity is O(log_2(w)) 
+     * runtime complexity is roughly O(log_2(wBits)).
      * @return minimum, else -1 if empty
      */
     public int minimum() {
         
-<span class="pc bpc" id="L511" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
-<span class="nc" id="L512">            return -1;</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
+<span class="nc" id="L514">            return -1;</span>
         }
         
-<span class="fc" id="L515">        Integer repr = xft.minimum();</span>
+<span class="fc" id="L517">        Integer repr = xft.minimum();</span>
         
-<span class="pc bpc" id="L517" title="3 of 4 branches missed.">        assert(repr != null);</span>
+<span class="pc bpc" id="L519" title="3 of 4 branches missed.">        assert(repr != null);</span>
        
-<span class="fc" id="L519">        return repr.intValue();</span>
+<span class="fc" id="L521">        return repr.intValue();</span>
     }
 
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @return maximum, else -1 if empty
      */
     public int maximum() {
         
-<span class="pc bpc" id="L532" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
-<span class="nc" id="L533">            return -1;</span>
+<span class="pc bpc" id="L531" title="1 of 2 branches missed.">        if (xft.size() == 0) {</span>
+<span class="nc" id="L532">            return -1;</span>
         }
         
-<span class="fc" id="L536">        Integer maxRepr = xft.maximum();</span>
+<span class="fc" id="L535">        Integer maxRepr = xft.maximum();</span>
         
-<span class="pc bpc" id="L538" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
+<span class="pc bpc" id="L537" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
         
-<span class="fc" id="L540">        int index = maxRepr.intValue()/binSz;</span>
+<span class="fc" id="L539">        int index = maxRepr.intValue()/binSz;</span>
         
-<span class="fc" id="L542">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
+<span class="fc" id="L541">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L544" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bpc" id="L543" title="3 of 4 branches missed.">        assert(map != null);</span>
         
-<span class="fc" id="L546">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
+<span class="fc" id="L545">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
         
-<span class="pc bpc" id="L548" title="3 of 4 branches missed.">        assert(lastItem != null);</span>
+<span class="pc bpc" id="L547" title="3 of 4 branches missed.">        assert(lastItem != null);</span>
         
-<span class="fc" id="L550">        return lastItem.getKey();</span>
+<span class="fc" id="L549">        return lastItem.getKey();</span>
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * TODO: calc runtime complexity again
+     * runtime complexity is roughly O(log_2(wBits)).
      * 
      * @return minumum, else -1 if empty
      */
     public int extractMinimum() {
         
         //O(log_2(w))
-<span class="fc" id="L566">        int min = minimum();</span>
+<span class="fc" id="L560">        int min = minimum();</span>
 
-<span class="pc bpc" id="L568" title="1 of 2 branches missed.">        if (min == -1) {</span>
-<span class="nc bnc" id="L569" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
-<span class="nc" id="L570">            return -1;</span>
+<span class="pc bpc" id="L562" title="1 of 2 branches missed.">        if (min == -1) {</span>
+<span class="nc bnc" id="L563" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc" id="L564">            return -1;</span>
         }
                 
-<span class="fc" id="L573">        remove(min);</span>
+<span class="fc" id="L567">        remove(min);</span>
         
-<span class="fc" id="L575">        return min;</span>
+<span class="fc" id="L569">        return min;</span>
     }
     
     /**
-     * runtime complexity is roughly .lte. O(10) and may be better than this
-     * for some datasets.  The runtime is dependent on the bit length of the
-     * largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
-     * 
-     * TODO: calc runtime complexity again
-     * 
+     * runtime complexity is roughly O(log_2(wBits)).
      * @return maximum, else -1 if empty
      */
     public int extractMaximum() {
         
-<span class="fc" id="L590">        int max = maximum();</span>
+<span class="fc" id="L578">        int max = maximum();</span>
 
-<span class="pc bpc" id="L592" title="1 of 2 branches missed.">        if (max == -1) {</span>
-<span class="nc bnc" id="L593" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
-<span class="nc" id="L594">            return -1;</span>
+<span class="pc bpc" id="L580" title="1 of 2 branches missed.">        if (max == -1) {</span>
+<span class="nc bnc" id="L581" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc" id="L582">            return -1;</span>
         }
                 
-<span class="fc" id="L597">        remove(max);</span>
+<span class="fc" id="L585">        remove(max);</span>
         
-<span class="fc" id="L599">        return max;</span>
+<span class="fc" id="L587">        return max;</span>
     }
     
+    /**
+    get the number of items stored in the trie.  runtime complexity is O(1).
+    @return number of items in the trie.
+    */
     public int size() {
-<span class="fc" id="L603">        return n;</span>
+<span class="fc" id="L595">        return n;</span>
     }
 
     protected int getBinSz() {
-<span class="nc" id="L607">        return binSz;</span>
+<span class="nc" id="L599">        return binSz;</span>
     }
     
     /**
@@ -646,24 +638,24 @@ YFastTrie
     public static long[] estimateSizeOnHeap(int numberOfEntries, int
         maxNumberOfBits) {
         
-<span class="fc" id="L649">        long ww = maxNumberOfBits;</span>
+<span class="fc" id="L641">        long ww = maxNumberOfBits;</span>
         
-<span class="fc" id="L651">        long maxNumber = (1L &lt;&lt; ww) - 1;</span>
+<span class="fc" id="L643">        long maxNumber = (1L &lt;&lt; ww) - 1;</span>
         
-<span class="fc" id="L653">        long binSz = maxNumberOfBits;</span>
+<span class="fc" id="L645">        long binSz = maxNumberOfBits;</span>
         
-<span class="fc" id="L655">        int nBins = (int)Math.ceil((double)maxNumber/(double)binSz);</span>
+<span class="fc" id="L647">        int nBins = (int)Math.ceil((double)maxNumber/(double)binSz);</span>
         
-<span class="fc" id="L657">        long total = 0;</span>
+<span class="fc" id="L649">        long total = 0;</span>
         
-<span class="fc" id="L659">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L660">        est.setNIntFields(2);</span>
-<span class="fc" id="L661">        est.setNLongFields(3);</span>
-<span class="fc" id="L662">        est.setNBooleanFields(1);</span>
+<span class="fc" id="L651">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L652">        est.setNIntFields(2);</span>
+<span class="fc" id="L653">        est.setNLongFields(3);</span>
+<span class="fc" id="L654">        est.setNBooleanFields(1);</span>
         //objects: xft, xftReps, rbs
-<span class="fc" id="L664">        est.setNObjRefsFields(3);</span>
+<span class="fc" id="L656">        est.setNObjRefsFields(3);</span>
        
-<span class="fc" id="L666">        total += est.estimateSizeOnHeap();</span>
+<span class="fc" id="L658">        total += est.estimateSizeOnHeap();</span>
        
         // --------- include contents of the objects --------------
         
@@ -697,67 +689,67 @@ YFastTrie
         // (1) estimate using all bins w/ factor 5 for tries
         // (2) estimate from using nBinsSparse of the nBins w/ factor 3 for tries
         
-<span class="fc" id="L700">        int nBinsSparse = nBins/10;</span>
-<span class="fc bfc" id="L701" title="All 2 branches covered.">        if (nBinsSparse &lt; 1) {</span>
-<span class="fc" id="L702">            nBinsSparse = 1;</span>
+<span class="fc" id="L692">        int nBinsSparse = nBins/10;</span>
+<span class="fc bfc" id="L693" title="All 2 branches covered.">        if (nBinsSparse &lt; 1) {</span>
+<span class="fc" id="L694">            nBinsSparse = 1;</span>
         }
         
         // using factor of 5 for total w/ prefix nodes
-<span class="fc" id="L706">        long total2_1 = numberOfEntries * 5 *</span>
-<span class="fc" id="L707">            XFastTrieNode.estimateSizeOnHeap();</span>
+<span class="fc" id="L698">        long total2_1 = numberOfEntries * 5 *</span>
+<span class="fc" id="L699">            XFastTrieNode.estimateSizeOnHeap();</span>
         
         // all nBins are filled w/ a repr
-<span class="fc" id="L710">        total2_1 += XFastTrie.estimateSizeOnHeap(numberOfEntries);</span>
+<span class="fc" id="L702">        total2_1 += XFastTrie.estimateSizeOnHeap(numberOfEntries);</span>
         
-<span class="fc" id="L712">        long total2_2 = numberOfEntries * 3 *</span>
-<span class="fc" id="L713">            XFastTrieNode.estimateSizeOnHeap();</span>
+<span class="fc" id="L704">        long total2_2 = numberOfEntries * 3 *</span>
+<span class="fc" id="L705">            XFastTrieNode.estimateSizeOnHeap();</span>
         
         // nBinsSparse of nBins are filled w/ a repr
-<span class="fc" id="L716">        total2_2 += XFastTrie.estimateSizeOnHeap(numberOfEntries);</span>
+<span class="fc" id="L708">        total2_2 += XFastTrie.estimateSizeOnHeap(numberOfEntries);</span>
         
         
         //TLongLongMap
-<span class="fc" id="L720">        total2_1 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
+<span class="fc" id="L712">        total2_1 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
         
         //nBins number of repr entries in map
-<span class="fc" id="L723">        total2_1 += (2 * nBins * ObjectSpaceEstimator.estimateLongSize());</span>
+<span class="fc" id="L715">        total2_1 += (2 * nBins * ObjectSpaceEstimator.estimateLongSize());</span>
         
         
         //TLongLongMap
-<span class="fc" id="L727">        total2_2 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
+<span class="fc" id="L719">        total2_2 += ObjectSpaceEstimator.estimateTLongLongHashMap();</span>
         
         //nBins/4 number of repr entries in map
-<span class="fc" id="L730">        total2_2 += (2 * nBinsSparse * ObjectSpaceEstimator.estimateLongSize());</span>
+<span class="fc" id="L722">        total2_2 += (2 * nBinsSparse * ObjectSpaceEstimator.estimateLongSize());</span>
         
         
         // 1 TLongObjectMap&lt;RedBlackBSTLongInt&gt; rbs;
-<span class="fc" id="L734">        total2_1 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
+<span class="fc" id="L726">        total2_1 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
         
-<span class="fc" id="L736">        total2_2 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
+<span class="fc" id="L728">        total2_2 += ObjectSpaceEstimator.estimateTLongObjectHashMap();</span>
         
         // nBins number of TreeMap&lt;Integer, Integer&gt; 
-<span class="fc" id="L739">        ObjectSpaceEstimator est2 = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L740">        est2.setNBooleanFields(1);</span>
-<span class="fc" id="L741">        est2.setNObjRefsFields(2);</span>
-<span class="fc" id="L742">        long totalEntry = est2.estimateSizeOnHeap();</span>
-<span class="fc" id="L743">        totalEntry += 3. * totalEntry;</span>
-<span class="fc" id="L744">        est2 = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L745">        est2.setNIntFields(2);</span>
-<span class="fc" id="L746">        long rbtree = est2.estimateSizeOnHeap() + totalEntry;</span>
-<span class="fc" id="L747">        long rbtreeNodes = numberOfEntries * totalEntry;</span>
+<span class="fc" id="L731">        ObjectSpaceEstimator est2 = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L732">        est2.setNBooleanFields(1);</span>
+<span class="fc" id="L733">        est2.setNObjRefsFields(2);</span>
+<span class="fc" id="L734">        long totalEntry = est2.estimateSizeOnHeap();</span>
+<span class="fc" id="L735">        totalEntry += 3. * totalEntry;</span>
+<span class="fc" id="L736">        est2 = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L737">        est2.setNIntFields(2);</span>
+<span class="fc" id="L738">        long rbtree = est2.estimateSizeOnHeap() + totalEntry;</span>
+<span class="fc" id="L739">        long rbtreeNodes = numberOfEntries * totalEntry;</span>
         
-<span class="fc" id="L749">        total2_1 += (nBins * rbtree);</span>
+<span class="fc" id="L741">        total2_1 += (nBins * rbtree);</span>
         
-<span class="fc" id="L751">        total2_2 += (nBinsSparse * rbtree);</span>
+<span class="fc" id="L743">        total2_2 += (nBinsSparse * rbtree);</span>
         
         
         // nEntries number of long, int nodes
         
-<span class="fc" id="L756">        total2_1 += rbtreeNodes;</span>
+<span class="fc" id="L748">        total2_1 += rbtreeNodes;</span>
         
-<span class="fc" id="L758">        total2_2 += rbtreeNodes;</span>
+<span class="fc" id="L750">        total2_2 += rbtreeNodes;</span>
            
-<span class="fc" id="L760">        return new long[]{total2_1 + total, total2_2 + total};</span>
+<span class="fc" id="L752">        return new long[]{total2_1 + total, total2_2 + total};</span>
     }
     
 }

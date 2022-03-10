@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPChristofidesSerdyukov.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.optimization</a> &gt; <span class="el_source">TSPChristofidesSerdyukov.java</span></div><h1>TSPChristofidesSerdyukov.java</h1><pre class="source lang-java linenums">package algorithms.optimization;
 
 import algorithms.graphs.HierholzersEulerCircuit;
-import algorithms.msts.KruskalsMinimumSpanningTree;
 import algorithms.msts.PrimsMST;
-import algorithms.tsp.TSPPrimsMST;
-import algorithms.util.PairInt;
-import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectDoubleMap;
-import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
@@ -61,7 +53,7 @@ import thirdparty.HungarianAlgorithm;
  * &lt;/pre&gt;
  * @author nichole
  */
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">public class TSPChristofidesSerdyukov {</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">public class TSPChristofidesSerdyukov {</span>
         
     /**
      * find a Hamiltonian tour of the given graph (simple cycle including all vertexes once) 
@@ -76,41 +68,41 @@ import thirdparty.HungarianAlgorithm;
     public int[] approxTSPTour(final int nVertexes, final TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
         
         //(1) T = mst(G)
-<span class="fc" id="L79">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree = buildMST(adjCostMap);</span>
+<span class="fc" id="L71">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree = buildMST(adjCostMap);</span>
         
         //(2) W = odd degree vertices in T
-<span class="fc" id="L82">        int[] degrees = calculateDegrees(mstTree, nVertexes);</span>
-<span class="fc" id="L83">        int[] oddDVertexes = oddPassFilter(degrees);</span>
+<span class="fc" id="L74">        int[] degrees = calculateDegrees(mstTree, nVertexes);</span>
+<span class="fc" id="L75">        int[] oddDVertexes = oddPassFilter(degrees);</span>
         // there are an even number of odd vertexes
-<span class="pc bpc" id="L85" title="3 of 4 branches missed.">        assert((oddDVertexes.length &amp; 1) != 1);</span>
+<span class="pc bpc" id="L77" title="3 of 4 branches missed.">        assert((oddDVertexes.length &amp; 1) != 1);</span>
         
         int i;
         
         //(3) O is subgraph of G induced by the vertices in oddDVertexes.
         //    make perfect min-cost matching from it
         // format: [nMatchings][2]
-<span class="fc" id="L92">        int[][] m = bipartiteMinCostMatchingFromSubgraph(oddDVertexes, adjCostMap);</span>
+<span class="fc" id="L84">        int[][] m = bipartiteMinCostMatchingFromSubgraph(oddDVertexes, adjCostMap);</span>
                 
         //(4) H is the union of graphs T and M
         //    where each edges present in both T and M are present twice in H
-<span class="fc" id="L96">        TIntObjectMap&lt;TIntSet&gt; h = unionMSTAndAssignments(mstTree, m);</span>
+<span class="fc" id="L88">        TIntObjectMap&lt;TIntSet&gt; h = unionMSTAndAssignments(mstTree, m);</span>
         
         //(5) EC is the eulerian circuit in H. each edge is visited exactly once.
-<span class="fc" id="L99">        HierholzersEulerCircuit hec = new HierholzersEulerCircuit();</span>
-<span class="fc" id="L100">        int[] ec = hec.createCircuit(h); // assuming start node = 0.</span>
+<span class="fc" id="L91">        HierholzersEulerCircuit hec = new HierholzersEulerCircuit();</span>
+<span class="fc" id="L92">        int[] ec = hec.createCircuit(h); // assuming start node = 0.</span>
 
         //(6) T2 is the hamiltonian circuit of EC made by skipping over previously visited vertices.
-<span class="fc" id="L103">        TIntSet visited = new TIntHashSet();</span>
-<span class="fc" id="L104">        TIntList t2 = new TIntArrayList();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (i = 0; i &lt; ec.length; ++i) {</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (!visited.contains(ec[i])) {</span>
-<span class="fc" id="L107">                t2.add(ec[i]);</span>
-<span class="fc" id="L108">                visited.add(ec[i]);</span>
+<span class="fc" id="L95">        TIntSet visited = new TIntHashSet();</span>
+<span class="fc" id="L96">        TIntList t2 = new TIntArrayList();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (i = 0; i &lt; ec.length; ++i) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            if (!visited.contains(ec[i])) {</span>
+<span class="fc" id="L99">                t2.add(ec[i]);</span>
+<span class="fc" id="L100">                visited.add(ec[i]);</span>
             }
         }
-<span class="fc" id="L111">        t2.add(t2.get(0));</span>
+<span class="fc" id="L103">        t2.add(t2.get(0));</span>
         //int[] _t2 = t2.toArray();
-<span class="fc" id="L113">        return t2.toArray();</span>
+<span class="fc" id="L105">        return t2.toArray();</span>
     }
     
     /**
@@ -120,41 +112,41 @@ import thirdparty.HungarianAlgorithm;
      * @return array of indexes in degrees which have odd values stored in the degrees array.
      */
     protected int[] oddPassFilter(int[] degrees) {
-<span class="fc" id="L123">        int[] odd = new int[degrees.length];</span>
-<span class="fc" id="L124">        int i, c = 0;</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (i = 0; i &lt; degrees.length; ++i) {</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">            if ((degrees[i] &amp; 1) == 1) {</span>
-<span class="fc" id="L127">                odd[c] = i;</span>
-<span class="fc" id="L128">                c++;</span>
+<span class="fc" id="L115">        int[] odd = new int[degrees.length];</span>
+<span class="fc" id="L116">        int i, c = 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (i = 0; i &lt; degrees.length; ++i) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if ((degrees[i] &amp; 1) == 1) {</span>
+<span class="fc" id="L119">                odd[c] = i;</span>
+<span class="fc" id="L120">                c++;</span>
             }
         }
-<span class="fc" id="L131">        odd = Arrays.copyOf(odd, c);</span>
-<span class="fc" id="L132">        return odd;</span>
+<span class="fc" id="L123">        odd = Arrays.copyOf(odd, c);</span>
+<span class="fc" id="L124">        return odd;</span>
     }
 
     protected int[] calculateDegrees(Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree, 
         int nVertexes) {
         
-<span class="fc" id="L138">        int[] d = new int[nVertexes];</span>
+<span class="fc" id="L130">        int[] d = new int[nVertexes];</span>
         
         int u, v;
         LinkedList&lt;Integer&gt; neighbors;
-<span class="fc" id="L142">        Iterator&lt;Integer&gt; iter = mstTree.keySet().iterator();</span>
+<span class="fc" id="L134">        Iterator&lt;Integer&gt; iter = mstTree.keySet().iterator();</span>
         Iterator&lt;Integer&gt; iterV;
         
-<span class="fc bfc" id="L145" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L146">            u = iter.next();</span>
-<span class="fc" id="L147">            neighbors = mstTree.get(u);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L138">            u = iter.next();</span>
+<span class="fc" id="L139">            neighbors = mstTree.get(u);</span>
             
-<span class="fc" id="L149">            iterV = neighbors.iterator();</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
-<span class="fc" id="L151">                v = iterV.next();</span>
-<span class="fc" id="L152">                d[u]++;</span>
-<span class="fc" id="L153">                d[v]++;</span>
+<span class="fc" id="L141">            iterV = neighbors.iterator();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
+<span class="fc" id="L143">                v = iterV.next();</span>
+<span class="fc" id="L144">                d[u]++;</span>
+<span class="fc" id="L145">                d[v]++;</span>
             }
         }
         
-<span class="fc" id="L157">        return d;</span>
+<span class="fc" id="L149">        return d;</span>
     }
 
     /**
@@ -169,60 +161,60 @@ import thirdparty.HungarianAlgorithm;
         TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
 
         int i, u, v, uvCost;
-<span class="fc" id="L172">        float[][] out = new float[oddDVertexes.length][];</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
-<span class="fc" id="L174">            out[i] = new float[oddDVertexes.length];</span>
-<span class="fc" id="L175">            Arrays.fill(out[i], Float.MAX_VALUE);</span>
+<span class="fc" id="L164">        float[][] out = new float[oddDVertexes.length][];</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
+<span class="fc" id="L166">            out[i] = new float[oddDVertexes.length];</span>
+<span class="fc" id="L167">            Arrays.fill(out[i], Float.MAX_VALUE);</span>
         }
   
         // a reverse index map to find where v is in oddDVertexes
-<span class="fc" id="L179">        TIntIntMap rIdxs = new TIntIntHashMap();</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
-<span class="fc" id="L181">            u = oddDVertexes[i];</span>
-<span class="fc" id="L182">            rIdxs.put(u, i);</span>
+<span class="fc" id="L171">        TIntIntMap rIdxs = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
+<span class="fc" id="L173">            u = oddDVertexes[i];</span>
+<span class="fc" id="L174">            rIdxs.put(u, i);</span>
         }
                 
         int idxV;
         TIntIntMap neighborCost;
         TIntIntIterator iter;
-<span class="fc bfc" id="L188" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {            </span>
-<span class="fc" id="L189">            u = oddDVertexes[i];</span>
-<span class="fc" id="L190">            neighborCost = adjCostMap.get(u);</span>
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">            if (neighborCost != null) {</span>
-<span class="fc" id="L192">                iter = neighborCost.iterator();</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
-<span class="fc" id="L194">                    iter.advance();</span>
-<span class="fc" id="L195">                    v = iter.key();</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">                    if (!rIdxs.containsKey(v)) {</span>
-<span class="fc" id="L197">                        continue;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {            </span>
+<span class="fc" id="L181">            u = oddDVertexes[i];</span>
+<span class="fc" id="L182">            neighborCost = adjCostMap.get(u);</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">            if (neighborCost != null) {</span>
+<span class="fc" id="L184">                iter = neighborCost.iterator();</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L186">                    iter.advance();</span>
+<span class="fc" id="L187">                    v = iter.key();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                    if (!rIdxs.containsKey(v)) {</span>
+<span class="fc" id="L189">                        continue;</span>
                     }
-<span class="fc" id="L199">                    uvCost = iter.value();</span>
-<span class="fc" id="L200">                    idxV = rIdxs.get(v);</span>
-<span class="fc" id="L201">                    out[i][idxV] = uvCost;</span>
+<span class="fc" id="L191">                    uvCost = iter.value();</span>
+<span class="fc" id="L192">                    idxV = rIdxs.get(v);</span>
+<span class="fc" id="L193">                    out[i][idxV] = uvCost;</span>
                 }
             }
         }
         
-<span class="fc" id="L206">        return out;</span>
+<span class="fc" id="L198">        return out;</span>
     }
 
     protected Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; buildMST(TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
                 
         // finding the max cost in the graph G.  the value is needed for a bit length used by a trie in Prim's MST
-<span class="fc" id="L212">        int maxCost = PrimsMST.maxEdgeCost(adjCostMap);</span>
+<span class="fc" id="L204">        int maxCost = PrimsMST.maxEdgeCost(adjCostMap);</span>
         
-<span class="fc" id="L214">        PrimsMST prims = new PrimsMST();</span>
+<span class="fc" id="L206">        PrimsMST prims = new PrimsMST();</span>
         
-<span class="fc" id="L216">        prims.calculateMinimumSpanningTree(adjCostMap, maxCost);</span>
+<span class="fc" id="L208">        prims.calculateMinimumSpanningTree(adjCostMap, maxCost);</span>
         
         //(1) T = mst(G)
-<span class="fc" id="L219">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree = prims.makeTreeFromPrev();</span>
+<span class="fc" id="L211">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree = prims.makeTreeFromPrev();</span>
         //print(mstTree);
         
         //TIntList treeWalk = prims.getPreorderIndexes();
         //System.out.printf(&quot;treeWalk=%s\n&quot;, Arrays.toString(treeWalk.toArray()));
         
-<span class="fc" id="L225">        return mstTree;</span>
+<span class="fc" id="L217">        return mstTree;</span>
     }
     
     /*
@@ -248,7 +240,7 @@ import thirdparty.HungarianAlgorithm;
         int[] oddDVertexes, TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
         
         // building O as a cost matrix for input to the Hungarian algorithm
-<span class="fc" id="L251">        float[][] oCostMatrix = buildCostMatrix(oddDVertexes, adjCostMap);</span>
+<span class="fc" id="L243">        float[][] oCostMatrix = buildCostMatrix(oddDVertexes, adjCostMap);</span>
         // indexes of the oCostMatrix are the values of oddDVertexes
         //   so should be transformed back to vertex numbers after
         //   mincost matching.
@@ -257,34 +249,34 @@ import thirdparty.HungarianAlgorithm;
         // alternatively, can use MinCostUnbalancedAssignment.
         // hungarian algorithm accepts argument: computeAssignments(float[][] matrix).
         // MinCostUnbalancedAssignment needs a Graph g.
-<span class="fc" id="L260">        int[][] assignmentsM = new HungarianAlgorithm().computeAssignments(oCostMatrix);</span>
+<span class="fc" id="L252">        int[][] assignmentsM = new HungarianAlgorithm().computeAssignments(oCostMatrix);</span>
         
-<span class="fc" id="L262">        int i, n = 0, k, v;</span>
-<span class="fc" id="L263">        TIntIntMap keep = new TIntIntHashMap();</span>
-<span class="fc" id="L264">        TIntSet included = new TIntHashSet();</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">        for (i = 0; i &lt; assignmentsM.length; ++i) {</span>
-<span class="fc" id="L266">            k = assignmentsM[i][0];</span>
-<span class="fc" id="L267">            v = assignmentsM[i][1];</span>
+<span class="fc" id="L254">        int i, n = 0, k, v;</span>
+<span class="fc" id="L255">        TIntIntMap keep = new TIntIntHashMap();</span>
+<span class="fc" id="L256">        TIntSet included = new TIntHashSet();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (i = 0; i &lt; assignmentsM.length; ++i) {</span>
+<span class="fc" id="L258">            k = assignmentsM[i][0];</span>
+<span class="fc" id="L259">            v = assignmentsM[i][1];</span>
             //System.out.printf(&quot;%d, %d\n&quot;, k, v);
-<span class="pc bpc" id="L269" title="1 of 4 branches missed.">            if (included.contains(k) || included.contains(v)) {</span>
-<span class="nc" id="L270">                continue;</span>
+<span class="pc bpc" id="L261" title="1 of 4 branches missed.">            if (included.contains(k) || included.contains(v)) {</span>
+<span class="nc" id="L262">                continue;</span>
             }
-<span class="fc" id="L272">            keep.put(k, v);</span>
-<span class="fc" id="L273">            included.add(k);</span>
-<span class="fc" id="L274">            included.add(v);</span>
-<span class="fc" id="L275">            n++;</span>
+<span class="fc" id="L264">            keep.put(k, v);</span>
+<span class="fc" id="L265">            included.add(k);</span>
+<span class="fc" id="L266">            included.add(v);</span>
+<span class="fc" id="L267">            n++;</span>
         }
         
-<span class="fc" id="L278">        int[][] m = new int[n][];</span>
-<span class="fc" id="L279">        TIntIntIterator iterK = keep.iterator();</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L281">            iterK.advance();</span>
-<span class="fc" id="L282">            k = iterK.key();</span>
-<span class="fc" id="L283">            v = iterK.value();</span>
-<span class="fc" id="L284">            m[i] = new int[]{oddDVertexes[k], oddDVertexes[v]};</span>
+<span class="fc" id="L270">        int[][] m = new int[n][];</span>
+<span class="fc" id="L271">        TIntIntIterator iterK = keep.iterator();</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L273">            iterK.advance();</span>
+<span class="fc" id="L274">            k = iterK.key();</span>
+<span class="fc" id="L275">            v = iterK.value();</span>
+<span class="fc" id="L276">            m[i] = new int[]{oddDVertexes[k], oddDVertexes[v]};</span>
         }
         
-<span class="fc" id="L287">        return m;</span>
+<span class="fc" id="L279">        return m;</span>
     }
 
     protected TIntObjectMap&lt;TIntSet&gt; unionMSTAndAssignments(
@@ -292,71 +284,71 @@ import thirdparty.HungarianAlgorithm;
         
         int i, u, v;
         
-<span class="fc" id="L295">        TIntObjectMap&lt;TIntSet&gt; h = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L287">        TIntObjectMap&lt;TIntSet&gt; h = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
-<span class="fc" id="L297">        Iterator&lt;Integer&gt; iterMST = mstTree.keySet().iterator();</span>
+<span class="fc" id="L289">        Iterator&lt;Integer&gt; iterMST = mstTree.keySet().iterator();</span>
         LinkedList&lt;Integer&gt; lList;
         Iterator&lt;Integer&gt; iterList;
         TIntSet s;
-<span class="fc bfc" id="L301" title="All 2 branches covered.">        while (iterMST.hasNext()) {</span>
-<span class="fc" id="L302">            u = iterMST.next();</span>
-<span class="fc" id="L303">            lList = mstTree.get(u);</span>
-<span class="fc" id="L304">            iterList = lList.iterator();</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">            while (iterList.hasNext()) {</span>
-<span class="fc" id="L306">                v = iterList.next();</span>
-<span class="fc" id="L307">                s = h.get(u);</span>
-<span class="fc bfc" id="L308" title="All 2 branches covered.">                if (s == null) {</span>
-<span class="fc" id="L309">                    s = new TIntHashSet();</span>
-<span class="fc" id="L310">                    h.put(u, s);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        while (iterMST.hasNext()) {</span>
+<span class="fc" id="L294">            u = iterMST.next();</span>
+<span class="fc" id="L295">            lList = mstTree.get(u);</span>
+<span class="fc" id="L296">            iterList = lList.iterator();</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">            while (iterList.hasNext()) {</span>
+<span class="fc" id="L298">                v = iterList.next();</span>
+<span class="fc" id="L299">                s = h.get(u);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">                if (s == null) {</span>
+<span class="fc" id="L301">                    s = new TIntHashSet();</span>
+<span class="fc" id="L302">                    h.put(u, s);</span>
                 }
-<span class="fc" id="L312">                s.add(v);</span>
+<span class="fc" id="L304">                s.add(v);</span>
             }
         }
 
-<span class="fc bfc" id="L316" title="All 2 branches covered.">        for (i = 0; i &lt; m.length; ++i) {</span>
-<span class="fc" id="L317">            s = h.get(m[i][0]);</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">            if (s == null) {</span>
-<span class="fc" id="L319">                s = new TIntHashSet();</span>
-<span class="fc" id="L320">                h.put(m[i][0], s);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">        for (i = 0; i &lt; m.length; ++i) {</span>
+<span class="fc" id="L309">            s = h.get(m[i][0]);</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            if (s == null) {</span>
+<span class="fc" id="L311">                s = new TIntHashSet();</span>
+<span class="fc" id="L312">                h.put(m[i][0], s);</span>
             }
-<span class="fc" id="L322">            s.add(m[i][1]);</span>
+<span class="fc" id="L314">            s.add(m[i][1]);</span>
         }        
         
-<span class="fc" id="L325">        return h;</span>
+<span class="fc" id="L317">        return h;</span>
     }
     
     public static long totalCost(int[] hamiltonian, TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
-<span class="fc" id="L329">        long sum = 0;</span>
+<span class="fc" id="L321">        long sum = 0;</span>
         int i, u, v, cost;
         TIntIntMap assoc;
-<span class="fc bfc" id="L332" title="All 2 branches covered.">        for (i = 1; i &lt; hamiltonian.length;++i) {</span>
-<span class="fc" id="L333">            u = hamiltonian[i - 1];</span>
-<span class="fc" id="L334">            v = hamiltonian[i];</span>
-<span class="fc" id="L335">            assoc = adjCostMap.get(u);</span>
-<span class="pc bpc" id="L336" title="1 of 2 branches missed.">            if (assoc == null) {</span>
-<span class="nc" id="L337">                throw new IllegalStateException(&quot;node &quot; + u + &quot; is not a key in the adjCostMap&quot;);</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">        for (i = 1; i &lt; hamiltonian.length;++i) {</span>
+<span class="fc" id="L325">            u = hamiltonian[i - 1];</span>
+<span class="fc" id="L326">            v = hamiltonian[i];</span>
+<span class="fc" id="L327">            assoc = adjCostMap.get(u);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">            if (assoc == null) {</span>
+<span class="nc" id="L329">                throw new IllegalStateException(&quot;node &quot; + u + &quot; is not a key in the adjCostMap&quot;);</span>
             }
-<span class="pc bpc" id="L339" title="1 of 2 branches missed.">            if (!assoc.containsKey(v)) {</span>
-<span class="nc" id="L340">                throw new IllegalStateException(&quot;node &quot; + v + &quot; is not a value in the adjCostMapfor key=&quot; + u);</span>
+<span class="pc bpc" id="L331" title="1 of 2 branches missed.">            if (!assoc.containsKey(v)) {</span>
+<span class="nc" id="L332">                throw new IllegalStateException(&quot;node &quot; + v + &quot; is not a value in the adjCostMapfor key=&quot; + u);</span>
             }
-<span class="fc" id="L342">            sum += assoc.get(v);</span>
+<span class="fc" id="L334">            sum += assoc.get(v);</span>
         }
-<span class="fc" id="L344">        return sum;</span>
+<span class="fc" id="L336">        return sum;</span>
     }
 
     private void print(Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree) {
-<span class="nc" id="L348">        Iterator&lt;Integer&gt; intIter = mstTree.keySet().iterator();</span>
+<span class="nc" id="L340">        Iterator&lt;Integer&gt; intIter = mstTree.keySet().iterator();</span>
         Iterator&lt;Integer&gt; intIter2;
         int u, v;
-<span class="nc" id="L351">        System.out.println(&quot;MST:&quot;);</span>
-<span class="nc bnc" id="L352" title="All 2 branches missed.">        while (intIter.hasNext()) {</span>
-<span class="nc" id="L353">            u = intIter.next();</span>
-<span class="nc" id="L354">            intIter2 = mstTree.get(u).iterator();</span>
-<span class="nc bnc" id="L355" title="All 2 branches missed.">            while (intIter2.hasNext()) {</span>
-<span class="nc" id="L356">                v = intIter2.next();</span>
-<span class="nc" id="L357">                System.out.printf(&quot;%d:%d\n&quot;, u, v);</span>
+<span class="nc" id="L343">        System.out.println(&quot;MST:&quot;);</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">        while (intIter.hasNext()) {</span>
+<span class="nc" id="L345">            u = intIter.next();</span>
+<span class="nc" id="L346">            intIter2 = mstTree.get(u).iterator();</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">            while (intIter2.hasNext()) {</span>
+<span class="nc" id="L348">                v = intIter2.next();</span>
+<span class="nc" id="L349">                System.out.printf(&quot;%d:%d\n&quot;, u, v);</span>
             }
         }
-<span class="nc" id="L360">    }</span>
+<span class="nc" id="L352">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

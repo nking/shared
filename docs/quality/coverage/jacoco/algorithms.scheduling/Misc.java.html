@@ -198,7 +198,7 @@ import java.util.TreeSet;
 <span class="fc" id="L198">        return sched;</span>
     }
 
-    
+    // s and f are sorted by ascending order of f before passed to this method
     private int[] calcP(double[] s, double[] f) {
         // iterating from highest index to lowest,
         // find for each s, highest previous index in which f[i-...] &lt; s_i

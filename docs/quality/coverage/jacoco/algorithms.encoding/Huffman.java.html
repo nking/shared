@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Huffman.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.encoding</a> &gt; <span class="el_source">Huffman.java</span></div><h1>Huffman.java</h1><pre class="source lang-java linenums">package algorithms.encoding;
+
+import algorithms.TreeTraversal;
+import algorithms.VeryLongBitString;
+import algorithms.bipartite.YFastTrieWrapper;
+import algorithms.heapsAndPQs.HeapNode;
+import algorithms.misc.MiscMath0;
+import gnu.trove.iterator.TIntIntIterator;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+/**
+ Huffman encoding is a compression algorithm that uses entropy 
+ and a prefix-free variable length code.
+ &lt;pre&gt;
+ prefix-free variable length code (a.k.a. prefix code)
+    -- No codeword is a prefix of any other codeword
+    -- Prefix codes are uniquely decodable
+   Example: 1, 10, 110,111
+
+   Prefix-free coding:
+    -- uses a symbol tree for all symbols of message
+    -- usually the most frequently used symbols are at top of tree
+    -- static algorithms have 3 phases for ENCODING
+        (1) read source messages and calculate symbol frequency
+        (2) build symbol code tree, optimized by frequency
+        (3) encode messages using symbol codes
+    -- static algorithms have 3 phases for DECODING:
+        (1) read the stats of the source message
+            (usually the stored symbol table or other means
+            to create it)
+        (2) build the code tree
+        (3) decode the messages
+&lt;/pre&gt;
+   Huffman and Shannon-Fado attempt to assign shorter code words to more frequent
+   symbols.
+   
+ * Huffman assigns a symbol to each
+ * character based upon the frequency of that character in the text string.
+ * The algorithm creates a table of frequency of characters and converts those
+   to variable length binary strings.  The most frequent characters
+   use the smallest binary strings.
+   The compressed results are usually 20%-90% of the original size.
+   
+  From Cormen et al. &quot;Introduction to algorithms&quot;:
+  consider only prefix-codes, that is, codes in which no codeword is also a 
+  prefix of some other codeword.
+   Encoding for any binary character code is a concatenation of the codewords 
+   representing each character of the file. 
+   For example, with the variable-length prefix code of Figure 16.3, we code 
+   the 3-character file abc as 0.101.100, where “.” denotes concatenation.
+   Prefix codes are desirable because they simplify decoding. 
+   Since no codeword is a prefix of any other, the codeword that begins an 
+   encoded file is unambiguous. We can simply identify the initial codeword, 
+   translate it back to the original character, and repeat the decoding process 
+   on the remainder of the encoded file. In our example, the string 001011101 
+   parses uniquely as 0 . 0 . 101 . 1101, which decodes to aabe.
+ * @author nichole
+ */
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">public class Huffman {</span>
+
+    public static class HuffmanEncoding {
+        
+        /**
+         * The symbol code tree:
+         * the values in the leaf nodes as datum are the code point for decoded letters.
+         * To use the tree with the encoded bit-string: start from the root
+         * node, and read the first bit in the bit-string.  A '0' in the bit-string
+         * means follow the left node while a '1' in the bit-string means
+         * follow the right node.  When one reaches a leaf, that is the
+         * letter that has just been decoded, so write it.  Continue reading the bit-string
+         * but begin the traversal from the root node again.
+         */
+        public HeapNode symbolTree = null;
+        
+        /**
+         * a map with key=code point of a letter in the alphabet to encode,
+         * and the value for the key is the number of times the letter
+         * occurs in the text to be encoded.
+         * This can be used to build the symbol code tree,
+         */
+        public TIntIntMap freqMap = null;
+        
+        /**
+         * the encoded text.  when reading, start from bit 0.
+         */
+        public VeryLongBitString encoded = null;
+        
+        public void print() {
+            System.out.println(&quot;freqMap:&quot;);
+            if (freqMap != null) {
+                printMap(freqMap);
+            }
+
+            System.out.println(&quot;symbolTree:&quot;);
+            if (symbolTree != null) {
+                TreeTraversal.printLevelOrder(symbolTree);
+            }
+            
+            System.out.println(&quot;encoded bitstring:&quot;);
+            if (encoded != null) {
+                System.out.println(encoded.toString());
+            }
+        }
+    }
+    
+    protected static class EncodingSymbols {
+        
+        /**
+         * The symbol code tree:
+         * the values in the leaf nodes as datum are the code point for original uncoded letters
+         * while the keys are the bit-strings for the encodings.
+         * Note that the nodes which are not leaves (that is not encoded alphabet)
+         * will have null for their data property.
+         */
+        HeapNode symbolTree = null;
+        
+        /**
+         * keys are the code-points for the original un-coded text.
+         * values for the keys are the bit-strings for the encodings.
+         */
+        TIntIntMap codeSymbolMap = null;
+        
+        public void print() {
+            System.out.println(&quot;codeSymbolMap:&quot;);
+            if (codeSymbolMap != null) {
+                printMap(codeSymbolMap);
+            }
+
+            System.out.println(&quot;symbolTree:&quot;);
+            if (symbolTree != null) {
+                TreeTraversal.printLevelOrder(symbolTree);
+            }
+        }
+    }
+
+    /**
+     * use Huffman encoding to compress the text s. returns a tree representing
+     * the compressed text and the frequency table needed to decode it. The
+     * runtime complexity is O(n * log_2 log_2 (n)) where n is the length of the
+     * text string c, though can be as high as O(n * log_2(n)) if Fibonacci heap
+     * is used.
+     *
+     * @param c text to encode
+     * @return returns the Huffman encoded text and the symbol code map.
+     */
+    public HuffmanEncoding compress(String c) {
+
+<span class="fc" id="L152">        int n = c.length();</span>
+
+        // key = code point of character, value = number of times character is in c
+<span class="fc" id="L155">        int sumF = 0;</span>
+<span class="fc" id="L156">        TIntIntMap f = new TIntIntHashMap();</span>
+        int cP;
+        int fP;
+        int i;
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L161">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L162">            fP = 1;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (f.containsKey(cP)) {</span>
+<span class="fc" id="L164">                fP += f.get(cP);</span>
+            }
+<span class="fc" id="L166">            f.put(cP, fP);</span>
+<span class="fc" id="L167">            sumF += fP;</span>
+        }
+
+<span class="fc" id="L170">        EncodingSymbols symbols = buildSymbolCodeTree(f, sumF);</span>
+        
+        // encode c         
+<span class="fc" id="L173">        VeryLongBitString encoded = encode(c, symbols.codeSymbolMap);</span>
+        
+<span class="fc" id="L175">        HuffmanEncoding h = new HuffmanEncoding();</span>
+<span class="fc" id="L176">        h.symbolTree = symbols.symbolTree;</span>
+<span class="fc" id="L177">        h.freqMap = f;</span>
+<span class="fc" id="L178">        h.encoded = encoded;</span>
+        
+<span class="fc" id="L180">        return h;</span>
+    }
+
+    /**
+     * @param f map with key=code-point, value=frequency of code-point in 
+     * original text.
+     * @param sumF the sum of all frequencies in f.  it's used to assign
+     * a maximum bit-length needed by an internal YFastTrie data structure.
+     * @return 
+     */
+    protected HeapNode buildFrequencyCodeTree(TIntIntMap f, int sumF) {
+        
+<span class="fc" id="L192">        int n = f.size();</span>
+
+        // initialize heap with C set of characters which are the keys of f
+<span class="fc" id="L195">        int maxQ = sumF;</span>
+<span class="fc" id="L196">        YFastTrieWrapper q = new YFastTrieWrapper(maxQ + 1);</span>
+<span class="fc" id="L197">        TIntIntIterator iter = f.iterator();</span>
+        int cP;
+        int fP;
+        // or PriorityQueue&lt;Integer&gt; q = new PriorityQueue&lt;&gt;(n);
+        HeapNode node;
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L203">            iter.advance();;</span>
+<span class="fc" id="L204">            cP = iter.key();</span>
+<span class="fc" id="L205">            fP = iter.value();</span>
+<span class="fc" id="L206">            node = new HeapNode(fP);</span>
+<span class="fc" id="L207">            node.setData(cP);</span>
+<span class="fc" id="L208">            q.insert(node);</span>
+        }
+
+        //build a tree from the bottom up
+        HeapNode nodeZ;
+        int i;
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        for (i = 1; i &lt; n; ++i) {</span>
+<span class="fc" id="L215">            nodeZ = new HeapNode();</span>
+<span class="fc" id="L216">            nodeZ.setLeft(q.extractMin());</span>
+<span class="fc" id="L217">            nodeZ.setRight(q.extractMin());</span>
+<span class="fc" id="L218">            nodeZ.setKey(nodeZ.getLeft().getKey() + nodeZ.getRight().getKey());</span>
+            
+<span class="fc" id="L220">            q.insert(nodeZ);</span>
+        }
+        
+<span class="pc bpc" id="L223" title="3 of 4 branches missed.">        assert (q.getNumberOfNodes() == 1);</span>
+
+<span class="fc" id="L225">        HeapNode t = q.extractMin();</span>
+        
+<span class="fc" id="L227">        t = repairToUniqueIfNeeded(t);</span>
+        
+<span class="fc" id="L229">        return t;</span>
+    }
+    
+    /**
+     * 
+     * @param f map with key=code-point, value=frequency of code-point in 
+     * original text.
+     * @param sumF the sum of all frequencies in f.  it's used to assign
+     * a maximum bit-length needed by an internal YFastTrie data structure.
+     * @return 
+     */
+    protected EncodingSymbols buildSymbolCodeTree(TIntIntMap f, int sumF) {
+        
+        //System.out.println(&quot;freqMap:&quot;);
+        //printMap(f);   
+        
+
+<span class="fc" id="L246">        HeapNode t = buildFrequencyCodeTree(f, sumF);</span>
+        
+        
+        //System.out.println(&quot;freq code tree:&quot;);
+        //TreeTraversal.printLevelOrder(t);
+        
+
+<span class="fc" id="L253">        TIntIntMap symbolCodeMap = new TIntIntHashMap();</span>
+
+        // convert the tree into variable-length binary prefix-code.
+        // traversal is level-order.
+<span class="fc" id="L257">        HeapNode node = t;</span>
+        // the node key here is changed from frequency to binary code
+<span class="fc" id="L259">        t.setKey(0);// key=freq-&gt;code, value=cP</span>
+<span class="fc" id="L260">        Queue&lt;HeapNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
+        long key;
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        while (node != null) {</span>
+<span class="fc bfc" id="L263" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
+                // this is a leaf, so is one of the characters
+<span class="fc" id="L265">                symbolCodeMap.put((Integer) node.getData(), (int) node.getKey());</span>
+            } else {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">                if (node.getLeft() != null) {</span>
+                    //change left key: append 0 to node key
+<span class="fc" id="L269">                    key = node.getKey() &lt;&lt; 1;</span>
+<span class="fc" id="L270">                    node.getLeft().setKey(key);</span>
+<span class="fc" id="L271">                    queue.add(node.getLeft());</span>
+                }
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                if (node.getRight() != null) {</span>
+                    //change right key: append 1 to node key
+<span class="fc" id="L275">                    key = node.getKey() &lt;&lt; 1;</span>
+<span class="fc" id="L276">                    key |= 1;</span>
+<span class="fc" id="L277">                    node.getRight().setKey(key);</span>
+<span class="fc" id="L278">                    queue.add(node.getRight());</span>
+                }
+            }
+<span class="fc" id="L281">            node = queue.poll(); // returns null if empty</span>
+        }
+        
+<span class="fc" id="L284">        EncodingSymbols eS = new EncodingSymbols();</span>
+<span class="fc" id="L285">        eS.symbolTree = t;</span>
+<span class="fc" id="L286">        eS.codeSymbolMap = symbolCodeMap;</span>
+        
+        //eS.print();
+
+<span class="fc" id="L290">        return eS;</span>
+    }
+    
+    private long count(String c, TIntIntMap codeSymbolMap) {
+<span class="fc" id="L294">        long nBits = 0;</span>
+        int cP;
+        int s;
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
+<span class="fc" id="L298">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L299">            s = codeSymbolMap.get(cP);</span>
+<span class="fc" id="L300">            nBits += MiscMath0.numberOfBits(s);</span>
+        }
+<span class="fc" id="L302">        return nBits;</span>
+    }
+
+    /**
+     * encode the text c, given the code symbol map.
+     * @param c uncoded text to be encoded.
+     * @param codeSymbolMap map with key = alphabet code point, value = 
+     * bit-string symbol.
+     * @return returns the encoding of text 'c', stored as a VeryLongBitString.
+     */
+    VeryLongBitString encode(String c, TIntIntMap codeSymbolMap) {
+        
+        // count the number of bits the encoded string will be.
+        // this is needed to construct the VeryLongBitString.
+<span class="fc" id="L316">        long nE = count(c, codeSymbolMap);</span>
+        
+        //NOTE: could use java's BigInteger, but that creates a new BigInteger 
+        //      for every modifying operation such as setBit().
+<span class="fc" id="L320">        VeryLongBitString encoded = new VeryLongBitString(nE);</span>
+       
+        /*
+        network data is usually passed as big endian
+            example integer: 0A0B0C0D
+
+                       Big        Little 
+                       Endian:    Endian:
+            memory
+            address
+                a     0A           0D
+              a+1     0B           0C
+              a+2     0C           0B
+              a+3     0D           0A
+        */
+         
+        int cP;
+        int s;
+<span class="fc" id="L338">        long b = 0;</span>
+        long b2;
+        int nB;
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
+<span class="fc" id="L342">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L343">            s = codeSymbolMap.get(cP);</span>
+            
+<span class="fc" id="L345">            nB = MiscMath0.numberOfBits(s);</span>
+            
+            // set bits, reversing them from b to b+nB for the bit-string tree path
+            // _ _ _ _ _ _  b=0, nB=3   7 6 5 4 3 2 1 0
+            //              s=100: write s[0] to  c[(b+nB-1)]
+<span class="fc" id="L350">            b2 = b + nB - 1;</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">            while (nB &gt; 0) {</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">                if ((s &amp; 1) == 1) {</span>
+<span class="fc" id="L353">                    encoded.setBit(b2);</span>
+                }
+<span class="fc" id="L355">                s &gt;&gt;= 1;</span>
+<span class="fc" id="L356">                ++b;</span>
+<span class="fc" id="L357">                --nB;</span>
+<span class="fc" id="L358">                --b2;</span>
+            }
+        }
+        
+<span class="fc" id="L362">        return encoded;</span>
+    }
+    
+    /**
+     * decode the Huffman encoded tree. runtime complexity is O(N) where N is
+     * the number of characters in the original text.
+     *
+     * @param symbolTree the symbol code map
+     * @param encoded text
+     * @return returns the decoded text.
+     */
+    public String decompress(HeapNode symbolTree, VeryLongBitString encoded) {
+        
+<span class="fc" id="L375">        StringBuilder sb = new StringBuilder();</span>
+        
+<span class="fc" id="L377">        HeapNode node = symbolTree;</span>
+             
+<span class="pc bpc" id="L379" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L380">            return &quot;&quot;;</span>
+        }
+        
+<span class="fc" id="L383">        long n = encoded.getInstantiatedBitSize();</span>
+        long i;
+        int cP;
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L387" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
+                
+                // this is a leaf node, so we have a letter in the decoded alphabet now
+<span class="fc" id="L390">                cP = (Integer)node.getData();</span>
+                
+<span class="fc" id="L392">                sb.append(Character.toChars(cP));</span>
+<span class="fc" id="L393">                node = symbolTree;</span>
+            }
+            
+<span class="fc bfc" id="L396" title="All 2 branches covered.">            if (encoded.isSet(i)) {</span>
+<span class="fc" id="L397">                node = node.getRight();</span>
+            } else {
+<span class="fc" id="L399">                node = node.getLeft();</span>
+            }
+        }
+        
+<span class="pc bpc" id="L403" title="2 of 4 branches missed.">        if (node != null &amp;&amp; node.getData() != null) {</span>
+<span class="fc" id="L404">            cP = (Integer)node.getData();</span>
+<span class="fc" id="L405">            sb.append(Character.toChars(cP));</span>
+        }
+        
+<span class="fc" id="L408">        return sb.toString();</span>
+    }
+    
+    private HeapNode repairToUniqueIfNeeded(HeapNode t) {
+        
+        //System.out.println(&quot;\nrepairToUniqueIfNeeded:&quot;);
+        //    TreeTraversal.printLevelOrder(t);
+            
+        // there is a possible violation of unique prefix code for
+        // a path from root to leaf that is all left nodes and longer than 1.
+        // can remove the all left path leaf
+        // add a new root node to top of the tree t and assign the existing tree to its right
+        // assign the leaf to the new root's left 
+        
+<span class="pc bpc" id="L422" title="1 of 4 branches missed.">        if (!(t.getLeft() != null &amp;&amp; t.getLeft().getLeft() != null)) {</span>
+<span class="fc" id="L423">            return t;</span>
+        }
+       
+<span class="fc" id="L426">        HeapNode p = t;</span>
+<span class="fc" id="L427">        HeapNode leaf = p.getLeft();</span>
+                
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        while (leaf.getLeft() != null) {</span>
+<span class="fc" id="L430">            p = leaf;</span>
+<span class="fc" id="L431">            leaf = leaf.getLeft();</span>
+        }
+        
+        //System.out.printf(&quot;remove leaf=(%d,%d), p=(%d,%d)\n&quot;, 
+        //    leaf.getKey(), (Integer)leaf.getData(), p.getKey(), (Integer)p.getData());
+<span class="fc" id="L436">        p.setLeft(null);</span>
+        
+<span class="fc" id="L438">        HeapNode r = new HeapNode(t.getKey() - 1);</span>
+<span class="fc" id="L439">        r.setRight(t);</span>
+<span class="fc" id="L440">        r.setLeft(leaf);</span>
+        
+        //System.out.println(&quot;repaired tree:&quot;);
+        //TreeTraversal.printLevelOrder(r);
+        
+<span class="fc" id="L445">        return r;</span>
+    }
+    
+    private static void printMap(TIntIntMap f) {
+<span class="nc" id="L449">        TIntIntIterator iter = f.iterator();</span>
+<span class="nc bnc" id="L450" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L451">            iter.advance();</span>
+<span class="nc" id="L452">            System.out.printf(&quot;key=%d, v=%d\n&quot;, iter.key(), iter.value());</span>
+        }
+<span class="nc" id="L454">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

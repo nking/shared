@@ -277,8 +277,8 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc bfc" id="L277" title="All 2 branches covered.">		for (; i &gt;= 0; i--) {</span>
 <span class="fc" id="L278">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
 <span class="pc bpc" id="L279" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">			if (v.jump == u) {</span>
-<span class="fc" id="L281">				v.jump = u.child[1-c];</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">			if (v.jump == u) {</span>
+<span class="nc" id="L281">				v.jump = u.child[1-c];</span>
             }
 <span class="fc" id="L283">			v = v.parent;</span>
 		}

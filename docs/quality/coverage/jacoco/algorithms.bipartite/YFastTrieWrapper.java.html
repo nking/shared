@@ -132,29 +132,28 @@ import java.util.Set;
 <span class="fc" id="L132">    }</span>
     
     /**
-     * runtime complexity is O(10) or better. It is dependent on the bit length 
-     * of the largest number to hold or query, and the balance between the number
-     * of bins and number of items per bin.
+     * runtime complexity is roughly O(log_2(w)) where w is the bitlength of the
+       maximum value stored in the trie, set at construction time.
      * @param node 
      */
     public void remove(HeapNode node) {
 
-<span class="fc" id="L142">        int keyIdx = (int)node.getKey();</span>
+<span class="fc" id="L141">        int keyIdx = (int)node.getKey();</span>
                 
-<span class="fc" id="L144">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
+<span class="fc" id="L143">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
         
-<span class="pc bpc" id="L146" title="3 of 4 branches missed.">        assert(set0 != null);</span>
+<span class="pc bpc" id="L145" title="3 of 4 branches missed.">        assert(set0 != null);</span>
         
-<span class="fc" id="L148">        set0.remove(node);</span>
+<span class="fc" id="L147">        set0.remove(node);</span>
         
-<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (set0.isEmpty()) {</span>
-<span class="fc" id="L151">            boolean removed = yft.remove(Integer.valueOf(keyIdx));</span>
-<span class="pc bpc" id="L152" title="3 of 4 branches missed.">            assert(removed);</span>
-<span class="fc" id="L153">            map.remove(keyIdx);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        if (set0.isEmpty()) {</span>
+<span class="fc" id="L150">            boolean removed = yft.remove(Integer.valueOf(keyIdx));</span>
+<span class="pc bpc" id="L151" title="3 of 4 branches missed.">            assert(removed);</span>
+<span class="fc" id="L152">            map.remove(keyIdx);</span>
         }
         
-<span class="fc" id="L156">        n--;</span>
-<span class="fc" id="L157">    }</span>
+<span class="fc" id="L155">        n--;</span>
+<span class="fc" id="L156">    }</span>
     
     /**
      * runtime complexity for best case is O(1) when there
@@ -170,30 +169,30 @@ import java.util.Set;
      */
     public HeapNode extractMin() {
         
-<span class="fc bfc" id="L173" title="All 2 branches covered.">        if (n == 0) {</span>
-<span class="fc" id="L174">            return null;</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (n == 0) {</span>
+<span class="fc" id="L173">            return null;</span>
         }
      
-<span class="fc" id="L177">        Integer key = yft.minimum();</span>
+<span class="fc" id="L176">        Integer key = yft.minimum();</span>
         
-<span class="fc" id="L179">        Set&lt;HeapNode&gt; set = map.get(key.intValue());</span>
+<span class="fc" id="L178">        Set&lt;HeapNode&gt; set = map.get(key.intValue());</span>
         
-<span class="fc" id="L181">        HeapNode node = set.iterator().next();</span>
-<span class="fc" id="L182">        set.remove(node);</span>
+<span class="fc" id="L180">        HeapNode node = set.iterator().next();</span>
+<span class="fc" id="L181">        set.remove(node);</span>
         
-<span class="fc bfc" id="L184" title="All 2 branches covered.">        if (set.isEmpty()) {</span>
-<span class="fc" id="L185">            map.remove(key.intValue());</span>
-<span class="fc" id="L186">            yft.remove(key);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (set.isEmpty()) {</span>
+<span class="fc" id="L184">            map.remove(key.intValue());</span>
+<span class="fc" id="L185">            yft.remove(key);</span>
         }
        
-<span class="fc" id="L189">        lastKnownMinKey = key.intValue();</span>
-<span class="fc" id="L190">        n--;</span>
+<span class="fc" id="L188">        lastKnownMinKey = key.intValue();</span>
+<span class="fc" id="L189">        n--;</span>
         
-<span class="fc" id="L192">        return node;</span>
+<span class="fc" id="L191">        return node;</span>
     }
     
     public long getNumberOfNodes() {
-<span class="fc" id="L196">        return n;</span>
+<span class="fc" id="L195">        return n;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

@@ -80,6 +80,7 @@ NOTE: Newman generates random graphs for testing too:
      * we will get Q = 0. value approaching the maximum, Q = 1, indicate strong
      * community structure [50]. values tend to be 0.3 to 0.7 and higher values
      * are rare.
+     * NOTE: communities are disjoint sets for Girvan-Newman 2002 and 2004
      *
      * @param originalAdjacencyList
      * @param layer the results of an iteration of the girvan-newman algorithm
@@ -93,8 +94,6 @@ NOTE: Newman generates random graphs for testing too:
     public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
         originalAdjacencyList, double nEdges) {
         
-        // NOTE: communities are disjoint sets for Girvan-Newman 2002 and 2004
-       
         /*
         modularity Q =  Tr e - ||e^2||
            where ||e^2|| is the sum of the square of elements of matrix e.
@@ -117,57 +116,57 @@ NOTE: Newman generates random graphs for testing too:
         int i, j, k, c1, c2;
         double trE, q;
 
-<span class="fc" id="L120">        k = layer.nComponents;</span>
+<span class="fc" id="L119">        k = layer.nComponents;</span>
 
         //create matrix e where e[i][j] is fraction of edges from i to jover all edges
-<span class="fc" id="L123">        e = new double[k][k];</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L125">            e[i] = new double[k];</span>
+<span class="fc" id="L122">        e = new double[k][k];</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L124">            e[i] = new double[k];</span>
         }
 
         // count number of edges between communities using direction of edges
-<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (i = 0; i &lt; layer.vertexComponents.length; ++i) {</span>
-<span class="fc" id="L130">            c1 = layer.vertexComponents[i];</span>
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">            if (c1 == -1) {</span>
-<span class="nc" id="L132">                continue;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        for (i = 0; i &lt; layer.vertexComponents.length; ++i) {</span>
+<span class="fc" id="L129">            c1 = layer.vertexComponents[i];</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">            if (c1 == -1) {</span>
+<span class="nc" id="L131">                continue;</span>
             }
 
-<span class="fc" id="L135">            SimpleLinkedListNode jNode = originalAdjacencyList[i];</span>
-<span class="fc bfc" id="L136" title="All 4 branches covered.">            while (jNode != null &amp;&amp; jNode.getKey() != -1) {</span>
-<span class="fc" id="L137">                j = jNode.getKey();</span>
-<span class="fc" id="L138">                c2 = layer.vertexComponents[j];</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">                if (c2 == -1) {</span>
-<span class="nc" id="L140">                    continue;</span>
+<span class="fc" id="L134">            SimpleLinkedListNode jNode = originalAdjacencyList[i];</span>
+<span class="fc bfc" id="L135" title="All 4 branches covered.">            while (jNode != null &amp;&amp; jNode.getKey() != -1) {</span>
+<span class="fc" id="L136">                j = jNode.getKey();</span>
+<span class="fc" id="L137">                c2 = layer.vertexComponents[j];</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">                if (c2 == -1) {</span>
+<span class="nc" id="L139">                    continue;</span>
                 }
-<span class="fc" id="L142">                e[c1][c2]++;</span>
-<span class="fc" id="L143">                jNode = jNode.getNext();</span>
+<span class="fc" id="L141">                e[c1][c2]++;</span>
+<span class="fc" id="L142">                jNode = jNode.getNext();</span>
             }
         }
 
         // divide matrix e by number of edges
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (j = 0; j &lt; k; ++j) {</span>
-<span class="fc" id="L150">                e[i][j] /= nEdges;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            for (j = 0; j &lt; k; ++j) {</span>
+<span class="fc" id="L149">                e[i][j] /= nEdges;</span>
             }
         }
 
         //Trace of e is the fraction of edges in the network that connect 
         //   vertices in the same community.  this is high for good component divisions.
-<span class="fc" id="L156">        trE = 0;</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L158">            trE += e[i][i];</span>
+<span class="fc" id="L155">        trE = 0;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L157">            trE += e[i][i];</span>
         }
 
         // Q = trE - || e^2 ||
-<span class="fc" id="L162">        q = 0;</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">            for (j = 0; j &lt; k; ++j) {</span>
-<span class="fc" id="L165">                q += (e[i][j] * e[i][j]);</span>
+<span class="fc" id="L161">        q = 0;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            for (j = 0; j &lt; k; ++j) {</span>
+<span class="fc" id="L164">                q += (e[i][j] * e[i][j]);</span>
             }
         }
-<span class="fc" id="L168">        q = trE - q;</span>
+<span class="fc" id="L167">        q = trE - q;</span>
 
-<span class="fc" id="L170">        return q;</span>
+<span class="fc" id="L169">        return q;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

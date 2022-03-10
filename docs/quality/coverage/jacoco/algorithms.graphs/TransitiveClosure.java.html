@@ -37,8 +37,8 @@ public class TransitiveClosure {
 <span class="nc" id="L37">    }</span>
     
     /**
-     * 
-     * @param w an adjacency matrix for a DAG with |V|=w.length.
+     * runtime complexity is O(n^3) where n is w.length
+     * @param w a square adjacency matrix for a DAG with |V|=w.length.
      * @return 
      */
     public boolean[][] calc(boolean[][] w) {
@@ -105,8 +105,8 @@ public class TransitiveClosure {
     }
     
     /**
-     * 
-     * @param w an adjacency matrix for a DAG with |V|=w.length.
+     * runtime complexity is O(n^3) where n is w.length.
+     * @param w a square adjacency matrix for a DAG with |V|=w.length.
      * @return 
      */
     public VeryLongBitString[] calc(VeryLongBitString[] w) {

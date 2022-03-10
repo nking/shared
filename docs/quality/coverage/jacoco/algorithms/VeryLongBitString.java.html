@@ -136,7 +136,7 @@ import java.util.Arrays;
     }
     
     public long getInstantiatedBitSize() {
-<span class="nc" id="L139">        return nBits;</span>
+<span class="fc" id="L139">        return nBits;</span>
     }
     
     public boolean isSet(long nthBit) {
@@ -215,11 +215,11 @@ import java.util.Arrays;
      */
     @Override
     public String toString() {
-<span class="nc" id="L218">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">        for (int i = (bitstring.length - 1); i &gt; -1 ; i--) {</span>
-<span class="nc" id="L220">            sb.append(Long.toBinaryString(bitstring[i]));</span>
+<span class="fc" id="L218">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        for (int i = (bitstring.length - 1); i &gt; -1 ; i--) {</span>
+<span class="fc" id="L220">            sb.append(Long.toBinaryString(bitstring[i]));</span>
         }
-<span class="nc" id="L222">        return sb.toString();</span>
+<span class="fc" id="L222">        return sb.toString();</span>
     }
     
     protected void recountNSetBits() {

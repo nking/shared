@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NumberTheory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.misc</a> &gt; <span class="el_source">NumberTheory.java</span></div><h1>NumberTheory.java</h1><pre class="source lang-java linenums">package algorithms.misc;
+
+/**
+ * implemented from pseudocode from Cormen et al. 
+ * &quot;Introduction to Algorithms&quot;, Chap 31
+ *
+ * first implemented in project
+     http://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+   then moved here to share with other projects.
+   
+ * @author nichole
+ */
+<span class="nc" id="L15">public class NumberTheory {</span>
+
+    /**
+     * return the greatest common denominator of the 2 integers.
+     *
+     * runtime complexity is (?)
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static int euclid(int a, int b) {
+        int t;
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        while (b != 0) {</span>
+<span class="fc" id="L29">            t = b;</span>
+<span class="fc" id="L30">            b = Math.floorMod(a, b);//a % b;</span>
+<span class="fc" id="L31">            a = t;</span>
+        }
+<span class="fc" id="L33">        return Math.max(a, -a);</span>
+    }
+
+    /**
+     * return the greatest common denominator of the 2 integers.
+     *
+     * runtime complexity is (?)
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static long euclid(long a, long b) {
+        long t;
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        while (b != 0) {</span>
+<span class="fc" id="L48">            t = b;</span>
+<span class="fc" id="L49">            b = Math.floorMod(a, b);</span>
+<span class="fc" id="L50">            a = t;</span>
+        }
+<span class="fc" id="L52">        return Math.max(a, -a);</span>
+    }
+    
+    /**
+     * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) mod n = b)
+     * where d is the gcd of number n and d|b (that is, d divides b).
+     * finds the smallest gcd for which a*x + b*y = d.
+     * The equation may have zero, one, or more than one such solution.
+     * performs O(lg n + gcd(a, n)) arithmetic operations.
+     * &lt;pre&gt;
+     * Section 31.4, Cormen et al. Introduction to Computer Algorithms.
+     * &lt;/pre&gt;
+     * @param a positive number greater than 0
+     * @param b positive number greater than 0
+     * @param n
+     * @return 
+     */
+    public static long[] gcdModularLinearEqnSolver(long a, long b, long n) {
+        
+        /*
+        https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity
+        Bézout's identity (also called Bézout's lemma) is a theorem in 
+        elementary number theory: let a and b be nonzero integers and let d be 
+        their greatest common divisor. Then there exist integers x and y such 
+        that 
+            ax+by=d.  
+        In addition, the greatest common divisor d is the 
+        smallest positive integer that can be written as ax + by every integer 
+        of the form ax + by is a multiple of the greatest common divisor d.
+        The integers x and y are called Bézout coefficients for (a, b); they 
+        are not unique. A pair of Bézout coefficients can be computed by the 
+        extended Euclidean algorithm.
+        */
+        
+<span class="fc" id="L86">        long min = Long.MAX_VALUE;</span>
+        
+<span class="fc" id="L88">        long[] dXY = extendedEuclid(a, n);</span>
+<span class="fc" id="L89">        long d = dXY[0];</span>
+<span class="pc bpc" id="L90" title="2 of 4 branches missed.">        if (d == 0L || ((b % d) != 0)) {</span>
+<span class="nc" id="L91">            return new long[]{min};</span>
+        }
+<span class="fc" id="L93">        long m = dXY[1] * (b / d);</span>
+        // use the floor modulo operator instead of the default truncated which is '%'
+<span class="fc" id="L95">        long x0 = Math.floorMod(m, n);</span>
+<span class="fc" id="L96">        long[] s = new long[(int)d];</span>
+        
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (int i = 0; i &lt; d; ++i) {</span>
+<span class="fc" id="L99">            s[i] = (x0 + i * (n / d)) % n;</span>
+        }
+<span class="fc" id="L101">        return s;</span>
+    }
+    
+    /**
+     * calculate a^b mod n.
+     * &lt;pre&gt;
+     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen et al. Introduction
+     * to Algorithms (a.k.a. CLRS).
+     * &lt;/pre&gt;
+     * @param a non-negative integer
+     * @param b non-negative integer
+     * @param n positive integer
+     * @return 
+     */
+    public static int modularExponentiation(int a, int b, int n) {
+        
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (a == 0) {</span>
+<span class="nc" id="L118">            return 0;</span>
+        }
+<span class="pc bpc" id="L120" title="3 of 4 branches missed.">        if (b == 0 &amp;&amp; a &lt; n) {</span>
+<span class="nc" id="L121">            return a;</span>
+        }
+<span class="fc" id="L123">        int c = 0;</span>
+<span class="fc" id="L124">        int d = 1;</span>
+<span class="fc" id="L125">        int k = MiscMath0.numberOfBits(b);</span>
+<span class="fc" id="L126">        int mask = 1 &lt;&lt; (k - 1);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        for (int i = k - 1; i &gt;= 0; --i) {</span>
+<span class="fc" id="L128">            c *= 2;</span>
+<span class="fc" id="L129">            d = Math.floorMod(d*d, n);//(d*d) % n;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">            if ((b &amp; mask) != 0) {</span>
+<span class="fc" id="L131">                c++;</span>
+<span class="fc" id="L132">                d = Math.floorMod(d*a, n);//(d*a) % n;</span>
+            } 
+<span class="fc" id="L134">            mask &gt;&gt;= 1;</span>
+        }
+<span class="fc" id="L136">        return d;</span>
+    }
+    
+    /**
+     * calculate a^b mod n.
+     * &lt;pre&gt;
+     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen et al. Introduction
+     * to Algorithms (a.k.a. CLRS).
+     * &lt;/pre&gt;
+     * @param a non-negative integer
+     * @param b non-negative integer
+     * @param n positive integer
+     * @return 
+     */
+    public static long modularExponentiation(long a, long b, long n) {
+        
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (a == 0) {</span>
+<span class="nc" id="L153">            return 0;</span>
+        }
+<span class="pc bpc" id="L155" title="3 of 4 branches missed.">        if (b == 0 &amp;&amp; a &lt; n) {</span>
+<span class="nc" id="L156">            return a;</span>
+        }
+<span class="fc" id="L158">        int c = 0;</span>
+<span class="fc" id="L159">        long d = 1;</span>
+<span class="fc" id="L160">        int k = MiscMath0.numberOfBits(b);</span>
+<span class="fc" id="L161">        long mask = 1 &lt;&lt; (k - 1);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (int i = k - 1; i &gt;= 0; --i) {</span>
+<span class="fc" id="L163">            c *= 2;</span>
+<span class="fc" id="L164">            d = Math.floorMod(d*d, n);//(d*d) % n;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if ((b &amp; mask) != 0) {</span>
+<span class="fc" id="L166">                c++;</span>
+<span class="fc" id="L167">                d = Math.floorMod(d*a, n);//(d*a) % n;</span>
+            } 
+<span class="fc" id="L169">            mask &gt;&gt;= 1;</span>
+        }
+<span class="fc" id="L171">        return d;</span>
+    }
+    
+    /*
+    r.t. complexity of multiplying 2 n bit numbers is
+         O(n log n log log n).
+    */
+
+    /**
+     * 
+     * extended euclid returns d, x, and y where
+     * d = gcd(a, b) = a*x + b*y where x and y may be zero or negative.
+     * x and y are useful for forming multiplicative inverses.
+     * 
+     * if a .gt. b .geq. 0, runtime complexity is O(log_2(b)).
+     * 
+     * @param a
+     * @param b
+     * @return returns d, x, and y where
+     * d = gcd(a, b) = a*x + b*y where x and y may be zero or negative.
+     * x and y are useful for forming multiplicative inverses.
+     * 
+     */
+    public static long[] extendedEuclid(long a, long b) {
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (b == 0) {</span>
+<span class="fc" id="L196">            return new long[]{a, 1, 0};</span>
+        }
+        
+<span class="fc" id="L199">        long[] dxyP = extendedEuclid(b, a % b);</span>
+        
+<span class="fc" id="L201">        long t = (long)Math.floor((double)a/(double)b);</span>
+<span class="fc" id="L202">        long r = dxyP[1] - t*dxyP[2];</span>
+        
+<span class="fc" id="L204">        return new long[] {dxyP[0], dxyP[2], r};</span>
+    }
+    
+    /**
+     * the least common multiple, lowest common multiple, or smallest common 
+     * multiple of two integers a and b, usually denoted by lcm(a, b), 
+     * is the smallest positive integer that is divisible by both a and b.
+     * &lt;pre&gt;
+     * reference:
+     * https://en.m.wikipedia.org/wiki/Least_common_multiple
+     * &lt;/pre&gt;
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static long leastCommonMultiple(long a, long b) {
+<span class="pc bpc" id="L220" title="3 of 4 branches missed.">        if (a == 0 &amp;&amp; b == 0) {</span>
+<span class="nc" id="L221">            throw new IllegalArgumentException(&quot;a and b cannot both be0&quot;);</span>
+        }
+        
+<span class="fc" id="L224">        long m = Math.abs(a * b);</span>
+<span class="fc" id="L225">        long gcd = extendedEuclid(a, b)[0];</span>
+        
+<span class="fc" id="L227">        return m/gcd;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

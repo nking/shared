@@ -72,60 +72,61 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 <span class="fc" id="L72">        PairInt[] w = sortWeightsNonDecreasing(edgeWeights);</span>
         
 <span class="fc" id="L74">        TIntObjectMap&lt;SimpleLinkedListNode&gt; a = new TIntObjectHashMap&lt;&gt;();</span>
+        
         DisjointSet2Node&lt;Integer&gt; aUV;
-<span class="fc" id="L76">        long sum = 0;</span>
-<span class="fc" id="L77">        int nMSTEdges = 0;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (PairInt e : w) {</span>
-<span class="fc" id="L79">            u = e.getX();</span>
-<span class="fc" id="L80">            v = e.getY();</span>
-<span class="fc" id="L81">            uVertex = forest.findSet(vertexMap.get(u));</span>
-<span class="fc" id="L82">            vVertex = forest.findSet(vertexMap.get(v));</span>
+<span class="fc" id="L77">        long sum = 0;</span>
+<span class="fc" id="L78">        int nMSTEdges = 0;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (PairInt e : w) {</span>
+<span class="fc" id="L80">            u = e.getX();</span>
+<span class="fc" id="L81">            v = e.getY();</span>
+<span class="fc" id="L82">            uVertex = forest.findSet(vertexMap.get(u));</span>
+<span class="fc" id="L83">            vVertex = forest.findSet(vertexMap.get(v));</span>
             
-<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (!uVertex.equals(vVertex)) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            if (!uVertex.equals(vVertex)) {</span>
                 
-<span class="fc" id="L86">                aUV = forest.union(uVertex, vVertex);</span>
+<span class="fc" id="L87">                aUV = forest.union(uVertex, vVertex);</span>
                 
-<span class="fc bfc" id="L88" title="All 2 branches covered.">                if (a.containsKey(u)) {</span>
-<span class="fc" id="L89">                    a.get(u).insert(v);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                if (a.containsKey(u)) {</span>
+<span class="fc" id="L90">                    a.get(u).insert(v);</span>
                 } else {
-<span class="fc" id="L91">                    SimpleLinkedListNode node = new SimpleLinkedListNode(v);</span>
-<span class="fc" id="L92">                    a.put(u, node);</span>
+<span class="fc" id="L92">                    SimpleLinkedListNode node = new SimpleLinkedListNode(v);</span>
+<span class="fc" id="L93">                    a.put(u, node);</span>
                 }
-<span class="fc" id="L94">                sum += edgeWeights.get(new PairInt(u, v));</span>
-<span class="fc" id="L95">                nMSTEdges++;</span>
+<span class="fc" id="L95">                sum += edgeWeights.get(new PairInt(u, v));</span>
+<span class="fc" id="L96">                nMSTEdges++;</span>
             }
         }
         
-<span class="fc" id="L99">        System.out.println(&quot;forest stats=&quot; + forest.toString());</span>
-<span class="fc" id="L100">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;, </span>
-<span class="fc" id="L101">            nMSTEdges, edgeWeights.size(), sum);</span>
+<span class="fc" id="L100">        System.out.println(&quot;forest stats=&quot; + forest.toString());</span>
+<span class="fc" id="L101">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;, </span>
+<span class="fc" id="L102">            nMSTEdges, edgeWeights.size(), sum);</span>
         
-<span class="fc" id="L103">        return a;</span>
+<span class="fc" id="L104">        return a;</span>
     }
 
     static PairInt[] sortWeightsNonDecreasing(
         TObjectDoubleMap&lt;PairInt&gt; edgeWeights) {
         
-<span class="fc" id="L109">        int n = edgeWeights.size();</span>
+<span class="fc" id="L110">        int n = edgeWeights.size();</span>
         
-<span class="fc" id="L111">        PairInt[] keys = new PairInt[n];</span>
-<span class="fc" id="L112">        double[] w = new double[n];</span>
+<span class="fc" id="L112">        PairInt[] keys = new PairInt[n];</span>
+<span class="fc" id="L113">        double[] w = new double[n];</span>
         
-<span class="fc" id="L114">        TObjectDoubleIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L116">            iter.advance();</span>
-<span class="fc" id="L117">            keys[i] = iter.key();</span>
-<span class="fc" id="L118">            w[i] = iter.value();</span>
+<span class="fc" id="L115">        TObjectDoubleIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L117">            iter.advance();</span>
+<span class="fc" id="L118">            keys[i] = iter.key();</span>
+<span class="fc" id="L119">            w[i] = iter.value();</span>
         }
         
-<span class="fc" id="L121">        int[] sortedIdxs = MiscSorter.mergeSortIncreasing(w);</span>
+<span class="fc" id="L122">        int[] sortedIdxs = MiscSorter.mergeSortIncreasing(w);</span>
         
-<span class="fc" id="L123">        PairInt[] sortedKeys = new PairInt[n];</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L125">            sortedKeys[i] = keys[sortedIdxs[i]];</span>
+<span class="fc" id="L124">        PairInt[] sortedKeys = new PairInt[n];</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L126">            sortedKeys[i] = keys[sortedIdxs[i]];</span>
         }
         
-<span class="fc" id="L128">        return sortedKeys;</span>
+<span class="fc" id="L129">        return sortedKeys;</span>
     }
     
 }

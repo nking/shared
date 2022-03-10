@@ -12,11 +12,12 @@ import java.util.Arrays;
  * (impl is Tarjan's algorithm).
  * 
  * Directed graphs are said to be strongly connected if every vertex is 
- * reachable from every other vertex.
+ * reachable from every other vertex and there is a path in each 
+ * direction between each pair of vertices of the graph.
  * 
  * @author nichole
  */
-<span class="fc" id="L19">public class StronglyConnectedComponents2 {</span>
+<span class="fc" id="L20">public class StronglyConnectedComponents2 {</span>
         
     /**
      * Given the adjacency list for a graph whose vertexes are the indexes of 
@@ -42,21 +43,21 @@ import java.util.Arrays;
         4) output the vertices of each tree in the depth first forest formed in
            line (3) as a separate strongly connected component.
         */
-<span class="fc" id="L45">        DFS dfs = new DFS(connected);</span>
-<span class="fc" id="L46">        dfs.walk();</span>
+<span class="fc" id="L46">        DFS dfs = new DFS(connected);</span>
+<span class="fc" id="L47">        dfs.walk();</span>
            
-<span class="fc" id="L48">        SimpleLinkedListNode[] reversedEdges = reverse(connected);</span>
+<span class="fc" id="L49">        SimpleLinkedListNode[] reversedEdges = reverse(connected);</span>
         
-<span class="fc" id="L50">        int[] rTf = Arrays.copyOf(dfs.tf, dfs.tf.length);</span>
-<span class="fc" id="L51">        int[] indexes = new int[rTf.length];</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = 0; i &lt; rTf.length; ++i) {</span>
-<span class="fc" id="L53">            indexes[i] = i;</span>
+<span class="fc" id="L51">        int[] rTf = Arrays.copyOf(dfs.tf, dfs.tf.length);</span>
+<span class="fc" id="L52">        int[] indexes = new int[rTf.length];</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = 0; i &lt; rTf.length; ++i) {</span>
+<span class="fc" id="L54">            indexes[i] = i;</span>
         }
-<span class="fc" id="L55">        MiscSorter.sortByDecr(rTf, indexes);</span>
+<span class="fc" id="L56">        MiscSorter.sortByDecr(rTf, indexes);</span>
               
         // DFS traversing vertices rTF on graph gT
-<span class="fc" id="L58">        DFS dfs2 = new DFS(reversedEdges);</span>
-<span class="fc" id="L59">        dfs2._walk(indexes);</span>
+<span class="fc" id="L59">        DFS dfs2 = new DFS(reversedEdges);</span>
+<span class="fc" id="L60">        dfs2._walk(indexes);</span>
         
         /* components can be found by looking at the G' start and end times.
         The components are between them.
@@ -94,40 +95,40 @@ import java.util.Arrays;
         
         // using a yfasttrie with key=start time.  
         //   the yfasttrie extractMin() has constant small runtime complexity
-<span class="fc" id="L97">        int maxV = MiscMath0.findMax(dfs2.td);</span>
-<span class="fc" id="L98">        int approxN = dfs2.td.length;</span>
-<span class="fc" id="L99">        int maxNumberOfBits = (int)Math.ceil(Math.log(maxV)/Math.log(2));</span>
-<span class="fc" id="L100">        MinHeapForRT2012 heap = new MinHeapForRT2012(maxV, approxN,</span>
+<span class="fc" id="L98">        int maxV = MiscMath0.findMax(dfs2.td);</span>
+<span class="fc" id="L99">        int approxN = dfs2.td.length;</span>
+<span class="fc" id="L100">        int maxNumberOfBits = (int)Math.ceil(Math.log(maxV)/Math.log(2));</span>
+<span class="fc" id="L101">        MinHeapForRT2012 heap = new MinHeapForRT2012(maxV, approxN,</span>
             maxNumberOfBits);
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
             // td is time when node is first discovered in dfs search
-<span class="fc" id="L104">            HeapNode node = new HeapNode(dfs2.td[i]);</span>
-<span class="fc" id="L105">            NodeData d = new NodeData();</span>
-<span class="fc" id="L106">            d.idx = i;</span>
-<span class="fc" id="L107">            d.tf = dfs2.tf[i];</span>
-<span class="fc" id="L108">            node.setData(d);</span>
-<span class="fc" id="L109">            heap.insert(node);</span>
+<span class="fc" id="L105">            HeapNode node = new HeapNode(dfs2.td[i]);</span>
+<span class="fc" id="L106">            NodeData d = new NodeData();</span>
+<span class="fc" id="L107">            d.idx = i;</span>
+<span class="fc" id="L108">            d.tf = dfs2.tf[i];</span>
+<span class="fc" id="L109">            node.setData(d);</span>
+<span class="fc" id="L110">            heap.insert(node);</span>
         }
    
-<span class="fc" id="L112">        int c = -1;</span>
-<span class="fc" id="L113">        int endTime = Integer.MIN_VALUE;</span>
-<span class="fc" id="L114">        int[] components = new int[dfs2.td.length];</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
-<span class="fc" id="L116">            HeapNode node = heap.extractMin();</span>
-<span class="fc" id="L117">            NodeData d = (NodeData) node.getData();</span>
+<span class="fc" id="L113">        int c = -1;</span>
+<span class="fc" id="L114">        int endTime = Integer.MIN_VALUE;</span>
+<span class="fc" id="L115">        int[] components = new int[dfs2.td.length];</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
+<span class="fc" id="L117">            HeapNode node = heap.extractMin();</span>
+<span class="fc" id="L118">            NodeData d = (NodeData) node.getData();</span>
             //System.out.printf(&quot;ti=%d, tf=%d, idx=%d   endTime=%d c=%d\n&quot;, 
             //    node.getKey(), d.tf, d.idx, endTime, c);
-<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (node.getKey() &lt;= endTime){</span>
-<span class="fc" id="L121">                components[d.idx] = c;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            if (node.getKey() &lt;= endTime){</span>
+<span class="fc" id="L122">                components[d.idx] = c;</span>
             } else {
-<span class="fc" id="L123">                c++;</span>
-<span class="fc" id="L124">                endTime = d.tf;</span>
-<span class="fc" id="L125">                components[d.idx] = c;</span>
+<span class="fc" id="L124">                c++;</span>
+<span class="fc" id="L125">                endTime = d.tf;</span>
+<span class="fc" id="L126">                components[d.idx] = c;</span>
             }
             //System.out.printf(&quot;  idx=%d c=%d\n&quot;, d.idx, components[d.idx]);
         }
        
-<span class="fc" id="L130">        return components;</span>
+<span class="fc" id="L131">        return components;</span>
     }
     
     private static class NodeData {
@@ -137,21 +138,21 @@ import java.util.Arrays;
    
     private SimpleLinkedListNode[] reverse(SimpleLinkedListNode[] connected) {
         
-<span class="fc" id="L140">        SimpleLinkedListNode[] reversed = new SimpleLinkedListNode[connected.length];</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (int i = 0; i &lt; connected.length; ++i) {</span>
-<span class="fc" id="L142">            reversed[i] = new SimpleLinkedListNode();</span>
+<span class="fc" id="L141">        SimpleLinkedListNode[] reversed = new SimpleLinkedListNode[connected.length];</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        for (int i = 0; i &lt; connected.length; ++i) {</span>
+<span class="fc" id="L143">            reversed[i] = new SimpleLinkedListNode();</span>
         }
         
-<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (int v = 0; v &lt; connected.length; v++) {</span>
-<span class="fc" id="L146">            SimpleLinkedListNode uNode = connected[v];</span>
-<span class="pc bpc" id="L147" title="1 of 4 branches missed.">            while (uNode != null &amp;&amp; uNode.getKey() != -1) {</span>
-<span class="fc" id="L148">                int u = uNode.getKey();</span>
-<span class="fc" id="L149">                reversed[u].insert(v);</span>
-<span class="fc" id="L150">                uNode = uNode.getNext();</span>
-<span class="fc" id="L151">            }</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for (int v = 0; v &lt; connected.length; v++) {</span>
+<span class="fc" id="L147">            SimpleLinkedListNode uNode = connected[v];</span>
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">            while (uNode != null &amp;&amp; uNode.getKey() != -1) {</span>
+<span class="fc" id="L149">                int u = uNode.getKey();</span>
+<span class="fc" id="L150">                reversed[u].insert(v);</span>
+<span class="fc" id="L151">                uNode = uNode.getNext();</span>
+<span class="fc" id="L152">            }</span>
         }
         
-<span class="fc" id="L154">        return reversed;</span>
+<span class="fc" id="L155">        return reversed;</span>
     }
     
 }
