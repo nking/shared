@@ -5,6 +5,7 @@ algorithms.connected
 algorithms.correlation
 algorithms.dimensionReduction
 algorithms.disjointSets
+algorithms.encoding
 algorithms.graphs
 algorithms.heapsAndPQs
 algorithms.imageProcessing
