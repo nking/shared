@@ -1,5 +1,7 @@
 package algorithms.sort;
 
+import java.util.Arrays;
+
 /**
  * 
    first implemented in project
@@ -442,6 +444,128 @@ public class MiscSorter {
         }
     }
     
+    
+    /**
+     * sort by increasing value a1 and apply same changes to a2 using merge-sort.
+     * Ties are further sorted by increasing values of a2.
+     * The original indexes, sorted by the same swaps as a1 and a2 are returned.
+     * runtime is O(N * log_2(N))
+     *
+     * @param a1 array of points to be sorted
+     * @param a2 array of points to apply a1 sorting to also
+     * @return the original indexes, sorted by the same swaps that a1 and a2 received.
+     */
+    public static int[] sortBy1stArg2(long[] a1, long[] a2) {
+        if (a1.length != a2.length) {
+            throw new IllegalArgumentException("a1 and a2 must be the same length");
+        }
+        int[] idxs = new int[a1.length];
+        for (int i = 0; i < a1.length; ++i) {
+            idxs[i] = i;
+        }
+        sortBy1stArg2(a1, a2, idxs, 0, a1.length - 1);
+        return idxs;
+    }
+    
+    /**
+     * sort by increasing value a1 and apply same changes to a2 using merge-sort.
+     * Ties are further sorted by increasing values of a2.
+     * The original indexes, sorted by the same swaps as a1 and a2 are returned.
+     * runtime is O(N * log_2(N))
+     *
+     * @param a1 array of points to be sorted
+     * @param a2 array of points to apply a1 sorting to also
+     * @param idxs the original indexes, sorted by the same swaps that a1 and a2 received.
+     * @param iLo
+     * @param iHi
+     */
+    protected static void sortBy1stArg2(long[] a1, long[] a2, int[] idxs, int iLo, int iHi) {
+        if (iLo < iHi) {
+            int iMid = (iLo + iHi)/2;
+            sortBy1stArg2(a1, a2, idxs, iLo, iMid);
+            sortBy1stArg2(a1, a2, idxs, iMid + 1, iHi);
+            mergeSortBy1stArg2(a1, a2, idxs, iLo, iMid, iHi);
+        }
+    }
+        
+    private static void mergeSortBy1stArg2(long[] a, long[] b, int[] c, 
+        int iLo, int iMid, int iHi) {
+        
+        // 0-based: [iLo, iMid] inclusive
+        //          [iMid+1, iHi] inclusive
+                
+        /*
+        int nLeft = iMid - iLo + 1; 
+        int nRight = iHi - iMid; 
+        
+        long[] aLeft = new long[nLeft + 1];
+        long[] bLeft = new long[nLeft + 1];
+        int[] cLeft = new int[nLeft + 1];
+        long[] aRight = new long[nRight + 1];
+        long[] bRight = new long[nRight + 1];
+        int[] cRight = new int[nRight + 1];
+        System.arraycopy(a, iLo, aLeft, 0, nLeft); // indexes inclusive [iLo, iLo + iMid - iLo + 1 - 1] = [iLo, iMid]
+        System.arraycopy(b, iLo, bLeft, 0, nLeft);
+        System.arraycopy(c, iLo, cLeft, 0, nLeft);
+        
+        System.arraycopy(a, iMid + 1, aRight, 0, nRight); // indexes inclusive [iMid + 1, iMid + 1 + iHi - iMid - 1] = [iMid + 1, iHi]
+        System.arraycopy(b, iMid + 1, bRight, 0, nRight);
+        System.arraycopy(c, iMid + 1, cRight, 0, nRight);
+        */
+        
+        long[] aLeft = Arrays.copyOfRange(a, iLo, iMid + 2);
+        long[] bLeft = Arrays.copyOfRange(b, iLo, iMid + 2);
+        int[] cLeft = Arrays.copyOfRange(c, iLo, iMid + 2);
+        
+        long[] aRight = Arrays.copyOfRange(a, iMid + 1, iHi + 2);
+        long[] bRight = Arrays.copyOfRange(b, iMid + 1, iHi + 2);
+        int[] cRight = Arrays.copyOfRange(c, iMid + 1, iHi + 2);
+        
+        aLeft[aLeft.length - 1] = Long.MAX_VALUE;
+        bLeft[bLeft.length - 1] = Long.MAX_VALUE;
+        cLeft[cLeft.length - 1] = Integer.MAX_VALUE;
+        aRight[aRight.length - 1] = Long.MAX_VALUE;
+        bRight[bRight.length - 1] = Long.MAX_VALUE;
+        cRight[cRight.length - 1] = Integer.MAX_VALUE;
+        
+        int iL = 0;
+        int iR = 0;
+        
+        long l;
+        long r;
+        
+        for (int k = iLo; k <= iHi; ++k) {
+            l = aLeft[iL];
+            r = aRight[iR];
+            if (l < r) {
+                a[k] = l;
+                b[k] = bLeft[iL];
+                c[k] = cLeft[iL];
+                iL++;
+            } else if (l > r) {
+                a[k] = r;
+                b[k] = bRight[iR];
+                c[k] = cRight[iR];
+                iR++;
+            } else {
+                // a1[iL] == a1[iR] so break ties using a2
+                l = bLeft[iL];
+                r = bRight[iR];
+                if (l <= r) {
+                    a[k] = aLeft[iL];
+                    b[k] = bLeft[iL];
+                    c[k] = cLeft[iL];
+                    iL++;
+                } else {
+                    a[k] = aRight[iR];
+                    b[k] = bRight[iR];
+                    c[k] = cRight[iR];
+                    iR++;
+                }
+            }
+        }
+    }
+        
     /**
      * use mergesort to sort a1 by increasing values and apply same changes to
      * a2.
@@ -1195,6 +1319,5 @@ public class MiscSorter {
                 rightPos++;
             }
         }
-    }
-               
+    }       
 }

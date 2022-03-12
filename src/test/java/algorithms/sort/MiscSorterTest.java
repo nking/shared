@@ -325,7 +325,23 @@ public class MiscSorterTest extends TestCase {
         assertTrue(b[2] == 3);
         
         assertTrue(a[3] == 7);
-        assertTrue(b[3] == 1); 
+        assertTrue(b[3] == 1);
+        
+    }
+    public void testSortBy1stArg2_long_long() {
+
+        long[] a = new long[]{3, 7, 1, 1};
+        long[] b = new long[]{0, 1, 2, 3};
+        
+        long[] ea = new long[]{1, 1, 3, 7};
+        long[] eb = new long[]{2, 3, 0, 1};
+        int[] ei = new int[]{2, 3, 0, 1};
+        
+        int[] idxs = MiscSorter.sortBy1stArg2(a, b);
+                
+        assertTrue(Arrays.equals(ea, a));
+        assertTrue(Arrays.equals(eb, b));
+        assertTrue(Arrays.equals(ei, idxs));
     }
  
     public void testSortByFirstArgument_int_float() {
