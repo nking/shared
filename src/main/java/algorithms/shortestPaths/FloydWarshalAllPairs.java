@@ -8,7 +8,11 @@ import java.util.Arrays;
  * finds shortest paths between all pairs of vertices in a directed graph
  * with dynamic programming.
  * 
- * The runtime complexity is <em>O(V^3)</em>.
+ * The runtime complexity is <em>O(|V|^3)</em>.
+ *
+ * Note: consider using DFS single source-all destination search on each
+   vertex, making a worst case runtime complexity of O(|V|*(|V| + |E|)).
+ * 
  *  
  * W, D
  * 

@@ -614,6 +614,32 @@ public class MiscMath0 {
     }
     
     /**
+     * given an array of points, return the average and standard deviation from
+     * the average
+     * @param x
+     * @return 
+     */
+    public static double[] getAvgAndStDev(long[] x, int length) {
+        
+        long sumX = 0;
+        for (int i = 0; i < length; i++) {
+            sumX += x[i];
+        }
+        
+        double avgX = (double)sumX/(double)length;
+        
+        double diffX;
+        sumX = 0;
+        for (int i = 0; i < length; i++) {
+            diffX = x[i] - avgX;
+            sumX += (diffX * diffX);
+        }
+        double stdDevX = Math.sqrt(sumX/(length - 1.0f));
+        
+        return new double[]{avgX, stdDevX};
+    }
+    
+    /**
      * calculate the quartiles Q1, Q2, and Q3 of x as
      * <pre>
      * x = ascending sort(x)

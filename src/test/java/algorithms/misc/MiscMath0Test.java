@@ -58,6 +58,16 @@ public class MiscMath0Test extends TestCase {
         
     }
     
+    public void testGetAvgAndStDev_long() throws Exception {
+        
+        long[] x = new long[]{2, 2, 2, 4, 4, 4};
+        
+        double[] avgAndStDev = MiscMath0.getAvgAndStDev(x, x.length);
+        assertEquals(avgAndStDev[0], 3.);
+        assertTrue(Math.abs(avgAndStDev[1] - 1.1) < 0.01);
+        
+    }
+    
     public void testGet20NeighborOffsets() throws Exception {
                 
         PairIntArray offsets = MiscMath0.get20NeighborOffsets();
