@@ -1,15 +1,14 @@
 package algorithms.scheduling;
 
 import algorithms.sort.MiscSorter;
-import algorithms.util.FormatArray;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  *
@@ -59,8 +58,9 @@ public class Misc {
         Arrays.fill(outputStart, 0);
         Arrays.fill(outputLate, 0);
         
-        //sort tasks by increasing deadline 
+        //sort tasks by increasing deadline to minimize the lateness
         int[] indexes = MiscSorter.mergeBy1stArgThen2nd(deadline, duration);
+
         double f_prev = 0; // f is the finish time of previous task
         int i; 
         for (i = 0; i < duration.length; ++i) {
@@ -305,7 +305,7 @@ public class Misc {
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
         int[] origIndexes = sort2(f, s, v);
-        System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
         
         double[] memo = new double[n];
         TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
@@ -495,36 +495,30 @@ public class Misc {
         }
         */
        
-        // the schedule of indexes, in a datastructure that sorts upon insert
-        SortedSet<Integer> a = new TreeSet<>();
+        TIntList a = new TIntArrayList();
+        int prevA = -1;
         for(i = 0; i < deadlines.length; ++i) {
-            oIdx = origIndexes[i];
-            //System.out.printf("a%d f_i=%d, (%d,%d): ", oIdx+1, (a.size()+1), deadlines[i], penalties[i]);
+            //oIdx = origIndexes[i];
+            //System.out.printf("i=%d, oIdx=%d, a%d f_i=%d, (%d,%d): ", i, oIdx, oIdx+1, (a.size()+1), deadlines[i], penalties[i]);
             if (deadlines[i] >= (a.size()+1)) {
                 //done early
                 a.add(i);
-            //    System.out.println("  accept");
-            } else if (!a.isEmpty() && (deadlines[i] < deadlines[a.last()])) {
-                
-                // check whether this increase of start time by 1 unit would push
-                //    out the last item (which is the same last item that we just
-                //    compared in this conditional clause.
-                //    if that were true, do not add this item because it conflicts.
-                if (deadlines[a.last()] >= (a.size() + 1)) {
-                    a.add(i);
-            //        System.out.println("  accept");
-            //    } else {
-            //        System.out.println("  reject");
-                }                
-            //} else {
-            //    System.out.println("  reject");
-            }
+                prevA = i;
+                //System.out.println("  early accept");
+            } else if (!a.isEmpty() 
+                && (deadlines[prevA] > deadlines[i]) && (deadlines[prevA] >= (a.size() + 1))
+                ) {
+                a.add(i);
+                prevA = i;
+                //System.out.println("  accept");
+            } /*else {
+                System.out.println("  reject");
+            }*/
         }
         // rewrite indexes in context of original array indexes:
-        int[] ao = new int[a.size()];
-        int count = 0;
-        for (Integer ai : a) {
-            ao[count++] = origIndexes[ai];
+        int[] ao = a.toArray();
+        for (i = 0; i < ao.length; ++i) {
+            ao[i] = origIndexes[ao[i]];
         }
         return ao;
     }
