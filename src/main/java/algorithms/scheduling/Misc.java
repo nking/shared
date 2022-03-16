@@ -144,6 +144,8 @@ public class Misc {
            Thru these 2 short examples, one can see that a dynamic solution 
            also avoiding exponential comparisons of every permutation by re-using
            the answers from subproblems, should be possible.
+           
+          First, sort tasks by finish time.
 
           example:
             0 ---------|
@@ -176,6 +178,8 @@ public class Misc {
 
              so memo can be a 1-dimensional array
              can also store the indexes in a map with key=integer and value=integer hashset
+
+        sort tasks by finish time.
 
         for i=[n-1,0]
           max = int.min
