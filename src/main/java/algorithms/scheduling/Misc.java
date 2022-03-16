@@ -3,6 +3,8 @@ package algorithms.scheduling;
 import algorithms.sort.MiscSorter;
 import algorithms.util.FormatArray;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
@@ -134,76 +136,7 @@ public class Misc {
      * The code follows the lecture notes of David Mount for CMSC 451 
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
-     * 
-     * TODO:
-     * (1) outline his pseudocode here with runtime complexities (already easy to see from implementation here).
-     * (2) consider an alternative dynamic solution:
-       <pre>
-         Roughly, before coding:
-         
-           Thru these 2 short examples, one can see that a dynamic solution 
-           also avoiding exponential comparisons of every permutation by re-using
-           the answers from subproblems, should be possible.
-           
-          First, sort tasks by finish time.
-
-          example:
-            0 ---------|
-            1    ------------|*
-            2             -----|
-            3          ------------|
-            0+2 is possible. store total weight.
-            0+3 is possible and has larger weight than 0+2. store total weight.
-
-          Mount's example:
-              0  1  2  3  4  5  6  7  8  9
-           0  ---------|
-           1     ------------|*
-           2           --------|
-           3        ---------------|
-           4                   ------|*
-           5                       -----|
-             indexes that can be appended after 0: 2,4,5
-             indexes that can be appended after 1: 4,5
-             indexes that can be appended after 2: 4,5
-             indexes that can be appended after 3: 5
-             indexes that can be appended after 4:
-
-             start from i=5.  best combination = [5], weight=w[5]
-                        i=4.  best combination = [4], weight=w[4]
-                        i=3.  best combination = [3,5], weight=w[3]+memo[5]
-                        i=2.  combinations max([2,4], [2,5]) = max(w[2]+memo[4], w[2]+memo[5])
-                        i=1.  combinations max([1,4], [1,5]) = max(w[1]+memo[4], w[1]+memo[5])
-                        i=0.  combinations max([0,2], [0,4], [0,5]) = max(w[0]+memo[2], w[0]+memo[4], w[0]+memo[5])
-
-             so memo can be a 1-dimensional array
-             can also store the indexes in a map with key=integer and value=integer hashset
-
-        sort tasks by finish time.
-
-        for i=[n-1,0]
-          max = int.min
-          jmax = -1
-          for j=[i+1, n) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
-            if (s[j] >= f[i]) { // task j can be appended after task i
-              if (memo[j] > max) {
-                jmax = j;
-                max = memo[j];
-              }
-            }
-          }
-          set = new hashset<int>();
-          map.put(i, set);
-          set.add(i);
-          if (jmax==-1) {
-            memo[i] = w[i];
-          } else {
-            memo[i] = w[i] + max;
-            set.add(jmax);
-          }
-        }
-     * </pre>
-     * 
+     
      * @param s interval start times
      * @param f interval finish times
      * @param v interval weights
@@ -265,6 +198,163 @@ public class Misc {
             j = pred[j];
         }
         sched = Arrays.copyOfRange(sched, 0, count);
+        return sched;
+    }
+    
+    /**
+     * The objective is to compute any maximum sized subset of non-overlapping intervals.
+     * Weighted Interval Scheduling: 
+     * given a set S = {1, . . . , n} of n activity requests, 
+     * where each activity is expressed as an interval [s_i, f_i] from a given 
+     * start time si to a given finish time f_i
+     * and each request is associated with a numeric weight or value v_i.
+     * 
+     * The objective is to find a set of non-overlapping requests such that sum 
+     * of values of the scheduled requests is maximum.
+     * 
+     * This code uses dynamic programming and has runtime complexity O(N * log_2(N)).
+     * 
+     * The problem is from the lecture notes of David Mount for CMSC 451 
+     * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
+     * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
+     * 
+     * His pseudocode is present in the version of this method called 
+     * weightedIntervalBottomUp().
+     * 
+     * The version here is a simpler dynamic programming solution:
+     * 
+       <pre>
+         Roughly:
+         
+           Thru these 2 short examples, one can see that a dynamic solution 
+           also avoiding exponential comparisons of every permutation by re-using
+           the answers from subproblems, should be possible.
+           
+          First, sort tasks by finish time.
+
+          example:
+            0 ---------|
+            1    ------------|*
+            2             -----|
+            3          ------------|
+            0+2 is possible. store total weight.
+            0+3 is possible and has larger weight than 0+2. store total weight.
+
+          Mount's example:
+              0  1  2  3  4  5  6  7  8  9
+           0  ---------|
+           1     ------------|*
+           2           --------|
+           3        ---------------|
+           4                   ------|*
+           5                       -----|
+             indexes that can be appended after 0: 2,4,5
+             indexes that can be appended after 1: 4,5
+             indexes that can be appended after 2: 4,5
+             indexes that can be appended after 3: 5
+             indexes that can be appended after 4:
+
+             start from i=5.  best combination = [5], weight=w[5]
+                        i=4.  best combination = [4], weight=w[4]
+                        i=3.  best combination = [3,5], weight=w[3]+memo[5]
+                        i=2.  combinations max([2,4], [2,5]) = max(w[2]+memo[4], w[2]+memo[5])
+                        i=1.  combinations max([1,4], [1,5]) = max(w[1]+memo[4], w[1]+memo[5])
+                        i=0.  combinations max([0,2], [0,4], [0,5]) = max(w[0]+memo[2], w[0]+memo[4], w[0]+memo[5])
+
+             so memo can be a 1-dimensional array
+             can also store the indexes in a map with key=integer and value=integer hashset
+
+        sort tasks by finish time.
+
+        for i=[n-1,0]
+          max = int.min
+          jmax = -1
+          for j=[i+1, n) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
+            if (s[j] >= f[i]) { // task j can be appended after task i
+              if (memo[j] > max) {
+                jmax = j;
+                max = memo[j];
+              }
+            }
+          }
+          set = new hashset int();
+          map.put(i, set);
+          set.add(i);
+          if (jmax==-1) {
+            memo[i] = w[i];
+          } else {
+            memo[i] = w[i] + max;
+            set.add(jmax);
+          }
+        }
+     * </pre>
+     * 
+     * @param s interval start times
+     * @param f interval finish times
+     * @param v interval weights
+     * @return indexes of scheduled intervals.
+     */
+    public int[] weightedIntervalBottomUp2(double[] s, double[] f, double[] v) {
+        //interval [si, fi] of start and finish times
+        s = Arrays.copyOf(s, s.length);
+        f = Arrays.copyOf(f, f.length);
+        v = Arrays.copyOf(v, v.length);
+        
+        int n = f.length;
+        
+        // ascending order sort by f
+        // runtime complexity is O(log_2(n))
+        int[] origIndexes = sort2(f, s, v);
+        System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
+        
+        double[] memo = new double[n];
+        TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
+        
+        int i;
+        int j;
+        double max;
+        int jMax;
+        TIntSet set;
+        
+        // runtime complexity is O(n*log_2(n))
+        for (i = n - 1; i >= 0; --i) {
+          max = Double.NEGATIVE_INFINITY;
+          jMax = -1;
+          for (j = i + 1; j < n; ++j) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
+            if (s[j] >= f[i]) { // task j can be appended after task i
+              if (memo[j] > max) {
+                jMax = j;
+                max = memo[j];
+              }
+            }
+          }
+          set = new TIntHashSet();
+          map.put(i, set);
+          set.add(i);
+          if (jMax == -1) {
+            memo[i] = v[i];
+          } else {
+            memo[i] = v[i] + memo[jMax];
+            set.add(jMax);
+          }
+        }
+        
+        max = Double.NEGATIVE_INFINITY;
+        jMax = -1;
+        for (i = 0; i < n; ++i) {
+            if (memo[i] > max) {
+                max = memo[i];
+                jMax = i;
+            }
+        } 
+                 
+        int[] sched = map.get(jMax).toArray();
+        for (i = 0; i < sched.length; ++i) {
+            sched[i] = origIndexes[sched[i]];
+        }
+                
+        Arrays.sort(sched);
+        
         return sched;
     }
 
