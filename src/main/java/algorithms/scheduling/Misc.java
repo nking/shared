@@ -135,6 +135,71 @@ public class Misc {
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
      * 
+     * TODO:
+     * (1) outline his pseudocode here with runtime complexities (already easy to see from implementation here).
+     * (2) consider an alternative dynamic solution:
+       <pre>
+         Roughly, before coding:
+         
+           Thru these 2 short examples, one can see that a dynamic solution 
+           also avoiding exponential comparisons of every permutation by re-using
+           the answers from subproblems, should be possible.
+
+          example:
+            0 ---------|
+            1    ------------|*
+            2             -----|
+            3          ------------|
+            0+2 is possible. store total weight.
+            0+3 is possible and has larger weight than 0+2. store total weight.
+
+          Mount's example:
+              0  1  2  3  4  5  6  7  8  9
+           0  ---------|
+           1     ------------|*
+           2           --------|
+           3        ---------------|
+           4                   ------|*
+           5                       -----|
+             indexes that can be appended after 0: 2,4,5
+             indexes that can be appended after 1: 4,5
+             indexes that can be appended after 2: 4,5
+             indexes that can be appended after 3: 5
+             indexes that can be appended after 4:
+
+             start from i=5.  best combination = [5], weight=w[5]
+                        i=4.  best combination = [4], weight=w[4]
+                        i=3.  best combination = [3,5], weight=w[3]+memo[5]
+                        i=2.  combinations max([2,4], [2,5]) = max(w[2]+memo[4], w[2]+memo[5])
+                        i=1.  combinations max([1,4], [1,5]) = max(w[1]+memo[4], w[1]+memo[5])
+                        i=0.  combinations max([0,2], [0,4], [0,5]) = max(w[0]+memo[2], w[0]+memo[4], w[0]+memo[5])
+
+             so memo can be a 1-dimensional array
+             can also store the indexes in a map with key=integer and value=integer hashset
+
+        for i=[n-1,0]
+          max = int.min
+          jmax = -1
+          for j=[i+1, n) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
+            if (s[j] >= f[i]) { // task j can be appended after task i
+              if (memo[j] > max) {
+                jmax = j;
+                max = memo[j];
+              }
+            }
+          }
+          set = new hashset<int>();
+          map.put(i, set);
+          set.add(i);
+          if (jmax==-1) {
+            memo[i] = w[i];
+          } else {
+            memo[i] = w[i] + max;
+            set.add(jmax);
+          }
+        }
+     * </pre>
+     * 
      * @param s interval start times
      * @param f interval finish times
      * @param v interval weights
