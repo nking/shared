@@ -118,7 +118,7 @@ public class Misc {
         return scheduled;
     }
     
-       /**
+    /**
      * The objective is to compute any maximum sized subset of non-overlapping intervals.
      * Weighted Interval Scheduling: 
      * given a set S = {1, . . . , n} of n activity requests, 
@@ -137,20 +137,21 @@ public class Misc {
      * 
      * @param s interval start times
      * @param f interval finish times
-     * @param w interval weights
+     * @param v interval weights
      * @return indexes of scheduled intervals.
      */
-    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] w) {
+    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
         //interval [si, fi] of start and finish times
         s = Arrays.copyOf(s, s.length);
         f = Arrays.copyOf(f, f.length);
-        w = Arrays.copyOf(w, w.length);
+        v = Arrays.copyOf(v, v.length);
         
         int n = f.length;
         
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
-        int[] origIndexes = sort2(f, s, w);
+        int[] origIndexes = sort2(f, s, v);
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
         
         // p[i] is the largest index such that f[p(i)] < s[i]
         //     p[i] is < i
@@ -167,9 +168,9 @@ public class Misc {
         // runtime complexity is O(n)
         for (j = 0; j < n; ++j) {
             leaveWeight = memo[j];                // total weight if we leave j
-            takeWeight = w[j] + memo[p[j]];         // total weight if we take j
-        //    System.out.printf("j=%d lw=M[j]=%.2f tw=v[j]+M[p[j]]=%.2f+%.2f=%.2f (where p[j]=%d) ", 
-        //        j, leaveWeight, v[j], M[p[j]], takeWeight, p[j]);
+            takeWeight = v[j] + memo[p[j]];         // total weight if we take j
+            //System.out.printf("j=%d lw=M[j]=%.2f tw=v[j]+M[p[j]]=%.2f+%.2f=%.2f (where p[j]=%d) ", 
+            //    j, leaveWeight, v[j], memo[p[j]], takeWeight, p[j]);
             if (leaveWeight > takeWeight) {
                 memo[j + 1] = leaveWeight;              // better to leave j
                 pred[j+1] = j;                   // previous is j-1
@@ -177,11 +178,11 @@ public class Misc {
                 memo[j + 1] = takeWeight;               // better to take j
                 pred[j+1] = p[j];                  // previous is p[j]
             }
-        //    System.out.printf("  M[j+1]=%.2f\n", M[j+1]);
+           // System.out.printf("  M[j+1]=%.2f\n", memo[j+1]);
         }
          
         //System.out.printf("memo=%s\n", FormatArray.toString(memo, "%.3f"));
-        //System.out.printf("p=%s\n", Arrays.toString(p));
+        //System.out.printf("   p=%s\n", Arrays.toString(p));
         //System.out.printf("pred=%s\n", Arrays.toString(pred));
         
         int[] sched = new int[j];
@@ -189,8 +190,8 @@ public class Misc {
         j = pred.length-1;
         while (j > 0) {
             if (pred[j] == p[j-1]) {
-                //System.out.printf("  sched[%d]=%d\n", j, origIndexes[j]);
-                sched[count++] = origIndexes[j];
+                //System.out.printf("  sched[%d]=%d\n", j-1, origIndexes[j-1]);
+                sched[count++] = origIndexes[j - 1];
             }
             j = pred[j];
         }
@@ -206,7 +207,7 @@ public class Misc {
         int[] p = new int[f.length+1];
         for (i = s.length - 1; i > -1; i--) {
             for (j = i - 1; j > -1; j--) {
-                //System.out.printf("%d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
+                //System.out.printf("calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
                 if (f[j] <= s[i]) {
                     p[i] = j+1;
                     //System.out.printf("   p[%d]=%d\n", i, p[i]);

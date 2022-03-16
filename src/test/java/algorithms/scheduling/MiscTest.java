@@ -55,23 +55,46 @@ public class MiscTest extends TestCase {
         
         //TODO: add more tests and include changing the order of items in this one
         
-        double[] s = new double[]{0.5, 1, 2.75, 1.25, 5.25, 6};
-        double[] f = new double[]{2.5, 3., 5., 7., 7.5, 8.5};
-        double[] v = new double[]{2, 6, 3.5, 7, 8, 1.1};
+        //                              *               *
+        double[] s = new double[]{0.5,  1, 2.75, 1.25, 5.25,   6};
+        double[] f = new double[]{2.5,  3,    5,    7,  7.5, 8.5};
+        double[] v = new double[]{  2,  6,  3.5,    7,    8, 1.1};
 
-        Misc misc =new Misc();
+        Misc misc = new Misc();
         int[] indexes = misc.weightedIntervalBottomUp(s, f, v);
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         int i;
         double sum = 0;
         for (i = 0; i < indexes.length; ++i) {
-        //    System.out.printf("[%.2f : %.2f]  sum=%.2f\n", s[indexes[i]], f[indexes[i]], sum);
-            sum += v[i];
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            sum += v[indexes[i]];
         }
         //System.out.println("sum of values=" + sum);
+        assertEquals(14.0, sum);
      
-        int[] expected = new int[]{5, 2};
+        int[] expected = new int[]{4, 1};
         assertTrue(Arrays.equals(expected, indexes));
+
+        
+        // change the order  
+        s = new double[]{1.25, 0.5,  5.25,  1, 2.75,   6};
+        f = new double[]{   7, 2.5,   7.5,  3,    5, 8.5};
+        v = new double[]{   7,   2,     8,  6,  3.5, 1.1};
+        
+        misc = new Misc();
+        indexes = misc.weightedIntervalBottomUp(s, f, v);
+        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
+        sum = 0;
+        for (i = 0; i < indexes.length; ++i) {
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            sum += v[indexes[i]];
+        }
+        //System.out.println("sum of values=" + sum);
+        assertEquals(14.0, sum);
+     
+        expected = new int[]{2, 3};
+        assertTrue(Arrays.equals(expected, indexes));
+        
     }
     
     public void testWeightedGreedy() {
