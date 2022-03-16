@@ -95,6 +95,24 @@ public class MiscTest extends TestCase {
         expected = new int[]{2, 3};
         assertTrue(Arrays.equals(expected, indexes));
         
+        // add a redundant interval with lower weight  
+        s = new double[]{1.25, 0.5,  5.25,  1, 2.75,   6, 1};
+        f = new double[]{   7, 2.5,   7.5,  3,    5, 8.5, 3};
+        v = new double[]{   7,   2,     8,  6,  3.5, 1.1, 1};
+        
+        misc = new Misc();
+        indexes = misc.weightedIntervalBottomUp(s, f, v);
+        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
+        sum = 0;
+        for (i = 0; i < indexes.length; ++i) {
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            sum += v[indexes[i]];
+        }
+        //System.out.println("sum of values=" + sum);
+        assertEquals(14.0, sum);
+     
+        expected = new int[]{2, 3};
+        assertTrue(Arrays.equals(expected, indexes));
     }
     
     public void testWeightedGreedy() {
