@@ -4,7 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
+ * a simple wrapping of java's LinkedHashMap in order to implement a "least
+ * recently accessed cache".
+ * 
  * @author nichole
  */
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {

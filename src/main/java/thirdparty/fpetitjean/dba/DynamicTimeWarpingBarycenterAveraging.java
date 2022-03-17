@@ -85,7 +85,7 @@ public class DynamicTimeWarpingBarycenterAveraging {
 
         for (int i = 0; i < nIterations; i++) {
             System.out.println("center=" + Arrays.toString(center));
-            center = DBAUpdate(center, sequences, costMatrix, pathMatrix);
+            center = dBAUpdate(center, sequences, costMatrix, pathMatrix);
         }
         return center;
     }
@@ -175,7 +175,7 @@ public class DynamicTimeWarpingBarycenterAveraging {
         return sqrt(costMatrix[S.length - 1][T.length - 1]);
     }
 
-    private static double[] DBAUpdate(double[] C, double[][] sequences, double[][] costMatrix, int[][] pathMatrix) {
+    private static double[] dBAUpdate(double[] C, double[][] sequences, double[][] costMatrix, int[][] pathMatrix) {
         double[] updatedMean = new double[C.length];
         int[] nElementsForMean = new int[C.length];
 

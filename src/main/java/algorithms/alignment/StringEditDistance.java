@@ -49,7 +49,8 @@ public class StringEditDistance {
      * Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
      * 
      * Other methods for comparing string similarity are Jaccard similarity, 
-     * Jaro-Winkler distance, and dynamic time warping. 
+     * Jaro-Winkler distance, and dynamic time warping
+     * (see thirdparty.fpetitjean.dba.DynamicTimeWarpingBarycenterAveraging in this project).
      * 
      * @param a string to edit
      * @param b target string to change a into.
