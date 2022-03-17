@@ -8,6 +8,10 @@
    Yoshiharu Kohayakawa, and Nivio Ziviani, 2005 
    in PerfectHashBuilder.java 
 
+-- consider implementing bi-directional search.
+   Holte et al. 2016, "Bidirectional Search That Is Guaranteed to Meet in the Middle",
+   Proceedings of the Thirtieth AAAI Conference on Artificial Intelligence (AAAI-16)
+
 -- consider refactoring the code for permutations (Shuffle), combinations
    and partitions to place in one package/directory.
 
