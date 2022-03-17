@@ -131,7 +131,7 @@ public class Misc {
      * The objective is to find a set of non-overlapping requests such that sum 
      * of values of the scheduled requests is maximum.
      * 
-     * This code uses dynamic programming and has runtime complexity O(N * log_2(N)).
+     * This code uses dynamic programming and has runtime complexity O(n^2).
      * 
      * The code follows the lecture notes of David Mount for CMSC 451 
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
@@ -220,6 +220,8 @@ public class Misc {
      * 
      * His pseudocode is present in the version of this method called 
      * weightedIntervalBottomUp().
+     * 
+     * runtime complexity is O(n^2)
      * 
      * The version here is a simpler dynamic programming solution:
      * 
@@ -316,7 +318,7 @@ public class Misc {
         int jMax;
         TIntSet set;
         
-        // runtime complexity is O(n*log_2(n))
+        // runtime complexity is O(n^2)
         for (i = n - 1; i >= 0; --i) {
           max = Double.NEGATIVE_INFINITY;
           jMax = -1;
@@ -359,6 +361,7 @@ public class Misc {
     }
 
     // s and f are sorted by ascending order of f before passed to this method
+    // runtime complexity is O(n^2)
     private int[] calcP(double[] s, double[] f) {
         // iterating from highest index to lowest,
         // find for each s, highest previous index in which f[i-...] < s_i
