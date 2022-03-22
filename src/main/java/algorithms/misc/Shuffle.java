@@ -24,6 +24,16 @@ public class Shuffle {
         fisherYates(a, rand);
     }
     
+    public static void fisherYates(int[] a) throws NoSuchAlgorithmException {
+        
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        fisherYates(a, rand);
+    }
+    
     public static void fisherYates(double[] a, SecureRandom rand) {
         
         int n = a.length;
@@ -32,6 +42,20 @@ public class Shuffle {
         for (int i = (n-1); i > 0; i--) {
             // 0 <= j <= i
             j = rand.nextInt(i + 1);
+            swap = a[i];
+            a[i] = a[j];
+            a[j] = swap;
+        }
+    }
+    
+    public static void fisherYates(int[] a, SecureRandom rand) {
+        
+        int n = a.length;
+        int j;
+        int swap;
+        for (int i = (n-1); i > 0; i--) {
+            // 0 <= j <= i
+            j = rand.nextInt(i + 1);// upper bound, exclusive, so need i+1
             swap = a[i];
             a[i] = a[j];
             a[j] = swap;
