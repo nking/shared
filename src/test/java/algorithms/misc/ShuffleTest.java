@@ -32,6 +32,7 @@ public class ShuffleTest extends TestCase {
         // each permutation p=1./5040
         
         long n = MiscMath0.factorial(7);
+        // to see the Poisson distribution change factor to 1, 10, 100, etc or fit the profiles...
         int factor = 100;
         
         /*
@@ -121,7 +122,7 @@ public class ShuffleTest extends TestCase {
         for (j = 0; j < k2.length; ++j) {
             c2[j] = countMap.get(k2[j]);
         }
-        // shows it's a gaussian distribution, not a uniform distribution        
+        // shows it's a poisson distribution, not a uniform distribution        
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
         //addPlot(double[] xPoints, double[] yPoints, double[] xPolygon, double[] yPolygon, String plotLabel)
         plotter.addPlot(k2, c2, null, null, "f=" + factor + " shuffle");

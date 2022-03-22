@@ -15,7 +15,7 @@ import java.security.SecureRandom;
 public class Shuffle {
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * randomly shuffle the cards.  the distribution of permutations is poisson.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @throws NoSuchAlgorithmException 
@@ -31,7 +31,7 @@ public class Shuffle {
     }
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * randomly shuffle the cards.  the distribution of permutations is poisson.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @throws NoSuchAlgorithmException 
@@ -47,7 +47,7 @@ public class Shuffle {
     }
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * randomly shuffle the cards.  the distribution of permutations is poisson.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @param rand 
@@ -67,7 +67,7 @@ public class Shuffle {
     }
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * randomly shuffle the cards.  the distribution of permutations is poisson.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @param rand 
