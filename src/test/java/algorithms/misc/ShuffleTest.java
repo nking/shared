@@ -8,6 +8,12 @@ import junit.framework.TestCase;
 import algorithms.util.PolygonAndPointPlotter;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  *
@@ -18,9 +24,102 @@ public class ShuffleTest extends TestCase {
     public ShuffleTest(String testName) {
         super(testName);
     }
+    
+    public void est0() throws NoSuchAlgorithmException, IOException {
+        
+        // random number generator method nextInt(bound) is not producing a uniform distribution
+        //     between 0 and bound
+        
+        Random rand = new Random();
+        long seed = System.nanoTime();
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        
+        int n = 7;
+        
+        int factor = 1000;
+        int nP = (int)MiscMath0.factorial(n);
+        int r;
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (int i = 0; i < factor*nP; ++i) {
+            r = rand.nextInt(nP);
+            //r = (int)Math.round(nP*rand.nextDouble());
+            //r = rand.nextInt();
+            if (map.containsKey(r)) {
+                map.put(r, map.get(r) + 1);
+            } else {
+                map.put(r, 1);
+            }
+        }
+        System.out.printf("number of unique random keys = %d, number of draws = %d, expected %d (%.3f)\n", 
+            map.size(), factor*nP, nP,  (float)map.size()/(float)nP);
+        System.out.flush();
+        
+        int nUniqueGenerated = map.size();
+        
+        // calculate the median and IQR or mean and st.dev or use MAD
+        //median of absolute deviation of x, median, min, and max.
+        double[] count = new double[nUniqueGenerated];
+        
+        Set<Integer> keySet = map.keySet();
+        int j = 0;
+        for (int key : keySet) {
+            count[j] = map.get(key);
+            ++j;
+        }
+        
+        // histogram of number of repeated permutations
+        TIntIntMap countMap = new TIntIntHashMap();
+        int c;
+        for (j = 0; j < count.length; ++j) {
+            c = (int)count[j];
+            if (countMap.containsKey(c)) {
+                countMap.put(c, countMap.get(c) + 1);
+            } else {
+                countMap.put(c, 1);
+            }
+        }
+        int[] k2 = countMap.keys();
+        int[] c2 = new int[k2.length];
+        Arrays.sort(k2);
+        for (j = 0; j < k2.length; ++j) {
+            c2[j] = countMap.get(k2[j]);
+        }
+        // shows it's a poisson distribution, not a uniform distribution        
+        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+        //addPlot(double[] xPoints, double[] yPoints, double[] xPolygon, double[] yPolygon, String plotLabel)
+        plotter.addPlot(k2, c2, null, null, "f=" + factor + " rand");
+        plotter.writeFile("rand_hist_" + factor);
+        
+        Arrays.sort(count);
+        
+        double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(count);
+        double kMAD = 1.4826;
+        double s = kMAD*mADMinMax[0];
+        double r0 = mADMinMax[1] - 3*s;
+        double r1 = mADMinMax[1] + 3*s;
+        
+        double[] medianAndIQR = MiscMath0.calcMedianAndIQR(count);
+        double[] avgAndStDev = MiscMath0.getAvgAndStDev(count);
+                     
+        System.out.printf("median of absolute deviation of x, the median, the min, and the max = \n  %s with r0=%.3f r1=%.3f\n", 
+            FormatArray.toString(mADMinMax, "%.3f"), r0, r1);
+        
+        System.out.printf("medianAndIQR = %s\n", 
+            FormatArray.toString(medianAndIQR, "%.3f"));
+        
+        System.out.printf("avgAndStDev = %s\n", 
+            FormatArray.toString(avgAndStDev, "%.3f"));
+       
+    }
 
     public void testFisherYates_doubleArr() throws Exception {
         
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+                
         // not a uniform distribution
         
         // make a sequence of 7 numbers.
@@ -76,7 +175,7 @@ public class ShuffleTest extends TestCase {
             
             ai = Arrays.copyOf(a, a.length);
             
-            Shuffle.fisherYates(ai);
+            Shuffle.fisherYates(ai, rand);
             
             // store each number in decimal digit place
             sum = 0;
