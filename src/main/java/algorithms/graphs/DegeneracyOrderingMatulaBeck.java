@@ -14,13 +14,16 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- *In graph theory, a k-degenerate graph is an undirected graph in which every 
+ * In graph theory, a k-degenerate graph is an undirected graph in which every 
  * subgraph has a vertex of degree at most k: that is, some vertex in the 
  * subgraph touches k or fewer of the subgraph's edges. The degeneracy of a 
  * graph is the smallest value of k for which it is k-degenerate. 
  * The degeneracy of a graph is a measure of how sparse it is, and is within 
  * a constant factor of other sparsity measures such as the arboricity of a 
  * graph.
+ <pre>
+ https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
+</pre>
 
 Degeneracy is also known as the k-core number, width, and linkage, and 
 * is essentially the same as the coloring number or Szekeres-Wilf number 
@@ -37,23 +40,19 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  * of smallest degree. 
  * 
  * <pre>
- * if |V| is less than the maximum degree of any vertex, 
- *   the runtime complexity is O( (|V| + |E|) * log_2(|V|))
- * else {
      the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
      which is essentially O((|V| + |E|))
-   }
- * <pre>
- * https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
  * </pre>
  * 
  * NOTE:  for an undirected graph that is a simple undirected graph not a multigraph, 
         the maximum possible number of edges |E|_max = C(|V|, 2) 
         and the max possible degree of a vertex = |V|-1,
         and in that case |V| will not be less than a number whose maximum is |V|-1.
-   The alternative bucket queue for the multigraph possibility remains in this 
-   class, though unused, for future exploration of multigraphs. 
-   
+        
+  This code does not at this time handle multigraphs, but the ability to store the 
+   structure needed for it is present.  When the multigraph datastructure is used,
+   the runtime complexity is O( (|V| + |E|) * log_2(|V|))
+ 
  * @author nichole
  */
 public class DegeneracyOrderingMatulaBeck {
@@ -66,7 +65,7 @@ public class DegeneracyOrderingMatulaBeck {
         the runtime is O( (|V| + |E|) * log_2(w)) where w is maxDegree
           which is essentially O((|V| + |E|))
         
-      <pre>
+      </pre>
  
      * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
      * set of indexes of vertexes for the neighbors of the key.  note: the method
@@ -395,6 +394,9 @@ public class DegeneracyOrderingMatulaBeck {
     static class SBucketQueue implements IBucketQueue {
         
         /* 
+        This implementation is currently unused, but remains present in case
+        a method for multigraphs is ever made.
+        
         this datastructure is used in findDegeneracyOrder() in a single iterating
         clause, and so the limiting runtime complexity is the largest of the
         bucket runtime operations.

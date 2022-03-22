@@ -43,11 +43,11 @@ public class NumberTheory {
      * @return
      */
     public static long euclid(long a, long b) {
-        long t;
+        long swap;
         while (b != 0) {
-            t = b;
+            swap = b;
             b = Math.floorMod(a, b);
-            a = t;
+            a = swap;
         }
         return Math.max(a, -a);
     }
@@ -222,7 +222,7 @@ public class NumberTheory {
         }
         
         long m = Math.abs(a * b);
-        long gcd = extendedEuclid(a, b)[0];
+        long gcd = euclid(a, b);
         
         return m/gcd;
     }
