@@ -6,14 +6,20 @@ import java.security.SecureRandom;
 /**
  * included is the Fisher-Yates algorithm which can be used to create unbiased random permutations.
 
-   As the number of permuations of a sequence of integers of length n is n!, there are limits to
-   calculating all permutations.  For n < 20, could implement Heap's recursive algorithm if needed or
+   As the number of permutations of a sequence of integers of length n is n!, there are limits to
+   calculating all permutations.  For n less than 20, could implement Heap's recursive algorithm if needed or
    Ives' iterative algorithm.
 
  * @author nichole
  */
 public class Shuffle {
     
+    /**
+     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * runtime complexity is O(n) where n = a.length.
+     * @param a
+     * @throws NoSuchAlgorithmException 
+     */
     public static void fisherYates(double[] a) throws NoSuchAlgorithmException {
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -24,6 +30,12 @@ public class Shuffle {
         fisherYates(a, rand);
     }
     
+    /**
+     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * runtime complexity is O(n) where n = a.length.
+     * @param a
+     * @throws NoSuchAlgorithmException 
+     */
     public static void fisherYates(int[] a) throws NoSuchAlgorithmException {
         
         SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -34,6 +46,12 @@ public class Shuffle {
         fisherYates(a, rand);
     }
     
+    /**
+     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * runtime complexity is O(n) where n = a.length.
+     * @param a
+     * @param rand 
+     */
     public static void fisherYates(double[] a, SecureRandom rand) {
         
         int n = a.length;
@@ -48,6 +66,12 @@ public class Shuffle {
         }
     }
     
+    /**
+     * randomly shuffle the cards.  the distribution of permutations is gaussian (normal).
+     * runtime complexity is O(n) where n = a.length.
+     * @param a
+     * @param rand 
+     */
     public static void fisherYates(int[] a, SecureRandom rand) {
         
         int n = a.length;

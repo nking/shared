@@ -2,11 +2,12 @@ package algorithms.misc;
 
 import algorithms.util.FormatArray;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import junit.framework.TestCase;
+import algorithms.util.PolygonAndPointPlotter;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 /**
  *
@@ -20,6 +21,8 @@ public class ShuffleTest extends TestCase {
 
     public void testFisherYates_doubleArr() throws Exception {
         
+        // not a uniform distribution
+        
         // make a sequence of 7 numbers.
         //
         // run Shuffle 7! times and count the number of 5040 permutations.
@@ -29,7 +32,36 @@ public class ShuffleTest extends TestCase {
         // each permutation p=1./5040
         
         long n = MiscMath0.factorial(7);
-        int factor = 10;
+        int factor = 100;
+        
+        /*
+        for factor=10:
+        [junit] shuffled 10 * 7!
+        [junit] median of absolute deviation of x, the median, the min, and the max =
+        [junit]   2.000, 10.000, 1.000, 24.000  with r0=1.104 r1=18.896
+        [junit] medianAndIQR = 10.000, 2.000 
+        [junit] avgAndStDev = 10.002, 3.215 
+        [junit] number of permutations in shuffle = 5039, expected 5040 (1.000)
+        2./10 = 0.2
+        
+        for factor=100:
+        [junit] shuffled 100 * 7!
+        [junit] median of absolute deviation of x, the median, the min, and the max = 
+        [junit]   7.000, 100.000, 64.000, 137.000  with r0=68.865 r1=131.135
+        [junit] medianAndIQR = 100.000, 7.000 
+        [junit] avgAndStDev = 100.000, 9.842 
+        [junit] number of permutations in shuffle = 5040, expected 5040 (1.000)
+        7.0/100 = 0.07
+        
+        for factor=1000:
+        [junit] shuffled 1000 * 7!
+        [junit] median of absolute deviation of x, the median, the min, and the max = 
+        [junit]   22.000, 1000.000, 869.000, 1116.000  with r0=902.148 r1=1097.852
+        [junit] medianAndIQR = 1000.000, 22.000 
+        [junit] avgAndStDev = 1000.000, 31.803 
+        [junit] number of permutations in shuffle = 5040, expected 5040 (1.000)
+        22./1000 = 0.022
+        */
         
         // sorting by key to more easily look at permutations
         TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
@@ -71,6 +103,30 @@ public class ShuffleTest extends TestCase {
             count[j] = map.get(key);
             ++j;
         }
+        
+        // histogram of number of repeated permutations
+        TIntIntMap countMap = new TIntIntHashMap();
+        int c;
+        for (j = 0; j < count.length; ++j) {
+            c = (int)count[j];
+            if (countMap.containsKey(c)) {
+                countMap.put(c, countMap.get(c) + 1);
+            } else {
+                countMap.put(c, 1);
+            }
+        }
+        int[] k2 = countMap.keys();
+        int[] c2 = new int[k2.length];
+        Arrays.sort(k2);
+        for (j = 0; j < k2.length; ++j) {
+            c2[j] = countMap.get(k2[j]);
+        }
+        // shows it's a gaussian distribution, not a uniform distribution        
+        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+        //addPlot(double[] xPoints, double[] yPoints, double[] xPolygon, double[] yPolygon, String plotLabel)
+        plotter.addPlot(k2, c2, null, null, "f=" + factor + " shuffle");
+        plotter.writeFile("shuffle_perm_hist_" + factor);
+        
         Arrays.sort(count);
         
         double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(count);
@@ -81,7 +137,7 @@ public class ShuffleTest extends TestCase {
         
         double[] medianAndIQR = MiscMath0.calcMedianAndIQR(count);
         double[] avgAndStDev = MiscMath0.getAvgAndStDev(count);
-        
+             
         System.out.printf("shuffled %d * %d!\n", factor, a.length);
         
         System.out.printf("median of absolute deviation of x, the median, the min, and the max = \n  %s with r0=%.3f r1=%.3f\n", 
