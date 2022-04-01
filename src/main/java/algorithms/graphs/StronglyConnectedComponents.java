@@ -118,51 +118,51 @@ public class StronglyConnectedComponents {
         return scc;
     }
     
-    private void strongConnect(int v) {
+    private void strongConnect(int u) {
         
-        td[v] = time;
-        lowLink[v] = time;
+        td[u] = time;
+        lowLink[u] = time;
         time++;
         
-        stack.push(v);
-        onStack[v] = 1;
+        stack.push(u);
+        onStack[u] = 1;
         
-        log.log(logLevel, "v:" + toString(v));
+        log.log(logLevel, "u:" + toString(u));
                 
-        SimpleLinkedListNode wNode = g[v];
+        SimpleLinkedListNode wNode = g[u];
         while (wNode != null && wNode.getKey() != -1) {
-            int w = wNode.getKey();
-            log.log(logLevel, "    w=" + toString(w));            
-            if (td[w] == -1) {
-                // Successor w has not yet been visited; recurse on it
-                strongConnect(w);
-                lowLink[v] = Math.min(lowLink[v], lowLink[w]);  // update Low[v]
-            } else if (onStack[w] == 1) {
-                // w is in stack S and hence in the current SCC
-                // If w is not on stack, then (v, w) is a cross-edge in the 
+            int v = wNode.getKey();
+            log.log(logLevel, "    v=" + toString(v));            
+            if (td[v] == -1) {
+                // Successor v has not yet been visited; recurse on it
+                strongConnect(v);
+                lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]
+            } else if (onStack[v] == 1) {
+                // v is in stack S and hence in the current SCC
+                // If v is not on stack, then (u, v) is a cross-edge in the 
                 // DFS tree and must be ignored.
-                lowLink[v] = Math.min(lowLink[v], td[w]);  // update Low[v]
+                lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]
             }
             wNode = wNode.getNext();
         }
         
         // If v is a root node, pop the stack and generate an SCC
-        if (lowLink[v] == td[v] && inSCC[v] == 0) {
-            log.log(logLevel, "    START scc " + v);
+        if (lowLink[u] == td[u] && inSCC[u] == 0) {
+            log.log(logLevel, "    START scc " + u);
             SimpleLinkedListNode sccNode = new SimpleLinkedListNode();
             scc.add(sccNode);
-            inSCC[v] = 1;
-            int w;
+            inSCC[u] = 1;
+            int v;
             do {
                 if (stack.isEmpty()) {
                     break;
                 }
-                w = stack.pop();
-                onStack[w] = 0;
-                sccNode.insert(w);
-                inSCC[w] = 1;
-                log.log(logLevel, "    add " + w + " to scc");
-            } while (w != v);
+                v = stack.pop();
+                onStack[v] = 0;
+                sccNode.insert(v);
+                inSCC[v] = 1;
+                log.log(logLevel, "    add " + v + " to scc");
+            } while (v != u);
             log.log(logLevel, "stack size=" + stack.size());
         }
     }

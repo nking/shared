@@ -1353,7 +1353,7 @@ public class MiscMath0 {
             return n;
         }
         
-        if (n > 12) {
+        if (n > 20) {
             throw new IllegalArgumentException("use factorialBigInteger instead");
         }
 

@@ -25,7 +25,7 @@ public class ShuffleTest extends TestCase {
         super(testName);
     }
     
-    public void est0() throws NoSuchAlgorithmException, IOException {
+    public void test0() throws NoSuchAlgorithmException, IOException {
         
         // random number generator method nextInt(bound) is not producing a uniform distribution
         //     between 0 and bound
@@ -37,14 +37,14 @@ public class ShuffleTest extends TestCase {
         
         int n = 7;
         
-        int factor = 1000;
+        int factor = 200;
         int nP = (int)MiscMath0.factorial(n);
         int r;
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
         for (int i = 0; i < factor*nP; ++i) {
-            r = rand.nextInt(nP);
+            //r = Math.round(nP*rand.nextDouble());
             //r = (int)Math.round(nP*rand.nextDouble());
-            //r = rand.nextInt();
+            r = rand.nextInt(nP);
             if (map.containsKey(r)) {
                 map.put(r, map.get(r) + 1);
             } else {
@@ -221,7 +221,8 @@ public class ShuffleTest extends TestCase {
         for (j = 0; j < k2.length; ++j) {
             c2[j] = countMap.get(k2[j]);
         }
-        // shows it's a poisson distribution, not a uniform distribution        
+        // shows it's a poisson distribution, not a uniform distribution, but
+        // that's due to the random number generator bounded next int method
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
         //addPlot(double[] xPoints, double[] yPoints, double[] xPolygon, double[] yPolygon, String plotLabel)
         plotter.addPlot(k2, c2, null, null, "f=" + factor + " shuffle");

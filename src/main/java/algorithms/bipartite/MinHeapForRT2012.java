@@ -15,20 +15,16 @@ import java.util.logging.Logger;
 
     <pre>
      prefer to use YFastTrie as all operations are essentially
-     O(log_2 log_2(w)) where w is the bit length of largest integer to store in trie.
+     O(log_2 log_2(w)) where w is the largest integer to store in trie.
      in contrast Min-Heap/PriorityQueue and Fibonacci have these trade-offs
                                  FibHeap             MinHeap/PQ
-      extractMin()           O(1)                  O(1)
+      extractMin()        O(log_2(n))                  O(1)
       insert()                   O(1)                  O(log_2(n))
-      decreaseKey()       O(log_2(n))        O(log_2(n))
+      decreaseKey()       O(log_2(n))                  O(log_2(n))
     </pre>
  * 
- * The Fibonacci Heap has O(1) operations excepting
- * extractMin which is O(lg_2(N_nodes)).
- * 
  * The YFastTrie has O(log log(M)) operations including successor and
- * predecessor where M is M is the number of bits
- * of the maximum value in the domain.
+ * predecessor where M is the maximum value in the domain.
  * 
  * @author nichole
  */

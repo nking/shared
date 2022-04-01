@@ -43,7 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package algorithms.misc;
 
 import algorithms.matrix.MatrixUtil;
-import algorithms.util.FormatArray;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -144,8 +143,7 @@ public class PolynomialRootSolver {
      * @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * @param toleranceForZero the value for which any number less than is considered 0.
-     * @return
-     * @throws  
+     * @return     
      */
     public static double[] solveForRealUsingMPSolve(double[] coeffs,
         double toleranceForZero) throws IOException {

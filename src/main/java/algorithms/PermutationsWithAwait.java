@@ -53,7 +53,7 @@ public class PermutationsWithAwait {
     /**
      * becomes true when the run-loop has ended for the permuter thread
      */
-    private AtomicBoolean finished;
+    private final AtomicBoolean finished;
     
     //private final BigInteger nPermutations;
     
