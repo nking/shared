@@ -366,7 +366,7 @@ key, left or right field.
         //printPreOrderTraversal();
         
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L369" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L369" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L370">            root.color = RED;</span>
 
 <span class="fc" id="L372">        root = deleteMax(root);</span>
@@ -535,9 +535,9 @@ key, left or right field.
         // assert isRed(h) &amp;&amp; !isRed(h.right) &amp;&amp; !isRed(h.right.left);
         
 <span class="fc" id="L537">        flipColors(h);</span>
-<span class="pc bpc" id="L538" title="1 of 2 branches missed.">        if (isRed(h.left.left)) { </span>
-<span class="nc" id="L539">            h = rotateRight(h);</span>
-<span class="nc" id="L540">            flipColors(h);</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">        if (isRed(h.left.left)) { </span>
+<span class="fc" id="L539">            h = rotateRight(h);</span>
+<span class="fc" id="L540">            flipColors(h);</span>
         }
     
 <span class="fc" id="L543">        return h;</span>

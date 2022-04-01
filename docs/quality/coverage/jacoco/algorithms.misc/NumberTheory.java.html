@@ -43,11 +43,11 @@
      * @return
      */
     public static long euclid(long a, long b) {
-        long t;
+        long swap;
 <span class="fc bfc" id="L47" title="All 2 branches covered.">        while (b != 0) {</span>
-<span class="fc" id="L48">            t = b;</span>
+<span class="fc" id="L48">            swap = b;</span>
 <span class="fc" id="L49">            b = Math.floorMod(a, b);</span>
-<span class="fc" id="L50">            a = t;</span>
+<span class="fc" id="L50">            a = swap;</span>
         }
 <span class="fc" id="L52">        return Math.max(a, -a);</span>
     }
@@ -222,7 +222,7 @@
         }
         
 <span class="fc" id="L224">        long m = Math.abs(a * b);</span>
-<span class="fc" id="L225">        long gcd = extendedEuclid(a, b)[0];</span>
+<span class="fc" id="L225">        long gcd = euclid(a, b);</span>
         
 <span class="fc" id="L227">        return m/gcd;</span>
     }

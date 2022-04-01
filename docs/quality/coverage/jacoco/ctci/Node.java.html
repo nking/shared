@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Node.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">ctci</a> &gt; <span class="el_source">Node.java</span></div><h1>Node.java</h1><pre class="source lang-java linenums">package ctci;
+
+/**
+ *
+ * @author nichole
+ */
+public class Node&lt;K,V&gt; {
+  protected final K key;
+  protected final V data;
+<span class="nc" id="L10">  protected Node&lt;K,V&gt; prev = null;</span>
+<span class="nc" id="L11">  protected Node&lt;K,V&gt; next = null;</span>
+
+<span class="nc" id="L13">  public Node(K key, V value) {</span>
+<span class="nc" id="L14">    this.key = key;</span>
+<span class="nc" id="L15">    this.data = value;</span>
+<span class="nc" id="L16">  }</span>
+
+  public void setNext(Node&lt;K,V&gt; node) {
+<span class="nc" id="L19">    this.next = node;</span>
+<span class="nc" id="L20">  }</span>
+  public void setPrev(Node&lt;K,V&gt; node) {
+<span class="nc" id="L22">    this.prev = node;</span>
+<span class="nc" id="L23">  }</span>
+
+  public K getKey() {
+<span class="nc" id="L26">    return key;</span>
+  }
+  public V getData() {
+<span class="nc" id="L29">    return data;</span>
+  }
+  
+  public Node&lt;K,V&gt; getNext() {
+<span class="nc" id="L33">    return next;</span>
+  }
+  public Node&lt;K,V&gt; getPrev() {
+<span class="nc" id="L36">    return prev;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

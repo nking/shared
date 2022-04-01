@@ -85,7 +85,7 @@ import java.util.Collections;
 
 <span class="fc bfc" id="L86" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; i++) {</span>
 <span class="fc" id="L87">            System.out.println(&quot;center=&quot; + Arrays.toString(center));</span>
-<span class="fc" id="L88">            center = DBAUpdate(center, sequences, costMatrix, pathMatrix);</span>
+<span class="fc" id="L88">            center = dBAUpdate(center, sequences, costMatrix, pathMatrix);</span>
         }
 <span class="fc" id="L90">        return center;</span>
     }
@@ -130,7 +130,7 @@ import java.util.Collections;
 <span class="fc" id="L130">            double[] possibleMedoid = sequences[medianCandidateIndex];</span>
             // NLK: runtime complexity is sequence.length * sequence.length * sequences[i].length
 <span class="fc" id="L132">            double tmpSoS = sumOfSquares(possibleMedoid, sequences, mat);</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (tmpSoS &lt; lowestSoS) {</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">            if (tmpSoS &lt; lowestSoS) {</span>
 <span class="fc" id="L134">                indexMedoid = medianCandidateIndex;</span>
 <span class="fc" id="L135">                lowestSoS = tmpSoS;</span>
             }
@@ -175,7 +175,7 @@ import java.util.Collections;
 <span class="fc" id="L175">        return sqrt(costMatrix[S.length - 1][T.length - 1]);</span>
     }
 
-    private static double[] DBAUpdate(double[] C, double[][] sequences, double[][] costMatrix, int[][] pathMatrix) {
+    private static double[] dBAUpdate(double[] C, double[][] sequences, double[][] costMatrix, int[][] pathMatrix) {
 <span class="fc" id="L179">        double[] updatedMean = new double[C.length];</span>
 <span class="fc" id="L180">        int[] nElementsForMean = new int[C.length];</span>
 

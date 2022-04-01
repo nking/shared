@@ -49,7 +49,8 @@ import java.util.Arrays;
      * Vintsyuk TK (1968). &quot;Speech discrimination by dynamic programming&quot;. Kibernetika. 4: 81–88.
      * 
      * Other methods for comparing string similarity are Jaccard similarity, 
-     * Jaro-Winkler distance, and dynamic time warping. 
+     * Jaro-Winkler distance, and dynamic time warping
+     * (see thirdparty.fpetitjean.dba.DynamicTimeWarpingBarycenterAveraging in this project).
      * 
      * @param a string to edit
      * @param b target string to change a into.
@@ -59,8 +60,8 @@ import java.util.Arrays;
      */
     public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes) {
         
-<span class="fc" id="L62">        final int cDel = 1;</span>
-<span class="fc" id="L63">        final int cIns = 1;</span>
+<span class="fc" id="L63">        final int cDel = 1;</span>
+<span class="fc" id="L64">        final int cIns = 1;</span>
          /*
         The positive costs and minimization are the common forms in this
         algorithm in context of computer science.
@@ -71,13 +72,13 @@ import java.util.Arrays;
          Pages 45–53, https://doi.org/10.1093/bioinformatics/13.1.45
         */
         
-<span class="fc" id="L74">        int cChangeUnequal = 1;</span>
-<span class="fc" id="L75">        int m = a.length();</span>
-<span class="fc" id="L76">        int n = b.length();</span>
+<span class="fc" id="L75">        int cChangeUnequal = 1;</span>
+<span class="fc" id="L76">        int m = a.length();</span>
+<span class="fc" id="L77">        int n = b.length();</span>
         // (m+1) X (n+1)
-<span class="fc" id="L78">        int[][] d = new int[m + 1][];</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (int i = 0; i &lt;= m; ++i) {</span>
-<span class="fc" id="L80">            d[i] = new int[n + 1];</span>
+<span class="fc" id="L79">        int[][] d = new int[m + 1][];</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt;= m; ++i) {</span>
+<span class="fc" id="L81">            d[i] = new int[n + 1];</span>
         }
         
         //Theorem 2
@@ -111,25 +112,25 @@ import java.util.Arrays;
         for LCS:         cIns=cDel=0 and cEqual=1, and the cost is maximized
         */
         
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        for (int i = 1; i &lt;= m; ++i) {</span>
-<span class="fc" id="L115">            d[i][0] = i; //i*cDel</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (int i = 1; i &lt;= m; ++i) {</span>
+<span class="fc" id="L116">            d[i][0] = i; //i*cDel</span>
         }
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (int i = 1; i &lt;= n; ++i) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (int i = 1; i &lt;= n; ++i) {</span>
             //a conversion of empty string 'a' into 'b' is all inserts
-<span class="fc" id="L119">            d[0][i] = i; //i*cIns</span>
+<span class="fc" id="L120">            d[0][i] = i; //i*cIns</span>
         }
         
         int i, j;
-<span class="fc" id="L123">        int c = 0;</span>
+<span class="fc" id="L124">        int c = 0;</span>
         
-<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (j = 1; j &lt;= n; ++j) {</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">                if (a.charAt(i-1) == b.charAt(j-1)) {</span>
-<span class="fc" id="L128">                    c = 0;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (j = 1; j &lt;= n; ++j) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">                if (a.charAt(i-1) == b.charAt(j-1)) {</span>
+<span class="fc" id="L129">                    c = 0;</span>
                 } else {
-<span class="fc" id="L130">                    c = cChangeUnequal;</span>
+<span class="fc" id="L131">                    c = cChangeUnequal;</span>
                 }
-<span class="fc" id="L132">                d[i][j] = minimum(d[i-1][j-1] + c, d[i-1][j] + cDel, d[i][j-1] + cIns);</span>
+<span class="fc" id="L133">                d[i][j] = minimum(d[i-1][j-1] + c, d[i-1][j] + cDel, d[i][j-1] + cIns);</span>
             }
         }
         
@@ -142,21 +143,21 @@ import java.util.Arrays;
         //       print((i, j));
         //       i:=i- 1;j:=j-1;
         //       end;
-<span class="fc" id="L145">        i = m;</span>
-<span class="fc" id="L146">        j = n;</span>
-<span class="pc bpc" id="L147" title="1 of 4 branches missed.">        while (i != 0 &amp;&amp; j != 0){</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">            if (d[i][j] == d[i-1][j] + cDel) {</span>
-<span class="fc" id="L149">                i--;</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">            } else if (d[i][j] == d[i][j-1] + cIns) {</span>
-<span class="fc" id="L151">                j--;</span>
+<span class="fc" id="L146">        i = m;</span>
+<span class="fc" id="L147">        j = n;</span>
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">        while (i != 0 &amp;&amp; j != 0){</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (d[i][j] == d[i-1][j] + cDel) {</span>
+<span class="fc" id="L150">                i--;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            } else if (d[i][j] == d[i][j-1] + cIns) {</span>
+<span class="fc" id="L152">                j--;</span>
             } else {
-<span class="fc" id="L153">                outIndexes.add(i-1, j-1);// subtracting 1 for 0-based indexes</span>
-<span class="fc" id="L154">                i--;</span>
-<span class="fc" id="L155">                j--;</span>
+<span class="fc" id="L154">                outIndexes.add(i-1, j-1);// subtracting 1 for 0-based indexes</span>
+<span class="fc" id="L155">                i--;</span>
+<span class="fc" id="L156">                j--;</span>
             }
         }
         //System.out.printf(&quot;m=%d, n=%d, d=\n%s\n&quot;, m, n, FormatArray.toString(d, &quot;%d&quot;));
-<span class="fc" id="L159">        return d[m][n];</span>
+<span class="fc" id="L160">        return d[m][n];</span>
     }
     
     /**
@@ -187,8 +188,8 @@ import java.util.Arrays;
      */
     public int calculateWithModifiedWagnerFischer(String a, String b) {
        
-<span class="fc" id="L190">        final int cDel = 1;</span>
-<span class="fc" id="L191">        final int cIns = 1;</span>
+<span class="fc" id="L191">        final int cDel = 1;</span>
+<span class="fc" id="L192">        final int cIns = 1;</span>
         /*
         The positive costs and minimization are the common forms in this
         algorithm in context of computer science.
@@ -206,14 +207,14 @@ import java.util.Arrays;
                N(i, 0) stores M(i, j − 1) and N(i, 1) stores M(i, j)
         */
         
-<span class="fc" id="L209">        int cChangeUnequal = 1;</span>
-<span class="fc" id="L210">        int m = a.length();</span>
-<span class="fc" id="L211">        int n = b.length();</span>
-<span class="fc" id="L212">        int[][] dN = new int[m + 1][];</span>
+<span class="fc" id="L210">        int cChangeUnequal = 1;</span>
+<span class="fc" id="L211">        int m = a.length();</span>
+<span class="fc" id="L212">        int n = b.length();</span>
+<span class="fc" id="L213">        int[][] dN = new int[m + 1][];</span>
         int i;
         //dN(i, 0) stores M(i, j − 1) and dN(i, 1) stores M(i, j)
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        for (i = 0; i &lt;= m; ++i) {</span>
-<span class="fc" id="L216">            dN[i] = new int[2];</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        for (i = 0; i &lt;= m; ++i) {</span>
+<span class="fc" id="L217">            dN[i] = new int[2];</span>
         }
         // (m+1) X (n+1)
         /*int[][] d = new int[m + 1][];
@@ -253,40 +254,40 @@ import java.util.Arrays;
         */
         
         //dN(i, 0) stores M(i, j − 1) and dN(i, 1) stores M(i, j)
-<span class="fc bfc" id="L256" title="All 2 branches covered.">        for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (i = 1; i &lt;= m; ++i) {</span>
             //d[i][0] = i; //i*cDel
-<span class="fc" id="L258">            dN[i][0] = i; //i*cDel</span>
+<span class="fc" id="L259">            dN[i][0] = i; //i*cDel</span>
         }
         //for (i = 1; i &lt;= n; ++i) {
             //d[0][i] = i; //i*cIns
         //}
         
         int j;
-<span class="fc" id="L265">        int c = 0;</span>
+<span class="fc" id="L266">        int c = 0;</span>
         
         int minPos;
                 
-<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (j = 1; j &lt;= n; ++j) {</span>
-<span class="fc" id="L270">            dN[0][1] = j; //j*cIns</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        for (j = 1; j &lt;= n; ++j) {</span>
+<span class="fc" id="L271">            dN[0][1] = j; //j*cIns</span>
             //System.out.printf(&quot;j=%d: &quot;, j-1);
-<span class="fc bfc" id="L272" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">                if (a.charAt(i-1) == b.charAt(j-1)) {</span>
-<span class="fc" id="L274">                    c = 0;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">                if (a.charAt(i-1) == b.charAt(j-1)) {</span>
+<span class="fc" id="L275">                    c = 0;</span>
                     //System.out.printf(&quot;(%d,%d),  &quot;, i-1, j-1); //subtracting 1 for 0-based indexes
                 } else {
-<span class="fc" id="L277">                    c = cChangeUnequal;</span>
+<span class="fc" id="L278">                    c = cChangeUnequal;</span>
                 }
                 //d[i][j] = minimum(d[i-1][j-1] + c, d[i-1][j] + cDel, d[i][j-1] + cIns);
-<span class="fc" id="L280">                minPos = minimumPos(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);</span>
-<span class="fc bfc" id="L281" title="All 3 branches covered.">                switch(minPos) {</span>
+<span class="fc" id="L281">                minPos = minimumPos(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);</span>
+<span class="fc bfc" id="L282" title="All 3 branches covered.">                switch(minPos) {</span>
                     case 1: {
-<span class="fc" id="L283">                        dN[i][1] = dN[i-1][1] + cDel;</span>
-<span class="fc" id="L284">                        break;</span>
+<span class="fc" id="L284">                        dN[i][1] = dN[i-1][1] + cDel;</span>
+<span class="fc" id="L285">                        break;</span>
                     } case 2: {
-<span class="fc" id="L286">                        dN[i][1] = dN[i][0] + cIns;</span>
-<span class="fc" id="L287">                        break;</span>
+<span class="fc" id="L287">                        dN[i][1] = dN[i][0] + cIns;</span>
+<span class="fc" id="L288">                        break;</span>
                     } default: {
-<span class="fc" id="L289">                        dN[i][1] = dN[i-1][0] + c; </span>
+<span class="fc" id="L290">                        dN[i][1] = dN[i-1][0] + c; </span>
                         break;
                     }
                 }
@@ -294,8 +295,8 @@ import java.util.Arrays;
             //System.out.printf(&quot;\n, &quot;);
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
-<span class="fc bfc" id="L297" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
-<span class="fc" id="L298">                dN[i][0] = dN[i][1];</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc" id="L299">                dN[i][0] = dN[i][1];</span>
             }
         }
          
@@ -321,7 +322,7 @@ import java.util.Arrays;
         Analysis&quot; by David Mount.
         */
         
-<span class="fc" id="L324">        return dN[m][1];</span>
+<span class="fc" id="L325">        return dN[m][1];</span>
     }
     
         /**
@@ -342,10 +343,10 @@ import java.util.Arrays;
      */
     public int calculateNeedlemanWunschScoring(char[] a, char[] b) {
        
-<span class="fc" id="L345">        final int cDel = -2;</span>
-<span class="fc" id="L346">        final int cIns = -2;</span>
-<span class="fc" id="L347">        final int subUnequal = -1;</span>
-<span class="fc" id="L348">        final int subEqual = 2;</span>
+<span class="fc" id="L346">        final int cDel = -2;</span>
+<span class="fc" id="L347">        final int cIns = -2;</span>
+<span class="fc" id="L348">        final int subUnequal = -1;</span>
+<span class="fc" id="L349">        final int subEqual = 2;</span>
        
         /*
             Entries in jth column only depend on (j − 1)’s column and earlier 
@@ -354,41 +355,41 @@ import java.util.Arrays;
                N(i, 0) stores M(i, j − 1) and N(i, 1) stores M(i, j)
         */
         
-<span class="fc" id="L357">        int m = a.length;</span>
-<span class="fc" id="L358">        int n = b.length;</span>
-<span class="fc" id="L359">        int[][] dN = new int[m + 1][];</span>
+<span class="fc" id="L358">        int m = a.length;</span>
+<span class="fc" id="L359">        int n = b.length;</span>
+<span class="fc" id="L360">        int[][] dN = new int[m + 1][];</span>
         int i;
         //dN(i, 0) stores M(i, j − 1) and dN(i, 1) stores M(i, j)
-<span class="fc bfc" id="L362" title="All 2 branches covered.">        for (i = 0; i &lt;= m; ++i) {</span>
-<span class="fc" id="L363">            dN[i] = new int[2];</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        for (i = 0; i &lt;= m; ++i) {</span>
+<span class="fc" id="L364">            dN[i] = new int[2];</span>
         }
-<span class="fc bfc" id="L365" title="All 2 branches covered.">        for (i = 1; i &lt;= m; ++i) {</span>
-<span class="fc" id="L366">            dN[i][0] = i*cDel;</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc" id="L367">            dN[i][0] = i*cDel;</span>
         }
         
         int j;
-<span class="fc" id="L370">        int c = 0;</span>
+<span class="fc" id="L371">        int c = 0;</span>
                         
-<span class="fc bfc" id="L372" title="All 2 branches covered.">        for (j = 1; j &lt;= n; ++j) {</span>
-<span class="fc" id="L373">            dN[0][1] = j*cIns;</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
-<span class="fc bfc" id="L375" title="All 2 branches covered.">                if (a[i-1] == b[j-1]) {</span>
-<span class="fc" id="L376">                    c = subEqual;</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">        for (j = 1; j &lt;= n; ++j) {</span>
+<span class="fc" id="L374">            dN[0][1] = j*cIns;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">                if (a[i-1] == b[j-1]) {</span>
+<span class="fc" id="L377">                    c = subEqual;</span>
                     //System.out.printf(&quot;(%d,%d),  &quot;, i-1, j-1); //subtracting 1 for 0-based indexes
                 } else {
-<span class="fc" id="L379">                    c = subUnequal;</span>
+<span class="fc" id="L380">                    c = subUnequal;</span>
                 }
-<span class="fc" id="L381">                dN[i][1] = maximum(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);</span>
+<span class="fc" id="L382">                dN[i][1] = maximum(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);</span>
             }
             //System.out.printf(&quot;\n, &quot;);
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
-<span class="fc bfc" id="L386" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
-<span class="fc" id="L387">                dN[i][0] = dN[i][1];</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
+<span class="fc" id="L388">                dN[i][0] = dN[i][1];</span>
             }
         }
         
-<span class="fc" id="L391">        return dN[m][1];</span>
+<span class="fc" id="L392">        return dN[m][1];</span>
     }
     
     /**
@@ -405,39 +406,39 @@ import java.util.Arrays;
      */
     public TCharList[] hirschbergOptimal(char[] a, char[] b) {
                 
-<span class="fc" id="L408">        TCharList z = new TCharArrayList();</span>
-<span class="fc" id="L409">        TCharList w = new TCharLinkedList();</span>
+<span class="fc" id="L409">        TCharList z = new TCharArrayList();</span>
+<span class="fc" id="L410">        TCharList w = new TCharLinkedList();</span>
         
-<span class="fc" id="L411">        int m = a.length;</span>
-<span class="fc" id="L412">        int n = b.length;</span>
+<span class="fc" id="L412">        int m = a.length;</span>
+<span class="fc" id="L413">        int n = b.length;</span>
         int i;
-<span class="pc bpc" id="L414" title="1 of 2 branches missed.">        if (m == 0) {</span>
-<span class="nc bnc" id="L415" title="All 2 branches missed.">            for (i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L416">                z.add('-');</span>
-<span class="nc" id="L417">                w.add(b[i]);</span>
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">        if (m == 0) {</span>
+<span class="nc bnc" id="L416" title="All 2 branches missed.">            for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L417">                z.add('-');</span>
+<span class="nc" id="L418">                w.add(b[i]);</span>
             }
-<span class="nc" id="L419">            return new TCharList[]{z, w};</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">        } else if (n == 0) {</span>
-<span class="fc bfc" id="L421" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L422">                z.add(a[i]);</span>
-<span class="fc" id="L423">                w.add('-');</span>
+<span class="nc" id="L420">            return new TCharList[]{z, w};</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        } else if (n == 0) {</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L423">                z.add(a[i]);</span>
+<span class="fc" id="L424">                w.add('-');</span>
             }
-<span class="fc" id="L425">            return new TCharList[]{z, w};</span>
-<span class="pc bpc" id="L426" title="1 of 4 branches missed.">        } else if (m==1 || n==1) {</span>
-<span class="fc" id="L427">            PairIntArray outIndexes = new PairIntArray();</span>
-<span class="fc" id="L428">            int nEdits = calculateWithWagnerFischer(new String(a), new String(b), outIndexes);</span>
-<span class="fc" id="L429">            char[] resultA = new char[outIndexes.getN()];</span>
-<span class="fc" id="L430">            char[] resultB = new char[outIndexes.getN()];</span>
-<span class="fc bfc" id="L431" title="All 2 branches covered.">            for (int ii = 0; ii &lt; resultA.length; ++ii) {</span>
-<span class="fc" id="L432">                resultA[ii] = a[outIndexes.getX(ii)];</span>
-<span class="fc" id="L433">                resultB[ii] = b[outIndexes.getY(ii)];</span>
+<span class="fc" id="L426">            return new TCharList[]{z, w};</span>
+<span class="pc bpc" id="L427" title="1 of 4 branches missed.">        } else if (m==1 || n==1) {</span>
+<span class="fc" id="L428">            PairIntArray outIndexes = new PairIntArray();</span>
+<span class="fc" id="L429">            int nEdits = calculateWithWagnerFischer(new String(a), new String(b), outIndexes);</span>
+<span class="fc" id="L430">            char[] resultA = new char[outIndexes.getN()];</span>
+<span class="fc" id="L431">            char[] resultB = new char[outIndexes.getN()];</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">            for (int ii = 0; ii &lt; resultA.length; ++ii) {</span>
+<span class="fc" id="L433">                resultA[ii] = a[outIndexes.getX(ii)];</span>
+<span class="fc" id="L434">                resultB[ii] = b[outIndexes.getY(ii)];</span>
             }
-<span class="fc" id="L435">            z.addAll(resultA);</span>
-<span class="fc" id="L436">            w.addAll(resultB);</span>
-<span class="fc" id="L437">            return new TCharList[]{z, w};</span>
+<span class="fc" id="L436">            z.addAll(resultA);</span>
+<span class="fc" id="L437">            w.addAll(resultB);</span>
+<span class="fc" id="L438">            return new TCharList[]{z, w};</span>
         }
         //m: xlen = length(X)
-<span class="fc" id="L440">        int aMid = m/2;</span>
+<span class="fc" id="L441">        int aMid = m/2;</span>
         //n: ylen = length(Y)
         //ScoreL = NWScore(X1:xmid, Y)
         //int scoreL = calculateNeedlemanWunschScoring(Arrays.copyOfRange(a, 0, aMid), b);
@@ -458,91 +459,91 @@ import java.util.Arrays;
             = D( reverse( a.substring(aMid + 1, m)),reverse( b.substring(k + 1, n)) )
         bMid = ymid = k;
         */
-<span class="fc" id="L461">        int bMid = argmax(aMid, a, b);</span>
+<span class="fc" id="L462">        int bMid = argmax(aMid, a, b);</span>
                 
         //(Z,W) = Hirschberg(X1:xmid, y1:ymid) + Hirschberg(Xxmid+1:xlen, Yymid+1:ylen)
         
-<span class="fc" id="L465">        TCharList[] zW0 = hirschbergOptimal(</span>
-<span class="fc" id="L466">            Arrays.copyOfRange(a, 0, aMid), Arrays.copyOfRange(b, 0, bMid));</span>
-<span class="fc" id="L467">        TCharList[] zW1 = hirschbergOptimal( </span>
-<span class="fc" id="L468">            Arrays.copyOfRange(a, aMid, m), Arrays.copyOfRange(b, bMid, n));</span>
+<span class="fc" id="L466">        TCharList[] zW0 = hirschbergOptimal(</span>
+<span class="fc" id="L467">            Arrays.copyOfRange(a, 0, aMid), Arrays.copyOfRange(b, 0, bMid));</span>
+<span class="fc" id="L468">        TCharList[] zW1 = hirschbergOptimal( </span>
+<span class="fc" id="L469">            Arrays.copyOfRange(a, aMid, m), Arrays.copyOfRange(b, bMid, n));</span>
         
-<span class="fc" id="L470">        TCharList[] zW = new TCharList[2];</span>
-<span class="fc" id="L471">        zW[0] = new TCharArrayList(zW0[0]);</span>
-<span class="fc" id="L472">        zW[0].addAll(zW1[0]);</span>
-<span class="fc" id="L473">        zW[1] = new TCharArrayList(zW0[1]);</span>
-<span class="fc" id="L474">        zW[1].addAll(zW1[1]);</span>
+<span class="fc" id="L471">        TCharList[] zW = new TCharList[2];</span>
+<span class="fc" id="L472">        zW[0] = new TCharArrayList(zW0[0]);</span>
+<span class="fc" id="L473">        zW[0].addAll(zW1[0]);</span>
+<span class="fc" id="L474">        zW[1] = new TCharArrayList(zW0[1]);</span>
+<span class="fc" id="L475">        zW[1].addAll(zW1[1]);</span>
         
-<span class="fc" id="L476">        return zW;</span>
+<span class="fc" id="L477">        return zW;</span>
     }
     
     private String reverse(String a) {
-<span class="nc" id="L480">        char[] r = a.toCharArray();</span>
-<span class="nc" id="L481">        reverse(r);</span>
-<span class="nc" id="L482">        return new String(r);</span>
+<span class="nc" id="L481">        char[] r = a.toCharArray();</span>
+<span class="nc" id="L482">        reverse(r);</span>
+<span class="nc" id="L483">        return new String(r);</span>
     }
     private void reverse(char[] a) {
-<span class="fc" id="L485">        int n = a.length;</span>
-<span class="fc" id="L486">        int i, i2, mid = n/2;</span>
+<span class="fc" id="L486">        int n = a.length;</span>
+<span class="fc" id="L487">        int i, i2, mid = n/2;</span>
         char swap;
-<span class="fc bfc" id="L488" title="All 2 branches covered.">        for (i = 0, i2=n-1; i &lt; mid; ++i, i2--) {</span>
-<span class="fc" id="L489">            swap = a[i];</span>
-<span class="fc" id="L490">            a[i] = a[i2];</span>
-<span class="fc" id="L491">            a[i2] = swap;</span>
+<span class="fc bfc" id="L489" title="All 2 branches covered.">        for (i = 0, i2=n-1; i &lt; mid; ++i, i2--) {</span>
+<span class="fc" id="L490">            swap = a[i];</span>
+<span class="fc" id="L491">            a[i] = a[i2];</span>
+<span class="fc" id="L492">            a[i2] = swap;</span>
         }
-<span class="fc" id="L493">    }</span>
+<span class="fc" id="L494">    }</span>
     private char[] reverse2(char[] a) {
-<span class="nc" id="L495">        char[] out = Arrays.copyOf(a, a.length);</span>
-<span class="nc" id="L496">        reverse(out);</span>
-<span class="nc" id="L497">        return out;</span>
+<span class="nc" id="L496">        char[] out = Arrays.copyOf(a, a.length);</span>
+<span class="nc" id="L497">        reverse(out);</span>
+<span class="nc" id="L498">        return out;</span>
     }
     
     private int minimum(int a, int b, int c) {
-<span class="fc bfc" id="L501" title="All 2 branches covered.">        if (a &lt;= b) {</span>
-<span class="fc bfc" id="L502" title="All 2 branches covered.">            if (a &lt;= c) {</span>
-<span class="fc" id="L503">                return a;</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">        if (a &lt;= b) {</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">            if (a &lt;= c) {</span>
+<span class="fc" id="L504">                return a;</span>
             } else {
-<span class="fc" id="L505">                return c;</span>
+<span class="fc" id="L506">                return c;</span>
             }
         } else {
             // b &lt; a
-<span class="pc bpc" id="L509" title="1 of 2 branches missed.">            if (b &lt;= c) {</span>
-<span class="fc" id="L510">                return b;</span>
+<span class="pc bpc" id="L510" title="1 of 2 branches missed.">            if (b &lt;= c) {</span>
+<span class="fc" id="L511">                return b;</span>
             } else {
-<span class="nc" id="L512">                return c;</span>
+<span class="nc" id="L513">                return c;</span>
             }
         } 
     }
     private int minimumPos(int a, int b, int c) {
-<span class="fc bfc" id="L517" title="All 2 branches covered.">        if (a &lt;= b) {</span>
-<span class="fc bfc" id="L518" title="All 2 branches covered.">            if (a &lt;= c) {</span>
-<span class="fc" id="L519">                return 0;</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        if (a &lt;= b) {</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">            if (a &lt;= c) {</span>
+<span class="fc" id="L520">                return 0;</span>
             } else {
-<span class="fc" id="L521">                return 2;</span>
+<span class="fc" id="L522">                return 2;</span>
             }
         } else {
             // b &lt; a
-<span class="pc bpc" id="L525" title="1 of 2 branches missed.">            if (b &lt;= c) {</span>
-<span class="fc" id="L526">                return 1;</span>
+<span class="pc bpc" id="L526" title="1 of 2 branches missed.">            if (b &lt;= c) {</span>
+<span class="fc" id="L527">                return 1;</span>
             } else {
-<span class="nc" id="L528">                return 2;</span>
+<span class="nc" id="L529">                return 2;</span>
             }
         } 
     }
     
     private int maximum(int a, int b, int c) {
-<span class="fc bfc" id="L534" title="All 2 branches covered.">        if (a &gt;= b) {</span>
-<span class="fc bfc" id="L535" title="All 2 branches covered.">            if (a &gt;= c) {</span>
-<span class="fc" id="L536">                return a;</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">        if (a &gt;= b) {</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">            if (a &gt;= c) {</span>
+<span class="fc" id="L537">                return a;</span>
             } else {
-<span class="fc" id="L538">                return c;</span>
+<span class="fc" id="L539">                return c;</span>
             }
         } else {
             // b &gt; a
-<span class="pc bpc" id="L542" title="1 of 2 branches missed.">            if (b &gt;= c) {</span>
-<span class="fc" id="L543">                return b;</span>
+<span class="pc bpc" id="L543" title="1 of 2 branches missed.">            if (b &gt;= c) {</span>
+<span class="fc" id="L544">                return b;</span>
             } else {
-<span class="nc" id="L545">                return c;</span>
+<span class="nc" id="L546">                return c;</span>
             }
         } 
     }
@@ -563,29 +564,29 @@ import java.util.Arrays;
              + D( reverse( a.substring(aMid + 1, m) ), 
                   reverse( b.substring(k + 1, n) ) );
         */
-<span class="fc" id="L566">        char[] a0Mid = Arrays.copyOfRange(a, 0, aMid);</span>
-<span class="fc" id="L567">        char[] aMidMRev = Arrays.copyOfRange(a, aMid, a.length);</span>
-<span class="fc" id="L568">        reverse(aMidMRev);</span>
+<span class="fc" id="L567">        char[] a0Mid = Arrays.copyOfRange(a, 0, aMid);</span>
+<span class="fc" id="L568">        char[] aMidMRev = Arrays.copyOfRange(a, aMid, a.length);</span>
+<span class="fc" id="L569">        reverse(aMidMRev);</span>
         
-<span class="fc" id="L570">        int maxK = -1;</span>
-<span class="fc" id="L571">        int maxVal = Integer.MIN_VALUE;</span>
+<span class="fc" id="L571">        int maxK = -1;</span>
+<span class="fc" id="L572">        int maxVal = Integer.MIN_VALUE;</span>
         int k, sL, sR, tot;
         char[] b0k, bkMidRev;
-<span class="fc bfc" id="L574" title="All 2 branches covered.">        for (k = 0; k &lt; b.length; ++k) {</span>
-<span class="fc" id="L575">            b0k = Arrays.copyOfRange(b, 0, k);</span>
-<span class="fc" id="L576">            bkMidRev = Arrays.copyOfRange(b, k, b.length);</span>
-<span class="fc" id="L577">            reverse(bkMidRev);</span>
+<span class="fc bfc" id="L575" title="All 2 branches covered.">        for (k = 0; k &lt; b.length; ++k) {</span>
+<span class="fc" id="L576">            b0k = Arrays.copyOfRange(b, 0, k);</span>
+<span class="fc" id="L577">            bkMidRev = Arrays.copyOfRange(b, k, b.length);</span>
+<span class="fc" id="L578">            reverse(bkMidRev);</span>
             
-<span class="fc" id="L579">            sL = calculateNeedlemanWunschScoring(a0Mid, b0k);</span>
-<span class="fc" id="L580">            sR = calculateNeedlemanWunschScoring(aMidMRev, bkMidRev);</span>
+<span class="fc" id="L580">            sL = calculateNeedlemanWunschScoring(a0Mid, b0k);</span>
+<span class="fc" id="L581">            sR = calculateNeedlemanWunschScoring(aMidMRev, bkMidRev);</span>
             
-<span class="fc" id="L582">            tot = sL + sR;</span>
-<span class="fc bfc" id="L583" title="All 2 branches covered.">            if (tot &gt; maxVal) {</span>
-<span class="fc" id="L584">                maxVal = tot;</span>
-<span class="fc" id="L585">                maxK = k;</span>
+<span class="fc" id="L583">            tot = sL + sR;</span>
+<span class="fc bfc" id="L584" title="All 2 branches covered.">            if (tot &gt; maxVal) {</span>
+<span class="fc" id="L585">                maxVal = tot;</span>
+<span class="fc" id="L586">                maxK = k;</span>
             }
         }
-<span class="fc" id="L588">        return maxK;</span>
+<span class="fc" id="L589">        return maxK;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

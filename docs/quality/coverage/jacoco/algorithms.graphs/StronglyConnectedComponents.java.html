@@ -118,51 +118,51 @@ import java.util.logging.Logger;
 <span class="fc" id="L118">        return scc;</span>
     }
     
-    private void strongConnect(int v) {
+    private void strongConnect(int u) {
         
-<span class="fc" id="L123">        td[v] = time;</span>
-<span class="fc" id="L124">        lowLink[v] = time;</span>
+<span class="fc" id="L123">        td[u] = time;</span>
+<span class="fc" id="L124">        lowLink[u] = time;</span>
 <span class="fc" id="L125">        time++;</span>
         
-<span class="fc" id="L127">        stack.push(v);</span>
-<span class="fc" id="L128">        onStack[v] = 1;</span>
+<span class="fc" id="L127">        stack.push(u);</span>
+<span class="fc" id="L128">        onStack[u] = 1;</span>
         
-<span class="fc" id="L130">        log.log(logLevel, &quot;v:&quot; + toString(v));</span>
+<span class="fc" id="L130">        log.log(logLevel, &quot;u:&quot; + toString(u));</span>
                 
-<span class="fc" id="L132">        SimpleLinkedListNode wNode = g[v];</span>
+<span class="fc" id="L132">        SimpleLinkedListNode wNode = g[u];</span>
 <span class="pc bpc" id="L133" title="1 of 4 branches missed.">        while (wNode != null &amp;&amp; wNode.getKey() != -1) {</span>
-<span class="fc" id="L134">            int w = wNode.getKey();</span>
-<span class="fc" id="L135">            log.log(logLevel, &quot;    w=&quot; + toString(w));            </span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (td[w] == -1) {</span>
-                // Successor w has not yet been visited; recurse on it
-<span class="fc" id="L138">                strongConnect(w);</span>
-<span class="fc" id="L139">                lowLink[v] = Math.min(lowLink[v], lowLink[w]);  // update Low[v]</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">            } else if (onStack[w] == 1) {</span>
-                // w is in stack S and hence in the current SCC
-                // If w is not on stack, then (v, w) is a cross-edge in the 
+<span class="fc" id="L134">            int v = wNode.getKey();</span>
+<span class="fc" id="L135">            log.log(logLevel, &quot;    v=&quot; + toString(v));            </span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (td[v] == -1) {</span>
+                // Successor v has not yet been visited; recurse on it
+<span class="fc" id="L138">                strongConnect(v);</span>
+<span class="fc" id="L139">                lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            } else if (onStack[v] == 1) {</span>
+                // v is in stack S and hence in the current SCC
+                // If v is not on stack, then (u, v) is a cross-edge in the 
                 // DFS tree and must be ignored.
-<span class="fc" id="L144">                lowLink[v] = Math.min(lowLink[v], td[w]);  // update Low[v]</span>
+<span class="fc" id="L144">                lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]</span>
             }
 <span class="fc" id="L146">            wNode = wNode.getNext();</span>
 <span class="fc" id="L147">        }</span>
         
         // If v is a root node, pop the stack and generate an SCC
-<span class="fc bfc" id="L150" title="All 4 branches covered.">        if (lowLink[v] == td[v] &amp;&amp; inSCC[v] == 0) {</span>
-<span class="fc" id="L151">            log.log(logLevel, &quot;    START scc &quot; + v);</span>
+<span class="fc bfc" id="L150" title="All 4 branches covered.">        if (lowLink[u] == td[u] &amp;&amp; inSCC[u] == 0) {</span>
+<span class="fc" id="L151">            log.log(logLevel, &quot;    START scc &quot; + u);</span>
 <span class="fc" id="L152">            SimpleLinkedListNode sccNode = new SimpleLinkedListNode();</span>
 <span class="fc" id="L153">            scc.add(sccNode);</span>
-<span class="fc" id="L154">            inSCC[v] = 1;</span>
-            int w;
+<span class="fc" id="L154">            inSCC[u] = 1;</span>
+            int v;
             do {
 <span class="pc bpc" id="L157" title="1 of 2 branches missed.">                if (stack.isEmpty()) {</span>
 <span class="nc" id="L158">                    break;</span>
                 }
-<span class="fc" id="L160">                w = stack.pop();</span>
-<span class="fc" id="L161">                onStack[w] = 0;</span>
-<span class="fc" id="L162">                sccNode.insert(w);</span>
-<span class="fc" id="L163">                inSCC[w] = 1;</span>
-<span class="fc" id="L164">                log.log(logLevel, &quot;    add &quot; + w + &quot; to scc&quot;);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            } while (w != v);</span>
+<span class="fc" id="L160">                v = stack.pop();</span>
+<span class="fc" id="L161">                onStack[v] = 0;</span>
+<span class="fc" id="L162">                sccNode.insert(v);</span>
+<span class="fc" id="L163">                inSCC[v] = 1;</span>
+<span class="fc" id="L164">                log.log(logLevel, &quot;    add &quot; + v + &quot; to scc&quot;);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            } while (v != u);</span>
 <span class="fc" id="L166">            log.log(logLevel, &quot;stack size=&quot; + stack.size());</span>
         }
 <span class="fc" id="L168">    }</span>
