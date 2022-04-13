@@ -212,7 +212,7 @@ public class Misc {
      * The objective is to find a set of non-overlapping requests such that sum 
      * of values of the scheduled requests is maximum.
      * 
-     * This code uses dynamic programming and has runtime complexity O(N * log_2(N)).
+     * This code uses dynamic programming and has runtime complexity O(n^2).
      * 
      * The problem is from the lecture notes of David Mount for CMSC 451 
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).

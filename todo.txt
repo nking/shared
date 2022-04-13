@@ -1,5 +1,10 @@
 -- update the JUnit library and make any needed changes
 
+-- implement approx inverse CDF:
+   can approximate an inverse CDF using piecewise constant (PWC) or
+   piecewise linear (PWL).
+   - Inverse method from "Independent Random Sampling", 2018, Martino et al.
+
 -- consider implementing a 3D voronoi
 
 -- implement perfect hashing one day. not currently needed.
