@@ -190,7 +190,6 @@
             </classpath>
             <formatter type="plain" usefile="true"/>
             <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
-            <jvmarg value="-XX:-UseSplitVerifier" />
             <jvmarg value="-enableassertions" />
             <batchtest fork="yes" todir="${tests.out.dir}">
                 <fileset dir="${tests.out.dir}">
@@ -223,7 +222,6 @@
                 <path refid="test.classpath"/>
             </classpath>
             <formatter type="plain" usefile="true"/>
-            <jvmarg value="-XX:-UseSplitVerifier" />
             <jvmarg value="-enableassertions" />
             <!--
             <jvmarg value="-Xmx2048m" />
@@ -247,7 +245,6 @@
                 <pathelement location="${src.out.dir}"/>
             </classpath>
             <formatter type="plain" usefile="true"/>
-            <jvmarg value="-XX:-UseSplitVerifier" />
             <jvmarg value="-enableassertions" />
             <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
             <batchtest fork="yes" todir="${tests.out.dir}">
@@ -271,7 +268,7 @@
                 <enable/>
             </assertions>
 
-            <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y -XX:-UseSplitVerifier"/>
+            <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y"/>
  
             <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
             
@@ -297,7 +294,7 @@
                 <enable/>
             </assertions>
 
-            <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y -XX:-UseSplitVerifier"/>
+            <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y"/>
  
             <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
             
