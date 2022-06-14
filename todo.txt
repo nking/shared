@@ -1,9 +1,16 @@
+-- consider changing java compile source to 1.11
+   -- then update libraries
+
 -- update the JUnit library and make any needed changes
 
 -- implement approx inverse CDF:
    can approximate an inverse CDF using piecewise constant (PWC) or
    piecewise linear (PWL).
    - Inverse method from "Independent Random Sampling", 2018, Martino et al.
+
+-- in the sampling packages (e.g. algorithms.imageProcessing.features or create new), 
+   add variational Bayes and expectation propagation 
+   they allow Bayesian techniques to be used in large-scale applications (Blei et al., 2003).
 
 -- consider implementing a 3D voronoi
 

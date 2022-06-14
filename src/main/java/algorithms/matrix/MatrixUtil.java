@@ -1555,7 +1555,7 @@ public class MatrixUtil {
      * Note that the term rank can be deceptive for cases when the 
      * original matrix a was rank deficient and then is perturbed to become
      * a full rank matrix leading to possibility of larger errors when treated as full rank.
-     * the term rank deficient can be replaced by the ter numerically rank deficient.
+     * the term rank deficient can be replaced by the term numerically rank deficient.
      * (see Bjork 1991 Section 2, "Algorithms for linear least squares problems"
      * and Chap 6 of Golub & Van Loan).
      * This method uses the SVD of a,

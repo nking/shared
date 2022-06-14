@@ -44,7 +44,7 @@ public class UnivariateNormalDistribution {
           using the inverse CDF of the standard normal.
      * @param rand
      * @param n
-     * @return 
+     * @return n randomly sampled x's
      */
     public static double[] randomSampleOfUnitStandard(SecureRandom rand, int n) {
         double t;

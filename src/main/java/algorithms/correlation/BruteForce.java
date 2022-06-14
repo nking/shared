@@ -62,6 +62,8 @@ public class BruteForce {
      * e.g.  a[0] = new double[]{10, 100, 1000}
      *       a[1] = new double[]{ 9, 110, 900}
      * </pre>
+     *          Note, aside from unit tests, a quick comparison with python numpy cov function produces same result.
+     *
      * @return the covariance matrix as a double array of size [a[0].length][a[0].length]
      */
     public static double[][] covariance(double[][] a) {
