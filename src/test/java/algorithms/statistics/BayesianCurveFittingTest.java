@@ -2,13 +2,11 @@ package algorithms.statistics;
 
 import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
-import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.NotConvergedException;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -34,6 +32,7 @@ public class BayesianCurveFittingTest extends TestCase {
         alpha = 5E-3
         beta = 11.1
         M = order of fit = 9 for this example
+        changing to 8 to have a different dimension
 
         [junit] INFO: x avg and stdev = 0.5033, 0.3396
         [junit] INFO: t avg and stdev = 0.1278, 0.6657
@@ -42,46 +41,42 @@ public class BayesianCurveFittingTest extends TestCase {
         [junit] 0.1153, -0.1467
         [junit] -0.1467, 0.4431
         */
-        double[] x = new double[]{0., 6./60, 13./60, 21./60, 27./60, 34./60, 40./60, 47./60, 54./60, 60./60};
+        double[] xTrain = new double[]{0., 6./60, 13./60, 21./60, 27./60, 34./60, 40./60, 47./60, 54./60, 60./60};
+        double[] xTrainC = new double[]{(0.-30.)/60., (6.-30.)/60., (13.-30.)/60, (21.-30.)/60, (27.-30.)/60,
+                (34.-30.)/60, (40.-30.)/60, (47.-30.)/60, (54.-30.)/60, (60.-30.)/60};
+
         double[] t = new double[]{3.5/9, 7.5/9, 9./9, 8.5/9, -1./9, -1.5/9, -8./9, -4./9, -5./9, 2.5/9};
+
+        double[] xTest = new double[]{-0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, 1.0, 1.1};
+        double[] xTestC = MatrixUtil.subtract(xTest, 0.5);
+
         final double alpha = 5e-3;
         final double beta = 11.1;
-        final int m = 9;
+        final int m = 8;//9;
 
-        double[][] a = new double[2][];
-        a[0] = Arrays.copyOf(x, x.length);
-        a[1] = Arrays.copyOf(t, t.length);
-        a = MatrixUtil.transpose(a);
-        double[][] covA = BruteForce.covariance(a);
-        double[] xAvgStdev = MiscMath0.getAvgAndStDev(x);
-        double[] tAvgStdev = MiscMath0.getAvgAndStDev(t);
-        double[] meanV = new double[]{xAvgStdev[0], tAvgStdev[0]};
-        double[] stdvV = new double[]{xAvgStdev[1], tAvgStdev[1]};
-        double[] xtSample = MultivariateNormalDistribution.sampleRandomlyFrom0(meanV, covA);
+        double[][] phiX = BayesianCurveFitting.generatePhiX(xTrain, m);
+        double[][] phiXTest = BayesianCurveFitting.generatePhiX(xTest, m);
 
+        ModelFit fit = BayesianCurveFitting.fit(phiX, t, alpha, beta);
 
-        double[][] sInv = BayesianCurveFitting.calcSInv(x, m, alpha, beta);
-        double[][] s = MatrixUtil.pseudoinverseRankDeficient(sInv);
+        ModelPrediction prediction = BayesianCurveFitting.predict(fit, phiXTest);
 
-        double[][] meanM = BayesianCurveFitting.calcMean(s, x, t, m, alpha, beta);
+        double tol = 1E-3;
+        double[] yExpected = new double[]{0.2343, 0.8219, 0.9126, 0.7776, 0.4582, 0.02793,
+                -0.4061, -0.7102, -0.4186, 0.2561, 1.02878};
+        double[] yErrExpected = new double[]{0.48093, 0.3475, 0.34986, 0.3489, 0.3433, 0.3435,
+                0.3489, 0.3506, 0.3836, 0.4207, 1.6300};
 
-        double[][] varianceM = BayesianCurveFitting.calcVariance(s, x, m, alpha, beta);
+        assertEquals(prediction.getYFit().length, yExpected.length);
+        assertEquals(prediction.getYErr().length, yErrExpected.length);
 
-        log.log(java.util.logging.Level.INFO, String.format(
-                "x = %s", FormatArray.toString(x, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format(
-                "t = %s", FormatArray.toString(t, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format(
-                "x avg and stdev = %s", FormatArray.toString(xAvgStdev, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format("t avg and stdev = %s",
-                FormatArray.toString(tAvgStdev, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format("brute force cov=\n%s", FormatArray.toString(covA, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format("sInv=\n%s", FormatArray.toString(sInv, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format("pseudoInv(sInv)=\n%s", FormatArray.toString(s, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format("mean=\n%s", FormatArray.toString(meanM, "%.4f")));
-        log.log(java.util.logging.Level.INFO, String.format("variance=\n%s", FormatArray.toString(varianceM, "%.4f")));
-
-
+        double diff;
+        for (int i = 0; i < yExpected.length; ++i) {
+            diff = prediction.getYFit()[i] - yExpected[i];
+            assertTrue(Math.abs(diff) < tol);
+            diff = prediction.getYErr()[i] - yErrExpected[i];
+            assertTrue(Math.abs(diff) < tol);
+        }
     }
 
 
