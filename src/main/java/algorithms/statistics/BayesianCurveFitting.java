@@ -152,6 +152,7 @@ public class BayesianCurveFitting {
     public static ModelPrediction predict(ModelFit fit, double[][] phiXTest) throws NotConvergedException {
 
         // [testX.length X (m+1)]  [m+1] = [testX.length]
+        // this is the expectation times the probability:
         double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, fit.mean);
         log.log(java.util.logging.Level.FINE, String.format("y=\n%s", FormatArray.toString(y, "%.4f")));
 
