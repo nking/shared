@@ -272,25 +272,26 @@ public class BayesianCurveFitting {
     }
 
     /**
-     * implementing eqn 1.70 of Bishop's PRML.  there's an error in the equation, so
-     * use method calcMean() instead.
+     * implementing eqn 1.70 of Bishop's PRML.  there's an error in the equation, corrected here.
      * @param x training data points
      * @param t training data values
      * @param m order of polynomial originally used to fit the training data x,t.
-     * @param alpha noise to add to the generated gaussian.
-     * @param beta the precision, that is, the reciprocal of the variance.
-     * @return size
+     @param alpha the precision of the prior. the precision is the reciprocal of the variance.
+     @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
+     @return size
      */
-    private static double[][] _calcMean(final double[][] s, final double[] x, final double[] t, final int m, final double alpha, final double beta) throws NotConvergedException {
+    private static double[] _calcMean(final double[][] s, final double[] x, final double[] t, final int m, final double alpha, final double beta) throws NotConvergedException {
 
         //[x.length X m]
         double[][] xMatrix = generatePhiX(x, m);
         double[][] xMatrixT = MatrixUtil.transpose(xMatrix);
 
         //error in eqn 1.70.  dimensions do not match
-        //[x.length x (m+1))] = [x.length x (m+1))] [(m+1) x (m+1)]
-        double[][] out = MatrixUtil.multiply(xMatrixT, s);
-        MatrixUtil.multiply(out, beta);
+        //  m(x) = beta * phiXT * S * summation_i=0_to_(n-1)( phiX(i) * t(i) )
+        //    should be m(x) = beta * S * summation_i=0_to_(n-1)( phiX(i) * t(i) )
+
+        double[][] sB = MatrixUtil.copy(s);
+        MatrixUtil.multiply(sB, beta);
 
         double[] phiXn;
 
@@ -301,15 +302,10 @@ public class BayesianCurveFitting {
             MatrixUtil.multiply(phiXn, t[i]);
             sum = MatrixUtil.add(phiXn, sum);
         }
-        // [(m+1) X 1] in 2D array
-        double[][] sumM = new double[m+1][];
-        for (int i = 0; i < sum.length; ++i) {
-            sumM[i] = new double[]{sum[i]};
-        }
 
-        out = MatrixUtil.multiply(out, sumM);
+        double[] meanOfRegression = MatrixUtil.multiplyMatrixByColumnVector(sB, sum);
 
-        return out;
+        return meanOfRegression;
     }
 
     /**
