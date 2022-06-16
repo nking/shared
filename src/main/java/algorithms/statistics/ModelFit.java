@@ -5,6 +5,9 @@ public class ModelFit {
     // s is covariance
     protected double[][] phiX;
     protected double[][] precision;
+    /**
+     * mean of the regression relationship, roughly similar to a slope term of yTrain/xTrain
+     */
     protected double[] mean;
     protected double[][] cov;
     protected double alpha;

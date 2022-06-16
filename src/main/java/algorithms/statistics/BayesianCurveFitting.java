@@ -111,6 +111,7 @@ public class BayesianCurveFitting {
         double[][] s = MatrixUtil.pseudoinverseRankDeficient(sInv);
         log.log(java.util.logging.Level.FINE, String.format("s=\n%s", FormatArray.toString(s, "%.4f")));
 
+        // the mean is roughly similar to a slope term of yTrain/xTrain
         //[(m+1) X 1]
         double[] mean = calcMean(priorMean, priorCov, sInv, phiXT, t, alpha, beta);
         log.log(java.util.logging.Level.FINE, String.format("mean=\n%s", FormatArray.toString(mean, "%.4f")));
@@ -143,7 +144,7 @@ public class BayesianCurveFitting {
     }
 
     /**
-     *
+     * calculate
      * the likelihood and the prior are both Gaussian.
      * @param fit model fit made from training data
      * @param phiXTest x value feature matrix for which to predict target t values.
@@ -152,7 +153,7 @@ public class BayesianCurveFitting {
     public static ModelPrediction predict(ModelFit fit, double[][] phiXTest) throws NotConvergedException {
 
         // [testX.length X (m+1)]  [m+1] = [testX.length]
-        // this is the expectation times the probability:
+        // use regression slope term:
         double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, fit.mean);
         log.log(java.util.logging.Level.FINE, String.format("y=\n%s", FormatArray.toString(y, "%.4f")));
 
@@ -163,6 +164,7 @@ public class BayesianCurveFitting {
         ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);
         log.log(java.util.logging.Level.FINE, String.format("ys1=\n%s", FormatArray.toString(ys1, "%.4f")));
 
+        // propagation of errors:
         // sum ys1 along rows, add 1/beta, take sqrt:
         double[] yErr = new double[ys1.length];
         int j;

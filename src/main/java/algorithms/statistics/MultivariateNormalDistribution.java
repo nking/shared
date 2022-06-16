@@ -114,7 +114,11 @@ public class MultivariateNormalDistribution {
         
         */
         //System.out.println("u="+Arrays.toString(u));
-        
+
+        //from Wasserman's "All of Statistics", 2.43 Theorem:
+        //N(0, I) ~ Σ^(−1/2) * (X−μ)
+        //Σ^(1/2) * N(0, I) ~ (X−μ)
+        // d ~ X−μ
         double[][] ksq = MatrixUtil.squareRoot(k);
         double[] d = MatrixUtil.multiplyMatrixByColumnVector(ksq, u);
         assert(d.length == m.length);
@@ -155,11 +159,13 @@ public class MultivariateNormalDistribution {
                 System.out.printf("%11.3e  ", d[i]);
             }
             System.out.printf("\n");
-            
             System.out.flush();            
         }
         */
-        
+
+        //Σ^(1/2) * N(0, I) ~ (X−μ)
+        // d ~ X−μ
+        // X ~ d + μ
         double[] x = new double[n];
         for (i = 0; i < n; ++i) {
             x[i] = d[i] + m[i];

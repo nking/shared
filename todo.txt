@@ -1,3 +1,19 @@
+-- add the multivariate sample predict
+    to the BayesianCurveFitting method
+    y = x * MultivariateNormalDistribution.sampleRandomlyFrom0
+
+-- implement the pseudo-determinant
+   from wikipedia:
+   In linear algebra and statistics, the pseudo-determinant[1] is the product of all 
+   non-zero eigenvalues of a square matrix. It coincides with the regular determinant 
+   when the matrix is non-singular.
+   Minka, T.P. (2001). "Inferring a Gaussian Distribution"
+
+   If A is positive semi-definite, then the singular values and eigenvalues of A coincide. 
+   In this case, if the singular value decomposition (SVD) is available, then A_{+} may be 
+   computed as the product of the non-zero singular values. If all singular values are zero, 
+   then the pseudo-determinant is 1.
+   
 -- consider changing java compile source to 1.11
    -- then update libraries
 
