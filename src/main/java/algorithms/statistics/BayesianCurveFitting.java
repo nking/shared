@@ -114,7 +114,7 @@ public class BayesianCurveFitting {
 
         // the mean is roughly similar to a slope term of yTrain/xTrain
         //[(m+1) X 1]
-        double[] mean = calcMean(priorMean, priorCov, sInv, phiXT, t, alpha, beta);
+        double[] mean = calcMean(priorMean, priorCov, s, phiXT, t, alpha, beta);
         log.log(java.util.logging.Level.FINE, String.format("mean=\n%s", FormatArray.toString(mean, "%.4f")));
 
         //[m+1 X m+1]
@@ -204,49 +204,9 @@ public class BayesianCurveFitting {
     }
 
     /**
-     * correcting the error in eqn 1.71 of Bishop's PRML for the square of the standard deviation.
-     * this returns the square root of the corrected result.
-     * @param xTest training data points
-     * @param m order of polynomial originally used to fit the training data x,t.
-     * @param alpha noise to add to the generated gaussian.
-     * @param beta the precision, that is, the reciprocal of the variance.
-     * @return size [x.length X x.length]
-     */
-    private static double[] _calcSD(final double[][] s, final double[] xTest, final int m, final double alpha, final double beta) throws NotConvergedException {
-
-        double[][] phiX = generatePhiX(xTest, m);
-
-        /*
-        bishop eqn 1.71 dimensions are wrong: s^2 = (1/beta) + phiXT * s * phiX
-
-        PRML code by CTGK (see class documentation) corrects it to:
-            (1/beta) + np.sum(x * s dot x, axis=1) )
-        */
-
-        // [NX(M+1)] [(M+1)X(M+1)] = [NX(M+1)]
-        double[][] tmp2 = MatrixUtil.multiply(phiX, s);
-
-        // [NX(M+1)] dot [NX(M+1)] = [NX(M+1)]
-        tmp2 = MatrixUtil.elementwiseMultiplication(tmp2, phiX);
-
-        // sum along rows, add 1/beta, take sqrt:
-        double[] sum = new double[tmp2.length];
-        int j;
-        for (int i = 0; i < tmp2.length; ++i) {
-            for (j = 0; j < tmp2[i].length; ++j) {
-                sum[i] += tmp2[i][j];
-            }
-            sum[i] += (1./beta);
-            sum[i] = Math.sqrt(sum[i]);
-        }
-
-        return sum;
-    }
-
-    /**
      * calculate the mean.
      * <pre>
-     * the method is from
+     * the method is from eqn 3.5 of Bishop's PRML, following code in
      * https://github.com/ctgk/PRML/blob/main/prml/linear/_bayesian_regression.py
      * method fit().
      * </pre>
@@ -254,7 +214,7 @@ public class BayesianCurveFitting {
      * @return size [(m+1)]
      */
     protected static double[] calcMean(final double[] priorMean, final double[][] priorPrecision,
-            final double[][] sInv, final double[][] phiXT, final double[] t,  final double alpha, final double beta) throws NotConvergedException {
+            final double[][] s, final double[][] phiXT, final double[] t,  final double alpha, final double beta) throws NotConvergedException {
 
         /*
         solve for mean as x in a*x=b
@@ -263,6 +223,8 @@ public class BayesianCurveFitting {
                  = (alpha * I_(m+1)) + beta * (phiXT * phiX)
         b = precision_prev @ mean_prev + beta * x_train.T @ y_train
           = (alpha * I_(m+1)) * zero_(m+1) + beta * (phiXT * t)
+
+        same as x = pinv(a) * b = s * b
         */
 
         double[] bV0 = MatrixUtil.multiplyMatrixByColumnVector(priorPrecision, priorMean);
@@ -272,44 +234,9 @@ public class BayesianCurveFitting {
 
         bV = MatrixUtil.add(bV0, bV);
 
-        DenseMatrix a = new DenseMatrix(sInv);
-        DenseVector b = new DenseVector(bV);
-        DenseVector x = new DenseVector(bV.length);
-        x = (DenseVector)a.solve(b, x);
+        double[] mean = MatrixUtil.multiplyMatrixByColumnVector(s, bV);
 
-        return x.getData();
-    }
-
-    /**
-     * implementing eqn 1.70 of Bishop's PRML.  there's an error in the equation, corrected here.
-     @param phiX training data feature matrix
-      * @param t training data label vector
-     * @param m order of polynomial originally used to fit the training data x,t.
-     @param alpha the precision of the prior. the precision is the reciprocal of the variance.
-     @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
-     @return size
-     */
-    private static double[] _calcMean(final double[][] s, double[][] phiX, final double[] t, final int m, final double alpha, final double beta) throws NotConvergedException {
-
-        //error in eqn 1.70.  dimensions do not match
-        //  m(x) = beta * phiXT * S * summation_i=0_to_(n-1)( phiX(i) * t(i) )
-        //    should be m(x) = beta * S * summation_i=0_to_(n-1)( phiX(i) * t(i) )
-
-        double[][] sB = MatrixUtil.copy(s);
-        MatrixUtil.multiply(sB, beta);
-
-        double[] phiXn;
-        double[] sum = new double[m + 1];
-        for (int i = 0; i < phiX.length; ++i) {
-            // phiXn is [(m+1) X 1]
-            phiXn = Arrays.copyOf(phiX[i], phiX[i].length);
-            MatrixUtil.multiply(phiXn, t[i]);
-            sum = MatrixUtil.add(phiXn, sum);
-        }
-
-        double[] meanOfRegression = MatrixUtil.multiplyMatrixByColumnVector(sB, sum);
-
-        return meanOfRegression;
+        return mean;
     }
 
     /**
@@ -361,7 +288,8 @@ public class BayesianCurveFitting {
 
         // eqn 1.72 from Bishop's PRML has an errata.
         //     corrected by the errata to: S^-1=alpha*I + beta * summation_from_n=1_to_N(phi(x_n) * phi(x_n)^T)
-        // PRML CODE instead uses: S^-1=alpha*I + beta * (xT*x)
+        //     the equation is corrected in Bishop's eqn 3.51 and in the
+        // ctgk github PRML CODE : S^-1=alpha*I + beta * (xT*x)
 
         double[][] p1 = MatrixUtil.multiply(xT, x);
         MatrixUtil.multiply(p1, beta);
