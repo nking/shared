@@ -41,11 +41,11 @@ public class BayesianCurveFittingTest extends TestCase {
         [junit] 0.1153, -0.1467
         [junit] -0.1467, 0.4431
         */
-        double[] xTrain = new double[]{0., 6./60, 13./60, 21./60, 27./60, 34./60, 40./60, 47./60, 54./60, 60./60};
-        double[] xTrainC = new double[]{(0.-30.)/60., (6.-30.)/60., (13.-30.)/60, (21.-30.)/60, (27.-30.)/60,
-                (34.-30.)/60, (40.-30.)/60, (47.-30.)/60, (54.-30.)/60, (60.-30.)/60};
+        double[] xTrain = new double[]{0., 6. / 60, 13. / 60, 21. / 60, 27. / 60, 34. / 60, 40. / 60, 47. / 60, 54. / 60, 60. / 60};
+        double[] xTrainC = new double[]{(0. - 30.) / 60., (6. - 30.) / 60., (13. - 30.) / 60, (21. - 30.) / 60, (27. - 30.) / 60,
+                (34. - 30.) / 60, (40. - 30.) / 60, (47. - 30.) / 60, (54. - 30.) / 60, (60. - 30.) / 60};
 
-        double[] t = new double[]{3.5/9, 7.5/9, 9./9, 8.5/9, -1./9, -1.5/9, -8./9, -4./9, -5./9, 2.5/9};
+        double[] t = new double[]{3.5 / 9, 7.5 / 9, 9. / 9, 8.5 / 9, -1. / 9, -1.5 / 9, -8. / 9, -4. / 9, -5. / 9, 2.5 / 9};
 
         double[] xTest = new double[]{-0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, 1.0, 1.1};
         double[] xTestC = MatrixUtil.subtract(xTest, 0.5);
@@ -77,8 +77,8 @@ public class BayesianCurveFittingTest extends TestCase {
             diff = prediction.getYErr()[i] - yErrExpected[i];
             assertTrue(Math.abs(diff) < tol);
         }
+        
     }
-
 
     public void estSampleFrom() throws NotConvergedException, NoSuchAlgorithmException {
 

@@ -1,6 +1,7 @@
 package algorithms.statistics;
 
 public class ModelFit {
+    // precision matrix is inverse of the covariance matrix
     // sInv is precision
     // s is covariance
     protected double[][] phiX;
