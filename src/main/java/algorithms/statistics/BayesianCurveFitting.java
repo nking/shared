@@ -6,6 +6,7 @@ import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.NotConvergedException;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -145,8 +146,7 @@ public class BayesianCurveFitting {
     }
 
     /**
-     * calculate
-     * the likelihood and the prior are both Gaussian.
+     * predict the labels given the model and x test data.
      * @param fit model fit made from training data
      * @param phiXTest x value feature matrix for which to predict target t values.
      * @return
@@ -192,6 +192,71 @@ public class BayesianCurveFitting {
            unit standard normal distribution.
         </pre>
         */
+
+        //from Wasserman's "All of Statistics", 2.43 Theorem:
+        //N(0, I) ~ Σ^(−1/2) * (X−μ)
+
+        ModelPrediction model = new ModelPrediction();
+        model.yFit = y;
+        model.yErr = yErr;
+
+        return model;
+    }
+
+    /**
+     * predict values for test feature matrix phiXTest using randomly generated points
+     * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     * @return nSamples predicted from random samples of the model at the points from phiXTest.
+     * the return matrix size is [nSamples X phiXTest.length] so that each row is a sample
+     * generated for phiXTest.
+     */
+    public static double[][] predictRandomSample(ModelFit fit, double[][] phiXTest, int nSamples) throws NotConvergedException, NoSuchAlgorithmException {
+
+        // [nSamples X fit.mean.length] = [nSamples X (M+1))]
+        double[][] w = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, fit.cov, nSamples);
+
+        // [phiXTest is [N2 X (M+1)]
+        // [N2 X (M+1)] [(M+1) X nSamples]
+        double[][] y = MatrixUtil.multiply(phiXTest, MatrixUtil.transpose(w));
+
+        return MatrixUtil.transpose(y);
+    }
+
+    /**
+     * predict values for test feature matrix phiXTest using randomly generated points
+     * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     * @return a sample predicted from random samples of the model at the points from phiXTest.
+     */
+    public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest) throws NotConvergedException, NoSuchAlgorithmException {
+
+        //  [(M+1))]
+        double[] u = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, fit.cov);
+
+        // [phiXTest is [N2 X (M+1)]
+        // [N2 X (M+1)] [(M+1) X 1]
+        double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, u);
+
+        //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
+        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);
+        //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
+        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);
+
+        // propagation of errors:
+        // sum ys1 along rows, add 1/beta, take sqrt:
+        double[] yErr = new double[ys1.length];
+        int j;
+        for (int i = 0; i < ys1.length; ++i) {
+            for (j = 0; j < ys1[i].length; ++j) {
+                yErr[i] += ys1[i][j];
+            }
+            yErr[i] += (1./fit.beta);
+            yErr[i] = Math.sqrt(yErr[i]);
+        }
+        log.log(java.util.logging.Level.FINE, String.format("yErr=\n%s", FormatArray.toString(yErr, "%.4f")));
 
         //from Wasserman's "All of Statistics", 2.43 Theorem:
         //N(0, I) ~ Σ^(−1/2) * (X−μ)
@@ -251,7 +316,7 @@ public class BayesianCurveFitting {
      * @param m order of polynomial fit
      * @return a matrix where each column is x to the order j where j is the column number
      * and ranges from 0 to m, inclusive.
-     * size is [(M+1) X N] where M is m and N is x.length.
+     * output size is [N X (M+1)] where M is m and N is x.length.
      */
     public static double[][] generatePhiX(double[] x, int m) {
 

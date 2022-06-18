@@ -4,6 +4,7 @@ import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import algorithms.misc.MiscMath0;
 import no.uib.cipr.matrix.*;
@@ -15,6 +16,27 @@ import no.uib.cipr.matrix.*;
  * @author nichole
  */
 public class MultivariateNormalDistribution {
+
+    /**
+     * sample from a multivariate normal distribution N(m⃗, K) following
+     * Strang's SVD in machine learning, that is using sqrt(K) for a factor to
+     * the generated unit standard normal distribution.
+     * @param m vector of means for multivariate distribution.
+     * @param k double array of covariance matrix for multivariate distribution.
+     * must be a symmetric positive definite matrix.
+     * @param nSamples number of samples to generate of length m.length.  e.g. if m is length 2 and
+     *                   sampleSize is 3, the method returns 3 rows of length 2.
+     * @return a fair sampling from a normal distribution N(M, K) os length sampleSize.
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[][] sampleRandomlyFrom0(double[] m, double[][] k, int nSamples) throws NotConvergedException, NoSuchAlgorithmException {
+
+        double[][] out = new double[nSamples][];
+        for (int i = 0; i < nSamples; ++i) {
+            out[i] = sampleRandomlyFrom0(m, k);
+        }
+        return out;
+    }
 
     /**
      * sample from a multivariate normal distribution N(m⃗, K) following
