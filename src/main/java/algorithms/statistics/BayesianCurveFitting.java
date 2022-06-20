@@ -2,12 +2,8 @@ package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
 import algorithms.util.FormatArray;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.NotConvergedException;
-
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
