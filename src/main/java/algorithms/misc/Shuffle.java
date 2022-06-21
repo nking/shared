@@ -15,8 +15,9 @@ import java.security.SecureRandom;
 public class Shuffle {
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is poisson
-     * due to use of the random number generator bounded next integer method.
+     * randomly shuffle the cards.
+     * as the number of points drawn from random number generator bounded next int method
+     * increases, the uniform distribution approaches a Gaussian distribution.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @throws NoSuchAlgorithmException 
@@ -32,8 +33,9 @@ public class Shuffle {
     }
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is poisson
-     * due to use of the random number generator bounded next integer method.
+     * randomly shuffle the cards.
+     * as the number of points drawn from random number generator bounded next int method
+     * increases, the uniform distribution approaches a Gaussian distribution.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @throws NoSuchAlgorithmException 
@@ -49,8 +51,9 @@ public class Shuffle {
     }
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is poisson
-     * due to use of the random number generator bounded next integer method.
+     * randomly shuffle the cards.
+     * as the number of points drawn from random number generator bounded next int method
+     * increases, the uniform distribution approaches a Gaussian distribution.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @param rand 
@@ -70,8 +73,9 @@ public class Shuffle {
     }
     
     /**
-     * randomly shuffle the cards.  the distribution of permutations is poisson
-     * due to use of the random number generator bounded next integer method.
+     * randomly shuffle the cards.
+     * as the number of points drawn from random number generator bounded next int method
+     * increases, the uniform distribution approaches a Gaussian distribution.
      * runtime complexity is O(n) where n = a.length.
      * @param a
      * @param rand 

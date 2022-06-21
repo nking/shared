@@ -301,7 +301,7 @@ public class BayesianCurveFitting {
     }
 
     /**
-     * create a matrix generated from vector: φi(x) = xi for i = 0,...,M.
+     * create a design matrix generated from vector: φi(x) = xi for i = 0,...,M.
      <pre>
      ɸ(x)=  | x[0]    (x[0])^1    ...  (x[0])^m    |
             | x[1]    (x[1])^1    ...  (x[1])^m    |

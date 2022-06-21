@@ -2,11 +2,14 @@ package algorithms.statistics;
 
 import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.NotConvergedException;
+import thirdparty.scipy.optimization.ElasticNet;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -77,7 +80,51 @@ public class BayesianCurveFittingTest extends TestCase {
             diff = prediction.getYErr()[i] - yErrExpected[i];
             assertTrue(Math.abs(diff) < tol);
         }
-        
+
+        // do the same for the zero-centered data.  note that they haven't been divided by standard deviation:
+        double[][] phiXC = BayesianCurveFitting.generatePhiX(xTrainC, m);
+        double[][] phiXTestC = BayesianCurveFitting.generatePhiX(xTestC, m);
+        ModelFit fitC = BayesianCurveFitting.fit(phiXC, t, alpha, beta);
+        ModelPrediction predictionC = BayesianCurveFitting.predict(fitC, phiXTestC);
+
+        for (int i = 0; i < yExpected.length; ++i) {
+            diff = predictionC.getYFit()[i] - yExpected[i];
+            assertTrue(Math.abs(diff) < 2.5*prediction.getYErr()[i]);
+        }
+
+        ModelPrediction predictionRandom = BayesianCurveFitting.predictRandomSample(fitC, phiXTestC);
+        for (int i = 0; i < yExpected.length; ++i) {
+            diff = predictionRandom.getYFit()[i] - yExpected[i];
+            assertTrue(Math.abs(diff) < 2.5*prediction.getYErr()[i]);
+        }
+
+        // to see which of the (m+1) coefficients fit the data best, see the non-zero coefficients in:
+        double alphaE =1e-15;//0.01
+        double l1_ratio = 0.1;
+        ElasticNet en = new ElasticNet(alphaE, l1_ratio);
+        en.fit(phiX, t);
+        double[] coef = en.getCoef();
+        System.out.println("coef=" + Arrays.toString(coef));
+
+        // for alpha=0.01, l1_ratio=0.7:
+        //coef=[0.0, -0.7765111080212174, -1.5473265172779087, -0.0, -0.0, 0.0, 0.0, 0.5574769984932583, 1.071223968473462]
+        //    [junit] -
+        // alpha=1E-15, l1=0.1-0.9:
+        //coef=[0.0, 5.788417822392037, -17.620929974823493, 5.174997856609265, 5.4221837073367585, 2.6105252550572944, 0.41117118941185976, -0.7737875928696337, -1.2109419254553988]
+
+        /*
+        https://towardsdatascience.com/ridge-lasso-and-elasticnet-regression-b1f9c00ea3a3
+        LASSO (L1 regularization)
+            regularization term penalizes absolute value of the coefficients
+            sets irrelevant values to 0
+            might remove too many features in your model
+        Ridge regression (L2 regularization)
+            penalizes the size (square of the magnitude) of the regression coefficients
+            enforces the B (slope/partial slope) coefficients to be lower, but not 0
+            does not remove irrelevant features, but minimizes their impact
+
+         */
+
     }
 
     public void estSampleFrom() throws NotConvergedException, NoSuchAlgorithmException {
