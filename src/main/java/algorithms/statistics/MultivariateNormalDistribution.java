@@ -45,6 +45,7 @@ public class MultivariateNormalDistribution {
      * @param m vector of means for multivariate distribution.
      * @param k double array of covariance matrix for multivariate distribution.
      * must be a symmetric positive definite matrix.
+     *          If it isn't, use MatrixUtil.nearestPositiveSemidefiniteToA() first.
      * @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
@@ -92,7 +93,8 @@ public class MultivariateNormalDistribution {
      * </pre>
      * @param m vector of means for multivariate distribution.
      * @param k double array of covariance matrix for multivariate distribution.
-     * must be a symmetric positive definite matrix.
+     *          k should be a symmetric positive definite matrix.
+     *          if it isn't, use MatrixUtil.nearestPositiveSemidefiniteToA() first.
      * @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
@@ -288,7 +290,7 @@ public class MultivariateNormalDistribution {
 
         //System.out.println("u="+Arrays.toString(u));
 
-        double[][] k2 = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(k, 1e-7);
+        double[][] k2 = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(k, 1.e-11);
         /*
         for (i = 0; i < n; ++i) {
             k[i][i] += 0.0001;

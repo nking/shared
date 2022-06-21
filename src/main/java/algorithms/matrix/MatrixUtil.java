@@ -2707,7 +2707,7 @@ public class MatrixUtil {
         
         // TODO: fix the test for symmetric and use it here
          
-        // uses the Frobenius norm as a distinace.  notation: ||A||_F
+        // uses the Frobenius norm as a distiance.  notation: ||A||_F
         
         // spectral decomposition 
         //  X = Q * diag(tau_i) * Q^T
@@ -2758,10 +2758,11 @@ public class MatrixUtil {
     /**
      * Given a matrix a that is not necessarily symmetric,
      * and a nonnegative number eps, find the
-     * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
+     * nearest symmetric positive definite matrices with eigenvalues at least eps.
      * Note that this method attempts to make it symmetric positive definite by
      * adding a small perturbation of size smallest eigenvalue to the diagonal
-     * of the resulting matrix.
+     * of the resulting matrix.  The result satisfies the broader, non-negative
+     * definition of positive semi-definite matrix.
      * <pre>
      * References:
      * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
@@ -3158,7 +3159,8 @@ public class MatrixUtil {
      * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
      * Also see Chap 7.4 of "Introduction to LinearAlgebra" by Strang, the section
      * on Polar Decomposition.
-     * @param a a square symmetric non-negative definite matrix.
+     * @param a a square symmetric positive definite matrix.  If the matrix is not
+     *          positive definite matrix, use nearestPositiveSemidefiniteToA() first.
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
