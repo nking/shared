@@ -354,6 +354,7 @@ public class BayesianCurveFitting {
         //     corrected by the errata to: S^-1=alpha*I + beta * summation_from_n=1_to_N(phi(x_n) * phi(x_n)^T)
         //     the equation is corrected in Bishop's eqn 3.51 and in the
         // ctgk github PRML CODE : S^-1=alpha*I + beta * (xT*x)
+        // Note: Gram Matrix is in section 6.1 of Bishop's PRML.
 
         double[][] p1 = MatrixUtil.multiply(xT, x);
         MatrixUtil.multiply(p1, beta);
