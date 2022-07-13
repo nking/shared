@@ -2,7 +2,6 @@ package algorithms.statistics;
 
 import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
-import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.NotConvergedException;
@@ -57,8 +56,8 @@ public class BayesianCurveFittingTest extends TestCase {
         final double beta = 11.1;
         final int m = 8;//9;
 
-        double[][] phiX = BayesianCurveFitting.generatePhiX(xTrain, m);
-        double[][] phiXTest = BayesianCurveFitting.generatePhiX(xTest, m);
+        double[][] phiX = BayesianCurveFitting.generatePolynomialPhiX(xTrain, m);
+        double[][] phiXTest = BayesianCurveFitting.generatePolynomialPhiX(xTest, m);
 
         ModelFit fit = BayesianCurveFitting.fit(phiX, t, alpha, beta);
 
@@ -82,8 +81,8 @@ public class BayesianCurveFittingTest extends TestCase {
         }
 
         // do the same for the zero-centered data.  note that they haven't been divided by standard deviation:
-        double[][] phiXC = BayesianCurveFitting.generatePhiX(xTrainC, m);
-        double[][] phiXTestC = BayesianCurveFitting.generatePhiX(xTestC, m);
+        double[][] phiXC = BayesianCurveFitting.generatePolynomialPhiX(xTrainC, m);
+        double[][] phiXTestC = BayesianCurveFitting.generatePolynomialPhiX(xTestC, m);
         ModelFit fitC = BayesianCurveFitting.fit(phiXC, t, alpha, beta);
         ModelPrediction predictionC = BayesianCurveFitting.predict(fitC, phiXTestC);
 

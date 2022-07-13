@@ -2,6 +2,17 @@
     to the BayesianCurveFitting method
     y = x * MultivariateNormalDistribution.sampleRandomlyFrom0
 
+-- impl kernel pca
+-- impl  Kernel-k-means clustering
+-- impl nonlinear component analysis
+-- consider implementing
+   Approximating a Gram Matrix for Improved Kernel-Based Learning 
+   Drineas and Mahoney 
+   Auer and Meir (Eds.): COLT 2005, LNAI 3559, pp. 323–337, 2005 
+-- ** consider implementing
+   Spectral Grouping Using the Nystrom Method
+   Fowlkes, Belongie, Chung, and Malik
+
 -- implement the pseudo-determinant
    from wikipedia:
    In linear algebra and statistics, the pseudo-determinant[1] is the product of all 
@@ -21,6 +32,9 @@
       using a YFastTrie when log{w} le sqrt{log{n}}, one obtains an O(n) space data structure 
       that can implement the find(x) operation in O(sqrt{log{n}}) time.
 -- consider dynamic graph data structures (Henzinger 2000)
+
+-- consider implementing optimizer Adam:
+   https://machinelearningmastery.com/adam-optimization-from-scratch/
 
 -- consider changing java compile source to 1.11
    -- then update libraries
