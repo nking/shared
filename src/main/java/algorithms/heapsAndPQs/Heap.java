@@ -373,6 +373,7 @@ public class Heap {
         return writer;
     }
 
+    @SuppressWarnings({"deprecation"})
     @Override
     protected void finalize() throws Throwable {
         try {

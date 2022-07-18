@@ -73,7 +73,7 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 	 */
 	protected S newNode() {
 		try {
-            S u = (S)sampleNode.getClass().newInstance();
+            S u = (S)sampleNode.getClass().getDeclaredConstructor().newInstance();
 			u.parent = u.child[0] = u.child[1] = null;
 			return u;
 		} catch (Exception e) {
