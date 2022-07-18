@@ -4,7 +4,8 @@
       - prior
       - initial estimates of parameters
       - for optimization, need to impl or use an API
-        - google optimization api
+        - google optimization apis
+            http://ceres-solver.org/
             https://developers.google.com/optimization/install
         - if using an API, might need to export to another project:
             - prml in github by ctgk (python)
