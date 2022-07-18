@@ -1,7 +1,6 @@
--- add the multivariate sample predict
-    to the BayesianCurveFitting method
-    y = x * MultivariateNormalDistribution.sampleRandomlyFrom0
-
+-- impl a GIST descriptor
+-- use of CNN for images and audio.
+-- use of Mel-frequency cepstrum for audio
 -- impl kernel pca
 -- impl  Kernel-k-means clustering
 -- impl nonlinear component analysis
@@ -12,6 +11,7 @@
 -- ** consider implementing
    Spectral Grouping Using the Nystrom Method
    Fowlkes, Belongie, Chung, and Malik
+-- return to MMDS: TF-IDF and vectors compared to n-gram
 
 -- implement the pseudo-determinant
    from wikipedia:
@@ -25,7 +25,7 @@
    computed as the product of the non-zero singular values. If all singular values are zero, 
    then the pseudo-determinant is 1.
    
--- implement a fusion tree and add it to the heap wrapper.
+-- implement a fusion tree and add logic to heap wrapper for it
    from ods:
       fusion tree can store n w-bit integers in O(n) space so that the find(x) operation runs in 
       O(log{n}/log{w}) time. By using a fusion tree when log(w) > sqrt{log{n}} and 
