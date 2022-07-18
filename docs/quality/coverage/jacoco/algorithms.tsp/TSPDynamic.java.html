@@ -66,7 +66,7 @@ see AbstractTSP for details about the keys used for memo.
 
  * @author nichole
  */
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">public class TSPDynamic extends AbstractTSP {</span>
+<span class="fc" id="L69">public class TSPDynamic extends AbstractTSP {</span>
     
     /**
      * 
@@ -125,7 +125,7 @@ see AbstractTSP for details about the keys used for memo.
 <span class="fc" id="L125">            bitstring = memoKeys[i];</span>
 <span class="fc" id="L126">            sum = memo.get(bitstring);</span>
 
-<span class="pc bpc" id="L128" title="3 of 4 branches missed.">            assert (stack.isEmpty());</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">            assert (stack.isEmpty());</span>
 
 <span class="fc" id="L130">            stack.add(new StackP(bitstring, sum, nNodesRemaining));</span>
 
@@ -143,11 +143,11 @@ see AbstractTSP for details about the keys used for memo.
                 
 <span class="fc" id="L144">                TIntList remaining = new TIntArrayList();</span>
 <span class="fc" id="L145">                findUnsetBitsBase10(bitstring2, remaining);</span>
-<span class="pc bpc" id="L146" title="3 of 4 branches missed.">                assert (nNodesRemaining2 == remaining.size());</span>
+<span class="pc bnc" id="L146" title="All 2 branches missed.">                assert (nNodesRemaining2 == remaining.size());</span>
 <span class="fc" id="L147">                int nNodesSet2 = (dist.length - 1) - nNodesRemaining2;</span>
                 
 <span class="fc" id="L149">                k2 = nNodesSet2;// number of bits in path bitstring2</span>
-<span class="pc bpc" id="L150" title="3 of 4 branches missed.">                assert(k2 == this.numberOfSetNodes(bitstring2));</span>
+<span class="pc bnc" id="L150" title="All 2 branches missed.">                assert(k2 == this.numberOfSetNodes(bitstring2));</span>
                              
 <span class="pc bpc" id="L152" title="1 of 2 branches missed.">                if (nNodesRemaining2 &lt;= k2) {</span>
 <span class="fc" id="L153">                    stackDecr.add(new StackP(bitstring2, sum2, nNodesRemaining2));                 </span>
@@ -178,11 +178,11 @@ see AbstractTSP for details about the keys used for memo.
 
 <span class="fc" id="L179">            TIntList remaining = new TIntArrayList();</span>
 <span class="fc" id="L180">            findUnsetBitsBase10(bitstring2, remaining);</span>
-<span class="pc bpc" id="L181" title="3 of 4 branches missed.">            assert (nNodesRemaining2 == remaining.size());</span>
+<span class="pc bnc" id="L181" title="All 2 branches missed.">            assert (nNodesRemaining2 == remaining.size());</span>
 <span class="fc" id="L182">            int nNodesSet2 = (dist.length - 1) - nNodesRemaining2;</span>
             
 <span class="fc" id="L184">            k2 = nNodesSet2;// number of bits in path bitstring2</span>
-<span class="pc bpc" id="L185" title="3 of 4 branches missed.">            assert(k2 == this.numberOfSetNodes(bitstring2));</span>
+<span class="pc bnc" id="L185" title="All 2 branches missed.">            assert(k2 == this.numberOfSetNodes(bitstring2));</span>
             
             // find the largest subset multiple of k0 for the number of unset bits
 <span class="pc bpc" id="L188" title="1 of 4 branches missed.">            while ((k2 &gt; k0) &amp;&amp; (k2 &gt;= nNodesRemaining)) {</span>
@@ -200,4 +200,4 @@ see AbstractTSP for details about the keys used for memo.
 <span class="nc" id="L200">        }</span>
 <span class="fc" id="L201">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -30,7 +30,7 @@ import java.util.Arrays;
 
  * @author nichole
  */
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">public class UnivariateDistance {</span>
+<span class="pc" id="L33">public class UnivariateDistance {</span>
     
     /**
      * calculates the unbiased distance covariance between univariate vectors x and y as
@@ -97,7 +97,7 @@ import java.util.Arrays;
         */
 
 <span class="fc" id="L99">        double[] si = MiscMath0.cumulativeSum(x);</span>
-<span class="pc bpc" id="L100" title="3 of 4 branches missed.">        assert (si.length == n);</span>
+<span class="pc bnc" id="L100" title="All 2 branches missed.">        assert (si.length == n);</span>
 
 <span class="fc" id="L102">        double s = si[n - 1];</span>
 
@@ -297,9 +297,9 @@ import java.util.Arrays;
         //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
         //              [1][n] * [n][1] = [1][1]
 <span class="fc" id="L299">        double[] mx = MiscMath0.mean(x, 1);</span>
-<span class="pc bpc" id="L300" title="3 of 4 branches missed.">        assert (mx.length == 1);</span>
+<span class="pc bnc" id="L300" title="All 2 branches missed.">        assert (mx.length == 1);</span>
 <span class="fc" id="L301">        double[] my = MiscMath0.mean(y, 1);</span>
-<span class="pc bpc" id="L302" title="3 of 4 branches missed.">        assert (my.length == 1);</span>
+<span class="pc bnc" id="L302" title="All 2 branches missed.">        assert (my.length == 1);</span>
 <span class="fc" id="L303">        double[] xz = Arrays.copyOf(x, x.length);</span>
 <span class="fc" id="L304">        double[] yz = Arrays.copyOf(y, y.length);</span>
 <span class="fc bfc" id="L305" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
@@ -989,4 +989,4 @@ import java.util.Arrays;
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

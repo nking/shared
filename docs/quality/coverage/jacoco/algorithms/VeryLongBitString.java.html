@@ -21,7 +21,7 @@ import java.util.Arrays;
   
  * @author nichole
  */
-<span class="pc bpc" id="L24" title="1 of 2 branches missed.">public final class VeryLongBitString {</span>
+<span class="fc" id="L24">public final class VeryLongBitString {</span>
     
     private final long[] bitstring;
     
@@ -77,8 +77,8 @@ import java.util.Arrays;
         
 <span class="fc" id="L78">        int bitIdx = getBitIdx(nthBit, idx);</span>
         
-<span class="pc bpc" id="L80" title="3 of 4 branches missed.">        assert(bitIdx &lt; 64);</span>
-<span class="pc bpc" id="L81" title="3 of 4 branches missed.">        assert(bitIdx &gt;= 0);</span>
+<span class="pc bnc" id="L80" title="All 2 branches missed.">        assert(bitIdx &lt; 64);</span>
+<span class="pc bnc" id="L81" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
         
         // test bit is not set
 <span class="fc bfc" id="L84" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0) {</span>
@@ -239,7 +239,7 @@ import java.util.Arrays;
 <span class="fc bfc" id="L239" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
 <span class="fc" id="L240">            n += Long.bitCount(bitstring[i]);</span>
         }
-<span class="pc bpc" id="L242" title="3 of 4 branches missed.">        assert(n == nSetBits);</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">        assert(n == nSetBits);</span>
         
 <span class="fc" id="L244">        int[] setBits = new int[n];</span>
 <span class="fc" id="L245">        int n2 = 0;</span>
@@ -256,7 +256,7 @@ import java.util.Arrays;
             }
         }
         
-<span class="pc bpc" id="L259" title="3 of 4 branches missed.">        assert(n == n2);</span>
+<span class="pc bnc" id="L259" title="All 2 branches missed.">        assert(n == n2);</span>
                 
 <span class="fc" id="L261">        return setBits;</span>
     }
@@ -648,4 +648,4 @@ import java.util.Arrays;
 <span class="nc" id="L648">        return -1;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

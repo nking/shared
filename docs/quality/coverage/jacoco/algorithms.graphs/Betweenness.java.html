@@ -72,7 +72,7 @@ import java.util.logging.Logger;
     
  * @author nichole
  */
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">public class Betweenness {</span>
+<span class="fc" id="L75">public class Betweenness {</span>
     
 <span class="fc" id="L77">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
     
@@ -219,7 +219,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L219">                }</span>
 <span class="fc" id="L220">                color[u] = 2;</span>
 <span class="fc" id="L221">            }</span>
-<span class="pc bpc" id="L222" title="3 of 4 branches missed.">            assert(queue.isEmpty());</span>
+<span class="pc bnc" id="L222" title="All 2 branches missed.">            assert(queue.isEmpty());</span>
          
             //add weights from previous root traversals
 <span class="fc bfc" id="L225" title="All 2 branches covered.">            if (rootIndexes.length &gt; 1) {</span>
@@ -307,7 +307,7 @@ import java.util.logging.Logger;
             //update the total tree weights with current
 <span class="fc bfc" id="L308" title="All 2 branches covered.">            for (int ii = 0; ii &lt; w.length; ++ii) {</span>
 <span class="fc bfc" id="L309" title="All 2 branches covered.">                if (w[ii] &gt; 0) {</span>
-<span class="pc bpc" id="L310" title="3 of 4 branches missed.">                    assert(wG[ii] &lt;= w[ii]);</span>
+<span class="pc bnc" id="L310" title="All 2 branches missed.">                    assert(wG[ii] &lt;= w[ii]);</span>
 <span class="fc" id="L311">                    wG[ii] = w[ii];</span>
                 }
             }
@@ -453,7 +453,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L453">                }</span>
 <span class="fc" id="L454">                color[u] = 2;</span>
 <span class="fc" id="L455">            }</span>
-<span class="pc bpc" id="L456" title="3 of 4 branches missed.">            assert(queue.isEmpty());</span>
+<span class="pc bnc" id="L456" title="All 2 branches missed.">            assert(queue.isEmpty());</span>
          
             //add weights from previous root traversals
 <span class="pc bpc" id="L459" title="1 of 2 branches missed.">            if (rootIndexes.length &gt; 1) {</span>
@@ -484,7 +484,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L484">                        enqd.add(i);</span>
                     }
 <span class="fc" id="L486">                    e = (float) w[i] / (float) w[t];</span>
-<span class="pc bpc" id="L487" title="3 of 4 branches missed.">                    assert(d[i] &lt; d[t]);</span>
+<span class="pc bnc" id="L487" title="All 2 branches missed.">                    assert(d[i] &lt; d[t]);</span>
 <span class="fc" id="L488">                    uv = new PairInt(i, t);</span>
 <span class="fc" id="L489">                    wEdges.put(uv, e);</span>
 <span class="fc" id="L490">                    log.log(logLevel, String.format(&quot;  edge=(%d, %d) w=%.3e\n&quot;, i, t, e));</span>
@@ -512,8 +512,8 @@ import java.util.logging.Logger;
 <span class="fc" id="L512">                    int j = jNode.getKey();</span>
 <span class="fc bfc" id="L513" title="All 2 branches covered.">                    if (d[i] &lt; d[j]) {</span>
 <span class="fc" id="L514">                        ij = new PairInt(i, j);</span>
-<span class="pc bpc" id="L515" title="3 of 4 branches missed.">                        assert (d[i] &lt; d[j]);</span>
-<span class="pc bpc" id="L516" title="3 of 4 branches missed.">                        assert (wEdges.containsKey(ij));</span>
+<span class="pc bnc" id="L515" title="All 2 branches missed.">                        assert (d[i] &lt; d[j]);</span>
+<span class="pc bnc" id="L516" title="All 2 branches missed.">                        assert (wEdges.containsKey(ij));</span>
 <span class="fc" id="L517">                        e += wEdges.get(ij);</span>
 <span class="fc" id="L518">                        log.log(logLevel, String.format(&quot;  + (w[%d]/w[%d]=%.3f)&quot;, i, j, wEdges.get(ij)));</span>
                     }
@@ -530,7 +530,7 @@ import java.util.logging.Logger;
                     }
 <span class="fc" id="L531">                    log.log(logLevel, String.format(&quot;  parent=d[%d]=%d,  child=d[%d]=%d\n&quot;, </span>
 <span class="fc" id="L532">                        ip, d[ip], i, d[i]));</span>
-<span class="pc bpc" id="L533" title="3 of 4 branches missed.">                    assert(d[ip] &lt; d[i]);</span>
+<span class="pc bnc" id="L533" title="All 2 branches missed.">                    assert(d[ip] &lt; d[i]);</span>
 <span class="fc" id="L534">                    e2 = (float) w[ip] / (float) w[i];</span>
 <span class="fc" id="L535">                    e2 *= e;</span>
 <span class="fc" id="L536">                    log.log(logLevel, String.format(&quot;    e=(%.3f)*(w[%d]/w[%d]=%.3f)\n&quot;, e, ip, i, (float) w[ip] / (float) w[i]));</span>
@@ -543,7 +543,7 @@ import java.util.logging.Logger;
             //update the total tree weights with current
 <span class="fc bfc" id="L544" title="All 2 branches covered.">            for (int ii = 0; ii &lt; w.length; ++ii) {</span>
 <span class="pc bpc" id="L545" title="1 of 2 branches missed.">                if (w[ii] &gt; 0) {</span>
-<span class="pc bpc" id="L546" title="3 of 4 branches missed.">                    assert(wG[ii] &lt;= w[ii]);</span>
+<span class="pc bnc" id="L546" title="All 2 branches missed.">                    assert(wG[ii] &lt;= w[ii]);</span>
 <span class="fc" id="L547">                    wG[ii] = w[ii];</span>
                 }
             }
@@ -675,4 +675,4 @@ import java.util.logging.Logger;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

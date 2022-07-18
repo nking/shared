@@ -664,8 +664,8 @@ public class ElasticNet {
             //dual_gaps[i] = dual_gap_
 <span class="fc" id="L665">            dualGaps2[i] = dualGap;</span>
 
-<span class="pc bpc" id="L667" title="1 of 2 branches missed.">            if (dualGap &gt; tol2) {</span>
-<span class="nc" id="L668">                log.warning(&quot;Objective did not converge.&quot; +</span>
+<span class="fc bfc" id="L667" title="All 2 branches covered.">            if (dualGap &gt; tol2) {</span>
+<span class="fc" id="L668">                log.warning(&quot;Objective did not converge.&quot; +</span>
                     &quot; You might want&quot; +
                     &quot; to increase the number of iterations&quot;);
             }
@@ -883,7 +883,7 @@ public class ElasticNet {
         double t;
 <span class="fc" id="L884">        double gap = Double.NEGATIVE_INFINITY;</span>
 
-<span class="pc bpc" id="L886" title="1 of 2 branches missed.">        for (nIter2 = 0; nIter2 &lt; nMaxIter2; ++nIter2) {</span>
+<span class="fc bfc" id="L886" title="All 2 branches covered.">        for (nIter2 = 0; nIter2 &lt; nMaxIter2; ++nIter2) {</span>
 <span class="fc" id="L887">            double w_max = 0.0;</span>
 <span class="fc" id="L888">            double d_w_max = 0.0;</span>
 
@@ -896,8 +896,8 @@ public class ElasticNet {
 <span class="fc" id="L896">                    ii = fIter;</span>
                 }
 
-<span class="pc bpc" id="L899" title="1 of 2 branches missed.">                if (normColsX[ii] == 0.0) {</span>
-<span class="nc" id="L900">                    continue;</span>
+<span class="fc bfc" id="L899" title="All 2 branches covered.">                if (normColsX[ii] == 0.0) {</span>
+<span class="fc" id="L900">                    continue;</span>
                 }
 
                 // Store previous value
@@ -946,7 +946,7 @@ public class ElasticNet {
                 }
             }
 
-<span class="pc bpc" id="L949" title="2 of 6 branches missed.">            if (w_max == 0.0 ||</span>
+<span class="pc bpc" id="L949" title="1 of 6 branches missed.">            if (w_max == 0.0 ||</span>
                 d_w_max / w_max &lt; d_w_tol ||
                 nIter2 == nMaxIter2 - 1) {
                 //# the biggest coordinate update of this iteration was smaller
@@ -1102,4 +1102,4 @@ public class ElasticNet {
 <span class="fc" id="L1102">        return nIter;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

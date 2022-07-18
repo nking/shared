@@ -55,7 +55,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  
  * @author nichole
  */
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">public class DegeneracyOrderingMatulaBeck {</span>
+<span class="pc" id="L58">public class DegeneracyOrderingMatulaBeck {</span>
     
     /**
      * following
@@ -117,7 +117,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
             
 <span class="fc" id="L118">            k = Math.max(k, i);</span>
             
-<span class="pc bpc" id="L120" title="3 of 4 branches missed.">            assert(!outSet.contains(i));</span>
+<span class="pc bnc" id="L120" title="All 2 branches missed.">            assert(!outSet.contains(i));</span>
             
 <span class="fc" id="L122">            bucket = bQ.getBucket(i);</span>
             
@@ -143,7 +143,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 <span class="fc" id="L143">                    continue;</span>
                 }
                 // user should have created adjMap with a key for every vertex
-<span class="pc bpc" id="L146" title="3 of 4 branches missed.">                assert(adjMap.containsKey(w));</span>
+<span class="pc bnc" id="L146" title="All 2 branches missed.">                assert(adjMap.containsKey(w));</span>
                 // count neighbors of w not already in L
 <span class="fc" id="L148">                nW = 0;</span>
 <span class="pc bpc" id="L149" title="1 of 2 branches missed.">                if (adjMap.get(w).size() &gt; 0) {</span>
@@ -653,4 +653,4 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

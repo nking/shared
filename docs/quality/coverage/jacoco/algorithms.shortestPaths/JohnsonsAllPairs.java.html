@@ -19,7 +19,7 @@ import java.util.Arrays;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L22" title="1 of 2 branches missed.">public class JohnsonsAllPairs {</span>
+<span class="fc" id="L22">public class JohnsonsAllPairs {</span>
     
     /**
      * graph where the main index of the object array
@@ -149,8 +149,8 @@ import java.util.Arrays;
 <span class="nc" id="L149">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
                     + u + &quot; to &quot; + v);
                 }
-<span class="pc bpc" id="L152" title="3 of 4 branches missed.">                assert(hv[u] &lt; sentinel);</span>
-<span class="pc bpc" id="L153" title="3 of 4 branches missed.">                assert(hv[v] &lt; sentinel);</span>
+<span class="pc bnc" id="L152" title="All 2 branches missed.">                assert(hv[u] &lt; sentinel);</span>
+<span class="pc bnc" id="L153" title="All 2 branches missed.">                assert(hv[v] &lt; sentinel);</span>
 <span class="fc" id="L154">                int wUV = uWeights.get(v) + hv[u] - hv[v];</span>
                 
 <span class="fc" id="L156">                uWeights.put(v, wUV);</span>
@@ -176,8 +176,8 @@ import java.util.Arrays;
 
 <span class="fc" id="L177">                int v2 = v2Node.getKey();</span>
 
-<span class="pc bpc" id="L179" title="3 of 4 branches missed.">                assert(hv[v2] &lt; sentinel);</span>
-<span class="pc bpc" id="L180" title="3 of 4 branches missed.">                assert(hv[u] &lt; sentinel);</span>
+<span class="pc bnc" id="L179" title="All 2 branches missed.">                assert(hv[v2] &lt; sentinel);</span>
+<span class="pc bnc" id="L180" title="All 2 branches missed.">                assert(hv[u] &lt; sentinel);</span>
                 
                 //do d(u,v) = delta_hat(u, v) + h(v) - h(u)
                 //dist[u][v2] = dijkstras.dist[v2] + hv[v2] - hv[u];
@@ -302,4 +302,4 @@ import java.util.Arrays;
     }
   
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

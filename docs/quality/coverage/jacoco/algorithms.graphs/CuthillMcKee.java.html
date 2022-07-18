@@ -37,7 +37,7 @@ massive distributed-memory parallelism – the primary topic of interest of this
 TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
 @author nichole
  */
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">public class CuthillMcKee {</span>
+<span class="pc" id="L40">public class CuthillMcKee {</span>
     
     /**
      * given the adjacency map as pairs of edges, calculate the
@@ -174,7 +174,7 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
 <span class="pc bpc" id="L174" title="1 of 2 branches missed.">            if (q.isEmpty()) {</span>
                 // find minimum degree vertex which is not in outSet
 <span class="nc" id="L176">                pIdx = findMinDegreeVertex(vertexDegreeMap, outSet);</span>
-<span class="nc bnc" id="L177" title="All 4 branches missed.">                assert(pIdx &gt; -1);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">                assert(pIdx &gt; -1);</span>
 <span class="nc" id="L178">                out[oIdx] = pIdx;</span>
 <span class="nc" id="L179">                revOut[pIdx] = oIdx;</span>
 <span class="nc" id="L180">                outSet.add(pIdx);</span>
@@ -432,4 +432,4 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

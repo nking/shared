@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BayesianCurveFitting.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">BayesianCurveFitting.java</span></div><h1>BayesianCurveFitting.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+import algorithms.matrix.MatrixUtil;
+import algorithms.util.FormatArray;
+import no.uib.cipr.matrix.NotConvergedException;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
+
+/**
+ * Class to preform Bayesian regression prediction of data points given a test data set.
+ * &lt;pre&gt;
+ *     Usage:
+ *     The training data and test data are both transformed into a polynomial order feature matrix.
+ *
+ *     The training data are modeled using a Gaussian prior and likelihood.
+ *
+ *     to generate the training data polynomial feature matrix:
+ *         double[][] phiX = BayesianCurveFitting.generatePhiX(xTrain, m);
+ *
+ *     to generate the test polynomial feature matrix:
+ *         double[][] phiXTest = BayesianCurveFitting.generatePhiX(xTest, m);
+ *
+ *     the labels for the training data are double[] t;
+ *
+ *     perform the regression fit:
+ *         ModelFit fit = BayesianCurveFitting.fit(phiX, t, alpha, beta);
+ *
+ *     predict the labels, given phiXTest:
+ *         ModelPrediction prediction = BayesianCurveFitting.predict(fit, phiXTest);
+  &lt;/pre&gt;
+ * The methods are adapted from github project PRML code
+ * https://github.com/ctgk/PRML/blob/main/prml/linear/_bayesian_regression.py
+ *
+ * Their license is:
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018 ctgk
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+<span class="nc" id="L58">public class BayesianCurveFitting {</span>
+
+<span class="fc" id="L60">    private static final Logger log = Logger.getLogger(BayesianCurveFitting.class.getSimpleName());</span>
+
+    /**
+     * fit the training data
+     * the likelihood and the prior are both Gaussian.
+     * @param phiX training data feature matrix
+     * @param t training data label vector
+     * @param alpha the precision of the prior. the precision is the reciprocal of the variance.
+     * @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
+     * @return the model fit data structures.
+     */
+    public static ModelFit fit(double[][] phiX, double[] t, final double alpha, final double beta) throws NotConvergedException {
+
+<span class="fc" id="L73">        double[][] priorPrecision = MatrixUtil.createIdentityMatrix(phiX[0].length);</span>
+<span class="fc" id="L74">        MatrixUtil.multiply(priorPrecision, alpha);</span>
+
+<span class="fc" id="L76">        double[] priorMean = new double[phiX[0].length];</span>
+
+<span class="fc" id="L78">        return fit(phiX, t, alpha, beta, priorMean, priorPrecision);</span>
+    }
+
+    /**
+     * fit the training data.
+     * the likelihood and the prior are both Gaussian.
+     * @param phiX training data feature matrix
+     * @param t training data label vector
+     * @param alpha the precision of the prior. the precision is the reciprocal of the variance.
+     * @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
+     * @param priorMean the prior mean
+     * @param priorCov the prior covariance
+     * @return the model fit data structures
+     */
+    public static ModelFit fit(double[][] phiX, double[] t, final double alpha, final double beta,
+           final double[] priorMean, final double[][] priorCov) throws NotConvergedException {
+
+<span class="fc" id="L95">        log.log(java.util.logging.Level.FINE, String.format(&quot;xTrain=phiX=\n%s&quot;,</span>
+<span class="fc" id="L96">                FormatArray.toString(phiX, &quot;%.8e&quot;)));</span>
+
+<span class="fc" id="L98">        double[][] phiXT = MatrixUtil.transpose(phiX);</span>
+
+        //[m X m]
+<span class="fc" id="L101">        double[][] sInv = calcSInv(priorCov, phiX, phiXT, alpha, beta);</span>
+<span class="fc" id="L102">        log.log(java.util.logging.Level.FINE, String.format(&quot;sInv=\n%s&quot;, FormatArray.toString(sInv, &quot;%.4f&quot;)));</span>
+
+        // same result as calcSInv, difference in use of outer product
+        //double[][] _sInv = _calcSInv(x, m, alpha, beta); where x is the original training data given to generator
+        //log.log(java.util.logging.Level.FINE, String.format(&quot;_sInv=\n%s&quot;, FormatArray.toString(_sInv, &quot;%.4f&quot;)));
+
+        //[m X m]
+<span class="fc" id="L109">        double[][] s = MatrixUtil.pseudoinverseRankDeficient(sInv);</span>
+<span class="fc" id="L110">        log.log(java.util.logging.Level.FINE, String.format(&quot;s=\n%s&quot;, FormatArray.toString(s, &quot;%.4f&quot;)));</span>
+
+        // the mean is roughly similar to a slope term of yTrain/xTrain
+        //[(m+1) X 1]
+<span class="fc" id="L114">        double[] mean = calcMean(priorMean, priorCov, s, phiXT, t, alpha, beta);</span>
+<span class="fc" id="L115">        log.log(java.util.logging.Level.FINE, String.format(&quot;mean=\n%s&quot;, FormatArray.toString(mean, &quot;%.4f&quot;)));</span>
+
+        //[m+1 X m+1]
+<span class="fc" id="L118">        double[][] cov = s;</span>
+
+<span class="fc" id="L120">        log.log(java.util.logging.Level.FINE, String.format(&quot;covariance=\n%s&quot;, FormatArray.toString(cov, &quot;%.4f&quot;)));</span>
+
+<span class="fc" id="L122">        log.log(java.util.logging.Level.FINE, String.format(&quot;phiX=\n%s&quot;, FormatArray.toString(phiX, &quot;%.4f&quot;)));</span>
+
+        /*
+         from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
+           X = mu + sqrt(sigma)*Z where mu is the mean vector,
+           sigma is the covariance, and Z is N(O, I) which is the
+           unit standard normal distribution.
+
+        N(0, I) ~ Σ^(−1/2) * (X−μ)
+        */
+
+<span class="fc" id="L133">        ModelFit fit = new ModelFit();</span>
+<span class="fc" id="L134">        fit.phiX = phiX;</span>
+<span class="fc" id="L135">        fit.mean = mean;</span>
+<span class="fc" id="L136">        fit.cov = cov; // s</span>
+<span class="fc" id="L137">        fit.precision = sInv;</span>
+<span class="fc" id="L138">        fit.alpha = alpha;</span>
+<span class="fc" id="L139">        fit.beta = beta;</span>
+
+<span class="fc" id="L141">        return fit;</span>
+    }
+
+    /**
+     * predict the labels given the model and x test data.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     * @return
+     */
+    public static ModelPrediction predict(ModelFit fit, double[][] phiXTest) throws NotConvergedException {
+
+        // [testX.length X (m+1)]  [m+1] = [testX.length]
+        // use regression slope term:
+<span class="fc" id="L154">        double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, fit.mean);</span>
+<span class="fc" id="L155">        log.log(java.util.logging.Level.FINE, String.format(&quot;y=\n%s&quot;, FormatArray.toString(y, &quot;%.4f&quot;)));</span>
+
+        //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
+<span class="fc" id="L158">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
+<span class="fc" id="L159">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=\n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
+        //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
+<span class="fc" id="L161">        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);</span>
+<span class="fc" id="L162">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=\n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
+
+        // propagation of errors:
+        // sum ys1 along rows, add 1/beta, take sqrt:
+<span class="fc" id="L166">        double[] yErr = new double[ys1.length];</span>
+        int j;
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int i = 0; i &lt; ys1.length; ++i) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            for (j = 0; j &lt; ys1[i].length; ++j) {</span>
+<span class="fc" id="L170">                yErr[i] += ys1[i][j];</span>
+            }
+<span class="fc" id="L172">            yErr[i] += (1./fit.beta);</span>
+<span class="fc" id="L173">            yErr[i] = Math.sqrt(yErr[i]);</span>
+        }
+<span class="fc" id="L175">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=\n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
+
+        /*
+        Wasserman's eqn 2.10 from All of Statistics:
+          f(x, mu, sigma) =
+                1 / ( (2*p1)^(n/2) * |sigma|^(1/2) * exp( -(0.5)*(x-mu)^T * (sigma)^-1 * (x-mu) )
+                where sigma is the covariance, mu is the mean,
+                and |sigma| is the determinant of sigma
+
+         from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
+        &lt;pre&gt;
+           X = mu + sqrt(sigma)*Z where mu is the mean vector,
+           sigma is the covariance, and Z is N(O, I) which is the
+           unit standard normal distribution.
+        &lt;/pre&gt;
+        */
+
+        //from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
+        //N(0, I) ~ Σ^(−1/2) * (X−μ)
+
+<span class="fc" id="L195">        ModelPrediction model = new ModelPrediction();</span>
+<span class="fc" id="L196">        model.yFit = y;</span>
+<span class="fc" id="L197">        model.yErr = yErr;</span>
+
+<span class="fc" id="L199">        return model;</span>
+    }
+
+    /**
+     * predict values for test feature matrix phiXTest using randomly generated points
+     * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     * @return nSamples predicted from random samples of the model at the points from phiXTest.
+     * the return matrix size is [nSamples X phiXTest.length] so that each row is a sample
+     * generated for phiXTest.
+     */
+    public static double[][] predictRandomSample(ModelFit fit, double[][] phiXTest, int nSamples) throws NotConvergedException, NoSuchAlgorithmException {
+
+<span class="nc" id="L213">        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-11);</span>
+
+        // [nSamples X fit.mean.length] = [nSamples X (M+1))]
+<span class="nc" id="L216">        double[][] w = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, k, nSamples);</span>
+
+        // [phiXTest is [N2 X (M+1)]
+        // [N2 X (M+1)] [(M+1) X nSamples]
+<span class="nc" id="L220">        double[][] y = MatrixUtil.multiply(phiXTest, MatrixUtil.transpose(w));</span>
+
+<span class="nc" id="L222">        return MatrixUtil.transpose(y);</span>
+    }
+
+    /**
+     * predict values for test feature matrix phiXTest using randomly generated points
+     * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     * @return a sample predicted from random samples of the model at the points from phiXTest.
+     */
+    public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest) throws NotConvergedException, NoSuchAlgorithmException {
+
+        //  [(M+1))]
+<span class="fc" id="L235">        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-11);</span>
+<span class="fc" id="L236">        double[] u = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, k);</span>
+
+        // [phiXTest is [N2 X (M+1)]
+        // [N2 X (M+1)] [(M+1) X 1]
+<span class="fc" id="L240">        double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, u);</span>
+
+        //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
+<span class="fc" id="L243">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
+        //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
+<span class="fc" id="L245">        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);</span>
+
+        // propagation of errors:
+        // sum ys1 along rows, add 1/beta, take sqrt:
+<span class="fc" id="L249">        double[] yErr = new double[ys1.length];</span>
+        int j;
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        for (int i = 0; i &lt; ys1.length; ++i) {</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (j = 0; j &lt; ys1[i].length; ++j) {</span>
+<span class="fc" id="L253">                yErr[i] += ys1[i][j];</span>
+            }
+<span class="fc" id="L255">            yErr[i] += (1./fit.beta);</span>
+<span class="fc" id="L256">            yErr[i] = Math.sqrt(yErr[i]);</span>
+        }
+<span class="fc" id="L258">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=\n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
+
+        //from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
+        //N(0, I) ~ Σ^(−1/2) * (X−μ)
+
+<span class="fc" id="L263">        ModelPrediction model = new ModelPrediction();</span>
+<span class="fc" id="L264">        model.yFit = y;</span>
+<span class="fc" id="L265">        model.yErr = yErr;</span>
+
+<span class="fc" id="L267">        return model;</span>
+    }
+
+    /**
+     * calculate the mean.
+     * &lt;pre&gt;
+     * the method is from eqn 3.5 of Bishop's PRML, following code in
+     * https://github.com/ctgk/PRML/blob/main/prml/linear/_bayesian_regression.py
+     * method fit().
+     * &lt;/pre&gt;
+     *
+     * @return size [(m+1)]
+     */
+    protected static double[] calcMean(final double[] priorMean, final double[][] priorPrecision,
+            final double[][] s, final double[][] phiXT, final double[] t,  final double alpha, final double beta) throws NotConvergedException {
+
+        /*
+        solve for mean as x in a*x=b
+        where
+        a = sInv = precision_prev + beta * x_train.T @ x_train
+                 = (alpha * I_(m+1)) + beta * (phiXT * phiX)
+        b = precision_prev @ mean_prev + beta * x_train.T @ y_train
+          = (alpha * I_(m+1)) * zero_(m+1) + beta * (phiXT * t)
+
+        same as x = pinv(a) * b = s * b
+        */
+
+<span class="fc" id="L294">        double[] bV0 = MatrixUtil.multiplyMatrixByColumnVector(priorPrecision, priorMean);</span>
+
+<span class="fc" id="L296">        double[] bV = MatrixUtil.multiplyMatrixByColumnVector(phiXT, t);</span>
+<span class="fc" id="L297">        MatrixUtil.multiply(bV, beta);</span>
+
+<span class="fc" id="L299">        bV = MatrixUtil.add(bV0, bV);</span>
+
+<span class="fc" id="L301">        double[] mean = MatrixUtil.multiplyMatrixByColumnVector(s, bV);</span>
+
+<span class="fc" id="L303">        return mean;</span>
+    }
+
+    /**
+     * create a design matrix generated from vector: φi(x) = xi for i = 0,...,M.
+     &lt;pre&gt;
+     ɸ(x)=  | x[0]    (x[0])^1    ...  (x[0])^m    |
+            | x[1]    (x[1])^1    ...  (x[1])^m    |
+            | ...                                  |
+            | x[n-1]  (x[n-1])^1  ...  (x[n-1])^m  |
+     &lt;/pre&gt;
+     * @param x array of data points
+     * @param m order of polynomial fit
+     * @return a matrix where each column is x to the order j where j is the column number
+     * and ranges from 0 to m, inclusive.
+     * output size is [N X (M+1)] where M is m and N is x.length.
+     */
+    public static double[][] generatePolynomialPhiX(double[] x, int m) {
+
+<span class="fc" id="L322">        double[][] out = new double[x.length][];</span>
+        int i;
+        int j;
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc" id="L326">            out[i] = new double[m + 1];</span>
+<span class="fc" id="L327">            out[i][0] = 1;//(x[i])^0;</span>
+<span class="fc" id="L328">            out[i][1] = x[i];</span>
+        }
+
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">            for (j = 2; j &lt;= m; ++j) {</span>
+<span class="fc" id="L333">                out[i][j] = out[i][j - 1] * x[i];</span>
+            }
+        }
+<span class="fc" id="L336">        return out;</span>
+    }
+
+    /**
+     * calculate S^-1=alpha*I + beta * (xT*x).
+     * &lt;pre&gt;
+     * This method
+     * &lt;/pre&gt;
+     * @param x phi(x)
+     * @param xT phi(x)^T
+     * @param alpha noise to add to the generated gaussian.
+     * @param beta the precision, that is, the reciprocal of the variance.
+     * @return S^-1 = alpha * I + beta * (xT*x)
+     */
+    protected static double[][] calcSInv(final double[][] priorPrecision,
+                                         final double[][] x, final double[][] xT, final double alpha, final double beta) {
+
+        // eqn 1.72 from Bishop's PRML has an errata.
+        //     corrected by the errata to: S^-1=alpha*I + beta * summation_from_n=1_to_N(phi(x_n) * phi(x_n)^T)
+        //     the equation is corrected in Bishop's eqn 3.51 and in the
+        // ctgk github PRML CODE : S^-1=alpha*I + beta * (xT*x)
+        // Note: Gram Matrix is in section 6.1 of Bishop's PRML.
+
+<span class="fc" id="L359">        double[][] p1 = MatrixUtil.multiply(xT, x);</span>
+<span class="fc" id="L360">        MatrixUtil.multiply(p1, beta);</span>
+
+<span class="fc" id="L362">        double[][] sInv = MatrixUtil.elementwiseAdd(priorPrecision, p1);</span>
+
+<span class="fc" id="L364">        return sInv;</span>
+    }
+
+    /**
+     * generate vector phiXn from data point xn up to order m where phiXn is
+     *   ɸ_i(x) = x^i for i=0 to m.
+     *   see comments under eqn 1.72 of Bishop's PRML.
+     * @param m the largest order of the polynomial used to fit training data x, t.
+     * @param xn point n in vector of training data x.
+     * @return a vector of length m+1 composed of elements xn^0, xn^1, ... xn^m;
+     */
+    private static double[] generatePhiXn(int m, double xn) {
+<span class="nc" id="L376">        double[] phiXn = new double[m + 1];</span>
+<span class="nc" id="L377">        phiXn[0] = 1;// xn^0=1</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">        for (int i = 1; i &lt;= m; ++i) {</span>
+<span class="nc" id="L379">            phiXn[i] = phiXn[i - 1] * xn;</span>
+        }
+<span class="nc" id="L381">        return phiXn;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

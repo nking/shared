@@ -57,7 +57,7 @@ import thirdparty.ods.XFastTrieNode;
 
  * @author nichole
  */
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">public class YFastTrie {</span>
+<span class="fc" id="L60">public class YFastTrie {</span>
 
     /*    
     designing from browsing a few different lecture notes
@@ -200,7 +200,7 @@ YFastTrie
         // runtime complexity is O(1)
 <span class="fc" id="L201">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L203" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bnc" id="L203" title="All 2 branches missed.">        assert(map != null);</span>
         
 <span class="fc" id="L205">        Integer key = Integer.valueOf(node);</span>
         
@@ -225,7 +225,7 @@ YFastTrie
                 
 <span class="fc" id="L226">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L228" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bnc" id="L228" title="All 2 branches missed.">        assert(map != null);</span>
         
 <span class="fc" id="L230">        Integer key = Integer.valueOf(node);</span>
 
@@ -472,7 +472,7 @@ YFastTrie
             
 <span class="pc bpc" id="L473" title="1 of 2 branches missed.">            if (nodeMap.size() &gt; 1) {</span>
 <span class="fc" id="L474">                Entry&lt;Integer, Integer&gt; successor = nodeMap.higherEntry(nodeKey);</span>
-<span class="pc bpc" id="L475" title="3 of 4 branches missed.">                assert(successor != null);</span>
+<span class="pc bnc" id="L475" title="All 2 branches missed.">                assert(successor != null);</span>
 <span class="fc" id="L476">                return successor.getKey();</span>
             }
             
@@ -516,7 +516,7 @@ YFastTrie
         
 <span class="fc" id="L517">        Integer repr = xft.minimum();</span>
         
-<span class="pc bpc" id="L519" title="3 of 4 branches missed.">        assert(repr != null);</span>
+<span class="pc bnc" id="L519" title="All 2 branches missed.">        assert(repr != null);</span>
        
 <span class="fc" id="L521">        return repr.intValue();</span>
     }
@@ -534,17 +534,17 @@ YFastTrie
         
 <span class="fc" id="L535">        Integer maxRepr = xft.maximum();</span>
         
-<span class="pc bpc" id="L537" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
+<span class="pc bnc" id="L537" title="All 2 branches missed.">        assert(maxRepr != null);</span>
         
 <span class="fc" id="L539">        int index = maxRepr.intValue()/binSz;</span>
         
 <span class="fc" id="L541">        TreeMap&lt;Integer, Integer&gt; map = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L543" title="3 of 4 branches missed.">        assert(map != null);</span>
+<span class="pc bnc" id="L543" title="All 2 branches missed.">        assert(map != null);</span>
         
 <span class="fc" id="L545">        Entry&lt;Integer, Integer&gt; lastItem = map.lastEntry();</span>
         
-<span class="pc bpc" id="L547" title="3 of 4 branches missed.">        assert(lastItem != null);</span>
+<span class="pc bnc" id="L547" title="All 2 branches missed.">        assert(lastItem != null);</span>
         
 <span class="fc" id="L549">        return lastItem.getKey();</span>
     }
@@ -560,7 +560,7 @@ YFastTrie
 <span class="fc" id="L560">        int min = minimum();</span>
 
 <span class="pc bpc" id="L562" title="1 of 2 branches missed.">        if (min == -1) {</span>
-<span class="nc bnc" id="L563" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc bnc" id="L563" title="All 2 branches missed.">            assert(xft.size() == 0);</span>
 <span class="nc" id="L564">            return -1;</span>
         }
                 
@@ -578,7 +578,7 @@ YFastTrie
 <span class="fc" id="L578">        int max = maximum();</span>
 
 <span class="pc bpc" id="L580" title="1 of 2 branches missed.">        if (max == -1) {</span>
-<span class="nc bnc" id="L581" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc bnc" id="L581" title="All 2 branches missed.">            assert(xft.size() == 0);</span>
 <span class="nc" id="L582">            return -1;</span>
         }
                 
@@ -753,4 +753,4 @@ YFastTrie
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

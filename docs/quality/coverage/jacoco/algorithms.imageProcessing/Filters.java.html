@@ -17,7 +17,7 @@ import java.util.Arrays;
    * 
  * @author nichole
  */
-<span class="pc bpc" id="L20" title="1 of 2 branches missed.">public class Filters {</span>
+<span class="fc" id="L20">public class Filters {</span>
     
     /**
      * @author nichole
@@ -136,8 +136,8 @@ import java.util.Arrays;
         //# Non maximum filter
 <span class="nc" id="L137">        int size = 2 * minDistance + 1;</span>
 <span class="nc" id="L138">        float[][] imageMax = maximumFilter(img, size);</span>
-<span class="nc bnc" id="L139" title="All 4 branches missed.">        assert(nRows == imageMax.length);</span>
-<span class="nc bnc" id="L140" title="All 4 branches missed.">        assert(nCols == imageMax[0].length);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        assert(nRows == imageMax.length);</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        assert(nCols == imageMax[0].length);</span>
         //mask = image == image_max
 
         //debugPrint(&quot;before shift imageMax=&quot;, imageMax);
@@ -306,7 +306,7 @@ import java.util.Arrays;
         //# Non maximum filter
 <span class="fc" id="L307">        int size = 2 * minDistance + 1;</span>
 <span class="fc" id="L308">        float[] imageMax = maximumFilter(img, size);</span>
-<span class="pc bpc" id="L309" title="3 of 4 branches missed.">        assert(nRows == imageMax.length);</span>
+<span class="pc bnc" id="L309" title="All 2 branches missed.">        assert(nRows == imageMax.length);</span>
 
         // a fudge to match results of scipy which must store same windows at
         // locations shifted by minDistance or so in x and y from the
@@ -442,4 +442,4 @@ import java.util.Arrays;
         }
 <span class="nc" id="L443">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

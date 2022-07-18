@@ -19,7 +19,7 @@ import java.util.Arrays;
    * 
  * @author nichole
  */
-<span class="pc bpc" id="L22" title="1 of 2 branches missed.">public class StatsInSlidingWindow {</span>
+<span class="fc" id="L22">public class StatsInSlidingWindow {</span>
     
     /**
      * calculate a running maximum of a window of size xWindow, yWindow.
@@ -106,8 +106,8 @@ import java.util.Arrays;
                 }
             }
             
-<span class="pc bpc" id="L109" title="3 of 4 branches missed.">            assert(sVec.n == sVec.a.length);</span>
-<span class="pc bpc" id="L110" title="3 of 4 branches missed.">            assert(sVec.sorted);</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">            assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L110" title="All 2 branches missed.">            assert(sVec.sorted);</span>
 
             //O(k) + (N)*lg2(k)
             float maximum;
@@ -132,17 +132,17 @@ import java.util.Arrays;
                     
 <span class="fc bfc" id="L133" title="All 2 branches covered.">                    for (int j = row; j &lt; (row + yWindow); ++j) {</span>
 
-<span class="pc bpc" id="L135" title="3 of 4 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L135" title="All 2 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
 
                         // remove : O(log_2(k))
 <span class="fc" id="L138">                        sVec.remove(input2[i - xWindow + 1][j]);</span>
 
-<span class="pc bpc" id="L140" title="3 of 4 branches missed.">                        assert(sVec.n == (sVec.a.length - 1));</span>
+<span class="pc bnc" id="L140" title="All 2 branches missed.">                        assert(sVec.n == (sVec.a.length - 1));</span>
                       
                         // add : O(log_2(k)) + &lt; O(k)
 <span class="fc" id="L143">                        sVec.insertIntoOpenSlot(input2[i + 1][j]);</span>
                        
-<span class="pc bpc" id="L145" title="3 of 4 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L145" title="All 2 branches missed.">                        assert(sVec.n == sVec.a.length);</span>
                     }       
                 }
             }                        
@@ -198,8 +198,8 @@ import java.util.Arrays;
 <span class="fc" id="L198">            sVec.append(input2[i]);</span>
         }
 
-<span class="pc bpc" id="L201" title="3 of 4 branches missed.">        assert(sVec.n == sVec.a.length);</span>
-<span class="pc bpc" id="L202" title="3 of 4 branches missed.">        assert(sVec.sorted);</span>
+<span class="pc bnc" id="L201" title="All 2 branches missed.">        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L202" title="All 2 branches missed.">        assert(sVec.sorted);</span>
 
         //O(k) + (N)*lg2(k)
         float maximum;
@@ -222,17 +222,17 @@ import java.util.Arrays;
 
 <span class="pc bpc" id="L223" title="1 of 2 branches missed.">            if ((i + 1) &lt; w) {</span>
 
-<span class="pc bpc" id="L225" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L225" title="All 2 branches missed.">                assert(sVec.n == sVec.a.length);</span>
 
                 // remove : O(log_2(k))
 <span class="fc" id="L228">                sVec.remove(input2[i - window + 1]);</span>
 
-<span class="pc bpc" id="L230" title="3 of 4 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
+<span class="pc bnc" id="L230" title="All 2 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
 
                 // add : O(log_2(k)) + &lt; O(k)
 <span class="fc" id="L233">                sVec.insertIntoOpenSlot(input2[i + 1]);</span>
 
-<span class="pc bpc" id="L235" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L235" title="All 2 branches missed.">                assert(sVec.n == sVec.a.length);</span>
             }
         }                                
 <span class="fc" id="L238">    }</span>
@@ -464,4 +464,4 @@ import java.util.Arrays;
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

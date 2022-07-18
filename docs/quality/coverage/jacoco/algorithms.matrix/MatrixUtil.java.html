@@ -69,7 +69,7 @@ import gnu.trove.set.hash.TIntHashSet;
    
  * @author nichole
  */
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">public class MatrixUtil {</span>
+<span class="pc" id="L72">public class MatrixUtil {</span>
     
     /**
      * multiply the row vector v by matrix m.
@@ -758,7 +758,7 @@ import gnu.trove.set.hash.TIntHashSet;
 <span class="fc" id="L758">                prod = MatrixUtil.multiply(aT, a);</span>
             }
 <span class="fc" id="L760">            n = prod.length;</span>
-<span class="pc bpc" id="L761" title="3 of 4 branches missed.">            assert(n == prod[0].length);</span>
+<span class="pc bnc" id="L761" title="All 2 branches missed.">            assert(n == prod[0].length);</span>
 <span class="fc bfc" id="L762" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
 <span class="pc bpc" id="L763" title="1 of 2 branches missed.">                if (prod[i][i] != 1) {</span>
 <span class="nc" id="L764">                    return false;</span>
@@ -1105,15 +1105,15 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static double[] subtract(double[] m, double s) {
 
-<span class="nc" id="L1108">        int len = m.length;</span>
+<span class="fc" id="L1108">        int len = m.length;</span>
 
-<span class="nc" id="L1110">        double[] c = new double[len];</span>
+<span class="fc" id="L1110">        double[] c = new double[len];</span>
 
-<span class="nc bnc" id="L1112" title="All 2 branches missed.">        for (int i = 0; i &lt; len; ++i) {</span>
-<span class="nc" id="L1113">            c[i] = m[i] - s;</span>
+<span class="fc bfc" id="L1112" title="All 2 branches covered.">        for (int i = 0; i &lt; len; ++i) {</span>
+<span class="fc" id="L1113">            c[i] = m[i] - s;</span>
         }
 
-<span class="nc" id="L1116">        return c;</span>
+<span class="fc" id="L1116">        return c;</span>
     }
     /**
      * calculate s - m[i] for each i=[0, m.length).
@@ -1477,16 +1477,16 @@ import gnu.trove.set.hash.TIntHashSet;
     }
     
     public static double[][] convertToRowMajor(LowerSymmDenseMatrix a) {
-<span class="fc" id="L1480">        int nc = a.numColumns();</span>
-<span class="fc" id="L1481">        int nr = a.numRows();</span>
-<span class="fc" id="L1482">        double[][] out = new double[nr][];</span>
-<span class="fc bfc" id="L1483" title="All 2 branches covered.">        for (int i = 0; i &lt; nr; ++i) {</span>
-<span class="fc" id="L1484">            out[i] = new double[nc];</span>
-<span class="fc bfc" id="L1485" title="All 2 branches covered.">            for (int j = 0; j &lt; nc; ++j) {</span>
-<span class="fc" id="L1486">                out[i][j] = a.get(i, j);</span>
+<span class="nc" id="L1480">        int nc = a.numColumns();</span>
+<span class="nc" id="L1481">        int nr = a.numRows();</span>
+<span class="nc" id="L1482">        double[][] out = new double[nr][];</span>
+<span class="nc bnc" id="L1483" title="All 2 branches missed.">        for (int i = 0; i &lt; nr; ++i) {</span>
+<span class="nc" id="L1484">            out[i] = new double[nc];</span>
+<span class="nc bnc" id="L1485" title="All 2 branches missed.">            for (int j = 0; j &lt; nc; ++j) {</span>
+<span class="nc" id="L1486">                out[i][j] = a.get(i, j);</span>
             }
         }
-<span class="fc" id="L1489">        return out;</span>
+<span class="nc" id="L1489">        return out;</span>
     }
             
     /*
@@ -1555,7 +1555,7 @@ import gnu.trove.set.hash.TIntHashSet;
      * Note that the term rank can be deceptive for cases when the 
      * original matrix a was rank deficient and then is perturbed to become
      * a full rank matrix leading to possibility of larger errors when treated as full rank.
-     * the term rank deficient can be replaced by the ter numerically rank deficient.
+     * the term rank deficient can be replaced by the term numerically rank deficient.
      * (see Bjork 1991 Section 2, &quot;Algorithms for linear least squares problems&quot;
      * and Chap 6 of Golub &amp; Van Loan).
      * This method uses the SVD of a,
@@ -1630,10 +1630,10 @@ import gnu.trove.set.hash.TIntHashSet;
         S is mxn with non-negative singular values.  rank is number of non-zero entries
         V is  nxn
         */
-<span class="pc bpc" id="L1633" title="3 of 4 branches missed.">        assert(v.length == n);</span>
-<span class="pc bpc" id="L1634" title="3 of 4 branches missed.">        assert(v[0].length == n);</span>
-<span class="pc bpc" id="L1635" title="3 of 4 branches missed.">        assert(uT.length == m);</span>
-<span class="pc bpc" id="L1636" title="3 of 4 branches missed.">        assert(uT[0].length == m);</span>
+<span class="pc bnc" id="L1633" title="All 2 branches missed.">        assert(v.length == n);</span>
+<span class="pc bnc" id="L1634" title="All 2 branches missed.">        assert(v[0].length == n);</span>
+<span class="pc bnc" id="L1635" title="All 2 branches missed.">        assert(uT.length == m);</span>
+<span class="pc bnc" id="L1636" title="All 2 branches missed.">        assert(uT[0].length == m);</span>
         
 <span class="fc" id="L1638">        double[][] sInverse = zeros(n, m);</span>
         double sI;
@@ -2707,7 +2707,7 @@ import gnu.trove.set.hash.TIntHashSet;
         
         // TODO: fix the test for symmetric and use it here
          
-        // uses the Frobenius norm as a distinace.  notation: ||A||_F
+        // uses the Frobenius norm as a distiance.  notation: ||A||_F
         
         // spectral decomposition 
         //  X = Q * diag(tau_i) * Q^T
@@ -2758,10 +2758,11 @@ import gnu.trove.set.hash.TIntHashSet;
     /**
      * Given a matrix a that is not necessarily symmetric,
      * and a nonnegative number eps, find the
-     * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
+     * nearest symmetric positive definite matrices with eigenvalues at least eps.
      * Note that this method attempts to make it symmetric positive definite by
      * adding a small perturbation of size smallest eigenvalue to the diagonal
-     * of the resulting matrix.
+     * of the resulting matrix.  The result satisfies the broader, non-negative
+     * definition of positive semi-definite matrix.
      * &lt;pre&gt;
      * References:
      * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
@@ -2779,11 +2780,11 @@ import gnu.trove.set.hash.TIntHashSet;
         
         // uses the Frobenius norm as a distinace
         
-<span class="pc bpc" id="L2782" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L2783">            throw new IllegalArgumentException(&quot;a must b a square matrix&quot;);</span>
+<span class="pc bpc" id="L2783" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L2784">            throw new IllegalArgumentException(&quot;a must b a square matrix&quot;);</span>
         }
-<span class="pc bpc" id="L2785" title="1 of 2 branches missed.">        if (eps &lt; 0) {</span>
-<span class="nc" id="L2786">            throw new IllegalArgumentException(&quot;eps must be .gte. 0&quot;);</span>
+<span class="pc bpc" id="L2786" title="1 of 2 branches missed.">        if (eps &lt; 0) {</span>
+<span class="nc" id="L2787">            throw new IllegalArgumentException(&quot;eps must be .gte. 0&quot;);</span>
         }
         
         // TODO: fix the test for symmetric
@@ -2804,47 +2805,47 @@ import gnu.trove.set.hash.TIntHashSet;
         
         // can use polar decompositon on square matrices:
                 
-<span class="fc" id="L2807">        double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));</span>
-<span class="fc" id="L2808">        MatrixUtil.multiply(b, 0.5);</span>
+<span class="fc" id="L2808">        double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));</span>
+<span class="fc" id="L2809">        MatrixUtil.multiply(b, 0.5);</span>
         
         // H is formed from V, S, and V^T of SVD(B)
-<span class="fc" id="L2811">        QH qh = performPolarDecomposition(b);</span>
-<span class="fc" id="L2812">        double[][] h = qh.h;</span>
+<span class="fc" id="L2812">        QH qh = performPolarDecomposition(b);</span>
+<span class="fc" id="L2813">        double[][] h = qh.h;</span>
         
         //X_F:
-<span class="fc" id="L2815">        double[][] aPSD = MatrixUtil.elementwiseAdd(a, h);</span>
-<span class="fc" id="L2816">        MatrixUtil.multiply(aPSD, 0.5);</span>
+<span class="fc" id="L2816">        double[][] aPSD = MatrixUtil.elementwiseAdd(a, h);</span>
+<span class="fc" id="L2817">        MatrixUtil.multiply(aPSD, 0.5);</span>
         
         // check that all eigenvalues are &gt;= eps
-<span class="fc" id="L2819">        EVD evd = EVD.factorize(new DenseMatrix(aPSD));</span>
+<span class="fc" id="L2820">        EVD evd = EVD.factorize(new DenseMatrix(aPSD));</span>
         int i;
-<span class="fc" id="L2821">        double[] eig = evd.getRealEigenvalues();</span>
-<span class="fc" id="L2822">        boolean ok = true;</span>
-<span class="pc bpc" id="L2823" title="1 of 2 branches missed.">        for (i = 0; i &lt; eig.length; ++i) {</span>
-<span class="pc bpc" id="L2824" title="1 of 2 branches missed.">            if (eig[i] &lt; eps) {</span>
-<span class="fc" id="L2825">                ok = false;</span>
-<span class="fc" id="L2826">                break;</span>
+<span class="fc" id="L2822">        double[] eig = evd.getRealEigenvalues();</span>
+<span class="fc" id="L2823">        boolean ok = true;</span>
+<span class="pc bpc" id="L2824" title="1 of 2 branches missed.">        for (i = 0; i &lt; eig.length; ++i) {</span>
+<span class="pc bpc" id="L2825" title="1 of 2 branches missed.">            if (eig[i] &lt; eps) {</span>
+<span class="fc" id="L2826">                ok = false;</span>
+<span class="fc" id="L2827">                break;</span>
             }
         }
-<span class="pc bpc" id="L2829" title="1 of 2 branches missed.">        if (!ok) {</span>
+<span class="pc bpc" id="L2830" title="1 of 2 branches missed.">        if (!ok) {</span>
             //System.out.printf(&quot;before: evd eigenvalues=%s\n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
 
             //still needs a small perturbation to make the eigenvalues all &gt;= eps
             // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
         
-<span class="fc" id="L2835">            double[] e = Arrays.copyOf(eig, eig.length);</span>
-<span class="fc" id="L2836">            Arrays.sort(e);</span>
-<span class="fc" id="L2837">            double eigMin = Math.max(-e[0], eps);</span>
-<span class="fc" id="L2838">            double[][] D = MatrixUtil.zeros(a.length, a.length);</span>
-<span class="fc bfc" id="L2839" title="All 2 branches covered.">            for (i = 0; i &lt; D.length; ++i) {</span>
-<span class="fc" id="L2840">                D[i][i] = eigMin;</span>
+<span class="fc" id="L2836">            double[] e = Arrays.copyOf(eig, eig.length);</span>
+<span class="fc" id="L2837">            Arrays.sort(e);</span>
+<span class="fc" id="L2838">            double eigMin = Math.max(-e[0], eps);</span>
+<span class="fc" id="L2839">            double[][] D = MatrixUtil.zeros(a.length, a.length);</span>
+<span class="fc bfc" id="L2840" title="All 2 branches covered.">            for (i = 0; i &lt; D.length; ++i) {</span>
+<span class="fc" id="L2841">                D[i][i] = eigMin;</span>
             }
-<span class="fc" id="L2842">            aPSD = MatrixUtil.elementwiseAdd(aPSD, D);</span>
+<span class="fc" id="L2843">            aPSD = MatrixUtil.elementwiseAdd(aPSD, D);</span>
             //evd = EVD.factorize(new DenseMatrix(aPSD));
             //System.out.printf(&quot;after:  evd eigenvalues=%s\n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
         }
         
-<span class="fc" id="L2847">        return aPSD; </span>
+<span class="fc" id="L2848">        return aPSD; </span>
     }
     
     /**
@@ -2856,16 +2857,16 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[] normalizeLP(double[] v, double p) {
-<span class="fc" id="L2859">        double sum = 0;</span>
-<span class="fc bfc" id="L2860" title="All 2 branches covered.">        for (double a : v) {</span>
-<span class="fc" id="L2861">            sum += Math.pow(a, p);</span>
+<span class="fc" id="L2860">        double sum = 0;</span>
+<span class="fc bfc" id="L2861" title="All 2 branches covered.">        for (double a : v) {</span>
+<span class="fc" id="L2862">            sum += Math.pow(a, p);</span>
         }
-<span class="fc" id="L2863">        double[] out = Arrays.copyOf(v, v.length);</span>
-<span class="fc" id="L2864">        sum = Math.pow(sum, 1./p);</span>
-<span class="fc bfc" id="L2865" title="All 2 branches covered.">        for (int i = 0; i &lt; v.length; ++i) {</span>
-<span class="fc" id="L2866">            out[i] /= sum;</span>
+<span class="fc" id="L2864">        double[] out = Arrays.copyOf(v, v.length);</span>
+<span class="fc" id="L2865">        sum = Math.pow(sum, 1./p);</span>
+<span class="fc bfc" id="L2866" title="All 2 branches covered.">        for (int i = 0; i &lt; v.length; ++i) {</span>
+<span class="fc" id="L2867">            out[i] /= sum;</span>
         }
-<span class="fc" id="L2868">        return out;</span>
+<span class="fc" id="L2869">        return out;</span>
     }
     
     /**
@@ -2877,15 +2878,15 @@ import gnu.trove.set.hash.TIntHashSet;
      * size v1.length X v2.length.
      */
     public static double[][] outerProduct(double[] v1, double[] v2) {
-<span class="fc" id="L2880">        int n = v1.length;</span>
-<span class="fc" id="L2881">        int m = v2.length;</span>
-<span class="fc" id="L2882">        double[][] out = new double[n][m];</span>
-<span class="fc bfc" id="L2883" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
-<span class="fc bfc" id="L2884" title="All 2 branches covered.">            for (int col = 0; col &lt; m; ++col) {</span>
-<span class="fc" id="L2885">                out[row][col] = v1[row] * v2[col];</span>
+<span class="fc" id="L2881">        int n = v1.length;</span>
+<span class="fc" id="L2882">        int m = v2.length;</span>
+<span class="fc" id="L2883">        double[][] out = new double[n][m];</span>
+<span class="fc bfc" id="L2884" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
+<span class="fc bfc" id="L2885" title="All 2 branches covered.">            for (int col = 0; col &lt; m; ++col) {</span>
+<span class="fc" id="L2886">                out[row][col] = v1[row] * v2[col];</span>
             }
         }
-<span class="fc" id="L2888">        return out;</span>
+<span class="fc" id="L2889">        return out;</span>
     }
     
     /**
@@ -2911,44 +2912,44 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static double powerMethod(double[][] a, int nIterations) {
 
-<span class="pc bpc" id="L2914" title="1 of 2 branches missed.">        if (!isPositiveDefinite(a)) {</span>
-<span class="nc" id="L2915">            throw new IllegalArgumentException(&quot;a must be positive definite&quot;);</span>
+<span class="pc bpc" id="L2915" title="1 of 2 branches missed.">        if (!isPositiveDefinite(a)) {</span>
+<span class="nc" id="L2916">            throw new IllegalArgumentException(&quot;a must be positive definite&quot;);</span>
         }
         
         // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
 
-<span class="fc" id="L2920">        int nR = a.length;</span>
-<span class="fc" id="L2921">        double[] v = new double[nR];</span>
+<span class="fc" id="L2921">        int nR = a.length;</span>
+<span class="fc" id="L2922">        double[] v = new double[nR];</span>
         double[] z;
         double norm;
-<span class="fc" id="L2924">        double eig = 0;</span>
+<span class="fc" id="L2925">        double eig = 0;</span>
         int row;
         
-<span class="fc" id="L2927">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L2928">        long seed = System.nanoTime();</span>
+<span class="fc" id="L2928">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L2929">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L2930">        rand.setSeed(seed);</span>
+<span class="fc" id="L2931">        rand.setSeed(seed);</span>
         //avoid orthogonal first guess at v using randomization.
-<span class="fc bfc" id="L2932" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2933">            v[row] = rand.nextDouble();</span>
+<span class="fc bfc" id="L2933" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2934">            v[row] = rand.nextDouble();</span>
         }
             
-<span class="fc bfc" id="L2936" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
+<span class="fc bfc" id="L2937" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
             
-<span class="fc" id="L2938">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
-<span class="fc" id="L2939">            norm = 0;</span>
-<span class="fc bfc" id="L2940" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2941">                norm += (z[row]*z[row]);</span>
+<span class="fc" id="L2939">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
+<span class="fc" id="L2940">            norm = 0;</span>
+<span class="fc bfc" id="L2941" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2942">                norm += (z[row]*z[row]);</span>
             }
-<span class="fc" id="L2943">            norm = Math.sqrt(norm);</span>
-<span class="fc" id="L2944">            eig = norm;</span>
-<span class="fc bfc" id="L2945" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2946">                v[row] = z[row] / eig;</span>
+<span class="fc" id="L2944">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L2945">            eig = norm;</span>
+<span class="fc bfc" id="L2946" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2947">                v[row] = z[row] / eig;</span>
             }
             //System.out.printf(&quot;eig=%.3f\n  v=%s\n  z=%s\n&quot;, eig, Arrays.toString(v),
             //    Arrays.toString(z));
         }
-<span class="fc" id="L2951">        return eig;</span>
+<span class="fc" id="L2952">        return eig;</span>
     }
     
     /**
@@ -2971,50 +2972,50 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double powerMethod(double[][] a, double tolerance, double[] x) {
-<span class="fc" id="L2974">        int nR = a.length;</span>
-<span class="fc" id="L2975">        double[] v = new double[nR];</span>
+<span class="fc" id="L2975">        int nR = a.length;</span>
+<span class="fc" id="L2976">        double[] v = new double[nR];</span>
         double[] z;
         double norm, t;
-<span class="fc" id="L2978">        double eig = 0;</span>
+<span class="fc" id="L2979">        double eig = 0;</span>
         int row, stop;
         
-<span class="fc" id="L2981">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L2982">        long seed = System.nanoTime();</span>
+<span class="fc" id="L2982">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L2983">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L2984">        rand.setSeed(seed);</span>
+<span class="fc" id="L2985">        rand.setSeed(seed);</span>
         //avoid orthogonal first guess at v using randomization.
-<span class="fc bfc" id="L2986" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2987">            v[row] = rand.nextDouble();</span>
+<span class="fc bfc" id="L2987" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2988">            v[row] = rand.nextDouble();</span>
         }
         
-<span class="fc" id="L2990">        int nIter = 0;</span>
+<span class="fc" id="L2991">        int nIter = 0;</span>
         
         while (true) {
                         
-<span class="fc" id="L2994">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
-<span class="fc" id="L2995">            norm = 0;</span>
-<span class="fc bfc" id="L2996" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L2997">                norm += (z[row]*z[row]);</span>
+<span class="fc" id="L2995">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
+<span class="fc" id="L2996">            norm = 0;</span>
+<span class="fc bfc" id="L2997" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L2998">                norm += (z[row]*z[row]);</span>
             }
-<span class="fc" id="L2999">            norm = Math.sqrt(norm);</span>
-<span class="fc" id="L3000">            eig = norm;</span>
-<span class="fc" id="L3001">            stop = 1;</span>
-<span class="fc bfc" id="L3002" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3003">                t = z[row]/eig;</span>
-<span class="fc bfc" id="L3004" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
-<span class="fc" id="L3005">                    stop = 0;</span>
+<span class="fc" id="L3000">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L3001">            eig = norm;</span>
+<span class="fc" id="L3002">            stop = 1;</span>
+<span class="fc bfc" id="L3003" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3004">                t = z[row]/eig;</span>
+<span class="fc bfc" id="L3005" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
+<span class="fc" id="L3006">                    stop = 0;</span>
                 }
-<span class="fc" id="L3007">                v[row] = t;</span>
+<span class="fc" id="L3008">                v[row] = t;</span>
             }
-<span class="fc bfc" id="L3009" title="All 2 branches covered.">            if (stop == 1) {</span>
-<span class="fc" id="L3010">                break;</span>
+<span class="fc bfc" id="L3010" title="All 2 branches covered.">            if (stop == 1) {</span>
+<span class="fc" id="L3011">                break;</span>
             }
             //System.out.printf(&quot;nIter=%d eig=%.3f\n  v=%s\n  z=%s\n&quot;, nIter, 
             //    eig, Arrays.toString(v), Arrays.toString(z));
-<span class="fc" id="L3014">            nIter++;</span>
+<span class="fc" id="L3015">            nIter++;</span>
         }
-<span class="fc" id="L3016">        System.arraycopy(v, 0, x, 0, v.length);</span>
-<span class="fc" id="L3017">        return eig;</span>
+<span class="fc" id="L3017">        System.arraycopy(v, 0, x, 0, v.length);</span>
+<span class="fc" id="L3018">        return eig;</span>
     }
     
      /**
@@ -3035,8 +3036,8 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double powerMethod(double[][] a, double tolerance) {
-<span class="fc" id="L3038">        double[] x = new double[a.length];</span>
-<span class="fc" id="L3039">        return powerMethod(a, tolerance, x);</span>
+<span class="fc" id="L3039">        double[] x = new double[a.length];</span>
+<span class="fc" id="L3040">        return powerMethod(a, tolerance, x);</span>
     }
     
     /**
@@ -3054,32 +3055,32 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static double[] powerMethodEigenPairs(double[][] a, double tolerance) {
         
-<span class="fc" id="L3057">        double[] x = new double[a.length];</span>
+<span class="fc" id="L3058">        double[] x = new double[a.length];</span>
         double eig;
-<span class="fc" id="L3059">        double[] eigs = new double[a.length];</span>
+<span class="fc" id="L3060">        double[] eigs = new double[a.length];</span>
         double[][] x2, a2;
         
-<span class="fc bfc" id="L3062" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
+<span class="fc bfc" id="L3063" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
             
-<span class="fc" id="L3064">            eigs[nr] = powerMethod(a, tolerance, x);</span>
+<span class="fc" id="L3065">            eigs[nr] = powerMethod(a, tolerance, x);</span>
             
-<span class="fc" id="L3066">            x2 = outerProduct(x, x);</span>
-<span class="fc" id="L3067">            a2 = copy(a);</span>
-<span class="fc bfc" id="L3068" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc bfc" id="L3069" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
-<span class="fc" id="L3070">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
+<span class="fc" id="L3067">            x2 = outerProduct(x, x);</span>
+<span class="fc" id="L3068">            a2 = copy(a);</span>
+<span class="fc bfc" id="L3069" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc bfc" id="L3070" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
+<span class="fc" id="L3071">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
                 }
             }
-<span class="fc" id="L3073">            a = a2;</span>
+<span class="fc" id="L3074">            a = a2;</span>
             
-<span class="fc" id="L3075">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
-<span class="fc" id="L3076">            System.out.println(&quot;  a2=\n&quot;);</span>
-<span class="fc bfc" id="L3077" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc" id="L3078">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
+<span class="fc" id="L3076">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
+<span class="fc" id="L3077">            System.out.println(&quot;  a2=\n&quot;);</span>
+<span class="fc bfc" id="L3078" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc" id="L3079">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
             }
         }
                 
-<span class="fc" id="L3082">        return eigs;</span>
+<span class="fc" id="L3083">        return eigs;</span>
     }
     
     /**
@@ -3092,31 +3093,31 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public double[][] powerOf(double[][] a, int power) throws NotConvergedException {
-<span class="nc bnc" id="L3095" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3096">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
+<span class="nc bnc" id="L3096" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3097">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
         }
-<span class="nc" id="L3098">        double eps = 1E-15;</span>
-<span class="nc" id="L3099">        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);</span>
+<span class="nc" id="L3099">        double eps = 1E-15;</span>
+<span class="nc" id="L3100">        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);</span>
         
-<span class="nc" id="L3101">        int rank = 0;</span>
-<span class="nc bnc" id="L3102" title="All 2 branches missed.">        for (double sv : svd.s) {</span>
-<span class="nc bnc" id="L3103" title="All 2 branches missed.">            if (sv &gt; eps) {</span>
-<span class="nc" id="L3104">                rank++;</span>
+<span class="nc" id="L3102">        int rank = 0;</span>
+<span class="nc bnc" id="L3103" title="All 2 branches missed.">        for (double sv : svd.s) {</span>
+<span class="nc bnc" id="L3104" title="All 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="nc" id="L3105">                rank++;</span>
             }
         }
         
-<span class="nc bnc" id="L3108" title="All 2 branches missed.">        if (rank &lt; svd.u.length) {</span>
+<span class="nc bnc" id="L3109" title="All 2 branches missed.">        if (rank &lt; svd.u.length) {</span>
             // this case has eigenvalues that are 0.
             //  det(A - lambda*I) = 0, so is not diagonalizable.
-<span class="nc" id="L3111">            throw new IllegalStateException(&quot;there are eigenvalues with value 0, so matrix a is not diagonalizable&quot;);</span>
+<span class="nc" id="L3112">            throw new IllegalStateException(&quot;there are eigenvalues with value 0, so matrix a is not diagonalizable&quot;);</span>
         }
         
-<span class="nc" id="L3114">        double[] d = new double[a.length];</span>
-<span class="nc bnc" id="L3115" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L3116">            d[i] = Math.pow(svd.s[i], power);</span>
+<span class="nc" id="L3115">        double[] d = new double[a.length];</span>
+<span class="nc bnc" id="L3116" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L3117">            d[i] = Math.pow(svd.s[i], power);</span>
         }
                 
-<span class="nc" id="L3119">        double[][] s = svd.u;</span>
+<span class="nc" id="L3120">        double[][] s = svd.u;</span>
         
         double[][] sInv;
         // check that the eigenvectors are independent.
@@ -3125,11 +3126,11 @@ import gnu.trove.set.hash.TIntHashSet;
         //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
         //  S*S^-1 = I
         //  S.solve(I, sInv) to get sInv using MTJ:
-<span class="nc" id="L3128">        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);</span>
-<span class="nc" id="L3129">        _sInv = (DenseMatrix) new DenseMatrix(s).solve(</span>
-<span class="nc" id="L3130">             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), </span>
+<span class="nc" id="L3129">        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);</span>
+<span class="nc" id="L3130">        _sInv = (DenseMatrix) new DenseMatrix(s).solve(</span>
+<span class="nc" id="L3131">             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), </span>
              _sInv);
-<span class="nc" id="L3132">        sInv = MatrixUtil.convertToRowMajor(_sInv);</span>
+<span class="nc" id="L3133">        sInv = MatrixUtil.convertToRowMajor(_sInv);</span>
  
         /*
             // check this condition... S not invertible so check math in A = S^-1 * Delta * S
@@ -3141,9 +3142,9 @@ import gnu.trove.set.hash.TIntHashSet;
         */
         
         // A = S^-1 * delta^power * S
-<span class="nc" id="L3144">        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);</span>
+<span class="nc" id="L3145">        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);</span>
         
-<span class="nc" id="L3146">        return aP;</span>
+<span class="nc" id="L3147">        return aP;</span>
     }
     
     /**
@@ -3158,43 +3159,44 @@ import gnu.trove.set.hash.TIntHashSet;
      * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
      * Also see Chap 7.4 of &quot;Introduction to LinearAlgebra&quot; by Strang, the section
      * on Polar Decomposition.
-     * @param a a square symmetric non-negative definite matrix.
+     * @param a a square symmetric positive definite matrix.  If the matrix is not
+     *          positive definite matrix, use nearestPositiveSemidefiniteToA() first.
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
         
-<span class="pc bpc" id="L3166" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
-<span class="nc" id="L3167">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
+<span class="pc bpc" id="L3168" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
+<span class="nc" id="L3169">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
         }
                 
-<span class="fc" id="L3170">        int m = a.length;</span>
-<span class="fc" id="L3171">        int n = a[0].length;</span>
+<span class="fc" id="L3172">        int m = a.length;</span>
+<span class="fc" id="L3173">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3173" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
-<span class="nc" id="L3174">            a = MatrixUtil.transpose(a);</span>
-<span class="nc" id="L3175">            m = a.length;</span>
-<span class="nc" id="L3176">            n = a[0].length;</span>
+<span class="pc bpc" id="L3175" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
+<span class="nc" id="L3176">            a = MatrixUtil.transpose(a);</span>
+<span class="nc" id="L3177">            m = a.length;</span>
+<span class="nc" id="L3178">            n = a[0].length;</span>
         }
         
         // limit for a number to be significant above 0
-<span class="fc" id="L3180">        double eps = 1e-16;</span>
+<span class="fc" id="L3182">        double eps = 1e-16;</span>
         
-<span class="fc" id="L3182">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
-<span class="fc" id="L3183">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
+<span class="fc" id="L3184">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
+<span class="fc" id="L3185">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
         
         // s is an array of size min(m,n)  which is nxn here
-<span class="fc" id="L3186">        double[] s = svd.getS();</span>
+<span class="fc" id="L3188">        double[] s = svd.getS();</span>
         
-<span class="fc" id="L3188">        double[][] sMatrix = new double[n][n];</span>
-<span class="fc bfc" id="L3189" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3190">            sMatrix[i] = new double[n];</span>
-<span class="fc" id="L3191">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
+<span class="fc" id="L3190">        double[][] sMatrix = new double[n][n];</span>
+<span class="fc bfc" id="L3191" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3192">            sMatrix[i] = new double[n];</span>
+<span class="fc" id="L3193">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
         }
         
-<span class="fc" id="L3194">        int rank = 0;</span>
-<span class="fc bfc" id="L3195" title="All 2 branches covered.">        for (double sv : s) {</span>
-<span class="pc bpc" id="L3196" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
-<span class="fc" id="L3197">                rank++;</span>
+<span class="fc" id="L3196">        int rank = 0;</span>
+<span class="fc bfc" id="L3197" title="All 2 branches covered.">        for (double sv : s) {</span>
+<span class="pc bpc" id="L3198" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="fc" id="L3199">                rank++;</span>
             }
         }
         // the number of distinct non-zero eigenvalues is rank.
@@ -3232,19 +3234,19 @@ import gnu.trove.set.hash.TIntHashSet;
         a_r1_c0 * s[0]    a_r1_c1 * s[1]
         a_r2_c0 * s[0]    a_r2_c1 * s[1]
         */
-<span class="fc" id="L3235">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
+<span class="fc" id="L3237">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
         //DenseMatrix u = (DenseMatrix) svd.getU();
         
-<span class="fc" id="L3238">        double[][] _vT = Matrices.getArray(vT);</span>
+<span class="fc" id="L3240">        double[][] _vT = Matrices.getArray(vT);</span>
       
-<span class="fc" id="L3240">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
-<span class="fc" id="L3241">        j = MatrixUtil.multiply(j, _vT);</span>
+<span class="fc" id="L3242">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
+<span class="fc" id="L3243">        j = MatrixUtil.multiply(j, _vT);</span>
         
-<span class="fc" id="L3243">        return j;</span>
+<span class="fc" id="L3245">        return j;</span>
     }
     
     public static boolean isSquare(double[][] a) {
-<span class="pc bpc" id="L3247" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
+<span class="pc bpc" id="L3249" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
     }
     
     /*
@@ -3276,24 +3278,24 @@ import gnu.trove.set.hash.TIntHashSet;
     */
     
     public static boolean isPositiveSymmetric(double[][] a) {
-<span class="nc bnc" id="L3279" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3280">            return false;</span>
+<span class="nc bnc" id="L3281" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3282">            return false;</span>
         }
                         
-<span class="nc" id="L3283">        double tol = 1e-3;</span>
-<span class="nc" id="L3284">        int n = a.length;</span>
+<span class="nc" id="L3285">        double tol = 1e-3;</span>
+<span class="nc" id="L3286">        int n = a.length;</span>
         int i, j;
-<span class="nc bnc" id="L3286" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="nc bnc" id="L3287" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
-<span class="nc bnc" id="L3288" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
-<span class="nc" id="L3289">                    return false;</span>
+<span class="nc bnc" id="L3288" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc bnc" id="L3289" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L3290" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
+<span class="nc" id="L3291">                    return false;</span>
                 }
-<span class="nc bnc" id="L3291" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
-<span class="nc" id="L3292">                    return false;</span>
+<span class="nc bnc" id="L3293" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
+<span class="nc" id="L3294">                    return false;</span>
                 }
             }
         }
-<span class="nc" id="L3296">        return true;</span>
+<span class="nc" id="L3298">        return true;</span>
     }
     
     /**
@@ -3331,19 +3333,19 @@ import gnu.trove.set.hash.TIntHashSet;
          and P = p * b
         */
         
-<span class="fc" id="L3334">        ProjectionResults pr = new ProjectionResults();</span>
+<span class="fc" id="L3336">        ProjectionResults pr = new ProjectionResults();</span>
         
         // A_pseudoinverse = inverse(A^T*A) * A^T 
         // [a[0].length][a.length]
-<span class="fc" id="L3338">        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
+<span class="fc" id="L3340">        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
         
-<span class="fc" id="L3340">        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);</span>
+<span class="fc" id="L3342">        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);</span>
         
-<span class="fc" id="L3342">        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);</span>
+<span class="fc" id="L3344">        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);</span>
         
-<span class="fc" id="L3344">        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);</span>
+<span class="fc" id="L3346">        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);</span>
         
-<span class="fc" id="L3346">        return pr;</span>
+<span class="fc" id="L3348">        return pr;</span>
     }
     
     /**
@@ -3353,8 +3355,8 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static boolean isPositiveDefinite(double[][] a) {
-<span class="pc bpc" id="L3356" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3357">            return false;</span>
+<span class="pc bpc" id="L3358" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3359">            return false;</span>
         }
         
         /*
@@ -3371,17 +3373,17 @@ import gnu.trove.set.hash.TIntHashSet;
 
         */
         // using rule that left upward rooted determinants &gt; 0
-<span class="fc" id="L3374">        int n = a.length;</span>
+<span class="fc" id="L3376">        int n = a.length;</span>
         double[][] sa;
         double det;
-<span class="fc bfc" id="L3377" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3378">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
-<span class="fc" id="L3379">            det = MatrixUtil.determinant(sa);</span>
-<span class="pc bpc" id="L3380" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
-<span class="nc" id="L3381">                return false;</span>
+<span class="fc bfc" id="L3379" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3380">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
+<span class="fc" id="L3381">            det = MatrixUtil.determinant(sa);</span>
+<span class="pc bpc" id="L3382" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
+<span class="nc" id="L3383">                return false;</span>
             }
         }
-<span class="fc" id="L3384">        return true;</span>
+<span class="fc" id="L3386">        return true;</span>
     }
     
         /*
@@ -3401,33 +3403,33 @@ import gnu.trove.set.hash.TIntHashSet;
     */
     public static double[][] createCofactor(double[][] m) {
 
-<span class="fc" id="L3404">        int ncols = m.length;</span>
-<span class="fc" id="L3405">        int nrows = m[0].length;</span>
+<span class="fc" id="L3406">        int ncols = m.length;</span>
+<span class="fc" id="L3407">        int nrows = m[0].length;</span>
 
-<span class="fc" id="L3407">        double[][] cofactor = new double[ncols][nrows];</span>
+<span class="fc" id="L3409">        double[][] cofactor = new double[ncols][nrows];</span>
 
-<span class="fc bfc" id="L3409" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
+<span class="fc bfc" id="L3411" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
             
-<span class="fc" id="L3411">            cofactor[i] = new double[nrows];</span>
+<span class="fc" id="L3413">            cofactor[i] = new double[nrows];</span>
 
-<span class="fc bfc" id="L3413" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
+<span class="fc bfc" id="L3415" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
 
-<span class="fc bfc" id="L3415" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
+<span class="fc bfc" id="L3417" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
 
-<span class="fc bfc" id="L3417" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
+<span class="fc bfc" id="L3419" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
 
-<span class="fc" id="L3419">                double[][] n = copyExcept(m, i, j);</span>
+<span class="fc" id="L3421">                double[][] n = copyExcept(m, i, j);</span>
 
-<span class="fc" id="L3421">                double cfctr = determinant(n);</span>
+<span class="fc" id="L3423">                double cfctr = determinant(n);</span>
 
-<span class="fc bfc" id="L3423" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
-<span class="fc" id="L3424">                    cfctr = -1*cfctr;</span>
+<span class="fc bfc" id="L3425" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
+<span class="fc" id="L3426">                    cfctr = -1*cfctr;</span>
                 }
 
-<span class="fc" id="L3427">                cofactor[i][j] = cfctr;</span>
+<span class="fc" id="L3429">                cofactor[i][j] = cfctr;</span>
             }
          }
-<span class="fc" id="L3430">        return cofactor;</span>
+<span class="fc" id="L3432">        return cofactor;</span>
     }
     
     /**
@@ -3450,15 +3452,15 @@ import gnu.trove.set.hash.TIntHashSet;
     public static double[][] inverse(double[][] m) {
 
         // create cofactor of matrix:
-<span class="fc" id="L3453">        double[][] cofactor = createCofactor(m);</span>
+<span class="fc" id="L3455">        double[][] cofactor = createCofactor(m);</span>
 
-<span class="fc" id="L3455">        double[][] cofactorTransposed = transpose(cofactor);</span>
+<span class="fc" id="L3457">        double[][] cofactorTransposed = transpose(cofactor);</span>
 
-<span class="fc" id="L3457">        double det = determinant(m);</span>
+<span class="fc" id="L3459">        double det = determinant(m);</span>
 
-<span class="fc" id="L3459">        multiply(cofactorTransposed, 1./det);</span>
+<span class="fc" id="L3461">        multiply(cofactorTransposed, 1./det);</span>
 
-<span class="fc" id="L3461">        return cofactorTransposed;</span>
+<span class="fc" id="L3463">        return cofactorTransposed;</span>
     }
     
     /**
@@ -3471,20 +3473,20 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return mean of each column as an array of size a[0].length
      */
     public static double[] mean(double[][] a) {
-<span class="fc" id="L3474">        int nSamples = a.length;</span>
-<span class="fc" id="L3475">        int nVariables = a[0].length;</span>
+<span class="fc" id="L3476">        int nSamples = a.length;</span>
+<span class="fc" id="L3477">        int nVariables = a[0].length;</span>
         
         int i, j;
-<span class="fc" id="L3478">        double[] mean = new double[nVariables];</span>
+<span class="fc" id="L3480">        double[] mean = new double[nVariables];</span>
         double sum;
-<span class="fc bfc" id="L3480" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
-<span class="fc" id="L3481">            sum = 0;</span>
-<span class="fc bfc" id="L3482" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc" id="L3483">                sum += (a[i][j]);</span>
+<span class="fc bfc" id="L3482" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
+<span class="fc" id="L3483">            sum = 0;</span>
+<span class="fc bfc" id="L3484" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc" id="L3485">                sum += (a[i][j]);</span>
             }
-<span class="fc" id="L3485">            mean[j] = sum/(double)nSamples;</span>
+<span class="fc" id="L3487">            mean[j] = sum/(double)nSamples;</span>
         }
-<span class="fc" id="L3487">        return mean;</span>
+<span class="fc" id="L3489">        return mean;</span>
     }
     
     /**
@@ -3497,25 +3499,25 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[] standardDeviation(double[][] a) {
-<span class="fc" id="L3500">        int nSamples = a.length;</span>
-<span class="fc" id="L3501">        int nVars = a[0].length;</span>
+<span class="fc" id="L3502">        int nSamples = a.length;</span>
+<span class="fc" id="L3503">        int nVars = a[0].length;</span>
         
-<span class="fc" id="L3503">        double[] c = mean(a);</span>
+<span class="fc" id="L3505">        double[] c = mean(a);</span>
         
-<span class="fc" id="L3505">        double[] out = new double[nVars];</span>
+<span class="fc" id="L3507">        double[] out = new double[nVars];</span>
         int i, d;
         double diff;
-<span class="fc bfc" id="L3508" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L3509" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L3510">                diff = a[i][d] - c[d];</span>
-<span class="fc" id="L3511">                out[d] += (diff*diff);</span>
+<span class="fc bfc" id="L3510" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L3511" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L3512">                diff = a[i][d] - c[d];</span>
+<span class="fc" id="L3513">                out[d] += (diff*diff);</span>
             }
         }
-<span class="fc bfc" id="L3514" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L3515">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); </span>
+<span class="fc bfc" id="L3516" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L3517">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); </span>
         }
         
-<span class="fc" id="L3518">        return out;</span>
+<span class="fc" id="L3520">        return out;</span>
     }
     
     /**
@@ -3526,22 +3528,22 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return the matrix a - v*I.
      */
     public static double[][] aMinusVectorTimesIdentity(double[][] a, double[] v) {
-<span class="fc" id="L3529">        int n = a.length;</span>
-<span class="pc bpc" id="L3530" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
-<span class="nc" id="L3531">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="fc" id="L3531">        int n = a.length;</span>
+<span class="pc bpc" id="L3532" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
+<span class="nc" id="L3533">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
-<span class="pc bpc" id="L3533" title="1 of 2 branches missed.">        if (n != v.length) {</span>
-<span class="nc" id="L3534">            throw new IllegalArgumentException(&quot;v must be same length as a&quot;);</span>
+<span class="pc bpc" id="L3535" title="1 of 2 branches missed.">        if (n != v.length) {</span>
+<span class="nc" id="L3536">            throw new IllegalArgumentException(&quot;v must be same length as a&quot;);</span>
         }
         
-<span class="fc" id="L3537">        double[][] out = copy(a);</span>
+<span class="fc" id="L3539">        double[][] out = copy(a);</span>
         
         int i;
-<span class="fc bfc" id="L3540" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3541">            out[i][i] -= v[i];</span>
+<span class="fc bfc" id="L3542" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3543">            out[i][i] -= v[i];</span>
         }
         
-<span class="fc" id="L3544">        return out;</span>
+<span class="fc" id="L3546">        return out;</span>
     }
     
     /**
@@ -3552,19 +3554,19 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return the sum of the diagonal elements of a
      */
     public static double trace(double[][] a) {
-<span class="fc" id="L3555">        int n = a.length;</span>
-<span class="pc bpc" id="L3556" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
-<span class="nc" id="L3557">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="fc" id="L3557">        int n = a.length;</span>
+<span class="pc bpc" id="L3558" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
+<span class="nc" id="L3559">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
         
-<span class="fc" id="L3560">        double sum = 0;</span>
+<span class="fc" id="L3562">        double sum = 0;</span>
         
         int i;
-<span class="fc bfc" id="L3563" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3564">            sum += a[i][i];</span>
+<span class="fc bfc" id="L3565" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3566">            sum += a[i][i];</span>
         }
         
-<span class="fc" id="L3567">        return sum;</span>
+<span class="fc" id="L3569">        return sum;</span>
     }
     
     /**
@@ -3573,16 +3575,16 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return the sum of the elements of v
      */
     public static double trace(double[] v) {
-<span class="fc" id="L3576">        int n = v.length;</span>
+<span class="fc" id="L3578">        int n = v.length;</span>
         
-<span class="fc" id="L3578">        double sum = 0;</span>
+<span class="fc" id="L3580">        double sum = 0;</span>
         
         int i;
-<span class="fc bfc" id="L3581" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3582">            sum += v[i];</span>
+<span class="fc bfc" id="L3583" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3584">            sum += v[i];</span>
         }
         
-<span class="fc" id="L3585">        return sum;</span>
+<span class="fc" id="L3587">        return sum;</span>
     }
     
     /**
@@ -3592,22 +3594,22 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[][] elementwiseMultiplication(double[][] a, double[][] b) {
-<span class="fc" id="L3595">        int m = a.length;</span>
-<span class="fc" id="L3596">        int n = a[0].length;</span>
+<span class="fc" id="L3597">        int m = a.length;</span>
+<span class="fc" id="L3598">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3598" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3599">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3600" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3601">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="fc" id="L3603">        double[][] out = new double[m][n];</span>
-<span class="fc bfc" id="L3604" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3605">            out[i] = new double[n];</span>
-<span class="fc bfc" id="L3606" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L3607">                out[i][j] = a[i][j] * b[i][j];</span>
+<span class="fc" id="L3605">        double[][] out = new double[m][n];</span>
+<span class="fc bfc" id="L3606" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3607">            out[i] = new double[n];</span>
+<span class="fc bfc" id="L3608" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L3609">                out[i][j] = a[i][j] * b[i][j];</span>
             }
         }
-<span class="fc" id="L3610">        return out;</span>
+<span class="fc" id="L3612">        return out;</span>
     }
     
     /**
@@ -3617,22 +3619,22 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static int[][] elementwiseMultiplication(int[][] a, int[][] b) {
-<span class="fc" id="L3620">        int m = a.length;</span>
-<span class="fc" id="L3621">        int n = a[0].length;</span>
+<span class="fc" id="L3622">        int m = a.length;</span>
+<span class="fc" id="L3623">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3623" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3624">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3625" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3626">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="fc" id="L3628">        int[][] out = new int[m][n];</span>
-<span class="fc bfc" id="L3629" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3630">            out[i] = new int[n];</span>
-<span class="fc bfc" id="L3631" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L3632">                out[i][j] = a[i][j] * b[i][j];</span>
+<span class="fc" id="L3630">        int[][] out = new int[m][n];</span>
+<span class="fc bfc" id="L3631" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3632">            out[i] = new int[n];</span>
+<span class="fc bfc" id="L3633" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L3634">                out[i][j] = a[i][j] * b[i][j];</span>
             }
         }
-<span class="fc" id="L3635">        return out;</span>
+<span class="fc" id="L3637">        return out;</span>
     }
     
     /**
@@ -3642,9 +3644,9 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[][] elementwiseAdd(double[][] a, double[][] b) {
-<span class="fc" id="L3645">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
-<span class="fc" id="L3646">        elementwiseAdd(a, b, out);</span>
-<span class="fc" id="L3647">        return out;</span>
+<span class="fc" id="L3647">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
+<span class="fc" id="L3648">        elementwiseAdd(a, b, out);</span>
+<span class="fc" id="L3649">        return out;</span>
     }
     
     /**
@@ -3655,23 +3657,23 @@ import gnu.trove.set.hash.TIntHashSet;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseAdd(double[][] a, double[][] b, double[][] out) {
-<span class="fc" id="L3658">        int m = a.length;</span>
-<span class="fc" id="L3659">        int n = a[0].length;</span>
+<span class="fc" id="L3660">        int m = a.length;</span>
+<span class="fc" id="L3661">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3661" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3662">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3663" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3664">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L3664" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
-<span class="nc" id="L3665">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3666" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
+<span class="nc" id="L3667">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
         
         int i, j;
-<span class="fc bfc" id="L3669" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L3670" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L3671">                out[i][j] = a[i][j] + b[i][j];</span>
+<span class="fc bfc" id="L3671" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L3672" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L3673">                out[i][j] = a[i][j] + b[i][j];</span>
             }
         }
-<span class="fc" id="L3674">    }</span>
+<span class="fc" id="L3676">    }</span>
     
     /** element-wise subtraction
      * @param a
@@ -3679,9 +3681,9 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[][] elementwiseSubtract(double[][] a, double[][] b) {
-<span class="fc" id="L3682">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
-<span class="fc" id="L3683">        elementwiseSubtract(a, b, out);</span>
-<span class="fc" id="L3684">        return out;</span>
+<span class="fc" id="L3684">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
+<span class="fc" id="L3685">        elementwiseSubtract(a, b, out);</span>
+<span class="fc" id="L3686">        return out;</span>
     }
     
     /**
@@ -3692,23 +3694,23 @@ import gnu.trove.set.hash.TIntHashSet;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseSubtract(double[][] a, double[][] b, double[][] out) {
-<span class="fc" id="L3695">        int m = a.length;</span>
-<span class="fc" id="L3696">        int n = a[0].length;</span>
+<span class="fc" id="L3697">        int m = a.length;</span>
+<span class="fc" id="L3698">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3698" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3699">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3700" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3701">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L3701" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
-<span class="nc" id="L3702">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3703" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
+<span class="nc" id="L3704">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
         
         int i, j;
-<span class="fc bfc" id="L3706" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L3707" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L3708">                out[i][j] = a[i][j] - b[i][j];</span>
+<span class="fc bfc" id="L3708" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L3709" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L3710">                out[i][j] = a[i][j] - b[i][j];</span>
             }
         }
-<span class="fc" id="L3711">    }</span>
+<span class="fc" id="L3713">    }</span>
     
     /**
      * element-wise subtraction
@@ -3717,23 +3719,23 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return the results of element-wise subtraction, a - b.
      */
     public static int[][] elementwiseSubtract(int[][] a, int[][] b) {
-<span class="fc" id="L3720">        int m = a.length;</span>
-<span class="fc" id="L3721">        int n = a[0].length;</span>
+<span class="fc" id="L3722">        int m = a.length;</span>
+<span class="fc" id="L3723">        int n = a[0].length;</span>
         
-<span class="pc bpc" id="L3723" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3724">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3725" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3726">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
-<span class="fc" id="L3727">        int[][] out = new int[m][];</span>
+<span class="fc" id="L3729">        int[][] out = new int[m][];</span>
         
         int i, j;
-<span class="fc bfc" id="L3730" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc" id="L3731">            out[i] = new int[n];</span>
-<span class="fc bfc" id="L3732" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L3733">                out[i][j] = a[i][j] - b[i][j];</span>
+<span class="fc bfc" id="L3732" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc" id="L3733">            out[i] = new int[n];</span>
+<span class="fc bfc" id="L3734" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L3735">                out[i][j] = a[i][j] - b[i][j];</span>
             }
         }
-<span class="fc" id="L3736">        return out;</span>
+<span class="fc" id="L3738">        return out;</span>
     }
     
     /**
@@ -3744,20 +3746,20 @@ import gnu.trove.set.hash.TIntHashSet;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void elementwiseSubtract(double[] a, double[] b, double[] out) {
-<span class="fc" id="L3747">        int m = a.length;</span>
+<span class="fc" id="L3749">        int m = a.length;</span>
         
-<span class="pc bpc" id="L3749" title="1 of 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3750">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3751" title="1 of 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3752">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L3752" title="1 of 2 branches missed.">        if (out.length != m) {</span>
-<span class="nc" id="L3753">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L3754" title="1 of 2 branches missed.">        if (out.length != m) {</span>
+<span class="nc" id="L3755">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
         
         int i;
-<span class="fc bfc" id="L3757" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc" id="L3758">            out[i] = a[i] - b[i];</span>
+<span class="fc bfc" id="L3759" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc" id="L3760">            out[i] = a[i] - b[i];</span>
         }
-<span class="fc" id="L3760">    }</span>
+<span class="fc" id="L3762">    }</span>
     
     /**
      * element-wise multiplication
@@ -3766,18 +3768,18 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[] elementwiseMultiplication(double[] a, double[] b) {
-<span class="nc" id="L3769">        int m = a.length;</span>
+<span class="nc" id="L3771">        int m = a.length;</span>
         
-<span class="nc bnc" id="L3771" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3772">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3773" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3774">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3776">        double[] out = new double[m];</span>
-<span class="nc bnc" id="L3777" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3778">            out[i] = a[i] * b[i];</span>
+<span class="nc" id="L3778">        double[] out = new double[m];</span>
+<span class="nc bnc" id="L3779" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3780">            out[i] = a[i] * b[i];</span>
         }
-<span class="nc" id="L3780">        return out;</span>
+<span class="nc" id="L3782">        return out;</span>
     }
     
     /**
@@ -3787,17 +3789,17 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double dot(double[] a, double[] b) {
-<span class="nc" id="L3790">        int m = a.length;</span>
+<span class="nc" id="L3792">        int m = a.length;</span>
         
-<span class="nc bnc" id="L3792" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3793">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3794" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3795">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
-<span class="nc" id="L3796">        double out = 0;</span>
-<span class="nc bnc" id="L3797" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3798">            out += a[i] * b[i];</span>
+<span class="nc" id="L3798">        double out = 0;</span>
+<span class="nc bnc" id="L3799" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3800">            out += a[i] * b[i];</span>
         }
-<span class="nc" id="L3800">        return out;</span>
+<span class="nc" id="L3802">        return out;</span>
     }
     
     /**
@@ -3807,21 +3809,21 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[][] zeros(int nRows, int nCols) {
-<span class="fc" id="L3810">        double[][] out = new double[nRows][nCols];</span>
-<span class="fc bfc" id="L3811" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L3812">            out[i] = new double[nCols];</span>
+<span class="fc" id="L3812">        double[][] out = new double[nRows][nCols];</span>
+<span class="fc bfc" id="L3813" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L3814">            out[i] = new double[nCols];</span>
             // java, by default, initializes with zeroes
         }
-<span class="fc" id="L3815">        return out;</span>
+<span class="fc" id="L3817">        return out;</span>
     }
     
     public static double[][] createIdentityMatrix(int nRows) {
-<span class="fc" id="L3819">        double[][] out = new double[nRows][nRows];</span>
-<span class="fc bfc" id="L3820" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L3821">            out[i] = new double[nRows];</span>
-<span class="fc" id="L3822">            out[i][i] = 1;</span>
+<span class="fc" id="L3821">        double[][] out = new double[nRows][nRows];</span>
+<span class="fc bfc" id="L3822" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L3823">            out[i] = new double[nRows];</span>
+<span class="fc" id="L3824">            out[i][i] = 1;</span>
         }
-<span class="fc" id="L3824">        return out;</span>
+<span class="fc" id="L3826">        return out;</span>
     }
     
     /**
@@ -3831,22 +3833,22 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[][] elementwiseDivision(double[][] a, double[][] b) {
-<span class="nc" id="L3834">        int m = a.length;</span>
-<span class="nc" id="L3835">        int n = a[0].length;</span>
+<span class="nc" id="L3836">        int m = a.length;</span>
+<span class="nc" id="L3837">        int n = a[0].length;</span>
         
-<span class="nc bnc" id="L3837" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L3838">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L3839" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L3840">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3842">        double[][] out = new double[m][n];</span>
-<span class="nc bnc" id="L3843" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3844">            out[i] = new double[n];</span>
-<span class="nc bnc" id="L3845" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc" id="L3846">                out[i][j] = a[i][j] / b[i][j];</span>
+<span class="nc" id="L3844">        double[][] out = new double[m][n];</span>
+<span class="nc bnc" id="L3845" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3846">            out[i] = new double[n];</span>
+<span class="nc bnc" id="L3847" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc" id="L3848">                out[i][j] = a[i][j] / b[i][j];</span>
             }
         }
-<span class="nc" id="L3849">        return out;</span>
+<span class="nc" id="L3851">        return out;</span>
     }
     
     /**
@@ -3856,18 +3858,18 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[] elementwiseDivision(double[] a, double[] b) {
-<span class="nc" id="L3859">        int m = a.length;</span>
+<span class="nc" id="L3861">        int m = a.length;</span>
         
-<span class="nc bnc" id="L3861" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L3862">            throw new IllegalArgumentException(&quot;a and b must have same lengths&quot;);</span>
+<span class="nc bnc" id="L3863" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L3864">            throw new IllegalArgumentException(&quot;a and b must have same lengths&quot;);</span>
         }
         
         int j;
-<span class="nc" id="L3866">        double[] out = Arrays.copyOf(a, m);</span>
-<span class="nc bnc" id="L3867" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L3868">            out[i] /= b[i];</span>
+<span class="nc" id="L3868">        double[] out = Arrays.copyOf(a, m);</span>
+<span class="nc bnc" id="L3869" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L3870">            out[i] /= b[i];</span>
         }
-<span class="nc" id="L3870">        return out;</span>
+<span class="nc" id="L3872">        return out;</span>
     }
     
     /**
@@ -3876,24 +3878,24 @@ import gnu.trove.set.hash.TIntHashSet;
      * @param a 
      */
     public static void flipLR(double[][] a) {
-<span class="fc" id="L3879">        int idxHi = a[0].length - 1;</span>
-<span class="fc" id="L3880">        int idxLo = 0;</span>
-<span class="fc" id="L3881">        int n = idxHi - idxLo + 1;</span>
-<span class="fc" id="L3882">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L3881">        int idxHi = a[0].length - 1;</span>
+<span class="fc" id="L3882">        int idxLo = 0;</span>
+<span class="fc" id="L3883">        int n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L3884">        int end = idxLo + (n/2);</span>
         
         double swap;
         int col, row, idx2;
-<span class="fc" id="L3886">        int count = 0;</span>
-<span class="fc bfc" id="L3887" title="All 2 branches covered.">        for (col = idxLo; col &lt; end; col++) {</span>
-<span class="fc" id="L3888">            idx2 = idxHi - count;</span>
-<span class="fc bfc" id="L3889" title="All 2 branches covered.">            for (row = 0; row &lt; a.length; row++) {</span>
-<span class="fc" id="L3890">                swap = a[row][col];</span>
-<span class="fc" id="L3891">                a[row][col] = a[row][idx2];</span>
-<span class="fc" id="L3892">                a[row][idx2] = swap;</span>
+<span class="fc" id="L3888">        int count = 0;</span>
+<span class="fc bfc" id="L3889" title="All 2 branches covered.">        for (col = idxLo; col &lt; end; col++) {</span>
+<span class="fc" id="L3890">            idx2 = idxHi - count;</span>
+<span class="fc bfc" id="L3891" title="All 2 branches covered.">            for (row = 0; row &lt; a.length; row++) {</span>
+<span class="fc" id="L3892">                swap = a[row][col];</span>
+<span class="fc" id="L3893">                a[row][col] = a[row][idx2];</span>
+<span class="fc" id="L3894">                a[row][idx2] = swap;</span>
             }
-<span class="fc" id="L3894">            count++;</span>
+<span class="fc" id="L3896">            count++;</span>
         }
-<span class="fc" id="L3896">    }</span>
+<span class="fc" id="L3898">    }</span>
     
     /**
      * perform an up-down swap of the rows of a, flipping the matrix
@@ -3901,22 +3903,22 @@ import gnu.trove.set.hash.TIntHashSet;
      * @param a 
      */
     public static void flipUD(double[][] a) {
-<span class="fc" id="L3904">        int idxHi = a.length - 1;</span>
-<span class="fc" id="L3905">        int idxLo = 0;</span>
-<span class="fc" id="L3906">        int n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L3906">        int idxHi = a.length - 1;</span>
+<span class="fc" id="L3907">        int idxLo = 0;</span>
+<span class="fc" id="L3908">        int n = idxHi - idxLo + 1;</span>
         
-<span class="fc" id="L3908">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L3910">        int end = idxLo + (n/2);</span>
         double[] swap;
-<span class="fc" id="L3910">        int count = 0;</span>
+<span class="fc" id="L3912">        int count = 0;</span>
         int i, idx2;
-<span class="fc bfc" id="L3912" title="All 2 branches covered.">        for (i = idxLo; i &lt; end; i++) {</span>
-<span class="fc" id="L3913">            idx2 = idxHi - count;</span>
-<span class="fc" id="L3914">            swap = a[i];</span>
-<span class="fc" id="L3915">            a[i] = a[idx2];</span>
-<span class="fc" id="L3916">            a[idx2] = swap;</span>
-<span class="fc" id="L3917">            count++;</span>
+<span class="fc bfc" id="L3914" title="All 2 branches covered.">        for (i = idxLo; i &lt; end; i++) {</span>
+<span class="fc" id="L3915">            idx2 = idxHi - count;</span>
+<span class="fc" id="L3916">            swap = a[i];</span>
+<span class="fc" id="L3917">            a[i] = a[idx2];</span>
+<span class="fc" id="L3918">            a[idx2] = swap;</span>
+<span class="fc" id="L3919">            count++;</span>
         }
-<span class="fc" id="L3919">    }</span>
+<span class="fc" id="L3921">    }</span>
     
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
@@ -3927,9 +3929,9 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return x in equation L*x = b
      */
     public static double[] forwardSubstitution(double[][] lowerTriangular, double[] b) {
-<span class="fc" id="L3930">        double[] outX = new double[b.length];</span>
-<span class="fc" id="L3931">        forwardSubstitution(lowerTriangular, b, outX);</span>
-<span class="fc" id="L3932">        return outX;</span>
+<span class="fc" id="L3932">        double[] outX = new double[b.length];</span>
+<span class="fc" id="L3933">        forwardSubstitution(lowerTriangular, b, outX);</span>
+<span class="fc" id="L3934">        return outX;</span>
     }
     
     /**
@@ -3944,25 +3946,25 @@ import gnu.trove.set.hash.TIntHashSet;
     public static void forwardSubstitution(double[][] lowerTriangular, double[] b,
         double[] outX) {
         
-<span class="fc" id="L3947">        int m = b.length;</span>
+<span class="fc" id="L3949">        int m = b.length;</span>
         
-<span class="pc bpc" id="L3949" title="1 of 2 branches missed.">        if (lowerTriangular[0].length != m) {</span>
-<span class="nc" id="L3950">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L3951" title="1 of 2 branches missed.">        if (lowerTriangular[0].length != m) {</span>
+<span class="nc" id="L3952">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;lowerTriangular must equal the length of b&quot;);
         }
-<span class="pc bpc" id="L3953" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
-<span class="nc" id="L3954">            throw new IllegalArgumentException(&quot;outX.length must equal the length of b&quot;);</span>
+<span class="pc bpc" id="L3955" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
+<span class="nc" id="L3956">            throw new IllegalArgumentException(&quot;outX.length must equal the length of b&quot;);</span>
         }
                 
         int i, j;
-<span class="fc bfc" id="L3958" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3959">            outX[i] = b[i];</span>
-<span class="fc bfc" id="L3960" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
-<span class="fc" id="L3961">                outX[i] -= (lowerTriangular[i][j] * outX[j]);</span>
+<span class="fc bfc" id="L3960" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3961">            outX[i] = b[i];</span>
+<span class="fc bfc" id="L3962" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
+<span class="fc" id="L3963">                outX[i] -= (lowerTriangular[i][j] * outX[j]);</span>
             }
-<span class="fc" id="L3963">            outX[i] /= lowerTriangular[i][i];</span>
+<span class="fc" id="L3965">            outX[i] /= lowerTriangular[i][i];</span>
         }
-<span class="fc" id="L3965">    }</span>
+<span class="fc" id="L3967">    }</span>
     
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
@@ -3975,25 +3977,25 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static double[] forwardSubstitution(LowerTriangDenseMatrix lowerTriangular, double[] b) {
         
-<span class="fc" id="L3978">        int m = b.length;</span>
+<span class="fc" id="L3980">        int m = b.length;</span>
         
-<span class="pc bpc" id="L3980" title="1 of 2 branches missed.">        if (lowerTriangular.numColumns() != m) {</span>
-<span class="nc" id="L3981">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L3982" title="1 of 2 branches missed.">        if (lowerTriangular.numColumns() != m) {</span>
+<span class="nc" id="L3983">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;lowerTriangular must equal the length of b&quot;);
         }
         
-<span class="fc" id="L3985">        double[] x = new double[b.length];</span>
+<span class="fc" id="L3987">        double[] x = new double[b.length];</span>
                 
         int i, j;
-<span class="fc bfc" id="L3988" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3989">            x[i] = b[i];</span>
-<span class="fc bfc" id="L3990" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
-<span class="fc" id="L3991">                x[i] -= (lowerTriangular.get(i, j) * x[j]);</span>
+<span class="fc bfc" id="L3990" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3991">            x[i] = b[i];</span>
+<span class="fc bfc" id="L3992" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
+<span class="fc" id="L3993">                x[i] -= (lowerTriangular.get(i, j) * x[j]);</span>
             }
-<span class="fc" id="L3993">            x[i] /= lowerTriangular.get(i, i);</span>
+<span class="fc" id="L3995">            x[i] /= lowerTriangular.get(i, i);</span>
         }
         
-<span class="fc" id="L3996">        return x;</span>
+<span class="fc" id="L3998">        return x;</span>
     }
     
     /**
@@ -4015,11 +4017,11 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static double[] backwardSubstitution(double[][] upperTriangular, double[] y) {
         
-<span class="fc" id="L4018">        double[] outX = new double[y.length];</span>
+<span class="fc" id="L4020">        double[] outX = new double[y.length];</span>
         
-<span class="fc" id="L4020">        backwardSubstitution(upperTriangular, y, outX);</span>
+<span class="fc" id="L4022">        backwardSubstitution(upperTriangular, y, outX);</span>
         
-<span class="fc" id="L4022">        return outX;</span>
+<span class="fc" id="L4024">        return outX;</span>
     }
     
     /**
@@ -4041,25 +4043,25 @@ import gnu.trove.set.hash.TIntHashSet;
     public static void backwardSubstitution(double[][] upperTriangular, double[] y,
         double[] outX) {
         
-<span class="fc" id="L4044">        int m = y.length;</span>
+<span class="fc" id="L4046">        int m = y.length;</span>
         
-<span class="pc bpc" id="L4046" title="1 of 2 branches missed.">        if (upperTriangular[0].length != m) {</span>
-<span class="nc" id="L4047">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L4048" title="1 of 2 branches missed.">        if (upperTriangular[0].length != m) {</span>
+<span class="nc" id="L4049">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;upperTriangular must equal the length of y&quot;);
         }
-<span class="pc bpc" id="L4050" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
-<span class="nc" id="L4051">            throw new IllegalArgumentException(&quot;outX.length must equal the length of y&quot;);</span>
+<span class="pc bpc" id="L4052" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
+<span class="nc" id="L4053">            throw new IllegalArgumentException(&quot;outX.length must equal the length of y&quot;);</span>
         }
                 
         int i, j;
-<span class="fc bfc" id="L4055" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L4056">            outX[i] = y[i];</span>
-<span class="fc bfc" id="L4057" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
-<span class="fc" id="L4058">                outX[i] -= (outX[j]*upperTriangular[i][j]);</span>
+<span class="fc bfc" id="L4057" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L4058">            outX[i] = y[i];</span>
+<span class="fc bfc" id="L4059" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
+<span class="fc" id="L4060">                outX[i] -= (outX[j]*upperTriangular[i][j]);</span>
             }
-<span class="fc" id="L4060">            outX[i] /= upperTriangular[i][i];</span>
+<span class="fc" id="L4062">            outX[i] /= upperTriangular[i][i];</span>
         }        
-<span class="fc" id="L4062">    }</span>
+<span class="fc" id="L4064">    }</span>
     
     /**
      * solves for vector x in the equation U*x = y where 
@@ -4072,39 +4074,39 @@ import gnu.trove.set.hash.TIntHashSet;
     public static double[] backwardSubstitution(UpperTriangDenseMatrix upperTriangular, 
         double[] y) {
         
-<span class="fc" id="L4075">        int m = y.length;</span>
+<span class="fc" id="L4077">        int m = y.length;</span>
         
-<span class="pc bpc" id="L4077" title="1 of 2 branches missed.">        if (upperTriangular.numColumns() != m) {</span>
-<span class="nc" id="L4078">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L4079" title="1 of 2 branches missed.">        if (upperTriangular.numColumns() != m) {</span>
+<span class="nc" id="L4080">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;upperTriangular must equal the length of y&quot;);
         }
         
-<span class="fc" id="L4082">        double[] x = new double[m];</span>
+<span class="fc" id="L4084">        double[] x = new double[m];</span>
         int i, j;
-<span class="fc bfc" id="L4084" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L4085">            x[i] = y[i];</span>
-<span class="fc bfc" id="L4086" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
-<span class="fc" id="L4087">                x[i] -= (x[j]*upperTriangular.get(i, j));</span>
+<span class="fc bfc" id="L4086" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L4087">            x[i] = y[i];</span>
+<span class="fc bfc" id="L4088" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
+<span class="fc" id="L4089">                x[i] -= (x[j]*upperTriangular.get(i, j));</span>
             }
-<span class="fc" id="L4089">            x[i] /= upperTriangular.get(i, i);</span>
+<span class="fc" id="L4091">            x[i] /= upperTriangular.get(i, i);</span>
         }
-<span class="fc" id="L4091">        return x;</span>
+<span class="fc" id="L4093">        return x;</span>
     }
             
     public static void fill(double[][] a, double value) {
         int i;
-<span class="fc bfc" id="L4096" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L4097">            Arrays.fill(a[i], value);</span>
+<span class="fc bfc" id="L4098" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L4099">            Arrays.fill(a[i], value);</span>
         }
-<span class="fc" id="L4099">    }</span>
+<span class="fc" id="L4101">    }</span>
     
     public static BlockMatrixIsometric transpose(BlockMatrixIsometric a) {
         
-<span class="fc" id="L4103">        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);</span>
+<span class="fc" id="L4105">        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);</span>
         
-<span class="fc" id="L4105">        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());</span>
+<span class="fc" id="L4107">        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());</span>
         
-<span class="fc" id="L4107">        transpose(a.getA(), b.getA());</span>
+<span class="fc" id="L4109">        transpose(a.getA(), b.getA());</span>
         
         /*
         double[][] block = MatrixUtil.zeros(a.getBlockSize0(), a.getBlockSize1());
@@ -4126,7 +4128,7 @@ import gnu.trove.set.hash.TIntHashSet;
         }
         */
         
-<span class="fc" id="L4129">        return b;</span>
+<span class="fc" id="L4131">        return b;</span>
     }
     
     /**
@@ -4136,16 +4138,16 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static double[] reshapeToVector(double[][] a) {
-<span class="fc" id="L4139">        double[] out = new double[a.length * a[0].length];</span>
-<span class="fc" id="L4140">        int c = 0;</span>
+<span class="fc" id="L4141">        double[] out = new double[a.length * a[0].length];</span>
+<span class="fc" id="L4142">        int c = 0;</span>
         int i, j;
-<span class="fc bfc" id="L4142" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc bfc" id="L4143" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L4144">                out[c] = a[i][j];</span>
-<span class="fc" id="L4145">                c++;</span>
+<span class="fc bfc" id="L4144" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc bfc" id="L4145" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L4146">                out[c] = a[i][j];</span>
+<span class="fc" id="L4147">                c++;</span>
             }
         }
-<span class="fc" id="L4148">        return out;</span>
+<span class="fc" id="L4150">        return out;</span>
     }
      
     /**
@@ -4187,9 +4189,9 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static double[][] calculatePreconditionerFromLUP(double[][] a) throws NotConvergedException {
         
-<span class="nc" id="L4190">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
+<span class="nc" id="L4192">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
         
-<span class="nc" id="L4192">        return lup.u;</span>
+<span class="nc" id="L4194">        return lup.u;</span>
     }
     
     /**
@@ -4228,23 +4230,23 @@ import gnu.trove.set.hash.TIntHashSet;
      * @throws NotConvergedException 
      */
     public static double[][] calculatePreconditionerFromColumns(double[][] a) throws NotConvergedException {
-<span class="nc" id="L4231">        int m = a.length;</span>
-<span class="nc" id="L4232">        int n = a[0].length;</span>
+<span class="nc" id="L4233">        int m = a.length;</span>
+<span class="nc" id="L4234">        int n = a[0].length;</span>
         /*
         D^(1/2) = diag( sqrt(d_1), ... sqrt(d_n)) where 
         d_j = (||a_j||_2)^2  where a_j is column j of a.
         */
         int j, i;
-<span class="nc" id="L4238">        double[][] diag = MatrixUtil.zeros(n, n);</span>
+<span class="nc" id="L4240">        double[][] diag = MatrixUtil.zeros(n, n);</span>
         
-<span class="nc bnc" id="L4240" title="All 2 branches missed.">        for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc bnc" id="L4241" title="All 2 branches missed.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L4242">                diag[j][j] += (a[i][j] + a[i][j]);</span>
+<span class="nc bnc" id="L4242" title="All 2 branches missed.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L4243" title="All 2 branches missed.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L4244">                diag[j][j] += (a[i][j] + a[i][j]);</span>
             }
-<span class="nc" id="L4244">            diag[j][j] = Math.sqrt(diag[j][j]);</span>
+<span class="nc" id="L4246">            diag[j][j] = Math.sqrt(diag[j][j]);</span>
         }
         
-<span class="nc" id="L4247">        return diag;</span>
+<span class="nc" id="L4249">        return diag;</span>
     }
     
     /**
@@ -4257,24 +4259,24 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static QH performPolarDecomposition(double[][] a) throws NotConvergedException {
         
-<span class="pc bpc" id="L4260" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L4261">            throw new IllegalArgumentException(&quot;a must b a square matrix&quot;);</span>
+<span class="pc bpc" id="L4262" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L4263">            throw new IllegalArgumentException(&quot;a must b a square matrix&quot;);</span>
         }
         
-<span class="fc" id="L4264">        SVDProducts svd = performSVD(a);</span>
+<span class="fc" id="L4266">        SVDProducts svd = performSVD(a);</span>
         
-<span class="fc" id="L4266">        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);</span>
+<span class="fc" id="L4268">        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);</span>
         
-<span class="fc" id="L4268">        double[][] v = MatrixUtil.transpose(svd.vT);</span>
+<span class="fc" id="L4270">        double[][] v = MatrixUtil.transpose(svd.vT);</span>
         
-<span class="fc" id="L4270">        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);</span>
-<span class="fc" id="L4271">        h = MatrixUtil.multiply(h, svd.vT);</span>
+<span class="fc" id="L4272">        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);</span>
+<span class="fc" id="L4273">        h = MatrixUtil.multiply(h, svd.vT);</span>
         
-<span class="fc" id="L4273">        QH qh = new QH();</span>
-<span class="fc" id="L4274">        qh.q = q;</span>
-<span class="fc" id="L4275">        qh.h = h;</span>
+<span class="fc" id="L4275">        QH qh = new QH();</span>
+<span class="fc" id="L4276">        qh.q = q;</span>
+<span class="fc" id="L4277">        qh.h = h;</span>
         
-<span class="fc" id="L4277">        return qh;</span>
+<span class="fc" id="L4279">        return qh;</span>
     }
     
     /**
@@ -4306,21 +4308,21 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static int[] multisetIntersection(int[] orderedA, int[] orderedB) {
         
-<span class="fc" id="L4309">        TIntList c = new TIntArrayList();</span>
+<span class="fc" id="L4311">        TIntList c = new TIntArrayList();</span>
         
-<span class="fc" id="L4311">        int i = 0, j = 0;</span>
-<span class="fc bfc" id="L4312" title="All 4 branches covered.">        while (i &lt; orderedA.length &amp;&amp; j &lt; orderedB.length) {</span>
-<span class="fc bfc" id="L4313" title="All 2 branches covered.">            if (orderedA[i] == orderedB[j]) {</span>
-<span class="fc" id="L4314">                c.add(orderedA[i]);</span>
-<span class="fc" id="L4315">                i++; </span>
-<span class="fc" id="L4316">                j++;</span>
-<span class="fc bfc" id="L4317" title="All 2 branches covered.">            } else if (orderedA[i] &lt; orderedB[j]) {</span>
-<span class="fc" id="L4318">                i++;</span>
+<span class="fc" id="L4313">        int i = 0, j = 0;</span>
+<span class="fc bfc" id="L4314" title="All 4 branches covered.">        while (i &lt; orderedA.length &amp;&amp; j &lt; orderedB.length) {</span>
+<span class="fc bfc" id="L4315" title="All 2 branches covered.">            if (orderedA[i] == orderedB[j]) {</span>
+<span class="fc" id="L4316">                c.add(orderedA[i]);</span>
+<span class="fc" id="L4317">                i++; </span>
+<span class="fc" id="L4318">                j++;</span>
+<span class="fc bfc" id="L4319" title="All 2 branches covered.">            } else if (orderedA[i] &lt; orderedB[j]) {</span>
+<span class="fc" id="L4320">                i++;</span>
             } else {
-<span class="fc" id="L4320">                j++;</span>
+<span class="fc" id="L4322">                j++;</span>
             }
         }
-<span class="fc" id="L4323">        return c.toArray();</span>
+<span class="fc" id="L4325">        return c.toArray();</span>
     }
     
     /**
@@ -4334,52 +4336,52 @@ import gnu.trove.set.hash.TIntHashSet;
      */
     public static int[] multisetUnorderedIntersection(int[] a, int[] b) {
         
-<span class="fc" id="L4337">        a = Arrays.copyOf(a, a.length);</span>
-<span class="fc" id="L4338">        b = Arrays.copyOf(b, b.length);</span>
-<span class="fc" id="L4339">        Arrays.sort(a);</span>
-<span class="fc" id="L4340">        Arrays.sort(b);</span>
+<span class="fc" id="L4339">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L4340">        b = Arrays.copyOf(b, b.length);</span>
+<span class="fc" id="L4341">        Arrays.sort(a);</span>
+<span class="fc" id="L4342">        Arrays.sort(b);</span>
         
-<span class="fc" id="L4342">        return multisetIntersection(a, b);</span>
+<span class="fc" id="L4344">        return multisetIntersection(a, b);</span>
     }
     
     public static TIntObjectMap&lt;TIntSet&gt; copy(TIntObjectMap&lt;TIntSet&gt; a) {
-<span class="fc" id="L4346">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-<span class="fc" id="L4347">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
+<span class="fc" id="L4348">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L4349">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
         TIntSet set, cSet;
         TIntIterator iter2;
         int i, key;
-<span class="fc bfc" id="L4351" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="fc" id="L4352">            iter.advance();</span>
+<span class="fc bfc" id="L4353" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L4354">            iter.advance();</span>
             
-<span class="fc" id="L4354">            key = iter.key();</span>
-<span class="fc" id="L4355">            set = iter.value();</span>
+<span class="fc" id="L4356">            key = iter.key();</span>
+<span class="fc" id="L4357">            set = iter.value();</span>
             
-<span class="fc" id="L4357">            cSet = new TIntHashSet();</span>
+<span class="fc" id="L4359">            cSet = new TIntHashSet();</span>
             
-<span class="fc" id="L4359">            iter2 = set.iterator();</span>
+<span class="fc" id="L4361">            iter2 = set.iterator();</span>
             
-<span class="fc bfc" id="L4361" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L4362">                cSet.add(iter2.next());</span>
+<span class="fc bfc" id="L4363" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L4364">                cSet.add(iter2.next());</span>
             }
-<span class="fc" id="L4364">            c.put(key, cSet);</span>
+<span class="fc" id="L4366">            c.put(key, cSet);</span>
         }
-<span class="fc" id="L4366">        return c;</span>
+<span class="fc" id="L4368">        return c;</span>
     }
     
     public static TObjectDoubleMap&lt;PairInt&gt; copy(TObjectDoubleMap&lt;PairInt&gt; a) {
         
-<span class="fc" id="L4371">        TObjectDoubleMap&lt;PairInt&gt; out = new TObjectDoubleHashMap&lt;PairInt&gt;();</span>
+<span class="fc" id="L4373">        TObjectDoubleMap&lt;PairInt&gt; out = new TObjectDoubleHashMap&lt;PairInt&gt;();</span>
         
-<span class="fc" id="L4373">        TObjectDoubleIterator&lt;PairInt&gt; iter = a.iterator();</span>
+<span class="fc" id="L4375">        TObjectDoubleIterator&lt;PairInt&gt; iter = a.iterator();</span>
         PairInt p;
         int i;
-<span class="fc bfc" id="L4376" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="fc" id="L4377">            iter.advance();</span>
-<span class="fc" id="L4378">            p = iter.key();</span>
-<span class="fc" id="L4379">            out.put(p.copy(), iter.value());</span>
+<span class="fc bfc" id="L4378" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L4379">            iter.advance();</span>
+<span class="fc" id="L4380">            p = iter.key();</span>
+<span class="fc" id="L4381">            out.put(p.copy(), iter.value());</span>
         }
         
-<span class="fc" id="L4382">        return out;</span>
+<span class="fc" id="L4384">        return out;</span>
     }
     
     /**
@@ -4388,75 +4390,75 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static TIntObjectMap&lt;TIntSet&gt; copyToSymmetricMap(TIntObjectMap&lt;TIntSet&gt; a) {
-<span class="fc" id="L4391">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L4393">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
-<span class="fc" id="L4393">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
+<span class="fc" id="L4395">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
         TIntSet set, uSet, vSet;
         TIntIterator iter2;
         
         int i, u, v;
-<span class="fc bfc" id="L4398" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="fc" id="L4399">            iter.advance();</span>
+<span class="fc bfc" id="L4400" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L4401">            iter.advance();</span>
             
-<span class="fc" id="L4401">            u = iter.key();</span>
-<span class="fc" id="L4402">            set = iter.value();</span>
+<span class="fc" id="L4403">            u = iter.key();</span>
+<span class="fc" id="L4404">            set = iter.value();</span>
             
-<span class="fc" id="L4404">            uSet = out.get(u);</span>
-<span class="fc bfc" id="L4405" title="All 2 branches covered.">            if (uSet == null) {</span>
-<span class="fc" id="L4406">                uSet = new TIntHashSet();</span>
-<span class="fc" id="L4407">                out.put(u, uSet);</span>
+<span class="fc" id="L4406">            uSet = out.get(u);</span>
+<span class="fc bfc" id="L4407" title="All 2 branches covered.">            if (uSet == null) {</span>
+<span class="fc" id="L4408">                uSet = new TIntHashSet();</span>
+<span class="fc" id="L4409">                out.put(u, uSet);</span>
             }
             
-<span class="fc" id="L4410">            iter2 = set.iterator();</span>
-<span class="fc bfc" id="L4411" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L4412">                v = iter2.next();</span>
+<span class="fc" id="L4412">            iter2 = set.iterator();</span>
+<span class="fc bfc" id="L4413" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L4414">                v = iter2.next();</span>
                 
-<span class="fc" id="L4414">                uSet.add(v);</span>
+<span class="fc" id="L4416">                uSet.add(v);</span>
                 
-<span class="fc" id="L4416">                vSet = out.get(v);</span>
-<span class="fc bfc" id="L4417" title="All 2 branches covered.">                if (vSet == null) {</span>
-<span class="fc" id="L4418">                    vSet = new TIntHashSet();</span>
-<span class="fc" id="L4419">                    out.put(v, vSet);</span>
+<span class="fc" id="L4418">                vSet = out.get(v);</span>
+<span class="fc bfc" id="L4419" title="All 2 branches covered.">                if (vSet == null) {</span>
+<span class="fc" id="L4420">                    vSet = new TIntHashSet();</span>
+<span class="fc" id="L4421">                    out.put(v, vSet);</span>
                 }
-<span class="fc" id="L4421">                vSet.add(u);</span>
+<span class="fc" id="L4423">                vSet.add(u);</span>
             }
         }
         
-<span class="fc" id="L4425">        return out;</span>
+<span class="fc" id="L4427">        return out;</span>
     }
     
     public static TIntIntMap copy(TIntIntMap a) {
-<span class="nc" id="L4429">        TIntIntMap c = new TIntIntHashMap();</span>
-<span class="nc" id="L4430">        TIntIntIterator iter = a.iterator();</span>
+<span class="nc" id="L4431">        TIntIntMap c = new TIntIntHashMap();</span>
+<span class="nc" id="L4432">        TIntIntIterator iter = a.iterator();</span>
         int i;
-<span class="nc bnc" id="L4432" title="All 2 branches missed.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="nc" id="L4433">            iter.advance();</span>
-<span class="nc" id="L4434">            c.put(iter.key(), iter.value());</span>
+<span class="nc bnc" id="L4434" title="All 2 branches missed.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="nc" id="L4435">            iter.advance();</span>
+<span class="nc" id="L4436">            c.put(iter.key(), iter.value());</span>
         }
-<span class="nc" id="L4436">        return c;</span>
+<span class="nc" id="L4438">        return c;</span>
     }
     
     public static float[][] convertToFloat(double[][] a) {
-<span class="fc" id="L4440">        float[][] c = new float[a.length][];</span>
+<span class="fc" id="L4442">        float[][] c = new float[a.length][];</span>
         int i, j;
-<span class="fc bfc" id="L4442" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L4443">            c[i] = new float[a[0].length];</span>
-<span class="fc bfc" id="L4444" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc" id="L4445">                c[i][j] = (float) a[i][j];</span>
+<span class="fc bfc" id="L4444" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L4445">            c[i] = new float[a[0].length];</span>
+<span class="fc bfc" id="L4446" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc" id="L4447">                c[i][j] = (float) a[i][j];</span>
             }
         }
-<span class="fc" id="L4448">        return c;</span>
+<span class="fc" id="L4450">        return c;</span>
     }
     public static double[][] convertIntToDouble(int[][] a) {
-<span class="nc" id="L4451">        double[][] c = new double[a.length][];</span>
+<span class="nc" id="L4453">        double[][] c = new double[a.length][];</span>
         int i, j;
-<span class="nc bnc" id="L4453" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L4454">            c[i] = new double[a[0].length];</span>
-<span class="nc bnc" id="L4455" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="nc" id="L4456">                c[i][j] = a[i][j];</span>
+<span class="nc bnc" id="L4455" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L4456">            c[i] = new double[a[0].length];</span>
+<span class="nc bnc" id="L4457" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="nc" id="L4458">                c[i][j] = a[i][j];</span>
             }
         }
-<span class="nc" id="L4459">        return c;</span>
+<span class="nc" id="L4461">        return c;</span>
     }
     
     /**
@@ -4467,18 +4469,18 @@ import gnu.trove.set.hash.TIntHashSet;
      * @return 
      */
     public static int[][] createPermutationMatrix(int[] assignments) {
-<span class="fc" id="L4470">        int n = assignments.length;</span>
-<span class="fc" id="L4471">        int[][] p = new int[n][];</span>
+<span class="fc" id="L4472">        int n = assignments.length;</span>
+<span class="fc" id="L4473">        int[][] p = new int[n][];</span>
         int i;
-<span class="fc bfc" id="L4473" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4474">            p[i] = new int[n];</span>
+<span class="fc bfc" id="L4475" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4476">            p[i] = new int[n];</span>
         }
-<span class="fc bfc" id="L4476" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4477">            p[i][assignments[i]] = 1;</span>
+<span class="fc bfc" id="L4478" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4479">            p[i][assignments[i]] = 1;</span>
         }
-<span class="pc bpc" id="L4479" title="3 of 4 branches missed.">        assert(MatrixUtil.isAPermutationMatrix(p));</span>
-<span class="fc" id="L4480">        return p;</span>
+<span class="pc bnc" id="L4481" title="All 2 branches missed.">        assert(MatrixUtil.isAPermutationMatrix(p));</span>
+<span class="fc" id="L4482">        return p;</span>
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

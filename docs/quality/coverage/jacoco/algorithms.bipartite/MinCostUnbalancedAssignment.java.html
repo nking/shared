@@ -87,7 +87,7 @@ import java.util.logging.Logger;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">@SuppressWarnings({&quot;unchecked&quot;})</span>
+<span class="fc" id="L90">@SuppressWarnings({&quot;unchecked&quot;})</span>
 <span class="fc" id="L91">public class MinCostUnbalancedAssignment {</span>
 
 <span class="fc" id="L93">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
@@ -386,14 +386,14 @@ import java.util.logging.Logger;
                 + &quot; epsLarge=&quot; + epsLarge);
             
             // pg 44, assertions I1, I2, I3, and I4
-<span class="pc bpc" id="L389" title="3 of 4 branches missed.">            assert(gFlow.assertFlowValue(s));</span>
-<span class="pc bpc" id="L390" title="3 of 4 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
+<span class="pc bnc" id="L389" title="All 2 branches missed.">            assert(gFlow.assertFlowValue(s));</span>
+<span class="pc bnc" id="L390" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
             // if using a smaller eps than maxC, cannot assert
             //    these on first round
 <span class="pc bpc" id="L393" title="1 of 4 branches missed.">            if ((nIterR &gt; 0) || (eps &gt; gFlow.getMaxC())) {</span>
                 //assert(gFlow.integralFlowIsEpsProper(eps));
-<span class="pc bpc" id="L395" title="3 of 4 branches missed.">                assert(gFlow.integralBipartiteFlowIsEpsProper(eps));</span>
-<span class="pc bpc" id="L396" title="3 of 4 branches missed.">                assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
+<span class="pc bnc" id="L395" title="All 2 branches missed.">                assert(gFlow.integralBipartiteFlowIsEpsProper(eps));</span>
+<span class="pc bnc" id="L396" title="All 2 branches missed.">                assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
             }
             
 <span class="fc" id="L399">            eps /= ((float) q);</span>
@@ -441,7 +441,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L441">        gFlow.zeroTheMatchedBipartiteFlow(surplus, deficit);</span>
 
         // assert I4 and I5
-<span class="pc bpc" id="L444" title="3 of 4 branches missed.">        assert(gFlow.assertSaturatedBipartiteIsEpsSnug(epsLarge));</span>
+<span class="pc bnc" id="L444" title="All 2 branches missed.">        assert(gFlow.assertSaturatedBipartiteIsEpsSnug(epsLarge));</span>
         
         /*
         see Figure 7.4 on pg 53.
@@ -545,8 +545,8 @@ import java.util.logging.Logger;
             // assert from pg 52 
             //       I1', I2, I3, I4, on FlowNetwork
             //       and I5 on ResidualDigraph2
-<span class="pc bpc" id="L548" title="3 of 4 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
-<span class="pc bpc" id="L549" title="3 of 4 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
+<span class="pc bnc" id="L548" title="All 2 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
+<span class="pc bnc" id="L549" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
             //assert(gFlow.integralFlowIsEpsProper(epsLarge));
             //assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));
             //assert I5: Rf has no cycles of length zero
@@ -578,11 +578,11 @@ import java.util.logging.Logger;
             //gFlow.printNetCosts();
             
             // pg 63 assert I1', I2, I3
-<span class="pc bpc" id="L581" title="3 of 4 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
-<span class="pc bpc" id="L582" title="3 of 4 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
+<span class="pc bnc" id="L581" title="All 2 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
+<span class="pc bnc" id="L582" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
             //assert(gFlow.integralFlowIsEpsProper(epsLarge));  
-<span class="pc bpc" id="L584" title="3 of 4 branches missed.">            assert(gFlow.integralBipartiteFlowIsEpsProper(eps));  </span>
-<span class="pc bpc" id="L585" title="3 of 4 branches missed.">            assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
+<span class="pc bnc" id="L584" title="All 2 branches missed.">            assert(gFlow.integralBipartiteFlowIsEpsProper(eps));  </span>
+<span class="pc bnc" id="L585" title="All 2 branches missed.">            assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
                         
             //log.info(&quot;after augment flow:&quot;);
             //gFlow.printSaturatedLinks();
@@ -792,8 +792,8 @@ import java.util.logging.Logger;
             }
 <span class="fc" id="L793">            int idx1 = node1.index;</span>
                                 
-<span class="pc bpc" id="L795" title="1 of 2 branches missed.">            if (terminatingKeys.containsKey(idx1)) {</span>
-<span class="nc" id="L796">                continue;</span>
+<span class="fc bfc" id="L795" title="All 2 branches covered.">            if (terminatingKeys.containsKey(idx1)) {</span>
+<span class="fc" id="L796">                continue;</span>
 <span class="fc bfc" id="L797" title="All 4 branches covered.">            } else if (</span>
                 node1.pathPredecessor != null &amp;&amp;
                 node1.pathPredecessor instanceof RightNode &amp;&amp;
@@ -1060,7 +1060,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L1060">            return;</span>
         }
         
-<span class="nc bnc" id="L1063" title="All 4 branches missed.">        assert(!ks.isEmpty());</span>
+<span class="nc bnc" id="L1063" title="All 2 branches missed.">        assert(!ks.isEmpty());</span>
         
         // pick from ks to modify prices
         //pd^~(v) = math.floor(pd(v) + k * eps_down)
@@ -1334,7 +1334,7 @@ Matchings in G are integral flows in N_G
 <span class="fc" id="L1334">            List&lt;List&lt;PathNode&gt;&gt; pathLists = extractPathNodes(forest, </span>
                 ltForestKey);
             
-<span class="pc bpc" id="L1337" title="3 of 4 branches missed.">            assert(pathLists != null);</span>
+<span class="pc bnc" id="L1337" title="All 2 branches missed.">            assert(pathLists != null);</span>
                         
 <span class="fc bfc" id="L1339" title="All 2 branches covered.">            for (int pathIdx = 0; pathIdx &lt; pathLists.size(); ++pathIdx) {</span>
             
@@ -1373,7 +1373,7 @@ Matchings in G are integral flows in N_G
                     // determine if node1 -&gt; node2 is &quot;idle&quot; or &quot;saturated&quot;
 
 <span class="pc bpc" id="L1375" title="1 of 2 branches missed.">                    if (node1IsRight) {</span>
-<span class="nc bnc" id="L1376" title="All 4 branches missed.">                        assert(!node2IsRight);</span>
+<span class="nc bnc" id="L1376" title="All 2 branches missed.">                        assert(!node2IsRight);</span>
 <span class="nc bnc" id="L1377" title="All 2 branches missed.">                        if (node2IsLeft) {</span>
 <span class="nc bnc" id="L1378" title="All 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
 <span class="nc" id="L1379">                                float p2 = (delta2 * eps);</span>
@@ -1402,7 +1402,7 @@ Matchings in G are integral flows in N_G
                                 
 <span class="nc" id="L1403">                                node2.setKey(l2);</span>
                             } else {
-<span class="nc bnc" id="L1405" title="All 4 branches missed.">                                assert (rF.getForwardLinksRM().get(idx2) != null</span>
+<span class="nc bnc" id="L1405" title="All 2 branches missed.">                                assert (rF.getForwardLinksRM().get(idx2) != null</span>
 <span class="nc" id="L1406">                                &amp;&amp; rF.getForwardLinksRM().get(idx2)</span>
 <span class="nc bnc" id="L1407" title="All 2 branches missed.">                                .contains(idx1));</span>
 
@@ -1442,7 +1442,7 @@ Matchings in G are integral flows in N_G
                                 
 <span class="nc" id="L1443">                                node1.setKey(l1);</span>
                             } else {
-<span class="nc bnc" id="L1445" title="All 4 branches missed.">                                assert (rF.getForwardLinksSinkRM().contains(idx1));</span>
+<span class="nc bnc" id="L1445" title="All 2 branches missed.">                                assert (rF.getForwardLinksSinkRM().contains(idx1));</span>
                                 // &quot;idle&quot; node1(right) --&gt; node2(sink)
 <span class="nc" id="L1447">                                l2 -= (lt - l1);</span>
                                 
@@ -1460,7 +1460,7 @@ Matchings in G are integral flows in N_G
                         }
                         // end of node1 is right node
 <span class="pc bpc" id="L1462" title="1 of 2 branches missed.">                    } else if (node1IsLeft) {</span>
-<span class="pc bpc" id="L1463" title="3 of 4 branches missed.">                        assert(!node2IsLeft);</span>
+<span class="pc bnc" id="L1463" title="All 2 branches missed.">                        assert(!node2IsLeft);</span>
 <span class="pc bpc" id="L1464" title="1 of 2 branches missed.">                        if (node2IsRight) {   </span>
     
 <span class="pc bpc" id="L1466" title="2 of 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
@@ -1489,7 +1489,7 @@ Matchings in G are integral flows in N_G
                                 
 <span class="nc" id="L1490">                                node1.setKey(l1);</span>
                             } else {
-<span class="pc bpc" id="L1492" title="1 of 2 branches missed.">                                assert(rF.getForwardLinksRM().get(idx1)</span>
+<span class="pc" id="L1492">                                assert(rF.getForwardLinksRM().get(idx1)</span>
 <span class="nc bnc" id="L1493" title="All 2 branches missed.">                                    .contains(idx2));</span>
                                 // idle link node1(left) --&gt; node2(right)
 <span class="fc" id="L1495">                                l2 -= (lt - l1);</span>
@@ -1528,7 +1528,7 @@ Matchings in G are integral flows in N_G
                                 
 <span class="nc" id="L1529">                                node2.setKey(l2);</span>
                             } else {
-<span class="nc bnc" id="L1531" title="All 4 branches missed.">                                assert(rF.getForwardLinksSourceRM().contains(idx1));</span>
+<span class="nc bnc" id="L1531" title="All 2 branches missed.">                                assert(rF.getForwardLinksSourceRM().contains(idx1));</span>
                                 // idle  node2(source) --&gt; node1(left)
 <span class="nc" id="L1533">                                l1 -= (lt - l2);</span>
                                 
@@ -1546,7 +1546,7 @@ Matchings in G are integral flows in N_G
                         }
                         // end of node1 is left node
 <span class="nc bnc" id="L1548" title="All 2 branches missed.">                    } else if (node1IsSource) {</span>
-<span class="nc bnc" id="L1549" title="All 4 branches missed.">                        assert (node2IsLeft);</span>
+<span class="nc bnc" id="L1549" title="All 2 branches missed.">                        assert (node2IsLeft);</span>
 <span class="nc bnc" id="L1550" title="All 4 branches missed.">                        if (!leftPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
 <span class="nc" id="L1551">                            float p2 = ((lt - l2) * eps);</span>
 <span class="nc" id="L1552">                            leftPriceIncreases.put(idx2, p2);</span>
@@ -1567,7 +1567,7 @@ Matchings in G are integral flows in N_G
                             
 <span class="nc" id="L1568">                            node1.setKey(l1);</span>
                         } else {
-<span class="nc bnc" id="L1570" title="All 4 branches missed.">                            assert (rF.getForwardLinksSourceRM().contains(idx2));</span>
+<span class="nc bnc" id="L1570" title="All 2 branches missed.">                            assert (rF.getForwardLinksSourceRM().contains(idx2));</span>
                             // idle  node1(source) --&gt; node2(left)
 <span class="nc" id="L1572">                            l2 -= (lt - l1);</span>
                             
@@ -1583,7 +1583,7 @@ Matchings in G are integral flows in N_G
 <span class="nc" id="L1583">                            node2.setKey(l2);</span>
                         }
 <span class="nc bnc" id="L1585" title="All 2 branches missed.">                    } else if (node1IsSink) {</span>
-<span class="nc bnc" id="L1586" title="All 4 branches missed.">                        assert(node2IsRight);</span>
+<span class="nc bnc" id="L1586" title="All 2 branches missed.">                        assert(node2IsRight);</span>
 <span class="nc bnc" id="L1587" title="All 4 branches missed.">                        if (!rightPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
 <span class="nc" id="L1588">                            float p2 = (delta2 * eps);</span>
 <span class="nc" id="L1589">                            rightPriceIncreases.put(idx2, p2);</span>
@@ -1605,7 +1605,7 @@ Matchings in G are integral flows in N_G
                             
 <span class="nc" id="L1606">                            node2.setKey(l2);</span>
                         } else {
-<span class="nc bnc" id="L1608" title="All 4 branches missed.">                            assert(rF.getForwardLinksSinkRM().contains(idx2));</span>
+<span class="nc bnc" id="L1608" title="All 2 branches missed.">                            assert(rF.getForwardLinksSinkRM().contains(idx2));</span>
                             // &quot;idle&quot; node2(right) --&gt; node1(sink)
 <span class="nc" id="L1610">                            l1 -= (lt - l2);</span>
                             
@@ -1763,21 +1763,21 @@ Matchings in G are integral flows in N_G
         //   AND idle-saturated states of the underlying arcs
         
 <span class="fc bfc" id="L1765" title="All 2 branches covered.">        for (LinkedList&lt;PathNode&gt; link : cPaths) {</span>
-<span class="pc bpc" id="L1766" title="3 of 4 branches missed.">            assert(link.size() == 2);</span>
+<span class="pc bnc" id="L1766" title="All 2 branches missed.">            assert(link.size() == 2);</span>
 <span class="fc" id="L1767">            PathNode node2 = link.pollFirst();</span>
 <span class="fc" id="L1768">            PathNode node1 = link.pollFirst();</span>
-<span class="pc bpc" id="L1769" title="3 of 4 branches missed.">            assert(link.isEmpty());</span>
+<span class="pc bnc" id="L1769" title="All 2 branches missed.">            assert(link.isEmpty());</span>
 <span class="fc" id="L1770">            int idx1 = node1.index;</span>
 <span class="fc" id="L1771">            int idx2 = node2.index;</span>
         
 <span class="pc bpc" id="L1773" title="1 of 2 branches missed.">            if (node1 instanceof SourceNode) {</span>
-<span class="nc bnc" id="L1774" title="All 4 branches missed.">                assert(!(node2 instanceof SourceNode));</span>
+<span class="nc bnc" id="L1774" title="All 2 branches missed.">                assert(!(node2 instanceof SourceNode));</span>
 <span class="nc" id="L1775">                gFlow.augmentSourceToLeftFlowAndArc(idx2);</span>
 <span class="pc bpc" id="L1776" title="1 of 2 branches missed.">            } else if (node1 instanceof SinkNode) {</span>
-<span class="nc bnc" id="L1777" title="All 4 branches missed.">                assert(!(node2 instanceof SinkNode));</span>
+<span class="nc bnc" id="L1777" title="All 2 branches missed.">                assert(!(node2 instanceof SinkNode));</span>
 <span class="nc" id="L1778">                gFlow.augmentRightToSinkFlowAndArc(idx2);</span>
 <span class="pc bpc" id="L1779" title="1 of 2 branches missed.">            } else if (node1 instanceof LeftNode) {</span>
-<span class="nc bnc" id="L1780" title="All 4 branches missed.">                assert(!(node2 instanceof LeftNode));</span>
+<span class="nc bnc" id="L1780" title="All 2 branches missed.">                assert(!(node2 instanceof LeftNode));</span>
 <span class="nc bnc" id="L1781" title="All 2 branches missed.">                if (node2 instanceof RightNode) {</span>
 <span class="nc" id="L1782">                    gFlow.augmentFlowAndArc(idx1, idx2);</span>
 <span class="nc bnc" id="L1783" title="All 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
@@ -1786,7 +1786,7 @@ Matchings in G are integral flows in N_G
 <span class="nc" id="L1786">                    gFlow.augmentRightToSinkFlowAndArc(idx1);</span>
                 }
             } else {
-<span class="pc bpc" id="L1789" title="3 of 4 branches missed.">                assert(!(node2 instanceof RightNode));</span>
+<span class="pc bnc" id="L1789" title="All 2 branches missed.">                assert(!(node2 instanceof RightNode));</span>
 <span class="pc bpc" id="L1790" title="1 of 2 branches missed.">                if (node2 instanceof LeftNode) {</span>
 <span class="fc" id="L1791">                    gFlow.augmentFlowAndArc(idx2, idx1);</span>
 <span class="nc bnc" id="L1792" title="All 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
@@ -2088,4 +2088,4 @@ Matchings in G are integral flows in N_G
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

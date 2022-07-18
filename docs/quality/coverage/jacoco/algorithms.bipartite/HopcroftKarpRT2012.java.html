@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * 
  * @author nichole
  */
-<span class="nc bnc" id="L34" title="All 2 branches missed.">public class HopcroftKarpRT2012 {</span>
+<span class="nc" id="L34">public class HopcroftKarpRT2012 {</span>
     
 <span class="nc" id="L36">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
     
@@ -151,7 +151,7 @@ import java.util.logging.Logger;
             
 <span class="nc" id="L152">            rM = new ResidualDigraph(g, m);</span>
             
-<span class="nc bnc" id="L154" title="All 4 branches missed.">            assert(prevMSize &lt; m.size());</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">            assert(prevMSize &lt; m.size());</span>
             
 <span class="nc" id="L156">            prevMSize = m.size();</span>
 <span class="nc" id="L157">            ++nIter;            </span>
@@ -258,7 +258,7 @@ import java.util.logging.Logger;
                 rightNodes, node, prevKey,
                 augmentedLeft, augmentedRight, 
 <span class="nc" id="L260">                node, vXY.get(i));</span>
-<span class="nc bnc" id="L261" title="All 4 branches missed.">            assert(prevKey == 0L);</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">            assert(prevKey == 0L);</span>
         }
      
 <span class="nc" id="L264">        int nRight = rM.getNRight();</span>
@@ -277,7 +277,7 @@ import java.util.logging.Logger;
             // an alternating path from a maiden.
             // the key is the length of shortest path so far
 <span class="nc" id="L279">            PathNode y = (PathNode) heap.extractMin();</span>
-<span class="nc bnc" id="L280" title="All 4 branches missed.">            assert(y instanceof RightNode);</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">            assert(y instanceof RightNode);</span>
             
 <span class="nc" id="L282">            log.fine(&quot;heap.size=&quot; + heap.getNumberOfNodes());</span>
             
@@ -289,7 +289,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L289">                continue;</span>
             }
             
-<span class="nc bnc" id="L292" title="All 4 branches missed.">            assert(y.topPredecessor != null);</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">            assert(y.topPredecessor != null);</span>
             
 <span class="nc" id="L294">            int topIdx = y.topPredecessor.index;</span>
             
@@ -407,7 +407,7 @@ import java.util.logging.Logger;
         }
         
 <span class="nc" id="L409">        long lX = xNode.getKey();</span>
-<span class="nc bnc" id="L410" title="All 4 branches missed.">        assert(lX &lt; Long.MAX_VALUE);</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        assert(lX &lt; Long.MAX_VALUE);</span>
         
 <span class="nc" id="L412">        TIntSet forwardLinks </span>
 <span class="nc" id="L413">            = rM.getForwardLinksRM().get(xIdx);</span>
@@ -430,7 +430,7 @@ import java.util.logging.Logger;
 
 <span class="nc" id="L431">                RightNode yNode = yNodes.get(yIdx);</span>
 <span class="nc" id="L432">                long lOld = yNode.getKey();</span>
-<span class="nc bnc" id="L433" title="All 4 branches missed.">                assert(yNode.index == yIdx);</span>
+<span class="nc bnc" id="L433" title="All 2 branches missed.">                assert(yNode.index == yIdx);</span>
                 
                 //L := l(x) + lp(x ⇒ y) 
                 //   = l(x) + cp(x, y)
@@ -446,11 +446,11 @@ import java.util.logging.Logger;
 <span class="nc" id="L446">                long ell = lX + cp;</span>
 <span class="nc bnc" id="L447" title="All 2 branches missed.">                if (ell &lt; lOld) {</span>
 <span class="nc bnc" id="L448" title="All 2 branches missed.">                    if (lOld == Long.MAX_VALUE) {</span>
-<span class="nc bnc" id="L449" title="All 4 branches missed.">                        assert(yNode instanceof RightNode);</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">                        assert(yNode instanceof RightNode);</span>
 <span class="nc" id="L450">                        yNode = (RightNode)yNode.copy();</span>
 <span class="nc" id="L451">                        yNode.pathPredecessor = xNode.copy();</span>
 <span class="nc bnc" id="L452" title="All 2 branches missed.">                        if (yNode.pathPredecessor.topPredecessor != null) {</span>
-<span class="nc bnc" id="L453" title="All 4 branches missed.">                            assert (yNode.pathPredecessor.topPredecessor.index ==</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">                            assert (yNode.pathPredecessor.topPredecessor.index ==</span>
                                 topNode.index);
 <span class="nc" id="L455">                            yNode.topPredecessor</span>
                                 = yNode.pathPredecessor.topPredecessor;
@@ -462,16 +462,16 @@ import java.util.logging.Logger;
 <span class="nc" id="L462">                        log.fine(String.format(&quot;HEAP insert: %s&quot;,</span>
 <span class="nc" id="L463">                            yNode.toString()));</span>
                     } else {
-<span class="nc bnc" id="L465" title="All 2 branches missed.">                        int prev = </span>
-<span class="nc" id="L466">                            (yNode.pathPredecessor == null) ?</span>
-                            null :
+                        int prev = 
+<span class="nc bnc" id="L466" title="All 2 branches missed.">                            (yNode.pathPredecessor == null) ?</span>
+<span class="nc" id="L467">                            null :</span>
 <span class="nc" id="L468">                            yNode.pathPredecessor.index;</span>
-<span class="nc bnc" id="L469" title="All 2 branches missed.">                        int top = </span>
-<span class="nc" id="L470">                            (yNode.topPredecessor == null) ?</span>
-                            null :
+                        int top = 
+<span class="nc bnc" id="L470" title="All 2 branches missed.">                            (yNode.topPredecessor == null) ?</span>
+<span class="nc" id="L471">                            null :</span>
 <span class="nc" id="L472">                            yNode.topPredecessor.index;</span>
-<span class="nc bnc" id="L473" title="All 4 branches missed.">                        assert(prev != -1);</span>
-<span class="nc bnc" id="L474" title="All 4 branches missed.">                        assert(top != -1);</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">                        assert(prev != -1);</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">                        assert(top != -1);</span>
 <span class="nc bnc" id="L475" title="All 2 branches missed.">                        if (prev != xIdx) {</span>
 <span class="nc" id="L476">                            yNode.pathPredecessor = xNode;</span>
 <span class="nc" id="L477">                            yNode.topPredecessor = xNode.topPredecessor;</span>
@@ -512,7 +512,7 @@ import java.util.logging.Logger;
         
 <span class="nc" id="L513">        DoubleLinkedCircularList tree = forest.get((int)foresIdx);</span>
 
-<span class="nc bnc" id="L515" title="All 4 branches missed.">        assert(tree != null);</span>
+<span class="nc bnc" id="L515" title="All 2 branches missed.">        assert(tree != null);</span>
         
 <span class="nc" id="L517">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
 <span class="nc" id="L518">        long n = tree.getNumberOfNodes();</span>
@@ -649,7 +649,7 @@ import java.util.logging.Logger;
             }
             
             // assert saturated mapping for right node doesn't exist
-<span class="nc bnc" id="L652" title="All 4 branches missed.">            assert(rM.getBackwardLinksRM().containsKey(rightIdx));</span>
+<span class="nc bnc" id="L652" title="All 2 branches missed.">            assert(rM.getBackwardLinksRM().containsKey(rightIdx));</span>
 <span class="nc" id="L653">            int v2 = rM.getBackwardLinksRM().get(rightIdx);</span>
             
 <span class="nc" id="L655">            TIntSet rIndexes = rM.getForwardLinksRM().get(leftIdx);</span>
@@ -830,7 +830,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L830">                            break;</span>
                         }
 <span class="nc" id="L832">                    }</span>
-<span class="nc bnc" id="L833" title="All 4 branches missed.">                    assert (p0 != null);</span>
+<span class="nc bnc" id="L833" title="All 2 branches missed.">                    assert (p0 != null);</span>
 <span class="nc" id="L834">                    edges2.add(p0);</span>
 <span class="nc" id="L835">                    edges.remove(p0);</span>
 <span class="nc" id="L836">                    nc++;</span>
@@ -911,7 +911,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L911">                            break;</span>
                         }
 <span class="nc" id="L913">                    }</span>
-<span class="nc bnc" id="L914" title="All 4 branches missed.">                    assert (p0 != null);</span>
+<span class="nc bnc" id="L914" title="All 2 branches missed.">                    assert (p0 != null);</span>
 <span class="nc" id="L915">                    edges2.add(p0);</span>
 <span class="nc" id="L916">                    edges.remove(p0);</span>
 <span class="nc" id="L917">                    nc++;</span>
@@ -970,4 +970,4 @@ import java.util.logging.Logger;
 <span class="nc" id="L970">        }            </span>
 <span class="nc" id="L971">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

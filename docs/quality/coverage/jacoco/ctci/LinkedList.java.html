@@ -4,7 +4,7 @@
  *
  * @author nichole
  */
-<span class="nc bnc" id="L7" title="All 2 branches missed.">public class LinkedList&lt;K, V&gt; {</span>
+<span class="nc" id="L7">public class LinkedList&lt;K, V&gt; {</span>
 
 <span class="nc" id="L9">  protected Node&lt;K, V&gt; head = null;</span>
 <span class="nc" id="L10">  protected Node&lt;K, V&gt; tail = null;</span>
@@ -23,7 +23,7 @@
   public Node&lt;K,V&gt; add(K key, V value) {
 <span class="nc" id="L24">    Node&lt;K,V&gt; node = new Node(key, value);</span>
 <span class="nc bnc" id="L25" title="All 2 branches missed.">    if (head == null) {</span>
-<span class="nc bnc" id="L26" title="All 4 branches missed.">      assert(tail == null);</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">      assert(tail == null);</span>
 <span class="nc" id="L27">      head = node;</span>
 <span class="nc" id="L28">      tail = node;</span>
       // node next and prev are null instead of pointing to self
@@ -44,16 +44,16 @@
     //  (3) there's more than one item in list
 
 <span class="nc bnc" id="L46" title="All 2 branches missed.">    if (head == null) {</span>
-<span class="nc bnc" id="L47" title="All 4 branches missed.">      assert(n == 0);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">      assert(n == 0);</span>
 <span class="nc" id="L48">      return null;</span>
     }
-<span class="nc bnc" id="L50" title="All 4 branches missed.">    assert(tail != null);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    assert(tail != null);</span>
 
 <span class="nc" id="L52">    Node&lt;K,V&gt; node = head;</span>
 
     // case where head == tail, that is, only 1 item was in the list
 <span class="nc bnc" id="L55" title="All 2 branches missed.">    if (head.equals(tail)) {</span>
-<span class="nc bnc" id="L56" title="All 4 branches missed.">       assert(n == 1);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">       assert(n == 1);</span>
 <span class="nc" id="L57">       head = null;</span>
 <span class="nc" id="L58">       tail = null;</span>
 <span class="nc" id="L59">       --n;</span>
@@ -63,9 +63,9 @@
 <span class="nc" id="L63">       return node;</span>
     }
 
-<span class="nc bnc" id="L66" title="All 4 branches missed.">    assert(head.next != null);</span>
-<span class="nc bnc" id="L67" title="All 4 branches missed.">    assert(tail.prev != null);</span>
-<span class="nc bnc" id="L68" title="All 4 branches missed.">    assert(n &gt; 1);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    assert(head.next != null);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">    assert(tail.prev != null);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    assert(n &gt; 1);</span>
 
 <span class="nc" id="L70">    head = head.next;</span>
 <span class="nc" id="L71">    head.prev = null;</span>
@@ -85,15 +85,15 @@
     //(3) more than 1 item in list
 
 <span class="nc bnc" id="L87" title="All 2 branches missed.">    if (tail == null) {</span>
-<span class="nc bnc" id="L88" title="All 4 branches missed.">      assert(head == null);</span>
-<span class="nc bnc" id="L89" title="All 4 branches missed.">      assert(n == 0);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      assert(head == null);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">      assert(n == 0);</span>
 <span class="nc" id="L90">      return null;</span>
     }
 
 <span class="nc" id="L93">    Node&lt;K,V&gt; node = tail;</span>
 
 <span class="nc bnc" id="L95" title="All 2 branches missed.">    if (head.equals(tail)) {</span>
-<span class="nc bnc" id="L96" title="All 4 branches missed.">      assert(n == 1);</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">      assert(n == 1);</span>
 <span class="nc" id="L97">      head = null;</span>
 <span class="nc" id="L98">      tail = null;</span>
 <span class="nc" id="L99">      --n;</span>
@@ -172,4 +172,4 @@
 <span class="nc bnc" id="L172" title="All 2 branches missed.">    return (n == 0);</span>
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

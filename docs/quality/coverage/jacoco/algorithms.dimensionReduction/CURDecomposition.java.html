@@ -59,7 +59,7 @@ import no.uib.cipr.matrix.SVD;
    * 
  * @author nichole
  */
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">public class CURDecomposition {</span>
+<span class="pc" id="L62">public class CURDecomposition {</span>
     
     /**
      * a CUR-Decomposition is an approximation to the SVD, but the result is that 
@@ -295,7 +295,7 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc bfc" id="L295" title="All 2 branches covered.">        for (i = 0; i &lt; selectedRowIdxs.length; ++i) {</span>
             
 <span class="fc" id="L297">            j = selectedRowIdxs[i];</span>
-<span class="pc bpc" id="L298" title="5 of 6 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
+<span class="pc bnc" id="L298" title="All 4 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
             
 <span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!freq.containsKey(j)) {</span>
 <span class="fc" id="L301">                continue;</span>
@@ -506,4 +506,4 @@ import no.uib.cipr.matrix.SVD;
         double[][] r;
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

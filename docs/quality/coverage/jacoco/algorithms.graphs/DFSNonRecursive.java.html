@@ -40,7 +40,7 @@ import java.util.Stack;
 * 
  * @author nichole
  */
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">public class DFSNonRecursive {</span>
+<span class="fc" id="L43">public class DFSNonRecursive {</span>
     /**
      * adjacency matrix with connected i-&gt;j indicated by the index and each
      *    node in the linked list, respectively.
@@ -270,7 +270,7 @@ import java.util.Stack;
 <span class="pc bpc" id="L270" title="1 of 2 branches missed.">        if (g == null) {</span>
 <span class="nc" id="L271">            return null;</span>
         }
-<span class="pc bpc" id="L273" title="3 of 4 branches missed.">        assert(a.length == g.length);</span>
+<span class="pc bnc" id="L273" title="All 2 branches missed.">        assert(a.length == g.length);</span>
 <span class="fc" id="L274">        a = Arrays.copyOf(a, a.length);</span>
 <span class="fc" id="L275">        int[] idxs = new int[a.length];</span>
 <span class="fc bfc" id="L276" title="All 2 branches covered.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
@@ -306,4 +306,4 @@ import java.util.Stack;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

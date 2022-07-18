@@ -44,7 +44,7 @@ import java.util.Arrays;
  * leads to a vertex whose discovery time is strictly smaller than v’s 
  * discovery time.
  */
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">public class FindAllBridgesDFS {</span>
+<span class="fc" id="L47">public class FindAllBridgesDFS {</span>
 
     /**
      * adjacency matrix with connected i-&gt;j indicated by the index and each
@@ -191,7 +191,7 @@ import java.util.Arrays;
 <span class="nc bnc" id="L191" title="All 2 branches missed.">        if (g == null) {</span>
 <span class="nc" id="L192">            return null;</span>
         }
-<span class="nc bnc" id="L194" title="All 4 branches missed.">        assert(a.length == g.length);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        assert(a.length == g.length);</span>
 <span class="nc" id="L195">        a = Arrays.copyOf(a, a.length);</span>
 <span class="nc" id="L196">        int[] idxs = new int[a.length];</span>
 <span class="nc bnc" id="L197" title="All 2 branches missed.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
@@ -218,4 +218,4 @@ import java.util.Arrays;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

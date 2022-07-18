@@ -55,7 +55,7 @@ import java.util.Arrays;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">public class RelabelToFront {</span>
+<span class="fc" id="L58">public class RelabelToFront {</span>
     
     /**
      * represents a generous machine precision in comparisons to 0.
@@ -117,7 +117,7 @@ import java.util.Arrays;
         // contains V - {src, sink}
 <span class="fc" id="L118">        this.ell = constructL();</span>
         
-<span class="pc bpc" id="L120" title="3 of 4 branches missed.">        assert(uNMap.size() == (ell.size() + 2));</span>
+<span class="pc bnc" id="L120" title="All 2 branches missed.">        assert(uNMap.size() == (ell.size() + 2));</span>
         
 <span class="fc" id="L122">        this.c = MatrixUtil.copy(cap);</span>
         
@@ -163,7 +163,7 @@ import java.util.Arrays;
         // contains V - {src, sink}
 <span class="fc" id="L164">        this.ell = constructL();</span>
         
-<span class="pc bpc" id="L166" title="3 of 4 branches missed.">        assert(uNMap.size() == (ell.size() + 2));</span>
+<span class="pc bnc" id="L166" title="All 2 branches missed.">        assert(uNMap.size() == (ell.size() + 2));</span>
         
 <span class="fc" id="L168">        this.c = createCapacityMap(adj);</span>
         
@@ -326,7 +326,7 @@ import java.util.Arrays;
 <span class="nc" id="L326">        TIntIterator iter = v.iterator();</span>
 <span class="nc bnc" id="L327" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
 <span class="nc" id="L328">            p = new PairInt(u, iter.next());</span>
-<span class="nc bnc" id="L329" title="All 4 branches missed.">            assert(this.f.containsKey(p));</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">            assert(this.f.containsKey(p));</span>
 <span class="nc" id="L330">            sum += this.f.get(p);</span>
         }
 <span class="nc" id="L332">        return sum;</span>
@@ -560,7 +560,7 @@ import java.util.Arrays;
 <span class="fc" id="L560">        this.h[u] = minH + 1;</span>
         
         //Lemma 26.20
-<span class="pc bpc" id="L563" title="3 of 4 branches missed.">        assert(h[u] &lt;= (2*uNMap.size() - 1));</span>
+<span class="pc bnc" id="L563" title="All 2 branches missed.">        assert(h[u] &lt;= (2*uNMap.size() - 1));</span>
         
         //DEBUG
         /*System.out.printf(&quot;\n&quot;);        
@@ -570,7 +570,7 @@ import java.util.Arrays;
                 u, Arrays.toString(vs.toArray()));
         }*/
         
-<span class="pc bpc" id="L573" title="3 of 4 branches missed.">        assert(minH &lt; Integer.MAX_VALUE);     </span>
+<span class="pc bnc" id="L573" title="All 2 branches missed.">        assert(minH &lt; Integer.MAX_VALUE);     </span>
 <span class="fc" id="L574">    }</span>
     
     /**
@@ -623,7 +623,7 @@ import java.util.Arrays;
             
 <span class="fc" id="L624">            fVU -= delta;</span>
             
-<span class="pc bpc" id="L626" title="3 of 4 branches missed.">            assert(fVU &lt;= c.get(p));</span>
+<span class="pc bnc" id="L626" title="All 2 branches missed.">            assert(fVU &lt;= c.get(p));</span>
             
 <span class="fc" id="L628">            f.put(p, fVU);</span>
                         
@@ -756,7 +756,7 @@ import java.util.Arrays;
         
 <span class="fc bfc" id="L757" title="All 2 branches covered.">        while (u != null) {</span>
             
-<span class="pc bpc" id="L759" title="3 of 4 branches missed.">            assert(Math.abs(this.eF[u.vertex]) &lt; 1e-7);</span>
+<span class="pc bnc" id="L759" title="All 2 branches missed.">            assert(Math.abs(this.eF[u.vertex]) &lt; 1e-7);</span>
             
 <span class="fc" id="L761">            u = (VertexNode) u.next;</span>
         }
@@ -842,4 +842,4 @@ import java.util.Arrays;
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

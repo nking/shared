@@ -14,7 +14,7 @@ import java.util.Arrays;
  
  * @author nichole
  */
-<span class="pc bpc" id="L17" title="1 of 2 branches missed.">public class MedianSmooth1D {</span>
+<span class="fc" id="L17">public class MedianSmooth1D {</span>
     
     /**
      * calculate a running median of a window of size xWindow, yWindow.
@@ -55,8 +55,8 @@ import java.util.Arrays;
 <span class="fc" id="L55">            sVec.append(input[i]);</span>
         }
 
-<span class="pc bpc" id="L58" title="3 of 4 branches missed.">        assert(sVec.n == sVec.a.length);</span>
-<span class="pc bpc" id="L59" title="3 of 4 branches missed.">        assert(sVec.sorted);</span>
+<span class="pc bnc" id="L58" title="All 2 branches missed.">        assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L59" title="All 2 branches missed.">        assert(sVec.sorted);</span>
 
         //O(k) + (N)*lg2(k)
         float median;
@@ -73,17 +73,17 @@ import java.util.Arrays;
 
 <span class="fc bfc" id="L74" title="All 2 branches covered.">            if ((i + 1) &lt; input.length) {</span>
 
-<span class="pc bpc" id="L76" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L76" title="All 2 branches missed.">                assert(sVec.n == sVec.a.length);</span>
 
                 // remove : O(log_2(k))
 <span class="fc" id="L79">                sVec.remove(input[i - window + 1]);</span>
 
-<span class="pc bpc" id="L81" title="3 of 4 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
+<span class="pc bnc" id="L81" title="All 2 branches missed.">                assert(sVec.n == (sVec.a.length - 1));</span>
 
                 // add : O(log_2(k)) + &lt; O(k)
 <span class="fc" id="L84">                sVec.insertIntoOpenSlot(input[i + 1]);</span>
 
-<span class="pc bpc" id="L86" title="3 of 4 branches missed.">                assert(sVec.n == sVec.a.length);</span>
+<span class="pc bnc" id="L86" title="All 2 branches missed.">                assert(sVec.n == sVec.a.length);</span>
             }
         }
 
@@ -280,4 +280,4 @@ import java.util.Arrays;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

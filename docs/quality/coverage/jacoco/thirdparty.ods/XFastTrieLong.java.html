@@ -26,7 +26,7 @@ Edits were made to the code in project
 and then moved to this project
 
 */
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">@SuppressWarnings(&quot;unchecked&quot;)</span>
+<span class="fc" id="L29">@SuppressWarnings(&quot;unchecked&quot;)</span>
 public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt; 
 	extends BinaryTrieLong&lt;S, T&gt; {
 
@@ -101,7 +101,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 <span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (l == w) return false; // already contains x - abort</span>
        
 <span class="fc" id="L103">        int c = (int)((ix &gt;&gt;&gt; w-l-1) &amp; 1);</span>
-<span class="pc bpc" id="L104" title="5 of 6 branches missed.">        assert(c==0 || c==1);</span>
+<span class="pc bnc" id="L104" title="All 4 branches missed.">        assert(c==0 || c==1);</span>
         
 <span class="fc bfc" id="L106" title="All 2 branches covered.">        S pred = (c == right) ? (S)u.jump : (S)u.jump.child[0];</span>
 <span class="fc" id="L107">		u.jump = null;  // u will have two children shortly</span>
@@ -109,7 +109,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
         // 2 - add path to ix. rt is O(w-l)
 <span class="fc bfc" id="L110" title="All 2 branches covered.">		for (; i &lt; w; i++) {</span>
 <span class="fc" id="L111">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L112" title="5 of 6 branches missed.">            assert(c==0 || c==1);</span>
+<span class="pc bnc" id="L112" title="All 4 branches missed.">            assert(c==0 || c==1);</span>
 <span class="fc" id="L113">			u.child[c] = newNode();</span>
 <span class="fc" id="L114">			u.child[c].parent = u;</span>
 <span class="fc" id="L115">			u = (S) u.child[c];</span>
@@ -142,7 +142,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 <span class="fc" id="L142">            u.prefix = ix &gt;&gt;&gt; w - i;</span>
 <span class="fc" id="L143">            t.get(i).put(u.prefix, u);</span>
 <span class="fc" id="L144">            c = (int)((ix &gt;&gt;&gt; w - i - 1) &amp; 1);</span>
-<span class="pc bpc" id="L145" title="5 of 6 branches missed.">            assert(c==0 || c==1);</span>
+<span class="pc bnc" id="L145" title="All 4 branches missed.">            assert(c==0 || c==1);</span>
 <span class="pc bpc" id="L146" title="1 of 2 branches missed.">            u = (u.child[c] != null) ? (S) u.child[c] : null;</span>
         }
 <span class="fc" id="L148">        return true;</span>
@@ -186,9 +186,9 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
        
 		// 2 - remove u from linked list
 <span class="pc bpc" id="L188" title="1 of 2 branches missed.">		S pred = (u.child[prev] != null) ?</span>
-            (S)u.child[prev] : null;   // predecessor
+<span class="pc" id="L189">            (S)u.child[prev] : null;   // predecessor</span>
 <span class="pc bpc" id="L190" title="1 of 2 branches missed.">		S succ = (u.child[next] != null) ?</span>
-            (S)u.child[next] : null;   // successor
+<span class="pc" id="L191">            (S)u.child[next] : null;   // successor</span>
 <span class="pc bpc" id="L192" title="1 of 2 branches missed.">                if (pred != null) {</span>
 <span class="fc" id="L193">                    pred.child[next] = succ;</span>
                 }
@@ -198,7 +198,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 <span class="fc" id="L198">		u.child[next] = u.child[prev] = null;</span>
 <span class="fc" id="L199">		S w = u;</span>
 		// 3 - delete nodes on path to u
-<span class="pc bpc" id="L201" title="1 of 6 branches missed.">		while (w != r &amp;&amp; w.child[left] == null &amp;&amp; w.child[right] == null) {</span>
+<span class="fc bfc" id="L201" title="All 6 branches covered.">		while (w != r &amp;&amp; w.child[left] == null &amp;&amp; w.child[right] == null) {</span>
 <span class="fc bfc" id="L202" title="All 2 branches covered.">			if (w == w.parent.child[left]) {</span>
 <span class="fc" id="L203">				w.parent.child[left] = null;</span>
             } else { // u == u.parent.child[right] 
@@ -210,7 +210,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 		}
 		// 4 - update jump pointers
 <span class="fc bfc" id="L212" title="All 2 branches covered.">		w.jump = (w.child[left] == null) ? succ : pred;</span>
-<span class="pc bpc" id="L213" title="1 of 2 branches missed.">		w = (w.parent != null) ? (S)w.parent : null;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		w = (w.parent != null) ? (S)w.parent : null;</span>
 <span class="fc bfc" id="L214" title="All 2 branches covered.">		while (w != null) {</span>
 <span class="fc bfc" id="L215" title="All 2 branches covered.">			if (w.jump == u)</span>
 <span class="fc bfc" id="L216" title="All 2 branches covered.">				w.jump = (w.child[left] == null) ? succ : pred;</span>
@@ -308,7 +308,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 <span class="fc" id="L308">            successor = u.child[next];</span>
         } else {
 <span class="fc" id="L310">		    int c = (int)((ix &gt;&gt;&gt; w-l-1) &amp; 1);</span>
-<span class="pc bpc" id="L311" title="5 of 6 branches missed.">            assert(c==0 || c==1);</span>
+<span class="pc bnc" id="L311" title="All 4 branches missed.">            assert(c==0 || c==1);</span>
 <span class="fc bfc" id="L312" title="All 2 branches covered.">            successor = (c == 0) ? u.jump : u.jump.child[1];</span>
         }
 <span class="pc bpc" id="L314" title="1 of 2 branches missed.">		return (successor != null) ? (S)successor : null;</span>
@@ -555,4 +555,4 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
     }
    
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

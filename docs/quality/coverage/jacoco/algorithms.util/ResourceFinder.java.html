@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
  * @author nichole
  */
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">public class ResourceFinder {</span>
+<span class="nc" id="L32">public class ResourceFinder {</span>
 
 <span class="fc" id="L34">    protected final static String sep = System.getProperty(&quot;file.separator&quot;);</span>
 
@@ -124,7 +124,7 @@ import java.util.logging.Logger;
 
 <span class="fc" id="L125">        String cwd = System.getProperty(&quot;user.dir&quot;);</span>
         
-<span class="pc bpc" id="L127" title="5 of 6 branches missed.">        assert(cwd != null &amp;&amp; !cwd.equals(&quot;&quot;));</span>
+<span class="pc bnc" id="L127" title="All 4 branches missed.">        assert(cwd != null &amp;&amp; !cwd.equals(&quot;&quot;));</span>
         
 <span class="fc" id="L129">        String filePath = cwd + sep + dirName;</span>
 
@@ -151,7 +151,7 @@ import java.util.logging.Logger;
 
 <span class="fc" id="L152">        String cwd = System.getProperty(&quot;user.dir&quot;);</span>
         
-<span class="pc bpc" id="L154" title="5 of 6 branches missed.">        assert(cwd != null &amp;&amp; !cwd.equals(&quot;&quot;));</span>
+<span class="pc bnc" id="L154" title="All 4 branches missed.">        assert(cwd != null &amp;&amp; !cwd.equals(&quot;&quot;));</span>
         
 <span class="fc bfc" id="L156" title="All 2 branches covered.">        for (String p : path) {</span>
 <span class="fc" id="L157">            cwd = cwd + sep + p;</span>
@@ -284,15 +284,15 @@ import java.util.logging.Logger;
 
         } finally {
 
-<span class="pc bpc" id="L287" title="3 of 4 branches missed.">            if (writer != null) {</span>
-<span class="pc" id="L288">                writer.close();</span>
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">            if (writer != null) {</span>
+<span class="fc" id="L288">                writer.close();</span>
             }
-<span class="pc bpc" id="L290" title="3 of 4 branches missed.">            if (fw != null) {</span>
-<span class="pc" id="L291">                fw.close();</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">            if (fw != null) {</span>
+<span class="fc" id="L291">                fw.close();</span>
             }
         }
 <span class="fc" id="L294">        return filePath;</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

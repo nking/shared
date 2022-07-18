@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author nichole
  */
-<span class="pc bpc" id="L11" title="1 of 2 branches missed.">public class MedianTransform1D {</span>
+<span class="fc" id="L11">public class MedianTransform1D {</span>
     
     /**
      * pyramidal median transform (faster than multiscalePyramidalMedianTransform
@@ -55,7 +55,7 @@ import java.util.List;
             
 <span class="fc" id="L56">            float[] cJPlus1Ast = med.calculate(cJ.a, winL);   </span>
             
-<span class="pc bpc" id="L58" title="3 of 4 branches missed.">            assert(cJ.a.length == cJPlus1Ast.length);</span>
+<span class="pc bnc" id="L58" title="All 2 branches missed.">            assert(cJ.a.length == cJPlus1Ast.length);</span>
                         
             // decimation:
             float[] cJPlus1;
@@ -75,7 +75,7 @@ import java.util.List;
             
 <span class="fc" id="L76">            outputCoeff.add(wJPlus1);</span>
             
-<span class="pc bpc" id="L78" title="3 of 4 branches missed.">            assert(cJ.a.length == wJPlus1.a.length);</span>
+<span class="pc bnc" id="L78" title="All 2 branches missed.">            assert(cJ.a.length == wJPlus1.a.length);</span>
         }
 <span class="fc" id="L80">        outputCoeff.remove(0);</span>
 <span class="fc" id="L81">    }</span>
@@ -126,4 +126,4 @@ import java.util.List;
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

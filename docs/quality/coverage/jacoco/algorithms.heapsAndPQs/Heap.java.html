@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  *
  * @author nichole
  */
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">public class Heap {</span>
+<span class="fc" id="L47">public class Heap {</span>
 
 <span class="fc" id="L49">    protected Logger log = Logger.getLogger(this.getClass().getName());</span>
 
@@ -169,7 +169,7 @@ import java.util.logging.Logger;
 
 <span class="fc" id="L170">            int d = x.getNumberOfChildren();</span>
 
-<span class="pc bpc" id="L172" title="3 of 4 branches missed.">            assert(d &lt;= maxDegree);</span>
+<span class="pc bnc" id="L172" title="All 2 branches missed.">            assert(d &lt;= maxDegree);</span>
 
             // is there another node of the same degree, that is, has the
             // same number of children?
@@ -373,174 +373,175 @@ import java.util.logging.Logger;
 <span class="fc" id="L373">        return writer;</span>
     }
 
+    @SuppressWarnings({&quot;deprecation&quot;})
     @Override
     protected void finalize() throws Throwable {
         try {
-<span class="fc" id="L379">            closeDebug();</span>
+<span class="fc" id="L380">            closeDebug();</span>
         } finally {
-<span class="pc" id="L381">            super.finalize();</span>
-<span class="fc" id="L382">        }</span>
-<span class="fc" id="L383">    }</span>
+<span class="fc" id="L382">            super.finalize();</span>
+        }
+<span class="fc" id="L384">    }</span>
     
     private void closeDebug() {
-<span class="fc bfc" id="L386" title="All 2 branches covered.">        if (debugWriter != null) {</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">        if (debugWriter != null) {</span>
             try {
-<span class="fc" id="L388">                debugWriter.close();</span>
-<span class="fc" id="L389">                debugWriter = null;</span>
-<span class="nc" id="L390">            } catch (IOException ex) {</span>
-<span class="nc" id="L391">                log.severe(ex.getMessage());</span>
-<span class="fc" id="L392">            }</span>
+<span class="fc" id="L389">                debugWriter.close();</span>
+<span class="fc" id="L390">                debugWriter = null;</span>
+<span class="nc" id="L391">            } catch (IOException ex) {</span>
+<span class="nc" id="L392">                log.severe(ex.getMessage());</span>
+<span class="fc" id="L393">            }</span>
         }
-<span class="fc" id="L394">    }</span>
+<span class="fc" id="L395">    }</span>
     
     public void printHeapToTestOut(String label) {
                 
-<span class="fc bfc" id="L398" title="All 2 branches covered.">        if (debugWriter == null) {</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">        if (debugWriter == null) {</span>
             try {
-<span class="fc" id="L400">                debugWriter = createWriter();</span>
-<span class="nc" id="L401">            } catch (IOException ex) {</span>
-<span class="nc" id="L402">                closeDebug();</span>
-<span class="fc" id="L403">            }</span>
+<span class="fc" id="L401">                debugWriter = createWriter();</span>
+<span class="nc" id="L402">            } catch (IOException ex) {</span>
+<span class="nc" id="L403">                closeDebug();</span>
+<span class="fc" id="L404">            }</span>
         }
         
-<span class="pc bpc" id="L406" title="1 of 2 branches missed.">        if (debugWriter != null) {</span>
+<span class="pc bpc" id="L407" title="1 of 2 branches missed.">        if (debugWriter != null) {</span>
             try {
-<span class="fc" id="L408">                printHeap(label, debugWriter);</span>
-<span class="nc" id="L409">            } catch (IOException ex) {</span>
-<span class="nc" id="L410">                log.severe(ex.getMessage());</span>
-<span class="fc" id="L411">            }</span>
+<span class="fc" id="L409">                printHeap(label, debugWriter);</span>
+<span class="nc" id="L410">            } catch (IOException ex) {</span>
+<span class="nc" id="L411">                log.severe(ex.getMessage());</span>
+<span class="fc" id="L412">            }</span>
         }
-<span class="fc" id="L413">    }</span>
+<span class="fc" id="L414">    }</span>
     
     public void printHeap(String label, BufferedWriter writer) throws IOException {
         
-<span class="fc" id="L417">        int bufferSize = 1024;//2 * 72 * 4;</span>
+<span class="fc" id="L418">        int bufferSize = 1024;//2 * 72 * 4;</span>
                         
-<span class="pc bpc" id="L419" title="1 of 2 branches missed.">        if (label != null) {</span>
-<span class="fc" id="L420">            char[] c = label.toCharArray();</span>
-<span class="fc" id="L421">            writer.write(c, 0, c.length);</span>
-<span class="fc" id="L422">            writer.write(&quot;\n&quot;);</span>
-<span class="fc" id="L423">            writer.flush();</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">        if (label != null) {</span>
+<span class="fc" id="L421">            char[] c = label.toCharArray();</span>
+<span class="fc" id="L422">            writer.write(c, 0, c.length);</span>
+<span class="fc" id="L423">            writer.write(&quot;\n&quot;);</span>
+<span class="fc" id="L424">            writer.flush();</span>
         }
         
-<span class="fc" id="L426">        char[] c = String.format(&quot;(n=%d rootList.n=%d) &quot;, n, rootList.getNumberOfNodes()).toCharArray();</span>
-<span class="fc" id="L427">        writer.write(c, 0, c.length);</span>
-<span class="fc" id="L428">        c = &quot; minimumNode=&quot;.toCharArray();</span>
-<span class="fc" id="L429">        writer.write(c, 0, c.length);</span>
-<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if (minimumNode != null) {</span>
-<span class="fc" id="L431">            c = minimumNode.toString().toCharArray();</span>
-<span class="fc" id="L432">            writer.write(c, 0, c.length);</span>
-<span class="pc bpc" id="L433" title="1 of 2 branches missed.">            if (minimumNode.getData() != null) {</span>
-<span class="nc" id="L434">                writer.write(minimumNode.getData().toString());</span>
+<span class="fc" id="L427">        char[] c = String.format(&quot;(n=%d rootList.n=%d) &quot;, n, rootList.getNumberOfNodes()).toCharArray();</span>
+<span class="fc" id="L428">        writer.write(c, 0, c.length);</span>
+<span class="fc" id="L429">        c = &quot; minimumNode=&quot;.toCharArray();</span>
+<span class="fc" id="L430">        writer.write(c, 0, c.length);</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">        if (minimumNode != null) {</span>
+<span class="fc" id="L432">            c = minimumNode.toString().toCharArray();</span>
+<span class="fc" id="L433">            writer.write(c, 0, c.length);</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">            if (minimumNode.getData() != null) {</span>
+<span class="nc" id="L435">                writer.write(minimumNode.getData().toString());</span>
             }
         }
-<span class="fc" id="L437">        c = &quot;;  heap=\n&quot;.toCharArray();</span>
-<span class="fc" id="L438">        writer.write(c, 0, c.length);</span>
-<span class="fc" id="L439">        writer.flush();</span>
+<span class="fc" id="L438">        c = &quot;;  heap=\n&quot;.toCharArray();</span>
+<span class="fc" id="L439">        writer.write(c, 0, c.length);</span>
+<span class="fc" id="L440">        writer.flush();</span>
             
         // pre-order traversal of the heap
 
-<span class="fc" id="L443">        HeapNode node = rootList.getSentinel().getRight();</span>
+<span class="fc" id="L444">        HeapNode node = rootList.getSentinel().getRight();</span>
 
-<span class="fc" id="L445">        long sentinel = DoubleLinkedCircularList.sentinelKey;</span>
+<span class="fc" id="L446">        long sentinel = DoubleLinkedCircularList.sentinelKey;</span>
 
-<span class="fc" id="L447">        Stack&lt;HeapNode&gt; stack = new Stack&lt;HeapNode&gt;();</span>
+<span class="fc" id="L448">        Stack&lt;HeapNode&gt; stack = new Stack&lt;HeapNode&gt;();</span>
 
-<span class="fc" id="L449">        int currentLevel = -1;</span>
+<span class="fc" id="L450">        int currentLevel = -1;</span>
         
-<span class="fc" id="L451">        StringBuilder sb = new StringBuilder(bufferSize);</span>
+<span class="fc" id="L452">        StringBuilder sb = new StringBuilder(bufferSize);</span>
 
-<span class="fc" id="L453">        int nIter = 0;</span>
+<span class="fc" id="L454">        int nIter = 0;</span>
         
-<span class="fc bfc" id="L455" title="All 4 branches covered.">        while (!stack.isEmpty() || (node.getKey() != sentinel)) {</span>
+<span class="fc bfc" id="L456" title="All 4 branches covered.">        while (!stack.isEmpty() || (node.getKey() != sentinel)) {</span>
             
-<span class="fc" id="L457">            nIter++;</span>
+<span class="fc" id="L458">            nIter++;</span>
             
-<span class="fc bfc" id="L459" title="All 2 branches covered.">            if (node.getKey() != sentinel) {</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">            if (node.getKey() != sentinel) {</span>
 
-<span class="fc" id="L461">                currentLevel++;</span>
+<span class="fc" id="L462">                currentLevel++;</span>
                 
-<span class="pc bpc" id="L463" title="1 of 2 branches missed.">                if (sb.length() &gt; 72) {</span>
-<span class="nc" id="L464">                    sb.append(&quot;\n&quot;);</span>
-<span class="nc" id="L465">                    c = sb.toString().toCharArray();</span>
-<span class="nc" id="L466">                    writer.write(c, 0, c.length);</span>
-<span class="nc bnc" id="L467" title="All 2 branches missed.">                    if (nIter % 100 == 0) {</span>
-<span class="nc" id="L468">                        writer.flush();</span>
+<span class="pc bpc" id="L464" title="1 of 2 branches missed.">                if (sb.length() &gt; 72) {</span>
+<span class="nc" id="L465">                    sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L466">                    c = sb.toString().toCharArray();</span>
+<span class="nc" id="L467">                    writer.write(c, 0, c.length);</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">                    if (nIter % 100 == 0) {</span>
+<span class="nc" id="L469">                        writer.flush();</span>
                     }
-<span class="nc" id="L470">                    sb = new StringBuilder(bufferSize);</span>
-<span class="nc bnc" id="L471" title="All 2 branches missed.">                    if (currentLevel &gt; 0) {</span>
-<span class="nc" id="L472">                        sb.append(&quot;    &quot;);</span>
+<span class="nc" id="L471">                    sb = new StringBuilder(bufferSize);</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">                    if (currentLevel &gt; 0) {</span>
+<span class="nc" id="L473">                        sb.append(&quot;    &quot;);</span>
                     }
                 }
 
-<span class="fc" id="L476">                sb.append(&quot; &quot;).append(&quot;[&quot;).append(currentLevel);</span>
-<span class="fc bfc" id="L477" title="All 2 branches covered.">                if (currentLevel==0) {</span>
-<span class="pc bpc" id="L478" title="1 of 2 branches missed.">                    if (node.getData() != null) {</span>
-<span class="nc" id="L479">                        writer.write(node.getData().toString());</span>
+<span class="fc" id="L477">                sb.append(&quot; &quot;).append(&quot;[&quot;).append(currentLevel);</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">                if (currentLevel==0) {</span>
+<span class="pc bpc" id="L479" title="1 of 2 branches missed.">                    if (node.getData() != null) {</span>
+<span class="nc" id="L480">                        writer.write(node.getData().toString());</span>
                     }
                 }
-<span class="fc" id="L482">                sb.append(&quot;] key=&quot;);</span>
-<span class="pc bpc" id="L483" title="1 of 2 branches missed.">                if (node.getKey() == Long.MAX_VALUE) {</span>
-<span class="nc" id="L484">                    sb.append(&quot;M&quot;);</span>
+<span class="fc" id="L483">                sb.append(&quot;] key=&quot;);</span>
+<span class="pc bpc" id="L484" title="1 of 2 branches missed.">                if (node.getKey() == Long.MAX_VALUE) {</span>
+<span class="nc" id="L485">                    sb.append(&quot;M&quot;);</span>
                 } else {
-<span class="fc" id="L486">                    sb.append(node.getKey());</span>
+<span class="fc" id="L487">                    sb.append(node.getKey());</span>
                 }
 
-<span class="fc" id="L489">                stack.push(node);</span>
+<span class="fc" id="L490">                stack.push(node);</span>
 
-<span class="fc" id="L491">                node = node.getChildren().getSentinel().getRight();</span>
+<span class="fc" id="L492">                node = node.getChildren().getSentinel().getRight();</span>
 
             } else {
 
-<span class="fc" id="L495">                node = stack.pop();</span>
+<span class="fc" id="L496">                node = stack.pop();</span>
 
-<span class="fc bfc" id="L497" title="All 2 branches covered.">                boolean eol = (currentLevel == 0);</span>
-<span class="fc bfc" id="L498" title="All 2 branches covered.">                if (!eol) {</span>
-<span class="fc" id="L499">                    eol = true;</span>
-<span class="fc" id="L500">                    int nSb = sb.length();</span>
-<span class="pc bpc" id="L501" title="1 of 2 branches missed.">                    if (nSb &gt; 1) {</span>
-<span class="fc" id="L502">                        int c0 = sb.charAt(nSb - 1);</span>
-<span class="fc" id="L503">                        int c1 = sb.charAt(nSb - 2);</span>
-<span class="fc" id="L504">                        int space = (int)' ';</span>
-<span class="pc bpc" id="L505" title="1 of 4 branches missed.">                        if (c0 == space &amp;&amp; c1 == space) {</span>
-<span class="fc" id="L506">                            eol = false;</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">                boolean eol = (currentLevel == 0);</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">                if (!eol) {</span>
+<span class="fc" id="L500">                    eol = true;</span>
+<span class="fc" id="L501">                    int nSb = sb.length();</span>
+<span class="pc bpc" id="L502" title="1 of 2 branches missed.">                    if (nSb &gt; 1) {</span>
+<span class="fc" id="L503">                        int c0 = sb.charAt(nSb - 1);</span>
+<span class="fc" id="L504">                        int c1 = sb.charAt(nSb - 2);</span>
+<span class="fc" id="L505">                        int space = (int)' ';</span>
+<span class="pc bpc" id="L506" title="1 of 4 branches missed.">                        if (c0 == space &amp;&amp; c1 == space) {</span>
+<span class="fc" id="L507">                            eol = false;</span>
                         }
                     }
                 }
-<span class="fc bfc" id="L510" title="All 2 branches covered.">                if (!eol) {</span>
-<span class="pc bpc" id="L511" title="1 of 2 branches missed.">                    if (sb.length() &gt; 72) {</span>
-<span class="nc" id="L512">                        sb.append(&quot;\n&quot;);</span>
-<span class="nc" id="L513">                        c = sb.toString().toCharArray();</span>
-<span class="nc" id="L514">                        writer.write(c, 0, c.length);</span>
-<span class="nc bnc" id="L515" title="All 2 branches missed.">                        if (nIter % 100 == 0) {</span>
-<span class="nc" id="L516">                            writer.flush();</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">                if (!eol) {</span>
+<span class="pc bpc" id="L512" title="1 of 2 branches missed.">                    if (sb.length() &gt; 72) {</span>
+<span class="nc" id="L513">                        sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L514">                        c = sb.toString().toCharArray();</span>
+<span class="nc" id="L515">                        writer.write(c, 0, c.length);</span>
+<span class="nc bnc" id="L516" title="All 2 branches missed.">                        if (nIter % 100 == 0) {</span>
+<span class="nc" id="L517">                            writer.flush();</span>
                         }
-<span class="nc" id="L518">                        sb = new StringBuilder(&quot;    &quot;);</span>
+<span class="nc" id="L519">                        sb = new StringBuilder(&quot;    &quot;);</span>
                     }
                 }
-<span class="fc bfc" id="L521" title="All 2 branches covered.">                if (eol) {</span>
-<span class="fc" id="L522">                    sb.append(&quot;\n&quot;);</span>
-<span class="fc" id="L523">                    c = sb.toString().toCharArray();</span>
-<span class="fc" id="L524">                    writer.write(c, 0, c.length);</span>
-<span class="pc bpc" id="L525" title="1 of 2 branches missed.">                    if ((nIter % 100) == 0) {</span>
-<span class="nc" id="L526">                        writer.flush();</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">                if (eol) {</span>
+<span class="fc" id="L523">                    sb.append(&quot;\n&quot;);</span>
+<span class="fc" id="L524">                    c = sb.toString().toCharArray();</span>
+<span class="fc" id="L525">                    writer.write(c, 0, c.length);</span>
+<span class="pc bpc" id="L526" title="1 of 2 branches missed.">                    if ((nIter % 100) == 0) {</span>
+<span class="nc" id="L527">                        writer.flush();</span>
                     }
-<span class="fc" id="L528">                    sb = new StringBuilder();</span>
-<span class="fc bfc" id="L529" title="All 2 branches covered.">                    if (currentLevel &gt; 0) {</span>
-<span class="fc" id="L530">                        sb.append(&quot;    &quot;);</span>
+<span class="fc" id="L529">                    sb = new StringBuilder();</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">                    if (currentLevel &gt; 0) {</span>
+<span class="fc" id="L531">                        sb.append(&quot;    &quot;);</span>
                     }
                 }
 
-<span class="fc" id="L534">                currentLevel--;</span>
+<span class="fc" id="L535">                currentLevel--;</span>
 
-<span class="fc" id="L536">                node = node.getRight();</span>
-<span class="fc" id="L537">            }</span>
+<span class="fc" id="L537">                node = node.getRight();</span>
+<span class="fc" id="L538">            }</span>
         }
 
-<span class="fc" id="L540">        c = sb.toString().toCharArray();</span>
-<span class="fc" id="L541">        writer.write(c, 0, c.length);</span>
-<span class="fc" id="L542">        writer.flush();</span>
-<span class="fc" id="L543">    }</span>
+<span class="fc" id="L541">        c = sb.toString().toCharArray();</span>
+<span class="fc" id="L542">        writer.write(c, 0, c.length);</span>
+<span class="fc" id="L543">        writer.flush();</span>
+<span class="fc" id="L544">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

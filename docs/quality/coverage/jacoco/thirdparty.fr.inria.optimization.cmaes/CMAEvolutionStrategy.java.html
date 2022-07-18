@@ -200,7 +200,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
  * @see #updateDistribution(double[])
  * @author Nikolaus Hansen, 1996, 2003, 2005, 2007
  */
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">public class CMAEvolutionStrategy implements java.io.Serializable {</span>
+<span class="fc" id="L203">public class CMAEvolutionStrategy implements java.io.Serializable {</span>
     /**
 	 * 
 	 */
@@ -633,7 +633,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
 <span class="nc" id="L633">    				diagD[i] = startsigma[i]/sigma;</span>
     			}
     		} else
-<span class="nc bnc" id="L636" title="All 2 branches missed.">    			assert false;</span>
+<span class="nc" id="L636">    			assert false;</span>
     	} else {
     		// we might use boundaries here to find startsigma, but I prefer to have stddevs mandatory 
 <span class="nc" id="L639">    		error(&quot;no initial standard deviation specified, use setInitialStandardDeviations()&quot;);</span>
@@ -689,8 +689,8 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
     		}
     	}
 
-<span class="pc bpc" id="L692" title="3 of 4 branches missed.">    	assert xmean != null;</span>
-<span class="pc bpc" id="L693" title="3 of 4 branches missed.">    	assert sigma &gt; 0; </span>
+<span class="pc bnc" id="L692" title="All 2 branches missed.">    	assert xmean != null;</span>
+<span class="pc bnc" id="L693" title="All 2 branches missed.">    	assert sigma &gt; 0; </span>
     	
     	/* interpret missing option value */
 <span class="pc bpc" id="L696" title="1 of 2 branches missed.">    	if (options.diagonalCovarianceMatrix &lt; 0) // necessary for hello world message</span>
@@ -1185,8 +1185,8 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
 <span class="nc" id="L1185">    			  dd += Q[i][k] * Q[j][k];</span>
     		  }
     		  /* check here, is the normalization the right one? */
-<span class="nc bnc" id="L1188" title="All 10 branches missed.">    		  if (Math.abs(cc - C[i&gt;j?i:j][i&gt;j?j:i])/Math.sqrt(C[i][i]*C[j][j]) &gt; 1e-10 </span>
-<span class="nc bnc" id="L1189" title="All 2 branches missed.">    				  &amp;&amp; Math.abs(cc - C[i&gt;j?i:j][i&gt;j?j:i]) &gt; 1e-9) { /* quite large */</span>
+<span class="nc bnc" id="L1188" title="All 6 branches missed.">    		  if (Math.abs(cc - C[i&gt;j?i:j][i&gt;j?j:i])/Math.sqrt(C[i][i]*C[j][j]) &gt; 1e-10 </span>
+<span class="nc bnc" id="L1189" title="All 6 branches missed.">    				  &amp;&amp; Math.abs(cc - C[i&gt;j?i:j][i&gt;j?j:i]) &gt; 1e-9) { /* quite large */</span>
 <span class="nc bnc" id="L1190" title="All 8 branches missed.">    			  s = &quot; &quot; + i + &quot; &quot; + j + &quot; &quot; + cc + &quot; &quot; + C[i&gt;j?i:j][i&gt;j?j:i] + &quot; &quot; + (cc-C[i&gt;j?i:j][i&gt;j?j:i]);</span>
 <span class="nc" id="L1191">    			  warning(&quot;cmaes_t:Eigen(): imprecise result detected &quot; + s);</span>
 <span class="nc" id="L1192">    			  ++res; </span>
@@ -1907,7 +1907,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
      * @return
      */
     double[] assignNew(double[] rhs, double[] lhs) {
-<span class="pc bpc" id="L1910" title="3 of 4 branches missed.">    	assert rhs != null; // will produce an error anyway</span>
+<span class="pc bnc" id="L1910" title="All 2 branches missed.">    	assert rhs != null; // will produce an error anyway</span>
 <span class="pc bpc" id="L1911" title="3 of 6 branches missed.">    	if(lhs != null &amp;&amp; lhs != rhs &amp;&amp; lhs.length == rhs.length)</span>
 <span class="fc bfc" id="L1912" title="All 2 branches covered.">    		for(int i = 0; i &lt; lhs.length; ++i)</span>
 <span class="fc" id="L1913">    			lhs[i] = rhs[i];</span>
@@ -2194,7 +2194,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
     				+ startsigma.length + &quot;do not agree&quot;);
 <span class="nc bnc" id="L2195" title="All 2 branches missed.">        if (N == 0)</span>
 <span class="nc" id="L2196">        	setDimension(startsigma.length);</span>
-<span class="nc bnc" id="L2197" title="All 4 branches missed.">        assert N == startsigma.length;</span>
+<span class="nc bnc" id="L2197" title="All 2 branches missed.">        assert N == startsigma.length;</span>
 <span class="nc" id="L2198">        this.startsigma = startsigma.clone();</span>
 <span class="nc" id="L2199">        lockDimension = 1;</span>
 <span class="nc" id="L2200">    }</span>
@@ -2265,7 +2265,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
 <span class="nc" id="L2265">            error(&quot;dimensions do not match&quot;);</span>
 <span class="pc bpc" id="L2266" title="1 of 2 branches missed.">        if (N == 0)</span>
 <span class="nc" id="L2267">        	setDimension(x.length);</span>
-<span class="pc bpc" id="L2268" title="3 of 4 branches missed.">        assert N == x.length;</span>
+<span class="pc bnc" id="L2268" title="All 2 branches missed.">        assert N == x.length;</span>
 <span class="fc" id="L2269">        xmean = new double[N];</span>
 <span class="fc bfc" id="L2270" title="All 2 branches covered.">        for (int i = 0; i &lt; N; ++i)</span>
 <span class="fc" id="L2271">            xmean[i] = x[i];</span>
@@ -2484,8 +2484,8 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
 <span class="pc bpc" id="L2484" title="1 of 2 branches missed.">        if (mode == SINGLE_MODE)</span>
 <span class="nc" id="L2485">            idx = idxRecentOffspring; </span>
 <span class="fc" id="L2486">        String s = new String();    </span>
-<span class="pc bpc" id="L2487" title="1 of 2 branches missed.">        s = countiter + &quot; &quot; + counteval + &quot; &quot; + sigma + &quot; 0 &quot; </span>
-        	+ (state == 1 ? Double.NaN : fit.raw[idx].val) + &quot; &quot;;
+<span class="fc" id="L2487">        s = countiter + &quot; &quot; + counteval + &quot; &quot; + sigma + &quot; 0 &quot; </span>
+<span class="pc bpc" id="L2488" title="1 of 2 branches missed.">        	+ (state == 1 ? Double.NaN : fit.raw[idx].val) + &quot; &quot;;</span>
 <span class="fc bfc" id="L2489" title="All 2 branches covered.">        for (int i = 0; i &lt; N; ++i) {</span>
 <span class="fc" id="L2490">            s += arx[fit.raw[idx].i][i] + &quot; &quot;;</span>
         }
@@ -2567,8 +2567,8 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
             //e.printStackTrace();            // output goes to System.err
             //e.printStackTrace(System.out);  // send trace to stdout
         } finally {
-<span class="pc bpc" id="L2570" title="7 of 8 branches missed.">            if (out != null)</span>
-<span class="pc" id="L2571">                out.close();</span>
+<span class="pc bpc" id="L2570" title="1 of 2 branches missed.">            if (out != null)</span>
+<span class="fc" id="L2571">                out.close();</span>
         }
         // if first time written
         // append filename to fileswritten
@@ -2616,7 +2616,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
      *  
      * @see #writeToDefaultFiles() */
     public void writeToDefaultFiles(int flgForce) {
-<span class="pc bpc" id="L2619" title="2 of 4 branches missed.">        if (flgForce &gt; 0 &amp;&amp; countiter != citerlastwritten) </span>
+<span class="pc bpc" id="L2619" title="1 of 4 branches missed.">        if (flgForce &gt; 0 &amp;&amp; countiter != citerlastwritten) </span>
 <span class="fc" id="L2620">            citerlastwritten = -1; // force writing if something new is there</span>
 <span class="pc bpc" id="L2621" title="1 of 2 branches missed.">        if (flgForce &gt;= 2)</span>
 <span class="nc" id="L2622">            citerlastwritten = -1; // force writing </span>
@@ -2634,8 +2634,8 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
 <span class="fc bfc" id="L2634" title="All 2 branches covered.">        if (citerlastwritten &gt;= 0) { // negative value forces writing</span>
 <span class="pc bpc" id="L2635" title="1 of 2 branches missed.">            if (state &lt; 1)</span>
 <span class="nc" id="L2636">                return;</span>
-<span class="pc bpc" id="L2637" title="1 of 2 branches missed.">            if (countiter == citerlastwritten)</span>
-<span class="nc" id="L2638">                return; </span>
+<span class="fc bfc" id="L2637" title="All 2 branches covered.">            if (countiter == citerlastwritten)</span>
+<span class="fc" id="L2638">                return; </span>
 <span class="pc bpc" id="L2639" title="1 of 2 branches missed.">            if (options.maxTimeFractionForWriteToDefaultFiles &lt;= 0)</span>
 <span class="nc" id="L2640">                return;</span>
 <span class="pc bpc" id="L2641" title="1 of 6 branches missed.">            if (countiter &gt; 4 &amp;&amp; stopConditions.index == 0  // has no effect if stopCondition.test() was not called</span>
@@ -2745,4 +2745,4 @@ class IntDouble implements Comparator&lt;IntDouble&gt; {
 <span class="nc" id="L2745">        return false;</span>
     }
 } // IntDouble
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

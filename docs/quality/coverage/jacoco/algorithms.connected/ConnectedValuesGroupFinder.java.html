@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author nichole
  */
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {</span>
+<span class="fc" id="L26">public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {</span>
 
 <span class="fc" id="L28">    private final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();</span>
 
@@ -154,14 +154,14 @@ import java.util.logging.Logger;
 <span class="fc" id="L154">        DisjointSet2Node&lt;Long&gt; uNode = pixNodes.get(uPoint);</span>
 <span class="fc" id="L155">        DisjointSet2Node&lt;Long&gt; uParentNode</span>
 <span class="fc" id="L156">            = disjointSetHelper.findSet(uNode);</span>
-<span class="pc bpc" id="L157" title="3 of 4 branches missed.">        assert(uParentNode != null);</span>
+<span class="pc bnc" id="L157" title="All 2 branches missed.">        assert(uParentNode != null);</span>
 
 <span class="fc" id="L159">        int uGroupId = uParentNode.getMember().intValue();</span>
 
 <span class="fc" id="L161">        DisjointSet2Node&lt;Long&gt; vNode = pixNodes.get(vPoint);</span>
 <span class="fc" id="L162">        DisjointSet2Node&lt;Long&gt; vParentNode</span>
 <span class="fc" id="L163">            = disjointSetHelper.findSet(vNode);</span>
-<span class="pc bpc" id="L164" title="3 of 4 branches missed.">        assert(vParentNode != null);</span>
+<span class="pc bnc" id="L164" title="All 2 branches missed.">        assert(vParentNode != null);</span>
 
 <span class="fc" id="L166">        long vGroupId = vParentNode.getMember().longValue();</span>
 
@@ -242,4 +242,4 @@ import java.util.logging.Logger;
         }
 <span class="fc" id="L243">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -22,7 +22,7 @@ import no.uib.cipr.matrix.NotConvergedException;
    pseudocode from Cormen, Leiserson, Rivest, and Stein, &quot;Introduction to
    Computer Algorithms&quot;.
 */
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">public class LinearEquations {</span>
+<span class="pc" id="L25">public class LinearEquations {</span>
 
     /**
      solving for 'x' in equations:
@@ -404,7 +404,7 @@ import no.uib.cipr.matrix.NotConvergedException;
 <span class="pc bpc" id="L404" title="1 of 2 branches missed.">            if (p == 0.) {</span>
 <span class="nc" id="L405">                throw new IllegalStateException(&quot;Error: a is a singular matrix&quot;);</span>
             }
-<span class="pc bpc" id="L407" title="3 of 4 branches missed.">            assert(k2 &gt;= 0);</span>
+<span class="pc bnc" id="L407" title="All 2 branches missed.">            assert(k2 &gt;= 0);</span>
 <span class="fc" id="L408">            swapI = pi[k2];</span>
 <span class="fc" id="L409">            pi[k2] = pi[k];</span>
 <span class="fc" id="L410">            pi[k] = swapI;</span>
@@ -663,4 +663,4 @@ import no.uib.cipr.matrix.NotConvergedException;
 <span class="fc" id="L663">        return c;</span>
     }
 } 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

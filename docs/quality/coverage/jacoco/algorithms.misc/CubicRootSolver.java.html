@@ -7,7 +7,7 @@ import no.uib.cipr.matrix.NotConvergedException;
  * cubic root methods
  * @author nichole
  */
-<span class="pc bpc" id="L10" title="1 of 2 branches missed.">public class CubicRootSolver {</span>
+<span class="nc" id="L10">public class CubicRootSolver {</span>
 
 <span class="fc" id="L12">    public static double eps = 1e-7;</span>
     public static double[] realNonZeroOnly(Complex[] r) {
@@ -155,7 +155,7 @@ import no.uib.cipr.matrix.NotConvergedException;
             // discriminant &lt; 0.  3 real distinct roots
             // trigonometric solution
             //https://www.wikiwand.com/en/Cubic_equation#/google_vignette
-<span class="pc bpc" id="L158" title="3 of 4 branches missed.">            assert(p &lt; 0);</span>
+<span class="pc bnc" id="L158" title="All 2 branches missed.">            assert(p &lt; 0);</span>
             
 <span class="fc" id="L160">            double pt1 = 2.*Math.sqrt(-p/3);</span>
 <span class="fc" id="L161">            double pt2 = Math.acos(((3.*q)/(2.*p)) * Math.sqrt(-3./p));</span>
@@ -351,4 +351,4 @@ import no.uib.cipr.matrix.NotConvergedException;
         
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

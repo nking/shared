@@ -11,7 +11,7 @@ import java.util.Set;
  * heap that can handle more than one node of the same key.
  * @author nichole
  */
-<span class="pc bpc" id="L14" title="1 of 2 branches missed.">public class YFastTrieWrapper {</span>
+<span class="fc" id="L14">public class YFastTrieWrapper {</span>
 
     private final int w;
     
@@ -63,7 +63,7 @@ import java.util.Set;
 <span class="fc" id="L63">            Integer key = Integer.valueOf(keyIdx);</span>
             // O(log_2(w)) + O(w-l)
 <span class="fc" id="L65">            boolean added = yft.add(key);</span>
-<span class="pc bpc" id="L66" title="3 of 4 branches missed.">            assert(added);</span>
+<span class="pc bnc" id="L66" title="All 2 branches missed.">            assert(added);</span>
             
 <span class="fc" id="L68">            set = new HashSet&lt;HeapNode&gt;();</span>
 <span class="fc" id="L69">            map.put(keyIdx, set);</span>
@@ -100,13 +100,13 @@ import java.util.Set;
                 
 <span class="fc" id="L101">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
         
-<span class="pc bpc" id="L103" title="3 of 4 branches missed.">        assert(set0 != null);</span>
+<span class="pc bnc" id="L103" title="All 2 branches missed.">        assert(set0 != null);</span>
         
 <span class="fc" id="L105">        set0.remove(node);</span>
         
 <span class="fc bfc" id="L107" title="All 2 branches covered.">        if (set0.isEmpty()) {</span>
 <span class="fc" id="L108">            boolean removed = yft.remove(Integer.valueOf(keyIdx));</span>
-<span class="pc bpc" id="L109" title="3 of 4 branches missed.">            assert(removed);</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">            assert(removed);</span>
 <span class="fc" id="L110">            map.remove(keyIdx);</span>
         }
                         
@@ -118,7 +118,7 @@ import java.util.Set;
          
 <span class="fc bfc" id="L119" title="All 2 branches covered.">        if (set2 == null) {</span>
 <span class="fc" id="L120">            boolean added = yft.add(index2);</span>
-<span class="pc bpc" id="L121" title="3 of 4 branches missed.">            assert(added);</span>
+<span class="pc bnc" id="L121" title="All 2 branches missed.">            assert(added);</span>
             
 <span class="fc" id="L123">            set2 = new HashSet&lt;HeapNode&gt;();</span>
 <span class="fc" id="L124">            map.put((int)key2, set2);</span>
@@ -142,13 +142,13 @@ import java.util.Set;
                 
 <span class="fc" id="L143">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
         
-<span class="pc bpc" id="L145" title="3 of 4 branches missed.">        assert(set0 != null);</span>
+<span class="pc bnc" id="L145" title="All 2 branches missed.">        assert(set0 != null);</span>
         
 <span class="fc" id="L147">        set0.remove(node);</span>
         
 <span class="fc bfc" id="L149" title="All 2 branches covered.">        if (set0.isEmpty()) {</span>
 <span class="fc" id="L150">            boolean removed = yft.remove(Integer.valueOf(keyIdx));</span>
-<span class="pc bpc" id="L151" title="3 of 4 branches missed.">            assert(removed);</span>
+<span class="pc bnc" id="L151" title="All 2 branches missed.">            assert(removed);</span>
 <span class="fc" id="L152">            map.remove(keyIdx);</span>
         }
         
@@ -195,4 +195,4 @@ import java.util.Set;
 <span class="fc" id="L195">        return n;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -32,7 +32,7 @@ proof of NP-hardness:
       
  * @author nichole
  */
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">public class LongestPath {</span>
+<span class="pc" id="L35">public class LongestPath {</span>
     
     /**
      * given a DAG, find the longest simple path of maximum length where lengths
@@ -132,7 +132,7 @@ proof of NP-hardness:
             }
         }
         //System.out.printf(&quot;srcIdx=%d, sIdx=%d, ts=%s\n&quot;, srcIdx, sIdx, Arrays.toString(tsIdxs));
-<span class="pc bpc" id="L135" title="3 of 4 branches missed.">        assert(sIdx &gt; -1);</span>
+<span class="pc bnc" id="L135" title="All 2 branches missed.">        assert(sIdx &gt; -1);</span>
         
 <span class="fc" id="L137">        double[] dist = new double[nodes.length];</span>
 <span class="fc" id="L138">        int[] prev = new int[nodes.length];</span>
@@ -173,7 +173,7 @@ proof of NP-hardness:
 <span class="fc bfc" id="L173" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
 <span class="fc" id="L174">                    u = iter.next();</span>
 <span class="fc" id="L175">                    wUV = g.get(new PairInt(u, v));</span>
-<span class="pc bpc" id="L176" title="3 of 4 branches missed.">                    assert(g.containsKey(new PairInt(u, v)));</span>
+<span class="pc bnc" id="L176" title="All 2 branches missed.">                    assert(g.containsKey(new PairInt(u, v)));</span>
 <span class="fc" id="L177">                    d = dist[u] + wUV;</span>
 <span class="fc bfc" id="L178" title="All 2 branches covered.">                    if (d &gt; distV) {</span>
 <span class="fc" id="L179">                        distV = d;</span>
@@ -241,4 +241,4 @@ proof of NP-hardness:
 <span class="fc" id="L241">        return nodes;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -79,7 +79,7 @@ import java.util.Arrays;
  *
  * @author nichole
  */
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunction {</span>
+<span class="fc" id="L82">public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunction {</span>
 
     /**
      * the number of dimensions present in the observations.  e.g. 2 for x and y axes.
@@ -213,7 +213,7 @@ import java.util.Arrays;
         
 <span class="fc" id="L214">        int nData = (obs.length / nDimensions);</span>
         
-<span class="pc bpc" id="L216" title="3 of 4 branches missed.">        assert(ssdPerPoint.length == nData);</span>
+<span class="pc bnc" id="L216" title="All 2 branches missed.">        assert(ssdPerPoint.length == nData);</span>
         
 <span class="fc" id="L218">        double s = 0;</span>
         int i;
@@ -295,11 +295,11 @@ import java.util.Arrays;
                      
         //geoMedian - obs_i for each dimension for each point
 <span class="fc" id="L297">        double[] diffs = calculateDifferences(geoMedian);</span>
-<span class="pc bpc" id="L298" title="3 of 4 branches missed.">        assert(diffs.length == obs.length);</span>
+<span class="pc bnc" id="L298" title="All 2 branches missed.">        assert(diffs.length == obs.length);</span>
         
         // length is nData.  sum of squared diffeences
 <span class="fc" id="L301">        double[] ssdPerPoint = calculateSSDPerPoint(diffs);        </span>
-<span class="pc bpc" id="L302" title="3 of 4 branches missed.">        assert(ssdPerPoint.length == nData);</span>
+<span class="pc bnc" id="L302" title="All 2 branches missed.">        assert(ssdPerPoint.length == nData);</span>
         
         int i, j, d;
         double s;
@@ -387,4 +387,4 @@ import java.util.Arrays;
 <span class="nc" id="L387">        return fDEps;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

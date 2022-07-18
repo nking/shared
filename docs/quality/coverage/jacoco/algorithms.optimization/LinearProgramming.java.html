@@ -174,7 +174,7 @@ Example:
  &lt;/pre&gt;
  * @author nichole
  */
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">public class LinearProgramming {</span>
+public class LinearProgramming {
 
 <span class="fc" id="L179">    private final Random rand = Misc0.getSecureRandom();</span>
     
@@ -280,7 +280,7 @@ Example:
 <span class="nc" id="L280">                slackForm.state = STATE.UNBOUNDED;</span>
 <span class="nc" id="L281">                return slackForm;</span>
             }
-<span class="pc bpc" id="L283" title="3 of 4 branches missed.">            assert(lIdx != -1);</span>
+<span class="pc bnc" id="L283" title="All 2 branches missed.">            assert(lIdx != -1);</span>
            
 <span class="fc" id="L285">            slackForm = pivot(slackForm, lIdx, eIdx);</span>
             
@@ -774,11 +774,11 @@ Example:
 <span class="nc" id="L774">                nn++;</span>
             }
         }
-<span class="pc bpc" id="L777" title="3 of 4 branches missed.">        assert(a2.size() == a.length);</span>
-<span class="pc bpc" id="L778" title="3 of 4 branches missed.">        assert(c2.size() == (c.length + nn));</span>
-<span class="pc bpc" id="L779" title="3 of 4 branches missed.">        assert(ac2.size() == constraintComparisons.length);</span>
-<span class="pc bpc" id="L780" title="3 of 4 branches missed.">        assert(b2.size() == b.length);</span>
-<span class="pc bpc" id="L781" title="3 of 4 branches missed.">        assert(a2.get(0).size() == a[0].length + nn);</span>
+<span class="pc bnc" id="L777" title="All 2 branches missed.">        assert(a2.size() == a.length);</span>
+<span class="pc bnc" id="L778" title="All 2 branches missed.">        assert(c2.size() == (c.length + nn));</span>
+<span class="pc bnc" id="L779" title="All 2 branches missed.">        assert(ac2.size() == constraintComparisons.length);</span>
+<span class="pc bnc" id="L780" title="All 2 branches missed.">        assert(b2.size() == b.length);</span>
+<span class="pc bnc" id="L781" title="All 2 branches missed.">        assert(a2.get(0).size() == a[0].length + nn);</span>
            
         //System.out.printf(&quot;a0=\n%s\n&quot;, FormatArray.toString(a,  &quot;%.3f&quot;));
         //System.out.printf(&quot;a2=\n%s\n&quot;, print(a2));
@@ -864,12 +864,12 @@ Example:
 <span class="fc" id="L864">        int m = standForm.b.length;</span>
         
 <span class="fc" id="L866">        double[][] aHat = MatrixUtil.copy(standForm.a);</span>
-<span class="pc bpc" id="L867" title="3 of 4 branches missed.">        assert(aHat.length == m);</span>
-<span class="pc bpc" id="L868" title="3 of 4 branches missed.">        assert(aHat[0].length == n);</span>
+<span class="pc bnc" id="L867" title="All 2 branches missed.">        assert(aHat.length == m);</span>
+<span class="pc bnc" id="L868" title="All 2 branches missed.">        assert(aHat[0].length == n);</span>
         
 <span class="fc" id="L870">        double[] bHat = Arrays.copyOf(standForm.b, standForm.b.length);</span>
 <span class="fc" id="L871">        double[] cHat = Arrays.copyOf(standForm.c, standForm.c.length);</span>
-<span class="pc bpc" id="L872" title="3 of 4 branches missed.">        assert(cHat.length == n);</span>
+<span class="pc bnc" id="L872" title="All 2 branches missed.">        assert(cHat.length == n);</span>
         
         // removing redundant constraints
         int i, i2, j;
@@ -1114,7 +1114,7 @@ Example:
 <span class="fc bfc" id="L1114" title="All 2 branches covered.">            if (!nHatIdxs.contains(i)) {</span>
 <span class="fc" id="L1115">                cCoeff = origForm.c[i];</span>
                 //find the row for index in bindices
-<span class="pc bpc" id="L1117" title="3 of 4 branches missed.">                assert(bHatIdxMap.containsKey(i));</span>
+<span class="pc bnc" id="L1117" title="All 2 branches missed.">                assert(bHatIdxMap.containsKey(i));</span>
 <span class="fc" id="L1118">                j = bHatIdxMap.get(i);</span>
                 
 <span class="fc" id="L1120">                aHatRow = aHat[j]; </span>
@@ -1124,7 +1124,7 @@ Example:
                 
 <span class="fc bfc" id="L1125" title="All 2 branches covered.">                for (jj = 0; jj &lt; aHatRow.length; ++jj) {</span>
 <span class="fc" id="L1126">                    jIdx = nHatIndices[jj];</span>
-<span class="pc bpc" id="L1127" title="3 of 4 branches missed.">                    assert(nHatIdxMap.containsKey(jIdx));</span>
+<span class="pc bnc" id="L1127" title="All 2 branches missed.">                    assert(nHatIdxMap.containsKey(jIdx));</span>
 <span class="fc" id="L1128">                    jIdx = nHatIdxMap.get(jIdx);</span>
 <span class="fc" id="L1129">                    tmp = cCoeff * -aHatRow[jj];</span>
 <span class="fc" id="L1130">                    cHat[jIdx] += tmp;</span>
@@ -1191,7 +1191,7 @@ Example:
         int i;
 <span class="fc bfc" id="L1192" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
 <span class="fc" id="L1193">            a2.add(new TDoubleArrayList(Arrays.copyOf(a[i], a[i].length)));</span>
-<span class="pc bpc" id="L1194" title="3 of 4 branches missed.">            assert(a2.get(i).size() == n);</span>
+<span class="pc bnc" id="L1194" title="All 2 branches missed.">            assert(a2.get(i).size() == n);</span>
         }
 <span class="fc" id="L1196">        return a2;</span>
     }
@@ -1203,7 +1203,7 @@ Example:
         int i;
 <span class="fc bfc" id="L1204" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
 <span class="fc" id="L1205">            a2[i] = a.get(i).toArray();</span>
-<span class="pc bpc" id="L1206" title="3 of 4 branches missed.">            assert(a2[i].length == n);</span>
+<span class="pc bnc" id="L1206" title="All 2 branches missed.">            assert(a2[i].length == n);</span>
         }
 <span class="fc" id="L1208">        return a2;</span>
     }
@@ -1634,4 +1634,4 @@ Example:
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

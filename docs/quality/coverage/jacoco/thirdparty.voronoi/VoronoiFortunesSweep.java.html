@@ -728,7 +728,7 @@ public class VoronoiFortunesSweep {
 <span class="nc" id="L728">            return bottomsite;</span>
         }
 <span class="fc bfc" id="L730" title="All 2 branches covered.">        return he.ELpm == LE ? he.ELedge.reg[LE] : </span>
-            he.ELedge.reg[RE];
+<span class="fc" id="L731">            he.ELedge.reg[RE];</span>
     }
 
     private void ELInsert(HalfEdge lb, HalfEdge newHe) {
@@ -1043,7 +1043,7 @@ public class VoronoiFortunesSweep {
         // if the ELpm field is zero, return the site 0 that this edge bisects,
         // otherwise return site number 1
 <span class="fc bfc" id="L1045" title="All 2 branches covered.">        return he.ELpm == LE ? he.ELedge.reg[RE] : </span>
-            he.ELedge.reg[LE];
+<span class="fc" id="L1046">            he.ELedge.reg[LE];</span>
     }
 
     private float dist(Site s, Site t) {
@@ -1105,4 +1105,4 @@ public class VoronoiFortunesSweep {
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

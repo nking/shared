@@ -44,7 +44,7 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
 
  * @author nichole
  */
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">public class KNearestNeighbors {</span>
+<span class="fc" id="L47">public class KNearestNeighbors {</span>
     
 <span class="pc" id="L49">    private VoronoiFortunesSweep voronoi = null;</span>
     
@@ -110,7 +110,7 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
 <span class="fc" id="L110">            y[i] = xy[1];</span>
 <span class="fc" id="L111">            ++i;</span>
 <span class="fc" id="L112">        }</span>
-<span class="pc bpc" id="L113" title="3 of 4 branches missed.">        assert(i == x.length);</span>
+<span class="pc bnc" id="L113" title="All 2 branches missed.">        assert(i == x.length);</span>
         
 <span class="fc" id="L115">        init(x, y);</span>
 <span class="fc" id="L116">    }</span>
@@ -167,7 +167,7 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
         
 <span class="fc" id="L168">        siteIndexesMap = new HashMap&lt;PairFloat, Set&lt;Integer&gt;&gt;();</span>
     
-<span class="pc bpc" id="L170" title="3 of 4 branches missed.">        assert (!edges.isEmpty());</span>
+<span class="pc bnc" id="L170" title="All 2 branches missed.">        assert (!edges.isEmpty());</span>
 <span class="fc bfc" id="L171" title="All 2 branches covered.">        for (GraphEdge edge : edges) {</span>
 <span class="fc" id="L172">            int s1 = edge.site1;</span>
 <span class="fc" id="L173">            int s2 = edge.site2;</span>
@@ -190,7 +190,7 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
 <span class="fc" id="L190">            indexes.add(Integer.valueOf(s1));</span>
 <span class="fc" id="L191">        }</span>
 
-<span class="pc bpc" id="L193" title="3 of 4 branches missed.">        assert(sites.length == x.length);</span>
+<span class="pc bnc" id="L193" title="All 2 branches missed.">        assert(sites.length == x.length);</span>
 
         // points closer than minDist are not present,
         // so the map is possibly smaller than all points.
@@ -367,4 +367,4 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
 <span class="nc" id="L367">    }</span>
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

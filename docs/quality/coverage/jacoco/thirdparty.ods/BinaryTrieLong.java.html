@@ -24,7 +24,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-<span class="pc bpc" id="L27" title="1 of 2 branches missed.">@SuppressWarnings({&quot;unchecked&quot;})</span>
+<span class="fc" id="L27">@SuppressWarnings({&quot;unchecked&quot;})</span>
 public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt; 
     implements SSet&lt;T&gt; {
 	
@@ -70,7 +70,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 	 */
 	protected S newNode() {
 		try {
-<span class="fc" id="L73">            S u = (S)sampleNode.getClass().newInstance();</span>
+<span class="fc" id="L73">            S u = (S)sampleNode.getClass().getDeclaredConstructor().newInstance();</span>
 <span class="fc" id="L74">			u.parent = u.child[0] = u.child[1] = null;</span>
 <span class="fc" id="L75">			return u;</span>
 <span class="nc" id="L76">		} catch (Exception e) {</span>
@@ -149,7 +149,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 		// 1 - search for ix until falling out of the trie
 <span class="pc bpc" id="L150" title="1 of 2 branches missed.">		for (i = 0; i &lt; w; i++) {</span>
 <span class="fc" id="L151">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L152" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L152" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="fc bfc" id="L153" title="All 2 branches covered.">			if (u.child[c] == null) break;</span>
 <span class="fc" id="L154">			u = u.child[c];</span>
 		}
@@ -159,7 +159,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 		// 2 - add path to ix
 <span class="fc bfc" id="L160" title="All 2 branches covered.">		for (; i &lt; w; i++) {</span>
 <span class="fc" id="L161">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L162" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L162" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="fc" id="L163">			u.child[c] = newNode();</span>
 <span class="fc" id="L164">			u.child[c].parent = u;</span>
 <span class="fc" id="L165">			u = u.child[c];</span>
@@ -219,7 +219,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L219">        BinaryTrieNode&lt;T&gt; u = r;</span>
 <span class="fc bfc" id="L220" title="All 2 branches covered.">		for (i = 0; i &lt; w; i++) {</span>
 <span class="fc" id="L221">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L222" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L222" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="fc bfc" id="L223" title="All 2 branches covered.">			if (u.child[c] == null) break;</span>
 <span class="fc" id="L224">			u = u.child[c];</span>
 		}
@@ -252,7 +252,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L252">		BinaryTrieNode&lt;T&gt; u = r;</span>
 <span class="fc bfc" id="L253" title="All 2 branches covered.">		for (i = 0; i &lt; w; i++) {</span>
 <span class="fc" id="L254">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L255" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L255" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="pc bpc" id="L256" title="1 of 2 branches missed.">			if (u.child[c] == null) return false;</span>
 <span class="fc" id="L257">			u = u.child[c];</span>
 		}
@@ -263,20 +263,20 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 		// 3 - delete nodes on path to u
 <span class="pc bpc" id="L264" title="1 of 2 branches missed.">		for (i = w-1; i &gt;= 0; i--) {</span>
 <span class="fc" id="L265">            c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L266" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L266" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="fc" id="L267">			v = v.parent;</span>
 <span class="fc" id="L268">			v.child[c] = null;</span>
 <span class="fc bfc" id="L269" title="All 2 branches covered.">			if (v.child[1-c] != null) break;</span>
 		}
 		// 4 - update jump pointers
 <span class="fc" id="L272">		c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L273" title="5 of 6 branches missed.">        assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L273" title="All 4 branches missed.">        assert(c == 0 || c == 1);</span>
 <span class="fc" id="L274">		v.jump = u.child[1-c];</span>
 <span class="fc" id="L275">		v = v.parent;</span>
 <span class="fc" id="L276">		i--;</span>
 <span class="fc bfc" id="L277" title="All 2 branches covered.">		for (; i &gt;= 0; i--) {</span>
 <span class="fc" id="L278">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L279" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L279" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="fc bfc" id="L280" title="All 2 branches covered.">			if (v.jump == u) {</span>
 <span class="fc" id="L281">				v.jump = u.child[1-c];</span>
             }
@@ -327,7 +327,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L327">		BinaryTrieNode&lt;T&gt; u = r;</span>
 <span class="fc bfc" id="L328" title="All 2 branches covered.">		for (i = 0; i &lt; w; i++) {</span>
 <span class="fc" id="L329">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L330" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L330" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="fc bfc" id="L331" title="All 2 branches covered.">			if (u.child[c] == null) break;</span>
 <span class="fc" id="L332">			u = u.child[c];</span>
 		}
@@ -378,7 +378,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L378">		BinaryTrieNode&lt;T&gt; u = r;</span>
 <span class="fc bfc" id="L379" title="All 2 branches covered.">		for (i = 0; i &lt; w; i++) {</span>
 <span class="fc" id="L380">			c = (int)((ix &gt;&gt;&gt; w-i-1) &amp; 1);</span>
-<span class="pc bpc" id="L381" title="5 of 6 branches missed.">            assert(c == 0 || c == 1);</span>
+<span class="pc bnc" id="L381" title="All 4 branches missed.">            assert(c == 0 || c == 1);</span>
 <span class="pc bpc" id="L382" title="1 of 2 branches missed.">			if (u.child[c] == null) break;</span>
 <span class="fc" id="L383">			u = u.child[c];</span>
 		}
@@ -543,4 +543,4 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

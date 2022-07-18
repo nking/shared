@@ -52,7 +52,7 @@ import no.uib.cipr.matrix.SVD;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">public class PrincipalComponents {</span>
+<span class="pc" id="L55">public class PrincipalComponents {</span>
     
     /**
      * calculate the principal components of the unit standardized data x
@@ -120,8 +120,8 @@ import no.uib.cipr.matrix.SVD;
         */
     
 <span class="fc" id="L122">        double[][] cov = BruteForce.covariance(x);</span>
-<span class="pc bpc" id="L123" title="3 of 4 branches missed.">        assert(nDimensions == cov.length);</span>
-<span class="pc bpc" id="L124" title="3 of 4 branches missed.">        assert(nDimensions == cov[0].length);</span>
+<span class="pc bnc" id="L123" title="All 2 branches missed.">        assert(nDimensions == cov.length);</span>
+<span class="pc bnc" id="L124" title="All 2 branches missed.">        assert(nDimensions == cov[0].length);</span>
                         
         //NOTE: we know that cov is symmetric positive definite, so there are
         //   many operations special to it one could explore for diagonalization
@@ -154,8 +154,8 @@ import no.uib.cipr.matrix.SVD;
         // COLUMNS of u are the principal axes, a.k.a. principal directions
         // size is nDimensions x nDimensions
 <span class="fc" id="L156">        DenseMatrix u = svd.getU();</span>
-<span class="pc bpc" id="L157" title="3 of 4 branches missed.">        assert(nDimensions == u.numRows());</span>
-<span class="pc bpc" id="L158" title="3 of 4 branches missed.">        assert(nDimensions == u.numColumns());</span>
+<span class="pc bnc" id="L157" title="All 2 branches missed.">        assert(nDimensions == u.numRows());</span>
+<span class="pc bnc" id="L158" title="All 2 branches missed.">        assert(nDimensions == u.numColumns());</span>
                      
         // extract the nComponents columns of U as the principal axes, a.k.a. 
         //  principal directions.  array format: [nDimensions][nComponents]
@@ -377,4 +377,4 @@ import no.uib.cipr.matrix.SVD;
         double[] eigenvalues;
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

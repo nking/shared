@@ -14,7 +14,7 @@ import java.util.Arrays;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L17" title="1 of 2 branches missed.">public class StackIntLarge {</span>
+<span class="fc" id="L17">public class StackIntLarge {</span>
     
     // circular array
 <span class="fc" id="L20">    protected int[] a = null;</span>
@@ -41,7 +41,7 @@ import java.util.Arrays;
         }
         
 <span class="fc" id="L43">        int idxNext = idxLast + 1;</span>
-<span class="pc bpc" id="L44" title="3 of 4 branches missed.">        assert(idxNext &lt; a.length);</span>
+<span class="pc bnc" id="L44" title="All 2 branches missed.">        assert(idxNext &lt; a.length);</span>
 <span class="fc" id="L45">        idxLast = idxNext;</span>
 <span class="fc" id="L46">        a[idxLast] = value;</span>
 <span class="fc" id="L47">    }</span>
@@ -91,7 +91,7 @@ import java.util.Arrays;
 <span class="fc" id="L91">            return;</span>
         }
         
-<span class="pc bpc" id="L94" title="3 of 4 branches missed.">        assert(idxLast &gt; -1);</span>
+<span class="pc bnc" id="L94" title="All 2 branches missed.">        assert(idxLast &gt; -1);</span>
         
         // expand by 10 percent?
 <span class="fc" id="L97">        int nAdd = (int)Math.ceil(sz * 0.1f);</span>
@@ -103,4 +103,4 @@ import java.util.Arrays;
 <span class="fc" id="L103">    }</span>
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

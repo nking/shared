@@ -13,7 +13,7 @@ import thirdparty.ods.XFastTrieNode;
  * heap that can handle more than one node of the same key.
  * @author nichole
  */
-<span class="nc bnc" id="L16" title="All 2 branches missed.">public class XFastTrieWrapper {</span>
+<span class="nc" id="L16">public class XFastTrieWrapper {</span>
 
     private final int w;
     
@@ -73,7 +73,7 @@ import thirdparty.ods.XFastTrieNode;
 <span class="nc" id="L73">            Integer key = Integer.valueOf(keyIdx);</span>
             // O(log_2(w)) + O(w-l)
 <span class="nc" id="L75">            boolean added = xft.add(key);</span>
-<span class="nc bnc" id="L76" title="All 4 branches missed.">            assert(added);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            assert(added);</span>
             
 <span class="nc" id="L78">            set = new HashSet&lt;HeapNode&gt;();</span>
 <span class="nc" id="L79">            map.put(keyIdx, set);</span>
@@ -110,13 +110,13 @@ import thirdparty.ods.XFastTrieNode;
                 
 <span class="nc" id="L111">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
         
-<span class="nc bnc" id="L113" title="All 4 branches missed.">        assert(set0 != null);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        assert(set0 != null);</span>
         
 <span class="nc" id="L115">        set0.remove(node);</span>
         
 <span class="nc bnc" id="L117" title="All 2 branches missed.">        if (set0.size() == 0) {</span>
 <span class="nc" id="L118">            boolean removed = xft.remove(Integer.valueOf(keyIdx));</span>
-<span class="nc bnc" id="L119" title="All 4 branches missed.">            assert(removed);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">            assert(removed);</span>
 <span class="nc" id="L120">            map.remove(keyIdx);</span>
         }
                         
@@ -128,7 +128,7 @@ import thirdparty.ods.XFastTrieNode;
          
 <span class="nc bnc" id="L129" title="All 2 branches missed.">        if (set2 == null) {</span>
 <span class="nc" id="L130">            boolean added = xft.add(index2);</span>
-<span class="nc bnc" id="L131" title="All 4 branches missed.">            assert(added);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">            assert(added);</span>
             
 <span class="nc" id="L133">            set2 = new HashSet&lt;HeapNode&gt;();</span>
 <span class="nc" id="L134">            map.put((int)key2, set2);</span>
@@ -181,4 +181,4 @@ import thirdparty.ods.XFastTrieNode;
 <span class="nc" id="L181">        return n;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

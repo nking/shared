@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultivariateNormalDistribution.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">MultivariateNormalDistribution.java</span></div><h1>MultivariateNormalDistribution.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
 
+import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import no.uib.cipr.matrix.DenseCholesky;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.LowerSPDDenseMatrix;
-import no.uib.cipr.matrix.Matrices;
-import no.uib.cipr.matrix.NotConvergedException;
+import java.util.Arrays;
+
+import algorithms.misc.MiscMath0;
+import no.uib.cipr.matrix.*;
 
 /**
  * sample from a multivariate normal distribution N(m⃗ ,K) following
@@ -15,8 +15,8 @@ import no.uib.cipr.matrix.NotConvergedException;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L18" title="1 of 2 branches missed.">public class MultivariateNormalDistribution {</span>
- 
+<span class="pc" id="L18">public class MultivariateNormalDistribution {</span>
+
     /**
      * sample from a multivariate normal distribution N(m⃗, K) following
      * Strang's SVD in machine learning, that is using sqrt(K) for a factor to
@@ -24,29 +24,101 @@ import no.uib.cipr.matrix.NotConvergedException;
      * @param m vector of means for multivariate distribution.
      * @param k double array of covariance matrix for multivariate distribution.
      * must be a symmetric positive definite matrix.
+     * @param nSamples number of samples to generate of length m.length.  e.g. if m is length 2 and
+     *                   sampleSize is 3, the method returns 3 rows of length 2.
+     * @return a fair sampling from a normal distribution N(M, K) os length sampleSize.
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[][] sampleRandomlyFrom0(double[] m, double[][] k, int nSamples) throws NotConvergedException, NoSuchAlgorithmException {
+
+<span class="nc" id="L34">        double[][] out = new double[nSamples][];</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (int i = 0; i &lt; nSamples; ++i) {</span>
+<span class="nc" id="L36">            out[i] = sampleRandomlyFrom0(m, k);</span>
+        }
+<span class="nc" id="L38">        return out;</span>
+    }
+
+    /**
+     * sample from a multivariate normal distribution N(m⃗, K) following
+     * Strang's SVD in machine learning, that is using sqrt(K) for a factor to
+     * the generated unit standard normal distribution.
+     * @param m vector of means for multivariate distribution.
+     * @param k double array of covariance matrix for multivariate distribution.
+     * must be a symmetric positive definite matrix.
+     *          If it isn't, use MatrixUtil.nearestPositiveSemidefiniteToA() first.
      * @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
-    public static double[] sampleFrom0(double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
-        
-<span class="fc" id="L32">        int n = m.length;</span>
-        
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (n != k.length) {</span>
-<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;length of m must equal length of k&quot;);</span>
+    public static double[] sampleRandomlyFrom0(double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
+
+<span class="fc" id="L54">        int n = m.length;</span>
+
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (n != k.length) {</span>
+<span class="nc" id="L57">            throw new IllegalArgumentException(&quot;length of m must equal length of k&quot;);</span>
         }
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(k)) {</span>
-<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;k must be a positive definite matrix&quot;);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(k)) {</span>
+<span class="nc" id="L60">            throw new IllegalArgumentException(&quot;k must be a positive definite matrix&quot;);</span>
         }
-        
-<span class="fc" id="L41">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="fc" id="L42">        long seed = System.nanoTime();</span>
+
+<span class="fc" id="L63">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="fc" id="L64">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L44">        rand.setSeed(seed);</span>
+<span class="fc" id="L66">        rand.setSeed(seed);</span>
+
+        int i, j;
+        double r;
+
+        /*
+        Wasserman &quot;All of Statistics&quot;, eqn 2.10
+        multivariate PDF:
+           ((2*pi)^(-k/2)) * (det(k)^(-1/2)) * exp(-0.5*( (x-m)^T * (k^-1) * (x-m) ))
+        */
+
+<span class="fc" id="L77">        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);</span>
+        //System.out.println(&quot;u=&quot;+Arrays.toString(u));
+
+<span class="fc" id="L80">        return _sampleFrom0(u, m, k);</span>
+    }
+
+    /**
+     * sample from a multivariate normal distribution N(m⃗, K) following
+     * Strang's SVD in machine learning, that is using sqrt(K) for a factor to
+     * the generated unit standard normal distribution.
+     * The implementation of the sqrt is from Strang's SVD algorithm and
+     * from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
+     * &lt;pre&gt;
+     *     X = mu + sqrt(sigma)*Z where mu is the mean vector,
+     *     sigma is the covariance, and Z is N(O, I) which is the
+     *     unit standard normal distribution.
+     * &lt;/pre&gt;
+     * @param m vector of means for multivariate distribution.
+     * @param k double array of covariance matrix for multivariate distribution.
+     *          k should be a symmetric positive definite matrix.
+     *          if it isn't, use MatrixUtil.nearestPositiveSemidefiniteToA() first.
+     * @return a fair sampling from a normal distribution N(M, K).
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    static double[] _sampleFrom0(double[] u, double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
+        
+<span class="fc" id="L103">        int n = m.length;</span>
+        
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if (n != k.length) {</span>
+<span class="nc" id="L106">            throw new IllegalArgumentException(&quot;length of m must equal length of k&quot;);</span>
+        }
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(k)) {</span>
+<span class="nc" id="L109">            throw new IllegalArgumentException(&quot;k must be a positive definite matrix&quot;);</span>
+        }
+        
+<span class="fc" id="L112">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="fc" id="L113">        long seed = System.nanoTime();</span>
+        //System.out.println(&quot;SEED=&quot; + seed);
+<span class="fc" id="L115">        rand.setSeed(seed);</span>
         
         int i, j;
         double r;
         
         /*
+        Wasserman &quot;All of Statistics&quot;, eqn 2.10
         multivariate PDF:
            ((2*pi)^(-k/2)) * (det(k)^(-1/2)) * exp(-0.5*( (x-m)^T * (k^-1) * (x-m) ))
         */
@@ -65,12 +137,15 @@ import no.uib.cipr.matrix.NotConvergedException;
         4)  Then⃗ x= m⃗ + d, is a fair sample from N(m⃗,K)
         
         */
-<span class="fc" id="L68">        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);</span>
         //System.out.println(&quot;u=&quot;+Arrays.toString(u));
-        
-<span class="fc" id="L71">        double[][] ksq = MatrixUtil.squareRoot(k);</span>
-<span class="fc" id="L72">        double[] d = MatrixUtil.multiplyMatrixByColumnVector(ksq, u);</span>
-<span class="pc bpc" id="L73" title="3 of 4 branches missed.">        assert(d.length == m.length);</span>
+
+        //from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
+        //N(0, I) ~ Σ^(−1/2) * (X−μ)
+        //Σ^(1/2) * N(0, I) ~ (X−μ)
+        // d ~ X−μ
+<span class="fc" id="L146">        double[][] ksq = MatrixUtil.squareRoot(k);</span>
+<span class="fc" id="L147">        double[] d = MatrixUtil.multiplyMatrixByColumnVector(ksq, u);</span>
+<span class="pc bnc" id="L148" title="All 2 branches missed.">        assert(d.length == m.length);</span>
         
         /*{
             // check
@@ -108,118 +183,147 @@ import no.uib.cipr.matrix.NotConvergedException;
                 System.out.printf(&quot;%11.3e  &quot;, d[i]);
             }
             System.out.printf(&quot;\n&quot;);
-            
             System.out.flush();            
         }
         */
-        
-<span class="fc" id="L116">        double[] x = new double[n];</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L118">            x[i] = d[i] + m[i];</span>
+
+        //Σ^(1/2) * N(0, I) ~ (X−μ)
+        // d ~ X−μ
+        // X ~ d + μ
+<span class="fc" id="L193">        double[] x = new double[n];</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L195">            x[i] = d[i] + m[i];</span>
         }
         
-<span class="fc" id="L121">        return x;</span>
+<span class="fc" id="L198">        return x;</span>
     }
     
     /**
      * sample from a multivariate normal distribution N(m⃗, K) using 
      * the Cholesky decomposition for a factor to
      * the generated unit standard normal distribution.
-     * caveat is that the Cholesky decomposition may fail for ill-conditioned
-     * matrices k.
      * @param m vector of means for multivariate distribution.
      * @param k double array of covariance matrix for multivariate distribution.
      * must be a symmetric positive definite matrix.
      * @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
-    public static double[] sampleFrom1(double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
+    public static double[] sampleRandomlyFrom1(double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
         
-<span class="fc" id="L138">        int n = m.length;</span>
+<span class="fc" id="L213">        int n = m.length;</span>
         
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        if (n != k.length) {</span>
-<span class="nc" id="L141">            throw new IllegalArgumentException(&quot;length of m must equal length of k&quot;);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (n != k.length) {</span>
+<span class="nc" id="L216">            throw new IllegalArgumentException(&quot;length of m must equal length of k&quot;);</span>
         }
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(k)) {</span>
-<span class="nc" id="L144">            throw new IllegalArgumentException(&quot;k must be a positive definite matrix&quot;);</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(k)) {</span>
+<span class="nc" id="L219">            throw new IllegalArgumentException(&quot;k must be a positive definite matrix&quot;);</span>
         }
         
-<span class="fc" id="L147">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="fc" id="L148">        long seed = System.nanoTime();</span>
+<span class="fc" id="L222">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="fc" id="L223">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L150">        rand.setSeed(seed);</span>
+<span class="fc" id="L225">        rand.setSeed(seed);</span>
         
         int i, j;
         double r;
-        
+
+<span class="fc" id="L230">        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);</span>
+
+<span class="fc" id="L232">        return _sampleFrom1(u, m, k);</span>
+    }
+
+    /**
+     *
+     * @param u random selection of x from randomSampleOfUnitStandard
+     * @param m
+     * @param k
+     * @return
+     * @throws NotConvergedException
+     * @throws NoSuchAlgorithmException
+     */
+    static double[] _sampleFrom1(final double[] u, double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
+
+<span class="fc" id="L246">        int n = m.length;</span>
+
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">        if (n != k.length) {</span>
+<span class="nc" id="L249">            throw new IllegalArgumentException(&quot;length of m must equal length of k&quot;);</span>
+        }
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(k)) {</span>
+<span class="nc" id="L252">            throw new IllegalArgumentException(&quot;k must be a positive definite matrix&quot;);</span>
+        }
+
+        int i, j;
+        double r;
+
         /*
         multivariate PDF:
            ((2*pi)^(-k/2)) * (det(k)^(-1/2)) * exp(-0.5*( (x-m)^T * (k^-1) * (x-m) ))
         */
-        
+
         // 1D: x = m + stDev * N(0, 1)
-        
-        /*
+
+        /*&lt;pre&gt;
         To sample from the Normal distribution N(m⃗, K) we do the following:
         (K is square, symmetric, and positive definite)
 
-        1)  generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
-            normal distribution with mean=0 and covariance=1
-                           1             ( -(x - mu)^2 )
+        1)                 1             ( -(x - mu)^2 )
              f = ------------------ * exp( ----------- )
                  sigma * sqrt(2*pi)      (    2o~^2    )
-        
+        generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
+            normal distribution with mean=0 and covariance=1
                            1             ( -(x)^2 )
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
 
-        2) add a perturbation to K for numerical stability for the Cholesky 
+        2) add a perturbation to K for numerical stability for the Cholesky
            decomposition (next)
              K = K + 0.0001 * I
+
         3) calculate L from Cholesky decomposition of K
-           (can assert that K = L * L^T 
+           (can assert that K = L * L^T
         4) Then x = m + L * u
-        
+
         NOTE: can use in place of L, the inverse of the upper triangular matrix
         from the Cholesky decomposition.
-        */        
-<span class="fc" id="L186">        double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);</span>
-        
+        &lt;/pre&gt;
+        */
+
         //System.out.println(&quot;u=&quot;+Arrays.toString(u));
-        
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L191">            k[i][i] += 0.0001;</span>
-        }
-        
-<span class="fc" id="L194">        DenseCholesky c = new DenseCholesky(n, false);</span>
-<span class="fc" id="L195">        LowerSPDDenseMatrix lt = new LowerSPDDenseMatrix(new DenseMatrix(k));</span>
-<span class="fc" id="L196">        c.factor(lt);</span>
-<span class="fc" id="L197">        double[] d = MatrixUtil.multiplyMatrixByColumnVector(lt, u);</span>
-        
-<span class="pc bpc" id="L199" title="3 of 4 branches missed.">        assert(d.length == m.length);</span>
-        
-        {
+
+<span class="fc" id="L293">        double[][] k2 = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(k, 1.e-11);</span>
+        /*
+        for (i = 0; i &lt; n; ++i) {
+            k[i][i] += 0.0001;
+        }*/
+
+<span class="fc" id="L299">        DenseCholesky c = new DenseCholesky(n, false);</span>
+<span class="fc" id="L300">        LowerSPDDenseMatrix lt = new LowerSPDDenseMatrix(new DenseMatrix(k2));</span>
+<span class="fc" id="L301">        c.factor(lt);</span>
+<span class="fc" id="L302">        double[] d = MatrixUtil.multiplyMatrixByColumnVector(lt, u);</span>
+
+<span class="pc bnc" id="L304" title="All 2 branches missed.">        assert(d.length == m.length);</span>
+
+        /*{
             // check
-<span class="fc" id="L203">            double[][] lu = MatrixUtil.convertToRowMajor(lt);</span>
-<span class="fc" id="L204">            double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(lu),</span>
-                lu);
-<span class="fc" id="L206">            System.out.printf(&quot;cov check of decomp  L^T * L =\n&quot;);</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">            for ( i = 0; i &lt; cov.length; ++i) {</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">                for ( j = 0; j &lt; cov[i].length; ++j) {</span>
-<span class="fc" id="L209">                    System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);</span>
+            double[][] lu = MatrixUtil.convertToRowMajor(lt);
+            double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(lu),
+                    lu);
+            System.out.printf(&quot;cov check of decomp  L^T * L =\n&quot;);
+            for ( i = 0; i &lt; cov.length; ++i) {
+                for ( j = 0; j &lt; cov[i].length; ++j) {
+                    System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
                 }
-<span class="fc" id="L211">                System.out.printf(&quot;\n&quot;);</span>
+                System.out.printf(&quot;\n&quot;);
             }
-<span class="fc" id="L213">            System.out.flush();</span>
+            System.out.flush();
+        }*/
+
+<span class="fc" id="L321">        double[] x = new double[n];</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L323">            x[i] = m[i] + d[i];</span>
         }
-        
-<span class="fc" id="L216">        double[] x = new double[n];</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L218">            x[i] = m[i] + d[i];</span>
-        }
-        
-<span class="fc" id="L221">        return x;</span>
+
+<span class="fc" id="L326">        return x;</span>
     }
-    
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

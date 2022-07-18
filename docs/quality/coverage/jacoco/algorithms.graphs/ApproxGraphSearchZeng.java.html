@@ -49,7 +49,7 @@ in information theory, GED is seeking the matched configuration of vertices
    * 
  * @author nichole
  */
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">public class ApproxGraphSearchZeng {</span>
+<span class="fc" id="L52">public class ApproxGraphSearchZeng {</span>
     
     /**
      * property used in calculating the edit distance.  if edgesAreLabeled = true,
@@ -516,8 +516,8 @@ SDM, pp 154–163 (2011)
 <span class="fc" id="L516">        int[][] p = MatrixUtil.createPermutationMatrix(assignments);</span>
         
 <span class="fc" id="L518">        int[][] c = createLabelMatrix(sg1, sg2, assignments);</span>
-<span class="pc bpc" id="L519" title="3 of 4 branches missed.">        assert(c.length == p.length);</span>
-<span class="pc bpc" id="L520" title="3 of 4 branches missed.">        assert(c[0].length == p[0].length);</span>
+<span class="pc bnc" id="L519" title="All 2 branches missed.">        assert(c.length == p.length);</span>
+<span class="pc bnc" id="L520" title="All 2 branches missed.">        assert(c[0].length == p[0].length);</span>
         
         //C(g, h, P') = sum_(i|0:n-1) sum_(j|0:n-1) ( c[i][j]*p[i][j]  
         //              + (1/2) || a1 - P*a2*P^T ||_1
@@ -880,7 +880,7 @@ SDM, pp 154–163 (2011)
             }
 <span class="fc" id="L881">            sg2 = _sg2;</span>
         }
-<span class="pc bpc" id="L883" title="3 of 4 branches missed.">        assert (sg1.length == sg2.length);</span>
+<span class="pc bnc" id="L883" title="All 2 branches missed.">        assert (sg1.length == sg2.length);</span>
 <span class="fc" id="L884">        norm.sg1 = sg1;</span>
 <span class="fc" id="L885">        norm.sg2 = sg2;</span>
 <span class="fc" id="L886">        return norm;</span>
@@ -889,7 +889,7 @@ SDM, pp 154–163 (2011)
     static int[] balancedBipartiteAssignment(double[][] distM) {
 <span class="fc" id="L890">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
 <span class="fc" id="L891">        int[][] hAssign = ha.computeAssignments(MatrixUtil.convertToFloat(distM));</span>
-<span class="pc bpc" id="L892" title="3 of 4 branches missed.">        assert(hAssign.length == distM.length);</span>
+<span class="pc bnc" id="L892" title="All 2 branches missed.">        assert(hAssign.length == distM.length);</span>
 <span class="fc" id="L893">        int[] assign = new int[distM.length];</span>
         int i1, i2, i; 
 <span class="fc bfc" id="L895" title="All 2 branches covered.">        for (i = 0; i &lt; hAssign.length; ++i) {</span>
@@ -1010,4 +1010,4 @@ SDM, pp 154–163 (2011)
         boolean swapped;
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

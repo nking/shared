@@ -92,7 +92,7 @@ key, left or right field.
  *  @author Kevin Wayne
  */
 
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">public class RedBlackBSTLongInt {</span>
+<span class="fc" id="L95">public class RedBlackBSTLongInt {</span>
     
     private static final boolean RED   = true;
     private static final boolean BLACK = false;
@@ -366,7 +366,7 @@ key, left or right field.
         //printPreOrderTraversal();
         
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L369" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L369" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L370">            root.color = RED;</span>
 
 <span class="fc" id="L372">        root = deleteMax(root);</span>
@@ -409,8 +409,8 @@ key, left or right field.
 <span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L412" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
-<span class="fc" id="L413">            root.color = RED;</span>
+<span class="pc bpc" id="L412" title="3 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="nc" id="L413">            root.color = RED;</span>
 
 <span class="fc" id="L415">        root = delete(root, key);</span>
 <span class="pc bpc" id="L416" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
@@ -595,7 +595,7 @@ key, left or right field.
 
     // the smallest key in subtree rooted at x; null if no such key
     private Node min(Node x) { 
-<span class="pc bpc" id="L598" title="3 of 4 branches missed.">        assert(x != null);</span>
+<span class="pc bnc" id="L598" title="All 2 branches missed.">        assert(x != null);</span>
 <span class="fc bfc" id="L599" title="All 2 branches covered.">        while (x.left != null) {</span>
 <span class="fc" id="L600">            x = x.left;</span>
         }
@@ -614,7 +614,7 @@ key, left or right field.
 
     // the largest key in the subtree rooted at x; null if no such key
     private Node max(Node x) { 
-<span class="pc bpc" id="L617" title="3 of 4 branches missed.">        assert(x != null);</span>
+<span class="pc bnc" id="L617" title="All 2 branches missed.">        assert(x != null);</span>
 <span class="fc bfc" id="L618" title="All 2 branches covered.">        while (x.right != null) {</span>
 <span class="fc" id="L619">            x = x.right;</span>
         }
@@ -1313,4 +1313,4 @@ key, left or right field.
 <span class="nc" id="L1313">        return total;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  *
  * @author nichole
  */
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder {</span>
+<span class="fc" id="L31">public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder {</span>
 
     // key = pixel index, value = key of pixNodes
 <span class="fc" id="L34">    private TLongLongMap pixKeyMap = new TLongLongHashMap();</span>
@@ -259,8 +259,8 @@ import java.util.logging.Logger;
             //System.out.println(&quot;u=&quot; + uPoint + &quot; v=&quot; + vPoint +
             //    &quot; key=&quot; + uPoint);
         }
-<span class="pc bpc" id="L262" title="3 of 4 branches missed.">        assert(keySetMap.get(pixKeyMap.get(uPoint)) != null);</span>
-<span class="pc bpc" id="L263" title="3 of 4 branches missed.">        assert(keySetMap.get(pixKeyMap.get(vPoint)) != null);</span>
+<span class="pc bnc" id="L262" title="All 2 branches missed.">        assert(keySetMap.get(pixKeyMap.get(uPoint)) != null);</span>
+<span class="pc bnc" id="L263" title="All 2 branches missed.">        assert(keySetMap.get(pixKeyMap.get(vPoint)) != null);</span>
     
 <span class="fc" id="L265">    }</span>
 
@@ -294,4 +294,4 @@ import java.util.logging.Logger;
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

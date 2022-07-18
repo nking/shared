@@ -35,7 +35,7 @@ implementing a star structure and related methods following the
 * 
  * @author nichole
  */
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">public class StarStructure {</span>
+public class StarStructure {
     
     /**
      * ε is a special label indicating that the vertex is virtual
@@ -56,7 +56,7 @@ implementing a star structure and related methods following the
      * the indexes of vLabels before re-ordered by sorting */
     public int[] origVIndexes;
    
-<span class="nc" id="L59">    private StarStructure(){};</span>
+    private StarStructure(){};
     /**
      * convert the graph vertex rootIndex and it's immediate neighbors into
      * a star structure.
@@ -409,10 +409,10 @@ implementing a star structure and related methods following the
 <span class="fc bfc" id="L409" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
 <span class="fc" id="L410">            dist[i] = new double[n];</span>
 <span class="fc" id="L411">            s1 = sg1[i];</span>
-<span class="pc bpc" id="L412" title="3 of 4 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="pc bnc" id="L412" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
 <span class="fc bfc" id="L413" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
 <span class="fc" id="L414">                s2 = sg2[j];</span>
-<span class="pc bpc" id="L415" title="3 of 4 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="pc bnc" id="L415" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
 <span class="fc" id="L416">                dist[i][j] = calculateEditDistance(s1, s2);</span>
             }
         }
@@ -436,10 +436,10 @@ implementing a star structure and related methods following the
 <span class="nc bnc" id="L436" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
 <span class="nc" id="L437">            dist[i] = new double[n];</span>
 <span class="nc" id="L438">            s1 = sg1[i];</span>
-<span class="nc bnc" id="L439" title="All 4 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="nc bnc" id="L439" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
 <span class="nc bnc" id="L440" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
 <span class="nc" id="L441">                s2 = sg2[j];</span>
-<span class="nc bnc" id="L442" title="All 4 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="nc bnc" id="L442" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
 <span class="nc" id="L443">                dist[i][j] = calculateEditDistanceV(s1, s2);</span>
             }
         }
@@ -461,10 +461,10 @@ implementing a star structure and related methods following the
 <span class="fc bfc" id="L461" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
 <span class="fc" id="L462">            dist[i] = new double[n];</span>
 <span class="fc" id="L463">            s1 = sg1[i];</span>
-<span class="pc bpc" id="L464" title="3 of 4 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="pc bnc" id="L464" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
 <span class="fc bfc" id="L465" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
 <span class="fc" id="L466">                s2 = sg2[j];</span>
-<span class="pc bpc" id="L467" title="3 of 4 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="pc bnc" id="L467" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
 <span class="fc" id="L468">                dist[i][j] = calculateEditDistanceNoRelabeling(s1, s2);</span>
             }
         }
@@ -488,10 +488,10 @@ implementing a star structure and related methods following the
 <span class="nc bnc" id="L488" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
 <span class="nc" id="L489">            dist[i] = new double[n];</span>
 <span class="nc" id="L490">            s1 = sg1[i];</span>
-<span class="nc bnc" id="L491" title="All 4 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
 <span class="nc bnc" id="L492" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
 <span class="nc" id="L493">                s2 = sg2[j];</span>
-<span class="nc bnc" id="L494" title="All 4 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
 <span class="nc" id="L495">                dist[i][j] = calculateEditDistanceNoRelabelingV(s1, s2);</span>
             }
         }
@@ -554,4 +554,4 @@ implementing a star structure and related methods following the
 <span class="fc" id="L554">        return s;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

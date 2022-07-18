@@ -93,7 +93,7 @@ import thirdparty.ods.XFastTrieNodeLong;
      &lt;/pre&gt;
  * @author nichole
  */
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">public class YFastTrieLong {</span>
+<span class="fc" id="L96">public class YFastTrieLong {</span>
 
     /*    
     designing from browsing a few different lecture notes
@@ -267,7 +267,7 @@ YFastTrie
         
 <span class="fc" id="L268">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L270" title="3 of 4 branches missed.">        assert(tree != null);</span>
+<span class="pc bnc" id="L270" title="All 2 branches missed.">        assert(tree != null);</span>
                 
 <span class="fc" id="L272">        int[] output = new int[2];</span>
         
@@ -292,7 +292,7 @@ YFastTrie
                 
 <span class="fc" id="L293">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L295" title="3 of 4 branches missed.">        assert(tree != null);</span>
+<span class="pc bnc" id="L295" title="All 2 branches missed.">        assert(tree != null);</span>
         
 <span class="fc" id="L297">        int[] output = new int[2];</span>
         
@@ -428,7 +428,7 @@ YFastTrie
 <span class="fc" id="L428">                tree.min(kOutput);</span>
                 
                 // tree is not empty
-<span class="pc bpc" id="L431" title="3 of 4 branches missed.">                assert(kOutput[0] != -1);</span>
+<span class="pc bnc" id="L431" title="All 2 branches missed.">                assert(kOutput[0] != -1);</span>
 <span class="fc" id="L432">                long minKey = kOutput[1];</span>
 <span class="fc" id="L433">                xft.add(minKey);</span>
 <span class="fc" id="L434">                xftReps.put(index, minKey); </span>
@@ -535,7 +535,7 @@ YFastTrie
 <span class="fc" id="L535">        tree.max(kOutput);</span>
         
         // tree is not empty
-<span class="pc bpc" id="L538" title="3 of 4 branches missed.">        assert(kOutput[0] != -1);</span>
+<span class="pc bnc" id="L538" title="All 2 branches missed.">        assert(kOutput[0] != -1);</span>
 <span class="fc" id="L539">        long lastKey = kOutput[1];</span>
         
 <span class="fc" id="L541">        return lastKey;</span>
@@ -580,7 +580,7 @@ YFastTrie
 <span class="fc" id="L580">            tree.higher(node, output);</span>
                 
 <span class="fc bfc" id="L582" title="All 2 branches covered.">            if (isAMinimum) {</span>
-<span class="pc bpc" id="L583" title="3 of 4 branches missed.">                assert(output[0] != -1);</span>
+<span class="pc bnc" id="L583" title="All 2 branches missed.">                assert(output[0] != -1);</span>
 <span class="fc" id="L584">                return output[1];</span>
             }
         
@@ -621,7 +621,7 @@ YFastTrie
 <span class="fc" id="L621">        Long repr = xft.minimum();</span>
         
         // cannot be null if size &gt; 0
-<span class="pc bpc" id="L624" title="3 of 4 branches missed.">        assert(repr != null);</span>
+<span class="pc bnc" id="L624" title="All 2 branches missed.">        assert(repr != null);</span>
        
 <span class="fc" id="L626">        return repr.longValue();</span>
     }
@@ -643,19 +643,19 @@ YFastTrie
         
 <span class="fc" id="L644">        Long maxRepr = xft.maximum();</span>
         
-<span class="pc bpc" id="L646" title="3 of 4 branches missed.">        assert(maxRepr != null);</span>
+<span class="pc bnc" id="L646" title="All 2 branches missed.">        assert(maxRepr != null);</span>
         
 <span class="fc" id="L648">        long index = maxRepr.longValue()/binSz;</span>
         
 <span class="fc" id="L650">        RedBlackBSTLongInt2 tree = getTreeMap(index);</span>
         
-<span class="pc bpc" id="L652" title="3 of 4 branches missed.">        assert(tree != null);</span>
-<span class="pc bpc" id="L653" title="3 of 4 branches missed.">        assert(!tree.isEmpty());</span>
+<span class="pc bnc" id="L652" title="All 2 branches missed.">        assert(tree != null);</span>
+<span class="pc bnc" id="L653" title="All 2 branches missed.">        assert(!tree.isEmpty());</span>
         
 <span class="fc" id="L655">        long[] kOutput = new long[2];</span>
 <span class="fc" id="L656">        tree.max(kOutput);</span>
         
-<span class="pc bpc" id="L658" title="3 of 4 branches missed.">        assert(kOutput[0] != -1);</span>
+<span class="pc bnc" id="L658" title="All 2 branches missed.">        assert(kOutput[0] != -1);</span>
         
 <span class="fc" id="L660">        long lastKey = kOutput[1];</span>
                 
@@ -678,7 +678,7 @@ YFastTrie
 <span class="fc" id="L678">        long min = minimum();</span>
 
 <span class="pc bpc" id="L680" title="1 of 2 branches missed.">        if (min == -1) {</span>
-<span class="nc bnc" id="L681" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc bnc" id="L681" title="All 2 branches missed.">            assert(xft.size() == 0);</span>
 <span class="nc" id="L682">            return -1;</span>
         }
                 
@@ -701,7 +701,7 @@ YFastTrie
 <span class="fc" id="L701">        long max = maximum();</span>
 
 <span class="pc bpc" id="L703" title="1 of 2 branches missed.">        if (max == -1) {</span>
-<span class="nc bnc" id="L704" title="All 4 branches missed.">            assert(xft.size() == 0);</span>
+<span class="nc bnc" id="L704" title="All 2 branches missed.">            assert(xft.size() == 0);</span>
 <span class="nc" id="L705">            return -1;</span>
         }
                 
@@ -885,4 +885,4 @@ YFastTrie
         }
 <span class="nc" id="L886">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

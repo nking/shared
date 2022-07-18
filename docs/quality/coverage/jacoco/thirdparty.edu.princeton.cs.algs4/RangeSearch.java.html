@@ -164,31 +164,31 @@ adapted from http://algs4.cs.princeton.edu/92search/
         }
         
 <span class="fc" id="L166">        int cmp = key.compareTo(x.key);</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (cmp == 0) {</span>
-<span class="fc" id="L168">            int cmpV = compareVal.compareTo(val);</span>
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (cmpV &lt; 0) {</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L168">            int cmpV = compareVal.compareTo(val);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (cmpV &lt; 0) {</span>
                 // continue w/ insert
 <span class="nc" id="L171">                replaced[0] = x.val;</span>
 <span class="nc" id="L172">                x.val = val;</span>
 <span class="nc" id="L173">                inserted[0] = true;</span>
             } else {
-<span class="fc" id="L175">                inserted[0] = false;</span>
+<span class="nc" id="L175">                inserted[0] = false;</span>
             }
-<span class="fc" id="L177">            return x;</span>
+<span class="nc" id="L177">            return x;</span>
         }
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
 <span class="fc" id="L180">            return putRootIfLessThan(x, key, val, compareVal, replaced, inserted);</span>
         }
-<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="nc" id="L183">            x.left  = putIfLessThan(x.left,  key, val, compareVal, replaced,</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="fc" id="L183">            x.left  = putIfLessThan(x.left,  key, val, compareVal, replaced,</span>
                 inserted);
         } else {
 <span class="nc" id="L186">            x.right = putIfLessThan(x.right, key, val, compareVal, replaced,</span>
                 inserted);
         }
         // (x.N)++;
-<span class="nc" id="L190">        fix(x);</span>
-<span class="nc" id="L191">        return x;</span>
+<span class="fc" id="L190">        fix(x);</span>
+<span class="fc" id="L191">        return x;</span>
     }
     
     /**
@@ -213,17 +213,17 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L213">            x.val = val;</span>
 <span class="nc" id="L214">            return x;</span>
         }
-<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
 <span class="fc" id="L217">            return putRoot(x, key, val, replaced);</span>
         }
-<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="fc" id="L220">            x.left  = put(x.left,  key, val, replaced);</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="nc" id="L220">            x.left  = put(x.left,  key, val, replaced);</span>
         } else {
 <span class="nc" id="L222">            x.right = put(x.right, key, val, replaced);</span>
         } 
         // (x.N)++;
-<span class="fc" id="L225">        fix(x);</span>
-<span class="fc" id="L226">        return x;</span>
+<span class="nc" id="L225">        fix(x);</span>
+<span class="nc" id="L226">        return x;</span>
     }
 
     private &lt;Value2 extends Comparable&lt;Value&gt;&gt; 
@@ -231,22 +231,22 @@ adapted from http://algs4.cs.princeton.edu/92search/
         RangeSearchNode&lt;Key, Value&gt; x, Key key, Value val, Value2 compareVal,
         Object[] replaced, boolean[] inserted) {
         
-<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (x == null) {</span>
-<span class="fc" id="L235">            inserted[0] = true;</span>
-<span class="fc" id="L236">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L235">            inserted[0] = true;</span>
+<span class="nc" id="L236">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
         }
         
 <span class="fc" id="L239">        int cmp = key.compareTo(x.key);</span>
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L241">            int cmpV = compareVal.compareTo(val);</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">            if (cmpV &lt; 0) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        if (cmp == 0) {</span>
+<span class="fc" id="L241">            int cmpV = compareVal.compareTo(val);</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">            if (cmpV &lt; 0) {</span>
 <span class="nc" id="L243">                replaced[0] = x.val;</span>
 <span class="nc" id="L244">                x.val = val;</span>
 <span class="nc" id="L245">                inserted[0] = true;</span>
             } else {
-<span class="nc" id="L247">                inserted[0] = false;</span>
+<span class="fc" id="L247">                inserted[0] = false;</span>
             }
-<span class="nc" id="L249">            return x; </span>
+<span class="fc" id="L249">            return x; </span>
 <span class="pc bpc" id="L250" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
 <span class="fc" id="L251">            x.left  = putRootIfLessThan(x.left,  key, val, compareVal, replaced,</span>
                 inserted); 
@@ -577,4 +577,4 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L577">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -73,7 +73,7 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 	 */
 	protected S newNode() {
 		try {
-<span class="fc" id="L76">            S u = (S)sampleNode.getClass().newInstance();</span>
+<span class="fc" id="L76">            S u = (S)sampleNode.getClass().getDeclaredConstructor().newInstance();</span>
 <span class="fc" id="L77">			u.parent = u.child[0] = u.child[1] = null;</span>
 <span class="fc" id="L78">			return u;</span>
 <span class="nc" id="L79">		} catch (Exception e) {</span>
@@ -175,7 +175,7 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc bfc" id="L175" title="All 2 branches covered.">		while (v != null) {</span>
 <span class="fc bfc" id="L176" title="All 4 branches covered.">			if ((v.child[left] == null </span>
 	        	&amp;&amp; (v.jump == null ||
-<span class="pc bpc" id="L178" title="1 of 8 branches missed.">                it.intValue(v.jump.x) &gt; ix))</span>
+<span class="fc bfc" id="L178" title="All 8 branches covered.">                it.intValue(v.jump.x) &gt; ix))</span>
 			|| (v.child[right] == null 
 	    		&amp;&amp; (v.jump == null || 
 <span class="fc bfc" id="L181" title="All 2 branches covered.">                (v.jump.x != null &amp;&amp; it.intValue(v.jump.x) &lt; ix))</span>
@@ -509,4 +509,4 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L509">        return total;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

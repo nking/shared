@@ -18,7 +18,7 @@ import java.util.Arrays;
   
  * @author nichole
  */
-<span class="pc bpc" id="L21" title="1 of 2 branches missed.">public class Standardization {</span>
+<span class="pc" id="L21">public class Standardization {</span>
     
     /**
      * performs &quot;standard unit normalization&quot; on the points, that is,
@@ -64,8 +64,8 @@ import java.util.Arrays;
         }
         
 <span class="fc" id="L66">        double[][] mAndSD = MiscMath0.standardDeviation(out, nDimensions);</span>
-<span class="pc bpc" id="L67" title="3 of 4 branches missed.">        assert(mAndSD[0].length == nDimensions);</span>
-<span class="pc bpc" id="L68" title="3 of 4 branches missed.">        assert(mAndSD[1].length == nDimensions);</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">        assert(mAndSD[0].length == nDimensions);</span>
+<span class="pc bnc" id="L68" title="All 2 branches missed.">        assert(mAndSD[1].length == nDimensions);</span>
         
 <span class="fc" id="L70">        System.arraycopy(mAndSD[1], 0, outputStandardDeviation, 0, nDimensions);</span>
         
@@ -191,4 +191,4 @@ import java.util.Arrays;
 <span class="fc" id="L191">        return out;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

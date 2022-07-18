@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * 
  * @author nichole
  */
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">public class FlowNetwork {</span>
+<span class="fc" id="L28">public class FlowNetwork {</span>
     
 <span class="fc" id="L30">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
     
@@ -249,7 +249,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L249">            rightToSinkF.put(rightIdx, 1);</span>
 <span class="fc" id="L250">        }</span>
 
-<span class="pc bpc" id="L252" title="3 of 4 branches missed.">        assert (maxC &gt; 1);</span>
+<span class="pc bnc" id="L252" title="All 2 branches missed.">        assert (maxC &gt; 1);</span>
 
         /*
         For each vertex x in X, there is a left-dummy arc |- -&gt; x, 
@@ -497,7 +497,7 @@ import java.util.logging.Logger;
         
 <span class="nc" id="L498">        TIntHashSet surplus = new TIntHashSet();</span>
 <span class="nc" id="L499">        getSurplusRightIndexes(surplus);</span>
-<span class="nc bnc" id="L500" title="All 4 branches missed.">        assert(surplus.isEmpty());</span>
+<span class="nc bnc" id="L500" title="All 2 branches missed.">        assert(surplus.isEmpty());</span>
         
 <span class="nc" id="L502">        getSurplusLeftIndexes(surplus);</span>
         
@@ -1123,7 +1123,7 @@ import java.util.logging.Logger;
     
     public void augmentFlowAndArc(int idx1, int idx2) {
         
-<span class="pc bpc" id="L1126" title="3 of 4 branches missed.">        assert(forwardArcs.containsKey(idx1)</span>
+<span class="pc bnc" id="L1126" title="All 2 branches missed.">        assert(forwardArcs.containsKey(idx1)</span>
 <span class="nc" id="L1127">            &amp;&amp; forwardArcs.get(idx1)</span>
 <span class="nc bnc" id="L1128" title="All 2 branches missed.">            .contains(idx2));</span>
         
@@ -1328,4 +1328,4 @@ import java.util.logging.Logger;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

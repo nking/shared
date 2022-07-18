@@ -50,7 +50,7 @@ import java.util.Stack;
 
  * @author nichole
  */
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">public abstract class AbstractTSP {</span>
+<span class="fc" id="L53">public abstract class AbstractTSP {</span>
 
 <span class="fc" id="L55">    protected double minCost = Double.POSITIVE_INFINITY;</span>
 <span class="fc" id="L56">    protected final TLongList minPath = new TLongArrayList();</span>
@@ -353,7 +353,7 @@ import java.util.Stack;
      * NOTE that s should not contain the startNode.
      */
     protected long concatenate(long path, int nPathNodesSet, int[] base10Nodes) {
-<span class="pc bpc" id="L356" title="3 of 4 branches missed.">        assert (numberOfSetNodes(path) == nPathNodesSet);</span>
+<span class="pc bnc" id="L356" title="All 2 branches missed.">        assert (numberOfSetNodes(path) == nPathNodesSet);</span>
 <span class="fc" id="L357">        long path2 = path;</span>
         int i;
         int si;
@@ -370,7 +370,7 @@ import java.util.Stack;
      * number of unset path nodes &lt; 4.
      */
     protected void initNodePaths() throws InterruptedException {
-<span class="pc bpc" id="L373" title="3 of 4 branches missed.">        assert(memo.isEmpty());</span>
+<span class="pc bnc" id="L373" title="All 2 branches missed.">        assert(memo.isEmpty());</span>
         
 <span class="fc" id="L375">        int nNotSet = dist.length - 1;</span>
         
@@ -414,7 +414,7 @@ import java.util.Stack;
      * @param k
      */
     protected void initKNodePaths(final int k) throws InterruptedException {        
-<span class="pc bpc" id="L417" title="3 of 4 branches missed.">        assert(memo.isEmpty());</span>
+<span class="pc bnc" id="L417" title="All 2 branches missed.">        assert(memo.isEmpty());</span>
         
 <span class="fc" id="L419">        int nNodesSet = 0;</span>
 <span class="fc" id="L420">        Stack&lt;StackP&gt; stack = null;</span>
@@ -554,7 +554,7 @@ import java.util.Stack;
         // the first 64-((dist.length-1*w) can be discarded as unused space
 <span class="fc" id="L555">        int nd = 64 - nn;</span>
 <span class="fc" id="L556">        int n0 = Long.numberOfLeadingZeros(path);</span>
-<span class="pc bpc" id="L557" title="3 of 4 branches missed.">        assert (n0 &gt;= nd);</span>
+<span class="pc bnc" id="L557" title="All 2 branches missed.">        assert (n0 &gt;= nd);</span>
 <span class="fc" id="L558">        int nc = n0 - nd;</span>
 <span class="fc" id="L559">        int nUnset = nc / w;</span>
 <span class="fc" id="L560">        return nUnset;</span>
@@ -673,4 +673,4 @@ import java.util.Stack;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

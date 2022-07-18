@@ -8,7 +8,7 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
  * @author nichole
  * @param &lt;T&gt; node type that is or extends DoublyLinkedNode
  */
-<span class="pc bpc" id="L11" title="1 of 2 branches missed.">public class DoublyLinkedList&lt;T extends DoublyLinkedNode&gt; {</span>
+<span class="fc" id="L11">public class DoublyLinkedList&lt;T extends DoublyLinkedNode&gt; {</span>
 
     public static class DoublyLinkedNode {
         public DoublyLinkedNode next = null;
@@ -26,15 +26,15 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
      */
     public void add(T node) {
 <span class="fc bfc" id="L28" title="All 2 branches covered.">        if (head == null) {</span>
-<span class="pc bpc" id="L29" title="3 of 4 branches missed.">            assert(tail == null);</span>
+<span class="pc bnc" id="L29" title="All 2 branches missed.">            assert(tail == null);</span>
 <span class="fc" id="L30">            head = node;</span>
 <span class="fc" id="L31">            head.prev = null;</span>
 <span class="fc" id="L32">            tail = node;</span>
 <span class="fc" id="L33">            tail.next = null;</span>
         } else {
-<span class="pc bpc" id="L35" title="3 of 4 branches missed.">            assert(tail != null);</span>
+<span class="pc bnc" id="L35" title="All 2 branches missed.">            assert(tail != null);</span>
 <span class="fc" id="L36">            T t = tail;</span>
-<span class="pc bpc" id="L37" title="3 of 4 branches missed.">            assert(tail.next == null);</span>
+<span class="pc bnc" id="L37" title="All 2 branches missed.">            assert(tail.next == null);</span>
 <span class="fc" id="L38">            t.next = node;</span>
 <span class="fc" id="L39">            node.prev = t;</span>
 <span class="fc" id="L40">            node.next = null;</span>
@@ -59,15 +59,15 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
      */
     public void addFirst(T node) {
 <span class="fc bfc" id="L61" title="All 2 branches covered.">        if (head == null) {</span>
-<span class="pc bpc" id="L62" title="3 of 4 branches missed.">            assert(tail == null);</span>
+<span class="pc bnc" id="L62" title="All 2 branches missed.">            assert(tail == null);</span>
 <span class="fc" id="L63">            head = node;</span>
 <span class="fc" id="L64">            node.prev = null;</span>
 <span class="fc" id="L65">            node.next = null;</span>
 <span class="fc" id="L66">            tail = node;</span>
         } else {
-<span class="pc bpc" id="L68" title="3 of 4 branches missed.">            assert(tail != null);</span>
+<span class="pc bnc" id="L68" title="All 2 branches missed.">            assert(tail != null);</span>
 <span class="fc" id="L69">            T h = head;</span>
-<span class="pc bpc" id="L70" title="3 of 4 branches missed.">            assert(h.prev == null);</span>
+<span class="pc bnc" id="L70" title="All 2 branches missed.">            assert(h.prev == null);</span>
 <span class="fc" id="L71">            node.prev = null;</span>
 <span class="fc" id="L72">            node.next = h;</span>
 <span class="fc" id="L73">            h.prev = node;</span>
@@ -212,4 +212,4 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
 <span class="fc bfc" id="L212" title="All 2 branches covered.">        return (n == 0);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
