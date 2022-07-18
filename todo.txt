@@ -1,3 +1,28 @@
+-- for parameter finding of GEV:
+   -- bayesian inference
+      - likelihood
+      - prior
+      - initial estimates of parameters
+      - for optimization, need to impl or use an API
+        - google optimization api
+            https://developers.google.com/optimization/install
+        - if using an API, might need to export to another project:
+            - prml in github by ctgk (python)
+            - tensorflow2
+            - Google ML (android java)
+            - cloud APIs
+-- considering imple of parameter finding for the individual type I, II, and II distributions of GEV
+   -- gumbel
+      -- method of moments
+   -- weibull 3-parameters:
+      -- "Procedures for Estimation of Weibull Parameters"
+         Evens, Kretchmann, and Green 2019 
+         recommend maximum-likelihood
+   -- frechet:
+      -- "The Frechet distribution: Estimation and Application an Overview"
+         Ramos et al 2018 
+         recommend bayesian inference
+
 -- impl a GIST descriptor
 -- use of CNN for images and audio.
 -- use of Mel-frequency cepstrum for audio
@@ -35,6 +60,11 @@
 
 -- consider implementing optimizer Adam:
    https://machinelearningmastery.com/adam-optimization-from-scratch/
+   -- if haven't restored one of my downhill simplex algorithm implementations,
+      can dig up the older version in two-point-correlation project history:
+         src/main/java/algorithms/curves/GEVChiSquareMinimization.java
+      and the non-linear conjugate gradient algorithm in
+         src/main/java/algorithms/curves/NonQuadraticConjugateGradientSolver.java
 
 -- consider changing java compile source to 1.11
    -- then update libraries
