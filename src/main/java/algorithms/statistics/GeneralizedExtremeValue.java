@@ -24,7 +24,7 @@ import algorithms.misc.MiscMath0;
  
   Let z = (x-mu)/sigma
  
-  Extreme Value Type I:
+  Extreme Value Type I (Gumbel):
                       1
       y = y_const * ----- * exp( -z -exp(-z))
                     sigma
@@ -32,16 +32,17 @@ import algorithms.misc.MiscMath0;
       sigma > 0
       k = 0
  
-  Extreme Value Type II:
+  Extreme Value Type II (Frechet):
                       k     (sigma)^(k+1)      (   (sigma)^k)
       y = y_const * ----- * (-----)       * exp( - (-----)  )
                     sigma   (  x  )            (   (  x  )  )
  
-      k  > 0
+      k  > 0, (1/k)>0
       sigma > 0
       x > 0
+      if (1 + k*(x - mu)/sigma) <= 0, y = 0
  
-  Extreme Value Type III:
+  Extreme Value Type III (Weibull):
                       k     (x - mu)^(k+1)      (   (x - mu)^k)
       y = y_const * ----- * (------)       * exp( - (------)  )
                     sigma   (sigma )            (   (sigma )  )
@@ -50,9 +51,10 @@ import algorithms.misc.MiscMath0;
         = y_const * ----- * (z)^(k+1) * exp( -1*(z)^k )
                     sigma
  
-      k < 0
+      k < 0, (1/k)<0
       sigma > 0
       x > 0
+       if -(1 + k*(x - mu)/sigma) >= 0, y = 1
  
  </pre>
   first implemented in project
@@ -66,70 +68,80 @@ import algorithms.misc.MiscMath0;
  */
 public class GeneralizedExtremeValue {
 
-    protected final float[] x;
-    protected final float[] y;
+    protected final double[] x;
+    protected final double[] y;
 
-    protected final float[] dx;
-    protected final float[] dy;
+    protected final double[] dx;
+    protected final double[] dy;
 
-    public GeneralizedExtremeValue(float[] xPoints, float[] yPoints, float[] dXPoints, float[] dYPoints) {
+    public GeneralizedExtremeValue(double[] xPoints, double[] yPoints, double[] dXPoints, double[] dYPoints) {
         this.x = xPoints;
         this.y = yPoints;
         this.dx = dXPoints;
         this.dy = dYPoints;
     }
 
-    public float[] generateNormalizedCurve(float[] parameters, float yConst) {
+    /**
+     * generate a normalized GEV
+     * @param parameters mu, sigma, and k
+     where mu is  the location parameter, sigma is the scale parameter and is > 0,
+     and k is the shape parameter.
+     * @param yConst normalization factor
+     * @return
+     */
+    public double[] generateNormalizedCurve(double[] parameters, double yConst) {
         if (parameters == null) {
             throw new IllegalArgumentException("parameters cannot be null");
         }
         if (parameters.length != 3) {
-            throw new IllegalArgumentException("parameters must hold k, sigma, and mu");
+            throw new IllegalArgumentException("parameters must hold mu, sigma, and k");
         }
 
         return generateNormalizedCurve(parameters[0], parameters[1], parameters[2], yConst);
     }
 
-    public float[] generateNormalizedCurve(float[] parameters) {
+    /**
+     * generate a GEV curve
+     * @param parameters mu, sigma, and k
+    where mu is  the location parameter, sigma is the scale parameter and is > 0,
+    and k is the shape parameter.
+     * @return
+     */
+    public double[] generateNormalizedCurve(double[] parameters) {
         if (parameters == null) {
             throw new IllegalArgumentException("parameters cannot be null");
         }
         if (parameters.length != 3) {
-            throw new IllegalArgumentException("parameters must hold k, sigma, and mu");
+            throw new IllegalArgumentException("parameters must hold mu, sigma, and k");
         }
 
         return generateNormalizedCurve(parameters[0], parameters[1], parameters[2]);
     }
 
-    public float[] generateNormalizedCurve(float k, float sigma, float mu) {
+    public double[] generateNormalizedCurve(double mu, double sigma, double k) {
 
-        float[] yGEV = generateCurve(x, k, sigma, mu);
-        if (yGEV == null) {
-            return null;
-        }
-        float yConst = determineYConstant(yGEV, mu);
+        double[] yGEV = generateCurve(x, mu, sigma, k);
 
-        return generateNormalizedCurve(k, sigma, mu, yConst);
+        double yConst = determineYConstant(yGEV, mu);
+
+        return generateNormalizedCurve(mu, sigma, k, yConst);
     }
 
     /**
      * generate a GEV curve w/ parameters k, sigma, and mu and then multiply it
      * by yConst so that the highest peak has value yConst
      *
-     * @param k
-     * @param sigma
-     * @param mu
+     * @param k shape parameter
+     * @param sigma scale parameter, > 0
+     * @param mu location parameter
      * @param yConst
      * @return
      */
-    public float[] generateNormalizedCurve(float k, float sigma, float mu, float yConst) {
+    public double[] generateNormalizedCurve(double mu, double sigma, double k, double yConst) {
 
-        float[] yGEV = generateCurve(x, k, sigma, mu);
-        if (yGEV == null) {
-            return null;
-        }
+        double[] yGEV = generateCurve(x, mu, sigma, k);
 
-        float yMax = MiscMath0.findMax(yGEV);
+        double yMax = MiscMath0.findMax(yGEV);
 
         for (int i = 0; i < yGEV.length; i++) {
             yGEV[i] *= yConst/yMax;
@@ -160,22 +172,21 @@ public class GeneralizedExtremeValue {
      *   then y = (yconst/sigma) * f1 * f2
      *</pre>
      */
-    public static Double generateYGEV(float xPoint, float k, float sigma, float mu) {
+    public static Double generateYGEV(double xPoint, double mu, double sigma, double k) {
 
         if (sigma == 0) {
-            //throw new IllegalArgumentException("sigma must be > 0");
-            return null;
+            throw new IllegalArgumentException("sigma must be > 0");
         }
 
         // if k =~ 0, use Gumbel which is Type I
-        if (k == 0 || Float.isInfinite(1.f/k)) {
+        if (k == 0 || Double.isInfinite(1.f/k)) {
             return generateYEVTypeI(xPoint, sigma, mu);
         }        
         // if k > 0, use Frechet which is Type II
         // if k < 0, use Weibull which is Type III.  Not using k < 0 in this project
 
-        float z = 1.f + k * ((xPoint - mu)/sigma);
-        float a,b;
+        double z = 1.f + k * ((xPoint - mu)/sigma);
+        double a,b;
 
         boolean zIsNegative = (z < 0);
         // When z is negative, need to use alternative methods for exponentiation:
@@ -192,25 +203,24 @@ public class GeneralizedExtremeValue {
         //        (-1)^(g/h) * ((1./z)^(g/h))
 
         if (zIsNegative) {
-            float invNegZ = -1.0f*(1.0f/z);
-            float neg1Pow = -1.0f; // TODO:  revisit this
-            a = -1.f * neg1Pow * (float) Math.pow(invNegZ, (-1.f/k));
-            b = neg1Pow * (float) Math.pow(invNegZ, (-1.f - (1.f/k)));
+            double invNegZ = -1.0f*(1.0f/z);
+            double neg1Pow = -1.0f; // TODO:  revisit this
+            a = -1.f * neg1Pow * Math.pow(invNegZ, (-1.f/k));
+            b = neg1Pow * Math.pow(invNegZ, (-1.f - (1.f/k)));
         } else {
-            a = -1.f * (float) Math.pow(z, (-1.f/k));
-            b = (float) Math.pow(z, (-1.f - (1.f/k)));
+            a = -1.f * Math.pow(z, (-1.f/k));
+            b = Math.pow(z, (-1.f - (1.f/k)));
         }
         
-        if (Float.isNaN(a) || Float.isNaN(b)) {
+        if (Double.isNaN(a) || Double.isNaN(b)) {
             // or return 0?
-            return null;
+            throw new IllegalStateException("cannot be NaN");
         } else {
-            float t = (float) ((1.f/sigma) * Math.exp(a) * b);
-            return Double.valueOf(t);
+            return ((1.f/sigma) * Math.exp(a) * b);
         }
     }
 
-    public static Double generateYEVTypeI(float xPoint, float sigma, float mu) {
+    public static Double generateYEVTypeI(double xPoint, double mu, double sigma) {
 
         if (sigma == 0) {
             throw new IllegalArgumentException("sigma must be > 0");
@@ -218,29 +228,27 @@ public class GeneralizedExtremeValue {
 
         double z = (xPoint - mu)/sigma;
 
-        double a = (float) (-1.f*z - Math.exp(-1.0f*z));
+        double a = (-1.f*z - Math.exp(-1.0f*z));
 
-        double yGEV = (float) ((1.f/sigma) * Math.exp(a));
-
-        return yGEV;
+        return ((1.f/sigma) * Math.exp(a));
     }
 
-    public float[] generateCurve(float[] x1, float k, float sigma, float mu) {
+    public double[] generateCurve(double[] x1, double mu, double sigma, double k) {
 
         if (sigma == 0) {
-            return null;
+            throw new IllegalArgumentException("sigma cannot be null");
         }
         // if k =~ 0, use Gumbel which is Type I
-        if (k == 0 || Float.isInfinite(1.f/k)) {
-            return generateEVTypeICurve(x1, sigma, mu);
+        if (k == 0 || Double.isInfinite(1.f/k)) {
+            return generateEVTypeICurve(x1, mu, sigma);
         }
         
-        float[] yGEV = new float[x1.length];
+        double[] yGEV = new double[x1.length];
 
         for (int i = 0; i < x1.length; i++) {
 
-            float z = 1.f + k*((x1[i] - mu)/sigma);
-            float a,b;
+            double z = 1.f + k*((x1[i] - mu)/sigma);
+            double a,b;
 
             boolean zIsNegative = (z < 0);
             // When z is negative, need to use alternative methods for exponentiation:
@@ -257,20 +265,20 @@ public class GeneralizedExtremeValue {
             //        (-1)^(g/h) * ((1./z)^(g/h))
             
             if (zIsNegative) {
-                float invNegZ = -1.0f*(1.0f/z);
-                float neg1Pow = -1.0f; // TODO:  revisit this
-                a = -1.f * neg1Pow * (float) Math.pow(invNegZ, (-1.f/k));
-                b = neg1Pow * (float) Math.pow(invNegZ, (-1.f - (1.f/k)));
+                double invNegZ = -1.0f*(1.0f/z);
+                double neg1Pow = -1.0f; // TODO:  revisit this
+                a = -1.f * neg1Pow * Math.pow(invNegZ, (-1.f/k));
+                b = neg1Pow * Math.pow(invNegZ, (-1.f - (1.f/k)));
             } else {
-                a = -1.f * (float) Math.pow(z, (-1.f/k));
-                b = (float) Math.pow(z, (-1.f - (1.f/k)));
+                a = -1.f * Math.pow(z, (-1.f/k));
+                b = Math.pow(z, (-1.f - (1.f/k)));
             }
 
-            if (Float.isNaN(a) || Float.isNaN(b)) {
+            if (Double.isNaN(a) || Double.isNaN(b)) {
                 yGEV[i] = 0;
             } else {
-                float t = (float) ((1.f/sigma) * Math.exp(a) * b);
-                if (t < 0 || Float.isNaN(t)) {
+                double t = ((1.f/sigma) * Math.exp(a) * b);
+                if (t < 0 || Double.isNaN(t)) {
                     yGEV[i] = 0;
                 } else {
                     yGEV[i] = t;
@@ -281,27 +289,27 @@ public class GeneralizedExtremeValue {
         return yGEV;
     }
 
-    public static float[] generateEVTypeICurve(float[] x1, float sigma, float mu) {
+    public static double[] generateEVTypeICurve(double[] x1, double mu, double sigma) {
 
         if (sigma == 0) {
             throw new IllegalArgumentException("sigma must be > 0");
         }
 
-        float[] yGEV = new float[x1.length];
+        double[] yGEV = new double[x1.length];
 
         for (int i = 0; i < x1.length; i++) {
 
-            float z = (x1[i] - mu)/sigma;
+            double z = (x1[i] - mu)/sigma;
 
-            float a = (float) (-1.f*z - Math.exp(-1.0f*z));
+            double a = (-1.f*z - Math.exp(-1.0f*z));
 
-            yGEV[i] = (float) ((1.f/sigma) * Math.exp(a));
+            yGEV[i] = ((1.f/sigma) * Math.exp(a));
         }
 
         return yGEV;
     }
 
-    public float determineYConstant(float[] yGEV, float mu) {
+    public double determineYConstant(double[] yGEV, double mu) {
 
         int index = MiscMath0.findYMaxIndex(y);
         if (index == -1) {
@@ -311,9 +319,9 @@ public class GeneralizedExtremeValue {
         return determineYConstant(yGEV, mu, index);
     }
 
-    public float determineYConstant(float[] yGEV, float mu, int index) {
+    public double determineYConstant(double[] yGEV, double mu, int index) {
 
-        float yConst = y[index]/yGEV[index];
+        double yConst = y[index]/yGEV[index];
 
         return yConst;
     }
@@ -326,15 +334,15 @@ public class GeneralizedExtremeValue {
      * @param yGEV the generated GEV y model array
      * @return the mean error of the fit
      */
-    public static float calculateChiSq(float[] y1, float[] yGEV) {
+    public static double calculateChiSq(double[] y1, double[] yGEV) {
 
-        float yNorm = MiscMath0.findMax(y1);
+        double yNorm = MiscMath0.findMax(y1);
 
-        float chiSum = 0.f;
+        double chiSum = 0.f;
 
         for (int i = 0; i < yGEV.length; i++) {
 
-            float z = (yGEV[i] - y1[i])/yNorm;
+            double z = (yGEV[i] - y1[i])/yNorm;
             z *= z;
 
             chiSum += z;
@@ -351,22 +359,21 @@ public class GeneralizedExtremeValue {
        (err_y_fit)^2 =  (err_x)^2|--------|   + (err_k)^2|--------|   + (err_s)^2|-------|   + (err_m)^2|------|
                                  |   dx   |              |   dk   |              |  ds   |              |  dm  |
      </pre>
-     * @param bestFit2
      * @return
      */
-    public static double calculateFittingErrorSquared(GEVYFit yFit, float xPoint) {
+    public static double calculateFittingErrorSquared(GEVYFit yFit, double xPoint) {
 
         if (yFit == null) {
-            return Float.POSITIVE_INFINITY;
+            return Double.POSITIVE_INFINITY;
         }
 
         int yMaxIdx = MiscMath0.findYMaxIndex(yFit.getYFit());
 
         if (yMaxIdx == -1) {
-            return Float.POSITIVE_INFINITY;
+            return Double.POSITIVE_INFINITY;
         }
 
-        float xPeak = yFit.getX()[yMaxIdx];
+        double xPeak = yFit.getX()[yMaxIdx];
 
         // since we don't have an error in the parameters, we'll make a rough
         //   guess with the parameters in bestFit compared to prior bestFit.
@@ -376,31 +383,31 @@ public class GeneralizedExtremeValue {
         //  the error has to be smaller than half of the delta otherwise the prior Fit
         //  value would have been kept.  very very rough approx for parameter errors...
 
-        float kDelta = yFit.getKResolution()/2.f;
-        float sigmaDelta = yFit.getSigmaResolution()/2.f;
-        float muDelta = yFit.getMuSolutionResolution()/2.f;
+        double kDelta = yFit.getKResolution()/2.f;
+        double sigmaDelta = yFit.getSigmaResolution()/2.f;
+        double muDelta = yFit.getMuSolutionResolution()/2.f;
 
-        float yConst = yFit.getYScale();
-        float mu = yFit.getMu();
-        float k = yFit.getK();
-        float sigma = yFit.getSigma();
+        double yConst = yFit.getYScale();
+        double mu = yFit.getMu();
+        double k = yFit.getK();
+        double sigma = yFit.getSigma();
 
-        float xDelta = yFit.getX()[1] - yFit.getX()[0];
+        double xDelta = yFit.getX()[1] - yFit.getX()[0];
 
-        double dydx = DerivGEV.derivWRTX(yConst, mu, k, sigma, xPoint);
+        double dydx = DerivGEV.derivWRTX(yConst, mu, sigma, k, xPoint);
 
-        double dydk = DerivGEV.derivWRTK(yConst, mu, k, sigma, xPoint);
+        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, xPoint);
 
-        double dyds = DerivGEV.derivWRTSigma(yConst, mu, k, sigma, xPoint);
+        double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, xPoint);
 
-        double dydm = DerivGEV.derivWRTMu(yConst, mu, k, sigma, xPoint);
+        double dydm = DerivGEV.derivWRTMu(yConst, mu, sigma, k, xPoint);
 
         // since x is always given as a number, exclude it from propagation
         double err = /*Math.pow(xDelta*dydx, 2)*/ + Math.pow(kDelta*dydk, 2) + Math.pow(sigmaDelta*dyds, 2) + Math.pow(muDelta*dydm, 2);
 
 //System.out.println("error in x alone: " + Math.sqrt( Math.pow(xDelta*dydx, 2) )/yFit.getYScale());
 
-        return (float)err/(yFit.getYScale() * yFit.getYScale());
+        return err/(yFit.getYScale() * yFit.getYScale());
     }
 
     /**
@@ -417,17 +424,17 @@ public class GeneralizedExtremeValue {
      </pre>
      
      * @param yFit
-     * @param yLimitFraction
+     * @param yMaxFactor
      * @return
      */
-    public static double calculateWidthFittingError(GEVYFit yFit, float yMaxFactor) {
+    public static double calculateWidthFittingError(GEVYFit yFit, double yMaxFactor) {
 
         if (yFit == null) {
-            return Float.POSITIVE_INFINITY;
+            return Double.POSITIVE_INFINITY;
         }
 
         int yPeakIdx = MiscMath0.findYMaxIndex(yFit.getOriginalScaleX());
-        float yLimit = yMaxFactor * yFit.getOriginalScaleYFit()[yPeakIdx];
+        double yLimit = yMaxFactor * yFit.getOriginalScaleYFit()[yPeakIdx];
         int yLimitIdx = -1;
         for (int i = 0; i < yFit.getOriginalScaleX().length; i++) {
             if (i > yPeakIdx) {
@@ -446,29 +453,28 @@ public class GeneralizedExtremeValue {
         //   a safe addition to that (added in quadrature) would be an error in x derived from chi square
         //   but that is not done here
 
-        float xDelta = yFit.getX()[1] - yFit.getX()[0];
-        float xErrorSq = (xDelta*xDelta/4.f);
+        double xDelta = yFit.getX()[1] - yFit.getX()[0];
+        double xErrorSq = (xDelta*xDelta/4.f);
 
-        float sum = 0.0f;
+        double sum = 0.0f;
         for (int i = 0; i <= yLimitIdx; i++) {
             sum += xErrorSq;
         }
 
-        sum = (float) Math.sqrt(sum);
+        sum = Math.sqrt(sum);
 
         return sum;
     }
 
-    public static float[] generateNormalizedCurve(float[] x1, float k, float sigma, float mu) {
+    public static double[] generateNormalizedCurve(double[] x1, double mu, double sigma, double k) {
 
         if (sigma == 0) {
-            //throw new IllegalArgumentException("sigma must be > 0");
-            return null;
+            throw new IllegalArgumentException("sigma must be > 0");
         }
 
-        float[] yGEV = genCurve(x1, k, sigma, mu);
+        double[] yGEV = genCurve(x1, mu, sigma, k);
 
-        float yMax = MiscMath0.findMax(yGEV);
+        double yMax = MiscMath0.findMax(yGEV);
 
         for (int i = 0; i < yGEV.length; i++) {
             yGEV[i] /= yMax;
@@ -477,22 +483,22 @@ public class GeneralizedExtremeValue {
         return yGEV;
     }
 
-    public static float[] genCurve(float[] x1, float k, float sigma, float mu) {
+    public static double[] genCurve(double[] x1, double mu, double sigma, double k) {
 
         if (sigma == 0) {
-            return null;
+            throw new IllegalArgumentException("sigma must be > 0");
         }
         // if k =~ 0, use Gumbel which is Type I
-        if (k == 0 || Float.isInfinite(1.f/k)) {
-            return generateEVTypeICurve(x1, sigma, mu);
+        if (k == 0 || Double.isInfinite(1.f/k)) {
+            return generateEVTypeICurve(x1, mu, sigma);
         }
 
-        float[] yGEV = new float[x1.length];
+        double[] yGEV = new double[x1.length];
 
         for (int i = 0; i < x1.length; i++) {
 
-            float z = 1.f + k * ((x1[i] - mu)/sigma);
-            float a,b;
+            double z = 1.f + k * ((x1[i] - mu)/sigma);
+            double a,b;
 
             boolean zIsNegative = (z < 0);
             // When z is negative, need to use alternative methods for exponentiation:
@@ -509,20 +515,20 @@ public class GeneralizedExtremeValue {
             //        (-1)^(g/h) * ((1./z)^(g/h))
 
             if (zIsNegative) {
-                float invNegZ = -1.0f*(1.0f/z);
-                float neg1Pow = -1.0f; // TODO:  revisit this
-                a = -1.f * neg1Pow * (float) Math.pow(invNegZ, (-1.f/k));
-                b = neg1Pow * (float) Math.pow(invNegZ, (-1.f - (1.f/k)));
+                double invNegZ = -1.0f*(1.0f/z);
+                double neg1Pow = -1.0f; // TODO:  revisit this
+                a = -1.f * neg1Pow * Math.pow(invNegZ, (-1.f/k));
+                b = neg1Pow * Math.pow(invNegZ, (-1.f - (1.f/k)));
             } else {
-                a = -1.f * (float) Math.pow(z, (-1.f/k));
-                b = (float) Math.pow(z, (-1.f - (1.f/k)));
+                a = -1.f * Math.pow(z, (-1.f/k));
+                b = Math.pow(z, (-1.f - (1.f/k)));
             }
 
-            if (Float.isNaN(a) || Float.isNaN(b)) {
+            if (Double.isNaN(a) || Double.isNaN(b)) {
                 yGEV[i] = 0;
             } else {
-                float t = (float) ((1.f/sigma) * Math.exp(a) * b);
-                if (t < 0 || Float.isNaN(t)) {
+                double t = ((1.f/sigma) * Math.exp(a) * b);
+                if (t < 0 || Double.isNaN(t)) {
                     yGEV[i] = 0;
                 } else {
                     yGEV[i] = t;

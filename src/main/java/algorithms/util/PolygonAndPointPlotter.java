@@ -258,32 +258,50 @@ public class PolygonAndPointPlotter {
         plotContent.insert(srchIdx + srch.length() - 2, 
             "WithLines");
     }
+
+    public static float[] convert(double[] a) {
+        if (a == null) {
+            return null;
+        }
+        float[] b = new float[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            b[i] = (float)a[i];
+        }
+        return b;
+    }
+
+    public void addPlot(double[] xPoints, double[] yPoints,
+                        double[] xErrPoints, double[] yErrPoints,
+                        double[] xPolygon, double[] yPolygon,
+                        String plotLabel) {
+        addPlot(convert(xPoints), convert(yPoints), convert(xErrPoints), convert(yErrPoints), convert(xPolygon), convert(yPolygon), plotLabel);
+    }
     
     public void addPlot(float[] xPoints, float[] yPoints, 
         float[] xErrPoints, float[] yErrPoints, 
         float[] xPolygon, float[] yPolygon, 
         String plotLabel) {
-        
+
         if (!dataMinMaxAreSet) {
 
             float minX0 = MiscMath0.findMin(xPoints);
             float maxX0 = MiscMath0.findMax(xPoints);
             float minY0 = MiscMath0.findMin(yPoints);
             float maxY0 = MiscMath0.findMax(yPoints);
-            
+
             addPlot(minX0, maxX0, minY0, maxY0, xPoints, yPoints, 
                 xErrPoints, yErrPoints, xPolygon, yPolygon, plotLabel);
-            
+
         } else {
-            
+
             addPlot(minX, maxX, minY, maxY, xPoints, yPoints, 
                 xErrPoints, yErrPoints, xPolygon, yPolygon, plotLabel);
-            
+
         }
     }
 
     /**
-     * 
+     *
      * @param xmn
      * @param xmx
      * @param ymn

@@ -20,7 +20,7 @@ public class GEVYFit implements IYFit {
     protected float yDataErrSq;
 
     protected String[] parameterNames = new String[]{
-        "k", "sigma", "mu"
+        "mu", "sigma", "k"
     };
 
     public long approximateMemoryUsed() {
@@ -68,14 +68,14 @@ public class GEVYFit implements IYFit {
     }
 
     public float[] getParameters() {
-        return new float[]{k, sigma, mu};
+        return new float[]{mu, sigma, k};
     }
 
     public String toString() {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(yfit.length).append(" points, k=").append(k).append(" sigma=").append(sigma)
-            .append(" mu=").append(mu).append(" chiSqSum=").append(chiSqSum)
+        sb.append(yfit.length).append(" points, mu=").append(mu).append(" sigma=").append(sigma)
+            .append(" k=").append(k).append(" chiSqSum=").append(chiSqSum)
             .append(" chiSqStatistic=").append(chiSqStatistic);
 
         return sb.toString();

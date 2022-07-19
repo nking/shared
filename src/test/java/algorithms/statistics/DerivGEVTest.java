@@ -13,20 +13,20 @@ public class DerivGEVTest extends TestCase {
     
     public void testDerivWRTX() throws Exception {
         
-        float k = 1.80f;
-        float sigma = 0.85f;
-        float mu = 0.441f;
-        float yConst = 1;
+        double k = 1.80f;
+        double sigma = 0.85f;
+        double mu = 0.441f;
+        double yConst = 1;
         
-        float[] xp = new float[30];
+        double[] xp = new double[30];
 
         for (int i = 0; i < xp.length; i++) {
-            xp[i] = (float)i/xp.length;
+            xp[i] = i/xp.length;
         }
        
-        GeneralizedExtremeValue gev = new GeneralizedExtremeValue(new float[0], 
-            new float[0], new float[0], new float[0]);
-        float[] yGEV = gev.generateCurve(xp, k, sigma, mu);
+        GeneralizedExtremeValue gev = new GeneralizedExtremeValue(new double[0], 
+            new double[0], new double[0], new double[0]);
+        double[] yGEV = gev.generateCurve(xp, mu, sigma, k);
                     
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter(0.f, 1.0f, 0f, 1.3f);
         plotter.addPlot(xp, yGEV, null, null, null, null, "");
@@ -43,18 +43,18 @@ public class DerivGEVTest extends TestCase {
         }
         */
         
-        double d = DerivGEV.derivWRTX(yConst, mu, k, sigma, xp[0]);
+        double d = DerivGEV.derivWRTX(yConst, mu, sigma, k, xp[0]);
         assertTrue( d > 0);
         
         // top of curve where slope should be near zero
-        d = DerivGEV.derivWRTX(yConst, mu, k, sigma, (float)(0.04278)); // d=-0.000589
+        d = DerivGEV.derivWRTX(yConst, mu, sigma, k, 0.04278); // d=-0.000589
         assertTrue( Math.abs(d) < 0.01);
         
         // slope should be near -1 at x near 0.4
-        d = DerivGEV.derivWRTX(yConst, mu, k, sigma, 0.4f);
-        assertTrue( Math.abs(d - -1) < 0.1);
+        d = DerivGEV.derivWRTX(yConst, mu, sigma, k, 0.4f);
+        assertTrue( Math.abs(d + 1) < 0.1);
         
-        d = DerivGEV.derivWRTX(yConst, mu, k, sigma, 0.7f);
+        d = DerivGEV.derivWRTX(yConst, mu, sigma, k, 0.7f);
         assertTrue( d < 0);
         
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
@@ -63,20 +63,20 @@ public class DerivGEVTest extends TestCase {
         log.info("seed=" + seed);
         
         for (int i = 0; i < 100; i++) {
-            float x = sr.nextFloat()*sr.nextInt(120000);
-            Double deriv = DerivGEV.derivWRTX(yConst, mu, k, sigma, x);
+            double x = sr.nextDouble()*sr.nextInt(120000);
+            double deriv = DerivGEV.derivWRTX(yConst, mu, sigma, k, x);
             log.fine( x + ":" + deriv);
         }
         
         /*
-        float s = 0.85f;
+        double s = 0.85f;
         s = 1.9f;
         
         k = 1.0f;
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=1");
         filePath = plotter.writeFile();
         
@@ -84,7 +84,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=1.5");
         filePath = plotter.writeFile();
         
@@ -92,7 +92,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=2");
         filePath = plotter.writeFile();
         
@@ -100,7 +100,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=2.5");
         filePath = plotter.writeFile();
         
@@ -108,7 +108,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=3");
         filePath = plotter.writeFile();
         
@@ -116,7 +116,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=3.5");
         filePath = plotter.writeFile();
         
@@ -124,7 +124,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "k=4");
         filePath = plotter.writeFile();
         
@@ -132,7 +132,7 @@ public class DerivGEVTest extends TestCase {
         sigma = s;
         mu = 0.441f;
         yConst = 1;
-        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);                    
+        yGEV = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
         plotter.addPlot(xp, yGEV, null, null, null, null, "");
         filePath = plotter.writeFile();
         */
@@ -142,59 +142,59 @@ public class DerivGEVTest extends TestCase {
         
         // k is the shape parameter
         
-        float k = 1.80f;
-        float sigma = 0.85f;
-        float mu = 0.441f;
-        float yConst = 1;
-        float xPoint = 0.4f; // point at which slope is approx -1 for dy/dx
+        double k = 1.80f;
+        double sigma = 0.85f;
+        double mu = 0.441f;
+        double yConst = 1;
+        double xPoint = 0.4f; // point at which slope is approx -1 for dy/dx
         
-        float[] xp = new float[30];
+        double[] xp = new double[30];
 
         for (int i = 0; i < xp.length; i++) {
-            xp[i] = (float)i/xp.length;
+            xp[i] = i/xp.length;
         }
         
         /*
         // ====== exploring known GEV curve and expected residual suggested for a change in k ====
-        float minChiSqSum = Float.MAX_VALUE;
+        double minChiSqSum = double.MAX_VALUE;
         int minChiSqSumIdx = 0;
-        float[] yg0 = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);
-        float[] yg0e = new float[yg0.length];
+        double[] yg0 = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
+        double[] yg0e = new double[yg0.length];
         Arrays.fill(yg0e, 0.03f);
-        float s2  = 0.85f; //1.07f;
-        float mu2 = 0.441f;//0.59f;
-        float k2  = 1.80f - 1.7f; //2.75f;
-        float avgResidK = 0.f;
-        int yMaxModelIdx = MiscMath.findYMaxIndex(GeneralizedExtremeValue.generateNormalizedCurve(xp, k2, s2, mu2));
+        double s2  = 0.85f; //1.07f;
+        double mu2 = 0.441f;//0.59f;
+        double k2  = 1.80f - 1.7f; //2.75f;
+        double avgResidK = 0.f;
+        int yMaxModelIdx = MiscMath.findYMaxIndex(GeneralizedExtremeValue.generateNormalizedCurve(xp, mu2, s2, k2));
         log.fine("yMaxModelIdx=" + yMaxModelIdx);
         double[] suggestedK = new double[xp.length];
         for (int i = 0; i < xp.length; i++) {            
-            Double d = DerivGEV.derivWRTK(yConst, mu2, k2, s2, xp[i]);
+            Double d = DerivGEV.derivWRTK(yConst, mu2, s2, k2, xp[i]);
             double deltaK = 0.0001f;
-            Double d2 = DerivGEV.derivWRTK(yConst, mu2, (float)(k2 - deltaK), s2, xp[i]);
+            Double d2 = DerivGEV.derivWRTK(yConst, mu2, s2, (k2 - deltaK), xp[i]);
             Double dd = (d2-d)/deltaK;            
             double preconditionedResidual = d2/dd;
-            float chiSqSum = DerivGEV.chiSqSum((float)(k2 + preconditionedResidual), s2, mu2, xp, yg0, yg0e);
-            float chiSqSum2 = DerivGEV.chiSqSum((float)(k2 - preconditionedResidual), s2, mu2, xp, yg0, yg0e);
+            double chiSqSum = DerivGEV.chiSqSum(mu2, s2, (k2 + preconditionedResidual), xp, yg0, yg0e);
+            double chiSqSum2 = DerivGEV.chiSqSum(mu2, s2, (k2 - preconditionedResidual), xp, yg0, yg0e);
             log.fine( String.format("x[%d]=%4.3f  (d/dk=%4.5f, d2/dkdk=%4.5f) ==> (+%4.4f  chiSqSum=%4.4f) (-%4.4f  chiSqSum=%4.4f)", 
                 i, xp[i], d, dd, preconditionedResidual, chiSqSum, preconditionedResidual, chiSqSum2));
             avgResidK += preconditionedResidual;
             suggestedK[i] = (chiSqSum < chiSqSum2) ? preconditionedResidual : -1.f*preconditionedResidual;
             if (suggestedK[i] < minChiSqSum) {
-                minChiSqSum = (float) suggestedK[i];
+                minChiSqSum =  suggestedK[i];
                 minChiSqSumIdx = i;
             }
         }
         avgResidK /= xp.length;
-        float stdDevSuggestedK = 0;
+        double stdDevSuggestedK = 0;
         for (int i = 0; i < xp.length; i++) {
             stdDevSuggestedK += Math.pow((suggestedK[i] - avgResidK), 2);
         }
-        stdDevSuggestedK = (float) (Math.sqrt(stdDevSuggestedK/(xp.length - 1.0f)));//N-1 because had to calculate mean from the data
-        float avgKWithoutOutliers = 0;
+        stdDevSuggestedK =  (Math.sqrt(stdDevSuggestedK/(xp.length - 1.0f)));//N-1 because had to calculate mean from the data
+        double avgKWithoutOutliers = 0;
         int countWithoutOutliers = 0;
         for (int i = 0; i < xp.length; i++) {
-            float diff = (float)suggestedK[i] - avgResidK;
+            double diff = suggestedK[i] - avgResidK;
             if (Math.abs(diff - avgResidK) < 3.*stdDevSuggestedK) {
                 avgKWithoutOutliers += suggestedK[i];
                 countWithoutOutliers++;
@@ -216,13 +216,13 @@ public class DerivGEVTest extends TestCase {
         //      and test whether adding that or subtracting it improves the chi sq sum and take the best answer.
         */
         
-        float factor = 0.0001f;
+        double factor = 0.0001f;
         
-        GeneralizedExtremeValue gev = new GeneralizedExtremeValue(new float[0], 
-            new float[0], new float[0], new float[0]);
-        float[] yGEV0 = gev.generateCurve(xp, k - (k*factor), sigma, mu);
-        float[] yGEV1 = gev.generateCurve(xp, k, sigma, mu);
-        float[] yGEV2 = gev.generateCurve(xp, k + (k*factor), sigma, mu);
+        GeneralizedExtremeValue gev = new GeneralizedExtremeValue(new double[0], 
+            new double[0], new double[0], new double[0]);
+        double[] yGEV0 = gev.generateCurve(xp, mu, sigma,k - (k*factor));
+        double[] yGEV1 = gev.generateCurve(xp, mu, sigma, k);
+        double[] yGEV2 = gev.generateCurve(xp, mu, sigma,k + (k*factor));
                     
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter(0.f, 1.0f, 0f, 1.3f);
      
@@ -232,29 +232,25 @@ public class DerivGEVTest extends TestCase {
         plotter.addPlot(xp, yGEV2, null, null, null, null, "k+deltaK");
         String filePath = plotter.writeFile();
        
-        double last = Integer.MIN_VALUE;
+        //double last = Integer.MIN_VALUE;
         for (int i = 1; i < 10; i++) {
             double delta = (k*factor) * i;
-            float d = (float) (k + delta);
+            double d = (k + delta);
                         
             // looks like the deriv increases with increasing shape k for this region of the curve
             
-            Double deriv = DerivGEV.derivWRTK(yConst, mu, d, sigma, xPoint);
+            double deriv = DerivGEV.derivWRTK(yConst, mu, sigma, d, xPoint);
             
-            if (deriv != null) {
-                log.fine("k=" + d + "  derivWRTK=" + deriv);
-            }
-            
-            assertNotNull(deriv);
-            
+            log.fine("k=" + d + "  derivWRTK=" + deriv);
+
             // these are all nearly the same value since x is the same and delta k is small
             //assertTrue(last < deriv.doubleValue());
             
-            Double deriv2 = DerivGEV.estimateDerivUsingDeltaK(mu, k, sigma, xPoint);
+            double deriv2 = DerivGEV.estimateDerivUsingDeltaK(mu, sigma, k, xPoint);
             
             log.fine("  compare derivWRTK to  estimateDerivUsingDeltaK " + deriv + " : " + deriv2);
             
-            last = deriv.doubleValue();           
+            //last = deriv.doubleValue();
         }
         
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
@@ -263,25 +259,25 @@ public class DerivGEVTest extends TestCase {
         log.info("seed=" + seed);
         
         for (int i = 0; i < 100000; i++) {
-            float x = sr.nextFloat()*sr.nextInt(120000);
+            double x = sr.nextDouble()*sr.nextInt(120000);
             while (x == 0) {
-                x = sr.nextFloat()*sr.nextInt(120000);
+                x = sr.nextDouble()*sr.nextInt(120000);
             }
-            Double deriv = DerivGEV.derivWRTK(yConst, mu, k, sigma, x);
+            Double deriv = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);
             assertNotNull(deriv);
-            Double deriv2 = DerivGEV.estimateDerivUsingDeltaK(mu, k, sigma, x);
+            Double deriv2 = DerivGEV.estimateDerivUsingDeltaK(mu, sigma, k, x);
             assertNotNull(deriv2);
                         
-            float m = sr.nextFloat()*sr.nextInt((int)Math.ceil(x));
-            float s = sr.nextFloat()*sr.nextInt(10);
+            double m = sr.nextDouble()*sr.nextInt((int)Math.ceil(x));
+            double s = sr.nextDouble()*sr.nextInt(10);
             while (s == 0) {
-                s = sr.nextFloat()*sr.nextInt(10);
+                s = sr.nextDouble()*sr.nextInt(10);
             }
-            float k_ = sr.nextFloat()*sr.nextInt(10);
+            double k_ = sr.nextDouble()*sr.nextInt(10);
             while (k_ == 0) {
-                k_ = sr.nextFloat()*sr.nextInt(10);
+                k_ = sr.nextDouble()*sr.nextInt(10);
             }
-            deriv = DerivGEV.derivWRTK(yConst, m, k_, s, x);
+            deriv = DerivGEV.derivWRTK(yConst, m, s, k_, x);
             assertNotNull(deriv);
 
             //log.info( x + ":" + deriv);
@@ -295,91 +291,31 @@ public class DerivGEVTest extends TestCase {
         
         // sigma is the scale factor
         
-        float k = 1.80f;
-        float sigma = 0.85f;
-        float mu = 0.441f;
-        float yConst = 1;
-        float xPoint = 0.4f; // point at which slope is approx -1 for dy/dx
+        double k = 1.80f;
+        double sigma = 0.85f;
+        double mu = 0.441f;
+        double yConst = 1;
+        double xPoint = 0.4f; // point at which slope is approx -1 for dy/dx
         
-        float[] xp = new float[30];
+        double[] xp = new double[30];
 
         for (int i = 0; i < xp.length; i++) {
-            xp[i] = (float)i/xp.length;
+            xp[i] = i/xp.length;
         }
+
+        double factor = 0.0001f;
         
-        /*
-        // ====== exploring known GEV curve and expected residual suggested for a change in k ====
-        float minChiSqSum = Float.MAX_VALUE;
-        int minChiSqSumIdx = 0;
-        float[] yg0 = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);
-        float[] yg0e = new float[yg0.length];
-        Arrays.fill(yg0e, 0.03f);
-        float s2  = sigma - 0.4f;
-        float mu2 = mu;
-        float k2  = k;
-        float avgResid = 0.f;
-        int yMaxModelIdx = MiscMath.findYMaxIndex(GeneralizedExtremeValue.generateNormalizedCurve(xp, k2, s2, mu2));
-        log.fine("yMaxModelIdx=" + yMaxModelIdx);
-        double[] suggested = new double[xp.length];
-        for (int i = 0; i < xp.length; i++) {            
-            Double d = DerivGEV.derivWRTSigma(yConst, mu2, k2, s2, xp[i]);
-            
-            // modification by 2nd derivs for sigma is more complex
-            // (&#8706;<sup>2</sup>/&#8706;sigma&#8706;sigma)
-            double delta = 0.0001f*s2;
-            Double d2 = DerivGEV.derivWRTSigma(yConst, mu2, k2, (float)(s2 + delta), xp[i]);
-            Double dd = (d2-d)/delta;
-            
-            double preconditionedResidual = DerivGEV.calculatePreconditionerModifiedResidualSigma(yConst, mu2, k2, sigma, xp[i]);
-            
-            float chiSqSum = DerivGEV.chiSqSum(k2, (float)(s2 + preconditionedResidual), mu2, xp, yg0, yg0e);
-            float chiSqSum2 = DerivGEV.chiSqSum(k2, (float)(s2 - preconditionedResidual), mu2, xp, yg0, yg0e);
-            log.info( String.format("x[%d]=%4.3f  (d/ds=%4.5f, d2/dsds=%4.5f) ==> (+%4.4f  chiSqSum=%4.4f) (-%4.4f  chiSqSum=%4.4f)", 
-                i, xp[i], d, dd, preconditionedResidual, chiSqSum, preconditionedResidual, chiSqSum2));
-            avgResid += preconditionedResidual;
-            suggested[i] = (chiSqSum < chiSqSum2) ? preconditionedResidual : -1.f*preconditionedResidual;
-            if (suggested[i] < minChiSqSum) {
-                minChiSqSum = (float) suggested[i];
-                minChiSqSumIdx = i;
-            }
-        }
-        avgResid /= xp.length;
-        float stdDevSuggested = 0;
-        for (int i = 0; i < xp.length; i++) {
-            stdDevSuggested += Math.pow((suggested[i] - avgResid), 2);
-        }
-        stdDevSuggested = (float) (Math.sqrt(stdDevSuggested/(xp.length - 1.0f)));//N-1 because had to calculate mean from the data
-        float avgKWithoutOutliers = 0;
-        int countWithoutOutliers = 0;
-        for (int i = 0; i < xp.length; i++) {
-            float diff = (float)suggested[i] - avgResid;
-            if (Math.abs(diff - avgResid) < 3.*stdDevSuggested) {
-                avgKWithoutOutliers += suggested[i];
-                countWithoutOutliers++;
-            } else {
-                log.fine("  exclude " + suggested[i]);
-            }
-        }
-        avgKWithoutOutliers /= countWithoutOutliers;
-        log.fine("===> avg d/ds/d2/dsds = " + avgKWithoutOutliers 
-            + "  d/ds/d2/dsds at minChiSqSum = " + suggested[minChiSqSumIdx]
-            + "  d/ds/d2/dsds at yMax=" + suggested[yMaxModelIdx]);
-        // ===> looks like a good pattern would be to get the modified d/dsigma at position yMaxIdx + 1
-        //      and test whether adding that or subtracting it improves the chi sq sum and take the best answer.
-        // it's quick and gives an answer in the right direction.
-        */
-        
-        float factor = 0.0001f;
-        
-        float[] yGEV0 = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, (sigma - (sigma*factor)), mu);
-        float[] yGEV1 = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);
-        float[] yGEV2 = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, (sigma + (sigma*factor)), mu);
+        double[] yGEV0 = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, (sigma - (sigma*factor)), k);
+        double[] yGEV1 = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, sigma, k);
+        double[] yGEV2 = GeneralizedExtremeValue.generateNormalizedCurve(xp, mu, (sigma + (sigma*factor)), k);
                     
-        float[] yGEV = GeneralizedExtremeValue.genCurve(xp, k, sigma, mu);
+        double[] yGEV = GeneralizedExtremeValue.genCurve(xp, mu, sigma, k);
         int idx = MiscMath0.findYMaxIndex(yGEV);
-        idx = 12;
-        float yFactor = yGEV[idx];
-        float xForYFactor = xp[idx];
+        assertTrue(idx > -1);
+        assertTrue(idx < yGEV.length);
+        //idx = 12;
+        double yFactor = yGEV[idx];
+        double xForYFactor = xp[idx];
         
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter(0.f, 1.0f, 0f, 1.3f);
         plotter.addPlot(xp, yGEV0, null, null, null, null, "sigma-delta");
@@ -390,11 +326,11 @@ public class DerivGEVTest extends TestCase {
         double last = Integer.MIN_VALUE;
         for (int i = 1; i < 10; i++) {
             double delta = (sigma*factor) * i;
-            float d = (float) (sigma + delta);
+            double d =  (sigma + delta);
                         
             // looks like the deriv increases with increasing scale sigma for this region of the curve
             
-            Double deriv = DerivGEV.derivWRTSigma(yConst, mu, k, d, xPoint);
+            Double deriv = DerivGEV.derivWRTSigma(yConst, mu, d, k, xPoint);
             if (deriv != null) {
                 log.fine("sigma=" + d + "  derivWRTSigma=" + deriv);
             }
@@ -403,7 +339,7 @@ public class DerivGEVTest extends TestCase {
             
             assertTrue(last < deriv.doubleValue());
             
-            Double deriv2 = DerivGEV.estimateDerivUsingDeltaSigma(mu, k, sigma, xPoint);
+            Double deriv2 = DerivGEV.estimateDerivUsingDeltaSigma(mu, sigma, k, xPoint);
             
             log.fine("  compare derivWRTSigma to  estimateDerivUsingDeltaSigma " + deriv + " : " + deriv2);
             
@@ -417,26 +353,26 @@ public class DerivGEVTest extends TestCase {
         log.info("seed=" + seed);
         
         for (int i = 0; i < 100000; i++) {
-            float x = sr.nextFloat()*sr.nextInt(120000);
+            double x = sr.nextDouble()*sr.nextInt(120000);
             while (x == 0) {
-                x = sr.nextFloat()*sr.nextInt(120000);
+                x = sr.nextDouble()*sr.nextInt(120000);
             }
-            Double deriv = DerivGEV.derivWRTSigma(yConst, mu, k, sigma, x);
+            Double deriv = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);
             assertNotNull(deriv);
-            Double deriv2 = DerivGEV.estimateDerivUsingDeltaSigma(mu, k, sigma, x);
+            Double deriv2 = DerivGEV.estimateDerivUsingDeltaSigma(mu, sigma, k, x);
             assertNotNull(deriv2);
             //log.fine( x + ":" + deriv);
             
-            float m = sr.nextFloat()*sr.nextInt((int)Math.ceil(x));
-            float s = sr.nextFloat()*sr.nextInt(10);
+            double m = sr.nextDouble()*sr.nextInt((int)Math.ceil(x));
+            double s = sr.nextDouble()*sr.nextInt(10);
             while (s == 0) {
-                s = sr.nextFloat()*sr.nextInt(10);
+                s = sr.nextDouble()*sr.nextInt(10);
             }
-            float k_ = sr.nextFloat()*sr.nextInt(10);
+            double k_ = sr.nextDouble()*sr.nextInt(10);
             while (k_ == 0) {
-                k_ = sr.nextFloat()*sr.nextInt(10);
+                k_ = sr.nextDouble()*sr.nextInt(10);
             }
-            deriv = DerivGEV.derivWRTSigma(yConst, m, k_, s, x);
+            deriv = DerivGEV.derivWRTSigma(yConst, m, s, k_, x);
             assertNotNull(deriv);
         }
     }
@@ -447,95 +383,35 @@ public class DerivGEVTest extends TestCase {
         
         // mu is the location variable
         
-        float k = 1.80f;
-        float sigma = 0.85f;
-        float mu = 0.441f;
-        float yConst = 1;
-        float xPoint = 0.4f; // point at which slope is approx -1 for dy/dx
+        double k = 1.80f;
+        double sigma = 0.85f;
+        double mu = 0.441f;
+        double yConst = 1;
+        double xPoint = 0.4f; // point at which slope is approx -1 for dy/dx
         
-        float[] xp = new float[30];
+        double[] xp = new double[30];
 
         for (int i = 0; i < xp.length; i++) {
-            xp[i] = (float)i/xp.length;
+            xp[i] = i/xp.length;
         }
-        /*
-        // ====== exploring known GEV curve and expected residual suggested for a change in k ====
-        float minChiSqSum = Float.MAX_VALUE;
-        int minChiSqSumIdx = 0;
-        float[] yg0 = GeneralizedExtremeValue.generateNormalizedCurve(xp, k, sigma, mu);
-        float[] yg0e = new float[yg0.length];
-        Arrays.fill(yg0e, 0.03f);
-        float s2  = sigma;
-        float mu2 = mu  - 0.4f;
-        float k2  = k;
-        float avgResid = 0.f;
-        int yMaxModelIdx = MiscMath.findYMaxIndex(GeneralizedExtremeValue.generateNormalizedCurve(xp, k2, s2, mu2));
-        log.fine("yMaxModelIdx=" + yMaxModelIdx);
-        double[] suggested = new double[xp.length];
-        for (int i = 0; i < xp.length; i++) {            
-            Double d = DerivGEV.derivWRTSigma(yConst, mu2, k2, s2, xp[i]);
-            
-            // modification by 2nd derivs for mu is more complex
-            // (&#8706;<sup>2</sup>/&#8706;mu&#8706;mu)
-            double delta = 0.0001f*mu2;
-            Double d2 = DerivGEV.derivWRTMu(yConst, (float)(mu2 + delta), k2, s2, xp[i]);
-            Double dd = (d2-d)/delta;
-            
-            double preconditionedResidual = DerivGEV.calculatePreconditionerModifiedResidualMu(yConst, mu2, k2, sigma, xp[i]);
-            
-            float chiSqSum = DerivGEV.chiSqSum(k2, s2, (float)(mu2 + preconditionedResidual), xp, yg0, yg0e);
-            float chiSqSum2 = DerivGEV.chiSqSum(k2, s2, (float)(mu2 - preconditionedResidual), xp, yg0, yg0e);
-            log.fine( String.format("x[%d]=%4.3f  (d/dm=%4.5f, d2/dmdm=%4.5f) ==> (+%4.4f  chiSqSum=%4.4f) (-%4.4f  chiSqSum=%4.4f)", 
-                i, xp[i], d, dd, preconditionedResidual, chiSqSum, preconditionedResidual, chiSqSum2));
-            avgResid += preconditionedResidual;
-            suggested[i] = (chiSqSum < chiSqSum2) ? preconditionedResidual : -1.f*preconditionedResidual;
-            if (suggested[i] < minChiSqSum) {
-                minChiSqSum = (float) suggested[i];
-                minChiSqSumIdx = i;
-            }
-        }
-        avgResid /= xp.length;
-        float stdDevSuggested = 0;
-        for (int i = 0; i < xp.length; i++) {
-            stdDevSuggested += Math.pow((suggested[i] - avgResid), 2);
-        }
-        stdDevSuggested = (float) (Math.sqrt(stdDevSuggested/(xp.length - 1.0f)));//N-1 because had to calculate mean from the data
-        float avgKWithoutOutliers = 0;
-        int countWithoutOutliers = 0;
-        for (int i = 0; i < xp.length; i++) {
-            float diff = (float)suggested[i] - avgResid;
-            if (Math.abs(diff - avgResid) < 3.*stdDevSuggested) {
-                avgKWithoutOutliers += suggested[i];
-                countWithoutOutliers++;
-            } else {
-                log.fine("  exclude " + suggested[i]);
-            }
-        }
-        avgKWithoutOutliers /= countWithoutOutliers;
-        log.fine("===> avg d/dm/d2/dmdm = " + avgKWithoutOutliers 
-            + "  d/dm/d2/dmdm at minChiSqSum = " + suggested[minChiSqSumIdx]
-            + "  d/dm/d2/dmdm at yMax=" + suggested[yMaxModelIdx]);
-        // ===> looks like a good pattern would be to get the modified d/dsigma at position yMaxIdx + 1
-        //      and test whether adding that or subtracting it improves the chi sq sum and take the best answer.
-        // it's quick and gives an answer in the right direction.
-       */
-        float factor = 0.0001f;
+
+        double factor = 0.0001f;
         
-        GeneralizedExtremeValue gev = new GeneralizedExtremeValue(new float[0], 
-            new float[0], new float[0], new float[0]);
+        GeneralizedExtremeValue gev = new GeneralizedExtremeValue(new double[0], 
+            new double[0], new double[0], new double[0]);
                     
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter(0.f, 1.0f, 0f, 1.3f);        
         
         double last = Integer.MIN_VALUE;
         for (int i = 1; i < 10; i++) {
             double delta = (mu*factor) * i;
-            float d = (float) (mu + delta);
+            double d = (mu + delta);
                                     
-            Double deriv = DerivGEV.derivWRTMu(yConst, d, k, sigma, xPoint);
+            Double deriv = DerivGEV.derivWRTMu(yConst, d, sigma, k, xPoint);
             if (deriv != null) {
                 log.info("mu=" + d + "  derivWRTMu=" + deriv);
             }
-            float[] yGEV1 = gev.generateCurve(xp, k, sigma, d);
+            double[] yGEV1 = gev.generateCurve(xp, d, sigma, k);
             plotter.addPlot(xp, yGEV1, null, null, null, null, "mu=" + d);
             
             assertNotNull(deriv);
@@ -543,7 +419,7 @@ public class DerivGEVTest extends TestCase {
             //assertTrue(last < deriv.doubleValue());
             
 
-            Double deriv2 = DerivGEV.estimateDerivUsingDeltaMu(mu, k, sigma, xPoint);
+            Double deriv2 = DerivGEV.estimateDerivUsingDeltaMu(mu, sigma, k, xPoint);
             
             log.fine("  compare derivWRTMu to  estimateDerivUsingDeltaMu " + deriv + " : " + deriv2);
             
@@ -557,26 +433,26 @@ public class DerivGEVTest extends TestCase {
         log.info("seed=" + seed);
         
         for (int i = 0; i < 100000; i++) {
-            float x = sr.nextFloat()*sr.nextInt(120000);
+            double x = sr.nextDouble()*sr.nextInt(120000);
             while (x == 0) {
-                x = sr.nextFloat()*sr.nextInt(120000);
+                x = sr.nextDouble()*sr.nextInt(120000);
             }
-            Double deriv = DerivGEV.derivWRTMu(yConst, mu, k, sigma, x);
+            Double deriv = DerivGEV.derivWRTMu(yConst, mu, sigma, k, x);
             assertNotNull(deriv);
-            Double deriv2 = DerivGEV.estimateDerivUsingDeltaMu(mu, k, sigma, x);
+            Double deriv2 = DerivGEV.estimateDerivUsingDeltaMu(mu, sigma, k, x);
             assertNotNull(deriv2);
             //log.fine( x + ":" + deriv);
             
-            float m = sr.nextFloat()*sr.nextInt((int)Math.ceil(x));
-            float s = sr.nextFloat()*sr.nextInt(10);
+            double m = sr.nextDouble()*sr.nextInt((int)Math.ceil(x));
+            double s = sr.nextDouble()*sr.nextInt(10);
             while (s == 0) {
-                s = sr.nextFloat()*sr.nextInt(10);
+                s = sr.nextDouble()*sr.nextInt(10);
             }
-            float k_ = sr.nextFloat()*sr.nextInt(10);
+            double k_ = sr.nextDouble()*sr.nextInt(10);
             while (k_ == 0) {
-                k_ = sr.nextFloat()*sr.nextInt(10);
+                k_ = sr.nextDouble()*sr.nextInt(10);
             }
-            deriv = DerivGEV.derivWRTMu(yConst, m, k_, s, x);
+            deriv = DerivGEV.derivWRTMu(yConst, m, s, k_, x);
             assertNotNull(deriv);
         }
     }

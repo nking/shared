@@ -17,11 +17,11 @@ The project requires java 1.7 or greater.
 The ant version should be 1.9.6 or greater.
 The jacoco version should be jacoco-0.7.5.201505241946 or greater.
     Then set an environment variable called JACOCO_HOME
-    to the path of the base direcotry of jacoco.
-    The build scripts looks for $JACOCO_HOME/lib/jacocoant.jar
+    to the path of the base directory of jacoco.
+    The build script looks for $JACOCO_HOME/lib/jacocoant.jar
 
 Note: if you choose to download jacoco and eclemma in a directory independent
-of an IDE, you can simply download the latest jacoc file from
+of an IDE, you can simply download the latest jacoco file from
 http://www.jacoco.org/jacoco/ and unpack it into a directory that you've
 named JACOCO_HOME in your environment variables (e.g. defined in your path via your shell profile file, etc).
 Then download the latest eclemma file from https://www.jacoco.org/download.html

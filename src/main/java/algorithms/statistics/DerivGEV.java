@@ -148,7 +148,7 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double derivWRTX(float yConst, float mu, float k, float sigma, float x) {
+    public static double derivWRTX(double yConst, double mu, double sigma, double k, double x) {
 
         double z = 1. + k *( (x-mu)/sigma );
         double a, f1, f2;
@@ -166,7 +166,7 @@ public class DerivGEV {
         if (zIsNegative) {
             double invNegZ = -1.0*(1.0/z);
             double neg1Pow = -1.0; // TODO:  revisit this
-            a = -1. * neg1Pow * (float) Math.pow(invNegZ, (-1./k));
+            a = -1. * neg1Pow * (double) Math.pow(invNegZ, (-1./k));
             f2 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)) );
         } else {
             a = -1.*Math.pow(z, (-1./k));
@@ -203,7 +203,7 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double derivWRTK(float yConst, float mu, float k, float sigma, float x) {
+    public static double derivWRTK(double yConst, double mu, double sigma, double k, double x) {
 
         double z = 1. + k *( (x-mu)/sigma );
         double a, f1, f2;
@@ -219,7 +219,7 @@ public class DerivGEV {
         if (zIsNegative) {
             double invNegZ = -1.0*(1.0/z);
             double neg1Pow = -1.0; // TODO:  revisit this
-            a = -1. * neg1Pow * (float) Math.pow(invNegZ, (-1./k));
+            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));
             f2 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)) );
         } else {
             a = -1.*Math.pow(z, (-1./k));
@@ -285,15 +285,15 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    static Double estimateDerivUsingDeltaK(float mu, float k, float sigma, float x) {
+    static Double estimateDerivUsingDeltaK(double mu, double sigma, double k, double x) {
 
-        float deltaK = 0.0001f*k;
+        double deltaK = 0.0001f*k;
 
-        Double d0 = GeneralizedExtremeValue.generateYGEV(x, (k - deltaK), sigma, mu);
+        Double d0 = GeneralizedExtremeValue.generateYGEV(x, mu, sigma, (k - deltaK));
 
-        Double d1 = GeneralizedExtremeValue.generateYGEV(x, (k), sigma, mu);
+        Double d1 = GeneralizedExtremeValue.generateYGEV(x, mu, sigma, k);
 
-        Double d2 = GeneralizedExtremeValue.generateYGEV(x, (k + deltaK), sigma, mu);
+        Double d2 = GeneralizedExtremeValue.generateYGEV(x, mu, sigma, (k + deltaK));
 
         Double d = estimateDerivUsingDelta(d0, d1, d2, deltaK);
 
@@ -358,7 +358,7 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double derivWRTSigma(float yConst, float mu, float k, float sigma, float x) {
+    public static double derivWRTSigma(double yConst, double mu, double sigma, double k, double x) {
 
         double z = 1. + k *( (x-mu)/sigma );
         double a, f1, f2, df2dsigma, df1dsigma;
@@ -409,7 +409,7 @@ public class DerivGEV {
         double dydSigma = (  df0dsigma * f1 * f2 ) + ( df1dsigma * f0 * f2 ) + (df2dsigma * f0 * f1 );
 
         if (Double.isNaN(dydSigma)) {
-            Double d = estimateDerivUsingDeltaSigma(mu, k, sigma, x);
+            Double d = estimateDerivUsingDeltaSigma(mu, sigma, k, x);
             return (d != null) ? d.doubleValue() : 0;
         }
 
@@ -425,15 +425,15 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    static Double estimateDerivUsingDeltaSigma(float mu, float k, float sigma, float x) {
+    static Double estimateDerivUsingDeltaSigma(double mu, double sigma, double k, double x) {
 
-        float delta = 0.0001f*sigma;
+        double delta = 0.0001f*sigma;
 
-        Double d0 = GeneralizedExtremeValue.generateYGEV(x, k, (sigma - delta), mu);
+        Double d0 = GeneralizedExtremeValue.generateYGEV(x, mu, (sigma - delta), k);
 
-        Double d1 = GeneralizedExtremeValue.generateYGEV(x, k, sigma, mu);
+        Double d1 = GeneralizedExtremeValue.generateYGEV(x, mu, sigma, k);
 
-        Double d2 = GeneralizedExtremeValue.generateYGEV(x, k, (sigma + delta), mu);
+        Double d2 = GeneralizedExtremeValue.generateYGEV(x, mu, (sigma + delta), k);
 
         return estimateDerivUsingDelta(d0, d1, d2, delta);
     }
@@ -449,7 +449,7 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double derivWRTMu(float yConst, float mu, float k, float sigma, float x) {
+    public static double derivWRTMu(double yConst, double mu, double sigma, double k, double x) {
 
         double z = 1. + k *( (x-mu)/sigma );
 
@@ -471,7 +471,7 @@ public class DerivGEV {
         if (zIsNegative) {
             double invNegZ = -1.0*(1.0/z);
             double neg1Pow = -1.0; // TODO:  revisit this
-            a = -1. * neg1Pow * (float) Math.pow(invNegZ, (-1./k));
+            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));
             f1 = Math.exp( a );
             f2 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)) );
             
@@ -495,7 +495,7 @@ public class DerivGEV {
         double dydmu = (yConst/sigma) * ( f1 * df2dmu + f2 * df1dmu );
 
         if (Double.isNaN(dydmu)) {
-            Double d = estimateDerivUsingDeltaMu(mu, k, sigma, x);
+            Double d = estimateDerivUsingDeltaMu(mu, sigma, k, x);
             return (d != null) ? d.doubleValue() : 0;
         }
 
@@ -511,15 +511,15 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    static Double estimateDerivUsingDeltaMu(float mu, float k, float sigma, float x) {
+    static Double estimateDerivUsingDeltaMu(double mu, double sigma, double k, double x) {
 
-        float deltaMu = 0.0001f*mu;
+        double deltaMu = 0.0001f*mu;
 
-        Double d0 = GeneralizedExtremeValue.generateYGEV(x, k, sigma, (mu - deltaMu));
+        Double d0 = GeneralizedExtremeValue.generateYGEV(x, (mu - deltaMu), sigma, k);
 
-        Double d1 = GeneralizedExtremeValue.generateYGEV(x, k, sigma, mu);
+        Double d1 = GeneralizedExtremeValue.generateYGEV(x, mu, sigma, k);
 
-        Double d2 = GeneralizedExtremeValue.generateYGEV(x, k, sigma, (mu + deltaMu));
+        Double d2 = GeneralizedExtremeValue.generateYGEV(x, (mu + deltaMu), sigma, k);
 
         return estimateDerivUsingDelta(d0, d1, d2, deltaMu);
     }
@@ -540,16 +540,17 @@ public class DerivGEV {
      *
      * runtime cost is
      *
-     * @param vars array of current values of k, sigma, and mu
-     * @param varsMin array of minimum allowed values of k, sigma, and mu
-     * @param varsMax array of maximum allowed values of k, sigma, and mu
+     * @param vars array of current values of mu, sigma, and k
+     * @param varsMin array of minimum allowed values of mu, sigma, and k
+     * @param varsMax array of maximum allowed values of mu, sigma, and k
      * @param chiSqSumReturn item [0] is the best current chiSqSum for given vars.
      *    item [1] is to return the value of the best chiSqSum here to the invoker
      *    if r was set to non-zero values.
      * @param x normalized x values of histogram to fit
      * @param r the array to pass back values to be added to vars found by this method.
-     *     the items are ordered so that index=0 holds delta k, index=1 holds delta sigma,
-     *     index=2 holds delta mu.  the values may be zero if no step was found to
+     *     the items are ordered so that
+     *          index=0 holds delta mu, index=1 holds delta sigma,
+     *     index=2 holds delta k.  the values may be zero if no step was found to
      *     improve the chi square sum.
      * @param normalizedY
      * @param normalizedYErr
@@ -558,8 +559,8 @@ public class DerivGEV {
      * @param r array to populate with answers.  it's given as an argument to reuse the array
      * @return
      */
-    public static void derivsThatMinimizeChiSqSum(float[] vars, float[] varsMin, float[] varsMax, float[] chiSqSumReturn,
-        float[] x, float[] normalizedY, float[] normalizedYErr, float[] r, int idx0, int idx1) {
+    public static void derivsThatMinimizeChiSqSum(double[] vars, double[] varsMin, double[] varsMax, double[] chiSqSumReturn,
+        double[] x, double[] normalizedY, double[] normalizedYErr, double[] r, int idx0, int idx1) {
 
         Arrays.fill(r, 0);
 
@@ -572,11 +573,11 @@ public class DerivGEV {
 
         for (int i = idx0; i < (idx1 + 1); i++) {
 
-            float k = vars[0] + r[0];
-            float sigma = vars[1] + r[1];
-            float mu = vars[2] + r[2];
+            double mu = vars[0] + r[0];
+            double sigma = vars[1] + r[1];
+            double k = vars[2] + r[2];
 
-            float[] yGEV = GeneralizedExtremeValue.genCurve(x, vars[0], vars[1], vars[2]);
+            double[] yGEV = GeneralizedExtremeValue.genCurve(x, vars[0], vars[1], vars[2]);
             if (yGEV == null) {
                 return;
             }
@@ -584,40 +585,40 @@ public class DerivGEV {
             if (yMaxIdx < 0) {
                 yMaxIdx = 0;
             }
-            float yMax = yGEV[yMaxIdx];
+            double yMax = yGEV[yMaxIdx];
             for (int ii = 0; ii < yGEV.length; ii++){
                 yGEV[ii] /= yMax;
             }
-            float yConst = 1.f/yMax;
+            double yConst = 1.f/yMax;
 
             int xIdx = yMaxIdx + 1;
             if (xIdx > x.length - 1) {
                 xIdx = x.length - 1;
             }
 
-            float xPoint = x[xIdx];
+            double xPoint = x[xIdx];
 
-            float bestChiSqSum = chiSqSumReturn[0];
+            double bestChiSqSum = chiSqSumReturn[0];
 
-            float[] yGEVPlus = null;
-            float[] yGEVMinus = null;
+            double[] yGEVPlus = null;
+            double[] yGEVMinus = null;
             double rModified = 0;
 
             switch(i) {
                 // calculate a step size that would affect a change in GEV by using the 1st and 2nd partial derivatives
                 case 0: {
                     // k
-                    rModified = calculatePreconditionerModifiedResidualK(yConst, mu, k, sigma, xPoint);
+                    rModified = calculatePreconditionerModifiedResidualK(yConst, mu, sigma, k, xPoint);
                     break;
                 }
                 case 1: {
                     // sigma
-                    rModified = calculatePreconditionerModifiedResidualSigma(yConst, mu, k, sigma, xPoint);
+                    rModified = calculatePreconditionerModifiedResidualSigma(yConst, mu, sigma, k, xPoint);
                     break;
                 }
                 case 2: {
                     // mu
-                    rModified = calculatePreconditionerModifiedResidualMu(yConst, mu, k, sigma, xPoint);
+                    rModified = calculatePreconditionerModifiedResidualMu(yConst, mu, sigma, k, xPoint);
                     break;
                 }
             }
@@ -626,11 +627,11 @@ public class DerivGEV {
                 case 0: {
                     // k
                     if (rModified != 0) {
-                        if (((float)(k + rModified) >= varsMin[i]) && ((float)(k + rModified) <= varsMax[i])) {
-                            yGEVPlus = GeneralizedExtremeValue.generateNormalizedCurve(x, (float)(k + rModified), sigma, mu);
+                        if (((double)(k + rModified) >= varsMin[i]) && ((double)(k + rModified) <= varsMax[i])) {
+                            yGEVPlus = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, sigma, (k + rModified));
                         }
-                        if (((float)(k - rModified) >= varsMin[i]) && ((float)(k - rModified) <= varsMax[i])) {
-                            yGEVMinus = GeneralizedExtremeValue.generateNormalizedCurve(x, (float)(k - rModified), sigma, mu);
+                        if (((k - rModified) >= varsMin[i]) && ((k - rModified) <= varsMax[i])) {
+                            yGEVMinus = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, sigma, (k - rModified));
                         }
                     }
                     break;
@@ -638,11 +639,11 @@ public class DerivGEV {
                 case 1: {
                     // sigma
                     if (rModified != 0) {
-                        if (((float)(sigma + rModified) >= varsMin[i]) && ((float)(sigma + rModified) <= varsMax[i])) {
-                            yGEVPlus = GeneralizedExtremeValue.generateNormalizedCurve(x, k, (float)(sigma + rModified), mu);
+                        if (((sigma + rModified) >= varsMin[i]) && ((sigma + rModified) <= varsMax[i])) {
+                            yGEVPlus = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, (sigma + rModified), k);
                         }
-                        if (((float)(sigma - rModified) >= varsMin[i]) && ((float)(sigma - rModified) <= varsMax[i])) {
-                            yGEVMinus = GeneralizedExtremeValue.generateNormalizedCurve(x, k, (float)(sigma - rModified), mu);
+                        if (((sigma - rModified) >= varsMin[i]) && ((sigma - rModified) <= varsMax[i])) {
+                            yGEVMinus = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, (sigma - rModified), k);
                         }
                     }
                     break;
@@ -650,27 +651,27 @@ public class DerivGEV {
                 case 2: {
                     // mu
                     if (rModified != 0) {
-                        if (((float)(mu + rModified) >= varsMin[i]) && ((float)(mu + rModified) <= varsMax[i])) {
-                            yGEVPlus = GeneralizedExtremeValue.generateNormalizedCurve(x, k, sigma, (float)(mu + rModified));
+                        if (((mu + rModified) >= varsMin[i]) && ((mu + rModified) <= varsMax[i])) {
+                            yGEVPlus = GeneralizedExtremeValue.generateNormalizedCurve(x, (mu + rModified), sigma, k);
                         }
-                        if (((float)(mu - rModified) >= varsMin[i]) && ((float)(mu - rModified) <= varsMax[i])) {
-                            yGEVMinus = GeneralizedExtremeValue.generateNormalizedCurve(x, k, sigma, (float)(mu - rModified));
+                        if (((mu - rModified) >= varsMin[i]) && ((mu - rModified) <= varsMax[i])) {
+                            yGEVMinus = GeneralizedExtremeValue.generateNormalizedCurve(x, (mu - rModified), sigma, k);
                         }
                     }
                     break;
                 }
             }
 
-            float chiSqSumPlus = (yGEVPlus != null) ? chiSqSum(yGEVPlus, normalizedY, normalizedYErr) : Float.MAX_VALUE;
-            float chiSqSumMinus = (yGEVMinus != null) ? chiSqSum(yGEVMinus, normalizedY, normalizedYErr) : Float.MAX_VALUE;
+            double chiSqSumPlus = (yGEVPlus != null) ? chiSqSum(yGEVPlus, normalizedY, normalizedYErr) : Double.POSITIVE_INFINITY;
+            double chiSqSumMinus = (yGEVMinus != null) ? chiSqSum(yGEVMinus, normalizedY, normalizedYErr) : Double.POSITIVE_INFINITY;
             boolean bestIsPlus = (chiSqSumPlus < chiSqSumMinus);
 
             if (bestIsPlus && (chiSqSumPlus < bestChiSqSum)) {
-                r[i] = (float) rModified;
+                r[i] = (double) rModified;
                 bestChiSqSum = chiSqSumPlus;
                 chiSqSumReturn[1] = bestChiSqSum;
             } else if (chiSqSumMinus < bestChiSqSum) {
-                r[i] = (float) (-1.f * rModified);
+                r[i] = (double) (-1.f * rModified);
                 bestChiSqSum = chiSqSumMinus;
                 chiSqSumReturn[1] = bestChiSqSum;
             }
@@ -679,7 +680,7 @@ public class DerivGEV {
         }
     }
 
-    public static double calculatePreconditionerModifiedResidualK(float yConst, float mu, float k, float sigma, float x) {
+    public static double calculatePreconditionerModifiedResidualK(double yConst, double mu, double sigma, double k, double x) {
 
         // using Incomplete Cholesky factorization with fill 0 (ICU0) to apply preconditioning
         // to the first derivative
@@ -687,13 +688,13 @@ public class DerivGEV {
         // k component to residuals = d(1,1) * (&#8706;/&#8706;k)
         //       where d(1,1) is 1./(&#8706;<sup>2</sup>/&#8706;k&#8706;k), that is 1./(&#8706;<sup>2</sup>/&#8706;k&#8706;k)
 
-        Double dydk = DerivGEV.derivWRTK(yConst, mu, k, sigma, x);
+        Double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);
 
         if (dydk == null) {
             return 0;
         }
 
-        Double d2ydkdk = estimateDY2DKDK(yConst, mu, k, sigma, x, dydk);
+        Double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);
 
         if (d2ydkdk == null) {
             return dydk;
@@ -715,15 +716,15 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double estimateDY2DKDK(float yConst, float mu, float k, float sigma, float x) {
+    public static double estimateDY2DKDK(double yConst, double mu, double sigma, double k, double x) {
 
-        Double dydk = DerivGEV.derivWRTK(yConst, mu, k, sigma, x);
+        Double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);
 
         if (dydk == null) {
             return 0;
         }
 
-        Double d = estimateDY2DKDK(yConst, mu, k, sigma, x, dydk.doubleValue());
+        Double d = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk.doubleValue());
 
         return (d != null) ? d.doubleValue() : 0;
     }
@@ -741,15 +742,15 @@ public class DerivGEV {
      * @param dydk
      * @return
      */
-    public static double estimateDY2DKDK(float yConst, float mu, float k, float sigma, float x, double dydk) {
+    public static double estimateDY2DKDK(double yConst, double mu, double sigma, double k, double x, double dydk) {
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
-        double delta = (k*factor);
+        double delta = k*factor;
 
-        Double dydk_0 = DerivGEV.derivWRTK(yConst, mu, (float)(k - delta), sigma, x);
+        Double dydk_0 = DerivGEV.derivWRTK(yConst, mu, sigma, (k - delta), x);
 
-        Double dydk_2 = DerivGEV.derivWRTK(yConst, mu, (float)(k + delta), sigma, x);
+        Double dydk_2 = DerivGEV.derivWRTK(yConst, mu, sigma, (k + delta), x);
 
         Double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);
 
@@ -769,17 +770,17 @@ public class DerivGEV {
      * @param dydk
      * @return
      */
-    public static double estimateDY2DKDSigma(float yConst, float mu, float k, float sigma, float x, double dydk) {
+    public static double estimateDY2DKDSigma(double yConst, double mu, double sigma, double k, double x, double dydk) {
 
         // &#8706;<sup>2</sup>/&#8706;k&#8706;sigma
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
         double delta = (sigma*factor);
 
-        Double dydk_0 = DerivGEV.derivWRTK(yConst, mu, k, (float)(sigma - delta), x);
+        Double dydk_0 = DerivGEV.derivWRTK(yConst, mu, (sigma - delta), k, x);
 
-        Double dydk_2 = DerivGEV.derivWRTK(yConst, mu, k, (float)(sigma + delta), x);
+        Double dydk_2 = DerivGEV.derivWRTK(yConst, mu, (sigma + delta), k, x);
 
         Double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);
 
@@ -800,17 +801,17 @@ public class DerivGEV {
      * @param dydk
      * @return
      */
-    public static double estimateDY2DKDMu(float yConst, float mu, float k, float sigma, float x, double dydk) {
+    public static double estimateDY2DKDMu(double yConst, double mu, double sigma, double k, double x, double dydk) {
 
         // &#8706;<sup>2</sup>/&#8706;k&#8706;mu
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
-        double delta = (mu*factor);
+        double delta = mu*factor;
 
-        Double dydk_0 = DerivGEV.derivWRTK(yConst, (float)(mu - delta), k, sigma, x);
+        Double dydk_0 = DerivGEV.derivWRTK(yConst, (mu - delta), sigma, k, x);
 
-        Double dydk_2 = DerivGEV.derivWRTK(yConst, (float)(mu + delta), k, sigma, x);
+        Double dydk_2 = DerivGEV.derivWRTK(yConst, (mu + delta), sigma, k, x);
 
         Double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);
 
@@ -830,17 +831,17 @@ public class DerivGEV {
      * @param dydsigma
      * @return
      */
-    public static double estimateDY2DSigmaDSigma(float yConst, float mu, float k, float sigma, float x, double dydsigma) {
+    public static double estimateDY2DSigmaDSigma(double yConst, double mu, double sigma, double k, double x, double dydsigma) {
 
         // &#8706;<sup>2</sup>/&#8706;sigma&#8706;sigma = estimate as (dyds_2 - dyds)/ds
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
-        double delta = (sigma*factor);
+        double delta = sigma*factor;
 
-        Double dyds_0 = DerivGEV.derivWRTSigma(yConst, mu, k, (float)(sigma - delta), x);
+        Double dyds_0 = DerivGEV.derivWRTSigma(yConst, mu, (sigma - delta), k, x);
 
-        Double dyds_2 = DerivGEV.derivWRTSigma(yConst, mu, k, (float)(sigma + delta), x);
+        Double dyds_2 = DerivGEV.derivWRTSigma(yConst, mu, (sigma + delta), k, x);
 
         Double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);
 
@@ -860,17 +861,17 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double estimateDY2DMuDMu(float yConst, float mu, float k, float sigma, float x, double dydmu) {
+    public static double estimateDY2DMuDMu(double yConst, double mu, double sigma, double k, double x, double dydmu) {
 
         // &#8706;<sup>2</sup>/&#8706;mu&#8706;mu
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
-        double delta = (mu*factor);
+        double delta = mu*factor;
 
-        Double dydm_0 = DerivGEV.derivWRTMu(yConst, (float)(mu - delta), k, sigma, x);
+        Double dydm_0 = DerivGEV.derivWRTMu(yConst, (mu - delta), sigma, k, x);
 
-        Double dydm_2 = DerivGEV.derivWRTMu(yConst, (float)(mu + delta), k, sigma, x);
+        Double dydm_2 = DerivGEV.derivWRTMu(yConst, (mu + delta), sigma, k, x);
 
         Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);
 
@@ -891,17 +892,17 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double estimateDY2DMuDK(float yConst, float mu, float k, float sigma, float x, double dydmu) {
+    public static double estimateDY2DMuDK(double yConst, double mu, double sigma, double k, double x, double dydmu) {
 
         // &#8706;<sup>2</sup>/&#8706;mu&#8706;k
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
-        double delta = (k*factor);
+        double delta = k*factor;
 
-        Double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, (float)(k - delta), sigma, x);
+        Double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, sigma, (k - delta), x);
 
-        Double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, (float)(k + delta), sigma, x);
+        Double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, sigma, (k + delta), x);
 
         Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);
 
@@ -922,17 +923,17 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double estimateDY2DMuDSigma(float yConst, float mu, float k, float sigma, float x, double dydmu) {
+    public static double estimateDY2DMuDSigma(double yConst, double mu, double sigma, double k, double x, double dydmu) {
 
         // &#8706;<sup>2</sup>/&#8706;mu&#8706;sigma
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
-        double delta = (sigma*factor);
+        double delta = sigma*factor;
 
-        Double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, k, (float)(sigma - delta), x);
+        Double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, (sigma - delta), k, x);
 
-        Double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, k, (float)(sigma + delta), x);
+        Double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, (sigma + delta), k, x);
 
         Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);
 
@@ -954,17 +955,17 @@ public class DerivGEV {
      * @param dydsigma
      * @return
      */
-    public static double estimateDY2DSigmaDK(float yConst, float mu, float k, float sigma, float x, double dydsigma) {
+    public static double estimateDY2DSigmaDK(double yConst, double mu, double sigma, double k, double x, double dydsigma) {
 
         // &#8706;<sup>2</sup>/&#8706;sigma&#8706;k = estimate as (dy2_ds_dk - dyds)/dk
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
         double delta = (k*factor);
 
-        Double dydk_0 = DerivGEV.derivWRTSigma(yConst, mu, (float)(k - delta), sigma, x);
+        Double dydk_0 = DerivGEV.derivWRTSigma(yConst, mu, sigma, (k - delta), x);
 
-        Double dydk_2 = DerivGEV.derivWRTSigma(yConst, mu, (float)(k + delta), sigma, x);
+        Double dydk_2 = DerivGEV.derivWRTSigma(yConst, mu, sigma, (k + delta), x);
 
         Double d = estimateDerivUsingDelta(dydk_0, dydsigma, dydk_2, delta);
 
@@ -986,17 +987,17 @@ public class DerivGEV {
      * @param dydsigma
      * @return
      */
-    public static double estimateDY2DSigmaDMu(float yConst, float mu, float k, float sigma, float x, double dydsigma) {
+    public static double estimateDY2DSigmaDMu(double yConst, double mu, double sigma, double k, double x, double dydsigma) {
 
         // &#8706;<sup>2</sup>/&#8706;sigma&#8706;mu = estimate as (dy2_ds_dk - dyds)/dk
 
-        float factor = 0.0001f;
+        double factor = 0.0001f;
 
         double delta = (sigma*factor);
 
-        Double dyds_0 = DerivGEV.derivWRTSigma(yConst, (float)(mu - delta), k, sigma, x);
+        Double dyds_0 = DerivGEV.derivWRTSigma(yConst, (mu - delta), sigma, k, x);
 
-        Double dyds_2 = DerivGEV.derivWRTSigma(yConst, (float)(mu + delta), k, sigma, x);
+        Double dyds_2 = DerivGEV.derivWRTSigma(yConst, (mu + delta), sigma, k, x);
 
         Double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);
 
@@ -1004,7 +1005,7 @@ public class DerivGEV {
     }
 
     public static double calculatePreconditionerModifiedResidualSigma(
-        float yConst, float mu, float k, float sigma, float x) {
+        double yConst, double mu, double sigma, double k, double x) {
 
         // using Incomplete Cholesky factorization with fill 0 (ICU0) to apply preconditioning
         // to the first derivative
@@ -1013,7 +1014,7 @@ public class DerivGEV {
         //       where d(2,2) is ( 1./ ( (&#8706;<sup>2</sup>/&#8706;sigma&#8706;sigma) - (&#8706;<sup>2</sup>/&#8706;sigma&#8706;k)*( 1/(&#8706;<sup>2</sup>/&#8706;k&#8706;k, that is &#8706;<sup>2</sup>/&#8706;k&#8706;k) ) * (&#8706;<sup>2</sup>/&#8706;k&#8706;sigma) ) )
 
         // &#8706;/&#8706;sigma
-        Double dyds = DerivGEV.derivWRTSigma(yConst, mu, k, sigma, x);
+        Double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);
 
         if (dyds == null) {
             return 0;
@@ -1021,22 +1022,22 @@ public class DerivGEV {
 
 
         // &#8706;<sup>2</sup>/&#8706;sigma&#8706;sigma
-        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, k, sigma, x, dyds);
+        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, sigma, k, x, dyds);
 
 
         // (&#8706;<sup>2</sup>/&#8706;sigma&#8706;k) = estimate as (dydsigma_1 - dydsigma)/dsigma
-        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, k, sigma, x, dyds);
+        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, sigma, k, x, dyds);
 
         // &#8706;/&#8706;k
-        Double dydk = DerivGEV.derivWRTK(yConst, mu, k, sigma, x);
+        Double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);
 
         if (dydk != null) {
 
             // &#8706;<sup>2</sup>/&#8706;k&#8706;k, that is &#8706;<sup>2</sup>/&#8706;k&#8706;k
-            double d2ydkdk = estimateDY2DKDK(yConst, mu, k, sigma, x, dydk.doubleValue());
+            double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk.doubleValue());
 
             // &#8706;<sup>2</sup>/&#8706;k&#8706;sigma
-            double d2ydkds = estimateDY2DKDSigma(yConst, mu, k, sigma, x, dydk.doubleValue());
+            double d2ydkds = estimateDY2DKDSigma(yConst, mu, sigma, k, x, dydk.doubleValue());
 
             double modification = d2ydsds - (d2ydsdk / d2ydkdk) * d2ydkds;
 
@@ -1054,8 +1055,7 @@ public class DerivGEV {
         }
     }
 
-    public static double calculatePreconditionerModifiedResidualMu(
-        float yConst, float mu, float k, float sigma, float x) {
+    public static double calculatePreconditionerModifiedResidualMu(double yConst, double mu, double sigma, double k, double x) {
 
         // using Incomplete Cholesky factorization with fill 0 (ICU0) to apply preconditioning
         // to the first derivative
@@ -1084,20 +1084,20 @@ public class DerivGEV {
         */
 
         // &#8706;/&#8706;mu
-        Double dydmu = DerivGEV.derivWRTMu(yConst, mu, k, sigma, x);
+        Double dydmu = DerivGEV.derivWRTMu(yConst, mu, sigma, k, x);
 
         if (dydmu == null) {
             return 0;
         }
 
         // &#8706;/&#8706;sigma
-        Double dyds = DerivGEV.derivWRTSigma(yConst, mu, k, sigma, x);
+        Double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);
         if (dyds == null) {
             return 0;
         }
 
         // &#8706;<sup>2</sup>/&#8706;sigma&#8706;sigma
-        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, k, sigma, x, dyds.doubleValue());
+        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, sigma, k, x, dyds.doubleValue());
 
         if (d2ydsds == 0) {
             return 0;
@@ -1105,23 +1105,23 @@ public class DerivGEV {
 
 
         // &#8706;<sup>2</sup>/&#8706;mu&#8706;mu
-        double d2ydmdm = estimateDY2DMuDMu(yConst, mu, k, sigma, x, dydmu.doubleValue());
+        double d2ydmdm = estimateDY2DMuDMu(yConst, mu, sigma, k, x, dydmu.doubleValue());
 
         // &#8706;/&#8706;k
-        Double dydk = DerivGEV.derivWRTK(yConst, mu, k, sigma, x);
+        Double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);
 
         double pt1;
 
         if (dydk != null) {
 
             // &#8706;<sup>2</sup>/&#8706;mu&#8706;k
-            double d2ydmdk = estimateDY2DMuDK(yConst, mu, k, sigma, x, dydmu.doubleValue());
+            double d2ydmdk = estimateDY2DMuDK(yConst, mu, sigma, k, x, dydmu.doubleValue());
 
             // &#8706;<sup>2</sup>/&#8706;k&#8706;k, that is &#8706;<sup>2</sup>/&#8706;k&#8706;k
-            double d2ydkdk = estimateDY2DKDK(yConst, mu, k, sigma, x, dydk.doubleValue());
+            double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk.doubleValue());
 
             // &#8706;<sup>2</sup>/&#8706;k&#8706;mu
-            double d2ydkdm = estimateDY2DKDMu(yConst, mu, k, sigma, x, dydk.doubleValue());
+            double d2ydkdm = estimateDY2DKDMu(yConst, mu, sigma, k, x, dydk.doubleValue());
 
             pt1 = d2ydmdm - (d2ydmdk*d2ydkdm / d2ydkdk);
 
@@ -1131,12 +1131,12 @@ public class DerivGEV {
         }
 
         // (&#8706;<sup>2</sup>/&#8706;sigma&#8706;k) = estimate as (dydsigma_1 - dydsigma)/dsigma
-        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, k, sigma, x, dyds.doubleValue());
+        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, sigma, k, x, dyds.doubleValue());
 
-        double d2ydmds = estimateDY2DMuDSigma(yConst, mu, k, sigma, x, dydmu.doubleValue());
+        double d2ydmds = estimateDY2DMuDSigma(yConst, mu, sigma, k, x, dydmu.doubleValue());
 
         // &#8706;<sup>2</sup>/&#8706;sigma&#8706;mu
-        double d2ydsdm = estimateDY2DSigmaDMu(yConst, mu, k, sigma, x, dyds.doubleValue());
+        double d2ydsdm = estimateDY2DSigmaDMu(yConst, mu, sigma, k, x, dyds.doubleValue());
 
         // d(3,3) = 1./( (pt1) - ( &#8706;<sup>2</sup>/&#8706;mu&#8706;sigma * pt2_1 * &#8706;<sup>2</sup>/&#8706;sigma&#8706;mu ))
         //
@@ -1152,10 +1152,10 @@ public class DerivGEV {
         } else if (d2ydsdk != 0 && dydk != null) {
 
             // &#8706;<sup>2</sup>/&#8706;sigma&#8706;k
-            double d2ydkdk = estimateDY2DKDK(yConst, mu, k, sigma, x, dydk.doubleValue());
+            double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk.doubleValue());
 
             // &#8706;<sup>2</sup>/&#8706;k&#8706;sigma
-            double d2ydkds = estimateDY2DKDSigma(yConst, mu, k, sigma, x, dydk.doubleValue());
+            double d2ydkds = estimateDY2DKDSigma(yConst, mu, sigma, k, x, dydk.doubleValue());
 
             pt2_1 = d2ydsds - (d2ydsdk * d2ydkds / d2ydkdk);
 
@@ -1177,10 +1177,10 @@ public class DerivGEV {
         return resid;
     }
 
-    public static Float chiSqSum(final float k, final float sigma, final float mu, final float[] x,
-        final float[] normalizedY, final float[] normalizedYErr) {
+    public static Double chiSqSum(final double mu, final double sigma, final double k, final double[] x,
+        final double[] normalizedY, final double[] normalizedYErr) {
 
-        float[] yGEV = GeneralizedExtremeValue.generateNormalizedCurve(x, k, sigma, mu);
+        double[] yGEV = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, sigma, k);
         if (yGEV == null) {
             return null;
         }
@@ -1196,7 +1196,7 @@ public class DerivGEV {
      * @param normalizedYErr
      * @return
      */
-    public static float chiSqSum(float[] normalizedYGEV, float[] normalizedY, float[] normalizedYErr) {
+    public static double chiSqSum(double[] normalizedYGEV, double[] normalizedY, double[] normalizedYErr) {
         return chiSqSum(normalizedYGEV, normalizedY, normalizedYErr, 0, normalizedY.length);
     }
 
@@ -1213,11 +1213,11 @@ public class DerivGEV {
      * @param stopIdx the last index, exclusive
      * @return
      */
-    public static float chiSqSum(float[] normalizedYGEV, float[] normalizedY, float[] normalizedYErr,
+    public static double chiSqSum(double[] normalizedYGEV, double[] normalizedY, double[] normalizedYErr,
         int startIdx, int stopIdx) {
-        float chiSqSum = 0.0f;
+        double chiSqSum = 0.0f;
         for (int ii = startIdx; ii < stopIdx; ii++) {
-            float z = (normalizedYGEV[ii] - normalizedY[ii]);
+            double z = (normalizedYGEV[ii] - normalizedY[ii]);
             chiSqSum += z*z*normalizedYErr[ii];
         }
         return chiSqSum;
@@ -1237,7 +1237,7 @@ public class DerivGEV {
      * @param x
      * @return
      */
-    public static double secondDerivKDerivMu(float yConst, float mu, float k, float sigma, float x) {
+    public static double secondDerivKDerivMu(double yConst, double mu, double sigma, double k, double x) {
 
         double z = 1. + k *( (x-mu)/sigma );
 
@@ -1259,7 +1259,7 @@ public class DerivGEV {
         if (zIsNegative) {
             double invNegZ = -1.0*(1.0/z);
             double neg1Pow = -1.0; // TODO:  revisit this
-            a = -1. * neg1Pow * (float) Math.pow(invNegZ, (-1./k));
+            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));
             f1 = Math.exp( a );
             f2 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)) );
             
@@ -1280,8 +1280,8 @@ public class DerivGEV {
             df1dmu =  f1 * (1./k) * Math.pow(z, -1. - (1./k)) * dzdmu;
         }
         
-        float deltaK = 0.0001f;
-        float deltaMu = 0.0001f;
+        double deltaK = 0.0001f;
+        double deltaMu = 0.0001f;
         double k_1 = k + deltaK;
         double mu_1 = mu + deltaMu;
         double z_1 = 1. + k_1 *( (x-mu)/sigma );
