@@ -44,8 +44,8 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         // to generate the input for the estimators, we need to turn
         // the pair (xPoints, curve) into an ordered statistic for x,
         // that is, x points present in proportion to the curve (pdf).
-        // TODO: add methods to do this properly, after take a quick rough look using
-        // a histogram (Chap 19 of "Statistical Distributions").
+        // TODO: add methods to do this properly, after take a quick rough look.
+        //(Chap 19 of "Statistical Distributions").
                 
         // where right tail begins to flatten
         double factor = 338.;
