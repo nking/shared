@@ -8,5 +8,5 @@ public interface IYFit {
 
     public String[] getParameterNames();
 
-    public float[] getParameters();
+    public double[] getParameters();
 }

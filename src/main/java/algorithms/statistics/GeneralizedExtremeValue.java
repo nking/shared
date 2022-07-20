@@ -6,6 +6,8 @@ import algorithms.misc.MiscMath0;
   <pre>
   Generate curves following the Generalized Extreme Value probability density
   function.
+ The GEV is a.k.a. the Fisher-Tippett distribution (though some restrict the
+ Fisher-Tippett to the Gumbel distribution).
  
                            (   (      ( x-mu))-(1/k))
                            (-1*(1 + k*(-----))      )
@@ -179,13 +181,13 @@ public class GeneralizedExtremeValue {
         }
 
         // if k =~ 0, use Gumbel which is Type I
-        if (k == 0 || Double.isInfinite(1.f/k)) {
+        if (k == 0 || Double.isInfinite(1./k)) {
             return generateYEVTypeI(xPoint, sigma, mu);
         }        
         // if k > 0, use Frechet which is Type II
         // if k < 0, use Weibull which is Type III.  Not using k < 0 in this project
 
-        double z = 1.f + k * ((xPoint - mu)/sigma);
+        double z = 1. + k * ((xPoint - mu)/sigma);
         double a,b;
 
         boolean zIsNegative = (z < 0);
@@ -205,18 +207,18 @@ public class GeneralizedExtremeValue {
         if (zIsNegative) {
             double invNegZ = -1.0f*(1.0f/z);
             double neg1Pow = -1.0f; // TODO:  revisit this
-            a = -1.f * neg1Pow * Math.pow(invNegZ, (-1.f/k));
-            b = neg1Pow * Math.pow(invNegZ, (-1.f - (1.f/k)));
+            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));
+            b = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)));
         } else {
-            a = -1.f * Math.pow(z, (-1.f/k));
-            b = Math.pow(z, (-1.f - (1.f/k)));
+            a = -1. * Math.pow(z, (-1./k));
+            b = Math.pow(z, (-1. - (1./k)));
         }
         
         if (Double.isNaN(a) || Double.isNaN(b)) {
             // or return 0?
             throw new IllegalStateException("cannot be NaN");
         } else {
-            return ((1.f/sigma) * Math.exp(a) * b);
+            return ((1./sigma) * Math.exp(a) * b);
         }
     }
 
@@ -228,9 +230,9 @@ public class GeneralizedExtremeValue {
 
         double z = (xPoint - mu)/sigma;
 
-        double a = (-1.f*z - Math.exp(-1.0f*z));
+        double a = (-1.*z - Math.exp(-1.0f*z));
 
-        return ((1.f/sigma) * Math.exp(a));
+        return ((1./sigma) * Math.exp(a));
     }
 
     public double[] generateCurve(double[] x1, double mu, double sigma, double k) {
@@ -239,7 +241,7 @@ public class GeneralizedExtremeValue {
             throw new IllegalArgumentException("sigma cannot be null");
         }
         // if k =~ 0, use Gumbel which is Type I
-        if (k == 0 || Double.isInfinite(1.f/k)) {
+        if (k == 0 || Double.isInfinite(1./k)) {
             return generateEVTypeICurve(x1, mu, sigma);
         }
         
@@ -247,7 +249,7 @@ public class GeneralizedExtremeValue {
 
         for (int i = 0; i < x1.length; i++) {
 
-            double z = 1.f + k*((x1[i] - mu)/sigma);
+            double z = 1. + k*((x1[i] - mu)/sigma);
             double a,b;
 
             boolean zIsNegative = (z < 0);
@@ -267,17 +269,17 @@ public class GeneralizedExtremeValue {
             if (zIsNegative) {
                 double invNegZ = -1.0f*(1.0f/z);
                 double neg1Pow = -1.0f; // TODO:  revisit this
-                a = -1.f * neg1Pow * Math.pow(invNegZ, (-1.f/k));
-                b = neg1Pow * Math.pow(invNegZ, (-1.f - (1.f/k)));
+                a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));
+                b = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)));
             } else {
-                a = -1.f * Math.pow(z, (-1.f/k));
-                b = Math.pow(z, (-1.f - (1.f/k)));
+                a = -1. * Math.pow(z, (-1./k));
+                b = Math.pow(z, (-1. - (1./k)));
             }
 
             if (Double.isNaN(a) || Double.isNaN(b)) {
                 yGEV[i] = 0;
             } else {
-                double t = ((1.f/sigma) * Math.exp(a) * b);
+                double t = ((1./sigma) * Math.exp(a) * b);
                 if (t < 0 || Double.isNaN(t)) {
                     yGEV[i] = 0;
                 } else {
@@ -290,22 +292,92 @@ public class GeneralizedExtremeValue {
     }
 
     public static double[] generateEVTypeICurve(double[] x1, double mu, double sigma) {
-
         if (sigma == 0) {
             throw new IllegalArgumentException("sigma must be > 0");
         }
-
         double[] yGEV = new double[x1.length];
-
+        double z;
+        double a;
         for (int i = 0; i < x1.length; i++) {
-
-            double z = (x1[i] - mu)/sigma;
-
-            double a = (-1.f*z - Math.exp(-1.0f*z));
-
-            yGEV[i] = ((1.f/sigma) * Math.exp(a));
+            z = (x1[i] - mu)/sigma;
+            a = -(z + Math.exp(-1.*z));
+            yGEV[i] = (1./sigma) * Math.exp(a);
         }
+        return yGEV;
+    }
 
+    /**
+     * calculate a rough estimate of Gumbel distribution parameters for the given x.
+     * A more precise estimate can be obtained from fitGumbelUsingML or fitGumbelUsingBayesian
+     * when they are implemented.
+     * @param x ordered statistic of an observed Gumbel distribution.
+     * @return
+     */
+    public static double[] gumbelParamsViaMethodOfMoments(double[] x) {
+        //double[] mean = new double[1];
+        //double[] stDev = new double[1];
+        //x = Standardization.standardUnitNormalization(x, 1, mean, stDev);
+        //System.out.println("mean=" + mean[0] + " sigma=" + stDev[0]);
+        
+        double[] meanStdv = MiscMath0.getAvgAndStDev(x);
+        double sigma = meanStdv[1] * Math.sqrt(6.)/Math.PI;
+        double mu = meanStdv[0] - sigma * MiscMath0.eulerMascheroniConstant();
+        
+        
+        System.out.println("mu=" + mu);
+        System.out.println("sigma=" + sigma);
+        return new double[]{mu, sigma, 0};
+    }
+
+    /**
+     * estimate the parameters mu and sigma (location and shape, respectively) using
+     * method of maximum likelihood simultaneous solution.
+     * <pre>
+     *    reference is Chap 19 of "Statistical Distributions" by Evans et al.
+     * </pre>
+     * @param x
+     * @param y
+     * @return
+     */
+    public static GEVYFit fitGumbelUsingML(double[] x, double[] y) {
+
+        /*
+        method of maximum likelihood simultaneous solutions:
+        sigmaEst = x_avg - ( sum_over_i(x_i * exp(-x_i/sigma) ) / sum_over_i(exp(-x_i/sigma) ) )
+        muEst = -sigmaEst * Math.log( (1/n) * sum_over_i( exp(-x_i/sigmaEst) ))
+        ==> initial estimate of b via method of moments
+
+        assert that muEst < x_avg (due to skew)
+
+        iterate until little change in sigma estimate.
+         */
+
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    /**
+     * generate the generalized Gumbel probability density curve (GEV Type I).
+     * <pre>
+     *     reference is Chap 19 of "Statistical Distributions" by Evans et al.
+     * </pre>
+     * @param x1
+     * @param mu
+     * @param sigma
+     * @return
+     */
+    public static double[] generateGumbelCurve(double[] x1, double mu, double sigma) {
+        if (sigma <= 0) {
+            throw new IllegalArgumentException("sigma must be > 0");
+        }
+        double[] yGEV = new double[x1.length];
+        double z;
+        double a;
+        for (int i = 0; i < x1.length; i++) {
+            z = (x1[i] - mu)/sigma;
+            a = Math.exp(-z);
+            yGEV[i] = (1./sigma) * Math.exp(-z) * Math.exp(-a);
+            //yGEV[i] = (1./sigma) * Math.exp(-(Math.exp(-z) + z)); // same result
+        }
         return yGEV;
     }
 
@@ -338,7 +410,7 @@ public class GeneralizedExtremeValue {
 
         double yNorm = MiscMath0.findMax(y1);
 
-        double chiSum = 0.f;
+        double chiSum = 0.;
 
         for (int i = 0; i < yGEV.length; i++) {
 
@@ -383,9 +455,9 @@ public class GeneralizedExtremeValue {
         //  the error has to be smaller than half of the delta otherwise the prior Fit
         //  value would have been kept.  very very rough approx for parameter errors...
 
-        double kDelta = yFit.getKResolution()/2.f;
-        double sigmaDelta = yFit.getSigmaResolution()/2.f;
-        double muDelta = yFit.getMuSolutionResolution()/2.f;
+        double kDelta = yFit.getKResolution()/2.;
+        double sigmaDelta = yFit.getSigmaResolution()/2.;
+        double muDelta = yFit.getMuSolutionResolution()/2.;
 
         double yConst = yFit.getYScale();
         double mu = yFit.getMu();
@@ -454,7 +526,7 @@ public class GeneralizedExtremeValue {
         //   but that is not done here
 
         double xDelta = yFit.getX()[1] - yFit.getX()[0];
-        double xErrorSq = (xDelta*xDelta/4.f);
+        double xErrorSq = (xDelta*xDelta/4.);
 
         double sum = 0.0f;
         for (int i = 0; i <= yLimitIdx; i++) {
@@ -489,7 +561,7 @@ public class GeneralizedExtremeValue {
             throw new IllegalArgumentException("sigma must be > 0");
         }
         // if k =~ 0, use Gumbel which is Type I
-        if (k == 0 || Double.isInfinite(1.f/k)) {
+        if (k == 0 || Double.isInfinite(1./k)) {
             return generateEVTypeICurve(x1, mu, sigma);
         }
 
@@ -497,7 +569,7 @@ public class GeneralizedExtremeValue {
 
         for (int i = 0; i < x1.length; i++) {
 
-            double z = 1.f + k * ((x1[i] - mu)/sigma);
+            double z = 1. + k * ((x1[i] - mu)/sigma);
             double a,b;
 
             boolean zIsNegative = (z < 0);
@@ -517,17 +589,17 @@ public class GeneralizedExtremeValue {
             if (zIsNegative) {
                 double invNegZ = -1.0f*(1.0f/z);
                 double neg1Pow = -1.0f; // TODO:  revisit this
-                a = -1.f * neg1Pow * Math.pow(invNegZ, (-1.f/k));
-                b = neg1Pow * Math.pow(invNegZ, (-1.f - (1.f/k)));
+                a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));
+                b = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)));
             } else {
-                a = -1.f * Math.pow(z, (-1.f/k));
-                b = Math.pow(z, (-1.f - (1.f/k)));
+                a = -1. * Math.pow(z, (-1./k));
+                b = Math.pow(z, (-1. - (1./k)));
             }
 
             if (Double.isNaN(a) || Double.isNaN(b)) {
                 yGEV[i] = 0;
             } else {
-                double t = ((1.f/sigma) * Math.exp(a) * b);
+                double t = ((1./sigma) * Math.exp(a) * b);
                 if (t < 0 || Double.isNaN(t)) {
                     yGEV[i] = 0;
                 } else {

@@ -1434,6 +1434,9 @@ public class DerivGEV {
                             + 0
                             + pt2_0_1_0 * f1 * (-1*z^(-1/k)) * (1/k^2)
 
+
+
+
                      pt2_0_1_0 = ∂/∂mu( ln ( -1*(sigma + k*(x-mu))/sigma )
                                = (k*sigma)/(sigma + k*(x-mu))
 

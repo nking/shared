@@ -1515,5 +1515,37 @@ public class MiscMath0 {
             a[i2] = swap;
         }
     }
-    
+
+    /**
+     * return the Euler-Mascheroni constant.
+     * It is the first derivative of the gamma function w.r.t. n at n=1.
+     * <pre>
+     *     Chap 19 of "Statistical Distributions" by Evans et al.
+     * </pre>
+     * @return
+     */
+    public static double eulerMascheroniConstant() {
+        return 0.5772156649;
+    }
+
+    public static double[] convertFloatToDouble(float[] a) {
+        if (a == null) {
+            return null;
+        }
+        double[] b = new double[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            b[i] = a[i];
+        }
+        return b;
+    }
+    public static double[] convertIntToDouble(int[] a) {
+        if (a == null) {
+            return null;
+        }
+        double[] b = new double[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            b[i] = a[i];
+        }
+        return b;
+    }
 }

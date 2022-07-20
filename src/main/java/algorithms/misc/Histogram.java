@@ -186,6 +186,7 @@ public class Histogram {
         if (nBins < 0) {
             nBins *= -1;
         }
+        System.out.println("nBins=" + nBins);
         
         float[] afloat = new float[a.length];
         for (int i = 0; i < a.length; ++i) {

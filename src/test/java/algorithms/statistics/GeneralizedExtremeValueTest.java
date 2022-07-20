@@ -25,9 +25,9 @@ public class GeneralizedExtremeValueTest extends TestCase {
         for (int i = 0; i < 11; i++) {
             xPoints[i] = -4+i;
         }
-        k = 0.5f;
-        sigma = 1.0f;
-        mu = 0.0f;
+        k = 0.5;
+        sigma = 1.0;
+        mu = 0.0;
         gev = new GeneralizedExtremeValue(xPoints, yPoints, dXPoints, dYPoints);
         curve = gev.generateCurve(xPoints, mu, sigma, k);
         assertTrue(Math.abs(curve[3] - 0.15f) < 0.01f);
@@ -72,9 +72,9 @@ public class GeneralizedExtremeValueTest extends TestCase {
         }
         
         // TypeI
-        k = 0.0f;
-        sigma = 1.0f;
-        mu = 0.0f;
+        k = 0.0;
+        sigma = 1.0;
+        mu = 0.0;
         gev = new GeneralizedExtremeValue(xPoints, yPoints, dXPoints, dYPoints);
         curve = gev.generateCurve(xPoints, mu, sigma, k);
         assertNotNull(curve);        

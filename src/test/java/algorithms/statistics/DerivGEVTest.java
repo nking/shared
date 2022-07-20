@@ -164,7 +164,7 @@ public class DerivGEVTest extends TestCase {
         double s2  = 0.85f; //1.07f;
         double mu2 = 0.441f;//0.59f;
         double k2  = 1.80f - 1.7f; //2.75f;
-        double avgResidK = 0.f;
+        double avgResidK = 0.;
         int yMaxModelIdx = MiscMath.findYMaxIndex(GeneralizedExtremeValue.generateNormalizedCurve(xp, mu2, s2, k2));
         log.fine("yMaxModelIdx=" + yMaxModelIdx);
         double[] suggestedK = new double[xp.length];
@@ -179,7 +179,7 @@ public class DerivGEVTest extends TestCase {
             log.fine( String.format("x[%d]=%4.3f  (d/dk=%4.5f, d2/dkdk=%4.5f) ==> (+%4.4f  chiSqSum=%4.4f) (-%4.4f  chiSqSum=%4.4f)", 
                 i, xp[i], d, dd, preconditionedResidual, chiSqSum, preconditionedResidual, chiSqSum2));
             avgResidK += preconditionedResidual;
-            suggestedK[i] = (chiSqSum < chiSqSum2) ? preconditionedResidual : -1.f*preconditionedResidual;
+            suggestedK[i] = (chiSqSum < chiSqSum2) ? preconditionedResidual : -1.*preconditionedResidual;
             if (suggestedK[i] < minChiSqSum) {
                 minChiSqSum =  suggestedK[i];
                 minChiSqSumIdx = i;
