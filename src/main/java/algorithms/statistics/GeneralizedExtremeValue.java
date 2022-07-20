@@ -330,7 +330,7 @@ public class GeneralizedExtremeValue {
     }
 
     /**
-     * estimate the parameters mu and sigma (location and shape, respectively) using
+     * estimate the parameters mu and sigma (location and scale, respectively) using
      * method of maximum likelihood simultaneous solution.
      * <pre>
      *    reference is Chap 19 of "Statistical Distributions" by Evans et al.

@@ -38,7 +38,7 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         curve = GeneralizedExtremeValue.generateGumbelCurve(xPoints, mu, sigma);
         
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter((float)xMin, (float)xMax, 0f, 0.5f);
-        plotter.addPlot(xPoints, curve, null, null, xPoints, curve, "gumbel: loc=1, shape=1");
+        plotter.addPlot(xPoints, curve, null, null, xPoints, curve, "gumbel: loc=" + mu +  " scale=" + sigma);
 
         
         // to generate the input for the estimators, we need to turn
