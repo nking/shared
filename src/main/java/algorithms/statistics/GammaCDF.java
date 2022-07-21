@@ -2,6 +2,9 @@ package algorithms.statistics;
 
 /**
  *
+ *  note, can find method of moments for Gamma and many other functions here:
+ *  https://stats.libretexts.org/Bookshelves/Probability_Theory/Probability_Mathematical_Statistics_and_Stochastic_Processes_(Siegrist)/07%3A_Point_Estimation/7.02%3A_The_Method_of_Moments
+ *
  * @author nichole
  */
 public class GammaCDF {

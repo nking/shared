@@ -310,6 +310,12 @@ public class GeneralizedExtremeValue {
      * calculate a rough estimate of Gumbel distribution parameters for the given x.
      * A more precise estimate can be obtained from fitGumbelUsingML or fitGumbelUsingBayesian
      * when they are implemented.
+     * <pre>
+     * references:
+     *     Chap 19 of "Statistical Distributions" by Evans et al.
+     *     and
+     *     https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
+     * </pre>
      * @param x ordered statistic of an observed Gumbel distribution.
      * @return
      */
@@ -318,15 +324,31 @@ public class GeneralizedExtremeValue {
         //double[] stDev = new double[1];
         //x = Standardization.standardUnitNormalization(x, 1, mean, stDev);
         //System.out.println("mean=" + mean[0] + " sigma=" + stDev[0]);
-        
+
+        int n = x.length;
+
         double[] meanStdv = MiscMath0.getAvgAndStDev(x);
-        double sigma = meanStdv[1] * Math.sqrt(6.)/Math.PI;
-        double mu = meanStdv[0] - sigma * MiscMath0.eulerMascheroniConstant();
-        
-        
-        System.out.println("mu=" + mu);
-        System.out.println("sigma=" + sigma);
-        return new double[]{mu, sigma, 0};
+        double sigma0 = meanStdv[1] * Math.sqrt(6.)/Math.PI;
+        double mu0 = meanStdv[0] - sigma0 * MiscMath0.eulerMascheroniConstant();
+
+        /* use MAD instead of stDev
+        https://aakinshin.net/posts/gumbel-mad/
+        */
+        double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(x);
+        //double kMAD = 1.4826;
+        //double s = kMAD*mADMinMax[0];
+        //double r0 = mADMinMax[1] - 3*s;
+        //double r1 = mADMinMax[1] + 3*s;
+        double p = 0.767049251325708;
+        double s = mADMinMax[0]/p;
+
+        double sigma1 = s * Math.sqrt(6.)/Math.PI;
+        double mu1 = meanStdv[0] - sigma1 * MiscMath0.eulerMascheroniConstant();
+
+        System.out.println("mu=" + mu0 + ", " + mu1);
+        System.out.println("sigma=" + sigma0 + ", " + sigma1);
+
+        return new double[]{mu0, sigma0, 0};
     }
 
     /**
@@ -334,6 +356,8 @@ public class GeneralizedExtremeValue {
      * method of maximum likelihood simultaneous solution.
      * <pre>
      *    reference is Chap 19 of "Statistical Distributions" by Evans et al.
+     *    and
+     *    https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
      * </pre>
      * @param x
      * @param y
@@ -343,9 +367,10 @@ public class GeneralizedExtremeValue {
 
         /*
         method of maximum likelihood simultaneous solutions:
-        sigmaEst = x_avg - ( sum_over_i(x_i * exp(-x_i/sigma) ) / sum_over_i(exp(-x_i/sigma) ) )
+        sigmaEst = x_avg - ( sum_over_i(x_i * exp(-x_i/sigmaEst) ) / sum_over_i(exp(-x_i/sigmaEst) ) )
         muEst = -sigmaEst * Math.log( (1/n) * sum_over_i( exp(-x_i/sigmaEst) ))
-        ==> initial estimate of b via method of moments
+
+        ==> initial estimates from method of moments
 
         assert that muEst < x_avg (due to skew)
 

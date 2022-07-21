@@ -9,6 +9,8 @@ import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import junit.framework.TestCase;
 
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class GeneralizedExtremeValue2Test extends TestCase {
@@ -35,12 +37,20 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         sigma = 7.0;
         k = 0.0;
 
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+        double[] randDist = GumbelCDF.sampleRandomlyFrom(mu, sigma, n, rand);
+        Arrays.sort(randDist);
+        double[] randDistParams = GeneralizedExtremeValue.gumbelParamsViaMethodOfMoments(randDist);
+        log.info(String.format("randDistParams=%s\n", FormatArray.toString(randDistParams, "%.3f")));
+
         curve = GeneralizedExtremeValue.generateGumbelCurve(xPoints, mu, sigma);
         
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter((float)xMin, (float)xMax, 0f, 0.5f);
         plotter.addPlot(xPoints, curve, null, null, xPoints, curve, "gumbel: loc=" + mu +  " scale=" + sigma);
 
-        
         // to generate the input for the estimators, we need to turn
         // the pair (xPoints, curve) into an ordered statistic for x,
         // that is, x points present in proportion to the curve (pdf).
