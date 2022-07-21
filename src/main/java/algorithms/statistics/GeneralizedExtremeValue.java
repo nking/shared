@@ -320,35 +320,27 @@ public class GeneralizedExtremeValue {
      * @return
      */
     public static double[] gumbelParamsViaMethodOfMoments(double[] x) {
-        //double[] mean = new double[1];
-        //double[] stDev = new double[1];
-        //x = Standardization.standardUnitNormalization(x, 1, mean, stDev);
-        //System.out.println("mean=" + mean[0] + " sigma=" + stDev[0]);
 
         int n = x.length;
 
-        double[] meanStdv = MiscMath0.getAvgAndStDev(x);
-        double sigma0 = meanStdv[1] * Math.sqrt(6.)/Math.PI;
-        double mu0 = meanStdv[0] - sigma0 * MiscMath0.eulerMascheroniConstant();
-
-        /* use MAD instead of stDev
-        https://aakinshin.net/posts/gumbel-mad/
-        */
         double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(x);
-        //double kMAD = 1.4826;
-        //double s = kMAD*mADMinMax[0];
-        //double r0 = mADMinMax[1] - 3*s;
-        //double r1 = mADMinMax[1] + 3*s;
-        double p = 0.767049251325708;
-        double s = mADMinMax[0]/p;
+        double kMAD = 1.4826;
+        double s = kMAD*mADMinMax[0];
 
+        double[] meanStdv = MiscMath0.getAvgAndStDev(x);
+
+        double sigma0 = meanStdv[1] * Math.sqrt(6.)/Math.PI;
         double sigma1 = s * Math.sqrt(6.)/Math.PI;
+        double mu0 = meanStdv[0] - sigma0 * MiscMath0.eulerMascheroniConstant();
         double mu1 = meanStdv[0] - sigma1 * MiscMath0.eulerMascheroniConstant();
 
-        System.out.println("mu=" + mu0 + ", " + mu1);
-        System.out.println("sigma=" + sigma0 + ", " + sigma1);
+        //double r0 = mADMinMax[1] - 3*s;
+        //double r1 = mADMinMax[1] + 3*s;
 
-        return new double[]{mu0, sigma0, 0};
+        System.out.println("mu0,1=" + mu0 + ", " + mu1);
+        System.out.println("sigma0,1=" + sigma0 + ", " + sigma1);
+
+        return new double[]{mu1, sigma1, 0};
     }
 
     /**
