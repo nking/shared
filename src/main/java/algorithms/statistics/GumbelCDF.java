@@ -101,10 +101,11 @@ public class GumbelCDF {
         double[] out = new double[nDraws];
         int i;
         double u;
-        double eps = 1e-19;
+        double eps = 1e-320;
         for (i = 0; i < nDraws; ++i) {
             u = rand.nextDouble();
             while (u < eps) {
+                // to stay within math domain of Math.log(u)
                 u = rand.nextDouble();
             }
             out[i] = inverseCdf(u, location, scale);
