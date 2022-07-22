@@ -351,25 +351,53 @@ public class GeneralizedExtremeValue {
      *    and
      *    https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
      * </pre>
-     * @param x
-     * @param y
+     * @param x ordered values for which to find the best fitting Gumbel distribution parameters
      * @return
      */
-    public static GEVYFit fitGumbelUsingML(double[] x, double[] y) {
+    public static GEVYFit fitGumbelUsingML(double[] x) {
 
+        double[] params = GeneralizedExtremeValue.gumbelParamsViaMethodOfMoments(x);
+        double[] avgAndStdev = MiscMath0.getAvgAndStDev(x);
         /*
         method of maximum likelihood simultaneous solutions:
-        sigmaEst = x_avg - ( sum_over_i(x_i * exp(-x_i/sigmaEst) ) / sum_over_i(exp(-x_i/sigmaEst) ) )
-        muEst = -sigmaEst * Math.log( (1/n) * sum_over_i( exp(-x_i/sigmaEst) ))
+        scaleEst = x_avg - ( sum_over_i(x_i * exp(-x_i/scaleEst) ) / sum_over_i(exp(-x_i/scaleEst) ) )
+        locEst = -scaleEst * Math.log( (1/n) * sum_over_i( exp(-x_i/scaleEst) ))
 
-        ==> initial estimates from method of moments
+        initial estimates from method of moments
 
-        assert that muEst < x_avg (due to skew)
+        assert that locEst < x_avg (due to skew)
+        */
+        double scaleEst = params[1];
+        scaleEst = estimateScaleML(x, avgAndStdev[0], scaleEst);
+        double locEst = estimateLocML(x, scaleEst);
 
-        iterate until little change in sigma estimate.
-         */
+        //choose optimization...
+        //    can minimize the difference between histogram(X) and histogram(generatGumbel(locEst, scaleEst))
+        //    decide stopping strategy
+        //    alternatively can loop over scaleEst estimates and stop when change is below tolerance
 
         throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    private static double estimateLocML(double[] x, double scaleEst) {
+        int n = x.length;
+        double sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += Math.exp(-x[i]/scaleEst);
+        }
+        return -scaleEst * Math.log((1./n)*sum);
+    }
+
+    private static double estimateScaleML(double[] x, double xAvg, double scaleEst) {
+        int n = x.length;
+        double sum0 = 0;
+        double sum1 = 0;
+        for (int i = 0; i < n; ++i) {
+            sum0 += (x[i] * Math.exp(-x[i]/scaleEst));
+            sum1 += (Math.exp(-x[i]/scaleEst));
+        }
+        scaleEst = xAvg - ( sum0 / sum1 );
+        return scaleEst;
     }
 
     /**
