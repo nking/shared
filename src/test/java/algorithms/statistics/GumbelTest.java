@@ -5,23 +5,19 @@ import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
-import algorithms.util.ResourceFinder;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import junit.framework.TestCase;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-public class GeneralizedExtremeValue2Test extends TestCase {
+public class GumbelTest extends TestCase {
 
     protected Logger log = Logger.getLogger(this.getClass().getName());
     
-    public void testGenerateGumbelCurve() throws Exception {
+    public void estGenerateGumbelCurve() throws Exception {
         
         double[] xPoints;
         double[] curve;
@@ -45,12 +41,12 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         long seed = System.nanoTime();
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
-        double[] randDist = GumbelCDF.sampleRandomlyFrom(mu, sigma, n, rand);
+        double[] randDist = Gumbel.sampleRandomlyFrom(mu, sigma, n, rand);
         Arrays.sort(randDist);
-        double[] randDistParams = GeneralizedExtremeValue.gumbelParamsViaMethodOfMoments(randDist);
+        double[] randDistParams = Gumbel.fitGumbelUsingMethodOfMoments(randDist);
         log.info(String.format("randDistParams=%s\n", FormatArray.toString(randDistParams, "%.3f")));
 
-        curve = GeneralizedExtremeValue.generateGumbelCurve(xPoints, mu, sigma);
+        curve = Gumbel.generateGumbelCurve(xPoints, mu, sigma);
         
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter((float)xMin, (float)xMax, 0f, 0.5f);
         plotter.addPlot(xPoints, curve, null, null, xPoints, curve, "gumbel: loc=" + mu +  " scale=" + sigma);
@@ -75,37 +71,17 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         }
         double[] xOrd = x.toArray();
 
-        double[] params = GeneralizedExtremeValue.gumbelParamsViaMethodOfMoments(xOrd);
+        double[] params = Gumbel.fitGumbelUsingMethodOfMoments(xOrd);
         log.info(String.format("params=%s\n", FormatArray.toString(params, "%.3f")));
 
         String filePath = plotter.writeFile("gumbel_mu1_sigma_1");
 
     }
 
-    public void estSMC() throws Exception {
+    public void testSMC() throws Exception {
 
-        // read in the dataset
-        String path = ResourceFinder.findFileInTestResources("smc118.1_diffs.txt");
-        FileReader reader = null;
-        BufferedReader in = null;
-        int count = 0;
-        TDoubleList d = new TDoubleArrayList();
-        try {
-            in = new BufferedReader(new FileReader(new File(path)));
-            String line = in.readLine();
-            while (line != null) {
-                d.add(Double.parseDouble(line));
-                line = in.readLine();
-            }
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (reader != null) {
-                reader.close();
-            }
-        }
-        double[] X = d.toArray();
+        double[] X = SMCFileReader.readDiffFile("smc118.1_diffs.txt");
+
         double sigma, k, mu;
 
         int n = X.length;
@@ -123,8 +99,12 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         for (int i = 0; i < hist.getYHistFloat().length; ++i) {
             hist.getYHistFloat()[i] /= maxYHist;
         }
-        double[] params = GeneralizedExtremeValue.gumbelParamsViaMethodOfMoments(X);
-        log.info(String.format("params=%s\n", FormatArray.toString(params, "%.3f")));
+        double[] params = Gumbel.fitGumbelUsingMethodOfMoments(X);
+        log.info(String.format("MME params=%s\n", FormatArray.toString(params, "%.3f")));
+
+        double[] params2 = Gumbel.fitGumbelUsingML(X);
+        log.info(String.format("MLE params=%s\n", FormatArray.toString(params2, "%.3f")));
+
 
         // overplot a generated curve using params
         SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -132,7 +112,7 @@ public class GeneralizedExtremeValue2Test extends TestCase {
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
 
-        double[] randX = GumbelCDF.sampleRandomlyFrom(params[0], params[1], 10*nBins, rand);
+        double[] randX = Gumbel.sampleRandomlyFrom(params[0], params[1], 10*nBins, rand);
         HistogramHolder randHist = Histogram.createSimpleHistogram(randX, binSize, 0, maxX);
         maxYHist = MiscMath0.findMax(randHist.getYHistFloat());
         for (int i = 0; i < randHist.getYHistFloat().length; ++i) {

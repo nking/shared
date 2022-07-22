@@ -18,9 +18,11 @@ public class DerivGEV {
      * sigma is the scale parameter and is > 0
      * k is the shape parameter
      *
-     * Components needed in the derivatives:
+     * Let z = (1 + k*( (x-mu)/sigma )
      *
-     *   Let z = (1 + k*( (x-mu)/sigma )
+     *  y = y_const * (1/sigma) * exp(-1*(z^-(1/k))) * (z^(-1-(1/k)))
+     *
+     * Components needed in the derivatives:
      *
      *   then deriv of z w.r.t x is
      *   dzdx = k/sigma
@@ -30,8 +32,7 @@ public class DerivGEV {
      *   dzdsigma =  -1 * k * (x-mu) * (sigma^-2)
      *
      *   dzdmu = -1*k/sigma
-     *
-     *
+
      *   deriv of -z^(-1/k) w.r.t. x is
      *      (1/k) * z^(-1 - (1/k)) * dzdx
      *
@@ -417,7 +418,7 @@ public class DerivGEV {
     }
 
     /**
-     * calculate d/dk of GEV using the difference between GEVs given minor changes in k
+     * calculate d/dsigma of GEV using the difference between GEVs given minor changes in k
      *
      * @param mu
      * @param k
