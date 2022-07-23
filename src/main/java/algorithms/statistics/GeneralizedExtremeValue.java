@@ -94,14 +94,18 @@ public class GeneralizedExtremeValue {
         // estimate b0, b1, b2 using eqn (4) and plotting position for p_j
         // p[j] = (j - 0.35)/n
         // eqn (4) : b_r[p[j]] = (1/n) *  sum over j=1 to n ( p[j]^r * x[j] )
+        /*
+        HERE: j is the jth ranked (from largest to smallest) datum
+        where the datum is x which is ordered smallest to largest
+         */
 
         // eqn (14) for shape estimator
         // c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
         // kEst = 7.859 * x + 2.9554 * c^2
 
         // eqn (15) for location and scale estimators
-        // alphaEst = (kEst*(2*b1 - b0)/( gamma(1+kEst) * (1 - 2^kEst)))
-        // epsEst = b0 + (alphaEst*(gamma(1+kEst) - 1)/kEst)
+        // scale: alphaEst = (kEst*(2*b1 - b0)/( gamma(1+kEst) * (1 - 2^kEst)))
+        // location: epsEst = b0 + (alphaEst*(gamma(1+kEst) - 1)/kEst)
 
         throw new UnsupportedOperationException("not yet implemented");
     }
