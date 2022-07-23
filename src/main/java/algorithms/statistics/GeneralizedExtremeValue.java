@@ -76,6 +76,36 @@ public class GeneralizedExtremeValue {
     protected final double[] dx;
     protected final double[] dy;
 
+    /**
+     * calculate a rough estimate of GEV distribution parameters for the given x.
+     *
+     * <pre>
+     * references:
+     *     "Estimation of th eGeneralized Extreme-Value Distribution by the Method of Probability Weighted Moments"
+     *    Hosking, Wallis, and Wood 1984
+     * </pre>
+     * @param x ordered statistic of an observed GEV distribution.
+     * @return
+     */
+    public static double[] fitUsingMethodOfMoments(double[] x) {
+
+        int n = x.length;
+
+        // estimate b0, b1, b2 using eqn (4) and plotting position for p_j
+        // p[j] = (j - 0.35)/n
+        // eqn (4) : b_r[p[j]] = (1/n) *  sum over j=1 to n ( p[j]^r * x[j] )
+
+        // eqn (14) for shape estimator
+        // c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
+        // kEst = 7.859 * x + 2.9554 * c^2
+
+        // eqn (15) for location and scale estimators
+        // alphaEst = (kEst*(2*b1 - b0)/( gamma(1+kEst) * (1 - 2^kEst)))
+        // epsEst = b0 + (alphaEst*(gamma(1+kEst) - 1)/kEst)
+
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
     public GeneralizedExtremeValue(double[] xPoints, double[] yPoints, double[] dXPoints, double[] dYPoints) {
         this.x = xPoints;
         this.y = yPoints;
