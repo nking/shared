@@ -117,7 +117,8 @@ public class GeneralizedExtremeValue {
 
         double pj;
         for (i = 0; i < n; ++i) {
-            j = n - i;
+            //j = n - i; error?
+            j = i;
             pj = (j - 0.35)/n;
             t = x[i];
             b[0] += t;
@@ -146,12 +147,9 @@ public class GeneralizedExtremeValue {
         double gam = Gamma.lanczosGamma9(1. + shapeEst);
         double denom = gam * (1. - Math.pow(2, -shapeEst));
         double scaleEst = shapeEst*(2.*b[1] - b[0])/denom;
-        // error?
-        scaleEst = Math.abs(scaleEst);
         double locationEst = b[0] + (scaleEst*(gam - 1.)/shapeEst);
 
-        // consider
-       // replace with Castillo and Hadi (1994)
+        // consider replacing with Castillo and Hadi (1994)
        // Castillo, E., and A. Hadi. (1994).
        //     Parameter and Quantile Estimation for the Generalized Extreme-Value Distribution. Environmetrics 5, 417–432.
 
