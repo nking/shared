@@ -1441,7 +1441,7 @@ public class MiscMath0 {
         }
         return new float[]{min, max};
     }
-        
+
     public int sign(int v) {
         return v >>> 31;
     }
@@ -1526,6 +1526,17 @@ public class MiscMath0 {
      */
     public static double eulerMascheroniConstant() {
         return 0.5772156649;
+    }
+
+    public static float[] convertDoubleToFloat(double[] a) {
+        if (a == null) {
+            return null;
+        }
+        float[] b = new float[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            b[i] = (float)a[i];
+        }
+        return b;
     }
 
     public static double[] convertFloatToDouble(float[] a) {

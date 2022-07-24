@@ -1,12 +1,8 @@
 package algorithms.statistics;
 
-import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
-import no.uib.cipr.matrix.NotConvergedException;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Random;
 
 /**
  *  the Gumbel distribution (Generalized Extreme Value distribution Type-I)
@@ -143,7 +139,7 @@ public class Gumbel {
      * @param x ordered statistic of an observed Gumbel distribution.
      * @return
      */
-    public static double[] fitGumbelUsingMethodOfMoments(double[] x) {
+    public static double[] fitUsingMethodOfMoments(double[] x) {
 
         int n = x.length;
 
@@ -178,9 +174,9 @@ public class Gumbel {
      * @param x ordered values for which to find the best fitting Gumbel distribution parameters
      * @return
      */
-    public static double[] fitGumbelUsingML(double[] x) {
+    public static double[] fitUsingMaximumLikelihood(double[] x) {
 
-        double[] params = fitGumbelUsingMethodOfMoments(x);
+        double[] params = fitUsingMethodOfMoments(x);
         double[] avgAndStdev = MiscMath0.getAvgAndStDev(x);
         /*
         method of maximum likelihood simultaneous solutions:
@@ -222,7 +218,7 @@ public class Gumbel {
 
             throw new UnsupportedOperationException("not yet implemented");
         }
-        return new double[]{scaleEst, locEst};
+        return new double[]{locEst, scaleEst};
     }
 
     private static double estimateLocML(double[] x, double scaleEst) {

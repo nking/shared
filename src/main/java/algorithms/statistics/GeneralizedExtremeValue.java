@@ -1,6 +1,7 @@
 package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
+import algorithms.util.FormatArray;
 
 /**
   <pre>
@@ -81,33 +82,83 @@ public class GeneralizedExtremeValue {
      *
      * <pre>
      * references:
-     *     "Estimation of th eGeneralized Extreme-Value Distribution by the Method of Probability Weighted Moments"
+     *     "Estimation of the Generalized Extreme-Value Distribution by the Method of Probability Weighted Moments"
      *    Hosking, Wallis, and Wood 1984
      * </pre>
      * @param x ordered statistic of an observed GEV distribution.
      * @return
      */
-    public static double[] fitUsingMethodOfMoments(double[] x) {
+    public static double[] fitUsingMethodOfProbabilityWeightedMoments(double[] x) {
 
         int n = x.length;
 
-        // estimate b0, b1, b2 using eqn (4) and plotting position for p_j
-        // p[j] = (j - 0.35)/n
-        // eqn (4) : b_r[p[j]] = (1/n) *  sum over j=1 to n ( p[j]^r * x[j] )
-        /*
+        /* estimate b0, b1, b2 using eqn (4) and plotting position for p_j
+        p[j] = (j - 0.35)/n
+        eqn (4) : b_r[p[j]] = (1/n) * sum over j=1 to n ( p[j]^r * x[j] )
+
         HERE: j is the jth ranked (from largest to smallest) datum
         where the datum is x which is ordered smallest to largest
-         */
 
-        // eqn (14) for shape estimator
-        // c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
-        // kEst = 7.859 * x + 2.9554 * c^2
+        b0 = (1/n) * sum over j=1 to n ( 1 * x[j] )
+        b1 = (1/n) * sum over j=1 to n ( p[j] * x[j] )
+        b2 = (1/n) * sum over j=1 to n ( p[j]^2 * x[j] )
 
-        // eqn (15) for location and scale estimators
-        // scale: alphaEst = (kEst*(2*b1 - b0)/( gamma(1+kEst) * (1 - 2^kEst)))
-        // location: epsEst = b0 + (alphaEst*(gamma(1+kEst) - 1)/kEst)
+        Alternatively, Landwehr 1979 as referenced in
+        IMPROVING PROBABILITY-WEIGHTED MOMENT METHODS FOR THE GENERALIZED EXTREME VALUE DISTRIBUTION
+        Diebolt et al 2008
 
-        throw new UnsupportedOperationException("not yet implemented");
+        b_r = (1/n) * sum over j=1 to n ( multiply over l=1 to r( (j-l)/(n-l) ) * X_j,n )
+        */
+
+        double[] b = new double[3];
+        int i;
+        int j;
+        double t;
+
+        double pj;
+        for (i = 0; i < n; ++i) {
+            j = n - i;
+            pj = (j - 0.35)/n;
+            t = x[i];
+            b[0] += t;
+            t *= pj;
+            b[1] += t;
+            t *= pj;
+            b[2] += t;
+        }
+        b[0] /= (double)n;
+        b[1] /= (double)n;
+        b[2] /= (double)n;
+
+        System.out.printf("b=%s\n", FormatArray.toString(b, "%.3e"));
+
+        /* eqn (14) for shape estimator
+        c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
+        kEst = 7.859 * c + 2.9554 * c^2
+        */
+        double c =  ((2.*b[1] - b[0])/(3.*b[2] - b[0])) - (Math.log(2)/Math.log(3));
+        double shapeEst = 7.859*c + 2.9554*c*c;
+
+        /* eqn (15) for location and scale estimators
+        scale: alphaEst = (kEst*(2*b1 - b0)/( gamma(1+kEst) * (1 - 2^-kEst)))
+        location: epsEst = b0 + (alphaEst*(gamma(1+kEst) - 1)/kEst)
+        */
+        double gam = Gamma.lanczosGamma9(1. + shapeEst);
+        double denom = gam * (1. - Math.pow(2, -shapeEst));
+        double scaleEst = shapeEst*(2.*b[1] - b[0])/denom;
+        // error?
+        scaleEst = Math.abs(scaleEst);
+        double locationEst = b[0] + (scaleEst*(gam - 1.)/shapeEst);
+
+        // consider
+       // replace with Castillo and Hadi (1994)
+       // Castillo, E., and A. Hadi. (1994).
+       //     Parameter and Quantile Estimation for the Generalized Extreme-Value Distribution. Environmetrics 5, 417–432.
+
+        // TODO:
+        // test data example:  https://www.ncl.ucar.edu/Document/Functions/Built-in/extval_mlegev.shtml
+
+        return new double[]{locationEst, scaleEst, shapeEst};
     }
 
     public GeneralizedExtremeValue(double[] xPoints, double[] yPoints, double[] dXPoints, double[] dYPoints) {
@@ -511,6 +562,24 @@ public class GeneralizedExtremeValue {
             yGEV[i] /= yMax;
         }
 
+        return yGEV;
+    }
+
+    public static double[] _genCurve(double[] x1, double mu, double sigma, double k) {
+        if (sigma == 0) {
+            throw new IllegalArgumentException("sigma must be > 0");
+        }
+        // if k =~ 0, use Gumbel which is Type I
+        if (k == 0 || Double.isInfinite(1./k)) {
+            return generateEVTypeICurve(x1, mu, sigma);
+        }
+        double t;
+        double[] yGEV = new double[x1.length];
+        for (int i = 0; i < x1.length; i++) {
+            t = 1. + k * ((x1[i] - mu) / sigma);
+            t = Math.pow(t, -1./k);
+            yGEV[i] = (1./sigma) * Math.pow(t, k + 1.) * Math.exp(-t);
+        }
         return yGEV;
     }
 
