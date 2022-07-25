@@ -18,7 +18,7 @@ public class GumbelTest extends TestCase {
 
     protected Logger log = Logger.getLogger(this.getClass().getName());
     
-    public void estGenerateGumbelCurve() throws Exception {
+    public void testGenerateGumbelCurve() throws Exception {
         
         double[] xPoints;
         double[] curve;
@@ -79,7 +79,7 @@ public class GumbelTest extends TestCase {
 
     }
 
-    public void testSMC() throws Exception {
+    public void estSMC() throws Exception {
 
         double[] X = SMCFileReader.readDiffFile("smc118.1_diffs.txt");
 

@@ -3,6 +3,9 @@ package algorithms.statistics;
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 /**
   <pre>
   Generate curves following the Generalized Extreme Value probability density
@@ -85,7 +88,7 @@ public class GeneralizedExtremeValue {
      *     "Estimation of the Generalized Extreme-Value Distribution by the Method of Probability Weighted Moments"
      *    Hosking, Wallis, and Wood 1984
      * </pre>
-     * @param x ordered statistic of an observed GEV distribution.
+     * @param x ordered statistic of an observed GEV distribution where X is ordered from min to max.
      * @return
      */
     public static double[] fitUsingMethodOfProbabilityWeightedMoments(double[] x) {
@@ -96,8 +99,7 @@ public class GeneralizedExtremeValue {
         p[j] = (j - 0.35)/n
         eqn (4) : b_r[p[j]] = (1/n) * sum over j=1 to n ( p[j]^r * x[j] )
 
-        HERE: j is the jth ranked (from largest to smallest) datum
-        where the datum is x which is ordered smallest to largest
+        below, j is the jth ranked (from smallest to largest) datum.
 
         b0 = (1/n) * sum over j=1 to n ( 1 * x[j] )
         b1 = (1/n) * sum over j=1 to n ( p[j] * x[j] )
@@ -106,20 +108,19 @@ public class GeneralizedExtremeValue {
         Alternatively, Landwehr 1979 as referenced in
         IMPROVING PROBABILITY-WEIGHTED MOMENT METHODS FOR THE GENERALIZED EXTREME VALUE DISTRIBUTION
         Diebolt et al 2008
-
-        b_r = (1/n) * sum over j=1 to n ( multiply over l=1 to r( (j-l)/(n-l) ) * X_j,n )
+             b_r = (1/n) * sum over j=1 to n ( multiply over l=1 to r( (j-l)/(n-l) ) * X_j,n )
         */
 
         double[] b = new double[3];
         int i;
-        int j;
+        //int j;
         double t;
 
         double pj;
         for (i = 0; i < n; ++i) {
-            //j = n - i; error?
-            j = i;
-            pj = (j - 0.35)/n;
+            //j = n - i; // for the statistic where X is ordered from max to min
+            // pj = (j - 0.35)/n; // for the statistic where X is ordered from max to min
+            pj = (i - 0.35)/n;
             t = x[i];
             b[0] += t;
             t *= pj;
@@ -131,7 +132,7 @@ public class GeneralizedExtremeValue {
         b[1] /= (double)n;
         b[2] /= (double)n;
 
-        System.out.printf("b=%s\n", FormatArray.toString(b, "%.3e"));
+        //System.out.printf("b=%s\n", FormatArray.toString(b, "%.3e"));
 
         /* eqn (14) for shape estimator
         c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
@@ -149,12 +150,13 @@ public class GeneralizedExtremeValue {
         double scaleEst = shapeEst*(2.*b[1] - b[0])/denom;
         double locationEst = b[0] + (scaleEst*(gam - 1.)/shapeEst);
 
-        // consider replacing with Castillo and Hadi (1994)
-       // Castillo, E., and A. Hadi. (1994).
-       //     Parameter and Quantile Estimation for the Generalized Extreme-Value Distribution. Environmetrics 5, 417–432.
+        // TODO: consider replacing with Castillo and Hadi (1994)
+        // Castillo, E., and A. Hadi. (1994).
+        //     Parameter and Quantile Estimation for the Generalized Extreme-Value Distribution. Environmetrics 5, 417–432.
 
-        // TODO:
-        // test data example:  https://www.ncl.ucar.edu/Document/Functions/Built-in/extval_mlegev.shtml
+        // TODO: consider shape estimator of Dekkers 1989 or Resnick and Starica 1997
+        //shapeEst = M1 + 1 − 0.5* (1-((M1)^2)*(M2^(−1)))^(−1),
+        // where Mj ≡ (1/k)* sum_over_i=1 to k*( (ln(X_{i:n}) −ln(X_{(k+1):n} )^j, j=1;2.
 
         return new double[]{locationEst, scaleEst, shapeEst};
     }
@@ -407,25 +409,36 @@ public class GeneralizedExtremeValue {
     }
 
     /**
-     * Errors in fitting the curve can be calculated via chain rule of derivatives of the fit:
-     *
+     * calculate sum of the square of the differences between the curves.
      *
      * @param y1 the y data array
      * @param yGEV the generated GEV y model array
      * @return the mean error of the fit
      */
-    public static double calculateChiSq(double[] y1, double[] yGEV) {
+    public static double sumOfSquaredDiff(double[] y1, double[] yGEV) {
+        double chiSum = 0.;
+        double d;
+        for (int i = 0; i < yGEV.length; i++) {
+            d = yGEV[i] - y1[i];
+            chiSum += (d * d);
+        }
+        return chiSum;
+    }
 
-        double yNorm = MiscMath0.findMax(y1);
+    /**
+     * calculate sum of ( square(y1 - yGEV)/yGEV )
+     *
+     * @param y1 the y data array
+     * @param yGEV the generated GEV y model array
+     * @return the mean error of the fit
+     */
+    public static double chisq(double[] y1, double[] yGEV) {
 
         double chiSum = 0.;
-
+        double d;
         for (int i = 0; i < yGEV.length; i++) {
-
-            double z = (yGEV[i] - y1[i])/yNorm;
-            z *= z;
-
-            chiSum += z;
+            d = (y1[i] - yGEV[i]);
+            chiSum += (d*d/yGEV[i]);
         }
 
         return chiSum;
@@ -544,6 +557,174 @@ public class GeneralizedExtremeValue {
         sum = Math.sqrt(sum);
 
         return sum;
+    }
+
+    /**
+     * calculate the inverse CDF of the GEV, that is, a random variate x given the
+     * probability alpha.
+     * <pre>
+     *     reference is from the book "Extreme Value Distributions, Theory and Applications"
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 < p < 1
+     * </pre>
+     * @param p random variate drawn from U(0,1) where U is the uniform distribution.
+     *          NOTE that p must be greater than 0 and less 1, so consider
+     *          using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
+     *          In other words, p drawn from U(1e-16, 1. - 1e-16).
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return
+     */
+    public static double inverseCdf(double p, double location, double scale, double shape) throws NoSuchAlgorithmException {
+
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
+        return inverseCdf(p, location, scale, scale, rand);
+    }
+
+    /**
+     * calculate the inverse CDF of the GEV, that is, a random variate x given the
+     * probability alpha.
+     * <pre>
+     *     reference is from the book "Extreme Value Distributions, Theory and Applications"
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 < p < 1
+     * </pre>
+     * @param p random variate drawn from U(0,1) where U is the uniform distribution.
+     *    NOTE that p must be greater than 0 and less 1, so consider
+     *    using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
+     *    In other words, p drawn from U(1e-16, 1. - 1e-16).
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return
+     */
+    public static double inverseCdf(double p, double location, double scale, double shape, SecureRandom rand) {
+        if (p <= 0) {
+            throw new IllegalArgumentException("p must be > 0 and < 1");
+        }
+        if (p >= 1) {
+            throw new IllegalArgumentException("p must be > 0 and < 1");
+        }
+        double y = -Math.log(-Math.log(p));
+        double x;
+        if (shape != 0) {
+            x = location + scale * (1. - Math.exp(-shape * y)) / shape;
+        } else {
+            x = location + scale * y;
+        }
+        return x;
+    }
+
+    /**
+     * calculate the inverse CDF of the GEV, that is, a random variate x given the
+     * probability alpha.
+     * <pre>
+     *     reference is from the book "Extreme Value Distributions, Theory and Applications"
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 < p < 1
+     * </pre>
+     * @param p array of random variates drawn from U(0,1) where U is the uniform distribution.
+     *    NOTE that p elements must be greater than 0 and less 1, so consider
+     *    using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
+     *    In other words, p elements drawn from U(1e-16, 1. - 1e-16).
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return
+     */
+    public static double[] inverseCdf(double[] p, double location, double scale, double shape, SecureRandom rand) {
+        int n = p.length;
+        int i;
+        double y;
+        double[] x = new double[n];
+        if (shape != 0) {
+            for (i = 0; i < n; ++i) {
+                y = -Math.log(-Math.log(p[i]));
+                x[i] = location + scale * (1. - Math.exp(-shape * y)) / shape;
+            }
+        } else {
+            for (i = 0; i < n; ++i) {
+                y = -Math.log(-Math.log(p[i]));
+                x[i] = location + scale * y;
+            }
+        }
+        return x;
+    }
+
+    /**
+     * randomly draw from the inverse CDF of the GEV to return points that follow a GEV distibution.
+     * <pre>
+     *     reference is from the book "Extreme Value Distributions, Theory and Applications"
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 < p < 1
+     * </pre>
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return array of randomly drawn numbers from the GEV
+     */
+    public static double[] sampleRandomlyFrom(double location, double scale, double shape,
+                                              int nDraws) throws NoSuchAlgorithmException {
+
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
+        return sampleRandomlyFrom(location, scale, shape, nDraws, rand);
+    }
+
+    /**
+     * randomly draw from the inverse CDF of the GEV to return points that follow a GEV distibution.
+     * <pre>
+     *     reference is from the book "Extreme Value Distributions, Theory and Applications"
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 < p < 1
+     * </pre>
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return array of randomly drawn numbers from the GEV
+     */
+    public static double[] sampleRandomlyFrom(double location, double scale, double shape,
+                                              int nDraws, SecureRandom rand) {
+        double eps = 1e-16;
+        double[] p = new double[nDraws];
+        for (int i = 0; i < nDraws; ++i) {
+            p[i] = rand.nextDouble();
+            if (p[i] == 0) {
+                p[i] = eps;
+            } else if (p[i] == 1.) {
+                p[i] -= eps;
+            }
+        }
+
+        return inverseCdf(p, location, scale, shape, rand);
     }
 
     public static double[] generateNormalizedCurve(double[] x1, double mu, double sigma, double k) {
