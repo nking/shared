@@ -82,7 +82,7 @@ public class GeneralizedExtremeValue {
 
     /**
      * calculate a rough estimate of GEV distribution parameters for the given x.
-     *
+     * Note that the methods works best for sample sizes > 50.
      * <pre>
      * references:
      *     "Estimation of the Generalized Extreme-Value Distribution by the Method of Probability Weighted Moments"

@@ -1,28 +1,40 @@
--- for parameter finding of GEV:
-   -- bayesian inference
-      - likelihood
-      - prior
-      - initial estimates of parameters
-      - for optimization, need to impl or use an API
-        - google optimization apis
-            http://ceres-solver.org/
-            https://developers.google.com/optimization/install
-        - if using an API, might need to export to another project:
-            - prml in github by ctgk (python)
-            - tensorflow2
-            - Google ML (android java)
-            - cloud APIs
--- considering imple of parameter finding for the individual type I, II, and II distributions of GEV
-   -- gumbel
-      -- method of moments
-   -- weibull 3-parameters:
-      -- "Procedures for Estimation of Weibull Parameters"
-         Evens, Kretchmann, and Green 2019 
-         recommend maximum-likelihood
-   -- frechet:
-      -- "The Frechet distribution: Estimation and Application an Overview"
-         Ramos et al 2018 
-         recommend bayesian inference
+-- Bayes estimate of GEV:
+   -- a conjugate prior and likelihood is nearly intractable,
+      so many use sampling of the posterior by MCMC, importance, metropolis, etc.
+      for an approximate inference
+      - an example with details and pseudocode for the sampling:
+        Choeng, R. Y. and Gabda, D., 2017, “Modelling maximum river flow by using Bayesian Markov Chain Monte Carlo”,
+        prior: gaussian
+        likelihood: GEV likelihood
+
+   -- the NEVA matlab toolbox is used by
+      "Non-stationary extreme value analysis in a changing climate"
+       by Cheng et al. Climatic Change 2014, 127:353-369
+       The default priors for the location and scale parameters are non-informative normal distributions, 
+       whereas the default for the shape parameter is a normal distribution with a standard deviation of 0.3 
+       as suggested in Renard et al. 2013
+   -- others have used a beta distribution for the prior of the shape parameter
+   -- importance sampling
+   -- non-informative priors
+   
+-- implement approx inverse CDF:
+   can approximate an inverse CDF using piecewise constant (PWC) or
+   piecewise linear (PWL).
+   - Inverse method from "Independent Random Sampling", 2018, Martino et al.
+
+-- add optmization branch to Gumbel.fitGumbelUsingML
+   can extend a function to use w/ LBFGS
+
+-- consider implementing or a toolbox containing estimators for at least these distributions:
+   Frechet,  Weibull, (X) Gumbel, (X) GEV, Rayleigh, (X) gamma distribution, inverse gaussian (wald),
+   lognormal, chi-squared, non-central F
+
+       
+-- follow up browsing:
+    Shamos (1976, p. 260) 
+       "Geometry and Statistics: Problems at the Interface," in N ~ MDiJrections and Recent Results in Algorithms and Complexity"
+    Bickel and Lehmann (1979, p. 38)
+       "Descriptive Statistics for Non- parametric Models 111: Dispersion"
 
 -- impl a GIST descriptor
 -- use of CNN for images and audio.
@@ -71,11 +83,6 @@
    -- then update libraries
 
 -- update the JUnit library and make any needed changes
-
--- implement approx inverse CDF:
-   can approximate an inverse CDF using piecewise constant (PWC) or
-   piecewise linear (PWL).
-   - Inverse method from "Independent Random Sampling", 2018, Martino et al.
 
 -- in the sampling packages (e.g. algorithms.imageProcessing.features or create new), 
    add variational Bayes and expectation propagation 
