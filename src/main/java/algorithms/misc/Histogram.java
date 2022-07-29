@@ -1094,6 +1094,77 @@ public class Histogram {
         
         return fwhms;
     }
+
+    /**
+     * calculate the risk of a histogram where risk = bias^2 + variance.
+     * <pre>
+     * risk estimator:
+     *     JEst(h) = (2/((n-1)*h)) - ((n+1)/(n-1)) * sum over j=[0:n-1]( pEst_j^2 )
+     *     where h is the bin width,
+     *     n is the number of points used to generate the histogram,
+     *     pEst_j is the histogram count in the jth bin divided by n.
+     *
+     *  Note that the algorithm expects that the data range of X was normalized
+     *  to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
+     *
+     *  reference:
+     *  Wasserman's "All of Statistics" eqn (20.14).
+     * </pre>
+     * One can estimate the best bin width h by minimizing the risk over
+     * histograms generated with small to increasingly larger bin widths.
+     * @param n the number of points used when constructing the histogram.
+     * @param h the bin width. Note that the algorithm expects that the data range of X was normalized
+     * to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
+     * @param pEst array of is the histogram counts, where each bin should have been divided by n
+     * @return the estimated risk
+     */
+    public static double crossValidationRiskEstimator(int n, double h, double[] pEst) {
+        int m = pEst.length;
+        // assert that h == 1./m
+        double sum = 0;
+        for (int j = 0; j < m; ++j) {
+            sum += (pEst[j] * pEst[j]);
+        }
+        double jEst = (2./((n-1.)*h)) - ((n+1)/(n-1))*sum;
+        return jEst;
+    }
+
+    /**
+     * calculate the 1-alpha confidence envelope (a.k.a. confidence band) for the histogram.
+     <pre>
+     reference:
+         Wasserman's "All of Statistics" eqn (20.17), (20.18).
+     </pre>
+     * @param n the number of points used when constructing the histogram.
+     * @param h the bin width. Note that the algorithm expects that the data range of X was normalized
+     * to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
+     * @param pEst array of is the histogram counts, where each bin should have been divided by n.
+     * @param zAlpha the value from the z-table for the confidence level.  e.g. for 95% confidence level,
+     *               zAlpha is 1.96.
+     *  One can roughly estimate zAlpha using zAlpha = CDFStandardNormal.approxInverseShort(p).
+     *  or use these:
+     *    for 90%, zAlpha=1.645, for 95% zAalpha=1.96, for 98% zAlpha=2.326, for 99% zAlpha=2.576.
+     * @return the lower and upper confidence envelope as 2 rows of length pEst (2 x pEst.length)
+     */
+    public static double[][] confidenceEnvelope(int n, double h, double[] pEst, double zAlpha) {
+        int m = pEst.length;
+        // assert that h == 1./m
+        double c = ((zAlpha/(2.*m))/2.) * Math.sqrt((double)m/(double)n);
+
+        double[][] lu = new double[2][m];
+        lu[0] = new double[m];
+        lu[1] = new double[m];
+        int i;
+        double fEstSR;
+        for (i = 0; i < m; ++i) {
+            fEstSR = Math.sqrt(pEst[i]/h);
+            lu[0][i] = Math.max(fEstSR - c, 0);
+            lu[0][i] *= lu[0][i];
+            lu[1][i] = fEstSR + c;
+            lu[1][i] *= lu[1][i];
+        }
+        return lu;
+    }
     
     public static float measureFWHM(HistogramHolder hist, int yPeakIndex) {
         
