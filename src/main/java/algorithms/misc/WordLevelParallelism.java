@@ -325,10 +325,9 @@ public class WordLevelParallelism {
             i0 += bSz;
         }
 
-        //TODO: adjust this for nbExtra
         int nBitsInMask = (int)Math.ceil(Math.log(nTiles)/Math.log(2));
         long kMask = 0;
-        int b2 = ((nTiles - 1) * bSz) - 1;
+        int b2 = ((nTiles - (1 + nBExtra)) * bSz) - 1;
         for (i = 0; i < nBitsInMask; ++i) {
             kMask |= (1L << (b2 + i));
         }
