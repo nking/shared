@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.TIntIntMap;
 import junit.framework.TestCase;
 
 /**
@@ -707,5 +710,43 @@ public class HistogramTest extends TestCase {
         
         return hist;
     }
-    
+
+    public void testCreateMultidimensionalHistogram() {
+
+        /* a simple 3-dimensional test.
+            x                     b0  b1 b2  idx
+            0, 0, 0                0, 0, 0, 0 --> hist[0] = 1
+            0, 0, 0.22             0, 0, 0, 0 --> hist[0] = 2
+            0, 0, 0.34             0, 0, 1, 1  ...
+            0, 0.00, 0.7           0, 0, 2, 2  ...
+            0, 0.34, 0.0           0, 1, 0, 3 --> hist[3] = 1
+            0, 0.34, 0.34          0, 1, 1, 4  ...
+            0.34, 0.0, 0.0         1, 0, 0, 9 ...
+            0.7, 0.0, 0.0          2, 0, 0, 18  ...
+            0.7, 0.7, 0.7          2, 2, 2, 26  ...
+         */
+        double[] h = new double[]{1./3., 1./3., 1./3.};
+        double[][] x = new double[9][];
+        x[0] = new double[]{0,0,0};
+        x[1] = new double[]{0, 0, 0.22};
+        x[2] = new double[]{0, 0, 0.34};
+        x[3] = new double[]{0, 0.00, 0.7};
+        x[4] = new double[]{0, 0.34, 0.0};
+        x[5] = new double[]{0, 0.34, 0.34};
+        x[6] = new double[]{0.34, 0.0, 0.0};
+        x[7] = new double[]{0.7, 0.0, 0.0};
+        x[8] = new double[]{0.7, 0.7, 0.7};
+        TIntIntMap histMap = Histogram.createMultidimensionalHistogram(h, x);
+        assertEquals(8, histMap.size());
+        assertEquals(2, histMap.get(0));
+        assertEquals(1, histMap.get(1));
+        assertEquals(1, histMap.get(2));
+        assertEquals(1, histMap.get(3));
+        assertEquals(1, histMap.get(4));
+        assertEquals(1, histMap.get(9));
+        assertEquals(1, histMap.get(18));
+        assertEquals(1, histMap.get(26));
+        assertFalse(histMap.containsKey(-1));
+        assertFalse(histMap.containsKey(27));
+    }
 }

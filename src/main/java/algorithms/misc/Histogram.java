@@ -7,8 +7,10 @@ import algorithms.util.PairIntArray;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TDoubleIntMap;
+import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
+import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 import java.util.Arrays;
@@ -1289,5 +1291,76 @@ public class Histogram {
             }
         }
         return min;
+    }
+
+    /**
+     * calculate the multidimensional histogram of the data using a simple brute force approach.
+     * Only the populated bins are returned in a hash map with key = bin index, value = counts in the bin
+     * where index is calculated in a telescoping manner.  e.g.:
+     <pre>
+      for 3D to one dimensional index:
+          index = (((bin0Idx * n1) + bin1Idx) * n2) + bin2Idx
+          where bin0Idx = x[row=some number][col=0] / h
+          and bin1Idx = x[row=same row number][col=1] / h
+
+     and for the same example, to extract the bin numbers from the one-dimensional index:
+         bin2Idx = index % n1
+         bin1Idx = index % (n1*n2)
+         bin0Idx = index / (n1*n2)
+     </pre>
+
+     TODO: upon use, will create a way to read off the populated bins of a histogram as a slice
+     of the returned sparse multidimensional histogram.  currently, the user has to iterate
+     through the 1-D index to get the counts in the bins of interest.
+
+     <pre>
+     There is mention of choosing the bandwidth h in the lecture notes of
+     Larry Wasserstein, CMU
+     36-708 Statistical Methods for Machine Learning by
+     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
+     after equation (8), but c2 isn't defined.
+     </pre>
+     * @param h the bin width to use
+     * @param x n x m data array where the n rows are the data points and the m columns are the
+                dimensions. each column of data must have already been normalized to the range [0, 1].
+                a 2-dimensional sample of 4 data points as an example:
+                <pre>
+                2 x 4 array:
+                       dim 0    dim 1
+                x[0] = (0,      0.5)
+                x[1] = (0.25,   0.45)
+                x[2] = (0.1,    0.55)
+                x[3] = (0.35,   0.46)
+                </pre>
+     * @return
+     */
+    public static TIntIntMap createMultidimensionalHistogram(double[] h, double[][] x) {
+        if (x.length == 0 || x[0].length == 0) {
+            throw new IllegalArgumentException("x must have > 0 rows and > 0 columns");
+        }
+        int n0 = x[0].length;
+        if (h.length != n0) {
+            throw new IllegalArgumentException("the length of h must equal x[0].length");
+        }
+
+        TIntIntMap hist = new TIntIntHashMap();
+        int i;
+        int d;
+        int idx;
+        int b;
+        for (i = 0; i < x.length; ++i) {
+            idx = 0;
+            for (d = 0; d < x[i].length; ++d) {
+                b = (int)(x[i][d]/h[d]);
+                //for 2D: (bin0 * n1) + bin1.  for 3D:  (((bin0 * n1) + bin1) * n2) + bin2...
+                idx = (idx * n0) + b;
+            }
+            if (hist.containsKey(idx)) {
+                hist.put(idx, hist.get(idx) + 1);
+            } else {
+                hist.put(idx, 1);
+            }
+        }
+        return hist;
     }
 }
