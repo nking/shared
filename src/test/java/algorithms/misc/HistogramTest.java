@@ -725,7 +725,7 @@ public class HistogramTest extends TestCase {
             0.7, 0.0, 0.0          2, 0, 0, 18  ...
             0.7, 0.7, 0.7          2, 2, 2, 26  ...
          */
-        double[] h = new double[]{1./3., 1./3., 1./3.};
+        double h = 1./3.;
         double[][] x = new double[9][];
         x[0] = new double[]{0,0,0};
         x[1] = new double[]{0, 0, 0.22};

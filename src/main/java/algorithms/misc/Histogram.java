@@ -1320,9 +1320,12 @@ public class Histogram {
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      after equation (8), but c2 isn't defined.
      One can estimate the bandwidth by using a range of h values to find the minimum result of
-     crossValidationRiskEstimator() in this class.
+     crossValidationRiskEstimator() in this class, but the estimator is for 1-D.
      </pre>
-     * @param h the binwidth to use
+     * @param h the binwidth to use.  note that using the same binwidth for all dimensions is not
+     *          ideal, but it does allow for a n-Dimensional to 1-Dimensional bin index to be made
+     *          in which the individual components can be extracted if needed... putting the results
+     *          into a sparse form was a goal of this method.
      * @param x n x m data array where the n rows are the data points and the m columns are the
                 dimensions. each column of data must have already been normalized to the range [0, 1].
                 a 2-dimensional sample of 4 data points as an example:
@@ -1336,14 +1339,11 @@ public class Histogram {
                 </pre>
      * @return
      */
-    public static TIntIntMap createMultidimensionalHistogram(double[] h, double[][] x) {
+    public static TIntIntMap createMultidimensionalHistogram(double h, double[][] x) {
         if (x.length == 0 || x[0].length == 0) {
             throw new IllegalArgumentException("x must have > 0 rows and > 0 columns");
         }
         int n0 = x[0].length;
-        if (h.length != n0) {
-            throw new IllegalArgumentException("the length of h must equal x[0].length");
-        }
 
         TIntIntMap hist = new TIntIntHashMap();
         int i;
@@ -1353,7 +1353,7 @@ public class Histogram {
         for (i = 0; i < x.length; ++i) {
             idx = 0;
             for (d = 0; d < x[i].length; ++d) {
-                b = (int)(x[i][d]/h[d]);
+                b = (int)(x[i][d]/h);
                 //for 2D: (bin0 * n1) + bin1.  for 3D:  (((bin0 * n1) + bin1) * n2) + bin2...
                 idx = (idx * n0) + b;
             }

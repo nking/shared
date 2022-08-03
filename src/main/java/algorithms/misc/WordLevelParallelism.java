@@ -154,7 +154,8 @@ public class WordLevelParallelism {
      tiled1 is 0b1010010011100111, where 1's have been concatenated onto the high end of
      each tileBitLength bitstring, making a bitstring of length 16.
      @param tiled2 a bit array holding numbers of length tileBitLength separated by 0's.
-     @param tileBitLength the length of each tile in the bit arrays.
+     @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     because it includes the gap bit between tiles.
      @param mask1 the 1's mask (same used in setting the gap bits in tiled1)
      @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
@@ -178,11 +179,24 @@ public class WordLevelParallelism {
         final int d = tileBitLength + 1;
         // e.g. for bitstringLength=7, kMult=(1<<8)|(1<<0) etc
         long kMult = 0;
-        for (int i = 0; i < nTiles; ++i) {
-            kMult |= (1<<i0);
+        int i;
+        for (i = 0; i < (nTiles-1); ++i) {
+            kMult |= (1L<<i0);
             i0 += d;
         }
 
+        int nBitsInMask = (int)Math.ceil(Math.log(nTiles)/Math.log(2));
+        long kMask = 0;
+        int b2 = (nTiles - 1)*d;
+        for (i = 0; i < nBitsInMask; ++i) {
+            kMask |= (1L << (b2 + i));
+        }
+        int kShift = (d * nTiles) - d - 1;
+        int kShift2 = (d * nTiles) - 1;
+
+        long sum = (((comparison * kMult) & kMask) >> kShift) + (comparison >> kShift2);
+
+        return sum;
 
         /*
         caveat: the first example is for a 64-bit string, and in java we're limited to unsigned 63 bit length.
@@ -204,9 +218,20 @@ public class WordLevelParallelism {
                  # the number of tiles fits in 4 bits, so set the 4 bits at start of 2nd block
         kShift = 60 - 6 - 1
         sum=(((value * kMult) & kMask) >> kShift) + (value >> 59)
-        */
 
-        throw new UnsupportedOperationException("not yet implemente");
+        sumOf for 3 bit tiling of 2 bit bitstrings.  21 tiles (total was 64 bits, is now 63 bits.
+        because 21 is 5 bits, need to reserve an extra bit at top of array, so can only
+        pack 20 tiles into the tiled bit array.
+                   6         5         4         3         2         1
+                3210987654321098765432109876543210987654321098765432109876543210
+        value=0b0000100100100100100100100100100100100100100100100100000000000000 # 20 tiles comparison, 16 set
+        kMult=0b0000000001001001001001001001001001001001001001001001001001001001 # 19 set bits
+        kMask=0b0000001111100000000000000000000000000000000000000000000000000000 # 5 bit mask, set from 3rd block?
+        # need an additional block shift for 5 bit mask:
+        kShift = 60 - 6 - 1 # previously, for 3 bit mask, kShift was tiledBitLength - (tileBitLength + 1) - 1
+        kShift2 = 60 - 1 - 3 # previously, for 3 bit mask, kShift2 was tiledBitLength - 1
+        sum=(((value * kMult) & kMask) >> kShift) + (value >> kShift2)
+        */
     }
 
 }
