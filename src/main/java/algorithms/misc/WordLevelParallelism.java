@@ -204,7 +204,7 @@ public class WordLevelParallelism {
                  # the number of tiles fits in 4 bits, so set the 4 bits at start of 2nd block
         kShift = 60 - 6 - 1
         sum=(((value * kMult) & kMask) >> kShift) + (value >> 59)
-*/
+        */
 
         throw new UnsupportedOperationException("not yet implemente");
     }

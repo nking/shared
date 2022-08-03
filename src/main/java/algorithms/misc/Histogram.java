@@ -1112,10 +1112,10 @@ public class Histogram {
      *  reference:
      *  Wasserman's "All of Statistics" eqn (20.14).
      * </pre>
-     * One can estimate the best bin width h by minimizing the risk over
-     * histograms generated with small to increasingly larger bin widths.
+     * One can estimate the best binwidth h by minimizing the risk over
+     * histograms generated with small to increasingly larger binwidths.
      * @param n the number of points used when constructing the histogram.
-     * @param h the bin width. Note that the algorithm expects that the data range of X was normalized
+     * @param h the binwidth. Note that the algorithm expects that the data range of X was normalized
      * to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
      * @param pEst array of is the histogram counts, where each bin should have been divided by n
      * @return the estimated risk
@@ -1138,7 +1138,7 @@ public class Histogram {
          Wasserman's "All of Statistics" eqn (20.17), (20.18).
      </pre>
      * @param n the number of points used when constructing the histogram.
-     * @param h the bin width. Note that the algorithm expects that the data range of X was normalized
+     * @param h the binwidth. Note that the algorithm expects that the data range of X was normalized
      * to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
      * @param pEst array of is the histogram counts, where each bin should have been divided by n.
      * @param zAlpha the value from the z-table for the confidence level.  e.g. for 95% confidence level,
@@ -1319,8 +1319,10 @@ public class Histogram {
      36-708 Statistical Methods for Machine Learning by
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      after equation (8), but c2 isn't defined.
+     One can estimate the bandwidth by using a range of h values to find the minimum result of
+     crossValidationRiskEstimator() in this class.
      </pre>
-     * @param h the bin width to use
+     * @param h the binwidth to use
      * @param x n x m data array where the n rows are the data points and the m columns are the
                 dimensions. each column of data must have already been normalized to the range [0, 1].
                 a 2-dimensional sample of 4 data points as an example:
