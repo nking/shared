@@ -37,5 +37,7 @@ public class WordLevelParallelismTest extends TestCase {
         String tiled2Expected = "0110011100100100";
 
         long comp = WordLevelParallelism.parallelCompare10(tiled1, tiled2, nTiles, kBits, mask1);
+
+        System.out.println("sum=" + comp);
     }
 }
