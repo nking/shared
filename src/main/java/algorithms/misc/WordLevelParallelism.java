@@ -153,7 +153,7 @@ public class WordLevelParallelism {
         }
 
         long kTiled = (value * kMult) | kMask;
-        System.out.printf("value=%s, tiled=%s\n", Integer.toBinaryString(value), Long.toBinaryString(kTiled));
+        //System.out.printf("value=%s, tiled=%s\n", Integer.toBinaryString(value), Long.toBinaryString(kTiled));
         return kTiled;
     }
 
@@ -256,8 +256,8 @@ public class WordLevelParallelism {
 
         long comparison = diff & mask1;
 
-        System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
-                Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
+        //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
+        //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
         return parallelSum(comparison, nTiles, tileBitLength);
     }
@@ -321,7 +321,7 @@ public class WordLevelParallelism {
         long kMult = 0;
         int i;
         for (i = 0; i < (nTiles-1); ++i) {
-            kMult |= (1L<<i0);
+            kMult |= (1L << i0);
             i0 += bSz;
         }
 
@@ -337,12 +337,13 @@ public class WordLevelParallelism {
         long s1 = (((comparison * kMult) & kMask) >> kShift);
         long s2 = (comparison >> kShift2);
 
-        System.out.printf("\nkMask= %30s\nkMult= %30s\nkShift=%d\nkShift2=%d\n" +
+        /*System.out.printf("\nkMask= %30s\nkMult= %30s\nkShift=%d\nkShift2=%d\n" +
                 "nBExtra=%d\n" +
                 "(((comparison * kMult) & kMask) >> kShift)=\n%37s\n=%d" +
                 "\n(comparison >> kShift2)=\n%37s\n=%d\n",
                 Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift, kShift2, nBExtra,
                 Long.toBinaryString(s1), s1, Long.toBinaryString(s2), s2);
+         */
 
         long sum = s1 + s2;
 
