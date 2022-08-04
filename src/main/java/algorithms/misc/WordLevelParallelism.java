@@ -408,8 +408,9 @@ public class WordLevelParallelism {
     public static long sketch(long tiled, int nTiles, int tileBitLength) {
 
         /*
-        example in the MSB64.cpp sketchOf comments:
-           8 bit tiling, 7 bit bitstrings
+        Case 1:
+           example in the MSB64.cpp sketchOf comments:
+           8 bit tiling, 7 bit bitstrings, nTiles=8
                            6         5         4         3         2         1
                         3210987654321098765432109876543210987654321098765432109876543210
         value1      = 0b1000000010000000100000001000000010000000000000000000000000000000;#8 positions, 5 are set
@@ -436,10 +437,10 @@ public class WordLevelParallelism {
 
         Case 2:
             let block size = 7, and the bitstrings in between the flags are 6 bits in length.
-            the packing is such that there are 9 tiles in the tileds bitstring of size 63.
+            the packing is such that there are 9 tiles in the tiled bitstring of size 63.
 
-            the 9 tiles are 9 set bits and so cannot fit within a block size of 7 using the
-            multiplier above which uses block size-1 intervals.
+            The 9 tiles are 9 set bits and so cannot fit within a block size of 7 using the
+            multiplier above which uses (block size - 1) intervals.
             So one has to use a large enough interval in the multiplier so that the stacked 9 tiles
             are sequential and can be masked by a 9 bit mask.
             Therefore, the multiplier mask should have intervals 0, 8, 16, 24, 32, 40, 48, 56, 64.
@@ -456,7 +457,7 @@ public class WordLevelParallelism {
 
             block size=7, bitstring length of each tile in between flags is 6, and nTiles <= 8.
             then the multiplier is 0, 7, 14, 21, 28, 35, 42, 49
-            which is the same multiplier as above.
+            which is the same multiplier as above in Case 1.
             the mask location and shift may need edits (include details here).
 
         Case 3:
