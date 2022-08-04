@@ -228,6 +228,10 @@ public class WordLevelParallelism {
         //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
         // then edited to make the block size variable
 
+        if (nTiles < 1) {
+            throw new IllegalArgumentException("nTiles must be > 0");
+        }
+
         final int bSz = tileBitLength + 1;
 
         final int nMaskBits = (int)Math.ceil(Math.log(nTiles)/Math.log(2));
@@ -317,7 +321,7 @@ public class WordLevelParallelism {
         }
 
         int i0 = 0;
-        // e.g. for bitstringLength=7, kMult=(1<<8)|(1<<0) etc
+        // e.g. for bSz=8, kMult=(1<<8)|(1<<0) etc
         long kMult = 0;
         int i;
         for (i = 0; i < (nTiles-1); ++i) {
@@ -388,4 +392,81 @@ public class WordLevelParallelism {
         */
     }
 
+    /**
+     * given a bitarray packed full of tiles separated by flags, extract and return the flags.
+     * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
+     * <pre>
+     *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     *     then edited here for variable block size and number of tiles packed into tiled.
+     * </pre>
+     * @param tiled a bitarray of concatenated bitstrings of length tileBiltLength sepearated by flag bits.
+     *              the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @param nTiles the number of tiles packed into the bitarray tiled.
+     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     * @return
+     */
+    public static long sketch(long tiled, int nTiles, int tileBitLength) {
+
+        /*
+        example in the MSB64.cpp sketchOf comments:
+           8 bit tiling, 7 bit bitstrings
+                           6         5         4         3         2         1
+                        3210987654321098765432109876543210987654321098765432109876543210
+        value1      = 0b1000000010000000100000001000000010000000000000000000000000000000;#8 positions, 5 are set
+        #               1       2       3       4       5       6       7       8
+        kMult1      = 0b0000000000000010000001000000100000010000001000000100000010000001;#8 flags set: 0,7,14,21,...<== smallest interval of 7 gives maske size 8 which is enough to hold the 1 bit each to represent a set tile ( interval <= nTiles)
+        #                             8      7      6      5      4      3      2      1
+        kMask1      = 0b1111111100000000000000000000000000000000000000000000000000000000;#8 bits masked
+        kShift1     = 64 - 8;
+        sketch1=((value1 * kMult1) & kMask1) >> kShift1;
+        bin((value1 * kMult1)); bin(kMask1); bin((value1 * kMult1) & kMask1)
+
+        the multiplication:
+                                                        '0b1000000010000000100000001000000010000000000000000000000000000000'
+                                                  0b1000000010000000100000001000000010000000000000000000000000000000'
+                                           0b1000000010000000100000001000000010000000000000000000000000000000'
+                                    0b1000000010000000100000001000000010000000000000000000000000000000'
+                             0b1000000010000000100000001000000010000000000000000000000000000000'
+                      0b1000000010000000100000001000000010000000000000000000000000000000'
+               0b1000000010000000100000001000000010000000000000000000000000000000'
+        0b1000000010000000100000001000000010000000000000000000000000000000'
+        =
+        0b10000001100000111000011110001111100111110011111001111100011110000111000001100000010000000000000000000000000000000'
+                                           kMask1      = 0b1111111100000000000000000000000000000000000000000000000000000000;
+
+        Case 2:
+            let block size = 7, and the bitstrings in between the flags are 6 bits in length.
+            the packing is such that there are 9 tiles in the tileds bitstring of size 63.
+
+            the 9 tiles are 9 set bits and so cannot fit within a block size of 7 using the
+            multiplier above which uses block size-1 intervals.
+            So one has to use a large enough interval in the multiplier so that the stacked 9 tiles
+            are sequential and can be masked by a 9 bit mask.
+            Therefore, the multiplier mask should have intervals 0, 8, 16, 24, 32, 40, 48, 56, 64.
+            On Java platform, we have a limit for unsigned long of 63 bits.
+            So we could use BigInteger instead of long, but then we incur an increasingly large cost
+            with each operation because that class creates a new object every time instead of
+            modifying the properties of one instance.  (I have a class to do that to replace BigInteger,
+            but will continue using java primitives for this sketch method instead).
+
+            Sticking with java's long,
+            we then have the problem that the original tiled number can only have contained nTiles=8,
+            which changes our multiplier one more time in order to not overflow and to be able
+            to sketch 8 bits sequentially.
+
+            block size=7, bitstring length of each tile in between flags is 6, and nTiles <= 8.
+            then the multiplier is 0, 7, 14, 21, 28, 35, 42, 49
+            which is the same multiplier as above.
+            the mask location and shift may need edits (include details here).
+
+        Case 3:
+            3 bit tiling of 2 bit bitstrings.  21 tiles (total was 64 bits, is now 63 bits.
+
+                       6         5         4         3         2         1
+                    3210987654321098765432109876543210987654321098765432109876543210
+            value=0b0000100100100100100100100100100100100100100100100100000000000000 # 20 tiles comparison, 16 set
+            kMult=0b0000000001001001001001001001001001001001001001001001001001001001 # 19 set bits
+         */
+        throw new UnsupportedOperationException("not yet implemented");
+    }
 }
