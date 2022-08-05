@@ -623,17 +623,34 @@ mask=                                                                           
      *
      * @param value a bitlength number
      * @param bitlength the bitlength of value
-     * @return the highest bit set
+     * @return the highest bit set in value.  the bit number is w.r.t. 0.
+     * e.g. if bitlength is 8, the return value range is [0,7] inclusive.
      */
     public static long highestBitSetIn(long value, int bitlength) {
 
+        // the method name highestBitSetIn8 is a one-based index, but the bit number
+        // returned is w.r.t. a zero-based index.
+        // e.g. highestBitSetIn8 is the highest bit in an 8 bit value,
+        //      but the returned bit range is [0,7] inclusive
         switch (bitlength) {
             case 8: {
                 return highestBitSetIn8(value);
             } case 7: {
                 return highestBitSetIn7(value);
+            } case 6: {
+                return highestBitSetIn6(value);
+            } case 5: {
+                return highestBitSetIn5(value);
+            } case 4: {
+                return highestBitSetIn4(value);
+            } case 3: {
+                return highestBitSetIn3(value);
+            } case 2: {
+                return highestBitSetIn2(value);
+            } case 1: {
+                return highestBitSetIn1(value);
             } default: {
-                throw new UnsupportedOperationException("not yet implemented");
+                throw new UnsupportedOperationException("not a supported bitlength");
             }
         }
     }
@@ -654,7 +671,7 @@ mask=                                                                           
      * @param value
      * @return
      */
-    public static long highestBitSetIn8(long value) {
+     static long highestBitSetIn8(long value) {
 
         /* We will again use the parallel comparison technique. To get everything to
          * fit cleanly into a machine word, we'll treat the 8-bit value as actually
@@ -745,7 +762,7 @@ mask=                                                                           
      * @param value
      * @return
      */
-    public static long highestBitSetIn7(long value) {
+     static long highestBitSetIn7(long value) {
 
         if ((value & 0b1000000L) != 0) {
             return 6;
@@ -768,8 +785,8 @@ mask=                                                                           
         //         5         4         3         2         1
         //  7654321098765432109876543210987654321098765432109876543210
         //                  1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa
-        //                          100000  10000    100     10      1
-        long kComparator = 0b00000001000000010000000010000000100000001L;
+        //                   100000  10000   1000    100     10      1
+        long kComparator = 0b10000000100000001000000010000000100000001L;
 
         /* We need to spray out 6 copies of the value so that we can compare
          * multiple copies of it in parallel. To do this, we essentially want to make
@@ -816,6 +833,289 @@ mask=                                                                           
         int nTiles = 6;
         int tileBitLength = 6;
         return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }
+
+    /**
+     * Given a 6-bit value, returns the index of the highest 1 bit within that
+     * value.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * @param value
+     * @return
+     */
+     static long highestBitSetIn6(long value) {
+
+        if ((value & 0b100000L) != 0) {
+            return 5;
+        }
+
+        /*
+         * Since we have a 5-bit number at this point, there are only 5
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers  10000, 1000, 100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa
+         * -  000000000000010000001000000100000010000001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                  1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa
+        //                - 000000000000010000001000000100000010000001
+        long kComparator = 0b00000000000010000001000000100000010000001L;
+
+        /* We need to spray out 5 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+
+                                         aaaaaa
+                                   aaaaaa
+                             aaaaaa
+                       aaaaaa
+                 aaaaaa
+           aaaaaa
+         ---------------------------------------------------------
+
+         * This corresponds to a multiplication by 2^0 + 2^6 + 2^12 + 2^18 + ...
+         * It is (1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24)
+         */
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b000000000000000000000000000000000000001000001000001000001000001L;
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1<<5) | (1<<11) | (1<<17) | (1<<23) | (1<<29)
+         */
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b000000000000000000000000000000000100000100000100000100000100000L;
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+        int nTiles = 5;
+        int tileBitLength = 5;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }
+
+    /**
+     * Given a 5-bit value, returns the index of the highest 1 bit within that
+     * value.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * @param value
+     * @return
+     */
+     static long highestBitSetIn5(long value) {
+
+        if ((value & 0b10000L) != 0) {
+            return 4;
+        }
+
+        /*
+         * Since we have a 4-bit number at this point, there are only 4
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers  1000, 100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa
+         * -  00000000000000001000001000001000001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                         1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa
+        //                       - 00000000000000001000001000001000001
+        long kComparator = 0b00000000000000000000001000001000001000001L;
+
+        /* We need to spray out 4 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+
+                                    aaaaa
+                               aaaaa
+                          aaaaa
+                     aaaaa
+                aaaaa
+           aaaaa
+         ---------------------------------------------------------
+
+         * This corresponds to a multiplication by 2^0 + 2^5 + 2^10 + 2^15
+         * It is (1<<0) | (1<<5) | (1<<10) | (1<<15)
+         */
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b000000000000000000000000000000000000000000000001000010000100001L;
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1<<4) | (1<<9) | (1<<14) | (1<<19)
+         */
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b000000000000000000000000000000000000000000010000100001000010000L;
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+        int nTiles = 4;
+        int tileBitLength = 4;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }
+
+    /**
+     * Given a 4-bit value, returns the index of the highest 1 bit within that
+     * value.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * @param value
+     * @return
+     */
+     static long highestBitSetIn4(long value) {
+
+        if ((value & 0b1000L) != 0) {
+            return 3;
+        }
+
+        /*
+         * Since we have a 3-bit number at this point, there are only 3
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers  100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaa1aaa1aaa1aaa1aaa1aaa1aaa
+         * -     0000000000000010000100001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                                1aaa1aaa1aaa1aaa1aaa1aaa1aaa
+        //                                 - 0000000000000010000100001
+        long kComparator = 0b00000000000000000000000000000010000100001L;
+
+        /* We need to spray out 4 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+
+                                    aaaa
+                                aaaa
+                            aaaa
+                        aaaa
+                    aaaa
+                aaaa
+         ---------------------------------------------------------
+
+         * This corresponds to a multiplication by 2^0 + 2^4 + 2^8
+         * It is (1<<0) | (1<<4) | (1<<8)
+         */
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b000000000000000000000000000000000000000000000000000000100010001L;
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1<<3) | (1<<7) | (1<<11)
+         */
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b000000000000000000000000000000000000000000000000000100010001000L;
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+        int nTiles = 3;
+        int tileBitLength = 3;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }
+
+    /**
+     * Given a 3-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * @param value
+     * @return
+     */
+     static long highestBitSetIn3(long value) {
+        if ((value & 0b100L) != 0) {
+            return 2;
+        } else if ((value & 0b10L) != 0) {
+            return 1;
+        } else if ((value & 0b1L) != 0) {
+            return 0;
+        }
+        throw new IllegalArgumentException("no bits below 3 are set in value");
+    }
+     static long highestBitSetIn2(long value) {
+        if ((value & 0b10L) != 0) {
+            return 1;
+        } else if ((value & 0b1L) != 0) {
+            return 0;
+        }
+        throw new IllegalArgumentException("no bits below 3 are set in value");
+    }
+     static long highestBitSetIn1(long value) {
+        if ((value & 0b1L) != 0) {
+            return 0;
+        }
+        throw new IllegalArgumentException("no bits below 3 are set in value");
     }
 
     /**

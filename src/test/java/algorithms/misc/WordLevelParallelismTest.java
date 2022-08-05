@@ -69,22 +69,51 @@ public class WordLevelParallelismTest extends TestCase {
         assertEquals(expected, u);
     }
 
+    @SuppressWarnings("fallthrough")
     public void testHighestBitIn() {
-
-        long value = 0b01000000;
-        long h = WordLevelParallelism.highestBitSetIn(value, 8);
-        assertEquals(6L, h);
-
-        h = WordLevelParallelism.highestBitSetIn(value, 7);
-        assertEquals(6L, h);
-
-        //        76543210
-        value = 0b00010000;
-        h = WordLevelParallelism.highestBitSetIn(value, 8);
-        assertEquals(4L, h);
-
-        h = WordLevelParallelism.highestBitSetIn(value, 7);
-        assertEquals(4L, h);
+        long h;
+        long v;
+        int j;
+        for (int i = 0; i < 8; ++i) {
+            v = 0 | (1L << i);
+            switch(i) {
+                case 0:
+                    h = WordLevelParallelism.highestBitSetIn(v, 1);
+                    assertEquals(i, h);
+                    // fall through
+                case 1:
+                    h = WordLevelParallelism.highestBitSetIn(v, 2);
+                    assertEquals(i, h);
+                    // fall through
+                case 2:
+                    h = WordLevelParallelism.highestBitSetIn(v, 3);
+                    assertEquals(i, h);
+                    // fall through
+                case 3:
+                    h = WordLevelParallelism.highestBitSetIn(v, 4);
+                    assertEquals(i, h);
+                    // fall through
+                case 4:
+                    h = WordLevelParallelism.highestBitSetIn(v, 5);
+                    assertEquals(i, h);
+                    // fall through
+                case 5:
+                    h = WordLevelParallelism.highestBitSetIn(v, 6);
+                    assertEquals(i, h);
+                    // fall through
+                case 6:
+                    h = WordLevelParallelism.highestBitSetIn(v, 7);
+                    assertEquals(i, h);
+                    // fall through
+                case 7: {
+                    h = WordLevelParallelism.highestBitSetIn(v, 8);
+                    assertEquals(i, h);
+                    // fall through
+                }
+                default:
+                    break;
+            }
+        }
 
     }
     public void testSketch() {
