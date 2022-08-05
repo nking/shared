@@ -1,16 +1,6 @@
 package algorithms.misc;
 
-import algorithms.util.FormatArray;
-import algorithms.util.PolygonAndPointPlotter;
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
 import junit.framework.TestCase;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.*;
 
 /**
  *
@@ -22,21 +12,78 @@ public class WordLevelParallelismTest extends TestCase {
         super(testName);
     }
 
+    public void testsHighestBlockSetIn() {
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+        long tiled = 0b000000010000000100000001000000010000000100000001000000010000000L;
+        int nTiles = 8;
+        int tileBitLength = 7;
+
+        long h = WordLevelParallelism.highestBlockSetIn(tiled, nTiles, tileBitLength);
+        assertEquals(6L, h);
+    }
+
+    public void testUsedBlocksIn() {
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long expected = 0b0000000010000000100000001000000010000000100000001000000010000000L;
+        long value    = 0b0000000010000000100000001000000010000000100000001000000010000000L;
+        long u = WordLevelParallelism.usedBlocksIn(value, 8);
+        assertEquals(expected, u);
+
+        //          6         5         4         3         2         1
+        //        210987654321098765432109876543210987654321098765432109876543210
+        value = 0b100000001000000010000001000000010000000100000000000100000000011L;
+        u = WordLevelParallelism.usedBlocksIn(value, 8);
+        assertEquals(expected, u);
+
+        expected = 0b0000000010000001000000100000010000001000000100000010000001000000L;
+        value = 0b0000000010000001000000100000010000001000000100000010000001000000L;
+        u = WordLevelParallelism.usedBlocksIn(value, 7);
+        assertEquals(expected, u);
+
+        value = 0b0000000001000000100000110001000001100000100000010000000010000001L;
+        u = WordLevelParallelism.usedBlocksIn(value, 7);
+        assertEquals(expected, u);
+
+        expected = 0b0100000010000001000000100000010000001000000100000010000001000000L;
+        value    = 0b0100000010000001000000100000010000001000000100000010000001000000L;
+        u = WordLevelParallelism.usedBlocksIn(value, 7);
+        assertEquals(expected, u);
+
+        value    = 0b0000000100000010000001000000100000010000001000000100000010000001L;
+        u = WordLevelParallelism.usedBlocksIn(value, 7);
+        assertEquals(expected, u);
+
+        expected = 0b0000100000100000100000100000100000100000100000100000100000100000L;
+        value    = 0b0000100000100000100000100000100000100000100000100000100000100000L;
+        u = WordLevelParallelism.usedBlocksIn(value, 6);
+        assertEquals(expected, u);
+
+        value    = 0b0001000001000001000001000001000001000001000001000001000001000001L;
+        u = WordLevelParallelism.usedBlocksIn(value, 6);
+        assertEquals(expected, u);
+
+        value    = 0b0010000010000010000010000010000010000010000010000010000010000010L;
+        u = WordLevelParallelism.usedBlocksIn(value, 6);
+        assertEquals(expected, u);
+    }
+
     public void testHighestBitIn() {
 
         long value = 0b01000000;
-        long h = WordLevelParallelism.highestBitSet(value, 8);
+        long h = WordLevelParallelism.highestBitSetIn(value, 8);
         assertEquals(6L, h);
 
-        h = WordLevelParallelism.highestBitSet(value, 7);
+        h = WordLevelParallelism.highestBitSetIn(value, 7);
         assertEquals(6L, h);
 
         //        76543210
         value = 0b00010000;
-        h = WordLevelParallelism.highestBitSet(value, 8);
+        h = WordLevelParallelism.highestBitSetIn(value, 8);
         assertEquals(4L, h);
 
-        h = WordLevelParallelism.highestBitSet(value, 7);
+        h = WordLevelParallelism.highestBitSetIn(value, 7);
         assertEquals(4L, h);
 
     }

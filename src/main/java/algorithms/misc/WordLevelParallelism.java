@@ -19,6 +19,55 @@ public class WordLevelParallelism {
     //      masks and multipliers for block sizes 2 through 31.
 
     /**
+     * given a bitarray packed full of tiles separated by flags (= blocks),
+     * returns the index of the highest nonzero block.
+     *
+     * <pre>
+     *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     *     then edited here for variable block size and number of tiles packed into tiled.
+     * </pre>
+     *
+     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @param nTiles        the number of tiles packed into the bitarray tiled.
+     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     * @return the index of the highest nonzero block in tiled
+     */
+    public static long highestOneBitIn(long tiled, int nTiles, int tileBitLength) {
+
+        int bSz = tileBitLength + 1;
+
+        /* Step 1: Identify the index of the highest block with a 1 bit in it. */
+        long highBlockIndex = highestBlockSetIn(tiled, nTiles, tileBitLength);
+
+        /* Step 2: Identify the highest bit within that block. To do so, we're going
+         * to shift that block down to the proper position and mask out the other
+         * bits.
+         */
+        long highBlock = tiled >> (highBlockIndex * 8);
+
+        return highBlockIndex * bSz + highestBitSetIn(highBlock, tileBitLength);
+    }
+
+    /**
+     * Given a 64-bit integer, returns the index of the block within that integer
+     * that contains a 1 bit, where the index is zero-based numbering.
+     * @param tiled the bitarray of tiled integers.
+     * @param nTiles the number of tiles embedded in tiled.
+     * @param tileBitLength the length of each tile in tiled, not counting the surrounding single flag bits.
+     *                      the block size is tileBitLength + 1.
+     * @return
+     */
+    static long highestBlockSetIn(long tiled, int nTiles, int tileBitLength) {
+
+        long usedBlocksIn = usedBlocksIn(tiled, tileBitLength + 1);
+
+        long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);
+
+        return highestBitSetIn(sketch, tileBitLength);
+    }
+
+    /**
      * given an array of bitstringLength values, concatenate them and insert 0's on the high
      * end of each value.
      * e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
@@ -36,7 +85,11 @@ public class WordLevelParallelism {
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from values array in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 62 bit limit.
-     *
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * @param values          array of bitstrings, each of length bitstringLength
      * @param bitstringLength the bitlength of each value in values.  the tile for each will be bitstringLength + 1
      *                        bits long.  the total tiled result will be values.length * (bitstringLength + 1) bits.
@@ -85,7 +138,11 @@ public class WordLevelParallelism {
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 62 bit limit.
-     *
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * @param nTiles          the number of tiles of bitstringLength for which this mask will be calculated.
      * @param bitstringLength the bit-length of each tile
      * @return the bitarray holding the bitarray of '1' separators for nTiles of length bitstringLength.
@@ -104,7 +161,7 @@ public class WordLevelParallelism {
         // e.g. for bitstringLength=7, kMask=(1<<15)|(1<<7) etc
         long kMask = 0;
         for (int i = 0; i < nTiles; ++i) {
-            kMask |= (1 << i1);
+            kMask |= (1L << i1);
             i1 += d;
         }
         return kMask;
@@ -117,7 +174,7 @@ public class WordLevelParallelism {
      * e.g. for 7-bit value 0b1100111 and nTiles=2, the returned bitarray would be 0b1110011111100111.
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
-     * Let block size = (bistringLength + 1).
+     * Let block size = (bitstringLength + 1).
      * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
      * and so (nTiles * block) must be less than or equal to 62.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
@@ -126,7 +183,11 @@ public class WordLevelParallelism {
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 62 bit limit.
-     *
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * @param value           bitstring of length .lte. bitstringLength
      * @param nTiles          the number of copies of value to set in the returned bitarray
      * @param bitstringLength the length of tiling before the 1's are concatenated as separators.
@@ -147,26 +208,26 @@ public class WordLevelParallelism {
         long kMult = 0;
         long kMask = 0;
         for (int i = 0; i < nTiles; ++i) {
-            kMult |= (1 << i0);
-            kMask |= (1 << i1);
+            kMult |= (1L << i0);
+            kMask |= (1L << i1);
             i0 += d;
             i1 += d;
         }
 
-        long kTiled = (value * kMult) | kMask;
-        //System.out.printf("value=%s, tiled=%s\n", Integer.toBinaryString(value), Long.toBinaryString(kTiled));
-        return kTiled;
+        return (value * kMult) | kMask;
     }
 
     /**
      * parallel compare of tiled1 to tiled2 and return a masked bit array whose set bits indicate which
      * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
-     * <pre>
-     * following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     * </pre>
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
-     * Let block size = (bistringLength + 1).
+     * Let block size = (bitstringLength + 1).
      * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
      * and so (nTiles * block) must be less than or equal to 62.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
@@ -198,10 +259,11 @@ public class WordLevelParallelism {
     /**
      * parallel compare of tiled1 to tiled2 and return a masked bit array whose set bits indicate which
      * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
-     * <pre>
-     * following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     * Then edited here to allow block sizes other than 8.
-     * </pre>
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
@@ -251,11 +313,11 @@ public class WordLevelParallelism {
             // how many blocks needed to store nMaskBits?  then subtract 1 which is already reserved for it.
             nBExtra = ((int) Math.ceil((double) nMaskBits / bSz)) - 1;
             int tiledLength = nTiles * bSz;
-            if ((tiledLength + nBExtra * bSz) > 62) {
+            /*if ((tiledLength + nBExtra * bSz) > 62) {
                 throw new IllegalArgumentException(String.format("nTiles needs %d blocks of size %d bits above the " +
                                 "total tiled bit length =%d.\n  That total %d must fit within 62 bits.",
                         nBExtra, bSz, tiledLength, (tiledLength + nBExtra * bSz)));
-            }
+            }*/
         }
 
         //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
@@ -272,10 +334,11 @@ public class WordLevelParallelism {
     /**
      * sum the set bits of bitstring comparison.  the flags that may have set bits are the MSB if each block.
      *
-     * <pre>
-     * following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     * Then edited here to allow block sizes other than 8.
-     * </pre>
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
@@ -399,10 +462,11 @@ public class WordLevelParallelism {
     /**
      * given a bitarray packed full of tiles separated by flags, extract and return the flags.
      * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
-     * <pre>
-     *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     *     then edited here for variable block size and number of tiles packed into tiled.
-     * </pre>
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      *
      * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
@@ -540,10 +604,11 @@ mask=                                                                           
      * Given an n-bit value, returns the index of the highest 1 bit within that
      * value.
      *
-     * <pre>
-     * following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     * Then edited here to allow block sizes other than 8.
-     * </pre>
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
@@ -560,7 +625,7 @@ mask=                                                                           
      * @param bitlength the bitlength of value
      * @return the highest bit set
      */
-    public static long highestBitSet(long value, int bitlength) {
+    public static long highestBitSetIn(long value, int bitlength) {
 
         switch (bitlength) {
             case 8: {
@@ -577,8 +642,9 @@ mask=                                                                           
      * Given an 8-bit value, returns the index of the highest 1 bit within that
      * value.
      <pre>
-     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     then edited here for variable block size and number of tiles packed into tiled.
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
      </pre>
      * This subroutine is where much of the magic happens with regards to the
      * overall algorithm. The idea is that if we can get down to an eight-bit
@@ -672,8 +738,9 @@ mask=                                                                           
      * Given a 7-bit value, returns the index of the highest 1 bit within that
      * value.
      <pre>
-     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     then edited here for variable block size and number of tiles packed into tiled.
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
      </pre>
      * @param value
      * @return
@@ -749,5 +816,254 @@ mask=                                                                           
         int nTiles = 6;
         int tileBitLength = 6;
         return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }
+
+    /**
+     *  Returns a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffffgggggggghhhhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A0000000B0000000C0000000D0000000E0000000F0000000G0000000H0000000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     */
+    public static long usedBlocksIn(long value, int blockSize) {
+        switch(blockSize) {
+            case 8:
+                return usedBlocksIn8(value);
+            case 7:
+                return usedBlocksIn7(value);
+            case 6:
+                return usedBlocksIn6(value);
+            default:
+                throw new UnsupportedOperationException("not yet implemented");
+        }
+    }
+
+    /**
+     * For a tiled value whose block size = 8 bits (and hence, the embedded tile size is 7 bits in between
+     * flags of size 1), returns
+     * a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffffgggggggghhhhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A0000000B0000000C0000000D0000000E0000000F0000000G0000000H0000000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     */
+    public static long usedBlocksIn8(long value) {
+
+        /* Every block with a 1 bit set in it either
+         *  1. has its highest bit set, or
+         *  2. when that bit is cleared, has a numeric value of 1 or greater.
+         *
+         * We can check for ths first part by using a bitmask to extract the high bits
+         * from each of the blocks. The remainder can be identified by using the
+         * parallel comparison technique of comparing each block against 1.
+         */
+        // Positions of all the high bits within each block. (1<<7)|(1<<15)|(1<<23)|(1<<31)|(1<<39)|(1<<47)|(1<<55)|(1<<64)
+        final long kHighBits = 0b000000010000000100000001000000010000000100000001000000010000000L;
+        //                         6         5         4         3         2         1
+        //                      3210987654321098765432109876543210987654321098765432109876543210
+        long highBitsSet = value & kHighBits;
+
+        /* Now, do a parallel comparison on the 7-bit remainders of each block to
+         * identify all the blocks with a nonzero bit set in them.
+         *
+         * The parallel comparison works as follows. We begin by reshaping the blocks
+         * so that each block starts with a 1:
+         *
+         *   1aaaaaaa1bbbbbbb1ccccccc1ddddddd1eeeeeee1fffffff1ggggggg1hhhhhhh
+         *
+         * Now, subtract out the value with 1's at the bottom of each block:
+         *
+         *   1aaaaaaa 1bbbbbbb 1ccccccc 1ddddddd 1eeeeeee 1fffffff 1ggggggg 1hhhhhhh
+         * - 00000001 00000001 00000001 00000001 00000001 00000001 00000001 00000001
+         *
+         * If a block is nonempty, then the subtraction will stop before hitting the
+         * special 1 bit we placed at the front of the block. That 1 bit then means
+         * "yes, there was some bit set here." Otherwise, if the block is empty, then
+         * the subtraction within that block will be forced to borrow the 1 bit from
+         * the flag, which means that the resulting 0 bit means "no, there was no bit
+         * set here."
+         *
+         * We can therefore perform the subtraction, mask off all the bits except for
+         * the flags, and we end up with what we're looking for.
+         */
+        // (1<<0) | (1<<8) | (1<<16) | (1<<24)| (1<<32) | (1<<40) | (1<<48) | (1<<56)
+        //                    6         5         4         3         2         1
+        //                  210987654321098765432109876543210987654321098765432109876543210
+         long kLowBits =  0b000000100000001000000010000000100000001000000010000000100000001L;
+         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    /**
+     * For a tiled value whose block size = 7 bits (and hence, the embedded tile size is 6 bits in between
+     * flags of size 1), returns
+     * a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaaabbbbbbbcccccccdddddddeeeeeeefffffffggggggghhhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A000000B000000C000000D000000E000000F000000G000000H000000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     */
+    public static long usedBlocksIn7(long value) {
+
+        /* Every block with a 1 bit set in it either
+         *  1. has its highest bit set, or
+         *  2. when that bit is cleared, has a numeric value of 1 or greater.
+         *
+         * We can check for ths first part by using a bitmask to extract the high bits
+         * from each of the blocks. The remainder can be identified by using the
+         * parallel comparison technique of comparing each block against 1.
+         */
+        // Positions of all the high bits within each block.
+        // (1<<6)|(1<<13)|(1<<20)|(1<<27)|(1<<34)|(1<<41)|(1<<48)|(1<<55)|(1<<62)
+        final long kHighBits = 0b100000010000001000000100000010000001000000100000010000001000000L;
+        //                         6         5         4         3         2         1
+        //                       210987654321098765432109876543210987654321098765432109876543210
+        long highBitsSet = value & kHighBits;
+
+        /* Now, do a parallel comparison on the 7-bit remainders of each block to
+         * identify all the blocks with a nonzero bit set in them.
+         *
+         * The parallel comparison works as follows. We begin by reshaping the blocks
+         * so that each block starts with a 1:
+         *
+         *   1aaaaaa1bbbbbb1cccccc1dddddd1eeeeee1ffffff1gggggg1hhhhhh
+         *
+         * Now, subtract out the value with 1's at the bottom of each block:
+         *
+         *   1aaaaaa 1bbbbbb 1cccccc 1dddddd 1eeeeee 1ffffff 1gggggg 1hhhhhh
+         * - 0000001 0000001 0000001 0000001 0000001 0000001 0000001 0000001
+         *
+         * If a block is nonempty, then the subtraction will stop before hitting the
+         * special 1 bit we placed at the front of the block. That 1 bit then means
+         * "yes, there was some bit set here." Otherwise, if the block is empty, then
+         * the subtraction within that block will be forced to borrow the 1 bit from
+         * the flag, which means that the resulting 0 bit means "no, there was no bit
+         * set here."
+         *
+         * We can therefore perform the subtraction, mask off all the bits except for
+         * the flags, and we end up with what we're looking for.
+         */
+        // (1<<0) | (1<<7) | (1<<14) | (1<<21)| (1<<28) | (1<<35) | (1<<42) | (1<<49) | (1<<56)
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =    0b000000100000010000001000000100000010000001000000100000010000001L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    /**
+     * For a tiled value whose block size = 6 bits (and hence, the embedded tile size is 5 bits in between
+     * flags of size 1), returns
+     * a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaabbbbbbccccccddddddeeeeeeffffffgggggghhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A00000B00000C00000D00000E00000F00000G00000H00000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     */
+    public static long usedBlocksIn6(long value) {
+
+        /* Every block with a 1 bit set in it either
+         *  1. has its highest bit set, or
+         *  2. when that bit is cleared, has a numeric value of 1 or greater.
+         *
+         * We can check for ths first part by using a bitmask to extract the high bits
+         * from each of the blocks. The remainder can be identified by using the
+         * parallel comparison technique of comparing each block against 1.
+         */
+        // Positions of all the high bits within each block.
+        // (1<<5)|(1<<11)|(1<<17)|(1<<23)|(1<<29)|(1<<35)|(1<<41)|(1<<47)|(1<<53) |(1<<59)
+        final long kHighBits = 0b000100000100000100000100000100000100000100000100000100000100000L;
+        //                       210987654321098765432109876543210987654321098765432109876543210
+        //                         6         5         4         3         2         1
+
+        long highBitsSet = value & kHighBits;
+
+        /* Now, do a parallel comparison on the 7-bit remainders of each block to
+         * identify all the blocks with a nonzero bit set in them.
+         *
+         * The parallel comparison works as follows. We begin by reshaping the blocks
+         * so that each block starts with a 1:
+         *
+         *   1aaaaa1bbbbb1ccccc1ddddd1eeeee1fffff1ggggg1hhhhh
+         *
+         * Now, subtract out the value with 1's at the bottom of each block:
+         *
+         *   1aaaaa 1bbbbb 1ccccc 1ddddd 1eeeee 1fffff 1ggggg 1hhhhh
+         * - 000001 000001 000001 000001 000001 000001 000001 000001
+         *
+         * If a block is nonempty, then the subtraction will stop before hitting the
+         * special 1 bit we placed at the front of the block. That 1 bit then means
+         * "yes, there was some bit set here." Otherwise, if the block is empty, then
+         * the subtraction within that block will be forced to borrow the 1 bit from
+         * the flag, which means that the resulting 0 bit means "no, there was no bit
+         * set here."
+         *
+         * We can therefore perform the subtraction, mask off all the bits except for
+         * the flags, and we end up with what we're looking for.
+         */
+        // (1<<0) | (1<<6) | (1<<12) | (1<<18)| (1<<24) | (1<<30) | (1<<36) | (1<<42) | (1<<48) | (1<<54) | (1<<60)
+        //                     6         5         4         3         2         1
+        //                  3210987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =    0b001000001000001000001000001000001000001000001000001000001000001L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
     }
 }
