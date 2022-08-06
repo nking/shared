@@ -652,6 +652,14 @@ public class WordLevelParallelism {
                 return sketch8(tiled);
             case 7:
                 return sketch7(tiled, nTiles);
+            case 6:
+                return sketch6(tiled, nTiles);
+            case 5:
+                return sketch5(tiled, nTiles);
+            case 4:
+                return sketch4(tiled, nTiles);
+            case 1:
+                return tiled;
             default:
                 throw new UnsupportedOperationException("not yet implemented");
         }
@@ -678,7 +686,7 @@ public class WordLevelParallelism {
         int i0 = 0;
         // e.g. for bitstringLength=7 blockSize=8, kMult=(1<<0) | (1<<7) | (1<<14) etc
         long kMult   = 0b0000000000000000000001000000100000010000001000000100000010000001L;
-        long kMask   = 0b111111100000000000000000000000000000000000000000000000000L;
+        long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;
         int kShift   = 49;
 
         /*System.out.printf("\nkMask=\n%63s\n" +
@@ -723,29 +731,35 @@ public class WordLevelParallelism {
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
      * and embedded tile size of 6 bits
-     * @param nTiles the number of tiles of block size 7 embedded in tiled.
+     * @param nTiles the number of tiles of block size 7 embedded in tiled.  maximum nTiles is 8.
      * @return
      */
     public static long sketch7(final long tiled, final int nTiles) {
 
-        final int bSz = 7;
-        final int kShift;
-        final long kMult;
-        final long kMask;
+        // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36)
+        //          6         5         4         3         2         1
+        //        210987654321098765432109876543210987654321098765432109876543210
+        final long kMult = 0b000000000000000000000000001000001000001000001000001000001000001L;
+        final long kMask = 0b1111111000000000000000000000000000000000000000000L;
+        int kShift = 42;
+        long sketch = ((tiled * kMult) & kMask) >> kShift;
+
         if (nTiles < 8) {
-            // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36)
-            //          6         5         4         3         2         1
-            //        210987654321098765432109876543210987654321098765432109876543210
-            kMult = 0b000000000000000000000000001000001000001000001000001000001000001L;
-            kMask = 0b1111111000000000000000000000000000000000000000000L;
-            kShift = 42;
-        } else {
-            //          6         5         4         3         2         1
-            //        210987654321098765432109876543210987654321098765432109876543210
-            kMult = 0b000000000000000000001000001000001000001000001000001000001000001L;
-            kMask = 0b11111111000000000000000000000000000000000000000000000000L; // from 48->55
-            kShift = 48;
+            return sketch;
         }
+
+        //TOOD: consider more efficient ways for these last few lines
+
+        // set bit 7 of sketch to the high bit of block 8
+        if ((tiled & (1L << 56)) != 0) {
+            //set last bit
+            sketch |= (1L << 7);
+        } else {
+            // clear last bit
+            sketch &= ~(1L << 7);
+        }
+
+        return sketch;
 
         /*
         for nTiles <=7
@@ -769,21 +783,330 @@ public class WordLevelParallelism {
         editing for nTiles = 8
                                                            6         5         4         3         2         1
                                                          210987654321098765432109876543210987654321098765432109876543210
-                                                         100000010000001000000100000010000001000000100000010000001000000
+                                                         _00000010000001000000100000010000001000000100000010000001000000
+sketch overlaps here:
+    so will handle block 7 after sketching the first 7 blocks as above
 
-                                                              0b7      6      5      4      3      2      1      0      L
-                                                        0b7      6      5      4      3      2      1      0      L
-                                                  0b7      6      5      4      3      2      1      0      L
-                                            0b7      6      5      4      3      2      1      0      L
-                                      0b7      6      5      4      3      2      1      0      L
-                                0b7      6      5      4      3      2      1      0      L
-                          0b7      6      5      4      3      2      1      0      L
-                    0b7      6      5      4      3      2      1      0      L
+                                                                7      6      5      4      3      2      1      0      L
+                                                          7      6      5      4      3      2      1      0      L
+                                                    7      6      5      4      3      2      1      0      L
+                                              7      6      5      4      3      2      1      0      L
+                                        7      6      5      4      3      2      1      0      L
+                                  7      6      5      4      3      2      1      0      L
+                            7      6      5      4      3      2      1      0      L
+                      7      6      5      4      3      2      1      0      L
 
                                                            6         5         4         3         2         1
                                                          210987654321098765432109876543210987654321098765432109876543210
-                                                         100000010000001000000100000010000001000000100000010000001000000
-                                           kMask1    =        0b11111111000000000000000000000000000000000000000000000000;
+                                        kMask1      =         0b11111111000000000000000000000000000000000000000000000000;
+        */
+
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) & kMask),
+                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 6 bits
+     * and embedded tile size of 5 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A00000B00000C00000D00000, this method would return ABCD.
+
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 6 bits
+     * and embedded tile size of 5 bits
+     * @param nTiles the number of tiles of block size 6 embedded in tiled.  the maximum number for the java unsigned
+     *               long is 10 tiles of block size 6.
+     * @return
+     */
+    public static long sketch6(final long tiled, final int nTiles) {
+
+        if (nTiles == 0) {
+            return 0;
+        }
+        if (nTiles < 0 || nTiles > 10) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 10 for block size 6");
+        }
+
+        // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25)
+        //          6         5         4         3         2         1
+        //        210987654321098765432109876543210987654321098765432109876543210
+        long kMult = 0b000000000000000000000000000000000000010000100001000010000100001L;
+        long kMask = 0b111111000000000000000000000000000000L;
+        long kShift = 30;
+
+        long sketch = ((tiled * kMult) & kMask) >> kShift;
+
+        if (nTiles < 7) {
+            return sketch;
+        }
+
+        perform a sketch for blocks greater than 6.
+            note that cannot increase the multiplier for nTiles=10 to use an interval of 9 because
+            the highest bit in the multiplied number that needs to be masked to extract the sketch
+                would be > 62 bits
+
+        /*
+        for nTiles <=7
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000_00000_00000_00000_00000100000100000100000100000100000100000
+
+                                                                                  0b5     4     3     2     1     0     L
+                                                                             0b5     4     3     2     1     0     L
+                                                                        0b5     4     3     2     1     0     L
+                                                                   0b5     4     3     2     1     0     L
+                                                              0b5     4     3     2     1     0     L
+                                                         0b5     4     3     2     1     0     L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                             0b111111000000000000000000000000000000;
+         */
+        /*
+        editing for nTiles <= 10
+
+        overlaps here so need to
+        use more than one sketch or increase
+        the intervals in multiplier
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000100000100000100000100000100000100000100000100000100000100000
+
+                                                            9     8     7     6     5     4     3     2     1     0     L
+                                                       9     8     7     6     5     4     3     2     1     0     L
+                                                  9     8     7     6     5     4     3     2     1     0     L
+                                             9     8     7     6     5     4     3     2     1     0     L
+                                        9     8     7     6     5     4     3     2     1     0     L
+                                   9     8     7     6     5     4     3     2     1     0     L
+                              9     8     7     6     5     4     3     2     1     0     L
+                         9     8     7     6     5     4     3     2     1     0     L
+                    9     8     7     6     5     4     3     2     1     0     L
+               9     8     7     6     5     4     3     2     1     0     L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =     0b111111111100000000000000000000000000000000000000000000000000;
+
+         */
+
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) & kMask),
+                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 5 bits
+     * and embedded tile size of 4 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A0000B0000C0000D0000, this method would return ABCD.
+
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 5 bits
+     * and embedded tile size of 4 bits
+     * @param nTiles the number of tiles of block size 5 embedded in tiled.  the maximum number of 12 for nTiles for
+     *               block size of 5 is limited by the java unsigned long and the location of the mask bits needed after
+     *               the sketch multiplier.
+     * @return
+     */
+    public static long sketch5(final long tiled, final int nTiles) {
+
+        if (nTiles == 0) {
+            return 0;
+        }
+        if (nTiles < 0 || nTiles > 12) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 12 for block size 5");
+        }
+
+        int kShift = 20;
+        long kMult = 0b000000000000000000000000000000000000000000000010001000100010001L;
+        long kMask = 0b1111100000000000000000000L;
+
+        long sketch = ((tiled * kMult) & kMask) >> kShift;
+
+        if (nTiles < 6) {
+            return sketch;
+        }
+
+        perform up to 2 more sketches for blocks higher than 5 and a bit set for block 10 if nTiles == 11
+
+        note that cannot increase the multiplier for nTiles=12 to use an interval of 11 because
+        the highest bit in the multiplied number that needs to be masked to extract the sketch
+        would be > 62 bits.
+
+        considering using an interval of 7 bits in the multiplier to be able to sketch 7 blocks at a time
+        then the maximum total number of sketches is 2 instead of 3
+
+        /*
+        for nTiles <=5
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                          00_0000_0000_0000_0000_0000_0000_00001000010000100001000010000
+                                                                                               4    3    2    1    0    L
+                                                                                           4    3    2    1    0    L
+                                                                                       4    3    2    1    0    L
+                                                                                   4    3    2    1    0    L
+                                                                               4    3    2    1    0    L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                                        0b1111100000000000000000000;
+         */
+        /*
+        editing for nTiles <= 11
+
+        overlaps here so need to
+        use more than one sketch
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                          00100001000010000100001000010000100001000010000100001000010000
+                                                            B    A    9    8    7    6    5    4    3    2    1    0    L
+                                                        B    A    9    8    7    6    5    4    3    2    1    0    L
+                                                    B    A    9    8    7    6    5    4    3    2    1    0    L
+                                                B    A    9    8    7    6    5    4    3    2    1    0    L
+                                            B    A    9    8    7    6    5    4    3    2    1    0    L
+                                        B    A    9    8    7    6    5    4    3    2    1    0    L
+                                    B    A    9    8    7    6    5    4    3    2    1    0    L
+                                B    A    9    8    7    6    5    4    3    2    1    0    L
+                            B    A    9    8    7    6    5    4    3    2    1    0    L
+                        B    A    9    8    7    6    5    4    3    2    1    0    L
+                    B    A    9    8    7    6    5    4    3    2    1    0    L
+                B    A    9    8    7    6    5    4    3    2    1    0    L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =     0b111111111111000000000000000000000000000000000000000000000000;
+         */
+
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) & kMask),
+                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 4 bits
+     * and embedded tile size of 3 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A000B000C000D000, this method would return ABCD.
+
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 4 bits
+     * and embedded tile size of 3 bits
+     * @param nTiles the number of tiles of block size 4 embedded in tiled.  the maximum number of 15 for nTiles for
+     *               block size of 4 is limited by the java unsigned long and the location of the mask bits needed after
+     *               the sketch multiplier.
+     * @return
+     */
+    public static long sketch4(final long tiled, final int nTiles) {
+
+        if (nTiles == 0) {
+            return 0;
+        }
+        if (nTiles < 0 || nTiles > 15) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 15 for block size 4");
+        }
+
+        // kMult=(1<<0) | (1<<3) | (1<<6) | (1<<9)
+        //          6         5         4         3         2         1
+        //        210987654321098765432109876543210987654321098765432109876543210
+        long kMult = 0b000000000000000000000000000000000000000000000000000001001001001L;
+        long kMask = 0b1111000000000000L;
+        int kShift = 12;
+        long sketch = ((tiled * kMult) & kMask) >> kShift;
+
+        if (nTiles < 5) {
+            return sketch;
+        }
+
+        considering using an interval of 7 bits in the multiplier to be able to sketch 7 blocks at a time
+        then the maximum total number of sketches is 2
+
+        and set high bit for block 14 if nTiles=15
+
+        /*
+        for nTiles <=5
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000_000_000_000_000_000_000_000_000_000_000_0001000100010001000
+                                                                                                        3   2   1   0   L
+                                                                                                     3   2   1   0   L
+                                                                                                  3   2   1   0   L
+                                                                                               3   2   1   0   L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                                                 0b1111000000000000;
+         */
+        /*
+        editing for nTiles <= 15
+
+        overlaps here so need to
+        use more than one sketch
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000100010001000100010001000100010001000100010001000100010001000
+                                                            E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                                         E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                                      E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                                   E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                                E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                             E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                          E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                       E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                    E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                                 E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                              E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                           E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                        E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                     E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+                  E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =     0b111111111111111000000000000000000000000000000000000000000000;
+         */
+
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) & kMask),
+                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+
+    }
 
          */
 
