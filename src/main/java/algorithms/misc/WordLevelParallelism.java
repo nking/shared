@@ -15,8 +15,7 @@ package algorithms.misc;
  */
 public class WordLevelParallelism {
 
-    //TODO: optimize code to reuse bit masks and multipliers.  consider a static array of
-    //      masks and multipliers for block sizes 2 through 31.
+    //TODO: optimize code
 
     /**
      * given a bitarray packed full of tiles separated by flags (= blocks),
@@ -44,9 +43,10 @@ public class WordLevelParallelism {
          * to shift that block down to the proper position and mask out the other
          * bits.
          */
-        long highBlock = tiled >> (highBlockIndex * 8);
+        //long highBlock = tiled >> (highBlockIndex * 8);
+        long highBlock = tiled >> (highBlockIndex * bSz);
 
-        return highBlockIndex * bSz + highestBitSetIn(highBlock, tileBitLength);
+        return highBlockIndex * bSz + highestBitSetIn(highBlock, bSz);
     }
 
     /**
@@ -60,11 +60,14 @@ public class WordLevelParallelism {
      */
     static long highestBlockSetIn(long tiled, int nTiles, int tileBitLength) {
 
-        long usedBlocksIn = usedBlocksIn(tiled, tileBitLength + 1);
+        int bSz = tileBitLength + 1;
 
+        long usedBlocksIn = usedBlocksIn(tiled, bSz);
+
+        // the block number in bits, e.g. 6th block is 0b1000000
         long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);
 
-        return highestBitSetIn(sketch, tileBitLength);
+        return highestBitSetIn(sketch, nTiles+1);
     }
 
     /**
@@ -257,6 +260,49 @@ public class WordLevelParallelism {
     }
 
     /**
+     * parallel compare of tiled1 to tiled2 which both have block sizes of 8 and have flag bits
+     * of '0' separating the embedded 7-bit tiles.
+     * returns a masked bit array whose set bits indicate which
+     * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bitstringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
+     * and so (nTiles * block) must be less than or equal to 62.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 62 bit limit.
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled1 is 0b0010010001100111, where 0's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     * @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    public static long parallelCompare008(long tiled1, long tiled2, int nTiles) {
+        //                6         5         4         3         2         1
+        //              210987654321098765432109876543210987654321098765432109876543210
+        long kMask1 = 0b000000010000000100000001000000010000000100000001000000010000000L;
+        // e.g. for bitstringLength=7, block size=8, kMask=(1<<15)|(1<<7) etc
+
+        tiled1 |= kMask1;
+
+        return parallelCompare10(tiled1, tiled2, nTiles, 7, kMask1);
+    }
+
+    /**
      * parallel compare of tiled1 to tiled2 and return a masked bit array whose set bits indicate which
      * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
      <pre>
@@ -329,6 +375,81 @@ public class WordLevelParallelism {
         //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
         return parallelSum(comparison, nTiles, tileBitLength);
+    }
+
+    /**
+     * parallel compare of tiled1 to tiled2 both of which have block size 8 and
+     * embedded tiles of size 7-bits.
+     * this method returns a masked bit array whose set bits indicate which
+     * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bistringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
+     * and so (nTiles * block) must be less than or equal to 62.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 62 bit limit.
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled1 is 0b1010010011100111, where 1's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    static long parallelCompare108(long tiled1, long tiled2, int nTiles, long mask1) {
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+        if (nTiles < 1) {
+            throw new IllegalArgumentException("nTiles must be > 0");
+        }
+
+        final int bSz = 8;
+
+        final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
+
+        // by default the number of blacks used to hold the number nTiles is 1.
+        // if number of bits in nTiles > bSz, nBExtra is the number of blacks to add to the default '1 reserved block'
+        // to hold the number of bits in nTiles.
+        // e.g. nTiles=7 can be held in a block of size 3 bits. if bSz=2, need 1 extra block to hold nTiles.
+        //      nTiles=16 can be held in a block of size 5 bits. if bSz=2, need 2 extra blocks to hold nTiles.
+        int nBExtra = 0;
+
+        // assert that there is enough space to hold the bits to represent nTiles
+        if (nMaskBits > bSz) {
+            // how many blocks needed to store nMaskBits?  then subtract 1 which is already reserved for it.
+            nBExtra = ((int) Math.ceil((double) nMaskBits / bSz)) - 1;
+            int tiledLength = nTiles * bSz;
+            /*if ((tiledLength + nBExtra * bSz) > 62) {
+                throw new IllegalArgumentException(String.format("nTiles needs %d blocks of size %d bits above the " +
+                                "total tiled bit length =%d.\n  That total %d must fit within 62 bits.",
+                        nBExtra, bSz, tiledLength, (tiledLength + nBExtra * bSz)));
+            }*/
+        }
+
+        //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
+        long diff = tiled1 - tiled2;
+
+        long comparison = diff & mask1;
+
+        //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
+        //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
+
+        return parallelSum(comparison, nTiles, 7);
     }
 
     /**
@@ -460,149 +581,8 @@ public class WordLevelParallelism {
     }
 
     /**
-     * given a bitarray packed full of tiles separated by flags, extract and return the flags.
-     * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
-     <pre>
-     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     Then edited here to allow block sizes other than 8.
-     </pre>
-     *
-     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
-     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
-     * @param nTiles        the number of tiles packed into the bitarray tiled.
-     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
-     * @return
-     */
-    public static long sketch(long tiled, int nTiles, int tileBitLength) {
-
-        final int bSz = tileBitLength + 1;
-        final int kShift = nTiles * (bSz - 1);
-        int i0 = 0;
-        // e.g. for bitstringLength=7 blockSize=8, kMult=(1<<0) | (1<<7) | (1<<14) etc
-        long kMult = 0;
-        long kMask = 0;
-        for (int i = 0; i < nTiles; ++i) {
-            kMult |= (1L << i0);
-            i0 += tileBitLength;
-            kMask |= (1L << (kShift + i));
-        }
-
-        /*System.out.printf("\nkMask=\n%63s\n" +
-                "kMult=\n%63s\n" +
-                "kShift=%d\n" +
-                "(tiled * kMult) & kMask=\n%63s\n" +
-                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
-                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
-                Long.toBinaryString((tiled * kMult) & kMask),
-                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
-
-        return ((tiled * kMult) & kMask) >> kShift;
-
-        /*
-        <pre>
-        Case 1:
-           example in the MSB64.cpp sketchOf comments:
-           8 bit tiling, 7 bit bitstrings, nTiles=8
-                           6         5         4         3         2         1
-                        3210987654321098765432109876543210987654321098765432109876543210
-        value1      = 0b1000000010000000100000001000000010000000000000000000000000000000;#8 positions, 5 are set
-        #               1       2       3       4       5       6       7       8
-        kMult1      = 0b0000000000000010000001000000100000010000001000000100000010000001;#8 flags set: 0,7,14,21,...<== smallest interval of 7 gives maske size 8 which is enough to hold the 1 bit each to represent a set tile ( interval <= nTiles)
-        #                             8      7      6      5      4      3      2      1
-        kMask1      = 0b1111111100000000000000000000000000000000000000000000000000000000;#8 bits masked
-        kShift1     = 64 - 8;
-        sketch1=((value1 * kMult1) & kMask1) >> kShift1;
-        bin((value1 * kMult1)); bin(kMask1); bin((value1 * kMult1) & kMask1)
-
-        the multiplication:
-                                                        '0b1000000010000000100000001000000010000000000000000000000000000000'
-                                                  0b1000000010000000100000001000000010000000000000000000000000000000'
-                                           0b1000000010000000100000001000000010000000000000000000000000000000'
-                                    0b1000000010000000100000001000000010000000000000000000000000000000'
-                             0b1000000010000000100000001000000010000000000000000000000000000000'
-                      0b1000000010000000100000001000000010000000000000000000000000000000'
-               0b1000000010000000100000001000000010000000000000000000000000000000'
-        0b1000000010000000100000001000000010000000000000000000000000000000'
-        =
-        0b10000001100000111000011110001111100111110011111001111100011110000111000001100000010000000000000000000000000000000'
-                                           kMask1      = 0b1111111100000000000000000000000000000000000000000000000000000000;
-
-        Case 2:
-            let block size = 7, and the bitstrings in between the flags are 6 bits in length.
-            the packing is such that there are 9 tiles in the tiled bitstring of size 62.
-
-            The 9 tiles are 9 set bits and so cannot fit within a block size of 7 using the
-            multiplier above which uses (block size - 1) intervals.
-            So one has to use a large enough interval in the multiplier so that the stacked 9 tiles
-            are sequential and can be masked by a 9 bit mask.
-            Therefore, the multiplier mask should have intervals 0, 8, 16, 24, 32, 40, 48, 56, 64.
-            On Java platform, we have a limit for unsigned long of 62 bits.
-            So we could use BigInteger instead of long, but then we incur an increasingly large cost
-            with each operation because that class creates a new object every time instead of
-            modifying the properties of one instance.  (I have a class to do that to replace BigInteger,
-            but will continue using java primitives for this sketch method instead).
-
-            Sticking with java's long,
-            we then have the problem that the original tiled number can only have contained nTiles=8,
-            which changes our multiplier one more time in order to not overflow and to be able
-            to sketch 8 bits sequentially.
-
-            block size=7, bitstring length of each tile in between flags is 6, and nTiles <= 8.
-            then the multiplier is 0, 7, 14, 21, 28, 35, 42, 49
-            which is the same multiplier as above in Case 1.
-            the mask location and shift may need edits (include details here).
-
-        Case 3:
-            3 bit tiling of 2 bit bitstrings.  21 tiles (total was 64 bits, is now 62 bits.
-                The multiplier length would be 21 * 21 which is much larger than 64 bits.
-                Would need to revert to the Case 1 multiplier that uses 8 bit intervals and nTiles <= 8.
-
-        Case 4:
-            10 bit tiling of 9 bit bitstrings.  6 tiles (total tiled size = 60 bits).
-            the multiplier needs to use intervals of size (nTiles - 1) to result in potentially 6 sequential
-            set bits.
-
-        One can see that the number of tiles must be less than or equal to the squareroot(64).
-        When the number of tiles is less than 8, one could modify the multiplier and the mask and shift
-        to use smaller numbers, but the default 7-bit interval multiplier would work for it too.
-
-        If one were to use an efficient BitInteger that did not create a new object for each operation,
-        but instead, operated on the properties of the existing BitInteger replacement class,
-        one could use this example for how to modify the multiplier, mask, and shift:
-
-        7 bit tiling (== block size), 6 bit bitstrings in between the flags, 9 tiles in the value bitstring:
-                           6         5         4         3         2         1
-                        3210987654321098765432109876543210987654321098765432109876543210
-        value       =  0b100000010000001000000100000010000001000000100000010000000000000;#9 positions, 8 are set
-
-        multiplication blocks with intervals of size 8 (to handle potential of 9 sequential bits set).
-             0,8,16,24,....  9 multiplications
-        mask should be bits [70,62]
-        shift = 62
-        multiplication number of bits is 127 bits (= 62 bits + 8*8)
-
-                             13        12        11        10         9         8         7         6         5         4         3         2         1
-                  432109876543210987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210
-                                                                                        0b100000010000001000000100000010000001000000100000010000000000000;
-                                                                                0b100000010000001000000100000010000001000000100000010000000000000;
-                                                                        0b100000010000001000000100000010000001000000100000010000000000000;
-                                                                0b100000010000001000000100000010000001000000100000010000000000000;
-                                                        0b100000010000001000000100000010000001000000100000010000000000000;
-                                                0b100000010000001000000100000010000001000000100000010000000000000;
-                                        0b100000010000001000000100000010000001000000100000010000000000000;
-                                0b100000010000001000000100000010000001000000100000010000000000000;
-                        0b10000001000000100000010000001000000100000010000001000000*000000;
-mask=                                                                           0b11111111100000000000000000000000000000000000000000000000000000000000000
-                     13        12        11        10         9         8         7         6         5         4         3         2         1
-                  432109876543210987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210
-         </pre>
-        */
-    }
-
-    /**
-     * Given an n-bit value, returns the index of the highest 1 bit within that
-     * value.
+     * sum the set bits of the comparison bitstring which has a block size of 8 and embedded tiles of
+     * size 7-bits.  this method sums the set bits at the high end of each block and returns the result.
      *
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
@@ -621,7 +601,214 @@ mask=                                                                           
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 62 bit limit.
      *
-     * @param value a bitlength number
+     * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
+     *                      are summed in this method.
+     * @return the sum of the set bits of the MSB of each 8-bit block.
+     */
+    static long parallelSum8(long comparison, int nTiles) {
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+        final int bSz = 8;
+
+        // e.g. for bSz=8, kMult=(1<<8)|(1<<0) etc
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+        //long kMult = 0b000000100000001000000010000000100000001000000010000000100000001L;
+        long kMult = 0b000000000000001000000010000000100000001000000010000000100000001L;
+        long kMask = 0b000001110000000000000000000000000000000000000000000000000000000L;
+
+        int kShift = 64-8-1;
+        int kShift2 = 63;
+
+        long s1 = (((comparison * kMult) & kMask) >> kShift);
+        long s2 = (comparison >> kShift2);
+
+        long sum = s1 + s2;
+
+        return sum;
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags, extract and return the flags.
+     * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @param nTiles        the number of tiles packed into the bitarray tiled.
+     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     * @return
+     */
+    public static long sketch(long tiled, int nTiles, int tileBitLength) {
+
+        switch(tileBitLength + 1) {
+            case 8:
+                return sketch8(tiled);
+            case 7:
+                return sketch7(tiled, nTiles);
+            default:
+                throw new UnsupportedOperationException("not yet implemented");
+        }
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 8 bits
+     * and embedded tile size of 7 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
+
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     * and embedded tile size of 6 bits
+     * @return
+     */
+    public static long sketch8(long tiled) {
+
+        final int bSz = 8;
+        int i0 = 0;
+        // e.g. for bitstringLength=7 blockSize=8, kMult=(1<<0) | (1<<7) | (1<<14) etc
+        long kMult   = 0b0000000000000000000001000000100000010000001000000100000010000001L;
+        long kMask   = 0b111111100000000000000000000000000000000000000000000000000L;
+        int kShift   = 49;
+
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) & kMask),
+                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+
+        return ((tiled * kMult) & kMask) >> kShift;
+
+        /*
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000000010000000100000001000000010000000100000001000000010000000
+                                                              0b6       5       4       3       2       1       0       L
+                                                       0b6       5       4       3       2       1       0       L
+                                                0b6       5       4       3       2       1       0       L
+                                         0b6       5       4       3       2       1       0       L
+                                  0b6       5       4       3       2       1       0       L
+                           0b6       5       4       3       2       1       0       L
+                    0b6       5       4       3       2       1       0       L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask       =         0b11111110000000000000000000000000000000000000000000000000;
+        */
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     * and embedded tile size of 6 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A000000B000000C000000D000000, this method would return ABCD.
+
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     * and embedded tile size of 6 bits
+     * @param nTiles the number of tiles of block size 7 embedded in tiled.
+     * @return
+     */
+    public static long sketch7(final long tiled, final int nTiles) {
+
+        final int bSz = 7;
+        final int kShift;
+        final long kMult;
+        final long kMask;
+        if (nTiles < 8) {
+            // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36)
+            //          6         5         4         3         2         1
+            //        210987654321098765432109876543210987654321098765432109876543210
+            kMult = 0b000000000000000000000000001000001000001000001000001000001000001L;
+            kMask = 0b1111111000000000000000000000000000000000000000000L;
+            kShift = 42;
+        } else {
+            //          6         5         4         3         2         1
+            //        210987654321098765432109876543210987654321098765432109876543210
+            kMult = 0b000000000000000000001000001000001000001000001000001000001000001L;
+            kMask = 0b11111111000000000000000000000000000000000000000000000000L; // from 48->55
+            kShift = 48;
+        }
+
+        /*
+        for nTiles <=7
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         _000000_0000001000000100000010000001000000100000010000001000000
+
+                                                               0b      6      5      4      3      2      1      0      L
+                                                         0b      6      5      4      3      2      1      0      L
+                                                   0b      6      5      4      3      2      1      0      L
+                                             0b      6      5      4      3      2      1      0      L
+                                       0b      6      5      4      3      2      1      0      L
+                                 0b      6      5      4      3      2      1      0      L
+                           0b      6      5      4      3      2      1      0      L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                0b1111111000000000000000000000000000000000000000000;
+         */
+        /*
+        editing for nTiles = 8
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         100000010000001000000100000010000001000000100000010000001000000
+
+                                                              0b7      6      5      4      3      2      1      0      L
+                                                        0b7      6      5      4      3      2      1      0      L
+                                                  0b7      6      5      4      3      2      1      0      L
+                                            0b7      6      5      4      3      2      1      0      L
+                                      0b7      6      5      4      3      2      1      0      L
+                                0b7      6      5      4      3      2      1      0      L
+                          0b7      6      5      4      3      2      1      0      L
+                    0b7      6      5      4      3      2      1      0      L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         100000010000001000000100000010000001000000100000010000001000000
+                                           kMask1    =        0b11111111000000000000000000000000000000000000000000000000;
+
+         */
+
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) & kMask),
+                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+
+        return ((tiled * kMult) & kMask) >> kShift;
+    }
+
+    /**
+     * Given an n-bit value, returns the index of the highest 1 bit within that
+     * value.
+     *
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * @param value a bitlength number.  note that this is the same as the block size for some contexts.
      * @param bitlength the bitlength of value
      * @return the highest bit set in value.  the bit number is w.r.t. 0.
      * e.g. if bitlength is 8, the return value range is [0,7] inclusive.
@@ -632,7 +819,8 @@ mask=                                                                           
         // returned is w.r.t. a zero-based index.
         // e.g. highestBitSetIn8 is the highest bit in an 8 bit value,
         //      but the returned bit range is [0,7] inclusive
-        switch (bitlength) {
+        // switch is based on the block size which s bitlength + 1
+        switch (bitlength + 1) {
             case 8: {
                 return highestBitSetIn8(value);
             } case 7: {
@@ -748,7 +936,7 @@ mask=                                                                           
          */
         int nTiles = 7;
         int tileBitLength = 7;
-        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+        return parallelSum8(comparison, nTiles) - 1;
     }
 
     /**
@@ -1185,6 +1373,7 @@ mask=                                                                           
          */
         // Positions of all the high bits within each block. (1<<7)|(1<<15)|(1<<23)|(1<<31)|(1<<39)|(1<<47)|(1<<55)|(1<<64)
         final long kHighBits = 0b000000010000000100000001000000010000000100000001000000010000000L;
+    //    final long kHighBits =0b1000000010000000100000001000000010000000100000001000000010000000L;
         //                         6         5         4         3         2         1
         //                      3210987654321098765432109876543210987654321098765432109876543210
         long highBitsSet = value & kHighBits;
