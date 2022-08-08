@@ -634,9 +634,12 @@ public class WordLevelParallelism {
      * given a bitarray packed full of tiles separated by flags, extract and return the flags.
      * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
      <pre>
-     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     Then edited here to allow block sizes other than 8.
+     references:
+     lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+          and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+
+     https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+
      </pre>
      *
      * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
@@ -649,7 +652,7 @@ public class WordLevelParallelism {
 
         switch(tileBitLength + 1) {
             case 8:
-                return sketch8(tiled);
+                return sketch8(tiled, nTiles);
             case 7:
                 return sketch7(tiled, nTiles);
             case 6:
@@ -658,6 +661,10 @@ public class WordLevelParallelism {
                 return sketch5(tiled, nTiles);
             case 4:
                 return sketch4(tiled, nTiles);
+            case 3:
+                return sketch3(tiled, nTiles);
+            case 2:
+                return sketch2(tiled);
             case 1:
                 return tiled;
             default:
@@ -1019,6 +1026,7 @@ sketch overlaps here:
         sketch = sketch ^ ((sketch ^ sketch2) & 0b111110000000000L);
 
         return sketch;
+
         /*
         for nTiles <=5
                                                            6         5         4         3         2         1
@@ -1071,6 +1079,7 @@ sketch overlaps here:
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 4 bits
@@ -1080,7 +1089,7 @@ sketch overlaps here:
      *               the sketch multiplier.
      * @return
      */
-    public static long sketch4(final long tiled, final int nTiles) {
+    public static long sketch4(long tiled, final int nTiles) {
 
         if (nTiles == 0) {
             return 0;
@@ -1088,6 +1097,8 @@ sketch overlaps here:
         if (nTiles < 0 || nTiles > 15) {
             throw new UnsupportedOperationException("nTiles must be > 0 and <= 15 for block size 4");
         }
+
+        // TODO: more efficient ways to implement this?  intrinsics?
 
         // kMult=(1<<0) | (1<<3) | (1<<6) | (1<<9)
         //          6         5         4         3         2         1
@@ -1101,64 +1112,50 @@ sketch overlaps here:
             return sketch;
         }
 
-        considering using an interval of 7 bits in the multiplier to be able to sketch 7 blocks at a time
-        then the maximum total number of sketches is 2
+        // 15 tiles, each sketch is 4 tiles, would mean 4 sketches
 
-        and set high bit for block 14 if nTiles=15
+        editing
 
-        /*
-        for nTiles <=5
-                                                           6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
-                                                         000_000_000_000_000_000_000_000_000_000_000_0001000100010001000
-                                                                                                        3   2   1   0   L
-                                                                                                     3   2   1   0   L
-                                                                                                  3   2   1   0   L
-                                                                                               3   2   1   0   L
+    }
 
-                                                           6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
-                                        kMask1      =                                                 0b1111000000000000;
-         */
-        /*
-        editing for nTiles <= 15
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 3 bits
+     * and embedded tile size of 2 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A00B00C00D00, this method would return ABCD.
 
-        overlaps here so need to
-        use more than one sketch
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 3 bits
+     * and embedded tile size of 2 bits
+     * @param nTiles the number of tiles of block size 3 embedded in tiled.  the maximum number of 20 for nTiles for
+     *               block size of 3 is limited by the java unsigned long and the location of the mask bits needed after
+     *               the sketch multiplier.
+     * @return
+     */
+    public static long sketch3(long tiled, final int nTiles) {
 
-                                                           6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
-                                                         000100010001000100010001000100010001000100010001000100010001000
-                                                            E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                                         E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                                      E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                                   E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                                E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                             E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                          E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                       E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                    E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                                 E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                              E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                           E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                        E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                     E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
-                  E   D   C   B   A   9   8   7   6   5   4   3   2   1   0   L
+        if (nTiles == 0) {
+            return 0;
+        }
+        if (nTiles < 0 || nTiles > 20) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 20 for block size 3");
+        }
 
-                                                           6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
-                                        kMask1      =     0b111111111111111000000000000000000000000000000000000000000000;
-         */
-
-        /*System.out.printf("\nkMask=\n%63s\n" +
-                "kMult=\n%63s\n" +
-                "kShift=%d\n" +
-                "(tiled * kMult) & kMask=\n%63s\n" +
-                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
-                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
-                Long.toBinaryString((tiled * kMult) & kMask),
-                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
-
+        // same as decoding 4 bit Morton 3D, for z
+        // uses binary magic numbers
+        long w = tiled >> 2;
+        w &= 0x1249249249249249L;
+        w = (w ^ (w >> 2))  & 0x30c30c30c30c30c3L;
+        w = (w ^ (w >> 4))  & 0xf00f00f00f00f00fL;
+        w = (w ^ (w >> 8))  & 0x00ff0000ff0000ffL;
+        w = (w ^ (w >> 16)) & 0x00ff00000000ffffL;
+        w = (w ^ (w >> 32)) & 0x00000000001fffffL;
+        return w;
     }
 
     /**
@@ -1179,7 +1176,7 @@ sketch overlaps here:
 
         // can do this with 5 sketches and 5 merges
 
-        /* else, use a down shift by 1, then 6 magic number shifts and masks
+        /* else, use a down shift by 1, then 6 binary magic number shifts and masks
         from https://stackoverflow.com/questions/30539347/2d-morton-code-encode-decode-64bits
         x = x & 0x5555555555555555;
         x = (x | (x >> 1))  & 0x3333333333333333;
@@ -1188,7 +1185,6 @@ sketch overlaps here:
         x = (x | (x >> 8))  & 0x0000FFFF0000FFFF;
         x = (x | (x >> 16)) & 0x00000000FFFFFFFF;
         */
-         */
 
         long sketch = tiled >> 1;
         //                                                              6         5         4         3         2         1
