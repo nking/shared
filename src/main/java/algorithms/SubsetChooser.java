@@ -99,10 +99,10 @@ public class SubsetChooser {
      */
     public SubsetChooser(int n, int k) {
         
-        if (k > 13) {
+        /*if (k > 13) {
             throw new IllegalArgumentException(
                 "currently, class can only handle k < 13, but changes to accomodate larger could be made");
-        }
+        }*/
         if (n < 1) {
             throw new IllegalArgumentException("n must be larger than 0");
         }

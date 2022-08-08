@@ -994,10 +994,10 @@ sketch overlaps here:
 
         // sketch 5 tiles at a time, and merge after each
 
-        System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
         // shift down by the 5 blocks we just sketched:
         tiled >>= 25;
-        System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 5 at the end to merge the 2 sketches:
         kShift -= 5;
@@ -1114,8 +1114,46 @@ sketch overlaps here:
 
         // 15 tiles, each sketch is 4 tiles, would mean 4 sketches
 
-        editing
+        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        // shift down by the 4 blocks we just sketched:
+        tiled >>= 16;
+        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
 
+        // change the shift to reserve space of 4 at the end to merge the 2 sketches:
+        kShift -= 4;
+        long sketch2 = ((tiled * kMult) & kMask) >> kShift;
+
+        //from https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        // Merge bits from two values according to a mask
+        //   a=0b000000001110  <--- similar to sketch
+        //   b=0b101111110000  <--- similar to sketch2
+        //mask=0b111111110000
+        //r = a ^ ((a ^ b) & mask); bin(r)
+        //0b10111110'
+
+        sketch = sketch ^ ((sketch ^ sketch2) & 0b11110000L);
+
+        if (nTiles < 9) {
+            return sketch;
+        }
+
+        // another round of sketch and merge
+        tiled >>= 16;
+        kShift -= 4;
+        sketch2 = ((tiled * kMult) & kMask) >> kShift;
+
+        // sketch is 8 bits, sketch2 is 4 bits
+        sketch = sketch ^ ((sketch ^ sketch2) & 0b111100000000L);
+
+        // one more round of sketch and merge
+        tiled >>= 16;
+        kShift -= 4;
+        sketch2 = ((tiled * kMult) & kMask) >> kShift;
+
+        // sketch is 12 bits, sketch2 is 4 bits
+        sketch = sketch ^ ((sketch ^ sketch2) & 0b1111000000000000L);
+
+        return sketch;
     }
 
     /**
