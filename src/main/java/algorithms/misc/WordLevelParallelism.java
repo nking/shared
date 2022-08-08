@@ -680,10 +680,15 @@ public class WordLevelParallelism {
      * and embedded tile size of 6 bits
      * @return
      */
-    public static long sketch8(long tiled) {
+    public static long sketch8(long tiled, int nTiles) {
 
-        final int bSz = 8;
-        int i0 = 0;
+        if (nTiles == 0) {
+            return 0;
+        }
+        if (nTiles < 0 || nTiles > 7) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 7 for block size 8");
+        }
+
         // e.g. for bitstringLength=7 blockSize=8, kMult=(1<<0) | (1<<7) | (1<<14) etc
         long kMult   = 0b0000000000000000000001000000100000010000001000000100000010000001L;
         long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;
@@ -698,7 +703,9 @@ public class WordLevelParallelism {
                 Long.toBinaryString((tiled * kMult) & kMask),
                 Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
 
-        return ((tiled * kMult) & kMask) >> kShift;
+        long sketch = ((tiled * kMult) & kMask) >> kShift;
+
+        return sketch;
 
         /*
                                                            6         5         4         3         2         1
@@ -727,6 +734,7 @@ public class WordLevelParallelism {
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
@@ -736,9 +744,16 @@ public class WordLevelParallelism {
      */
     public static long sketch7(final long tiled, final int nTiles) {
 
+        if (nTiles == 0) {
+            return 0;
+        }
+        if (nTiles < 0 || nTiles > 8) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 8 for block size 7");
+        }
+
         // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36)
-        //          6         5         4         3         2         1
-        //        210987654321098765432109876543210987654321098765432109876543210
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
         final long kMult = 0b000000000000000000000000001000001000001000001000001000001000001L;
         final long kMask = 0b1111111000000000000000000000000000000000000000000L;
         int kShift = 42;
@@ -749,13 +764,15 @@ public class WordLevelParallelism {
         }
 
         //TOOD: consider more efficient ways for these last few lines
+        // considering:
+        //Merge bits from two values according to a mask
+        //https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        //r = a ^ ((a ^ b) & mask);
 
         // set bit 7 of sketch to the high bit of block 8
         if ((tiled & (1L << 56)) != 0) {
-            //set last bit
             sketch |= (1L << 7);
         } else {
-            // clear last bit
             sketch &= ~(1L << 7);
         }
 
@@ -821,6 +838,8 @@ sketch overlaps here:
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+
      </pre>
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 6 bits
@@ -829,7 +848,7 @@ sketch overlaps here:
      *               long is 10 tiles of block size 6.
      * @return
      */
-    public static long sketch6(final long tiled, final int nTiles) {
+    public static long sketch6(long tiled, final int nTiles) {
 
         if (nTiles == 0) {
             return 0;
@@ -851,10 +870,43 @@ sketch overlaps here:
             return sketch;
         }
 
-        perform a sketch for blocks greater than 6.
-            note that cannot increase the multiplier for nTiles=10 to use an interval of 9 because
-            the highest bit in the multiplied number that needs to be masked to extract the sketch
-                would be > 62 bits
+        /*
+        note that cannot edit the multiplier to use a larger interval of 9 for nTiles=10 because
+        the highest bit in the product that needs to be masked to extract the sketch
+        would be > 62 bits.
+
+        so will make another sketch for remaining tiles:
+
+        for nTiles 7-10, that is, blocks 6-9, inclusive.
+        shift tiled down by 6*6, leaving blocks 6:9.
+        */
+
+        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        // shift down by the 6 blocks we just sketched:
+        tiled >>= 36;
+        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+
+        // change the shift to reserve space of 6 at the end to merge the 2 sketches:
+        kShift -= 6;
+        long sketch2 = ((tiled * kMult) & kMask) >> kShift;
+
+        //from https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        // Merge bits from two values according to a mask
+        //   a=0b000000001110  <--- similar to sketch
+        //   b=0b101111110000  <--- similar to sketch2
+        //mask=0b111111110000
+        //r = a ^ ((a ^ b) & mask); bin(r)
+        //0b10111110'
+
+        //System.out.printf("nTiles=%d, blockSize=6\n", nTiles);
+        //System.out.printf("sketch=%62s\n", Long.toBinaryString(sketch));
+        //System.out.printf("sketch=%62s\n", Long.toBinaryString(sketch2));
+
+        sketch = sketch ^ ((sketch ^ sketch2) & 0b111111000000L);
+
+        //System.out.printf("merged=%62s\n", Long.toBinaryString(sketch));
+
+        return sketch;
 
         /*
         for nTiles <=7
@@ -873,42 +925,23 @@ sketch overlaps here:
                                                          210987654321098765432109876543210987654321098765432109876543210
                                         kMask1      =                             0b111111000000000000000000000000000000;
          */
-        /*
-        editing for nTiles <= 10
-
-        overlaps here so need to
-        use more than one sketch or increase
-        the intervals in multiplier
+         /*
+        for nTiles 7 - 10
+        shift tiled down by 6*6, leaving blocks 6:9
+        mask = 0b111100000000000000000000
+        last shift = 20
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                                                          _00000100000100000100000100000
+                                                                             BLOCK              9     8     7     6
+                                                                                           9     8     7     6
+                                                                                      9     8     7     6
+                                                                                 9     8     7     6
 
                                                            6         5         4         3         2         1
                                                          210987654321098765432109876543210987654321098765432109876543210
-                                                         000100000100000100000100000100000100000100000100000100000100000
-
-                                                            9     8     7     6     5     4     3     2     1     0     L
-                                                       9     8     7     6     5     4     3     2     1     0     L
-                                                  9     8     7     6     5     4     3     2     1     0     L
-                                             9     8     7     6     5     4     3     2     1     0     L
-                                        9     8     7     6     5     4     3     2     1     0     L
-                                   9     8     7     6     5     4     3     2     1     0     L
-                              9     8     7     6     5     4     3     2     1     0     L
-                         9     8     7     6     5     4     3     2     1     0     L
-                    9     8     7     6     5     4     3     2     1     0     L
-               9     8     7     6     5     4     3     2     1     0     L
-
-                                                           6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
-                                        kMask1      =     0b111111111100000000000000000000000000000000000000000000000000;
-
+                                        kMask1      =                                         0b111100000000000000000000;
          */
-
-        /*System.out.printf("\nkMask=\n%63s\n" +
-                "kMult=\n%63s\n" +
-                "kShift=%d\n" +
-                "(tiled * kMult) & kMask=\n%63s\n" +
-                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
-                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
-                Long.toBinaryString((tiled * kMult) & kMask),
-                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
     }
 
     /**
@@ -946,8 +979,6 @@ sketch overlaps here:
         long sketch = ((tiled * kMult) & kMask) >> kShift;
 
         if (nTiles < 6) {
-            // trim the sketch to bit length = nTiles
-            sketch >>= (5 - nTiles);
             return sketch;
         }
 
@@ -976,8 +1007,6 @@ sketch overlaps here:
         sketch = sketch ^ ((sketch ^ sketch2) & 0b1111100000L);
 
         if (nTiles < 11) {
-            // trim the sketch to bit length = nTiles
-            sketch >>= (10 - nTiles);
             return sketch;
         }
 
@@ -988,9 +1017,6 @@ sketch overlaps here:
 
         // sketch is 10 bits, sketch2 is 5 bits
         sketch = sketch ^ ((sketch ^ sketch2) & 0b111110000000000L);
-
-        // trim the sketch to bit length = nTiles
-        sketch >>= (12 - nTiles);
 
         return sketch;
         /*
