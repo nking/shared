@@ -920,6 +920,7 @@ sketch overlaps here:
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 5 bits
@@ -929,7 +930,7 @@ sketch overlaps here:
      *               the sketch multiplier.
      * @return
      */
-    public static long sketch5(final long tiled, final int nTiles) {
+    public static long sketch5(long tiled, final int nTiles) {
 
         if (nTiles == 0) {
             return 0;
@@ -945,18 +946,53 @@ sketch overlaps here:
         long sketch = ((tiled * kMult) & kMask) >> kShift;
 
         if (nTiles < 6) {
+            // trim the sketch to bit length = nTiles
+            sketch >>= (5 - nTiles);
             return sketch;
         }
 
-        perform up to 2 more sketches for blocks higher than 5 and a bit set for block 10 if nTiles == 11
+        //TODO: consider how to implement a word-level parallel shift right to reduce the tiled values to just the flags?
+        // involves a division which is expensive?
 
-        note that cannot increase the multiplier for nTiles=12 to use an interval of 11 because
-        the highest bit in the multiplied number that needs to be masked to extract the sketch
-        would be > 62 bits.
+        // sketch 5 tiles at a time, and merge after each
 
-        considering using an interval of 7 bits in the multiplier to be able to sketch 7 blocks at a time
-        then the maximum total number of sketches is 2 instead of 3
+        System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        // shift down by the 5 blocks we just sketched:
+        tiled >>= 25;
+        System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
 
+        // change the shift to reserve space of 5 at the end to merge the 2 sketches:
+        kShift -= 5;
+        long sketch2 = ((tiled * kMult) & kMask) >> kShift;
+
+        //from https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        // Merge bits from two values according to a mask
+        //   a=0b000000001110  <--- similar to sketch
+        //   b=0b101111110000  <--- similar to sketch2
+        //mask=0b111111110000
+        //r = a ^ ((a ^ b) & mask); bin(r)
+        //0b10111110'
+
+        sketch = sketch ^ ((sketch ^ sketch2) & 0b1111100000L);
+
+        if (nTiles < 11) {
+            // trim the sketch to bit length = nTiles
+            sketch >>= (10 - nTiles);
+            return sketch;
+        }
+
+        // one more round of sketch and merge
+        tiled >>= 25;
+        kShift -= 5;
+        sketch2 = ((tiled * kMult) & kMask) >> kShift;
+
+        // sketch is 10 bits, sketch2 is 5 bits
+        sketch = sketch ^ ((sketch ^ sketch2) & 0b111110000000000L);
+
+        // trim the sketch to bit length = nTiles
+        sketch >>= (12 - nTiles);
+
+        return sketch;
         /*
         for nTiles <=5
                                                            6         5         4         3         2         1
@@ -998,15 +1034,6 @@ sketch overlaps here:
                                                          210987654321098765432109876543210987654321098765432109876543210
                                         kMask1      =     0b111111111111000000000000000000000000000000000000000000000000;
          */
-
-        /*System.out.printf("\nkMask=\n%63s\n" +
-                "kMult=\n%63s\n" +
-                "kShift=%d\n" +
-                "(tiled * kMult) & kMask=\n%63s\n" +
-                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
-                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
-                Long.toBinaryString((tiled * kMult) & kMask),
-                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
     }
 
     /**
@@ -1108,18 +1135,46 @@ sketch overlaps here:
 
     }
 
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of  bits
+     * and embedded tile size of 1 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A0B0C0D0, this method would return ABCD.
+     <pre>
+     reference:
+     https://stackoverflow.com/questions/30539347/2d-morton-code-encode-decode-64bits
+     </pre>
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 2 bits
+     * and embedded tile size of 1 bits
+     *
+     * @return
+     */
+    public static long sketch2(final long tiled) {
+
+        // can do this with 5 sketches and 5 merges
+
+        /* else, use a down shift by 1, then 6 magic number shifts and masks
+        from https://stackoverflow.com/questions/30539347/2d-morton-code-encode-decode-64bits
+        x = x & 0x5555555555555555;
+        x = (x | (x >> 1))  & 0x3333333333333333;
+        x = (x | (x >> 2))  & 0x0F0F0F0F0F0F0F0F;
+        x = (x | (x >> 4))  & 0x00FF00FF00FF00FF;
+        x = (x | (x >> 8))  & 0x0000FFFF0000FFFF;
+        x = (x | (x >> 16)) & 0x00000000FFFFFFFF;
+        */
          */
 
-        /*System.out.printf("\nkMask=\n%63s\n" +
-                "kMult=\n%63s\n" +
-                "kShift=%d\n" +
-                "(tiled * kMult) & kMask=\n%63s\n" +
-                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
-                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
-                Long.toBinaryString((tiled * kMult) & kMask),
-                Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
+        long sketch = tiled >> 1;
+        //                                                              6         5         4         3         2         1
+        //                                                            210987654321098765432109876543210987654321098765432109876543210
+        sketch = sketch & 0x5555555555555555L;                    //0b101010101010101010101010101010101010101010101010101010101010101
+        sketch = (sketch | (sketch >> 1))  & 0x3333333333333333L; // 0b11001100110011001100110011001100110011001100110011001100110011
+        sketch = (sketch | (sketch >> 2))  & 0x0F0F0F0F0F0F0F0FL; //   0b111100001111000011110000111100001111000011110000111100001111
+        sketch = (sketch | (sketch >> 4))  & 0x00FF00FF00FF00FFL; //       0b11111111000000001111111100000000111111110000000011111111
+        sketch = (sketch | (sketch >> 8))  & 0x0000FFFF0000FFFFL; //               0b111111111111111100000000000000001111111111111111
+        sketch = (sketch | (sketch >> 16)) & 0x00000000FFFFFFFFL; //                               0b11111111111111111111111111111111
 
-        return ((tiled * kMult) & kMask) >> kShift;
+        return sketch;
     }
 
     /**
