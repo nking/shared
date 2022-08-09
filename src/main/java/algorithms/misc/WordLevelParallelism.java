@@ -67,7 +67,7 @@ public class WordLevelParallelism {
         // the block number in bits, e.g. 6th block is 0b1000000
         long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);
 
-        return highestBitSetIn(sketch, nTiles+1);
+        return highestBitSetIn(sketch, tileBitLength);
     }
 
     /**
@@ -508,76 +508,122 @@ public class WordLevelParallelism {
             }*/
         }
 
-        int i0 = 0;
-        // e.g. for bSz=8, kMult=(1<<8)|(1<<0) etc
-        long kMult = 0;
-        int i;
-        for (i = 0; i < (nTiles - 1); ++i) {
-            kMult |= (1L << i0);
-            i0 += bSz;
+        final long kMult;
+        final long kMask;
+        final long kShift;
+        long sumBits;
+
+        switch(bSz) {
+            case 8:
+                // for nTiles=7, need 3-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000000001000000010000000100000001000000010000000100000001L;
+                kMask = 0b00001110000000000000000000000000000000000000000000000000000000L;
+                //              A0000000B0000000C0000000D0000000E0000000F0000000G0000000L
+                kShift = 55;
+                return ((comparison * kMult) & kMask) >> kShift;
+            case 7:
+                // for nTiles = 8, need 4 bits in mask
+                // kMult=(1<<0) | (1<<7) | (1<<14) | (1<<21) | (1<<28) | (1<<35) | (1<<42) | (1<<49)
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000000010000001000000100000010000001000000100000010000001L;
+                kMask = 0b00011110000000000000000000000000000000000000000000000000000000L;
+                //              10000001000000100000010000001000000100000010000001000000;
+                kShift = 55;
+                return ((comparison * kMult) & kMask) >> kShift;
+            case 6:
+                // for nTiles = 10, need 4 bits in mask
+                // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36) | (1<<42) | (1<<48) | (1<<54)
+                //           6         5         4         3         2         1
+                //          10987654321098765432109876543210987654321098765432109876543210
+                //kMult = 0b00000001000001000001000001000001000001000001000001000001000001L;
+                //kMask =    0b11110000000000000000000000000000000000000000000000000000000L;
+                //            A00000B00000C00000D00000E00000F00000G00000H00000I00000J00000L;
+                // not enough space in 62 bits for the bit mask, so handle nTiles = 9,
+                // then set a higher bit if block 9 high bit is set
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000000001000001000001000001000001000001000001000001000001L;
+                kMask =      0b111100000000000000000000000000000000000000000000000000000L;
+                //                  A00000B00000C00000D00000E00000F00000G00000H00000I00000L;
+                kShift = 53;
+                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                sumBits += (comparison >> 59);
+                return sumBits;
+            case 5:
+                // for nTiles = 12, need 4 bits in mask
+                // not enough space for mask, so will calculate for nTiles=11 and set the high bit for last
+                // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25) | (1<<30) | (1<<35) | (1<<40) | (1<<45) | (1<<50) | (1<<55)
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000000100001000010000100001000010000100001000010000100001L;
+                kMask =     0b1111000000000000000000000000000000000000000000000000000000L;
+                //           A0000B0000C0000D0000E0000F0000G0000H0000I0000J0000K0000L0000L;
+                kShift = 54;
+                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                sumBits += (comparison >> 59);
+                return sumBits;
+            case 4:
+                // for nTiles = 15, need 4 bits in mask
+                // not enough space for nTiles=15 and 4 bits of mask,
+                // so will calculate sum for nTiles=14 and set last high bit
+                // kMult=(1<<0) | (1<<4) | (1<<8) | (1<<12) | (1<<16) | (1<<20) | (1<<24) | (1<<28) | (1<<32) | (1<<36)
+                // | (1<<40) | (1<<44) | (1<<48) | (1<<52)
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000010001000100010001000100010001000100010001000100010001L;
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMask =    0b11110000000000000000000000000000000000000000000000000000000L;
+                //           A0000B0000C0000D0000E0000F0000G0000H0000I0000J0000K0000L0000L;
+                kShift = 55;
+                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                sumBits += (comparison >> 59);
+                return sumBits;
+            case 3:
+                // for nTiles = 20, need 5 bits in mask.
+                // not enough space in 62 bits to hold the 5 bit mask for nTiles=20,
+                // so will handle nTiles=18 and set high bits for blocks 18 and 19
+                // kMult=(1<<0) | (1<<3)  | (1<<6)  | (1<<9)  | (1<<12) | (1<<15) | (1<<18) | (1<<21) | (1<<24) | (1<<27)
+                //    | (1<<30) | (1<<33) | (1<<36) | (1<<39) | (1<<42) | (1<<45) | (1<<48) | (1<<51)
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000001001001001001001001001001001001001001001001001001001L;
+                kMask =     0b11111000000000000000000000000000000000000000000000000000000L;
+                kShift = 54;
+                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                comparison >>= 56;
+                sumBits += (comparison & 0b1) + ((comparison >> 3) & 0b1);
+                return sumBits;
+            case 2:
+                editing here for a more efficient way
+                // for nTiles = 31, need 5 bits in mask.
+                // not enough space in 62 bits to hold the 5 bit mask for nTiles=31,
+                // so will handle nTiles=29
+                // then set a higher bit if block 29 high bit is set and same for block 30
+                // kMult=(1<<0) | (1<<2)  | (1<<4)  | etc
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000101010101010101010101010101010101010101010101010101010101L;
+                //              9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1
+                //kMask = 0b;
+                //            1_2_3_4_5_6_7_8_9_0_1_2_3_4_5_6_7_8_9_0_1_2_3_4_5_6_7_8_9_0_1_L
+                //kShift = 38;
+                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                break;
+            case 1:
+                // for nTiles = 62, need 6 bits in mask.
+                //         6         5         4         3         2         1
+                //        10987654321098765432109876543210987654321098765432109876543210
+                kMult = 0b00000000000000000000000000000000000000000000000000000000000001L;
+                kMask = 0b0;
+                editing  should be a more efficient way to impl this one
+                break;
+            default:
+                throw new UnsupportedOperationException("not yet implemented");
         }
-
-        int nBitsInMask = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
-        long kMask = 0;
-        int b2 = ((nTiles - (1 + nBExtra)) * bSz) - 1;
-        for (i = 0; i < nBitsInMask; ++i) {
-            kMask |= (1L << (b2 + i));
-        }
-        int kShift = (bSz * nTiles) - (bSz * (nBExtra + 1)) - 1;
-        int kShift2 = (bSz * nTiles) - 1 - (nBExtra * bSz);
-
-        long s1 = (((comparison * kMult) & kMask) >> kShift);
-        long s2 = (comparison >> kShift2);
-
-        /*System.out.printf("\nkMask= %30s\nkMult= %30s\nkShift=%d\nkShift2=%d\n" +
-                "nBExtra=%d\n" +
-                "(((comparison * kMult) & kMask) >> kShift)=\n%37s\n=%d" +
-                "\n(comparison >> kShift2)=\n%37s\n=%d\n",
-                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift, kShift2, nBExtra,
-                Long.toBinaryString(s1), s1, Long.toBinaryString(s2), s2);
-         */
-
-        long sum = s1 + s2;
-
-        return sum;
-
-        /*
-        case 1:
-            caveat: the first example is for a 64-bit string, and in java we're limited to unsigned 62 bit length.
-            sumOf for 8 bit tiling of 7 bit bitstrings:
-                       6         5         4         3         2         1
-                    3210987654321098765432109876543210987654321098765432109876543210
-            value=0b1000000010000000100000000000000000000000000000000000000000000000#<== 8 tiles comparison
-            kMult=0b0000000000000001000000010000000100000001000000010000000100000001#<== 7 set bits
-            kMask=0b0000001110000000000000000000000000000000000000000000000000000000#<== 3 bit mask
-            kShift = 64 - 8 - 1
-            sum=(((value * kMult) & kMask) >> kShift) + (value >> 62)
-
-        case 2:
-            sumOf for 6 bit tiling of 5 bit bitstrings, 10 tiles (total was 64 bits, is now 60 bits):
-                       6         5         4         3         2         1
-                    3210987654321098765432109876543210987654321098765432109876543210
-            value=0b0000100000100000100000100000100000100000100000100000100000100000 #<== 10 tiles comparison
-            kMult=0b0000000000000001000001000001000001000001000001000001000001000001 #<== 9 set bits
-            kMask=0b0000000111100000000000000000000000000000000000000000000000000000 #<== 4 bit mask
-                     # the number of tiles fits in 4 bits, so set the 4 bits at start of 2nd block
-            kShift = 60 - 6 - 1
-            sum=(((value * kMult) & kMask) >> kShift) + (value >> 59)
-
-        case 3:
-            sumOf for 3 bit tiling of 2 bit bitstrings.  21 tiles (total was 64 bits, is now 62 bits.
-            because 21 is 5 bits, need to reserve an extra bit at top of array, so can only
-            pack 20 tiles into the tiled bit array.
-                       6         5         4         3         2         1
-                    3210987654321098765432109876543210987654321098765432109876543210
-            value=0b0000100100100100100100100100100100100100100100100100000000000000 # 20 tiles comparison, 16 set
-            kMult=0b0000000001001001001001001001001001001001001001001001001001001001 # 19 set bits
-            kMask=0b0000001111100000000000000000000000000000000000000000000000000000 # 5 bit mask, set from 3rd block?
-            # need an additional block shift for 5 bit mask:
-            kShift = 60 - 6 - 1 # previously, for 3 bit mask, kShift was tiledBitLength - (tileBitLength + 1) - 1
-            kShift2 = 60 - 1 - 3 # previously, for 3 bit mask, kShift2 was tiledBitLength - 1
-            sum=(((value * kMult) & kMask) >> kShift) + (value >> kShift2)
-        */
     }
 
     /**
@@ -613,11 +659,11 @@ public class WordLevelParallelism {
         final int bSz = 8;
 
         // e.g. for bSz=8, kMult=(1<<8)|(1<<0) etc
-        //               6         5         4         3         2         1
-        //             210987654321098765432109876543210987654321098765432109876543210
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
         //long kMult = 0b000000100000001000000010000000100000001000000010000000100000001L;
-        long kMult = 0b000000000000001000000010000000100000001000000010000000100000001L;
-        long kMask = 0b000001110000000000000000000000000000000000000000000000000000000L;
+        long kMult = 0b00000000000001000000010000000100000001000000010000000100000001L;
+        long kMask = 0b00001110000000000000000000000000000000000000000000000000000000L;
 
         int kShift = 64-8-1;
         int kShift2 = 63;
@@ -697,7 +743,10 @@ public class WordLevelParallelism {
         }
 
         // e.g. for bitstringLength=7 blockSize=8, kMult=(1<<0) | (1<<7) | (1<<14) etc
-        long kMult   = 0b0000000000000000000001000000100000010000001000000100000010000001L;
+        //                6         5         4         3         2         1
+        //               10987654321098765432109876543210987654321098765432109876543210
+        //                     10000001000000100000010000001000000100000010000001000000
+        long kMult   = 0b00000000000000000001000000100000010000001000000100000010000001L;
         long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;
         int kShift   = 49;
 
@@ -759,9 +808,9 @@ public class WordLevelParallelism {
         }
 
         // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36)
-        //                     6         5         4         3         2         1
-        //                   210987654321098765432109876543210987654321098765432109876543210
-        final long kMult = 0b000000000000000000000000001000001000001000001000001000001000001L;
+        //                    6         5         4         3         2         1
+        //                   10987654321098765432109876543210987654321098765432109876543210
+        final long kMult = 0b00000000000000000000000001000001000001000001000001000001000001L;
         final long kMask = 0b1111111000000000000000000000000000000000000000000L;
         int kShift = 42;
         long sketch = ((tiled * kMult) & kMask) >> kShift;
@@ -770,19 +819,17 @@ public class WordLevelParallelism {
             return sketch;
         }
 
-        //TOOD: consider more efficient ways for these last few lines
-        // considering:
-        //Merge bits from two values according to a mask
-        //https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
-        //r = a ^ ((a ^ b) & mask);
+        //TODO: consider more efficient ways for these last few lines
 
+        sketch += (((tiled>>56) & 0b1) << 7);
+/*
         // set bit 7 of sketch to the high bit of block 8
         if ((tiled & (1L << 56)) != 0) {
             sketch |= (1L << 7);
         } else {
             sketch &= ~(1L << 7);
         }
-
+*/
         return sketch;
 
         /*
@@ -865,8 +912,8 @@ sketch overlaps here:
         }
 
         // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25)
-        //          6         5         4         3         2         1
-        //        210987654321098765432109876543210987654321098765432109876543210
+        //               6         5         4         3         2         1
+        //              10987654321098765432109876543210987654321098765432109876543210
         long kMult = 0b000000000000000000000000000000000000010000100001000010000100001L;
         long kMask = 0b111111000000000000000000000000000000L;
         long kShift = 30;
@@ -1030,7 +1077,7 @@ sketch overlaps here:
         /*
         for nTiles <=5
                                                            6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                          10987654321098765432109876543210987654321098765432109876543210
                                                           00_0000_0000_0000_0000_0000_0000_00001000010000100001000010000
                                                                                                4    3    2    1    0    L
                                                                                            4    3    2    1    0    L
@@ -1039,7 +1086,7 @@ sketch overlaps here:
                                                                                4    3    2    1    0    L
 
                                                            6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                          10987654321098765432109876543210987654321098765432109876543210
                                         kMask1      =                                        0b1111100000000000000000000;
          */
         /*
@@ -1049,7 +1096,7 @@ sketch overlaps here:
         use more than one sketch
 
                                                            6         5         4         3         2         1
-                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                          10987654321098765432109876543210987654321098765432109876543210
                                                           00100001000010000100001000010000100001000010000100001000010000
                                                             B    A    9    8    7    6    5    4    3    2    1    0    L
                                                         B    A    9    8    7    6    5    4    3    2    1    0    L
@@ -1101,9 +1148,9 @@ sketch overlaps here:
         // TODO: more efficient ways to implement this?  intrinsics?
 
         // kMult=(1<<0) | (1<<3) | (1<<6) | (1<<9)
-        //          6         5         4         3         2         1
-        //        210987654321098765432109876543210987654321098765432109876543210
-        long kMult = 0b000000000000000000000000000000000000000000000000000001001001001L;
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+        long kMult = 0b00000000000000000000000000000000000000000000000000001001001001L;
         long kMask = 0b1111000000000000L;
         int kShift = 12;
         long sketch = ((tiled * kMult) & kMask) >> kShift;
@@ -1226,7 +1273,7 @@ sketch overlaps here:
 
         long sketch = tiled >> 1;
         //                                                              6         5         4         3         2         1
-        //                                                            210987654321098765432109876543210987654321098765432109876543210
+        //                                                             10987654321098765432109876543210987654321098765432109876543210
         sketch = sketch & 0x5555555555555555L;                    //0b101010101010101010101010101010101010101010101010101010101010101
         sketch = (sketch | (sketch >> 1))  & 0x3333333333333333L; // 0b11001100110011001100110011001100110011001100110011001100110011
         sketch = (sketch | (sketch >> 2))  & 0x0F0F0F0F0F0F0F0FL; //   0b111100001111000011110000111100001111000011110000111100001111
@@ -1276,7 +1323,7 @@ sketch overlaps here:
             } case 1: {
                 return highestBitSetIn1(value);
             } default: {
-                throw new UnsupportedOperationException("not a supported bitlength");
+                throw new UnsupportedOperationException(bitlength + " is not a supported bitlength");
             }
         }
     }
@@ -1329,9 +1376,9 @@ sketch overlaps here:
          * That bottom string is the concatenation of all the powers of two listed
          * above, padded with zeros betweeh the elements.
          */
-                           //  6         5         4         3         2         1
-                          // 210987654321098765432109876543210987654321098765432109876543210
-        long kComparator = 0b000000001000000001000000001000000001000000001000000001000000001L;
+                           // 6         5         4         3         2         1
+                          // 10987654321098765432109876543210987654321098765432109876543210
+        long kComparator = 0b00000001000000001000000001000000001000000001000000001000000001L;
 
         /* We need to spray out seven copies of the value so that we can compare
          * multiple copies of it in parallel. To do this, we essentially want to make
@@ -1429,18 +1476,18 @@ sketch overlaps here:
          * This corresponds to a multiplication by 2^0 + 2^7 + 2^14 + 2^21 + ...
          * It is (1<<0) | (1<<7) | (1<<14) | (1<<21) | (1<<28) | (1<<35)
          */
-        //                   6         5         4         3         2         1
-        //                 210987654321098765432109876543210987654321098765432109876543210
-        long kSpreader = 0b000000000000000000000000000100000010000001000000100000010000001L;
+        //                  6         5         4         3         2         1
+        //                 10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b00000000000000000000000000100000010000001000000100000010000001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
          * the byte - we need to recycle that bit for other purposes.)
          * (1<<6) | (1<<13) | (1<<20) | (1<<27) | (1<<34) | (1<<41)
          */
-        //               6         5         4         3         2         1
-        //             210987654321098765432109876543210987654321098765432109876543210
-        long kMask = 0b000000000000000000000100000010000001000000100000010000001000000L;
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b00000000000000000000100000010000001000000100000010000001000000L;
 
         /* Perform the parallel comparison:
          *
@@ -1513,18 +1560,18 @@ sketch overlaps here:
          * This corresponds to a multiplication by 2^0 + 2^6 + 2^12 + 2^18 + ...
          * It is (1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24)
          */
-        //                   6         5         4         3         2         1
-        //                 210987654321098765432109876543210987654321098765432109876543210
-        long kSpreader = 0b000000000000000000000000000000000000001000001000001000001000001L;
+        //                  6         5         4         3         2         1
+        //                 10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b00000000000000000000000000000000000001000001000001000001000001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
          * the byte - we need to recycle that bit for other purposes.)
          * (1<<5) | (1<<11) | (1<<17) | (1<<23) | (1<<29)
          */
-        //               6         5         4         3         2         1
-        //             210987654321098765432109876543210987654321098765432109876543210
-        long kMask = 0b000000000000000000000000000000000100000100000100000100000100000L;
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b00000000000000000000000000000000100000100000100000100000100000L;
 
         /* Perform the parallel comparison:
          *
@@ -1597,18 +1644,18 @@ sketch overlaps here:
          * This corresponds to a multiplication by 2^0 + 2^5 + 2^10 + 2^15
          * It is (1<<0) | (1<<5) | (1<<10) | (1<<15)
          */
-        //                   6         5         4         3         2         1
-        //                 210987654321098765432109876543210987654321098765432109876543210
-        long kSpreader = 0b000000000000000000000000000000000000000000000001000010000100001L;
+        //                  6         5         4         3         2         1
+        //                 10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b00000000000000000000000000000000000000000000001000010000100001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
          * the byte - we need to recycle that bit for other purposes.)
          * (1<<4) | (1<<9) | (1<<14) | (1<<19)
          */
-        //               6         5         4         3         2         1
-        //             210987654321098765432109876543210987654321098765432109876543210
-        long kMask = 0b000000000000000000000000000000000000000000010000100001000010000L;
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b00000000000000000000000000000000000000000010000100001000010000L;
 
         /* Perform the parallel comparison:
          *
@@ -1682,17 +1729,17 @@ sketch overlaps here:
          * It is (1<<0) | (1<<4) | (1<<8)
          */
         //                   6         5         4         3         2         1
-        //                 210987654321098765432109876543210987654321098765432109876543210
-        long kSpreader = 0b000000000000000000000000000000000000000000000000000000100010001L;
+        //                 10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b00000000000000000000000000000000000000000000000000000100010001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
          * the byte - we need to recycle that bit for other purposes.)
          * (1<<3) | (1<<7) | (1<<11)
          */
-        //               6         5         4         3         2         1
-        //             210987654321098765432109876543210987654321098765432109876543210
-        long kMask = 0b000000000000000000000000000000000000000000000000000100010001000L;
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b00000000000000000000000000000000000000000000000000100010001000L;
 
         /* Perform the parallel comparison:
          *
@@ -1812,8 +1859,8 @@ sketch overlaps here:
         // Positions of all the high bits within each block. (1<<7)|(1<<15)|(1<<23)|(1<<31)|(1<<39)|(1<<47)|(1<<55)|(1<<64)
         final long kHighBits = 0b000000010000000100000001000000010000000100000001000000010000000L;
     //    final long kHighBits =0b1000000010000000100000001000000010000000100000001000000010000000L;
-        //                         6         5         4         3         2         1
-        //                      3210987654321098765432109876543210987654321098765432109876543210
+        //                       6         5         4         3         2         1
+        //                      10987654321098765432109876543210987654321098765432109876543210
         long highBitsSet = value & kHighBits;
 
         /* Now, do a parallel comparison on the 7-bit remainders of each block to
@@ -1840,9 +1887,9 @@ sketch overlaps here:
          * the flags, and we end up with what we're looking for.
          */
         // (1<<0) | (1<<8) | (1<<16) | (1<<24)| (1<<32) | (1<<40) | (1<<48) | (1<<56)
-        //                    6         5         4         3         2         1
-        //                  210987654321098765432109876543210987654321098765432109876543210
-         long kLowBits =  0b000000100000001000000010000000100000001000000010000000100000001L;
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+         long kLowBits =  0b00000100000001000000010000000100000001000000010000000100000001L;
          long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
@@ -1884,8 +1931,8 @@ sketch overlaps here:
         // Positions of all the high bits within each block.
         // (1<<6)|(1<<13)|(1<<20)|(1<<27)|(1<<34)|(1<<41)|(1<<48)|(1<<55)|(1<<62)
         final long kHighBits = 0b100000010000001000000100000010000001000000100000010000001000000L;
-        //                         6         5         4         3         2         1
-        //                       210987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+        //                       10987654321098765432109876543210987654321098765432109876543210
         long highBitsSet = value & kHighBits;
 
         /* Now, do a parallel comparison on the 7-bit remainders of each block to
@@ -1912,9 +1959,9 @@ sketch overlaps here:
          * the flags, and we end up with what we're looking for.
          */
         // (1<<0) | (1<<7) | (1<<14) | (1<<21)| (1<<28) | (1<<35) | (1<<42) | (1<<49) | (1<<56)
-        //                     6         5         4         3         2         1
-        //                   210987654321098765432109876543210987654321098765432109876543210
-        long kLowBits =    0b000000100000010000001000000100000010000001000000100000010000001L;
+        //                    6         5         4         3         2         1
+        //                   10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =    0b00000100000010000001000000100000010000001000000100000010000001L;
         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
@@ -1955,9 +2002,9 @@ sketch overlaps here:
          */
         // Positions of all the high bits within each block.
         // (1<<5)|(1<<11)|(1<<17)|(1<<23)|(1<<29)|(1<<35)|(1<<41)|(1<<47)|(1<<53) |(1<<59)
-        final long kHighBits = 0b000100000100000100000100000100000100000100000100000100000100000L;
-        //                       210987654321098765432109876543210987654321098765432109876543210
-        //                         6         5         4         3         2         1
+        final long kHighBits = 0b00100000100000100000100000100000100000100000100000100000100000L;
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
 
         long highBitsSet = value & kHighBits;
 
@@ -1985,9 +2032,9 @@ sketch overlaps here:
          * the flags, and we end up with what we're looking for.
          */
         // (1<<0) | (1<<6) | (1<<12) | (1<<18)| (1<<24) | (1<<30) | (1<<36) | (1<<42) | (1<<48) | (1<<54) | (1<<60)
-        //                     6         5         4         3         2         1
-        //                  3210987654321098765432109876543210987654321098765432109876543210
-        long kLowBits =    0b001000001000001000001000001000001000001000001000001000001000001L;
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =   0b01000001000001000001000001000001000001000001000001000001000001L;
         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
