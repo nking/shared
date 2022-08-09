@@ -554,7 +554,7 @@ public class WordLevelParallelism {
                 sumBits += (comparison >> 59);
                 return sumBits;
             case 5:
-                // for nTiles = 12, need 4 bits in mask
+                // for nTiles = 12, need 4 bits in mask.
                 // not enough space for mask, so will calculate for nTiles=11 and set the high bit for last
                 // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25) | (1<<30) | (1<<35) | (1<<40) | (1<<45) | (1<<50) | (1<<55)
                 //         6         5         4         3         2         1

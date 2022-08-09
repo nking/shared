@@ -116,6 +116,13 @@ public class WordLevelParallelismTest extends TestCase {
         // the sketch input is a tiled bit array of all 0's except the flag bits.
         //  it extracts the flag bits and concatenates them and returns that.
 
+        int nRTests = 100;
+        Random rand = Misc0.getSecureRandom();
+        long seed = System.nanoTime();
+        //seed = 232949844799850L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
         SubsetChooser chooser;
         long comp;
         // b is block size in bits
@@ -126,6 +133,7 @@ public class WordLevelParallelismTest extends TestCase {
         long expectedSketch;
         int[] selectedIndexes;
         // the block size 2 and 1 sketches take a long time because of the test use of subset chooser
+        // so will use random tests for those below this block
         for (int b = 8; b > 2; --b) {//8
 
             nb = (int) Math.floor(62. / b);
@@ -173,14 +181,46 @@ public class WordLevelParallelismTest extends TestCase {
             }
         }
 
-        //#7 tiles, 4 have set bit flags
-        long value = 0b10000000100000001000000010000000000000000000000000000000L;
+        // for block sizes of 2 and 1
+        int r;
+        for (int b = 2; b > 0; --b) {
+            nb = (int) Math.floor(62. / b);
+            // test random combinations of the blocks' flag bits for  [0, nb-1] inclusive
+            for (int k = 0; k < nb; ++k) {
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                comp = 0L;
+                if (k == 0) {
+                    sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
+                    //System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
+                    continue;
+                }
+                // randomly choose 3 indexes in the range [0, nb-1] inclusive
+                // repeat nTest times
+                for (int m = 0; m < nRTests; ++m) {
+                    comp = 0L;
+                    expectedSketch = 0L;
+                    // set k bits randomly
+                    for (int n = 0; n < k; ++n) {
+                        r = rand.nextInt(nb);
+                        comp |= (1L << ((b - 1) + r * b));
+                        expectedSketch |= (1L << r);
+                    }
+                    // test that the sketch finds the same set bits
+                    sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
 
-        sketch = WordLevelParallelism.sketch(value, 7, 7);
-        System.out.printf("sketch=%62s\n", Long.toBinaryString(sketch));
-        long expected = 0b1111000L;
-        //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
-        assertEquals(expected, sketch);
+                    if (expectedSketch != sketch) {
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
+                        //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                        sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
+                        System.out.printf("  sketch=%8s\n", Long.toBinaryString(sketch));
+                        System.out.printf("e sketch=%8s\n", Long.toBinaryString(expectedSketch));
+                    }
+                    assertEquals(expectedSketch, sketch);
+                }
+            }
+        }
     }
 
     public void test10Compare() {
