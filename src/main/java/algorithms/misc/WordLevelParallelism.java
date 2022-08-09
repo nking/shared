@@ -508,6 +508,7 @@ public class WordLevelParallelism {
             }*/
         }
 
+        long kMask0;
         final long kMult;
         final long kMask;
         final long kShift;
@@ -545,11 +546,13 @@ public class WordLevelParallelism {
                 // then set a higher bit if block 9 high bit is set
                 //         6         5         4         3         2         1
                 //        10987654321098765432109876543210987654321098765432109876543210
+                //comp =0b00100000100000100000100000100000100000100000100000100000100000;
                 kMult = 0b00000000000001000001000001000001000001000001000001000001000001L;
+                kMask0= 0b00000000111111111111111111111111111111111111111111111111111111L;
                 kMask =      0b111100000000000000000000000000000000000000000000000000000L;
                 //                  A00000B00000C00000D00000E00000F00000G00000H00000I00000L;
                 kShift = 53;
-                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                sumBits = (((comparison & kMask0) * kMult) & kMask) >> kShift;
                 sumBits += (comparison >> 59);
                 return sumBits;
             case 5:
@@ -558,11 +561,13 @@ public class WordLevelParallelism {
                 // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25) | (1<<30) | (1<<35) | (1<<40) | (1<<45) | (1<<50) | (1<<55)
                 //         6         5         4         3         2         1
                 //        10987654321098765432109876543210987654321098765432109876543210
+                //comp =0b00100001000010000100001000010000100001000010000100001000010000;
                 kMult = 0b00000000000100001000010000100001000010000100001000010000100001L;
+                kMask0 =0b00000001111111111111111111111111111111111111111111111111111111L;
                 kMask =     0b1111000000000000000000000000000000000000000000000000000000L;
                 //           A0000B0000C0000D0000E0000F0000G0000H0000I0000J0000K0000L0000L;
                 kShift = 54;
-                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                sumBits = (((comparison&kMask0) * kMult) & kMask) >> kShift;
                 sumBits += (comparison >> 59);
                 return sumBits;
             case 4:
@@ -573,45 +578,52 @@ public class WordLevelParallelism {
                 // | (1<<40) | (1<<44) | (1<<48) | (1<<52)
                 //         6         5         4         3         2         1
                 //        10987654321098765432109876543210987654321098765432109876543210
+                //comp =0b00100010001000100010001000100010001000100010001000100010001000
                 kMult = 0b00000000010001000100010001000100010001000100010001000100010001L;
                 //         6         5         4         3         2         1
                 //        10987654321098765432109876543210987654321098765432109876543210
+                kMask0 =0b00000011111111111111111111111111111111111111111111111111111111L;
                 kMask =    0b11110000000000000000000000000000000000000000000000000000000L;
                 //           A0000B0000C0000D0000E0000F0000G0000H0000I0000J0000K0000L0000L;
                 kShift = 55;
-                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                sumBits = (((comparison & kMask0) * kMult) & kMask) >> kShift;
                 sumBits += (comparison >> 59);
                 return sumBits;
             case 3:
                 // for nTiles = 20, need 5 bits in mask.
                 // not enough space in 62 bits to hold the 5 bit mask for nTiles=20,
-                // so will handle nTiles=18 and set high bits for blocks 18 and 19
+                // so will handle nTiles=18 and then blocks 18 and 19
                 // kMult=(1<<0) | (1<<3)  | (1<<6)  | (1<<9)  | (1<<12) | (1<<15) | (1<<18) | (1<<21) | (1<<24) | (1<<27)
                 //    | (1<<30) | (1<<33) | (1<<36) | (1<<39) | (1<<42) | (1<<45) | (1<<48) | (1<<51)
                 //         6         5         4         3         2         1
                 //        10987654321098765432109876543210987654321098765432109876543210
+                //comp= 0b00100100*00100100100100100100100100100100100100100100100100100;
                 kMult = 0b00000000001001001001001001001001001001001001001001001001001001L;
-                kMask =     0b11111000000000000000000000000000000000000000000000000000000L;
-                kShift = 54;
-                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                kMask0 =0b00000000111111111111111111111111111111111111111111111111111111L;
+                kMask =     0b1111100000000000000000000000000000000000000000000000000000L;
+                kShift = 53;
+                sumBits = (((comparison & kMask0) * kMult) & kMask) >> kShift;
                 comparison >>= 56;
                 sumBits += (comparison & 0b1) + ((comparison >> 3) & 0b1);
                 return sumBits;
             case 2:
-                editing here for a more efficient way
+                paused here
                 // for nTiles = 31, need 5 bits in mask.
                 // not enough space in 62 bits to hold the 5 bit mask for nTiles=31,
-                // so will handle nTiles=29
-                // then set a higher bit if block 29 high bit is set and same for block 30
+                //     so will handle nTiles=28, then sum the last 3 blocks
                 // kMult=(1<<0) | (1<<2)  | (1<<4)  | etc
                 //         6         5         4         3         2         1
                 //        10987654321098765432109876543210987654321098765432109876543210
-                kMult = 0b00000101010101010101010101010101010101010101010101010101010101L;
-                //              9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1
-                //kMask = 0b;
-                //            1_2_3_4_5_6_7_8_9_0_1_2_3_4_5_6_7_8_9_0_1_2_3_4_5_6_7_8_9_0_1_L
-                //kShift = 38;
-                sumBits = ((comparison * kMult) & kMask) >> kShift;
+                //comp= 0b101010*0101010101010101010101010101010101010101010101010101010L
+                kMult = 0b00000001010101010101010101010101010101010101010101010101010101L;
+                //               8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1
+                kMask0 =0b00000011111111111111111111111111111111111111111111111111111111L;
+                kMask = 0b00111110000000000000000000000000000000000000000000000000000000L;
+                kShift = 55;
+                sumBits = (((comparison & kMask0) * kMult) & kMask) >> kShift;
+                comparison >>= 56;
+                sumBits += (comparison & 0b1) + ((comparison >> 2) & 0b1) + ((comparison >> 4) & 0b1);
+                return sumBits;
                 break;
             case 1:
                 // for nTiles = 62, need 6 bits in mask.
