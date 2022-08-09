@@ -7,14 +7,13 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+
+import java.util.*;
 import java.util.logging.Logger;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
 import junit.framework.TestCase;
 
 /**
@@ -306,6 +305,35 @@ public class MiscMath0Test extends TestCase {
         assertFalse(MiscMath0.isAPowerOf2(71));
 
         assertFalse(MiscMath0.isAPowerOf2(17));
+    }
+
+    public static void testNumberOfSetBits() {
+        //    public static int numberOfSetBits(long x) {
+        Random rand = new Random();
+        long seed = System.nanoTime();
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
+        int nTests = 100;
+        int nb;
+        long x;
+        int ns;
+        int r;
+        int j;
+        TIntSet set = new TIntHashSet();
+        for (int i = 0; i < nTests; ++i) {
+            x = 0;
+            set.clear();
+            // number of bits to set in x.  some may be the same bits
+            nb = rand.nextInt(62);
+            for (j = 0; j < nb; ++j) {
+                r = rand.nextInt(62);
+                set.add(r);
+                x |= (1L << r);
+            }
+            ns = MiscMath0.numberOfSetBits(x);
+            assertEquals(set.size(), ns);
+        }
     }
 
     public void testNumberOfBits() throws Exception {

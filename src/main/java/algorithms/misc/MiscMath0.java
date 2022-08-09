@@ -873,7 +873,6 @@ public class MiscMath0 {
     /**
      * find the minima and maxima of x and y and return them as
      * int[]{xMin, xMax, yMin, yMax}
-     * @param points
      * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
      */
     public static int[] findMinMaxXY(TIntSet pixelIdxs, int imgWidth) {
@@ -1009,6 +1008,29 @@ public class MiscMath0 {
             return 1;
         }
         return 64 -  Long.numberOfLeadingZeros(v);
+    }
+
+    /**
+     * determine the number of set bits.  this method uses the
+     * hamming weight which uses binary magic numbers.
+     <pre>
+     reference:
+     https://en.wikipedia.org/wiki/Hamming_weight
+     method popcount64c
+     </pre>
+     * @param x the bitstring with the set bits to count
+     * @return the number of bits set in x
+     */
+    public static int numberOfSetBits(long x) {
+        //put count of each 2 bits into those 2 bits, where the mask is 62 bits of repeated '10's
+        x -= (x >> 1) & 0x5555555555555555L;
+        //put count of each 4 bits into those 4 bits
+        x = (x & 0x3333333333333333L) + ((x >> 2) & 0x3333333333333333L);
+        //put count of each 8 bits into those 8 bits
+        x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0fL;
+        //returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ...
+        x = ((x * 0x0101010101010101L) >> 56);
+        return (int) (x & 0x7f);
     }
     
     /**
