@@ -270,6 +270,112 @@ public class WordLevelParallelismTest extends TestCase {
         assertEquals(2, sum);
     }
 
+    public void testParallelSum() {
+
+        int nRTests = 100;
+        Random rand = Misc0.getSecureRandom();
+        long seed = System.nanoTime();
+        //seed = 232949844799850L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
+        SubsetChooser chooser;
+        long comp;
+        // b is block size in bits
+        // nb is the number of blocks in the tiled bitarray.  nb*b <= 62.  this is nTiles.
+        // tileBitLength is b-1
+        int nb;
+        long sum;
+        long expectedSum;
+        int[] selectedIndexes;
+        // the block size 2 and 1 sketches take a long time because of the test use of subset chooser
+        // so will use random tests for those below this block
+        for (int b = 8; b > 2; --b) {
+
+            nb = (int) Math.floor(62. / b);
+
+            // test all combinations of the blocks' flag bits for  [0, nb-1] inclusive
+            for (int k = 0; k < nb; ++k) {
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                comp = 0L;
+                if (k == 0) {
+                    sum = WordLevelParallelism.parallelSum(comp, nb, b-1);
+                    //System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
+                    assertEquals(0L, sum);
+                    continue;
+                }
+                expectedSum = k;
+                selectedIndexes = new int[k];
+                chooser = new SubsetChooser(nb-1, k);
+                while (chooser.getNextSubset(selectedIndexes) != -1) {
+                    comp = 0L;
+                    // set the high bit of each block in selectedIndexes
+                    for (int i = 0; i < selectedIndexes.length; ++i) {
+                        //         6         5         4         3         2         1
+                        //       210987654321098765432109876543210987654321098765432109876543210
+                        //              1_______1_______1_______1_______1_______1_______1_______
+                        // block 0, b=8 =>   1_______  bit 7
+                        // block 1, b=8 =>   1_______0_______ bit 15
+
+                        comp |= (1L << ((b-1) + selectedIndexes[i] * b));
+                    }
+                    sum = WordLevelParallelism.parallelSum(comp, nb, b-1);
+
+                    if (expectedSum != sum) {
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
+                        System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                        System.out.printf("  sum=%d\n", sum);
+                        System.out.printf("e sum=%d\n", expectedSum);
+                    }
+                    assertEquals(expectedSum, sum);
+                }
+            }
+        }
+
+        // for block sizes of 2 and 1
+        int r;
+        TIntSet set = new TIntHashSet();
+        for (int b = 2; b > 0; --b) {
+            nb = (int) Math.floor(62. / b);
+            // test random combinations of the blocks' flag bits for  [0, nb-1] inclusive
+            for (int k = 0; k < nb; ++k) {
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                comp = 0L;
+                if (k == 0) {
+                    sum = WordLevelParallelism.parallelSum(comp, nb, b - 1);
+                    //System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
+                    assertEquals(0L, sum);
+                    continue;
+                }
+                // randomly choose 3 indexes in the range [0, nb-1] inclusive
+                // repeat nTest times
+                for (int m = 0; m < nRTests; ++m) {
+                    comp = 0L;
+                    set.clear();
+                    // set k bits randomly
+                    for (int n = 0; n < k; ++n) {
+                        r = rand.nextInt(nb);
+                        set.add(r);
+                        comp |= (1L << ((b - 1) + r * b));
+                    }
+                    expectedSum = set.size();
+
+                    sum = WordLevelParallelism.parallelSum(comp, nb, b - 1);
+
+                    if (expectedSum != sum) {
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
+                        //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                        System.out.printf("  sum=%d\n", sum);
+                        System.out.printf("e sum=%d\n", expectedSum);
+                    }
+                    assertEquals(expectedSum, sum);
+                }
+            }
+        }
     public void test3BitTilesSum() {
         /*
         sumOf for 3 bit tiling of 2 bit bitstrings.  21 tiles (63 bits total).
@@ -293,4 +399,5 @@ public class WordLevelParallelismTest extends TestCase {
         long sum = WordLevelParallelism.parallelSum(comparison, nTiles, tileBitLength);
         assertEquals(16, sum);
     }
+
 }
