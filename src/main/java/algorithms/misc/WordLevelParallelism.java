@@ -586,7 +586,7 @@ public class WordLevelParallelism {
                 // not enough space in the resulting addition from the multiplier to hold the 6 bits of mask
                 // (in other words, the space for the sum is 6 bits, but the intervals in addition are 0 bits.
                 // instead of the 5 or so operations used for parallelSum,
-                // one can use binary magic numbers in hamming weight to count the set bits in 16 operations.
+                // one can use binary magic numbers in hamming weight to count the set bits in 13 operations.
                 //TODO: consider more efficient methods.
                 return MiscMath0.numberOfSetBits(comparison);
             default:
