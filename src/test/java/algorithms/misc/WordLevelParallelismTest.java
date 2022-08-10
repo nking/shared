@@ -1,6 +1,8 @@
 package algorithms.misc;
 
 import algorithms.SubsetChooser;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -12,103 +14,149 @@ import java.util.Random;
  */
 public class WordLevelParallelismTest extends TestCase {
 
+    final Random rand;
+
     public WordLevelParallelismTest(String testName) {
         super(testName);
-    }
-
-
-    @SuppressWarnings("fallthrough")
-    public void testHighestBitIn() {
-        //TODO implement test
-    }
-
-    public void testHighestOneBitIn() {
-
-        Random rand = Misc0.getSecureRandom();
+        rand = Misc0.getSecureRandom();
         long seed = System.nanoTime();
-        seed = 232949844799850L;
+        //seed = 232949844799850L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
-
-        long tiled;
-        int nTiles;
-        int tileBitLength;
-        long h;
-        long v;
-        // b is block size in bits
-        // bn is block number
-        // hbn is highest block number having any set bits in it.  it's a zero-based number.
-        // v is the tiled bitarray with blocks of size bn
-        // nb is the number of blocks in the tiled bitarray.  nb*b <= 62
-        // h is the calculation of highestOneBitIn which should be == to hbn
-        int nb;
-        int r;
-        long t;
-        System.out.println("   6         5         4         3         2         1");
-        System.out.println("  10987654321098765432109876543210987654321098765432109876543210");
-        //                        0b10000000000000000000000000000000000000000000000000000000
-        //                          *       *       *       *       *       *       *
-        //TODO implement test
-
     }
 
-    public void testsHighestBlockSetIn() {
-        //TODO: finish unit tests for
-        
-        //               6         5         4         3         2         1
-        //             210987654321098765432109876543210987654321098765432109876543210
-        long tiled = 0b000000010000000100000001000000010000000100000001000000010000000L;
-        int nTiles = 7;
-        int tileBitLength = 7;
+    public void testHighestBitIn() {
+        //long highestBitSetIn(long value, int bitlength
+        // for each bitlength, randomly select 100 set bits to test
+        long value;
+        int highBit;
+        int r;
+        int nb;
+        long hb;
+        int nRTests = 100;
+        long mb;
+        for (int b = 8; b > 0; --b) {
+            // test random combinations of the blocks' flag bits for  [0, b-1] inclusive
+            for (int kBits = 1; kBits <= b; ++kBits) {
+                // randomly choose kBits indexes in the range [0, b] inclusive
+                // repeat nTest times
+                for (int m = 0; m < nRTests; ++m) {
+                    value = 0L;
+                    mb = 0L;
+                    // set k bits randomly
+                    for (int n = 0; n < kBits; ++n) {
+                        r = rand.nextInt(b);
+                        value |= (1L << r);
+                        mb = Math.max(mb, r);
+                    }
+                    hb = WordLevelParallelism.highestBitSetIn(value, b);
 
-        long h = WordLevelParallelism.highestBlockSetIn(tiled, nTiles, tileBitLength);
-        assertEquals(6L, h);
+                    if (mb != hb) {
+                        System.out.printf("b=%d, kBits=%d\n", b, kBits);
+                        System.out.printf("value=%62s\n", Long.toBinaryString(value));
+                        //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                        hb = WordLevelParallelism.highestBitSetIn(value, b);
+                        System.out.printf("  hb=%d\n", hb);
+                        System.out.printf("e hb=%d\n", mb);
+                    }
+                    assertEquals(mb, hb);
+                }
+            }
+        }
     }
 
     public void testUsedBlocksIn() {
-        //                   6         5         4         3         2         1
-        //                 210987654321098765432109876543210987654321098765432109876543210
-        long expected = 0b0000000010000000100000001000000010000000100000001000000010000000L;
-        long value    = 0b0000000010000000100000001000000010000000100000001000000010000000L;
-        long u = WordLevelParallelism.usedBlocksIn(value, 8);
-        assertEquals(expected, u);
 
-        //          6         5         4         3         2         1
-        //        210987654321098765432109876543210987654321098765432109876543210
-        value = 0b100000001000000010000001000000010000000100000000000100000000011L;
-        u = WordLevelParallelism.usedBlocksIn(value, 8);
-        assertEquals(expected, u);
+        /*
+        for each block size b=[1,8], inclusive
+           calc nb = the number of blocks in 62 bits
+           # testing:
+           no bits set within all nb blocks: result should 0
+              set all bits within all nb blocks: result should be nb blocks with highest bit set
+              randomly set [0,b-1] bits for each of the nb blocks
+         */
 
-        expected = 0b0000000010000001000000100000010000001000000100000010000001000000L;
-        value = 0b0000000010000001000000100000010000001000000100000010000001000000L;
-        u = WordLevelParallelism.usedBlocksIn(value, 7);
-        assertEquals(expected, u);
+        long tiled;
+        // b is block size in bits
+        // nb is the number of blocks in the tiled bitarray.  nb*b <= 62.  this is nTiles.
+        // u is the used blocks which is all zeroes except the high bits of blocks which had any bits set in them.
+        int nb;
+        long u;
+        int bn;
+        long expectedU;
+        int r;
+        int kBits;
+        boolean nbSet;
+        int nRTests = 1;
 
-        value = 0b0000000001000000100000110001000001100000100000010000000010000001L;
-        u = WordLevelParallelism.usedBlocksIn(value, 7);
-        assertEquals(expected, u);
+        for (int b = 8; b > 7; --b) {
 
-        expected = 0b0100000010000001000000100000010000001000000100000010000001000000L;
-        value    = 0b0100000010000001000000100000010000001000000100000010000001000000L;
-        u = WordLevelParallelism.usedBlocksIn(value, 7);
-        assertEquals(expected, u);
+            nb = (int) Math.floor(62. / b);
 
-        value    = 0b0000000100000010000001000000100000010000001000000100000010000001L;
-        u = WordLevelParallelism.usedBlocksIn(value, 7);
-        assertEquals(expected, u);
+            // test all blocks empty:
+            tiled = 0L;
+            u = WordLevelParallelism.usedBlocksIn(tiled, b);
+            assertEquals(0, u);
 
-        expected = 0b0000100000100000100000100000100000100000100000100000100000100000L;
-        value    = 0b0000100000100000100000100000100000100000100000100000100000100000L;
-        u = WordLevelParallelism.usedBlocksIn(value, 6);
-        assertEquals(expected, u);
+            // set all bits within all nb blocks: result should be nb blocks with highest bit set
+            tiled = (1L << (nb*b)) - 1L;
+            expectedU = 0;
+            for (int i = 0; i < nb; ++i) {
+                expectedU |= (1L << ((b-1) + i * b));
+            }
+            u = WordLevelParallelism.usedBlocksIn(tiled, b);
+            if (expectedU != u) {
+                System.out.printf("(2) b=%d, nb=%d\n", b, nb);
+                System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+                u = WordLevelParallelism.usedBlocksIn(tiled, b);
+                System.out.printf("    u=%62s\n", Long.toBinaryString(u));
+                System.out.printf("e   u=%8s\n", Long.toBinaryString(expectedU));
+            }
+            assertEquals(expectedU, u);
 
-        value    = 0b0001000001000001000001000001000001000001000001000001000001000001L;
-        u = WordLevelParallelism.usedBlocksIn(value, 6);
-        assertEquals(expected, u);
+            // randomly set [0,b-1] bits for each of the nb blocks
+            // repeat nRTests times
+            for (int m = 0; m < nRTests; ++m) {
+                tiled = 0L;
+                expectedU = 0L;
 
-        value    = 0b0010000010000010000010000010000010000010000010000010000010000010L;
-        u = WordLevelParallelism.usedBlocksIn(value, 6);
-        assertEquals(expected, u);
+                for (bn = 0; bn < nb; ++bn) {
+                    nbSet = false;
+                    // set kBits in each of the nb blocks
+                    kBits = 1 + rand.nextInt(b);
+                    for (int k = 0; k < kBits; ++k) {
+                        r = rand.nextInt(b);
+                        // set bit r in block nb: nb*b + r
+                        // 1_______1_______4_______3_______2_______1_______0_______
+                        //                         10987654321098765432109876543210
+                        tiled |= (1L << (bn*b + r));
+                        if (r > 0) {
+                            nbSet = true;
+                        }
+                    }
+                    if (nbSet) {
+                        expectedU |= (1L << ((bn*b) + (b-1)));
+                        //
+                    }
+                }
+                // test that the sketch finds the same set bits
+                u = WordLevelParallelism.usedBlocksIn(tiled, b);
+
+                if (expectedU != u) {
+                    System.out.printf("(3)b=%d, nb=%d\n", b, nb);
+                    System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+                    //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                    u = WordLevelParallelism.usedBlocksIn(tiled, b);
+                    System.out.printf("    u=%8s\n", Long.toBinaryString(u));
+                    System.out.printf("e   u=%8s\n", Long.toBinaryString(expectedU));
+                }
+                assertEquals(expectedU, u);
+            }
+        }
+    }
+
+    public void estHighestBlockSetIn() {
+
     }
 
     public void testSketch() {
@@ -117,11 +165,6 @@ public class WordLevelParallelismTest extends TestCase {
         //  it extracts the flag bits and concatenates them and returns that.
 
         int nRTests = 100;
-        Random rand = Misc0.getSecureRandom();
-        long seed = System.nanoTime();
-        //seed = 232949844799850L;
-        System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
 
         SubsetChooser chooser;
         long comp;
@@ -146,6 +189,7 @@ public class WordLevelParallelismTest extends TestCase {
                     sketch = WordLevelParallelism.sketch(comp, nb, b-1);
                     //System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
                     //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
+                    assertEquals(0b0, sketch);
                     continue;
                 }
                 selectedIndexes = new int[k];
@@ -193,9 +237,10 @@ public class WordLevelParallelismTest extends TestCase {
                     sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
                     //System.out.printf("comp=%62s\n", Long.toBinaryString(comp));
                     //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
+                    assertEquals(0b0, sketch);
                     continue;
                 }
-                // randomly choose 3 indexes in the range [0, nb-1] inclusive
+                // randomly choose k indexes in the range [0, nb-1] inclusive
                 // repeat nTest times
                 for (int m = 0; m < nRTests; ++m) {
                     comp = 0L;
@@ -223,7 +268,7 @@ public class WordLevelParallelismTest extends TestCase {
         }
     }
 
-    public void test10Compare() {
+    public void est10Compare() {
         int k = 0b1100111;
         //System.out.println("k=" + Integer.toBinaryString(k));
         int kBits = 7;
@@ -240,44 +285,9 @@ public class WordLevelParallelismTest extends TestCase {
         assertEquals(2, comp);
     }
 
-    public void test6BitTilesSum() {
-        /*
-        6 bit tiling of 5 bit bitstrings
-        value=0b0000100000100000100000100000100000100000100000100000100000100000 #<== 10 tiles comparison, all 10 are set
-        kMult=0b0000000000000001000001000001000001000001000001000001000001000001 #<== 9 set bits
-        kMask=0b0000000111100000000000000000000000000000000000000000000000000000 #<== 4 bit mask
-                     # the number of tiles fits in 4 bits, so set the 4 bits at start of 2nd block
-        kShift = 60 - 6 - 1
-        sum=(((value * kMult) & kMask) >> kShift) + (value >> 59)
-         */
-        long comparison = 0b0000100000100000100000100000100000100000100000100000100000100000L;
-        //System.out.println("comparison=" + Long.toBinaryString(comparison));
-
-        int nTiles = 10;
-        int tileBitLength = 5;
-
-        long sum = WordLevelParallelism.parallelSum(comparison, nTiles, tileBitLength);
-        assertEquals(10, sum);
-
-        // change compare to have 7 set bits
-        comparison = 0b0000100000100000100000100000100000100000100000000000000000000000L;
-        sum = WordLevelParallelism.parallelSum(comparison, nTiles, tileBitLength);
-        assertEquals(7, sum);
-
-        // change compare to have 2 set bits
-        comparison = 0b0000100000100000000000000000000000000000000000000000000000000000L;
-        sum = WordLevelParallelism.parallelSum(comparison, nTiles, tileBitLength);
-        assertEquals(2, sum);
-    }
-
     public void testParallelSum() {
 
         int nRTests = 100;
-        Random rand = Misc0.getSecureRandom();
-        long seed = System.nanoTime();
-        //seed = 232949844799850L;
-        System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
 
         SubsetChooser chooser;
         long comp;
@@ -350,7 +360,7 @@ public class WordLevelParallelismTest extends TestCase {
                     assertEquals(0L, sum);
                     continue;
                 }
-                // randomly choose 3 indexes in the range [0, nb-1] inclusive
+                // randomly choose k indexes in the range [0, nb-1] inclusive
                 // repeat nTest times
                 for (int m = 0; m < nRTests; ++m) {
                     comp = 0L;
@@ -376,28 +386,6 @@ public class WordLevelParallelismTest extends TestCase {
                 }
             }
         }
-    public void test3BitTilesSum() {
-        /*
-        sumOf for 3 bit tiling of 2 bit bitstrings.  21 tiles (63 bits total).
-        because 21 is 5 bits, need to reserve an extra bit at top of array, so can only
-        pack 20 tiles into the tiled bit array.
-                   6         5         4         3         2         1
-                3210987654321098765432109876543210987654321098765432109876543210
-        value=0b0000100100100100100100100100100100100100100100100100000000000000 # 20 tiles comparison, 16 set
-        kMult=0b0000000001001001001001001001001001001001001001001001001001001001 # 19 set bits
-        kMask=0b0000001111100000000000000000000000000000000000000000000000000000 # 5 bit mask, set from 3rd block?
-        # need an additional block shift for 5 bit mask:
-        kShift = 60 - 6 - 1 # previously, for 3 bit mask, kShift was tiledBitLength - (tileBitLength + 1) - 1
-        kShift2 = 60 - 1 - 3 # previously, for 3 bit mask, kShift2 was tiledBitLength - 1
-        */
-        long comparison = 0b0000100100100100100100100100100100100100100100100100000000000000L;
-        //System.out.println("comparison=" + Long.toBinaryString(comparison));
-
-        int nTiles = 20;
-        int tileBitLength = 2;
-
-        long sum = WordLevelParallelism.parallelSum(comparison, nTiles, tileBitLength);
-        assertEquals(16, sum);
     }
 
 }

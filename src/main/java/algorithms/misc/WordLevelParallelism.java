@@ -67,7 +67,7 @@ public class WordLevelParallelism {
         // the block number in bits, e.g. 6th block is 0b1000000
         long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);
 
-        return highestBitSetIn(sketch, tileBitLength);
+        return highestBitSetIn(sketch, bSz);
     }
 
     /**
@@ -1254,26 +1254,26 @@ sketch overlaps here:
 
     /**
      * Given an n-bit value, returns the index of the highest 1 bit within that
-     * value.
+     * value.  the input is not tiled.
      *
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value a bitlength number.  note that this is the same as the block size for some contexts.
-     * @param bitlength the bitlength of value
+     * @param value a bitlength number.
+     * @param valueBitLength the bit length of value.  range is [1,8] inclusive
      * @return the highest bit set in value.  the bit number is w.r.t. 0.
-     * e.g. if bitlength is 8, the return value range is [0,7] inclusive.
+     * e.g. if blockSize is 8, the return value range is [0,7] inclusive.
      */
-    public static long highestBitSetIn(long value, int bitlength) {
+    public static long highestBitSetIn(long value, int valueBitLength) {
 
         // the method name highestBitSetIn8 is a one-based index, but the bit number
         // returned is w.r.t. a zero-based index.
         // e.g. highestBitSetIn8 is the highest bit in an 8 bit value,
         //      but the returned bit range is [0,7] inclusive
         // switch is based on the block size which s bitlength + 1
-        switch (bitlength + 1) {
+        switch (valueBitLength) {
             case 8: {
                 return highestBitSetIn8(value);
             } case 7: {
@@ -1291,7 +1291,7 @@ sketch overlaps here:
             } case 1: {
                 return highestBitSetIn1(value);
             } default: {
-                throw new UnsupportedOperationException(bitlength + " is not a supported bitlength");
+                throw new UnsupportedOperationException(valueBitLength + " is not a supported valueBitLength");
             }
         }
     }
@@ -1787,6 +1787,16 @@ sketch overlaps here:
                 return usedBlocksIn7(value);
             case 6:
                 return usedBlocksIn6(value);
+            case 5:
+                return usedBlocksIn5(value);
+            case 4:
+                return usedBlocksIn4(value);
+            case 3:
+                return usedBlocksIn3(value);
+            case 2:
+                return usedBlocksIn2(value);
+            case 1:
+                return usedBlocksIn1(value);
             default:
                 throw new UnsupportedOperationException("not yet implemented");
         }
@@ -1814,7 +1824,7 @@ sketch overlaps here:
      Then edited here to allow block sizes other than 8.
      </pre>
      */
-    public static long usedBlocksIn8(long value) {
+    static long usedBlocksIn8(long value) {
 
         /* Every block with a 1 bit set in it either
          *  1. has its highest bit set, or
@@ -1886,16 +1896,8 @@ sketch overlaps here:
      Then edited here to allow block sizes other than 8.
      </pre>
      */
-    public static long usedBlocksIn7(long value) {
+    static long usedBlocksIn7(long value) {
 
-        /* Every block with a 1 bit set in it either
-         *  1. has its highest bit set, or
-         *  2. when that bit is cleared, has a numeric value of 1 or greater.
-         *
-         * We can check for ths first part by using a bitmask to extract the high bits
-         * from each of the blocks. The remainder can be identified by using the
-         * parallel comparison technique of comparing each block against 1.
-         */
         // Positions of all the high bits within each block.
         // (1<<6)|(1<<13)|(1<<20)|(1<<27)|(1<<34)|(1<<41)|(1<<48)|(1<<55)|(1<<62)
         final long kHighBits = 0b100000010000001000000100000010000001000000100000010000001000000L;
@@ -1903,30 +1905,6 @@ sketch overlaps here:
         //                       10987654321098765432109876543210987654321098765432109876543210
         long highBitsSet = value & kHighBits;
 
-        /* Now, do a parallel comparison on the 7-bit remainders of each block to
-         * identify all the blocks with a nonzero bit set in them.
-         *
-         * The parallel comparison works as follows. We begin by reshaping the blocks
-         * so that each block starts with a 1:
-         *
-         *   1aaaaaa1bbbbbb1cccccc1dddddd1eeeeee1ffffff1gggggg1hhhhhh
-         *
-         * Now, subtract out the value with 1's at the bottom of each block:
-         *
-         *   1aaaaaa 1bbbbbb 1cccccc 1dddddd 1eeeeee 1ffffff 1gggggg 1hhhhhh
-         * - 0000001 0000001 0000001 0000001 0000001 0000001 0000001 0000001
-         *
-         * If a block is nonempty, then the subtraction will stop before hitting the
-         * special 1 bit we placed at the front of the block. That 1 bit then means
-         * "yes, there was some bit set here." Otherwise, if the block is empty, then
-         * the subtraction within that block will be forced to borrow the 1 bit from
-         * the flag, which means that the resulting 0 bit means "no, there was no bit
-         * set here."
-         *
-         * We can therefore perform the subtraction, mask off all the bits except for
-         * the flags, and we end up with what we're looking for.
-         */
-        // (1<<0) | (1<<7) | (1<<14) | (1<<21)| (1<<28) | (1<<35) | (1<<42) | (1<<49) | (1<<56)
         //                    6         5         4         3         2         1
         //                   10987654321098765432109876543210987654321098765432109876543210
         long kLowBits =    0b00000100000010000001000000100000010000001000000100000010000001L;
@@ -1958,51 +1936,110 @@ sketch overlaps here:
      Then edited here to allow block sizes other than 8.
      </pre>
      */
-    public static long usedBlocksIn6(long value) {
+    static long usedBlocksIn6(long value) {
 
-        /* Every block with a 1 bit set in it either
-         *  1. has its highest bit set, or
-         *  2. when that bit is cleared, has a numeric value of 1 or greater.
-         *
-         * We can check for ths first part by using a bitmask to extract the high bits
-         * from each of the blocks. The remainder can be identified by using the
-         * parallel comparison technique of comparing each block against 1.
-         */
         // Positions of all the high bits within each block.
-        // (1<<5)|(1<<11)|(1<<17)|(1<<23)|(1<<29)|(1<<35)|(1<<41)|(1<<47)|(1<<53) |(1<<59)
         final long kHighBits = 0b00100000100000100000100000100000100000100000100000100000100000L;
         //                       10987654321098765432109876543210987654321098765432109876543210
         //                        6         5         4         3         2         1
 
         long highBitsSet = value & kHighBits;
 
-        /* Now, do a parallel comparison on the 7-bit remainders of each block to
-         * identify all the blocks with a nonzero bit set in them.
-         *
-         * The parallel comparison works as follows. We begin by reshaping the blocks
-         * so that each block starts with a 1:
-         *
-         *   1aaaaa1bbbbb1ccccc1ddddd1eeeee1fffff1ggggg1hhhhh
-         *
-         * Now, subtract out the value with 1's at the bottom of each block:
-         *
-         *   1aaaaa 1bbbbb 1ccccc 1ddddd 1eeeee 1fffff 1ggggg 1hhhhh
-         * - 000001 000001 000001 000001 000001 000001 000001 000001
-         *
-         * If a block is nonempty, then the subtraction will stop before hitting the
-         * special 1 bit we placed at the front of the block. That 1 bit then means
-         * "yes, there was some bit set here." Otherwise, if the block is empty, then
-         * the subtraction within that block will be forced to borrow the 1 bit from
-         * the flag, which means that the resulting 0 bit means "no, there was no bit
-         * set here."
-         *
-         * We can therefore perform the subtraction, mask off all the bits except for
-         * the flags, and we end up with what we're looking for.
-         */
         // (1<<0) | (1<<6) | (1<<12) | (1<<18)| (1<<24) | (1<<30) | (1<<36) | (1<<42) | (1<<48) | (1<<54) | (1<<60)
         //                   6         5         4         3         2         1
         //                  10987654321098765432109876543210987654321098765432109876543210
         long kLowBits =   0b01000001000001000001000001000001000001000001000001000001000001L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    static long usedBlocksIn5(long value) {
+
+        // Positions of all the high bits within each block.
+        final long kHighBits = 0b00100001000010000100001000010000100001000010000100001000010000L;
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+        long highBitsSet = value & kHighBits;
+
+        // (1<<0) | (1<<6) | (1<<12) | (1<<18)| (1<<24) | (1<<30) | (1<<36) | (1<<42) | (1<<48) | (1<<54) | (1<<60)
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =   0b0000010000100001000010000100001000010000100001000010000100001L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    static long usedBlocksIn4(long value) {
+
+        // Positions of all the high bits within each block.
+        final long kHighBits = 0b0100010001000100010001000100010001000100010001000100010001000L;
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+        long highBitsSet = value & kHighBits;
+
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =   0b00000100010001000100010001000100010001000100010001000100010001L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    static long usedBlocksIn3(long value) {
+
+        // Positions of all the high bits within each block.
+        final long kHighBits = 0b0100100100100100100100100100100100100100100100100100100100100L;
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+        long highBitsSet = value & kHighBits;
+
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =   0b00001001001001001001001001001001001001001001001001001001001001L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    static long usedBlocksIn2(long value) {
+
+        // Positions of all the high bits within each block.
+        final long kHighBits = 0b10101010101010101010101010101010101010101010101010101010101010L;
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+        long highBitsSet = value & kHighBits;
+
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =   0b01010101010101010101010101010101010101010101010101010101010101L;
+        long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
+
+        /* Combine them together to find nonempty blocks. */
+        return highBitsSet | lowBitsSet;
+    }
+
+    static long usedBlocksIn1(long value) {
+
+        // Positions of all the high bits within each block.
+        final long kHighBits = 0b01111111111111111111111111111111111111111111111111111111111111L;
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+        long highBitsSet = value & kHighBits;
+
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =   0b01111111111111111111111111111111111111111111111111111111111111L;
         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
