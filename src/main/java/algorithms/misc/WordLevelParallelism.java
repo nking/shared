@@ -105,23 +105,13 @@ public class WordLevelParallelism {
         if (n == 0) {
             return 0;
         }
-        int i0 = 0;
-        final int d = bitstringLength + 1;
-        // e.g. for bitstringLength=7, kMult=(1<<8)|(1<<0) etc
-        long kMult = 0;
+        final int b = bitstringLength + 1;
+        long tiled = 0;
         for (int i = 0; i < n; ++i) {
-            kMult |= (values[i] * (1L << i0));
-            i0 += d;
-        }
-        // clear the gap bits
-        i0 = bitstringLength;
-        //kMask=(1<<15)|(1<<7) etc
-        for (int i = 0; i < n; ++i) {
-            kMult &= ~(1L << i0);
-            i0 += d;
+            tiled  |= (((long)values[i]) << (b*(n-i-1)));
         }
 
-        return kMult;
+        return tiled;
     }
 
     /**
@@ -197,8 +187,8 @@ public class WordLevelParallelism {
      * @return the bitarray holding the bitarray of replicated values with '1' separators.
      */
     public static long createTiledBitstring1(int value, int nTiles, int bitstringLength) {
-        if (bitstringLength < 1 || bitstringLength > 62) {
-            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 63");
+        if (bitstringLength < 1 || bitstringLength > 63) {
+            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 64");
         }
         if (nTiles < 1 || nTiles > 63) {
             throw new IllegalArgumentException("nTiles must be greater than 0 and less than 64");
@@ -255,7 +245,7 @@ public class WordLevelParallelism {
         long mask1 = createTiledBitMask1(nTiles, tileBitLength);
         tiled1 |= mask1;
 
-        return parallelCompare10(tiled1, tiled2, nTiles, tileBitLength, mask1);
+        return rank(tiled1, tiled2, nTiles, tileBitLength, mask1);
     }
 
     /**
@@ -299,7 +289,56 @@ public class WordLevelParallelism {
 
         tiled1 |= kMask1;
 
-        return parallelCompare10(tiled1, tiled2, nTiles, 7, kMask1);
+        return rank(tiled1, tiled2, nTiles, 7, kMask1);
+    }
+
+    /**
+     * calculate the rank of the replicated query tile in tiled1 with respect to the tiled keys
+     * in tiled2.  This method performs a parallel compare of tiled1 to tiled2,
+     * masks the result, and then sums the number of set bits in the masked result.
+     * The calculated rank requires that the keys embedded in tiled2 are ordered.
+     * The calculated rank is the number of blocks in tiled2 that are less than or equal to the
+     * query (which is replicated in tiled1).
+     * The method is O(1).
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     *                      e.g. For bitstring 0b0010100 replicated 2 times using a bitlength of 7 bits,
+     *                      the resulting tiled1 is bitstring of length 16 bits which has 2 blocks of size 8 bits,
+     *                      = 0b10010100_10010100.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled2 is 0b00100100_01100111, where 0's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     *                      because it includes the gap bit between tiles.
+     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    public static long rank(long tiled1, long tiled2, int nTiles, int tileBitLength, long mask1) {
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+        if (nTiles < 1) {
+            throw new IllegalArgumentException("nTiles must be > 0");
+        }
+
+        //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
+        long diff = tiled1 - tiled2;
+
+        long comparison = diff & mask1;
+
+        //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
+        //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
+
+        return parallelSum(comparison, nTiles, tileBitLength);
     }
 
     /**
@@ -329,33 +368,15 @@ public class WordLevelParallelism {
      * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
      * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
      *                      because it includes the gap bit between tiles.
-     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
      * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
      * in tiled2.
      */
-    public static long parallelCompare10(long tiled1, long tiled2, int nTiles, int tileBitLength, long mask1) {
+    public static long rank(long tiled1, long tiled2, int nTiles, int tileBitLength) {
 
-        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-        // then edited to make the block size variable
+        long mask1 = createTiledBitMask1(nTiles, tileBitLength);
 
-        if (nTiles < 1) {
-            throw new IllegalArgumentException("nTiles must be > 0");
-        }
-
-        final int bSz = tileBitLength + 1;
-
-        final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
-
-        //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
-        long diff = tiled1 - tiled2;
-
-        long comparison = diff & mask1;
-
-        //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
-        //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
-
-        return parallelSum(comparison, nTiles, tileBitLength);
+        return rank(tiled1, tiled2, nTiles, tileBitLength, mask1);
     }
 
     /**
@@ -398,10 +419,6 @@ public class WordLevelParallelism {
         if (nTiles < 1) {
             throw new IllegalArgumentException("nTiles must be > 0");
         }
-
-        final int bSz = 8;
-
-        final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
 
         //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
         long diff = tiled1 - tiled2;
@@ -1982,5 +1999,35 @@ sketch overlaps here:
 
         /* Combine them together to find nonempty blocks. */
         return highBitsSet | lowBitsSet;
+    }
+
+    /**
+     * returns the maximum number of blockSize tiles that can fit into a java unsigned
+     * long (= 63 bits).
+     * @param blockSize the size of blocks
+     * @return the maximum number of blockSize tiles that can fit into a java unsigned
+     long (= 63 bits).
+     */
+    public static int maxNumberOfTiles(int blockSize) {
+        switch(blockSize) {
+            case 8:
+                return 7;
+            case 7:
+                return 9;
+            case 6:
+                return 10;
+            case 5:
+                return 12;
+            case 4:
+                return 15;
+            case 3:
+                return 21;
+            case 2:
+                return 31;
+            case 1:
+                return 63;
+            default:
+                throw new UnsupportedOperationException("blocksize " + blockSize + " is not implemented");
+        }
     }
 }
