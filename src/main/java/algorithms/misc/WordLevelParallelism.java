@@ -15,8 +15,6 @@ package algorithms.misc;
  */
 public class WordLevelParallelism {
 
-    //TODO: optimize code
-
     /**
      * given a bitarray packed full of tiles separated by flags (= blocks),
      * returns the index of the highest nonzero block.
@@ -30,7 +28,7 @@ public class WordLevelParallelism {
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
      * @param nTiles        the number of tiles packed into the bitarray tiled.
      * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
-     * @return the index of the highest nonzero block in tiled
+     * @return the index of the highest nonzero block in tiled.  returns a negative number if no bits are set in tiled.
      */
     public static long highestOneBitIn(long tiled, int nTiles, int tileBitLength) {
 
@@ -56,7 +54,8 @@ public class WordLevelParallelism {
      * @param nTiles the number of tiles embedded in tiled.
      * @param tileBitLength the length of each tile in tiled, not counting the surrounding single flag bits.
      *                      the block size is tileBitLength + 1.
-     * @return
+     * @return return the largest index of the block within tiled that contains a set bit, else returns a
+     * negative number if there are no set bits in tiled.  the block size is tileBitLength + 1.
      */
     static long highestBlockSetIn(long tiled, int nTiles, int tileBitLength) {
 
@@ -80,14 +79,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (values.length * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (values.length * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent values.length is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from values array in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
@@ -99,8 +98,8 @@ public class WordLevelParallelism {
      * @return the bitarray holding the bitarray of replicated values with '0' separators.
      */
     public static long createTiledBitstring0(int[] values, int bitstringLength) {
-        if (bitstringLength < 1 || bitstringLength > 61) {
-            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 62");
+        if (bitstringLength < 1 || bitstringLength > 62) {
+            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 63");
         }
         int n = values.length;
         if (n == 0) {
@@ -133,14 +132,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
@@ -153,8 +152,8 @@ public class WordLevelParallelism {
      * which is 16 bits.
      */
     static long createTiledBitMask1(int nTiles, int bitstringLength) {
-        if (bitstringLength < 1 || bitstringLength > 61) {
-            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 62");
+        if (bitstringLength < 1 || bitstringLength > 62) {
+            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 63");
         }
         if (nTiles == 0) {
             return 0;
@@ -178,14 +177,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bitstringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
@@ -198,11 +197,11 @@ public class WordLevelParallelism {
      * @return the bitarray holding the bitarray of replicated values with '1' separators.
      */
     public static long createTiledBitstring1(int value, int nTiles, int bitstringLength) {
-        if (bitstringLength < 1 || bitstringLength > 61) {
-            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 62");
+        if (bitstringLength < 1 || bitstringLength > 62) {
+            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 63");
         }
-        if (nTiles < 1 || nTiles > 62) {
-            throw new IllegalArgumentException("nTiles must be greater than 0 and less than 62");
+        if (nTiles < 1 || nTiles > 63) {
+            throw new IllegalArgumentException("nTiles must be greater than 0 and less than 64");
         }
         int i0 = 0;
         int i1 = bitstringLength;
@@ -231,14 +230,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bitstringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      *
      * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
@@ -272,14 +271,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bitstringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      *
      * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
@@ -294,6 +293,7 @@ public class WordLevelParallelism {
     public static long parallelCompare008(long tiled1, long tiled2, int nTiles) {
         //                6         5         4         3         2         1
         //              210987654321098765432109876543210987654321098765432109876543210
+        //            0b111111111111111111111111111111111111111111111111111111111111111
         long kMask1 = 0b000000010000000100000001000000010000000100000001000000010000000L;
         // e.g. for bitstringLength=7, block size=8, kMask=(1<<15)|(1<<7) etc
 
@@ -313,14 +313,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      *
      * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
@@ -347,25 +347,6 @@ public class WordLevelParallelism {
 
         final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
 
-        // by default the number of blacks used to hold the number nTiles is 1.
-        // if number of bits in nTiles > bSz, nBExtra is the number of blacks to add to the default '1 reserved block'
-        // to hold the number of bits in nTiles.
-        // e.g. nTiles=7 can be held in a block of size 3 bits. if bSz=2, need 1 extra block to hold nTiles.
-        //      nTiles=16 can be held in a block of size 5 bits. if bSz=2, need 2 extra blocks to hold nTiles.
-        int nBExtra = 0;
-
-        // assert that there is enough space to hold the bits to represent nTiles
-        if (nMaskBits > bSz) {
-            // how many blocks needed to store nMaskBits?  then subtract 1 which is already reserved for it.
-            nBExtra = ((int) Math.ceil((double) nMaskBits / bSz)) - 1;
-            int tiledLength = nTiles * bSz;
-            /*if ((tiledLength + nBExtra * bSz) > 62) {
-                throw new IllegalArgumentException(String.format("nTiles needs %d blocks of size %d bits above the " +
-                                "total tiled bit length =%d.\n  That total %d must fit within 62 bits.",
-                        nBExtra, bSz, tiledLength, (tiledLength + nBExtra * bSz)));
-            }*/
-        }
-
         //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
         long diff = tiled1 - tiled2;
 
@@ -390,14 +371,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      *
      * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
@@ -422,25 +403,6 @@ public class WordLevelParallelism {
 
         final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
 
-        // by default the number of blacks used to hold the number nTiles is 1.
-        // if number of bits in nTiles > bSz, nBExtra is the number of blacks to add to the default '1 reserved block'
-        // to hold the number of bits in nTiles.
-        // e.g. nTiles=7 can be held in a block of size 3 bits. if bSz=2, need 1 extra block to hold nTiles.
-        //      nTiles=16 can be held in a block of size 5 bits. if bSz=2, need 2 extra blocks to hold nTiles.
-        int nBExtra = 0;
-
-        // assert that there is enough space to hold the bits to represent nTiles
-        if (nMaskBits > bSz) {
-            // how many blocks needed to store nMaskBits?  then subtract 1 which is already reserved for it.
-            nBExtra = ((int) Math.ceil((double) nMaskBits / bSz)) - 1;
-            int tiledLength = nTiles * bSz;
-            /*if ((tiledLength + nBExtra * bSz) > 62) {
-                throw new IllegalArgumentException(String.format("nTiles needs %d blocks of size %d bits above the " +
-                                "total tiled bit length =%d.\n  That total %d must fit within 62 bits.",
-                        nBExtra, bSz, tiledLength, (tiledLength + nBExtra * bSz)));
-            }*/
-        }
-
         //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
         long diff = tiled1 - tiled2;
 
@@ -463,14 +425,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      *
      * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
      *                      are summed in this method.
@@ -489,25 +451,6 @@ public class WordLevelParallelism {
 
         final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));
 
-        // by default the number of blacks used to hold the number nTiles is 1.
-        // if number of bits in nTiles > bSz, nBExtra is the number of blacks to add to the default '1 reserved block'
-        // to hold the number of bits in nTiles.
-        // e.g. nTiles=7 can be held in a block of size 3 bits. if bSz=2, need 1 extra block to hold nTiles.
-        //      nTiles=16 can be held in a block of size 5 bits. if bSz=2, need 2 extra blocks to hold nTiles.
-        int nBExtra = 0;
-
-        // assert that there is enough space to hold the bits to represent nTiles
-        if (nMaskBits > bSz) {
-            // how many blocks needed to store nMaskBits?  then subtract 1 which is already reserved for it.
-            nBExtra = ((int) Math.ceil((double) nMaskBits / bSz)) - 1;
-            int tiledLength = nTiles * bSz;
-            /*if ((tiledLength + nBExtra * bSz) > 62) {
-                throw new IllegalArgumentException(String.format("nTiles needs %d blocks of size %d bits above the " +
-                                "total tiled bit length =%d.\n  That total %d must fit within 62 bits.",
-                        nBExtra, bSz, tiledLength, (tiledLength + nBExtra * bSz)));
-            }*/
-        }
-
         final long kMult;
         final long kMask;
         final long kShift;
@@ -518,18 +461,18 @@ public class WordLevelParallelism {
                 // for nTiles=7, need 3-bit mask
                 //         6         5         4         3         2         1
                 //       210987654321098765432109876543210987654321098765432109876543210
-                kMult = 0b00000000000001000000010000000100000001000000010000000100000001L;
-                kMask = 0b00001110000000000000000000000000000000000000000000000000000000L;
+                kMult =0b000000000000001000000010000000100000001000000010000000100000001L;
+                kMask =0b000001110000000000000000000000000000000000000000000000000000000L;
                 //              A0000000B0000000C0000000D0000000E0000000F0000000G0000000L
                 kShift = 55;
                 return ((comparison * kMult) & kMask) >> kShift;
             case 7:
-                // for nTiles = 8, need 4 bits in mask
-                // kMult=(1<<0) | (1<<7) | (1<<14) | (1<<21) | (1<<28) | (1<<35) | (1<<42) | (1<<49)
+                // for nTiles = 9, need 4 bits in mask
+                // kMult=(1<<0) | (1<<7) | (1<<14) | (1<<21) | (1<<28) | (1<<35) | (1<<42) | (1<<49) | (1<<56)
                 //         6         5         4         3         2         1
-                //        10987654321098765432109876543210987654321098765432109876543210
-                kMult = 0b00000000000010000001000000100000010000001000000100000010000001L;
-                kMask = 0b00011110000000000000000000000000000000000000000000000000000000L;
+                //       210987654321098765432109876543210987654321098765432109876543210
+                kMult =0b000000100000010000001000000100000010000001000000100000010000001L;
+                kMask =0b000011110000000000000000000000000000000000000000000000000000000L;
                 //              10000001000000100000010000001000000100000010000001000000;
                 kShift = 55;
                 return ((comparison * kMult) & kMask) >> kShift;
@@ -537,15 +480,12 @@ public class WordLevelParallelism {
                 // for nTiles = 10, need 4 bits in mask
                 // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36) | (1<<42) | (1<<48) | (1<<54)
                 //           6         5         4         3         2         1
-                //          10987654321098765432109876543210987654321098765432109876543210
-                //kMult = 0b00000001000001000001000001000001000001000001000001000001000001L;
-                //kMask =    0b11110000000000000000000000000000000000000000000000000000000L;
-                //            A00000B00000C00000D00000E00000F00000G00000H00000I00000J00000L;
-                // not enough space in 62 bits for the bit mask, so handle nTiles = 9,
+                //         210987654321098765432109876543210987654321098765432109876543210
+                // not enough space in 63 bits for the bit mask, so handle nTiles = 9,
                 // then set a higher bit if block 9 high bit is set
                 //         6         5         4         3         2         1
-                //        10987654321098765432109876543210987654321098765432109876543210
-                //comp =0b00100000100000100000100000100000100000100000100000100000100000;
+                //       210987654321098765432109876543210987654321098765432109876543210
+                //comp=0b000100000100000100000100000100000100000100000100000100000100000;
                 kMult = 0b00000000000001000001000001000001000001000001000001000001000001L;
                 kMask =      0b111100000000000000000000000000000000000000000000000000000L;
                 //                  A00000B00000C00000D00000E00000F00000G00000H00000I00000L;
@@ -558,8 +498,8 @@ public class WordLevelParallelism {
                 // not enough space for mask, so will calculate for nTiles=11 and set the high bit for last
                 // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25) | (1<<30) | (1<<35) | (1<<40) | (1<<45) | (1<<50) | (1<<55)
                 //         6         5         4         3         2         1
-                //        10987654321098765432109876543210987654321098765432109876543210
-                //comp =0b00100001000010000100001000010000100001000010000100001000010000;
+                //       210987654321098765432109876543210987654321098765432109876543210
+                //comp=0b000100001000010000100001000010000100001000010000100001000010000;
                 kMult = 0b00000000000100001000010000100001000010000100001000010000100001L;
                 kMask =     0b1111000000000000000000000000000000000000000000000000000000L;
                 //           A0000B0000C0000D0000E0000F0000G0000H0000I0000J0000K0000L0000L;
@@ -573,7 +513,7 @@ public class WordLevelParallelism {
                 // (in other words, the space for the sum is 4 bits, but the intervals in addition are only 3 bits).
                 // fall through
             case 3:
-                // for nTiles = 20, need 5 bits in mask.
+                // for nTiles = 21, need 5 bits in mask.
                 // not enough space in the resulting addition from the multiplier to hold the 5 bits of mask
                 // (in other words, the space for the sum is 5 bits, but the intervals in addition are only 2 bits).
                 // fall through
@@ -582,7 +522,7 @@ public class WordLevelParallelism {
                 // the additions from the multiplier can fit into 2 bits only.
                 // fall through
             case 1:
-                // for nTiles = 62, need 6 bits in mask.
+                // for nTiles = 63, need 6 bits in mask.
                 // not enough space in the resulting addition from the multiplier to hold the 6 bits of mask
                 // (in other words, the space for the sum is 6 bits, but the intervals in addition are 0 bits.
                 // instead of the 5 or so operations used for parallelSum,
@@ -606,14 +546,14 @@ public class WordLevelParallelism {
      * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
      * operations.
      * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 62 bits,
-     * and so (nTiles * block) must be less than or equal to 62.
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
      * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
      * representation of the number of tiles into the highest blocks of a mask that is the same size as the
      * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
      * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 62 bit limit.
+     * and the 63 bit limit.
      *
      * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
      *                      are summed in this method.
@@ -627,9 +567,8 @@ public class WordLevelParallelism {
         final int bSz = 8;
 
         // e.g. for bSz=8, kMult=(1<<8)|(1<<0) etc
-        //              6         5         4         3         2         1
-        //             10987654321098765432109876543210987654321098765432109876543210
-        //long kMult = 0b000000100000001000000010000000100000001000000010000000100000001L;
+        //               6         5         4         3         2         1
+        //            210987654321098765432109876543210987654321098765432109876543210
         long kMult = 0b00000000000001000000010000000100000001000000010000000100000001L;
         long kMask = 0b00001110000000000000000000000000000000000000000000000000000000L;
 
@@ -712,7 +651,7 @@ public class WordLevelParallelism {
 
         // e.g. for bitstringLength=7 blockSize=8, kMult=(1<<0) | (1<<7) | (1<<14) etc
         //                6         5         4         3         2         1
-        //               10987654321098765432109876543210987654321098765432109876543210
+        //              210987654321098765432109876543210987654321098765432109876543210
         //                     10000001000000100000010000001000000100000010000001000000
         long kMult   = 0b00000000000000000001000000100000010000001000000100000010000001L;
         long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;
@@ -763,41 +702,39 @@ public class WordLevelParallelism {
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
      * and embedded tile size of 6 bits
-     * @param nTiles the number of tiles of block size 7 embedded in tiled.  maximum nTiles is 8.
+     * @param nTiles the number of tiles of block size 7 embedded in tiled.  maximum nTiles is 9.
      * @return
      */
-    public static long sketch7(final long tiled, final int nTiles) {
+    public static long sketch7(long tiled, final int nTiles) {
 
         if (nTiles == 0) {
             return 0;
         }
-        if (nTiles < 0 || nTiles > 8) {
-            throw new UnsupportedOperationException("nTiles must be > 0 and <= 8 for block size 7");
+        if (nTiles < 0 || nTiles > 9) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 9 for block size 7");
         }
+
+        // 1 block to fit the sketch where each bit represents a tile, means that can
+        //  only sketch 7 blocks, then handle the last 2 after first 7.
 
         // kMult=(1<<0) | (1<<6) | (1<<12) | (1<<18) | (1<<24) | (1<<30) | (1<<36)
         //                    6         5         4         3         2         1
-        //                   10987654321098765432109876543210987654321098765432109876543210
+        //                  210987654321098765432109876543210987654321098765432109876543210
+        //         tiled= 0b100000010000001000000100000010000001000000100000010000001000000
         final long kMult = 0b00000000000000000000000001000001000001000001000001000001000001L;
-        final long kMask = 0b1111111000000000000000000000000000000000000000000L;
-        int kShift = 42;
+        //
+        final long kMask =              0b1111111000000000000000000000000000000000000000000L;
+        int kShift = 42;//7*7-7
         long sketch = ((tiled * kMult) & kMask) >> kShift;
 
         if (nTiles < 8) {
             return sketch;
         }
 
-        //TODO: consider more efficient ways for these last few lines
+        tiled >>= 55;
+        sketch |= ((tiled & 0b1) << 7);
+        sketch |= (((tiled>>7) & 0b1) << 8);
 
-        sketch += (((tiled>>56) & 0b1) << 7);
-/*
-        // set bit 7 of sketch to the high bit of block 8
-        if ((tiled & (1L << 56)) != 0) {
-            sketch |= (1L << 7);
-        } else {
-            sketch &= ~(1L << 7);
-        }
-*/
         return sketch;
 
         /*
@@ -881,7 +818,7 @@ sketch overlaps here:
 
         // kMult=(1<<0) | (1<<5) | (1<<10) | (1<<15) | (1<<20) | (1<<25)
         //               6         5         4         3         2         1
-        //              10987654321098765432109876543210987654321098765432109876543210
+        //             210987654321098765432109876543210987654321098765432109876543210
         long kMult = 0b000000000000000000000000000000000000010000100001000010000100001L;
         long kMask = 0b111111000000000000000000000000000000L;
         long kShift = 30;
@@ -895,7 +832,7 @@ sketch overlaps here:
         /*
         note that cannot edit the multiplier to use a larger interval of 9 for nTiles=10 because
         the highest bit in the product that needs to be masked to extract the sketch
-        would be > 62 bits.
+        would be > 63 bits.
 
         so will make another sketch for remaining tiles:
 
@@ -903,10 +840,10 @@ sketch overlaps here:
         shift tiled down by 6*6, leaving blocks 6:9.
         */
 
-        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
         // shift down by the 6 blocks we just sketched:
         tiled >>= 36;
-        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 6 at the end to merge the 2 sketches:
         kShift -= 6;
@@ -921,12 +858,12 @@ sketch overlaps here:
         //0b10111110'
 
         //System.out.printf("nTiles=%d, blockSize=6\n", nTiles);
-        //System.out.printf("sketch=%62s\n", Long.toBinaryString(sketch));
-        //System.out.printf("sketch=%62s\n", Long.toBinaryString(sketch2));
+        //System.out.printf("sketch=%63s\n", Long.toBinaryString(sketch));
+        //System.out.printf("sketch=%63s\n", Long.toBinaryString(sketch2));
 
         sketch = sketch ^ ((sketch ^ sketch2) & 0b111111000000L);
 
-        //System.out.printf("merged=%62s\n", Long.toBinaryString(sketch));
+        //System.out.printf("merged=%63s\n", Long.toBinaryString(sketch));
 
         return sketch;
 
@@ -1009,10 +946,10 @@ sketch overlaps here:
 
         // sketch 5 tiles at a time, and merge after each
 
-        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
         // shift down by the 5 blocks we just sketched:
         tiled >>= 25;
-        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 5 at the end to merge the 2 sketches:
         kShift -= 5;
@@ -1129,10 +1066,10 @@ sketch overlaps here:
 
         // 15 tiles, each sketch is 4 tiles, would mean 4 sketches
 
-        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
         // shift down by the 4 blocks we just sketched:
         tiled >>= 16;
-        //System.out.printf("tiled=%62s\n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 4 at the end to merge the 2 sketches:
         kShift -= 4;
@@ -1185,7 +1122,7 @@ sketch overlaps here:
      *
      * @param tiled a bitarray packed full of tiles separated by flags with a block size of 3 bits
      * and embedded tile size of 2 bits
-     * @param nTiles the number of tiles of block size 3 embedded in tiled.  the maximum number of 20 for nTiles for
+     * @param nTiles the number of tiles of block size 3 embedded in tiled.  the maximum number of 21 for nTiles for
      *               block size of 3 is limited by the java unsigned long and the location of the mask bits needed after
      *               the sketch multiplier.
      * @return
@@ -1195,8 +1132,8 @@ sketch overlaps here:
         if (nTiles == 0) {
             return 0;
         }
-        if (nTiles < 0 || nTiles > 20) {
-            throw new UnsupportedOperationException("nTiles must be > 0 and <= 20 for block size 3");
+        if (nTiles < 0 || nTiles > 21) {
+            throw new UnsupportedOperationException("nTiles must be > 0 and <= 21 for block size 3");
         }
 
         // same as decoding 4 bit Morton 3D, for z
@@ -1265,6 +1202,7 @@ sketch overlaps here:
      * @param valueBitLength the bit length of value.  range is [1,8] inclusive
      * @return the highest bit set in value.  the bit number is w.r.t. 0.
      * e.g. if blockSize is 8, the return value range is [0,7] inclusive.
+     * the result is a negative number if there are no bits set in value.
      */
     public static long highestBitSetIn(long value, int valueBitLength) {
 
@@ -1309,8 +1247,8 @@ sketch overlaps here:
      * number, we can manually check each power of two that could serve as the
      * most-significant bit. This is actually done using a clever parallel
      * comparison step, describe below.
-     * @param value
-     * @return
+     @param value a 4-bit number
+     @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn8(long value) {
 
@@ -1400,8 +1338,8 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value
-     * @return
+     @param value a 4-bit number
+     @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn7(long value) {
 
@@ -1444,18 +1382,18 @@ sketch overlaps here:
          * This corresponds to a multiplication by 2^0 + 2^7 + 2^14 + 2^21 + ...
          * It is (1<<0) | (1<<7) | (1<<14) | (1<<21) | (1<<28) | (1<<35)
          */
-        //                  6         5         4         3         2         1
-        //                 10987654321098765432109876543210987654321098765432109876543210
-        long kSpreader = 0b00000000000000000000000000100000010000001000000100000010000001L;
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long kSpreader = 0b000000000000000000000000000100000010000001000000100000010000001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
          * the byte - we need to recycle that bit for other purposes.)
          * (1<<6) | (1<<13) | (1<<20) | (1<<27) | (1<<34) | (1<<41)
          */
-        //              6         5         4         3         2         1
-        //             10987654321098765432109876543210987654321098765432109876543210
-        long kMask = 0b00000000000000000000100000010000001000000100000010000001000000L;
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+        long kMask = 0b000000000000000000000100000010000001000000100000010000001000000L;
 
         /* Perform the parallel comparison:
          *
@@ -1484,8 +1422,8 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value
-     * @return
+     @param value a 4-bit number
+     @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn6(long value) {
 
@@ -1568,8 +1506,8 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value
-     * @return
+     @param value a 4-bit number
+     @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn5(long value) {
 
@@ -1652,8 +1590,8 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value
-     * @return
+     * @param value a 4-bit number
+     @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn4(long value) {
 
@@ -1731,8 +1669,8 @@ sketch overlaps here:
     /**
      * Given a 3-bit value, returns the index of the highest 1 bit within that
      * value.
-     * @param value
-     * @return
+     * @param value a 3-bit number
+     @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn3(long value) {
         if ((value & 0b100L) != 0) {
@@ -1742,7 +1680,7 @@ sketch overlaps here:
         } else if ((value & 0b1L) != 0) {
             return 0;
         }
-        throw new IllegalArgumentException("no bits below 3 are set in value");
+        return -1;
     }
      static long highestBitSetIn2(long value) {
         if ((value & 0b10L) != 0) {
@@ -1750,13 +1688,13 @@ sketch overlaps here:
         } else if ((value & 0b1L) != 0) {
             return 0;
         }
-        throw new IllegalArgumentException("no bits below 3 are set in value");
+        return -1;
     }
      static long highestBitSetIn1(long value) {
         if ((value & 0b1L) != 0) {
             return 0;
         }
-        throw new IllegalArgumentException("no bits below 3 are set in value");
+        return -1;
     }
 
     /**
@@ -1899,15 +1837,15 @@ sketch overlaps here:
     static long usedBlocksIn7(long value) {
 
         // Positions of all the high bits within each block.
-        // (1<<6)|(1<<13)|(1<<20)|(1<<27)|(1<<34)|(1<<41)|(1<<48)|(1<<55)|(1<<62)
+        // (1<<6)|(1<<13)|(1<<20)|(1<<27)|(1<<34)|(1<<41)|(1<<48)|(1<<55)|(1<<63)
         final long kHighBits = 0b100000010000001000000100000010000001000000100000010000001000000L;
-        //                        6         5         4         3         2         1
-        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                         6         5         4         3         2         1
+        //                       210987654321098765432109876543210987654321098765432109876543210
         long highBitsSet = value & kHighBits;
 
-        //                    6         5         4         3         2         1
-        //                   10987654321098765432109876543210987654321098765432109876543210
-        long kLowBits =    0b00000100000010000001000000100000010000001000000100000010000001L;
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =    0b000000100000010000001000000100000010000001000000100000010000001L;
         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
@@ -1995,15 +1933,15 @@ sketch overlaps here:
     static long usedBlocksIn3(long value) {
 
         // Positions of all the high bits within each block.
-        final long kHighBits = 0b0100100100100100100100100100100100100100100100100100100100100L;
-        //                       10987654321098765432109876543210987654321098765432109876543210
-        //                        6         5         4         3         2         1
+        final long kHighBits = 0b100100100100100100100100100100100100100100100100100100100100100L;
+        //                       210987654321098765432109876543210987654321098765432109876543210
+        //                         6         5         4         3         2         1
 
         long highBitsSet = value & kHighBits;
 
         //                   6         5         4         3         2         1
-        //                  10987654321098765432109876543210987654321098765432109876543210
-        long kLowBits =   0b00001001001001001001001001001001001001001001001001001001001001L;
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =  0b001001001001001001001001001001001001001001001001001001001001001L;
         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
@@ -2031,15 +1969,15 @@ sketch overlaps here:
     static long usedBlocksIn1(long value) {
 
         // Positions of all the high bits within each block.
-        final long kHighBits = 0b01111111111111111111111111111111111111111111111111111111111111L;
-        //                       10987654321098765432109876543210987654321098765432109876543210
+        final long kHighBits = 0b111111111111111111111111111111111111111111111111111111111111111L;
+        //                       210987654321098765432109876543210987654321098765432109876543210
         //                        6         5         4         3         2         1
 
         long highBitsSet = value & kHighBits;
 
         //                   6         5         4         3         2         1
-        //                  10987654321098765432109876543210987654321098765432109876543210
-        long kLowBits =   0b01111111111111111111111111111111111111111111111111111111111111L;
+        //                 210987654321098765432109876543210987654321098765432109876543210
+        long kLowBits =  0b011111111111111111111111111111111111111111111111111111111111111L;
         long lowBitsSet  = ((value | kHighBits) - kLowBits) & kHighBits;
 
         /* Combine them together to find nonempty blocks. */
