@@ -20,7 +20,7 @@ public class WordLevelParallelismTest extends TestCase {
         super(testName);
         rand = Misc0.getSecureRandom();
         long seed = System.nanoTime();
-        //seed = 232949844799850L;
+        //seed = 350147418303212L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
     }
@@ -86,8 +86,7 @@ public class WordLevelParallelismTest extends TestCase {
         long expectedU;
         int r;
         int kBits;
-        boolean nbSet;
-        int nRTests = 1;
+        int nRTests = 100;
 
         for (int b = 8; b > 7; --b) {
 
@@ -121,22 +120,17 @@ public class WordLevelParallelismTest extends TestCase {
                 expectedU = 0L;
 
                 for (bn = 0; bn < nb; ++bn) {
-                    nbSet = false;
                     // set kBits in each of the nb blocks
-                    kBits = 1 + rand.nextInt(b);
+                    kBits = rand.nextInt(b);
                     for (int k = 0; k < kBits; ++k) {
                         r = rand.nextInt(b);
                         // set bit r in block nb: nb*b + r
                         // 1_______1_______4_______3_______2_______1_______0_______
                         //                         10987654321098765432109876543210
                         tiled |= (1L << (bn*b + r));
-                        if (r > 0) {
-                            nbSet = true;
-                        }
                     }
-                    if (nbSet) {
+                    if (kBits > 0) {
                         expectedU |= (1L << ((bn*b) + (b-1)));
-                        //
                     }
                 }
                 // test that the sketch finds the same set bits
@@ -156,6 +150,7 @@ public class WordLevelParallelismTest extends TestCase {
     }
 
     public void estHighestBlockSetIn() {
+        //highestBlockSetIn(long tiled, int nTiles, int tileBitLength)
 
     }
 
