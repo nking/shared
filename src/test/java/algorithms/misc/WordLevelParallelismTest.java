@@ -14,15 +14,17 @@ import java.util.Random;
  */
 public class WordLevelParallelismTest extends TestCase {
 
-    final Random rand;
+    final static Random rand;
+    static {
+        rand = Misc0.getSecureRandom();
+        long seed = System.nanoTime();
+        seed = 377949482646163L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+    }
 
     public WordLevelParallelismTest(String testName) {
         super(testName);
-        rand = Misc0.getSecureRandom();
-        long seed = System.nanoTime();
-        //seed = 350147418303212L;
-        System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
     }
 
     public void testParallelCompare() {
@@ -56,7 +58,10 @@ public class WordLevelParallelismTest extends TestCase {
 
     }
 
-    public void testHighestOneBitIn() {
+    public void testHighestOneBitIn_MSB() {
+
+        //TODO: finish tests
+
         //           6         5         4         3         2         1
         //         210987654321098765432109876543210987654321098765432109876543210
         //  1000000100000010000001000000100000010000001000000100000010000001000000
@@ -76,9 +81,7 @@ public class WordLevelParallelismTest extends TestCase {
         assertEquals(57, msb);
     }
 
-    public void testHighestBitIn() {
-        //long highestBitSetIn(long value, int bitlength
-        // for each bitlength, randomly select 100 set bits to test
+    public void testHighestBitSetIn() {
         long value;
         int highBit;
         int r;
@@ -86,7 +89,8 @@ public class WordLevelParallelismTest extends TestCase {
         long hb;
         int nRTests = 100;
         long mb;
-        for (int b = 8; b > 0; --b) {
+        int[] bs = new int[]{32, 24, 16, 8,7,6,5,4,3};
+        for (int b : bs) {
 
             // test no set bits
             value = 0L;
@@ -338,7 +342,8 @@ public class WordLevelParallelismTest extends TestCase {
         int[] selectedIndexes;
         // the block size 2 and 1 sketches take a long time because of the test use of subset chooser
         // so will use random tests for those below this block
-        for (int b = 8; b > 2; --b) {
+        int[] bs = new int[]{32, 24, 16, 8,7,6,5,4,3};
+        for (int b : bs) {
 
             nb = (int) Math.floor(63. / b);
 
@@ -385,7 +390,7 @@ public class WordLevelParallelismTest extends TestCase {
         // for block sizes of 2 and 1
         int r;
         TIntSet set = new TIntHashSet();
-        for (int b = 2; b > 0; --b) {
+        for (int b = 2; b > 1; --b) {
             nb = (int) Math.floor(63. / b);
             // test random combinations of the blocks' flag bits for  [0, nb-1] inclusive
             for (int k = 0; k < nb; ++k) {

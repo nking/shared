@@ -37,6 +37,7 @@ public class WordLevelParallelism {
         // with block size 7 and 9 tiles, have 63 bits that are searched.  tileBitLength=blockSize - 1.
         return highestOneBitIn(tiled, 9, 6);
     }
+
     /**
      * finds the highest set bit in the bitstring tiled.  the method is a.k.a. MSB.
      * MSB(tiled) is the largest value of k such that 2^k ≤ tiled.
@@ -125,8 +126,8 @@ public class WordLevelParallelism {
      * @return the bitarray holding the bitarray of replicated values with '0' separators.
      */
     public static long createTiledBitstring0(int[] values, int bitstringLength) {
-        if (bitstringLength < 1 || bitstringLength > 62) {
-            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 63");
+        if (bitstringLength < 1 || bitstringLength > 63) {
+            throw new IllegalArgumentException("bitstringLength must be > 0 and <= 63");
         }
         int n = values.length;
         if (n == 0) {
@@ -169,8 +170,8 @@ public class WordLevelParallelism {
      * which is 16 bits.
      */
     static long createTiledBitMask1(int nTiles, int bitstringLength) {
-        if (bitstringLength < 1 || bitstringLength > 62) {
-            throw new IllegalArgumentException("bitstringLength must be greater than 0 and less than 63");
+        if (bitstringLength < 1 || bitstringLength > 63) {
+            throw new IllegalArgumentException("bitstringLength must be > 0 and <=> 63");
         }
         if (nTiles == 0) {
             return 0;
@@ -459,7 +460,7 @@ public class WordLevelParallelism {
     }
 
     /**
-     * sum the set bits of bitstring comparison.  the flags that may have set bits are the MSB if each block.
+     * sum the set bits of bitstring comparison.  the flags that may have set bits are the MSB of each block.
      *
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
@@ -488,6 +489,13 @@ public class WordLevelParallelism {
      */
     static long parallelSum(long comparison, int nTiles, int tileBitLength) {
 
+        if (nTiles == 0 ||comparison == 0) {
+            return 0;
+        }
+        if (tileBitLength < 1 || tileBitLength > 63) {
+            throw new IllegalArgumentException("tileBitLength must be >= 1 and <= 63");
+        }
+
         //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
         // then edited to make the block size variable
 
@@ -501,6 +509,30 @@ public class WordLevelParallelism {
         long sumBits;
 
         switch(bSz) {
+            case 32:
+                // only 1 tile fits in 63 bits, so test that bit and return 1 or 0
+                if ((comparison & (1L << 31)) != 0) {
+                    return 1;
+                }
+                return 0;
+            case 24:
+                // for nTiles=2, need 2-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                kMult =0b000000000000000000000000000000000000001000000000000000000000001L;
+                kMask =0b000000000000011100000000000000000000000000000000000000000000000L;
+                //                      A00000000000000000000000B00000000000000000000000L
+                kShift = 47;
+                return ((comparison * kMult) & kMask) >> kShift;
+            case 16:
+                // for nTiles=3, need 2-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                kMult =0b000000000000000000000000000000100000000000000010000000000000001L;
+                kMask =0b000000000000011100000000000000000000000000000000000000000000000L;
+                //                      A000000000000000B000000000000000C000000000000000L
+                kShift = 47;
+                return ((comparison * kMult) & kMask) >> kShift;
             case 8:
                 // for nTiles=7, need 3-bit mask
                 //         6         5         4         3         2         1
@@ -573,8 +605,21 @@ public class WordLevelParallelism {
                 // one can use binary magic numbers in hamming weight to count the set bits in 13 operations.
                 //TODO: consider more efficient methods.
                 return MiscMath0.numberOfSetBits(comparison);
-            default:
-                throw new UnsupportedOperationException("not yet implemented");
+            default: {
+                //TODO:
+                //make a generic, not necessarily most efficient method for cases blockSize = [9,63]
+
+                // for blockSize=8, nTiles=7, need 3-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                // kMult=(1<<0) | (1<<8) | (1<<16) | (1<<24) ...
+                kMult =0b000000000000001000000010000000100000001000000010000000100000001L;
+                kMask =0b000001110000000000000000000000000000000000000000000000000000000L;
+                //              A0000000B0000000C0000000D0000000E0000000F0000000G0000000L
+                kShift = 55;
+
+                return ((comparison * kMult) & kMask) >> kShift;
+            }
         }
     }
 
@@ -1256,11 +1301,69 @@ sketch overlaps here:
         //      but the returned bit range is [0,7] inclusive
         // switch is based on the block size which s bitlength + 1
         switch (valueBitLength) {
-            edit for bit lengths > 8 up to 63.  nTiles=7,9,10,12,15,21,31,63
-                so can divide into combination of operations depending upon nTiles (which is valueBitLength)
-            case 8: {
+            case 31: // fall through to 32
+            case 30: // fall through to 32
+            case 29: // fall through to 32
+            case 28: // fall through to 32
+            case 27: // fall through to 32
+            case 26: // fall through to 32
+            case 25: // fall through to 32
+            case 32: {
+                long v = value >> 24;
+                if (v > 0) {
+                    return highestBitSetIn8(v) + 24;
+                }
+                v = value >> 16;
+                if (v > 0) {
+                    return highestBitSetIn8(v) + 16;
+                }
+                v = value >> 8;
+                if (v > 0) {
+                    return highestBitSetIn8(v) + 8;
+                }
+                return highestBitSetIn8(value);
+            }
+            case 23: // fall through to 24
+            case 22: // fall through to 24
+            case 21: // fall through to 24
+            case 20: // fall through to 24
+            case 19: // fall through to 24
+            case 18: // fall through to 24
+            case 17: // fall through to 24
+            case 24: {
+                // can only distinguish the 2 lowest bits
+                // return highestBitSetIn24(value);
+                // so instead solve for top 8 bits, and if none set, 2nd 8 bits, and if none set, 3rd 8 bits
+                long v = value >> 16;
+                if (v > 0) {
+                    return highestBitSetIn8(v) + 16;
+                }
+                v = value >> 8;
+                if (v > 0) {
+                    return highestBitSetIn8(v) + 8;
+                }
+                return highestBitSetIn8(value);
+            }
+            case 15: // fall through to 16
+            case 14: // fall through to 16
+            case 13: // fall through to 16
+            case 12: // fall through to 16
+            case 11: // fall through to 16
+            case 10: // fall through to 16
+            case 9: // fall through to 16
+            case 16: {
+                // can only distinguish the 3 lowest bits
+                //return highestBitSetIn16(value);
+                long v = value >> 8;
+                if (v > 0) {
+                    return highestBitSetIn8(v) + 8;
+                }
+                return highestBitSetIn8(value);
+            } case 8: {
+                // can distinguish all 8 bits
                 return highestBitSetIn8(value);
             } case 7: {
+                // can distinguish all bits...
                 return highestBitSetIn7(value);
             } case 6: {
                 return highestBitSetIn6(value);
@@ -1293,10 +1396,10 @@ sketch overlaps here:
      * number, we can manually check each power of two that could serve as the
      * most-significant bit. This is actually done using a clever parallel
      * comparison step, describe below.
-     @param value a 4-bit number
+     @param value an 8-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
-     static long highestBitSetIn8(long value) {
+    static long highestBitSetIn8(long value) {
 
         /* We will again use the parallel comparison technique. To get everything to
          * fit cleanly into a machine word, we'll treat the 8-bit value as actually
@@ -1328,8 +1431,8 @@ sketch overlaps here:
          * That bottom string is the concatenation of all the powers of two listed
          * above, padded with zeros betweeh the elements.
          */
-                           // 6         5         4         3         2         1
-                          // 10987654321098765432109876543210987654321098765432109876543210
+        // 6         5         4         3         2         1
+        // 10987654321098765432109876543210987654321098765432109876543210
         long kComparator = 0b00000001000000001000000001000000001000000001000000001000000001L;
 
         /* We need to spray out seven copies of the value so that we can compare
@@ -1348,14 +1451,14 @@ sketch overlaps here:
          * This corresponds to a multiplication by 2^0 + 2^8 + 2^16 + 2^24 + ...
          * It is (1<<0) | (1<<8) | (1<<16) | (1<<24) etc
          */
-         long kSpreader   = 0b0000000000000001000000010000000100000001000000010000000100000001L;
+        long kSpreader   = 0b0000000000000001000000010000000100000001000000010000000100000001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
          * the byte - we need to recycle that bit for other purposes.)
          * It is (1<<7) | (1<<15) | (1<<23) | (1<<31) etc.
          */
-         long kMask       = 0b0000000010000000100000001000000010000000100000001000000010000000L;
+        long kMask       = 0b0000000010000000100000001000000010000000100000001000000010000000L;
 
         /* Perform the parallel comparison:
          *
@@ -1365,7 +1468,7 @@ sketch overlaps here:
          *     we're bigger than.
          *  4. Mask off everything except the flag bits.
          */
-         long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
 
         /* We now have a flag integer holding bits indicating which powers of two
          * are smaller than us. Summing up those flags using a summation operation
@@ -1376,6 +1479,98 @@ sketch overlaps here:
         return parallelSum8(comparison, nTiles) - 1;
     }
 
+    /*
+     * Given a 16-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * This method can only distinguish the lowest 3 bits, so has been commented out and left
+     * to view notes.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     @param value a 16-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     /*static long highestBitSetIn16(long value) {
+
+        if ((value & 0b1000000000000000L) != 0) {
+            return 15;
+        }
+
+        //max nTiles = floor(63/16)=3
+                           // 6         5         4         3         2         1
+                          // 10987654321098765432109876543210987654321098765432109876543210
+        //                                              +17              +17
+        long kComparator = 0b00000000000000000000000000010000000000000000100000000000000001L;
+
+         //                      6         5         4         3         2         1
+         //                     10987654321098765432109876543210987654321098765432109876543210
+         long kSpreader   = 0b0000000000000000000000000000000100000000000000010000000000000001L;
+
+         //                      6         5         4         3         2         1
+         //                     10987654321098765432109876543210987654321098765432109876543210
+         long kMask       = 0b0000000000000000100000000000000010000000000000001000000000000000L;
+
+         long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        int nTiles = 3;
+        int tileBitLength = 15;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }*/
+
+    /*
+     * Given a 24-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * This method can only distinguish the lowest 2 bits, so has been disabled, and commented out to leave
+     * the notes.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     @param value a 24-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+    /*static long highestBitSetIn24(long value) {
+
+        if ((value & 0b100000000000000000000000L) != 0) {
+            return 23;
+        }
+
+        //max nTiles = floor(63/24)=2
+        //                    6         5         4         3         2         1
+        //                   10987654321098765432109876543210987654321098765432109876543210
+        //                                                       +25
+        long kComparator = 0b00000000000000000000000000000000000010000000000000000000000001L;
+
+         // (1<<0) | (1<<24)
+        //                      6         5         4         3         2         1
+        //                     10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader   = 0b0000000000000000000000000000000000000001000000000000000000000001L;
+
+        //It is (1<<23) | (1<<47)
+        //                      6         5         4         3         2         1
+        //                     10987654321098765432109876543210987654321098765432109876543210
+        long kMask       = 0b0000000000000000100000000000000000000000100000000000000000000000L;
+
+        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        int nTiles = 2;
+        int tileBitLength = 23;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }*/
+
     /**
      * Given a 7-bit value, returns the index of the highest 1 bit within that
      * value.
@@ -1384,7 +1579,7 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     @param value a 4-bit number
+     @param value a 7-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn7(long value) {
@@ -1468,7 +1663,7 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     @param value a 4-bit number
+     @param value a 6-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn6(long value) {
@@ -1552,7 +1747,7 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     @param value a 4-bit number
+     @param value a 5-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn5(long value) {
