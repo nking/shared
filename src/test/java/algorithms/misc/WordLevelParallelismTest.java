@@ -58,7 +58,7 @@ public class WordLevelParallelismTest extends TestCase {
 
     }
 
-    public void testHighestOneBitIn_MSB() {
+    public void estHighestOneBitIn_MSB() {
 
         //TODO: finish tests
 
@@ -89,8 +89,7 @@ public class WordLevelParallelismTest extends TestCase {
         long hb;
         int nRTests = 100;
         long mb;
-        int[] bs = new int[]{32, 24, 16, 8,7,6,5,4,3};
-        for (int b : bs) {
+        for (int b = 63;  b > 2; --b) {
 
             // test no set bits
             value = 0L;

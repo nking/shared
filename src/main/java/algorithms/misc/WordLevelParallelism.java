@@ -1295,12 +1295,46 @@ sketch overlaps here:
      */
     public static long highestBitSetIn(long value, int valueBitLength) {
 
+        if (valueBitLength < 63 && valueBitLength > 48) {
+            return highestBitSetIn(value, 63);
+        } else if (valueBitLength < 48 && valueBitLength > 32) {
+            return highestBitSetIn(value, 48);
+        }
+
         // the method name highestBitSetIn8 is a one-based index, but the bit number
         // returned is w.r.t. a zero-based index.
         // e.g. highestBitSetIn8 is the highest bit in an 8 bit value,
         //      but the returned bit range is [0,7] inclusive
         // switch is based on the block size which s bitlength + 1
         switch (valueBitLength) {
+            case 63: {
+                // test highest 16-bit block, and repeat if needed for next
+                long v = value >> 48;
+                if (v > 0) {
+                    return highestBitSetIn(v, 16) + 48;
+                }
+                v = value >> 32;
+                if (v > 0) {
+                    return highestBitSetIn(v, 16) + 32;
+                }
+                v = value >> 16;
+                if (v > 0) {
+                    return highestBitSetIn(v, 16) + 16;
+                }
+                return highestBitSetIn(value, 16);
+            }
+            case 48: {
+                // test highest 16-bit block, and repeat if needed for next
+                long v = value >> 32;
+                if (v > 0) {
+                    return highestBitSetIn(v, 16) + 32;
+                }
+                v = value >> 16;
+                if (v > 0) {
+                    return highestBitSetIn(v, 16) + 16;
+                }
+                return highestBitSetIn(value, 16);
+            }
             case 31: // fall through to 32
             case 30: // fall through to 32
             case 29: // fall through to 32
