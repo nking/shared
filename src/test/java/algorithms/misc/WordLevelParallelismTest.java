@@ -48,8 +48,6 @@ public class WordLevelParallelismTest extends TestCase {
 
         //          6         5         4         3         2         1
         //        210987654321098765432109876543210987654321098765432109876543210
-        //                                                10001010000000000000000
-        //               01000101000101000010000001010000001000100100010000001000
         assertEquals(0b01011101_01100111_01101010_01101011_01101101_01101110_01111111L, tiledKeys);
 
         long rank = WordLevelParallelism.rank(tiledQ, tiledKeys, nTiles, bitstringLength);
@@ -58,8 +56,24 @@ public class WordLevelParallelismTest extends TestCase {
 
     }
 
-    public void estHighestOneBitIn() {
+    public void testHighestOneBitIn() {
+        //           6         5         4         3         2         1
+        //         210987654321098765432109876543210987654321098765432109876543210
+        //  1000000100000010000001000000100000010000001000000100000010000001000000
+        long t = 0b000001000000000010000000000010000000000010000000000010000000000L;
+        //            0b1000000000010000000000010000000000010000000000010000000000
 
+        //           6         5         4         3         2         1
+        //         210987654321098765432109876543210987654321098765432109876543210
+        //  1000000100000010000001000000100000010000001000000100000010000001000000
+        // used blocks in
+        //       0b100000000000001000000000000010000001000000000000010000000000000
+        // sketch of used blocks in:
+        //                                                             0b101011010
+        int nTiles = 9;
+        int tileBitLength = 7-1;
+        long msb = WordLevelParallelism.highestOneBitIn(t, nTiles, tileBitLength);
+        assertEquals(57, msb);
     }
 
     public void testHighestBitIn() {

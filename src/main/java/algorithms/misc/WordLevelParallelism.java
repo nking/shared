@@ -16,19 +16,46 @@ package algorithms.misc;
 public class WordLevelParallelism {
 
     /**
-     * given a bitarray packed full of tiles separated by flags (= blocks),
-     * returns the index of the highest nonzero block.
-     *
+     * finds the highest set bit in the bitstring tiled.  the method is a.k.a. MSB.
+     * MSB(tiled) is the largest value of k such that 2^k ≤ tiled.
+     * uses O(1) machine operations and O(1) space.
      * <pre>
      *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      *     then edited here for variable block size and number of tiles packed into tiled.
+     *     see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      * </pre>
+     * An example of where MSB is used:
+     * In the sparse table Range Minimum Queries (RMQ) structure,
+     * where computing RMQ(i, j) requires computing
+     * the largest number k where 2^k ≤ (j–i+1), k = msb(j – i + 1).
+     *
+     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
+     */
+    public static long highestOneBitIn(long tiled) {
+        // with block size 7 and 9 tiles, have 63 bits that are searched.  tileBitLength=blockSize - 1.
+        return highestOneBitIn(tiled, 9, 6);
+    }
+    /**
+     * finds the highest set bit in the bitstring tiled.  the method is a.k.a. MSB.
+     * MSB(tiled) is the largest value of k such that 2^k ≤ tiled.
+     * uses O(1) machine operations and O(1) space.
+     * <pre>
+     *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     *     then edited here for variable block size and number of tiles packed into tiled.
+     *     see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     * </pre>
+     * An example of where MSB is used:
+     * In the sparse table Range Minimum Queries (RMQ) structure,
+     * where computing RMQ(i, j) requires computing
+     * the largest number k where 2^k ≤ (j–i+1), k = msb(j – i + 1).
      *
      * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
      * @param nTiles        the number of tiles packed into the bitarray tiled.
      * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
-     * @return the index of the highest nonzero block in tiled.  returns a negative number if no bits are set in tiled.
+     * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
      */
     public static long highestOneBitIn(long tiled, int nTiles, int tileBitLength) {
 
@@ -66,7 +93,7 @@ public class WordLevelParallelism {
         // the block number in bits, e.g. 6th block is 0b1000000
         long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);
 
-        return highestBitSetIn(sketch, bSz);
+        return highestBitSetIn(sketch, nTiles);
     }
 
     /**
@@ -1229,6 +1256,8 @@ sketch overlaps here:
         //      but the returned bit range is [0,7] inclusive
         // switch is based on the block size which s bitlength + 1
         switch (valueBitLength) {
+            edit for bit lengths > 8 up to 63.  nTiles=7,9,10,12,15,21,31,63
+                so can divide into combination of operations depending upon nTiles (which is valueBitLength)
             case 8: {
                 return highestBitSetIn8(value);
             } case 7: {
