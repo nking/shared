@@ -58,7 +58,7 @@ public class WordLevelParallelismTest extends TestCase {
 
     }
 
-    public void estHighestOneBitIn_MSB() {
+    public void testHighestOneBitIn_MSB() {
 
         //TODO: finish tests
 

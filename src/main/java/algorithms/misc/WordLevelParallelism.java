@@ -34,8 +34,11 @@ public class WordLevelParallelism {
      * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
      */
     public static long highestOneBitIn(long tiled) {
+        //NOTE: java's Long.highestOneBit() uses 14 operations
+        return Long.highestOneBit(tiled);
+        // this implementation uses ~33 operations
         // with block size 7 and 9 tiles, have 63 bits that are searched.  tileBitLength=blockSize - 1.
-        return highestOneBitIn(tiled, 9, 6);
+        //return highestOneBitIn(tiled, 9, 6);
     }
 
     /**
@@ -51,7 +54,9 @@ public class WordLevelParallelism {
      * In the sparse table Range Minimum Queries (RMQ) structure,
      * where computing RMQ(i, j) requires computing
      * the largest number k where 2^k ≤ (j–i+1), k = msb(j – i + 1).
-     *
+     *  The operation is ~33 to a few times that operations.
+     *  Consider using instead Long.highestOneBitIn() which uses the Henry S. Warren, Jr.'s Hacker's Delight
+     *  bit twiddling for 14 operations.
      * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
      * @param nTiles        the number of tiles packed into the bitarray tiled.
@@ -62,7 +67,8 @@ public class WordLevelParallelism {
 
         int bSz = tileBitLength + 1;
 
-        /* Step 1: Identify the index of the highest block with a 1 bit in it. */
+        // Step 1: Identify the index of the highest block with a 1 bit in it.
+        // ~ 21 operations
         long highBlockIndex = highestBlockSetIn(tiled, nTiles, tileBitLength);
 
         /* Step 2: Identify the highest bit within that block. To do so, we're going
@@ -72,12 +78,19 @@ public class WordLevelParallelism {
         //long highBlock = tiled >> (highBlockIndex * 8);
         long highBlock = tiled >> (highBlockIndex * bSz);
 
+        // ~10 to a few times 10 operations:
         return highBlockIndex * bSz + highestBitSetIn(highBlock, bSz);
     }
 
     /**
      * Given a 64-bit integer, returns the index of the block within that integer
      * that contains a 1 bit, where the index is zero-based numbering.
+     <pre>
+          reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+          then edited here for variable block size and number of tiles packed into tiled.
+          see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     </pre>
+     * the method is ~ 21 operations.
      * @param tiled the bitarray of tiled integers.
      * @param nTiles the number of tiles embedded in tiled.
      * @param tileBitLength the length of each tile in tiled, not counting the surrounding single flag bits.
@@ -89,11 +102,14 @@ public class WordLevelParallelism {
 
         int bSz = tileBitLength + 1;
 
+        // 5 operations
         long usedBlocksIn = usedBlocksIn(tiled, bSz);
 
         // the block number in bits, e.g. 6th block is 0b1000000
+        // ~ 3 operations
         long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);
 
+        // ~ 13 operations
         return highestBitSetIn(sketch, nTiles);
     }
 
@@ -632,18 +648,7 @@ public class WordLevelParallelism {
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
-     * operations.
-     * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
-     * and so (nTiles * block) must be less than or equal to 63.
-     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
-     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
-     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
-     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
-     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 63 bit limit.
-     *
+     * this is ~ 6 operations.
      * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
      *                      are summed in this method.
      * @return the sum of the set bits of the MSB of each 8-bit block.
@@ -683,7 +688,7 @@ public class WordLevelParallelism {
      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
 
      </pre>
-     *
+     The method is ~ 3 operations.
      * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
      * @param nTiles        the number of tiles packed into the bitarray tiled.
@@ -1430,6 +1435,7 @@ sketch overlaps here:
      * number, we can manually check each power of two that could serve as the
      * most-significant bit. This is actually done using a clever parallel
      * comparison step, describe below.
+     * this is ~10 operations.
      @param value an 8-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
@@ -2036,6 +2042,7 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
+     The method is 5 operations.
      */
     static long usedBlocksIn8(long value) {
 
