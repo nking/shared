@@ -1315,7 +1315,7 @@ public class Histogram {
 
      <pre>
      There is mention of choosing the bandwidth h in the lecture notes of
-     Larry Wasserstein, CMU
+     Larry Wasserman, CMU
      36-708 Statistical Methods for Machine Learning by
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      after equation (8), but c2 isn't defined.

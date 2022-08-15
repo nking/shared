@@ -75,7 +75,6 @@ public class WordLevelParallelism {
          * to shift that block down to the proper position and mask out the other
          * bits.
          */
-        //long highBlock = tiled >> (highBlockIndex * 8);
         long highBlock = tiled >> (highBlockIndex * bSz);
 
         // ~10 to a few times 10 operations:
@@ -341,15 +340,14 @@ public class WordLevelParallelism {
      * in tiled2.  This method performs a parallel compare of tiled1 to tiled2,
      * masks the result, and then sums the number of set bits in the masked result.
      * The calculated rank requires that the keys embedded in tiled2 are ordered.
-     * The calculated rank is the number of blocks in tiled2 that are less than or equal to the
-     * query (which is replicated in tiled1).
-     * The method is O(1).
+     * The calculated rank is the number of flags of blocks in tiled2 that are less than or equal to those
+     * in the query (which is replicated in tiled1).
+     * The method is O(1) (5 operations).
      <pre>
      following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     *
      * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
      *                      e.g. For bitstring 0b0010100 replicated 2 times using a bitlength of 7 bits,
      *                      the resulting tiled1 is bitstring of length 16 bits which has 2 blocks of size 8 bits,
@@ -361,9 +359,8 @@ public class WordLevelParallelism {
      * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
      *                      because it includes the gap bit between tiles.
      * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
-     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
-     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
-     * in tiled2.
+     * @return The calculated rank is the number of flags of blocks in tiled2 that are less than or equal to those
+     * in the query (which is replicated in tiled1).
      */
     public static long rank(long tiled1, long tiled2, int nTiles, int tileBitLength, long mask1) {
 
@@ -382,6 +379,7 @@ public class WordLevelParallelism {
         //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
         //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
+        // 3 operations
         return parallelSum(comparison, nTiles, tileBitLength);
     }
 
@@ -483,18 +481,7 @@ public class WordLevelParallelism {
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
-     * operations.
-     * Let block size = (bistringLength + 1).
-     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
-     * and so (nTiles * block) must be less than or equal to 63.
-     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
-     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
-     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
-     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
-     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
-     * and the 63 bit limit.
-     *
+     * This is 3 operations.
      * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
      *                      are summed in this method.
      * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
@@ -537,7 +524,7 @@ public class WordLevelParallelism {
                 //       210987654321098765432109876543210987654321098765432109876543210
                 kMult =0b000000000000000000000000000000000000001000000000000000000000001L;
                 kMask =0b000000000000011100000000000000000000000000000000000000000000000L;
-                //                      A00000000000000000000000B00000000000000000000000L
+                //    not in hex:       A00000000000000000000000B00000000000000000000000L
                 kShift = 47;
                 return ((comparison * kMult) & kMask) >> kShift;
             case 16:
@@ -680,6 +667,7 @@ public class WordLevelParallelism {
     /**
      * given a bitarray packed full of tiles separated by flags, extract and return the flags.
      * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
+     * This is also known as "parallel pack".
      <pre>
      references:
      lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
@@ -1469,11 +1457,12 @@ sketch overlaps here:
          * - 01000000001000000001000000001000000001000000001000000001
          *
          * That bottom string is the concatenation of all the powers of two listed
-         * above, padded with zeros betweeh the elements.
+         * above, padded with zeros between the elements.
          */
-        // 6         5         4         3         2         1
-        // 10987654321098765432109876543210987654321098765432109876543210
-        long kComparator = 0b00000001000000001000000001000000001000000001000000001000000001L;
+        // (1<<0) | (1<<9) | (1<<18) | (1<<27) | (1<<36) | (1<<45) | (1<<54)
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+        long kComparator = 0b000000001000000001000000001000000001000000001000000001000000001L;
 
         /* We need to spray out seven copies of the value so that we can compare
          * multiple copies of it in parallel. To do this, we essentially want to make
@@ -1491,7 +1480,9 @@ sketch overlaps here:
          * This corresponds to a multiplication by 2^0 + 2^8 + 2^16 + 2^24 + ...
          * It is (1<<0) | (1<<8) | (1<<16) | (1<<24) etc
          */
-        long kSpreader   = 0b0000000000000001000000010000000100000001000000010000000100000001L;
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+        long kSpreader   = 0b000000000000001000000010000000100000001000000010000000100000001L;
 
         /* As before, to make a parallel comparison, we're going to force a 1 bit at
          * the start of each block. (This is why we special-cased away the top bit of
@@ -1518,98 +1509,6 @@ sketch overlaps here:
         int tileBitLength = 7;
         return parallelSum8(comparison, nTiles) - 1;
     }
-
-    /*
-     * Given a 16-bit value, returns the index of the highest 1 bit within that
-     * value.
-     * This method can only distinguish the lowest 3 bits, so has been commented out and left
-     * to view notes.
-     <pre>
-     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     Then edited here to allow block sizes other than 8.
-     </pre>
-     * This subroutine is where much of the magic happens with regards to the
-     * overall algorithm. The idea is that if we can get down to an eight-bit
-     * number, we can manually check each power of two that could serve as the
-     * most-significant bit. This is actually done using a clever parallel
-     * comparison step, describe below.
-     @param value a 16-bit number
-     @return the highest set bit in value, or -1 for no set bits
-     */
-     /*static long highestBitSetIn16(long value) {
-
-        if ((value & 0b1000000000000000L) != 0) {
-            return 15;
-        }
-
-        //max nTiles = floor(63/16)=3
-                           // 6         5         4         3         2         1
-                          // 10987654321098765432109876543210987654321098765432109876543210
-        //                                              +17              +17
-        long kComparator = 0b00000000000000000000000000010000000000000000100000000000000001L;
-
-         //                      6         5         4         3         2         1
-         //                     10987654321098765432109876543210987654321098765432109876543210
-         long kSpreader   = 0b0000000000000000000000000000000100000000000000010000000000000001L;
-
-         //                      6         5         4         3         2         1
-         //                     10987654321098765432109876543210987654321098765432109876543210
-         long kMask       = 0b0000000000000000100000000000000010000000000000001000000000000000L;
-
-         long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
-
-        int nTiles = 3;
-        int tileBitLength = 15;
-        return parallelSum(comparison, nTiles, tileBitLength) - 1;
-    }*/
-
-    /*
-     * Given a 24-bit value, returns the index of the highest 1 bit within that
-     * value.
-     * This method can only distinguish the lowest 2 bits, so has been disabled, and commented out to leave
-     * the notes.
-     <pre>
-     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
-     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
-     Then edited here to allow block sizes other than 8.
-     </pre>
-     * This subroutine is where much of the magic happens with regards to the
-     * overall algorithm. The idea is that if we can get down to an eight-bit
-     * number, we can manually check each power of two that could serve as the
-     * most-significant bit. This is actually done using a clever parallel
-     * comparison step, describe below.
-     @param value a 24-bit number
-     @return the highest set bit in value, or -1 for no set bits
-     */
-    /*static long highestBitSetIn24(long value) {
-
-        if ((value & 0b100000000000000000000000L) != 0) {
-            return 23;
-        }
-
-        //max nTiles = floor(63/24)=2
-        //                    6         5         4         3         2         1
-        //                   10987654321098765432109876543210987654321098765432109876543210
-        //                                                       +25
-        long kComparator = 0b00000000000000000000000000000000000010000000000000000000000001L;
-
-         // (1<<0) | (1<<24)
-        //                      6         5         4         3         2         1
-        //                     10987654321098765432109876543210987654321098765432109876543210
-        long kSpreader   = 0b0000000000000000000000000000000000000001000000000000000000000001L;
-
-        //It is (1<<23) | (1<<47)
-        //                      6         5         4         3         2         1
-        //                     10987654321098765432109876543210987654321098765432109876543210
-        long kMask       = 0b0000000000000000100000000000000000000000100000000000000000000000L;
-
-        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
-
-        int nTiles = 2;
-        int tileBitLength = 23;
-        return parallelSum(comparison, nTiles, tileBitLength) - 1;
-    }*/
 
     /**
      * Given a 7-bit value, returns the index of the highest 1 bit within that
@@ -1646,6 +1545,7 @@ sketch overlaps here:
         //  7654321098765432109876543210987654321098765432109876543210
         //                  1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa
         //                   100000  10000   1000    100     10      1
+        // (1<<0) | (1<<8) | (1<<16) | (1<<24) | (1<<32) | (1<<40)
         long kComparator = 0b10000000100000001000000010000000100000001L;
 
         /* We need to spray out 6 copies of the value so that we can compare
@@ -1977,6 +1877,99 @@ sketch overlaps here:
         }
         return -1;
     }
+
+
+    /*
+     * Given a 16-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * This method can only distinguish the lowest 3 bits, so has been commented out and left
+     * to view notes.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     @param value a 16-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     /*static long highestBitSetIn16(long value) {
+
+        if ((value & 0b1000000000000000L) != 0) {
+            return 15;
+        }
+
+        //max nTiles = floor(63/16)=3
+                           // 6         5         4         3         2         1
+                          // 10987654321098765432109876543210987654321098765432109876543210
+        //                                              +17              +17
+        long kComparator = 0b00000000000000000000000000010000000000000000100000000000000001L;
+
+         //                      6         5         4         3         2         1
+         //                     10987654321098765432109876543210987654321098765432109876543210
+         long kSpreader   = 0b0000000000000000000000000000000100000000000000010000000000000001L;
+
+         //                      6         5         4         3         2         1
+         //                     10987654321098765432109876543210987654321098765432109876543210
+         long kMask       = 0b0000000000000000100000000000000010000000000000001000000000000000L;
+
+         long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        int nTiles = 3;
+        int tileBitLength = 15;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }*/
+
+    /*
+     * Given a 24-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * This method can only distinguish the lowest 2 bits, so has been disabled, and commented out to leave
+     * the notes.
+     <pre>
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     </pre>
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     @param value a 24-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+    /*static long highestBitSetIn24(long value) {
+
+        if ((value & 0b100000000000000000000000L) != 0) {
+            return 23;
+        }
+
+        //max nTiles = floor(63/24)=2
+        //                    6         5         4         3         2         1
+        //                   10987654321098765432109876543210987654321098765432109876543210
+        //                                                       +25
+        long kComparator = 0b00000000000000000000000000000000000010000000000000000000000001L;
+
+         // (1<<0) | (1<<24)
+        //                      6         5         4         3         2         1
+        //                     10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader   = 0b0000000000000000000000000000000000000001000000000000000000000001L;
+
+        //It is (1<<23) | (1<<47)
+        //                      6         5         4         3         2         1
+        //                     10987654321098765432109876543210987654321098765432109876543210
+        long kMask       = 0b0000000000000000100000000000000000000000100000000000000000000000L;
+
+        long comparison = (((kSpreader * value) | kMask) - kComparator) & kMask;
+
+        int nTiles = 2;
+        int tileBitLength = 23;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }*/
 
     /**
      *  Returns a bitmask where each block's high bit is 1 if that block contains a

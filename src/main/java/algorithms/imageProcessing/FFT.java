@@ -215,47 +215,100 @@ public class FFT {
         
         double[] a = bitReverseCopy(x);
         
+        return _fft_body(a);
+    }
+
+    /**
+     * perform FFT on x
+     * runtime complexity is O(N).
+     * (adapted from  Cormen et al. pseudocode for forward transform).
+     * Note that the result cannot be inverted because only the real portion is
+     * returned and inverse FFT needs the real and complex components.
+     */
+    public double[] fft(double[] x) {
+
+        if (x == null || x.length == 0) {
+            throw new IllegalArgumentException("xReal cannot be null or empty");
+        }
+
+        int n = x.length;
+
+        if (n == 1) {
+            return new double[]{x[0]};
+        }
+
+        if (!MiscMath0.isAPowerOf2(n)) {
+            throw new IllegalArgumentException("xReal's length has to be a power of 2");
+        }
+
+        double[] a = bitReverseCopy(x);
+
+        return _fft_body(a);
+    }
+
+    /**
+     * the main body of FFT
+     */
+    double[] _fft_body(double[] bitReversedX) {
+
+        if (bitReversedX == null || bitReversedX.length == 0) {
+            throw new IllegalArgumentException("xReal cannot be null or empty");
+        }
+
+        int n = bitReversedX.length;
+
+        if (!MiscMath0.isAPowerOf2(n)) {
+            throw new IllegalArgumentException("xReal's length has to be a power of 2");
+        }
+
+        double[] a = bitReversedX;
+
+        double wReal;
+        double wImag;
+        double tReal;
+        double tImag;
+        double tAbs;
+        double u;
+        double eCoeff;
+        double wnReal;
+        double wnImag;
         double norm = 1./Math.sqrt(n);
-        
         int end = (int)(Math.log(n)/Math.log(2));
-        
+        int m;
+
         for (int s = 1; s <= end; s++) {
-            
-            int m = 1 << s;
-            
-            double eCoeff = 2. * Math.PI/(double)m;
-            double wnReal = Math.cos(eCoeff);
-            double wnImag = Math.sin(eCoeff);
-        
+
+            m = 1 << s;
+            eCoeff = 2. * Math.PI/(double)m;
+            wnReal = Math.cos(eCoeff);
+            wnImag = Math.sin(eCoeff);
+
             for (int k = 0; k < n; k+=m) {
-                
-                double wReal = 1;
-                double wImag = 0;
-                
+                wReal = 1;
+                wImag = 0;
                 for (int j = 0; j < (m/2); j++) {
-                    
                     //complex multiplication:
-                    double tReal = wReal * a[k + j + (m/2)];
-                    double tImag = wImag * a[k + j + (m/2)];
-                    double tAbs = Math.hypot(tReal, tImag);;
-                    
-                    double u = a[k + j];
+                    tReal = wReal * a[k + j + (m/2)];
+                    tImag = wImag * a[k + j + (m/2)];
+                    tAbs = Math.hypot(tReal, tImag);;
+
+                    u = a[k + j];
                     a[k + j] = (u + tAbs);
                     a[k + j + (m/2)] = (u - tAbs);
-                    
+
                     //complex multiplication:
                     wReal = wReal * wnReal - (wImag * wnImag);
                     wImag = wReal * wnImag + (wImag * wnReal);
                 }
             }
         }
-        
+
         if (performNormalization) {
             for (int i = 0; i < a.length; i++) {
                 a[i] *= norm;
             }
         }
-        
+
         /*
         bit-reverse-copy(a,A)
         for s=1 to lg n {
@@ -273,7 +326,7 @@ public class FFT {
             }
         }
         */
-        
+
         return a;
     }
 }
