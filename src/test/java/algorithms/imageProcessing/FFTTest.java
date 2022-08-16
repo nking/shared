@@ -61,27 +61,35 @@ public class FFTTest extends TestCase {
         
         int n = 16;
         Complex[] a = new Complex[n];
+
+        double[] aDbl = new double[n];
         
         for (int i = 0; i < n; ++i) {
             a[i] = new Complex(16, 0);
+            aDbl[i] = 16;
         }
         
         Complex[] aTr = fft.fft(a, true);
+
+        double[] aDblTr = fft.fft(aDbl);
 
         // should be a delta function
         assertTrue(aTr.length == n);
         assertEquals(64.0, aTr[0].re());
         assertEquals(0.0, aTr[0].im());
+        assertTrue(aDblTr.length == n);
+        assertEquals(64.0, aDblTr[0]);
 
         for (int i = 1; i < n; ++i) {  
             assertEquals(0.0, aTr[i].re());
             assertEquals(0.0, aTr[i].im());
+            assertEquals(0.0, aDblTr[i]);
         }
                        
         fft = new FFT();
         aTr = fft.fft(aTr, true);
 
-        for (int i = 0; i < n; ++i) {  
+        for (int i = 0; i < n; ++i) {
             assertTrue( Math.abs(a[i].re() - aTr[i].re()) < 0.01);
             assertEquals(0.0, aTr[i].im());
         }
@@ -108,11 +116,16 @@ public class FFTTest extends TestCase {
         int n = 1 << 2;
         int w = 1;
         Complex[] a = new Complex[n];
-        
         a[0] = new Complex(1, 0);
         a[1] = new Complex(2*w, 0);
         a[2] = new Complex(1, 0);
         a[3] = new Complex(1, 0);
+
+        double[] aDbl = new double[n];
+        aDbl[0] = 1;
+        aDbl[1] = 2*w;
+        aDbl[2] = 1;
+        aDbl[3] = 1;
         
         if (makePlot) {
             float[] x = new float[a.length];
@@ -130,6 +143,8 @@ public class FFTTest extends TestCase {
         }
         
         Complex[] aTr = fft.fft(a, true);
+
+        double[] aDblTr = fft.fft(aDbl);
         
         if (makePlot) {
             float[] x = new float[a.length];
@@ -151,8 +166,13 @@ public class FFTTest extends TestCase {
         assertTrue( Math.abs(aTr[0].re() - 2.5) < 0.001);
         double v = Math.abs(aTr[1].re());
         assertTrue( v < 0.01);
-        assertTrue( aTr[2].re() < aTr[1].re());   
-        
+        assertTrue( aTr[2].re() < aTr[1].re());
+
+        assertTrue( Math.abs(aDblTr[0] - 2.5) < 0.001);
+        v = Math.abs(aDblTr[1]);
+        assertTrue( v < 0.01);
+        assertTrue( aDblTr[2] < aDblTr[1]);
+
         // the FFT of triangle is the sync squared function 
         fft = new FFT();
         aTr = fft.fft(aTr, false);
@@ -180,11 +200,16 @@ public class FFTTest extends TestCase {
         */
         int n = 1 << 2;
         Complex[] a = new Complex[n];
-        
         a[0] = new Complex(1, 0);
         a[1] = new Complex(1, 0);
         a[2] = new Complex(-1, 0);
         a[3] = new Complex(-1, 0);
+
+        double[] aDbl = new double[n];
+        aDbl[0] = 1;
+        aDbl[1] = 1;
+        aDbl[2] = -1;
+        aDbl[3] = -1;
         
         if (makePlot) {
             float[] x = new float[a.length];
@@ -202,7 +227,7 @@ public class FFTTest extends TestCase {
         }
         
         Complex[] aTr = fft.fft(a, true);
-        
+
         if (makePlot) {
             float[] x = new float[a.length];
             float[] y = new float[x.length];
@@ -224,7 +249,7 @@ public class FFTTest extends TestCase {
         assertTrue( Math.abs(aTr[1].re() - 1) < 0.001);
         assertTrue( Math.abs(aTr[2].re() - 0) < 0.001);
         assertTrue( Math.abs(aTr[3].re() - 1) < 0.001);
-        
+
         // the FFT of triangle is the sync squared function 
         fft = new FFT();
         aTr = fft.fft(aTr, false);

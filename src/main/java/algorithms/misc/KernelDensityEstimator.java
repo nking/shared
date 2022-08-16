@@ -2,6 +2,8 @@ package algorithms.misc;
 
 import algorithms.imageProcessing.FFT;
 
+import java.util.Arrays;
+
 /**
  * TODO: consider implementing the Improved Sheather - Jones algorithm for estimating bandwidth:.
  * can see implementations
@@ -19,8 +21,18 @@ import algorithms.imageProcessing.FFT;
  * https://idl.cs.washington.edu/files/2021-FastKDE-VIS.pdf
  *
  * TODO: consider using MSER in a 2-D KDE estimator
+ *
+ * TODO: explore https://github.com/TasCL/cpda/ one day.
+ * Probability Density Approximation.
+ * The authors are Yi-Shin Lin yishin.lin@utas.edu.au, Andrew Heathcote, William Holmes
+ * The repository implements some of
+ * Holmes, W. (2015). A practical guide to the Probability Density Approximation (PDA) with improved implementation
+ * and error characterization. Journal of Mathematical Psychology, 68-69, 13--24, doi:
+ * http://dx.doi.org/10.1016/j.jmp.2015.08.006.
  */
 public class KernelDensityEstimator {
+
+    final static double BIG = 0.8 * Double.MAX_VALUE;
 
     /**
      * assuming a zero-centered mean gaussian kernel, return the bandwidth which minimizes the
@@ -57,8 +69,9 @@ public class KernelDensityEstimator {
     }
 
     public static class KDE {
+
         /**
-         * FFT of the data.
+         * FFT of the histogram of the data.
          u(s) = (1./sqrt(2*pi)) * (1/n) * sum j=1 to n of ( exp(i*s*X_j) ) where i is imaginary
          and n is the length of the data.
          Note that the data are a histogram of the original data.
@@ -69,7 +82,17 @@ public class KernelDensityEstimator {
          </pre>
          */
         public Complex[] u;
+
+        /**
+         * the x bins of the histogram of the data used in creating u.
+         */
+        public double[] hx;
+
+        /**
+         * kernel bandwidth
+         */
         public double h;
+
         /**
          * the kde calculated from u and h.
          * kde = inverse FFT(f_n(s))
@@ -84,14 +107,33 @@ public class KernelDensityEstimator {
      *      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
      *      https://www.jstor.org/stable/2347084#metadata_info_tab_contents
      *      </pre>
-     * @param x
-     * @param h
+     * @param x zero-centered data
+     * @param h bandwidth
      * @return
      */
     public static KDE viaFFTGaussKernel(double[] x, double h) {
 
         //TODO: consider using PeriodicFFT from the curvature scale space project instead of FFT
         //     to avoid edge effects.
+
+        // the histogram length (hist[1].length) is a power of 2 and the range is enlarged by at least 2*3*h
+        double[][] hist = createFineHistogram(x);
+
+        assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
+
+        Complex[] yHist = convertToComplex(hist[1]);
+
+        // normalization is performed by default:
+        FFT fft = new FFT();
+
+        // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
+        //   to find minimum bandwidth h.
+        //double[] u = fft.fft(hist[1]);
+        Complex[] u = fft.fft(yHist);
+
+        assert(u.length == hist[0].length);
+
+        return viaFFTGaussKernel(u, hist[0], h);
 
         /*
         summary of the paper:
@@ -105,9 +147,7 @@ public class KernelDensityEstimator {
                u(s) = (1./sqrt(2*pi)) * (1/n) * sum j=1 to n of ( exp(i*s*X_j) ) where i is imaginary
                ** A discrete approx of u(s) is found by constructing a histogram on a grid of 2^k cells
                   and then apply the FFT to it.
-                  (follow Gentelman and Sande as imple. by Monro 1976 (? keeping to a power of 2?
-                  the code below multiplies n by factor of 10 then takes the ceiling of the log base 2 of n...
-                  math.ceil( math.log(n*10)/math.log(2) )
+                  (follow Gentelman and Sande as imple. by Monro 1976
                ** The Munroe 1966 FFT takes an array of X(M) of M=2^k real values and returns
                   their discrete fourier transform Y stored with the real parts of Y_0 to Y_{M/2} in
                   locations X(1) to X((M/2)_1) and the imaginary parts of Y_1 to Y_{(M/2)-1} stored
@@ -124,8 +164,14 @@ public class KernelDensityEstimator {
              interest because of wrap around edge conditions.  they recommend enlarging the interval
              by 3*h at each end.  Note that the enlargement is not needed for circular data.
          */
+    }
 
-        throw new UnsupportedOperationException("not yet implemented");
+    private static Complex[] convertToComplex(double[] a) {
+        Complex[] c = new Complex[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            c[i] = new Complex(a[i], 0);
+        }
+        return c;
     }
 
     /**
@@ -138,7 +184,7 @@ public class KernelDensityEstimator {
      */
     protected static double[][] createFineHistogram(double[] x) {
         // the number of bins need to be a power of 2, and larger than x.length.
-        int nBins = (int)Math.ceil(Math.log(x.length*2)/Math.log(2));
+        int nBins = (int)Math.ceil(Math.log(x.length * 5)/Math.log(2));
 
         // unless the data are circular, the range has to be larger than the range of x in order to
         // avoid wrap around edge conditions
@@ -180,46 +226,105 @@ public class KernelDensityEstimator {
      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
      https://www.jstor.org/stable/2347084#metadata_info_tab_contents
      </pre>
-     * @param u
-     * @param h
-     * @return
+     * @param u the FFT of the histogram of the data.
+     * @param histBins the x bins of the histogram of the data that were used to create u
+     * @return kernel density estimate
      */
-    public static double[] viaFFTGaussKernel(Complex[] u, double h) {
-        throw new UnsupportedOperationException("not yet implemented");
+    public static KDE viaFFTGaussKernel(Complex[] u, double[] histBins, double h) {
+
+        // perform the fourier transform of the Gaussian Kernel K(h*s)
+        //    FFT( K(h*s) ) = exp(-(0.5) * h^2 * s^2)
+        // s = (x - xTilde[i])/h;  K(s*h)
+        double[] fftKernel = new double[histBins.length];
+        // note, this is not normalized.
+        double zh;
+        int i;
+        for (i = 0; i < histBins.length; ++i) {
+            zh = histBins[i] * h;
+            if (zh < BIG) {
+                fftKernel[i] = Math.exp(-0.5 * zh * zh);
+            }
+        }
+
+        // FFT(f_n(s)) = exp(-(0.5) * h^2 * s^2) * u(s)   EQN (3)
+        // Then f_n(s) = inverse FFT(f_n(s))
+        //     negative values of f_n are set to 0.
+        //     note that if several different uses of this algorithm for different h are employed,
+        //     that the discrete FFT has to be calculated only once and can be reused.
+        // The algorithm also avoids exponential underflow by setting
+        // FFT(f_n(s)) equal to 0 if 0.5*h*h*s*s is > BIG which is large for the machine.
+
+        // element-wise multiplication
+        Complex[] eqn3 = new Complex[fftKernel.length];
+        for (i = 0; i < fftKernel.length; ++i) {
+            eqn3[i] = u[i].times(fftKernel[i]);
+            if (eqn3[i].re() < 0) {
+                eqn3[i] = new Complex(0, 0);
+            }
+        }
+
+        FFT fft = new FFT();
+
+        Complex[] kdeC = fft.ifft(eqn3);
+        double[] kd = new double[kdeC.length];
+        for (i = 0; i < kdeC.length; ++i) {
+            kd[i] = kdeC[i].abs();
+            //TODO: follow up on the math. presumably want magnitude instead of just the real component.
+        }
+
+        KDE kde = new KDE();
+        kde.u = Arrays.copyOf(u, u.length);
+        kde.h = h;
+        kde.hx = Arrays.copyOf(histBins, histBins.length);
+        kde.kde = Arrays.copyOf(kd, kd.length);
+
+        return kde;
+    }
+
+    protected static boolean assertHistRange(double[] histBins, double[] dataMinMax, double h) {
+        if (histBins.length < 3) {
+            throw new IllegalArgumentException("histBins.length must be >= 3");
+        }
+        double dataRange = dataMinMax[1] - dataMinMax[0];
+        double histBinSize = histBins[1] - histBins[0];
+        double histRange = histBins[histBins.length - 1] - histBins[0] + histBinSize;
+
+        // assert histRange + 6h >= dataRange
+        return (histRange + 6.*h) >= dataRange;
     }
 
     /**
+     NOTE: this method is replaced by the Silverman FFT approach.
+
     Wasserman chap 20:
     let X_0,...X_{N-1) denote the observed data which is a sample from f (= probability distribution).
     K is the kernel.
     the KDE estimator f_hat(x) = (1/n) * sum_i=0_to_{N-1} ( (1/h^d) * K((x - X_i)/h)
        where d is the dimensionality
 
-    public static double fEst(IKernel kernel, double[][] x, double[] h) {
-        throw new UnsupportedOperationException("not yet implemented");
-    }*/
+     once the kde is estimated, that is, f_hat(x), the risk can be estimated with Wasserman eqn (20.24)
+     J_hat(h) = integral( f_hat^2(x)*dz ) - (2/n) * summation_i=1_to_n( f_hat_{-i)(X_i) }
+     where -i denotes "leave one out" of the sample.
+    */
 
     /**
+     estimate the KDE for a single value x.
+     NOTE that this method is not efficent if used to calculate many x.  one should instead use the FFT method.
+     <pre>
      Wasserman chap 20:
      let X_0,...X_{N-1) denote the observed data which is a sample from f (= probability distribution).
      K is the kernel.
      the1-Dimensional  KDE estimator f_hat(x) = (1/n) * sum_i=0_to_{N-1} ( (1/h) * K((x - X_i)/h).
      runtime complexity is O(xTilde.length).
+     </pre>
+     * @param kernel
+     * @param x
+     * @param xTilde the observed data
+     * @param h the kernel bandwidth
+     * @return the kde at x
      */
     public static double univariateKernelDensityEstimate(IKernel kernel, double x, double[] xTilde, double h) {
         return kernel.kernel(x, xTilde, h);
     }
 
-    /*
-    using FFT to create KDE/PDA:
-
-    https://github.com/TasCL/cpda/
-
-    refine these:
-
-    construct a simulated histogram,
-    use FFT to transform the histogram to spectral domain,
-    applies standard Gaussian kernels to smooth it,
-    uses inverse FFT to get simulated PDF
-     */
 }
