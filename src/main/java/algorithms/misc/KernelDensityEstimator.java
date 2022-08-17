@@ -178,17 +178,17 @@ public class KernelDensityEstimator {
      */
     protected static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
-        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 11)/Math.log(2)));
+        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 10)/Math.log(2)));
 
         // unless the data are circular, the range has to be larger than the range of x in order to
         // avoid wrap around edge conditions
         double[] minMaxX = MiscMath0.getMinMax(x);
         double range = minMaxX[1] - minMaxX[0];
         double dr;
-        if (0.25*range> 3.*h) {
-            dr = 0.25 * range;
+        if (0.5 * range > 3.*h) {
+            dr = 0.5 * range;
         } else {
-            dr = 3.*range;
+            dr = 3. * range;
         }
         double min = minMaxX[0] - dr;
         double max = minMaxX[1] + dr;
