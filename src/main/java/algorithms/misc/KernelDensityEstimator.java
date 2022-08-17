@@ -105,6 +105,39 @@ public class KernelDensityEstimator {
      * @param h bandwidth
      * @return
      */
+    public static KDE viaFFTGaussKernel(double[] x, double h, int histNBins, double histBinWidth, double histMinBin,
+                                        double histMaxBin) {
+
+        // the histogram length (hist[1].length) is a power of 2 and the range is enlarged by at least 2*3*h
+        double[][] hist = createFineHistogram(x, h, histNBins, histBinWidth, histMinBin, histMaxBin);
+
+        //assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
+
+        Complex[] yHist = convertToComplex(hist[1]);
+
+        // normalization is performed by default:
+        FFT fft = new FFT();
+
+        // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
+        //   to find minimum bandwidth h.
+        //double[] u = fft.fft(hist[1]);
+        Complex[] u = fft.fft(yHist);
+
+        assert(u.length == hist[0].length);
+
+        return viaFFTGaussKernel(u, hist[0], h);
+    }
+
+    /**
+     * <pre>
+     *      reference:
+     *      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
+     *      https://www.jstor.org/stable/2347084#metadata_info_tab_contents
+     *      </pre>
+     * @param x data observed
+     * @param h bandwidth
+     * @return
+     */
     public static KDE viaFFTGaussKernel(double[] x, double h) {
 
         //TODO: consider using PeriodicFFT from the curvature scale space project instead of FFT
@@ -178,7 +211,7 @@ public class KernelDensityEstimator {
      */
     protected static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
-        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 10)/Math.log(2)));
+        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 2)/Math.log(2)));
 
         // unless the data are circular, the range has to be larger than the range of x in order to
         // avoid wrap around edge conditions
@@ -188,7 +221,7 @@ public class KernelDensityEstimator {
         if (0.5 * range > 3.*h) {
             dr = 0.5 * range;
         } else {
-            dr = 3. * range;
+            dr = 4. * h;
         }
         double min = minMaxX[0] - dr;
         double max = minMaxX[1] + dr;
@@ -196,17 +229,37 @@ public class KernelDensityEstimator {
         // nBins = (maxX - minX)/binWidth
         double binWidth = nBins/(max - min);
 
+        return createFineHistogram(x, h, nBins, binWidth, min, max);
+    }
+
+    /**
+     * calculate a fine resolution histogram for x, for a larger data range than x's.
+     * (NOTE that if the data are circular, a method can be created to calculate the histogram
+     * using the same data range as x, not larger)
+     * @param x
+     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     * and hist[1] holds the counts within the bins.
+     */
+    protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
+                                                    double minBin, double maxBin) {
+
+        if (!MiscMath0.isAPowerOf2(nBins)) {
+            throw new IllegalArgumentException("the number of histogram bins must be a power of 2");
+        }
+
+        System.out.printf("nBins=%d, binWidth=%.4f min=%.4f, max=%.4f\n", nBins, binWidth, minBin, maxBin);
+
         double[][] hist = new double[2][];
         hist[0] = new double[nBins];
         hist[1] = new double[nBins];
 
         for (int i = 0; i < nBins; i++) {
-            hist[0][i] = min + i*binWidth + (binWidth/2.);
+            hist[0][i] = minBin + i*binWidth + (binWidth/2.);
         }
 
         int bin;
         for (int i = 0; i < x.length; i++) {
-            bin = (int) ((x[i] - min)/binWidth);
+            bin = (int) ((x[i] - minBin)/binWidth);
             if ((bin > -1) && (bin < nBins)) {
                 hist[1][bin]++;
             }
