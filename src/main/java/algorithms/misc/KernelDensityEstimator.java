@@ -135,7 +135,7 @@ public class KernelDensityEstimator {
      *      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
      *      https://www.jstor.org/stable/2347084#metadata_info_tab_contents
      *      </pre>
-     * @param x data observed
+     * @param x data observed, best if zero-centered
      * @param h bandwidth
      * @return
      */
@@ -194,7 +194,7 @@ public class KernelDensityEstimator {
          */
     }
 
-    private static Complex[] convertToComplex(double[] a) {
+    protected static Complex[] convertToComplex(double[] a) {
         Complex[] c = new Complex[a.length];
         for (int i = 0; i < a.length; ++i) {
             c[i] = new Complex(a[i], 0);
@@ -210,9 +210,13 @@ public class KernelDensityEstimator {
      * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
-    protected static double[][] createFineHistogram(double[] x, double h) {
+    public static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
-        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 2)/Math.log(2)));
+        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 11)/Math.log(2)));
+
+        if (nBins > 16384) {
+            nBins = 16384;
+        }
 
         // unless the data are circular, the range has to be larger than the range of x in order to
         // avoid wrap around edge conditions
@@ -229,7 +233,7 @@ public class KernelDensityEstimator {
         double max = minMaxX[1] + dr;
 
         // nBins = (maxX - minX)/binWidth
-        double binWidth = nBins/(max - min);
+        double binWidth = (max - min)/nBins;
 
         return createFineHistogram(x, h, nBins, binWidth, min, max);
     }
@@ -250,6 +254,7 @@ public class KernelDensityEstimator {
         }
 
         System.out.printf("nBins=%d, binWidth=%.4f min=%.4f, max=%.4f\n", nBins, binWidth, minBin, maxBin);
+        System.out.flush();
 
         double[][] hist = new double[2][];
         hist[0] = new double[nBins];
