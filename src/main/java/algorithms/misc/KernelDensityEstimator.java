@@ -213,7 +213,10 @@ public class KernelDensityEstimator {
     public static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
         int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 11)/Math.log(2)));
+        // the power of 10 was inspired by method vbwkde, variable n_dct from documentation:
+        //https://user-web.icecube.wisc.edu/~peller/pisa_docs/_modules/pisa/utils/vbwkde.html
 
+        //TODO: improve this with an estimate for available memory of machine
         if (nBins > 16384) {
             nBins = 16384;
         }
@@ -223,12 +226,13 @@ public class KernelDensityEstimator {
         double[] minMaxX = MiscMath0.getMinMax(x);
         double range = minMaxX[1] - minMaxX[0];
         double dr;
-        double he = 4.*h;
+        double he = 3.*h;
         if (0.5 * range > he) {
             dr = 0.5 * range;
         } else {
             dr = he;
         }
+
         double min = minMaxX[0] - dr;
         double max = minMaxX[1] + dr;
 
