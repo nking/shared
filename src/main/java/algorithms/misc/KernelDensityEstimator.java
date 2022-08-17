@@ -11,12 +11,7 @@ import java.util.Arrays;
  * and
  * https://kdepy.readthedocs.io/en/latest/_modules/KDEpy/FFTKDE.html#FFTKDE
  *
- * TODO: consider implementing Silverman Fast Fourier Transform (FFT): bin the data, map it to the frequency domain
- * using FFT, convolution, then inverse FFT.
- * The runtime complexity is O(n + m log m), with binning of n points followed by FFT calls on m-sized grids.
- * references:
- * https://github.com/tommyod/KDEpy/blob/master/KDEpy
- * and
+ * TODO: consider implementing
  * "Fast & Accurate Gaussian Kernel Density Estimation", Jeffrey Heer, University of Washiington.
  * https://idl.cs.washington.edu/files/2021-FastKDE-VIS.pdf
  *
@@ -64,7 +59,6 @@ public class KernelDensityEstimator {
      * @return
      */
     public static double ruleOfThumbBandwidthGaussianKernel(double standardDeviation, double IQR, int nSample) {
-
         return 0.9 * Math.min(standardDeviation, IQR/1.34) * Math.pow(nSample, -1./5);
     }
 
@@ -117,9 +111,9 @@ public class KernelDensityEstimator {
         //     to avoid edge effects.
 
         // the histogram length (hist[1].length) is a power of 2 and the range is enlarged by at least 2*3*h
-        double[][] hist = createFineHistogram(x);
+        double[][] hist = createFineHistogram(x, h);
 
-        assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
+        //assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
 
         Complex[] yHist = convertToComplex(hist[1]);
 
@@ -182,16 +176,22 @@ public class KernelDensityEstimator {
      * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
-    protected static double[][] createFineHistogram(double[] x) {
+    protected static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
-        int nBins = (int)Math.ceil(Math.log(x.length * 5)/Math.log(2));
+        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 11)/Math.log(2)));
 
         // unless the data are circular, the range has to be larger than the range of x in order to
         // avoid wrap around edge conditions
         double[] minMaxX = MiscMath0.getMinMax(x);
         double range = minMaxX[1] - minMaxX[0];
-        double min = minMaxX[0] - 0.25*range;
-        double max = minMaxX[1] + 0.25*range;
+        double dr;
+        if (0.25*range> 3.*h) {
+            dr = 0.25 * range;
+        } else {
+            dr = 3.*range;
+        }
+        double min = minMaxX[0] - dr;
+        double max = minMaxX[1] + dr;
 
         // nBins = (maxX - minX)/binWidth
         double binWidth = nBins/(max - min);
@@ -258,9 +258,9 @@ public class KernelDensityEstimator {
         Complex[] eqn3 = new Complex[fftKernel.length];
         for (i = 0; i < fftKernel.length; ++i) {
             eqn3[i] = u[i].times(fftKernel[i]);
-            if (eqn3[i].re() < 0) {
-                eqn3[i] = new Complex(0, 0);
-            }
+            //if (eqn3[i].re() < 0) {
+            //    eqn3[i] = new Complex(0, 0);
+            //}
         }
 
         FFT fft = new FFT();
