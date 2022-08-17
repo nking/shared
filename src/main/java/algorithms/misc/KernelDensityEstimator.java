@@ -32,6 +32,7 @@ public class KernelDensityEstimator {
     /**
      * assuming a zero-centered mean gaussian kernel, return the bandwidth which minimizes the
      * mean integrated squared error (MISE).
+     * NOTE, the method ruleOfThumbBandwidthGaussianKernel() is preferred.
      * <pre>
      *     Silverman 1981, "Kernel Density Estimation Using theFast Fourier Transform"
      * </pre>
@@ -218,10 +219,11 @@ public class KernelDensityEstimator {
         double[] minMaxX = MiscMath0.getMinMax(x);
         double range = minMaxX[1] - minMaxX[0];
         double dr;
-        if (0.5 * range > 3.*h) {
+        double he = 4.*h;
+        if (0.5 * range > he) {
             dr = 0.5 * range;
         } else {
-            dr = 4. * h;
+            dr = he;
         }
         double min = minMaxX[0] - dr;
         double max = minMaxX[1] + dr;

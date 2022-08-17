@@ -70,8 +70,10 @@ public class KernelDensityEstimatorTest extends TestCase {
 
         double[] medianAndIQR = MiscMath0.calcMedianAndIQR(data);
 
-        double h = KernelDensityEstimator.ruleOfThumbBandwidthGaussianKernel(s, medianAndIQR[1],
+        double h;
+        h = KernelDensityEstimator.ruleOfThumbBandwidthGaussianKernel(s, medianAndIQR[1],
                 data.length);
+        // best answer for this data is h/2
 
         KernelDensityEstimator.KDE kde;
 
@@ -86,7 +88,8 @@ public class KernelDensityEstimatorTest extends TestCase {
         plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
         for (int i = 0; i < 10; ++i) {
             h /= 2.;
-            kde = KernelDensityEstimator.viaFFTGaussKernel(kde.u, kde.hx, h);
+            //kde = KernelDensityEstimator.viaFFTGaussKernel(kde.u, kde.hx, h);
+            kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
             plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
         }
 
