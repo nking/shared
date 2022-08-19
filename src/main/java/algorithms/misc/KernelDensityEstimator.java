@@ -449,7 +449,8 @@ public class KernelDensityEstimator {
 
     /**
      * a fast cross-validation method which can be used in choosing the bandwidth for the kernel density estimator.
-     * the runtime complexity is O(n_s*log_2(ns)) where n_2 is the number of elements in the data histogram
+     * the runtime complexity is max( O(n), O(n_s*log_2(ns)))
+     *  where n is the data length, and n_s is the number of elements in the data histogram
      * (which is equal to u.length).
      * This method is implemented for 1-D only, but the references (eqn 27) provide a formula for multiple dimensions.
      <pre>
@@ -478,6 +479,8 @@ public class KernelDensityEstimator {
         similar to the way the kernel density is estimated using FFTs.
         */
 
+        int n = histBins.length;
+
         // perform the fourier transform of the Gaussian Kernel K(h*s)
         //    FFT( K(h*s) ) = exp(-(0.5) * h^2 * s^2)
         // s = (x - xTilde[i])/h;  K(s*h)  <== multiply h differently for term1, term2, term3
@@ -485,16 +488,56 @@ public class KernelDensityEstimator {
         double term1 = 0;
         int i;
         double zh;
-        for (i = 0; i < histBins.length; ++i) {
+        double m;
+
+        //((n-2)/(n*((n-1)^2))) * summation over i where i!=j of (K(Xi-Xj, sqrt(2)*h))
+        double term2 = 0;
+
+        //(2/(n*(n-1))) * summation over i where i!=j of (K(Xi-Xj, h))
+        double term3 = 0;
+
+        for (i = 0; i < n; ++i) {
             zh = histBins[i] * sh;
             if (zh < BIG) {
-                term1 += Math.exp(-0.5 * zh * zh);
+                m = -0.5 * zh * zh;
+                term1 += Math.exp(m);
+
+                m = u[i].times(m).abs();
+                // if (m >= 0) {
+                term2 += m;
+            }
+
+            zh = histBins[i] * h;
+            if (zh < BIG) {
+                m = u[i].times(-0.5 * zh * zh).abs();
+                // if (m >= 0) {
+                term3 += m;
             }
         }
-        term1 /= ((double)(histBins.length - 1));
+        term1 /= (n - 1.);
+        term2 *= ((n-2.)/(n*(Math.pow((n-1.), 2))));
+        term3 *= ((n-2.)/(n*(n-1.)));
+
+        // this isn't correct
+        double r = term1 + term2 - term3;
+
+
+        /*
+        try again, but with the Wasserman eqn (20.25)
+
+        r_hat(h) ~ (1/(h*n*n)) * sum_i( sum_j( K_ast((X_i-X_j)/h) + (2/(n*h)) * K(0)
+
+        K
+        K_2(z) = integral( K(z-y)*K(y)*dy )
+        K_ast(x) = K_2(x) - 2*K(x)
+
+        z = (X_i-X_j)/h;
+        K_ast((X_i-X_j)/h) = K_ast(z)
+                           = K_2(z) - 2*K(z)
+                           = integral( K(z-y)*K(y)*dy ) - 2*K(z)
+        */
 
         throw new UnsupportedOperationException("not yet implemented");
-
     }
 
     /**
