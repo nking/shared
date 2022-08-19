@@ -27,7 +27,7 @@ public class FFT {
     
     /**
      * compute the FFT of x[], assuming its length is a power of 2.
-     * runtime complexity is O(N).
+     * runtime complexity is O(N*log(N)).
      * (adapted from  Cormen et al. pseudocode)
      * ability added
      */ 
@@ -39,7 +39,7 @@ public class FFT {
     /**
      * FFT from  Cormen et al. pseudocode for iterative FFT w/ an inverse
      * ability added.  Note that the length of x must be a power of 2.
-     * runtime complexity is O(N).
+     * runtime complexity is O(N*log(N)).
      * 
      * @param x
      * @param forward run the transform in forward if true, else perform inverse 
@@ -70,26 +70,33 @@ public class FFT {
         double norm = 1./Math.sqrt(n);
         
         int end = (int)(Math.log(n)/Math.log(2));
-        
+        Complex t;
+        Complex u;
+        Complex w;
+        int m;
+        double eCoeff;
+        Complex wn;
+        int k;
+        int j;
         for (int s = 1; s <= end; s++) {
             
-            int m = 1 << s;
+            m = 1 << s;
             
-            double eCoeff = 2. * Math.PI/(double)m;
+            eCoeff = 2. * Math.PI/(double)m;
             
-            Complex wn = forward ? 
+            wn = forward ?
                 new Complex(Math.cos(eCoeff), -Math.sin(eCoeff)) :
                 new Complex(Math.cos(eCoeff), Math.sin(eCoeff));
             
-            for (int k = 0; k < n; k+=m) {
+            for (k = 0; k < n; k+=m) {
                 
-                Complex w = new Complex(1, 0);
+                w = new Complex(1, 0);
                 
-                for (int j = 0; j < (m/2); j++) {
+                for (j = 0; j < (m/2); j++) {
                     
-                    Complex t = w.times(a[k + j + (m/2)]);
+                    t = w.times(a[k + j + (m/2)]);
                     
-                    Complex u = a[k + j];
+                    u = a[k + j];
                     a[k + j + (m/2)] = u.minus(t);
                     a[k + j] = u.plus(t);
                     
@@ -143,10 +150,10 @@ public class FFT {
         int nBits = MiscMath0.numberOfBits(n - 1);
                         
         double[] r = new double[n];
-        
+        int idx;
         for (int k = 0; k < n; k++) {
             
-            int idx = MiscMath0.bitReverse(k, nBits);
+            idx = MiscMath0.bitReverse(k, nBits);
             
             r[idx] = x[k];
         }
@@ -161,10 +168,10 @@ public class FFT {
         int nBits = MiscMath0.numberOfBits(n - 1);
                         
         double[] r = new double[n];
-        
+        int idx;
         for (int k = 0; k < n; k++) {
             
-            int idx = MiscMath0.bitReverse(k, nBits);
+            idx = MiscMath0.bitReverse(k, nBits);
             
             r[idx] = x[k];
         }
@@ -179,10 +186,10 @@ public class FFT {
         int nBits = MiscMath0.numberOfBits(n - 1);
                         
         Complex[] r = new Complex[n];
-        
+        int idx;
         for (int k = 0; k < n; k++) {
             
-            int idx = MiscMath0.bitReverse(k, nBits);
+            idx = MiscMath0.bitReverse(k, nBits);
             
             r[idx] = x[k].copy();
         }
@@ -192,7 +199,7 @@ public class FFT {
     
     /**
      * perform FFT on x
-     * runtime complexity is O(N).
+     * runtime complexity is O(N*log(N)).
      * (adapted from  Cormen et al. pseudocode for forward transform).
      * Note that the result cannot be inverted because only the real portion is 
      * returned and inverse FFT needs the real and complex components.

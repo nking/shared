@@ -1,6 +1,7 @@
 package algorithms.misc;
 
-import algorithms.imageProcessing.FFT;
+import algorithms.imageProcessing.FFTUtil;
+import algorithms.matrix.MatrixUtil;
 
 import java.util.Arrays;
 
@@ -97,12 +98,28 @@ public class KernelDensityEstimator {
     }
 
     /**
-     * <pre>
-     *      reference:
-     *      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
-     *      https://www.jstor.org/stable/2347084#metadata_info_tab_contents
-     *      </pre>
-     * @param x zero-centered data
+     * estimate the density by using properties of exponentials to make a faster algorithm.
+     <pre>
+     reference:
+     Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
+     https://www.jstor.org/stable/2347084#metadata_info_tab_contents
+     </pre>
+     calculate the KDE in a fast manner by using discrete FFTs and using a grid of data points
+     the kde = f_hat(x) ~ summation over i=1 to n of (K(|| x - X_i ||/h).
+     the kernel estimate is a convolution of the data with the kernel.
+     naive implementation is O(n^2).
+     if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
+     exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
+     also note that the discrete FFT is a summation of exponentials.
+     convolution theorem: one can use the elementwise multiplication between the fourier paired functions.
+     (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
+     convolution to FFT:
+     FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
+     one can choose s to be the same spatial intervals (=grid) in the histogram
+     and in the kernel, to avoid interpolation.  the multiplication is element-wise.
+     then inverse FFT of FFT(kde) = kde.
+     the runtime complexity is then O(n_s*log(n_s))
+     * @param x observed data
      * @param h bandwidth
      * @return
      */
@@ -114,15 +131,12 @@ public class KernelDensityEstimator {
 
         //assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
 
-        Complex[] yHist = convertToComplex(hist[1]);
-
         // normalization is performed by default:
-        FFT fft = new FFT();
+        FFTUtil fft = new FFTUtil();
 
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
-        //double[] u = fft.fft(hist[1]);
-        Complex[] u = fft.fft(yHist);
+        Complex[] u = fft.create1DFFT(hist[1], true);
 
         assert(u.length == hist[0].length);
 
@@ -130,12 +144,29 @@ public class KernelDensityEstimator {
     }
 
     /**
-     * <pre>
-     *      reference:
-     *      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
-     *      https://www.jstor.org/stable/2347084#metadata_info_tab_contents
-     *      </pre>
-     * @param x data observed, best if zero-centered
+     *
+     * estimate the density by using properties of exponentials to make a faster algorithm.
+     <pre>
+     reference:
+     Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
+     https://www.jstor.org/stable/2347084#metadata_info_tab_contents
+     </pre>
+     calculate the KDE in a fast manner by using discrete FFTs and using a grid of data points
+     the kde = f_hat(x) ~ summation over i=1 to n of (K(|| x - X_i ||/h).
+     the kernel estimate is a convolution of the data with the kernel.
+     naive implementation is O(n^2).
+     if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
+     exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
+     also note that the discrete FFT is a summation of exponentials.
+     convolution theorem: one can use the elementwise multiplication between the fourier paired functions.
+     (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
+     convolution to FFT:
+     FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
+     one can choose s to be the same spatial intervals (=grid) in the histogram
+     and in the kernel, to avoid interpolation.  the multiplication is element-wise.
+     then inverse FFT of FFT(kde) = kde.
+     the runtime complexity is then O(n_s*log(n_s))
+     * @param x data observed
      * @param h bandwidth
      * @return
      */
@@ -149,15 +180,12 @@ public class KernelDensityEstimator {
 
         //assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
 
-        Complex[] yHist = convertToComplex(hist[1]);
-
         // normalization is performed by default:
-        FFT fft = new FFT();
+        FFTUtil fft = new FFTUtil();
 
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
-        //double[] u = fft.fft(hist[1]);
-        Complex[] u = fft.fft(yHist);
+        Complex[] u = fft.create1DFFT(hist[1], true);
 
         assert(u.length == hist[0].length);
 
@@ -213,6 +241,7 @@ public class KernelDensityEstimator {
     public static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
         int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 11)/Math.log(2)));
+        nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 3)/Math.log(2)));
         // the power of 10 was inspired by method vbwkde, variable n_dct from documentation:
         //https://user-web.icecube.wisc.edu/~peller/pisa_docs/_modules/pisa/utils/vbwkde.html
 
@@ -253,9 +282,9 @@ public class KernelDensityEstimator {
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
                                                     double minBin, double maxBin) {
 
-        if (!MiscMath0.isAPowerOf2(nBins)) {
-            throw new IllegalArgumentException("the number of histogram bins must be a power of 2");
-        }
+        //if (!MiscMath0.isAPowerOf2(nBins)) {
+        //    throw new IllegalArgumentException("the number of histogram bins must be a power of 2");
+        //}
 
         System.out.printf("nBins=%d, binWidth=%.4f min=%.4f, max=%.4f\n", nBins, binWidth, minBin, maxBin);
         System.out.flush();
@@ -284,12 +313,45 @@ public class KernelDensityEstimator {
     }
 
     /**
-     *
+     * calculate a substitute for the fine resolution histogram for x for use in the
+     * risk estimator that uses cross-validation.
+     * @param x
+     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     * and hist[1] holds the counts within the bins.
+     */
+    protected static double[] createFineHistogramSubstitute(double[] x) {
+        double[] yHist = new double[x.length];
+        Arrays.fill(yHist, 1.);
+        // divide by x.length
+        for (int i = 0; i < yHist.length; ++i) {
+            yHist[i] /= x.length;
+        }
+        return yHist;
+    }
+
+    /**
+     estimate the density by using properties of exponentials to make a faster algorithm.
      <pre>
-     reference:
-     Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
-     https://www.jstor.org/stable/2347084#metadata_info_tab_contents
+           reference:
+           Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
+           https://www.jstor.org/stable/2347084#metadata_info_tab_contents
      </pre>
+     calculate the KDE in a fast manner by using discrete FFTs and using a grid of data points
+     the kde = f_hat(x) ~ summation over i=1 to n of (K(|| x - X_i ||/h).
+     the kernel estimate is a convolution of the data with the kernel.
+     naive implementation is O(n^2).
+     if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
+     exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
+     also note that the discrete FFT is a summation of exponentials.
+     convolution theorem: one can use the elementwise multiplication between the fourier paired functions.
+     (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
+     convolution to FFT:
+     FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
+     one can choose s to be the same spatial intervals (=grid) in the histogram
+     and in the kernel, to avoid interpolation.  the multiplication is element-wise.
+     then inverse FFT of FFT(kde) = kde.
+     the runtime complexity is then O(n_s*log(n_s))
+     * The Gausian Kernel with discrete fast fourier transforms is O(s*log(s)).
      * @param u the FFT of the histogram of the data.
      * @param histBins the x bins of the histogram of the data that were used to create u
      * @return kernel density estimate
@@ -299,16 +361,6 @@ public class KernelDensityEstimator {
         // perform the fourier transform of the Gaussian Kernel K(h*s)
         //    FFT( K(h*s) ) = exp(-(0.5) * h^2 * s^2)
         // s = (x - xTilde[i])/h;  K(s*h)
-        double[] fftKernel = new double[histBins.length];
-        // note, this is not normalized.
-        double zh;
-        int i;
-        for (i = 0; i < histBins.length; ++i) {
-            zh = histBins[i] * h;
-            if (zh < BIG) {
-                fftKernel[i] = Math.exp(-0.5 * zh * zh);
-            }
-        }
 
         // FFT(f_n(s)) = exp(-(0.5) * h^2 * s^2) * u(s)   EQN (3)
         // Then f_n(s) = inverse FFT(f_n(s))
@@ -317,23 +369,27 @@ public class KernelDensityEstimator {
         //     that the discrete FFT has to be calculated only once and can be reused.
         // The algorithm also avoids exponential underflow by setting
         // FFT(f_n(s)) equal to 0 if 0.5*h*h*s*s is > BIG which is large for the machine.
-
+        int i;
+        double zh;
         // element-wise multiplication
-        Complex[] eqn3 = new Complex[fftKernel.length];
-        for (i = 0; i < fftKernel.length; ++i) {
-            eqn3[i] = u[i].times(fftKernel[i]);
+        Complex[] eqn3 = new Complex[histBins.length];
+        for (i = 0; i < histBins.length; ++i) {
+            zh = histBins[i] * h;
+            if (zh < BIG) {
+                eqn3[i] = u[i].times(-0.5 * zh * zh);
+            }
+
             //if (eqn3[i].re() < 0) {
             //    eqn3[i] = new Complex(0, 0);
             //}
         }
 
-        FFT fft = new FFT();
+        FFTUtil fft = new FFTUtil();
 
-        Complex[] kdeC = fft.ifft(eqn3);
+        Complex[] kdeC = fft.create1DFFT(eqn3, false);
         double[] kd = new double[kdeC.length];
         for (i = 0; i < kdeC.length; ++i) {
             kd[i] = kdeC[i].abs();
-            //TODO: follow up on the math. presumably want magnitude instead of just the real component.
         }
 
         KDE kde = new KDE();
@@ -389,6 +445,140 @@ public class KernelDensityEstimator {
      */
     public static double univariateKernelDensityEstimate(IKernel kernel, double x, double[] xTilde, double h) {
         return kernel.kernel(x, xTilde, h);
+    }
+
+    /**
+     * a fast cross-validation method which can be used in choosing the bandwidth for the kernel density estimator.
+     * the runtime complexity is O(n_s*log_2(ns)) where n_2 is the number of elements in the data histogram
+     * (which is equal to u.length).
+     * This method is implemented for 1-D only, but the references (eqn 27) provide a formula for multiple dimensions.
+     <pre>
+     References:
+     Wasserman, "All of Statistics", eqn (20.25)
+     and
+     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
+     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
+     eqn (27) (which is (27)+(28))
+     </pre>
+     * @param u fft of the histogram of the data.
+     * @param histBins the x axis of the histogram of the data.
+     * @param h the bandwidth to use
+     * @return the cross validation score
+     */
+    public static double crossValidationScore(Complex[] u, double[] histBins, double h) {
+
+        /*
+        let K(z, sigma) = normal (gaussian) kernel with mean 0 and variance sigma^2.
+
+        r_hat(h) = (K(0, sqrt(2)*h)/(n-1))
+                   + ((n-2)/(n*((n-1)^2))) * summation over i where i!=j of (K(Xi-Xj, sqrt(2)*h))
+                   - (2/(n*(n-1))) * summation over i where i!=j of (K(Xi-Xj, h))
+
+        The 2nd and 3rd terms can be estimated using the properties of convolution and discrete FFTs,
+        similar to the way the kernel density is estimated using FFTs.
+        */
+
+        // perform the fourier transform of the Gaussian Kernel K(h*s)
+        //    FFT( K(h*s) ) = exp(-(0.5) * h^2 * s^2)
+        // s = (x - xTilde[i])/h;  K(s*h)  <== multiply h differently for term1, term2, term3
+        double sh = Math.sqrt(2) * h;
+        double term1 = 0;
+        int i;
+        double zh;
+        for (i = 0; i < histBins.length; ++i) {
+            zh = histBins[i] * sh;
+            if (zh < BIG) {
+                term1 += Math.exp(-0.5 * zh * zh);
+            }
+        }
+        term1 /= ((double)(histBins.length - 1));
+
+        throw new UnsupportedOperationException("not yet implemented");
+
+    }
+
+    /**
+     * calculate the risk estimator for the "leave-one-out" method of cross validation.
+     * This method can be used to select a kde bandwidth by minimizing the risk estimator for a range
+     * of bandwidths.  It is a data based method as the true probability distribution is unknown.
+     <pre>
+     see eqn (20.24) of Wasserman's "All of Statistics"
+     see eqn (26) of
+     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
+     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
+     </pre>
+     * @return
+     */
+    static double riskEstimatorLeaveOneOut() {
+
+        // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
+        //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
+        //    for bandwidth selection) and it is nearly negligible as n increases.
+        //
+        //     for the "leave-one-out" algorithm, p_hat is the density estimator after removing
+        //        the "i-th" observation.
+        //     for the "data-splitting" algorithm,
+        //        X_i is split into half randomly, and that instead of the entire X_i is used
+        //        in the summation above.
+        //        Note that splitting in half is V-fold or k-fold of 2, but a larger number can be used instead.
+
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    /**
+     * calculate the risk estimator for the "data-splitting" V-fold or k-fold method of cross validation.
+     * This method can be used to select a kde bandwidth by minimizing the risk estimator for a range
+     * of bandwidths.  It is a data based method as the true probability distribution is unknown.
+     <pre>
+     see eqn (20.24) of Wasserman's "All of Statistics".
+     see eqn (26) of
+     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
+     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
+     </pre>
+     * @return
+     */
+    static double riskEstimatorDataSplitting() {
+
+        // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
+        //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
+        //    for bandwidth selection) and it is nearly negligible as n increases.
+        //
+        //     for the "leave-one-out" algorithm, p_hat is the density estimator after removing
+        //        the "i-th" observation.
+        //     for the "data-splitting" algorithm,
+        //        X_i is split into half randomly, and that instead of the entire X_i is used
+        //        in the summation above.
+        //        Note that splitting in half is V-fold or k-fold of 2, but a larger number can be used instead.
+
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    /**
+     * calculate the risk estimator for the "leave-one-out" method of cross validation.
+     * This method can be used to select a kde bandwidth by minimizing the risk estimator for a range
+     * of bandwidths.  It is a data based method as the true probability distribution is unknown.
+     <pre>
+     see eqn (27), (28) of
+     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
+     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU.
+     see eqn (20.24) of Wasserman's "All of Statistics"
+     </pre>
+     * @return
+     */
+    static double riskEstimatorGaussianKernel() {
+
+        // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
+        //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
+        //    for bandwidth selection) and it is nearly negligible as n increases.
+        //
+        //     for the "leave-one-out" algorithm, p_hat is the density estimator after removing
+        //        the "i-th" observation.
+        //     for the "data-splitting" algorithm,
+        //        X_i is split into half randomly, and that instead of the entire X_i is used
+        //        in the summation above.
+        //        Note that splitting in half is V-fold or k-fold of 2, but a larger number can be used instead.
+
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
 }

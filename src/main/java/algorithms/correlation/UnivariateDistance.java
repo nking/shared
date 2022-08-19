@@ -39,7 +39,7 @@ public class UnivariateDistance {
      * it is 0 if and only if two random vectors  and  are independent. 
      * This measure can detect the presence of a dependence structure when the 
      * sample size is large enough."
-     * 
+     * computational cost is O(n log(n)) and memory cost is O(n).
      * This algorithm is an implementation/port of the Matlab code from
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
@@ -59,9 +59,7 @@ public class UnivariateDistance {
      * NOTE: redundant points are possible in the rankings as "ties" are handled
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
-     * 
-     * runtime is  O(n*log_2(n)).
-     * 
+     **
      * @param x sample of univariate observations of a variable
      * @param y second sample of univariate observations (can be of another variable)
      * @return covariance of X and Y along with intermediate data.  
@@ -131,7 +129,7 @@ public class UnivariateDistance {
 
         //% The columns of idx are buffers to store sort indices and output buffer
         //%of merge-sort
-        //%we alternate between them and avoid uneccessary copying
+        //%we alternate between them and avoid unnecessary copying
         int[][] idx = new int[n][2];
         for (int i = 0; i < n; ++i) {
             idx[i] = new int[2];
@@ -369,7 +367,7 @@ public class UnivariateDistance {
         /*
         TODO: add test here:
         
-        Distance Based Independence Tests in Secion 2.3 of paper
+        Distance Based Independence Tests in Section 2.3 of paper
         "A Statistically and Numerically Efficient Independence Test Based On
         Random Projections and Distance Covariance"
         2017, Huang and Hu
