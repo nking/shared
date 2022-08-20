@@ -521,6 +521,10 @@ public class KernelDensityEstimator {
         // this isn't correct
         double r = term1 + term2 - term3;
 
+        // complete fudge here:  It will be removed.
+        r = (n/2.)*(term1 + term2) - term3;
+
+        System.out.printf("%.4f %.4f %.4f  r=%.4f\n", term1, term2, term3, r);
 
         /*
         try again, but with the Wasserman eqn (20.25)
@@ -535,6 +539,7 @@ public class KernelDensityEstimator {
         K_ast((X_i-X_j)/h) = K_ast(z)
                            = K_2(z) - 2*K(z)
                            = integral( K(z-y)*K(y)*dy ) - 2*K(z)
+
         */
 
         throw new UnsupportedOperationException("not yet implemented");
