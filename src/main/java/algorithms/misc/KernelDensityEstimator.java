@@ -489,40 +489,42 @@ public class KernelDensityEstimator {
         int i;
         double zh;
         double m;
-
-        //((n-2)/(n*((n-1)^2))) * summation over i where i!=j of (K(Xi-Xj, sqrt(2)*h))
-        double term2 = 0;
-
-        //(2/(n*(n-1))) * summation over i where i!=j of (K(Xi-Xj, h))
-        double term3 = 0;
-
+        // term2: ((n-2)/(n*((n-1)^2))) * summation over i where i!=j of (K(Xi-Xj, sqrt(2)*h))
+        //term3: (2/(n*(n-1))) * summation over i where i!=j of (K(Xi-Xj, h))
+        double[] f2 = new double[n];
+        double[] f3 = new double[n];
         for (i = 0; i < n; ++i) {
             zh = histBins[i] * sh;
             if (zh < BIG) {
                 m = -0.5 * zh * zh;
                 term1 += Math.exp(m);
-
-                m = u[i].times(m).abs();
+                f2[i] = u[i].times(m).abs();
                 // if (m >= 0) {
-                term2 += m;
             }
-
             zh = histBins[i] * h;
             if (zh < BIG) {
-                m = u[i].times(-0.5 * zh * zh).abs();
+                f3[i] = u[i].times(-0.5 * zh * zh).abs();
+      //          term1 += Math.exp(-0.5 * zh * zh);
                 // if (m >= 0) {
-                term3 += m;
             }
         }
         term1 /= (n - 1.);
-        term2 *= ((n-2.)/(n*(Math.pow((n-1.), 2))));
-        term3 *= ((n-2.)/(n*(n-1.)));
 
-        // this isn't correct
+        FFTUtil fft = new FFTUtil();
+        Complex[] t2 = fft.create1DFFT(f2, false);
+        Complex[] t3 = fft.create1DFFT(f3, false);
+
+        double term2 = 0;
+        double term3 = 0.;
+        for (i = 0; i < n; ++i) {
+            term2 += t2[i].abs();
+            term3 += t3[i].abs();
+        }
+        term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));
+        term3 *= (2./(n*(n-1.)));
+
+        // there is an error
         double r = term1 + term2 - term3;
-
-        // complete fudge here:  It will be removed.
-        r = (n/2.)*(term1 + term2) - term3;
 
         System.out.printf("%.4f %.4f %.4f  r=%.4f\n", term1, term2, term3, r);
 

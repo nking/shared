@@ -130,7 +130,7 @@ public class KernelDensityEstimatorTest extends TestCase {
 
         double h = calcH(data);
 
-       // h *= 10;
+        h *= 10;
 
         KernelDensityEstimator.KDE kde;
 
@@ -138,21 +138,25 @@ public class KernelDensityEstimatorTest extends TestCase {
         //kde = KernelDensityEstimator.viaFFTGaussKernel(data, h, 16, 2,
         //        data[0] - 4*h, data[data.length - 1] + 4*h);
 
+        double cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
+
         //System.out.printf(" x =%s", FormatArray.toString(kde.hx, "%14.5e"));
         //System.out.printf("kde=%s", FormatArray.toString(kde.kde, "%14.5e"));
 
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
-        plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
+        plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
         PolygonAndPointPlotter plotter2 = new PolygonAndPointPlotter();
-        plotter2.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
+        plotter2.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
 
         for (int i = 0; i < 10; ++i) {
+            h /= 2.;
             kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
-            plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
+            cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
+            plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
 
             kde = KernelDensityEstimator.viaFFTGaussKernel(kde.u, kde.hx, h);
-            plotter2.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
-            h /= 2.;
+            cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
+            plotter2.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
         }
 
         plotter.writeFile("kde_0");
@@ -207,15 +211,18 @@ public class KernelDensityEstimatorTest extends TestCase {
 
         kde = KernelDensityEstimator.viaFFTGaussKernel(hf.u, hf.hx, h);
 
+        double cv = KernelDensityEstimator.crossValidationScore(hf.u, hf.hx, h);
+
         //System.out.printf(" x =%s", FormatArray.toString(kde.hx, "%14.5e"));
         //System.out.printf("kde=%s", FormatArray.toString(kde.kde, "%14.5e"));
 
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
-        plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
+        plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
         for (int i = 0; i < 10; ++i) {
             h /= 2.;
             kde = KernelDensityEstimator.viaFFTGaussKernel(hf.u, hf.hx, h);
-            plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
+            cv = KernelDensityEstimator.crossValidationScore(hf.u, hf.hx, h);
+            plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
         }
         plotter.writeFile("kde_2");
     }
