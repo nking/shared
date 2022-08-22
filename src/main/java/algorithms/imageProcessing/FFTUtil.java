@@ -148,7 +148,32 @@ public class FFTUtil {
         
         return output2;
     }
-    
+
+    /**
+     * runtime complexity: is O(N*lg_2(N)) for N not power of 2,
+     * else is
+     *
+     * perform fft on input.
+     * @param input
+     * @param forward
+     * @return
+     */
+    public Complex[] create1DFFTNormalized(final Complex[] input, boolean forward) {
+
+        Complex1D input2 = copyToComplex1D(input);
+        Complex1D output = create1DFFT2(input2, forward);
+        Complex[] output2 = copyToComplex(output);
+        normalize(output2);
+        return output2;
+    }
+
+    private void normalize(Complex[] a) {
+        double norm = 1./Math.sqrt(a.length);
+        for (int i = 0; i < a.length; ++i) {
+            a[i] = a[i].times(norm);
+        }
+    }
+
     /**
      * runtime complexity: is O(N*lg_2(N)) for N not power of 2,
      * else is
@@ -166,7 +191,24 @@ public class FFTUtil {
         
         return output2;
     }
-    
+
+    /**
+     * runtime complexity: is O(N*lg_2(N))
+     *
+     * perform fft on input.
+     * @param input
+     * @param forward
+     * @return
+     */
+    public Complex[] create1DFFTNormalized(final double[] input, boolean forward) {
+
+        Complex1D input2 = copyToComplex1D(input);
+        Complex1D output = create1DFFT2(input2, forward);
+        Complex[] output2 = copyToComplex(output);
+        normalize(output2);
+        return output2;
+    }
+
     /**
      * perform a 2-dimension FFT using the JFFTPack library.
      *

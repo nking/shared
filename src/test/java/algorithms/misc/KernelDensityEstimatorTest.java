@@ -3,6 +3,7 @@ package algorithms.misc;
 import algorithms.correlation.UnivariateDistance;
 import algorithms.imageProcessing.FFTUtil;
 import algorithms.statistics.SMCFileReader;
+import algorithms.statistics.UnivariateNormalDistribution;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
 import gnu.trove.list.TDoubleList;
@@ -12,6 +13,8 @@ import junit.framework.TestCase;
 import thirdparty.ca.uol.aig.fftpack.Complex1D;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class KernelDensityEstimatorTest extends TestCase {
@@ -56,7 +59,7 @@ public class KernelDensityEstimatorTest extends TestCase {
         return data;
     }
 
-    public void testOptimalBandwidthGaussianKernel() {
+    public void estOptimalBandwidthGaussianKernel() {
         double[] data;
         data = getData0();
 
@@ -82,7 +85,7 @@ public class KernelDensityEstimatorTest extends TestCase {
         assertTrue(bw1 > bwRT1);
     }
 
-    private double calcH(double[] data) {
+    private double[] calcH(double[] data) {
 
         double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(data);
         double kMAD = 1.4826;
@@ -92,15 +95,44 @@ public class KernelDensityEstimatorTest extends TestCase {
 
         double[] medianAndIQR = MiscMath0.calcMedianAndIQR(data);
 
-        return KernelDensityEstimator.ruleOfThumbBandwidthGaussianKernel(s, medianAndIQR[1],
+        double rt = KernelDensityEstimator.ruleOfThumbBandwidthGaussianKernel(s, medianAndIQR[1],
                 data.length);
+        double ob = KernelDensityEstimator.optimalBandwidthGaussianKernel(s, data.length);
+
+        System.out.printf("stdev=%.4e,  s=%.4e,  ob=%.4e,  rt=%.4e\n",
+                MiscMath0.getAvgAndStDev(data)[1], s, ob, rt);
+        return new double[]{rt, ob};
+    }
+
+    public double[] getRandomGaussianData0() throws NoSuchAlgorithmException {
+
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //seed = 175696292403861L;
+        System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
+        double mean1 = 0.3;
+        double mean2 = 0.8;
+        double sigma1 = 0.13;
+        double sigma2 = 0.13;
+        int n1 = 100;
+        int n2 = 3*n1;
+        double h = 0.5;
+
+        double[] g1 = UnivariateNormalDistribution.randomSampleOf(mean1, sigma1, rand, n1);
+        double[] g2 = UnivariateNormalDistribution.randomSampleOf(mean2, sigma2, rand, n2);
+        double[] data = Arrays.copyOf(g1, g1.length + g2.length);
+        System.arraycopy(g2, 0, data, g1.length, g2.length);
+
+        return data;
     }
 
     public void est0() throws IOException {
 
         double[] data = getData0();
 
-        double h = calcH(data);
+        double h = calcH(data)[0];
 
         // h *= 10;
 
@@ -122,21 +154,29 @@ public class KernelDensityEstimatorTest extends TestCase {
 
     }
 
-    public void testViaFFTGaussKernel0() throws IOException {
+    public void testViaFFTGaussKernel0() throws IOException, NoSuchAlgorithmException {
 
         double[] data;
         //data = getData0();
-        data = getCenteredData0();
+        //data = getCenteredData0();
+        //data = getSMCData();
+        data = getRandomGaussianData0();
 
-        double h = calcH(data);
-
+        double h = calcH(data)[0];
         h *= 10;
+
+        System.out.printf("data.length=%d h=%.4e\n", data.length, h);
+
+        double[][] hist = KernelDensityEstimator.createFineHistogram(data, h);
+
+        double sum = KernelDensityEstimator.sumHistogram(hist);
+        assertTrue(Math.abs(sum - 1.) < 1e-7);
+        System.out.printf("dx=%.4e  sumHist=%.4e  data.length=%d  hist[0].length=%d\n",
+                hist[0][1] - hist[0][0], sum, data.length, hist[0].length);
 
         KernelDensityEstimator.KDE kde;
 
         kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
-        //kde = KernelDensityEstimator.viaFFTGaussKernel(data, h, 16, 2,
-        //        data[0] - 4*h, data[data.length - 1] + 4*h);
 
         double cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
 
@@ -146,21 +186,19 @@ public class KernelDensityEstimatorTest extends TestCase {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
         plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
         PolygonAndPointPlotter plotter2 = new PolygonAndPointPlotter();
-        plotter2.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
+        //PolygonAndPointPlotter plotter2 = new PolygonAndPointPlotter(0, 1.f, 0, 1.f);
+        plotter2.addPlot(hist[0], hist[1], hist[0], hist[1], String.format("histogram"));
 
-        for (int i = 0; i < 10; ++i) {
-            h /= 2.;
+        for (int i = 0; i < 40; ++i) {
+            //h /= 2.;
+            h *= 0.85;
             kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
             cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
             plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
-
-            kde = KernelDensityEstimator.viaFFTGaussKernel(kde.u, kde.hx, h);
-            cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
-            plotter2.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
         }
 
         plotter.writeFile("kde_0");
-        plotter.writeFile("kde_0_1");
+        plotter2.writeFile("kde_0_1");
     }
 
     private static class HistAndFFT {
@@ -174,7 +212,7 @@ public class KernelDensityEstimatorTest extends TestCase {
         data = getSMCData();
         //data = getCenteredSMCData();
 
-        double h = calcH(data);
+        double h = calcH(data)[0];
 
         // the histogram length (hist[1].length) is a power of 2 and the range is enlarged by at least 2*3*h
         double[][] hist = KernelDensityEstimator.createFineHistogram(data, h);
@@ -227,9 +265,29 @@ public class KernelDensityEstimatorTest extends TestCase {
         plotter.writeFile("kde_2");
     }
 
-    public void testCreateFineHistogram() {
+    public void testCreateFineHistogram() throws NoSuchAlgorithmException, IOException {
+        double[] data = getRandomGaussianData0();
+        double h = calcH(data)[1];
+        h = 0.2;
+        double[][] hist = KernelDensityEstimator.createFineHistogram(data, h);
+        double sum = KernelDensityEstimator.sumHistogram(hist);
+        assertTrue(Math.abs(sum - 1.) < 1e-7);
+        System.out.printf("dx=%.4e  sumHist=%.4e  data.length=%d  hist[0].length=%d\n",
+                hist[0][1] - hist[0][0], sum, data.length, hist[0].length);
+
+        KernelDensityEstimator.KDE kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
+        double sumK = KernelDensityEstimator.sumKDE(kde.kde, (kde.hx[1] - kde.hx[0]));
+        System.out.printf("dx=%.4e  sumKDE=%.4e  data.length=%d  hist[1].length=%d\n",
+                hist[0][1] - hist[0][0], sumK, data.length, hist[1].length);
+
+        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+        plotter.addPlot(hist[0], hist[1], hist[0], hist[1], String.format("histogram, h=%.4e", h));
+
+        plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("kde, h=%.4e", h));
+        plotter.writeFile("kde_hist_kde");
+
     }
 
-    public void testUnivariateKernelDensityEstimate() {
+    public void estUnivariateKernelDensityEstimate() {
     }
 }

@@ -136,7 +136,7 @@ public class KernelDensityEstimator {
 
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
-        Complex[] u = fft.create1DFFT(hist[1], true);
+        Complex[] u = fft.create1DFFTNormalized(hist[1], true);
 
         assert(u.length == hist[0].length);
 
@@ -185,7 +185,7 @@ public class KernelDensityEstimator {
 
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
-        Complex[] u = fft.create1DFFT(hist[1], true);
+        Complex[] u = fft.create1DFFTNormalized(hist[1], true);
 
         assert(u.length == hist[0].length);
 
@@ -240,8 +240,13 @@ public class KernelDensityEstimator {
      */
     public static double[][] createFineHistogram(double[] x, double h) {
         // the number of bins need to be a power of 2, and larger than x.length.
-        int nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 11)/Math.log(2)));
-        nBins = (int)Math.pow(2, Math.ceil(Math.log(x.length * 3)/Math.log(2)));
+        int nBins;
+        //if (x.length < 50) {
+        //    nBins = x.length;
+        //} else {
+            nBins = (int) Math.pow(2, Math.ceil(Math.log(x.length * 3) / Math.log(2)));
+        //}
+
         // the power of 10 was inspired by method vbwkde, variable n_dct from documentation:
         //https://user-web.icecube.wisc.edu/~peller/pisa_docs/_modules/pisa/utils/vbwkde.html
 
@@ -307,7 +312,7 @@ public class KernelDensityEstimator {
 
         // divide by x.length
         for (int i = 0; i < hist[1].length; ++i) {
-            hist[1][i] /= x.length;
+            hist[1][i] /= ((double)x.length);
         }
         return hist;
     }
@@ -358,6 +363,8 @@ public class KernelDensityEstimator {
      */
     public static KDE viaFFTGaussKernel(Complex[] u, double[] histBins, double h) {
 
+        //K(x) ≥ 0, ∫K(x)dx = 1, ∫xK(x)dx = 0
+
         // perform the fourier transform of the Gaussian Kernel K(h*s)
         //    FFT( K(h*s) ) = exp(-(0.5) * h^2 * s^2)
         // s = (x - xTilde[i])/h;  K(s*h)
@@ -365,32 +372,34 @@ public class KernelDensityEstimator {
         // FFT(f_n(s)) = exp(-(0.5) * h^2 * s^2) * u(s)   EQN (3)
         // Then f_n(s) = inverse FFT(f_n(s))
         //     negative values of f_n are set to 0.
-        //     note that if several different uses of this algorithm for different h are employed,
+        //     note that if different uses of this algorithm for different h are employed,
         //     that the discrete FFT has to be calculated only once and can be reused.
         // The algorithm also avoids exponential underflow by setting
         // FFT(f_n(s)) equal to 0 if 0.5*h*h*s*s is > BIG which is large for the machine.
         int i;
         double zh;
+        double c = 1./Math.sqrt(2.*Math.PI);
         // element-wise multiplication
         Complex[] eqn3 = new Complex[histBins.length];
         for (i = 0; i < histBins.length; ++i) {
-            zh = histBins[i] * h;
+            zh = histBins[i] / h;
             if (zh < BIG) {
-                eqn3[i] = u[i].times(-0.5 * zh * zh);
+                eqn3[i] = u[i].times(c * Math.exp(-0.5 * zh * zh));
             }
-
-            //if (eqn3[i].re() < 0) {
-            //    eqn3[i] = new Complex(0, 0);
-            //}
         }
 
         FFTUtil fft = new FFTUtil();
 
-        Complex[] kdeC = fft.create1DFFT(eqn3, false);
+        Complex[] kdeC = fft.create1DFFTNormalized(eqn3, false);
         double[] kd = new double[kdeC.length];
+        //double d = 1./(kd.length - 1.);
         for (i = 0; i < kdeC.length; ++i) {
             kd[i] = kdeC[i].abs();
         }
+
+        //
+        double sum = sumKDE(kd, histBins[1] - histBins[0]);
+        System.out.printf("h=%.4e sumKDE=%.4e\n", h,  sum);
 
         KDE kde = new KDE();
         kde.u = Arrays.copyOf(u, u.length);
@@ -399,6 +408,14 @@ public class KernelDensityEstimator {
         kde.kde = Arrays.copyOf(kd, kd.length);
 
         return kde;
+    }
+
+    static double sumKDE(double[] kde, double dk) {
+        double sum = 0;
+        for (int i = 0; i < kde.length; ++i) {
+            sum += kde[i];
+        }
+        return sum;
     }
 
     protected static boolean assertHistRange(double[] histBins, double[] dataMinMax, double h) {
@@ -486,6 +503,7 @@ public class KernelDensityEstimator {
         // s = (x - xTilde[i])/h;  K(s*h)  <== multiply h differently for term1, term2, term3
         double sh = Math.sqrt(2) * h;
         double term1 = 0;
+
         int i;
         double zh;
         double m;
@@ -494,25 +512,24 @@ public class KernelDensityEstimator {
         double[] f2 = new double[n];
         double[] f3 = new double[n];
         for (i = 0; i < n; ++i) {
-            zh = histBins[i] * sh;
+            zh = histBins[i] / sh;
             if (zh < BIG) {
                 m = -0.5 * zh * zh;
                 term1 += Math.exp(m);
-                f2[i] = u[i].times(m).abs();
+                f2[i] = u[i].times( Math.exp(m) ).abs();
                 // if (m >= 0) {
             }
-            zh = histBins[i] * h;
+            zh = histBins[i] / h;
             if (zh < BIG) {
-                f3[i] = u[i].times(-0.5 * zh * zh).abs();
-      //          term1 += Math.exp(-0.5 * zh * zh);
+                f3[i] = u[i].times(Math.exp(-0.5 * zh * zh)).abs();
                 // if (m >= 0) {
             }
         }
         term1 /= (n - 1.);
 
         FFTUtil fft = new FFTUtil();
-        Complex[] t2 = fft.create1DFFT(f2, false);
-        Complex[] t3 = fft.create1DFFT(f3, false);
+        Complex[] t2 = fft.create1DFFTNormalized(f2, false);
+        Complex[] t3 = fft.create1DFFTNormalized(f3, false);
 
         double term2 = 0;
         double term3 = 0.;
@@ -526,8 +543,11 @@ public class KernelDensityEstimator {
         // there is an error
         double r = term1 + term2 - term3;
 
-        System.out.printf("%.4f %.4f %.4f  r=%.4f\n", term1, term2, term3, r);
+        System.out.printf("h=%.4f terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
 
+        if (true) {
+            return r;
+        }
         /*
         try again, but with the Wasserman eqn (20.25)
 
@@ -629,6 +649,15 @@ public class KernelDensityEstimator {
         //        Note that splitting in half is V-fold or k-fold of 2, but a larger number can be used instead.
 
         throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    static double sumHistogram(double[][] hist) {
+        double sum = 0;
+        double dh = hist[0][1] - hist[0][0];
+        for (int i = 0; i < hist[0].length; ++i) {
+            sum += (hist[1][i]);
+        }
+        return sum;
     }
 
 }
