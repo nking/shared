@@ -3,6 +3,7 @@ package algorithms.misc;
 import algorithms.correlation.UnivariateDistance;
 import algorithms.imageProcessing.FFTUtil;
 import algorithms.statistics.SMCFileReader;
+import algorithms.statistics.Standardization;
 import algorithms.statistics.UnivariateNormalDistribution;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
@@ -13,11 +14,22 @@ import junit.framework.TestCase;
 import thirdparty.ca.uol.aig.fftpack.Complex1D;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 
 public class KernelDensityEstimatorTest extends TestCase {
+
+    private Random rand = null;
+
+    public KernelDensityEstimatorTest() {
+        long seed = System.nanoTime();
+        //seed = 188903032980675L;
+        //byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(seed).array();
+        System.out.println("SEED=" + seed);
+        rand = new Random(seed);
+    }
 
     /**
      * get a very small test data set. the values are already sorted, ascending.
@@ -59,7 +71,7 @@ public class KernelDensityEstimatorTest extends TestCase {
         return data;
     }
 
-    public void estOptimalBandwidthGaussianKernel() {
+    public void testOptimalBandwidthGaussianKernel() {
         double[] data;
         data = getData0();
 
@@ -106,39 +118,45 @@ public class KernelDensityEstimatorTest extends TestCase {
 
     public double[] getRandomGaussianData0() throws NoSuchAlgorithmException {
 
-        SecureRandom rand = SecureRandom.getInstanceStrong();
-        long seed = System.nanoTime();
-        //seed = 175696292403861L;
-        System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
-
         double mean1 = 0.3;
         double mean2 = 0.8;
         double sigma1 = 0.13;
         double sigma2 = 0.13;
         int n1 = 100;
         int n2 = 3*n1;
-        double h = 0.5;
 
-        double[] g1 = UnivariateNormalDistribution.randomSampleOf(mean1, sigma1, rand, n1);
-        double[] g2 = UnivariateNormalDistribution.randomSampleOf(mean2, sigma2, rand, n2);
-        double[] data = Arrays.copyOf(g1, g1.length + g2.length);
-        System.arraycopy(g2, 0, data, g1.length, g2.length);
+        return getRandomGaussianData(new double[]{mean1, mean2}, new double[]{sigma1, sigma2},
+                new int[]{n1, n2});
+    }
 
+    public double[] getRandomGaussianData(double[] mean, double[] sigma, int[] n) throws NoSuchAlgorithmException {
+
+        int nTotal = 0;
+        int i;
+        for (i = 0; i < n.length; ++i) {
+            nTotal += n[i];
+        }
+
+        double[] data = new double[nTotal];
+        double[] g;
+        int d = 0;
+        for (i = 0; i < n.length; ++i) {
+            g = UnivariateNormalDistribution.randomSampleOf(mean[i], sigma[i], rand, n[i]);
+            System.arraycopy(g, 0, data, d, g.length);
+            d += g.length;
+        }
         return data;
     }
 
-    public void est0() throws IOException {
+    public void test0() throws IOException {
 
         double[] data = getData0();
 
         double h = calcH(data)[0];
 
-        // h *= 10;
-
         KernelDensityEstimator.KDE kde = null;
 
-        //kde = KernelDensityEstimator.cVTerm2(data, h);
+        kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
 
         //System.out.printf(" x =%s", FormatArray.toString(kde.hx, "%14.5e"));
         //System.out.printf("kde=%s", FormatArray.toString(kde.kde, "%14.5e"));
@@ -146,12 +164,25 @@ public class KernelDensityEstimatorTest extends TestCase {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
         plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
         for (int i = 0; i < 10; ++i) {
-            h /= 2.;
+            h /= 1.5;
             kde = KernelDensityEstimator.viaFFTGaussKernel(kde.u, kde.hx, h);
             plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f", h));
         }
         plotter.writeFile("kde_4");
 
+    }
+
+    private double[][] standardize(double[] data) {
+        double[] mean = new double[1];
+        double[] stDev = new double[1];
+        double[] data2 = Standardization.standardUnitNormalization(data, 1, mean, stDev);
+        double[][] s = new double[data.length][];
+        s[0] = data2;
+        s[1] = mean;
+        s[2] = stDev;
+        System.out.println("standardized mean, stdev=" + FormatArray.toString(
+                MiscMath0.getAvgAndStDev(data2),"%.4e"));
+        return s;
     }
 
     public void testViaFFTGaussKernel0() throws IOException, NoSuchAlgorithmException {
@@ -160,7 +191,13 @@ public class KernelDensityEstimatorTest extends TestCase {
         //data = getData0();
         //data = getCenteredData0();
         //data = getSMCData();
-        data = getRandomGaussianData0();
+        //data = getRandomGaussianData0();
+        data = getRandomGaussianData(new double[]{100, 200, 400}, new double[]{25, 10, 25},
+                new int[]{100, 30, 100});
+
+        // data[0] is unit standardized data, data[1] is the mean of data, data[2] is the standard deviation of the mean of data
+        double[][] unitStandardized = standardize(data);
+        data = unitStandardized[0];
 
         double h = calcH(data)[0];
         h *= 10;
@@ -189,13 +226,22 @@ public class KernelDensityEstimatorTest extends TestCase {
         //PolygonAndPointPlotter plotter2 = new PolygonAndPointPlotter(0, 1.f, 0, 1.f);
         plotter2.addPlot(hist[0], hist[1], hist[0], hist[1], String.format("histogram"));
 
+        double minCV = cv;
+        int minCVIdx = -1;
         for (int i = 0; i < 40; ++i) {
             //h /= 2.;
             h *= 0.85;
             kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
+            System.out.println("i=" + i + ":");
             cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
             plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4f, cv=%.4f", h, cv));
+            if (cv < minCV) {
+                minCV = cv;
+                minCVIdx = i;
+            }
         }
+
+        System.out.printf("min cv=%.4e , i=%d\n", minCV, minCVIdx);
 
         plotter.writeFile("kde_0");
         plotter2.writeFile("kde_0_1");
@@ -238,7 +284,7 @@ public class KernelDensityEstimatorTest extends TestCase {
         return hf;
     }
 
-    public void estViaFFTGaussKernel2() throws IOException {
+    public void estViaFFTGaussKernelSMC() throws IOException {
 
         HistAndFFT hf = getSMCFFTHist();
         System.gc();
@@ -288,6 +334,4 @@ public class KernelDensityEstimatorTest extends TestCase {
 
     }
 
-    public void estUnivariateKernelDensityEstimate() {
-    }
 }

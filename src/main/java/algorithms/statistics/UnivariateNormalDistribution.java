@@ -2,6 +2,7 @@ package algorithms.statistics;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  *
@@ -46,7 +47,7 @@ public class UnivariateNormalDistribution {
      * @param n
      * @return n randomly sampled x's
      */
-    public static double[] randomSampleOfUnitStandard(SecureRandom rand, int n) {
+    public static double[] randomSampleOfUnitStandard(Random rand, int n) {
         double t;
         
         double[] u = new double[n];
@@ -71,7 +72,7 @@ public class UnivariateNormalDistribution {
      * @return 
      */
     public static double[] randomSampleOf(double mean, double sigma,
-        SecureRandom rand, int n) {
+                                          Random rand, int n) {
                 
         double[] u = randomSampleOfUnitStandard(rand, n);
                

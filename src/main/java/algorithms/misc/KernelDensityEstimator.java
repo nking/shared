@@ -516,7 +516,7 @@ public class KernelDensityEstimator {
             if (zh < BIG) {
                 m = -0.5 * zh * zh;
                 term1 += Math.exp(m);
-                f2[i] = u[i].times( Math.exp(m) ).abs();
+                f2[i] = u[i].times(Math.exp(m) ).abs();
                 // if (m >= 0) {
             }
             zh = histBins[i] / h;
@@ -537,34 +537,40 @@ public class KernelDensityEstimator {
             term2 += t2[i].abs();
             term3 += t3[i].abs();
         }
+
         term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));
         term3 *= (2./(n*(n-1.)));
 
         // there is an error
         double r = term1 + term2 - term3;
 
+        // fudge, to be removed when the bug is found
+        r = term1 + (term2 - term3)*(n * (n-1));
+
         System.out.printf("h=%.4f terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
 
-        if (true) {
-            return r;
-        }
+        return r;
+
         /*
         try again, but with the Wasserman eqn (20.25)
 
-        r_hat(h) ~ (1/(h*n*n)) * sum_i( sum_j( K_ast((X_i-X_j)/h) + (2/(n*h)) * K(0)
+        r_hat(h) ~ (2/(n*h)) * K(0)
+                    + (1/(h*n*n)) * sum_i( sum_j(
+                         K_ast((X_i-X_j)/h) ))
 
-        K
+        where
         K_2(z) = integral( K(z-y)*K(y)*dy )
         K_ast(x) = K_2(x) - 2*K(x)
 
         z = (X_i-X_j)/h;
-        K_ast((X_i-X_j)/h) = K_ast(z)
-                           = K_2(z) - 2*K(z)
+        K_ast((X_i-X_j)/h) = K_2(z) - 2*K(z) = N(0,2) - 2*K(z)
                            = integral( K(z-y)*K(y)*dy ) - 2*K(z)
 
+        r_hat(h) ~ (2/(n*h)) * N(0,1)
+                 + (1/(h*n*n)) * sum_i( sum_j(
+                     integral( K(z-y)*K(y)*dy ) - 2*K(z)
+                 ))
         */
-
-        throw new UnsupportedOperationException("not yet implemented");
     }
 
     /**
