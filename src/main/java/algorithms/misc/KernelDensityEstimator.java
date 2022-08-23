@@ -477,6 +477,12 @@ public class KernelDensityEstimator {
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
      eqn (27) (which is (27)+(28))
+     and
+     Indirect Cross-validation for Density Estimation
+     Olga Y. Savchuk, Jeffrey D. Hart, Simon J. Sheather
+     https://doi.org/10.48550/arxiv.0812.0051,
+     https://arxiv.org/abs/0812.0051,
+     eqn (2).
      </pre>
      * @param u fft of the histogram of the data.
      * @param histBins the x axis of the histogram of the data.
@@ -525,7 +531,7 @@ public class KernelDensityEstimator {
                 // if (m >= 0) {
             }
         }
-        term1 /= (n - 1.);
+        term1 /= (n*(n - 1.));
 
         FFTUtil fft = new FFTUtil();
         Complex[] t2 = fft.create1DFFTNormalized(f2, false);
@@ -541,11 +547,11 @@ public class KernelDensityEstimator {
         term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));
         term3 *= (2./(n*(n-1.)));
 
-        // there is an error
+        // there is an error in my implementation
         double r = term1 + term2 - term3;
 
         // fudge, to be removed when the bug is found
-        r = term1 + (term2 - term3)*(n * (n-1));
+        r = term1 + (term2 - term3)*(n-1);
 
         System.out.printf("h=%.4f terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
 
