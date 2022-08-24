@@ -7,10 +7,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
 import gnu.trove.map.TIntDoubleMap;
@@ -23,6 +21,16 @@ import junit.framework.TestCase;
 public class HistogramTest extends TestCase {
 
     protected Logger log = Logger.getLogger(this.getClass().getSimpleName());
+
+    private Random rand = null;
+
+    public HistogramTest() {
+        long seed = System.nanoTime();
+        //seed = 188903032980675L;
+        //byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(seed).array();
+        System.out.println("SEED=" + seed);
+        rand = new Random(seed);
+    }
 
     /**
      * Test of createHistogram method, of class Histogram.
@@ -748,5 +756,78 @@ public class HistogramTest extends TestCase {
         assertEquals(1, histMap.get(26));
         assertFalse(histMap.containsKey(-1));
         assertFalse(histMap.containsKey(27));
+    }
+
+    public void testBandwidthSelection() {
+
+        // with a dataset that is populated in every 3rd bin,
+        //    a bandwidth selection method should be able to tell
+        //    that a histogram formed using a bandwidth of 2 such bins is a worse result.
+
+        int n = 100;
+        double binSize0 = 0.2;
+        double bw0 = 0.2;
+        //[0]=0:0.2, [3]=0.6:0.8, [6]=1.2:1.4,[9]=1.8:2.0, ...[(10-1)*3=27]=5.4:5.6
+        // range = 0:5.6
+        int nBins0 = 28;// 5.6/0.2
+
+        double[] expectedCount = new double[nBins0];
+        double[] data = new double[n];
+        int r;
+        int bin;
+        int i;
+
+        double r2;
+        for (i = 0; i < n; ++i) {
+            //populate 10 bins which are spaced at intervals of every 3rd 0.2.
+            r = rand.nextInt(10);
+            bin = r * 3;
+            expectedCount[bin]++;
+
+            // generate a number between [bin*0.2, bin*0.2 + 0.2)
+
+            /* this is code from open jdk for ThreadLocalRandom.current().nextDouble(bound):
+            which states:
+            Written by Doug Lea with assistance from members of JCP JSR-166
+            Expert Group and released to the public domain, as explained at
+            http://creativecommons.org/publicdomain/zero/1.0/
+            */
+            // rand.nextDouble(bw0):
+            r2 = (rand.nextLong() >>> 11) * 0x1.0p-53 * bw0;
+            data[i] = (r2 < bw0) ?  r2 : // correct for rounding
+                    Double.longBitsToDouble(Double.doubleToLongBits(bw0) - 1);
+            data[i] += bw0 * bin;
+        }
+
+        // a histogram of data that uses binwidth = binSize0 will be much better than a histogram
+        // generated with binwidth = 2*binSize0
+        // or a histogram generated with binwidth = binSize0 but starts at minimum - (binSize0/2.)
+
+        //double binSize0 = 0.2;
+        //[0]=0:0.2, [3]=0.6:0.8, [6]=1.2:1.4,[9]=1.8:2.0, ...[(10-1)*3=27]=5.4:5.6
+        // range = 0:5.6
+        //
+        // for binWidth0=0.2, nBins0 = 28
+        // for binWidth=0.4, nBins = 14
+        int nBins1 = 14;
+
+        double[][] hist0 = Histogram.createHistogram(data, nBins0);
+        //System.out.printf("bw0=%.4e\n", hist0[0][1] - hist0[0][0]);
+
+        double[][] hist1 = Histogram.createHistogram(data, nBins1);
+        //System.out.printf("bw1=%.4e\n", hist1[0][1] - hist1[0][0]);
+
+        double[] minMax = MiscMath0.getMinMax(data);
+        double[][] hist2 = Histogram.createHistogram(data, nBins0, minMax[0] + binSize0/2., minMax[1] + binSize0/2.);
+        //System.out.printf("bw2=%.4e\n", hist2[0][1] - hist2[0][0]);
+
+        double s0 = Histogram.crossValidationRiskEstimator(n, hist0[0][1] - hist0[0][0], hist0[1]);
+        double s1 = Histogram.crossValidationRiskEstimator(n, hist1[0][1] - hist1[0][0], hist1[1]);
+        double s2 = Histogram.crossValidationRiskEstimator(n, hist2[0][1] - hist2[0][0], hist2[1]);
+
+        //System.out.printf("scores=%.4e, %.4e, %.4e\n", s0, s1, s2);
+
+        assertTrue(s0 < s1);
+        assertTrue(s0 < s2);
     }
 }

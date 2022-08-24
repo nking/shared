@@ -1158,7 +1158,23 @@ public class MiscMath0 {
         }
         return c;
     }
-    
+    /**
+     * calculates the mean of the data
+     * @param data data points
+     * @return the sample mean
+     */
+    public static double mean(double[] data) {
+
+        int n = data.length;
+        int i;
+        double sum = 0;
+        for (i = 0; i < n; ++i) {
+            sum += data[i];
+        }
+        sum /= (double)n;
+        return sum;
+    }
+
     /**
      * calculates the mean per dimension and standard deviation per dimension
      * of the data and returns them in a double array of size [2][nDimensions] 
@@ -1462,6 +1478,41 @@ public class MiscMath0 {
             }
         }
         return new float[]{min, max};
+    }
+
+    /**
+     * third standardized moment of skewness as sample skewness:
+     * <pre>
+     *  https://en.m.wikipedia.org/wiki/Skewness
+     *     g1 = kappa_3/((kappa_2)^(3/2))
+     *        = (1/n) * summation from i=1 to n ( (x_i - mean)^3)
+     *           / ([ (1/n) * summation from i=1 to n ( (x_i - mean)^2) ]^(3/2) )
+     *
+     *           where kappa_2 is the 2nd cumulant = variance.
+     *          kappa_3 = central moment which is skewness
+     * </pre>
+     * @param data
+     * @return
+     */
+    public static double calcSampleSkewness(double[] data) {
+        double mean = MiscMath0.mean(data);
+        int n = data.length;
+        double sum2 = 0;
+        double sum3 = 0;
+        int i;
+        double diff;
+        double d2;
+        for (i = 0; i < n; ++i) {
+            diff = data[i] - mean;
+            d2 = diff * diff;
+            sum2 += d2;
+            sum3 += (diff * d2);
+        }
+        sum3 /= (double)n;
+        sum2 /= (double)n;
+        sum2 = Math.pow(sum2, 1.5);
+
+        return sum3/sum2;
     }
 
     public int sign(int v) {

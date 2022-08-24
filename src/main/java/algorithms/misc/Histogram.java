@@ -1,5 +1,6 @@
 package algorithms.misc;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.sort.CountingSort;
 import algorithms.util.Errors;
 import algorithms.util.PairInt;
@@ -166,6 +167,58 @@ public class Histogram {
         }
         
         return createSimpleHistogram(nBins, values, valueErrors);
+    }
+
+    /**
+     * given data points and the number of bins to use, return the histogram as a 2 dimensional
+     * array with row 0 being the bin centers, and row 1 being the histogram counts.
+     * the range of data used are the maximum - minimum.
+     * @param data data points
+     * @param nBins the number of bins to use
+     * @return 2 dimensional
+     *      * array with row 0 being the bin centers, and row 1 being the histogram counts
+     */
+    public static double[][] createHistogram(double[] data, int nBins) {
+
+        double[] minMax = MiscMath0.getMinMax(data);
+
+        return createHistogram(data, nBins, minMax[1], minMax[0]);
+    }
+
+    /**
+     * given data points and the number of bins to use, return the histogram as a 2 dimensional
+     * array with row 0 being the bin centers, and row 1 being the histogram counts.
+     * the range of data used are the maximum - minimum.
+     * @param data data points
+     * @param nBins the number of bins to use
+     * @param max maximum data value that the histogram will hold.  this is the end of the last bin.
+     * @param min minimum data value that thehistogram will hold.  this is the beginning of the first bin.
+     * @return 2 dimensional
+     *      * array with row 0 being the bin centers, and row 1 being the histogram counts
+     */
+    public static double[][] createHistogram(double[] data, int nBins, double max, double min) {
+
+        int n = data.length;
+
+        double binWidth = (max - min)/nBins;
+
+        double[][] hist = new double[2][];
+        hist[0] = new double[nBins];
+        hist[1] = new double[nBins];
+
+        for (int i = 0; i < nBins; i++) {
+            hist[0][i] = min + binWidth*i + (binWidth/2.);
+        }
+
+        int bin;
+        for (int i = 0; i < n; i++) {
+            bin = (int) ((data[i] - min)/binWidth);
+            if ((bin > -1) && (bin < nBins)) {
+                hist[1][bin]++;
+            }
+        }
+
+        return hist;
     }
      
     /**
@@ -1111,23 +1164,36 @@ public class Histogram {
      *
      *  reference:
      *  Wasserman's "All of Statistics" eqn (20.14).
+     *  and
+     *  https://en.m.wikipedia.org/wiki/Histogram
      * </pre>
      * One can estimate the best binwidth h by minimizing the risk over
      * histograms generated with small to increasingly larger binwidths.
      * @param n the number of points used when constructing the histogram.
-     * @param h the binwidth. Note that the algorithm expects that the data range of X was normalized
-     * to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
-     * @param pEst array of is the histogram counts, where each bin should have been divided by n
+     * @param h the binwidth.
+     * @param pEst array of the histogram counts, where each bin should have been divided by n.
+     *             Note that the algorithm expects that the data range of X was normalized
+     *      * to be between 0 and 1, inclusive.  Also, that h=1/m where m is pEst.length.
      * @return the estimated risk
      */
     public static double crossValidationRiskEstimator(int n, double h, double[] pEst) {
         int m = pEst.length;
+
         // assert that h == 1./m
+        //assert(Math.abs(h - (1./m)) < 1e-2);
+
         double sum = 0;
         for (int j = 0; j < m; ++j) {
             sum += (pEst[j] * pEst[j]);
         }
-        double jEst = (2./((n-1.)*h)) - ((n+1)/(n-1))*sum;
+        // from wikipedia, https://en.m.wikipedia.org/wiki/Histogram
+        // reference to Stone 1984
+        // AN ASYMPTOTICALLY OPTIMAL HISTOGRAM SELECTION RULE
+        double t1 = 2./((n-1.)*h);
+        //double t1 = 2./(n-1.);
+        double t2 = (n+1)/(n*n*h*(n-1.));
+
+        double jEst = t1 - t2*sum;
         return jEst;
     }
 
@@ -1364,5 +1430,62 @@ public class Histogram {
             }
         }
         return hist;
+    }
+
+    public static int numberOfBinsSqrt(int dataLength) {
+        //https://en.m.wikipedia.org/wiki/Histogram
+        return (int)Math.ceil(Math.sqrt(dataLength));
+    }
+
+    /**
+     * assumes an approximately normal distribution.
+     * for best results, dataLength >= 30.
+     * reference: https://en.m.wikipedia.org/wiki/Histogram
+     * @param dataLength
+     * @return
+     */
+    public static int numberOfBinsSturges(int dataLength) {
+        //https://en.m.wikipedia.org/wiki/Histogram
+        return 1 + (int)Math.ceil(Math.log(dataLength)/Math.log(2));
+    }
+    /**
+     * reference: https://en.m.wikipedia.org/wiki/Histogram
+     * @param dataLength
+     * @return
+     */
+    public static int numberOfBinsRice(int dataLength) {
+        //https://en.m.wikipedia.org/wiki/Histogram
+        return (int)Math.ceil(2.*Math.pow(dataLength, 1./3));
+    }
+
+    /**
+     * improvement of sturges formula for non-normal data.
+     * reference: https://en.m.wikipedia.org/wiki/Histogram
+     * @return
+     */
+    public static int numberOfBinsDoane(double[] data) {
+
+        double g1 = MiscMath0.calcSampleSkewness(data);
+
+        int n = data.length;
+
+        double sigmaG1 = Math.sqrt(  (6.*(n-2.))/((n+1.)*(n+3.)));
+
+        double t2 = Math.log(n)/Math.log(2);
+        double t3 = Math.log(1. + (Math.abs(g1)/sigmaG1))/Math.log(2);
+        double nBins = 1 + t2 + t3;
+        return (int)nBins;
+    }
+
+    /**
+     * this is less sensitive to outliers in data because it uses IQR.
+     * reference: https://en.m.wikipedia.org/wiki/Histogram
+     * @return
+     */
+    public static int numberOfBinsFreedmanDiaconis(double[] data) {
+
+        double[] medianAndIQR = MiscMath0.calcMedianAndIQR(data);
+        double d = Math.pow(data.length, 1./3.);
+        return (int) (2. * medianAndIQR[1]/d);
     }
 }
