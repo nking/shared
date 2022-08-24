@@ -4449,6 +4449,14 @@ public class MatrixUtil {
         }
         return c;
     }
+    public static float[] convertToFloat(double[] a) {
+        float[] c = new float[a.length];
+        int i;
+        for (i = 0; i < a.length; ++i) {
+            c[i] = (float) a[i];
+        }
+        return c;
+    }
     public static double[][] convertIntToDouble(int[][] a) {
         double[][] c = new double[a.length][];
         int i, j;

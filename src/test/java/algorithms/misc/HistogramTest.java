@@ -761,8 +761,8 @@ public class HistogramTest extends TestCase {
     public void testBandwidthSelection() {
 
         // with a dataset that is populated in every 3rd bin,
-        //    a bandwidth selection method should be able to tell
-        //    that a histogram formed using a bandwidth of 2 such bins is a worse result.
+        //    a binwidth selection method should be able to tell
+        //    that a histogram formed using a binwidth of 2 such bins is a worse result.
 
         int n = 100;
         double binSize0 = 0.2;
