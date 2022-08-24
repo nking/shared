@@ -3,23 +3,34 @@ package algorithms.misc;
 public class GaussianKernel implements IKernel {
 
     /**
+     * calculate (1./(h * n * Math.sqrt(2. * Math.PI)) * summation over i of exp(-0.5*( (x - xTilde[i])/h)^2 )
      * runtime complexity is O(xTilde.length).
-     * @param x
-     * @param xTilde
+     * @param x the grid point
+     * @param xTilde the observed data
      * @param h
      * @return
      */
     public double kernel(double x, double[] xTilde, double h) {
         int nS = xTilde.length;
-        double ch = 1./(h * Math.sqrt(2. * Math.PI));
+        double ch = 1./(Math.sqrt(2. * Math.PI));
         double z;
         double sum = 0;
         for (int i = 0; i < nS; i++) {
             z = (x - xTilde[i])/h;
             sum += Math.exp(-0.5 * z * z);
         }
-        sum *= ch;
-        return sum/nS;
+        sum *= ch/(h*nS);
+        return sum;
+    }
+
+    /**
+     * calculate (1./(Math.sqrt(2. * Math.PI)) * exp(-0.5*( z^2 )
+     * @param z
+     * @return
+     */
+    public double kernel(double z) {
+        double ch = 1./(Math.sqrt(2. * Math.PI));
+        return ch * Math.exp(-0.5 * z * z);
     }
 
     /**

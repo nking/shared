@@ -222,6 +222,69 @@ public class KernelDensityEstimator {
          */
     }
 
+    /**
+     * estimate the density of x using a Gaussian Kernel of bandwidth h.
+     * note that the grid to which the kernel is applied is also x in this case.
+     <pre>
+     f_hat(x) ~ (1/n) * summation over i=1 to n of ( (1/h) * K(|| x - X_i ||/h) ).
+     double[] kde = iter from j=1-1 to xGrid.length-1 estimating f_hat(xGrid[j]
+     reference: Wasserman's "All of Statistics", eqn (20.21)
+     </pre>
+     runtime complexity is O(n^2) where n = x.length.
+     * @param x data observed
+     * @param h bandwidth
+     * @return
+     */
+    public static KDE viaGaussKernel(double[] x, double h) {
+        int n = x.length;
+        int i;
+        KDE kde = new KDE();
+        kde.kde = new double[n];
+        GaussianKernel kernel = new GaussianKernel();
+        double sum = 0;
+        for (i = 0; i < n; ++i) {
+            kde.kde[i] = kernel.kernel(x[i], x, h);
+            sum += kde.kde[i];
+        }
+        System.out.printf("SUM KDE=%.4e\n", sum);
+        kde.hx = Arrays.copyOf(x, x.length);
+        kde.h = h;
+        kde.u = null;
+        return kde;
+    }
+
+    /**
+     * estimate the density of x using a Gaussian Kernel of bandwidth h.
+     * the grid to which the kernel is applied is xGrid in this case.
+     <pre>
+     f_hat(x) ~ (1/n) * summation over i=1 to n of ( (1/h) * K(|| x - X_i ||/h) ).
+     double[] kde = iter from j=1-1 to xGrid.length-1 estimating f_hat(xGrid[j]
+     reference: Wasserman's "All of Statistics", eqn (20.21)
+     </pre>
+     runtime complexity is O(n*m) where n = x.length and m=xGrid.length
+     * @param x data observed
+     * @param xGrid the grid of data at which to apply the kernel.
+     * @param h bandwidth
+     * @return
+     */
+    public static KDE viaGaussKernel(double[] x, double[] xGrid, double h) {
+        int n = xGrid.length;
+        int i;
+        KDE kde = new KDE();
+        kde.kde = new double[n];
+        GaussianKernel kernel = new GaussianKernel();
+        double sum = 0;
+        for (i = 0; i < n; ++i) {
+            kde.kde[i] = kernel.kernel(xGrid[i], x, h);
+            sum += kde.kde[i];
+        }
+        System.out.printf("SUM KDE=%.4e\n", sum);
+        kde.hx = Arrays.copyOf(xGrid, xGrid.length);
+        kde.h = h;
+        kde.u = null;
+        return kde;
+    }
+
     protected static Complex[] convertToComplex(double[] a) {
         Complex[] c = new Complex[a.length];
         for (int i = 0; i < a.length; ++i) {

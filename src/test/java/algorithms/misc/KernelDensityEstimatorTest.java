@@ -380,7 +380,44 @@ public class KernelDensityEstimatorTest extends TestCase {
             data[i] += bw0 * bin;
         }
 
+        Arrays.sort(data);
+
         return data;
+    }
+
+    public void testViaFFTGaussKernel_compare() throws IOException, NoSuchAlgorithmException {
+        System.out.printf("testViaFFTGaussKernel_compare");
+        double[] data = getDataEvery3rdBin();
+        int nPeaksExpected = 10;
+        double h0 = calcH(data)[0];
+
+        System.out.printf("data.length=%d h0=%.4e\n", data.length, h0);
+
+        KernelDensityEstimator.KDE kdeFFT0 = KernelDensityEstimator.viaFFTGaussKernel(data, h0);
+
+        double[] xGrid = kdeFFT0.hx;
+        //xGrid = data;
+        KernelDensityEstimator.KDE kde0 = KernelDensityEstimator.viaGaussKernel(data, h0);
+        KernelDensityEstimator.KDE kde00 = KernelDensityEstimator.viaGaussKernel(data, xGrid, h0);
+
+        float minX = (float)kdeFFT0.hx[0];
+        float maxX = (float)kdeFFT0.hx[kdeFFT0.hx.length - 1];
+        float minY = 0.f;
+        float maxY = 1.1f * (float)MiscMath0.getMinMax(kde00.kde)[1];
+
+        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+        plotter.addPlot(kdeFFT0.hx, kdeFFT0.kde, null, null, String.format("FFT: h=%.4f", h0));
+
+        float[] x0 = MiscMath0.convertDoubleToFloat(kde0.hx);
+        float[] y0 = MiscMath0.convertDoubleToFloat(kde0.kde);
+        plotter.addPlot(minX, maxX, minY, maxY, x0, y0, null, null, null, null,
+                String.format("0: h=%.4f", h0));
+        plotter.addPlot(kde00.hx, kde00.kde, null, null, String.format("00: h=%.4f", h0));
+
+        kde0 = KernelDensityEstimator.viaGaussKernel(data, h0/120.);
+        plotter.addPlot(kde0.hx, kde0.kde, null, null, String.format("0: h=%.4f", h0/120.));
+
+        plotter.writeFile("_kde_comp_");
     }
 
     public void testViaFFTGaussKernel3() throws IOException, NoSuchAlgorithmException {
@@ -429,7 +466,6 @@ public class KernelDensityEstimatorTest extends TestCase {
         int nPeaks = peaks.length;
         int minPeaks = nPeaks;
         for (int i = 1; i < 40; ++i) {
-            //h /= 2.;
             h *= 0.9;
             kde = KernelDensityEstimator.viaFFTGaussKernel(kde.u, kde.hx, h);
             nPeaks = peakFinder.findPeaks(MatrixUtil.convertToFloat(kde.kde)).length;

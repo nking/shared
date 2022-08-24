@@ -1,0 +1,57 @@
+convolution theorem applications:
+=================================
+
+probability density KDE:
+   one dimensional data: any distribution of points as X quantiles
+
+convolution of values:
+   one dimensional: an image row smoothed by convolution with a gaussian
+
+---------------------------------
+
+KDE:
+   double[] xGrid is the one-dimensional large scale grid over which to apply the kernel.
+
+   double[] xTilde is the observed data, preferably ordered by ascending values.
+   n = xTilde.length;
+   
+   the kernel is K(z) = (1/sqrt(2*pi)) * exp(-z^2/2)
+
+   the estimated probability density of point x is 
+        f_est(x) = (1/n) * sum of i=1 to n ( (1/h) * K((x-XTilde[i])/h) )
+
+   the estimated probability density distribution is 
+       double[] f_est = j=1 to xGrid.length ( f_est(xGrid[j]) )
+
+convolution:
+   kernel is a small array of fractional values between 0 and 1 where each 
+       of the elements as an index represents 1 pixel offset from the
+       point to which the kernel will be applied.
+       consider the kernel data having x coordinates and y intensity factors.
+           e.g.
+           x = -1, 0, 1
+           y = 0.25, 1, 0.25
+                ==> can see that h = kernel.length/2, that is 3/2
+   for xTilde = observed data.
+       consider the data also having a coordinates and y intensities.
+       e.g.
+           x = 0, 1, 2, 3, 4, 5, 6
+           y = 5, 0, 0, 5, 0, 0, 5
+          
+           we can avoid interpolation of x points for data and kernel if we use 
+           the same grid spacing for kernel and xTilde,
+           in which case only the y values need to be stored for xTilde and for kernel,
+           and the x values are assumed and used relatively.
+              one can assume the middle point in the kernel y array is at the zero offset from the xTilde index to
+              which the kernel is to be applied.
+
+           NOTE: for h=1, the convolution does not affect the example data, nor for h=2.
+                 for h>=3 the convolution affects this example data
+
+       the convolution over xTilde data:
+       for j=0 to xTilde.length-1
+          F_est[j] = convolve( xTilde, j, kernel)
+                   where convolve = summation over i=0 to kernel.length-1 of:
+                        // kernel = 0.25, 1, 0.25 ====> offset = kernel.length/2 - i
+                        xTilde[j - offset] * kernel[i]; // which multiplies the values
+                                                                 
