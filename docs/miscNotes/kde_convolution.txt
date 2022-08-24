@@ -2,10 +2,11 @@ convolution theorem applications:
 =================================
 
 probability density KDE:
-   one dimensional data: any distribution of points as X quantiles
+   one dimensional data: input is any distribution of points as X quantiles,
+                         output is an estimated probability distribution.
 
 convolution of values:
-   one dimensional: an image row smoothed by convolution with a gaussian
+   one dimensional: input is an image row, output is image row smoothed by convolution with a gaussian
 
 ---------------------------------
 

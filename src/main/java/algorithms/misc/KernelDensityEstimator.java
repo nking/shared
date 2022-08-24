@@ -282,6 +282,7 @@ public class KernelDensityEstimator {
         kde.hx = Arrays.copyOf(xGrid, xGrid.length);
         kde.h = h;
         kde.u = null;
+
         return kde;
     }
 
@@ -350,10 +351,6 @@ public class KernelDensityEstimator {
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
                                                     double minBin, double maxBin) {
 
-        //if (!MiscMath0.isAPowerOf2(nBins)) {
-        //    throw new IllegalArgumentException("the number of histogram bins must be a power of 2");
-        //}
-
         System.out.printf("nBins=%d, binWidth=%.4f min=%.4f, max=%.4f\n", nBins, binWidth, minBin, maxBin);
         System.out.flush();
 
@@ -407,11 +404,11 @@ public class KernelDensityEstimator {
      calculate the KDE in a fast manner by using discrete FFTs and using a grid of data points
      the kde = f_hat(x) ~ summation over i=1 to n of (K(|| x - X_i ||/h).
      the kernel estimate is a convolution of the data with the kernel.
-     naive implementation is O(n^2).
-     if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
+     A naive implementation such as the method viaGaussKernel() is O(n^2).
+     If the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
      exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
      also note that the discrete FFT is a summation of exponentials.
-     convolution theorem: one can use the elementwise multiplication between the fourier paired functions.
+     convolution theorem: one can use the element-wise multiplication between the fourier paired functions.
      (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
      convolution to FFT:
      FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
@@ -419,7 +416,7 @@ public class KernelDensityEstimator {
      and in the kernel, to avoid interpolation.  the multiplication is element-wise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
-     * The Gausian Kernel with discrete fast fourier transforms is O(s*log(s)).
+     * The Gaussian Kernel with discrete fast fourier transforms is O(s*log(s)).
      * @param u the FFT of the histogram of the data.
      * @param histBins the x bins of the histogram of the data that were used to create u
      * @return kernel density estimate
@@ -445,7 +442,7 @@ public class KernelDensityEstimator {
         // element-wise multiplication
         Complex[] eqn3 = new Complex[histBins.length];
         for (i = 0; i < histBins.length; ++i) {
-            zh = histBins[i] / h;
+            zh = histBins[i] * h;
             if (zh < BIG) {
                 eqn3[i] = u[i].times(c * Math.exp(-0.5 * zh * zh));
             }
