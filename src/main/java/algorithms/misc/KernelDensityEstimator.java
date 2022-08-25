@@ -578,20 +578,20 @@ public class KernelDensityEstimator {
         double[] f2 = new double[n];
         double[] f3 = new double[n];
         for (i = 0; i < n; ++i) {
-            zh = histBins[i] / sh;
+            zh = histBins[i] * sh;
             if (zh < BIG) {
                 m = -0.5 * zh * zh;
                 term1 += Math.exp(m);
                 f2[i] = u[i].times(Math.exp(m) ).abs();
                 // if (m >= 0) {
             }
-            zh = histBins[i] / h;
+            zh = histBins[i] * h;
             if (zh < BIG) {
                 f3[i] = u[i].times(Math.exp(-0.5 * zh * zh)).abs();
                 // if (m >= 0) {
             }
         }
-        term1 /= (n*(n - 1.));
+        term1 /= (n - 1.);
 
         FFTUtil fft = new FFTUtil();
         Complex[] t2 = fft.create1DFFTNormalized(f2, false);
@@ -611,7 +611,7 @@ public class KernelDensityEstimator {
         double r = term1 + term2 - term3;
 
         // fudge, to be removed when the bug is found
-        r = term1 + (term2 - term3)*(n-1);
+        r = term1/(n*n) + term2 - term3;
 
         System.out.printf("h=%.4f terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
 
