@@ -57,7 +57,7 @@ transform and convolution details using the fourier tables above:
    FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) ) 
             the count in a binwidth is (1/binwidth)*(X_j - b) where b = min of histogram range,
             so s is (1/binwidth).
-            looks like the term for exp(- min of histogram)*(1/sqrt(2*pi)) has been dropped.
+            looks like the term for exp(- min of histogram/binwidth)*(1/sqrt(2*pi)) has been dropped.
        rewrite to match the fourier tables:
              = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*X_j) ) 
              = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*t0_j) )  <-- should use t_j, but clearer to keep t0_j
