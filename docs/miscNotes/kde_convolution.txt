@@ -1,58 +1,84 @@
-convolution theorem applications:
-=================================
+a subset of information about fourier transforms, useful for the applications 
+outlined below
+=============================================================================
+note: '*' is multiplication (scalar or element-wise (dot)) 
+      and 'conv' is convolution.
+      i = sqrt(-1).
+      delta is the delta-dirac function (an impulse function).
 
-probability density KDE:
-   one dimensional data: input is any distribution of points as X quantiles,
-                         output is an estimated probability distribution.
+fourier pairs:
+  g(t)                          and G(f) = integral_(-inf to inf) ( g(t) * exp(-i f*t) * dt )
+  g(t) = (1/(2*pi)) * integral_(-inf to inf) ( G(f) * exp(i f*t) * df )   and G(f) is G(f)
+  g(t) = delta(t)               and G(f) = 1
+  g(t) = 1                      and G(f) = delta(f)
+  g(t) = exp(i 2*pi*f_0*t)      and G(f) = delta(f - f_0)
+  g(t) = u(t)                   and G(f) = (1/2)*( delta(f) + (1/(i 2*pi*f)) )
+                                   alternatively = pi * ( delta(f) + (1/(i f)) )
+  g(t) = exp(-t^2/(sigma^2))    and G(f) = sigma*sqrt(2*pi)*exp(-2*(sigma*pi*f)^2)  <== Gaussian
+  g(t) = A * delta(t - t0)      and G(f) = A * exp(-i f*t0)
+  g(t) = exp(i f0*t)            and G(f) = 2*pi*(delta(f - f0))
+  g(t) = exp(i 2*pi*f0*t)       and G(f) = delta(f - f0)
 
-convolution of values:
-   one dimensional: input is an image row, output is image row smoothed by convolution with a gaussian
+
+some properties:
+                                       g(t)                              G(f)
+ superposition:                  g1(t) + g2(t)                     G1(f) + G2(f)
+ scalar mult:                    k*g(t)                            k*G(f)
+ duality                         G(t)                              g(-f)
+ scaling:                        g(a*t)                            (1/|a|)*G(f/a)
+ space or time shifting:         g(t-t0)                           G(f/a) * exp(-i 2*pi*f*t0)
+ freq shifting:                  g(t) * exp( 2*pi*f*t0 )           G(f)
+ space or time convolution:      g1(t) conv g2(t)                  G1(f) * G2(f)
+ freq convolution:               g1(t) * g2(t)                     G1(f) conv G2(f)
+ space or time differentiation:  dg(t)/dt to power n               (i 2*pi*f)^n * G(f)
+ space or time integration:      integral_(-inf to inf)(g(x)*dx)   ( G(f)/(i 2*pi*f) ) + 0.5*G(0)*delta(f)
 
 ---------------------------------
-
 KDE:
-   double[] xGrid is the one-dimensional large scale grid over which to apply the kernel.
+   Silverman 1982 use of FFT:
 
-   double[] xTilde is the observed data, preferably ordered by ascending values.
-   n = xTilde.length;
-   
-   the kernel is K(z) = (1/sqrt(2*pi)) * exp(-z^2/2)
+   kde estimate f_n(x) = (1/(n*h)) sum_(j=1 to n)( K((x-X_j)/h)
+      where K is the kernel function
+      X_j is the observed data
+      h is the smoothing parameter of the window.
+      x is the point to evaluate the function at.
 
-   the estimated probability density of point x is 
-        f_est(x) = (1/n) * sum of i=1 to n ( (1/h) * K((x-XTilde[i])/h) )
+   FFT(kde) = FFT(f_n(x)) = (1/(2*pi)) * FFT(K(h*s)) * u(s)
+     where u(s) is the FFT of the fine histogram of the data:
+     u(s) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*j) ) 
+     and FFT(K(h*s)) = exp(-0.5*(h*s)^2)
 
-   the estimated probability density distribution is 
-       double[] f_est = j=1 to xGrid.length ( f_est(xGrid[j]) )
+   FFT(kde) = exp(-0.5*(h*s)^2) * u(s) 
 
-convolution:
-   kernel is a small array of fractional values between 0 and 1 where each 
-       of the elements as an index represents 1 pixel offset from the
-       point to which the kernel will be applied.
-       consider the kernel data having x coordinates and y intensity factors.
-           e.g.
-           x = -1, 0, 1
-           y = 0.25, 1, 0.25
-                ==> can see that h = kernel.length/2, that is 3/2
-   for xTilde = observed data.
-       consider the data also having a coordinates and y intensities.
-       e.g.
-           x = 0, 1, 2, 3, 4, 5, 6
-           y = 5, 0, 0, 5, 0, 0, 5
-          
-           we can avoid interpolation of x points for data and kernel if we use 
-           the same grid spacing for kernel and xTilde,
-           in which case only the y values need to be stored for xTilde and for kernel,
-           and the x values are assumed and used relatively.
-              one can assume the middle point in the kernel y array is at the zero offset from the xTilde index to
-              which the kernel is to be applied.
+   inverse FFT ( FFT(kde) ) = kde
 
-           NOTE: for h=1, the convolution does not affect the example data, nor for h=2.
-                 for h>=3 the convolution affects this example data
+transform and convolution details using the fourier tables above:
 
-       the convolution over xTilde data:
-       for j=0 to xTilde.length-1
-          F_est[j] = convolve( xTilde, j, kernel)
-                   where convolve = summation over i=0 to kernel.length-1 of:
-                        // kernel = 0.25, 1, 0.25 ====> offset = kernel.length/2 - i
-                        xTilde[j - offset] * kernel[i]; // which multiplies the values
-                                                                 
+   FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) ) 
+            the count in a binwidth is (1/binwidth)*(X_j - b) where b = min of histogram range,
+            so s is (1/binwidth).
+            looks like the term for exp(- min of histogram)*(1/sqrt(2*pi)) has been dropped.
+       rewrite to match the fourier tables:
+             = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*X_j) ) 
+             = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*t0_j) )  <-- should use t_j, but clearer to keep t0_j
+
+       the histogram of X is a superposition of shifted delta functions,
+          express each histogram x bin as t - t0:
+          t is the histogram binwidth (=1/f), and t0 will be the spatial coordinates of bin_0, bin_1, etc.
+          NOTE: t0 is a shift of -1 times the spatial coordinate of the bin.
+
+          delta(t - t0_0) + delta(t - t0_1) + delta(t - t0_2) + ...
+
+      the fourier pair for delta(t - t0) is exp(-i f*t0) and the sum is superposition:
+          FFT( sum_(j=0 to n-1) ( delta(t - t0_j) ) ) = sum_(j=0 to n-1) ( exp(-i f*t0_j) )
+
+   FFT(K(h*s)) = exp(-0.5*(h*s)^2)
+
+       the fourier pair of the Gaussian is another Gaussian:
+       g(t) = exp(-t^2/(sigma^2))   and G(f) = sigma*sqrt(2*pi)*exp(-2*(sigma*pi*f)^2)  
+        
+       the paper's FFT(K(h*s)) = the Gaussian g(t), so that implies that before FFT,
+           the kernel he's used was normalization * exp(-2*(sigma*pi*f)^2)
+           presumably, sigma is h
+
+

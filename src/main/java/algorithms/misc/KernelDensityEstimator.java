@@ -530,6 +530,9 @@ public class KernelDensityEstimator {
      *  where n is the data length, and n_s is the number of elements in the data histogram
      * (which is equal to u.length).
      * This method is implemented for 1-D only, but the references (eqn 27) provide a formula for multiple dimensions.
+     *
+     * NOTE: this method is not ready for use.  I altered the normalization of one of the terms,
+     * but the change is a fudge.  This comment will be removed when corrected.
      <pre>
      References:
      Wasserman, "All of Statistics", eqn (20.25)
