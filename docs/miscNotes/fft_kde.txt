@@ -55,15 +55,16 @@ KDE:
 transform and convolution details using the fourier tables above:
 
    FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) )  
-       in order to be the FFT of the histogram, the exponential should instead be: exp(i Y_j/s) <==
-       where Y_j is the count in bin j.
-       the bin number for each X_j is (1/binwidth)*(X_j - b) where b = min of histogram range.
+       in order to be the FFT of the histogram, the exponential should instead be: exp(i Y_j) <==
+       where Y_j is the count in bin j and depends upon X_j and s.
        s is the x axis of the histogram, and it's the grid in the frequency domain.
+       the binwidth is an interval in s.
+       the bin number for each X_j is (1/binwidth)*(X_j - b) where b = min of histogram range.
 
        rewrite to match the fourier tables in the frequency domain:
-           FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*Y_j) ) 
+           FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i Y_j) ) 
                         = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*t_j) )  
-                           where that f is (1/s) and t_j is Y_j of histogram.
+                           where that f is (1/s) and t_j is Y_j of histogram... editing here
 
        as an aside, to keep exploring the histogram in the frequency domain:
            s, as the x-axis of the histogram, is a superposition of shifted delta functions in 
