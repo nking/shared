@@ -29,7 +29,7 @@ some properties:
  space or time shifting:         g(t-t0)                           G(f/a) * exp(-i 2*pi*f*t0)
  freq shifting:                  g(t) * exp( 2*pi*f*t0 )           G(f)
  space or time convolution:      g1(t) conv g2(t)                  G1(f) mult G2(f)
- freq convolution:               g1(t) mult g2(t)                     G1(f) conv G2(f)
+ freq convolution:               g1(t) mult g2(t)                  G1(f) conv G2(f)
  space or time differentiation:  dg(t)/dt to power n               (i 2*pi*f)^n * G(f)
  space or time integration:      integral_(-inf to inf)(g(x)*dx)   ( G(f)/(i 2*pi*f) ) + 0.5*G(0)*delta(f)
 
@@ -54,17 +54,12 @@ KDE:
 
 transform and convolution details using the fourier tables above:
 
-   FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) )  
-       in order to be the FFT of the histogram, the exponential should instead be: exp(i Y_j) <==
-       where Y_j is the count in bin j and depends upon X_j and s.
+   FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) ). <-- looks like this should be exp(i X_j/s) 
+       the FFT of the histogram is ~ (c_normalization) * exp(i Y_j) <-- where one of the fourier pairs will use -i.
+       Y_j is the count in bin j and depends upon X_j and s.
        s is the x axis of the histogram, and it's the grid in the frequency domain.
-       the binwidth is an interval in s.
-       the bin number for each X_j is (1/binwidth)*(X_j - b) where b = min of histogram range.
-
-       rewrite to match the fourier tables in the frequency domain:
-           FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i Y_j) ) 
-                        = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*t_j) )  
-                           where that f is (1/s) and t_j is Y_j of histogram... editing here
+       the binwidth h is an interval in s.
+       the bin number for each X_j is (1/h)*(X_j - b) where b = min of histogram range.
 
        as an aside, to keep exploring the histogram in the frequency domain:
            s, as the x-axis of the histogram, is a superposition of shifted delta functions in 
@@ -88,7 +83,7 @@ transform and convolution details using the fourier tables above:
       spatial domain is the multiplication of the fourier transforms in the frequency domain
       and vice versa:
          space or time convolution:      g1(t) conv g2(t)                  G1(f) mult G2(f)
-         freq convolution:               g1(t) mult g2(t)                     G1(f) conv G2(f)
+         freq convolution:               g1(t) mult g2(t)                  G1(f) conv G2(f)
     
    FFT(kde) = FFT(f_n(x)) = (1/(2*pi)) times FFT(K(h*s)) mult FFT(hist(X))
    kde = inverse FFT( FFT(kde) )
