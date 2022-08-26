@@ -138,9 +138,23 @@ public class KernelDensityEstimator {
         //   to find minimum bandwidth h.
         Complex[] u = fft.create1DFFTNormalized(hist[1], true);
 
+        addDroppedFFTMinHistTerm(u, hist);
+
         assert(u.length == hist[0].length);
 
         return viaFFTGaussKernel(u, hist[0], h);
+    }
+
+    private static void addDroppedFFTMinHistTerm(Complex[] u, double[][] hist) {
+        // add the term dropped in the FFT of the histogram:
+        //     exp(- min of histogram/binwidth)* normalization
+        //     exp(- min of histogram/binwidth)* (1./Math.sqrt(hist[0].length))
+        double bw = hist[0][1] - hist[0][0];
+        double min = hist[0][0] - (bw/2.);
+        double term0 = Math.exp(min/bw) / (Math.sqrt(hist[0].length));
+        for (int i = 0; i < u.length; ++i) {
+            u[i] = u[i].plus(term0);
+        }
     }
 
     /**
@@ -186,6 +200,8 @@ public class KernelDensityEstimator {
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
         Complex[] u = fft.create1DFFTNormalized(hist[1], true);
+
+        addDroppedFFTMinHistTerm(u, hist);
 
         assert(u.length == hist[0].length);
 
