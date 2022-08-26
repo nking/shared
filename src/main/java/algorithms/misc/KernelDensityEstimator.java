@@ -138,23 +138,9 @@ public class KernelDensityEstimator {
         //   to find minimum bandwidth h.
         Complex[] u = fft.create1DFFTNormalized(hist[1], true);
 
-        addDroppedFFTMinHistTerm(u, hist);
-
         assert(u.length == hist[0].length);
 
         return viaFFTGaussKernel(u, hist[0], h);
-    }
-
-    private static void addDroppedFFTMinHistTerm(Complex[] u, double[][] hist) {
-        // add the term dropped in the FFT of the histogram:
-        //     exp(- min of histogram/binwidth)* normalization
-        //     exp(- min of histogram/binwidth)* (1./Math.sqrt(hist[0].length))
-        double bw = hist[0][1] - hist[0][0];
-        double min = hist[0][0] - (bw/2.);
-        double term0 = Math.exp(min/bw) / (Math.sqrt(hist[0].length));
-        for (int i = 0; i < u.length; ++i) {
-            u[i] = u[i].plus(term0);
-        }
     }
 
     /**
@@ -200,8 +186,6 @@ public class KernelDensityEstimator {
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
         Complex[] u = fft.create1DFFTNormalized(hist[1], true);
-
-        addDroppedFFTMinHistTerm(u, hist);
 
         assert(u.length == hist[0].length);
 
@@ -367,7 +351,7 @@ public class KernelDensityEstimator {
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
                                                     double minBin, double maxBin) {
 
-        System.out.printf("nBins=%d, binWidth=%.4f min=%.4f, max=%.4f\n", nBins, binWidth, minBin, maxBin);
+        System.out.printf("nBins=%d, binWidth=%.4e min=%.4e, max=%.4e\n", nBins, binWidth, minBin, maxBin);
         System.out.flush();
 
         double[][] hist = new double[2][];
@@ -632,7 +616,7 @@ public class KernelDensityEstimator {
         // fudge, to be removed when the bug is found
         r = term1/(n*n) + term2 - term3;
 
-        System.out.printf("h=%.4f terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
+        System.out.printf("h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
 
         return r;
 

@@ -1,0 +1,127 @@
+a subset of information about fourier transforms, useful for the applications 
+outlined below
+=============================================================================
+note: '*' is multiplication (scalar or element-wise (dot)) 
+      'mult' is also multiplication.
+      'conv' is convolution.
+      i = sqrt(-1).
+      delta is the delta-dirac function (an impulse function).
+
+fourier pairs:
+  g(t)                          and G(f) = integral_(-inf to inf) ( g(t) * exp(-i f*t) * dt )
+  g(t) = (1/(2*pi)) * integral_(-inf to inf) ( G(f) * exp(i f*t) * df )   and G(f) is G(f)
+  g(t) = delta(t)               and G(f) = 1
+  g(t) = 1                      and G(f) = delta(f)
+  g(t) = exp(i 2*pi*f_0*t)      and G(f) = delta(f - f_0)
+  g(t) = u(t)                   and G(f) = (1/2)*( delta(f) + (1/(i 2*pi*f)) )
+                                   alternatively = pi * ( delta(f) + (1/(i f)) )
+  g(t) = exp(-t^2/(sigma^2))    and G(f) = sigma*sqrt(2*pi)*exp(-2*(sigma*pi*f)^2)  <== Gaussian
+  g(t) = A * delta(t - t0)      and G(f) = A * exp(-i f*t0)
+  g(t) = exp(i f0*t)            and G(f) = 2*pi*(delta(f - f0))
+  g(t) = exp(i 2*pi*f0*t)       and G(f) = delta(f - f0)
+
+some properties:
+                                       g(t)                              G(f)
+ superposition:                  g1(t) + g2(t)                     G1(f) + G2(f)
+ scalar mult:                    k*g(t)                            k*G(f)
+ duality                         G(t)                              g(-f)
+ scaling:                        g(a*t)                            (1/|a|)*G(f/a)
+ space or time shifting:         g(t-t0)                           G(f/a) * exp(-i 2*pi*f*t0)
+ freq shifting:                  g(t) * exp( 2*pi*f*t0 )           G(f)
+ space or time convolution:      g1(t) conv g2(t)                  G1(f) mult G2(f)
+ freq convolution:               g1(t) mult g2(t)                     G1(f) conv G2(f)
+ space or time differentiation:  dg(t)/dt to power n               (i 2*pi*f)^n * G(f)
+ space or time integration:      integral_(-inf to inf)(g(x)*dx)   ( G(f)/(i 2*pi*f) ) + 0.5*G(0)*delta(f)
+
+---------------------------------
+KDE:
+   Silverman 1982 use of FFT:
+
+   kde estimate f_n(x) = (1/(n*h)) sum_(j=1 to n)( K((x-X_j)/h)
+      where K is the kernel function
+      X_j is the observed data
+      h is the smoothing parameter of the window.
+      x is the point to evaluate the function at.
+
+   FFT(kde) = FFT(f_n(x)) = (1/(2*pi)) * FFT(K(h*s)) * u(s)
+     where u(s) is the FFT of the fine histogram of the data:
+     u(s) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*j) ) 
+     and FFT(K(h*s)) = exp(-0.5*(h*s)^2)
+
+   FFT(kde) = exp(-0.5*(h*s)^2) * u(s) 
+
+   inverse FFT ( FFT(kde) ) = kde
+
+transform and convolution details using the fourier tables above:
+
+   FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) )  
+       in order to be the FFT of the histogram, the exponential should instead be: exp(i Y_j/s) <==
+       where Y_j is the count in bin j.
+       the bin number for each X_j is (1/binwidth)*(X_j - b) where b = min of histogram range.
+       s is the x axis of the histogram, and it's the grid in the frequency domain.
+
+       rewrite to match the fourier tables in the frequency domain:
+           FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*Y_j) ) 
+                        = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i f*t_j) )  
+                           where that f is (1/s) and t_j is Y_j of histogram.
+
+       as an aside, to keep exploring the histogram in the frequency domain:
+           s, as the x-axis of the histogram, is a superposition of shifted delta functions in 
+           the frequency domain, and each interval in s can be expressed as ff - ff_j, where ff is (1/f).
+               delta(ff - ff_0) + delta(ff - ff_1) + ... delta(ff - ff_(n-1))
+
+           the fourier pair for delta(ff - ff_j) is exp(-i ff_j*t) 
+           and the superposition of those for j=0 to n-1 is sum_(j=0 to n-1) ( exp(-i ff_j * tt) )
+           therefore FFT( sum_(j=0 to n-1) ( delta(ff - ff_j) ) ) = sum_(j=0 to n-1) ( exp(-i ff_j * tt) )
+
+   FFT(K(h*s)) = exp(-0.5*(h*s)^2)
+      the fourier pair of the Gaussian is another Gaussian:
+      g(t) = exp(-t^2/(sigma^2))   and G(f) = sigma*sqrt(2*pi)*exp(-2*(sigma*pi*f)^2)  
+                                            = sigma*(c1)*exp(-c2*(sigma*f)^2)  where c1 and c2 are normalization terms
+        
+      g(t) = exp(-t^2/(sigma^2)) <== sigma = h
+      and 
+      K(h*s) = G(f) = sigma*(c1)*exp(-c2*(sigma*f)^2) <== f = s, sigma=h
+   
+   The convolution of the data with the Gaussian Kernel function in the
+      spatial domain is the multiplication of the fourier transforms in the frequency domain
+      and vice versa:
+         space or time convolution:      g1(t) conv g2(t)                  G1(f) mult G2(f)
+         freq convolution:               g1(t) mult g2(t)                     G1(f) conv G2(f)
+    
+   FFT(kde) = FFT(f_n(x)) = (1/(2*pi)) times FFT(K(h*s)) mult FFT(hist(X))
+   kde = inverse FFT( FFT(kde) )
+
+--------------------------------------------------------------------------------------------
+
+image smoothing by convolving a 1D row of values with a gaussian kernel:
+    multiplies each pixel and neighbors within a kernel window and sums that for the new value.
+    
+The runtime complexity is O(n*h) where n is the number of data points in the 1D row and h is
+the gaussian parameter sigma (= standard deviation).  The FWHM of a Gaussian is ~ 2.35 * sigma.
+
+Any use of the FFT to perform operations in the frequency domain to perform this smoothing
+has a larger runtime complexity than O(n*h) while h <= math.log_2(n).
+But if one did want to perform the smoothing using FFT:
+
+spatial domain:
+    for each x_i
+        for each integer in h
+            sum += pixel value * gaussian(x-x0, h)
+                 where gaussian(x-x0, h) = gaussian(x, h) * gaussian(x0,h) with some normalization corrections
+        
+    can see that one can avoid repeating the expensive transcendental math exponential operations 
+    by calculating gaussian(x, h) only once and gaussian(x, h) only once and storing them for use in
+    the 2 loops.
+
+    the fourier pair for a Gaussian is another Gaussian:
+        g(t) = exp(-t^2/(sigma^2))    and G(f) = sigma*sqrt(2*pi)*exp(-2*(sigma*pi*f)^2)  <== Gaussian
+
+paused here
+                   
+--------------------------------------------------------------
+other interesting FFT applications:
+
+   basics of the phase congruency (edge maps through FFT and filters)
+       though MSER edges is faster and very accurate, but phase congruency basics are valuable tools...
+     
