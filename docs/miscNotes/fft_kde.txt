@@ -55,7 +55,7 @@ KDE:
 transform and convolution details using the fourier tables above:
 
    FFT(hist(X)) = (1/sqrt(2*pi)) * (1/n) * sum_(j=1 to n)( exp(i s*X_j) ). <-- looks like this should be exp(i X_j/s) 
-       the FFT of the histogram is ~ (c_normalization) * exp(i Y_j) <-- where one of the fourier pairs will use -i.
+       the FFT of the histogram is ~ (c_normalization) * exp(i (c_normalization2) * Y_j) <-- where one of the fourier pairs will use -i.
        Y_j is the count in bin j and depends upon X_j and s.
        s is the x axis of the histogram, and it's the grid in the frequency domain.
        the binwidth h is an interval in s.
@@ -94,30 +94,22 @@ image smoothing by convolving a 1D row of values with a gaussian kernel:
     multiplies each pixel and neighbors within a kernel window and sums that for the new value.
     
 The runtime complexity is O(n*h) where n is the number of data points in the 1D row and h is
-the gaussian parameter sigma (= standard deviation).  The FWHM of a Gaussian is ~ 2.35 * sigma.
+the Gaussian Kernel window width.  One can calc the Gaussian FWZI or a little above it or use
+a binomial kernel approximation.
 
-Any use of the FFT to perform operations in the frequency domain to perform this smoothing
-has a larger runtime complexity than O(n*h) while h <= math.log_2(n).
-But if one did want to perform the smoothing using FFT:
+The convolution theorem is used:  convolution of data X with Gaussian Kernel H
+is done by multiplication in the fourier frequency domain.
 
-spatial domain:
-    for each x_i
-        for each integer in h
+    for each x_i as x0
+        for each integer in h as x
             sum += pixel value * gaussian(x-x0, h)
                  where gaussian(x-x0, h) = gaussian(x, h) * gaussian(x0,h) with some normalization corrections
         
-    can see that one can avoid repeating the expensive transcendental math exponential operations 
-    by calculating gaussian(x, h) only once and gaussian(x, h) only once and storing them for use in
-    the 2 loops.
-
-    the fourier pair for a Gaussian is another Gaussian:
-        g(t) = exp(-t^2/(sigma^2))    and G(f) = sigma*sqrt(2*pi)*exp(-2*(sigma*pi*f)^2)  <== Gaussian
-
-paused here
-                   
 --------------------------------------------------------------
 other interesting FFT applications:
 
-   basics of the phase congruency (edge maps through FFT and filters)
-       though MSER edges is faster and very accurate, but phase congruency basics are valuable tools...
+    basics of the phase congruency (edge maps through FFT and filters)
+        though MSER edges is faster and very accurate, but phase congruency basics are valuable tools...
+        these are both in my github project curvature-scale-space-corners-and-transformations.
      
+
