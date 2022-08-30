@@ -112,4 +112,74 @@ other interesting FFT applications:
         though MSER edges is faster and very accurate, but phase congruency basics are valuable tools...
         these are both in my github project curvature-scale-space-corners-and-transformations.
      
+======================================================
+https://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/PIRODDI1/NUFT/node3.html#SECTION00021000000000000000
+
+--------------------------------------
+Non-Uniform Discrete Fourier Transform
+--------------------------------------
+
+for irregularly sampled input
+
+review of DFT:
+   finite number N of samples of the signal p(t) taken at regular intervals of duration T_s 
+(which can be considered a sampling interval). In practical cases the signal p(t) has not an infinite duration, 
+but its total duration is T = N * T_s and we have a set {p_n} of samples of the signal p(t) taken at regular intervals. 
+(the duration is the range in time, that is the last time minus the first time).
+We can define p_n = p(t_n) where t_n = n * T_s for n=0,1,...N-1, is the sampling coordinate.
+   for DFT, the signal is discrete and the FT is definded only at regular points in the frequency domain.
+     i.e. P(w) is only defined for certain w_m, so it's P(w_m).
+     the sample of P(w_m) are regularly spaced so that all samples w_m are multiples of a dominant frequency 1/T,
+     that is, w_m = m * (2*pi/T) for m=0,...N-1.
+     T is the finite duration of the signal p(x).
+     N frequency samples = N in temporal domain samples (not necessary, but notation is simplified).
+         P(w_m) = sum_{n=0,N-1}( p(t_n)*exp(-j w_m*t_n) )
+
+            since w_m can only be discrete values m*(2*pi/T) for m=0,...N-1
+            and since x_n can only be discrete values of n*T_s:
+
+         P(w_m) = sum_{n=0,N-1}( p(t_n)*exp(-j (m*2*pi/T) * (n*T_s)) )
+                = sum_{n=0,N-1}( p(t_n)*exp(-j (m*2*pi/(N*T_s)) * (n*T_s)) )
+                = sum_{n=0,N-1}( p(n)*exp(-j (m*n*2*pi/N)) )
+         which is now expressed P(m) and p(n)
+         and P(n) = sum_{n=0,N-1}( P(m)*exp(j (m*n*2*pi/N)) )
+
+For Non-uniform Discrete Fourier Transform (NDFT):
+    in general, we'd like to use same DFT but for irregular intervals in time (t_n) and frequency (w_m),
+    but practically, the restricted case is solved:
+       samples are irregular in time, and have regular intervals in frequency domain, delta k.
+       where delta k above = 2*pi/T 
+
+       P(m) = sum_{n=0,N-1}( p(n)*exp(-j (m*deltak*t_n)) )
+       P(m) = sum_{n=0,N-1}( p(n)*exp(-j (m*2*pi/T) * t_n) ) to use T as the range of extension for the samples t_n
+
+    differences between DFT and NDFT:
+       (1) samples in frequency are taken at intervals 2*pi/T in the irregular case
+           and 2*pi/N in the regular interval case.
+           where T is the duration of the signal p(t) with t:[0,T]
+           and N is the number of samples in the signal p(t).
+       (2) for the irregular case, the sampling coordinate t_n is in the exponent (rather than the index n).
+
+implementation: https://github.com/flatironinstitute/finufft
+
+paper using NUFFT:
+   https://opg.optica.org/oe/fulltext.cfm?uri=oe-19-27-26891&id=225906
+   "Selection of convolution kernel in non-uniform fast Fourier transform for Fourier domain optical 
+    coherence tomography", Chan and Tang 2011 
+    Optics Express Vol. 19, Issue 27, pp. 26891-26904 (2011) •https://doi.org/10.1364/OE.19.026891
+
+    gridding based nufft:
+       NUFFT is a fast algorithm that approximates NDFT [14,15,19,20]. 
+        non-uniform k spacing, 
+        ko is the wavenumber of the first sample, 
+        ΔK is the wavenumber range, 
+        and N is the number of sample points. 
+        Its steps are summarized in the following:
+
+        1) Convolve the non-uniformly sampled k domain data with a kernel function.
+        2) Resample the result onto evenly spaced locations on an oversampled grid.
+        3) Compute the Fourier transform using an FFT on the oversampled data.
+        4) Apply a deconvolution in the z domain by a division of the FT of the kernel 
+           function (also known as apodization correction or deapodization).
+     see Fig 2.
 
