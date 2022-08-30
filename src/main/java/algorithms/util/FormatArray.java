@@ -80,12 +80,13 @@ public class FormatArray {
         for (int i = 0; i < a.length; ++i) {
             sb.append("(").append(String.format(decimalFormat, a[i].re()))
             .append(", ").append(String.format(decimalFormat, a[i].im()))
-            .append("j)");
+            .append("j, abs=").append(String.format(decimalFormat, a[i].abs()))
+            .append(", p=").append(String.format(decimalFormat, a[i].phase()))
+            .append(")");
             if (i < a.length - 1) {
                 sb.append(", ");
             }
         }
-        sb.append("\n");
         return sb.toString();
     }
 

@@ -415,4 +415,11 @@ public class FFTUtil {
         return output;
     }
 
+    public double[] extractAbs(Complex[] fftData) {
+        double[] a = new double[fftData.length];
+        for (int i = 0; i < fftData.length; ++i) {
+            a[i] = fftData[i].abs();
+        }
+        return a;
+    }
 }
