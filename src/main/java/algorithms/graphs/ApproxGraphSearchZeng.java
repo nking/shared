@@ -2,7 +2,6 @@ package algorithms.graphs;
 
 import algorithms.PermutationsWithAwait;
 import algorithms.matrix.MatrixUtil;
-import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
@@ -15,7 +14,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.math.BigInteger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -529,7 +528,7 @@ SDM, pp 154–163 (2011)
             MatrixUtil.multiply(a2, MatrixUtil.transpose(p)));
         
         double term2 = 0.5*MatrixUtil.lp1Norm(
-            MatrixUtil.elementwiseSubtract(a1, pA2PT));
+            MatrixUtil.pointwiseSubtract(a1, pA2PT));
         
         //this is a large term, summed from labels being equal.
         //origins are  BLP paper  by Justice & Hero, eqn(18).

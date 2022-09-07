@@ -111,12 +111,12 @@ public class KernelDensityEstimator {
      if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
      exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
      also note that the discrete FFT is a summation of exponentials.
-     convolution theorem: one can use the elementwise multiplication between the fourier paired functions.
+     convolution theorem: one can use the pointwise multiplication between the fourier paired functions.
      (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
      convolution to FFT:
      FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
      one can choose s to be the same spatial intervals (=grid) in the histogram
-     and in the kernel, to avoid interpolation.  the multiplication is element-wise.
+     and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
      * @param x observed data
@@ -158,12 +158,12 @@ public class KernelDensityEstimator {
      if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
      exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
      also note that the discrete FFT is a summation of exponentials.
-     convolution theorem: one can use the elementwise multiplication between the fourier paired functions.
+     convolution theorem: one can use the pointwise multiplication between the fourier paired functions.
      (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
      convolution to FFT:
      FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
      one can choose s to be the same spatial intervals (=grid) in the histogram
-     and in the kernel, to avoid interpolation.  the multiplication is element-wise.
+     and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
      * @param x data observed
@@ -408,12 +408,12 @@ public class KernelDensityEstimator {
      If the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
      exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
      also note that the discrete FFT is a summation of exponentials.
-     convolution theorem: one can use the element-wise multiplication between the fourier paired functions.
+     convolution theorem: one can use the pointwise multiplication between the fourier paired functions.
      (Chap 15.5, Boas "Mathematical Methods in the Physical Sciences")
      convolution to FFT:
      FFT(kde) ~ FFT(K(h*s)) * FFT( hist(X) )
      one can choose s to be the same spatial intervals (=grid) in the histogram
-     and in the kernel, to avoid interpolation.  the multiplication is element-wise.
+     and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
      * The Gaussian Kernel with discrete fast fourier transforms is O(s*log(s)).
@@ -439,7 +439,7 @@ public class KernelDensityEstimator {
         int i;
         double zh;
         double c = 1./Math.sqrt(2.*Math.PI);
-        // element-wise multiplication
+        // pointwise multiplication
         Complex[] eqn3 = new Complex[histBins.length];
         for (i = 0; i < histBins.length; ++i) {
             zh = histBins[i] * h;

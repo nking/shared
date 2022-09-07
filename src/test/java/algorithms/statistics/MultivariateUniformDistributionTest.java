@@ -405,14 +405,14 @@ public class MultivariateUniformDistributionTest extends TestCase {
                    ν           0.90      0.95     0.975      0.99     0.999
 
                    1          2.706     3.841     5.024     6.635    10.828
-               ==> 2          4.605     5.991     7.378     9.210    13.816
+               ==> 2          4.605  => 5.991 <=  7.378     9.210    13.816
 
                 Lower-tail critical values of chi-square distribution with ν degrees of freedom
                         Probability less than the critical value
                    ν           0.10     0.05     0.025      0.01     0.001
 
                    1.          .016      .004      .001      .000      .000
-               ==> 2.          .211      .103      .051      .020      .002
+               ==> 2.          .211   => .103 <=   .051      .020      .002
 
                 */
                 //assertTrue(rn < 6);//5.991);
@@ -422,6 +422,6 @@ public class MultivariateUniformDistributionTest extends TestCase {
             }
         }
         System.out.println("nc=" + nc);
-        assert(nc >= 19);
+        assert(nc >= 17); //nIter*2 * (1-0.103)
     }
 }

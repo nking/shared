@@ -258,7 +258,7 @@ public class BlockMatrixIsometric {
     }
     
     /**
-     * add block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * add block b to internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance.
      * @param b a given block of values to add to a block of this instance.
      * @param blockNumber0 the number of the block along the first dimension,
@@ -289,7 +289,7 @@ public class BlockMatrixIsometric {
     }
     
     /**
-     * add column block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * add column block b to internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize1 must equal 1 at construction.
      * @param b a given column block of values to add to a block of this instance.
@@ -321,7 +321,7 @@ public class BlockMatrixIsometric {
     }
     
     /**
-     * add row block b to internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * add row block b to internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize0 must equal 1 at construction.
      * @param b a given row block of values to add to a block of this instance.
@@ -353,7 +353,7 @@ public class BlockMatrixIsometric {
     }
     
     /**
-     * subtract block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * subtract block b from internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance.
      * @param b a given block of values to replace a block of this instance with.
      * @param blockNumber0 the number of the block along the first dimension,
@@ -384,7 +384,7 @@ public class BlockMatrixIsometric {
     }
     
     /**
-     * subtract column block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * subtract column block b from internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize1 must equal 1 at construction.
      * @param b a given column block of values to subtract from a block of this instance.
@@ -416,7 +416,7 @@ public class BlockMatrixIsometric {
     }
     
     /**
-     * subtract row block b from internal matrix, element-wise, for (blockNumber0, blockNumber1).
+     * subtract row block b from internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize0 must equal 1 at construction.
      * @param b a given row block of values to subtract from a block of this instance.

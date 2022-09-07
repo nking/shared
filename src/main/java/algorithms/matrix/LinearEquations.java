@@ -1,13 +1,9 @@
 package algorithms.matrix;
 
 import java.util.Arrays;
-import no.uib.cipr.matrix.DenseCholesky;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.DenseVector;
-import no.uib.cipr.matrix.LowerSPDDenseMatrix;
-import no.uib.cipr.matrix.LowerTriangDenseMatrix;
-import no.uib.cipr.matrix.Matrices;
-import no.uib.cipr.matrix.NotConvergedException;
+
+import algorithms.util.FormatArray;
+import no.uib.cipr.matrix.*;
 
 /**
  a class of utility methods for linear algebra.
@@ -123,7 +119,7 @@ public class LinearEquations {
         int n = a.length;
         assertSquareMatrix(a, "a");
         
-        a = copy(a);
+        a = MatrixUtil.copy(a);
         
         //nXn for both:
         double[][] ell = new double[n][];
@@ -152,7 +148,166 @@ public class LinearEquations {
                 
         return new LU(ell, u);
     }
-    
+
+    /**
+     * create the reduced row echelon form of matrix a as the Upper right matrix from the LU decomposition,
+     * further normalized and reduced.
+     * @param a a rectangular matrix
+     * @param tol tolerance for comparing to zero.  e.g. the machine precision.
+     * @return
+     */
+    public static double[][] gaussianEliminationViaLU(double[][] a, double tol) throws NotConvergedException {
+        a = MatrixUtil.copy(a);
+        int m = a.length;
+        int n = a[0].length;
+
+        /*
+        //  following Algorithm 4.2-1 of "Matrix Computations", Golub and van Loan
+        // algorithm is written with "1" based indexes, so
+        // subtract 1 when using them as matrix indices.
+        int s = Math.min(m - 1, n);
+        double[] wj = new double[n];
+        double eta;
+        for (int k = 1; k <= s; ++k) {
+            if (Math.abs(a[k-1][k-1]) < tol) {
+                System.err.println("0 in matrix a cause algorithm to terminate");
+                break;
+            }
+            //j=k+1...n
+            Arrays.fill(wj,0);
+            for (j = k + 1; j <= n; ++j) {
+                wj[j-1] = a[k-1][j-1];
+            }
+            for (i = k + 1; i <= m; ++i) {
+                eta = a[i-1][k-1] / a[k-1][k-1];
+                a[i-1][k-1] = eta;
+                for (j = k + 1; j <= n; ++j) {
+                    a[i-1][j-1] -= eta * wj[j-1];
+                }
+            }
+        }
+        // the lower left is L, upper right is U.
+        // A = L*U
+        // and (L)^-1 * A = U where L^-1 is the gauss transformations.
+        double[][] ell = MatrixUtil.zeros(m, n);
+        double[][] u = MatrixUtil.zeros(m, n);
+        for (i = 0; i < m; ++i) {
+            for (j = i; j < n; ++j) {
+                u[i][j] =  a[i][j];
+            }
+        }
+        ell[0][0] = 1;
+        for (i = 1; i < m; ++i) {
+            ell[i][i] = 1;
+            for (j = 0; j < i; ++j) {
+                if (j >= n) {
+                    break;
+                }
+                if (i == j) {
+                    continue;
+                }
+                ell[i][j] =  a[i][j];
+            }
+        }
+        return u;
+        */
+
+        int j;
+        int i;
+        DenseMatrix aM = new DenseMatrix(a);
+        DenseLU luM = no.uib.cipr.matrix.DenseLU.factorize(aM);
+        UpperTriangDenseMatrix uM = luM.getU();
+        UnitLowerTriangDenseMatrix lM = luM.getL();
+
+        double[][] ell = Matrices.getArray(lM);
+        double[][] u = Matrices.getArray(uM);
+
+        double[][] ellInv = MatrixUtil.pseudoinverseFullColumnRank(ell);
+
+        // calculate U = L^-1 * A in full, not the nxn or mxm version
+        u = MatrixUtil.multiply(ellInv, a);
+
+        int c;
+        double[] t;
+        // normalize all rows in u so that pivots are "1"
+        makePivots1(u, tol);
+
+        // zero-out any repeated rows
+        for (i = u.length - 1; i > 0; --i) {
+            for (j = i - 1; j > -1; --j) {
+                if (identicalRows(u, j, i, tol)) {
+                    Arrays.fill(u[i], 0.);
+                    break;
+                }
+            }
+        }
+
+        // subtract pivot columns from lower rows
+        for (i = u.length - 1; i > 0; --i) {
+            c = 0;
+            // skip past zeroes
+            while (c < n && Math.abs(u[i][c]) < tol) {
+                ++c;
+            }
+            if (c < n) {
+                // this is the pivot column in row i.
+                // search lower rows and subtract this pivot row from them if not already 0 in pivot column
+                for (j = i - 1; j > -1; --j) {
+                    if (Math.abs(u[j][c]) > tol) {
+                        // subtract pivot row
+                        // e.g.   1  3  1  0  <== subtr 3*R1
+                        //        0  1  1  1
+                        t = Arrays.copyOf(u[i], n);
+                        MatrixUtil.multiply(t, u[j][c]);
+                        for (int k = 0; k < n; ++k) {
+                            u[j][k] -= t[k];
+                        }
+                    }
+                }
+            }
+        }
+
+        // if wanted to return the L matrix also, L = U * A^-1
+        // and return the pivot indexes
+        // add to comments that the product of the pivots gives the determinant
+        //     of U which is the determinant of A.
+        // when A has less than n pivots, det A = 0.
+
+        return u;
+    }
+
+    static void makePivots1(double[][] u, double tol) {
+        int m = u.length;
+        int n = u[0].length;
+        int c;
+        int i;
+        int j;
+        double f;
+        for (i = 0; i < m; ++i) {
+            c = 0;
+            // skip past zeroes
+            while (c < n && Math.abs(u[i][c]) < tol) {
+                ++c;
+            }
+            if (c < n) {
+                // this is the pivot column in row i.
+                f = 1./u[i][c];
+                for (j = 0; j < n; ++j) {
+                    u[i][j] *= f;
+                }
+            }
+        }
+    }
+
+    private static boolean identicalRows(double[][] u, int r1, int r2, double tol) {
+        for (int i = 0; i < u[r1].length; ++i) {
+            if (Math.abs(u[r1][i] - u[r2][i]) > tol) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * for a symmetric matrix A (with real numbers in matrix of size nXn), 
      * perform and L-D-M decomposition which is a 
@@ -169,7 +324,7 @@ public class LinearEquations {
      * M^T*x = z (in (n^2)/2 flops)
      * 
      * References:
-     * Golub and va Loan, "MAtrix Computations", Section 5.1
+     * Golub and va Loan, "Matrix Computations", Section 5.1
      * </pre>
      * 2n^3/3 flops.
      * @param a two dimensional array in row major format.  
@@ -380,7 +535,7 @@ public class LinearEquations {
         int n = a.length;
         assertSquareMatrix(a, "a");
         
-        a = copy(a);
+        a = MatrixUtil.copy(a);
         
         int[] pi = new int[n];
         for (int i = 0; i < n; ++i) {            
@@ -653,13 +808,5 @@ public class LinearEquations {
             throw new IllegalArgumentException(name + " must be length " + n);
         }
     }
-    
-    private static double[][] copy(double[][] a) {
-        int nrows = a.length;
-        double[][] c = new double[nrows][];
-        for (int i = 0; i < nrows; ++i) {
-            c[i] = Arrays.copyOf(a[i], a[i].length);
-        }
-        return c;
-    }
+
 } 

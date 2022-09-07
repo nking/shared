@@ -1,3 +1,5 @@
+-- look into jcilk
+
 -- Bayes estimate of GEV:
    -- a conjugate prior and likelihood is nearly intractable,
       so many use sampling of the posterior by MCMC, importance, metropolis, etc.

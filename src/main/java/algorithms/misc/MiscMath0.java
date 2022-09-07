@@ -1564,6 +1564,23 @@ public class MiscMath0 {
         //https://mathworld.wolfram.com/InverseHyperbolicCosine.html
         return Math.log(z + Math.sqrt(z + 1) * Math.sqrt(z - 1));
     }
+
+    public static double areaOfTriangle(double[] x, double[] y) {
+        if (x.length != 3 || y.length != 3) {
+            throw new IllegalArgumentException("x and y must be lengths 3");
+        }
+        // choose the first x,y pair to be the origin (0, 0)
+        double oX = -x[0];
+        double oY = -y[0];
+
+        // translate all points by adding xO and oY, then the area is
+        double x1 = x[1] + oX;
+        double x2 = x[2] + oX;
+        double y1 = y[1] + oY;
+        double y2 = y[2] + oY;
+        // 0.5 * det|x y| = 0.5 * (x1*y2 - x2*y1)
+        return 0.5 * ((x1 * y2) - (y1 * x2));
+    }
     
     public static double asinh(double z) {
         //https://mathworld.wolfram.com/InverseHyperbolicSine.html

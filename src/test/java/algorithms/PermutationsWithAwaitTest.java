@@ -32,7 +32,7 @@ public class PermutationsWithAwaitTest extends TestCase {
         
         long i;
         long np = MiscMath0.factorial(set.length);
-        assertEquals(6, (int)np);
+        assertEquals(6L, np);
         
         int ii;
         
@@ -47,11 +47,10 @@ public class PermutationsWithAwaitTest extends TestCase {
         for (i = 0; i < np; ++i) {
             p.getNext(results[(int)i]);
         }
-        //TODO: improve the concurrency model:
-        //assertFalse(p.hasNext());
-        
         //System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
-        
+
+        assertFalse(p.hasNext());
+
         int[] r, r2;
         TIntList re2;
         for (ii = 0; ii < results.length; ++ii) {

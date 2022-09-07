@@ -20,41 +20,48 @@ import java.util.concurrent.atomic.AtomicBoolean;
    </pre>
    <pre>
    Example invocation and an outline of the internal use of the 2 semaphores and 1 AtomicBoolean:
-       int[] seq = new int[]{1,2,3}; int[] perm = new int[3];
+       int[] seq = new int[]{1,2,3};
+       int[] perm = new int[3];
        PermutationsWithAwait p = new PermutationsWithAwait(seq);
        p.getNext(perm);
       
        invokes these operations:
-         constructor: availableItem = new Semaphore(0);
-                      computationLock = new Semaphore(1);
-                      computationLock.acquire(); //Acquires a permit, returns immed
-                      availableItem.release(); //Releases a permit, incr nAvailPermits by +1
-                      finished = new AtomicBoolean(false);
-         PermThread:  computationLock.acquire(); // wait for computationLock.release() or thread interruption by another thread
-         getNext():   if finished==true, return
-                      availableItem.acquire(); // acquire or wait for availableItem.release() or thread interruption by another thread
-                      copy data to out var
-                      computationLock.release(); // Releases a permit, incr nAvailPermits by +1
-         PermThread:  computationLock.acquire() // acquire or wait for computationLock.release() or thread interruption by another thread
-                      data computation
-                      availableItem.release(); // Releases a permit, incr nAvailPermits by +1
-                      if permutations are done, sets finished = true
+        init:
+          resultLock = 0
+          compLock = 1
+
+        main:
+          compLock acquire: 1 - 1 = 0
+          resultLock release: 0 + 1 = 1
+
+        getNext:
+          if finished, return
+          resultLock acquire: when >0, subtract one
+          compLock release: add 1
+
+        thread,run:
+          while i<n
+            if (c[i] < i)
+              compLock acquire: when >0, subtract one
+              do computations
+              resultLock release
    </pre>
  */
 public class PermutationsWithAwait {
-    
+
     private final Semaphore availableItem, computationLock;
     
     /**
      * the current permutation
      */
     private final int[] x;
-    
+
     /**
-     * becomes true when the run-loop has ended for the permuter thread
+     * becomes true when the run-loop has ended for the permuter thread.
+     * done = 0 is false, done = 1 is true
      */
-    private final AtomicBoolean finished;
-    
+    private volatile int done;
+
     //private final BigInteger nPermutations;
     
     /**
@@ -82,7 +89,10 @@ public class PermutationsWithAwait {
         
         this.availableItem = new Semaphore(0);
         this.computationLock = new Semaphore(1);
-        
+
+        // 0 = false, 1 = true
+        done = 0;
+
         //nPermutations = MiscMath0.factorialBigInteger(n);
         
         computationLock.acquire();
@@ -92,10 +102,8 @@ public class PermutationsWithAwait {
         //nCurrent = BigInteger.ONE;
         
         availableItem.release();
-        
-        finished = new AtomicBoolean(false);
-                
-        Thread thread = new Thread(new Permuter(seq, finished));
+
+        Thread thread = new Thread(new Permuter(seq, x));
         thread.start();
     }
     
@@ -105,7 +113,7 @@ public class PermutationsWithAwait {
      * else false if there are more permutations to be returned by the getNext() argument.
      */
     public boolean hasNext() {
-        return !finished.get();
+        return (done == 0);
     }
     
     /**
@@ -118,11 +126,8 @@ public class PermutationsWithAwait {
         if (out.length != x.length) {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
-        
-        if (finished.get()) {
-            return;
-        }
-        availableItem.tryAcquire(2, TimeUnit.SECONDS);
+
+        availableItem.tryAcquire(1, TimeUnit.SECONDS);
         
         System.arraycopy(x, 0, out, 0, out.length);
        
@@ -130,42 +135,43 @@ public class PermutationsWithAwait {
     }
     
     private class Permuter implements Runnable {
-        private final int[] s;
-        final AtomicBoolean permDone;
-        Permuter(int[] seq, AtomicBoolean permDone) {
-           this.s = Arrays.copyOf(seq, seq.length);
-           this.permDone = permDone;
+        private final int[] in;
+        private final int[] out;
+        Permuter(final int[] in, final int[] out) {
+           this.in = in;
+           this.out = out;
         }
 
         @Override
         public void run() {
-            final int n = s.length;
+            final int n = in.length;
             int[] c = new int[n];
             int i = 0;
             int swap;
             while (i < n) {
                 if (c[i] < i) {
                     if ((i & 1) != 1) {
-                        // i is even number
-                        swap = s[0];
-                        s[0] = s[i];
-                        s[i] = swap;
+                        // i is an even number
+                        swap = in[0];
+                        in[0] = in[i];
+                        in[i] = swap;
                     } else {
-                        swap = s[c[i]];
-                        s[c[i]] = s[i];
-                        s[i] = swap;
+                        swap = in[c[i]];
+                        in[c[i]] = in[i];
+                        in[i] = swap;
                     }
-                                        
+
                     try {
                         //Acquires a permit from this semaphore, blocking until one is
                         //available, or the thread is interrupted.
                         computationLock.acquire();
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
+                        System.err.println("thread interruption: " + ex.getMessage());
                     }
-                    
+
                     // output permutation to instance member x
-                    System.arraycopy(s, 0, x, 0, n);
+                    System.arraycopy(in, 0, out, 0, n);
                     
                     //nCurrent = nCurrent.add(BigInteger.ONE);                    
                     
@@ -181,7 +187,7 @@ public class PermutationsWithAwait {
                     //Simulate recursive call reaching the base case by bringing the 
                     //pointer to the base case analog in the array
                     i = 0;
-                    
+
                 } else {
                     //Calling generate(i+1, A) has ended as the for-loop terminated. 
                     //Reset the state and simulate popping the stack by incrementing the pointer.
@@ -189,7 +195,7 @@ public class PermutationsWithAwait {
                     i++;
                 }
             }
-            permDone.set(true);
+            done = 1;
         }
     }
 }

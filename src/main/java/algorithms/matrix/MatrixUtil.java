@@ -52,7 +52,7 @@ import gnu.trove.set.hash.TIntHashSet;
    Note that the eigenvectors are the same for the diagonalization of A, the 
    diagonalization of A^T*A, the SVD(A), and the same operations performed 
    on the CUR-Decompositions of A (=C) or on C^T*C.
-   NOTE: for large-scale eigenvalue problems,consider cur decomposition,power 
+   NOTE: for large-scale eigenvalue problems,consider cur decomposition, power
    * method, qr decomposition (which for general matrices might include the 
    * schur decomposition followed by back substitution), or
    * for hermetician matrices can use divide and conquer eigenvalue algorithms and they
@@ -66,7 +66,10 @@ import gnu.trove.set.hash.TIntHashSet;
    where B is a large matrix and only a few of its largest eigenvalues are needed.
    * for p eigenvalues out of n, if lambda__(p_1)/lambda_p is very small,
    * the computation of the eigenvectors should proceed quickly.
-   
+
+ see https://netlib.org/lapack/explore-html/index.html for details of
+ MTJ toolkit methods and LAPACK.getInstance() methods that might not be in MTJ
+
  * @author nichole
  */
 public class MatrixUtil {
@@ -199,7 +202,7 @@ public class MatrixUtil {
         Arrays.fill(out, 0);
         
         int cCol = 0;
-        
+
         for (int row = 0; row < mrows; row++) {                        
             for (int col = 0; col < mcols; col++) {
                 out[cCol] += (m[row][col] * n[col]);
@@ -1666,7 +1669,7 @@ public class MatrixUtil {
      * This particular pseudoinverse constitutes a left inverse.
      * pseudoinv(A)*A = I.
      * 
-     * If inverting A^T*A fails, the methor returns results of pseudoinverseRankDeficient().
+     * If inverting A^T*A fails, the method returns results of pseudoinverseRankDeficient().
      * 
      * NOTE that (A^T*A) (or (A * A^T)) has to be invertible, that is, 
      * the reduced echelon form of A has linearly independent columns (rank==n).
@@ -2696,18 +2699,16 @@ public class MatrixUtil {
      */
     public static double[][] nearestPositiveSemidefiniteToASymmetric(double[][] a,
         double eps) throws NotConvergedException {
-        
-        if (!isSquare(a)) {
-            throw new IllegalArgumentException("a must b a square matrix");
-        }
-        
+
         if (eps < 0) {
             throw new IllegalArgumentException("eps must be .gte. 0");
         }
-        
-        // TODO: fix the test for symmetric and use it here
-         
-        // uses the Frobenius norm as a distiance.  notation: ||A||_F
+
+        if (!isSymmetric(a, eps)) {
+            System.err.println("matrix is not symmetric in current form");
+        }
+
+        // uses the Frobenius norm as a distance.  notation: ||A||_F
         
         // spectral decomposition 
         //  X = Q * diag(tau_i) * Q^T
@@ -2742,13 +2743,13 @@ public class MatrixUtil {
         //   answer is X_F = (A + H)/2
         
         // can use polar decompositon on square matrices:
-        double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));
+        double[][] b = MatrixUtil.pointwiseAdd(a, MatrixUtil.transpose(a));
         MatrixUtil.multiply(b, 0.5);
         
         QH qh = performPolarDecomposition(b);
         
         //X_F:
-        double[][] aPSD2 = MatrixUtil.elementwiseAdd(a, qh.h);
+        double[][] aPSD2 = MatrixUtil.pointwiseAdd(a, qh.h);
         MatrixUtil.multiply(aPSD2, 0.5);
         */
         
@@ -2777,18 +2778,16 @@ public class MatrixUtil {
      */
     public static double[][] nearestPositiveSemidefiniteToA(double[][] a,
         double eps) throws NotConvergedException {
-        
-        // uses the Frobenius norm as a distinace
-        
-        if (!isSquare(a)) {
-            throw new IllegalArgumentException("a must b a square matrix");
-        }
+
         if (eps < 0) {
             throw new IllegalArgumentException("eps must be .gte. 0");
         }
-        
-        // TODO: fix the test for symmetric
-                
+        // uses the Frobenius norm as a distinace
+
+        if (!isSymmetric(a, eps)) {
+            System.err.println("matrix is not symmetric in current form");
+        }
+
         // uses the Frobenius norm as a distinace.  notation: ||A||_F
         
         //     the symmetric part of A is matrix B = 0.5*(A + A^T)
@@ -2805,7 +2804,7 @@ public class MatrixUtil {
         
         // can use polar decompositon on square matrices:
                 
-        double[][] b = MatrixUtil.elementwiseAdd(a, MatrixUtil.transpose(a));
+        double[][] b = MatrixUtil.pointwiseAdd(a, MatrixUtil.transpose(a));
         MatrixUtil.multiply(b, 0.5);
         
         // H is formed from V, S, and V^T of SVD(B)
@@ -2813,7 +2812,7 @@ public class MatrixUtil {
         double[][] h = qh.h;
         
         //X_F:
-        double[][] aPSD = MatrixUtil.elementwiseAdd(a, h);
+        double[][] aPSD = MatrixUtil.pointwiseAdd(a, h);
         MatrixUtil.multiply(aPSD, 0.5);
         
         // check that all eigenvalues are >= eps
@@ -2840,7 +2839,7 @@ public class MatrixUtil {
             for (i = 0; i < D.length; ++i) {
                 D[i][i] = eigMin;
             }
-            aPSD = MatrixUtil.elementwiseAdd(aPSD, D);
+            aPSD = MatrixUtil.pointwiseAdd(aPSD, D);
             //evd = EVD.factorize(new DenseMatrix(aPSD));
             //System.out.printf("after:  evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
         }
@@ -2912,8 +2911,10 @@ public class MatrixUtil {
      */
     public static double powerMethod(double[][] a, int nIterations) {
 
-        if (!isPositiveDefinite(a)) {
-            throw new IllegalArgumentException("a must be positive definite");
+        // is diagonalizable.   From wikipedia: "Real symmetric matrices are diagonalizable by orthogonal matrices; i.e.,
+        // given a real symmetric matrix A, Q^T * A * Q is diagonal for some orthogonal matrix Q
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("a must be a square matrix");
         }
         
         // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
@@ -3164,7 +3165,7 @@ public class MatrixUtil {
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
-        
+
         if (!MatrixUtil.isPositiveDefinite(a)) {
             throw new IllegalArgumentException("a must be a non-negative definite matrix");
         }
@@ -3180,7 +3181,7 @@ public class MatrixUtil {
         
         // limit for a number to be significant above 0
         double eps = 1e-16;
-        
+
         DenseMatrix aMatrix = new DenseMatrix(a);
         SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn
         
@@ -3214,8 +3215,8 @@ public class MatrixUtil {
                 
         /*
         U is mxm orthonormal columns
-        S is nxn with non-negative singular values.  rank is number of non-zero entries
-        V is  mxn
+        S is mxn with non-negative singular values.  rank is number of non-zero entries
+        V is  nxn
         
             [nxn] * [nxn] * [nxn]
         J = V * S^(1/2) * V^T  is [nxn]
@@ -3241,41 +3242,51 @@ public class MatrixUtil {
       
         double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);
         j = MatrixUtil.multiply(j, _vT);
-        
+
+        // Strang,"Introduction to Linear Algebra", chap 7, Section Polar Decomposition"
+        // A = U * Σ * V^T
+        //   = (U * V^T) * (V * Σ * V^T)
+        //   =  (Q)      *  (H)
+
         return j;
     }
     
     public static boolean isSquare(double[][] a) {
         return (a.length == a[0].length);
     }
-    
-    /*
-     * NOTE: this method is a very rough look at symmetry.  
-       matrix echelon row reduction should be performed 
-       (a may have 0's) and isn't present yet.
+
+    /**
+     *  checks for a_ij == a_ji.  no normalization for row factors is made.
+     *  that is, there may be a factor which makes the matrix symmetric.
+     // e.g. [33, 24]
+     //      [48, 57] <--- divide by 2 and the matrix is symmetric
+     //
      * @param a
-     * @return 
-    public static boolean isSymmetric(double[][] a) {
+     * @return
+     */
+    public static boolean isSymmetric(double[][] a, double tol) {
         if (!isSquare(a)) {
             return false;
         }
-                
-        // need reduced echelon form then can compare entries
-        
-        double tol = 1e-3;
-        double r;
+        // compare aij with aji
+
         int n = a.length;
         int i, j;
         for (i = 0; i < n; ++i) {
-            for (j = 0; j < n; ++j) {
+            for (j = i; j < n; ++j) {
                 if (Math.abs(a[i][j] - a[j][i]) > tol) {
                     return false;
                 }
             }
         }
+
+        // if false, there may be a factor which makes the matrix symmetric.
+        // e.g. [33, 24]
+        //      [48, 57] <--- divide by 2 and the matrix is symmetric
+        //
+
         return true;
     }
-    */
     
     public static boolean isPositiveSymmetric(double[][] a) {
         if (!isSquare(a)) {
@@ -3349,14 +3360,19 @@ public class MatrixUtil {
     }
     
     /**
-     * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive
-     * 
+     * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive,
+     * which means its pivots are positive.  a quick test is that x^T * A * x is strictly positive for every non-zero
+     * column vector x of n real numbers where A is n x n.
+     * Every positive definite matrix can be factored into L*D*L^T with positive pivots.
+     * Also note that if a hasnindependent columns (r==n), A^T*A is positive definite.
      * @param a
      * @return 
      */
     public static boolean isPositiveDefinite(double[][] a) {
-        if (!isSquare(a)) {
-            return false;
+
+        if (!isSymmetric(a, 1E-7)) {
+            System.err.println("matrix is not symmetric in current form");
+            //return false;
         }
         
         /*
@@ -3370,13 +3386,22 @@ public class MatrixUtil {
             2) all upper left determinants (the 1x1 and 2x2 ... ) are positive
             3) the pivots are positive a>0 and a*c-b^2>0
             4) the function x^T * A * x is positive except at x = 0
-
         */
-        // using rule that left upward rooted determinants > 0
+
         int n = a.length;
+        int i;
+
+        double[] x = new double[n];
+        for (i = 0; i < n; ++i) {
+            x[i] = i + 1;
+        }
+        double p = MatrixUtil.innerProduct(MatrixUtil.multiplyRowVectorByMatrix(x, a), x);
+        //return p > 0;
+
+        // using rule that left upward rooted determinants > 0
         double[][] sa;
         double det;
-        for (int i = 0; i < n; ++i) {
+        for (i = 0; i < n; ++i) {
             sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);
             det = MatrixUtil.determinant(sa);
             if (det < 0) {
@@ -3588,12 +3613,12 @@ public class MatrixUtil {
     }
     
     /**
-     * element-wise multiplication
+     * pointwise multiplication
      * @param a
      * @param b
      * @return 
      */
-    public static double[][] elementwiseMultiplication(double[][] a, double[][] b) {
+    public static double[][] pointwiseMultiplication(double[][] a, double[][] b) {
         int m = a.length;
         int n = a[0].length;
         
@@ -3613,12 +3638,12 @@ public class MatrixUtil {
     }
     
     /**
-     * element-wise multiplication
+     * pointwise multiplication
      * @param a
      * @param b
      * @return 
      */
-    public static int[][] elementwiseMultiplication(int[][] a, int[][] b) {
+    public static int[][] pointwiseMultiplication(int[][] a, int[][] b) {
         int m = a.length;
         int n = a[0].length;
         
@@ -3638,25 +3663,25 @@ public class MatrixUtil {
     }
     
     /**
-     * element-wise addition
+     * pointwise addition
      * @param a
      * @param b
      * @return 
      */
-    public static double[][] elementwiseAdd(double[][] a, double[][] b) {
+    public static double[][] pointwiseAdd(double[][] a, double[][] b) {
         double[][] out = MatrixUtil.zeros(a.length, a[0].length);
-        elementwiseAdd(a, b, out);
+        pointwiseAdd(a, b, out);
         return out;
     }
     
     /**
-     * element-wise addition
+     * pointwise addition
      * @param a
      * @param b
      * @param out the results of element wise add of a + b. Note that it
      * is safe to provide out as the same object as input argument a or b.
      */
-    public static void elementwiseAdd(double[][] a, double[][] b, double[][] out) {
+    public static void pointwiseAdd(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
         int n = a[0].length;
         
@@ -3675,25 +3700,24 @@ public class MatrixUtil {
         }
     }
     
-    /** element-wise subtraction
+    /** pointwise subtraction
      * @param a
      * @param b
      * @return 
      */
-    public static double[][] elementwiseSubtract(double[][] a, double[][] b) {
+    public static double[][] pointwiseSubtract(double[][] a, double[][] b) {
         double[][] out = MatrixUtil.zeros(a.length, a[0].length);
-        elementwiseSubtract(a, b, out);
+        pointwiseSubtract(a, b, out);
         return out;
     }
     
     /**
-     * element-wise subtraction
+     * pointwise subtraction
      * @param a
      * @param b
      * @param out the results of element wise subtraction, a - b. Note that it
-     * is safe to provide out as the same object as input argument a or b.
      */
-    public static void elementwiseSubtract(double[][] a, double[][] b, double[][] out) {
+    public static void pointwiseSubtract(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
         int n = a[0].length;
         
@@ -3713,12 +3737,12 @@ public class MatrixUtil {
     }
     
     /**
-     * element-wise subtraction
+     * point-wise subtraction
      * @param a
      * @param b
-     * @return the results of element-wise subtraction, a - b.
+     * @return the results of point-wise subtraction, a - b.
      */
-    public static int[][] elementwiseSubtract(int[][] a, int[][] b) {
+    public static int[][] pointwiseSubtract(int[][] a, int[][] b) {
         int m = a.length;
         int n = a[0].length;
         
@@ -3739,13 +3763,13 @@ public class MatrixUtil {
     }
     
     /**
-     * element-wise subtraction
+     * pointwise subtraction
      * @param a
      * @param b
      * @param out the results of element wise subtraction, a - b. Note that it
      * is safe to provide out as the same object as input argument a or b.
      */
-    public static void elementwiseSubtract(double[] a, double[] b, double[] out) {
+    public static void pointwiseSubtract(double[] a, double[] b, double[] out) {
         int m = a.length;
         
         if (b.length != m) {
@@ -3762,12 +3786,12 @@ public class MatrixUtil {
     }
     
     /**
-     * element-wise multiplication
+     * pointwise multiplication
      * @param a
      * @param b
      * @return 
      */
-    public static double[] elementwiseMultiplication(double[] a, double[] b) {
+    public static double[] pointwiseMultiplication(double[] a, double[] b) {
         int m = a.length;
         
         if (b.length != m) {
@@ -3827,12 +3851,12 @@ public class MatrixUtil {
     }
     
     /**
-     * right divide is element-wise division
+     * right divide is pointwise division
      * @param a
      * @param b
      * @return 
      */
-    public static double[][] elementwiseDivision(double[][] a, double[][] b) {
+    public static double[][] pointwiseDivision(double[][] a, double[][] b) {
         int m = a.length;
         int n = a[0].length;
         
@@ -3852,12 +3876,12 @@ public class MatrixUtil {
     }
     
     /**
-     * right divide is element-wise division, that is a[i]/b[i] for i = [0, a.length).
+     * right divide is pointwise division, that is a[i]/b[i] for i = [0, a.length).
      * @param a
      * @param b
      * @return 
      */
-    public static double[] elementwiseDivision(double[] a, double[] b) {
+    public static double[] pointwiseDivision(double[] a, double[] b) {
         int m = a.length;
         
         if (b.length != m) {
@@ -4260,7 +4284,7 @@ public class MatrixUtil {
     public static QH performPolarDecomposition(double[][] a) throws NotConvergedException {
         
         if (!isSquare(a)) {
-            throw new IllegalArgumentException("a must b a square matrix");
+            throw new IllegalArgumentException("a must be a square matrix");
         }
         
         SVDProducts svd = performSVD(a);

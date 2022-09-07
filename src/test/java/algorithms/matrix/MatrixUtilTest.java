@@ -977,7 +977,7 @@ public class MatrixUtilTest extends TestCase {
          }
      }
      
-     public void testElementwiseAdd() {
+     public void testpointwiseAdd() {
          double[][] a = new double[3][3];
          double[][] b = new double[3][3];
          
@@ -994,7 +994,7 @@ public class MatrixUtilTest extends TestCase {
          expected[1] = new double[]{22, 12, 6};
          expected[2] = new double[]{33, 22, 44};
          
-         double[][] r = MatrixUtil.elementwiseAdd(a, b);
+         double[][] r = MatrixUtil.pointwiseAdd(a, b);
          
          double eps = 1.e-11;
          double diff;
@@ -1007,7 +1007,7 @@ public class MatrixUtilTest extends TestCase {
          }
          
          MatrixUtil.fill(r, 0);
-         MatrixUtil.elementwiseAdd(a, b, r);
+         MatrixUtil.pointwiseAdd(a, b, r);
          for (i = 0; i < 3; ++i) {
              for (j = 0; j < 3; ++j) {
                  diff = Math.abs(expected[i][j] - r[i][j]);
@@ -1016,7 +1016,7 @@ public class MatrixUtilTest extends TestCase {
          }
      }
      
-     public void testElementwiseSubtract() {
+     public void testpointwiseSubtract() {
          double[][] a = new double[3][3];
          double[][] b = new double[3][3];
          
@@ -1033,7 +1033,7 @@ public class MatrixUtilTest extends TestCase {
          expected[1] = new double[]{22, 12, 6};
          expected[2] = new double[]{33, 22, 44};
          
-         double[][] r = MatrixUtil.elementwiseSubtract(a, b);
+         double[][] r = MatrixUtil.pointwiseSubtract(a, b);
          
          double eps = 1.e-11;
          double diff;
@@ -1046,7 +1046,7 @@ public class MatrixUtilTest extends TestCase {
          }
          
          MatrixUtil.fill(r, 0);
-         MatrixUtil.elementwiseSubtract(a, b, r);
+         MatrixUtil.pointwiseSubtract(a, b, r);
          for (i = 0; i < 3; ++i) {
              for (j = 0; j < 3; ++j) {
                  diff = Math.abs(expected[i][j] - r[i][j]);
@@ -1055,7 +1055,7 @@ public class MatrixUtilTest extends TestCase {
          }
          
          MatrixUtil.fill(r, 0);
-         MatrixUtil.elementwiseSubtract(a[0], b[0], r[0]);
+         MatrixUtil.pointwiseSubtract(a[0], b[0], r[0]);
          j = 0;
          for (i = 0; i < 3; ++i) {
              diff = Math.abs(expected[0][i] - r[0][i]);
@@ -1307,12 +1307,12 @@ public class MatrixUtilTest extends TestCase {
         System.out.printf("eig(aPSD2)=\n%s\n", FormatArray.toString(evd3.getRealEigenvalues(), "%.5e"));
         
         
-        double[][] aMinusPSD = MatrixUtil.elementwiseSubtract(a, aPSD);
+        double[][] aMinusPSD = MatrixUtil.pointwiseSubtract(a, aPSD);
         double dist1 = MatrixUtil.frobeniusNorm(aMinusPSD);
         
-        double[][] aMinusPSD2 = MatrixUtil.elementwiseSubtract(a, aPSD2);
+        double[][] aMinusPSD2 = MatrixUtil.pointwiseSubtract(a, aPSD2);
         double dist2 = MatrixUtil.frobeniusNorm(aMinusPSD2);
-        double[][] aPSDMinusPSD2 = MatrixUtil.elementwiseSubtract(aPSD, aPSD2);
+        double[][] aPSDMinusPSD2 = MatrixUtil.pointwiseSubtract(aPSD, aPSD2);
         double dist3 = MatrixUtil.frobeniusNorm(aPSDMinusPSD2);
         
         System.out.printf("dist1=%.7e, dist2=%.7e, dist3=%.7e\n", dist1, dist2, dist3);
@@ -1595,7 +1595,7 @@ public class MatrixUtilTest extends TestCase {
         assertEquals(expected, lp1Norm);
     }
     
-    public void testElementwiseMultiplication() {
+    public void testpointwiseMultiplication() {
         
         int[][] a = new int[3][];
         a[0] = new int[]{1, 1, 1};
@@ -1612,7 +1612,7 @@ public class MatrixUtilTest extends TestCase {
         expected[1] = new int[]{20, 40, 60};
         expected[2] = new int[]{30, 60, 90};
         
-        int[][] r = MatrixUtil.elementwiseMultiplication(a, b);
+        int[][] r = MatrixUtil.pointwiseMultiplication(a, b);
         assertEquals(expected.length, r.length);
         assertEquals(expected[0].length, r[0].length);
         
@@ -1624,7 +1624,7 @@ public class MatrixUtilTest extends TestCase {
         }
     }
     
-    public void testElementwiseMultiplicationDouble() {
+    public void testpointwiseMultiplicationDouble() {
         
         double[][] a = new double[3][];
         a[0] = new double[]{1, 1, 1};
@@ -1641,7 +1641,7 @@ public class MatrixUtilTest extends TestCase {
         expected[1] = new double[]{20, 40, 60};
         expected[2] = new double[]{30, 60, 90};
         
-        double[][] r = MatrixUtil.elementwiseMultiplication(a, b);
+        double[][] r = MatrixUtil.pointwiseMultiplication(a, b);
         assertEquals(expected.length, r.length);
         assertEquals(expected[0].length, r[0].length);
         
@@ -1653,7 +1653,7 @@ public class MatrixUtilTest extends TestCase {
         }
     }
     
-    public void testElementwiseSubtractInt() {
+    public void testpointwiseSubtractInt() {
         
         int[][] a = new int[3][];
         a[0] = new int[]{1, 1, 1};
@@ -1670,7 +1670,7 @@ public class MatrixUtilTest extends TestCase {
         expected[1] = new int[]{2-10, 2-20, 2-30};
         expected[2] = new int[]{3-10, 3-20, 3-30};
         
-        int[][] r = MatrixUtil.elementwiseSubtract(a, b);
+        int[][] r = MatrixUtil.pointwiseSubtract(a, b);
         assertEquals(expected.length, r.length);
         assertEquals(expected[0].length, r[0].length);
         

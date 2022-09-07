@@ -515,4 +515,54 @@ public class LinearEquationsTest extends TestCase {
         }
         
     }
+
+    public void testGaussianEliminationViaLU() throws NotConvergedException {
+        double[][] a = new double[3][];
+        a[0] = new double[]{1, 3, 0, 2, -1};
+        // multiply a[0] by 2 to make sure the results are rref
+        MatrixUtil.multiply(a[0], 2);
+        a[1] = new double[]{0, 0, 1, 4, -3};
+        a[2] = new double[]{1, 3, 1, 6, -4};
+
+        double[][] expectedR = new double[3][];
+        expectedR[0] = new double[]{1, 3, 0, 2, -1};
+        expectedR[1] = new double[]{0, 0, 1, 4, -3};
+        expectedR[2] = new double[]{0, 0, 0, 0, 0};
+
+        double[][] r;
+
+        r = LinearEquations.gaussianEliminationViaLU(a, 1E-7);
+
+        assertEquals(r.length, expectedR.length);
+        assertEquals(r[0].length, expectedR[0].length);
+        int i;
+        int j;
+        for (i = 0; i < expectedR.length; ++i) {
+            for (j = 0; j < expectedR[i].length; ++j) {
+                assertTrue(Math.abs(expectedR[i][j] - r[i][j]) < 1E-7);
+            }
+        }
+
+        // ========================
+        a = new double[2][];
+        a[0] = new double[]{1, 3, -1};
+        // multiply a[0] by 2 to make sure the results are rref
+        MatrixUtil.multiply(a[0], 2);
+        a[1] = new double[]{0, 1, 7};
+
+        expectedR = new double[2][];
+        expectedR[0] = new double[]{1, 0, -22};
+        expectedR[1] = new double[]{0, 1, 7};
+
+        r = LinearEquations.gaussianEliminationViaLU(a, 1E-7);
+
+        assertEquals(r.length, expectedR.length);
+        assertEquals(r[0].length, expectedR[0].length);
+
+        for (i = 0; i < expectedR.length; ++i) {
+            for (j = 0; j < expectedR[i].length; ++j) {
+                assertTrue(Math.abs(expectedR[i][j] - r[i][j]) < 1E-7);
+            }
+        }
+    }
 }

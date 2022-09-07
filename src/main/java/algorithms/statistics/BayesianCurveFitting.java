@@ -158,7 +158,7 @@ public class BayesianCurveFitting {
         double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);
         log.log(java.util.logging.Level.FINE, String.format("ys1=\n%s", FormatArray.toString(ys1, "%.4f")));
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
-        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);
+        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);
         log.log(java.util.logging.Level.FINE, String.format("ys1=\n%s", FormatArray.toString(ys1, "%.4f")));
 
         // propagation of errors:
@@ -242,7 +242,7 @@ public class BayesianCurveFitting {
         //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
         double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
-        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);
+        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);
 
         // propagation of errors:
         // sum ys1 along rows, add 1/beta, take sqrt:
@@ -359,7 +359,7 @@ public class BayesianCurveFitting {
         double[][] p1 = MatrixUtil.multiply(xT, x);
         MatrixUtil.multiply(p1, beta);
 
-        double[][] sInv = MatrixUtil.elementwiseAdd(priorPrecision, p1);
+        double[][] sInv = MatrixUtil.pointwiseAdd(priorPrecision, p1);
 
         return sInv;
     }
