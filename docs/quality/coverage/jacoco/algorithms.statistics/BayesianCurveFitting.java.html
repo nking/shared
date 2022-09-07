@@ -158,7 +158,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L158">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
 <span class="fc" id="L159">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=\n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
-<span class="fc" id="L161">        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);</span>
+<span class="fc" id="L161">        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);</span>
 <span class="fc" id="L162">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=\n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
 
         // propagation of errors:
@@ -242,7 +242,7 @@ import java.util.logging.Logger;
         //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
 <span class="fc" id="L243">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
-<span class="fc" id="L245">        ys1 = MatrixUtil.elementwiseMultiplication(ys1, phiXTest);</span>
+<span class="fc" id="L245">        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);</span>
 
         // propagation of errors:
         // sum ys1 along rows, add 1/beta, take sqrt:
@@ -359,7 +359,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L359">        double[][] p1 = MatrixUtil.multiply(xT, x);</span>
 <span class="fc" id="L360">        MatrixUtil.multiply(p1, beta);</span>
 
-<span class="fc" id="L362">        double[][] sInv = MatrixUtil.elementwiseAdd(priorPrecision, p1);</span>
+<span class="fc" id="L362">        double[][] sInv = MatrixUtil.pointwiseAdd(priorPrecision, p1);</span>
 
 <span class="fc" id="L364">        return sInv;</span>
     }

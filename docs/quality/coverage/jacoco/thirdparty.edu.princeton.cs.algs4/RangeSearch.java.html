@@ -164,20 +164,20 @@ adapted from http://algs4.cs.princeton.edu/92search/
         }
         
 <span class="fc" id="L166">        int cmp = key.compareTo(x.key);</span>
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L168">            int cmpV = compareVal.compareTo(val);</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (cmpV &lt; 0) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (cmp == 0) {</span>
+<span class="fc" id="L168">            int cmpV = compareVal.compareTo(val);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (cmpV &lt; 0) {</span>
                 // continue w/ insert
 <span class="nc" id="L171">                replaced[0] = x.val;</span>
 <span class="nc" id="L172">                x.val = val;</span>
 <span class="nc" id="L173">                inserted[0] = true;</span>
             } else {
-<span class="nc" id="L175">                inserted[0] = false;</span>
+<span class="fc" id="L175">                inserted[0] = false;</span>
             }
-<span class="nc" id="L177">            return x;</span>
+<span class="fc" id="L177">            return x;</span>
         }
-<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
-<span class="fc" id="L180">            return putRootIfLessThan(x, key, val, compareVal, replaced, inserted);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="nc" id="L180">            return putRootIfLessThan(x, key, val, compareVal, replaced, inserted);</span>
         }
 <span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
 <span class="fc" id="L183">            x.left  = putIfLessThan(x.left,  key, val, compareVal, replaced,</span>
@@ -231,32 +231,32 @@ adapted from http://algs4.cs.princeton.edu/92search/
         RangeSearchNode&lt;Key, Value&gt; x, Key key, Value val, Value2 compareVal,
         Object[] replaced, boolean[] inserted) {
         
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (x == null) {</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (x == null) {</span>
 <span class="nc" id="L235">            inserted[0] = true;</span>
 <span class="nc" id="L236">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
         }
         
-<span class="fc" id="L239">        int cmp = key.compareTo(x.key);</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">        if (cmp == 0) {</span>
-<span class="fc" id="L241">            int cmpV = compareVal.compareTo(val);</span>
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">            if (cmpV &lt; 0) {</span>
+<span class="nc" id="L239">        int cmp = key.compareTo(x.key);</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L241">            int cmpV = compareVal.compareTo(val);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">            if (cmpV &lt; 0) {</span>
 <span class="nc" id="L243">                replaced[0] = x.val;</span>
 <span class="nc" id="L244">                x.val = val;</span>
 <span class="nc" id="L245">                inserted[0] = true;</span>
             } else {
-<span class="fc" id="L247">                inserted[0] = false;</span>
+<span class="nc" id="L247">                inserted[0] = false;</span>
             }
-<span class="fc" id="L249">            return x; </span>
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
-<span class="fc" id="L251">            x.left  = putRootIfLessThan(x.left,  key, val, compareVal, replaced,</span>
+<span class="nc" id="L249">            return x; </span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
+<span class="nc" id="L251">            x.left  = putRootIfLessThan(x.left,  key, val, compareVal, replaced,</span>
                 inserted); 
-<span class="fc" id="L253">            x = rotR(x); </span>
+<span class="nc" id="L253">            x = rotR(x); </span>
         } else { 
 <span class="nc" id="L255">            x.right = putRootIfLessThan(x.right, key, val, compareVal, replaced,</span>
                 inserted); 
 <span class="nc" id="L257">            x = rotL(x); </span>
         }
-<span class="fc" id="L259">        return x;</span>
+<span class="nc" id="L259">        return x;</span>
     }
     
     /**

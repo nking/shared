@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GaussianKernel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.misc</a> &gt; <span class="el_source">GaussianKernel.java</span></div><h1>GaussianKernel.java</h1><pre class="source lang-java linenums">package algorithms.misc;
+
+<span class="fc" id="L3">public class GaussianKernel implements IKernel {</span>
+
+    /**
+     * calculate (1./(h * n * Math.sqrt(2. * Math.PI)) * summation over i of exp(-0.5*( (x - xTilde[i])/h)^2 )
+     * runtime complexity is O(xTilde.length).
+     * @param x the grid point
+     * @param xTilde the observed data
+     * @param h
+     * @return
+     */
+    public double kernel(double x, double[] xTilde, double h) {
+<span class="fc" id="L14">        int nS = xTilde.length;</span>
+<span class="fc" id="L15">        double ch = 1./(Math.sqrt(2. * Math.PI));</span>
+        double z;
+<span class="fc" id="L17">        double sum = 0;</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        for (int i = 0; i &lt; nS; i++) {</span>
+<span class="fc" id="L19">            z = (x - xTilde[i])/h;</span>
+<span class="fc" id="L20">            sum += Math.exp(-0.5 * z * z);</span>
+        }
+<span class="fc" id="L22">        sum *= ch/(h*nS);</span>
+<span class="fc" id="L23">        return sum;</span>
+    }
+
+    /**
+     * calculate (1./(Math.sqrt(2. * Math.PI)) * exp(-0.5*( z^2 )
+     * @param z
+     * @return
+     */
+    public double kernel(double z) {
+<span class="nc" id="L32">        double ch = 1./(Math.sqrt(2. * Math.PI));</span>
+<span class="nc" id="L33">        return ch * Math.exp(-0.5 * z * z);</span>
+    }
+
+    /**
+     * derivative of the kernel w.r.t. x
+     * @param x
+     * @return
+     */
+    public double dKdx(double x) {
+<span class="nc" id="L42">        double c = (1./Math.sqrt(2. * Math.PI));</span>
+<span class="nc" id="L43">        double e = Math.exp(-x*x/2.);</span>
+<span class="nc" id="L44">        return -x * c * e;</span>
+    }
+    /**
+     * 2nd derivative of the kernel w.r.t. x
+     * @param x
+     * @return
+     */
+    public double d2Kdx2(double x) {
+<span class="nc" id="L52">        double c = (1./Math.sqrt(2. * Math.PI));</span>
+<span class="nc" id="L53">        double e = Math.exp(-x*x/2.);</span>
+<span class="nc" id="L54">        return  (-x*x - 1.) * c * e;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

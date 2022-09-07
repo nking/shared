@@ -2,12 +2,13 @@
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  *
  * @author nichole
  */
-<span class="nc" id="L10">public class UnivariateNormalDistribution {</span>
+<span class="nc" id="L11">public class UnivariateNormalDistribution {</span>
     
     /**
      * generate u = nx1 vector where each element u_j is independently sampled from N (0, 1)
@@ -23,12 +24,12 @@ import java.security.SecureRandom;
      * @return 
      */
     public static double[] randomSampleOfUnitStandard(int n) throws NoSuchAlgorithmException {
-<span class="nc" id="L26">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="nc" id="L27">        long seed = System.nanoTime();</span>
+<span class="nc" id="L27">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L28">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="nc" id="L29">        rand.setSeed(seed);</span>
+<span class="nc" id="L30">        rand.setSeed(seed);</span>
         
-<span class="nc" id="L31">        return randomSampleOfUnitStandard(rand, n);</span>
+<span class="nc" id="L32">        return randomSampleOfUnitStandard(rand, n);</span>
     }
     
     /**
@@ -46,19 +47,19 @@ import java.security.SecureRandom;
      * @param n
      * @return n randomly sampled x's
      */
-    public static double[] randomSampleOfUnitStandard(SecureRandom rand, int n) {
+    public static double[] randomSampleOfUnitStandard(Random rand, int n) {
         double t;
         
-<span class="fc" id="L52">        double[] u = new double[n];</span>
+<span class="fc" id="L53">        double[] u = new double[n];</span>
         
         int i;
         // u range is approximately -3.1 to +3.1
-<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L57">            t = rand.nextDouble();</span>
-<span class="fc" id="L58">            u[i] = CDFStandardNormal.approxInverseShort(t);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L58">            t = rand.nextDouble();</span>
+<span class="fc" id="L59">            u[i] = CDFStandardNormal.approxInverseShort(t);</span>
         }
         
-<span class="fc" id="L61">        return u;</span>
+<span class="fc" id="L62">        return u;</span>
     }
     
     /**
@@ -71,17 +72,17 @@ import java.security.SecureRandom;
      * @return 
      */
     public static double[] randomSampleOf(double mean, double sigma,
-        SecureRandom rand, int n) {
+                                          Random rand, int n) {
                 
-<span class="fc" id="L76">        double[] u = randomSampleOfUnitStandard(rand, n);</span>
+<span class="fc" id="L77">        double[] u = randomSampleOfUnitStandard(rand, n);</span>
                
         int i;
-<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L80">            u[i] *= sigma;</span>
-<span class="fc" id="L81">            u[i] += mean;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L81">            u[i] *= sigma;</span>
+<span class="fc" id="L82">            u[i] += mean;</span>
         }
         
-<span class="fc" id="L84">        return u;</span>
+<span class="fc" id="L85">        return u;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

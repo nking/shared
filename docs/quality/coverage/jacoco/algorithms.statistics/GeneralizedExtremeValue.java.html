@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeneralizedExtremeValue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">GeneralizedExtremeValue.java</span></div><h1>GeneralizedExtremeValue.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
+import algorithms.util.FormatArray;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
   &lt;pre&gt;
   Generate curves following the Generalized Extreme Value probability density
   function.
+ The GEV is a.k.a. the Fisher-Tippett distribution (though some restrict the
+ Fisher-Tippett to the Gumbel distribution).
  
                            (   (      ( x-mu))-(1/k))
                            (-1*(1 + k*(-----))      )
@@ -24,7 +30,7 @@ import algorithms.misc.MiscMath0;
  
   Let z = (x-mu)/sigma
  
-  Extreme Value Type I:
+  Extreme Value Type I (Gumbel):
                       1
       y = y_const * ----- * exp( -z -exp(-z))
                     sigma
@@ -32,16 +38,17 @@ import algorithms.misc.MiscMath0;
       sigma &gt; 0
       k = 0
  
-  Extreme Value Type II:
+  Extreme Value Type II (Frechet):
                       k     (sigma)^(k+1)      (   (sigma)^k)
       y = y_const * ----- * (-----)       * exp( - (-----)  )
                     sigma   (  x  )            (   (  x  )  )
  
-      k  &gt; 0
+      k  &gt; 0, (1/k)&gt;0
       sigma &gt; 0
       x &gt; 0
+      if (1 + k*(x - mu)/sigma) &lt;= 0, y = 0
  
-  Extreme Value Type III:
+  Extreme Value Type III (Weibull):
                       k     (x - mu)^(k+1)      (   (x - mu)^k)
       y = y_const * ----- * (------)       * exp( - (------)  )
                     sigma   (sigma )            (   (sigma )  )
@@ -50,9 +57,10 @@ import algorithms.misc.MiscMath0;
         = y_const * ----- * (z)^(k+1) * exp( -1*(z)^k )
                     sigma
  
-      k &lt; 0
+      k &lt; 0, (1/k)&lt;0
       sigma &gt; 0
       x &gt; 0
+       if -(1 + k*(x - mu)/sigma) &gt;= 0, y = 1
  
  &lt;/pre&gt;
   first implemented in project
@@ -66,75 +74,166 @@ import algorithms.misc.MiscMath0;
  */
 public class GeneralizedExtremeValue {
 
-    protected final float[] x;
-    protected final float[] y;
+    protected final double[] x;
+    protected final double[] y;
 
-    protected final float[] dx;
-    protected final float[] dy;
+    protected final double[] dx;
+    protected final double[] dy;
 
-<span class="fc" id="L75">    public GeneralizedExtremeValue(float[] xPoints, float[] yPoints, float[] dXPoints, float[] dYPoints) {</span>
-<span class="fc" id="L76">        this.x = xPoints;</span>
-<span class="fc" id="L77">        this.y = yPoints;</span>
-<span class="fc" id="L78">        this.dx = dXPoints;</span>
-<span class="fc" id="L79">        this.dy = dYPoints;</span>
-<span class="fc" id="L80">    }</span>
+    /**
+     * calculate a rough estimate of GEV distribution parameters for the given x.
+     * Note that the methods works best for sample sizes &gt; 50.
+     * &lt;pre&gt;
+     * references:
+     *     &quot;Estimation of the Generalized Extreme-Value Distribution by the Method of Probability Weighted Moments&quot;
+     *    Hosking, Wallis, and Wood 1984
+     * &lt;/pre&gt;
+     * @param x ordered statistic of an observed GEV distribution where X is ordered from min to max.
+     * @return
+     */
+    public static double[] fitUsingMethodOfProbabilityWeightedMoments(double[] x) {
 
-    public float[] generateNormalizedCurve(float[] parameters, float yConst) {
-<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (parameters == null) {</span>
-<span class="nc" id="L84">            throw new IllegalArgumentException(&quot;parameters cannot be null&quot;);</span>
+<span class="fc" id="L96">        int n = x.length;</span>
+
+        /* estimate b0, b1, b2 using eqn (4) and plotting position for p_j
+        p[j] = (j - 0.35)/n
+        eqn (4) : b_r[p[j]] = (1/n) * sum over j=1 to n ( p[j]^r * x[j] )
+
+        below, j is the jth ranked (from smallest to largest) datum.
+
+        b0 = (1/n) * sum over j=1 to n ( 1 * x[j] )
+        b1 = (1/n) * sum over j=1 to n ( p[j] * x[j] )
+        b2 = (1/n) * sum over j=1 to n ( p[j]^2 * x[j] )
+
+        Alternatively, Landwehr 1979 as referenced in
+        IMPROVING PROBABILITY-WEIGHTED MOMENT METHODS FOR THE GENERALIZED EXTREME VALUE DISTRIBUTION
+        Diebolt et al 2008
+             b_r = (1/n) * sum over j=1 to n ( multiply over l=1 to r( (j-l)/(n-l) ) * X_j,n )
+        */
+
+<span class="fc" id="L114">        double[] b = new double[3];</span>
+        int i;
+        //int j;
+        double t;
+
+        double pj;
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+            //j = n - i; // for the statistic where X is ordered from max to min
+            // pj = (j - 0.35)/n; // for the statistic where X is ordered from max to min
+<span class="fc" id="L123">            pj = (i - 0.35)/n;</span>
+<span class="fc" id="L124">            t = x[i];</span>
+<span class="fc" id="L125">            b[0] += t;</span>
+<span class="fc" id="L126">            t *= pj;</span>
+<span class="fc" id="L127">            b[1] += t;</span>
+<span class="fc" id="L128">            t *= pj;</span>
+<span class="fc" id="L129">            b[2] += t;</span>
         }
-<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (parameters.length != 3) {</span>
-<span class="nc" id="L87">            throw new IllegalArgumentException(&quot;parameters must hold k, sigma, and mu&quot;);</span>
-        }
+<span class="fc" id="L131">        b[0] /= (double)n;</span>
+<span class="fc" id="L132">        b[1] /= (double)n;</span>
+<span class="fc" id="L133">        b[2] /= (double)n;</span>
 
-<span class="nc" id="L90">        return generateNormalizedCurve(parameters[0], parameters[1], parameters[2], yConst);</span>
+        //System.out.printf(&quot;b=%s\n&quot;, FormatArray.toString(b, &quot;%.3e&quot;));
+
+        /* eqn (14) for shape estimator
+        c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
+        kEst = 7.859 * c + 2.9554 * c^2
+        */
+<span class="fc" id="L141">        double c =  ((2.*b[1] - b[0])/(3.*b[2] - b[0])) - (Math.log(2)/Math.log(3));</span>
+<span class="fc" id="L142">        double shapeEst = 7.859*c + 2.9554*c*c;</span>
+
+        /* eqn (15) for location and scale estimators
+        scale: alphaEst = (kEst*(2*b1 - b0)/( gamma(1+kEst) * (1 - 2^-kEst)))
+        location: epsEst = b0 + (alphaEst*(gamma(1+kEst) - 1)/kEst)
+        */
+<span class="fc" id="L148">        double gam = Gamma.lanczosGamma9(1. + shapeEst);</span>
+<span class="fc" id="L149">        double denom = gam * (1. - Math.pow(2, -shapeEst));</span>
+<span class="fc" id="L150">        double scaleEst = shapeEst*(2.*b[1] - b[0])/denom;</span>
+<span class="fc" id="L151">        double locationEst = b[0] + (scaleEst*(gam - 1.)/shapeEst);</span>
+
+        // TODO: consider replacing with Castillo and Hadi (1994)
+        // Castillo, E., and A. Hadi. (1994).
+        //     Parameter and Quantile Estimation for the Generalized Extreme-Value Distribution. Environmetrics 5, 417–432.
+
+        // TODO: consider shape estimator of Dekkers 1989 or Resnick and Starica 1997
+        //shapeEst = M1 + 1 − 0.5* (1-((M1)^2)*(M2^(−1)))^(−1),
+        // where Mj ≡ (1/k)* sum_over_i=1 to k*( (ln(X_{i:n}) −ln(X_{(k+1):n} )^j, j=1;2.
+
+<span class="fc" id="L161">        return new double[]{locationEst, scaleEst, shapeEst};</span>
     }
 
-    public float[] generateNormalizedCurve(float[] parameters) {
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (parameters == null) {</span>
-<span class="nc" id="L95">            throw new IllegalArgumentException(&quot;parameters cannot be null&quot;);</span>
+<span class="fc" id="L164">    public GeneralizedExtremeValue(double[] xPoints, double[] yPoints, double[] dXPoints, double[] dYPoints) {</span>
+<span class="fc" id="L165">        this.x = xPoints;</span>
+<span class="fc" id="L166">        this.y = yPoints;</span>
+<span class="fc" id="L167">        this.dx = dXPoints;</span>
+<span class="fc" id="L168">        this.dy = dYPoints;</span>
+<span class="fc" id="L169">    }</span>
+
+    /**
+     * generate a normalized GEV
+     * @param parameters mu, sigma, and k
+     where mu is  the location parameter, sigma is the scale parameter and is &gt; 0,
+     and k is the shape parameter.
+     * @param yConst normalization factor
+     * @return
+     */
+    public double[] generateNormalizedCurve(double[] parameters, double yConst) {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (parameters == null) {</span>
+<span class="nc" id="L181">            throw new IllegalArgumentException(&quot;parameters cannot be null&quot;);</span>
         }
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (parameters.length != 3) {</span>
-<span class="nc" id="L98">            throw new IllegalArgumentException(&quot;parameters must hold k, sigma, and mu&quot;);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (parameters.length != 3) {</span>
+<span class="nc" id="L184">            throw new IllegalArgumentException(&quot;parameters must hold mu, sigma, and k&quot;);</span>
         }
 
-<span class="nc" id="L101">        return generateNormalizedCurve(parameters[0], parameters[1], parameters[2]);</span>
+<span class="nc" id="L187">        return generateNormalizedCurve(parameters[0], parameters[1], parameters[2], yConst);</span>
     }
 
-    public float[] generateNormalizedCurve(float k, float sigma, float mu) {
-
-<span class="nc" id="L106">        float[] yGEV = generateCurve(x, k, sigma, mu);</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (yGEV == null) {</span>
-<span class="nc" id="L108">            return null;</span>
+    /**
+     * generate a GEV curve
+     * @param parameters mu, sigma, and k
+    where mu is  the location parameter, sigma is the scale parameter and is &gt; 0,
+    and k is the shape parameter.
+     * @return
+     */
+    public double[] generateNormalizedCurve(double[] parameters) {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (parameters == null) {</span>
+<span class="nc" id="L199">            throw new IllegalArgumentException(&quot;parameters cannot be null&quot;);</span>
         }
-<span class="nc" id="L110">        float yConst = determineYConstant(yGEV, mu);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (parameters.length != 3) {</span>
+<span class="nc" id="L202">            throw new IllegalArgumentException(&quot;parameters must hold mu, sigma, and k&quot;);</span>
+        }
 
-<span class="nc" id="L112">        return generateNormalizedCurve(k, sigma, mu, yConst);</span>
+<span class="nc" id="L205">        return generateNormalizedCurve(parameters[0], parameters[1], parameters[2]);</span>
+    }
+
+    public double[] generateNormalizedCurve(double mu, double sigma, double k) {
+
+<span class="nc" id="L210">        double[] yGEV = generateCurve(x, mu, sigma, k);</span>
+
+<span class="nc" id="L212">        double yConst = determineYConstant(yGEV, mu);</span>
+
+<span class="nc" id="L214">        return generateNormalizedCurve(mu, sigma, k, yConst);</span>
     }
 
     /**
      * generate a GEV curve w/ parameters k, sigma, and mu and then multiply it
      * by yConst so that the highest peak has value yConst
      *
-     * @param k
-     * @param sigma
-     * @param mu
+     * @param k shape parameter
+     * @param sigma scale parameter, &gt; 0
+     * @param mu location parameter
      * @param yConst
      * @return
      */
-    public float[] generateNormalizedCurve(float k, float sigma, float mu, float yConst) {
+    public double[] generateNormalizedCurve(double mu, double sigma, double k, double yConst) {
 
-<span class="nc" id="L127">        float[] yGEV = generateCurve(x, k, sigma, mu);</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (yGEV == null) {</span>
-<span class="nc" id="L129">            return null;</span>
+<span class="nc" id="L229">        double[] yGEV = generateCurve(x, mu, sigma, k);</span>
+
+<span class="nc" id="L231">        double yMax = MiscMath0.findMax(yGEV);</span>
+
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
+<span class="nc" id="L234">            yGEV[i] *= yConst/yMax;</span>
         }
-
-<span class="nc" id="L132">        float yMax = MiscMath0.findMax(yGEV);</span>
-
-<span class="nc bnc" id="L134" title="All 2 branches missed.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
-<span class="nc" id="L135">            yGEV[i] *= yConst/yMax;</span>
-        }
-<span class="nc" id="L137">        return yGEV;</span>
+<span class="nc" id="L236">        return yGEV;</span>
     }
 
     /* &lt;pre&gt;
@@ -160,24 +259,23 @@ public class GeneralizedExtremeValue {
      *   then y = (yconst/sigma) * f1 * f2
      *&lt;/pre&gt;
      */
-    public static Double generateYGEV(float xPoint, float k, float sigma, float mu) {
+    public static Double generateYGEV(double xPoint, double mu, double sigma, double k) {
 
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
-            //throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);
-<span class="nc" id="L167">            return null;</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L265">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
         }
 
         // if k =~ 0, use Gumbel which is Type I
-<span class="pc bpc" id="L171" title="2 of 4 branches missed.">        if (k == 0 || Float.isInfinite(1.f/k)) {</span>
-<span class="nc" id="L172">            return generateYEVTypeI(xPoint, sigma, mu);</span>
+<span class="pc bpc" id="L269" title="2 of 4 branches missed.">        if (k == 0 || Double.isInfinite(1./k)) {</span>
+<span class="nc" id="L270">            return generateYEVTypeI(xPoint, sigma, mu);</span>
         }        
         // if k &gt; 0, use Frechet which is Type II
         // if k &lt; 0, use Weibull which is Type III.  Not using k &lt; 0 in this project
 
-<span class="fc" id="L177">        float z = 1.f + k * ((xPoint - mu)/sigma);</span>
-        float a,b;
+<span class="fc" id="L275">        double z = 1. + k * ((xPoint - mu)/sigma);</span>
+        double a,b;
 
-<span class="fc bfc" id="L180" title="All 2 branches covered.">        boolean zIsNegative = (z &lt; 0);</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        boolean zIsNegative = (z &lt; 0);</span>
         // When z is negative, need to use alternative methods for exponentiation:
         // 
         // For z^(g/h)
@@ -191,58 +289,55 @@ public class GeneralizedExtremeValue {
         //    the principal value is
         //        (-1)^(g/h) * ((1./z)^(g/h))
 
-<span class="fc bfc" id="L194" title="All 2 branches covered.">        if (zIsNegative) {</span>
-<span class="fc" id="L195">            float invNegZ = -1.0f*(1.0f/z);</span>
-<span class="fc" id="L196">            float neg1Pow = -1.0f; // TODO:  revisit this</span>
-<span class="fc" id="L197">            a = -1.f * neg1Pow * (float) Math.pow(invNegZ, (-1.f/k));</span>
-<span class="fc" id="L198">            b = neg1Pow * (float) Math.pow(invNegZ, (-1.f - (1.f/k)));</span>
-<span class="fc" id="L199">        } else {</span>
-<span class="fc" id="L200">            a = -1.f * (float) Math.pow(z, (-1.f/k));</span>
-<span class="fc" id="L201">            b = (float) Math.pow(z, (-1.f - (1.f/k)));</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">        if (zIsNegative) {</span>
+<span class="nc" id="L293">            double invNegZ = -1.0f*(1.0f/z);</span>
+<span class="nc" id="L294">            double neg1Pow = -1.0f; // TODO:  revisit this</span>
+<span class="nc" id="L295">            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));</span>
+<span class="nc" id="L296">            b = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)));</span>
+<span class="nc" id="L297">        } else {</span>
+<span class="fc" id="L298">            a = -1. * Math.pow(z, (-1./k));</span>
+<span class="fc" id="L299">            b = Math.pow(z, (-1. - (1./k)));</span>
         }
         
-<span class="pc bpc" id="L204" title="2 of 4 branches missed.">        if (Float.isNaN(a) || Float.isNaN(b)) {</span>
+<span class="pc bpc" id="L302" title="2 of 4 branches missed.">        if (Double.isNaN(a) || Double.isNaN(b)) {</span>
             // or return 0?
-<span class="nc" id="L206">            return null;</span>
+<span class="nc" id="L304">            throw new IllegalStateException(&quot;cannot be NaN&quot;);</span>
         } else {
-<span class="fc" id="L208">            float t = (float) ((1.f/sigma) * Math.exp(a) * b);</span>
-<span class="fc" id="L209">            return Double.valueOf(t);</span>
+<span class="fc" id="L306">            return ((1./sigma) * Math.exp(a) * b);</span>
         }
     }
 
-    public static Double generateYEVTypeI(float xPoint, float sigma, float mu) {
+    public static Double generateYEVTypeI(double xPoint, double mu, double sigma) {
 
-<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
-<span class="nc" id="L216">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L313">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
         }
 
-<span class="fc" id="L219">        double z = (xPoint - mu)/sigma;</span>
+<span class="nc" id="L316">        double z = (xPoint - mu)/sigma;</span>
 
-<span class="fc" id="L221">        double a = (float) (-1.f*z - Math.exp(-1.0f*z));</span>
+<span class="nc" id="L318">        double a = (-1.*z - Math.exp(-1.0f*z));</span>
 
-<span class="fc" id="L223">        double yGEV = (float) ((1.f/sigma) * Math.exp(a));</span>
-
-<span class="fc" id="L225">        return yGEV;</span>
+<span class="nc" id="L320">        return ((1./sigma) * Math.exp(a));</span>
     }
 
-    public float[] generateCurve(float[] x1, float k, float sigma, float mu) {
+    public double[] generateCurve(double[] x1, double mu, double sigma, double k) {
 
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
-<span class="nc" id="L231">            return null;</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L326">            throw new IllegalArgumentException(&quot;sigma cannot be null&quot;);</span>
         }
         // if k =~ 0, use Gumbel which is Type I
-<span class="pc bpc" id="L234" title="1 of 4 branches missed.">        if (k == 0 || Float.isInfinite(1.f/k)) {</span>
-<span class="fc" id="L235">            return generateEVTypeICurve(x1, sigma, mu);</span>
+<span class="pc bpc" id="L329" title="2 of 4 branches missed.">        if (k == 0 || Double.isInfinite(1./k)) {</span>
+<span class="nc" id="L330">            return generateEVTypeICurve(x1, mu, sigma);</span>
         }
         
-<span class="fc" id="L238">        float[] yGEV = new float[x1.length];</span>
+<span class="fc" id="L333">        double[] yGEV = new double[x1.length];</span>
 
-<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
 
-<span class="fc" id="L242">            float z = 1.f + k*((x1[i] - mu)/sigma);</span>
-            float a,b;
+<span class="fc" id="L337">            double z = 1. + k*((x1[i] - mu)/sigma);</span>
+            double a,b;
 
-<span class="fc bfc" id="L245" title="All 2 branches covered.">            boolean zIsNegative = (z &lt; 0);</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">            boolean zIsNegative = (z &lt; 0);</span>
             // When z is negative, need to use alternative methods for exponentiation:
             //
             // For z^(g/h)
@@ -256,91 +351,97 @@ public class GeneralizedExtremeValue {
             //    the principal value is
             //        (-1)^(g/h) * ((1./z)^(g/h))
             
-<span class="fc bfc" id="L259" title="All 2 branches covered.">            if (zIsNegative) {</span>
-<span class="fc" id="L260">                float invNegZ = -1.0f*(1.0f/z);</span>
-<span class="fc" id="L261">                float neg1Pow = -1.0f; // TODO:  revisit this</span>
-<span class="fc" id="L262">                a = -1.f * neg1Pow * (float) Math.pow(invNegZ, (-1.f/k));</span>
-<span class="fc" id="L263">                b = neg1Pow * (float) Math.pow(invNegZ, (-1.f - (1.f/k)));</span>
-<span class="fc" id="L264">            } else {</span>
-<span class="fc" id="L265">                a = -1.f * (float) Math.pow(z, (-1.f/k));</span>
-<span class="fc" id="L266">                b = (float) Math.pow(z, (-1.f - (1.f/k)));</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">            if (zIsNegative) {</span>
+<span class="nc" id="L355">                double invNegZ = -1.0f*(1.0f/z);</span>
+<span class="nc" id="L356">                double neg1Pow = -1.0f; // TODO:  revisit this</span>
+<span class="nc" id="L357">                a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));</span>
+<span class="nc" id="L358">                b = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)));</span>
+<span class="nc" id="L359">            } else {</span>
+<span class="fc" id="L360">                a = -1. * Math.pow(z, (-1./k));</span>
+<span class="fc" id="L361">                b = Math.pow(z, (-1. - (1./k)));</span>
             }
 
-<span class="pc bpc" id="L269" title="2 of 4 branches missed.">            if (Float.isNaN(a) || Float.isNaN(b)) {</span>
-<span class="nc" id="L270">                yGEV[i] = 0;</span>
+<span class="pc bpc" id="L364" title="2 of 4 branches missed.">            if (Double.isNaN(a) || Double.isNaN(b)) {</span>
+<span class="nc" id="L365">                yGEV[i] = 0;</span>
             } else {
-<span class="fc" id="L272">                float t = (float) ((1.f/sigma) * Math.exp(a) * b);</span>
-<span class="fc bfc" id="L273" title="All 4 branches covered.">                if (t &lt; 0 || Float.isNaN(t)) {</span>
-<span class="fc" id="L274">                    yGEV[i] = 0;</span>
+<span class="fc" id="L367">                double t = ((1./sigma) * Math.exp(a) * b);</span>
+<span class="pc bpc" id="L368" title="2 of 4 branches missed.">                if (t &lt; 0 || Double.isNaN(t)) {</span>
+<span class="nc" id="L369">                    yGEV[i] = 0;</span>
                 } else {
-<span class="fc" id="L276">                    yGEV[i] = t;</span>
+<span class="fc" id="L371">                    yGEV[i] = t;</span>
                 }
             }
         }
 
-<span class="fc" id="L281">        return yGEV;</span>
+<span class="fc" id="L376">        return yGEV;</span>
     }
 
-    public static float[] generateEVTypeICurve(float[] x1, float sigma, float mu) {
-
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
-<span class="nc" id="L287">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
+    public static double[] generateEVTypeICurve(double[] x1, double mu, double sigma) {
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L381">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
         }
-
-<span class="fc" id="L290">        float[] yGEV = new float[x1.length];</span>
-
-<span class="fc bfc" id="L292" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
-
-<span class="fc" id="L294">            float z = (x1[i] - mu)/sigma;</span>
-
-<span class="fc" id="L296">            float a = (float) (-1.f*z - Math.exp(-1.0f*z));</span>
-
-<span class="fc" id="L298">            yGEV[i] = (float) ((1.f/sigma) * Math.exp(a));</span>
+<span class="fc" id="L383">        double[] yGEV = new double[x1.length];</span>
+        double z;
+        double a;
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
+<span class="fc" id="L387">            z = (x1[i] - mu)/sigma;</span>
+<span class="fc" id="L388">            a = -(z + Math.exp(-1.*z));</span>
+<span class="fc" id="L389">            yGEV[i] = (1./sigma) * Math.exp(a);</span>
         }
-
-<span class="fc" id="L301">        return yGEV;</span>
+<span class="fc" id="L391">        return yGEV;</span>
     }
 
-    public float determineYConstant(float[] yGEV, float mu) {
+    public double determineYConstant(double[] yGEV, double mu) {
 
-<span class="nc" id="L306">        int index = MiscMath0.findYMaxIndex(y);</span>
-<span class="nc bnc" id="L307" title="All 2 branches missed.">        if (index == -1) {</span>
-<span class="nc" id="L308">            return 0;</span>
+<span class="nc" id="L396">        int index = MiscMath0.findYMaxIndex(y);</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">        if (index == -1) {</span>
+<span class="nc" id="L398">            return 0;</span>
         }
 
-<span class="nc" id="L311">        return determineYConstant(yGEV, mu, index);</span>
+<span class="nc" id="L401">        return determineYConstant(yGEV, mu, index);</span>
     }
 
-    public float determineYConstant(float[] yGEV, float mu, int index) {
+    public double determineYConstant(double[] yGEV, double mu, int index) {
 
-<span class="nc" id="L316">        float yConst = y[index]/yGEV[index];</span>
+<span class="nc" id="L406">        double yConst = y[index]/yGEV[index];</span>
 
-<span class="nc" id="L318">        return yConst;</span>
+<span class="nc" id="L408">        return yConst;</span>
     }
 
     /**
-     * Errors in fitting the curve can be calculated via chain rule of derivatives of the fit:
-     *
+     * calculate sum of the square of the differences between the curves.
      *
      * @param y1 the y data array
      * @param yGEV the generated GEV y model array
      * @return the mean error of the fit
      */
-    public static float calculateChiSq(float[] y1, float[] yGEV) {
+    public static double sumOfSquaredDiff(double[] y1, double[] yGEV) {
+<span class="nc" id="L419">        double chiSum = 0.;</span>
+        double d;
+<span class="nc bnc" id="L421" title="All 2 branches missed.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
+<span class="nc" id="L422">            d = yGEV[i] - y1[i];</span>
+<span class="nc" id="L423">            chiSum += (d * d);</span>
+        }
+<span class="nc" id="L425">        return chiSum;</span>
+    }
 
-<span class="nc" id="L331">        float yNorm = MiscMath0.findMax(y1);</span>
+    /**
+     * calculate sum of ( square(y1 - yGEV)/yGEV )
+     *
+     * @param y1 the y data array
+     * @param yGEV the generated GEV y model array
+     * @return the mean error of the fit
+     */
+    public static double chisq(double[] y1, double[] yGEV) {
 
-<span class="nc" id="L333">        float chiSum = 0.f;</span>
-
-<span class="nc bnc" id="L335" title="All 2 branches missed.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
-
-<span class="nc" id="L337">            float z = (yGEV[i] - y1[i])/yNorm;</span>
-<span class="nc" id="L338">            z *= z;</span>
-
-<span class="nc" id="L340">            chiSum += z;</span>
+<span class="nc" id="L437">        double chiSum = 0.;</span>
+        double d;
+<span class="nc bnc" id="L439" title="All 2 branches missed.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
+<span class="nc" id="L440">            d = (y1[i] - yGEV[i]);</span>
+<span class="nc" id="L441">            chiSum += (d*d/yGEV[i]);</span>
         }
 
-<span class="nc" id="L343">        return chiSum;</span>
+<span class="nc" id="L444">        return chiSum;</span>
     }
 
     /**
@@ -351,22 +452,21 @@ public class GeneralizedExtremeValue {
        (err_y_fit)^2 =  (err_x)^2|--------|   + (err_k)^2|--------|   + (err_s)^2|-------|   + (err_m)^2|------|
                                  |   dx   |              |   dk   |              |  ds   |              |  dm  |
      &lt;/pre&gt;
-     * @param bestFit2
      * @return
      */
-    public static double calculateFittingErrorSquared(GEVYFit yFit, float xPoint) {
+    public static double calculateFittingErrorSquared(GEVYFit yFit, double xPoint) {
 
-<span class="nc bnc" id="L359" title="All 2 branches missed.">        if (yFit == null) {</span>
-<span class="nc" id="L360">            return Float.POSITIVE_INFINITY;</span>
+<span class="nc bnc" id="L459" title="All 2 branches missed.">        if (yFit == null) {</span>
+<span class="nc" id="L460">            return Double.POSITIVE_INFINITY;</span>
         }
 
-<span class="nc" id="L363">        int yMaxIdx = MiscMath0.findYMaxIndex(yFit.getYFit());</span>
+<span class="nc" id="L463">        int yMaxIdx = MiscMath0.findYMaxIndex(yFit.getYFit());</span>
 
-<span class="nc bnc" id="L365" title="All 2 branches missed.">        if (yMaxIdx == -1) {</span>
-<span class="nc" id="L366">            return Float.POSITIVE_INFINITY;</span>
+<span class="nc bnc" id="L465" title="All 2 branches missed.">        if (yMaxIdx == -1) {</span>
+<span class="nc" id="L466">            return Double.POSITIVE_INFINITY;</span>
         }
 
-<span class="nc" id="L369">        float xPeak = yFit.getX()[yMaxIdx];</span>
+<span class="nc" id="L469">        double xPeak = yFit.getX()[yMaxIdx];</span>
 
         // since we don't have an error in the parameters, we'll make a rough
         //   guess with the parameters in bestFit compared to prior bestFit.
@@ -376,31 +476,31 @@ public class GeneralizedExtremeValue {
         //  the error has to be smaller than half of the delta otherwise the prior Fit
         //  value would have been kept.  very very rough approx for parameter errors...
 
-<span class="nc" id="L379">        float kDelta = yFit.getKResolution()/2.f;</span>
-<span class="nc" id="L380">        float sigmaDelta = yFit.getSigmaResolution()/2.f;</span>
-<span class="nc" id="L381">        float muDelta = yFit.getMuSolutionResolution()/2.f;</span>
+<span class="nc" id="L479">        double kDelta = yFit.getKResolution()/2.;</span>
+<span class="nc" id="L480">        double sigmaDelta = yFit.getSigmaResolution()/2.;</span>
+<span class="nc" id="L481">        double muDelta = yFit.getMuSolutionResolution()/2.;</span>
 
-<span class="nc" id="L383">        float yConst = yFit.getYScale();</span>
-<span class="nc" id="L384">        float mu = yFit.getMu();</span>
-<span class="nc" id="L385">        float k = yFit.getK();</span>
-<span class="nc" id="L386">        float sigma = yFit.getSigma();</span>
+<span class="nc" id="L483">        double yConst = yFit.getYScale();</span>
+<span class="nc" id="L484">        double mu = yFit.getMu();</span>
+<span class="nc" id="L485">        double k = yFit.getK();</span>
+<span class="nc" id="L486">        double sigma = yFit.getSigma();</span>
 
-<span class="nc" id="L388">        float xDelta = yFit.getX()[1] - yFit.getX()[0];</span>
+<span class="nc" id="L488">        double xDelta = yFit.getX()[1] - yFit.getX()[0];</span>
 
-<span class="nc" id="L390">        double dydx = DerivGEV.derivWRTX(yConst, mu, k, sigma, xPoint);</span>
+<span class="nc" id="L490">        double dydx = DerivGEV.derivWRTX(yConst, mu, sigma, k, xPoint);</span>
 
-<span class="nc" id="L392">        double dydk = DerivGEV.derivWRTK(yConst, mu, k, sigma, xPoint);</span>
+<span class="nc" id="L492">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, xPoint);</span>
 
-<span class="nc" id="L394">        double dyds = DerivGEV.derivWRTSigma(yConst, mu, k, sigma, xPoint);</span>
+<span class="nc" id="L494">        double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, xPoint);</span>
 
-<span class="nc" id="L396">        double dydm = DerivGEV.derivWRTMu(yConst, mu, k, sigma, xPoint);</span>
+<span class="nc" id="L496">        double dydm = DerivGEV.derivWRTMu(yConst, mu, sigma, k, xPoint);</span>
 
         // since x is always given as a number, exclude it from propagation
-<span class="nc" id="L399">        double err = /*Math.pow(xDelta*dydx, 2)*/ + Math.pow(kDelta*dydk, 2) + Math.pow(sigmaDelta*dyds, 2) + Math.pow(muDelta*dydm, 2);</span>
+<span class="nc" id="L499">        double err = /*Math.pow(xDelta*dydx, 2)*/ + Math.pow(kDelta*dydk, 2) + Math.pow(sigmaDelta*dyds, 2) + Math.pow(muDelta*dydm, 2);</span>
 
 //System.out.println(&quot;error in x alone: &quot; + Math.sqrt( Math.pow(xDelta*dydx, 2) )/yFit.getYScale());
 
-<span class="nc" id="L403">        return (float)err/(yFit.getYScale() * yFit.getYScale());</span>
+<span class="nc" id="L503">        return err/(yFit.getYScale() * yFit.getYScale());</span>
     }
 
     /**
@@ -417,27 +517,27 @@ public class GeneralizedExtremeValue {
      &lt;/pre&gt;
      
      * @param yFit
-     * @param yLimitFraction
+     * @param yMaxFactor
      * @return
      */
-    public static double calculateWidthFittingError(GEVYFit yFit, float yMaxFactor) {
+    public static double calculateWidthFittingError(GEVYFit yFit, double yMaxFactor) {
 
-<span class="nc bnc" id="L425" title="All 2 branches missed.">        if (yFit == null) {</span>
-<span class="nc" id="L426">            return Float.POSITIVE_INFINITY;</span>
+<span class="nc bnc" id="L525" title="All 2 branches missed.">        if (yFit == null) {</span>
+<span class="nc" id="L526">            return Double.POSITIVE_INFINITY;</span>
         }
 
-<span class="nc" id="L429">        int yPeakIdx = MiscMath0.findYMaxIndex(yFit.getOriginalScaleX());</span>
-<span class="nc" id="L430">        float yLimit = yMaxFactor * yFit.getOriginalScaleYFit()[yPeakIdx];</span>
-<span class="nc" id="L431">        int yLimitIdx = -1;</span>
-<span class="nc bnc" id="L432" title="All 2 branches missed.">        for (int i = 0; i &lt; yFit.getOriginalScaleX().length; i++) {</span>
-<span class="nc bnc" id="L433" title="All 2 branches missed.">            if (i &gt; yPeakIdx) {</span>
-<span class="nc bnc" id="L434" title="All 2 branches missed.">                if (yFit.getOriginalScaleYFit()[i] &gt; yLimit) {</span>
-<span class="nc" id="L435">                    yLimitIdx = i;</span>
+<span class="nc" id="L529">        int yPeakIdx = MiscMath0.findYMaxIndex(yFit.getOriginalScaleX());</span>
+<span class="nc" id="L530">        double yLimit = yMaxFactor * yFit.getOriginalScaleYFit()[yPeakIdx];</span>
+<span class="nc" id="L531">        int yLimitIdx = -1;</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        for (int i = 0; i &lt; yFit.getOriginalScaleX().length; i++) {</span>
+<span class="nc bnc" id="L533" title="All 2 branches missed.">            if (i &gt; yPeakIdx) {</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">                if (yFit.getOriginalScaleYFit()[i] &gt; yLimit) {</span>
+<span class="nc" id="L535">                    yLimitIdx = i;</span>
                 } else {
                     break;
                 }
             } else {
-<span class="nc" id="L440">                yLimitIdx = i;</span>
+<span class="nc" id="L540">                yLimitIdx = i;</span>
             }
         }
 
@@ -446,55 +546,240 @@ public class GeneralizedExtremeValue {
         //   a safe addition to that (added in quadrature) would be an error in x derived from chi square
         //   but that is not done here
 
-<span class="nc" id="L449">        float xDelta = yFit.getX()[1] - yFit.getX()[0];</span>
-<span class="nc" id="L450">        float xErrorSq = (xDelta*xDelta/4.f);</span>
+<span class="nc" id="L549">        double xDelta = yFit.getX()[1] - yFit.getX()[0];</span>
+<span class="nc" id="L550">        double xErrorSq = (xDelta*xDelta/4.);</span>
 
-<span class="nc" id="L452">        float sum = 0.0f;</span>
-<span class="nc bnc" id="L453" title="All 2 branches missed.">        for (int i = 0; i &lt;= yLimitIdx; i++) {</span>
-<span class="nc" id="L454">            sum += xErrorSq;</span>
+<span class="nc" id="L552">        double sum = 0.0f;</span>
+<span class="nc bnc" id="L553" title="All 2 branches missed.">        for (int i = 0; i &lt;= yLimitIdx; i++) {</span>
+<span class="nc" id="L554">            sum += xErrorSq;</span>
         }
 
-<span class="nc" id="L457">        sum = (float) Math.sqrt(sum);</span>
+<span class="nc" id="L557">        sum = Math.sqrt(sum);</span>
 
-<span class="nc" id="L459">        return sum;</span>
+<span class="nc" id="L559">        return sum;</span>
     }
 
-    public static float[] generateNormalizedCurve(float[] x1, float k, float sigma, float mu) {
+    /**
+     * calculate the inverse CDF of the GEV, that is, a random variate x given the
+     * probability alpha.
+     * &lt;pre&gt;
+     *     reference is from the book &quot;Extreme Value Distributions, Theory and Applications&quot;
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 &lt; p &lt; 1
+     * &lt;/pre&gt;
+     * @param p random variate drawn from U(0,1) where U is the uniform distribution.
+     *          NOTE that p must be greater than 0 and less 1, so consider
+     *          using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
+     *          In other words, p drawn from U(1e-16, 1. - 1e-16).
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return
+     */
+    public static double inverseCdf(double p, double location, double scale, double shape) throws NoSuchAlgorithmException {
 
-<span class="pc bpc" id="L464" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
-            //throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);
-<span class="nc" id="L466">            return null;</span>
-        }
+<span class="nc" id="L585">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L586">        long seed = System.nanoTime();</span>
+<span class="nc" id="L587">        System.out.println(&quot;SEED=&quot; + seed);</span>
+<span class="nc" id="L588">        rand.setSeed(seed);</span>
 
-<span class="fc" id="L469">        float[] yGEV = genCurve(x1, k, sigma, mu);</span>
-
-<span class="fc" id="L471">        float yMax = MiscMath0.findMax(yGEV);</span>
-
-<span class="fc bfc" id="L473" title="All 2 branches covered.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
-<span class="fc" id="L474">            yGEV[i] /= yMax;</span>
-        }
-
-<span class="fc" id="L477">        return yGEV;</span>
+<span class="nc" id="L590">        return inverseCdf(p, location, scale, scale, rand);</span>
     }
 
-    public static float[] genCurve(float[] x1, float k, float sigma, float mu) {
+    /**
+     * calculate the inverse CDF of the GEV, that is, a random variate x given the
+     * probability alpha.
+     * &lt;pre&gt;
+     *     reference is from the book &quot;Extreme Value Distributions, Theory and Applications&quot;
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 &lt; p &lt; 1
+     * &lt;/pre&gt;
+     * @param p random variate drawn from U(0,1) where U is the uniform distribution.
+     *    NOTE that p must be greater than 0 and less 1, so consider
+     *    using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
+     *    In other words, p drawn from U(1e-16, 1. - 1e-16).
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return
+     */
+    public static double inverseCdf(double p, double location, double scale, double shape, SecureRandom rand) {
+<span class="nc bnc" id="L615" title="All 2 branches missed.">        if (p &lt;= 0) {</span>
+<span class="nc" id="L616">            throw new IllegalArgumentException(&quot;p must be &gt; 0 and &lt; 1&quot;);</span>
+        }
+<span class="nc bnc" id="L618" title="All 2 branches missed.">        if (p &gt;= 1) {</span>
+<span class="nc" id="L619">            throw new IllegalArgumentException(&quot;p must be &gt; 0 and &lt; 1&quot;);</span>
+        }
+<span class="nc" id="L621">        double y = -Math.log(-Math.log(p));</span>
+        double x;
+<span class="nc bnc" id="L623" title="All 2 branches missed.">        if (shape != 0) {</span>
+<span class="nc" id="L624">            x = location + scale * (1. - Math.exp(-shape * y)) / shape;</span>
+        } else {
+<span class="nc" id="L626">            x = location + scale * y;</span>
+        }
+<span class="nc" id="L628">        return x;</span>
+    }
 
-<span class="pc bpc" id="L482" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
-<span class="nc" id="L483">            return null;</span>
+    /**
+     * calculate the inverse CDF of the GEV, that is, a random variate x given the
+     * probability alpha.
+     * &lt;pre&gt;
+     *     reference is from the book &quot;Extreme Value Distributions, Theory and Applications&quot;
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 &lt; p &lt; 1
+     * &lt;/pre&gt;
+     * @param p array of random variates drawn from U(0,1) where U is the uniform distribution.
+     *    NOTE that p elements must be greater than 0 and less 1, so consider
+     *    using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
+     *    In other words, p elements drawn from U(1e-16, 1. - 1e-16).
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return
+     */
+    public static double[] inverseCdf(double[] p, double location, double scale, double shape, SecureRandom rand) {
+<span class="fc" id="L653">        int n = p.length;</span>
+        int i;
+        double y;
+<span class="fc" id="L656">        double[] x = new double[n];</span>
+<span class="fc bfc" id="L657" title="All 2 branches covered.">        if (shape != 0) {</span>
+<span class="fc bfc" id="L658" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L659">                y = -Math.log(-Math.log(p[i]));</span>
+<span class="fc" id="L660">                x[i] = location + scale * (1. - Math.exp(-shape * y)) / shape;</span>
+            }
+        } else {
+<span class="fc bfc" id="L663" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L664">                y = -Math.log(-Math.log(p[i]));</span>
+<span class="fc" id="L665">                x[i] = location + scale * y;</span>
+            }
+        }
+<span class="fc" id="L668">        return x;</span>
+    }
+
+    /**
+     * randomly draw from the inverse CDF of the GEV to return points that follow a GEV distibution.
+     * &lt;pre&gt;
+     *     reference is from the book &quot;Extreme Value Distributions, Theory and Applications&quot;
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 &lt; p &lt; 1
+     * &lt;/pre&gt;
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return array of randomly drawn numbers from the GEV
+     */
+    public static double[] sampleRandomlyFrom(double location, double scale, double shape,
+                                              int nDraws) throws NoSuchAlgorithmException {
+
+<span class="fc" id="L690">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="fc" id="L691">        long seed = System.nanoTime();</span>
+<span class="fc" id="L692">        System.out.println(&quot;SEED=&quot; + seed);</span>
+<span class="fc" id="L693">        rand.setSeed(seed);</span>
+
+<span class="fc" id="L695">        return sampleRandomlyFrom(location, scale, shape, nDraws, rand);</span>
+    }
+
+    /**
+     * randomly draw from the inverse CDF of the GEV to return points that follow a GEV distibution.
+     * &lt;pre&gt;
+     *     reference is from the book &quot;Extreme Value Distributions, Theory and Applications&quot;
+     *     by Kotz and Nadarajah 2000, Section 2.2 Macleod (1989):
+     *     when shape != 0:
+     *         x = location + scale*(1 - exp(-shape * y))/shape
+     *     when shape= 0
+     *         x = location + scale * y
+     *     where y = -log(-log(p));  0 &lt; p &lt; 1
+     * &lt;/pre&gt;
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @param shape parameter of the distribution function
+     * @return array of randomly drawn numbers from the GEV
+     */
+    public static double[] sampleRandomlyFrom(double location, double scale, double shape,
+                                              int nDraws, SecureRandom rand) {
+<span class="fc" id="L716">        double eps = 1e-16;</span>
+<span class="fc" id="L717">        double[] p = new double[nDraws];</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">        for (int i = 0; i &lt; nDraws; ++i) {</span>
+<span class="fc" id="L719">            p[i] = rand.nextDouble();</span>
+<span class="pc bpc" id="L720" title="1 of 2 branches missed.">            if (p[i] == 0) {</span>
+<span class="nc" id="L721">                p[i] = eps;</span>
+<span class="pc bpc" id="L722" title="1 of 2 branches missed.">            } else if (p[i] == 1.) {</span>
+<span class="nc" id="L723">                p[i] -= eps;</span>
+            }
+        }
+
+<span class="fc" id="L727">        return inverseCdf(p, location, scale, shape, rand);</span>
+    }
+
+    public static double[] generateNormalizedCurve(double[] x1, double mu, double sigma, double k) {
+
+<span class="pc bpc" id="L732" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L733">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
+        }
+
+<span class="fc" id="L736">        double[] yGEV = genCurve(x1, mu, sigma, k);</span>
+
+<span class="fc" id="L738">        double yMax = MiscMath0.findMax(yGEV);</span>
+
+<span class="fc bfc" id="L740" title="All 2 branches covered.">        for (int i = 0; i &lt; yGEV.length; i++) {</span>
+<span class="fc" id="L741">            yGEV[i] /= yMax;</span>
+        }
+
+<span class="fc" id="L744">        return yGEV;</span>
+    }
+
+    public static double[] _genCurve(double[] x1, double mu, double sigma, double k) {
+<span class="nc bnc" id="L748" title="All 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L749">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
         }
         // if k =~ 0, use Gumbel which is Type I
-<span class="pc bpc" id="L486" title="1 of 4 branches missed.">        if (k == 0 || Float.isInfinite(1.f/k)) {</span>
-<span class="fc" id="L487">            return generateEVTypeICurve(x1, sigma, mu);</span>
+<span class="nc bnc" id="L752" title="All 4 branches missed.">        if (k == 0 || Double.isInfinite(1./k)) {</span>
+<span class="nc" id="L753">            return generateEVTypeICurve(x1, mu, sigma);</span>
+        }
+        double t;
+<span class="nc" id="L756">        double[] yGEV = new double[x1.length];</span>
+<span class="nc bnc" id="L757" title="All 2 branches missed.">        for (int i = 0; i &lt; x1.length; i++) {</span>
+<span class="nc" id="L758">            t = 1. + k * ((x1[i] - mu) / sigma);</span>
+<span class="nc" id="L759">            t = Math.pow(t, -1./k);</span>
+<span class="nc" id="L760">            yGEV[i] = (1./sigma) * Math.pow(t, k + 1.) * Math.exp(-t);</span>
+        }
+<span class="nc" id="L762">        return yGEV;</span>
+    }
+
+    public static double[] genCurve(double[] x1, double mu, double sigma, double k) {
+
+<span class="pc bpc" id="L767" title="1 of 2 branches missed.">        if (sigma == 0) {</span>
+<span class="nc" id="L768">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
+        }
+        // if k =~ 0, use Gumbel which is Type I
+<span class="pc bpc" id="L771" title="1 of 4 branches missed.">        if (k == 0 || Double.isInfinite(1./k)) {</span>
+<span class="fc" id="L772">            return generateEVTypeICurve(x1, mu, sigma);</span>
         }
 
-<span class="fc" id="L490">        float[] yGEV = new float[x1.length];</span>
+<span class="fc" id="L775">        double[] yGEV = new double[x1.length];</span>
 
-<span class="fc bfc" id="L492" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
 
-<span class="fc" id="L494">            float z = 1.f + k * ((x1[i] - mu)/sigma);</span>
-            float a,b;
+<span class="fc" id="L779">            double z = 1. + k * ((x1[i] - mu)/sigma);</span>
+            double a,b;
 
-<span class="fc bfc" id="L497" title="All 2 branches covered.">            boolean zIsNegative = (z &lt; 0);</span>
+<span class="fc bfc" id="L782" title="All 2 branches covered.">            boolean zIsNegative = (z &lt; 0);</span>
             // When z is negative, need to use alternative methods for exponentiation:
             //
             // For z^(g/h)
@@ -508,29 +793,29 @@ public class GeneralizedExtremeValue {
             //    the principal value is
             //        (-1)^(g/h) * ((1./z)^(g/h))
 
-<span class="fc bfc" id="L511" title="All 2 branches covered.">            if (zIsNegative) {</span>
-<span class="fc" id="L512">                float invNegZ = -1.0f*(1.0f/z);</span>
-<span class="fc" id="L513">                float neg1Pow = -1.0f; // TODO:  revisit this</span>
-<span class="fc" id="L514">                a = -1.f * neg1Pow * (float) Math.pow(invNegZ, (-1.f/k));</span>
-<span class="fc" id="L515">                b = neg1Pow * (float) Math.pow(invNegZ, (-1.f - (1.f/k)));</span>
-<span class="fc" id="L516">            } else {</span>
-<span class="fc" id="L517">                a = -1.f * (float) Math.pow(z, (-1.f/k));</span>
-<span class="fc" id="L518">                b = (float) Math.pow(z, (-1.f - (1.f/k)));</span>
+<span class="fc bfc" id="L796" title="All 2 branches covered.">            if (zIsNegative) {</span>
+<span class="fc" id="L797">                double invNegZ = -1.0f*(1.0f/z);</span>
+<span class="fc" id="L798">                double neg1Pow = -1.0f; // TODO:  revisit this</span>
+<span class="fc" id="L799">                a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));</span>
+<span class="fc" id="L800">                b = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)));</span>
+<span class="fc" id="L801">            } else {</span>
+<span class="fc" id="L802">                a = -1. * Math.pow(z, (-1./k));</span>
+<span class="fc" id="L803">                b = Math.pow(z, (-1. - (1./k)));</span>
             }
 
-<span class="pc bpc" id="L521" title="2 of 4 branches missed.">            if (Float.isNaN(a) || Float.isNaN(b)) {</span>
-<span class="nc" id="L522">                yGEV[i] = 0;</span>
+<span class="pc bpc" id="L806" title="2 of 4 branches missed.">            if (Double.isNaN(a) || Double.isNaN(b)) {</span>
+<span class="nc" id="L807">                yGEV[i] = 0;</span>
             } else {
-<span class="fc" id="L524">                float t = (float) ((1.f/sigma) * Math.exp(a) * b);</span>
-<span class="fc bfc" id="L525" title="All 4 branches covered.">                if (t &lt; 0 || Float.isNaN(t)) {</span>
-<span class="fc" id="L526">                    yGEV[i] = 0;</span>
+<span class="fc" id="L809">                double t = ((1./sigma) * Math.exp(a) * b);</span>
+<span class="pc bpc" id="L810" title="1 of 4 branches missed.">                if (t &lt; 0 || Double.isNaN(t)) {</span>
+<span class="fc" id="L811">                    yGEV[i] = 0;</span>
                 } else {
-<span class="fc" id="L528">                    yGEV[i] = t;</span>
+<span class="fc" id="L813">                    yGEV[i] = t;</span>
                 }
             }
         }
 
-<span class="fc" id="L533">        return yGEV;</span>
+<span class="fc" id="L818">        return yGEV;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

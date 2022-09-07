@@ -2,121 +2,124 @@
 
 /**
  *
+ *  note, can find method of moments for Gamma and many other functions here:
+ *  https://stats.libretexts.org/Bookshelves/Probability_Theory/Probability_Mathematical_Statistics_and_Stochastic_Processes_(Siegrist)/07%3A_Point_Estimation/7.02%3A_The_Method_of_Moments
+ *
  * @author nichole
  */
-<span class="nc" id="L7">public class GammaCDF {</span>
+<span class="nc" id="L10">public class GammaCDF {</span>
     
     public static double cdf(double x, double shape, double scale) {
      
         // from https://www.mathworks.com/help/stats/gamcdf.html
                 
-<span class="pc bpc" id="L13" title="1 of 2 branches missed.">        if (x &lt; 0) {</span>
-<span class="nc" id="L14">            throw new IllegalArgumentException(&quot;x cannot be a negative number&quot;);</span>
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">        if (x &lt; 0) {</span>
+<span class="nc" id="L17">            throw new IllegalArgumentException(&quot;x cannot be a negative number&quot;);</span>
         }
-<span class="pc bpc" id="L16" title="1 of 2 branches missed.">        if (shape &lt;= 0) {</span>
-<span class="nc" id="L17">            throw new IllegalArgumentException(&quot;shape must be a positive number&quot;);</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (shape &lt;= 0) {</span>
+<span class="nc" id="L20">            throw new IllegalArgumentException(&quot;shape must be a positive number&quot;);</span>
         }
-<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (scale &lt;= 0) {</span>
-<span class="nc" id="L20">            throw new IllegalArgumentException(&quot;scale must be a positive number&quot;);</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        if (scale &lt;= 0) {</span>
+<span class="nc" id="L23">            throw new IllegalArgumentException(&quot;scale must be a positive number&quot;);</span>
         }
         
-<span class="fc" id="L23">        return thirdparty.smile.math.special.Gamma.regularizedIncompleteGamma(shape, x/scale);</span>
+<span class="fc" id="L26">        return thirdparty.smile.math.special.Gamma.regularizedIncompleteGamma(shape, x/scale);</span>
     }
     
     public static double inverseCdf(double shape, double scale, double alpha) {
      
-<span class="pc bpc" id="L28" title="2 of 4 branches missed.">        if (alpha &lt; 0 || alpha &gt; 0.999) {</span>
-<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;alpha must be [0, 1] and has an artificial upper limit here of 0.999 for search&quot;);</span>
+<span class="pc bpc" id="L31" title="2 of 4 branches missed.">        if (alpha &lt; 0 || alpha &gt; 0.999) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;alpha must be [0, 1] and has an artificial upper limit here of 0.999 for search&quot;);</span>
         }
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (shape &lt;= 0) {</span>
-<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;shape must be a positive number&quot;);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (shape &lt;= 0) {</span>
+<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;shape must be a positive number&quot;);</span>
         }
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (scale &lt;= 0) {</span>
-<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;scale must be a positive number&quot;);</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (scale &lt;= 0) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;scale must be a positive number&quot;);</span>
         }
         
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (shape &gt; 1000) {</span>
-<span class="nc" id="L39">            throw new IllegalArgumentException(&quot;currently using an artificial maximum allowed value of 1000 for shape&quot;);</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (shape &gt; 1000) {</span>
+<span class="nc" id="L42">            throw new IllegalArgumentException(&quot;currently using an artificial maximum allowed value of 1000 for shape&quot;);</span>
         }
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (scale &gt; 1000) {</span>
-<span class="nc" id="L42">            throw new IllegalArgumentException(&quot;currently using an artificial maximum allowed value of 1000 for scale&quot;);</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (scale &gt; 1000) {</span>
+<span class="nc" id="L45">            throw new IllegalArgumentException(&quot;currently using an artificial maximum allowed value of 1000 for scale&quot;);</span>
         }
         
         // use binary search
     
-<span class="fc" id="L47">        final double mean = shape * scale;</span>
+<span class="fc" id="L50">        final double mean = shape * scale;</span>
         // variance = shape * scale*scale
-<span class="fc" id="L49">        final double variance = mean * scale;</span>
+<span class="fc" id="L52">        final double variance = mean * scale;</span>
         
        
-<span class="fc" id="L52">        final int nMaxIter = 1000;</span>
-<span class="fc" id="L53">        final double tolP = 1.e-3;</span>
-<span class="fc" id="L54">        final double tolX = 1.e-3;</span>
+<span class="fc" id="L55">        final int nMaxIter = 1000;</span>
+<span class="fc" id="L56">        final double tolP = 1.e-3;</span>
+<span class="fc" id="L57">        final double tolX = 1.e-3;</span>
         
-<span class="fc" id="L56">        double xLow = 0;</span>
-<span class="fc" id="L57">        double xHigh = mean + 3.2*variance;                </span>
-<span class="fc" id="L58">        double x = (xLow + xHigh)/2;</span>
+<span class="fc" id="L59">        double xLow = 0;</span>
+<span class="fc" id="L60">        double xHigh = mean + 3.2*variance;                </span>
+<span class="fc" id="L61">        double x = (xLow + xHigh)/2;</span>
         
         // may need to change how this is estimated.
-<span class="fc" id="L61">        double delta = Math.min(xHigh - x, x - xLow);</span>
-<span class="fc" id="L62">        delta /= 2;</span>
+<span class="fc" id="L64">        double delta = Math.min(xHigh - x, x - xLow);</span>
+<span class="fc" id="L65">        delta /= 2;</span>
         
-<span class="fc" id="L64">        double diffP = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L67">        double diffP = Double.POSITIVE_INFINITY;</span>
         
         double p0, pm, pp;
         
-<span class="fc" id="L68">        int nIter = 0;</span>
-<span class="pc bpc" id="L69" title="1 of 4 branches missed.">        while (nIter &lt; nMaxIter &amp;&amp; xHigh &gt; xLow) {</span>
+<span class="fc" id="L71">        int nIter = 0;</span>
+<span class="pc bpc" id="L72" title="1 of 4 branches missed.">        while (nIter &lt; nMaxIter &amp;&amp; xHigh &gt; xLow) {</span>
             
-<span class="fc" id="L71">            x = (xLow + xHigh)/2;</span>
+<span class="fc" id="L74">            x = (xLow + xHigh)/2;</span>
             
-<span class="fc" id="L73">            delta = Math.min(xHigh - x, x - xLow);</span>
-<span class="fc" id="L74">            delta /= 2;</span>
+<span class="fc" id="L76">            delta = Math.min(xHigh - x, x - xLow);</span>
+<span class="fc" id="L77">            delta /= 2;</span>
             
-<span class="fc" id="L76">            p0 = cdf(x, shape, scale);</span>
-<span class="fc" id="L77">            diffP = p0 - alpha;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (Math.abs(diffP) &lt; tolP) {</span>
-<span class="fc" id="L79">                return x;</span>
+<span class="fc" id="L79">            p0 = cdf(x, shape, scale);</span>
+<span class="fc" id="L80">            diffP = p0 - alpha;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            if (Math.abs(diffP) &lt; tolP) {</span>
+<span class="fc" id="L82">                return x;</span>
             }
                         
             /*System.out.printf(&quot;%d) alpha=%.4f p=%.4f diff=%.4f   x=%.4f delta=%.4f\n&quot;, 
                 nIter, alpha, p0, diffP, x, delta);
             System.out.flush();*/
             
-<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (diffP &gt; 0) {</span>
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">                if (Math.abs(xHigh - x) &lt; tolX) {</span>
-<span class="nc" id="L88">                    xHigh -= delta;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            if (diffP &gt; 0) {</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                if (Math.abs(xHigh - x) &lt; tolX) {</span>
+<span class="nc" id="L91">                    xHigh -= delta;</span>
                 } else {
-<span class="fc" id="L90">                    xHigh = x;</span>
+<span class="fc" id="L93">                    xHigh = x;</span>
                 }
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            } else if (diffP &lt; 0) {</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">                if (Math.abs(xLow - x) &lt; tolX) {</span>
-<span class="fc" id="L94">                    xLow += delta;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">            } else if (diffP &lt; 0) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                if (Math.abs(xLow - x) &lt; tolX) {</span>
+<span class="fc" id="L97">                    xLow += delta;</span>
                 } else {
-<span class="fc" id="L96">                    xLow = x;</span>
+<span class="fc" id="L99">                    xLow = x;</span>
                 }
             }
             
-<span class="fc" id="L100">            nIter++;</span>
+<span class="fc" id="L103">            nIter++;</span>
         }
-<span class="fc" id="L102">        double minX = x;</span>
-<span class="fc" id="L103">        p0 = cdf(x, shape, scale);</span>
-<span class="fc" id="L104">        diffP = p0 - alpha;</span>
-<span class="fc" id="L105">        delta = Math.min(xHigh - x, x - xLow);</span>
-<span class="fc" id="L106">        delta /= 2;</span>
+<span class="fc" id="L105">        double minX = x;</span>
+<span class="fc" id="L106">        p0 = cdf(x, shape, scale);</span>
+<span class="fc" id="L107">        diffP = p0 - alpha;</span>
+<span class="fc" id="L108">        delta = Math.min(xHigh - x, x - xLow);</span>
+<span class="fc" id="L109">        delta /= 2;</span>
         
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if ((x + delta) &lt; xHigh) {</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (Math.abs(cdf(x + delta, shape, scale) - alpha) &lt; diffP) {</span>
-<span class="nc" id="L110">                minX = x + delta;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if ((x + delta) &lt; xHigh) {</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">            if (Math.abs(cdf(x + delta, shape, scale) - alpha) &lt; diffP) {</span>
+<span class="nc" id="L113">                minX = x + delta;</span>
             }
         }
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if ((x - delta) &gt;= 0) {</span>
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            if ( Math.abs(cdf(x - delta, shape, scale) - alpha) &lt; diffP) {</span>
-<span class="nc" id="L115">                minX = x - delta;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if ((x - delta) &gt;= 0) {</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">            if ( Math.abs(cdf(x - delta, shape, scale) - alpha) &lt; diffP) {</span>
+<span class="nc" id="L118">                minX = x - delta;</span>
             }
         }
         
-<span class="fc" id="L119">        return minX;</span>
+<span class="fc" id="L122">        return minX;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

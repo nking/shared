@@ -140,11 +140,11 @@ import java.util.Arrays;
 <span class="fc" id="L140">                    int idx2 = minMaxIdxs[iii];</span>
 <span class="pc bpc" id="L141" title="1 of 2 branches missed.">                    if (idx2 &lt; 0) {</span>
 <span class="fc" id="L142">                        float compare = values[-1*idx2];</span>
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">                        if (compare &lt; lowThreshold) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                        if (compare &lt; lowThreshold) {</span>
                             // avoids divide by very small number sometimes
-<span class="nc" id="L145">                            compare = lowThreshold;</span>
+<span class="fc" id="L145">                            compare = lowThreshold;</span>
                         }
-<span class="pc bpc" id="L147" title="2 of 4 branches missed.">                        if (values[idx] &gt;= lowThreshold &amp;&amp; </span>
+<span class="fc bfc" id="L147" title="All 4 branches covered.">                        if (values[idx] &gt;= lowThreshold &amp;&amp; </span>
                             values[idx] &gt;= factorAboveMin * compare) {
                             
 <span class="fc" id="L150">                            peaks.add(idx);</span>
@@ -159,18 +159,18 @@ import java.util.Arrays;
                 }
 
                 //compare to proceeding minimum
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                for (int iii = (ii + 1); iii &lt; minMaxIdxs.length; iii++) {</span>
+<span class="pc bfc" id="L162" title="All 2 branches covered.">                for (int iii = (ii + 1); iii &lt; minMaxIdxs.length; iii++) {</span>
 <span class="fc" id="L163">                    int idx2 = minMaxIdxs[iii];</span>
 <span class="pc bpc" id="L164" title="1 of 2 branches missed.">                    if (idx2 &lt; 0) {</span>
 <span class="fc" id="L165">                        float compare = values[-1*idx2];</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">                        if (compare &lt; lowThreshold) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">                        if (compare &lt; lowThreshold) {</span>
                             // avoids divide by very small number sometimes
-<span class="nc" id="L168">                            compare = lowThreshold;</span>
+<span class="fc" id="L168">                            compare = lowThreshold;</span>
                         }
-<span class="pc bpc" id="L170" title="2 of 4 branches missed.">                        if (values[idx] &gt;= lowThreshold </span>
+<span class="pc bpc" id="L170" title="1 of 4 branches missed.">                        if (values[idx] &gt;= lowThreshold </span>
                             &amp;&amp; values[idx] &gt;= factorAboveMin * compare) {
                             
-<span class="nc" id="L173">                            peaks.add(idx);</span>
+<span class="fc" id="L173">                            peaks.add(idx);</span>
                         }
                         
                         break;
@@ -202,7 +202,7 @@ import java.util.Arrays;
 <span class="fc" id="L202">            float currentK = values[ii];</span>
 
 <span class="fc bfc" id="L204" title="All 4 branches covered.">            if ((currentK &lt; lastK) &amp;&amp; incr) {</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">                if (values[ii - 1] &gt; lowThreshold) {</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">                if (values[ii - 1] &gt; lowThreshold) {</span>
 <span class="fc" id="L206">                    minMaxIdxs.add(ii - 1);</span>
                 }
 <span class="fc" id="L208">                incr = false;</span>

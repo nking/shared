@@ -1,0 +1,2292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WordLevelParallelism.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.misc</a> &gt; <span class="el_source">WordLevelParallelism.java</span></div><h1>WordLevelParallelism.java</h1><pre class="source lang-java linenums">package algorithms.misc;
+
+/**
+ * word-level parallel operations.
+ * useful for classes such as the FusionTree.
+ * &lt;pre&gt;
+ *  methods are implemented following lecture notes in
+ *  http://web.stanford.edu/class/cs166/
+ *  and
+ *  ____ add other reference ---
+ *  The MSB methods are ports of the c code at
+ *  http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+ *  refactored here to use a variable tile size.
+ * &lt;/pre&gt;
+ */
+<span class="nc" id="L16">public class WordLevelParallelism {</span>
+
+    /**
+     * finds the highest set bit in the bitstring tiled.  the method is a.k.a. MSB.
+     * MSB(tiled) is the largest value of k such that 2^k ≤ tiled.
+     * uses O(1) machine operations and O(1) space.
+     * &lt;pre&gt;
+     *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     *     then edited here for variable block size and number of tiles packed into tiled.
+     *     see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     * &lt;/pre&gt;
+     * An example of where MSB is used:
+     * In the sparse table Range Minimum Queries (RMQ) structure,
+     * where computing RMQ(i, j) requires computing
+     * the largest number k where 2^k ≤ (j–i+1), k = msb(j – i + 1).
+     *
+     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
+     */
+    public static long highestOneBitIn(long tiled) {
+        //NOTE: java's Long.highestOneBit() uses 14 operations
+<span class="nc" id="L38">        return Long.highestOneBit(tiled);</span>
+        // this implementation uses ~33 operations
+        // with block size 7 and 9 tiles, have 63 bits that are searched.  tileBitLength=blockSize - 1.
+        //return highestOneBitIn(tiled, 9, 6);
+    }
+
+    /**
+     * finds the highest set bit in the bitstring tiled.  the method is a.k.a. MSB.
+     * MSB(tiled) is the largest value of k such that 2^k ≤ tiled.
+     * uses O(1) machine operations and O(1) space.
+     * &lt;pre&gt;
+     *     reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     *     then edited here for variable block size and number of tiles packed into tiled.
+     *     see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     * &lt;/pre&gt;
+     * An example of where MSB is used:
+     * In the sparse table Range Minimum Queries (RMQ) structure,
+     * where computing RMQ(i, j) requires computing
+     * the largest number k where 2^k ≤ (j–i+1), k = msb(j – i + 1).
+     *  The operation is ~33 to a few times that operations.
+     *  Consider using instead Long.highestOneBitIn() which uses the Henry S. Warren, Jr.'s Hacker's Delight
+     *  bit twiddling for 14 operations.
+     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @param nTiles        the number of tiles packed into the bitarray tiled.
+     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
+     */
+    public static long highestOneBitIn(long tiled, int nTiles, int tileBitLength) {
+
+<span class="fc" id="L68">        int bSz = tileBitLength + 1;</span>
+
+        // Step 1: Identify the index of the highest block with a 1 bit in it.
+        // ~ 21 operations
+<span class="fc" id="L72">        long highBlockIndex = highestBlockSetIn(tiled, nTiles, tileBitLength);</span>
+
+        /* Step 2: Identify the highest bit within that block. To do so, we're going
+         * to shift that block down to the proper position and mask out the other
+         * bits.
+         */
+<span class="fc" id="L78">        long highBlock = tiled &gt;&gt; (highBlockIndex * bSz);</span>
+
+        // ~10 to a few times 10 operations:
+<span class="fc" id="L81">        return highBlockIndex * bSz + highestBitSetIn(highBlock, bSz);</span>
+    }
+
+    /**
+     * Given a 64-bit integer, returns the index of the block within that integer
+     * that contains a 1 bit, where the index is zero-based numbering.
+     &lt;pre&gt;
+          reference http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+          then edited here for variable block size and number of tiles packed into tiled.
+          see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     &lt;/pre&gt;
+     * the method is ~ 21 operations.
+     * @param tiled the bitarray of tiled integers.
+     * @param nTiles the number of tiles embedded in tiled.
+     * @param tileBitLength the length of each tile in tiled, not counting the surrounding single flag bits.
+     *                      the block size is tileBitLength + 1.
+     * @return return the largest index of the block within tiled that contains a set bit, else returns a
+     * negative number if there are no set bits in tiled.  the block size is tileBitLength + 1.
+     */
+    static long highestBlockSetIn(long tiled, int nTiles, int tileBitLength) {
+
+<span class="fc" id="L102">        int bSz = tileBitLength + 1;</span>
+
+        // 5 operations
+<span class="fc" id="L105">        long usedBlocksIn = usedBlocksIn(tiled, bSz);</span>
+
+        // the block number in bits, e.g. 6th block is 0b1000000
+        // ~ 3 operations
+<span class="fc" id="L109">        long sketch = sketch(usedBlocksIn, nTiles, tileBitLength);</span>
+
+        // ~ 13 operations
+<span class="fc" id="L112">        return highestBitSetIn(sketch, nTiles);</span>
+    }
+
+    /**
+     * given an array of bitstringLength values, concatenate them and insert 0's on the high
+     * end of each value.
+     * e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     * tiled1 is 0b0010010001100111, where 0's have been concatenated onto the high end of
+     * each tileBitLength bitstring, making a bitstring of length 16.
+     * &lt;p&gt;
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bistringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (values.length * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent values.length is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from values array in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * @param values          array of bitstrings, each of length bitstringLength
+     * @param bitstringLength the bitlength of each value in values.  the tile for each will be bitstringLength + 1
+     *                        bits long.  the total tiled result will be values.length * (bitstringLength + 1) bits.
+     * @return the bitarray holding the bitarray of replicated values with '0' separators.
+     */
+    public static long createTiledBitstring0(int[] values, int bitstringLength) {
+<span class="pc bpc" id="L144" title="2 of 4 branches missed.">        if (bitstringLength &lt; 1 || bitstringLength &gt; 63) {</span>
+<span class="nc" id="L145">            throw new IllegalArgumentException(&quot;bitstringLength must be &gt; 0 and &lt;= 63&quot;);</span>
+        }
+<span class="fc" id="L147">        int n = values.length;</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (n == 0) {</span>
+<span class="nc" id="L149">            return 0;</span>
+        }
+<span class="fc" id="L151">        final int b = bitstringLength + 1;</span>
+<span class="fc" id="L152">        long tiled = 0;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L154">            tiled  |= (((long)values[i]) &lt;&lt; (b*(n-i-1)));</span>
+        }
+
+<span class="fc" id="L157">        return tiled;</span>
+    }
+
+    /**
+     * create a bitmask array of set bits at the location of separators in the concatenation of
+     * nTiles of length bitstringLength.
+     * e.g. for nTiles=2 and bitstringLength=7, the resulting bitmask is 0b1000000010000000
+     * which is 16 bits.
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bistringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * @param nTiles          the number of tiles of bitstringLength for which this mask will be calculated.
+     * @param bitstringLength the bit-length of each tile
+     * @return the bitarray holding the bitarray of '1' separators for nTiles of length bitstringLength.
+     * e.g. for nTiles=2 and bitstringLength=7, the resulting bitmask is 0b1000000010000000
+     * which is 16 bits.
+     */
+    static long createTiledBitMask1(int nTiles, int bitstringLength) {
+<span class="pc bpc" id="L188" title="2 of 4 branches missed.">        if (bitstringLength &lt; 1 || bitstringLength &gt; 63) {</span>
+<span class="nc" id="L189">            throw new IllegalArgumentException(&quot;bitstringLength must be &gt; 0 and &lt;=&gt; 63&quot;);</span>
+        }
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L192">            return 0;</span>
+        }
+<span class="fc" id="L194">        int i1 = bitstringLength;</span>
+<span class="fc" id="L195">        final int d = bitstringLength + 1;</span>
+        // e.g. for bitstringLength=7, kMask=(1&lt;&lt;15)|(1&lt;&lt;7) etc
+<span class="fc" id="L197">        long kMask = 0;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        for (int i = 0; i &lt; nTiles; ++i) {</span>
+<span class="fc" id="L199">            kMask |= (1L &lt;&lt; i1);</span>
+<span class="fc" id="L200">            i1 += d;</span>
+        }
+<span class="fc" id="L202">        return kMask;</span>
+    }
+
+    /**
+     * given a bitstring called value which is much smaller than a machine word,
+     * create a bitarray (word) with nTiles number of copies of value,
+     * concatenated, with 1's in between them and on the high end.
+     * e.g. for 7-bit value 0b1100111 and nTiles=2, the returned bitarray would be 0b1110011111100111.
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bitstringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * @param value           bitstring of length .lte. bitstringLength
+     * @param nTiles          the number of copies of value to set in the returned bitarray
+     * @param bitstringLength the length of tiling before the 1's are concatenated as separators.
+     *                        e.g. for a bitstringLength of 5 and nTiles=10, the resulting bitarray is length 10*(5+1)=60 bits
+     * @return the bitarray holding the bitarray of replicated values with '1' separators.
+     */
+    public static long createTiledBitstring1(int value, int nTiles, int bitstringLength) {
+<span class="pc bpc" id="L233" title="2 of 4 branches missed.">        if (bitstringLength &lt; 1 || bitstringLength &gt; 63) {</span>
+<span class="nc" id="L234">            throw new IllegalArgumentException(&quot;bitstringLength must be greater than 0 and less than 64&quot;);</span>
+        }
+<span class="pc bpc" id="L236" title="2 of 4 branches missed.">        if (nTiles &lt; 1 || nTiles &gt; 63) {</span>
+<span class="nc" id="L237">            throw new IllegalArgumentException(&quot;nTiles must be greater than 0 and less than 64&quot;);</span>
+        }
+<span class="fc" id="L239">        int i0 = 0;</span>
+<span class="fc" id="L240">        int i1 = bitstringLength;</span>
+<span class="fc" id="L241">        final int d = bitstringLength + 1;</span>
+        // e.g. for bitstringLength=7, kMult=(1&lt;&lt;8)|(1&lt;&lt;0) etc and kMask=(1&lt;&lt;15)|(1&lt;&lt;7) etc
+<span class="fc" id="L243">        long kMult = 0;</span>
+<span class="fc" id="L244">        long kMask = 0;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        for (int i = 0; i &lt; nTiles; ++i) {</span>
+<span class="fc" id="L246">            kMult |= (1L &lt;&lt; i0);</span>
+<span class="fc" id="L247">            kMask |= (1L &lt;&lt; i1);</span>
+<span class="fc" id="L248">            i0 += d;</span>
+<span class="fc" id="L249">            i1 += d;</span>
+        }
+
+<span class="fc" id="L252">        return (value * kMult) | kMask;</span>
+    }
+
+    /**
+     * parallel compare of tiled1 to tiled2 and return a masked bit array whose set bits indicate which
+     * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bitstringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled1 is 0b0010010001100111, where 0's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     * @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
+     * @param tileBitLength the length of each tile in the bit arrays.
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    public static long parallelCompare00(long tiled1, long tiled2, int nTiles, int tileBitLength) {
+
+<span class="nc" id="L288">        long mask1 = createTiledBitMask1(nTiles, tileBitLength);</span>
+<span class="nc" id="L289">        tiled1 |= mask1;</span>
+
+<span class="nc" id="L291">        return rank(tiled1, tiled2, nTiles, tileBitLength, mask1);</span>
+    }
+
+    /**
+     * parallel compare of tiled1 to tiled2 which both have block sizes of 8 and have flag bits
+     * of '0' separating the embedded 7-bit tiles.
+     * returns a masked bit array whose set bits indicate which
+     * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bitstringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled1 is 0b0010010001100111, where 0's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     * @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    public static long parallelCompare008(long tiled1, long tiled2, int nTiles) {
+        //                6         5         4         3         2         1
+        //              210987654321098765432109876543210987654321098765432109876543210
+        //            0b111111111111111111111111111111111111111111111111111111111111111
+<span class="nc" id="L330">        long kMask1 = 0b000000010000000100000001000000010000000100000001000000010000000L;</span>
+        // e.g. for bitstringLength=7, block size=8, kMask=(1&lt;&lt;15)|(1&lt;&lt;7) etc
+
+<span class="nc" id="L333">        tiled1 |= kMask1;</span>
+
+<span class="nc" id="L335">        return rank(tiled1, tiled2, nTiles, 7, kMask1);</span>
+    }
+
+    /**
+     * calculate the rank of the replicated query tile in tiled1 with respect to the tiled keys
+     * in tiled2.  This method performs a parallel compare of tiled1 to tiled2,
+     * masks the result, and then sums the number of set bits in the masked result.
+     * The calculated rank requires that the keys embedded in tiled2 are ordered.
+     * The calculated rank is the number of flags of blocks in tiled2 that are less than or equal to those
+     * in the query (which is replicated in tiled1).
+     * The method is O(1) (5 operations).
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     *                      e.g. For bitstring 0b0010100 replicated 2 times using a bitlength of 7 bits,
+     *                      the resulting tiled1 is bitstring of length 16 bits which has 2 blocks of size 8 bits,
+     *                      = 0b10010100_10010100.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled2 is 0b00100100_01100111, where 0's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     *                      because it includes the gap bit between tiles.
+     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
+     * @return The calculated rank is the number of flags of blocks in tiled2 that are less than or equal to those
+     * in the query (which is replicated in tiled1).
+     */
+    public static long rank(long tiled1, long tiled2, int nTiles, int tileBitLength, long mask1) {
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        if (nTiles &lt; 1) {</span>
+<span class="nc" id="L371">            throw new IllegalArgumentException(&quot;nTiles must be &gt; 0&quot;);</span>
+        }
+
+        //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
+<span class="fc" id="L375">        long diff = tiled1 - tiled2;</span>
+
+<span class="fc" id="L377">        long comparison = diff &amp; mask1;</span>
+
+        //System.out.printf(&quot;tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n&quot;, Long.toBinaryString(tiled1),
+        //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
+
+        // 3 operations
+<span class="fc" id="L383">        return parallelSum(comparison, nTiles, tileBitLength);</span>
+    }
+
+    /**
+     * parallel compare of tiled1 to tiled2 and return a masked bit array whose set bits indicate which
+     * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bistringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled1 is 0b1010010011100111, where 1's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     *                      because it includes the gap bit between tiles.
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    public static long rank(long tiled1, long tiled2, int nTiles, int tileBitLength) {
+
+<span class="fc" id="L419">        long mask1 = createTiledBitMask1(nTiles, tileBitLength);</span>
+
+<span class="fc" id="L421">        return rank(tiled1, tiled2, nTiles, tileBitLength, mask1);</span>
+    }
+
+    /**
+     * parallel compare of tiled1 to tiled2 both of which have block size 8 and
+     * embedded tiles of size 7-bits.
+     * this method returns a masked bit array whose set bits indicate which
+     * tiles of tiled1 are .gte. the tiles of tiled2 in the same position.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * NOTE that there are some size restrictions to the packing especially in context of further use such as the compare
+     * operations.
+     * Let block size = (bistringLength + 1).
+     * The unsigned long restricts the total bit length of the tiled result of this method to 63 bits,
+     * and so (nTiles * block) must be less than or equal to 63.
+     * Also, regarding the number of values to be tiled: the compare operation has to be able to store the bit
+     * representation of the number of tiles into the highest blocks of a mask that is the same size as the
+     * total tiled bit length.  If the number of bits needed to represent nTiles is not less than or equal to
+     * block size, then more blocks are needed to hold that number and that number of extra blocks may need to be subtracted
+     * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
+     * and the 63 bit limit.
+     *
+     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
+     *                      tiled1 is 0b1010010011100111, where 1's have been concatenated onto the high end of
+     *                      each tileBitLength bitstring, making a bitstring of length 16.
+     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    static long parallelCompare108(long tiled1, long tiled2, int nTiles, long mask1) {
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+<span class="nc bnc" id="L461" title="All 2 branches missed.">        if (nTiles &lt; 1) {</span>
+<span class="nc" id="L462">            throw new IllegalArgumentException(&quot;nTiles must be &gt; 0&quot;);</span>
+        }
+
+        //3. Compute X – Y. The bit preceding xi – yi is 1 if xi ≥ yi and 0 otherwise.
+<span class="nc" id="L466">        long diff = tiled1 - tiled2;</span>
+
+<span class="nc" id="L468">        long comparison = diff &amp; mask1;</span>
+
+        //System.out.printf(&quot;tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n&quot;, Long.toBinaryString(tiled1),
+        //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
+
+<span class="nc" id="L473">        return parallelSum(comparison, nTiles, 7);</span>
+    }
+
+    /**
+     * sum the set bits of bitstring comparison.  the flags that may have set bits are the MSB of each block.
+     *
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * This is 3 operations.
+     * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
+     *                      are summed in this method.
+     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     *                      because it includes the gap bit between tiles.
+     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
+     * in tiled2.
+     */
+    static long parallelSum(long comparison, int nTiles, int tileBitLength) {
+
+<span class="pc bpc" id="L495" title="1 of 4 branches missed.">        if (nTiles == 0 ||comparison == 0) {</span>
+<span class="fc" id="L496">            return 0;</span>
+        }
+<span class="pc bpc" id="L498" title="2 of 4 branches missed.">        if (tileBitLength &lt; 1 || tileBitLength &gt; 63) {</span>
+<span class="nc" id="L499">            throw new IllegalArgumentException(&quot;tileBitLength must be &gt;= 1 and &lt;= 63&quot;);</span>
+        }
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+<span class="fc" id="L505">        final int bSz = tileBitLength + 1;</span>
+
+<span class="fc" id="L507">        final int nMaskBits = (int) Math.ceil(Math.log(nTiles) / Math.log(2));</span>
+
+        final long kMult;
+        final long kMask;
+        final long kShift;
+        long sumBits;
+
+<span class="pc bpc" id="L514" title="2 of 9 branches missed.">        switch(bSz) {</span>
+            case 32:
+                // only 1 tile fits in 63 bits, so test that bit and return 1 or 0
+<span class="nc bnc" id="L517" title="All 2 branches missed.">                if ((comparison &amp; (1L &lt;&lt; 31)) != 0) {</span>
+<span class="nc" id="L518">                    return 1;</span>
+                }
+<span class="nc" id="L520">                return 0;</span>
+            case 24:
+                // for nTiles=2, need 2-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L525">                kMult =0b000000000000000000000000000000000000001000000000000000000000001L;</span>
+<span class="fc" id="L526">                kMask =0b000000000000011100000000000000000000000000000000000000000000000L;</span>
+                //    not in hex:       A00000000000000000000000B00000000000000000000000L
+<span class="fc" id="L528">                kShift = 47;</span>
+<span class="fc" id="L529">                return ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+            case 16:
+                // for nTiles=3, need 2-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L534">                kMult =0b000000000000000000000000000000100000000000000010000000000000001L;</span>
+<span class="fc" id="L535">                kMask =0b000000000000011100000000000000000000000000000000000000000000000L;</span>
+                //                      A000000000000000B000000000000000C000000000000000L
+<span class="fc" id="L537">                kShift = 47;</span>
+<span class="fc" id="L538">                return ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+            case 8:
+                // for nTiles=7, need 3-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L543">                kMult =0b000000000000001000000010000000100000001000000010000000100000001L;</span>
+<span class="fc" id="L544">                kMask =0b000001110000000000000000000000000000000000000000000000000000000L;</span>
+                //              A0000000B0000000C0000000D0000000E0000000F0000000G0000000L
+<span class="fc" id="L546">                kShift = 55;</span>
+<span class="fc" id="L547">                return ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+            case 7:
+                // for nTiles = 9, need 4 bits in mask
+                // kMult=(1&lt;&lt;0) | (1&lt;&lt;7) | (1&lt;&lt;14) | (1&lt;&lt;21) | (1&lt;&lt;28) | (1&lt;&lt;35) | (1&lt;&lt;42) | (1&lt;&lt;49) | (1&lt;&lt;56)
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L553">                kMult =0b000000100000010000001000000100000010000001000000100000010000001L;</span>
+<span class="fc" id="L554">                kMask =0b000011110000000000000000000000000000000000000000000000000000000L;</span>
+                //              10000001000000100000010000001000000100000010000001000000;
+<span class="fc" id="L556">                kShift = 55;</span>
+<span class="fc" id="L557">                return ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+            case 6:
+                // for nTiles = 10, need 4 bits in mask
+                // kMult=(1&lt;&lt;0) | (1&lt;&lt;6) | (1&lt;&lt;12) | (1&lt;&lt;18) | (1&lt;&lt;24) | (1&lt;&lt;30) | (1&lt;&lt;36) | (1&lt;&lt;42) | (1&lt;&lt;48) | (1&lt;&lt;54)
+                //           6         5         4         3         2         1
+                //         210987654321098765432109876543210987654321098765432109876543210
+                // not enough space in 63 bits for the bit mask, so handle nTiles = 9,
+                // then set a higher bit if block 9 high bit is set
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                //comp=0b000100000100000100000100000100000100000100000100000100000100000;
+<span class="fc" id="L568">                kMult = 0b00000000000001000001000001000001000001000001000001000001000001L;</span>
+<span class="fc" id="L569">                kMask =      0b111100000000000000000000000000000000000000000000000000000L;</span>
+                //                  A00000B00000C00000D00000E00000F00000G00000H00000I00000L;
+<span class="fc" id="L571">                kShift = 53;</span>
+<span class="fc" id="L572">                sumBits = ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+<span class="fc" id="L573">                sumBits += (comparison &gt;&gt; 59);</span>
+<span class="fc" id="L574">                return sumBits;</span>
+            case 5:
+                // for nTiles = 12, need 4 bits in mask.
+                // not enough space for mask, so will calculate for nTiles=11 and set the high bit for last
+                // kMult=(1&lt;&lt;0) | (1&lt;&lt;5) | (1&lt;&lt;10) | (1&lt;&lt;15) | (1&lt;&lt;20) | (1&lt;&lt;25) | (1&lt;&lt;30) | (1&lt;&lt;35) | (1&lt;&lt;40) | (1&lt;&lt;45) | (1&lt;&lt;50) | (1&lt;&lt;55)
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                //comp=0b000100001000010000100001000010000100001000010000100001000010000;
+<span class="fc" id="L582">                kMult = 0b00000000000100001000010000100001000010000100001000010000100001L;</span>
+<span class="fc" id="L583">                kMask =     0b1111000000000000000000000000000000000000000000000000000000L;</span>
+                //           A0000B0000C0000D0000E0000F0000G0000H0000I0000J0000K0000L0000L;
+<span class="fc" id="L585">                kShift = 54;</span>
+<span class="fc" id="L586">                sumBits = ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+<span class="fc" id="L587">                sumBits += (comparison &gt;&gt; 59);</span>
+<span class="fc" id="L588">                return sumBits;</span>
+            case 4:
+                // for nTiles = 15, need 4 bits in mask.
+                // not enough space in the resulting addition from the multiplier to hold the 4 bits of mask
+                // (in other words, the space for the sum is 4 bits, but the intervals in addition are only 3 bits).
+                // fall through
+            case 3:
+                // for nTiles = 21, need 5 bits in mask.
+                // not enough space in the resulting addition from the multiplier to hold the 5 bits of mask
+                // (in other words, the space for the sum is 5 bits, but the intervals in addition are only 2 bits).
+                // fall through
+            case 2:
+                // for nTiles = 31, need 5 bits in mask.
+                // the additions from the multiplier can fit into 2 bits only.
+                // fall through
+            case 1:
+                // for nTiles = 63, need 6 bits in mask.
+                // not enough space in the resulting addition from the multiplier to hold the 6 bits of mask
+                // (in other words, the space for the sum is 6 bits, but the intervals in addition are 0 bits.
+                // instead of the 5 or so operations used for parallelSum,
+                // one can use binary magic numbers in hamming weight to count the set bits in 13 operations.
+                //TODO: consider more efficient methods.
+<span class="fc" id="L610">                return MiscMath0.numberOfSetBits(comparison);</span>
+            default: {
+                //TODO:
+                //make a generic, not necessarily most efficient method for cases blockSize = [9,63]
+
+                // for blockSize=8, nTiles=7, need 3-bit mask
+                //         6         5         4         3         2         1
+                //       210987654321098765432109876543210987654321098765432109876543210
+                // kMult=(1&lt;&lt;0) | (1&lt;&lt;8) | (1&lt;&lt;16) | (1&lt;&lt;24) ...
+<span class="nc" id="L619">                kMult =0b000000000000001000000010000000100000001000000010000000100000001L;</span>
+<span class="nc" id="L620">                kMask =0b000001110000000000000000000000000000000000000000000000000000000L;</span>
+                //              A0000000B0000000C0000000D0000000E0000000F0000000G0000000L
+<span class="nc" id="L622">                kShift = 55;</span>
+
+<span class="nc" id="L624">                return ((comparison * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+            }
+        }
+    }
+
+    /**
+     * sum the set bits of the comparison bitstring which has a block size of 8 and embedded tiles of
+     * size 7-bits.  this method sums the set bits at the high end of each block and returns the result.
+     *
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * this is ~ 6 operations.
+     * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
+     *                      are summed in this method.
+     * @return the sum of the set bits of the MSB of each 8-bit block.
+     */
+    static long parallelSum8(long comparison, int nTiles) {
+
+        //following sumOf in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+        // then edited to make the block size variable
+
+<span class="fc" id="L648">        final int bSz = 8;</span>
+
+        // e.g. for bSz=8, kMult=(1&lt;&lt;8)|(1&lt;&lt;0) etc
+        //               6         5         4         3         2         1
+        //            210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L653">        long kMult = 0b00000000000001000000010000000100000001000000010000000100000001L;</span>
+<span class="fc" id="L654">        long kMask = 0b00001110000000000000000000000000000000000000000000000000000000L;</span>
+
+<span class="fc" id="L656">        int kShift = 64-8-1;</span>
+<span class="fc" id="L657">        int kShift2 = 63;</span>
+
+<span class="fc" id="L659">        long s1 = (((comparison * kMult) &amp; kMask) &gt;&gt; kShift);</span>
+<span class="fc" id="L660">        long s2 = (comparison &gt;&gt; kShift2);</span>
+
+<span class="fc" id="L662">        long sum = s1 + s2;</span>
+
+<span class="fc" id="L664">        return sum;</span>
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags, extract and return the flags.
+     * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
+     * This is also known as &quot;parallel pack&quot;.
+     &lt;pre&gt;
+     references:
+     lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+          and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+
+     https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+
+     &lt;/pre&gt;
+     The method is ~ 3 operations.
+     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
+     * @param nTiles        the number of tiles packed into the bitarray tiled.
+     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     * @return
+     */
+    public static long sketch(long tiled, int nTiles, int tileBitLength) {
+
+<span class="pc bpc" id="L688" title="1 of 9 branches missed.">        switch(tileBitLength + 1) {</span>
+            case 8:
+<span class="fc" id="L690">                return sketch8(tiled, nTiles);</span>
+            case 7:
+<span class="fc" id="L692">                return sketch7(tiled, nTiles);</span>
+            case 6:
+<span class="fc" id="L694">                return sketch6(tiled, nTiles);</span>
+            case 5:
+<span class="fc" id="L696">                return sketch5(tiled, nTiles);</span>
+            case 4:
+<span class="fc" id="L698">                return sketch4(tiled, nTiles);</span>
+            case 3:
+<span class="fc" id="L700">                return sketch3(tiled, nTiles);</span>
+            case 2:
+<span class="fc" id="L702">                return sketch2(tiled);</span>
+            case 1:
+<span class="fc" id="L704">                return tiled;</span>
+            default:
+<span class="nc" id="L706">                throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+        }
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 8 bits
+     * and embedded tile size of 7 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A0000000B0000000C0000000D0000000, this method would return ABCD.
+
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     * and embedded tile size of 6 bits
+     * @return
+     */
+    public static long sketch8(long tiled, int nTiles) {
+
+<span class="pc bpc" id="L727" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L728">            return 0;</span>
+        }
+<span class="pc bpc" id="L730" title="2 of 4 branches missed.">        if (nTiles &lt; 0 || nTiles &gt; 7) {</span>
+<span class="nc" id="L731">            throw new UnsupportedOperationException(&quot;nTiles must be &gt; 0 and &lt;= 7 for block size 8&quot;);</span>
+        }
+
+        // e.g. for bitstringLength=7 blockSize=8, kMult=(1&lt;&lt;0) | (1&lt;&lt;7) | (1&lt;&lt;14) etc
+        //                6         5         4         3         2         1
+        //              210987654321098765432109876543210987654321098765432109876543210
+        //                     10000001000000100000010000001000000100000010000001000000
+<span class="fc" id="L738">        long kMult   = 0b00000000000000000001000000100000010000001000000100000010000001L;</span>
+<span class="fc" id="L739">        long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;</span>
+<span class="fc" id="L740">        int kShift   = 49;</span>
+
+        /*System.out.printf(&quot;\nkMask=\n%63s\n&quot; +
+                &quot;kMult=\n%63s\n&quot; +
+                &quot;kShift=%d\n&quot; +
+                &quot;(tiled * kMult) &amp; kMask=\n%63s\n&quot; +
+                &quot;(((tiled * kMult) &amp; kMask) &gt;&gt; kShift)=\n%63s\n&quot;,
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) &amp; kMask),
+                Long.toBinaryString(((tiled * kMult) &amp; kMask) &gt;&gt; kShift));*/
+
+<span class="fc" id="L751">        long sketch = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+<span class="fc" id="L753">        return sketch;</span>
+
+        /*
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000000010000000100000001000000010000000100000001000000010000000
+                                                              0b6       5       4       3       2       1       0       L
+                                                       0b6       5       4       3       2       1       0       L
+                                                0b6       5       4       3       2       1       0       L
+                                         0b6       5       4       3       2       1       0       L
+                                  0b6       5       4       3       2       1       0       L
+                           0b6       5       4       3       2       1       0       L
+                    0b6       5       4       3       2       1       0       L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask       =         0b11111110000000000000000000000000000000000000000000000000;
+        */
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     * and embedded tile size of 6 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A000000B000000C000000D000000, this method would return ABCD.
+
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     * and embedded tile size of 6 bits
+     * @param nTiles the number of tiles of block size 7 embedded in tiled.  maximum nTiles is 9.
+     * @return
+     */
+    public static long sketch7(long tiled, final int nTiles) {
+
+<span class="pc bpc" id="L792" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L793">            return 0;</span>
+        }
+<span class="pc bpc" id="L795" title="2 of 4 branches missed.">        if (nTiles &lt; 0 || nTiles &gt; 9) {</span>
+<span class="nc" id="L796">            throw new UnsupportedOperationException(&quot;nTiles must be &gt; 0 and &lt;= 9 for block size 7&quot;);</span>
+        }
+
+        // 1 block to fit the sketch where each bit represents a tile, means that can
+        //  only sketch 7 blocks, then handle the last 2 after first 7.
+
+        // kMult=(1&lt;&lt;0) | (1&lt;&lt;6) | (1&lt;&lt;12) | (1&lt;&lt;18) | (1&lt;&lt;24) | (1&lt;&lt;30) | (1&lt;&lt;36)
+        //                    6         5         4         3         2         1
+        //                  210987654321098765432109876543210987654321098765432109876543210
+        //         tiled= 0b100000010000001000000100000010000001000000100000010000001000000
+<span class="fc" id="L806">        final long kMult = 0b00000000000000000000000001000001000001000001000001000001000001L;</span>
+        //
+<span class="fc" id="L808">        final long kMask =              0b1111111000000000000000000000000000000000000000000L;</span>
+<span class="fc" id="L809">        int kShift = 42;//7*7-7</span>
+<span class="fc" id="L810">        long sketch = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+<span class="pc bpc" id="L812" title="1 of 2 branches missed.">        if (nTiles &lt; 8) {</span>
+<span class="nc" id="L813">            return sketch;</span>
+        }
+
+<span class="fc" id="L816">        tiled &gt;&gt;= 55;</span>
+<span class="fc" id="L817">        sketch |= ((tiled &amp; 0b1) &lt;&lt; 7);</span>
+<span class="fc" id="L818">        sketch |= (((tiled&gt;&gt;7) &amp; 0b1) &lt;&lt; 8);</span>
+
+<span class="fc" id="L820">        return sketch;</span>
+
+        /*
+        for nTiles &lt;=7
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         _000000_0000001000000100000010000001000000100000010000001000000
+
+                                                               0b      6      5      4      3      2      1      0      L
+                                                         0b      6      5      4      3      2      1      0      L
+                                                   0b      6      5      4      3      2      1      0      L
+                                             0b      6      5      4      3      2      1      0      L
+                                       0b      6      5      4      3      2      1      0      L
+                                 0b      6      5      4      3      2      1      0      L
+                           0b      6      5      4      3      2      1      0      L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                0b1111111000000000000000000000000000000000000000000;
+         */
+        /*
+        editing for nTiles = 8
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         _00000010000001000000100000010000001000000100000010000001000000
+sketch overlaps here:
+    so will handle block 7 after sketching the first 7 blocks as above
+
+                                                                7      6      5      4      3      2      1      0      L
+                                                          7      6      5      4      3      2      1      0      L
+                                                    7      6      5      4      3      2      1      0      L
+                                              7      6      5      4      3      2      1      0      L
+                                        7      6      5      4      3      2      1      0      L
+                                  7      6      5      4      3      2      1      0      L
+                            7      6      5      4      3      2      1      0      L
+                      7      6      5      4      3      2      1      0      L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =         0b11111111000000000000000000000000000000000000000000000000;
+        */
+
+        /*System.out.printf(&quot;\nkMask=\n%63s\n&quot; +
+                &quot;kMult=\n%63s\n&quot; +
+                &quot;kShift=%d\n&quot; +
+                &quot;(tiled * kMult) &amp; kMask=\n%63s\n&quot; +
+                &quot;(((tiled * kMult) &amp; kMask) &gt;&gt; kShift)=\n%63s\n&quot;,
+                Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
+                Long.toBinaryString((tiled * kMult) &amp; kMask),
+                Long.toBinaryString(((tiled * kMult) &amp; kMask) &gt;&gt; kShift));*/
+
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 6 bits
+     * and embedded tile size of 5 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A00000B00000C00000D00000, this method would return ABCD.
+
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 6 bits
+     * and embedded tile size of 5 bits
+     * @param nTiles the number of tiles of block size 6 embedded in tiled.  the maximum number for the java unsigned
+     *               long is 10 tiles of block size 6.
+     * @return
+     */
+    public static long sketch6(long tiled, final int nTiles) {
+
+<span class="pc bpc" id="L894" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L895">            return 0;</span>
+        }
+<span class="pc bpc" id="L897" title="2 of 4 branches missed.">        if (nTiles &lt; 0 || nTiles &gt; 10) {</span>
+<span class="nc" id="L898">            throw new UnsupportedOperationException(&quot;nTiles must be &gt; 0 and &lt;= 10 for block size 6&quot;);</span>
+        }
+
+        // kMult=(1&lt;&lt;0) | (1&lt;&lt;5) | (1&lt;&lt;10) | (1&lt;&lt;15) | (1&lt;&lt;20) | (1&lt;&lt;25)
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L904">        long kMult = 0b000000000000000000000000000000000000010000100001000010000100001L;</span>
+<span class="fc" id="L905">        long kMask = 0b111111000000000000000000000000000000L;</span>
+<span class="fc" id="L906">        long kShift = 30;</span>
+
+<span class="fc" id="L908">        long sketch = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+<span class="pc bpc" id="L910" title="1 of 2 branches missed.">        if (nTiles &lt; 7) {</span>
+<span class="nc" id="L911">            return sketch;</span>
+        }
+
+        /*
+        note that cannot edit the multiplier to use a larger interval of 9 for nTiles=10 because
+        the highest bit in the product that needs to be masked to extract the sketch
+        would be &gt; 63 bits.
+
+        so will make another sketch for remaining tiles:
+
+        for nTiles 7-10, that is, blocks 6-9, inclusive.
+        shift tiled down by 6*6, leaving blocks 6:9.
+        */
+
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
+        // shift down by the 6 blocks we just sketched:
+<span class="fc" id="L927">        tiled &gt;&gt;= 36;</span>
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
+
+        // change the shift to reserve space of 6 at the end to merge the 2 sketches:
+<span class="fc" id="L931">        kShift -= 6;</span>
+<span class="fc" id="L932">        long sketch2 = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+        //from https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        // Merge bits from two values according to a mask
+        //   a=0b000000001110  &lt;--- similar to sketch
+        //   b=0b101111110000  &lt;--- similar to sketch2
+        //mask=0b111111110000
+        //r = a ^ ((a ^ b) &amp; mask); bin(r)
+        //0b10111110'
+
+        //System.out.printf(&quot;nTiles=%d, blockSize=6\n&quot;, nTiles);
+        //System.out.printf(&quot;sketch=%63s\n&quot;, Long.toBinaryString(sketch));
+        //System.out.printf(&quot;sketch=%63s\n&quot;, Long.toBinaryString(sketch2));
+
+<span class="fc" id="L946">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b111111000000L);</span>
+
+        //System.out.printf(&quot;merged=%63s\n&quot;, Long.toBinaryString(sketch));
+
+<span class="fc" id="L950">        return sketch;</span>
+
+        /*
+        for nTiles &lt;=7
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                         000_00000_00000_00000_00000100000100000100000100000100000100000
+
+                                                                                  0b5     4     3     2     1     0     L
+                                                                             0b5     4     3     2     1     0     L
+                                                                        0b5     4     3     2     1     0     L
+                                                                   0b5     4     3     2     1     0     L
+                                                              0b5     4     3     2     1     0     L
+                                                         0b5     4     3     2     1     0     L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                             0b111111000000000000000000000000000000;
+         */
+         /*
+        for nTiles 7 - 10
+        shift tiled down by 6*6, leaving blocks 6:9
+        mask = 0b111100000000000000000000
+        last shift = 20
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                                                                          _00000100000100000100000100000
+                                                                             BLOCK              9     8     7     6
+                                                                                           9     8     7     6
+                                                                                      9     8     7     6
+                                                                                 9     8     7     6
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                                         0b111100000000000000000000;
+         */
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 5 bits
+     * and embedded tile size of 4 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A0000B0000C0000D0000, this method would return ABCD.
+
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 5 bits
+     * and embedded tile size of 4 bits
+     * @param nTiles the number of tiles of block size 5 embedded in tiled.  the maximum number of 12 for nTiles for
+     *               block size of 5 is limited by the java unsigned long and the location of the mask bits needed after
+     *               the sketch multiplier.
+     * @return
+     */
+    public static long sketch5(long tiled, final int nTiles) {
+
+<span class="pc bpc" id="L1009" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L1010">            return 0;</span>
+        }
+<span class="pc bpc" id="L1012" title="2 of 4 branches missed.">        if (nTiles &lt; 0 || nTiles &gt; 12) {</span>
+<span class="nc" id="L1013">            throw new UnsupportedOperationException(&quot;nTiles must be &gt; 0 and &lt;= 12 for block size 5&quot;);</span>
+        }
+
+<span class="fc" id="L1016">        int kShift = 20;</span>
+<span class="fc" id="L1017">        long kMult = 0b000000000000000000000000000000000000000000000010001000100010001L;</span>
+<span class="fc" id="L1018">        long kMask = 0b1111100000000000000000000L;</span>
+
+<span class="fc" id="L1020">        long sketch = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+<span class="pc bpc" id="L1022" title="1 of 2 branches missed.">        if (nTiles &lt; 6) {</span>
+<span class="nc" id="L1023">            return sketch;</span>
+        }
+
+        //TODO: consider how to implement a word-level parallel shift right to reduce the tiled values to just the flags?
+        // involves a division which is expensive?
+
+        // sketch 5 tiles at a time, and merge after each
+
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
+        // shift down by the 5 blocks we just sketched:
+<span class="fc" id="L1033">        tiled &gt;&gt;= 25;</span>
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
+
+        // change the shift to reserve space of 5 at the end to merge the 2 sketches:
+<span class="fc" id="L1037">        kShift -= 5;</span>
+<span class="fc" id="L1038">        long sketch2 = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+        //from https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        // Merge bits from two values according to a mask
+        //   a=0b000000001110  &lt;--- similar to sketch
+        //   b=0b101111110000  &lt;--- similar to sketch2
+        //mask=0b111111110000
+        //r = a ^ ((a ^ b) &amp; mask); bin(r)
+        //0b10111110'
+
+<span class="fc" id="L1048">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b1111100000L);</span>
+
+<span class="pc bpc" id="L1050" title="1 of 2 branches missed.">        if (nTiles &lt; 11) {</span>
+<span class="nc" id="L1051">            return sketch;</span>
+        }
+
+        // one more round of sketch and merge
+<span class="fc" id="L1055">        tiled &gt;&gt;= 25;</span>
+<span class="fc" id="L1056">        kShift -= 5;</span>
+<span class="fc" id="L1057">        sketch2 = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+        // sketch is 10 bits, sketch2 is 5 bits
+<span class="fc" id="L1060">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b111110000000000L);</span>
+
+<span class="fc" id="L1062">        return sketch;</span>
+
+        /*
+        for nTiles &lt;=5
+                                                           6         5         4         3         2         1
+                                                          10987654321098765432109876543210987654321098765432109876543210
+                                                          00_0000_0000_0000_0000_0000_0000_00001000010000100001000010000
+                                                                                               4    3    2    1    0    L
+                                                                                           4    3    2    1    0    L
+                                                                                       4    3    2    1    0    L
+                                                                                   4    3    2    1    0    L
+                                                                               4    3    2    1    0    L
+
+                                                           6         5         4         3         2         1
+                                                          10987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =                                        0b1111100000000000000000000;
+         */
+        /*
+        editing for nTiles &lt;= 11
+
+        overlaps here so need to
+        use more than one sketch
+
+                                                           6         5         4         3         2         1
+                                                          10987654321098765432109876543210987654321098765432109876543210
+                                                          00100001000010000100001000010000100001000010000100001000010000
+                                                            B    A    9    8    7    6    5    4    3    2    1    0    L
+                                                        B    A    9    8    7    6    5    4    3    2    1    0    L
+                                                    B    A    9    8    7    6    5    4    3    2    1    0    L
+                                                B    A    9    8    7    6    5    4    3    2    1    0    L
+                                            B    A    9    8    7    6    5    4    3    2    1    0    L
+                                        B    A    9    8    7    6    5    4    3    2    1    0    L
+                                    B    A    9    8    7    6    5    4    3    2    1    0    L
+                                B    A    9    8    7    6    5    4    3    2    1    0    L
+                            B    A    9    8    7    6    5    4    3    2    1    0    L
+                        B    A    9    8    7    6    5    4    3    2    1    0    L
+                    B    A    9    8    7    6    5    4    3    2    1    0    L
+                B    A    9    8    7    6    5    4    3    2    1    0    L
+
+                                                           6         5         4         3         2         1
+                                                         210987654321098765432109876543210987654321098765432109876543210
+                                        kMask1      =     0b111111111111000000000000000000000000000000000000000000000000;
+         */
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 4 bits
+     * and embedded tile size of 3 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A000B000C000D000, this method would return ABCD.
+
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 4 bits
+     * and embedded tile size of 3 bits
+     * @param nTiles the number of tiles of block size 4 embedded in tiled.  the maximum number of 15 for nTiles for
+     *               block size of 4 is limited by the java unsigned long and the location of the mask bits needed after
+     *               the sketch multiplier.
+     * @return
+     */
+    public static long sketch4(long tiled, final int nTiles) {
+
+<span class="pc bpc" id="L1128" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L1129">            return 0;</span>
+        }
+<span class="pc bpc" id="L1131" title="2 of 4 branches missed.">        if (nTiles &lt; 0 || nTiles &gt; 15) {</span>
+<span class="nc" id="L1132">            throw new UnsupportedOperationException(&quot;nTiles must be &gt; 0 and &lt;= 15 for block size 4&quot;);</span>
+        }
+
+        // TODO: more efficient ways to implement this?  intrinsics?
+
+        // kMult=(1&lt;&lt;0) | (1&lt;&lt;3) | (1&lt;&lt;6) | (1&lt;&lt;9)
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1140">        long kMult = 0b00000000000000000000000000000000000000000000000000001001001001L;</span>
+<span class="fc" id="L1141">        long kMask = 0b1111000000000000L;</span>
+<span class="fc" id="L1142">        int kShift = 12;</span>
+<span class="fc" id="L1143">        long sketch = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+<span class="pc bpc" id="L1145" title="1 of 2 branches missed.">        if (nTiles &lt; 5) {</span>
+<span class="nc" id="L1146">            return sketch;</span>
+        }
+
+        // 15 tiles, each sketch is 4 tiles, would mean 4 sketches
+
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
+        // shift down by the 4 blocks we just sketched:
+<span class="fc" id="L1153">        tiled &gt;&gt;= 16;</span>
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
+
+        // change the shift to reserve space of 4 at the end to merge the 2 sketches:
+<span class="fc" id="L1157">        kShift -= 4;</span>
+<span class="fc" id="L1158">        long sketch2 = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+        //from https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+        // Merge bits from two values according to a mask
+        //   a=0b000000001110  &lt;--- similar to sketch
+        //   b=0b101111110000  &lt;--- similar to sketch2
+        //mask=0b111111110000
+        //r = a ^ ((a ^ b) &amp; mask); bin(r)
+        //0b10111110'
+
+<span class="fc" id="L1168">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b11110000L);</span>
+
+<span class="pc bpc" id="L1170" title="1 of 2 branches missed.">        if (nTiles &lt; 9) {</span>
+<span class="nc" id="L1171">            return sketch;</span>
+        }
+
+        // another round of sketch and merge
+<span class="fc" id="L1175">        tiled &gt;&gt;= 16;</span>
+<span class="fc" id="L1176">        kShift -= 4;</span>
+<span class="fc" id="L1177">        sketch2 = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+        // sketch is 8 bits, sketch2 is 4 bits
+<span class="fc" id="L1180">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b111100000000L);</span>
+
+        // one more round of sketch and merge
+<span class="fc" id="L1183">        tiled &gt;&gt;= 16;</span>
+<span class="fc" id="L1184">        kShift -= 4;</span>
+<span class="fc" id="L1185">        sketch2 = ((tiled * kMult) &amp; kMask) &gt;&gt; kShift;</span>
+
+        // sketch is 12 bits, sketch2 is 4 bits
+<span class="fc" id="L1188">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b1111000000000000L);</span>
+
+<span class="fc" id="L1190">        return sketch;</span>
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of 3 bits
+     * and embedded tile size of 2 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A00B00C00D00, this method would return ABCD.
+
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 3 bits
+     * and embedded tile size of 2 bits
+     * @param nTiles the number of tiles of block size 3 embedded in tiled.  the maximum number of 21 for nTiles for
+     *               block size of 3 is limited by the java unsigned long and the location of the mask bits needed after
+     *               the sketch multiplier.
+     * @return
+     */
+    public static long sketch3(long tiled, final int nTiles) {
+
+<span class="pc bpc" id="L1214" title="1 of 2 branches missed.">        if (nTiles == 0) {</span>
+<span class="nc" id="L1215">            return 0;</span>
+        }
+<span class="pc bpc" id="L1217" title="2 of 4 branches missed.">        if (nTiles &lt; 0 || nTiles &gt; 21) {</span>
+<span class="nc" id="L1218">            throw new UnsupportedOperationException(&quot;nTiles must be &gt; 0 and &lt;= 21 for block size 3&quot;);</span>
+        }
+
+        // same as decoding 4 bit Morton 3D, for z
+        // uses binary magic numbers
+<span class="fc" id="L1223">        long w = tiled &gt;&gt; 2;</span>
+<span class="fc" id="L1224">        w &amp;= 0x1249249249249249L;</span>
+<span class="fc" id="L1225">        w = (w ^ (w &gt;&gt; 2))  &amp; 0x30c30c30c30c30c3L;</span>
+<span class="fc" id="L1226">        w = (w ^ (w &gt;&gt; 4))  &amp; 0xf00f00f00f00f00fL;</span>
+<span class="fc" id="L1227">        w = (w ^ (w &gt;&gt; 8))  &amp; 0x00ff0000ff0000ffL;</span>
+<span class="fc" id="L1228">        w = (w ^ (w &gt;&gt; 16)) &amp; 0x00ff00000000ffffL;</span>
+<span class="fc" id="L1229">        w = (w ^ (w &gt;&gt; 32)) &amp; 0x00000000001fffffL;</span>
+<span class="fc" id="L1230">        return w;</span>
+    }
+
+    /**
+     * given a bitarray packed full of tiles separated by flags with a block size of  bits
+     * and embedded tile size of 1 bits, extract and return the flags as consecutive bits.
+     * e.g. if tiled were A0B0C0D0, this method would return ABCD.
+     &lt;pre&gt;
+     reference:
+     https://stackoverflow.com/questions/30539347/2d-morton-code-encode-decode-64bits
+     &lt;/pre&gt;
+     *
+     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 2 bits
+     * and embedded tile size of 1 bits
+     *
+     * @return
+     */
+    public static long sketch2(final long tiled) {
+
+        // can do this with 5 sketches and 5 merges
+
+        /* else, use a down shift by 1, then 6 binary magic number shifts and masks
+        from https://stackoverflow.com/questions/30539347/2d-morton-code-encode-decode-64bits
+        x = x &amp; 0x5555555555555555;
+        x = (x | (x &gt;&gt; 1))  &amp; 0x3333333333333333;
+        x = (x | (x &gt;&gt; 2))  &amp; 0x0F0F0F0F0F0F0F0F;
+        x = (x | (x &gt;&gt; 4))  &amp; 0x00FF00FF00FF00FF;
+        x = (x | (x &gt;&gt; 8))  &amp; 0x0000FFFF0000FFFF;
+        x = (x | (x &gt;&gt; 16)) &amp; 0x00000000FFFFFFFF;
+        */
+
+<span class="fc" id="L1261">        long sketch = tiled &gt;&gt; 1;</span>
+        //                                                              6         5         4         3         2         1
+        //                                                             10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1264">        sketch = sketch &amp; 0x5555555555555555L;                    //0b101010101010101010101010101010101010101010101010101010101010101</span>
+<span class="fc" id="L1265">        sketch = (sketch | (sketch &gt;&gt; 1))  &amp; 0x3333333333333333L; // 0b11001100110011001100110011001100110011001100110011001100110011</span>
+<span class="fc" id="L1266">        sketch = (sketch | (sketch &gt;&gt; 2))  &amp; 0x0F0F0F0F0F0F0F0FL; //   0b111100001111000011110000111100001111000011110000111100001111</span>
+<span class="fc" id="L1267">        sketch = (sketch | (sketch &gt;&gt; 4))  &amp; 0x00FF00FF00FF00FFL; //       0b11111111000000001111111100000000111111110000000011111111</span>
+<span class="fc" id="L1268">        sketch = (sketch | (sketch &gt;&gt; 8))  &amp; 0x0000FFFF0000FFFFL; //               0b111111111111111100000000000000001111111111111111</span>
+<span class="fc" id="L1269">        sketch = (sketch | (sketch &gt;&gt; 16)) &amp; 0x00000000FFFFFFFFL; //                               0b11111111111111111111111111111111</span>
+
+<span class="fc" id="L1271">        return sketch;</span>
+    }
+
+    /**
+     * Given an n-bit value, returns the index of the highest 1 bit within that
+     * value.  the input is not tiled.
+     *
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * @param value a bitlength number.
+     * @param valueBitLength the bit length of value.  range is [1,8] inclusive
+     * @return the highest bit set in value.  the bit number is w.r.t. 0.
+     * e.g. if blockSize is 8, the return value range is [0,7] inclusive.
+     * the result is a negative number if there are no bits set in value.
+     */
+    public static long highestBitSetIn(long value, int valueBitLength) {
+
+<span class="fc bfc" id="L1291" title="All 4 branches covered.">        if (valueBitLength &lt; 63 &amp;&amp; valueBitLength &gt; 48) {</span>
+<span class="fc" id="L1292">            return highestBitSetIn(value, 63);</span>
+<span class="fc bfc" id="L1293" title="All 4 branches covered.">        } else if (valueBitLength &lt; 48 &amp;&amp; valueBitLength &gt; 32) {</span>
+<span class="fc" id="L1294">            return highestBitSetIn(value, 48);</span>
+        }
+
+        // the method name highestBitSetIn8 is a one-based index, but the bit number
+        // returned is w.r.t. a zero-based index.
+        // e.g. highestBitSetIn8 is the highest bit in an 8 bit value,
+        //      but the returned bit range is [0,7] inclusive
+        // switch is based on the block size which s bitlength + 1
+<span class="pc bpc" id="L1302" title="3 of 14 branches missed.">        switch (valueBitLength) {</span>
+            case 63: {
+                // test highest 16-bit block, and repeat if needed for next
+<span class="fc" id="L1305">                long v = value &gt;&gt; 48;</span>
+<span class="fc bfc" id="L1306" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1307">                    return highestBitSetIn(v, 16) + 48;</span>
+                }
+<span class="fc" id="L1309">                v = value &gt;&gt; 32;</span>
+<span class="fc bfc" id="L1310" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1311">                    return highestBitSetIn(v, 16) + 32;</span>
+                }
+<span class="fc" id="L1313">                v = value &gt;&gt; 16;</span>
+<span class="fc bfc" id="L1314" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1315">                    return highestBitSetIn(v, 16) + 16;</span>
+                }
+<span class="fc" id="L1317">                return highestBitSetIn(value, 16);</span>
+            }
+            case 48: {
+                // test highest 16-bit block, and repeat if needed for next
+<span class="fc" id="L1321">                long v = value &gt;&gt; 32;</span>
+<span class="fc bfc" id="L1322" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1323">                    return highestBitSetIn(v, 16) + 32;</span>
+                }
+<span class="fc" id="L1325">                v = value &gt;&gt; 16;</span>
+<span class="fc bfc" id="L1326" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1327">                    return highestBitSetIn(v, 16) + 16;</span>
+                }
+<span class="fc" id="L1329">                return highestBitSetIn(value, 16);</span>
+            }
+            case 31: // fall through to 32
+            case 30: // fall through to 32
+            case 29: // fall through to 32
+            case 28: // fall through to 32
+            case 27: // fall through to 32
+            case 26: // fall through to 32
+            case 25: // fall through to 32
+            case 32: {
+<span class="fc" id="L1339">                long v = value &gt;&gt; 24;</span>
+<span class="fc bfc" id="L1340" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1341">                    return highestBitSetIn8(v) + 24;</span>
+                }
+<span class="fc" id="L1343">                v = value &gt;&gt; 16;</span>
+<span class="fc bfc" id="L1344" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1345">                    return highestBitSetIn8(v) + 16;</span>
+                }
+<span class="fc" id="L1347">                v = value &gt;&gt; 8;</span>
+<span class="fc bfc" id="L1348" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1349">                    return highestBitSetIn8(v) + 8;</span>
+                }
+<span class="fc" id="L1351">                return highestBitSetIn8(value);</span>
+            }
+            case 23: // fall through to 24
+            case 22: // fall through to 24
+            case 21: // fall through to 24
+            case 20: // fall through to 24
+            case 19: // fall through to 24
+            case 18: // fall through to 24
+            case 17: // fall through to 24
+            case 24: {
+                // can only distinguish the 2 lowest bits
+                // return highestBitSetIn24(value);
+                // so instead solve for top 8 bits, and if none set, 2nd 8 bits, and if none set, 3rd 8 bits
+<span class="fc" id="L1364">                long v = value &gt;&gt; 16;</span>
+<span class="fc bfc" id="L1365" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1366">                    return highestBitSetIn8(v) + 16;</span>
+                }
+<span class="fc" id="L1368">                v = value &gt;&gt; 8;</span>
+<span class="fc bfc" id="L1369" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1370">                    return highestBitSetIn8(v) + 8;</span>
+                }
+<span class="fc" id="L1372">                return highestBitSetIn8(value);</span>
+            }
+            case 15: // fall through to 16
+            case 14: // fall through to 16
+            case 13: // fall through to 16
+            case 12: // fall through to 16
+            case 11: // fall through to 16
+            case 10: // fall through to 16
+            case 9: // fall through to 16
+            case 16: {
+                // can only distinguish the 3 lowest bits
+                //return highestBitSetIn16(value);
+<span class="fc" id="L1384">                long v = value &gt;&gt; 8;</span>
+<span class="fc bfc" id="L1385" title="All 2 branches covered.">                if (v &gt; 0) {</span>
+<span class="fc" id="L1386">                    return highestBitSetIn8(v) + 8;</span>
+                }
+<span class="fc" id="L1388">                return highestBitSetIn8(value);</span>
+            } case 8: {
+                // can distinguish all 8 bits
+<span class="fc" id="L1391">                return highestBitSetIn8(value);</span>
+            } case 7: {
+                // can distinguish all bits...
+<span class="fc" id="L1394">                return highestBitSetIn7(value);</span>
+            } case 6: {
+<span class="fc" id="L1396">                return highestBitSetIn6(value);</span>
+            } case 5: {
+<span class="fc" id="L1398">                return highestBitSetIn5(value);</span>
+            } case 4: {
+<span class="fc" id="L1400">                return highestBitSetIn4(value);</span>
+            } case 3: {
+<span class="fc" id="L1402">                return highestBitSetIn3(value);</span>
+            } case 2: {
+<span class="nc" id="L1404">                return highestBitSetIn2(value);</span>
+            } case 1: {
+<span class="nc" id="L1406">                return highestBitSetIn1(value);</span>
+            } default: {
+<span class="nc" id="L1408">                throw new UnsupportedOperationException(valueBitLength + &quot; is not a supported valueBitLength&quot;);</span>
+            }
+        }
+    }
+
+    /**
+     * Given an 8-bit value, returns the index of the highest 1 bit within that
+     * value.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     * this is ~10 operations.
+     @param value an 8-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+    static long highestBitSetIn8(long value) {
+
+        /* We will again use the parallel comparison technique. To get everything to
+         * fit cleanly into a machine word, we'll treat the 8-bit value as actually
+         * being 7 bits, since if the top bit is set we immediately know the answer.
+         *
+         * As a result, our first step is to simply check if the highest bit is set
+         * and immediately return the answer if it is.
+         */
+<span class="fc bfc" id="L1439" title="All 2 branches covered.">        if ((value &amp; 0b10000000L) != 0) {</span>
+<span class="fc" id="L1440">            return 7;</span>
+        }
+
+        /* The main observation here is that the MSB of an integer is equal to the
+         * number of powers of two less than or equal to it, minus one. As an
+         * example, the number 00110110 has six powers of two less than or equal to
+         * it (each of the powers of two that are less than or equal to 00100000).
+         * Therefore, if we can count up how many powers of two are less than or
+         * equal to our number, we can quickly determine the most-significant bit.
+         *
+         * Since we have a seven-bit number at this point, there are only seven
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers 1000000, 100000, 10000, 1000, 100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *   1aaaaaaa1aaaaaaa1aaaaaaa1aaaaaaa1aaaaaaa1aaaaaaa1aaaaaaa
+         * - 01000000001000000001000000001000000001000000001000000001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+        // (1&lt;&lt;0) | (1&lt;&lt;9) | (1&lt;&lt;18) | (1&lt;&lt;27) | (1&lt;&lt;36) | (1&lt;&lt;45) | (1&lt;&lt;54)
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1465">        long kComparator = 0b000000001000000001000000001000000001000000001000000001000000001L;</span>
+
+        /* We need to spray out seven copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+         *
+         *                                                     aaaaaaaa
+         *                                             aaaaaaaa
+         *                                     aaaaaaaa
+         *                             aaaaaaaa
+         *                     aaaaaaaa
+         *             aaaaaaaa
+         *     aaaaaaaa
+         *  + ---------------------------------------------------------
+         *
+         * This corresponds to a multiplication by 2^0 + 2^8 + 2^16 + 2^24 + ...
+         * It is (1&lt;&lt;0) | (1&lt;&lt;8) | (1&lt;&lt;16) | (1&lt;&lt;24) etc
+         */
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1485">        long kSpreader   = 0b000000000000001000000010000000100000001000000010000000100000001L;</span>
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * It is (1&lt;&lt;7) | (1&lt;&lt;15) | (1&lt;&lt;23) | (1&lt;&lt;31) etc.
+         */
+<span class="fc" id="L1492">        long kMask       = 0b0000000010000000100000001000000010000000100000001000000010000000L;</span>
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+<span class="fc" id="L1502">        long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;</span>
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+<span class="fc" id="L1508">        int nTiles = 7;</span>
+<span class="fc" id="L1509">        int tileBitLength = 7;</span>
+<span class="fc" id="L1510">        return parallelSum8(comparison, nTiles) - 1;</span>
+    }
+
+    /**
+     * Given a 7-bit value, returns the index of the highest 1 bit within that
+     * value.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     @param value a 7-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     static long highestBitSetIn7(long value) {
+
+<span class="fc bfc" id="L1526" title="All 2 branches covered.">        if ((value &amp; 0b1000000L) != 0) {</span>
+<span class="fc" id="L1527">            return 6;</span>
+        }
+
+        /*
+         * Since we have a 6-bit number at this point, there are only 6
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers 100000, 10000, 1000, 100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa
+         * -  010000000100000001000000010000000100000001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                  1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa1aaaaaa
+        //                   100000  10000   1000    100     10      1
+        // (1&lt;&lt;0) | (1&lt;&lt;8) | (1&lt;&lt;16) | (1&lt;&lt;24) | (1&lt;&lt;32) | (1&lt;&lt;40)
+<span class="fc" id="L1549">        long kComparator = 0b10000000100000001000000010000000100000001L;</span>
+
+        /* We need to spray out 6 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+         *
+         *                                                     aaaaaaa
+         *                                              aaaaaaa
+         *                                       aaaaaaa
+         *                                aaaaaaa
+         *                         aaaaaaa
+         *                  aaaaaaa
+         *  + ---------------------------------------------------------
+         *
+         * This corresponds to a multiplication by 2^0 + 2^7 + 2^14 + 2^21 + ...
+         * It is (1&lt;&lt;0) | (1&lt;&lt;7) | (1&lt;&lt;14) | (1&lt;&lt;21) | (1&lt;&lt;28) | (1&lt;&lt;35)
+         */
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1568">        long kSpreader = 0b000000000000000000000000000100000010000001000000100000010000001L;</span>
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1&lt;&lt;6) | (1&lt;&lt;13) | (1&lt;&lt;20) | (1&lt;&lt;27) | (1&lt;&lt;34) | (1&lt;&lt;41)
+         */
+        //               6         5         4         3         2         1
+        //             210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1577">        long kMask = 0b000000000000000000000100000010000001000000100000010000001000000L;</span>
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+<span class="fc" id="L1587">        long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;</span>
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+<span class="fc" id="L1593">        int nTiles = 6;</span>
+<span class="fc" id="L1594">        int tileBitLength = 6;</span>
+<span class="fc" id="L1595">        return parallelSum(comparison, nTiles, tileBitLength) - 1;</span>
+    }
+
+    /**
+     * Given a 6-bit value, returns the index of the highest 1 bit within that
+     * value.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     @param value a 6-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     static long highestBitSetIn6(long value) {
+
+<span class="fc bfc" id="L1611" title="All 2 branches covered.">        if ((value &amp; 0b100000L) != 0) {</span>
+<span class="fc" id="L1612">            return 5;</span>
+        }
+
+        /*
+         * Since we have a 5-bit number at this point, there are only 5
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers  10000, 1000, 100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa
+         * -  000000000000010000001000000100000010000001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                  1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa1aaaaa
+        //                - 000000000000010000001000000100000010000001
+<span class="fc" id="L1633">        long kComparator = 0b00000000000010000001000000100000010000001L;</span>
+
+        /* We need to spray out 5 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+
+                                         aaaaaa
+                                   aaaaaa
+                             aaaaaa
+                       aaaaaa
+                 aaaaaa
+           aaaaaa
+         ---------------------------------------------------------
+
+         * This corresponds to a multiplication by 2^0 + 2^6 + 2^12 + 2^18 + ...
+         * It is (1&lt;&lt;0) | (1&lt;&lt;6) | (1&lt;&lt;12) | (1&lt;&lt;18) | (1&lt;&lt;24)
+         */
+        //                  6         5         4         3         2         1
+        //                 10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1652">        long kSpreader = 0b00000000000000000000000000000000000001000001000001000001000001L;</span>
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1&lt;&lt;5) | (1&lt;&lt;11) | (1&lt;&lt;17) | (1&lt;&lt;23) | (1&lt;&lt;29)
+         */
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1661">        long kMask = 0b00000000000000000000000000000000100000100000100000100000100000L;</span>
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+<span class="fc" id="L1671">        long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;</span>
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+<span class="fc" id="L1677">        int nTiles = 5;</span>
+<span class="fc" id="L1678">        int tileBitLength = 5;</span>
+<span class="fc" id="L1679">        return parallelSum(comparison, nTiles, tileBitLength) - 1;</span>
+    }
+
+    /**
+     * Given a 5-bit value, returns the index of the highest 1 bit within that
+     * value.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     @param value a 5-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     static long highestBitSetIn5(long value) {
+
+<span class="fc bfc" id="L1695" title="All 2 branches covered.">        if ((value &amp; 0b10000L) != 0) {</span>
+<span class="fc" id="L1696">            return 4;</span>
+        }
+
+        /*
+         * Since we have a 4-bit number at this point, there are only 4
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers  1000, 100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa
+         * -  00000000000000001000001000001000001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                         1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa1aaaa
+        //                       - 00000000000000001000001000001000001
+<span class="fc" id="L1717">        long kComparator = 0b00000000000000000000001000001000001000001L;</span>
+
+        /* We need to spray out 4 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+
+                                    aaaaa
+                               aaaaa
+                          aaaaa
+                     aaaaa
+                aaaaa
+           aaaaa
+         ---------------------------------------------------------
+
+         * This corresponds to a multiplication by 2^0 + 2^5 + 2^10 + 2^15
+         * It is (1&lt;&lt;0) | (1&lt;&lt;5) | (1&lt;&lt;10) | (1&lt;&lt;15)
+         */
+        //                  6         5         4         3         2         1
+        //                 10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1736">        long kSpreader = 0b00000000000000000000000000000000000000000000001000010000100001L;</span>
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1&lt;&lt;4) | (1&lt;&lt;9) | (1&lt;&lt;14) | (1&lt;&lt;19)
+         */
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1745">        long kMask = 0b00000000000000000000000000000000000000000010000100001000010000L;</span>
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+<span class="fc" id="L1755">        long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;</span>
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+<span class="fc" id="L1761">        int nTiles = 4;</span>
+<span class="fc" id="L1762">        int tileBitLength = 4;</span>
+<span class="fc" id="L1763">        return parallelSum(comparison, nTiles, tileBitLength) - 1;</span>
+    }
+
+    /**
+     * Given a 4-bit value, returns the index of the highest 1 bit within that
+     * value.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * @param value a 4-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     static long highestBitSetIn4(long value) {
+
+<span class="fc bfc" id="L1779" title="All 2 branches covered.">        if ((value &amp; 0b1000L) != 0) {</span>
+<span class="fc" id="L1780">            return 3;</span>
+        }
+
+        /*
+         * Since we have a 3-bit number at this point, there are only 3
+         * powers of two that we need to test, and we can test them all in parallel
+         * using our lovely parallel comparison technique! We'll compare against
+         * the numbers  100, 10, and 1 all at the same
+         * time by performing this subtraction, which is a parallel compare:
+         *
+         *    1aaa1aaa1aaa1aaa1aaa1aaa1aaa
+         * -     0000000000000010000100001
+         *
+         * That bottom string is the concatenation of all the powers of two listed
+         * above, padded with zeros between the elements.
+         */
+
+        //         5         4         3         2         1
+        //  7654321098765432109876543210987654321098765432109876543210
+        //                                1aaa1aaa1aaa1aaa1aaa1aaa1aaa
+        //                                 - 0000000000000010000100001
+<span class="fc" id="L1801">        long kComparator = 0b00000000000000000000000000000010000100001L;</span>
+
+        /* We need to spray out 4 copies of the value so that we can compare
+         * multiple copies of it in parallel. To do this, we essentially want to make
+         * a bunch of shifts and add them all together:
+
+                                    aaaa
+                                aaaa
+                            aaaa
+                        aaaa
+                    aaaa
+                aaaa
+         ---------------------------------------------------------
+
+         * This corresponds to a multiplication by 2^0 + 2^4 + 2^8
+         * It is (1&lt;&lt;0) | (1&lt;&lt;4) | (1&lt;&lt;8)
+         */
+        //                   6         5         4         3         2         1
+        //                 10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1820">        long kSpreader = 0b00000000000000000000000000000000000000000000000000000100010001L;</span>
+
+        /* As before, to make a parallel comparison, we're going to force a 1 bit at
+         * the start of each block. (This is why we special-cased away the top bit of
+         * the byte - we need to recycle that bit for other purposes.)
+         * (1&lt;&lt;3) | (1&lt;&lt;7) | (1&lt;&lt;11)
+         */
+        //              6         5         4         3         2         1
+        //             10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L1829">        long kMask = 0b00000000000000000000000000000000000000000000000000100010001000L;</span>
+
+        /* Perform the parallel comparison:
+         *
+         *  1. Spray out multiple copies of the value.
+         *  2. Put 1 bits at the front of each block.
+         *  3. Do the subtraction with the comparator to see which powers of two
+         *     we're bigger than.
+         *  4. Mask off everything except the flag bits.
+         */
+<span class="fc" id="L1839">        long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;</span>
+
+        /* We now have a flag integer holding bits indicating which powers of two
+         * are smaller than us. Summing up those flags using a summation operation
+         * gives us the number we want!
+         */
+<span class="fc" id="L1845">        int nTiles = 3;</span>
+<span class="fc" id="L1846">        int tileBitLength = 3;</span>
+<span class="fc" id="L1847">        return parallelSum(comparison, nTiles, tileBitLength) - 1;</span>
+    }
+
+    /**
+     * Given a 3-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * @param value a 3-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     static long highestBitSetIn3(long value) {
+<span class="fc bfc" id="L1857" title="All 2 branches covered.">        if ((value &amp; 0b100L) != 0) {</span>
+<span class="fc" id="L1858">            return 2;</span>
+<span class="fc bfc" id="L1859" title="All 2 branches covered.">        } else if ((value &amp; 0b10L) != 0) {</span>
+<span class="fc" id="L1860">            return 1;</span>
+<span class="fc bfc" id="L1861" title="All 2 branches covered.">        } else if ((value &amp; 0b1L) != 0) {</span>
+<span class="fc" id="L1862">            return 0;</span>
+        }
+<span class="fc" id="L1864">        return -1;</span>
+    }
+     static long highestBitSetIn2(long value) {
+<span class="nc bnc" id="L1867" title="All 2 branches missed.">        if ((value &amp; 0b10L) != 0) {</span>
+<span class="nc" id="L1868">            return 1;</span>
+<span class="nc bnc" id="L1869" title="All 2 branches missed.">        } else if ((value &amp; 0b1L) != 0) {</span>
+<span class="nc" id="L1870">            return 0;</span>
+        }
+<span class="nc" id="L1872">        return -1;</span>
+    }
+     static long highestBitSetIn1(long value) {
+<span class="nc bnc" id="L1875" title="All 2 branches missed.">        if ((value &amp; 0b1L) != 0) {</span>
+<span class="nc" id="L1876">            return 0;</span>
+        }
+<span class="nc" id="L1878">        return -1;</span>
+    }
+
+
+    /*
+     * Given a 16-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * This method can only distinguish the lowest 3 bits, so has been commented out and left
+     * to view notes.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     @param value a 16-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+     /*static long highestBitSetIn16(long value) {
+
+        if ((value &amp; 0b1000000000000000L) != 0) {
+            return 15;
+        }
+
+        //max nTiles = floor(63/16)=3
+                           // 6         5         4         3         2         1
+                          // 10987654321098765432109876543210987654321098765432109876543210
+        //                                              +17              +17
+        long kComparator = 0b00000000000000000000000000010000000000000000100000000000000001L;
+
+         //                      6         5         4         3         2         1
+         //                     10987654321098765432109876543210987654321098765432109876543210
+         long kSpreader   = 0b0000000000000000000000000000000100000000000000010000000000000001L;
+
+         //                      6         5         4         3         2         1
+         //                     10987654321098765432109876543210987654321098765432109876543210
+         long kMask       = 0b0000000000000000100000000000000010000000000000001000000000000000L;
+
+         long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;
+
+        int nTiles = 3;
+        int tileBitLength = 15;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }*/
+
+    /*
+     * Given a 24-bit value, returns the index of the highest 1 bit within that
+     * value.
+     * This method can only distinguish the lowest 2 bits, so has been disabled, and commented out to leave
+     * the notes.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     * This subroutine is where much of the magic happens with regards to the
+     * overall algorithm. The idea is that if we can get down to an eight-bit
+     * number, we can manually check each power of two that could serve as the
+     * most-significant bit. This is actually done using a clever parallel
+     * comparison step, describe below.
+     @param value a 24-bit number
+     @return the highest set bit in value, or -1 for no set bits
+     */
+    /*static long highestBitSetIn24(long value) {
+
+        if ((value &amp; 0b100000000000000000000000L) != 0) {
+            return 23;
+        }
+
+        //max nTiles = floor(63/24)=2
+        //                    6         5         4         3         2         1
+        //                   10987654321098765432109876543210987654321098765432109876543210
+        //                                                       +25
+        long kComparator = 0b00000000000000000000000000000000000010000000000000000000000001L;
+
+         // (1&lt;&lt;0) | (1&lt;&lt;24)
+        //                      6         5         4         3         2         1
+        //                     10987654321098765432109876543210987654321098765432109876543210
+        long kSpreader   = 0b0000000000000000000000000000000000000001000000000000000000000001L;
+
+        //It is (1&lt;&lt;23) | (1&lt;&lt;47)
+        //                      6         5         4         3         2         1
+        //                     10987654321098765432109876543210987654321098765432109876543210
+        long kMask       = 0b0000000000000000100000000000000000000000100000000000000000000000L;
+
+        long comparison = (((kSpreader * value) | kMask) - kComparator) &amp; kMask;
+
+        int nTiles = 2;
+        int tileBitLength = 23;
+        return parallelSum(comparison, nTiles, tileBitLength) - 1;
+    }*/
+
+    /**
+     *  Returns a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffffgggggggghhhhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A0000000B0000000C0000000D0000000E0000000F0000000G0000000H0000000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     */
+    public static long usedBlocksIn(long value, int blockSize) {
+<span class="pc bpc" id="L1995" title="7 of 9 branches missed.">        switch(blockSize) {</span>
+            case 8:
+<span class="fc" id="L1997">                return usedBlocksIn8(value);</span>
+            case 7:
+<span class="fc" id="L1999">                return usedBlocksIn7(value);</span>
+            case 6:
+<span class="nc" id="L2001">                return usedBlocksIn6(value);</span>
+            case 5:
+<span class="nc" id="L2003">                return usedBlocksIn5(value);</span>
+            case 4:
+<span class="nc" id="L2005">                return usedBlocksIn4(value);</span>
+            case 3:
+<span class="nc" id="L2007">                return usedBlocksIn3(value);</span>
+            case 2:
+<span class="nc" id="L2009">                return usedBlocksIn2(value);</span>
+            case 1:
+<span class="nc" id="L2011">                return usedBlocksIn1(value);</span>
+            default:
+<span class="nc" id="L2013">                throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+        }
+    }
+
+    /**
+     * For a tiled value whose block size = 8 bits (and hence, the embedded tile size is 7 bits in between
+     * flags of size 1), returns
+     * a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffffgggggggghhhhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A0000000B0000000C0000000D0000000E0000000F0000000G0000000H0000000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     The method is 5 operations.
+     */
+    static long usedBlocksIn8(long value) {
+
+        /* Every block with a 1 bit set in it either
+         *  1. has its highest bit set, or
+         *  2. when that bit is cleared, has a numeric value of 1 or greater.
+         *
+         * We can check for ths first part by using a bitmask to extract the high bits
+         * from each of the blocks. The remainder can be identified by using the
+         * parallel comparison technique of comparing each block against 1.
+         */
+        // Positions of all the high bits within each block. (1&lt;&lt;7)|(1&lt;&lt;15)|(1&lt;&lt;23)|(1&lt;&lt;31)|(1&lt;&lt;39)|(1&lt;&lt;47)|(1&lt;&lt;55)|(1&lt;&lt;64)
+<span class="fc" id="L2051">        final long kHighBits = 0b000000010000000100000001000000010000000100000001000000010000000L;</span>
+    //    final long kHighBits =0b1000000010000000100000001000000010000000100000001000000010000000L;
+        //                       6         5         4         3         2         1
+        //                      10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L2055">        long highBitsSet = value &amp; kHighBits;</span>
+
+        /* Now, do a parallel comparison on the 7-bit remainders of each block to
+         * identify all the blocks with a nonzero bit set in them.
+         *
+         * The parallel comparison works as follows. We begin by reshaping the blocks
+         * so that each block starts with a 1:
+         *
+         *   1aaaaaaa1bbbbbbb1ccccccc1ddddddd1eeeeeee1fffffff1ggggggg1hhhhhhh
+         *
+         * Now, subtract out the value with 1's at the bottom of each block:
+         *
+         *   1aaaaaaa 1bbbbbbb 1ccccccc 1ddddddd 1eeeeeee 1fffffff 1ggggggg 1hhhhhhh
+         * - 00000001 00000001 00000001 00000001 00000001 00000001 00000001 00000001
+         *
+         * If a block is nonempty, then the subtraction will stop before hitting the
+         * special 1 bit we placed at the front of the block. That 1 bit then means
+         * &quot;yes, there was some bit set here.&quot; Otherwise, if the block is empty, then
+         * the subtraction within that block will be forced to borrow the 1 bit from
+         * the flag, which means that the resulting 0 bit means &quot;no, there was no bit
+         * set here.&quot;
+         *
+         * We can therefore perform the subtraction, mask off all the bits except for
+         * the flags, and we end up with what we're looking for.
+         */
+        // (1&lt;&lt;0) | (1&lt;&lt;8) | (1&lt;&lt;16) | (1&lt;&lt;24)| (1&lt;&lt;32) | (1&lt;&lt;40) | (1&lt;&lt;48) | (1&lt;&lt;56)
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L2083">         long kLowBits =  0b00000100000001000000010000000100000001000000010000000100000001L;</span>
+<span class="fc" id="L2084">         long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="fc" id="L2087">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    /**
+     * For a tiled value whose block size = 7 bits (and hence, the embedded tile size is 6 bits in between
+     * flags of size 1), returns
+     * a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaaabbbbbbbcccccccdddddddeeeeeeefffffffggggggghhhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A000000B000000C000000D000000E000000F000000G000000H000000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     */
+    static long usedBlocksIn7(long value) {
+
+        // Positions of all the high bits within each block.
+        // (1&lt;&lt;6)|(1&lt;&lt;13)|(1&lt;&lt;20)|(1&lt;&lt;27)|(1&lt;&lt;34)|(1&lt;&lt;41)|(1&lt;&lt;48)|(1&lt;&lt;55)|(1&lt;&lt;63)
+<span class="fc" id="L2116">        final long kHighBits = 0b100000010000001000000100000010000001000000100000010000001000000L;</span>
+        //                         6         5         4         3         2         1
+        //                       210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L2119">        long highBitsSet = value &amp; kHighBits;</span>
+
+        //                     6         5         4         3         2         1
+        //                   210987654321098765432109876543210987654321098765432109876543210
+<span class="fc" id="L2123">        long kLowBits =    0b000000100000010000001000000100000010000001000000100000010000001L;</span>
+<span class="fc" id="L2124">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="fc" id="L2127">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    /**
+     * For a tiled value whose block size = 6 bits (and hence, the embedded tile size is 5 bits in between
+     * flags of size 1), returns
+     * a bitmask where each block's high bit is 1 if that block contains a
+     * 1 bit and is 0 otherwise. All remaining bits are 0.
+     *
+     * Stated differently, given the input
+     *
+     *   aaaaaabbbbbbccccccddddddeeeeeeffffffgggggghhhhhh
+     *
+     * We'll return a 64-bit flag integer
+     *
+     *   A00000B00000C00000D00000E00000F00000G00000H00000
+     *
+     * where each letter is 1 if any of the bits in the block were set and is
+     * 0 otherwise.
+     &lt;pre&gt;
+     following lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
+     and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
+     Then edited here to allow block sizes other than 8.
+     &lt;/pre&gt;
+     */
+    static long usedBlocksIn6(long value) {
+
+        // Positions of all the high bits within each block.
+<span class="nc" id="L2155">        final long kHighBits = 0b00100000100000100000100000100000100000100000100000100000100000L;</span>
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+<span class="nc" id="L2159">        long highBitsSet = value &amp; kHighBits;</span>
+
+        // (1&lt;&lt;0) | (1&lt;&lt;6) | (1&lt;&lt;12) | (1&lt;&lt;18)| (1&lt;&lt;24) | (1&lt;&lt;30) | (1&lt;&lt;36) | (1&lt;&lt;42) | (1&lt;&lt;48) | (1&lt;&lt;54) | (1&lt;&lt;60)
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+<span class="nc" id="L2164">        long kLowBits =   0b01000001000001000001000001000001000001000001000001000001000001L;</span>
+<span class="nc" id="L2165">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="nc" id="L2168">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    static long usedBlocksIn5(long value) {
+
+        // Positions of all the high bits within each block.
+<span class="nc" id="L2174">        final long kHighBits = 0b00100001000010000100001000010000100001000010000100001000010000L;</span>
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+<span class="nc" id="L2178">        long highBitsSet = value &amp; kHighBits;</span>
+
+        // (1&lt;&lt;0) | (1&lt;&lt;6) | (1&lt;&lt;12) | (1&lt;&lt;18)| (1&lt;&lt;24) | (1&lt;&lt;30) | (1&lt;&lt;36) | (1&lt;&lt;42) | (1&lt;&lt;48) | (1&lt;&lt;54) | (1&lt;&lt;60)
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+<span class="nc" id="L2183">        long kLowBits =   0b0000010000100001000010000100001000010000100001000010000100001L;</span>
+<span class="nc" id="L2184">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="nc" id="L2187">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    static long usedBlocksIn4(long value) {
+
+        // Positions of all the high bits within each block.
+<span class="nc" id="L2193">        final long kHighBits = 0b0100010001000100010001000100010001000100010001000100010001000L;</span>
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+<span class="nc" id="L2197">        long highBitsSet = value &amp; kHighBits;</span>
+
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+<span class="nc" id="L2201">        long kLowBits =   0b00000100010001000100010001000100010001000100010001000100010001L;</span>
+<span class="nc" id="L2202">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="nc" id="L2205">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    static long usedBlocksIn3(long value) {
+
+        // Positions of all the high bits within each block.
+<span class="nc" id="L2211">        final long kHighBits = 0b100100100100100100100100100100100100100100100100100100100100100L;</span>
+        //                       210987654321098765432109876543210987654321098765432109876543210
+        //                         6         5         4         3         2         1
+
+<span class="nc" id="L2215">        long highBitsSet = value &amp; kHighBits;</span>
+
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+<span class="nc" id="L2219">        long kLowBits =  0b001001001001001001001001001001001001001001001001001001001001001L;</span>
+<span class="nc" id="L2220">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="nc" id="L2223">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    static long usedBlocksIn2(long value) {
+
+        // Positions of all the high bits within each block.
+<span class="nc" id="L2229">        final long kHighBits = 0b10101010101010101010101010101010101010101010101010101010101010L;</span>
+        //                       10987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+<span class="nc" id="L2233">        long highBitsSet = value &amp; kHighBits;</span>
+
+        //                   6         5         4         3         2         1
+        //                  10987654321098765432109876543210987654321098765432109876543210
+<span class="nc" id="L2237">        long kLowBits =   0b01010101010101010101010101010101010101010101010101010101010101L;</span>
+<span class="nc" id="L2238">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="nc" id="L2241">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    static long usedBlocksIn1(long value) {
+
+        // Positions of all the high bits within each block.
+<span class="nc" id="L2247">        final long kHighBits = 0b111111111111111111111111111111111111111111111111111111111111111L;</span>
+        //                       210987654321098765432109876543210987654321098765432109876543210
+        //                        6         5         4         3         2         1
+
+<span class="nc" id="L2251">        long highBitsSet = value &amp; kHighBits;</span>
+
+        //                   6         5         4         3         2         1
+        //                 210987654321098765432109876543210987654321098765432109876543210
+<span class="nc" id="L2255">        long kLowBits =  0b011111111111111111111111111111111111111111111111111111111111111L;</span>
+<span class="nc" id="L2256">        long lowBitsSet  = ((value | kHighBits) - kLowBits) &amp; kHighBits;</span>
+
+        /* Combine them together to find nonempty blocks. */
+<span class="nc" id="L2259">        return highBitsSet | lowBitsSet;</span>
+    }
+
+    /**
+     * returns the maximum number of blockSize tiles that can fit into a java unsigned
+     * long (= 63 bits).
+     * @param blockSize the size of blocks
+     * @return the maximum number of blockSize tiles that can fit into a java unsigned
+     long (= 63 bits).
+     */
+    public static int maxNumberOfTiles(int blockSize) {
+<span class="nc bnc" id="L2270" title="All 9 branches missed.">        switch(blockSize) {</span>
+            case 8:
+<span class="nc" id="L2272">                return 7;</span>
+            case 7:
+<span class="nc" id="L2274">                return 9;</span>
+            case 6:
+<span class="nc" id="L2276">                return 10;</span>
+            case 5:
+<span class="nc" id="L2278">                return 12;</span>
+            case 4:
+<span class="nc" id="L2280">                return 15;</span>
+            case 3:
+<span class="nc" id="L2282">                return 21;</span>
+            case 2:
+<span class="nc" id="L2284">                return 31;</span>
+            case 1:
+<span class="nc" id="L2286">                return 63;</span>
+            default:
+<span class="nc" id="L2288">                throw new UnsupportedOperationException(&quot;blocksize &quot; + blockSize + &quot; is not implemented&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

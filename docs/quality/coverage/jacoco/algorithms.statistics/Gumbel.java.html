@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gumbel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">Gumbel.java</span></div><h1>Gumbel.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+import algorithms.misc.MiscMath0;
+
+import java.security.SecureRandom;
+
+/**
+ *  the Gumbel distribution (Generalized Extreme Value distribution Type-I)
+ *  is used to model the distribution of the maximum (or the minimum) of a number
+ *  of samples of various distributions.
+ *
+ * &lt;pre&gt;
+ * parameters:
+ *    mu is the location
+ *    sigma is the scale
+ *    k is the shape
+ *
+ * For Gumbel distribution, k = 0, sigma &gt; 0
+ *
+ * Let z = (x-mu)/sigma
+ *
+ *  PDF = f(x) = (1/sigma)*exp(-z)*exp(-exp(-z) )
+ *  CDF = F(x) = exp( -exp(-z) )
+ *  inverse of CDF = G(alpha) = mu - sigma*log( log(1/alpha)
+ *         where alpha is the random variate drawn from U(0,1))
+ *
+ * references:
+ *     &quot;Statistical Distibutions&quot;, 2011, ed 4
+ *         Merran Evans, Nicholas Hastings, Brian Peacock, and Catherine Forbes
+ *
+ *      https://www.statisticshowto.com/gumbel-distribution/
+ *
+ *     https://en.m.wikipedia.org/wiki/Gumbel_distribution
+ * &lt;/pre&gt;
+ */
+<span class="nc" id="L36">public class Gumbel {</span>
+
+    /**
+     * generate a point in the Gumbel cumulative distribution
+     * @param x a general element, that is a quantile, of the larger range of general variate X
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @return
+     */
+    public static double cdf(double x, double location, double scale) {
+<span class="nc" id="L46">        double z = (x - location) / scale;</span>
+<span class="nc" id="L47">        return Math.exp(-Math.exp(-z));</span>
+    }
+
+    /**
+     * calculate the probability of a point in the Gumbel discrete probability density function
+     * This uses the minimum Gumbel distribution and has a right leaning distribution.
+     * @param x a general element, that is a quantile, of the larger range of general variate X
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @return
+     */
+    public static double pdfForMinimum(double x, double location, double scale) {
+<span class="nc" id="L59">        double z = (x - location) / scale;</span>
+<span class="nc" id="L60">        return (1. / scale) * Math.exp(z) * Math.exp(-Math.exp(z));</span>
+    }
+
+    /**
+     * calculate the probability of a point in the Gumbel discrete probability density function
+     * This uses the maximum Gumbel distribution and has a left leaning distribution.
+     * @param x a general element, that is a quantile, of the larger range of general variate X
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @return
+     */
+    public static double pdf(double x, double location, double scale) {
+<span class="nc" id="L72">        double z = (x - location) / scale;</span>
+<span class="nc" id="L73">        return (1. / scale) * Math.exp(-z) * Math.exp(-Math.exp(-z));</span>
+    }
+
+    /**
+     * calculate the inverse CDF of the Gumbel, that is, a random variate x given the
+     * probability alpha.
+     * @param alpha random variate drawn from U(0,1) where U is the uniform distribution.
+     * @param location parameter of the distribution function
+     * @param scale parameter of the distribution function
+     * @return
+     */
+    public static double inverseCdf(double alpha, double location, double scale) {
+<span class="fc" id="L85">        return location - scale*Math.log(-Math.log(alpha));</span>
+    }
+
+    /**
+     * sample from a Gumbel distribution G(location, scale).
+     * @param location
+     * @param scale
+     * @param nDraws number of random draws to make
+     * @return a fair sampling from a Gumbel distribution G(location, scale).
+     */
+    public static double[] sampleRandomlyFrom(double location, double scale,
+        int nDraws, SecureRandom rand) {
+
+<span class="fc" id="L98">        double[] out = new double[nDraws];</span>
+        int i;
+        double u;
+<span class="fc" id="L101">        double eps = 1e-320;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (i = 0; i &lt; nDraws; ++i) {</span>
+<span class="fc" id="L103">            u = rand.nextDouble();</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            while (u &lt; eps) {</span>
+                // to stay within math domain of Math.log(u)
+<span class="nc" id="L106">                u = rand.nextDouble();</span>
+            }
+<span class="fc" id="L108">            out[i] = inverseCdf(u, location, scale);</span>
+        }
+
+<span class="fc" id="L111">        return out;</span>
+    }
+
+    /**
+     * @param x ordered statistic of an observed Gumbel distribution.
+     */
+    public static double[] empiricalCdf(double[] x) {
+<span class="nc" id="L118">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+    }
+
+    public static double[] generateCurve(double[] x, double location, double scale) {
+<span class="nc" id="L122">        double[] y = new double[x.length];</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; ++i) {</span>
+<span class="nc" id="L124">            y[i] = pdf(x[i], location, scale);</span>
+        }
+<span class="nc" id="L126">        return y;</span>
+    }
+
+    /**
+     * calculate a rough estimate of Gumbel distribution parameters for the given x.
+     * A more precise estimate can be obtained from fitGumbelUsingML or fitGumbelUsingBayesian
+     * when they are implemented.
+     * &lt;pre&gt;
+     * references:
+     *     Chap 19 of &quot;Statistical Distributions&quot; by Evans et al.
+     *     and
+     *     https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
+     * &lt;/pre&gt;
+     * @param x ordered statistic of an observed Gumbel distribution.
+     * @return
+     */
+    public static double[] fitUsingMethodOfMoments(double[] x) {
+
+<span class="fc" id="L144">        int n = x.length;</span>
+
+<span class="fc" id="L146">        double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(x);</span>
+<span class="fc" id="L147">        double kMAD = 1.4826;</span>
+<span class="fc" id="L148">        double s = kMAD*mADMinMax[0];</span>
+
+<span class="fc" id="L150">        double[] meanStdv = MiscMath0.getAvgAndStDev(x);</span>
+
+<span class="fc" id="L152">        double sigma0 = meanStdv[1] * Math.sqrt(6.)/Math.PI;</span>
+<span class="fc" id="L153">        double sigma1 = s * Math.sqrt(6.)/Math.PI;</span>
+<span class="fc" id="L154">        double mu0 = meanStdv[0] - sigma0 * MiscMath0.eulerMascheroniConstant();</span>
+<span class="fc" id="L155">        double mu1 = meanStdv[0] - sigma1 * MiscMath0.eulerMascheroniConstant();</span>
+
+        //double r0 = mADMinMax[1] - 3*s;
+        //double r1 = mADMinMax[1] + 3*s;
+
+<span class="fc" id="L160">        System.out.println(&quot;mu0,1=&quot; + mu0 + &quot;, &quot; + mu1);</span>
+<span class="fc" id="L161">        System.out.println(&quot;sigma0,1=&quot; + sigma0 + &quot;, &quot; + sigma1);</span>
+
+<span class="fc" id="L163">        return new double[]{mu1, sigma1, 0};</span>
+    }
+
+    /**
+     * estimate the parameters mu and sigma (location and scale, respectively) using
+     * method of maximum likelihood simultaneous solution.
+     * &lt;pre&gt;
+     *    reference is Chap 19 of &quot;Statistical Distributions&quot; by Evans et al.
+     *    and
+     *    https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
+     * &lt;/pre&gt;
+     * @param x ordered values for which to find the best fitting Gumbel distribution parameters
+     * @return
+     */
+    public static double[] fitUsingMaximumLikelihood(double[] x) {
+
+<span class="nc" id="L179">        double[] params = fitUsingMethodOfMoments(x);</span>
+<span class="nc" id="L180">        double[] avgAndStdev = MiscMath0.getAvgAndStDev(x);</span>
+        /*
+        method of maximum likelihood simultaneous solutions:
+        scaleEst = x_avg - ( sum_over_i(x_i * exp(-x_i/scaleEst) ) / sum_over_i(exp(-x_i/scaleEst) ) )
+        locEst = -scaleEst * Math.log( (1/n) * sum_over_i( exp(-x_i/scaleEst) ))
+
+        initial estimates from method of moments
+
+        assert that locEst &lt; x_avg (due to skew)
+        */
+
+        double locEst;
+        double scaleEst;
+
+        // simple loop until scale estimate change is small is not efficient
+        // so prefer the optimization
+<span class="nc" id="L196">        boolean useOptimization = false;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (!useOptimization) {</span>
+<span class="nc" id="L198">            final int nIterMax = 100;</span>
+<span class="nc" id="L199">            int nIter = 0;</span>
+            // TODO: allow tolerance and nIterMax to be method arguments if keep the simple loop iteration
+<span class="nc" id="L201">            final double tol = 1e-3;</span>
+<span class="nc" id="L202">            double prevScaleEst = params[1];</span>
+            double diffScale;
+            do {
+<span class="nc" id="L205">                scaleEst = estimateScaleML(x, avgAndStdev[0], prevScaleEst);</span>
+<span class="nc" id="L206">                locEst = estimateLocML(x, scaleEst);</span>
+<span class="nc" id="L207">                diffScale = scaleEst - prevScaleEst;</span>
+<span class="nc" id="L208">                System.out.printf(&quot;locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e\n&quot;,</span>
+<span class="nc" id="L209">                        locEst, prevScaleEst, scaleEst, diffScale);</span>
+<span class="nc" id="L210">                prevScaleEst = scaleEst;</span>
+<span class="nc" id="L211">                nIter++;</span>
+<span class="nc bnc" id="L212" title="All 4 branches missed.">            } while ((nIter &lt; nIterMax) &amp;&amp; Math.abs(diffScale) &gt; tol);</span>
+<span class="nc" id="L213">            System.out.printf(&quot;nIter=%d\n&quot;, nIter);</span>
+<span class="nc" id="L214">        } else {</span>
+            // non-linear optimization.
+            // solving for 2 parameter Gumbel distribution should be convex, so one could use the
+            //   first derivative, the second derivative, and or the gradient.
+
+<span class="nc" id="L219">            throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+        }
+<span class="nc" id="L221">        return new double[]{locEst, scaleEst};</span>
+    }
+
+    private static double estimateLocML(double[] x, double scaleEst) {
+<span class="nc" id="L225">        int n = x.length;</span>
+<span class="nc" id="L226">        double sum = 0;</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L228">            sum += Math.exp(-x[i]/scaleEst);</span>
+        }
+<span class="nc" id="L230">        return -scaleEst * Math.log((1./n)*sum);</span>
+    }
+
+    private static double estimateScaleML(double[] x, double xAvg, double scaleEst) {
+<span class="nc" id="L234">        int n = x.length;</span>
+<span class="nc" id="L235">        double sum0 = 0;</span>
+<span class="nc" id="L236">        double sum1 = 0;</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L238">            sum0 += (x[i] * Math.exp(-x[i]/scaleEst));</span>
+<span class="nc" id="L239">            sum1 += (Math.exp(-x[i]/scaleEst));</span>
+        }
+<span class="nc" id="L241">        scaleEst = xAvg - ( sum0 / sum1 );</span>
+<span class="nc" id="L242">        return scaleEst;</span>
+    }
+
+    /**
+     * generate the generalized Gumbel probability density curve (GEV Type I).
+     * &lt;pre&gt;
+     *     reference is Chap 19 of &quot;Statistical Distributions&quot; by Evans et al.
+     * &lt;/pre&gt;
+     * @param x1
+     * @param mu
+     * @param sigma
+     * @return
+     */
+    public static double[] generateGumbelCurve(double[] x1, double mu, double sigma) {
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (sigma &lt;= 0) {</span>
+<span class="nc" id="L257">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
+        }
+<span class="fc" id="L259">        double[] yGEV = new double[x1.length];</span>
+        double z;
+        double a;
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
+<span class="fc" id="L263">            z = (x1[i] - mu)/sigma;</span>
+<span class="fc" id="L264">            a = Math.exp(-z);</span>
+<span class="fc" id="L265">            yGEV[i] = (1./sigma) * Math.exp(-z) * Math.exp(-a);</span>
+            //yGEV[i] = (1./sigma) * Math.exp(-(Math.exp(-z) + z)); // same result
+        }
+<span class="fc" id="L268">        return yGEV;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
