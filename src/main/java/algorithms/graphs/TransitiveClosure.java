@@ -5,7 +5,7 @@ import algorithms.misc.MiscMath0;
 import java.util.Arrays;
 
 /**
- * from Cormen et al. "Intro to Algorithms"
+ * from Cormen, Leiserson, Rivest, and Stein "Intro to Algorithms"
  * 
  * The transitive closure of a graph is the set of pairs of nodes (u, v) such that
    there is a path from u to v of length one or more. 

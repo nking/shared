@@ -20,7 +20,7 @@ public class PrimesTest extends TestCase {
     
     public void test0() throws NoSuchAlgorithmException {
         
-        // Figure 31.7 of Cormen et al. Introduction to Alforithms
+        // Figure 31.7 of Cormen, Leiserson, Rivest, and Stein Introduction to Alforithms
         
         long n;
         long[] expected;

@@ -23,7 +23,7 @@ public class RelabelToFrontTest extends TestCase {
     
     public void testDischarge() {
         
-        // Figure 26.10 from Cormen et al. Introduction to Algorithms"
+        // Figure 26.10 from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms"
         
         TIntObjectMap<TIntSet> adj = new TIntObjectHashMap<TIntSet>();
         int nV = 5;
@@ -218,7 +218,7 @@ public class RelabelToFrontTest extends TestCase {
     }
     
     public void test2() {
-        // Figure 26.10 from Cormen et al. Introduction to Algorithms"
+        // Figure 26.10 from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms"
         
         // testing matrix argument
         

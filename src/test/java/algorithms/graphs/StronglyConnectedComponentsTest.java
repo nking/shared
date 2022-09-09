@@ -24,7 +24,7 @@ public class StronglyConnectedComponentsTest extends TestCase {
     }
     
     public void test0() {
-        // test from Cormen et al. Fig 22.9
+        // test from Cormen, Leiserson, Rivest, and Stein Fig 22.9
      
         SimpleLinkedListNode[] g = new SimpleLinkedListNode[8];
         for (int i = 0; i < g.length; ++i) {

@@ -17,7 +17,7 @@ public class DijkstrasTest extends TestCase {
     
     public void test0() {
         /*
-        from Cormen et al. Fig 24.6
+        from Cormen, Leiserson, Rivest, and Stein Fig 24.6
            edges   weight
              s t     10
              s y     5

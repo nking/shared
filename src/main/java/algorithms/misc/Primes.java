@@ -90,7 +90,7 @@ public class Primes {
     }
     
     /**
-     * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
+     * integer factorization into primes following Pollard-Rho algorithm in Cormen, Leiserson, Rivest, and Stein 
      * "Introduction to Algorithms".  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
      * "the algorithms is only a heuristic, neither its running time nor its success 
@@ -117,7 +117,7 @@ public class Primes {
     }
     
     /**
-     * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
+     * integer factorization into primes following Pollard-Rho algorithm in Cormen, Leiserson, Rivest, and Stein 
      * "Introduction to Algorithms".  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
      * "the algorithms is only a heuristic, neither its running time nor its success 
@@ -239,7 +239,7 @@ public class Primes {
      * so choose s ≥ log_2(log(n)-1) = math.log(beta/1.443)/math.log(2)
      * where beta is the bitlength of n.
      * 
-     * reference: Chap 31 of Cormen et al. Introduction to Algorithms.
+     * reference: Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * </pre>
      * @param n number to test for primality, must be odd and > 2.
      * @param s number of randomly chosen base numbers to try
@@ -276,7 +276,7 @@ public class Primes {
         return true;
     }
 
-    /*** implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
+    /*** implements algorithm from Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * tests whether number n is composite (hence not prime) using the
      * number a or possibly prime.
      * witness is a more effective extension of the test 
@@ -417,7 +417,7 @@ public class Primes {
     
     /**
      * estimate the number of primes less than or equal to n.
-     * uses Theorem 31.37 (Prime number theorem) of Cormen et al.
+     * uses Theorem 31.37 (Prime number theorem) of Cormen, Leiserson, Rivest, and Stein
      * Introduction to Algorithms.
      * The method is off by less than 6% at n = 1E9.
      * @param n

@@ -9,7 +9,7 @@ import no.uib.cipr.matrix.*;
  a class of utility methods for linear algebra.
  <pre>
  note, for solving linear least squares problems, a good resource aside
- * from Strang, Golub & van Loan, and Cormen et al. is:
+ * from Strang, Golub & van Loan, and Cormen, Leiserson, Rivest, and Stein is:
  “Algorithms for Linear Least Squares Problems”, 
  Bj̈orck 1991, published in Computer Algorithms for Solving Linear Algebraic Equations;
  The State of the Art., Vol. 77 of NATO-ASI Series F: Computer and Systems Sciences, pages 57–92.
@@ -609,7 +609,7 @@ public class LinearEquations {
      * x as polynomial factors.
      * NOTE that a regularized linear least squares algorithm called Elastic-Net
      * is implemented as thirdparty.scipy.optimization.ElastticNet.
-     * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
+     * This method follows pseudocode in chapter 28 of Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the
@@ -640,7 +640,7 @@ public class LinearEquations {
      * x as polynomial factors.
      * NOTE that a regularized linear least squares algorithm called Elastic-Net
      * is implemented as thirdparty.scipy.optimization.ElastticNet.
-     * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
+     * This method follows pseudocode in chapter 28 of Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the
@@ -659,7 +659,7 @@ public class LinearEquations {
      * x as polynomial factors.
      * NOTE that a regularized linear least squares algorithm called Elastic-Net
      * is implemented as thirdparty.scipy.optimization.ElastticNet.
-     * This method follows pseudocode in chapter 28 of Cormen et al. Introduction
+     * This method follows pseudocode in chapter 28 of Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
      * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
      * @param polyOrder the order of a polynomial to fit.  should be .lte. the

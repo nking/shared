@@ -8,7 +8,7 @@ import algorithms.util.SimpleLinkedListNode;
 import java.util.Arrays;
 
 /**
- * From pseudocode in "Introduction to Algorithms" by Cormen et al.
+ * From pseudocode in "Introduction to Algorithms" by Cormen, Leiserson, Rivest, and Stein
  * (impl is Tarjan's algorithm).
  * 
  * Directed graphs are said to be strongly connected if every vertex is 
@@ -62,7 +62,7 @@ public class StronglyConnectedComponents2 {
         /* components can be found by looking at the G' start and end times.
         The components are between them.
         
-        For example, see Fig 22.9 from Cormen et al Introduction to Algorithms.
+        For example, see Fig 22.9 from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
         The components are indexes c0={0,1,4}, c1={2,3}, c2={5,6}, c3={7}
         
         td is time when node is first discovered in dfs search

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * a disjoint set implemented as a forest.
  * 
- * based upon pseudocode from "Introduction to Algorithms" by Cormen et al.
+ * based upon pseudocode from "Introduction to Algorithms" by Cormen, Leiserson, Rivest, and Stein
   
    first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations

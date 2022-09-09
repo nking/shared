@@ -351,6 +351,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     		} /* for iKoo */
 
     		/* Condition number */
+			//NLK: TODO: edit here.  the norm is absolute value of eigenvalue, hence,
+			//  the condition number here is max(abs(diagD))/min(abs(diagD)).
+			//  see section 9.2 of Strang's "Introduction to Linear Algebra"
     		if (math.min(diagD) <= 0)
     			appendMessage("ConditionNumber: smallest eigenvalue smaller or equal zero");
     		else if (math.max(diagD)/math.min(diagD) > 1e7)

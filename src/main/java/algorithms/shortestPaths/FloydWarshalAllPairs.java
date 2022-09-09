@@ -3,7 +3,7 @@ package algorithms.shortestPaths;
 import java.util.Arrays;
 
 /**
- * from Cormen et al. "Intro to Algorithms"
+ * from Cormen, Leiserson, Rivest, and Stein "Intro to Algorithms"
  * 
  * finds shortest paths between all pairs of vertices in a directed graph
  * with dynamic programming.

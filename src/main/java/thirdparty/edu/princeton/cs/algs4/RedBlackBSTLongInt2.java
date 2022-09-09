@@ -746,7 +746,7 @@ public class RedBlackBSTLongInt2 {
 
     /**
      * make a left-leaning link lean to the right.
-     Note that the parent link logic is from Cormen et al. "Introduction to
+     Note that the parent link logic is from Cormen, Leiserson, Rivest, and Stein "Introduction to
      Algorithms".
      */
     protected long rotateRight(long h) {
@@ -834,7 +834,7 @@ public class RedBlackBSTLongInt2 {
 
     /**
      make a right-leaning link lean to the left.
-     Note that the parent link logic is from Cormen et al. "Introduction to
+     Note that the parent link logic is from Cormen, Leiserson, Rivest, and Stein "Introduction to
      Algorithms".
      */
     protected long rotateLeft(long h) {
@@ -1145,7 +1145,7 @@ public class RedBlackBSTLongInt2 {
     /** the largest key in the subtree rooted at x less than the given key
      * 
      * The method is symmetric t the successor method called 
-     * higher, as suggested by Cormen et al. in
+     * higher, as suggested by Cormen, Leiserson, Rivest, and Stein in
      * the book "Introduction to Algorithms".
      * 
      * @param x
@@ -1323,7 +1323,7 @@ public class RedBlackBSTLongInt2 {
     
     /** the smallest key in the subtree rooted at x greater than the given key.
      * 
-     * NOTE: the method uses in part, a pattern adapted from the Cormen et al.
+     * NOTE: the method uses in part, a pattern adapted from the Cormen, Leiserson, Rivest, and Stein
      * book "Introduction to Algorithms" for their Red Black Tree.
      * 
      * @param x

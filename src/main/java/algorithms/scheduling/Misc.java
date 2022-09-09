@@ -381,7 +381,7 @@ public class Misc {
     }
     
     /**
-     * sect 16.5 of Cormen et al.
+     * sect 16.5 of Cormen, Leiserson, Rivest, and Stein
      * 
      * there are numTasks number of tasks, each of which takes 1 unit of time
      * and has its own deadline and penalty for missing the deadline.

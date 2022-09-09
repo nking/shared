@@ -18,7 +18,7 @@ public class LinearEquationsTest extends TestCase {
     }
     
     public void testSolveXFromLUDecomposition() {
-        /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+        /* test from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms, chap. 28*/
         double[][] a = new double[3][3];
         a[0] = new double[]{1, 2, 0};
         a[1] = new double[]{3, 4, 4};
@@ -44,7 +44,7 @@ public class LinearEquationsTest extends TestCase {
 
     public void testLUPSolveX() {
 
-         /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+         /* test from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms, chap. 28*/
          double[][] a = new double[3][3];
          a[0] = new double[]{1, 2, 0};
          a[1] = new double[]{3, 4, 4};
@@ -120,7 +120,7 @@ public class LinearEquationsTest extends TestCase {
     
     public void testLUDecompositionOfA() {
 
-         /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+         /* test from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms, chap. 28*/
          
          double[][] a = new double[4][];
          a[0] = new double[]{2, 3, 1, 5};
@@ -156,7 +156,7 @@ public class LinearEquationsTest extends TestCase {
     
     public void testLUPDecompositionOfA() {
 
-         /* test from Cormen et al. Introduction to Algorithms, chap. 28*/
+         /* test from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms, chap. 28*/
          
          double[][] a = new double[4][];
          a[0] = new double[]{2, 0, 2, 0.6};

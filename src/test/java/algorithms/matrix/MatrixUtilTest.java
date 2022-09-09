@@ -310,7 +310,7 @@ public class MatrixUtilTest extends TestCase {
     
     public void testPseudoinverse2() throws NotConvergedException {
         
-        // from Cormen et al Introduction to Algorithms chap 28, near Fig 28.3
+        // from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms chap 28, near Fig 28.3
         double[][] a = new double[5][];
         a[0] = new double[]{1, -1, 1};
         a[1] = new double[]{1, 1, 1};
@@ -328,7 +328,7 @@ public class MatrixUtilTest extends TestCase {
         
         // c = pseudoinv(A) * y
         
-        //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
+        //from Cormen, Leiserson, Rivest, and Stein: A_pseudoinverse = inverse(A^T*A) * A^T
         double[][] inv = MatrixUtil.pseudoinverseFullColumnRank(a);
         
         double[] y = new double[]{2, 1, 1, 0, 3};
@@ -359,7 +359,7 @@ public class MatrixUtilTest extends TestCase {
     
     public void testPseudoinverse3() throws NotConvergedException {
         
-        // from Cormen et al Introduction to Algorithms chap 28, near Fig 28.3
+        // from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms chap 28, near Fig 28.3
         double[][] a = new double[5][];
         a[0] = new double[]{1, -1, 1};
         a[1] = new double[]{1, 1, 1};

@@ -7,7 +7,7 @@ package thirdparty.edu.princeton.cs.algs4;
    (2) a red node does not have a red child; and
    (3) every path from a node to all of its descendant leaves has the same 
        number of black nodes.
-   (Cormen et al. additionally use a black root node, but others do not.)
+   (Cormen, Leiserson, Rivest, and Stein additionally use a black root node, but others do not.)
  The balanced binary trees have search time O(log_2(n)) and h = log_2(n).
  
    from RedBlackBST.java from the 

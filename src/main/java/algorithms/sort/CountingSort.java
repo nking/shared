@@ -11,7 +11,7 @@ import java.util.Arrays;
  * is constructed and that consumes memory which also affects
  * performance for max &gt; 11e7.
  * 
- * implemented from Cormen et al. "Introduction to Algorithms"
+ * implemented from Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
 
    first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations

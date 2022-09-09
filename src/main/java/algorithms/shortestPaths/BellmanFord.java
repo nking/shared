@@ -20,7 +20,7 @@ import java.util.Arrays;
  * 
  * Runtime complexity is <em>O(|V||E|)</em>.
  * 
- * implemented following Cormen et al. "Introduction to Algorithms"
+ * implemented following Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
  * 
  * @author nichole
  */

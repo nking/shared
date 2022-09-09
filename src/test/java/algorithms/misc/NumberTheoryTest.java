@@ -61,7 +61,7 @@ public class NumberTheoryTest extends TestCase {
     }
 
     public void testExtendedEuclid() {
-        //from CLRS Fig 31.1 (Cormen et al. Introduction to Algorithms)
+        //from CLRS Fig 31.1 (Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms)
         System.out.println("testExtendedEuclid");
         long a = 99;
         long b = 78;
@@ -119,7 +119,7 @@ public class NumberTheoryTest extends TestCase {
     }
     
     public void testGcdModularLinearEqnSolver() {
-        // example form Cormen et al. Introuduction to Algorithms, Sect 31.4
+        // example form Cormen, Leiserson, Rivest, and Stein Introuduction to Algorithms, Sect 31.4
         long a = 14;
         long b = 30;
         long n = 100;
@@ -135,7 +135,7 @@ public class NumberTheoryTest extends TestCase {
     }
     
     public void testModularExponentiation() {
-        // test from CLRS (Cormen et al. Introduction to Algorithms)
+        // test from CLRS (Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms)
         // Chap 31
         int a = 7;
         int b = 560; 
@@ -151,7 +151,7 @@ public class NumberTheoryTest extends TestCase {
     }
     
     public void testRSA() {
-        // following Section 31.7 of Cormen et al. Introduction to Algorithms (CLRS)
+        // following Section 31.7 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms (CLRS)
         // exercise 31.7-1
         
         // NOTE: see also https://en.wikipedia.org/wiki/Paillier_cryptosystem

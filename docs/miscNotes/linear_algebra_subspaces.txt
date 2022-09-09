@@ -1,0 +1,182 @@
+from Strang "Introduction to Linear Algebra", 3.6:
+
+A is mxn
+A:                 echelon form U:
+  1  3  5  0  9    1  3  5  0  9   p
+  0  0  0  1  8    0  0  0  1  8   p
+  0  0  0  0  0    0  0  0  0  0   f
+  
+                   p  f  f  p  f
+
+where p and f are the pivot rows and columns and the free rows and columns, respectively.
+
+The rank r is the number of pivot columns which is the same as the number of pivot rows.
+
+The terms for the sizes are the dimension of the subspace as real number R^m or R^n, etc,
+and the other length is called "dimension".
+
+column space C(A):
+    subspace of R^m.  dimension is r.
+    the pivot columns of A  (can see this from U)
+    all A*x.  (the system A*x=b is solvable iff b is in column space).
+row space C(A^T):
+    subspace of R^n.  dimension is r.
+    the pivot columns of A^T.  These are the pivot rows of A. Standard nomenclature uses columns as convention.
+    all A^T*y.
+nullspaces: can be derived using the columns in A and A^T that are > r in column numbers.
+    left nullspace N(A^T):
+       subspace of R^m
+       dimension is m-r (= number of columns). 
+       is the orthogonal complement to the column space space of A. 
+       i.e. N(A^T) is orthogonal to C(A).
+       a.k.a. as the kernel of A^T. 
+       all A^T*y = 0.  all column vectors x such that x^T*A = 0^T. 
+    nullspace N(A):
+       subspace of R^n
+       dimension is n-r (= number of columns).   
+       is the orthogonal complement to the row space of A. 
+       i.e. N(A) is orthogonal to C(A^T).
+       a.k.a. the kernel of A.
+       Ax=0. 
+
+solving for nullspace N(A):
+    A*x = 0
+    subspace of R^n=R^5, dimension=n-r=5-2=3.  (so x is 5x3.)
+    write out the multiplication, but solve for the free variable columns
+          f  f     f
+       1  3  5  0  9  * x1 = 0  
+       0  0  0  1  8    x2   0
+       0  0  0  0  0    x3   0
+                        x4
+                        x5
+         the multiplication:
+         x1*1 + x2*3 + x3*5 + x5*9 = 0
+         x4*1 + x5*8 = 0
+  
+         free variable columns are x2, x3, x5
+            special solutions are to set one free variable to "1" and the remaining to "0".
+               set x2=1: x1*1 + 3 = 0 => x1 = -3, so special solution is x=(-3, 1, 0, 0, 0)
+               set x3=1: x1*1 + x3*5 = 0 => x1 = -5, so special solution is x=(-5, 0, 1, 0, 0)
+               set x5=1: x1*1 + x5*9 = 0 => x1 = -9
+                         x4*1 + x5*8 = 0 => x4 = -8
+                         so special solution is x=(-9, 0, 0, -8, 1)
+
+         Then the complete solution to A*x = 0 (which is also U*x = 0 in this case, but not always):
+              x = x2*[-3] + x3*[-5] + x5*[-5]
+                     [ 1]      [ 1]      [ 0]
+                     [ 0]      [ 0]      [ 1]
+                     [ 0]      [ 0]      [ 0]
+                     [ 0]      [ 0]      [ 0]
+
+solving for left nullspace N(A^T):
+    A^T*y = 0
+    subspace of R^m=R^3, dimension=m-r=3-2=1.  (so y is 3x1.)
+    write out the multiplication, but solve for the free variable rows
+        1  0  0  * y1  =  0  p
+      f 3  0  0    y2     0  f
+      f 5  0  0    y3     0  f
+        0  1  0           0  p
+      f 0  8  0           0  f
+      the free variable rows, multiplied:
+         y1*3 = 0
+         y1*5 = 0
+         y2*8 = 0
+            so y1 and y2 must be 0.
+            y3 is not contrained, so can be anything.
+            the solution is then (0, 0, y3) which is a multiple of a basis vector (0, 0, 1).
+ 
+----------------------------------------------------------------------------------------------
+from Strang "Introduction to Linear Algebra", chap 8
+
+| -1  1  0  0 |    | -1  1  0  0 |  p
+| -1  0  1  0 |    |  0 -1  1  0 |  p
+|  0 -1  1  0 |    |  0  0 -1  1 |  p
+| -1  0  0  1 |    |  0  0  0  0 |  f
+|  0 -1  0  1 |    |  0  0  0  0 |  f
+|  0  0 -1  1 |    |  0  0  0  0 |  f
+
+                      p  p  p  f
+
+      can already see the matrix is underdetermined (more variables than data).
+
+solving for left nullspace N(A^T):
+    A^T*y = 0
+    subspace of R^m=R^6, dimension=m-r=6-3=3.  (so y is 6x3.)
+    write out the multiplication, but solve for the free variable rows
+           p  p  p  f  f  f
+        [ -1 -1  0 -1  0  0 ] * y1   =  0
+        [  1  0 -1  0 -1  0 ]   y2      0
+        [  0  1  1  0  0 -1 ]   y3      0
+      f [  0  0  0  1  1  1 ]   y4      0
+                                y5
+                                y6
+      from the pivots we have -y1-y2-y4=0, y1-y3-y5=0, y2+y3-y6=0
+
+      the free variable row, multiplied:
+          y4*1 + y5*1 + y6*1 = 0
+          special solutions set one free variable (of y4,y5,y6) to "1" and remaining to "0".
+          set y4=1: requires y5 or y6 to be -1 or to sum to -1.  
+              we also have -y1-y2=1, y1-y3-y5=0, y2+y3-y6=0 from pivots 
+                  for y5=-1, and y6=0: -y1-y2=1, y1-y3=-1, y2+y3=0
+                      special solution: (y1, -y1-1, y1+1,   1, -1, 0)
+                  for y6=-1, and y5=0: -y1-y2=1, y1-y3=0, y2+y3=-1
+                      special solution: (y1, -y1-1,    y1,  1,  0, -1)      
+          set y5=1: requires y4 or y6 to be -1 
+              we also have from pivots: -y1-y2-y4=0, y1-y3=1, y2+y3-y6=0
+                  for y4=-1, and y6=0: -y1-y2=-1, y1-y3=1, y2+y3=0
+                       special solution: (y1, -y1+1, y1-1, -1,  1,  0)      
+                  for y6=-1, and y4=0: -y1-y2=0, y1-y3=1, y2+y3=-1
+                       special solution: (y1,  -y1,  y1-1,  0,  1, -1)
+          set y6=1: requires y4 or y5 to be -1  ...
+              we also have from pivots: -y1-y2-y4=0, y1-y3-y5=0, y2+y3=-1
+                  for y4=-1, and y5=0: -y1-y2=-1, y1-y3=0, y2+y3=-1
+                       special solution: (y1, -y1+1,   y1, -1,  0,  1)
+                  for y5=-1, and y4=0: -y1-y2=0, y1-y3=-1, y2+y3=-1
+                       special solution: (y1,   -y1, y1+1, 0, -1,  1)      
+          Then a complete solution for y contains 1 special solution from each of the free variables
+            y4, y5, and y6 set to "1", with the additional constraint that their sums must be 0.
+               e.g. [ y1  ]  +  [  y1 ]  + [ y1  ]   =  [ 3*y1 ]
+                    [-y1-1]     [-y1+1]    [-y1  ]      [-3*y1 ]
+                    [ y1  ]     [ y1-1]    [ y1+1]      [ 3*y1 ]
+                    [  1  ]     [  -1 ]    [  0  ]      [   0  ]
+                    [  0  ]     [   1 ]    [ -1  ]      [   0  ]
+                    [ -1  ]     [   0 ]    [  1  ]      [   0  ]
+               OR 
+                    [ y1  ]  +  [  y1 ]  + [ y1  ]   =  [ 3*y1 ]
+                    [-y1-1]     [-y1  ]    [-y1+1]      [-3*y1 ]
+                    [ y1+1]     [ y1-1]    [ y1  ]      [ 3*y1 ]
+                    [  1  ]     [   0 ]    [ -1  ]      [   0  ]
+                    [ -1  ]     [   1 ]    [  0  ]      [   0  ]
+                    [  0  ]     [  -1 ]    [  1  ]      [   0  ]
+
+solving for nullspace N(A):
+    A*x = 0
+    subspace of R^n=R^4, dimension=n-r=4-3=1.  (so x is 4x1.)
+    write out the multiplication, but solve for the free variable columns
+          | -1  1  0  0 |   * x1 = 0 
+          | -1  0  1  0 |     x2   0
+          |  0 -1  1  0 |     x3   0
+       f  | -1  0  0  1 |     x4   0
+       f  |  0 -1  0  1 |          0
+       f  |  0  0 -1  1 |          0
+             p  p  p  f
+
+         the multiplication:
+            -x1 + x2 = 0
+            -x1 + x3 = 0
+            -x2 + x3 = 0
+            -x1 + x4 = 0
+            -x2 + x4 = 0
+            -x3 + x4 = 0
+
+         free variable columns are x4
+            special solutions are to set one free variable to "1" and the remaining to "0".
+               set x4=1: x1 = 1, x2 = 1, x3 = 1
+                 so special solution is x=(1, 1, 1, 1)
+                     
+         Then the complete solution to A*x = 0 
+              x = x4*[1]
+                     [1]
+                     [1]
+                     [1]
+

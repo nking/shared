@@ -18,7 +18,7 @@ import java.util.Arrays;
     (1) d[v] is the minimum cost of any edge connecting to v
     and (2) the relax function compares the weight of u,v to d[v]
  * 
- * Implemented from pseudo code in Cormen et al. Introduction to Algorithms and
+ * Implemented from pseudo code in Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms and
       from http://en.wikipedia.org/wiki/Prim's_algorithm
      
       Time complexity for different implementations:
@@ -59,7 +59,7 @@ import java.util.Arrays;
 
 * 
   Following pseudo-code from Introduction to Algorithms,
-  by Cormen et al.
+  by Cormen, Leiserson, Rivest, and Stein
 
 * 
  * this implementation uses a YFastTrie min priority queue and adjacency list.

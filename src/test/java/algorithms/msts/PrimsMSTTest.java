@@ -28,7 +28,7 @@ public class PrimsMSTTest extends TestCase {
     }
     
     /**
-     * test created from Cormen et al. Chap 24, MST, Fig 23.4.
+     * test created from Cormen, Leiserson, Rivest, and Stein Chap 24, MST, Fig 23.4.
      * @throws Exception 
      */
     public void est0() throws Exception {
@@ -252,7 +252,7 @@ public class PrimsMSTTest extends TestCase {
         Map<PairInt, Integer> pointMap, boolean doSort) {
         
         /*
-         * From Cormen et al. chap 35 Approximation Algorithms, 35.2 Traveling-Salesman problem, Fig 35.2
+         * From Cormen, Leiserson, Rivest, and Stein chap 35 Approximation Algorithms, 35.2 Traveling-Salesman problem, Fig 35.2
          * 
          * 
          *   6  |---|---|---|---|---|---|---|----

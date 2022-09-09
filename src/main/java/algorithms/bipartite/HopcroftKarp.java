@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  * finds a maximum cardinality matching in a bipartite graph.
  * Note that the graph does not have edge weights.
  * 
- * useful reading is Cormen et al. "Introduction to Algorithms"
+ * useful reading is Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
  * pseudocode of Hopcroft-Karp.
  * 
  * Also helpful is 

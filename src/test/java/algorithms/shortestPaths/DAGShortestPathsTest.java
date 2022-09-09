@@ -16,7 +16,7 @@ public class DAGShortestPathsTest extends TestCase {
     
      public void test0() {
         
-        // Fig 24.5 from Cormen et al. "Intro to Alg"
+        // Fig 24.5 from Cormen, Leiserson, Rivest, and Stein "Intro to Alg"
         /*
          * r=0, s=1, t=2, x=3, y=4, z=5
          *

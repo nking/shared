@@ -15,7 +15,7 @@ import java.util.Arrays;
  * runtime complexity is <em>O(|V|^2 + |V||E|)</em> which is better than
  * Floyd-Warshall if E is less than V^2.
  * 
- * implemented following Cormen et al. "Introduction to Algorithms".
+ * implemented following Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
  * 
  * @author nichole
  */

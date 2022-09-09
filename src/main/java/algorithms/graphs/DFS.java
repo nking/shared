@@ -17,7 +17,7 @@ import java.util.Arrays;
    average runtime is approx O(|E|), worst case runtime: O(|V| + |E|)
    worst case space needed: O(|V|)
 
-   implemented following Cormen et al. "Introduction To Algorithms"
+   implemented following Cormen, Leiserson, Rivest, and Stein "Introduction To Algorithms"
 
    pros of DFS:
       useful in topological sorting

@@ -691,7 +691,7 @@ public class RedBlackBSTLongInt {
     /** the largest key in the subtree rooted at x less than the given key
      * 
      * The method is symmetric t the successor method called 
-     * higher, as suggested by Cormen et al. in
+     * higher, as suggested by Cormen, Leiserson, Rivest, and Stein in
      * the book "Introduction to Algorithms".
      * 
      * @param x
@@ -820,7 +820,7 @@ public class RedBlackBSTLongInt {
     
     /** the smallest key in the subtree rooted at x greater than the given key.
      * 
-     * NOTE: the method uses in part, a pattern adapted from the Cormen et al.
+     * NOTE: the method uses in part, a pattern adapted from the Cormen, Leiserson, Rivest, and Stein
      * book "Introduction to Algorithms" for their Red Black Tree.
      * 
      * @param x

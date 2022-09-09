@@ -22,7 +22,7 @@ import java.util.Set;
  * findSet method which makes subsequent membership disjointSet queries
  * faster.
  * 
- * implementation follows that in Cormen et al. Introduction to Algorithms
+ * implementation follows that in Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms
  * who include references in chapter notes, specifically Tarjan 1999 class notes
  * for COS 423 Princeton University.
  * 
@@ -239,7 +239,7 @@ public class DisjointForest<T> {
     
     /**
      * given the adjacency list of a graph, return the disjoint connected 
-     * components.  implemented from pseudocode in Cormen et al. Introduction
+     * components.  implemented from pseudocode in Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
      * @param adjList
      * @return the connected components as a list of the disjoint sets of 
@@ -384,7 +384,7 @@ public class DisjointForest<T> {
         /**
          * find the least common ancestor for node x and y in a tree using
          * Tarjan's off-line least common ancestor algorithm.
-         * implemented from pseudocode in Cormen et al. Introduction to 
+         * implemented from pseudocode in Cormen, Leiserson, Rivest, and Stein Introduction to 
          * Algorithms.
          * 
          * @param x

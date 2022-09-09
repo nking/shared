@@ -3,7 +3,7 @@ package algorithms.graphs;
 import algorithms.util.SimpleLinkedListNode;
 
 /**
- * From Cormen et al. "Introduction to Algorithms",
+ * From Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms",
  * Topological sort sorts a DAG (directed acyclic graph) by vertices such that
  * a directed edge uv to vertices u and v results in u before v in a linear
  * ordering.
@@ -54,7 +54,7 @@ public class TopologicalSort {
     
     /**
      * 
-     * implemented following Cormen et al. "Introduction To Algorithms".
+     * implemented following Cormen, Leiserson, Rivest, and Stein "Introduction To Algorithms".
      * Runtime complexity is <em>O(V + E)</em>.
      * @return indexes ordered by finish time of traversal
      */

@@ -15,7 +15,7 @@ public class TopologicalSortTest extends TestCase {
     public void testSort() {
         
         /*
-        from Cormen et al. Fig 22.7
+        from Cormen, Leiserson, Rivest, and Stein Fig 22.7
         
         11/16 undershorts     socks 17/18    
                |         \     |               watch 9/10
@@ -156,7 +156,7 @@ public class TopologicalSortTest extends TestCase {
 
         System.out.println("testSort2");
         
-        // constructing test from Cormen et al.'s "Introduction to Algorithms"
+        // constructing test from Cormen, Leiserson, Rivest, and Stein's "Introduction to Algorithms"
         SimpleLinkedListNode[] connected = new SimpleLinkedListNode[9];
 
         /*    *0 \         *3

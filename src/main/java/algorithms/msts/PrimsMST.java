@@ -21,7 +21,7 @@ import java.util.Stack;
  * that connect all vertexes for a total minimum cost (sum of edge weights).
  * 
  *
- * Implemented from pseudo code in Cormen et al. Introduction to Algorithms and
+ * Implemented from pseudo code in Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms and
  * from http://en.wikipedia.org/wiki/Prim's_algorithm.
    Useful also was
   http://www.i-programmer.info/projects/61-algorithms/534-minimum-spanning-tree.html?start=1

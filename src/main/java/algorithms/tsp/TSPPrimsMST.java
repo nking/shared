@@ -6,7 +6,7 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 
 /**
- * adapted from Cormen et al. Introduction to Algorithms
+ * adapted from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms
  *
  * An approximate solution to the traveling salesman problem.
  * The algorithms provides solution which is at most, twice the cost of an

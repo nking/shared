@@ -10,7 +10,7 @@ public class InsertionSort {
      * sorts in place with worse case runtime of O(n^2), best case of O(n) and
      * average case O(n^2).
      * 
-     * following pseudocode in Cormen et al "Introduction to Algorithms" and
+     * following pseudocode in Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms" and
      * wikipedia.
      * 
      * @param a 

@@ -20,7 +20,7 @@ public class LinearProgrammingTest extends TestCase {
     public void estPivot() {
         
         /*
-        following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
+        following Sect 29.3 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
         
         except changing to "zero based" integer indexes on x, etc.
         
@@ -156,7 +156,7 @@ public class LinearProgrammingTest extends TestCase {
     
     public void estSolveUsingSimplexMethod() {
         /*
-        following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
+        following Sect 29.3 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
         
         except changing to "zero based" integer indexes on x, etc.
         
@@ -742,7 +742,7 @@ public class LinearProgrammingTest extends TestCase {
     
     public void estSolveDual0() {
         /*
-        eqns (29.86) - (29.90) of Cormen et al. "Introduction to Algorithms"       
+        eqns (29.86) - (29.90) of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"       
         */
         
         double[] c = new double[]{30, 24, 36};

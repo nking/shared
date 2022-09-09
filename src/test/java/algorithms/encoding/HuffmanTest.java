@@ -22,7 +22,7 @@ public class HuffmanTest extends TestCase {
      */
     public void testBuildFrequencyCodeTree() {
         
-        // Fig 16.4 from Cormen et al. "Introduction to Algorithms"
+        // Fig 16.4 from Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
         
         System.out.println("buildFrequencyCodeTree");
         

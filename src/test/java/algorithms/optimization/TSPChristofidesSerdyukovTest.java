@@ -184,7 +184,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
         
         /* Test of traveling salesman approximate tour. 
          * 
-         * From Cormen et al. chap 35 Approximation Algorithms, 35.2 Traveling-Salesman problem, Fig 35.2
+         * From Cormen, Leiserson, Rivest, and Stein chap 35 Approximation Algorithms, 35.2 Traveling-Salesman problem, Fig 35.2
          * 
          * 
          *   6  |---|---|---|---|---|---|---|----

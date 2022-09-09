@@ -279,7 +279,7 @@ public class SetCover {
      * <pre>
      * The algorithm implements pseudocode from
      *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
-     * and Cormen et al "Introduction to Algorithms" chap 35.3.
+     * and Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms" chap 35.3.
      * </pre>
      * @param sets
      * @return the list of indexes of sets which comprise the cover.

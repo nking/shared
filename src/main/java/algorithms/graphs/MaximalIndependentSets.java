@@ -209,7 +209,7 @@ public class MaximalIndependentSets {
             //NOTE: this could be revised to use paralell spawn and sync comments
             // or the parallel concurrency keyword in comments
             // as is used in the dynamic multithreading parallelism model.
-            // (see Chap 27 of Cormen et al. "Introduction to Algorithms" whose
+            // (see Chap 27 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms" whose
             // multithreaded pseudocode and programming model were heavily 
             // influenced by the Cilk project at MIT and the Cilk++ extensions 
             // to C++ distributed by Cilk Arts, Inc, OpenMP, Task Parallel Library, 

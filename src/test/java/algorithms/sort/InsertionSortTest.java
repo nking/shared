@@ -14,7 +14,7 @@ public class InsertionSortTest extends TestCase {
     
     public void testSort(){
         /*
-        from Cormen et al. "Intorudction toAlgorithms" Fig 2.2
+        from Cormen, Leiserson, Rivest, and Stein "Intorudction toAlgorithms" Fig 2.2
         */
         
         int[] a = new int[]{5, 2, 4, 6, 1, 3};

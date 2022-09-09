@@ -1,7 +1,7 @@
 package algorithms.misc;
 
 /**
- * implemented from pseudocode from Cormen et al. 
+ * implemented from pseudocode from Cormen, Leiserson, Rivest, and Stein 
  * "Introduction to Algorithms", Chap 31
  *
  * first implemented in project
@@ -59,7 +59,7 @@ public class NumberTheory {
      * The equation may have zero, one, or more than one such solution.
      * performs O(lg n + gcd(a, n)) arithmetic operations.
      * <pre>
-     * Section 31.4, Cormen et al. Introduction to Computer Algorithms.
+     * Section 31.4, Cormen, Leiserson, Rivest, and Stein Introduction to Computer Algorithms.
      * </pre>
      * @param a positive number greater than 0
      * @param b positive number greater than 0
@@ -104,7 +104,7 @@ public class NumberTheory {
     /**
      * calculate a^b mod n.
      * <pre>
-     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen et al. Introduction
+     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen, Leiserson, Rivest, and Stein Introduction
      * to Algorithms (a.k.a. CLRS).
      * </pre>
      * @param a non-negative integer
@@ -139,7 +139,7 @@ public class NumberTheory {
     /**
      * calculate a^b mod n.
      * <pre>
-     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen et al. Introduction
+     * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen, Leiserson, Rivest, and Stein Introduction
      * to Algorithms (a.k.a. CLRS).
      * </pre>
      * @param a non-negative integer

@@ -18,10 +18,10 @@ import java.util.Arrays;
  * algorithm which is O(V*E), but can handle negative weight cycles by returning 
  * false at the end of the algorithm.
  * 
- * implemented from pseudocode from Cormen et al. "Introduction to Algorithms".
+ * implemented from pseudocode from Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
  * 
  * <pre>
- * from Cormen et al. :
+ * from Cormen, Leiserson, Rivest, and Stein :
  * useful for determining critical paths in PERT chart analysis.
  * edges hold jobs to be perform and their weights are the estimated time
  * to complete the jobs.

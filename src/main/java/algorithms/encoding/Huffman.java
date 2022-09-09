@@ -45,7 +45,7 @@ import java.util.Queue;
    use the smallest binary strings.
    The compressed results are usually 20%-90% of the original size.
    
-  From Cormen et al. "Introduction to algorithms":
+  From Cormen, Leiserson, Rivest, and Stein "Introduction to algorithms":
   consider only prefix-codes, that is, codes in which no codeword is also a 
   prefix of some other codeword.
    Encoding for any binary character code is a concatenation of the codewords 

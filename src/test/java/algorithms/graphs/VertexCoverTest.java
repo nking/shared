@@ -34,7 +34,7 @@ public class VertexCoverTest extends TestCase {
         Advanced Algorithms, University of Cambridge.
         VII. Approximation Algorithms: Covering Problems
            https://www.cl.cam.ac.uk/teaching/1617/AdvAlgo/vertexcover.pdf
-           who reference Cormen et al. "Introduction to Algorithms"
+           who reference Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
         
                                 *0
                         *1                2
@@ -80,7 +80,7 @@ public class VertexCoverTest extends TestCase {
     }
     
     /**
-     * test is from Fig. 35.1 of Cormen et al. "Introduction to Algorithms".
+     * test is from Fig. 35.1 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
      */
     public void testApprox2() {
         

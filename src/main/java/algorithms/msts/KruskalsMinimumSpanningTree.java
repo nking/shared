@@ -41,7 +41,7 @@ public class KruskalsMinimumSpanningTree {
     public static TIntObjectMap<SimpleLinkedListNode> mst(
         SimpleLinkedListNode[] graph, TObjectDoubleMap<PairInt> edgeWeights) {
                 
-        /* pseudo code form Cormen et al. "Introduction to Computer Science".
+        /* pseudo code form Cormen, Leiserson, Rivest, and Stein "Introduction to Computer Science".
          *
          *  initialize set A to the empty set and create |V| trees, one containing each vertex
          *

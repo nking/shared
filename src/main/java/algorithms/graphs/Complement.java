@@ -22,7 +22,7 @@ public class Complement {
        is not in E).  In other words, G is the graph containing exactly those 
        edges that are not in G.
        <pre>
-       Chap 34 Cormen et al. "Introduction to Algorithms".
+       Chap 34 Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
        </pre>
        runtime complexity is O(|V|^2).
      * @param g an undirected graph
@@ -38,7 +38,7 @@ public class Complement {
        of G as G_bar=(V,E_bar), where E_bar=((u,v): u,v in V, u!=v, and (u,v) is not in E).
        In other words, G is the graph containing exactly those edges that are not in G.
        <pre>
-       Chap 34 Cormen et al. "Introduction to Algorithms"
+       Chap 34 Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
        </pre>
        runtime complexity is O(|V|^2).
      * @param edges edges of an undirected graph

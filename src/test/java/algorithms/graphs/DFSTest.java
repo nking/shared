@@ -43,7 +43,7 @@ public class DFSTest extends TestCase {
 
         for (int j = 0; j < 2; ++j) {
 
-            // constructing test from Cormen et al.'s "Introduction to Algorithms"
+            // constructing test from Cormen, Leiserson, Rivest, and Stein's "Introduction to Algorithms"
             SimpleLinkedListNode[] connected = new SimpleLinkedListNode[9];
 
             /*    *0 \         *3
@@ -211,7 +211,7 @@ public class DFSTest extends TestCase {
         Logger.getLogger(getClass().getSimpleName()).info("testWalk2");
         
         /*
-        from Cormen et al. Fig 22.7
+        from Cormen, Leiserson, Rivest, and Stein Fig 22.7
         
         11/16 undershorts     socks 17/18    
                |         \     |               watch 9/10

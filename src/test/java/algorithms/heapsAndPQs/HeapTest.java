@@ -49,7 +49,7 @@ public class HeapTest extends TestCase {
 
     public void testInsert2() {
         
-        // example from cormen et al. chap 20, Fibonacci heaps, Fig 20.2
+        // example from Cormen, Leiserson, Rivest, and Stein chap 20, Fibonacci heaps, Fig 20.2
 
     	HeapNode node23 = new HeapNode(23);
 
@@ -181,7 +181,7 @@ log.info("h.minimumNode.key=" + h.minimumNode.key);*/
     
     public void testExtractMin2() {
         
-        // example from cormen et al. chap 20, Fibonacci heaps, Fig 20.3
+        // example from Cormen, Leiserson, Rivest, and Stein chap 20, Fibonacci heaps, Fig 20.3
 
         HeapNode node23 = new HeapNode(23);
 
@@ -312,7 +312,7 @@ log.info("h.minimumNode.key=" + h.minimumNode.key);*/
    
     public void testDecreaseKey0() {
         
-        //example from Cormen et al. chap 20, Fibonacci heaps, Fig 20.4
+        //example from Cormen, Leiserson, Rivest, and Stein chap 20, Fibonacci heaps, Fig 20.4
 
         HeapNode node7 = new HeapNode(7);
         HeapNode node24 = new HeapNode(24);

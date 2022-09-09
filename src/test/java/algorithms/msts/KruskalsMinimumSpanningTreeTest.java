@@ -49,7 +49,7 @@ public class KruskalsMinimumSpanningTreeTest extends TestCase {
     
     public void test0() {
         /*
-        Following example in Cormen et al. Chap 24, MST, Fig 23.4.
+        Following example in Cormen, Leiserson, Rivest, and Stein Chap 24, MST, Fig 23.4.
         
                  / [b] --- 8 ----/[c]-- 7  -- [d]\
                4    |          2     \         |    9

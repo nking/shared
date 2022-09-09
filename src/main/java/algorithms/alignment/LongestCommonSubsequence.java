@@ -16,7 +16,7 @@ public class LongestCommonSubsequence {
     
     /**
      * find the longest overlapping sequence between 2 sequences, allowing gaps
-     * following Cormen et al. "Introduction to Algorithms".
+     * following Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
      *
      * The solution takes time O(m * n) and uses dynamic programming.
      

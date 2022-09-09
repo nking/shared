@@ -20,10 +20,10 @@ import java.util.Arrays;
    where M is the number of bits of the maximum value the trie
    runtime complexity using Fibonacci is O(|V|*log_2|V| + |E|)
  * 
- * implemented from pseudocode from Cormen et al. "Introduction to Algorithms"
+ * implemented from pseudocode from Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
  * then edited to use heaps and priority queues.
  * 
- * from Cormen et al. :
+ * from Cormen, Leiserson, Rivest, and Stein :
  * 
  * @author nichole
  */

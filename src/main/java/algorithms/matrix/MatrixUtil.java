@@ -1673,7 +1673,7 @@ public class MatrixUtil {
      * 
      * NOTE that (A^T*A) (or (A * A^T)) has to be invertible, that is, 
      * the reduced echelon form of A has linearly independent columns (rank==n).
-     * following pseudocode from Cormen et al. Introduction to Algorithms.
+     * following pseudocode from Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * @param a two dimensional array in row major format with dimensions
      * m x n.  a is a full-rank matrix.
      * a is a non-singular matrix(i.e. has exactly one solution). 
@@ -1688,7 +1688,7 @@ public class MatrixUtil {
         // limit for a number to be significant above 0 (precision of computer)
         double eps = 1e-16;
         
-        //from cormen et al: A_pseudoinverse = inverse(A^T*A) * A^T
+        //from Cormen, Leiserson, Rivest, and Stein: A_pseudoinverse = inverse(A^T*A) * A^T
         double[][] _aT = MatrixUtil.transpose(a);
         double[][] _aTA = MatrixUtil.multiply(_aT, a);
         DenseMatrix aTA = new DenseMatrix(_aTA);
@@ -2585,14 +2585,16 @@ public class MatrixUtil {
      * calculate the condition number as the largest singular value divided
      * by the singular value for i==(rank-1) of A where the singular values are
      * found using the SVD.
-     * 
-     * from https://blogs.mathworks.com/cleve/2017/07/17/what-is-the-condition-number-of-a-matrix/
-     * A condition number for a matrix and computational task measures how 
-     * sensitive the answer is to perturbations in the input data and to roundoff 
-     * errors made during the solution process....If a matrix is singular, 
-     * then its condition number is infinite.
-     * ...(A large condition number means that the matrix is close to being singular).
-     * 
+     <pre>
+     from https://blogs.mathworks.com/cleve/2017/07/17/what-is-the-condition-number-of-a-matrix/
+     A condition number for a matrix and computational task measures how
+     sensitive the answer is to perturbations in the input data and to roundoff
+     errors made during the solution process....If a matrix is singular,
+     then its condition number is infinite.
+     ...(A large condition number means that the matrix is close to being singular).
+
+     also see Section 9.2 of Strang's "Introduction to Linear Algebra".
+     </pre>
      * 
      * @param a
      * @return 

@@ -21,7 +21,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 /**
  * A program to find the optimal values of x if possible given
  * an objective and constraints in Standard Form.
-  * 
  
  * The Simplex Method is used and will return infeasible or unbounded
  * if an optimal Basic feasible solution is not possible.
@@ -34,14 +33,20 @@ import gnu.trove.map.hash.TIntIntHashMap;
  * Interior-point is a class of algorithms that solve linear and nonlinear 
  * convex optimization problems in provably polynomial time.
  * https://en.m.wikipedia.org/wiki/Interior-point_method
- * The interior-point algorithms can use linear algebra more effecitvely
+ * The interior-point algorithms can use linear algebra more effectively
  * for large and sparse problems.
- * 
+ *
+ * Note that in the 4th edition of "Introduction to Algorithms", Cormen, Leiserson, Rivest, and Stein
+ * state that ellipsoid algorithms do not appear to be competitive with the simplex method in practice.
+ * (TODO: follow up on this with details of number of variables vs number of iterations or another measure of
+ * runtime complexity... Karmarkar's is O(N^3.5 * L) iterations where N is the number of variables and L is
+ * the number of bits of input to the algorithm)
+ *
  * when all variables must be integers, the problem is more specifically, Linear Integer
        Programming problem and it is NP-hard, no known polynomial time algorithm.
        
  * <pre>
- * The algorithm implements Chap 29 of Cormen et al. "Introduction to Algorithms"
+ * The algorithm implements Chap 29 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
  * 
   Some definitions:
    
@@ -202,7 +207,7 @@ public class LinearProgramming {
         set to unbounded, else
         returns a slack form for which a basic solution is feasible and optimal.
      <pre>
-       The method is implemented from pseudocode in Section 29.3 of Cormen et al.
+       The method is implemented from pseudocode in Section 29.3 of Cormen, Leiserson, Rivest, and Stein
        
        Some definitions:
            A feasible solution is the numbers xHat as x1,...xn that satisfy all constraints.
@@ -232,7 +237,7 @@ public class LinearProgramming {
             return slackForm;
         }
                 
-        //lines 2-11 of the SIMPLEX method of Cormen et al. Chap 29.:
+        //lines 2-11 of the SIMPLEX method of Cormen, Leiserson, Rivest, and Stein Chap 29.:
         
         // the j's in N w/ c_j > 0
         TIntSet positiveCIndexes = findPositiveCIndexes(slackForm);
@@ -318,7 +323,7 @@ public class LinearProgramming {
         set to unbounded, else
         returns a slack form for which a basic solution is feasible.
      * <pre>
-     * The method is implemented from pseudocode in Section 29.3 of Cormen et al.
+     * The method is implemented from pseudocode in Section 29.3 of Cormen, Leiserson, Rivest, and Stein
      * </pre>
      * @param standForm
      * @return 
@@ -404,7 +409,7 @@ public class LinearProgramming {
            then c = (c3, c5, c6)^T = ( -1/6  -1/6 -2/3 )^T
            for optimal
         
-        lines 2-11 of the SIMPLEX method of Cormen et al. Chap 29.:
+        lines 2-11 of the SIMPLEX method of Cormen, Leiserson, Rivest, and Stein Chap 29.:
          
         while some index j in nIndices has c_j > 0
             do choose an index eIdx in nIndices for which c_eIdx > 0
@@ -498,7 +503,7 @@ public class LinearProgramming {
      * an adjacent basic feasible solution.
      * https://en.m.wikipedia.org/wiki/Simplex_algorithm
      * <pre>
-     * The method is implemented from pseudocode in Section 29.3of Cormen et al.
+     * The method is implemented from pseudocode in Section 29.3of Cormen, Leiserson, Rivest, and Stein
      * </pre>
      * @param slackForm
      * @param lIdx the leaving index of x. the "leaving variable" is the basic 
@@ -668,10 +673,10 @@ public class LinearProgramming {
      * constants in b, convert L into standard maximum form.
      * Standard form has a maximization objective, nonnegative constraints
      * on all x_j's, and constraints which are all .leq. b_i's.
-     * The program implements material from Section 29.1 of Cormen et al.
+     * The program implements material from Section 29.1 of Cormen, Leiserson, Rivest, and Stein
      * "Introduction to Algorithms"
      <pre>
-       Example Linear Program for minimization from Cormen et al., Chap 29.
+       Example Linear Program for minimization from Cormen, Leiserson, Rivest, and Stein, Chap 29.
              minimize:
                -2*x1 + 3*x2
              subject to constraints:
@@ -946,7 +951,7 @@ public class LinearProgramming {
                 constraint with a negative b, then the non-basic variables in
                 that constraint (the other x's) can be > 0 and x0 can be 0.
     
-    Sect 29.5 of Cormen et al., method INITIALIZE-SIMPLEX(A, b,c)
+    Sect 29.5 of Cormen, Leiserson, Rivest, and Stein, method INITIALIZE-SIMPLEX(A, b,c)
     line 4:   form L_AUX by adding -x0 to the LHS of each equation and setting the
               objective function to -x0.
     </pre>    
@@ -1264,7 +1269,7 @@ public class LinearProgramming {
         
         /**
          * when x has been calculated, evaluate the objective.
-         * see eqn (29.42) of Cormen et al.
+         * see eqn (29.42) of Cormen, Leiserson, Rivest, and Stein
          * <pre> z = v + summation_j_in_nIndices(c_j*x_j) </pre>
          * @return 
          */
@@ -1319,7 +1324,7 @@ public class LinearProgramming {
          */
         @Override
         public double[] computeBasicSolution() {
-            //following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
+            //following Sect 29.3 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
             double[] xt = new double[a.length + b.length];
             int i;
             for (i = 0; i < b.length; ++i) {
@@ -1434,7 +1439,7 @@ public class LinearProgramming {
         
         /**
          * when x has been calculated, evaluate the objective.
-         * see eqn (29.42) of Cormen et al.
+         * see eqn (29.42) of Cormen, Leiserson, Rivest, and Stein
          * <pre> z = v + summation_j_in_nIndices(c_j*x_j) </pre>
          * @return 
          */
@@ -1492,7 +1497,7 @@ public class LinearProgramming {
         @Override
         public double[] computeBasicSolution() {
             /*
-            following Sect 29.3 of Cormen et al. "Introduction to Algorithms"
+            following Sect 29.3 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
 
             Slack Form example:
                  maximize 3*x1 + x2 + 2*x3
@@ -1519,7 +1524,7 @@ public class LinearProgramming {
         public double[] computeBasicDualSolution() {
             
             // dual b is primal slack -c from this instance
-            //  see eqn (29.91) of Cormen et al. "Introduction to Algorithms"
+            //  see eqn (29.91) of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
             
             double[] y = new double[nIndices.length + bIndices.length];
             int i, idx;
@@ -1582,7 +1587,7 @@ public class LinearProgramming {
         
         /**         
          * @param a mXn matrix of constraint coefficients.   Careful with the signs
-         * of the values for the SlackForm. see eqn (29.43) of Cormen et al.  
+         * of the values for the SlackForm. see eqn (29.43) of Cormen, Leiserson, Rivest, and Stein  
          * <pre> x_i = b_i - summation_j(a_i_j*x_j) for i in bIndices. </pre>
          * @param b m-dimensional vector of constraint inequalities
          * @param c n-dimensional vector of objective coefficients.

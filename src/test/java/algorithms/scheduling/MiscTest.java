@@ -140,7 +140,7 @@ public class MiscTest extends TestCase {
         
         // testing for task scheduling with penalty for lateness
         
-        // from cormen et al. Fig 16.7
+        // from Cormen, Leiserson, Rivest, and Stein Fig 16.7
         /*
          * Fig 16.7: 
          *                      0   1   2   3   4   5   6
