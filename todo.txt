@@ -1,5 +1,9 @@
 -- look into jcilk
 
+-- for multidimensional fast efficient KDE: the fastKDE github project
+   LBL-EESA by O'Brien T.A. et al. 2014, 2016.  it uses non-uniform FFT
+   and the silverman kernel method.  the code language is python.
+
 -- Bayes estimate of GEV:
    -- a conjugate prior and likelihood is nearly intractable,
       so many use sampling of the posterior by MCMC, importance, metropolis, etc.

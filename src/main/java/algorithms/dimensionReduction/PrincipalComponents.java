@@ -119,6 +119,8 @@ public class PrincipalComponents {
            the 1st principal direction is the 1st column of U.
         */
     
+        //TODO: overload this method to use fast distance covariance
+
         double[][] cov = BruteForce.covariance(x);
         assert(nDimensions == cov.length);
         assert(nDimensions == cov[0].length);
