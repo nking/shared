@@ -76,11 +76,11 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L76">            iter = factors2.iterator();</span>
 <span class="fc bfc" id="L77" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
 <span class="fc" id="L78">                factor2 = iter.next();</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">                if (probablyPrime(factor2, s)) {</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">                if (probablyPrime(factor2, s)) {</span>
 <span class="fc" id="L80">                    primeFactors.add(factor2);</span>
 <span class="fc" id="L81">                    continue;</span>
                 }
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">                if (!factors.contains(factor2)) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                if (!factors.contains(factor2)) {</span>
 <span class="nc" id="L84">                    factorsList.add(factor2);</span>
                 }
             }
@@ -90,7 +90,7 @@ import java.util.concurrent.ThreadLocalRandom;
     }
     
     /**
-     * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
+     * integer factorization into primes following Pollard-Rho algorithm in Cormen, Leiserson, Rivest, and Stein 
      * &quot;Introduction to Algorithms&quot;.  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
      * &quot;the algorithms is only a heuristic, neither its running time nor its success 
@@ -117,7 +117,7 @@ import java.util.concurrent.ThreadLocalRandom;
     }
     
     /**
-     * integer factorization into primes following Pollard-Rho algorithm in Cormen et al. 
+     * integer factorization into primes following Pollard-Rho algorithm in Cormen, Leiserson, Rivest, and Stein 
      * &quot;Introduction to Algorithms&quot;.  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
      * &quot;the algorithms is only a heuristic, neither its running time nor its success 
@@ -239,7 +239,7 @@ import java.util.concurrent.ThreadLocalRandom;
      * so choose s ≥ log_2(log(n)-1) = math.log(beta/1.443)/math.log(2)
      * where beta is the bitlength of n.
      * 
-     * reference: Chap 31 of Cormen et al. Introduction to Algorithms.
+     * reference: Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * &lt;/pre&gt;
      * @param n number to test for primality, must be odd and &gt; 2.
      * @param s number of randomly chosen base numbers to try
@@ -276,7 +276,7 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L276">        return true;</span>
     }
 
-    /*** implements algorithm from Chap 31 of Cormen et al. Introduction to Algorithms.
+    /*** implements algorithm from Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * tests whether number n is composite (hence not prime) using the
      * number a or possibly prime.
      * witness is a more effective extension of the test 
@@ -417,7 +417,7 @@ import java.util.concurrent.ThreadLocalRandom;
     
     /**
      * estimate the number of primes less than or equal to n.
-     * uses Theorem 31.37 (Prime number theorem) of Cormen et al.
+     * uses Theorem 31.37 (Prime number theorem) of Cormen, Leiserson, Rivest, and Stein
      * Introduction to Algorithms.
      * The method is off by less than 6% at n = 1E9.
      * @param n

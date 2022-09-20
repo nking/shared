@@ -519,10 +519,10 @@ key, left or right field.
         // assert isRed(h) &amp;&amp; !isRed(h.left) &amp;&amp; !isRed(h.left.left);
 
 <span class="fc" id="L521">        flipColors(h);</span>
-<span class="pc bpc" id="L522" title="1 of 2 branches missed.">        if (isRed(h.right.left)) { </span>
-<span class="nc" id="L523">            h.right = rotateRight(h.right);</span>
-<span class="nc" id="L524">            h = rotateLeft(h);</span>
-<span class="nc" id="L525">            flipColors(h);</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">        if (isRed(h.right.left)) { </span>
+<span class="fc" id="L523">            h.right = rotateRight(h.right);</span>
+<span class="fc" id="L524">            h = rotateLeft(h);</span>
+<span class="fc" id="L525">            flipColors(h);</span>
         }
             
 <span class="fc" id="L528">        return h;</span>
@@ -691,7 +691,7 @@ key, left or right field.
     /** the largest key in the subtree rooted at x less than the given key
      * 
      * The method is symmetric t the successor method called 
-     * higher, as suggested by Cormen et al. in
+     * higher, as suggested by Cormen, Leiserson, Rivest, and Stein in
      * the book &quot;Introduction to Algorithms&quot;.
      * 
      * @param x
@@ -820,7 +820,7 @@ key, left or right field.
     
     /** the smallest key in the subtree rooted at x greater than the given key.
      * 
-     * NOTE: the method uses in part, a pattern adapted from the Cormen et al.
+     * NOTE: the method uses in part, a pattern adapted from the Cormen, Leiserson, Rivest, and Stein
      * book &quot;Introduction to Algorithms&quot; for their Red Black Tree.
      * 
      * @param x

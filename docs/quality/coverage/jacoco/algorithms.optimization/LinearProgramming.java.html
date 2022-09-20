@@ -21,7 +21,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 /**
  * A program to find the optimal values of x if possible given
  * an objective and constraints in Standard Form.
-  * 
  
  * The Simplex Method is used and will return infeasible or unbounded
  * if an optimal Basic feasible solution is not possible.
@@ -34,14 +33,20 @@ import gnu.trove.map.hash.TIntIntHashMap;
  * Interior-point is a class of algorithms that solve linear and nonlinear 
  * convex optimization problems in provably polynomial time.
  * https://en.m.wikipedia.org/wiki/Interior-point_method
- * The interior-point algorithms can use linear algebra more effecitvely
+ * The interior-point algorithms can use linear algebra more effectively
  * for large and sparse problems.
- * 
+ *
+ * Note that in the 4th edition of &quot;Introduction to Algorithms&quot;, Cormen, Leiserson, Rivest, and Stein
+ * state that ellipsoid algorithms do not appear to be competitive with the simplex method in practice.
+ * (TODO: follow up on this with details of number of variables vs number of iterations or another measure of
+ * runtime complexity... Karmarkar's is O(N^3.5 * L) iterations where N is the number of variables and L is
+ * the number of bits of input to the algorithm)
+ *
  * when all variables must be integers, the problem is more specifically, Linear Integer
        Programming problem and it is NP-hard, no known polynomial time algorithm.
        
  * &lt;pre&gt;
- * The algorithm implements Chap 29 of Cormen et al. &quot;Introduction to Algorithms&quot;
+ * The algorithm implements Chap 29 of Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot;
  * 
   Some definitions:
    
@@ -176,24 +181,24 @@ Example:
  */
 public class LinearProgramming {
 
-<span class="fc" id="L179">    private final Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L184">    private final Random rand = Misc0.getSecureRandom();</span>
     
     /**
      * machine precision used in evaluating whether a double is different
      * from another double.
      */
-<span class="fc" id="L185">    private static double eps = 1e-11;</span>
+<span class="fc" id="L190">    private static double eps = 1e-11;</span>
     
     public LinearProgramming() {
-<span class="fc" id="L188">        this(System.nanoTime());</span>
-<span class="fc" id="L189">    }</span>
+<span class="fc" id="L193">        this(System.nanoTime());</span>
+<span class="fc" id="L194">    }</span>
     
-<span class="fc" id="L191">    public LinearProgramming(long randomSeed) {</span>
+<span class="fc" id="L196">    public LinearProgramming(long randomSeed) {</span>
         //seed = 180328550254112L;
-<span class="fc" id="L193">        System.out.println(&quot;seed=&quot; + randomSeed);</span>
-<span class="fc" id="L194">        System.out.flush();</span>
-<span class="fc" id="L195">        rand.setSeed(randomSeed);</span>
-<span class="fc" id="L196">    }</span>
+<span class="fc" id="L198">        System.out.println(&quot;seed=&quot; + randomSeed);</span>
+<span class="fc" id="L199">        System.out.flush();</span>
+<span class="fc" id="L200">        rand.setSeed(randomSeed);</span>
+<span class="fc" id="L201">    }</span>
     
     /**
         given a linear program in Standard Form if the problem is unfeasible, 
@@ -202,7 +207,7 @@ public class LinearProgramming {
         set to unbounded, else
         returns a slack form for which a basic solution is feasible and optimal.
      &lt;pre&gt;
-       The method is implemented from pseudocode in Section 29.3 of Cormen et al.
+       The method is implemented from pseudocode in Section 29.3 of Cormen, Leiserson, Rivest, and Stein
        
        Some definitions:
            A feasible solution is the numbers xHat as x1,...xn that satisfy all constraints.
@@ -223,34 +228,34 @@ public class LinearProgramming {
      */
     public SlackForm solveUsingSimplexMethod(StandardForm standForm) {
       
-<span class="fc" id="L226">        SlackForm slackForm = initializeSimplex(standForm);</span>
+<span class="fc" id="L231">        SlackForm slackForm = initializeSimplex(standForm);</span>
         
         //System.out.printf(&quot;initialized:\n%s\n&quot;, slackForm.toString());
         
-<span class="pc bpc" id="L230" title="1 of 4 branches missed.">        if (!slackForm.state.equals(STATE.FEASIBLE) &amp;&amp; !slackForm.state.equals(STATE.OPTIMAL)) {</span>
-<span class="nc" id="L231">            System.out.println(&quot;exiting: &quot; + slackForm.state.name());</span>
-<span class="nc" id="L232">            return slackForm;</span>
+<span class="pc bpc" id="L235" title="1 of 4 branches missed.">        if (!slackForm.state.equals(STATE.FEASIBLE) &amp;&amp; !slackForm.state.equals(STATE.OPTIMAL)) {</span>
+<span class="nc" id="L236">            System.out.println(&quot;exiting: &quot; + slackForm.state.name());</span>
+<span class="nc" id="L237">            return slackForm;</span>
         }
                 
-        //lines 2-11 of the SIMPLEX method of Cormen et al. Chap 29.:
+        //lines 2-11 of the SIMPLEX method of Cormen, Leiserson, Rivest, and Stein Chap 29.:
         
         // the j's in N w/ c_j &gt; 0
-<span class="fc" id="L238">        TIntSet positiveCIndexes = findPositiveCIndexes(slackForm);</span>
+<span class="fc" id="L243">        TIntSet positiveCIndexes = findPositiveCIndexes(slackForm);</span>
         
-<span class="fc" id="L240">        double[] delta = new double[slackForm.b.length];</span>
+<span class="fc" id="L245">        double[] delta = new double[slackForm.b.length];</span>
         
         //choose eIdx from the j's in N w/ c_j &gt; 0
-<span class="fc" id="L243">        int eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);</span>
+<span class="fc" id="L248">        int eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);</span>
         
-<span class="fc" id="L245">        int lIdx = -1, i;</span>
+<span class="fc" id="L250">        int lIdx = -1, i;</span>
         double minDelta; // lIdx is chosen with this
         
         // iterate until all c's are positive
         
         //choose index lIdx in bIndices that minimizes delta[i]
-<span class="fc bfc" id="L251" title="All 2 branches covered.">        while (eIdx &gt; -1) {</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">        while (eIdx &gt; -1) {</span>
                  
-<span class="fc" id="L253">            minDelta = Double.POSITIVE_INFINITY; // lIdx is chosen with this</span>
+<span class="fc" id="L258">            minDelta = Double.POSITIVE_INFINITY; // lIdx is chosen with this</span>
             
             /*
                 for each index i in B
@@ -261,40 +266,40 @@ public class LinearProgramming {
                 choose index lIdx in bIndices that minimizes delta[i]
             */
             
-<span class="fc bfc" id="L264" title="All 2 branches covered.">            for (i = 0; i &lt; delta.length; ++i) {</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">                if (slackForm.a[i][eIdx] &gt; 0) {</span>
-<span class="fc" id="L266">                    delta[i] = slackForm.b[i]/slackForm.a[i][eIdx];</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">                    if (delta[i] &lt; minDelta) {</span>
-<span class="fc" id="L268">                        minDelta = delta[i];</span>
-<span class="fc" id="L269">                        lIdx = i;</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            for (i = 0; i &lt; delta.length; ++i) {</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">                if (slackForm.a[i][eIdx] &gt; 0) {</span>
+<span class="fc" id="L271">                    delta[i] = slackForm.b[i]/slackForm.a[i][eIdx];</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">                    if (delta[i] &lt; minDelta) {</span>
+<span class="fc" id="L273">                        minDelta = delta[i];</span>
+<span class="fc" id="L274">                        lIdx = i;</span>
                     }
                 } else {
-<span class="fc" id="L272">                    delta[i] = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L277">                    delta[i] = Double.POSITIVE_INFINITY;</span>
                 }
             }
             
             //System.out.printf(&quot;eIdx=%d lIdx=%d minDelta=%.3f\n&quot;, eIdx, lIdx, minDelta);
             
-<span class="pc bpc" id="L278" title="1 of 2 branches missed.">            if (Double.isInfinite(minDelta)) {</span>
-<span class="nc" id="L279">                System.out.println(&quot;exit: UNBOUNDED&quot;);</span>
-<span class="nc" id="L280">                slackForm.state = STATE.UNBOUNDED;</span>
-<span class="nc" id="L281">                return slackForm;</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">            if (Double.isInfinite(minDelta)) {</span>
+<span class="nc" id="L284">                System.out.println(&quot;exit: UNBOUNDED&quot;);</span>
+<span class="nc" id="L285">                slackForm.state = STATE.UNBOUNDED;</span>
+<span class="nc" id="L286">                return slackForm;</span>
             }
-<span class="pc bnc" id="L283" title="All 2 branches missed.">            assert(lIdx != -1);</span>
+<span class="pc bnc" id="L288" title="All 2 branches missed.">            assert(lIdx != -1);</span>
            
-<span class="fc" id="L285">            slackForm = pivot(slackForm, lIdx, eIdx);</span>
+<span class="fc" id="L290">            slackForm = pivot(slackForm, lIdx, eIdx);</span>
             
-<span class="fc" id="L287">            slackForm.computeBasicSolution();</span>
-<span class="fc" id="L288">            double z = slackForm.evaluateObjective();</span>
+<span class="fc" id="L292">            slackForm.computeBasicSolution();</span>
+<span class="fc" id="L293">            double z = slackForm.evaluateObjective();</span>
             
             //System.out.printf(&quot;after pivot of eIdx=%d lIdx=%d, z=%.3f:\n%s\n&quot;, 
             //    eIdx, lIdx, z, slackForm.toString());
                         
-<span class="fc" id="L293">            positiveCIndexes = findPositiveCIndexes(slackForm);</span>
+<span class="fc" id="L298">            positiveCIndexes = findPositiveCIndexes(slackForm);</span>
                         
-<span class="fc" id="L295">            eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);            </span>
+<span class="fc" id="L300">            eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);            </span>
             //System.out.printf(&quot;remaining cIndexes=\n%s\n&quot;, positiveCIndexes.toString());
-<span class="fc" id="L297">        }</span>
+<span class="fc" id="L302">        }</span>
         
         // lines 12-16
         /*
@@ -305,10 +310,10 @@ public class LinearProgramming {
                 xhat_i = i
         return xHat_1:n
         */
-<span class="fc" id="L308">        slackForm.computeBasicSolution();</span>
-<span class="fc" id="L309">        slackForm.state = STATE.OPTIMAL;</span>
+<span class="fc" id="L313">        slackForm.computeBasicSolution();</span>
+<span class="fc" id="L314">        slackForm.state = STATE.OPTIMAL;</span>
         
-<span class="fc" id="L311">        return slackForm;</span>
+<span class="fc" id="L316">        return slackForm;</span>
     }
     
     /**
@@ -318,41 +323,41 @@ public class LinearProgramming {
         set to unbounded, else
         returns a slack form for which a basic solution is feasible.
      * &lt;pre&gt;
-     * The method is implemented from pseudocode in Section 29.3 of Cormen et al.
+     * The method is implemented from pseudocode in Section 29.3 of Cormen, Leiserson, Rivest, and Stein
      * &lt;/pre&gt;
      * @param standForm
      * @return 
      */
     protected SlackForm initializeSimplex(StandardForm standForm) {
         
-<span class="fc" id="L328">        SlackForm _slackForm = convertConstraints(standForm);</span>
+<span class="fc" id="L333">        SlackForm _slackForm = convertConstraints(standForm);</span>
         //System.out.printf(&quot;init: convert to slackForm =\n%s\n&quot;, _slackForm.toString());
                 
-<span class="fc" id="L331">        int m = _slackForm.b.length;</span>
-<span class="fc" id="L332">        int n = _slackForm.nIndices.length;</span>
+<span class="fc" id="L336">        int m = _slackForm.b.length;</span>
+<span class="fc" id="L337">        int n = _slackForm.nIndices.length;</span>
         
         int i;
-<span class="fc" id="L335">        int lIdx = findMinIndex(_slackForm.b);</span>
+<span class="fc" id="L340">        int lIdx = findMinIndex(_slackForm.b);</span>
                 
         //is the initial basic solution feasible?
-<span class="pc bpc" id="L338" title="1 of 4 branches missed.">        if (lIdx &gt; -1 &amp;&amp; _slackForm.b[lIdx] &gt;= 0) {</span>
-<span class="fc" id="L339">            int[] nIndices = new int[n];</span>
-<span class="fc" id="L340">            int[] bIndices = new int[m];</span>
+<span class="pc bpc" id="L343" title="1 of 4 branches missed.">        if (lIdx &gt; -1 &amp;&amp; _slackForm.b[lIdx] &gt;= 0) {</span>
+<span class="fc" id="L344">            int[] nIndices = new int[n];</span>
+<span class="fc" id="L345">            int[] bIndices = new int[m];</span>
             //nIndices = [1,2,...n]. NOTE: using 0-based indexes instead
-<span class="fc bfc" id="L342" title="All 2 branches covered.">            for (i = 1; i &lt; n; ++i) {</span>
-<span class="fc" id="L343">                nIndices[i] = i;</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            for (i = 1; i &lt; n; ++i) {</span>
+<span class="fc" id="L348">                nIndices[i] = i;</span>
             }
             //bIndices = [n+1,n+2,...n+m]. NOTE: using 0-based indexes instead
-<span class="fc bfc" id="L346" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L347">                bIndices[i] = n+i;</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L352">                bIndices[i] = n+i;</span>
             }
             
-<span class="fc" id="L350">            SlackForm slackForm = new SlackForm(nIndices, bIndices, </span>
+<span class="fc" id="L355">            SlackForm slackForm = new SlackForm(nIndices, bIndices, </span>
                 _slackForm.a, _slackForm.b, _slackForm.c, _slackForm.v);
             
-<span class="fc" id="L353">            slackForm.state = STATE.FEASIBLE;</span>
+<span class="fc" id="L358">            slackForm.state = STATE.FEASIBLE;</span>
             
-<span class="fc" id="L355">            return slackForm;</span>
+<span class="fc" id="L360">            return slackForm;</span>
         }
         
         // arrive here if any of b[i] were negative in the slack form
@@ -370,7 +375,7 @@ public class LinearProgramming {
         */
         
         //let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
-<span class="fc" id="L373">        SlackForm slackFormAux = createAuxiliarySlackForm(standForm);</span>
+<span class="fc" id="L378">        SlackForm slackFormAux = createAuxiliarySlackForm(standForm);</span>
         
         //System.out.printf(&quot;init: L_aux=\n%s\n&quot;, slackFormAux.toString());
         
@@ -379,18 +384,18 @@ public class LinearProgramming {
         
         //L_aux has n+1 nonbasic variables and m basic variables
         //(N, B, A, b, c, v) = pivot((N, B, A, b, c, v, lIdx, 0)
-<span class="fc" id="L382">        slackFormAux = pivot(slackFormAux, lIdx, 0);</span>
+<span class="fc" id="L387">        slackFormAux = pivot(slackFormAux, lIdx, 0);</span>
         
         //the basic solution is now feasible for L_aux
-<span class="fc" id="L385">        double[] xBasicSoln = slackFormAux.computeBasicSolution();</span>
+<span class="fc" id="L390">        double[] xBasicSoln = slackFormAux.computeBasicSolution();</span>
         
         //System.out.printf(&quot;init: L_aux after pivot=\n%s\n&quot;,
         //    slackFormAux.toString());
         
-<span class="fc" id="L390">        boolean isFeasible = slackFormAux.isFeasible();</span>
+<span class="fc" id="L395">        boolean isFeasible = slackFormAux.isFeasible();</span>
         //System.out.printf(&quot;init: L_aux basicSoln=%s\n&quot;, FormatArray.toString(xBasicSoln, &quot;%.3f&quot;));
         //System.out.println(&quot;   isFeasible=&quot; + isFeasible);
-<span class="fc" id="L393">        slackFormAux.state = STATE.FEASIBLE;</span>
+<span class="fc" id="L398">        slackFormAux.state = STATE.FEASIBLE;</span>
          
         /*        
         iterate the while loop of lines 2-11 of the SIMPLEX method
@@ -404,7 +409,7 @@ public class LinearProgramming {
            then c = (c3, c5, c6)^T = ( -1/6  -1/6 -2/3 )^T
            for optimal
         
-        lines 2-11 of the SIMPLEX method of Cormen et al. Chap 29.:
+        lines 2-11 of the SIMPLEX method of Cormen, Leiserson, Rivest, and Stein Chap 29.:
          
         while some index j in nIndices has c_j &gt; 0
             do choose an index eIdx in nIndices for which c_eIdx &gt; 0
@@ -421,74 +426,74 @@ public class LinearProgramming {
         
         */
         
-<span class="fc" id="L424">        TIntSet positiveCIndexes = findPositiveCIndexes(slackFormAux);</span>
+<span class="fc" id="L429">        TIntSet positiveCIndexes = findPositiveCIndexes(slackFormAux);</span>
         
         //System.out.printf(&quot;posIndexes of C=%s\n&quot;, Arrays.toString(positiveCIndexes.toArray()));
         
-<span class="fc" id="L428">        double[] delta = new double[slackFormAux.bIndices.length];</span>
-<span class="fc" id="L429">        int eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);</span>
+<span class="fc" id="L433">        double[] delta = new double[slackFormAux.bIndices.length];</span>
+<span class="fc" id="L434">        int eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);</span>
         
         double minDelta; // lIdx is chosen with this
         
         //choose index lIdx in bIndices that minimizes delta[i]
-<span class="fc bfc" id="L434" title="All 2 branches covered.">        while (eIdx &gt; -1) {</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">        while (eIdx &gt; -1) {</span>
                         
-<span class="fc" id="L436">            minDelta = Double.POSITIVE_INFINITY; // lIdx is chosen with this</span>
+<span class="fc" id="L441">            minDelta = Double.POSITIVE_INFINITY; // lIdx is chosen with this</span>
             
-<span class="fc bfc" id="L438" title="All 2 branches covered.">            for (i = 0; i &lt; delta.length; ++i) {</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">            for (i = 0; i &lt; delta.length; ++i) {</span>
                 //bIdx = slackForm2.bIndices[i]; used with x
-<span class="fc bfc" id="L440" title="All 2 branches covered.">                if (slackFormAux.a[i][eIdx] &gt; 0) {</span>
-<span class="fc" id="L441">                    delta[i] = slackFormAux.b[i]/slackFormAux.a[i][eIdx];</span>
-<span class="fc bfc" id="L442" title="All 2 branches covered.">                    if (delta[i] &lt; minDelta) {</span>
-<span class="fc" id="L443">                        minDelta = delta[i];</span>
-<span class="fc" id="L444">                        lIdx = i;</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">                if (slackFormAux.a[i][eIdx] &gt; 0) {</span>
+<span class="fc" id="L446">                    delta[i] = slackFormAux.b[i]/slackFormAux.a[i][eIdx];</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">                    if (delta[i] &lt; minDelta) {</span>
+<span class="fc" id="L448">                        minDelta = delta[i];</span>
+<span class="fc" id="L449">                        lIdx = i;</span>
                     }
                 } else {
-<span class="fc" id="L447">                    delta[i] = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L452">                    delta[i] = Double.POSITIVE_INFINITY;</span>
                 }
             }
             
             //System.out.printf(&quot;init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n&quot;,
             //    eIdx, slackFormAux.nIndices[eIdx], lIdx, slackFormAux.bIndices[lIdx]);
             
-<span class="pc bpc" id="L454" title="1 of 2 branches missed.">            if (Double.isInfinite(minDelta)) {</span>
-<span class="nc" id="L455">                slackFormAux.state = STATE.UNBOUNDED;</span>
-<span class="nc" id="L456">                return slackFormAux;</span>
+<span class="pc bpc" id="L459" title="1 of 2 branches missed.">            if (Double.isInfinite(minDelta)) {</span>
+<span class="nc" id="L460">                slackFormAux.state = STATE.UNBOUNDED;</span>
+<span class="nc" id="L461">                return slackFormAux;</span>
             }
             
-<span class="fc" id="L459">            slackFormAux = pivot(slackFormAux, lIdx, eIdx);</span>
+<span class="fc" id="L464">            slackFormAux = pivot(slackFormAux, lIdx, eIdx);</span>
             
             //System.out.printf(&quot;init: after pivot=\n%s\n&quot;, slackFormAux.toString());
                         
-<span class="fc" id="L463">            positiveCIndexes = findPositiveCIndexes(slackFormAux);</span>
+<span class="fc" id="L468">            positiveCIndexes = findPositiveCIndexes(slackFormAux);</span>
             
-<span class="fc" id="L465">            eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);</span>
+<span class="fc" id="L470">            eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);</span>
             
             //System.out.printf(&quot;positiveIndexes=\n%s\n&quot;, positiveCIndexes.toString());
         }
         
-<span class="fc" id="L470">        xBasicSoln = slackFormAux.computeBasicSolution();</span>
-<span class="pc bpc" id="L471" title="1 of 2 branches missed.">        if (Math.abs(xBasicSoln[0]) &gt; eps) {</span>
-<span class="nc" id="L472">            slackFormAux.state = STATE.UNFEASIBLE;</span>
-<span class="nc" id="L473">            return slackFormAux;</span>
+<span class="fc" id="L475">        xBasicSoln = slackFormAux.computeBasicSolution();</span>
+<span class="pc bpc" id="L476" title="1 of 2 branches missed.">        if (Math.abs(xBasicSoln[0]) &gt; eps) {</span>
+<span class="nc" id="L477">            slackFormAux.state = STATE.UNFEASIBLE;</span>
+<span class="nc" id="L478">            return slackFormAux;</span>
         }
                 
-<span class="fc" id="L476">        slackFormAux.state = STATE.OPTIMAL;</span>
+<span class="fc" id="L481">        slackFormAux.state = STATE.OPTIMAL;</span>
         
         // remove x0 and restore original objective function
-<span class="fc" id="L479">        SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux,</span>
+<span class="fc" id="L484">        SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux,</span>
             standForm);
-<span class="fc" id="L481">        double[] x = optimal.computeBasicSolution();</span>
+<span class="fc" id="L486">        double[] x = optimal.computeBasicSolution();</span>
         //System.out.printf(&quot;init: after truncation\n%s\n&quot;, optimal.toString());
         
         //System.out.printf(&quot;init: optimal isFeasible=%b\n%s\n&quot;, 
         //    optimal.isFeasible(), optimal.toString());
         
-<span class="fc" id="L487">        optimal.state = STATE.OPTIMAL;</span>
+<span class="fc" id="L492">        optimal.state = STATE.OPTIMAL;</span>
         
         //System.out.printf(&quot;init: slack form =\n%s\n&quot;, slackFormAux.toString());
         
-<span class="fc" id="L491">        return optimal;</span>
+<span class="fc" id="L496">        return optimal;</span>
     }
 
     /**
@@ -498,7 +503,7 @@ public class LinearProgramming {
      * an adjacent basic feasible solution.
      * https://en.m.wikipedia.org/wiki/Simplex_algorithm
      * &lt;pre&gt;
-     * The method is implemented from pseudocode in Section 29.3of Cormen et al.
+     * The method is implemented from pseudocode in Section 29.3of Cormen, Leiserson, Rivest, and Stein
      * &lt;/pre&gt;
      * @param slackForm
      * @param lIdx the leaving index of x. the &quot;leaving variable&quot; is the basic 
@@ -509,10 +514,10 @@ public class LinearProgramming {
      */
     protected SlackForm pivot(SlackForm slackForm, int lIdx /*m*/, int eIdx /*n*/) {
                         
-<span class="fc" id="L512">        int m = slackForm.bIndices.length;</span>
-<span class="fc" id="L513">        int n = slackForm.nIndices.length;</span>
+<span class="fc" id="L517">        int m = slackForm.bIndices.length;</span>
+<span class="fc" id="L518">        int n = slackForm.nIndices.length;</span>
                         
-<span class="fc" id="L515">        double[] bHat = new double[slackForm.b.length]; /*m*/</span>
+<span class="fc" id="L520">        double[] bHat = new double[slackForm.b.length]; /*m*/</span>
         
         // bIndices.length = |B| = m and nIndices.length = |N| = n
         
@@ -524,123 +529,123 @@ public class LinearProgramming {
         // and aHat[*][lIdx] is stored in aHat[*][eIdx].
         //the remaining entries continue to have same indexes.
 
-<span class="fc" id="L527">        double eVarCoeff = slackForm.a[lIdx][eIdx];</span>
+<span class="fc" id="L532">        double eVarCoeff = slackForm.a[lIdx][eIdx];</span>
         
         //compute the coefficients of the equation of the new basic variable x_entering.
-<span class="fc" id="L530">        bHat[lIdx] = slackForm.b[lIdx]/eVarCoeff;</span>
+<span class="fc" id="L535">        bHat[lIdx] = slackForm.b[lIdx]/eVarCoeff;</span>
         
-<span class="fc" id="L532">        double[][] aHat = MatrixUtil.zeros(slackForm.a.length, slackForm.a[0].length);</span>
+<span class="fc" id="L537">        double[][] aHat = MatrixUtil.zeros(slackForm.a.length, slackForm.a[0].length);</span>
         
         int j;
         
-<span class="fc bfc" id="L536" title="All 2 branches covered.">        for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
-<span class="fc bfc" id="L537" title="All 2 branches covered.">            if (j == eIdx) {</span>
-<span class="fc" id="L538">                continue;</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">        for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
+<span class="fc bfc" id="L542" title="All 2 branches covered.">            if (j == eIdx) {</span>
+<span class="fc" id="L543">                continue;</span>
             }
-<span class="fc" id="L540">            aHat[lIdx][j] = slackForm.a[lIdx][j]/eVarCoeff;</span>
+<span class="fc" id="L545">            aHat[lIdx][j] = slackForm.a[lIdx][j]/eVarCoeff;</span>
         }
-<span class="fc" id="L542">        aHat[lIdx][eIdx] = 1./eVarCoeff; </span>
+<span class="fc" id="L547">        aHat[lIdx][eIdx] = 1./eVarCoeff; </span>
         
         // compute the coefficients of the remaining constraints
         int i;
         
-<span class="fc bfc" id="L547" title="All 2 branches covered.">        for (i = 0; i &lt; slackForm.bIndices.length; ++i) {</span>
-<span class="fc bfc" id="L548" title="All 2 branches covered.">            if (i == lIdx) {</span>
-<span class="fc" id="L549">                continue;</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">        for (i = 0; i &lt; slackForm.bIndices.length; ++i) {</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">            if (i == lIdx) {</span>
+<span class="fc" id="L554">                continue;</span>
             }            
-<span class="fc" id="L551">            bHat[i] = slackForm.b[i] - slackForm.a[i][eIdx] * bHat[lIdx];</span>
-<span class="fc bfc" id="L552" title="All 2 branches covered.">            for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
-<span class="fc bfc" id="L553" title="All 2 branches covered.">                if (j == eIdx) {</span>
-<span class="fc" id="L554">                    continue;</span>
+<span class="fc" id="L556">            bHat[i] = slackForm.b[i] - slackForm.a[i][eIdx] * bHat[lIdx];</span>
+<span class="fc bfc" id="L557" title="All 2 branches covered.">            for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">                if (j == eIdx) {</span>
+<span class="fc" id="L559">                    continue;</span>
                 }
-<span class="fc" id="L556">                aHat[i][j] = slackForm.a[i][j] - </span>
+<span class="fc" id="L561">                aHat[i][j] = slackForm.a[i][j] - </span>
                     (slackForm.a[i][eIdx]*(slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx]));
             }
-<span class="fc" id="L559">            aHat[i][eIdx] = - slackForm.a[i][eIdx]/slackForm.a[lIdx][eIdx];</span>
+<span class="fc" id="L564">            aHat[i][eIdx] = - slackForm.a[i][eIdx]/slackForm.a[lIdx][eIdx];</span>
         }
        
         //compute the objective function
-<span class="fc" id="L563">        double vHat = slackForm.v + slackForm.c[eIdx] * bHat[lIdx];</span>
-<span class="fc" id="L564">        double[] cHat = new double[slackForm.c.length]; /*n*/</span>
-<span class="fc bfc" id="L565" title="All 2 branches covered.">        for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
-<span class="fc bfc" id="L566" title="All 2 branches covered.">            if (j == eIdx) {</span>
-<span class="fc" id="L567">                continue;</span>
+<span class="fc" id="L568">        double vHat = slackForm.v + slackForm.c[eIdx] * bHat[lIdx];</span>
+<span class="fc" id="L569">        double[] cHat = new double[slackForm.c.length]; /*n*/</span>
+<span class="fc bfc" id="L570" title="All 2 branches covered.">        for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">            if (j == eIdx) {</span>
+<span class="fc" id="L572">                continue;</span>
             }
-<span class="fc" id="L569">            cHat[j] = slackForm.c[j] - </span>
+<span class="fc" id="L574">            cHat[j] = slackForm.c[j] - </span>
                 (slackForm.c[eIdx]*( slackForm.a[lIdx][j]/slackForm.a[lIdx][eIdx]));
         }
-<span class="fc" id="L572">        cHat[eIdx] = - slackForm.c[eIdx]/slackForm.a[lIdx][eIdx]; </span>
+<span class="fc" id="L577">        cHat[eIdx] = - slackForm.c[eIdx]/slackForm.a[lIdx][eIdx]; </span>
               
         //compute new sets of basic and nonbasic variables
-<span class="fc" id="L575">        int[] nHatIndices = new int[slackForm.nIndices.length];</span>
-<span class="fc bfc" id="L576" title="All 2 branches covered.">        for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
-<span class="fc bfc" id="L577" title="All 2 branches covered.">            if (j == eIdx) {</span>
-<span class="fc" id="L578">                nHatIndices[j] = slackForm.bIndices[lIdx];</span>
+<span class="fc" id="L580">        int[] nHatIndices = new int[slackForm.nIndices.length];</span>
+<span class="fc bfc" id="L581" title="All 2 branches covered.">        for (j = 0; j &lt; slackForm.nIndices.length; ++j) {</span>
+<span class="fc bfc" id="L582" title="All 2 branches covered.">            if (j == eIdx) {</span>
+<span class="fc" id="L583">                nHatIndices[j] = slackForm.bIndices[lIdx];</span>
             } else {
-<span class="fc" id="L580">                nHatIndices[j] = slackForm.nIndices[j];</span>
+<span class="fc" id="L585">                nHatIndices[j] = slackForm.nIndices[j];</span>
             }
         }
-<span class="fc" id="L583">        int[] bHatIndices = new int[slackForm.bIndices.length];</span>
-<span class="fc bfc" id="L584" title="All 2 branches covered.">        for (i = 0; i &lt; slackForm.bIndices.length; ++i) {</span>
-<span class="fc bfc" id="L585" title="All 2 branches covered.">            if (i == lIdx) {</span>
-<span class="fc" id="L586">                bHatIndices[i] = slackForm.nIndices[eIdx];</span>
+<span class="fc" id="L588">        int[] bHatIndices = new int[slackForm.bIndices.length];</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">        for (i = 0; i &lt; slackForm.bIndices.length; ++i) {</span>
+<span class="fc bfc" id="L590" title="All 2 branches covered.">            if (i == lIdx) {</span>
+<span class="fc" id="L591">                bHatIndices[i] = slackForm.nIndices[eIdx];</span>
             } else {
-<span class="fc" id="L588">                bHatIndices[i] = slackForm.bIndices[i];</span>
+<span class="fc" id="L593">                bHatIndices[i] = slackForm.bIndices[i];</span>
             }            
         }
                 
         //re-order RHS by sorted nHatIndices
-<span class="fc" id="L593">        sortRHS(nHatIndices, cHat, aHat);</span>
+<span class="fc" id="L598">        sortRHS(nHatIndices, cHat, aHat);</span>
         
         //re-order LHS by sorted bHatIndices
-<span class="fc" id="L596">        sortLHS(bHatIndices, bHat, aHat);</span>
+<span class="fc" id="L601">        sortLHS(bHatIndices, bHat, aHat);</span>
         
-<span class="fc" id="L598">        SlackForm out = new SlackForm(nHatIndices, bHatIndices, aHat, bHat, cHat, vHat);</span>
+<span class="fc" id="L603">        SlackForm out = new SlackForm(nHatIndices, bHatIndices, aHat, bHat, cHat, vHat);</span>
                 
-<span class="fc" id="L600">        return out;</span>
+<span class="fc" id="L605">        return out;</span>
     }
 
     protected void sortRHS(int[] nHatIndices, double[] cHat, double[][] aHat) {
         
-<span class="fc" id="L605">        int[] idxs = new int[nHatIndices.length];</span>
+<span class="fc" id="L610">        int[] idxs = new int[nHatIndices.length];</span>
         int i;
-<span class="fc bfc" id="L607" title="All 2 branches covered.">        for (i = 1; i &lt; nHatIndices.length; ++i) {</span>
-<span class="fc" id="L608">            idxs[i] = i;</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">        for (i = 1; i &lt; nHatIndices.length; ++i) {</span>
+<span class="fc" id="L613">            idxs[i] = i;</span>
         }
-<span class="fc" id="L610">        MiscSorter.sortBy1stArg(nHatIndices, idxs);</span>
+<span class="fc" id="L615">        MiscSorter.sortBy1stArg(nHatIndices, idxs);</span>
         
-<span class="fc" id="L612">        double[] c = Arrays.copyOf(cHat, cHat.length);</span>
-<span class="fc" id="L613">        double[][] a = MatrixUtil.copy(aHat);</span>
+<span class="fc" id="L617">        double[] c = Arrays.copyOf(cHat, cHat.length);</span>
+<span class="fc" id="L618">        double[][] a = MatrixUtil.copy(aHat);</span>
         
         int idx, row;
-<span class="fc bfc" id="L616" title="All 2 branches covered.">        for (i = 0; i &lt; nHatIndices.length; ++i) {</span>
-<span class="fc" id="L617">            idx = idxs[i];</span>
-<span class="fc" id="L618">            cHat[i] = c[idx];</span>
+<span class="fc bfc" id="L621" title="All 2 branches covered.">        for (i = 0; i &lt; nHatIndices.length; ++i) {</span>
+<span class="fc" id="L622">            idx = idxs[i];</span>
+<span class="fc" id="L623">            cHat[i] = c[idx];</span>
             // columns of a get re-ordered
-<span class="fc bfc" id="L620" title="All 2 branches covered.">            for (row = 0; row &lt; aHat.length; ++row) {</span>
-<span class="fc" id="L621">                aHat[row][i] = a[row][idx];</span>
+<span class="fc bfc" id="L625" title="All 2 branches covered.">            for (row = 0; row &lt; aHat.length; ++row) {</span>
+<span class="fc" id="L626">                aHat[row][i] = a[row][idx];</span>
             }
         }
-<span class="fc" id="L624">    }</span>
+<span class="fc" id="L629">    }</span>
 
     protected void sortLHS(int[] bHatIndices, double[] bHat, double[][] aHat) {
-<span class="fc" id="L627">        int[] idxs = new int[bHatIndices.length];</span>
+<span class="fc" id="L632">        int[] idxs = new int[bHatIndices.length];</span>
         int i;
-<span class="fc bfc" id="L629" title="All 2 branches covered.">        for (i = 1; i &lt; bHatIndices.length; ++i) {</span>
-<span class="fc" id="L630">            idxs[i] = i;</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">        for (i = 1; i &lt; bHatIndices.length; ++i) {</span>
+<span class="fc" id="L635">            idxs[i] = i;</span>
         }
-<span class="fc" id="L632">        MiscSorter.sortBy1stArg(bHatIndices, idxs);</span>
+<span class="fc" id="L637">        MiscSorter.sortBy1stArg(bHatIndices, idxs);</span>
         
-<span class="fc" id="L634">        double[] b = Arrays.copyOf(bHat, bHat.length);</span>
-<span class="fc" id="L635">        double[][] a = MatrixUtil.copy(aHat);</span>
+<span class="fc" id="L639">        double[] b = Arrays.copyOf(bHat, bHat.length);</span>
+<span class="fc" id="L640">        double[][] a = MatrixUtil.copy(aHat);</span>
         
         int idx;
-<span class="fc bfc" id="L638" title="All 2 branches covered.">        for (i = 0; i &lt; bHatIndices.length; ++i) {</span>
-<span class="fc" id="L639">            idx = idxs[i];</span>
-<span class="fc" id="L640">            bHat[i] = b[idx];</span>
-<span class="fc" id="L641">            System.arraycopy(a[idx], 0, aHat[i], 0, a[idx].length);</span>
+<span class="fc bfc" id="L643" title="All 2 branches covered.">        for (i = 0; i &lt; bHatIndices.length; ++i) {</span>
+<span class="fc" id="L644">            idx = idxs[i];</span>
+<span class="fc" id="L645">            bHat[i] = b[idx];</span>
+<span class="fc" id="L646">            System.arraycopy(a[idx], 0, aHat[i], 0, a[idx].length);</span>
         }        
-<span class="fc" id="L643">    }</span>
+<span class="fc" id="L648">    }</span>
 
     /**
      * finds the smallest value in b and returns its index;  if b.length is 0
@@ -650,16 +655,16 @@ public class LinearProgramming {
      * or if b contains only Double.POSITIVE_INFINITY, -1 is returned.
      */
     protected int findMinIndex(double[] b) {
-<span class="fc" id="L653">        int minIdx = -1;</span>
-<span class="fc" id="L654">        double min = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L658">        int minIdx = -1;</span>
+<span class="fc" id="L659">        double min = Double.POSITIVE_INFINITY;</span>
         int i;
-<span class="fc bfc" id="L656" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
-<span class="fc bfc" id="L657" title="All 2 branches covered.">            if (b[i] &lt; min) {</span>
-<span class="fc" id="L658">                min = b[i];</span>
-<span class="fc" id="L659">                minIdx = i;</span>
+<span class="fc bfc" id="L661" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
+<span class="fc bfc" id="L662" title="All 2 branches covered.">            if (b[i] &lt; min) {</span>
+<span class="fc" id="L663">                min = b[i];</span>
+<span class="fc" id="L664">                minIdx = i;</span>
             }
         }
-<span class="fc" id="L662">        return minIdx;</span>
+<span class="fc" id="L667">        return minIdx;</span>
     }
     
     /**
@@ -668,10 +673,10 @@ public class LinearProgramming {
      * constants in b, convert L into standard maximum form.
      * Standard form has a maximization objective, nonnegative constraints
      * on all x_j's, and constraints which are all .leq. b_i's.
-     * The program implements material from Section 29.1 of Cormen et al.
+     * The program implements material from Section 29.1 of Cormen, Leiserson, Rivest, and Stein
      * &quot;Introduction to Algorithms&quot;
      &lt;pre&gt;
-       Example Linear Program for minimization from Cormen et al., Chap 29.
+       Example Linear Program for minimization from Cormen, Leiserson, Rivest, and Stein, Chap 29.
              minimize:
                -2*x1 + 3*x2
              subject to constraints:
@@ -712,31 +717,31 @@ public class LinearProgramming {
         double[][] a, double[] b, double[] c,
         int[] constraintComparisons, boolean[] nonnegativityConstraints) {
                 
-<span class="fc" id="L715">        int m = a.length;</span>
-<span class="fc" id="L716">        int n = c.length;</span>
-<span class="pc bpc" id="L717" title="1 of 2 branches missed.">        if (constraintComparisons.length != m) {</span>
-<span class="nc" id="L718">            throw new IllegalArgumentException(&quot;constraintComparisons.length &quot;</span>
+<span class="fc" id="L720">        int m = a.length;</span>
+<span class="fc" id="L721">        int n = c.length;</span>
+<span class="pc bpc" id="L722" title="1 of 2 branches missed.">        if (constraintComparisons.length != m) {</span>
+<span class="nc" id="L723">            throw new IllegalArgumentException(&quot;constraintComparisons.length &quot;</span>
             + &quot; must be equal to a.length&quot;);
         }
-<span class="pc bpc" id="L721" title="1 of 2 branches missed.">        if (a[0].length != n) {</span>
-<span class="nc" id="L722">            throw new IllegalArgumentException(&quot;c.length &quot;</span>
+<span class="pc bpc" id="L726" title="1 of 2 branches missed.">        if (a[0].length != n) {</span>
+<span class="nc" id="L727">            throw new IllegalArgumentException(&quot;c.length &quot;</span>
             + &quot; must be equal to a[0].length&quot;);
         }
-<span class="pc bpc" id="L725" title="1 of 2 branches missed.">        if (a.length &lt; 1) {</span>
-<span class="nc" id="L726">            throw new IllegalArgumentException(&quot;a.length must be &gt; 0 &quot;);</span>
+<span class="pc bpc" id="L730" title="1 of 2 branches missed.">        if (a.length &lt; 1) {</span>
+<span class="nc" id="L731">            throw new IllegalArgumentException(&quot;a.length must be &gt; 0 &quot;);</span>
         }
-<span class="pc bpc" id="L728" title="1 of 2 branches missed.">        if (c.length &lt; 1) {</span>
-<span class="nc" id="L729">            throw new IllegalArgumentException(&quot;c.length must be &gt; 0 &quot;);</span>
+<span class="pc bpc" id="L733" title="1 of 2 branches missed.">        if (c.length &lt; 1) {</span>
+<span class="nc" id="L734">            throw new IllegalArgumentException(&quot;c.length must be &gt; 0 &quot;);</span>
         }
-<span class="pc bpc" id="L731" title="1 of 2 branches missed.">        if (nonnegativityConstraints.length != n) {</span>
-<span class="nc" id="L732">            throw new IllegalArgumentException(&quot;nonnegativityConstraints.length &quot;</span>
+<span class="pc bpc" id="L736" title="1 of 2 branches missed.">        if (nonnegativityConstraints.length != n) {</span>
+<span class="nc" id="L737">            throw new IllegalArgumentException(&quot;nonnegativityConstraints.length &quot;</span>
             + &quot; must be equal to c.length&quot;);
         }
                 
         // handle the minimization to maximization
-<span class="fc" id="L737">        c = Arrays.copyOf(c, c.length);</span>
-<span class="fc bfc" id="L738" title="All 2 branches covered.">        if (!isMaximization) {</span>
-<span class="fc" id="L739">            MatrixUtil.multiply(c, -1.);</span>
+<span class="fc" id="L742">        c = Arrays.copyOf(c, c.length);</span>
+<span class="fc bfc" id="L743" title="All 2 branches covered.">        if (!isMaximization) {</span>
+<span class="fc" id="L744">            MatrixUtil.multiply(c, -1.);</span>
         }
         
         // rewrite datastructures as arrays for now to make book-keeping easier 
@@ -745,40 +750,40 @@ public class LinearProgramming {
         //       number of needed columns and loop through constraintComparisons
         //       to count the number of needed rows,
         //       then replace these with arrays.
-<span class="fc" id="L748">        List&lt;TDoubleList&gt; a2 = copy(a);</span>
-<span class="fc" id="L749">        TDoubleList b2 = copy(b);</span>
-<span class="fc" id="L750">        TDoubleList c2 = copy(c);</span>
-<span class="fc" id="L751">        TIntList ac2 = copy(constraintComparisons);</span>
+<span class="fc" id="L753">        List&lt;TDoubleList&gt; a2 = copy(a);</span>
+<span class="fc" id="L754">        TDoubleList b2 = copy(b);</span>
+<span class="fc" id="L755">        TDoubleList c2 = copy(c);</span>
+<span class="fc" id="L756">        TIntList ac2 = copy(constraintComparisons);</span>
         
         // handle the each variable missing a non-negative constraint
         //    by replacing it with 2 non-negative variables
         // === NOTE this section only expands along j, no new rows added to a ====
         int j, i;
-<span class="fc" id="L757">        int nn = 0;// number of missing non-negative constraints</span>
-<span class="fc bfc" id="L758" title="All 2 branches covered.">        for (j = 0; j &lt; nonnegativityConstraints.length; ++j) {</span>
-<span class="pc bpc" id="L759" title="1 of 2 branches missed.">            if (!nonnegativityConstraints[j]) {</span>
+<span class="fc" id="L762">        int nn = 0;// number of missing non-negative constraints</span>
+<span class="fc bfc" id="L763" title="All 2 branches covered.">        for (j = 0; j &lt; nonnegativityConstraints.length; ++j) {</span>
+<span class="pc bpc" id="L764" title="1 of 2 branches missed.">            if (!nonnegativityConstraints[j]) {</span>
                 //replace the x variable by 2 non-negative variables
                 
                 //handle c by appending a new variable at the end of the constraint with - coefficient of current
-<span class="nc" id="L763">                c2.add(-c[j]);</span>
+<span class="nc" id="L768">                c2.add(-c[j]);</span>
                 
                 //handle the expansion in each constraint (row of a)
-<span class="nc bnc" id="L766" title="All 2 branches missed.">                for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc bnc" id="L767" title="All 2 branches missed.">                    if (Math.abs(a[i][j]) &gt; eps) {// x_j is not 0 for this constraint, so replace it with 2</span>
-<span class="nc" id="L768">                        a2.get(i).add(-a[i][j]);</span>
+<span class="nc bnc" id="L771" title="All 2 branches missed.">                for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc bnc" id="L772" title="All 2 branches missed.">                    if (Math.abs(a[i][j]) &gt; eps) {// x_j is not 0 for this constraint, so replace it with 2</span>
+<span class="nc" id="L773">                        a2.get(i).add(-a[i][j]);</span>
                     } else {
                         // add a 0 for the new variable
-<span class="nc" id="L771">                        a2.get(i).add(0);</span>
+<span class="nc" id="L776">                        a2.get(i).add(0);</span>
                     }
                 }
-<span class="nc" id="L774">                nn++;</span>
+<span class="nc" id="L779">                nn++;</span>
             }
         }
-<span class="pc bnc" id="L777" title="All 2 branches missed.">        assert(a2.size() == a.length);</span>
-<span class="pc bnc" id="L778" title="All 2 branches missed.">        assert(c2.size() == (c.length + nn));</span>
-<span class="pc bnc" id="L779" title="All 2 branches missed.">        assert(ac2.size() == constraintComparisons.length);</span>
-<span class="pc bnc" id="L780" title="All 2 branches missed.">        assert(b2.size() == b.length);</span>
-<span class="pc bnc" id="L781" title="All 2 branches missed.">        assert(a2.get(0).size() == a[0].length + nn);</span>
+<span class="pc bnc" id="L782" title="All 2 branches missed.">        assert(a2.size() == a.length);</span>
+<span class="pc bnc" id="L783" title="All 2 branches missed.">        assert(c2.size() == (c.length + nn));</span>
+<span class="pc bnc" id="L784" title="All 2 branches missed.">        assert(ac2.size() == constraintComparisons.length);</span>
+<span class="pc bnc" id="L785" title="All 2 branches missed.">        assert(b2.size() == b.length);</span>
+<span class="pc bnc" id="L786" title="All 2 branches missed.">        assert(a2.get(0).size() == a[0].length + nn);</span>
            
         //System.out.printf(&quot;a0=\n%s\n&quot;, FormatArray.toString(a,  &quot;%.3f&quot;));
         //System.out.printf(&quot;a2=\n%s\n&quot;, print(a2));
@@ -786,32 +791,32 @@ public class LinearProgramming {
 
         // handle the constraints: .eq. and .geq.
         TDoubleList aRow, aRow2;
-<span class="fc bfc" id="L789" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="pc bpc" id="L790" title="1 of 3 branches missed.">            switch (constraintComparisons[i]) {</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="pc bpc" id="L795" title="1 of 3 branches missed.">            switch (constraintComparisons[i]) {</span>
                 case -1: {
                     // an .leq. constraint is in standard form
-<span class="fc" id="L793">                    break;</span>
+<span class="fc" id="L798">                    break;</span>
                 }
                 case 1: {
                     //convert .geq. to .leq. by multiplying the row of a by -1 and b[i] by -1
-<span class="fc" id="L797">                    aRow = a2.get(i);</span>
-<span class="fc bfc" id="L798" title="All 2 branches covered.">                    for (j = 0; j &lt; aRow.size(); ++j) {</span>
-<span class="fc" id="L799">                        aRow.replace(j, -1.*aRow.get(j));</span>
+<span class="fc" id="L802">                    aRow = a2.get(i);</span>
+<span class="fc bfc" id="L803" title="All 2 branches covered.">                    for (j = 0; j &lt; aRow.size(); ++j) {</span>
+<span class="fc" id="L804">                        aRow.replace(j, -1.*aRow.get(j));</span>
                     }
-<span class="fc" id="L801">                    b2.replace(i, -1.*b2.get(i));</span>
-<span class="fc" id="L802">                    break;</span>
+<span class="fc" id="L806">                    b2.replace(i, -1.*b2.get(i));</span>
+<span class="fc" id="L807">                    break;</span>
                 }
                 default: {
                     //convert equalities to 2 .leq. constraints
                     // the first conversion uses the same coefficients in a2[i] and b[i] so no need to change.
                     // the second conversion uses -1 times the coefficients in a2[i] and b[i] and gets inserted at end of both
-<span class="nc" id="L808">                    aRow = a2.get(i);</span>
-<span class="nc" id="L809">                    aRow2 = new TDoubleArrayList(aRow.size());</span>
-<span class="nc bnc" id="L810" title="All 2 branches missed.">                    for (j = 0; j &lt; aRow.size(); ++j) {</span>
-<span class="nc" id="L811">                        aRow2.add(-1.*aRow.get(j));</span>
+<span class="nc" id="L813">                    aRow = a2.get(i);</span>
+<span class="nc" id="L814">                    aRow2 = new TDoubleArrayList(aRow.size());</span>
+<span class="nc bnc" id="L815" title="All 2 branches missed.">                    for (j = 0; j &lt; aRow.size(); ++j) {</span>
+<span class="nc" id="L816">                        aRow2.add(-1.*aRow.get(j));</span>
                     }
-<span class="nc" id="L813">                    a2.add(aRow2);</span>
-<span class="nc" id="L814">                    b2.add(-1.*b2.get(i));</span>
+<span class="nc" id="L818">                    a2.add(aRow2);</span>
+<span class="nc" id="L819">                    b2.add(-1.*b2.get(i));</span>
                     break;
                 }
             }
@@ -820,10 +825,10 @@ public class LinearProgramming {
         //System.out.printf(&quot;a2=\n%s\n&quot;, print(a2));
         //System.out.printf(&quot;b=\n%s\n&quot;, FormatArray.toString(b2.toArray(),  &quot;%.3f&quot;));
 
-<span class="fc" id="L823">        double[][] a3 = copy(a2);</span>
+<span class="fc" id="L828">        double[][] a3 = copy(a2);</span>
          
-<span class="fc" id="L825">        StandardForm standForm = new StandardForm(a3, b2.toArray(), c2.toArray(), 0);</span>
-<span class="fc" id="L826">        return standForm;</span>
+<span class="fc" id="L830">        StandardForm standForm = new StandardForm(a3, b2.toArray(), c2.toArray(), 0);</span>
+<span class="fc" id="L831">        return standForm;</span>
     }
    
     /**
@@ -860,70 +865,70 @@ public class LinearProgramming {
             constraints -&gt;   subject to: A*x .leq. b
                              x .leq. 0
         */
-<span class="fc" id="L863">        int n = standForm.c.length;</span>
-<span class="fc" id="L864">        int m = standForm.b.length;</span>
+<span class="fc" id="L868">        int n = standForm.c.length;</span>
+<span class="fc" id="L869">        int m = standForm.b.length;</span>
         
-<span class="fc" id="L866">        double[][] aHat = MatrixUtil.copy(standForm.a);</span>
-<span class="pc bnc" id="L867" title="All 2 branches missed.">        assert(aHat.length == m);</span>
-<span class="pc bnc" id="L868" title="All 2 branches missed.">        assert(aHat[0].length == n);</span>
+<span class="fc" id="L871">        double[][] aHat = MatrixUtil.copy(standForm.a);</span>
+<span class="pc bnc" id="L872" title="All 2 branches missed.">        assert(aHat.length == m);</span>
+<span class="pc bnc" id="L873" title="All 2 branches missed.">        assert(aHat[0].length == n);</span>
         
-<span class="fc" id="L870">        double[] bHat = Arrays.copyOf(standForm.b, standForm.b.length);</span>
-<span class="fc" id="L871">        double[] cHat = Arrays.copyOf(standForm.c, standForm.c.length);</span>
-<span class="pc bnc" id="L872" title="All 2 branches missed.">        assert(cHat.length == n);</span>
+<span class="fc" id="L875">        double[] bHat = Arrays.copyOf(standForm.b, standForm.b.length);</span>
+<span class="fc" id="L876">        double[] cHat = Arrays.copyOf(standForm.c, standForm.c.length);</span>
+<span class="pc bnc" id="L877" title="All 2 branches missed.">        assert(cHat.length == n);</span>
         
         // removing redundant constraints
         int i, i2, j;
         double[] aRow, aRow2;
         boolean same;
-<span class="fc bfc" id="L878" title="All 2 branches covered.">        for (i = aHat.length - 1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L879">            aRow = aHat[i];</span>
-<span class="fc bfc" id="L880" title="All 2 branches covered.">            for (i2 = i - 1; i2 &gt;= 0; i2--) {</span>
-<span class="fc" id="L881">                aRow2 = aHat[i2];</span>
+<span class="fc bfc" id="L883" title="All 2 branches covered.">        for (i = aHat.length - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L884">            aRow = aHat[i];</span>
+<span class="fc bfc" id="L885" title="All 2 branches covered.">            for (i2 = i - 1; i2 &gt;= 0; i2--) {</span>
+<span class="fc" id="L886">                aRow2 = aHat[i2];</span>
                 // if b's are same, ignoring signs, compare the rest of the constraint
-<span class="fc bfc" id="L883" title="All 2 branches covered.">                if (Math.abs(bHat[i] - bHat[i2]) &lt; eps) {</span>
-<span class="fc" id="L884">                    same = true;</span>
-<span class="fc bfc" id="L885" title="All 2 branches covered.">                    for (j = 0; j &lt; aHat[i].length; ++j) {</span>
-<span class="fc bfc" id="L886" title="All 2 branches covered.">                        if (Math.abs(aRow[j] - aRow2[j]) &gt; eps) {</span>
-<span class="fc" id="L887">                            same = false;</span>
-<span class="fc" id="L888">                            break;</span>
+<span class="fc bfc" id="L888" title="All 2 branches covered.">                if (Math.abs(bHat[i] - bHat[i2]) &lt; eps) {</span>
+<span class="fc" id="L889">                    same = true;</span>
+<span class="fc bfc" id="L890" title="All 2 branches covered.">                    for (j = 0; j &lt; aHat[i].length; ++j) {</span>
+<span class="fc bfc" id="L891" title="All 2 branches covered.">                        if (Math.abs(aRow[j] - aRow2[j]) &gt; eps) {</span>
+<span class="fc" id="L892">                            same = false;</span>
+<span class="fc" id="L893">                            break;</span>
                         }
                     }
-<span class="fc bfc" id="L891" title="All 2 branches covered.">                } else if (Math.abs(bHat[i] + bHat[i2]) &lt; eps) {</span>
-<span class="fc" id="L892">                    same = true;</span>
-<span class="fc bfc" id="L893" title="All 2 branches covered.">                    for (j = 0; j &lt; aHat[i].length; ++j) {</span>
-<span class="fc bfc" id="L894" title="All 2 branches covered.">                        if (Math.abs(aRow[j] + aRow2[j]) &gt; eps) {</span>
-<span class="fc" id="L895">                            same = false;</span>
-<span class="fc" id="L896">                            break;</span>
+<span class="fc bfc" id="L896" title="All 2 branches covered.">                } else if (Math.abs(bHat[i] + bHat[i2]) &lt; eps) {</span>
+<span class="fc" id="L897">                    same = true;</span>
+<span class="fc bfc" id="L898" title="All 2 branches covered.">                    for (j = 0; j &lt; aHat[i].length; ++j) {</span>
+<span class="fc bfc" id="L899" title="All 2 branches covered.">                        if (Math.abs(aRow[j] + aRow2[j]) &gt; eps) {</span>
+<span class="fc" id="L900">                            same = false;</span>
+<span class="fc" id="L901">                            break;</span>
                         }
                     }
                 } else {
-<span class="fc" id="L900">                    same = false;</span>
+<span class="fc" id="L905">                    same = false;</span>
                 }
-<span class="fc bfc" id="L902" title="All 2 branches covered.">                if (same) {</span>
-<span class="fc" id="L903">                    bHat = removeElement(bHat, i);</span>
-<span class="fc" id="L904">                    aHat = removeRow(aHat, i);</span>
-<span class="fc" id="L905">                    break;</span>
+<span class="fc bfc" id="L907" title="All 2 branches covered.">                if (same) {</span>
+<span class="fc" id="L908">                    bHat = removeElement(bHat, i);</span>
+<span class="fc" id="L909">                    aHat = removeRow(aHat, i);</span>
+<span class="fc" id="L910">                    break;</span>
                 }
             } 
         }
         
-<span class="fc" id="L910">        m = bHat.length;</span>
+<span class="fc" id="L915">        m = bHat.length;</span>
                    
         // writing in 0-based indexes, the x index of non-basic and basic variables
-<span class="fc" id="L913">        int[] nHatIndices = new int[n]; </span>
-<span class="fc" id="L914">        int[] bHatIndices = new int[m];</span>
+<span class="fc" id="L918">        int[] nHatIndices = new int[n]; </span>
+<span class="fc" id="L919">        int[] bHatIndices = new int[m];</span>
         
-<span class="fc bfc" id="L916" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L917">            nHatIndices[i] = i;</span>
+<span class="fc bfc" id="L921" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L922">            nHatIndices[i] = i;</span>
         }
-<span class="fc bfc" id="L919" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L920">            bHatIndices[i] = n + i;</span>
+<span class="fc bfc" id="L924" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L925">            bHatIndices[i] = n + i;</span>
         }
-<span class="fc" id="L922">        double vHat = standForm.v;</span>
+<span class="fc" id="L927">        double vHat = standForm.v;</span>
         
-<span class="fc" id="L924">        SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, aHat, bHat, cHat, vHat);</span>
+<span class="fc" id="L929">        SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, aHat, bHat, cHat, vHat);</span>
         
-<span class="fc" id="L926">        return slackForm;</span>
+<span class="fc" id="L931">        return slackForm;</span>
     }
 
     /*
@@ -946,7 +951,7 @@ public class LinearProgramming {
                 constraint with a negative b, then the non-basic variables in
                 that constraint (the other x's) can be &gt; 0 and x0 can be 0.
     
-    Sect 29.5 of Cormen et al., method INITIALIZE-SIMPLEX(A, b,c)
+    Sect 29.5 of Cormen, Leiserson, Rivest, and Stein, method INITIALIZE-SIMPLEX(A, b,c)
     line 4:   form L_AUX by adding -x0 to the LHS of each equation and setting the
               objective function to -x0.
     &lt;/pre&gt;    
@@ -955,12 +960,12 @@ public class LinearProgramming {
         
         //System.out.printf(&quot;createAuxiliarySlackForm\n&quot;);
         
-<span class="fc" id="L958">        SlackForm slackForm = convertConstraints(standForm);</span>
+<span class="fc" id="L963">        SlackForm slackForm = convertConstraints(standForm);</span>
         
         //System.out.printf(&quot;SlackForm=%S\n&quot;, slackForm.toString());
         
-<span class="fc" id="L962">        int m = slackForm.b.length;</span>
-<span class="fc" id="L963">        int n = slackForm.c.length;</span>
+<span class="fc" id="L967">        int m = slackForm.b.length;</span>
+<span class="fc" id="L968">        int n = slackForm.c.length;</span>
                 
         int i, j;
         
@@ -995,68 +1000,68 @@ public class LinearProgramming {
         //double[] xHat = new double[m + n + 1];
         //System.arraycopy(xBasicSoln, 0, xHat, 1, m + n);
                
-<span class="fc" id="L998">        int[] nHatIndices = new int[n + 1];</span>
-<span class="fc bfc" id="L999" title="All 2 branches covered.">        for (i = 1; i &lt; nHatIndices.length; ++i) {</span>
-<span class="fc" id="L1000">            nHatIndices[i] = slackForm.nIndices[i - 1] + 1;</span>
+<span class="fc" id="L1003">        int[] nHatIndices = new int[n + 1];</span>
+<span class="fc bfc" id="L1004" title="All 2 branches covered.">        for (i = 1; i &lt; nHatIndices.length; ++i) {</span>
+<span class="fc" id="L1005">            nHatIndices[i] = slackForm.nIndices[i - 1] + 1;</span>
         }
-<span class="fc" id="L1002">        int[] bHatIndices = Arrays.copyOf(slackForm.bIndices, m);</span>
-<span class="fc bfc" id="L1003" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L1004">            bHatIndices[i]++;</span>
+<span class="fc" id="L1007">        int[] bHatIndices = Arrays.copyOf(slackForm.bIndices, m);</span>
+<span class="fc bfc" id="L1008" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L1009">            bHatIndices[i]++;</span>
         }
         
-<span class="fc" id="L1007">        double[] cHat = new double[n + 1];</span>
-<span class="fc" id="L1008">        cHat[0] = -1;</span>
+<span class="fc" id="L1012">        double[] cHat = new double[n + 1];</span>
+<span class="fc" id="L1013">        cHat[0] = -1;</span>
                 
-<span class="fc" id="L1010">        double[] bHat = Arrays.copyOf(slackForm.b, m);</span>
+<span class="fc" id="L1015">        double[] bHat = Arrays.copyOf(slackForm.b, m);</span>
         
-<span class="fc" id="L1012">        double[][] aHat = new double[m][];//mX(n+1)</span>
-<span class="fc bfc" id="L1013" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L1014">            aHat[i] = new double[n+1];</span>
-<span class="fc" id="L1015">            System.arraycopy(slackForm.a[i], 0, aHat[i], 1, n);</span>
-<span class="fc" id="L1016">            aHat[i][0] = -1;</span>
+<span class="fc" id="L1017">        double[][] aHat = new double[m][];//mX(n+1)</span>
+<span class="fc bfc" id="L1018" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L1019">            aHat[i] = new double[n+1];</span>
+<span class="fc" id="L1020">            System.arraycopy(slackForm.a[i], 0, aHat[i], 1, n);</span>
+<span class="fc" id="L1021">            aHat[i][0] = -1;</span>
         }
         
         //double[] xBasicSoln = slackForm.computeBasicSolution();
         //double eval = slackForm.evaluateObjective();
-<span class="fc" id="L1021">        double vHat = 0;//eval;</span>
+<span class="fc" id="L1026">        double vHat = 0;//eval;</span>
         
-<span class="fc" id="L1023">        SlackForm slackForm2 = new SlackForm(nHatIndices, bHatIndices, </span>
+<span class="fc" id="L1028">        SlackForm slackForm2 = new SlackForm(nHatIndices, bHatIndices, </span>
             aHat, bHat, cHat, vHat);
          
-<span class="fc" id="L1026">        return slackForm2;</span>
+<span class="fc" id="L1031">        return slackForm2;</span>
     }
     
     // remove x0 and restore original objective function
     private SlackForm truncateAuxiliarySlackForm(SlackForm slackFormAux,
         StandardForm origForm) {
         
-<span class="fc" id="L1033">        int m = slackFormAux.bIndices.length;</span>
-<span class="fc" id="L1034">        int n = slackFormAux.nIndices.length;</span>
+<span class="fc" id="L1038">        int m = slackFormAux.bIndices.length;</span>
+<span class="fc" id="L1039">        int n = slackFormAux.nIndices.length;</span>
         
-<span class="fc" id="L1036">        int i, i2 = 0;</span>
-<span class="fc" id="L1037">        int[] nHatIndices = new int[slackFormAux.nIndices.length - 1];</span>
-<span class="fc bfc" id="L1038" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">            if (slackFormAux.nIndices[i] != 0) {</span>
-<span class="fc" id="L1040">                nHatIndices[i2] = slackFormAux.nIndices[i] - 1;</span>
-<span class="fc" id="L1041">                i2++;</span>
+<span class="fc" id="L1041">        int i, i2 = 0;</span>
+<span class="fc" id="L1042">        int[] nHatIndices = new int[slackFormAux.nIndices.length - 1];</span>
+<span class="fc bfc" id="L1043" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L1044" title="All 2 branches covered.">            if (slackFormAux.nIndices[i] != 0) {</span>
+<span class="fc" id="L1045">                nHatIndices[i2] = slackFormAux.nIndices[i] - 1;</span>
+<span class="fc" id="L1046">                i2++;</span>
             }
         }
-<span class="fc" id="L1044">        int[] bHatIndices = new int[slackFormAux.bIndices.length];</span>
-<span class="fc bfc" id="L1045" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L1046">            bHatIndices[i] = slackFormAux.bIndices[i] - 1;</span>
+<span class="fc" id="L1049">        int[] bHatIndices = new int[slackFormAux.bIndices.length];</span>
+<span class="fc bfc" id="L1050" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L1051">            bHatIndices[i] = slackFormAux.bIndices[i] - 1;</span>
         }
         
-<span class="fc" id="L1049">        double[] bHat = Arrays.copyOf(slackFormAux.b, slackFormAux.b.length);</span>
+<span class="fc" id="L1054">        double[] bHat = Arrays.copyOf(slackFormAux.b, slackFormAux.b.length);</span>
         
-<span class="fc" id="L1051">        double[][] aHat = new double[m][];//mX(n-1)</span>
+<span class="fc" id="L1056">        double[][] aHat = new double[m][];//mX(n-1)</span>
         int j;
-<span class="fc bfc" id="L1053" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L1054">            aHat[i] = new double[n-1];</span>
-<span class="fc" id="L1055">            i2 = 0;</span>
-<span class="fc bfc" id="L1056" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc bfc" id="L1057" title="All 2 branches covered.">                if (slackFormAux.nIndices[j] != 0) {</span>
-<span class="fc" id="L1058">                    aHat[i][i2] = slackFormAux.a[i][j];</span>
-<span class="fc" id="L1059">                    i2++;</span>
+<span class="fc bfc" id="L1058" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L1059">            aHat[i] = new double[n-1];</span>
+<span class="fc" id="L1060">            i2 = 0;</span>
+<span class="fc bfc" id="L1061" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L1062" title="All 2 branches covered.">                if (slackFormAux.nIndices[j] != 0) {</span>
+<span class="fc" id="L1063">                    aHat[i][i2] = slackFormAux.a[i][j];</span>
+<span class="fc" id="L1064">                    i2++;</span>
                 }
             }
         }
@@ -1082,62 +1087,62 @@ public class LinearProgramming {
                           = 2x1 - (4/5 + x1/5 + x4/5)
                           = -4/5 + 9x1/5 -x4/5
         */
-<span class="fc" id="L1085">        TIntSet nHatIdxs = new TIntHashSet(nHatIndices);</span>
+<span class="fc" id="L1090">        TIntSet nHatIdxs = new TIntHashSet(nHatIndices);</span>
         // orig c indexes are 0 thru origC.length-1
-<span class="fc" id="L1087">        TIntIntMap bHatIdxMap = new TIntIntHashMap();</span>
+<span class="fc" id="L1092">        TIntIntMap bHatIdxMap = new TIntIntHashMap();</span>
         int idx;
-<span class="fc bfc" id="L1089" title="All 2 branches covered.">        for (i = 0; i &lt; bHatIndices.length; ++i) {</span>
-<span class="fc" id="L1090">            idx = bHatIndices[i];</span>
-<span class="fc" id="L1091">            bHatIdxMap.put(idx, i);</span>
+<span class="fc bfc" id="L1094" title="All 2 branches covered.">        for (i = 0; i &lt; bHatIndices.length; ++i) {</span>
+<span class="fc" id="L1095">            idx = bHatIndices[i];</span>
+<span class="fc" id="L1096">            bHatIdxMap.put(idx, i);</span>
         }
         
-<span class="fc" id="L1094">        TIntIntMap nHatIdxMap = new TIntIntHashMap();</span>
-<span class="fc bfc" id="L1095" title="All 2 branches covered.">        for (i = 0; i &lt; nHatIndices.length; ++i) {</span>
-<span class="fc" id="L1096">            idx = nHatIndices[i];</span>
-<span class="fc" id="L1097">            nHatIdxMap.put(idx, i);</span>
+<span class="fc" id="L1099">        TIntIntMap nHatIdxMap = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L1100" title="All 2 branches covered.">        for (i = 0; i &lt; nHatIndices.length; ++i) {</span>
+<span class="fc" id="L1101">            idx = nHatIndices[i];</span>
+<span class="fc" id="L1102">            nHatIdxMap.put(idx, i);</span>
         }
         
         double cCoeff;
         int jIdx, jj;
-<span class="fc" id="L1102">        double vHat = origForm.v;</span>
+<span class="fc" id="L1107">        double vHat = origForm.v;</span>
         double tmp;
-<span class="fc" id="L1104">        double[] cHat = new double[origForm.c.length];</span>
+<span class="fc" id="L1109">        double[] cHat = new double[origForm.c.length];</span>
         double[] aHatRow;
         double bHatI;
-<span class="fc bfc" id="L1107" title="All 2 branches covered.">        for (i = 0; i &lt; origForm.c.length; ++i) {</span>
-<span class="fc bfc" id="L1108" title="All 2 branches covered.">            if (nHatIdxs.contains(i)) { //i=1</span>
-<span class="fc" id="L1109">                cHat[i] = origForm.c[i];</span>
+<span class="fc bfc" id="L1112" title="All 2 branches covered.">        for (i = 0; i &lt; origForm.c.length; ++i) {</span>
+<span class="fc bfc" id="L1113" title="All 2 branches covered.">            if (nHatIdxs.contains(i)) { //i=1</span>
+<span class="fc" id="L1114">                cHat[i] = origForm.c[i];</span>
             }
         }
         // any orig c indexes not in nHatIdxs need to be rewritten using the basic constraint
-<span class="fc bfc" id="L1113" title="All 2 branches covered.">        for (i = 0; i &lt; origForm.c.length; ++i) {</span>
-<span class="fc bfc" id="L1114" title="All 2 branches covered.">            if (!nHatIdxs.contains(i)) {</span>
-<span class="fc" id="L1115">                cCoeff = origForm.c[i];</span>
+<span class="fc bfc" id="L1118" title="All 2 branches covered.">        for (i = 0; i &lt; origForm.c.length; ++i) {</span>
+<span class="fc bfc" id="L1119" title="All 2 branches covered.">            if (!nHatIdxs.contains(i)) {</span>
+<span class="fc" id="L1120">                cCoeff = origForm.c[i];</span>
                 //find the row for index in bindices
-<span class="pc bnc" id="L1117" title="All 2 branches missed.">                assert(bHatIdxMap.containsKey(i));</span>
-<span class="fc" id="L1118">                j = bHatIdxMap.get(i);</span>
+<span class="pc bnc" id="L1122" title="All 2 branches missed.">                assert(bHatIdxMap.containsKey(i));</span>
+<span class="fc" id="L1123">                j = bHatIdxMap.get(i);</span>
                 
-<span class="fc" id="L1120">                aHatRow = aHat[j]; </span>
-<span class="fc" id="L1121">                bHatI = bHat[j]; </span>
+<span class="fc" id="L1125">                aHatRow = aHat[j]; </span>
+<span class="fc" id="L1126">                bHatI = bHat[j]; </span>
                 
-<span class="fc" id="L1123">                vHat += (cCoeff * bHatI);</span>
+<span class="fc" id="L1128">                vHat += (cCoeff * bHatI);</span>
                 
-<span class="fc bfc" id="L1125" title="All 2 branches covered.">                for (jj = 0; jj &lt; aHatRow.length; ++jj) {</span>
-<span class="fc" id="L1126">                    jIdx = nHatIndices[jj];</span>
-<span class="pc bnc" id="L1127" title="All 2 branches missed.">                    assert(nHatIdxMap.containsKey(jIdx));</span>
-<span class="fc" id="L1128">                    jIdx = nHatIdxMap.get(jIdx);</span>
-<span class="fc" id="L1129">                    tmp = cCoeff * -aHatRow[jj];</span>
-<span class="fc" id="L1130">                    cHat[jIdx] += tmp;</span>
+<span class="fc bfc" id="L1130" title="All 2 branches covered.">                for (jj = 0; jj &lt; aHatRow.length; ++jj) {</span>
+<span class="fc" id="L1131">                    jIdx = nHatIndices[jj];</span>
+<span class="pc bnc" id="L1132" title="All 2 branches missed.">                    assert(nHatIdxMap.containsKey(jIdx));</span>
+<span class="fc" id="L1133">                    jIdx = nHatIdxMap.get(jIdx);</span>
+<span class="fc" id="L1134">                    tmp = cCoeff * -aHatRow[jj];</span>
+<span class="fc" id="L1135">                    cHat[jIdx] += tmp;</span>
                 }
             }
         }        
         
-<span class="fc" id="L1135">        SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, </span>
+<span class="fc" id="L1140">        SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, </span>
             aHat, bHat, cHat, vHat);
         
         //System.out.printf(&quot;truncated=\n%s\n&quot;, slackForm.toString());
         
-<span class="fc" id="L1140">        return slackForm;</span>
+<span class="fc" id="L1145">        return slackForm;</span>
     }
 
     protected int chooseEnteringIndex(SlackForm slackForm, TIntSet positiveCIndexes) {
@@ -1153,16 +1158,16 @@ public class LinearProgramming {
         */
         
         // choose eIdx randomly from nonNegativeC
-<span class="fc" id="L1156">        int eIdx = -1;</span>
-<span class="fc" id="L1157">        int nC = positiveCIndexes.size();</span>
-<span class="fc bfc" id="L1158" title="All 3 branches covered.">        switch (nC) {</span>
+<span class="fc" id="L1161">        int eIdx = -1;</span>
+<span class="fc" id="L1162">        int nC = positiveCIndexes.size();</span>
+<span class="fc bfc" id="L1163" title="All 3 branches covered.">        switch (nC) {</span>
             case 0:
-<span class="fc" id="L1160">                return eIdx;</span>
+<span class="fc" id="L1165">                return eIdx;</span>
             case 1:
-<span class="fc" id="L1162">                return positiveCIndexes.iterator().next();</span>
+<span class="fc" id="L1167">                return positiveCIndexes.iterator().next();</span>
             default:
-<span class="fc" id="L1164">                eIdx = rand.nextInt(nC);</span>
-<span class="fc" id="L1165">                return positiveCIndexes.toArray()[eIdx];</span>
+<span class="fc" id="L1169">                eIdx = rand.nextInt(nC);</span>
+<span class="fc" id="L1170">                return positiveCIndexes.toArray()[eIdx];</span>
         }
     }
 
@@ -1173,84 +1178,84 @@ public class LinearProgramming {
      * @return 
      */
     protected TIntSet findPositiveCIndexes(SlackForm slackForm) {
-<span class="fc" id="L1176">        TIntSet cs = new TIntHashSet();</span>
-<span class="fc" id="L1177">        int n = slackForm.c.length;</span>
+<span class="fc" id="L1181">        TIntSet cs = new TIntHashSet();</span>
+<span class="fc" id="L1182">        int n = slackForm.c.length;</span>
         int i;
-<span class="fc bfc" id="L1179" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L1180" title="All 2 branches covered.">            if (slackForm.c[i] &gt; 0) {</span>
-<span class="fc" id="L1181">                cs.add(i);</span>
+<span class="fc bfc" id="L1184" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L1185" title="All 2 branches covered.">            if (slackForm.c[i] &gt; 0) {</span>
+<span class="fc" id="L1186">                cs.add(i);</span>
             }
         }
-<span class="fc" id="L1184">        return cs;</span>
+<span class="fc" id="L1189">        return cs;</span>
     }
     
     private static List&lt;TDoubleList&gt; copy(double[][] a) {
-<span class="fc" id="L1188">        int m = a.length;</span>
-<span class="fc" id="L1189">        int n = a[0].length;</span>
-<span class="fc" id="L1190">        List&lt;TDoubleList&gt; a2 = new ArrayList&lt;TDoubleList&gt;(m);</span>
+<span class="fc" id="L1193">        int m = a.length;</span>
+<span class="fc" id="L1194">        int n = a[0].length;</span>
+<span class="fc" id="L1195">        List&lt;TDoubleList&gt; a2 = new ArrayList&lt;TDoubleList&gt;(m);</span>
         int i;
-<span class="fc bfc" id="L1192" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L1193">            a2.add(new TDoubleArrayList(Arrays.copyOf(a[i], a[i].length)));</span>
-<span class="pc bnc" id="L1194" title="All 2 branches missed.">            assert(a2.get(i).size() == n);</span>
+<span class="fc bfc" id="L1197" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L1198">            a2.add(new TDoubleArrayList(Arrays.copyOf(a[i], a[i].length)));</span>
+<span class="pc bnc" id="L1199" title="All 2 branches missed.">            assert(a2.get(i).size() == n);</span>
         }
-<span class="fc" id="L1196">        return a2;</span>
+<span class="fc" id="L1201">        return a2;</span>
     }
     
     private static double[][] copy(List&lt;TDoubleList&gt; a) {
-<span class="fc" id="L1200">        int m = a.size();</span>
-<span class="fc" id="L1201">        int n = a.get(0).size();</span>
-<span class="fc" id="L1202">        double[][] a2 = new double[m][];</span>
+<span class="fc" id="L1205">        int m = a.size();</span>
+<span class="fc" id="L1206">        int n = a.get(0).size();</span>
+<span class="fc" id="L1207">        double[][] a2 = new double[m][];</span>
         int i;
-<span class="fc bfc" id="L1204" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L1205">            a2[i] = a.get(i).toArray();</span>
-<span class="pc bnc" id="L1206" title="All 2 branches missed.">            assert(a2[i].length == n);</span>
+<span class="fc bfc" id="L1209" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L1210">            a2[i] = a.get(i).toArray();</span>
+<span class="pc bnc" id="L1211" title="All 2 branches missed.">            assert(a2[i].length == n);</span>
         }
-<span class="fc" id="L1208">        return a2;</span>
+<span class="fc" id="L1213">        return a2;</span>
     }
     
     private static double[] removeElement(double[] b, int idx) {
-<span class="fc" id="L1212">        double[] out = new double[b.length - 1];</span>
-<span class="fc" id="L1213">        int i, i2 = 0;</span>
-<span class="fc bfc" id="L1214" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
-<span class="fc bfc" id="L1215" title="All 2 branches covered.">            if (i != idx) {</span>
-<span class="fc" id="L1216">                out[i2] = b[i];</span>
-<span class="fc" id="L1217">                i2++;</span>
+<span class="fc" id="L1217">        double[] out = new double[b.length - 1];</span>
+<span class="fc" id="L1218">        int i, i2 = 0;</span>
+<span class="fc bfc" id="L1219" title="All 2 branches covered.">        for (i = 0; i &lt; b.length; ++i) {</span>
+<span class="fc bfc" id="L1220" title="All 2 branches covered.">            if (i != idx) {</span>
+<span class="fc" id="L1221">                out[i2] = b[i];</span>
+<span class="fc" id="L1222">                i2++;</span>
             }
         }
-<span class="fc" id="L1220">        return out;</span>
+<span class="fc" id="L1225">        return out;</span>
     }
 
     private static double[][] removeRow(double[][] a, int rowIdx) {
-<span class="fc" id="L1224">        double[][] out = new double[a.length - 1][];</span>
-<span class="fc" id="L1225">        int i, i2 = 0;</span>
-<span class="fc bfc" id="L1226" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L1227" title="All 2 branches covered.">            if (i != rowIdx) {</span>
-<span class="fc" id="L1228">                out[i2] = Arrays.copyOf(a[i], a[i].length);</span>
-<span class="fc" id="L1229">                i2++;</span>
+<span class="fc" id="L1229">        double[][] out = new double[a.length - 1][];</span>
+<span class="fc" id="L1230">        int i, i2 = 0;</span>
+<span class="fc bfc" id="L1231" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L1232" title="All 2 branches covered.">            if (i != rowIdx) {</span>
+<span class="fc" id="L1233">                out[i2] = Arrays.copyOf(a[i], a[i].length);</span>
+<span class="fc" id="L1234">                i2++;</span>
             }
         }
-<span class="fc" id="L1232">        return out;</span>
+<span class="fc" id="L1237">        return out;</span>
     }
     
     private static String print(List&lt;TDoubleList&gt; a) {
-<span class="nc" id="L1236">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc" id="L1237">        int m = a.size();</span>
-<span class="nc" id="L1238">        int n = a.get(0).size();</span>
+<span class="nc" id="L1241">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L1242">        int m = a.size();</span>
+<span class="nc" id="L1243">        int n = a.get(0).size();</span>
         int i;
-<span class="nc bnc" id="L1240" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L1241">            sb.append(FormatArray.toString(a.get(i).toArray(), &quot;%.3f&quot;)).append(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L1245" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L1246">            sb.append(FormatArray.toString(a.get(i).toArray(), &quot;%.3f&quot;)).append(&quot;\n&quot;);</span>
         }
-<span class="nc" id="L1243">        return sb.toString();</span>
+<span class="nc" id="L1248">        return sb.toString();</span>
     }
         
     private static TDoubleList copy(double[] b) {
-<span class="fc" id="L1247">        TDoubleList b2 = new TDoubleArrayList(Arrays.copyOf(b, b.length));</span>
-<span class="fc" id="L1248">        return b2;</span>
+<span class="fc" id="L1252">        TDoubleList b2 = new TDoubleArrayList(Arrays.copyOf(b, b.length));</span>
+<span class="fc" id="L1253">        return b2;</span>
     }
     
     private static TIntList copy(int[] cc) {
-<span class="fc" id="L1252">        TIntList cc2 = new TIntArrayList(Arrays.copyOf(cc, cc.length));</span>
-<span class="fc" id="L1253">        return cc2;</span>
+<span class="fc" id="L1257">        TIntList cc2 = new TIntArrayList(Arrays.copyOf(cc, cc.length));</span>
+<span class="fc" id="L1258">        return cc2;</span>
     }
     
     /**
@@ -1264,7 +1269,7 @@ public class LinearProgramming {
         
         /**
          * when x has been calculated, evaluate the objective.
-         * see eqn (29.42) of Cormen et al.
+         * see eqn (29.42) of Cormen, Leiserson, Rivest, and Stein
          * &lt;pre&gt; z = v + summation_j_in_nIndices(c_j*x_j) &lt;/pre&gt;
          * @return 
          */
@@ -1319,7 +1324,7 @@ public class LinearProgramming {
          */
         @Override
         public double[] computeBasicSolution() {
-            //following Sect 29.3 of Cormen et al. &quot;Introduction to Algorithms&quot;
+            //following Sect 29.3 of Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot;
             double[] xt = new double[a.length + b.length];
             int i;
             for (i = 0; i &lt; b.length; ++i) {
@@ -1434,7 +1439,7 @@ public class LinearProgramming {
         
         /**
          * when x has been calculated, evaluate the objective.
-         * see eqn (29.42) of Cormen et al.
+         * see eqn (29.42) of Cormen, Leiserson, Rivest, and Stein
          * &lt;pre&gt; z = v + summation_j_in_nIndices(c_j*x_j) &lt;/pre&gt;
          * @return 
          */
@@ -1492,7 +1497,7 @@ public class LinearProgramming {
         @Override
         public double[] computeBasicSolution() {
             /*
-            following Sect 29.3 of Cormen et al. &quot;Introduction to Algorithms&quot;
+            following Sect 29.3 of Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot;
 
             Slack Form example:
                  maximize 3*x1 + x2 + 2*x3
@@ -1519,7 +1524,7 @@ public class LinearProgramming {
         public double[] computeBasicDualSolution() {
             
             // dual b is primal slack -c from this instance
-            //  see eqn (29.91) of Cormen et al. &quot;Introduction to Algorithms&quot;
+            //  see eqn (29.91) of Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot;
             
             double[] y = new double[nIndices.length + bIndices.length];
             int i, idx;
@@ -1582,7 +1587,7 @@ public class LinearProgramming {
         
         /**         
          * @param a mXn matrix of constraint coefficients.   Careful with the signs
-         * of the values for the SlackForm. see eqn (29.43) of Cormen et al.  
+         * of the values for the SlackForm. see eqn (29.43) of Cormen, Leiserson, Rivest, and Stein  
          * &lt;pre&gt; x_i = b_i - summation_j(a_i_j*x_j) for i in bIndices. &lt;/pre&gt;
          * @param b m-dimensional vector of constraint inequalities
          * @param c n-dimensional vector of objective coefficients.

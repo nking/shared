@@ -194,7 +194,7 @@ import java.util.Stack;
      * @return {@code true} if this symbol table is empty and {@code false} otherwise
      */
     public boolean isEmpty() {
-<span class="fc bfc" id="L197" title="All 2 branches covered.">        return !rootIsSet;</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        return !rootIsSet;</span>
     }
 
    /***************************************************************************
@@ -559,11 +559,11 @@ import java.util.Stack;
 <span class="fc" id="L559">        long[] output = new long[2];</span>
 <span class="fc" id="L560">        delete(root, key, output);</span>
         
-<span class="fc bfc" id="L562" title="All 2 branches covered.">        if (output[0] == -1) {</span>
-<span class="fc" id="L563">            rootIsSet = false;</span>
-<span class="fc" id="L564">            nodeMap.remove(root);</span>
-<span class="fc" id="L565">            root = -1;</span>
-<span class="fc" id="L566">            return;</span>
+<span class="pc bpc" id="L562" title="1 of 2 branches missed.">        if (output[0] == -1) {</span>
+<span class="nc" id="L563">            rootIsSet = false;</span>
+<span class="nc" id="L564">            nodeMap.remove(root);</span>
+<span class="nc" id="L565">            root = -1;</span>
+<span class="nc" id="L566">            return;</span>
         }
 <span class="fc" id="L568">        root = output[1];</span>
 <span class="fc" id="L569">        nodeMap.unsetParent(root);</span>
@@ -746,7 +746,7 @@ import java.util.Stack;
 
     /**
      * make a left-leaning link lean to the right.
-     Note that the parent link logic is from Cormen et al. &quot;Introduction to
+     Note that the parent link logic is from Cormen, Leiserson, Rivest, and Stein &quot;Introduction to
      Algorithms&quot;.
      */
     protected long rotateRight(long h) {
@@ -834,7 +834,7 @@ import java.util.Stack;
 
     /**
      make a right-leaning link lean to the left.
-     Note that the parent link logic is from Cormen et al. &quot;Introduction to
+     Note that the parent link logic is from Cormen, Leiserson, Rivest, and Stein &quot;Introduction to
      Algorithms&quot;.
      */
     protected long rotateLeft(long h) {
@@ -1145,7 +1145,7 @@ import java.util.Stack;
     /** the largest key in the subtree rooted at x less than the given key
      * 
      * The method is symmetric t the successor method called 
-     * higher, as suggested by Cormen et al. in
+     * higher, as suggested by Cormen, Leiserson, Rivest, and Stein in
      * the book &quot;Introduction to Algorithms&quot;.
      * 
      * @param x
@@ -1323,7 +1323,7 @@ import java.util.Stack;
     
     /** the smallest key in the subtree rooted at x greater than the given key.
      * 
-     * NOTE: the method uses in part, a pattern adapted from the Cormen et al.
+     * NOTE: the method uses in part, a pattern adapted from the Cormen, Leiserson, Rivest, and Stein
      * book &quot;Introduction to Algorithms&quot; for their Red Black Tree.
      * 
      * @param x
@@ -2317,8 +2317,8 @@ import java.util.Stack;
 <span class="pc bpc" id="L2317" title="1 of 2 branches missed.">        if (hParentExists) {</span>
 <span class="fc" id="L2318">            nodeMap.updateParent(x, hParent);</span>
 <span class="pc bpc" id="L2319" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(hParent) </span>
-<span class="fc bfc" id="L2320" title="All 2 branches covered.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
-<span class="fc" id="L2321">                nodeMap.updateLeft(hParent, x);</span>
+<span class="pc bpc" id="L2320" title="1 of 2 branches missed.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
+<span class="nc" id="L2321">                nodeMap.updateLeft(hParent, x);</span>
             } else {
 <span class="pc bnc" id="L2323" title="All 2 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
 <span class="nc bnc" id="L2324" title="All 2 branches missed.">                    &amp;&amp; nodeMap.getRight(hParent) == h);</span>
@@ -2339,8 +2339,8 @@ import java.util.Stack;
         
 <span class="fc" id="L2340">        nodeMap.remove(h); </span>
         
-<span class="pc bpc" id="L2342" title="1 of 2 branches missed.">        if (h == root) {</span>
-<span class="nc" id="L2343">            root = x;</span>
+<span class="fc bfc" id="L2342" title="All 2 branches covered.">        if (h == root) {</span>
+<span class="fc" id="L2343">            root = x;</span>
         }
 <span class="fc" id="L2345">    }</span>
     

@@ -5,7 +5,7 @@ import algorithms.misc.MiscMath0;
 
 /**
  * 
- * adapted from  Cormen et al. pseudocode
+ * adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode
  * 
  * first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
@@ -28,7 +28,7 @@ import algorithms.misc.MiscMath0;
     /**
      * compute the FFT of x[], assuming its length is a power of 2.
      * runtime complexity is O(N*log(N)).
-     * (adapted from  Cormen et al. pseudocode)
+     * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode)
      * ability added
      */ 
     public Complex[] fft(Complex[] x) {
@@ -37,7 +37,7 @@ import algorithms.misc.MiscMath0;
     }
 
     /**
-     * FFT from  Cormen et al. pseudocode for iterative FFT w/ an inverse
+     * FFT from  Cormen, Leiserson, Rivest, and Stein pseudocode for iterative FFT w/ an inverse
      * ability added.  Note that the length of x must be a power of 2.
      * runtime complexity is O(N*log(N)).
      * 
@@ -135,7 +135,7 @@ import algorithms.misc.MiscMath0;
     /**
      * compute the inverse FFT of x[], assuming its length is a power of 2
      * runtime complexity is O(N).
-     * (adapted from  Cormen et al. pseudocode for forward transform)
+     * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode for forward transform)
      */
     public Complex[] ifft(Complex[] x) {
         
@@ -200,7 +200,7 @@ import algorithms.misc.MiscMath0;
     /**
      * perform FFT on x
      * runtime complexity is O(N*log(N)).
-     * (adapted from  Cormen et al. pseudocode for forward transform).
+     * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode for forward transform).
      * Note that the result cannot be inverted because only the real portion is 
      * returned and inverse FFT needs the real and complex components.
      */
@@ -228,7 +228,7 @@ import algorithms.misc.MiscMath0;
     /**
      * perform FFT on x
      * runtime complexity is O(N).
-     * (adapted from  Cormen et al. pseudocode for forward transform).
+     * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode for forward transform).
      * Note that the result cannot be inverted because only the real portion is
      * returned and inverse FFT needs the real and complex components.
      */
