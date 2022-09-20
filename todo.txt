@@ -1,4 +1,7 @@
+-- browse https://github.com/GPflow/GPflow
+
 -- look into jcilk
+   - does jcilk have cilksan and cilkscale?
 
 -- for multidimensional fast efficient KDE: the fastKDE github project
    LBL-EESA by O'Brien T.A. et al. 2014, 2016.  it uses non-uniform FFT

@@ -13,10 +13,15 @@ import no.uib.cipr.matrix.*;
  “Algorithms for Linear Least Squares Problems”, 
  Bj̈orck 1991, published in Computer Algorithms for Solving Linear Algebraic Equations;
  The State of the Art., Vol. 77 of NATO-ASI Series F: Computer and Systems Sciences, pages 57–92.
- </pre>
+
    LUPSolve, __, and __ follow
    pseudocode from Cormen, Leiserson, Rivest, and Stein, "Introduction to
    Computer Algorithms".
+ </pre>
+ Note that any rectangular matrix can be made into a square matrix by adding zero rows or columns,
+ without changing the nonzero singular values.
+ Bjorck 1991, "Algorithms for Linear Least Squares Problems"
+
 */
 public class LinearEquations {
 

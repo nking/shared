@@ -70,6 +70,10 @@ import gnu.trove.set.hash.TIntHashSet;
  see https://netlib.org/lapack/explore-html/index.html for details of
  MTJ toolkit methods and LAPACK.getInstance() methods that might not be in MTJ
 
+ Note that any rectangular matrix can be made into a square matrix by adding zero rows or columns,
+ without changing the nonzero singular values.
+ Bjorck 1991, "Algorithms for Linear Least Squares Problems"
+
  * @author nichole
  */
 public class MatrixUtil {
@@ -1778,8 +1782,7 @@ public class MatrixUtil {
        (2) an inverse matrix has n pivots remaining after elimination,
                 where pivot is the leftmost non-zero variable. i.e. the rank r
                 is equal to the dimension of the square matrix which is n.
-       (3) after elimination, next test for possible invertibility is 
-             that the determinant is not zero
+       (3) after elimination, next test is that the determinant is not zero
 
        if A is invertible, then A * x = b can be solved as x = A^-1 * b
        and (A * B)^-1 = B^-1 * A^-1
@@ -2434,6 +2437,7 @@ public class MatrixUtil {
     /**
      * constructs the 3x3 skew-symmetric matrices for use in cross products,
      * notation is [v]_x.
+     * the operator is also called "hat operator".
      * v cross product with w is v X w = [v]_x * w.
      * It’s individual terms are a_j_i = -a_i_j.
        <pre>
@@ -2468,6 +2472,7 @@ public class MatrixUtil {
        
        Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
+     * the operator is also called "hat operator".
      * @param v
      * @param out 
      */
@@ -2495,6 +2500,19 @@ public class MatrixUtil {
         out[2][1] = v[0];
         out[2][2] = 0;
         
+    }
+
+    /**
+     * extract the vector from a skew-symmetric matrix.  the operation is called vee operator.
+     * @param vHat
+     * @return
+     */
+    public static double[] extractVectorFromSkewSymmetric(double[][] vHat) {
+        double[] out = new double[3];
+        out[0] = 0.5*(vHat[2][1] - vHat[1][2]);
+        out[1] = 0.5*(vHat[0][2] - vHat[2][0]);
+        out[2] = 0.5*(vHat[1][0] - vHat[0][1]);
+        return out;
     }
     
     public static double[] crossProduct(double[] p0, double[] p1) {
@@ -4515,5 +4533,80 @@ public class MatrixUtil {
         assert(MatrixUtil.isAPermutationMatrix(p));
         return p;
     }
-    
+
+    /**
+     * extract each column of a and append it to an output vector.
+     * if a is [mxn], the output vector length will be m*n.
+     * @param a
+     * @return the output vector of stacked columns of a
+     */
+    public static double[] stack(double[][] a) {
+        int m = a.length;
+        int n = a[0].length;
+        double[] out = new double[m*n];
+        int j;
+        for (int i = 0; i < n; ++i) {
+            for (j = 0; j < m; ++j) {
+                out[i*m + j] = a[j][i];
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Given two matrices A € R^(mxn) and B € R^(kxl), their Kronecker product,
+     * denoted by A⨂B, is a new matrix € R^(mk x nl)
+     * @param a
+     * @param b
+     * @return
+     */
+    public static double[][] kroneckerProduct(double[][] a, double[][] b) {
+
+        int m = a.length;
+        int n = a[0].length;
+        int k = b.length;
+        int l = b[0].length;
+        int mk = m * k;
+        int nl = n * l;
+
+        double[][] kron = MatrixUtil.zeros(mk, nl);
+        int i;
+        int j;
+        int ii;
+        double[][] b2;
+        int r = 0;
+        int c = 0;
+        for (i = 0; i < m; ++i) {
+            for (j = 0; j < n; ++j) {
+                // multiply each a[i][j] by entire matrix b2
+                b2 = MatrixUtil.copy(b);
+                MatrixUtil.multiply(b2, a[i][j]);
+                // write the kXl items of b2 into [m*k][n*l] matrix starting at [i*k][j*l]
+                for (ii = 0; ii < k; ++ii) {
+                    System.arraycopy(b2[ii], 0, kron[i*k + ii], j*l, b2[ii].length);
+                }
+
+                // e.g. m=1,n=3,  k=3, l=4
+                // B: 0,0  0,1  0,2  0,3    0,4 0,5 0,6 0,7  j=0:[0,l*j] j=1:[0,l*j]
+                //    1, .. ..
+                //    2, .. ..
+                // B: 3, ...
+            }
+        }
+        return kron;
+    }
+
+    /**
+     * Given two vectors A € R^(m) and B € R^(k), their Kronecker product,
+     * denoted by A⨂B, is a new matrix € R^(mk).  It is the outer product of the
+     * vectors.
+     * @param a
+     * @param b
+     * @return the outer product
+     */
+    public static double[][] kroneckerProduct(double[] a, double[] b) {
+        return outerProduct(a, b);
+    }
+
 }

@@ -1704,4 +1704,95 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(revMap.get(2).contains(0));
         assertTrue(revMap.get(2).contains(3));
     }
+
+    public void testKroneckerProduct() {
+        // from Matlab documentation:
+        //https://www.mathworks.com/help/matlab/ref/kron.html?searchHighlight=kron&s_tid=srchtitle_kron_1
+
+        double[][] a = MatrixUtil.createIdentityMatrix(4);
+        double[][] b = new double[2][];
+        b[0] = new double[]{1, -1};
+        b[1] = new double[]{-1, 1};
+
+        double[][] expected = new double[8][];
+        expected[0] = new double[]{1, -1, 0, 0, 0, 0, 0, 0};
+        expected[1] = new double[]{-1, 1, 0, 0, 0, 0, 0, 0};
+        expected[2] = new double[]{0, 0, 1, -1, 0, 0, 0, 0};
+        expected[3] = new double[]{0, 0, -1, 1, 0, 0, 0, 0};
+        expected[4] = new double[]{0, 0, 0, 0, 1, -1, 0, 0};
+        expected[5] = new double[]{0, 0, 0, 0, -1, 1, 0, 0};
+        expected[6] = new double[]{0, 0, 0, 0, 0, 0, 1, -1};
+        expected[7] = new double[]{0, 0, 0, 0, 0, 0, -1, 1};
+
+        double[][] c = MatrixUtil.kroneckerProduct(a, b);
+
+        assertEquals(expected.length, c.length);
+
+        int i;
+        int j;
+        double tol = 1E-7;
+        for (i = 0; i < expected.length; ++i) {
+            assertEquals(expected[i].length, c[i].length);
+            for (j = 0; j < expected[i].length; ++j) {
+                assertTrue(Math.abs(expected[i][j] - c[i][j]) <tol);
+            }
+        }
+
+    }
+
+    public void testKroneckerProduct2() {
+        // from Matlab documentation:
+        //https://www.mathworks.com/help/matlab/ref/kron.html?searchHighlight=kron&s_tid=srchtitle_kron_1
+
+        // to replicate each item into a block, can use kronecker product:
+        // replicate matrix a into a blocks of 2x2 for each element byt mutliplying a by 1's"
+
+        double[][] a = new double[2][3];
+        a[0] = new double[]{1, 2, 3};
+        a[1] = new double[]{4, 5, 6};
+        double[][] b = new double[2][];
+        b[0] = new double[]{1, 1};
+        b[1] = new double[]{1, 1};
+
+        double[][] expected = new double[4][];
+        expected[0] = new double[]{1, 1, 2, 2, 3, 3};
+        expected[1] = new double[]{1, 1, 2, 2, 3, 3};
+        expected[2] = new double[]{4, 4, 5, 5, 6, 6};
+        expected[3] = new double[]{4, 4, 5, 5, 6, 6};
+
+        double[][] c = MatrixUtil.kroneckerProduct(a, b);
+
+        assertEquals(expected.length, c.length);
+
+        int i;
+        int j;
+        double tol = 1E-7;
+        for (i = 0; i < expected.length; ++i) {
+            assertEquals(expected[i].length, c[i].length);
+            for (j = 0; j < expected[i].length; ++j) {
+                assertTrue(Math.abs(expected[i][j] - c[i][j]) <tol);
+            }
+        }
+
+    }
+
+    public void testStack() {
+
+        double[][] a = new double[2][3];
+        a[0] = new double[]{1, 3, 5};
+        a[1] = new double[]{2, 4, 6};
+
+        double[] expected = new double[]{1, 2, 3, 4, 5, 6};
+
+        double[] c = MatrixUtil.stack(a);
+
+        assertEquals(expected.length, c.length);
+
+        int i;
+        double tol = 1E-7;
+        for (i = 0; i < expected.length; ++i) {
+            assertTrue(Math.abs(expected[i] - c[i]) <tol);
+        }
+
+    }
 }
