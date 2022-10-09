@@ -1,5 +1,6 @@
 package algorithms.misc;
 
+import algorithms.SubsetChooser;
 import algorithms.sort.CountingSort;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
@@ -1649,4 +1650,63 @@ public class MiscMath0 {
         }
         return b;
     }
+
+    /**
+     * determine whether any 3 points in X are colinear.  note
+     * that the method has not been edited for large number of points
+     * in X yet.
+     * @param X data points in format [2 X nPoints] or [3 X nPoints]
+     *          where row 0 are the 'x dimension' points,
+     *          and row 1 are the 'y dimension' points.
+     *          if row 2 is present, it is ignored as it is expected
+     *          to be the z-axis of homogenous points (= value 1) and
+     *          hence is not used.
+     * @param tol
+     * @return
+     */
+    public static boolean areColinear(double[][] X, double tol) {
+        if (X.length != 3 && X.length != 2) {
+            throw new IllegalArgumentException("X.length must be 2 or 3");
+        }
+        int ns = X[0].length;
+        int k = 3;
+        int[] selectedIndexes = new int[k];
+        long nComb = MiscMath0.computeNDivKTimesNMinusK(ns, k);
+        SubsetChooser chooser = new SubsetChooser(ns, k);
+        int c = 0;
+        while (chooser.getNextSubset(selectedIndexes) != -1) {
+            double x1 = X[0][selectedIndexes[0]];
+            double y1 = X[1][selectedIndexes[0]];
+            double x2 = X[0][selectedIndexes[1]];
+            double y2 = X[1][selectedIndexes[1]];
+            double x3 = X[0][selectedIndexes[2]];
+            double y3 = X[1][selectedIndexes[2]];
+            if (areColinear(x1, y1, x2, y2, x3, y3, tol)) {
+                return true;
+            }
+            c++;
+        }
+        return false;
+    }
+
+    /**
+     * given 3 pairs of points, determine whether they are colinear.
+     * @param tol
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static boolean areColinear(double tol, double x1, double y1, double x2, double y2,
+                                 double x3, double y3) {
+        // designating (x1,y1) the origin, so subtracting it from the other points
+        // then calculate direction using the cross product.
+        double direction = ((x2 - x1)*(y3 - y1)) - ((y2 - y1)*(x3 - x1));
+
+        return Math.abs(direction) < tol;
+    }
+
 }
