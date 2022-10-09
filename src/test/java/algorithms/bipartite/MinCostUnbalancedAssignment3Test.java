@@ -1,7 +1,11 @@
 package algorithms.bipartite;
 
+import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -9,6 +13,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
 import thirdparty.HungarianAlgorithm;
@@ -62,8 +67,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
         0  2
         */
                 
-        MinCostUnbalancedAssignment bipartite = 
-            new MinCostUnbalancedAssignment();
+        MinCostUnbalancedAssignment bipartite = new MinCostUnbalancedAssignment();
         
        TIntIntMap m = bipartite.flowAssign(g);
         
@@ -76,62 +80,89 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
     public void test1() throws Exception {
     
         log.info("test1");
-                
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+
+
         long seed = System.currentTimeMillis();
         //seed = 1466321947621L;
-        sr.setSeed(seed);
+        Random sr = new Random(seed);
         log.info("SEED=" + seed);
-        
+
+        Graph g;
+        MinCostUnbalancedAssignment bipartite = null;
+        HungarianAlgorithm ha = null;
+        int[][] m2;
+        long t0, t1;
+        TIntIntMap m;
+        int nTests = 10;//1000;
+        // store the time as double for use with statistics methods
+        TDoubleList mList;
+        TDoubleList hList;
+
         for (int size = 10; size <= 100; size *= 10) {
             for (int maxCost = 10; maxCost <= 10000; maxCost *= 10) {
-                    
-                log.info("size=" + size + " maxCost=" + maxCost);
-                
-                Graph g = getTestGraph1(size, maxCost, sr);
-       
-                long t0 = System.currentTimeMillis();
-                
-                MinCostUnbalancedAssignment bipartite = 
-                    new MinCostUnbalancedAssignment();
-                
-                TIntIntMap m = bipartite.flowAssign(g);
-                
-                long t1 = System.currentTimeMillis();
-                long tSec = (t1 - t0);
-                System.out.println(tSec + " msec for flowAssign");
 
-                
-                log.info("size=" + size + " scale=" + maxCost + 
-                    " m.size=" + m.size());
-                
-                assertEquals(size, m.size());
-                
-                for (int i = 0; i < size; ++i) {
-                    assertEquals((size - 1 - i), m.get(i));
+                mList = new TDoubleArrayList();
+                hList = new TDoubleArrayList();
+
+                for (int nt = 0; nt < nTests; ++nt) {
+                    //log.info("size=" + size + " maxCost=" + maxCost);
+
+                    g = getTestGraph1(size, maxCost, sr);
+
+                    t0 = System.nanoTime();
+
+                    bipartite = new MinCostUnbalancedAssignment();
+                    m = bipartite.flowAssign(g);
+
+                    t1 = System.nanoTime();
+                    mList.add(t1 - t0);
+
+                    //log.info("size=" + size + " scale=" + maxCost +
+                    //        " m.size=" + m.size());
+
+                    assertEquals(size, m.size());
+
+                    for (int i = 0; i < size; ++i) {
+                        assertEquals((size - 1 - i), m.get(i));
+                    }
+
+                    assertNotNull(bipartite.getFinalFlowNetwork());
+
+                    float[][] matrix = convert(g);
+
+                    t0 = System.nanoTime();
+
+                    ha = new HungarianAlgorithm();
+                    m2 = ha.computeAssignments(matrix);
+
+                    t1 = System.nanoTime();
+
+                    hList.add(t1 - t0);
+
+                    for (int i = 0; i < size; ++i) {
+                        int idx1 = m2[i][0];
+                        int idx2 = m2[i][1];
+                        assertEquals((size - 1 - idx1), idx2);
+                    }
                 }
-                
-                assertNotNull(bipartite.getFinalFlowNetwork());
-            
-                float[][] matrix = convert(g);
-                
-                long t2 = System.currentTimeMillis();
-                
-                HungarianAlgorithm ha = new HungarianAlgorithm();
-                int[][] m2 = ha.computeAssignments(matrix);
-                
-                long t3 = System.currentTimeMillis();
-                tSec = (t3 - t2);
-                System.out.println(tSec + " msec for hungarian");
-                
-                log.info("size=" + size + " scale=" + maxCost + 
-                    " m.size=" + m.size());
-                
-                for (int i = 0; i < size; ++i) {
-                    int idx1 = m2[i][0];
-                    int idx2 = m2[i][1];
-                    assertEquals((size - 1 - idx1), idx2);
+                double[] miM = MiscMath0.calcMedianAndIQR(mList.toArray());
+                double[] miH = MiscMath0.calcMedianAndIQR(hList.toArray());
+                // m = cost.length * cost[0].length;
+                // n = Math.min(cost.length, cost[0].length)
+                // c = constant >= 1
+                // minunbalanced runtime = O(m * sqrt(n) * log(n * C))
+                System.out.printf("min unbalanced median=%.3e iqr=%.3e\n", miM[0], miM[1]);
+                System.out.printf("hungarian      median=%.3e iqr=%.3e\n", miH[0], miH[1]);
+
+                int c = 0;
+                double mc = 0;
+                if (bipartite != null) {
+                    c = (bipartite.getFinalFlowNetwork().getMinC() +bipartite.getFinalFlowNetwork().getMaxC())/2;
+                    mc = size*size*Math.sqrt(size)*Math.log(size*c)/Math.log(2);
                 }
+
+                System.out.printf("n=%d, n^2=%.0e, n^3=%.0e, n^4=%.0e, O(m * sqrt(n) * log(n * C))=%.0e\n",
+                        size, Math.pow(size, 2), Math.pow(size, 3), Math.pow(size, 4), mc);
             }
         }
     }
@@ -318,7 +349,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
     }
     
     public static Graph getTestGraph1(int size, int maxCost,
-        SecureRandom sr) throws NoSuchAlgorithmException {
+        Random sr) throws NoSuchAlgorithmException {
         
         /*
         - graph of size n for both sets
@@ -384,7 +415,6 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
     }
     
     public static float[][] convert(Graph g) {
-        
         int n1 = g.getNLeft();
         int n2 = g.getNRight();
         
