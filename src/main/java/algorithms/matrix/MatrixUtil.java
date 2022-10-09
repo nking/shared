@@ -4522,6 +4522,18 @@ public class MatrixUtil {
         }
         return c;
     }
+
+    public static float[][] convertToFloat(int[][] a) {
+        float[][] c = new float[a.length][];
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            c[i] = new float[a[0].length];
+            for (j = 0; j < a[0].length; ++j) {
+                c[i][j] = a[i][j];
+            }
+        }
+        return c;
+    }
     
     /**
      * create a permutation matrix given the vector of permuted element indexes.
