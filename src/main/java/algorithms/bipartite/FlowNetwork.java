@@ -437,28 +437,28 @@ public class FlowNetwork {
         //Should this be for the integral flow only?
         double flow = calcTotalFlow();
         
-        log.info("assert I1: flow=" + flow + " s=" + s);
+        log.fine("assert I1: flow=" + flow + " s=" + s);
         
         return (Math.abs(flow - s) < 1);
     }
     
     boolean printFlowValueIncludingSrcSnk(int s) {
         
-        log.info("s=" + s);
+        log.fine("s=" + s);
         
         double flow = 0;
         
         flow += calcTotalFlow();
         
-        log.info("bipartite flow sum=" + flow);
+        log.fine("bipartite flow sum=" + flow);
         
         flow += calcTotalSourceFlow();
         
-        log.info("bipartite + source flow sum=" + flow);
+        log.fine("bipartite + source flow sum=" + flow);
         
         flow += calcTotalSinkFlow();
         
-        log.info("bipartite + source + sink flow sum=" + flow);
+        log.fine("bipartite + source + sink flow sum=" + flow);
     
         return true;
     }
@@ -489,7 +489,7 @@ public class FlowNetwork {
         
         flow += calcTotalFlow();
         
-        log.info("bipartite flow sum=" + flow);
+        log.fine("bipartite flow sum=" + flow);
         
         // nSurplus is the number of nodes, excluding the
         // sink where the flow into the node is larger
@@ -503,7 +503,7 @@ public class FlowNetwork {
         
         int nSurplus = surplus.size();
         
-        log.info("s=" + nMatchingsHK + " h=" + nSurplus);
+        log.fine("s=" + nMatchingsHK + " h=" + nSurplus);
                 
         return (Math.abs(flow - (nMatchingsHK - nSurplus)) < 1);
     }
@@ -523,7 +523,7 @@ public class FlowNetwork {
             sb.append(Integer.toString(s)).append(", ");
         }
         sb.append(")");
-        log.info(sb.toString());
+        log.fine(sb.toString());
         
         sb = new StringBuilder("deficit=(");
         iter = deficit.iterator();
@@ -532,7 +532,7 @@ public class FlowNetwork {
             sb.append(Integer.toString(d)).append(", ");
         }
         sb.append(")");
-        log.info(sb.toString());
+        log.fine(sb.toString());
         
         return true;
     }
@@ -1186,7 +1186,7 @@ public class FlowNetwork {
                 float cp = calcNetCost(p);
                 if (Math.abs(unitFlow - 1) < 0.01f) {
                     // saturated are matched arcs
-                    log.info("saturated bipartite arc from " +
+                    log.fine("saturated bipartite arc from " +
                         idx1 + " to " + idx2);
                 }
             }
@@ -1214,7 +1214,7 @@ public class FlowNetwork {
                     idx1, idx2, cp, unitFlow));
             }
         }
-        log.info(sb.toString());
+        log.fine(sb.toString());
 
         sb = new StringBuilder();
 
@@ -1227,7 +1227,7 @@ public class FlowNetwork {
             sb.append(String.format("source to %d cp=%.2f f=%.2f\n",
                 idx1, cp, unitFlow));
         }
-        log.info(sb.toString());
+        log.fine(sb.toString());
 
         sb = new StringBuilder();
         iter2 = sinkForwardArcs.iterator();
@@ -1238,7 +1238,7 @@ public class FlowNetwork {
             sb.append(String.format("%d to sink cp=%.2f f=%.2f\n",
                 idx1, cp, unitFlow));
         }
-        log.info(sb.toString());
+        log.fine(sb.toString());
     }
 
     public TIntIntMap extractMatches() {

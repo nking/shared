@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  * graph
  * (it is not a maximum cardinality, min-cost matching).
  * (To preprocess the data for larger cardinality, one 
- * might want ro consider pre-matching those edges
+ * might want to consider pre-matching those edges
  * that must be matched inspite of cost because no other
  * edges are connected to certain nodes else would be unmatched.
  * might consider the very fast state management
@@ -78,9 +78,7 @@ import java.util.logging.Logger;
  * of NetworkFlow passed to methods should only be used by
  * that method and thread at the given time.
  * 
- * Also note that the class needs an implementation of
- * "multi-level buckets" in the minHeap used in buildForest2
- * and the graphs should be consolidated and refactored
+ * Also note that the graphs should be consolidated and refactored
  * to use primitives where possible.  The current
  * runtime is longer than the Hungarian implementation 
  * in this project.
@@ -270,7 +268,7 @@ public class MinCostUnbalancedAssignment {
      * values greater than zero.  Also note that the graph g has to be constructed to have
        node numbers 0 up to the numbers of left and right nodes defined in the Graph g.
        TODO: create a static utility method in this class to rewrite edge weight vertex numbers
-       for that format if needed and another static method to tranform the  vertex numbers back
+       for that format if needed and another static method to transform the  vertex numbers back
        to the orginal reference frame.
      * @return map of indexes of left nodes matched to indexes of
      * right nodes
@@ -303,7 +301,7 @@ public class MinCostUnbalancedAssignment {
         FlowNetwork gFlow = new FlowNetwork(g, m);
         //assert(gFlow.printFlowValueIncludingSrcSnk(m.size()));
         
-        log.info("init FlowNetwork:");
+        log.fine("init FlowNetwork:");
         //gFlow.printNetCosts();
         
         //TODO: estimate of eps may need to be revised
@@ -371,7 +369,7 @@ public class MinCostUnbalancedAssignment {
                 
         int nIterR = 0;
         
-        log.info("eps=" + eps + " epsLarge=" + epsLarge
+        log.fine("eps=" + eps + " epsLarge=" + epsLarge
             + " rIter=" + rIter 
             + " minC=" + gFlow.getMinC() + " maxC=" + gFlow.getMaxC() 
             + " eps_down=" + eps_down);
@@ -382,7 +380,7 @@ public class MinCostUnbalancedAssignment {
         
         while ((epsLarge > eps_down) && (nIterR < 2*rIter)) {
             
-            log.info("nIterR=" + nIterR + " s=" + s + " eps=" + eps
+            log.fine("nIterR=" + nIterR + " s=" + s + " eps=" + eps
                 + " epsLarge=" + epsLarge);
             
             // pg 44, assertions I1, I2, I3, and I4
@@ -453,7 +451,7 @@ public class MinCostUnbalancedAssignment {
                 
         gFlow.raisePricesUntilEpsProper(epsLarge, q);
 
-        //log.info("after raise prices, w/ eps=" + eps);
+        //log.fine("after raise prices, w/ eps=" + eps);
         //gFlow.printNetCosts();
         //assert(gFlow.printFlowValueIncludingSrcSnk(s));        
         
@@ -584,7 +582,7 @@ public class MinCostUnbalancedAssignment {
             assert(gFlow.integralBipartiteFlowIsEpsProper(eps));  
             assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));
                         
-            //log.info("after augment flow:");
+            //log.fine("after augment flow:");
             //gFlow.printSaturatedLinks();
 
             h = surplus.size();
@@ -1148,7 +1146,7 @@ Matchings in G are integral flows in N_G
    
     private void debug(List<LinkedList<PathNode>> cPaths) {
 
-        log.info("cPaths.size=" + cPaths.size());
+        log.fine("cPaths.size=" + cPaths.size());
         
         for (int i = 0; i < cPaths.size(); ++i) {
             StringBuilder sb = new StringBuilder("i=");
@@ -1157,7 +1155,7 @@ Matchings in G are integral flows in N_G
             for (PathNode node : path) {
                 sb.append(node.toString()).append(" ");
             }
-            log.info(sb.toString());
+            log.fine(sb.toString());
         }
     }
 
@@ -1177,7 +1175,7 @@ Matchings in G are integral flows in N_G
                 int n2 = path.size();
                 for (int ii = 0; ii < n2; ++ii) {
                     PathNode node1 = path.get(ii);
-                    log.info("forest2[" + key + "] tree branch[" 
+                    log.fine("forest2[" + key + "] tree branch[" 
                         + j + "] node[" + ii + "]=" + node1.toString());
                 }                    
                 j++;
@@ -1480,7 +1478,7 @@ Matchings in G are integral flows in N_G
                                 
                                 if (l1 < 0) {
                                     //X=N1  Y=N2
-                                    log.info("forest at time of error:");
+                                    log.fine("forest at time of error:");
                                     debug(forest);
                                     throw new IllegalStateException(
                                         "for saturated link X=" + node1.index + " to Y="
@@ -1496,7 +1494,7 @@ Matchings in G are integral flows in N_G
                                 
                                 if (l2 < 0) {
                                     //X=N1  Y=N2
-                                    log.info("forest at time of error:");
+                                    log.fine("forest at time of error:");
                                     debug(forest);
                                     throw new IllegalStateException(
                                         "for idle link X=" + node1.index + " to Y="
@@ -1518,7 +1516,7 @@ Matchings in G are integral flows in N_G
                             
                                 if (l2 < 0) {
                                     //X=N1  N2=SOURCE
-                                    log.info("forest at time of error:");
+                                    log.fine("forest at time of error:");
                                     debug(forest);
                                     throw new IllegalStateException(
                                         "for saturated link source=" + node2.index 
@@ -1534,7 +1532,7 @@ Matchings in G are integral flows in N_G
                                 
                                 if (l1 < 0) {
                                     //X=N1  N2=SOURCE
-                                    log.info("forest at time of error:");
+                                    log.fine("forest at time of error:");
                                     debug(forest);
                                     throw new IllegalStateException(
                                         "for idle link source=" + node2.index + " to X="
@@ -1558,7 +1556,7 @@ Matchings in G are integral flows in N_G
                             
                             if (l1 < 0) {
                                 //N1=SOURCE  N2=X
-                                log.info("forest at time of error:");
+                                log.fine("forest at time of error:");
                                 debug(forest);
                                 throw new IllegalStateException(
                                     "for saturated link source=" + node1.index + " ro X="
@@ -1573,7 +1571,7 @@ Matchings in G are integral flows in N_G
                             
                             if (l2 < 0) {
                                 //N1=SOURCE  N2=X
-                                log.info("forest at time of error:");
+                                log.fine("forest at time of error:");
                                 debug(forest);
                                 throw new IllegalStateException(
                                     "for idle link source=" + node1.index + " ro X="
@@ -1595,7 +1593,7 @@ Matchings in G are integral flows in N_G
                             
                             if (l2 < 0) {
                                 //N2=Y  N1=SINK
-                                log.info("forest at time of error:");
+                                log.fine("forest at time of error:");
                                 debug(forest);
                                 throw new IllegalStateException(
                                     "for saturated link Y=" + node2.index 
@@ -1611,7 +1609,7 @@ Matchings in G are integral flows in N_G
                             
                             if (l1 < 0) {
                                 //N2=Y  N1=SINK
-                                log.info("forest at time of error:");
+                                log.fine("forest at time of error:");
                                 debug(forest);
                                 throw new IllegalStateException(
                                     "for saturated link Y=" + node2.index 
@@ -1901,7 +1899,7 @@ Matchings in G are integral flows in N_G
                 node.index);
             sb.append(str).append(", ");
         }
-        log.info(sb.toString());
+        log.fine(sb.toString());
     }
     
     private void validateGraph(Graph g) {
@@ -1976,7 +1974,7 @@ Matchings in G are integral flows in N_G
             }
             sb.append("]\n");
         }
-        log.info(sb.toString());
+        log.fine(sb.toString());
     }
 
     private void raisePricesForMaximalSet(FlowNetwork gFlow, 
@@ -2087,4 +2085,21 @@ Matchings in G are integral flows in N_G
         return map;
     }
 
+    public static Graph convert(int[][] cost) {
+
+        int n1 = cost.length;
+        int n2 = cost[0].length;
+
+        TObjectIntMap<PairInt> weights = new TObjectIntHashMap<PairInt>();
+
+        for (int i = 0; i < n1; ++i) {
+            for (int j = 0; j < n2; ++j) {
+                weights.put(new PairInt(i, j), cost[i][j]);
+            }
+        }
+
+        Graph g = new Graph(n1, n2, weights, true);
+
+        return g;
+    }
 }

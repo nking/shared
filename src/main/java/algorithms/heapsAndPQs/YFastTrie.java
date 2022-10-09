@@ -131,8 +131,8 @@ YFastTrie
 
         nBins = (int)Math.ceil((double)maxC/(double)binSz);
         
-        System.out.println("nBins=" + nBins + "  rt of ops=" +
-            (Math.log(binSz)/Math.log(2)));
+        //System.out.println("nBins=" + nBins + "  rt of ops=" +
+        //    (Math.log(binSz)/Math.log(2)));
         
         rbs = new TIntObjectHashMap<TreeMap<Integer, Integer>>();
          
@@ -163,8 +163,8 @@ YFastTrie
         
         nBins = (int)Math.ceil((double)maxC/(double)binSz);
                 
-        System.out.println("nBins=" + nBins + "  rt of ops=" +
-            (Math.log(binSz)/Math.log(2)));
+        //System.out.println("nBins=" + nBins + "  rt of ops=" +
+        //    (Math.log(binSz)/Math.log(2)));
         
         rbs = new TIntObjectHashMap<TreeMap<Integer, Integer>>();
         

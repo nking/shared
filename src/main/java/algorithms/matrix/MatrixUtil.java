@@ -2323,8 +2323,7 @@ public class MatrixUtil {
      * uses the first column as the cofactors.
      *
      * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
-     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 
-        + 135 + 2 = 148
+     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 + 135 + 2 = 148
      *         | 2   1  5 |
      * <pre>
      * Note that det(a) = 0 shows that matrix a is a singular matrix and is not
@@ -4512,6 +4511,17 @@ public class MatrixUtil {
         }
         return c;
     }
+    public static double[][] convertToDouble(float[][] a) {
+        double[][] c = new double[a.length][];
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            c[i] = new double[a[0].length];
+            for (j = 0; j < a[0].length; ++j) {
+                c[i][j] = a[i][j];
+            }
+        }
+        return c;
+    }
     
     /**
      * create a permutation matrix given the vector of permuted element indexes.
@@ -4607,6 +4617,63 @@ public class MatrixUtil {
      */
     public static double[][] kroneckerProduct(double[] a, double[] b) {
         return outerProduct(a, b);
+    }
+
+    /**
+     * return the nullspace of matrix A using SVD.  This method is more accurate, but slower than
+     * using QR decomposition.
+     * @param a matrix of dimensions [mXn]
+     * @param tol tolerance as the equivalent to 0 which is approximately machine precision.
+     * @return nullspace of matrix A, transposed to row vectors for easier use.
+     */
+    public static double[][] nullSpaceUsingSVD(double[][] a, double tol) throws NotConvergedException {
+        SVDProducts svd = MatrixUtil.performSVD(a);
+        int rank = 0;
+        int i;
+        for (i = 0; i < svd.s.length; ++i) {
+            if (svd.s[i] > tol) {
+                rank++;
+            }
+        }
+        int n = a[0].length;
+        // the last n-rank columns of V hold the nullspace
+        double[][] nullspace = new double[n-rank][];
+        int c;
+        for (i = rank, c = 0; i < n; ++i, ++c) {
+            nullspace[c] = Arrays.copyOf(svd.vT[i], svd.vT[i].length);
+        }
+        return nullspace;
+    }
+
+    /**
+     * return the nullspace of matrix A using QR decomposition.
+     * This method is less accurate, but faster than using SVD decomposition.
+     * @param a matrix of dimensions [mXn] where m must be <= n.
+     * @param tol tolerance as the equivalent to 0 which is approximately machine precision.
+     * @return nullspace of matrix A transposed to row vectors for easier use.
+     */
+    public static double[][] nullSpaceUsingQR(double[][] a, double tol) throws NotConvergedException {
+
+        QR qr = QR.factorize(new DenseMatrix(a));
+        UpperTriangDenseMatrix r = qr.getR();
+        DenseMatrix q = qr.getQ();
+        int rank = 0;
+        int i;
+        // r is square so can use the number of rows
+        for (i = 0; i < r.numRows(); ++i) {
+            if (r.get(i, i) > tol) {
+                rank++;
+            }
+        }
+        int n = a[0].length;
+        double[][] qT = MatrixUtil.transpose(Matrices.getArray(q));
+        // the last n-rank columns of q hold the nullspace
+        double[][] nullspace = new double[n-rank][];
+        int c;
+        for (i = rank, c = 0; i < n; ++i, ++c) {
+            nullspace[c] = Arrays.copyOf(qT[i], qT[i].length);
+        }
+        return nullspace;
     }
 
 }
