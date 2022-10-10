@@ -274,7 +274,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L274" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L277" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L277" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L278">            root.color = RED;</span>
 
 <span class="fc" id="L280">        root = deleteMin(root);</span>
@@ -287,7 +287,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="fc bfc" id="L287" title="All 2 branches covered.">        if (h.left == null)</span>
 <span class="fc" id="L288">            return null;</span>
 
-<span class="pc bpc" id="L290" title="1 of 4 branches missed.">        if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
+<span class="fc bfc" id="L290" title="All 4 branches covered.">        if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
 <span class="fc" id="L291">            h = moveRedLeft(h);</span>
 
 <span class="fc" id="L293">        h.left = deleteMin(h.left);</span>
@@ -339,7 +339,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L339" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L342" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L342" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L343">            root.color = RED;</span>
 
 <span class="fc" id="L345">        root = delete(root, key);</span>
@@ -441,9 +441,9 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         // assert (h != null);
         // assert isRed(h) &amp;&amp; !isRed(h.right) &amp;&amp; !isRed(h.right.left);
 <span class="fc" id="L443">        flipColors(h);</span>
-<span class="pc bpc" id="L444" title="1 of 2 branches missed.">        if (isRed(h.left.left)) { </span>
-<span class="nc" id="L445">            h = rotateRight(h);</span>
-<span class="nc" id="L446">            flipColors(h);</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        if (isRed(h.left.left)) { </span>
+<span class="fc" id="L445">            h = rotateRight(h);</span>
+<span class="fc" id="L446">            flipColors(h);</span>
         }
 <span class="fc" id="L448">        return h;</span>
     }

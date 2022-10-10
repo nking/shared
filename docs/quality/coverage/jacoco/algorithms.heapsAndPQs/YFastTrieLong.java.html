@@ -519,8 +519,8 @@ YFastTrie
         //    items in it.
                 
 <span class="fc" id="L521">        Long prev = xft.predecessor(Long.valueOf(node));</span>
-<span class="pc bpc" id="L522" title="1 of 2 branches missed.">        if (prev == null) {</span>
-<span class="nc" id="L523">            return -1;</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">        if (prev == null) {</span>
+<span class="fc" id="L523">            return -1;</span>
         }
         
 <span class="fc" id="L526">        long prev0Index = prev.longValue()/binSz;</span>

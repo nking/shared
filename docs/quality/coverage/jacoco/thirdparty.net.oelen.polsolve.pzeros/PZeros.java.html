@@ -620,10 +620,10 @@ public strictfp class PZeros {
     
     
     private static int transformStatus(int status, boolean[] err) {
-<span class="pc bpc" id="L623" title="1 of 4 branches missed.">        if (status == 0 || status == -4) {</span>
+<span class="pc bpc" id="L623" title="3 of 4 branches missed.">        if (status == 0 || status == -4) {</span>
 <span class="fc" id="L624">            status = 0;</span>
 <span class="fc bfc" id="L625" title="All 2 branches covered.">            for (boolean e : err) {</span>
-<span class="fc bfc" id="L626" title="All 2 branches covered.">                if (!e) status++;</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">                if (!e) status++;</span>
             }
         }
 <span class="fc" id="L629">        return status;</span>

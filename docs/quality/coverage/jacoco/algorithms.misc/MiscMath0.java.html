@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Arrays;
 import algorithms.sort.MiscSorter;
-import gnu.trove.list.array.TIntArrayList;
+
 import java.math.RoundingMode;
 
 /**
@@ -1652,8 +1652,8 @@ import java.math.RoundingMode;
     }
 
     /**
-     * determine whether any 3 points in X are colinear.  note
-     * that the method has not been edited for large number of points
+     * determine whether any 3 points in X are colinear.
+     * note that the method has not been edited for large number of points
      * in X yet.
      * @param X data points in format [2 X nPoints] or [3 X nPoints]
      *          where row 0 are the 'x dimension' points,
@@ -1665,28 +1665,28 @@ import java.math.RoundingMode;
      * @return
      */
     public static boolean areColinear(double[][] X, double tol) {
-<span class="nc bnc" id="L1668" title="All 4 branches missed.">        if (X.length != 3 &amp;&amp; X.length != 2) {</span>
+<span class="pc bpc" id="L1668" title="3 of 4 branches missed.">        if (X.length != 3 &amp;&amp; X.length != 2) {</span>
 <span class="nc" id="L1669">            throw new IllegalArgumentException(&quot;X.length must be 2 or 3&quot;);</span>
         }
-<span class="nc" id="L1671">        int ns = X[0].length;</span>
-<span class="nc" id="L1672">        int k = 3;</span>
-<span class="nc" id="L1673">        int[] selectedIndexes = new int[k];</span>
-<span class="nc" id="L1674">        long nComb = MiscMath0.computeNDivKTimesNMinusK(ns, k);</span>
-<span class="nc" id="L1675">        SubsetChooser chooser = new SubsetChooser(ns, k);</span>
-<span class="nc" id="L1676">        int c = 0;</span>
-<span class="nc bnc" id="L1677" title="All 2 branches missed.">        while (chooser.getNextSubset(selectedIndexes) != -1) {</span>
-<span class="nc" id="L1678">            double x1 = X[0][selectedIndexes[0]];</span>
-<span class="nc" id="L1679">            double y1 = X[1][selectedIndexes[0]];</span>
-<span class="nc" id="L1680">            double x2 = X[0][selectedIndexes[1]];</span>
-<span class="nc" id="L1681">            double y2 = X[1][selectedIndexes[1]];</span>
-<span class="nc" id="L1682">            double x3 = X[0][selectedIndexes[2]];</span>
-<span class="nc" id="L1683">            double y3 = X[1][selectedIndexes[2]];</span>
-<span class="nc bnc" id="L1684" title="All 2 branches missed.">            if (areColinear(x1, y1, x2, y2, x3, y3, tol)) {</span>
-<span class="nc" id="L1685">                return true;</span>
+<span class="fc" id="L1671">        int ns = X[0].length;</span>
+<span class="fc" id="L1672">        int k = 3;</span>
+<span class="fc" id="L1673">        int[] selectedIndexes = new int[k];</span>
+<span class="fc" id="L1674">        long nComb = MiscMath0.computeNDivKTimesNMinusK(ns, k);</span>
+<span class="fc" id="L1675">        SubsetChooser chooser = new SubsetChooser(ns, k);</span>
+<span class="fc" id="L1676">        int c = 0;</span>
+<span class="fc bfc" id="L1677" title="All 2 branches covered.">        while (chooser.getNextSubset(selectedIndexes) != -1) {</span>
+<span class="fc" id="L1678">            double x1 = X[0][selectedIndexes[0]];</span>
+<span class="fc" id="L1679">            double y1 = X[1][selectedIndexes[0]];</span>
+<span class="fc" id="L1680">            double x2 = X[0][selectedIndexes[1]];</span>
+<span class="fc" id="L1681">            double y2 = X[1][selectedIndexes[1]];</span>
+<span class="fc" id="L1682">            double x3 = X[0][selectedIndexes[2]];</span>
+<span class="fc" id="L1683">            double y3 = X[1][selectedIndexes[2]];</span>
+<span class="fc bfc" id="L1684" title="All 2 branches covered.">            if (areColinear(x1, y1, x2, y2, x3, y3, tol)) {</span>
+<span class="fc" id="L1685">                return true;</span>
             }
-<span class="nc" id="L1687">            c++;</span>
-<span class="nc" id="L1688">        }</span>
-<span class="nc" id="L1689">        return false;</span>
+<span class="fc" id="L1687">            c++;</span>
+<span class="fc" id="L1688">        }</span>
+<span class="fc" id="L1689">        return false;</span>
     }
 
     /**
@@ -1700,13 +1700,18 @@ import java.math.RoundingMode;
      * @param y3
      * @return
      */
-    public static boolean areColinear(double tol, double x1, double y1, double x2, double y2,
-                                 double x3, double y3) {
+    public static boolean areColinear(double x1, double y1, double x2, double y2,
+                                      double x3, double y3, double tol) {
         // designating (x1,y1) the origin, so subtracting it from the other points
         // then calculate direction using the cross product.
-<span class="nc" id="L1707">        double direction = ((x2 - x1)*(y3 - y1)) - ((y2 - y1)*(x3 - x1));</span>
+<span class="fc" id="L1707">        x2 -= x1;</span>
+<span class="fc" id="L1708">        x3 -= x1;</span>
+<span class="fc" id="L1709">        y2 -= y1;</span>
+<span class="fc" id="L1710">        y3 -= y1;</span>
+<span class="fc" id="L1711">        double direction = (x2*y3) - (y2*x3);</span>
+        // p1 . [p2 × p3] if = 0, they are coplanar
 
-<span class="nc bnc" id="L1709" title="All 2 branches missed.">        return Math.abs(direction) &lt; tol;</span>
+<span class="fc bfc" id="L1714" title="All 2 branches covered.">        return Math.abs(direction) &lt; tol;</span>
     }
 
 }

@@ -784,7 +784,7 @@ import thirdparty.net.oelen.polarith.Complex;
         // Beware: The vector err[] is now used as a flags vector
         // again[] in order to determine whether we need to iterate
         // again or not.
-<span class="fc bfc" id="L787" title="All 2 branches covered.">        for (; iter[0] &lt; nitmax; iter[0]++) {</span>
+<span class="pc bpc" id="L787" title="1 of 2 branches missed.">        for (; iter[0] &lt; nitmax; iter[0]++) {</span>
 <span class="fc bfc" id="L788" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
 <span class="fc bfc" id="L789" title="All 2 branches covered.">                if (err[i]) {</span>
 <span class="fc" id="L790">                    Complex corr = newton(n, poly, apoly, apolyr, root[i], small, eps, radius, err, i);</span>
@@ -805,7 +805,7 @@ import thirdparty.net.oelen.polarith.Complex;
             }
         }
 
-<span class="fc" id="L808">        return -4;</span>
+<span class="nc" id="L808">        return -4;</span>
     }
 
     
