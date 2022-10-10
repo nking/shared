@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Arrays;
 import algorithms.sort.MiscSorter;
-import gnu.trove.list.array.TIntArrayList;
+
 import java.math.RoundingMode;
 
 /**
@@ -1652,8 +1652,8 @@ public class MiscMath0 {
     }
 
     /**
-     * determine whether any 3 points in X are colinear.  note
-     * that the method has not been edited for large number of points
+     * determine whether any 3 points in X are colinear.
+     * note that the method has not been edited for large number of points
      * in X yet.
      * @param X data points in format [2 X nPoints] or [3 X nPoints]
      *          where row 0 are the 'x dimension' points,
@@ -1700,11 +1700,16 @@ public class MiscMath0 {
      * @param y3
      * @return
      */
-    public static boolean areColinear(double tol, double x1, double y1, double x2, double y2,
-                                 double x3, double y3) {
+    public static boolean areColinear(double x1, double y1, double x2, double y2,
+                                      double x3, double y3, double tol) {
         // designating (x1,y1) the origin, so subtracting it from the other points
         // then calculate direction using the cross product.
-        double direction = ((x2 - x1)*(y3 - y1)) - ((y2 - y1)*(x3 - x1));
+        x2 -= x1;
+        x3 -= x1;
+        y2 -= y1;
+        y3 -= y1;
+        double direction = (x2*y3) - (y2*x3);
+        // p1 . [p2 × p3] if = 0, they are coplanar
 
         return Math.abs(direction) < tol;
     }

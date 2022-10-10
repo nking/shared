@@ -797,4 +797,51 @@ public class MiscMath0Test extends TestCase {
             assertTrue(Math.abs(expectedInliers[i] - inliers[i]) < tol);
         }
     }
+
+    public void testAreColinear() {
+
+        //note that the z-axis is ignored.
+
+        double s0 = 2.;
+        double s2 = 3.;
+        // these columns are perpendicular to one another, so not colinear
+        double[][] x = new double[3][3];
+        x[0] = new double[]{s0*1, 0, 0};
+        x[1] = new double[]{0, 1, 0};
+        x[2] = new double[]{0, 0, s2*1};
+
+        boolean a = MiscMath0.areColinear(x, 1E-6);
+        assertFalse(a);
+
+        // make 2 columns parallel.
+        x = new double[3][4];
+        x[0] = new double[]{s0*1, 0,    0, 0};
+        x[1] = new double[]{0,    1,    0, 0};
+        x[2] = new double[]{0,    0, s2*1, 1};
+
+        a = MiscMath0.areColinear(x, 1E-6);
+        assertTrue(a);
+
+        // make 3 columns parallel.  they should be colinear
+        x = new double[3][4];
+        x[0] = new double[]{s0*1, 0,    0, 0, 0};
+        x[1] = new double[]{0,    1,    0, s0*1, s2*1};
+        x[2] = new double[]{0,    0, s2*1, 0, 0};
+        a = MiscMath0.areColinear(x, 1E-6);
+        assertTrue(a);
+
+        /*
+        -5.144e-02, 1.089e+00, 1.685e+00, 1.235e+00, 9.944e-01, 1.311e+00, 7.789e-01
+        1.026e+00, 1.026e+00, 8.093e-01, -6.703e-01, -7.966e-01, -2.372e-01, 3.402e-01
+        1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00
+
+        1.235e+00, 9.944e-01, 1.311e+00, 1.102e+00, 9.437e-01, 7.789e-01, 7.092e-01
+        -6.703e-01, -7.966e-01, -2.372e-01, 8.454e-01, -4.718e-01, 3.402e-01, -1.230e+00
+        1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00
+
+        8.930e-01, -5.144e-02, 1.089e+00, 1.235e+00, 1.311e+00, 7.789e-01, 7.092e-01
+        7.372e-01, 1.026e+00, 1.026e+00, -6.703e-01, -8.327e-01, 3.402e-01, -1.230e+00
+        1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00
+         */
+    }
 }
