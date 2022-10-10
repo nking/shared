@@ -761,22 +761,22 @@ public class LinearProgramming {
         int j, i;
 <span class="fc" id="L762">        int nn = 0;// number of missing non-negative constraints</span>
 <span class="fc bfc" id="L763" title="All 2 branches covered.">        for (j = 0; j &lt; nonnegativityConstraints.length; ++j) {</span>
-<span class="pc bpc" id="L764" title="1 of 2 branches missed.">            if (!nonnegativityConstraints[j]) {</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">            if (!nonnegativityConstraints[j]) {</span>
                 //replace the x variable by 2 non-negative variables
                 
                 //handle c by appending a new variable at the end of the constraint with - coefficient of current
-<span class="nc" id="L768">                c2.add(-c[j]);</span>
+<span class="fc" id="L768">                c2.add(-c[j]);</span>
                 
                 //handle the expansion in each constraint (row of a)
-<span class="nc bnc" id="L771" title="All 2 branches missed.">                for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc bnc" id="L772" title="All 2 branches missed.">                    if (Math.abs(a[i][j]) &gt; eps) {// x_j is not 0 for this constraint, so replace it with 2</span>
-<span class="nc" id="L773">                        a2.get(i).add(-a[i][j]);</span>
+<span class="fc bfc" id="L771" title="All 2 branches covered.">                for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="pc bpc" id="L772" title="1 of 2 branches missed.">                    if (Math.abs(a[i][j]) &gt; eps) {// x_j is not 0 for this constraint, so replace it with 2</span>
+<span class="fc" id="L773">                        a2.get(i).add(-a[i][j]);</span>
                     } else {
                         // add a 0 for the new variable
 <span class="nc" id="L776">                        a2.get(i).add(0);</span>
                     }
                 }
-<span class="nc" id="L779">                nn++;</span>
+<span class="fc" id="L779">                nn++;</span>
             }
         }
 <span class="pc bnc" id="L782" title="All 2 branches missed.">        assert(a2.size() == a.length);</span>
@@ -792,7 +792,7 @@ public class LinearProgramming {
         // handle the constraints: .eq. and .geq.
         TDoubleList aRow, aRow2;
 <span class="fc bfc" id="L794" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="pc bpc" id="L795" title="1 of 3 branches missed.">            switch (constraintComparisons[i]) {</span>
+<span class="fc bfc" id="L795" title="All 3 branches covered.">            switch (constraintComparisons[i]) {</span>
                 case -1: {
                     // an .leq. constraint is in standard form
 <span class="fc" id="L798">                    break;</span>
@@ -810,13 +810,13 @@ public class LinearProgramming {
                     //convert equalities to 2 .leq. constraints
                     // the first conversion uses the same coefficients in a2[i] and b[i] so no need to change.
                     // the second conversion uses -1 times the coefficients in a2[i] and b[i] and gets inserted at end of both
-<span class="nc" id="L813">                    aRow = a2.get(i);</span>
-<span class="nc" id="L814">                    aRow2 = new TDoubleArrayList(aRow.size());</span>
-<span class="nc bnc" id="L815" title="All 2 branches missed.">                    for (j = 0; j &lt; aRow.size(); ++j) {</span>
-<span class="nc" id="L816">                        aRow2.add(-1.*aRow.get(j));</span>
+<span class="fc" id="L813">                    aRow = a2.get(i);</span>
+<span class="fc" id="L814">                    aRow2 = new TDoubleArrayList(aRow.size());</span>
+<span class="fc bfc" id="L815" title="All 2 branches covered.">                    for (j = 0; j &lt; aRow.size(); ++j) {</span>
+<span class="fc" id="L816">                        aRow2.add(-1.*aRow.get(j));</span>
                     }
-<span class="nc" id="L818">                    a2.add(aRow2);</span>
-<span class="nc" id="L819">                    b2.add(-1.*b2.get(i));</span>
+<span class="fc" id="L818">                    a2.add(aRow2);</span>
+<span class="fc" id="L819">                    b2.add(-1.*b2.get(i));</span>
                     break;
                 }
             }

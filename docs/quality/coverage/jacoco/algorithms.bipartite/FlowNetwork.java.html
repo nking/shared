@@ -437,28 +437,28 @@ import java.util.logging.Logger;
         //Should this be for the integral flow only?
 <span class="nc" id="L438">        double flow = calcTotalFlow();</span>
         
-<span class="nc" id="L440">        log.info(&quot;assert I1: flow=&quot; + flow + &quot; s=&quot; + s);</span>
+<span class="nc" id="L440">        log.fine(&quot;assert I1: flow=&quot; + flow + &quot; s=&quot; + s);</span>
         
 <span class="nc bnc" id="L442" title="All 2 branches missed.">        return (Math.abs(flow - s) &lt; 1);</span>
     }
     
     boolean printFlowValueIncludingSrcSnk(int s) {
         
-<span class="nc" id="L447">        log.info(&quot;s=&quot; + s);</span>
+<span class="nc" id="L447">        log.fine(&quot;s=&quot; + s);</span>
         
 <span class="nc" id="L449">        double flow = 0;</span>
         
 <span class="nc" id="L451">        flow += calcTotalFlow();</span>
         
-<span class="nc" id="L453">        log.info(&quot;bipartite flow sum=&quot; + flow);</span>
+<span class="nc" id="L453">        log.fine(&quot;bipartite flow sum=&quot; + flow);</span>
         
 <span class="nc" id="L455">        flow += calcTotalSourceFlow();</span>
         
-<span class="nc" id="L457">        log.info(&quot;bipartite + source flow sum=&quot; + flow);</span>
+<span class="nc" id="L457">        log.fine(&quot;bipartite + source flow sum=&quot; + flow);</span>
         
 <span class="nc" id="L459">        flow += calcTotalSinkFlow();</span>
         
-<span class="nc" id="L461">        log.info(&quot;bipartite + source + sink flow sum=&quot; + flow);</span>
+<span class="nc" id="L461">        log.fine(&quot;bipartite + source + sink flow sum=&quot; + flow);</span>
     
 <span class="nc" id="L463">        return true;</span>
     }
@@ -489,7 +489,7 @@ import java.util.logging.Logger;
         
 <span class="nc" id="L490">        flow += calcTotalFlow();</span>
         
-<span class="nc" id="L492">        log.info(&quot;bipartite flow sum=&quot; + flow);</span>
+<span class="nc" id="L492">        log.fine(&quot;bipartite flow sum=&quot; + flow);</span>
         
         // nSurplus is the number of nodes, excluding the
         // sink where the flow into the node is larger
@@ -503,7 +503,7 @@ import java.util.logging.Logger;
         
 <span class="nc" id="L504">        int nSurplus = surplus.size();</span>
         
-<span class="nc" id="L506">        log.info(&quot;s=&quot; + nMatchingsHK + &quot; h=&quot; + nSurplus);</span>
+<span class="nc" id="L506">        log.fine(&quot;s=&quot; + nMatchingsHK + &quot; h=&quot; + nSurplus);</span>
                 
 <span class="nc bnc" id="L508" title="All 2 branches missed.">        return (Math.abs(flow - (nMatchingsHK - nSurplus)) &lt; 1);</span>
     }
@@ -523,7 +523,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L523">            sb.append(Integer.toString(s)).append(&quot;, &quot;);</span>
 <span class="nc" id="L524">        }</span>
 <span class="nc" id="L525">        sb.append(&quot;)&quot;);</span>
-<span class="nc" id="L526">        log.info(sb.toString());</span>
+<span class="nc" id="L526">        log.fine(sb.toString());</span>
         
 <span class="nc" id="L528">        sb = new StringBuilder(&quot;deficit=(&quot;);</span>
 <span class="nc" id="L529">        iter = deficit.iterator();</span>
@@ -532,7 +532,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L532">            sb.append(Integer.toString(d)).append(&quot;, &quot;);</span>
 <span class="nc" id="L533">        }</span>
 <span class="nc" id="L534">        sb.append(&quot;)&quot;);</span>
-<span class="nc" id="L535">        log.info(sb.toString());</span>
+<span class="nc" id="L535">        log.fine(sb.toString());</span>
         
 <span class="nc" id="L537">        return true;</span>
     }
@@ -1186,7 +1186,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L1186">                float cp = calcNetCost(p);</span>
 <span class="nc bnc" id="L1187" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated are matched arcs
-<span class="nc" id="L1189">                    log.info(&quot;saturated bipartite arc from &quot; +</span>
+<span class="nc" id="L1189">                    log.fine(&quot;saturated bipartite arc from &quot; +</span>
                         idx1 + &quot; to &quot; + idx2);
                 }
 <span class="nc" id="L1192">            }</span>
@@ -1214,7 +1214,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L1214">                    idx1, idx2, cp, unitFlow));</span>
 <span class="nc" id="L1215">            }</span>
 <span class="nc" id="L1216">        }</span>
-<span class="nc" id="L1217">        log.info(sb.toString());</span>
+<span class="nc" id="L1217">        log.fine(sb.toString());</span>
 
 <span class="nc" id="L1219">        sb = new StringBuilder();</span>
 
@@ -1227,7 +1227,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L1227">            sb.append(String.format(&quot;source to %d cp=%.2f f=%.2f\n&quot;,</span>
 <span class="nc" id="L1228">                idx1, cp, unitFlow));</span>
 <span class="nc" id="L1229">        }</span>
-<span class="nc" id="L1230">        log.info(sb.toString());</span>
+<span class="nc" id="L1230">        log.fine(sb.toString());</span>
 
 <span class="nc" id="L1232">        sb = new StringBuilder();</span>
 <span class="nc" id="L1233">        iter2 = sinkForwardArcs.iterator();</span>
@@ -1238,7 +1238,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L1238">            sb.append(String.format(&quot;%d to sink cp=%.2f f=%.2f\n&quot;,</span>
 <span class="nc" id="L1239">                idx1, cp, unitFlow));</span>
 <span class="nc" id="L1240">        }</span>
-<span class="nc" id="L1241">        log.info(sb.toString());</span>
+<span class="nc" id="L1241">        log.fine(sb.toString());</span>
 <span class="nc" id="L1242">    }</span>
 
     public TIntIntMap extractMatches() {

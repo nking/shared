@@ -76,12 +76,12 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L76">            iter = factors2.iterator();</span>
 <span class="fc bfc" id="L77" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
 <span class="fc" id="L78">                factor2 = iter.next();</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">                if (probablyPrime(factor2, s)) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">                if (probablyPrime(factor2, s)) {</span>
 <span class="fc" id="L80">                    primeFactors.add(factor2);</span>
 <span class="fc" id="L81">                    continue;</span>
                 }
-<span class="nc bnc" id="L83" title="All 2 branches missed.">                if (!factors.contains(factor2)) {</span>
-<span class="nc" id="L84">                    factorsList.add(factor2);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                if (!factors.contains(factor2)) {</span>
+<span class="fc" id="L84">                    factorsList.add(factor2);</span>
                 }
             }
         }

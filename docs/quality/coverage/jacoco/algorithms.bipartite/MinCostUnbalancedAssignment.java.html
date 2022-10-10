@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  * graph
  * (it is not a maximum cardinality, min-cost matching).
  * (To preprocess the data for larger cardinality, one 
- * might want ro consider pre-matching those edges
+ * might want to consider pre-matching those edges
  * that must be matched inspite of cost because no other
  * edges are connected to certain nodes else would be unmatched.
  * might consider the very fast state management
@@ -78,21 +78,19 @@ import java.util.logging.Logger;
  * of NetworkFlow passed to methods should only be used by
  * that method and thread at the given time.
  * 
- * Also note that the class needs an implementation of
- * &quot;multi-level buckets&quot; in the minHeap used in buildForest2
- * and the graphs should be consolidated and refactored
+ * Also note that the graphs should be consolidated and refactored
  * to use primitives where possible.  The current
  * runtime is longer than the Hungarian implementation 
  * in this project.
  * 
  * @author nichole
  */
-<span class="fc" id="L90">@SuppressWarnings({&quot;unchecked&quot;})</span>
-<span class="fc" id="L91">public class MinCostUnbalancedAssignment {</span>
+<span class="fc" id="L88">@SuppressWarnings({&quot;unchecked&quot;})</span>
+<span class="fc" id="L89">public class MinCostUnbalancedAssignment {</span>
 
-<span class="fc" id="L93">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
+<span class="fc" id="L91">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
 
-<span class="fc" id="L95">    private FlowNetwork finalFN = null;</span>
+<span class="fc" id="L93">    private FlowNetwork finalFN = null;</span>
 
     /**
      * class specializing a fibonacci heap node to identify
@@ -270,40 +268,40 @@ import java.util.logging.Logger;
      * values greater than zero.  Also note that the graph g has to be constructed to have
        node numbers 0 up to the numbers of left and right nodes defined in the Graph g.
        TODO: create a static utility method in this class to rewrite edge weight vertex numbers
-       for that format if needed and another static method to tranform the  vertex numbers back
+       for that format if needed and another static method to transform the  vertex numbers back
        to the orginal reference frame.
      * @return map of indexes of left nodes matched to indexes of
      * right nodes
      */
     public TIntIntMap flowAssign(Graph g) {
 
-<span class="fc" id="L280">        boolean isFirstInvoc = true;</span>
+<span class="fc" id="L278">        boolean isFirstInvoc = true;</span>
         
-<span class="fc" id="L282">        validateGraph(g);</span>
+<span class="fc" id="L280">        validateGraph(g);</span>
                 
-<span class="pc bpc" id="L284" title="3 of 4 branches missed.">        if (g.getNLeft() == 1 &amp;&amp; g.getNRight() == 1) {</span>
-<span class="nc" id="L285">            return singleNodesSolution(g);</span>
+<span class="pc bpc" id="L282" title="3 of 4 branches missed.">        if (g.getNLeft() == 1 &amp;&amp; g.getNRight() == 1) {</span>
+<span class="nc" id="L283">            return singleNodesSolution(g);</span>
         }
         
         // a first guess at the maximal matching size
-<span class="fc" id="L289">        int sz = Math.min(g.getNLeft(), g.getNRight());</span>
+<span class="fc" id="L287">        int sz = Math.min(g.getNLeft(), g.getNRight());</span>
 
         // hopcroft-karp produces a maximal matching of nodes
         // without using edge weights, just uses connectivity
-<span class="fc" id="L293">        TIntIntMap m = hopcroftKarp(g, sz);</span>
+<span class="fc" id="L291">        TIntIntMap m = hopcroftKarp(g, sz);</span>
 
         // if the code was given a graph created without 
         // using source and sink, need to transform that here.
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        if (g.getSourceNode() == -1) {</span>
-<span class="nc" id="L298">            g = g.copyToCreateSourceSink();</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if (g.getSourceNode() == -1) {</span>
+<span class="nc" id="L296">            g = g.copyToCreateSourceSink();</span>
         }
         
-<span class="fc" id="L301">        GraphUtil.condenseEdgeWeights(g);</span>
+<span class="fc" id="L299">        GraphUtil.condenseEdgeWeights(g);</span>
         
-<span class="fc" id="L303">        FlowNetwork gFlow = new FlowNetwork(g, m);</span>
+<span class="fc" id="L301">        FlowNetwork gFlow = new FlowNetwork(g, m);</span>
         //assert(gFlow.printFlowValueIncludingSrcSnk(m.size()));
         
-<span class="fc" id="L306">        log.info(&quot;init FlowNetwork:&quot;);</span>
+<span class="fc" id="L304">        log.fine(&quot;init FlowNetwork:&quot;);</span>
         //gFlow.printNetCosts();
         
         //TODO: estimate of eps may need to be revised
@@ -336,12 +334,12 @@ import java.util.logging.Logger;
         the flow.
         */
         
-<span class="fc" id="L339">        int s = m.size();</span>
+<span class="fc" id="L337">        int s = m.size();</span>
 
         // q &gt;= 2.  consider q = O(log_2(n)) pg 41 par 3.
         // the 2nd, shorter paper states:
         // q &gt; 1 ,  &quot;q=8 or q=16&quot; might be good choices
-<span class="fc" id="L344">        int q = 8;//1 + (int)Math.floor(Math.log(s)/Math.log(2));</span>
+<span class="fc" id="L342">        int q = 8;//1 + (int)Math.floor(Math.log(s)/Math.log(2));</span>
         
         // pg 32, the weight scaling techinique
         // starts w/ eps ~ maxC and reduces to ~1/s or 1/(6*s)
@@ -353,95 +351,95 @@ import java.util.logging.Logger;
                 
          // expected number of iterations without a constant factor
         
-<span class="fc" id="L356">        int e_up_large = 1 + (int)Math.floor(Math.log(gFlow.getMaxC())/Math.log(q));</span>
-<span class="fc" id="L357">        double eps_up_large = Math.pow(q, e_up_large - 1);</span>
-<span class="fc" id="L358">        float epsLarge = 1.f + (int)Math.floor(eps_up_large);</span>
+<span class="fc" id="L354">        int e_up_large = 1 + (int)Math.floor(Math.log(gFlow.getMaxC())/Math.log(q));</span>
+<span class="fc" id="L355">        double eps_up_large = Math.pow(q, e_up_large - 1);</span>
+<span class="fc" id="L356">        float epsLarge = 1.f + (int)Math.floor(eps_up_large);</span>
         
-<span class="fc" id="L360">        int e_up = 1 + (int)Math.floor(Math.log(gFlow.getMinC())/Math.log(q));</span>
-<span class="fc" id="L361">        double eps_up = Math.pow(q, e_up - 1);</span>
-<span class="fc" id="L362">        int rIter = (int)(Math.log(s * gFlow.getMinC())/Math.log(q));</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">        if (rIter == 0) {</span>
-<span class="fc" id="L364">            rIter = 1;</span>
+<span class="fc" id="L358">        int e_up = 1 + (int)Math.floor(Math.log(gFlow.getMinC())/Math.log(q));</span>
+<span class="fc" id="L359">        double eps_up = Math.pow(q, e_up - 1);</span>
+<span class="fc" id="L360">        int rIter = (int)(Math.log(s * gFlow.getMinC())/Math.log(q));</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">        if (rIter == 0) {</span>
+<span class="fc" id="L362">            rIter = 1;</span>
         }
         
-<span class="fc" id="L367">        int e_down = -(1 + (int)Math.floor( Math.log(s + 2)/Math.log(q)));</span>
-<span class="fc" id="L368">        double eps_down = Math.pow(q, e_down);</span>
+<span class="fc" id="L365">        int e_down = -(1 + (int)Math.floor( Math.log(s + 2)/Math.log(q)));</span>
+<span class="fc" id="L366">        double eps_down = Math.pow(q, e_down);</span>
 
-<span class="fc" id="L370">        float eps = 1.f + (int)Math.floor(eps_up);</span>
+<span class="fc" id="L368">        float eps = 1.f + (int)Math.floor(eps_up);</span>
                 
-<span class="fc" id="L372">        int nIterR = 0;</span>
+<span class="fc" id="L370">        int nIterR = 0;</span>
         
-<span class="fc" id="L374">        log.info(&quot;eps=&quot; + eps + &quot; epsLarge=&quot; + epsLarge</span>
+<span class="fc" id="L372">        log.fine(&quot;eps=&quot; + eps + &quot; epsLarge=&quot; + epsLarge</span>
             + &quot; rIter=&quot; + rIter 
-<span class="fc" id="L376">            + &quot; minC=&quot; + gFlow.getMinC() + &quot; maxC=&quot; + gFlow.getMaxC() </span>
+<span class="fc" id="L374">            + &quot; minC=&quot; + gFlow.getMinC() + &quot; maxC=&quot; + gFlow.getMaxC() </span>
             + &quot; eps_down=&quot; + eps_down);
 
         // all nodes V in gFlow have prices = 0
          
-<span class="fc" id="L381">        gFlow.createPathNodes();</span>
+<span class="fc" id="L379">        gFlow.createPathNodes();</span>
         
-<span class="pc bpc" id="L383" title="2 of 4 branches missed.">        while ((epsLarge &gt; eps_down) &amp;&amp; (nIterR &lt; 2*rIter)) {</span>
+<span class="pc bpc" id="L381" title="2 of 4 branches missed.">        while ((epsLarge &gt; eps_down) &amp;&amp; (nIterR &lt; 2*rIter)) {</span>
             
-<span class="fc" id="L385">            log.info(&quot;nIterR=&quot; + nIterR + &quot; s=&quot; + s + &quot; eps=&quot; + eps</span>
+<span class="fc" id="L383">            log.fine(&quot;nIterR=&quot; + nIterR + &quot; s=&quot; + s + &quot; eps=&quot; + eps</span>
                 + &quot; epsLarge=&quot; + epsLarge);
             
             // pg 44, assertions I1, I2, I3, and I4
-<span class="pc bnc" id="L389" title="All 2 branches missed.">            assert(gFlow.assertFlowValue(s));</span>
-<span class="pc bnc" id="L390" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
+<span class="pc bnc" id="L387" title="All 2 branches missed.">            assert(gFlow.assertFlowValue(s));</span>
+<span class="pc bnc" id="L388" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
             // if using a smaller eps than maxC, cannot assert
             //    these on first round
-<span class="pc bpc" id="L393" title="1 of 4 branches missed.">            if ((nIterR &gt; 0) || (eps &gt; gFlow.getMaxC())) {</span>
+<span class="pc bpc" id="L391" title="1 of 4 branches missed.">            if ((nIterR &gt; 0) || (eps &gt; gFlow.getMaxC())) {</span>
                 //assert(gFlow.integralFlowIsEpsProper(eps));
-<span class="pc bnc" id="L395" title="All 2 branches missed.">                assert(gFlow.integralBipartiteFlowIsEpsProper(eps));</span>
-<span class="pc bnc" id="L396" title="All 2 branches missed.">                assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
+<span class="pc bnc" id="L393" title="All 2 branches missed.">                assert(gFlow.integralBipartiteFlowIsEpsProper(eps));</span>
+<span class="pc bnc" id="L394" title="All 2 branches missed.">                assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
             }
             
-<span class="fc" id="L399">            eps /= ((float) q);</span>
-<span class="fc" id="L400">            epsLarge /= ((float)q);</span>
+<span class="fc" id="L397">            eps /= ((float) q);</span>
+<span class="fc" id="L398">            epsLarge /= ((float)q);</span>
 
-<span class="fc" id="L402">            int ext = refine(gFlow, s, eps, epsLarge, q, </span>
+<span class="fc" id="L400">            int ext = refine(gFlow, s, eps, epsLarge, q, </span>
                 isFirstInvoc);
             
-<span class="pc bpc" id="L405" title="1 of 2 branches missed.">            if (ext &gt; 0) {</span>
-<span class="fc" id="L406">                m = gFlow.extractMatches();</span>
-<span class="fc" id="L407">                roundFinalPrices(gFlow, eps_down);</span>
-<span class="fc" id="L408">                finalFN = gFlow;</span>
-<span class="fc" id="L409">                return m;</span>
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">            if (ext &gt; 0) {</span>
+<span class="fc" id="L404">                m = gFlow.extractMatches();</span>
+<span class="fc" id="L405">                roundFinalPrices(gFlow, eps_down);</span>
+<span class="fc" id="L406">                finalFN = gFlow;</span>
+<span class="fc" id="L407">                return m;</span>
             }
 
-<span class="nc" id="L412">            ++nIterR;</span>
-<span class="nc" id="L413">        }</span>
+<span class="nc" id="L410">            ++nIterR;</span>
+<span class="nc" id="L411">        }</span>
 
         // assert nIter is approx log_q(s * maxC)
 
         // round prices to integers that make all arcs proper
-<span class="nc" id="L418">        roundFinalPrices(gFlow, eps_down);</span>
+<span class="nc" id="L416">        roundFinalPrices(gFlow, eps_down);</span>
         
-<span class="nc" id="L420">        m = gFlow.extractMatches();</span>
+<span class="nc" id="L418">        m = gFlow.extractMatches();</span>
         
-<span class="nc" id="L422">        finalFN = gFlow;</span>
+<span class="nc" id="L420">        finalFN = gFlow;</span>
         
-<span class="nc" id="L424">        return m;</span>
+<span class="nc" id="L422">        return m;</span>
     }
     
     protected int refine(FlowNetwork gFlow, int s, float eps, 
         float epsLarge, int q, boolean isFirstInvoc) {
         
-<span class="fc" id="L430">        log.fine(&quot;at start of refine, s=&quot; + s + &quot; eps=&quot; + eps</span>
+<span class="fc" id="L428">        log.fine(&quot;at start of refine, s=&quot; + s + &quot; eps=&quot; + eps</span>
             + &quot; q=&quot; + q);
         
         //assert(gFlow.printFlowValueIncludingSrcSnk(s));
         
         // S = left nodes matched in gFlow
-<span class="fc" id="L436">        TIntSet surplus = new TIntHashSet();</span>
+<span class="fc" id="L434">        TIntSet surplus = new TIntHashSet();</span>
         
         // D = right nodes matched in gFlow
-<span class="fc" id="L439">        TIntSet deficit = new TIntHashSet();</span>
+<span class="fc" id="L437">        TIntSet deficit = new TIntHashSet();</span>
        
-<span class="fc" id="L441">        gFlow.zeroTheMatchedBipartiteFlow(surplus, deficit);</span>
+<span class="fc" id="L439">        gFlow.zeroTheMatchedBipartiteFlow(surplus, deficit);</span>
 
         // assert I4 and I5
-<span class="pc bnc" id="L444" title="All 2 branches missed.">        assert(gFlow.assertSaturatedBipartiteIsEpsSnug(epsLarge));</span>
+<span class="pc bnc" id="L442" title="All 2 branches missed.">        assert(gFlow.assertSaturatedBipartiteIsEpsSnug(epsLarge));</span>
         
         /*
         see Figure 7.4 on pg 53.
@@ -451,46 +449,46 @@ import java.util.logging.Logger;
         this makes I3 true.
         */
                 
-<span class="fc" id="L454">        gFlow.raisePricesUntilEpsProper(epsLarge, q);</span>
+<span class="fc" id="L452">        gFlow.raisePricesUntilEpsProper(epsLarge, q);</span>
 
-        //log.info(&quot;after raise prices, w/ eps=&quot; + eps);
+        //log.fine(&quot;after raise prices, w/ eps=&quot; + eps);
         //gFlow.printNetCosts();
         //assert(gFlow.printFlowValueIncludingSrcSnk(s));        
         
         //in [0] holds the length of the terminating deficit
         //    node which is also the forest index it was
         //    added to.
-<span class="fc" id="L463">        int h = s;</span>
-<span class="fc" id="L464">        int nHIter = 0;</span>
+<span class="fc" id="L461">        int h = s;</span>
+<span class="fc" id="L462">        int nHIter = 0;</span>
         
         // this should only execute sqrt(s) times
  
-<span class="pc bpc" id="L468" title="1 of 2 branches missed.">        while (h &gt; 0) {</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">        while (h &gt; 0) {</span>
             
-<span class="fc" id="L470">            log.fine(&quot;nHIter=&quot; + nHIter + &quot; h=&quot; + h + &quot; eps=&quot; + eps</span>
+<span class="fc" id="L468">            log.fine(&quot;nHIter=&quot; + nHIter + &quot; h=&quot; + h + &quot; eps=&quot; + eps</span>
                 + &quot; epsLarge-&quot; + epsLarge);
 
-<span class="fc" id="L473">            ResidualDigraph2 rF = new ResidualDigraph2(gFlow);</span>
+<span class="fc" id="L471">            ResidualDigraph2 rF = new ResidualDigraph2(gFlow);</span>
             
             // build a shortest-path forest from the current surpluses S, 
             // stopping when a current deficit in D is reached;
             // (pg 55)
 
             // pg 57, estimate lambda as size for dial arrays
-<span class="fc" id="L480">            int lambda = (4*q + 4)*s/h;</span>
+<span class="fc" id="L478">            int lambda = (4*q + 4)*s/h;</span>
             
             // map of surplus indexes and the forest index where
             //   their paths are stored
-<span class="fc" id="L484">            TIntIntMap spIndexes = new TIntIntHashMap();</span>
+<span class="fc" id="L482">            TIntIntMap spIndexes = new TIntIntHashMap();</span>
             
-<span class="fc" id="L486">            float maxDivMin = gFlow.getMaxC()/gFlow.getMinC();</span>
-<span class="fc" id="L487">            lambda = 1 + (int)Math.floor(maxDivMin * lambda);</span>
+<span class="fc" id="L484">            float maxDivMin = gFlow.getMaxC()/gFlow.getMinC();</span>
+<span class="fc" id="L485">            lambda = 1 + (int)Math.floor(maxDivMin * lambda);</span>
 
-<span class="fc" id="L489">            Forest forest = </span>
-<span class="fc" id="L490">                buildForest2(gFlow, rF, surplus, deficit, eps,</span>
+<span class="fc" id="L487">            Forest forest = </span>
+<span class="fc" id="L488">                buildForest2(gFlow, rF, surplus, deficit, eps,</span>
                 spIndexes, lambda, isFirstInvoc);
             
-<span class="fc" id="L493">            isFirstInvoc = false;</span>
+<span class="fc" id="L491">            isFirstInvoc = false;</span>
 
             // raise prices at forest nodes by multiples of ε, 
             // shortening the discovered augmenting path to length 0;
@@ -506,19 +504,19 @@ import java.util.logging.Logger;
             
             //assert(gFlow.printFlowValueIncludingSrcSnk(s));
 
-<span class="fc" id="L509">            log.fine(&quot;before modify prices:&quot;);</span>
+<span class="fc" id="L507">            log.fine(&quot;before modify prices:&quot;);</span>
             //debug(forest);
             //gFlow.printNetCosts();
 
-<span class="fc" id="L513">            List&lt;PathsAndPrices&gt; zeroLengthPaths = </span>
-<span class="fc" id="L514">                modifyPathLengths(gFlow, rF, forest, </span>
+<span class="fc" id="L511">            List&lt;PathsAndPrices&gt; zeroLengthPaths = </span>
+<span class="fc" id="L512">                modifyPathLengths(gFlow, rF, forest, </span>
                 spIndexes, eps);
     
-<span class="fc bfc" id="L517" title="All 2 branches covered.">            if (zeroLengthPaths.isEmpty()) {</span>
-<span class="fc" id="L518">                log.warning(&quot;extractedPaths is empty.  h=&quot; + h);                               </span>
+<span class="fc bfc" id="L515" title="All 2 branches covered.">            if (zeroLengthPaths.isEmpty()) {</span>
+<span class="fc" id="L516">                log.warning(&quot;extractedPaths is empty.  h=&quot; + h);                               </span>
                 // h &gt; 0 so the matching is unbalanced and one-sided
                 // perfect or is imperfect
-<span class="fc" id="L521">                return 1;</span>
+<span class="fc" id="L519">                return 1;</span>
             }
             
             /*
@@ -535,75 +533,75 @@ import java.util.logging.Logger;
                              
             // --- Sect 8.3, create maximal set of compatible augmenting paths
             
-<span class="fc" id="L538">            List&lt;LinkedList&lt;PathNode&gt;&gt; cPaths =</span>
-<span class="fc" id="L539">                findMaximalSetOfCompatiblePaths(gFlow,</span>
+<span class="fc" id="L536">            List&lt;LinkedList&lt;PathNode&gt;&gt; cPaths =</span>
+<span class="fc" id="L537">                findMaximalSetOfCompatiblePaths(gFlow,</span>
                 zeroLengthPaths, surplus, deficit);
 
-<span class="fc" id="L542">            raisePricesForMaximalSet(gFlow, cPaths, zeroLengthPaths);</span>
+<span class="fc" id="L540">            raisePricesForMaximalSet(gFlow, cPaths, zeroLengthPaths);</span>
          
             // postponed assertions:
             // assert from pg 52 
             //       I1', I2, I3, I4, on FlowNetwork
             //       and I5 on ResidualDigraph2
-<span class="pc bnc" id="L548" title="All 2 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
-<span class="pc bnc" id="L549" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
+<span class="pc bnc" id="L546" title="All 2 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
+<span class="pc bnc" id="L547" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
             //assert(gFlow.integralFlowIsEpsProper(epsLarge));
             //assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));
             //assert I5: Rf has no cycles of length zero
             
-<span class="fc" id="L554">            log.fine(&quot;cPaths.size=&quot; + cPaths.size());</span>
-<span class="pc bpc" id="L555" title="1 of 2 branches missed.">            if (cPaths.isEmpty()) {</span>
-<span class="nc" id="L556">                log.warning(&quot;did not find an augmenting path.  h=&quot; + h);                               </span>
+<span class="fc" id="L552">            log.fine(&quot;cPaths.size=&quot; + cPaths.size());</span>
+<span class="pc bpc" id="L553" title="1 of 2 branches missed.">            if (cPaths.isEmpty()) {</span>
+<span class="nc" id="L554">                log.warning(&quot;did not find an augmenting path.  h=&quot; + h);                               </span>
                 // h &gt; 0 so the matching is unbalanced and one-sided
                 // perfect or is imperfect
-<span class="nc" id="L559">                return 1;</span>
+<span class="nc" id="L557">                return 1;</span>
             }
         
             //augment f along each of the paths in P in turn, thereby 
             //   reducing |S| = |D| = h by |P|;
             //NOTE that surplus and deficit are modified and updated
             // within augmentFlow
-<span class="fc" id="L566">            augmentFlow(gFlow, cPaths);</span>
+<span class="fc" id="L564">            augmentFlow(gFlow, cPaths);</span>
             
-<span class="fc" id="L568">            surplus.clear();</span>
-<span class="fc" id="L569">            deficit.clear();</span>
-<span class="fc" id="L570">            gFlow.getSurplusLeftIndexes(surplus);</span>
-<span class="fc" id="L571">            gFlow.getDeficitRightIndexes(deficit);</span>
+<span class="fc" id="L566">            surplus.clear();</span>
+<span class="fc" id="L567">            deficit.clear();</span>
+<span class="fc" id="L568">            gFlow.getSurplusLeftIndexes(surplus);</span>
+<span class="fc" id="L569">            gFlow.getDeficitRightIndexes(deficit);</span>
 
-<span class="fc" id="L573">            log.fine(&quot;nSurplus=&quot; + surplus.size() + &quot; nDeficit=&quot;</span>
-<span class="fc" id="L574">                + deficit.size());</span>
+<span class="fc" id="L571">            log.fine(&quot;nSurplus=&quot; + surplus.size() + &quot; nDeficit=&quot;</span>
+<span class="fc" id="L572">                + deficit.size());</span>
 
-<span class="fc" id="L576">            log.fine(&quot;after augmentation (eps=&quot; + eps + &quot; epsLarge=&quot; + epsLarge);</span>
+<span class="fc" id="L574">            log.fine(&quot;after augmentation (eps=&quot; + eps + &quot; epsLarge=&quot; + epsLarge);</span>
             //debug(forest);
             //gFlow.printNetCosts();
             
             // pg 63 assert I1', I2, I3
-<span class="pc bnc" id="L581" title="All 2 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
-<span class="pc bnc" id="L582" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
+<span class="pc bnc" id="L579" title="All 2 branches missed.">            assert(gFlow.assertFlowValueIncludingSrcSnk(s));</span>
+<span class="pc bnc" id="L580" title="All 2 branches missed.">            assert(gFlow.assertPricesAreQuantizedEps(eps));</span>
             //assert(gFlow.integralFlowIsEpsProper(epsLarge));  
-<span class="pc bnc" id="L584" title="All 2 branches missed.">            assert(gFlow.integralBipartiteFlowIsEpsProper(eps));  </span>
-<span class="pc bnc" id="L585" title="All 2 branches missed.">            assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
+<span class="pc bnc" id="L582" title="All 2 branches missed.">            assert(gFlow.integralBipartiteFlowIsEpsProper(eps));  </span>
+<span class="pc bnc" id="L583" title="All 2 branches missed.">            assert(gFlow.assertSaturatedBipartiteIsEpsSnug(eps));</span>
                         
-            //log.info(&quot;after augment flow:&quot;);
+            //log.fine(&quot;after augment flow:&quot;);
             //gFlow.printSaturatedLinks();
 
-<span class="fc" id="L590">            h = surplus.size();</span>
+<span class="fc" id="L588">            h = surplus.size();</span>
 
             // NOTE: revisit this.  adding an early exit if all of the
             // integral flow is &quot;proper&quot;
-<span class="fc bfc" id="L594" title="All 2 branches covered.">            if (h == 0) {</span>
-<span class="fc" id="L595">                boolean isProper = gFlow.integralFlowIsProper();</span>
-<span class="pc bpc" id="L596" title="1 of 2 branches missed.">                if (isProper) {</span>
-<span class="fc" id="L597">                    return 2;</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">            if (h == 0) {</span>
+<span class="fc" id="L593">                boolean isProper = gFlow.integralFlowIsProper();</span>
+<span class="pc bpc" id="L594" title="1 of 2 branches missed.">                if (isProper) {</span>
+<span class="fc" id="L595">                    return 2;</span>
                 }
             }
             
-<span class="fc" id="L601">            gFlow.resetPathNodes(Long.MAX_VALUE);</span>
+<span class="fc" id="L599">            gFlow.resetPathNodes(Long.MAX_VALUE);</span>
             
-<span class="fc" id="L603">            ++nHIter;</span>
-<span class="fc" id="L604">        }</span>
+<span class="fc" id="L601">            ++nHIter;</span>
+<span class="fc" id="L602">        }</span>
         
-<span class="nc" id="L606">        return 0;</span>
+<span class="nc" id="L604">        return 0;</span>
     }
     
     public static class Forest {
@@ -727,12 +725,12 @@ import java.util.logging.Logger;
         TIntIntMap terminatingKeys, int lambda,
         boolean isFirstInvoc) {
         
-<span class="fc" id="L730">        log.fine(&quot;buildForest2&quot;);</span>
+<span class="fc" id="L728">        log.fine(&quot;buildForest2&quot;);</span>
 
-<span class="fc" id="L732">        log.fine(&quot;nSurplus=&quot; + surplus.size() + &quot; nDeficit=&quot;</span>
-<span class="fc" id="L733">            + deficit.size());</span>
+<span class="fc" id="L730">        log.fine(&quot;nSurplus=&quot; + surplus.size() + &quot; nDeficit=&quot;</span>
+<span class="fc" id="L731">            + deficit.size());</span>
         
-<span class="fc" id="L735">        terminatingKeys.clear();</span>
+<span class="fc" id="L733">        terminatingKeys.clear();</span>
 
         /*
         if a surplus node has been inserted into the forest, any further
@@ -741,84 +739,84 @@ import java.util.logging.Logger;
         TODO: there is overlapping logic in surplusForestKeys
         and terminatingKeys so this could be made more concise later.
         */
-<span class="fc" id="L744">        TIntIntMap surplusForestKeys = new TIntIntHashMap();</span>
+<span class="fc" id="L742">        TIntIntMap surplusForestKeys = new TIntIntHashMap();</span>
         
-<span class="pc bpc" id="L746" title="1 of 2 branches missed.">        if (lambda &lt; 4) {</span>
-<span class="nc" id="L747">            lambda = 4;</span>
+<span class="pc bpc" id="L744" title="1 of 2 branches missed.">        if (lambda &lt; 4) {</span>
+<span class="nc" id="L745">            lambda = 4;</span>
         }
-<span class="fc" id="L749">        log.fine(&quot;buildForest2 forest length lambda is set to &quot; + </span>
-<span class="fc" id="L750">            lambda + &quot; surplus.size=&quot; + surplus.size());</span>
+<span class="fc" id="L747">        log.fine(&quot;buildForest2 forest length lambda is set to &quot; + </span>
+<span class="fc" id="L748">            lambda + &quot; surplus.size=&quot; + surplus.size());</span>
         
-<span class="fc" id="L752">        long lastKey = -1;</span>
+<span class="fc" id="L750">        long lastKey = -1;</span>
         
         // sparsely populated holder for the 
         // DoubleLinkedCircularList trees
-<span class="fc" id="L756">        Forest forest = new Forest(lambda);</span>
+<span class="fc" id="L754">        Forest forest = new Forest(lambda);</span>
         
-<span class="fc" id="L758">        int nBitsC = 1 + (int)Math.ceil(Math.log(gFlow.getMaxC())/Math.log(2));</span>
-<span class="pc bpc" id="L759" title="1 of 2 branches missed.">        if (nBitsC &gt; 31) {</span>
-<span class="nc" id="L760">            nBitsC = 31;</span>
+<span class="fc" id="L756">        int nBitsC = 1 + (int)Math.ceil(Math.log(gFlow.getMaxC())/Math.log(2));</span>
+<span class="pc bpc" id="L757" title="1 of 2 branches missed.">        if (nBitsC &gt; 31) {</span>
+<span class="nc" id="L758">            nBitsC = 31;</span>
         }
      
-<span class="fc" id="L763">        MinHeapForRT2012 minHeap = new MinHeapForRT2012(lambda,</span>
-<span class="fc" id="L764">            rF.countOfForwardBipartiteLinks(), nBitsC);</span>
+<span class="fc" id="L761">        MinHeapForRT2012 minHeap = new MinHeapForRT2012(lambda,</span>
+<span class="fc" id="L762">            rF.countOfForwardBipartiteLinks(), nBitsC);</span>
            
-<span class="fc" id="L766">        PathNodes pathNodes = gFlow.getPathNodes();</span>
+<span class="fc" id="L764">        PathNodes pathNodes = gFlow.getPathNodes();</span>
      
-<span class="fc" id="L768">        TIntObjectMap&lt;LeftNode&gt; leftNodes = pathNodes.getLeftNodes();</span>
+<span class="fc" id="L766">        TIntObjectMap&lt;LeftNode&gt; leftNodes = pathNodes.getLeftNodes();</span>
         
-<span class="fc" id="L770">        TIntObjectMap&lt;RightNode&gt; rightNodes = pathNodes.getRightNodes();</span>
+<span class="fc" id="L768">        TIntObjectMap&lt;RightNode&gt; rightNodes = pathNodes.getRightNodes();</span>
         
-<span class="fc" id="L772">        SourceNode sourceNode = pathNodes.getSourceNode();</span>
+<span class="fc" id="L770">        SourceNode sourceNode = pathNodes.getSourceNode();</span>
         
-<span class="fc" id="L774">        SinkNode sinkNode = pathNodes.getSinkNode();</span>
+<span class="fc" id="L772">        SinkNode sinkNode = pathNodes.getSinkNode();</span>
         
-<span class="fc" id="L776">        TIntIterator iter = surplus.iterator();</span>
-<span class="fc bfc" id="L777" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L778">            int sigma = iter.next();        </span>
-<span class="fc" id="L779">            LeftNode sNode = leftNodes.get(sigma);</span>
-<span class="fc" id="L780">            sNode.setKey(0);</span>
-<span class="fc" id="L781">            minHeap.insert(sNode);</span>
-<span class="fc" id="L782">        }</span>
+<span class="fc" id="L774">        TIntIterator iter = surplus.iterator();</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L776">            int sigma = iter.next();        </span>
+<span class="fc" id="L777">            LeftNode sNode = leftNodes.get(sigma);</span>
+<span class="fc" id="L778">            sNode.setKey(0);</span>
+<span class="fc" id="L779">            minHeap.insert(sNode);</span>
+<span class="fc" id="L780">        }</span>
 
         // V * minHeap,extractMin +
         //     V * n_edges_per_V * minHeap.insert (or decr Key)
         do {
-<span class="fc" id="L787">            PathNode node1 = (PathNode) minHeap.extractMin();</span>
-<span class="fc bfc" id="L788" title="All 2 branches covered.">            if (node1 == null) {</span>
+<span class="fc" id="L785">            PathNode node1 = (PathNode) minHeap.extractMin();</span>
+<span class="fc bfc" id="L786" title="All 2 branches covered.">            if (node1 == null) {</span>
                 //TODO: revisit this for whether additional handling of
                 //   lastKey is needed
-<span class="fc" id="L791">                break;</span>
+<span class="fc" id="L789">                break;</span>
             }
-<span class="fc" id="L793">            int idx1 = node1.index;</span>
+<span class="fc" id="L791">            int idx1 = node1.index;</span>
                                 
-<span class="pc bpc" id="L795" title="1 of 2 branches missed.">            if (terminatingKeys.containsKey(idx1)) {</span>
-<span class="nc" id="L796">                continue;</span>
-<span class="fc bfc" id="L797" title="All 4 branches covered.">            } else if (</span>
+<span class="pc bpc" id="L793" title="1 of 2 branches missed.">            if (terminatingKeys.containsKey(idx1)) {</span>
+<span class="nc" id="L794">                continue;</span>
+<span class="fc bfc" id="L795" title="All 4 branches covered.">            } else if (</span>
                 node1.pathPredecessor != null &amp;&amp;
                 node1.pathPredecessor instanceof RightNode &amp;&amp;
-<span class="fc bfc" id="L800" title="All 2 branches covered.">                terminatingKeys.containsKey(</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">                terminatingKeys.containsKey(</span>
                 node1.pathPredecessor.index)) {
-<span class="fc" id="L802">                continue;</span>
-<span class="fc bfc" id="L803" title="All 2 branches covered.">            } else if (node1.pathPredecessor != null) {</span>
-<span class="fc bfc" id="L804" title="All 2 branches covered.">                if (node1.pathPredecessor instanceof LeftNode &amp;&amp;</span>
-<span class="fc bfc" id="L805" title="All 2 branches covered.">                surplusForestKeys.containsKey(</span>
+<span class="fc" id="L800">                continue;</span>
+<span class="fc bfc" id="L801" title="All 2 branches covered.">            } else if (node1.pathPredecessor != null) {</span>
+<span class="fc bfc" id="L802" title="All 2 branches covered.">                if (node1.pathPredecessor instanceof LeftNode &amp;&amp;</span>
+<span class="fc bfc" id="L803" title="All 2 branches covered.">                surplusForestKeys.containsKey(</span>
                 node1.pathPredecessor.index)) {
-<span class="fc" id="L807">                    continue;</span>
-<span class="fc bfc" id="L808" title="All 2 branches covered.">                } else if (node1.pathPredecessor.pathPredecessor </span>
-<span class="pc bpc" id="L809" title="1 of 2 branches missed.">                instanceof LeftNode &amp;&amp; surplusForestKeys.containsKey(</span>
+<span class="fc" id="L805">                    continue;</span>
+<span class="fc bfc" id="L806" title="All 2 branches covered.">                } else if (node1.pathPredecessor.pathPredecessor </span>
+<span class="pc bpc" id="L807" title="1 of 2 branches missed.">                instanceof LeftNode &amp;&amp; surplusForestKeys.containsKey(</span>
                 node1.pathPredecessor.pathPredecessor.index)) {
-<span class="fc" id="L811">                    continue;</span>
+<span class="fc" id="L809">                    continue;</span>
                 }
             }
 
-<span class="fc" id="L815">            log.fine(&quot;extractMin = &quot; + node1.toString());</span>
+<span class="fc" id="L813">            log.fine(&quot;extractMin = &quot; + node1.toString());</span>
         
-<span class="pc bpc" id="L817" title="1 of 2 branches missed.">            if (node1.getKey() &gt; lambda) {</span>
+<span class="pc bpc" id="L815" title="1 of 2 branches missed.">            if (node1.getKey() &gt; lambda) {</span>
                 // since this path did not reach a deficit
                 // should not store the last key?
                 //terminatingKeys.put(index1, Integer.valueOf((int) lastKey));
-<span class="nc" id="L821">                break;</span>
+<span class="nc" id="L819">                break;</span>
             }
             
             /*
@@ -826,109 +824,109 @@ import java.util.logging.Logger;
             of refine, can exclude the source and sink arc inserts here.
             */
              
-<span class="fc" id="L829">            boolean node1IsLeft = (node1 instanceof LeftNode);</span>
-<span class="fc" id="L830">            boolean nodeIsSource = (node1 instanceof SourceNode);</span>
-<span class="fc" id="L831">            boolean nodeIsSink = (node1 instanceof SinkNode);</span>
+<span class="fc" id="L827">            boolean node1IsLeft = (node1 instanceof LeftNode);</span>
+<span class="fc" id="L828">            boolean nodeIsSource = (node1 instanceof SourceNode);</span>
+<span class="fc" id="L829">            boolean nodeIsSink = (node1 instanceof SinkNode);</span>
             
             //scan all links leaving node1:
-<span class="pc bpc" id="L834" title="1 of 2 branches missed.">            if (nodeIsSource) {</span>
+<span class="pc bpc" id="L832" title="1 of 2 branches missed.">            if (nodeIsSource) {</span>
                 // scan forward source links
-<span class="nc" id="L836">                TIntIterator iter2 = </span>
-<span class="nc" id="L837">                    rF.getForwardLinksSourceRM().iterator();</span>
-<span class="nc bnc" id="L838" title="All 2 branches missed.">                while (iter2.hasNext()) {</span>
-<span class="nc" id="L839">                    int idx2 = iter2.next();</span>
-<span class="nc bnc" id="L840" title="All 2 branches missed.">                    if (surplusForestKeys.containsKey(idx2)) {</span>
-<span class="nc" id="L841">                        continue;</span>
+<span class="nc" id="L834">                TIntIterator iter2 = </span>
+<span class="nc" id="L835">                    rF.getForwardLinksSourceRM().iterator();</span>
+<span class="nc bnc" id="L836" title="All 2 branches missed.">                while (iter2.hasNext()) {</span>
+<span class="nc" id="L837">                    int idx2 = iter2.next();</span>
+<span class="nc bnc" id="L838" title="All 2 branches missed.">                    if (surplusForestKeys.containsKey(idx2)) {</span>
+<span class="nc" id="L839">                        continue;</span>
                     }
-<span class="nc" id="L843">                    handlePlusLink(minHeap, node1, </span>
-<span class="nc" id="L844">                        leftNodes.get(idx2),</span>
-<span class="nc" id="L845">                        gFlow.calcSourceNetCost(idx2), lambda, eps); </span>
-<span class="nc" id="L846">                }</span>
-<span class="pc bpc" id="L847" title="1 of 2 branches missed.">            } else if (nodeIsSink) {</span>
+<span class="nc" id="L841">                    handlePlusLink(minHeap, node1, </span>
+<span class="nc" id="L842">                        leftNodes.get(idx2),</span>
+<span class="nc" id="L843">                        gFlow.calcSourceNetCost(idx2), lambda, eps); </span>
+<span class="nc" id="L844">                }</span>
+<span class="pc bpc" id="L845" title="1 of 2 branches missed.">            } else if (nodeIsSink) {</span>
                 // scan backward sink links
-<span class="nc" id="L849">                TIntIterator iter2 = rF.getBackwardLinksSinkRM().iterator();</span>
-<span class="nc bnc" id="L850" title="All 2 branches missed.">                while (iter2.hasNext()) {</span>
-<span class="nc" id="L851">                    int idx2 = iter2.next();                </span>
-<span class="nc" id="L852">                    handleMinusLink(minHeap, node1, </span>
-<span class="nc" id="L853">                        rightNodes.get(idx2), </span>
-<span class="nc" id="L854">                        gFlow.calcSinkNetCost(idx2), </span>
+<span class="nc" id="L847">                TIntIterator iter2 = rF.getBackwardLinksSinkRM().iterator();</span>
+<span class="nc bnc" id="L848" title="All 2 branches missed.">                while (iter2.hasNext()) {</span>
+<span class="nc" id="L849">                    int idx2 = iter2.next();                </span>
+<span class="nc" id="L850">                    handleMinusLink(minHeap, node1, </span>
+<span class="nc" id="L851">                        rightNodes.get(idx2), </span>
+<span class="nc" id="L852">                        gFlow.calcSinkNetCost(idx2), </span>
                         lambda, eps);
-<span class="nc" id="L856">                }</span>
-<span class="pc bfc" id="L857" title="All 2 branches covered.">            } else if (node1IsLeft) {</span>
+<span class="nc" id="L854">                }</span>
+<span class="pc bfc" id="L855" title="All 2 branches covered.">            } else if (node1IsLeft) {</span>
                 // scan the bipartite arcs forward
-<span class="fc" id="L859">                TIntSet indexes2 = rF.getForwardLinksRM().get(idx1);</span>
-<span class="pc bpc" id="L860" title="1 of 2 branches missed.">                if (indexes2 != null) {</span>
-<span class="fc" id="L861">                    TIntIterator iter2 = indexes2.iterator();</span>
-<span class="fc bfc" id="L862" title="All 2 branches covered.">                    while (iter2.hasNext()) {</span>
-<span class="fc" id="L863">                        int idx2 = iter2.next();                    </span>
-<span class="fc" id="L864">                        float cp = gFlow.calcNetCost(idx1, idx2);</span>
+<span class="fc" id="L857">                TIntSet indexes2 = rF.getForwardLinksRM().get(idx1);</span>
+<span class="pc bpc" id="L858" title="1 of 2 branches missed.">                if (indexes2 != null) {</span>
+<span class="fc" id="L859">                    TIntIterator iter2 = indexes2.iterator();</span>
+<span class="fc bfc" id="L860" title="All 2 branches covered.">                    while (iter2.hasNext()) {</span>
+<span class="fc" id="L861">                        int idx2 = iter2.next();                    </span>
+<span class="fc" id="L862">                        float cp = gFlow.calcNetCost(idx1, idx2);</span>
                         
-<span class="fc" id="L866">                        handlePlusLink(minHeap, node1, rightNodes.get(idx2), </span>
+<span class="fc" id="L864">                        handlePlusLink(minHeap, node1, rightNodes.get(idx2), </span>
                             cp, lambda, eps);
-<span class="fc" id="L868">                    }</span>
+<span class="fc" id="L866">                    }</span>
                 }
            
-<span class="fc bfc" id="L871" title="All 2 branches covered.">                if (!isFirstInvoc) {</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">                if (!isFirstInvoc) {</span>
                     // if there's a source link
-<span class="pc bpc" id="L873" title="1 of 2 branches missed.">                    if (rF.getBackwardLinksSourceRM().contains(idx1)) {</span>
+<span class="pc bpc" id="L871" title="1 of 2 branches missed.">                    if (rF.getBackwardLinksSourceRM().contains(idx1)) {</span>
                         // insert a copy of the source node
-<span class="nc" id="L875">                        PathNode sNode2 = sourceNode.copy();</span>
-<span class="nc" id="L876">                        handleMinusLink(minHeap, node1, sNode2, </span>
-<span class="nc" id="L877">                            gFlow.calcSourceNetCost(idx1),</span>
+<span class="nc" id="L873">                        PathNode sNode2 = sourceNode.copy();</span>
+<span class="nc" id="L874">                        handleMinusLink(minHeap, node1, sNode2, </span>
+<span class="nc" id="L875">                            gFlow.calcSourceNetCost(idx1),</span>
                             lambda, eps);
                     }
                 }
-<span class="fc" id="L881">            } else {</span>
+<span class="fc" id="L879">            } else {</span>
                 // node1 is a RightNode
-<span class="fc bfc" id="L883" title="All 2 branches covered.">                if (rF.getBackwardLinksRM().containsKey(idx1)) {</span>
-<span class="fc" id="L884">                    int idx2 = rF.getBackwardLinksRM().get(idx1);</span>
-<span class="fc" id="L885">                    handleMinusLink(minHeap, node1, </span>
-<span class="fc" id="L886">                       leftNodes.get(idx2), </span>
-<span class="fc" id="L887">                       gFlow.calcNetCost(idx2, idx1),</span>
+<span class="fc bfc" id="L881" title="All 2 branches covered.">                if (rF.getBackwardLinksRM().containsKey(idx1)) {</span>
+<span class="fc" id="L882">                    int idx2 = rF.getBackwardLinksRM().get(idx1);</span>
+<span class="fc" id="L883">                    handleMinusLink(minHeap, node1, </span>
+<span class="fc" id="L884">                       leftNodes.get(idx2), </span>
+<span class="fc" id="L885">                       gFlow.calcNetCost(idx2, idx1),</span>
                        lambda, eps);                     
                 }
-<span class="fc bfc" id="L890" title="All 2 branches covered.">                if (!isFirstInvoc) {</span>
+<span class="fc bfc" id="L888" title="All 2 branches covered.">                if (!isFirstInvoc) {</span>
                     // if there is a sink link
-<span class="pc bpc" id="L892" title="1 of 2 branches missed.">                    if (rF.getForwardLinksSinkRM().contains(idx1)) {</span>
+<span class="pc bpc" id="L890" title="1 of 2 branches missed.">                    if (rF.getForwardLinksSinkRM().contains(idx1)) {</span>
                         // insert a copy of the sink node
-<span class="fc" id="L894">                        PathNode sNode2 = sinkNode.copy();</span>
-<span class="fc" id="L895">                        handlePlusLink(minHeap, node1, sNode2, </span>
-<span class="fc" id="L896">                            gFlow.calcSinkNetCost(idx1),</span>
+<span class="fc" id="L892">                        PathNode sNode2 = sinkNode.copy();</span>
+<span class="fc" id="L893">                        handlePlusLink(minHeap, node1, sNode2, </span>
+<span class="fc" id="L894">                            gFlow.calcSinkNetCost(idx1),</span>
                             lambda, eps);
                     }
                 }
             }
             
-<span class="fc" id="L902">            log.fine(&quot;add to forest key=&quot; + node1.toString());</span>
+<span class="fc" id="L900">            log.fine(&quot;add to forest key=&quot; + node1.toString());</span>
 
             //add v to the forest;
-<span class="fc" id="L905">            lastKey = forest.add(node1, lastKey);</span>
+<span class="fc" id="L903">            lastKey = forest.add(node1, lastKey);</span>
 
-<span class="fc bfc" id="L907" title="All 2 branches covered.">            if (lastKey &gt; 0) {</span>
+<span class="fc bfc" id="L905" title="All 2 branches covered.">            if (lastKey &gt; 0) {</span>
                 // if a single shortest path root node is being inserted:
-<span class="pc bpc" id="L909" title="2 of 4 branches missed.">                if ((node1.pathPredecessor != null) &amp;&amp;</span>
+<span class="pc bpc" id="L907" title="2 of 4 branches missed.">                if ((node1.pathPredecessor != null) &amp;&amp;</span>
                     (node1.pathPredecessor instanceof LeftNode) &amp;&amp; 
-<span class="pc bpc" id="L911" title="1 of 2 branches missed.">                    surplus.contains(</span>
+<span class="pc bpc" id="L909" title="1 of 2 branches missed.">                    surplus.contains(</span>
                         node1.pathPredecessor.index)) {
-<span class="fc" id="L913">                    surplusForestKeys.put(</span>
+<span class="fc" id="L911">                    surplusForestKeys.put(</span>
                         node1.pathPredecessor.index, (int)lastKey);
                 }
             }
             
             // store each shortest oath's terminating forest index
-<span class="fc bfc" id="L919" title="All 4 branches covered.">            if (deficit.contains(idx1) &amp;&amp; !node1IsLeft) {</span>
+<span class="fc bfc" id="L917" title="All 4 branches covered.">            if (deficit.contains(idx1) &amp;&amp; !node1IsLeft) {</span>
                 
-<span class="fc" id="L921">                terminatingKeys.put(idx1, (int)lastKey);</span>
+<span class="fc" id="L919">                terminatingKeys.put(idx1, (int)lastKey);</span>
                 
-<span class="fc" id="L923">                log.fine(&quot;terminatingKeys.size=&quot; + terminatingKeys.size()</span>
-<span class="fc" id="L924">                   + &quot; deficit.size=&quot; + deficit.size());</span>
+<span class="fc" id="L921">                log.fine(&quot;terminatingKeys.size=&quot; + terminatingKeys.size()</span>
+<span class="fc" id="L922">                   + &quot; deficit.size=&quot; + deficit.size());</span>
                 
-<span class="fc bfc" id="L926" title="All 2 branches covered.">                if (terminatingKeys.size() == deficit.size()) {</span>
-<span class="fc" id="L927">                    break;</span>
+<span class="fc bfc" id="L924" title="All 2 branches covered.">                if (terminatingKeys.size() == deficit.size()) {</span>
+<span class="fc" id="L925">                    break;</span>
                 }                
             }
             
-<span class="fc" id="L931">        } while (true);</span>
+<span class="fc" id="L929">        } while (true);</span>
         
         /*
         link lengths in residual digrph 2:
@@ -940,7 +938,7 @@ import java.util.logging.Logger;
                (value will be &gt;= 0)
         */
         
-<span class="fc" id="L943">        return forest;</span>
+<span class="fc" id="L941">        return forest;</span>
     }
     
     /**
@@ -959,17 +957,17 @@ import java.util.logging.Logger;
                 
         if (true) { 
             //runtime complexity O(m * sqrt(n))
-<span class="fc" id="L962">            HopcroftKarp hk = new HopcroftKarp();</span>
-<span class="fc" id="L963">            int[] matched = hk.hopcroftKarpV0(new GraphWithoutWeights(g));</span>
-<span class="fc" id="L964">            log.fine(&quot;matched=&quot; + Arrays.toString(matched));</span>
-<span class="fc" id="L965">            TIntIntMap m = new TIntIntHashMap();</span>
-<span class="fc bfc" id="L966" title="All 2 branches covered.">            for (int i = 0; i &lt; matched.length; ++i) {</span>
-<span class="fc" id="L967">                int v = matched[i];</span>
-<span class="fc bfc" id="L968" title="All 2 branches covered.">                if (v &gt; -1) {</span>
-<span class="fc" id="L969">                    m.put(i, v);</span>
+<span class="fc" id="L960">            HopcroftKarp hk = new HopcroftKarp();</span>
+<span class="fc" id="L961">            int[] matched = hk.hopcroftKarpV0(new GraphWithoutWeights(g));</span>
+<span class="fc" id="L962">            log.fine(&quot;matched=&quot; + Arrays.toString(matched));</span>
+<span class="fc" id="L963">            TIntIntMap m = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L964" title="All 2 branches covered.">            for (int i = 0; i &lt; matched.length; ++i) {</span>
+<span class="fc" id="L965">                int v = matched[i];</span>
+<span class="fc bfc" id="L966" title="All 2 branches covered.">                if (v &gt; -1) {</span>
+<span class="fc" id="L967">                    m.put(i, v);</span>
                 }
             }
-<span class="fc" id="L972">            return m;</span>
+<span class="fc" id="L970">            return m;</span>
         }
        
         HopcroftKarpRT2012 hk = new HopcroftKarpRT2012();
@@ -1016,58 +1014,58 @@ import java.util.logging.Logger;
         //   improper is net cost &gt; 0
         //   eps-proper is net cost &gt; -eps
         
-<span class="fc" id="L1019">        int sourceNode = gFlow.getSourceNode();</span>
+<span class="fc" id="L1017">        int sourceNode = gFlow.getSourceNode();</span>
         
-<span class="fc" id="L1021">        TIntSet ks = new TIntHashSet();</span>
-<span class="fc" id="L1022">        int maxK = (int)Math.ceil(1./eps_down);</span>
-<span class="fc bfc" id="L1023" title="All 2 branches covered.">        for (int k = 0; k &lt; maxK; ++k) {</span>
+<span class="fc" id="L1019">        TIntSet ks = new TIntHashSet();</span>
+<span class="fc" id="L1020">        int maxK = (int)Math.ceil(1./eps_down);</span>
+<span class="fc bfc" id="L1021" title="All 2 branches covered.">        for (int k = 0; k &lt; maxK; ++k) {</span>
             
-<span class="fc" id="L1025">            boolean keep = true;</span>
+<span class="fc" id="L1023">            boolean keep = true;</span>
         
-<span class="fc" id="L1027">            float factor = (float)eps_down * k;</span>
+<span class="fc" id="L1025">            float factor = (float)eps_down * k;</span>
             
-<span class="fc" id="L1029">            TIntIterator iter = gFlow.getSourceForwardArcs().iterator();</span>
-<span class="fc bfc" id="L1030" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
-<span class="fc" id="L1031">                int xIdx = iter.next();</span>
-<span class="fc" id="L1032">                float unitFlow = gFlow.getSourceToLeftFlow(xIdx);</span>
-<span class="fc bfc" id="L1033" title="All 2 branches covered.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="fc" id="L1027">            TIntIterator iter = gFlow.getSourceForwardArcs().iterator();</span>
+<span class="fc bfc" id="L1028" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L1029">                int xIdx = iter.next();</span>
+<span class="fc" id="L1030">                float unitFlow = gFlow.getSourceToLeftFlow(xIdx);</span>
+<span class="fc bfc" id="L1031" title="All 2 branches covered.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated
                     //cp = cost - pdX + pdY so incr pdX                    
-<span class="fc" id="L1036">                    int cost = gFlow.getSourceToLeftCost(xIdx);</span>
-<span class="fc" id="L1037">                    double pdX = gFlow.getLeftPrice(sourceNode);</span>
-<span class="fc" id="L1038">                    double pdY = gFlow.getLeftPrice(xIdx);</span>
+<span class="fc" id="L1034">                    int cost = gFlow.getSourceToLeftCost(xIdx);</span>
+<span class="fc" id="L1035">                    double pdX = gFlow.getLeftPrice(sourceNode);</span>
+<span class="fc" id="L1036">                    double pdY = gFlow.getLeftPrice(xIdx);</span>
                     
                     // values causing pdX to round down
                     // while pdY rounds up
                     // are not proper
-<span class="fc" id="L1043">                    double pdX2 = Math.floor(pdX + factor);</span>
-<span class="fc" id="L1044">                    double pdY2 = Math.floor(pdY + factor);</span>
+<span class="fc" id="L1041">                    double pdX2 = Math.floor(pdX + factor);</span>
+<span class="fc" id="L1042">                    double pdY2 = Math.floor(pdY + factor);</span>
                         
-<span class="pc bpc" id="L1046" title="3 of 4 branches missed.">                    if ((pdX2 &lt; pdX) &amp;&amp; (pdY2 &gt; pdY)) {</span>
-<span class="nc" id="L1047">                        keep = false;</span>
-<span class="nc" id="L1048">                        break;</span>
+<span class="pc bpc" id="L1044" title="3 of 4 branches missed.">                    if ((pdX2 &lt; pdX) &amp;&amp; (pdY2 &gt; pdY)) {</span>
+<span class="nc" id="L1045">                        keep = false;</span>
+<span class="nc" id="L1046">                        break;</span>
                     }            
                 }
-<span class="fc" id="L1051">            }</span>
-<span class="pc bpc" id="L1052" title="1 of 2 branches missed.">            if (keep) {</span>
-<span class="fc" id="L1053">                ks.add(k);</span>
+<span class="fc" id="L1049">            }</span>
+<span class="pc bpc" id="L1050" title="1 of 2 branches missed.">            if (keep) {</span>
+<span class="fc" id="L1051">                ks.add(k);</span>
             }
         }
         
-<span class="pc bpc" id="L1057" title="1 of 2 branches missed.">        if (ks.size() == maxK) {</span>
+<span class="pc bpc" id="L1055" title="1 of 2 branches missed.">        if (ks.size() == maxK) {</span>
             //TODO: revisit this
             // no improper arcs
-<span class="fc" id="L1060">            return;</span>
+<span class="fc" id="L1058">            return;</span>
         }
         
-<span class="nc bnc" id="L1063" title="All 2 branches missed.">        assert(!ks.isEmpty());</span>
+<span class="nc bnc" id="L1061" title="All 2 branches missed.">        assert(!ks.isEmpty());</span>
         
         // pick from ks to modify prices
         //pd^~(v) = math.floor(pd(v) + k * eps_down)
         
-<span class="nc" id="L1068">        int kV = ks.iterator().next();</span>
-<span class="nc" id="L1069">        gFlow.addToAllPrices((float)(kV * eps_down));        </span>
-<span class="nc" id="L1070">    }</span>
+<span class="nc" id="L1066">        int kV = ks.iterator().next();</span>
+<span class="nc" id="L1067">        gFlow.addToAllPrices((float)(kV * eps_down));        </span>
+<span class="nc" id="L1068">    }</span>
     
     /*
     NOTES
@@ -1123,108 +1121,108 @@ Matchings in G are integral flows in N_G
     private boolean allAreEmpty(DoubleLinkedCircularList[] 
         augmentingPaths) {
         
-<span class="nc bnc" id="L1126" title="All 2 branches missed.">        for (int i = 0; i &lt; augmentingPaths.length; ++i) {</span>
-<span class="nc" id="L1127">            DoubleLinkedCircularList path = augmentingPaths[i];</span>
-<span class="nc bnc" id="L1128" title="All 2 branches missed.">            if (path != null) {</span>
-<span class="nc" id="L1129">                return false;</span>
+<span class="nc bnc" id="L1124" title="All 2 branches missed.">        for (int i = 0; i &lt; augmentingPaths.length; ++i) {</span>
+<span class="nc" id="L1125">            DoubleLinkedCircularList path = augmentingPaths[i];</span>
+<span class="nc bnc" id="L1126" title="All 2 branches missed.">            if (path != null) {</span>
+<span class="nc" id="L1127">                return false;</span>
             }
         }
         
-<span class="nc" id="L1133">        return true;</span>
+<span class="nc" id="L1131">        return true;</span>
     }
     
     public static List&lt;PathNode&gt; extractNodes(PathNode node) {
         
-<span class="fc" id="L1138">        List&lt;PathNode&gt; nodes = new ArrayList&lt;PathNode&gt;();</span>
+<span class="fc" id="L1136">        List&lt;PathNode&gt; nodes = new ArrayList&lt;PathNode&gt;();</span>
         
-<span class="fc" id="L1140">        PathNode node1 = node;</span>
-<span class="fc bfc" id="L1141" title="All 2 branches covered.">        while (node1 != null) {</span>
-<span class="fc" id="L1142">            nodes.add(node1);</span>
-<span class="fc" id="L1143">            node1 = node1.pathPredecessor;</span>
+<span class="fc" id="L1138">        PathNode node1 = node;</span>
+<span class="fc bfc" id="L1139" title="All 2 branches covered.">        while (node1 != null) {</span>
+<span class="fc" id="L1140">            nodes.add(node1);</span>
+<span class="fc" id="L1141">            node1 = node1.pathPredecessor;</span>
         }
                 
-<span class="fc" id="L1146">        return nodes;</span>
+<span class="fc" id="L1144">        return nodes;</span>
     }
    
     private void debug(List&lt;LinkedList&lt;PathNode&gt;&gt; cPaths) {
 
-<span class="nc" id="L1151">        log.info(&quot;cPaths.size=&quot; + cPaths.size());</span>
+<span class="nc" id="L1149">        log.fine(&quot;cPaths.size=&quot; + cPaths.size());</span>
         
-<span class="nc bnc" id="L1153" title="All 2 branches missed.">        for (int i = 0; i &lt; cPaths.size(); ++i) {</span>
-<span class="nc" id="L1154">            StringBuilder sb = new StringBuilder(&quot;i=&quot;);</span>
-<span class="nc" id="L1155">            sb.append(Integer.toString(i)).append(&quot; &quot;);</span>
-<span class="nc" id="L1156">            LinkedList&lt;PathNode&gt; path = cPaths.get(i);</span>
-<span class="nc bnc" id="L1157" title="All 2 branches missed.">            for (PathNode node : path) {</span>
-<span class="nc" id="L1158">                sb.append(node.toString()).append(&quot; &quot;);</span>
-<span class="nc" id="L1159">            }</span>
-<span class="nc" id="L1160">            log.info(sb.toString());</span>
+<span class="nc bnc" id="L1151" title="All 2 branches missed.">        for (int i = 0; i &lt; cPaths.size(); ++i) {</span>
+<span class="nc" id="L1152">            StringBuilder sb = new StringBuilder(&quot;i=&quot;);</span>
+<span class="nc" id="L1153">            sb.append(Integer.toString(i)).append(&quot; &quot;);</span>
+<span class="nc" id="L1154">            LinkedList&lt;PathNode&gt; path = cPaths.get(i);</span>
+<span class="nc bnc" id="L1155" title="All 2 branches missed.">            for (PathNode node : path) {</span>
+<span class="nc" id="L1156">                sb.append(node.toString()).append(&quot; &quot;);</span>
+<span class="nc" id="L1157">            }</span>
+<span class="nc" id="L1158">            log.fine(sb.toString());</span>
         }
-<span class="nc" id="L1162">    }</span>
+<span class="nc" id="L1160">    }</span>
 
     private void debug(Forest forest) {
         
-<span class="nc bnc" id="L1166" title="All 2 branches missed.">        for (Integer key : forest.getKeys()) {</span>
+<span class="nc bnc" id="L1164" title="All 2 branches missed.">        for (Integer key : forest.getKeys()) {</span>
 
-<span class="nc" id="L1168">            DoubleLinkedCircularList tree = forest.get(key.intValue());</span>
+<span class="nc" id="L1166">            DoubleLinkedCircularList tree = forest.get(key.intValue());</span>
             
-<span class="nc" id="L1170">            long n = tree.getNumberOfNodes();</span>
-<span class="nc" id="L1171">            HeapNode node = tree.getSentinel();</span>
-<span class="nc" id="L1172">            int j = 0;</span>
-<span class="nc bnc" id="L1173" title="All 2 branches missed.">            while (j &lt; n) {</span>
-<span class="nc" id="L1174">                node = node.getLeft();</span>
+<span class="nc" id="L1168">            long n = tree.getNumberOfNodes();</span>
+<span class="nc" id="L1169">            HeapNode node = tree.getSentinel();</span>
+<span class="nc" id="L1170">            int j = 0;</span>
+<span class="nc bnc" id="L1171" title="All 2 branches missed.">            while (j &lt; n) {</span>
+<span class="nc" id="L1172">                node = node.getLeft();</span>
                 
-<span class="nc" id="L1176">                List&lt;PathNode&gt; path = extractNodes((PathNode)node);</span>
-<span class="nc" id="L1177">                int n2 = path.size();</span>
-<span class="nc bnc" id="L1178" title="All 2 branches missed.">                for (int ii = 0; ii &lt; n2; ++ii) {</span>
-<span class="nc" id="L1179">                    PathNode node1 = path.get(ii);</span>
-<span class="nc" id="L1180">                    log.info(&quot;forest2[&quot; + key + &quot;] tree branch[&quot; </span>
-<span class="nc" id="L1181">                        + j + &quot;] node[&quot; + ii + &quot;]=&quot; + node1.toString());</span>
+<span class="nc" id="L1174">                List&lt;PathNode&gt; path = extractNodes((PathNode)node);</span>
+<span class="nc" id="L1175">                int n2 = path.size();</span>
+<span class="nc bnc" id="L1176" title="All 2 branches missed.">                for (int ii = 0; ii &lt; n2; ++ii) {</span>
+<span class="nc" id="L1177">                    PathNode node1 = path.get(ii);</span>
+<span class="nc" id="L1178">                    log.fine(&quot;forest2[&quot; + key + &quot;] tree branch[&quot; </span>
+<span class="nc" id="L1179">                        + j + &quot;] node[&quot; + ii + &quot;]=&quot; + node1.toString());</span>
                 }                    
-<span class="nc" id="L1183">                j++;</span>
-<span class="nc" id="L1184">            }</span>
-<span class="nc" id="L1185">        }            </span>
-<span class="nc" id="L1186">    }</span>
+<span class="nc" id="L1181">                j++;</span>
+<span class="nc" id="L1182">            }</span>
+<span class="nc" id="L1183">        }            </span>
+<span class="nc" id="L1184">    }</span>
     
     private void handlePlusLink(MinHeapForRT2012 minHeap, 
         PathNode node1, PathNode node2, float cp, int lambda, 
         float eps) {
     
-<span class="fc" id="L1192">        long l1 = node1.getKey();</span>
+<span class="fc" id="L1190">        long l1 = node1.getKey();</span>
         
-<span class="fc" id="L1194">        long lp = (long) Math.ceil(cp / eps);</span>
-<span class="fc" id="L1195">        long lTot = l1 + lp;</span>
+<span class="fc" id="L1192">        long lp = (long) Math.ceil(cp / eps);</span>
+<span class="fc" id="L1193">        long lTot = l1 + lp;</span>
         
-<span class="fc" id="L1197">        long lOld = node2.getKey();</span>
-<span class="pc bpc" id="L1198" title="1 of 4 branches missed.">        if ((lTot &lt; lambda) &amp;&amp; (lTot &lt; lOld)) {</span>
-<span class="fc" id="L1199">            node2.pathPredecessor = node1;</span>
-<span class="fc bfc" id="L1200" title="All 2 branches covered.">            if (lOld == Long.MAX_VALUE) {</span>
-<span class="fc" id="L1201">                node2.setKey(lTot);</span>
-<span class="fc" id="L1202">                minHeap.insert(node2);</span>
+<span class="fc" id="L1195">        long lOld = node2.getKey();</span>
+<span class="pc bpc" id="L1196" title="1 of 4 branches missed.">        if ((lTot &lt; lambda) &amp;&amp; (lTot &lt; lOld)) {</span>
+<span class="fc" id="L1197">            node2.pathPredecessor = node1;</span>
+<span class="fc bfc" id="L1198" title="All 2 branches covered.">            if (lOld == Long.MAX_VALUE) {</span>
+<span class="fc" id="L1199">                node2.setKey(lTot);</span>
+<span class="fc" id="L1200">                minHeap.insert(node2);</span>
             } else {
-<span class="fc" id="L1204">                minHeap.decreaseKey(node2, lTot);</span>
+<span class="fc" id="L1202">                minHeap.decreaseKey(node2, lTot);</span>
             }
         }
-<span class="fc" id="L1207">    }</span>
+<span class="fc" id="L1205">    }</span>
     
     private void handleMinusLink(MinHeapForRT2012 minHeap,
         PathNode node1, PathNode node2, float cp,
         int lambda, float eps) {
     
-<span class="fc" id="L1213">        long l1 = node1.getKey();</span>
+<span class="fc" id="L1211">        long l1 = node1.getKey();</span>
         
-<span class="fc" id="L1215">        long lp = 1 - (long) Math.ceil(cp / eps);</span>
-<span class="fc" id="L1216">        long lTot = l1 + lp;</span>
-<span class="fc" id="L1217">        long lOld = node2.getKey();</span>
-<span class="pc bpc" id="L1218" title="2 of 4 branches missed.">        if ((lTot &lt; lambda) &amp;&amp; (lTot &lt; lOld)) {</span>
-<span class="fc" id="L1219">            node2.pathPredecessor = node1;</span>
-<span class="pc bpc" id="L1220" title="1 of 2 branches missed.">            if (lOld == Long.MAX_VALUE) {</span>
-<span class="fc" id="L1221">                node2.setKey(lTot);</span>
-<span class="fc" id="L1222">                minHeap.insert(node2);</span>
+<span class="fc" id="L1213">        long lp = 1 - (long) Math.ceil(cp / eps);</span>
+<span class="fc" id="L1214">        long lTot = l1 + lp;</span>
+<span class="fc" id="L1215">        long lOld = node2.getKey();</span>
+<span class="pc bpc" id="L1216" title="2 of 4 branches missed.">        if ((lTot &lt; lambda) &amp;&amp; (lTot &lt; lOld)) {</span>
+<span class="fc" id="L1217">            node2.pathPredecessor = node1;</span>
+<span class="pc bpc" id="L1218" title="1 of 2 branches missed.">            if (lOld == Long.MAX_VALUE) {</span>
+<span class="fc" id="L1219">                node2.setKey(lTot);</span>
+<span class="fc" id="L1220">                minHeap.insert(node2);</span>
             } else {
-<span class="nc" id="L1224">                minHeap.decreaseKey(node2, lTot);</span>
+<span class="nc" id="L1222">                minHeap.decreaseKey(node2, lTot);</span>
             }
         }
-<span class="fc" id="L1227">    }</span>
+<span class="fc" id="L1225">    }</span>
     
     /**
      * NOTE any paths in the tree with only a single link are discarded
@@ -1235,29 +1233,29 @@ Matchings in G are integral flows in N_G
     private List&lt;List&lt;PathNode&gt;&gt; extractPathNodes(Forest forest,
         int forestIdx) {
         
-<span class="fc" id="L1238">        List&lt;List&lt;PathNode&gt;&gt; pathLists = new ArrayList&lt;List&lt;PathNode&gt;&gt;();</span>
+<span class="fc" id="L1236">        List&lt;List&lt;PathNode&gt;&gt; pathLists = new ArrayList&lt;List&lt;PathNode&gt;&gt;();</span>
                     
-<span class="fc" id="L1240">        DoubleLinkedCircularList tree = forest.get(forestIdx);</span>
+<span class="fc" id="L1238">        DoubleLinkedCircularList tree = forest.get(forestIdx);</span>
         
-<span class="pc bpc" id="L1242" title="1 of 2 branches missed.">        if (tree == null) {</span>
-<span class="nc" id="L1243">            return null;</span>
+<span class="pc bpc" id="L1240" title="1 of 2 branches missed.">        if (tree == null) {</span>
+<span class="nc" id="L1241">            return null;</span>
         }
         
-<span class="fc" id="L1246">        long n = tree.getNumberOfNodes();</span>
-<span class="fc" id="L1247">        HeapNode node = tree.getSentinel();</span>
-<span class="fc" id="L1248">        int branchIdx = 0;</span>
-<span class="fc bfc" id="L1249" title="All 2 branches covered.">        while (branchIdx &lt; n) {</span>
-<span class="fc" id="L1250">            node = node.getRight();</span>
-<span class="fc" id="L1251">            List&lt;PathNode&gt; path = extractNodes((PathNode)node);</span>
+<span class="fc" id="L1244">        long n = tree.getNumberOfNodes();</span>
+<span class="fc" id="L1245">        HeapNode node = tree.getSentinel();</span>
+<span class="fc" id="L1246">        int branchIdx = 0;</span>
+<span class="fc bfc" id="L1247" title="All 2 branches covered.">        while (branchIdx &lt; n) {</span>
+<span class="fc" id="L1248">            node = node.getRight();</span>
+<span class="fc" id="L1249">            List&lt;PathNode&gt; path = extractNodes((PathNode)node);</span>
             
-<span class="pc bpc" id="L1253" title="1 of 2 branches missed.">            if (path.size() &gt; 1) {</span>
-<span class="fc" id="L1254">                Collections.&lt;PathNode&gt;reverse(path);</span>
-<span class="fc" id="L1255">                pathLists.add(path);</span>
+<span class="pc bpc" id="L1251" title="1 of 2 branches missed.">            if (path.size() &gt; 1) {</span>
+<span class="fc" id="L1252">                Collections.&lt;PathNode&gt;reverse(path);</span>
+<span class="fc" id="L1253">                pathLists.add(path);</span>
             }
-<span class="fc" id="L1257">            ++branchIdx;</span>
-<span class="fc" id="L1258">        }</span>
+<span class="fc" id="L1255">            ++branchIdx;</span>
+<span class="fc" id="L1256">        }</span>
         
-<span class="fc" id="L1260">        return pathLists;</span>
+<span class="fc" id="L1258">        return pathLists;</span>
     }
     
     private class PathsAndPrices {
@@ -1283,7 +1281,7 @@ Matchings in G are integral flows in N_G
             Map&lt;Integer, Float&gt; rightPriceIncreases
         */
         
-<span class="fc" id="L1286">        List&lt;PathsAndPrices&gt; output = new ArrayList&lt;PathsAndPrices&gt;();</span>
+<span class="fc" id="L1284">        List&lt;PathsAndPrices&gt; output = new ArrayList&lt;PathsAndPrices&gt;();</span>
         
         /*
         sect 8.2, pg 57
@@ -1317,336 +1315,336 @@ Matchings in G are integral flows in N_G
                 Lft(0) -&gt; Rgt(1) (is &quot;idle&quot; in this example)  
         */
         
-<span class="fc" id="L1320">        List&lt;Integer&gt; forestIndexes = forest.getKeys();</span>
-<span class="fc" id="L1321">        int n0 = forestIndexes.size();</span>
+<span class="fc" id="L1318">        List&lt;Integer&gt; forestIndexes = forest.getKeys();</span>
+<span class="fc" id="L1319">        int n0 = forestIndexes.size();</span>
         
-<span class="pc bpc" id="L1323" title="1 of 4 branches missed.">        if (n0 == 0 || spIndexes.isEmpty()) {</span>
-<span class="fc" id="L1324">            return output;</span>
+<span class="pc bpc" id="L1321" title="1 of 4 branches missed.">        if (n0 == 0 || spIndexes.isEmpty()) {</span>
+<span class="fc" id="L1322">            return output;</span>
         }
 
-<span class="fc" id="L1327">        TIntSet spForestIndexes = new TIntHashSet(spIndexes.values());</span>
-<span class="fc" id="L1328">        TIntIterator iter = spForestIndexes.iterator();</span>
-<span class="fc bfc" id="L1329" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L1330">            int ltForestKey = iter.next();</span>
-<span class="fc" id="L1331">            long lt = forest.get(ltForestKey).getSentinel()</span>
-<span class="fc" id="L1332">                .getRight().getKey();</span>
+<span class="fc" id="L1325">        TIntSet spForestIndexes = new TIntHashSet(spIndexes.values());</span>
+<span class="fc" id="L1326">        TIntIterator iter = spForestIndexes.iterator();</span>
+<span class="fc bfc" id="L1327" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L1328">            int ltForestKey = iter.next();</span>
+<span class="fc" id="L1329">            long lt = forest.get(ltForestKey).getSentinel()</span>
+<span class="fc" id="L1330">                .getRight().getKey();</span>
            
-<span class="fc" id="L1334">            List&lt;List&lt;PathNode&gt;&gt; pathLists = extractPathNodes(forest, </span>
+<span class="fc" id="L1332">            List&lt;List&lt;PathNode&gt;&gt; pathLists = extractPathNodes(forest, </span>
                 ltForestKey);
             
-<span class="pc bnc" id="L1337" title="All 2 branches missed.">            assert(pathLists != null);</span>
+<span class="pc bnc" id="L1335" title="All 2 branches missed.">            assert(pathLists != null);</span>
                         
-<span class="fc bfc" id="L1339" title="All 2 branches covered.">            for (int pathIdx = 0; pathIdx &lt; pathLists.size(); ++pathIdx) {</span>
+<span class="fc bfc" id="L1337" title="All 2 branches covered.">            for (int pathIdx = 0; pathIdx &lt; pathLists.size(); ++pathIdx) {</span>
             
-<span class="fc" id="L1341">                List&lt;PathNode&gt; path = pathLists.get(pathIdx);</span>
+<span class="fc" id="L1339">                List&lt;PathNode&gt; path = pathLists.get(pathIdx);</span>
 
-<span class="fc" id="L1343">                log.fine(&quot;path &quot; + pathIdx + &quot; (lt=&quot; + lt + &quot;)&quot;);</span>
-<span class="pc bpc" id="L1344" title="1 of 2 branches missed.">                if (log.isLoggable(Level.FINE)) {                </span>
-<span class="nc" id="L1345">                    debugPath(path);</span>
+<span class="fc" id="L1341">                log.fine(&quot;path &quot; + pathIdx + &quot; (lt=&quot; + lt + &quot;)&quot;);</span>
+<span class="pc bpc" id="L1342" title="1 of 2 branches missed.">                if (log.isLoggable(Level.FINE)) {                </span>
+<span class="nc" id="L1343">                    debugPath(path);</span>
                 }
                 
                 // these get stored for every path, but not applied to
                 // the gFlow at this time
-<span class="fc" id="L1350">                TIntFloatMap leftPriceIncreases = new TIntFloatHashMap();</span>
+<span class="fc" id="L1348">                TIntFloatMap leftPriceIncreases = new TIntFloatHashMap();</span>
             
-<span class="fc" id="L1352">                TIntFloatMap rightPriceIncreases = new TIntFloatHashMap();</span>
+<span class="fc" id="L1350">                TIntFloatMap rightPriceIncreases = new TIntFloatHashMap();</span>
             
-<span class="fc bfc" id="L1354" title="All 2 branches covered.">                for (int i = 0; i &lt; (path.size() - 1); ++i) {</span>
-<span class="fc" id="L1355">                    PathNode node1 = path.get(i);</span>
-<span class="fc" id="L1356">                    PathNode node2 = path.get(i + 1);</span>
-<span class="fc" id="L1357">                    int l1 = (int) node1.getKey();</span>
-<span class="fc" id="L1358">                    int l2 = (int) node2.getKey();</span>
-<span class="fc" id="L1359">                    int idx1 = node1.index;</span>
-<span class="fc" id="L1360">                    int idx2 = node2.index;</span>
+<span class="fc bfc" id="L1352" title="All 2 branches covered.">                for (int i = 0; i &lt; (path.size() - 1); ++i) {</span>
+<span class="fc" id="L1353">                    PathNode node1 = path.get(i);</span>
+<span class="fc" id="L1354">                    PathNode node2 = path.get(i + 1);</span>
+<span class="fc" id="L1355">                    int l1 = (int) node1.getKey();</span>
+<span class="fc" id="L1356">                    int l2 = (int) node2.getKey();</span>
+<span class="fc" id="L1357">                    int idx1 = node1.index;</span>
+<span class="fc" id="L1358">                    int idx2 = node2.index;</span>
                     
-<span class="fc" id="L1362">                    boolean node1IsRight = (node1 instanceof RightNode);</span>
-<span class="fc" id="L1363">                    boolean node1IsLeft = (node1 instanceof LeftNode);</span>
-<span class="fc" id="L1364">                    boolean node1IsSource = (node1 instanceof SourceNode);</span>
-<span class="fc" id="L1365">                    boolean node1IsSink = (node1 instanceof SinkNode);</span>
-<span class="fc" id="L1366">                    boolean node2IsRight = (node2 instanceof RightNode);</span>
-<span class="fc" id="L1367">                    boolean node2IsLeft = (node2 instanceof LeftNode);</span>
-<span class="fc" id="L1368">                    boolean node2IsSource = (node2 instanceof SourceNode);</span>
-<span class="fc" id="L1369">                    boolean node2IsSink = (node2 instanceof SinkNode);</span>
-<span class="fc" id="L1370">                    long delta2 = (lt - l2);</span>
-<span class="fc" id="L1371">                    long delta1 = (lt - l1);</span>
+<span class="fc" id="L1360">                    boolean node1IsRight = (node1 instanceof RightNode);</span>
+<span class="fc" id="L1361">                    boolean node1IsLeft = (node1 instanceof LeftNode);</span>
+<span class="fc" id="L1362">                    boolean node1IsSource = (node1 instanceof SourceNode);</span>
+<span class="fc" id="L1363">                    boolean node1IsSink = (node1 instanceof SinkNode);</span>
+<span class="fc" id="L1364">                    boolean node2IsRight = (node2 instanceof RightNode);</span>
+<span class="fc" id="L1365">                    boolean node2IsLeft = (node2 instanceof LeftNode);</span>
+<span class="fc" id="L1366">                    boolean node2IsSource = (node2 instanceof SourceNode);</span>
+<span class="fc" id="L1367">                    boolean node2IsSink = (node2 instanceof SinkNode);</span>
+<span class="fc" id="L1368">                    long delta2 = (lt - l2);</span>
+<span class="fc" id="L1369">                    long delta1 = (lt - l1);</span>
                     
                     // determine if node1 -&gt; node2 is &quot;idle&quot; or &quot;saturated&quot;
 
-<span class="pc bpc" id="L1375" title="1 of 2 branches missed.">                    if (node1IsRight) {</span>
-<span class="nc bnc" id="L1376" title="All 2 branches missed.">                        assert(!node2IsRight);</span>
-<span class="nc bnc" id="L1377" title="All 2 branches missed.">                        if (node2IsLeft) {</span>
-<span class="nc bnc" id="L1378" title="All 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
-<span class="nc" id="L1379">                                float p2 = (delta2 * eps);</span>
-<span class="nc" id="L1380">                                leftPriceIncreases.put(idx2, p2);</span>
+<span class="pc bpc" id="L1373" title="1 of 2 branches missed.">                    if (node1IsRight) {</span>
+<span class="nc bnc" id="L1374" title="All 2 branches missed.">                        assert(!node2IsRight);</span>
+<span class="nc bnc" id="L1375" title="All 2 branches missed.">                        if (node2IsLeft) {</span>
+<span class="nc bnc" id="L1376" title="All 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
+<span class="nc" id="L1377">                                float p2 = (delta2 * eps);</span>
+<span class="nc" id="L1378">                                leftPriceIncreases.put(idx2, p2);</span>
                             }
-<span class="nc bnc" id="L1382" title="All 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
-<span class="nc" id="L1383">                                float p1 = (delta1 * eps);</span>
-<span class="nc" id="L1384">                                rightPriceIncreases.put(idx1, p1);</span>
+<span class="nc bnc" id="L1380" title="All 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
+<span class="nc" id="L1381">                                float p1 = (delta1 * eps);</span>
+<span class="nc" id="L1382">                                rightPriceIncreases.put(idx1, p1);</span>
                             }
                             
-<span class="nc bnc" id="L1387" title="All 2 branches missed.">                            if (rF.getBackwardLinksRM().containsKey(idx1)</span>
-<span class="nc bnc" id="L1388" title="All 2 branches missed.">                                &amp;&amp; rF.getBackwardLinksRM().get(idx1)</span>
+<span class="nc bnc" id="L1385" title="All 2 branches missed.">                            if (rF.getBackwardLinksRM().containsKey(idx1)</span>
+<span class="nc bnc" id="L1386" title="All 2 branches missed.">                                &amp;&amp; rF.getBackwardLinksRM().get(idx1)</span>
                                 == idx2) {
 
                                 // &quot;saturated&quot; node2(left) &lt;-- node1(right)
-<span class="nc" id="L1392">                                l2 -= (lt - l1);</span>
+<span class="nc" id="L1390">                                l2 -= (lt - l1);</span>
                                 
-<span class="nc bnc" id="L1394" title="All 2 branches missed.">                                if (l2 &lt; 0) {</span>
+<span class="nc bnc" id="L1392" title="All 2 branches missed.">                                if (l2 &lt; 0) {</span>
                                     //X=N2  Y=N1
-<span class="nc" id="L1396">                                    log.severe(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1397">                                    debug(forest);</span>
-<span class="nc" id="L1398">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1394">                                    log.severe(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1395">                                    debug(forest);</span>
+<span class="nc" id="L1396">                                    throw new IllegalStateException(</span>
                                         &quot;for saturated link X=&quot; + node2.index + &quot; to Y=&quot;
                                         + node1.index + &quot; results in l(X)=&quot; + l2);
                                 }
                                 
-<span class="nc" id="L1403">                                node2.setKey(l2);</span>
+<span class="nc" id="L1401">                                node2.setKey(l2);</span>
                             } else {
-<span class="nc bnc" id="L1405" title="All 2 branches missed.">                                assert (rF.getForwardLinksRM().get(idx2) != null</span>
-<span class="nc" id="L1406">                                &amp;&amp; rF.getForwardLinksRM().get(idx2)</span>
-<span class="nc bnc" id="L1407" title="All 2 branches missed.">                                .contains(idx1));</span>
+<span class="nc bnc" id="L1403" title="All 2 branches missed.">                                assert (rF.getForwardLinksRM().get(idx2) != null</span>
+<span class="nc" id="L1404">                                &amp;&amp; rF.getForwardLinksRM().get(idx2)</span>
+<span class="nc bnc" id="L1405" title="All 2 branches missed.">                                .contains(idx1));</span>
 
                                 // &quot;idle&quot; node2(left) --&gt; node1(right) 
-<span class="nc" id="L1410">                                l1 -= (lt - l2);</span>
+<span class="nc" id="L1408">                                l1 -= (lt - l2);</span>
                                 
-<span class="nc bnc" id="L1412" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
+<span class="nc bnc" id="L1410" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
                                     //X=N2 Y=N1
-<span class="nc" id="L1414">                                    log.severe(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1415">                                    debug(forest);</span>
-<span class="nc" id="L1416">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1412">                                    log.severe(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1413">                                    debug(forest);</span>
+<span class="nc" id="L1414">                                    throw new IllegalStateException(</span>
                                         &quot;for idle link X=&quot; + node2.index + &quot; to Y=&quot;
                                         + node1.index + &quot; results in l(Y)=&quot; + l1);
                                 }
                                 
-<span class="nc" id="L1421">                                node1.setKey(l1);</span>
+<span class="nc" id="L1419">                                node1.setKey(l1);</span>
                             }
-<span class="nc bnc" id="L1423" title="All 2 branches missed.">                        } else if (node2IsSink) {</span>
+<span class="nc bnc" id="L1421" title="All 2 branches missed.">                        } else if (node2IsSink) {</span>
                             // node2 is sink so add to existing price changes?
                             
-<span class="nc bnc" id="L1426" title="All 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
-<span class="nc" id="L1427">                                float p1 = (delta1 * eps);</span>
-<span class="nc" id="L1428">                                rightPriceIncreases.put(idx1, p1);</span>
+<span class="nc bnc" id="L1424" title="All 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
+<span class="nc" id="L1425">                                float p1 = (delta1 * eps);</span>
+<span class="nc" id="L1426">                                rightPriceIncreases.put(idx1, p1);</span>
                             }
-<span class="nc bnc" id="L1430" title="All 2 branches missed.">                            if (rF.getBackwardLinksSinkRM().contains(idx1)) {</span>
+<span class="nc bnc" id="L1428" title="All 2 branches missed.">                            if (rF.getBackwardLinksSinkRM().contains(idx1)) {</span>
                                 // &quot;saturated&quot; node1(right) &lt;-- node2(sink)
-<span class="nc" id="L1432">                                l1 -= (lt - l2);</span>
+<span class="nc" id="L1430">                                l1 -= (lt - l2);</span>
                                 
-<span class="nc bnc" id="L1434" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
+<span class="nc bnc" id="L1432" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
                                     // Y=N1  Y=N2=SINK
-<span class="nc" id="L1436">                                    log.severe(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1437">                                    debug(forest);</span>
-<span class="nc" id="L1438">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1434">                                    log.severe(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1435">                                    debug(forest);</span>
+<span class="nc" id="L1436">                                    throw new IllegalStateException(</span>
                                         &quot;for saturated link Y=&quot; + node1.index + &quot; to sink=&quot;
                                         + node2.index + &quot; results in l(Y)=&quot; + l1);
                                 }
                                 
-<span class="nc" id="L1443">                                node1.setKey(l1);</span>
+<span class="nc" id="L1441">                                node1.setKey(l1);</span>
                             } else {
-<span class="nc bnc" id="L1445" title="All 2 branches missed.">                                assert (rF.getForwardLinksSinkRM().contains(idx1));</span>
+<span class="nc bnc" id="L1443" title="All 2 branches missed.">                                assert (rF.getForwardLinksSinkRM().contains(idx1));</span>
                                 // &quot;idle&quot; node1(right) --&gt; node2(sink)
-<span class="nc" id="L1447">                                l2 -= (lt - l1);</span>
+<span class="nc" id="L1445">                                l2 -= (lt - l1);</span>
                                 
-<span class="nc bnc" id="L1449" title="All 2 branches missed.">                                if (l2 &lt; 0) {</span>
+<span class="nc bnc" id="L1447" title="All 2 branches missed.">                                if (l2 &lt; 0) {</span>
                                     // Y=N1  Y=N2=SINK
-<span class="nc" id="L1451">                                    log.severe(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1452">                                    debug(forest);</span>
-<span class="nc" id="L1453">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1449">                                    log.severe(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1450">                                    debug(forest);</span>
+<span class="nc" id="L1451">                                    throw new IllegalStateException(</span>
                                         &quot;for idle link Y=&quot; + node1.index + &quot; to sink=&quot;
                                         + node2.index + &quot; results in l(sink)=&quot; + l2);
                                 }
                                 
-<span class="nc" id="L1458">                                node2.setKey(l2);</span>
+<span class="nc" id="L1456">                                node2.setKey(l2);</span>
                             }
                         }
                         // end of node1 is right node
-<span class="pc bpc" id="L1462" title="1 of 2 branches missed.">                    } else if (node1IsLeft) {</span>
-<span class="pc bnc" id="L1463" title="All 2 branches missed.">                        assert(!node2IsLeft);</span>
-<span class="pc bpc" id="L1464" title="1 of 2 branches missed.">                        if (node2IsRight) {   </span>
+<span class="pc bpc" id="L1460" title="1 of 2 branches missed.">                    } else if (node1IsLeft) {</span>
+<span class="pc bnc" id="L1461" title="All 2 branches missed.">                        assert(!node2IsLeft);</span>
+<span class="pc bpc" id="L1462" title="1 of 2 branches missed.">                        if (node2IsRight) {   </span>
     
-<span class="pc bpc" id="L1466" title="2 of 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
-<span class="nc" id="L1467">                                float p2 = (delta2 * eps);</span>
-<span class="nc" id="L1468">                                rightPriceIncreases.put(idx2, p2);</span>
+<span class="pc bpc" id="L1464" title="2 of 4 branches missed.">                            if (!rightPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
+<span class="nc" id="L1465">                                float p2 = (delta2 * eps);</span>
+<span class="nc" id="L1466">                                rightPriceIncreases.put(idx2, p2);</span>
                             }
-<span class="pc bpc" id="L1470" title="2 of 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
-<span class="fc" id="L1471">                                float p1 = (delta1 * eps);</span>
-<span class="fc" id="L1472">                                leftPriceIncreases.put(idx1, p1);</span>
+<span class="pc bpc" id="L1468" title="2 of 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
+<span class="fc" id="L1469">                                float p1 = (delta1 * eps);</span>
+<span class="fc" id="L1470">                                leftPriceIncreases.put(idx1, p1);</span>
                             }
 
-<span class="fc bfc" id="L1475" title="All 2 branches covered.">                            if (rF.getBackwardLinksRM().containsKey(idx2)</span>
-<span class="pc bpc" id="L1476" title="1 of 2 branches missed.">                                &amp;&amp; rF.getBackwardLinksRM().get(idx2) == idx1) {</span>
+<span class="fc bfc" id="L1473" title="All 2 branches covered.">                            if (rF.getBackwardLinksRM().containsKey(idx2)</span>
+<span class="pc bpc" id="L1474" title="1 of 2 branches missed.">                                &amp;&amp; rF.getBackwardLinksRM().get(idx2) == idx1) {</span>
 
                                 // saturated link node1(left) &lt;-- node2(right)
-<span class="nc" id="L1479">                                l1 -= (lt - l2);</span>
+<span class="nc" id="L1477">                                l1 -= (lt - l2);</span>
                                 
-<span class="nc bnc" id="L1481" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
+<span class="nc bnc" id="L1479" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
                                     //X=N1  Y=N2
-<span class="nc" id="L1483">                                    log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1484">                                    debug(forest);</span>
-<span class="nc" id="L1485">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1481">                                    log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1482">                                    debug(forest);</span>
+<span class="nc" id="L1483">                                    throw new IllegalStateException(</span>
                                         &quot;for saturated link X=&quot; + node1.index + &quot; to Y=&quot;
                                         + node2.index + &quot; results in l(X)=&quot; + l1);
                                 }
                                 
-<span class="nc" id="L1490">                                node1.setKey(l1);</span>
+<span class="nc" id="L1488">                                node1.setKey(l1);</span>
                             } else {
-<span class="pc" id="L1492">                                assert(rF.getForwardLinksRM().get(idx1)</span>
-<span class="nc bnc" id="L1493" title="All 2 branches missed.">                                    .contains(idx2));</span>
+<span class="pc" id="L1490">                                assert(rF.getForwardLinksRM().get(idx1)</span>
+<span class="nc bnc" id="L1491" title="All 2 branches missed.">                                    .contains(idx2));</span>
                                 // idle link node1(left) --&gt; node2(right)
-<span class="fc" id="L1495">                                l2 -= (lt - l1);</span>
+<span class="fc" id="L1493">                                l2 -= (lt - l1);</span>
                                 
-<span class="pc bpc" id="L1497" title="1 of 2 branches missed.">                                if (l2 &lt; 0) {</span>
+<span class="pc bpc" id="L1495" title="1 of 2 branches missed.">                                if (l2 &lt; 0) {</span>
                                     //X=N1  Y=N2
-<span class="nc" id="L1499">                                    log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1500">                                    debug(forest);</span>
-<span class="nc" id="L1501">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1497">                                    log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1498">                                    debug(forest);</span>
+<span class="nc" id="L1499">                                    throw new IllegalStateException(</span>
                                         &quot;for idle link X=&quot; + node1.index + &quot; to Y=&quot;
                                         + node2.index + &quot; results in l(Y)=&quot; + l2);
                                 }
                                 
-<span class="fc" id="L1506">                                node2.setKey(l2);</span>
+<span class="fc" id="L1504">                                node2.setKey(l2);</span>
                             }
 
-<span class="nc bnc" id="L1509" title="All 2 branches missed.">                        } else if (node2IsSource) {</span>
+<span class="nc bnc" id="L1507" title="All 2 branches missed.">                        } else if (node2IsSource) {</span>
                             // node2 is source so add to existing price changes?
-<span class="nc bnc" id="L1511" title="All 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
-<span class="nc" id="L1512">                                float p1 = (delta1 * eps);</span>
-<span class="nc" id="L1513">                                leftPriceIncreases.put(idx1, p1);</span>
+<span class="nc bnc" id="L1509" title="All 4 branches missed.">                            if (!leftPriceIncreases.containsKey(idx1) &amp;&amp; delta1 &gt; 0) {</span>
+<span class="nc" id="L1510">                                float p1 = (delta1 * eps);</span>
+<span class="nc" id="L1511">                                leftPriceIncreases.put(idx1, p1);</span>
                             }
-<span class="nc bnc" id="L1515" title="All 2 branches missed.">                            if (rF.getBackwardLinksSourceRM().contains(idx1)) {</span>
+<span class="nc bnc" id="L1513" title="All 2 branches missed.">                            if (rF.getBackwardLinksSourceRM().contains(idx1)) {</span>
                                 // saturated  node2(source) &lt;--- node1(Left)
-<span class="nc" id="L1517">                                l2 -= (lt - l1);</span>
+<span class="nc" id="L1515">                                l2 -= (lt - l1);</span>
                             
-<span class="nc bnc" id="L1519" title="All 2 branches missed.">                                if (l2 &lt; 0) {</span>
+<span class="nc bnc" id="L1517" title="All 2 branches missed.">                                if (l2 &lt; 0) {</span>
                                     //X=N1  N2=SOURCE
-<span class="nc" id="L1521">                                    log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1522">                                    debug(forest);</span>
-<span class="nc" id="L1523">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1519">                                    log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1520">                                    debug(forest);</span>
+<span class="nc" id="L1521">                                    throw new IllegalStateException(</span>
                                         &quot;for saturated link source=&quot; + node2.index 
                                             + &quot; to X=&quot;
                                         + node1.index + &quot; results in l(source)=&quot; + l2);
                                 }
                                 
-<span class="nc" id="L1529">                                node2.setKey(l2);</span>
+<span class="nc" id="L1527">                                node2.setKey(l2);</span>
                             } else {
-<span class="nc bnc" id="L1531" title="All 2 branches missed.">                                assert(rF.getForwardLinksSourceRM().contains(idx1));</span>
+<span class="nc bnc" id="L1529" title="All 2 branches missed.">                                assert(rF.getForwardLinksSourceRM().contains(idx1));</span>
                                 // idle  node2(source) --&gt; node1(left)
-<span class="nc" id="L1533">                                l1 -= (lt - l2);</span>
+<span class="nc" id="L1531">                                l1 -= (lt - l2);</span>
                                 
-<span class="nc bnc" id="L1535" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
+<span class="nc bnc" id="L1533" title="All 2 branches missed.">                                if (l1 &lt; 0) {</span>
                                     //X=N1  N2=SOURCE
-<span class="nc" id="L1537">                                    log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1538">                                    debug(forest);</span>
-<span class="nc" id="L1539">                                    throw new IllegalStateException(</span>
+<span class="nc" id="L1535">                                    log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1536">                                    debug(forest);</span>
+<span class="nc" id="L1537">                                    throw new IllegalStateException(</span>
                                         &quot;for idle link source=&quot; + node2.index + &quot; to X=&quot;
                                         + node1.index + &quot; results in l(X)=&quot; + l1);
                                 }
                                 
-<span class="nc" id="L1544">                                node1.setKey(l1);</span>
+<span class="nc" id="L1542">                                node1.setKey(l1);</span>
                             }
                         }
                         // end of node1 is left node
-<span class="nc bnc" id="L1548" title="All 2 branches missed.">                    } else if (node1IsSource) {</span>
-<span class="nc bnc" id="L1549" title="All 2 branches missed.">                        assert (node2IsLeft);</span>
-<span class="nc bnc" id="L1550" title="All 4 branches missed.">                        if (!leftPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
-<span class="nc" id="L1551">                            float p2 = ((lt - l2) * eps);</span>
-<span class="nc" id="L1552">                            leftPriceIncreases.put(idx2, p2);</span>
+<span class="nc bnc" id="L1546" title="All 2 branches missed.">                    } else if (node1IsSource) {</span>
+<span class="nc bnc" id="L1547" title="All 2 branches missed.">                        assert (node2IsLeft);</span>
+<span class="nc bnc" id="L1548" title="All 4 branches missed.">                        if (!leftPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
+<span class="nc" id="L1549">                            float p2 = ((lt - l2) * eps);</span>
+<span class="nc" id="L1550">                            leftPriceIncreases.put(idx2, p2);</span>
                         }
                         // node1 is source so add to existing price changes?
-<span class="nc bnc" id="L1555" title="All 2 branches missed.">                        if (rF.getBackwardLinksSourceRM().contains(idx2)) {</span>
+<span class="nc bnc" id="L1553" title="All 2 branches missed.">                        if (rF.getBackwardLinksSourceRM().contains(idx2)) {</span>
                             // saturated  node1(source) &lt;--- node2(Left)
-<span class="nc" id="L1557">                            l1 -= (lt - l2);</span>
+<span class="nc" id="L1555">                            l1 -= (lt - l2);</span>
                             
-<span class="nc bnc" id="L1559" title="All 2 branches missed.">                            if (l1 &lt; 0) {</span>
+<span class="nc bnc" id="L1557" title="All 2 branches missed.">                            if (l1 &lt; 0) {</span>
                                 //N1=SOURCE  N2=X
-<span class="nc" id="L1561">                                log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1562">                                debug(forest);</span>
-<span class="nc" id="L1563">                                throw new IllegalStateException(</span>
+<span class="nc" id="L1559">                                log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1560">                                debug(forest);</span>
+<span class="nc" id="L1561">                                throw new IllegalStateException(</span>
                                     &quot;for saturated link source=&quot; + node1.index + &quot; ro X=&quot;
                                     + node2.index + &quot; results in l(source)=&quot; + l1);
                             }
                             
-<span class="nc" id="L1568">                            node1.setKey(l1);</span>
+<span class="nc" id="L1566">                            node1.setKey(l1);</span>
                         } else {
-<span class="nc bnc" id="L1570" title="All 2 branches missed.">                            assert (rF.getForwardLinksSourceRM().contains(idx2));</span>
+<span class="nc bnc" id="L1568" title="All 2 branches missed.">                            assert (rF.getForwardLinksSourceRM().contains(idx2));</span>
                             // idle  node1(source) --&gt; node2(left)
-<span class="nc" id="L1572">                            l2 -= (lt - l1);</span>
+<span class="nc" id="L1570">                            l2 -= (lt - l1);</span>
                             
-<span class="nc bnc" id="L1574" title="All 2 branches missed.">                            if (l2 &lt; 0) {</span>
+<span class="nc bnc" id="L1572" title="All 2 branches missed.">                            if (l2 &lt; 0) {</span>
                                 //N1=SOURCE  N2=X
-<span class="nc" id="L1576">                                log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1577">                                debug(forest);</span>
-<span class="nc" id="L1578">                                throw new IllegalStateException(</span>
+<span class="nc" id="L1574">                                log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1575">                                debug(forest);</span>
+<span class="nc" id="L1576">                                throw new IllegalStateException(</span>
                                     &quot;for idle link source=&quot; + node1.index + &quot; ro X=&quot;
                                     + node2.index + &quot; results in l(X)=&quot; + l2);
                             }
                             
-<span class="nc" id="L1583">                            node2.setKey(l2);</span>
+<span class="nc" id="L1581">                            node2.setKey(l2);</span>
                         }
-<span class="nc bnc" id="L1585" title="All 2 branches missed.">                    } else if (node1IsSink) {</span>
-<span class="nc bnc" id="L1586" title="All 2 branches missed.">                        assert(node2IsRight);</span>
-<span class="nc bnc" id="L1587" title="All 4 branches missed.">                        if (!rightPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
-<span class="nc" id="L1588">                            float p2 = (delta2 * eps);</span>
-<span class="nc" id="L1589">                            rightPriceIncreases.put(idx2, p2);</span>
+<span class="nc bnc" id="L1583" title="All 2 branches missed.">                    } else if (node1IsSink) {</span>
+<span class="nc bnc" id="L1584" title="All 2 branches missed.">                        assert(node2IsRight);</span>
+<span class="nc bnc" id="L1585" title="All 4 branches missed.">                        if (!rightPriceIncreases.containsKey(idx2) &amp;&amp; delta2 &gt; 0) {</span>
+<span class="nc" id="L1586">                            float p2 = (delta2 * eps);</span>
+<span class="nc" id="L1587">                            rightPriceIncreases.put(idx2, p2);</span>
                         }
                         // node1 is sink so add existing price change?
-<span class="nc bnc" id="L1592" title="All 2 branches missed.">                        if (rF.getBackwardLinksSinkRM().contains(idx2)) {</span>
+<span class="nc bnc" id="L1590" title="All 2 branches missed.">                        if (rF.getBackwardLinksSinkRM().contains(idx2)) {</span>
                             // &quot;saturated&quot; node2(right) &lt;-- node1(sink)
-<span class="nc" id="L1594">                            l2 -= (lt - l1);</span>
+<span class="nc" id="L1592">                            l2 -= (lt - l1);</span>
                             
-<span class="nc bnc" id="L1596" title="All 2 branches missed.">                            if (l2 &lt; 0) {</span>
+<span class="nc bnc" id="L1594" title="All 2 branches missed.">                            if (l2 &lt; 0) {</span>
                                 //N2=Y  N1=SINK
-<span class="nc" id="L1598">                                log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1599">                                debug(forest);</span>
-<span class="nc" id="L1600">                                throw new IllegalStateException(</span>
+<span class="nc" id="L1596">                                log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1597">                                debug(forest);</span>
+<span class="nc" id="L1598">                                throw new IllegalStateException(</span>
                                     &quot;for saturated link Y=&quot; + node2.index 
                                     + &quot; to sink=&quot;
                                     + node1.index + &quot; results in l(Y)=&quot; + l2);
                             }
                             
-<span class="nc" id="L1606">                            node2.setKey(l2);</span>
+<span class="nc" id="L1604">                            node2.setKey(l2);</span>
                         } else {
-<span class="nc bnc" id="L1608" title="All 2 branches missed.">                            assert(rF.getForwardLinksSinkRM().contains(idx2));</span>
+<span class="nc bnc" id="L1606" title="All 2 branches missed.">                            assert(rF.getForwardLinksSinkRM().contains(idx2));</span>
                             // &quot;idle&quot; node2(right) --&gt; node1(sink)
-<span class="nc" id="L1610">                            l1 -= (lt - l2);</span>
+<span class="nc" id="L1608">                            l1 -= (lt - l2);</span>
                             
-<span class="nc bnc" id="L1612" title="All 2 branches missed.">                            if (l1 &lt; 0) {</span>
+<span class="nc bnc" id="L1610" title="All 2 branches missed.">                            if (l1 &lt; 0) {</span>
                                 //N2=Y  N1=SINK
-<span class="nc" id="L1614">                                log.info(&quot;forest at time of error:&quot;);</span>
-<span class="nc" id="L1615">                                debug(forest);</span>
-<span class="nc" id="L1616">                                throw new IllegalStateException(</span>
+<span class="nc" id="L1612">                                log.fine(&quot;forest at time of error:&quot;);</span>
+<span class="nc" id="L1613">                                debug(forest);</span>
+<span class="nc" id="L1614">                                throw new IllegalStateException(</span>
                                     &quot;for saturated link Y=&quot; + node2.index 
                                     + &quot; to sink=&quot;
                                     + node1.index + &quot; results in l(sink)=&quot; + l1);
                             }
                             
-<span class="nc" id="L1622">                            node1.setKey(l1);</span>
+<span class="nc" id="L1620">                            node1.setKey(l1);</span>
                         }
                     } 
                 }
                 
                 // if path lengths are zero,
                 // store in output
-<span class="fc" id="L1629">                boolean doStore = true;</span>
-<span class="fc bfc" id="L1630" title="All 2 branches covered.">                for (PathNode node : path) {</span>
-<span class="fc" id="L1631">                    int len = (int) node.getKey();</span>
-<span class="pc bpc" id="L1632" title="1 of 2 branches missed.">                    if (len != 0) {</span>
-<span class="nc" id="L1633">                        doStore = false;</span>
-<span class="nc" id="L1634">                        break;</span>
+<span class="fc" id="L1627">                boolean doStore = true;</span>
+<span class="fc bfc" id="L1628" title="All 2 branches covered.">                for (PathNode node : path) {</span>
+<span class="fc" id="L1629">                    int len = (int) node.getKey();</span>
+<span class="pc bpc" id="L1630" title="1 of 2 branches missed.">                    if (len != 0) {</span>
+<span class="nc" id="L1631">                        doStore = false;</span>
+<span class="nc" id="L1632">                        break;</span>
                     }
-<span class="fc" id="L1636">                }</span>
-<span class="pc bpc" id="L1637" title="1 of 2 branches missed.">                if (doStore) {</span>
+<span class="fc" id="L1634">                }</span>
+<span class="pc bpc" id="L1635" title="1 of 2 branches missed.">                if (doStore) {</span>
                     
-<span class="fc" id="L1639">                    PathsAndPrices p = new PathsAndPrices();</span>
-<span class="fc" id="L1640">                    p.path = path;</span>
-<span class="fc" id="L1641">                    p.leftPriceIncreases = leftPriceIncreases;</span>
-<span class="fc" id="L1642">                    p.rightPriceIncreases = rightPriceIncreases;</span>
+<span class="fc" id="L1637">                    PathsAndPrices p = new PathsAndPrices();</span>
+<span class="fc" id="L1638">                    p.path = path;</span>
+<span class="fc" id="L1639">                    p.leftPriceIncreases = leftPriceIncreases;</span>
+<span class="fc" id="L1640">                    p.rightPriceIncreases = rightPriceIncreases;</span>
                     
-<span class="fc" id="L1644">                    output.add(p);                    </span>
+<span class="fc" id="L1642">                    output.add(p);                    </span>
                 }
             }
-<span class="fc" id="L1647">        }</span>
+<span class="fc" id="L1645">        }</span>
         
-<span class="fc" id="L1649">        return output;</span>
+<span class="fc" id="L1647">        return output;</span>
     }
     
     private List&lt;LinkedList&lt;PathNode&gt;&gt;
@@ -1654,11 +1652,11 @@ Matchings in G are integral flows in N_G
             List&lt;PathsAndPrices&gt; pathsList,
             TIntSet surplus, TIntSet deficit) {
        
-<span class="fc" id="L1657">        List&lt;LinkedList&lt;PathNode&gt;&gt; augPaths </span>
+<span class="fc" id="L1655">        List&lt;LinkedList&lt;PathNode&gt;&gt; augPaths </span>
             = new ArrayList&lt;LinkedList&lt;PathNode&gt;&gt;();
         
-<span class="pc bpc" id="L1660" title="1 of 2 branches missed.">        if (pathsList.isEmpty()) {</span>
-<span class="nc" id="L1661">            return augPaths;</span>
+<span class="pc bpc" id="L1658" title="1 of 2 branches missed.">        if (pathsList.isEmpty()) {</span>
+<span class="nc" id="L1659">            return augPaths;</span>
         }
         
         //pseudocode from pg 62 , Figure 8.2
@@ -1670,88 +1668,88 @@ Matchings in G are integral flows in N_G
         //    - visited (== marked)
         //    - identity (== Left or Right or Source or Sink)
 
-<span class="fc" id="L1673">        Map&lt;PathNode, Set&lt;PathNode&gt;&gt; pathLinksMap =</span>
-<span class="fc" id="L1674">            createNewAdjacencyMap(pathsList, gFlow);</span>
+<span class="fc" id="L1671">        Map&lt;PathNode, Set&lt;PathNode&gt;&gt; pathLinksMap =</span>
+<span class="fc" id="L1672">            createNewAdjacencyMap(pathsList, gFlow);</span>
  
         //debug2(pathLinksMap);
 
-<span class="fc" id="L1678">        Set&lt;LeftNode&gt; surp = new HashSet&lt;LeftNode&gt;();</span>
-<span class="fc" id="L1679">        Set&lt;RightNode&gt; def = new HashSet&lt;RightNode&gt;();</span>
-<span class="fc" id="L1680">        makeSurplusAndDeficitSubSets(pathLinksMap, </span>
+<span class="fc" id="L1676">        Set&lt;LeftNode&gt; surp = new HashSet&lt;LeftNode&gt;();</span>
+<span class="fc" id="L1677">        Set&lt;RightNode&gt; def = new HashSet&lt;RightNode&gt;();</span>
+<span class="fc" id="L1678">        makeSurplusAndDeficitSubSets(pathLinksMap, </span>
             surplus, deficit, surp, def);
         
-<span class="fc" id="L1683">        Stack&lt;PathNode&gt; stack = new Stack&lt;PathNode&gt;();</span>
+<span class="fc" id="L1681">        Stack&lt;PathNode&gt; stack = new Stack&lt;PathNode&gt;();</span>
        
-<span class="fc bfc" id="L1685" title="All 2 branches covered.">        A: while (!surp.isEmpty()) {</span>
-<span class="fc" id="L1686">            LeftNode xNode = surp.iterator().next();</span>
-<span class="fc" id="L1687">            surp.remove(xNode);</span>
-<span class="fc" id="L1688">            stack.add(xNode);</span>
-<span class="fc bfc" id="L1689" title="All 2 branches covered.">            B: while (!stack.isEmpty()) {</span>
-<span class="fc" id="L1690">                PathNode v = stack.peek();</span>
-<span class="fc" id="L1691">                log.fine(&quot;v=stack.top=&quot; + v.toString());</span>
-<span class="fc" id="L1692">                boolean isLeftNode = (v instanceof LeftNode);</span>
-<span class="fc" id="L1693">                boolean isRightNode = (v instanceof RightNode);</span>
-<span class="pc bpc" id="L1694" title="1 of 4 branches missed.">                if (isLeftNode || isRightNode) {</span>
-<span class="fc" id="L1695">                    v.m = 1;</span>
+<span class="fc bfc" id="L1683" title="All 2 branches covered.">        A: while (!surp.isEmpty()) {</span>
+<span class="fc" id="L1684">            LeftNode xNode = surp.iterator().next();</span>
+<span class="fc" id="L1685">            surp.remove(xNode);</span>
+<span class="fc" id="L1686">            stack.add(xNode);</span>
+<span class="fc bfc" id="L1687" title="All 2 branches covered.">            B: while (!stack.isEmpty()) {</span>
+<span class="fc" id="L1688">                PathNode v = stack.peek();</span>
+<span class="fc" id="L1689">                log.fine(&quot;v=stack.top=&quot; + v.toString());</span>
+<span class="fc" id="L1690">                boolean isLeftNode = (v instanceof LeftNode);</span>
+<span class="fc" id="L1691">                boolean isRightNode = (v instanceof RightNode);</span>
+<span class="pc bpc" id="L1692" title="1 of 4 branches missed.">                if (isLeftNode || isRightNode) {</span>
+<span class="fc" id="L1693">                    v.m = 1;</span>
                 }
-<span class="fc bfc" id="L1697" title="All 4 branches covered.">                if (isRightNode &amp;&amp; def.contains((RightNode)v)) {</span>
+<span class="fc bfc" id="L1695" title="All 4 branches covered.">                if (isRightNode &amp;&amp; def.contains((RightNode)v)) {</span>
                     // add all of stack to P as an augmenting Path
-<span class="fc" id="L1699">                    LinkedList&lt;PathNode&gt; augPath = new</span>
+<span class="fc" id="L1697">                    LinkedList&lt;PathNode&gt; augPath = new</span>
                         LinkedList&lt;PathNode&gt;();
-<span class="fc bfc" id="L1701" title="All 2 branches covered.">                    while (!stack.isEmpty()) {</span>
-<span class="fc" id="L1702">                        augPath.add(stack.pop());</span>
+<span class="fc bfc" id="L1699" title="All 2 branches covered.">                    while (!stack.isEmpty()) {</span>
+<span class="fc" id="L1700">                        augPath.add(stack.pop());</span>
                     }
-<span class="pc bpc" id="L1704" title="1 of 2 branches missed.">                    if (!augPath.isEmpty()) {</span>
-<span class="fc" id="L1705">                        augPaths.add(augPath);</span>
+<span class="pc bpc" id="L1702" title="1 of 2 branches missed.">                    if (!augPath.isEmpty()) {</span>
+<span class="fc" id="L1703">                        augPaths.add(augPath);</span>
                     }
                     continue A;
                 }
-<span class="fc" id="L1709">                Set&lt;PathNode&gt; set = pathLinksMap.get(v);</span>
-<span class="fc bfc" id="L1710" title="All 2 branches covered.">                if (set != null) {</span>
-<span class="fc bfc" id="L1711" title="All 2 branches covered.">                    while (!set.isEmpty()) {</span>
-<span class="fc" id="L1712">                        PathNode w = set.iterator().next();</span>
-<span class="fc" id="L1713">                        set.remove(w);</span>
-<span class="fc" id="L1714">                        log.fine(&quot;stack.push w = &quot; + w.toString());</span>
-<span class="pc bpc" id="L1715" title="1 of 2 branches missed.">                        if (w.m == 0) {</span>
-<span class="fc" id="L1716">                            stack.push(w);</span>
-<span class="fc" id="L1717">                            continue B;</span>
+<span class="fc" id="L1707">                Set&lt;PathNode&gt; set = pathLinksMap.get(v);</span>
+<span class="fc bfc" id="L1708" title="All 2 branches covered.">                if (set != null) {</span>
+<span class="fc bfc" id="L1709" title="All 2 branches covered.">                    while (!set.isEmpty()) {</span>
+<span class="fc" id="L1710">                        PathNode w = set.iterator().next();</span>
+<span class="fc" id="L1711">                        set.remove(w);</span>
+<span class="fc" id="L1712">                        log.fine(&quot;stack.push w = &quot; + w.toString());</span>
+<span class="pc bpc" id="L1713" title="1 of 2 branches missed.">                        if (w.m == 0) {</span>
+<span class="fc" id="L1714">                            stack.push(w);</span>
+<span class="fc" id="L1715">                            continue B;</span>
                         }
-<span class="nc" id="L1719">                    }</span>
+<span class="nc" id="L1717">                    }</span>
                 }
                 // do nothing with v
-<span class="fc" id="L1722">                stack.pop();</span>
-<span class="fc" id="L1723">            }</span>
-<span class="fc" id="L1724">        }</span>
+<span class="fc" id="L1720">                stack.pop();</span>
+<span class="fc" id="L1721">            }</span>
+<span class="fc" id="L1722">        }</span>
         
-<span class="fc" id="L1726">        return augPaths;</span>
+<span class="fc" id="L1724">        return augPaths;</span>
     }
     
     private List&lt;LinkedList&lt;PathNode&gt;&gt; extractZeroLengthLinks(
         List&lt;List&lt;PathNode&gt;&gt; paths) {
 
         // each linked list is a pair of 2 path nodes whose link length = 0
-<span class="nc" id="L1733">        List&lt;LinkedList&lt;PathNode&gt;&gt; pathLists = new</span>
+<span class="nc" id="L1731">        List&lt;LinkedList&lt;PathNode&gt;&gt; pathLists = new</span>
             ArrayList&lt;LinkedList&lt;PathNode&gt;&gt;();
         
-<span class="nc bnc" id="L1736" title="All 2 branches missed.">        for (int i = 0; i &lt; paths.size(); ++i) {</span>
-<span class="nc" id="L1737">            List&lt;PathNode&gt; path = paths.get(i);</span>
-<span class="nc" id="L1738">            int n2 = path.size();</span>
-<span class="nc bnc" id="L1739" title="All 2 branches missed.">            for (int idx = 0; idx &lt; (n2 - 1); ++idx) {</span>
-<span class="nc" id="L1740">                PathNode node1 = path.get(idx);</span>
-<span class="nc" id="L1741">                PathNode node2 = path.get(idx + 1);</span>
-<span class="nc" id="L1742">                int l1 = (int) node1.getKey();</span>
-<span class="nc" id="L1743">                int l2 = (int) node2.getKey();</span>
-<span class="nc bnc" id="L1744" title="All 2 branches missed.">                if (l2 != 0) {</span>
-<span class="nc" id="L1745">                    continue;</span>
+<span class="nc bnc" id="L1734" title="All 2 branches missed.">        for (int i = 0; i &lt; paths.size(); ++i) {</span>
+<span class="nc" id="L1735">            List&lt;PathNode&gt; path = paths.get(i);</span>
+<span class="nc" id="L1736">            int n2 = path.size();</span>
+<span class="nc bnc" id="L1737" title="All 2 branches missed.">            for (int idx = 0; idx &lt; (n2 - 1); ++idx) {</span>
+<span class="nc" id="L1738">                PathNode node1 = path.get(idx);</span>
+<span class="nc" id="L1739">                PathNode node2 = path.get(idx + 1);</span>
+<span class="nc" id="L1740">                int l1 = (int) node1.getKey();</span>
+<span class="nc" id="L1741">                int l2 = (int) node2.getKey();</span>
+<span class="nc bnc" id="L1742" title="All 2 branches missed.">                if (l2 != 0) {</span>
+<span class="nc" id="L1743">                    continue;</span>
                 }
-<span class="nc" id="L1747">                LinkedList&lt;PathNode&gt; link = new LinkedList&lt;PathNode&gt;();</span>
-<span class="nc" id="L1748">                link.add(node1);</span>
-<span class="nc" id="L1749">                link.add(node2);</span>
-<span class="nc" id="L1750">                pathLists.add(link);</span>
+<span class="nc" id="L1745">                LinkedList&lt;PathNode&gt; link = new LinkedList&lt;PathNode&gt;();</span>
+<span class="nc" id="L1746">                link.add(node1);</span>
+<span class="nc" id="L1747">                link.add(node2);</span>
+<span class="nc" id="L1748">                pathLists.add(link);</span>
             }
         }
         
-<span class="nc" id="L1754">        return pathLists;</span>
+<span class="nc" id="L1752">        return pathLists;</span>
     }
     
     private void augmentFlow(FlowNetwork gFlow, 
@@ -1762,96 +1760,96 @@ Matchings in G are integral flows in N_G
         // - reverse forward-backward of links along paths
         //   AND idle-saturated states of the underlying arcs
         
-<span class="fc bfc" id="L1765" title="All 2 branches covered.">        for (LinkedList&lt;PathNode&gt; link : cPaths) {</span>
-<span class="pc bnc" id="L1766" title="All 2 branches missed.">            assert(link.size() == 2);</span>
-<span class="fc" id="L1767">            PathNode node2 = link.pollFirst();</span>
-<span class="fc" id="L1768">            PathNode node1 = link.pollFirst();</span>
-<span class="pc bnc" id="L1769" title="All 2 branches missed.">            assert(link.isEmpty());</span>
-<span class="fc" id="L1770">            int idx1 = node1.index;</span>
-<span class="fc" id="L1771">            int idx2 = node2.index;</span>
+<span class="fc bfc" id="L1763" title="All 2 branches covered.">        for (LinkedList&lt;PathNode&gt; link : cPaths) {</span>
+<span class="pc bnc" id="L1764" title="All 2 branches missed.">            assert(link.size() == 2);</span>
+<span class="fc" id="L1765">            PathNode node2 = link.pollFirst();</span>
+<span class="fc" id="L1766">            PathNode node1 = link.pollFirst();</span>
+<span class="pc bnc" id="L1767" title="All 2 branches missed.">            assert(link.isEmpty());</span>
+<span class="fc" id="L1768">            int idx1 = node1.index;</span>
+<span class="fc" id="L1769">            int idx2 = node2.index;</span>
         
-<span class="pc bpc" id="L1773" title="1 of 2 branches missed.">            if (node1 instanceof SourceNode) {</span>
-<span class="nc bnc" id="L1774" title="All 2 branches missed.">                assert(!(node2 instanceof SourceNode));</span>
-<span class="nc" id="L1775">                gFlow.augmentSourceToLeftFlowAndArc(idx2);</span>
-<span class="pc bpc" id="L1776" title="1 of 2 branches missed.">            } else if (node1 instanceof SinkNode) {</span>
-<span class="nc bnc" id="L1777" title="All 2 branches missed.">                assert(!(node2 instanceof SinkNode));</span>
-<span class="nc" id="L1778">                gFlow.augmentRightToSinkFlowAndArc(idx2);</span>
-<span class="pc bpc" id="L1779" title="1 of 2 branches missed.">            } else if (node1 instanceof LeftNode) {</span>
-<span class="nc bnc" id="L1780" title="All 2 branches missed.">                assert(!(node2 instanceof LeftNode));</span>
-<span class="nc bnc" id="L1781" title="All 2 branches missed.">                if (node2 instanceof RightNode) {</span>
-<span class="nc" id="L1782">                    gFlow.augmentFlowAndArc(idx1, idx2);</span>
-<span class="nc bnc" id="L1783" title="All 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
-<span class="nc" id="L1784">                    gFlow.augmentSourceToLeftFlowAndArc(idx1);</span>
-<span class="nc bnc" id="L1785" title="All 2 branches missed.">                } else if (node2 instanceof SinkNode) {</span>
-<span class="nc" id="L1786">                    gFlow.augmentRightToSinkFlowAndArc(idx1);</span>
+<span class="pc bpc" id="L1771" title="1 of 2 branches missed.">            if (node1 instanceof SourceNode) {</span>
+<span class="nc bnc" id="L1772" title="All 2 branches missed.">                assert(!(node2 instanceof SourceNode));</span>
+<span class="nc" id="L1773">                gFlow.augmentSourceToLeftFlowAndArc(idx2);</span>
+<span class="pc bpc" id="L1774" title="1 of 2 branches missed.">            } else if (node1 instanceof SinkNode) {</span>
+<span class="nc bnc" id="L1775" title="All 2 branches missed.">                assert(!(node2 instanceof SinkNode));</span>
+<span class="nc" id="L1776">                gFlow.augmentRightToSinkFlowAndArc(idx2);</span>
+<span class="pc bpc" id="L1777" title="1 of 2 branches missed.">            } else if (node1 instanceof LeftNode) {</span>
+<span class="nc bnc" id="L1778" title="All 2 branches missed.">                assert(!(node2 instanceof LeftNode));</span>
+<span class="nc bnc" id="L1779" title="All 2 branches missed.">                if (node2 instanceof RightNode) {</span>
+<span class="nc" id="L1780">                    gFlow.augmentFlowAndArc(idx1, idx2);</span>
+<span class="nc bnc" id="L1781" title="All 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
+<span class="nc" id="L1782">                    gFlow.augmentSourceToLeftFlowAndArc(idx1);</span>
+<span class="nc bnc" id="L1783" title="All 2 branches missed.">                } else if (node2 instanceof SinkNode) {</span>
+<span class="nc" id="L1784">                    gFlow.augmentRightToSinkFlowAndArc(idx1);</span>
                 }
             } else {
-<span class="pc bnc" id="L1789" title="All 2 branches missed.">                assert(!(node2 instanceof RightNode));</span>
-<span class="pc bpc" id="L1790" title="1 of 2 branches missed.">                if (node2 instanceof LeftNode) {</span>
-<span class="fc" id="L1791">                    gFlow.augmentFlowAndArc(idx2, idx1);</span>
-<span class="nc bnc" id="L1792" title="All 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
-<span class="nc" id="L1793">                    gFlow.augmentSourceToLeftFlowAndArc(idx1);</span>
-<span class="nc bnc" id="L1794" title="All 2 branches missed.">                } else if (node2 instanceof SinkNode) {</span>
-<span class="nc" id="L1795">                    gFlow.augmentRightToSinkFlowAndArc(idx1);</span>
+<span class="pc bnc" id="L1787" title="All 2 branches missed.">                assert(!(node2 instanceof RightNode));</span>
+<span class="pc bpc" id="L1788" title="1 of 2 branches missed.">                if (node2 instanceof LeftNode) {</span>
+<span class="fc" id="L1789">                    gFlow.augmentFlowAndArc(idx2, idx1);</span>
+<span class="nc bnc" id="L1790" title="All 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
+<span class="nc" id="L1791">                    gFlow.augmentSourceToLeftFlowAndArc(idx1);</span>
+<span class="nc bnc" id="L1792" title="All 2 branches missed.">                } else if (node2 instanceof SinkNode) {</span>
+<span class="nc" id="L1793">                    gFlow.augmentRightToSinkFlowAndArc(idx1);</span>
                 }
             }                
-<span class="fc" id="L1798">        }</span>
-<span class="fc" id="L1799">    }</span>
+<span class="fc" id="L1796">        }</span>
+<span class="fc" id="L1797">    }</span>
 
     private Map&lt;PathNode, Set&lt;PathNode&gt;&gt; createNewAdjacencyMap(
         List&lt;PathsAndPrices&gt; pathsList,
         FlowNetwork gFlow) {
         
-<span class="fc" id="L1805">        PathNodes pathNodes = gFlow.getPathNodes();</span>
-<span class="fc" id="L1806">        pathNodes.resetNodeExceptData(Long.MAX_VALUE);</span>
+<span class="fc" id="L1803">        PathNodes pathNodes = gFlow.getPathNodes();</span>
+<span class="fc" id="L1804">        pathNodes.resetNodeExceptData(Long.MAX_VALUE);</span>
    
-<span class="fc" id="L1808">        SinkNode sinkNode = pathNodes.getSinkNode();      </span>
+<span class="fc" id="L1806">        SinkNode sinkNode = pathNodes.getSinkNode();      </span>
         
-<span class="fc" id="L1810">        SourceNode sourceNode = pathNodes.getSourceNode();</span>
+<span class="fc" id="L1808">        SourceNode sourceNode = pathNodes.getSourceNode();</span>
         
-<span class="fc" id="L1812">        Map&lt;PathNode, Set&lt;PathNode&gt;&gt; pathLinksMap </span>
+<span class="fc" id="L1810">        Map&lt;PathNode, Set&lt;PathNode&gt;&gt; pathLinksMap </span>
             = new HashMap&lt;PathNode, Set&lt;PathNode&gt;&gt;();
         
-<span class="fc bfc" id="L1815" title="All 2 branches covered.">        for (PathsAndPrices p : pathsList) {</span>
-<span class="fc" id="L1816">            List&lt;PathNode&gt; path = p.path;</span>
-<span class="fc bfc" id="L1817" title="All 2 branches covered.">            for (int i = 0; i &lt; path.size() - 1; ++i) {            </span>
-<span class="fc" id="L1818">                PathNode node1 = path.get(i);</span>
-<span class="fc" id="L1819">                PathNode node2 = path.get(i + 1);</span>
+<span class="fc bfc" id="L1813" title="All 2 branches covered.">        for (PathsAndPrices p : pathsList) {</span>
+<span class="fc" id="L1814">            List&lt;PathNode&gt; path = p.path;</span>
+<span class="fc bfc" id="L1815" title="All 2 branches covered.">            for (int i = 0; i &lt; path.size() - 1; ++i) {            </span>
+<span class="fc" id="L1816">                PathNode node1 = path.get(i);</span>
+<span class="fc" id="L1817">                PathNode node2 = path.get(i + 1);</span>
             
                 // replace node1 and node2 
                 //     with nodes above to have same identity
                 //     and field m
-<span class="fc" id="L1824">                int idx1 = node1.index;</span>
-<span class="fc" id="L1825">                int idx2 = node2.index;</span>
-<span class="pc bpc" id="L1826" title="1 of 2 branches missed.">                if (node1 instanceof SinkNode) {</span>
-<span class="nc" id="L1827">                    node1 = sinkNode;</span>
-<span class="pc bpc" id="L1828" title="1 of 2 branches missed.">                } else if (node1 instanceof SourceNode) {</span>
-<span class="nc" id="L1829">                    node1 = sourceNode;</span>
-<span class="pc bpc" id="L1830" title="1 of 2 branches missed.">                } else if (node1 instanceof LeftNode) {</span>
-<span class="fc" id="L1831">                    node1 = pathNodes.getLeftNodes().get(idx1);</span>
+<span class="fc" id="L1822">                int idx1 = node1.index;</span>
+<span class="fc" id="L1823">                int idx2 = node2.index;</span>
+<span class="pc bpc" id="L1824" title="1 of 2 branches missed.">                if (node1 instanceof SinkNode) {</span>
+<span class="nc" id="L1825">                    node1 = sinkNode;</span>
+<span class="pc bpc" id="L1826" title="1 of 2 branches missed.">                } else if (node1 instanceof SourceNode) {</span>
+<span class="nc" id="L1827">                    node1 = sourceNode;</span>
+<span class="pc bpc" id="L1828" title="1 of 2 branches missed.">                } else if (node1 instanceof LeftNode) {</span>
+<span class="fc" id="L1829">                    node1 = pathNodes.getLeftNodes().get(idx1);</span>
                 } else {
-<span class="nc" id="L1833">                    node1 = pathNodes.getRightNodes().get(idx1);</span>
+<span class="nc" id="L1831">                    node1 = pathNodes.getRightNodes().get(idx1);</span>
                 }
-<span class="pc bpc" id="L1835" title="1 of 2 branches missed.">                if (node2 instanceof SinkNode) {</span>
-<span class="nc" id="L1836">                    node2 = sinkNode;</span>
-<span class="pc bpc" id="L1837" title="1 of 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
-<span class="nc" id="L1838">                    node2 = sourceNode;</span>
-<span class="pc bpc" id="L1839" title="1 of 2 branches missed.">                } else if (node2 instanceof LeftNode) {</span>
-<span class="nc" id="L1840">                    node2 = pathNodes.getLeftNodes().get(idx2);</span>
+<span class="pc bpc" id="L1833" title="1 of 2 branches missed.">                if (node2 instanceof SinkNode) {</span>
+<span class="nc" id="L1834">                    node2 = sinkNode;</span>
+<span class="pc bpc" id="L1835" title="1 of 2 branches missed.">                } else if (node2 instanceof SourceNode) {</span>
+<span class="nc" id="L1836">                    node2 = sourceNode;</span>
+<span class="pc bpc" id="L1837" title="1 of 2 branches missed.">                } else if (node2 instanceof LeftNode) {</span>
+<span class="nc" id="L1838">                    node2 = pathNodes.getLeftNodes().get(idx2);</span>
                 } else {
-<span class="fc" id="L1842">                    node2 = pathNodes.getRightNodes().get(idx2);</span>
+<span class="fc" id="L1840">                    node2 = pathNodes.getRightNodes().get(idx2);</span>
                 }
 
-<span class="fc" id="L1845">                Set&lt;PathNode&gt; values = pathLinksMap.get(node1);</span>
-<span class="pc bpc" id="L1846" title="1 of 2 branches missed.">                if (values == null) {</span>
-<span class="fc" id="L1847">                    values = new HashSet&lt;PathNode&gt;();</span>
-<span class="fc" id="L1848">                    pathLinksMap.put(node1, values);</span>
+<span class="fc" id="L1843">                Set&lt;PathNode&gt; values = pathLinksMap.get(node1);</span>
+<span class="pc bpc" id="L1844" title="1 of 2 branches missed.">                if (values == null) {</span>
+<span class="fc" id="L1845">                    values = new HashSet&lt;PathNode&gt;();</span>
+<span class="fc" id="L1846">                    pathLinksMap.put(node1, values);</span>
                 }
-<span class="fc" id="L1850">                values.add(node2);</span>
+<span class="fc" id="L1848">                values.add(node2);</span>
             }
-<span class="fc" id="L1852">        }</span>
+<span class="fc" id="L1850">        }</span>
 
-<span class="fc" id="L1854">        return pathLinksMap;</span>
+<span class="fc" id="L1852">        return pathLinksMap;</span>
     }
     
     /**
@@ -1861,7 +1859,7 @@ Matchings in G are integral flows in N_G
      * @return 
      */
     protected FlowNetwork getFinalFlowNetwork() {
-<span class="fc" id="L1864">        return finalFN;</span>
+<span class="fc" id="L1862">        return finalFN;</span>
     }
     
     private void makeSurplusAndDeficitSubSets(
@@ -1870,114 +1868,114 @@ Matchings in G are integral flows in N_G
         Set&lt;LeftNode&gt; outputSurplus, 
         Set&lt;RightNode&gt; outputDeficit) {
   
-<span class="fc bfc" id="L1873" title="All 2 branches covered.">        for (Entry&lt;PathNode, Set&lt;PathNode&gt;&gt; entry : pathLinksMap.entrySet()) {</span>
-<span class="fc" id="L1874">            PathNode node1 = entry.getKey();</span>
-<span class="fc" id="L1875">            int idx1 = node1.index;</span>
-<span class="pc bpc" id="L1876" title="1 of 2 branches missed.">            if (node1 instanceof LeftNode &amp;&amp; </span>
-<span class="pc bpc" id="L1877" title="1 of 2 branches missed.">                surplus.contains(idx1)) {</span>
-<span class="fc" id="L1878">                outputSurplus.add((LeftNode)node1);</span>
-<span class="nc bnc" id="L1879" title="All 2 branches missed.">            } else if (node1 instanceof RightNode &amp;&amp; </span>
-<span class="nc bnc" id="L1880" title="All 2 branches missed.">                deficit.contains(idx1)) {</span>
-<span class="nc" id="L1881">                outputDeficit.add((RightNode)node1);</span>
+<span class="fc bfc" id="L1871" title="All 2 branches covered.">        for (Entry&lt;PathNode, Set&lt;PathNode&gt;&gt; entry : pathLinksMap.entrySet()) {</span>
+<span class="fc" id="L1872">            PathNode node1 = entry.getKey();</span>
+<span class="fc" id="L1873">            int idx1 = node1.index;</span>
+<span class="pc bpc" id="L1874" title="1 of 2 branches missed.">            if (node1 instanceof LeftNode &amp;&amp; </span>
+<span class="pc bpc" id="L1875" title="1 of 2 branches missed.">                surplus.contains(idx1)) {</span>
+<span class="fc" id="L1876">                outputSurplus.add((LeftNode)node1);</span>
+<span class="nc bnc" id="L1877" title="All 2 branches missed.">            } else if (node1 instanceof RightNode &amp;&amp; </span>
+<span class="nc bnc" id="L1878" title="All 2 branches missed.">                deficit.contains(idx1)) {</span>
+<span class="nc" id="L1879">                outputDeficit.add((RightNode)node1);</span>
             }
-<span class="fc bfc" id="L1883" title="All 2 branches covered.">            for (PathNode node2 : entry.getValue()) {</span>
-<span class="fc" id="L1884">                int idx2 = node2.index;</span>
-<span class="pc bpc" id="L1885" title="1 of 2 branches missed.">                if (node2 instanceof LeftNode &amp;&amp; </span>
-<span class="nc bnc" id="L1886" title="All 2 branches missed.">                    surplus.contains(idx2)) {</span>
-<span class="nc" id="L1887">                    outputSurplus.add((LeftNode)node2);</span>
-<span class="pc bpc" id="L1888" title="1 of 2 branches missed.">                } else if (node2 instanceof RightNode &amp;&amp; </span>
-<span class="fc bfc" id="L1889" title="All 2 branches covered.">                    deficit.contains(idx2)) {</span>
-<span class="fc" id="L1890">                    outputDeficit.add((RightNode)node2);</span>
+<span class="fc bfc" id="L1881" title="All 2 branches covered.">            for (PathNode node2 : entry.getValue()) {</span>
+<span class="fc" id="L1882">                int idx2 = node2.index;</span>
+<span class="pc bpc" id="L1883" title="1 of 2 branches missed.">                if (node2 instanceof LeftNode &amp;&amp; </span>
+<span class="nc bnc" id="L1884" title="All 2 branches missed.">                    surplus.contains(idx2)) {</span>
+<span class="nc" id="L1885">                    outputSurplus.add((LeftNode)node2);</span>
+<span class="pc bpc" id="L1886" title="1 of 2 branches missed.">                } else if (node2 instanceof RightNode &amp;&amp; </span>
+<span class="fc bfc" id="L1887" title="All 2 branches covered.">                    deficit.contains(idx2)) {</span>
+<span class="fc" id="L1888">                    outputDeficit.add((RightNode)node2);</span>
                 }
-<span class="fc" id="L1892">            }</span>
-<span class="fc" id="L1893">        }</span>
-<span class="fc" id="L1894">    }</span>
+<span class="fc" id="L1890">            }</span>
+<span class="fc" id="L1891">        }</span>
+<span class="fc" id="L1892">    }</span>
     
     private void debugPath(List&lt;PathNode&gt; path) {
-<span class="nc" id="L1897">        StringBuilder sb = new StringBuilder(&quot;path=&quot;);</span>
-<span class="nc bnc" id="L1898" title="All 2 branches missed.">        for (PathNode node : path) {</span>
-<span class="nc" id="L1899">            String str = String.format(&quot;%s %s %d&quot;, </span>
-<span class="nc" id="L1900">                node.id, Long.toString(node.getKey()),</span>
-<span class="nc" id="L1901">                node.index);</span>
-<span class="nc" id="L1902">            sb.append(str).append(&quot;, &quot;);</span>
-<span class="nc" id="L1903">        }</span>
-<span class="nc" id="L1904">        log.info(sb.toString());</span>
-<span class="nc" id="L1905">    }</span>
+<span class="nc" id="L1895">        StringBuilder sb = new StringBuilder(&quot;path=&quot;);</span>
+<span class="nc bnc" id="L1896" title="All 2 branches missed.">        for (PathNode node : path) {</span>
+<span class="nc" id="L1897">            String str = String.format(&quot;%s %s %d&quot;, </span>
+<span class="nc" id="L1898">                node.id, Long.toString(node.getKey()),</span>
+<span class="nc" id="L1899">                node.index);</span>
+<span class="nc" id="L1900">            sb.append(str).append(&quot;, &quot;);</span>
+<span class="nc" id="L1901">        }</span>
+<span class="nc" id="L1902">        log.fine(sb.toString());</span>
+<span class="nc" id="L1903">    }</span>
     
     private void validateGraph(Graph g) {
 
-<span class="fc" id="L1909">        StringBuilder errors = new StringBuilder();</span>
-<span class="pc bpc" id="L1910" title="1 of 2 branches missed.">        if (g.getNLeft() == 0) {</span>
-<span class="nc" id="L1911">            errors.append(&quot;graph cannot have 0 left nodes.&quot;);</span>
+<span class="fc" id="L1907">        StringBuilder errors = new StringBuilder();</span>
+<span class="pc bpc" id="L1908" title="1 of 2 branches missed.">        if (g.getNLeft() == 0) {</span>
+<span class="nc" id="L1909">            errors.append(&quot;graph cannot have 0 left nodes.&quot;);</span>
         } 
-<span class="pc bpc" id="L1913" title="1 of 2 branches missed.">        if (g.getNRight() == 0) {</span>
-<span class="nc" id="L1914">            errors.append(&quot; graph cannot have 0 rght nodes.&quot;);</span>
+<span class="pc bpc" id="L1911" title="1 of 2 branches missed.">        if (g.getNRight() == 0) {</span>
+<span class="nc" id="L1912">            errors.append(&quot; graph cannot have 0 rght nodes.&quot;);</span>
         }
-<span class="pc bpc" id="L1916" title="1 of 2 branches missed.">        if (g.getEdgeWeights().isEmpty()) {</span>
-<span class="nc" id="L1917">            errors.append(&quot; every vertex in g must have at least one edge.&quot;);</span>
+<span class="pc bpc" id="L1914" title="1 of 2 branches missed.">        if (g.getEdgeWeights().isEmpty()) {</span>
+<span class="nc" id="L1915">            errors.append(&quot; every vertex in g must have at least one edge.&quot;);</span>
         } else {
             // every vertex must be part of at least one edge
-<span class="fc" id="L1920">            TIntSet xInEdges = new TIntHashSet();</span>
-<span class="fc" id="L1921">            TIntSet yInEdges = new TIntHashSet();</span>
-<span class="fc" id="L1922">            boolean lessThan1 = false;</span>
+<span class="fc" id="L1918">            TIntSet xInEdges = new TIntHashSet();</span>
+<span class="fc" id="L1919">            TIntSet yInEdges = new TIntHashSet();</span>
+<span class="fc" id="L1920">            boolean lessThan1 = false;</span>
             
-<span class="fc" id="L1924">            TObjectIntIterator&lt;PairInt&gt; iter2 = g.getEdgeWeights().iterator();</span>
-<span class="fc bfc" id="L1925" title="All 2 branches covered.">            for (int i = 0; i &lt; g.getEdgeWeights().size(); ++i) {</span>
-<span class="fc" id="L1926">                iter2.advance();</span>
-<span class="fc" id="L1927">                PairInt p = iter2.key();</span>
-<span class="pc bpc" id="L1928" title="1 of 2 branches missed.">                if (iter2.value() &lt; 1) {</span>
-<span class="nc" id="L1929">                    errors.append(</span>
+<span class="fc" id="L1922">            TObjectIntIterator&lt;PairInt&gt; iter2 = g.getEdgeWeights().iterator();</span>
+<span class="fc bfc" id="L1923" title="All 2 branches covered.">            for (int i = 0; i &lt; g.getEdgeWeights().size(); ++i) {</span>
+<span class="fc" id="L1924">                iter2.advance();</span>
+<span class="fc" id="L1925">                PairInt p = iter2.key();</span>
+<span class="pc bpc" id="L1926" title="1 of 2 branches missed.">                if (iter2.value() &lt; 1) {</span>
+<span class="nc" id="L1927">                    errors.append(</span>
                     &quot; edge weights should be larger than 0.&quot;);
-<span class="nc" id="L1931">                    lessThan1 = true;</span>
+<span class="nc" id="L1929">                    lessThan1 = true;</span>
                 }
-<span class="fc" id="L1933">                xInEdges.add(p.getX());</span>
-<span class="fc" id="L1934">                yInEdges.add(p.getY());</span>
+<span class="fc" id="L1931">                xInEdges.add(p.getX());</span>
+<span class="fc" id="L1932">                yInEdges.add(p.getY());</span>
             }
-<span class="pc bpc" id="L1936" title="1 of 2 branches missed.">            if (lessThan1) {</span>
-<span class="nc bnc" id="L1937" title="All 4 branches missed.">                if (g.getNLeft() &gt; xInEdges.size() || g.getNRight() &gt; yInEdges.size()) {</span>
-<span class="nc" id="L1938">                    errors.append(&quot; every vertex in g must have at least one edge.&quot;);</span>
+<span class="pc bpc" id="L1934" title="1 of 2 branches missed.">            if (lessThan1) {</span>
+<span class="nc bnc" id="L1935" title="All 4 branches missed.">                if (g.getNLeft() &gt; xInEdges.size() || g.getNRight() &gt; yInEdges.size()) {</span>
+<span class="nc" id="L1936">                    errors.append(&quot; every vertex in g must have at least one edge.&quot;);</span>
                 }
             }
         }
         
-<span class="pc bpc" id="L1943" title="1 of 2 branches missed.">        if (errors.length() &gt; 0) {</span>
-<span class="nc" id="L1944">            throw new IllegalArgumentException(errors.toString());</span>
+<span class="pc bpc" id="L1941" title="1 of 2 branches missed.">        if (errors.length() &gt; 0) {</span>
+<span class="nc" id="L1942">            throw new IllegalArgumentException(errors.toString());</span>
         }
-<span class="fc" id="L1946">    }</span>
+<span class="fc" id="L1944">    }</span>
 
     private TIntIntMap singleNodesSolution(Graph g) {
     
-<span class="nc" id="L1950">        TIntIntMap m = new TIntIntHashMap();</span>
+<span class="nc" id="L1948">        TIntIntMap m = new TIntIntHashMap();</span>
         
-<span class="nc bnc" id="L1952" title="All 2 branches missed.">        if (g.getEdgeWeights().containsKey(new PairInt(0, 0))) {</span>
-<span class="nc" id="L1953">            m.put(0, 0);</span>
+<span class="nc bnc" id="L1950" title="All 2 branches missed.">        if (g.getEdgeWeights().containsKey(new PairInt(0, 0))) {</span>
+<span class="nc" id="L1951">            m.put(0, 0);</span>
         }
         
-<span class="nc" id="L1956">        throw new IllegalStateException(&quot;graph only had 1 left&quot;</span>
+<span class="nc" id="L1954">        throw new IllegalStateException(&quot;graph only had 1 left&quot;</span>
             + &quot; and right node, but no edge between them.&quot;);
     }
   
     private void debug2(Map&lt;PathNode, Set&lt;PathNode&gt;&gt; pathLinksMap) {
         
-<span class="nc" id="L1962">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L1960">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="nc bnc" id="L1964" title="All 2 branches missed.">        for (Entry&lt;PathNode, Set&lt;PathNode&gt;&gt; entry : pathLinksMap.entrySet()) {</span>
+<span class="nc bnc" id="L1962" title="All 2 branches missed.">        for (Entry&lt;PathNode, Set&lt;PathNode&gt;&gt; entry : pathLinksMap.entrySet()) {</span>
             
-<span class="nc" id="L1966">            PathNode node1 = entry.getKey();</span>
+<span class="nc" id="L1964">            PathNode node1 = entry.getKey();</span>
             
-<span class="nc" id="L1968">            sb.append(String.format(&quot;%s %d&quot;, node1.id, node1.index));</span>
-<span class="nc" id="L1969">            sb.append(&quot;--&gt;[&quot;);</span>
+<span class="nc" id="L1966">            sb.append(String.format(&quot;%s %d&quot;, node1.id, node1.index));</span>
+<span class="nc" id="L1967">            sb.append(&quot;--&gt;[&quot;);</span>
             
-<span class="nc" id="L1971">            Set&lt;PathNode&gt; set = entry.getValue();</span>
-<span class="nc bnc" id="L1972" title="All 2 branches missed.">            for (PathNode node2 : set) {</span>
-<span class="nc" id="L1973">                sb.append(String.format(&quot;%s %d&quot;, node2.id, </span>
-<span class="nc" id="L1974">                    node2.index));</span>
-<span class="nc" id="L1975">                sb.append(&quot;, &quot;);</span>
-<span class="nc" id="L1976">            }</span>
-<span class="nc" id="L1977">            sb.append(&quot;]\n&quot;);</span>
-<span class="nc" id="L1978">        }</span>
-<span class="nc" id="L1979">        log.info(sb.toString());</span>
-<span class="nc" id="L1980">    }</span>
+<span class="nc" id="L1969">            Set&lt;PathNode&gt; set = entry.getValue();</span>
+<span class="nc bnc" id="L1970" title="All 2 branches missed.">            for (PathNode node2 : set) {</span>
+<span class="nc" id="L1971">                sb.append(String.format(&quot;%s %d&quot;, node2.id, </span>
+<span class="nc" id="L1972">                    node2.index));</span>
+<span class="nc" id="L1973">                sb.append(&quot;, &quot;);</span>
+<span class="nc" id="L1974">            }</span>
+<span class="nc" id="L1975">            sb.append(&quot;]\n&quot;);</span>
+<span class="nc" id="L1976">        }</span>
+<span class="nc" id="L1977">        log.fine(sb.toString());</span>
+<span class="nc" id="L1978">    }</span>
 
     private void raisePricesForMaximalSet(FlowNetwork gFlow, 
         List&lt;LinkedList&lt;PathNode&gt;&gt; cPaths, 
@@ -2002,90 +2000,107 @@ Matchings in G are integral flows in N_G
         TODO: consider compressed keys.
         */
     
-<span class="fc" id="L2005">        TObjectIntMap&lt;QuadInt&gt; priceLookupMap </span>
-<span class="fc" id="L2006">            = createPriceLookupMap(cachedPriceChanges);</span>
+<span class="fc" id="L2003">        TObjectIntMap&lt;QuadInt&gt; priceLookupMap </span>
+<span class="fc" id="L2004">            = createPriceLookupMap(cachedPriceChanges);</span>
         
-<span class="fc bfc" id="L2008" title="All 2 branches covered.">        for (List&lt;PathNode&gt; path : cPaths) {</span>
+<span class="fc bfc" id="L2006" title="All 2 branches covered.">        for (List&lt;PathNode&gt; path : cPaths) {</span>
             
-<span class="fc" id="L2010">            Collections.reverse(path);</span>
+<span class="fc" id="L2008">            Collections.reverse(path);</span>
             
-<span class="fc" id="L2012">            QuadInt key = createKey(path);</span>
+<span class="fc" id="L2010">            QuadInt key = createKey(path);</span>
                         
-<span class="pc bpc" id="L2014" title="1 of 2 branches missed.">            if (!priceLookupMap.containsKey(key)) {</span>
-<span class="nc" id="L2015">                throw new IllegalStateException(&quot;error in algorithm.&quot;</span>
+<span class="pc bpc" id="L2012" title="1 of 2 branches missed.">            if (!priceLookupMap.containsKey(key)) {</span>
+<span class="nc" id="L2013">                throw new IllegalStateException(&quot;error in algorithm.&quot;</span>
                     + &quot;  partial paths need to be considered&quot;);
             }
             
-<span class="fc" id="L2019">            int idx = priceLookupMap.get(key);</span>
+<span class="fc" id="L2017">            int idx = priceLookupMap.get(key);</span>
             
-<span class="fc" id="L2021">            PathsAndPrices p = cachedPriceChanges.get(idx);</span>
+<span class="fc" id="L2019">            PathsAndPrices p = cachedPriceChanges.get(idx);</span>
             
-<span class="fc" id="L2023">            TIntFloatMap leftP = p.leftPriceIncreases;</span>
+<span class="fc" id="L2021">            TIntFloatMap leftP = p.leftPriceIncreases;</span>
             
-<span class="fc" id="L2025">            TIntFloatIterator iter = leftP.iterator();</span>
-<span class="fc bfc" id="L2026" title="All 2 branches covered.">            for (int i = leftP.size(); i-- &gt; 0;) {</span>
-<span class="fc" id="L2027">                iter.advance();            </span>
-<span class="fc" id="L2028">                float f = iter.value();</span>
-<span class="fc" id="L2029">                gFlow.addToLeftPrice(iter.key(), f);</span>
-<span class="fc" id="L2030">            }</span>
+<span class="fc" id="L2023">            TIntFloatIterator iter = leftP.iterator();</span>
+<span class="fc bfc" id="L2024" title="All 2 branches covered.">            for (int i = leftP.size(); i-- &gt; 0;) {</span>
+<span class="fc" id="L2025">                iter.advance();            </span>
+<span class="fc" id="L2026">                float f = iter.value();</span>
+<span class="fc" id="L2027">                gFlow.addToLeftPrice(iter.key(), f);</span>
+<span class="fc" id="L2028">            }</span>
             
-<span class="fc" id="L2032">            TIntFloatMap rightP = p.rightPriceIncreases;</span>
-<span class="fc" id="L2033">            iter = rightP.iterator();</span>
-<span class="pc bpc" id="L2034" title="1 of 2 branches missed.">            for (int i = rightP.size(); i-- &gt; 0;) {</span>
-<span class="nc" id="L2035">                iter.advance();                </span>
-<span class="nc" id="L2036">                float f = iter.value();</span>
-<span class="nc" id="L2037">                gFlow.addToRightPrice(iter.key(), f);</span>
-<span class="nc" id="L2038">            }</span>
-<span class="fc" id="L2039">        }</span>
+<span class="fc" id="L2030">            TIntFloatMap rightP = p.rightPriceIncreases;</span>
+<span class="fc" id="L2031">            iter = rightP.iterator();</span>
+<span class="pc bpc" id="L2032" title="1 of 2 branches missed.">            for (int i = rightP.size(); i-- &gt; 0;) {</span>
+<span class="nc" id="L2033">                iter.advance();                </span>
+<span class="nc" id="L2034">                float f = iter.value();</span>
+<span class="nc" id="L2035">                gFlow.addToRightPrice(iter.key(), f);</span>
+<span class="nc" id="L2036">            }</span>
+<span class="fc" id="L2037">        }</span>
         
-<span class="fc" id="L2041">    }</span>
+<span class="fc" id="L2039">    }</span>
     
     private QuadInt createKey(List&lt;PathNode&gt; path) {
         
-<span class="fc" id="L2045">        QuadInt q = new QuadInt();</span>
+<span class="fc" id="L2043">        QuadInt q = new QuadInt();</span>
         
-<span class="fc bfc" id="L2047" title="All 2 branches covered.">        for (int i = 0; i &lt; path.size(); ++i) {</span>
-<span class="fc" id="L2048">            PathNode node = path.get(i);</span>
-<span class="fc" id="L2049">            int idx = node.index;</span>
-<span class="pc bpc" id="L2050" title="1 of 4 branches missed.">            if (node instanceof RightNode || node instanceof SinkNode) {</span>
-<span class="fc" id="L2051">                idx *= -1;</span>
+<span class="fc bfc" id="L2045" title="All 2 branches covered.">        for (int i = 0; i &lt; path.size(); ++i) {</span>
+<span class="fc" id="L2046">            PathNode node = path.get(i);</span>
+<span class="fc" id="L2047">            int idx = node.index;</span>
+<span class="pc bpc" id="L2048" title="1 of 4 branches missed.">            if (node instanceof RightNode || node instanceof SinkNode) {</span>
+<span class="fc" id="L2049">                idx *= -1;</span>
             }
-<span class="pc bpc" id="L2053" title="3 of 5 branches missed.">            switch(i) {</span>
+<span class="pc bpc" id="L2051" title="3 of 5 branches missed.">            switch(i) {</span>
                 case 0:
-<span class="fc" id="L2055">                    q.setA(idx);</span>
-<span class="fc" id="L2056">                    break;</span>
+<span class="fc" id="L2053">                    q.setA(idx);</span>
+<span class="fc" id="L2054">                    break;</span>
                 case 1:
-<span class="fc" id="L2058">                    q.setB(idx);</span>
-<span class="fc" id="L2059">                    break;</span>
+<span class="fc" id="L2056">                    q.setB(idx);</span>
+<span class="fc" id="L2057">                    break;</span>
                 case 2:
-<span class="nc" id="L2061">                    q.setC(idx);</span>
-<span class="nc" id="L2062">                    break;</span>
+<span class="nc" id="L2059">                    q.setC(idx);</span>
+<span class="nc" id="L2060">                    break;</span>
                 case 3:
-<span class="nc" id="L2064">                    q.setD(idx);</span>
-<span class="nc" id="L2065">                    break;</span>
+<span class="nc" id="L2062">                    q.setD(idx);</span>
+<span class="nc" id="L2063">                    break;</span>
                 default:
-<span class="nc" id="L2067">                    throw new IllegalStateException(&quot;Error in algorithm&quot;</span>
+<span class="nc" id="L2065">                    throw new IllegalStateException(&quot;Error in algorithm&quot;</span>
                         + &quot;.  Expecting path length &lt; 5&quot;);
             }
         }
         
-<span class="fc" id="L2072">        return q;</span>
+<span class="fc" id="L2070">        return q;</span>
     }
     
     private TObjectIntMap&lt;QuadInt&gt; createPriceLookupMap(
         List&lt;PathsAndPrices&gt; cachedPriceChanges) {
         
-<span class="fc" id="L2078">        TObjectIntMap&lt;QuadInt&gt; map = new TObjectIntHashMap&lt;QuadInt&gt;();</span>
+<span class="fc" id="L2076">        TObjectIntMap&lt;QuadInt&gt; map = new TObjectIntHashMap&lt;QuadInt&gt;();</span>
         
-<span class="fc bfc" id="L2080" title="All 2 branches covered.">        for (int i = 0; i &lt; cachedPriceChanges.size(); ++i) {</span>
+<span class="fc bfc" id="L2078" title="All 2 branches covered.">        for (int i = 0; i &lt; cachedPriceChanges.size(); ++i) {</span>
             
-<span class="fc" id="L2082">            PathsAndPrices p = cachedPriceChanges.get(i);</span>
+<span class="fc" id="L2080">            PathsAndPrices p = cachedPriceChanges.get(i);</span>
             
-<span class="fc" id="L2084">            map.put(createKey(p.path), i);</span>
+<span class="fc" id="L2082">            map.put(createKey(p.path), i);</span>
         }
         
-<span class="fc" id="L2087">        return map;</span>
+<span class="fc" id="L2085">        return map;</span>
     }
 
+    public static Graph convert(int[][] cost) {
+
+<span class="nc" id="L2090">        int n1 = cost.length;</span>
+<span class="nc" id="L2091">        int n2 = cost[0].length;</span>
+
+<span class="nc" id="L2093">        TObjectIntMap&lt;PairInt&gt; weights = new TObjectIntHashMap&lt;PairInt&gt;();</span>
+
+<span class="nc bnc" id="L2095" title="All 2 branches missed.">        for (int i = 0; i &lt; n1; ++i) {</span>
+<span class="nc bnc" id="L2096" title="All 2 branches missed.">            for (int j = 0; j &lt; n2; ++j) {</span>
+<span class="nc" id="L2097">                weights.put(new PairInt(i, j), cost[i][j]);</span>
+            }
+        }
+
+<span class="nc" id="L2101">        Graph g = new Graph(n1, n2, weights, true);</span>
+
+<span class="nc" id="L2103">        return g;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
