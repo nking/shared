@@ -16,7 +16,11 @@ public class FormatArray {
             if (i < (a.length - 1)) {
                 sb.append(",");
             }
-            sb.append(" ");
+            if (i == (a.length-1)) {
+                sb.append("\n");
+            } else {
+                sb.append(" ");
+            }
         }
         return sb.toString();
     }
@@ -28,7 +32,11 @@ public class FormatArray {
             if (i < (a.length - 1)) {
                 sb.append(",");
             }
-            sb.append(" ");
+            if (i == (a.length-1)) {
+                sb.append("\n");
+            } else {
+                sb.append(" ");
+            }
         }
         return sb.toString();
     }
@@ -40,7 +48,11 @@ public class FormatArray {
             if (i < (a.length - 1)) {
                 sb.append(",");
             }
-            sb.append(" ");
+            if (i == (a.length-1)) {
+                sb.append("\n");
+            } else {
+                sb.append(" ");
+            }
         }
         return sb.toString();
     }
@@ -85,6 +97,8 @@ public class FormatArray {
             .append(")");
             if (i < a.length - 1) {
                 sb.append(", ");
+            } else {
+                sb.append("\n");
             }
         }
         return sb.toString();
