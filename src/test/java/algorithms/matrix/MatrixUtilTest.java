@@ -7,6 +7,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
@@ -1793,6 +1794,29 @@ public class MatrixUtilTest extends TestCase {
         for (i = 0; i < expected.length; ++i) {
             assertTrue(Math.abs(expected[i] - c[i]) <tol);
         }
+
+    }
+
+    public void testFrobeniusNorm() throws NotConvergedException {
+        Random random = new Random();
+        int n = 9;
+        double sum = 0;
+        double[][] a = MatrixUtil.zeros(3, 3);
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                a[i][j] = random.nextInt(n*10);
+                sum += (a[i][j] * a[i][j]);
+            }
+        }
+        sum = Math.sqrt(sum);
+
+        double aF = MatrixUtil.frobeniusNorm(a);
+        double aV = MatrixUtil.lPSum(MatrixUtil.stack(a), 2);
+        double aS = MatrixUtil.spectralNorm(a);
+        double tol = 1e-7;
+        assertTrue(Math.abs(aF - sum) < tol);
+        assertTrue(Math.abs(aV - sum) < tol);
+        //aF and aV differ by the definitions: sqrt(square sums of singular values)), and the largest singular value.
 
     }
 }

@@ -2681,6 +2681,7 @@ public class MatrixUtil {
      * trace of a_conjugate*a, or as
      * the square root of the sums of the squares of the singular
      * values of a.
+     * (The later can be compared to the spectral norm which is the largest singular value of a.)
      * @param a
      * @return 
      */
@@ -2694,7 +2695,20 @@ public class MatrixUtil {
         }
         return Math.sqrt(sum);
     }
-    
+
+    /**
+     * calculate the value of the largest singular value of matrix r.  this is the induced norm
+     * which measures what is the maximum of ‖𝐴𝑥‖‖𝑥‖ for any 𝑥≠0 (or, equivalently, the maximum of ‖𝐴𝑥‖ for ‖𝑥‖=1).
+     * Note that the frobenius norm can be defined as the square root of the sums of the squares of the singular
+     * values of and therefore can be different than the spectral norm.
+     * <pre>
+     *     reference for documentation:
+     *     https://math.stackexchange.com/questions/33083/what-is-the-difference-between-the-frobenius-norm-and-the-2-norm-of-a-matrix
+     * </pre>
+     * @param r
+     * @return
+     * @throws NotConvergedException
+     */
     public static double spectralNorm(double[][] r) throws NotConvergedException {
         SVDProducts svd = performSVDATransposeA(r);
         double norm = Math.sqrt(svd.s[0]);
