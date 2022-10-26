@@ -2692,7 +2692,7 @@ public class MatrixUtil {
                 sum += (a[i][j]*a[i][j]);
             }
         }
-        return sum;
+        return Math.sqrt(sum);
     }
     
     public static double spectralNorm(double[][] r) throws NotConvergedException {
@@ -2801,13 +2801,13 @@ public class MatrixUtil {
         if (eps < 0) {
             throw new IllegalArgumentException("eps must be .gte. 0");
         }
-        // uses the Frobenius norm as a distinace
+        // uses the Frobenius norm as a distance
 
         if (!isSymmetric(a, eps)) {
             System.err.println("matrix is not symmetric in current form");
         }
 
-        // uses the Frobenius norm as a distinace.  notation: ||A||_F
+        // uses the Frobenius norm as a distance.  notation: ||A||_F
         
         //     the symmetric part of A is matrix B = 0.5*(A + A^T)
         //     the skew-symmetric part of A is matrix C = 0.5*(A - A^T)
@@ -2879,8 +2879,8 @@ public class MatrixUtil {
         for (double a : v) {
             sum += Math.pow(a, p);
         }
-        double[] out = Arrays.copyOf(v, v.length);
         sum = Math.pow(sum, 1./p);
+        double[] out = Arrays.copyOf(v, v.length);
         for (int i = 0; i < v.length; ++i) {
             out[i] /= sum;
         }
