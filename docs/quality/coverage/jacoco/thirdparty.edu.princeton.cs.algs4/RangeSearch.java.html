@@ -213,17 +213,17 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L213">            x.val = val;</span>
 <span class="nc" id="L214">            return x;</span>
         }
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
 <span class="fc" id="L217">            return putRoot(x, key, val, replaced);</span>
         }
-<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="nc" id="L220">            x.left  = put(x.left,  key, val, replaced);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="fc" id="L220">            x.left  = put(x.left,  key, val, replaced);</span>
         } else {
 <span class="nc" id="L222">            x.right = put(x.right, key, val, replaced);</span>
         } 
         // (x.N)++;
-<span class="nc" id="L225">        fix(x);</span>
-<span class="nc" id="L226">        return x;</span>
+<span class="fc" id="L225">        fix(x);</span>
+<span class="fc" id="L226">        return x;</span>
     }
 
     private &lt;Value2 extends Comparable&lt;Value&gt;&gt; 

@@ -409,7 +409,7 @@ key, left or right field.
 <span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L412" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L412" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L413">            root.color = RED;</span>
 
 <span class="fc" id="L415">        root = delete(root, key);</span>
@@ -424,13 +424,13 @@ key, left or right field.
         // assert get(h, key) != null;
 
 <span class="fc bfc" id="L426" title="All 2 branches covered.">        if (key &lt; h.key)  {</span>
-<span class="fc bfc" id="L427" title="All 4 branches covered.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left)) {</span>
+<span class="pc bpc" id="L427" title="1 of 4 branches missed.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left)) {</span>
 <span class="fc" id="L428">                h = moveRedLeft(h);</span>
             }
 <span class="fc" id="L430">            h.left = delete(h.left, key);</span>
         } else {
-<span class="fc bfc" id="L432" title="All 2 branches covered.">            if (isRed(h.left)) {</span>
-<span class="fc" id="L433">                h = rotateRight(h);</span>
+<span class="pc bpc" id="L432" title="1 of 2 branches missed.">            if (isRed(h.left)) {</span>
+<span class="nc" id="L433">                h = rotateRight(h);</span>
             }
 <span class="fc bfc" id="L435" title="All 4 branches covered.">            if (key == h.key &amp;&amp; (h.right == null)) {</span>
 <span class="fc" id="L436">                return null;</span>
