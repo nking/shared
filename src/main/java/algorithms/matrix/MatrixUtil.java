@@ -3,23 +3,15 @@ package algorithms.matrix;
 import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.misc.Misc0;
+import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.EVD;
-import no.uib.cipr.matrix.LowerSymmDenseMatrix;
-import no.uib.cipr.matrix.LowerTriangDenseMatrix;
-import no.uib.cipr.matrix.Matrices;
-import no.uib.cipr.matrix.Matrix;
-import no.uib.cipr.matrix.MatrixEntry;
-import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.QR;
-import no.uib.cipr.matrix.SVD;
-import no.uib.cipr.matrix.UpperTriangDenseMatrix;
+
+import no.uib.cipr.matrix.*;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
@@ -1456,7 +1448,7 @@ public class MatrixUtil {
         }        
     }
     
-    public static double[][] convertToRowMajor(DenseMatrix a) {
+    public static double[][] convertToRowMajor(AbstractMatrix a) {
         int nc = a.numColumns();
         int nr = a.numRows();
         double[][] out = new double[nr][];
@@ -1468,34 +1460,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
-    public static double[][] convertToRowMajor(UpperTriangDenseMatrix a) {
-        int nc = a.numColumns();
-        int nr = a.numRows();
-        //TODO: read API to see if can make this more effient by only visiting upper right of matrix
-        double[][] out = new double[nr][];
-        for (int i = 0; i < nr; ++i) {
-            out[i] = new double[nc];
-            for (int j = 0; j < nc; ++j) {
-                out[i][j] = a.get(i, j);
-            }
-        }
-        return out;
-    }
-    
-    public static double[][] convertToRowMajor(LowerSymmDenseMatrix a) {
-        int nc = a.numColumns();
-        int nr = a.numRows();
-        double[][] out = new double[nr][];
-        for (int i = 0; i < nr; ++i) {
-            out[i] = new double[nc];
-            for (int j = 0; j < nc; ++j) {
-                out[i][j] = a.get(i, j);
-            }
-        }
-        return out;
-    }
-            
+
     /*
     columns of mxn matrix A are linearly independent only when rank r == n.
     there are n pivots and no free variables.  \in this case m is .geq. r).
@@ -2788,6 +2753,34 @@ public class MatrixUtil {
         
         return aPSD;
     }
+
+    /**
+     * Given a matrix A that is not necessarily symmetric, find the
+     * nearest symmetric matrix to A.
+     * <pre>
+     * References:
+     * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
+     *
+     * </pre>
+     * @param a a square matrix which can be non-symmetric.
+     * @return
+     */
+    public static double[][] nearestSymmetricToA(double[][] a) {
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("a must be square");
+        }
+        //0.5 * (A + A^T)
+        int n = a.length;
+        double[][] out = new double[n][];
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            out[i] = new double[n];
+            for (j = 0; j < a[i].length; ++j) {
+                out[i][j] = 0.5 * (a[i][j] + a[j][i]);
+            }
+        }
+        return out;
+    }
     
     /**
      * Given a matrix a that is not necessarily symmetric,
@@ -2817,8 +2810,8 @@ public class MatrixUtil {
         }
         // uses the Frobenius norm as a distance
 
-        if (!isSymmetric(a, eps)) {
-            System.err.println("matrix is not symmetric in current form");
+        if (!isSquare(a)) {
+            System.err.println("matrix must be square for nearestPositiveSemidefiniteToA()");
         }
 
         // uses the Frobenius norm as a distance.  notation: ||A||_F
@@ -2835,17 +2828,33 @@ public class MatrixUtil {
         //   since A is symmetric): 
         //   answer is X_F = (A + H)/2
         
-        // can use polar decompositon on square matrices:
-                
-        double[][] b = MatrixUtil.pointwiseAdd(a, MatrixUtil.transpose(a));
-        MatrixUtil.multiply(b, 0.5);
-        
+        // can use polar decomposition on square matrices:
+
+        double[][] b = nearestSymmetricToA(a);
+
+        /* another to method to solve for X_F = PSD
+        // [Q,d] = eig(B,'vector'); X_F = Q*(max(d,0).*Q'); X_F = (X_F + X_F')/2;
+        // where Q are the right eigenvectors, and D is a vector of corresponding eigenvalues
+        EVD evdB = EVD.factorize(new DenseMatrix(b));
+        double[][] q = MatrixUtil.convertToRowMajor(evdB.getRightEigenvectors());
+        double[] d = evdB.getRealEigenvalues();
+        double dMax = MiscMath0.findMax(d);
+        double[][] xF = MatrixUtil.transpose(q);
+        MatrixUtil.multiply(xF, dMax);
+        xF = MatrixUtil.multiply(q, xF);
+        xF = MatrixUtil.pointwiseAdd(xF, MatrixUtil.transpose(xF));
+        MatrixUtil.multiply(xF, 0.5);
+        EVD evdXF = EVD.factorize(new DenseMatrix(xF));
+        double[] eigXF = evdXF.getRealEigenvalues();
+        // no perturbations needed for xF
+         */
+
         // H is formed from V, S, and V^T of SVD(B)
         QH qh = performPolarDecomposition(b);
         double[][] h = qh.h;
         
-        //X_F:
-        double[][] aPSD = MatrixUtil.pointwiseAdd(a, h);
+        //X = (B + H)/2.
+        double[][] aPSD = MatrixUtil.pointwiseAdd(b, h);
         MatrixUtil.multiply(aPSD, 0.5);
         
         // check that all eigenvalues are >= eps

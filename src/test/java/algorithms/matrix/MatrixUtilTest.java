@@ -1301,8 +1301,7 @@ public class MatrixUtilTest extends TestCase {
         EVD evd1 = EVD.factorize(new DenseMatrix(a));
         EVD evd2 = EVD.factorize(new DenseMatrix(aPSD));
         EVD evd3 = EVD.factorize(new DenseMatrix(aPSD2));
-        
-        
+
         System.out.printf("eig(a)=\n%s\n", FormatArray.toString(evd1.getRealEigenvalues(), "%.5e"));
         System.out.printf("eig(aPSD)=\n%s\n", FormatArray.toString(evd2.getRealEigenvalues(), "%.5e"));
         System.out.printf("eig(aPSD2)=\n%s\n", FormatArray.toString(evd3.getRealEigenvalues(), "%.5e"));
@@ -1317,8 +1316,7 @@ public class MatrixUtilTest extends TestCase {
         double dist3 = MatrixUtil.frobeniusNorm(aPSDMinusPSD2);
         
         System.out.printf("dist1=%.7e, dist2=%.7e, dist3=%.7e\n", dist1, dist2, dist3);
-        
-        
+
         double[][] g = LinearEquations.choleskyDecompositionViaLDL(aPSD, eps);
         double[][] g2 = LinearEquations.choleskyDecompositionViaLDL(aPSD2, eps);
         EVD evd4 = EVD.factorize(new DenseMatrix(g));
@@ -1326,7 +1324,67 @@ public class MatrixUtilTest extends TestCase {
         System.out.printf("chol(aPSD2)=\n%s\n", FormatArray.toString(g2, "%.5e"));
         
         System.out.printf("eig(g)=\n%s\n", FormatArray.toString(evd4.getRealEigenvalues(), "%.5e"));
-        
+
+        a = new double[5][];
+        a[0] = new double[]{0,1, 0, 0, 0};
+        a[1] = new double[]{0, 0, 1, 0, 0};
+        a[2] = new double[]{0, 0, 0, 1, 0};
+        a[3] = new double[]{0, 0, 0, 0, 1};
+        a[4] = new double[]{0, 0, 0, 0, 0};
+
+         double[][] ex1 = new double[5][];
+         ex1[0] = new double[]{1.972e-01,   2.500e-01,   1.443e-01,  -4.163e-17,  -5.283e-02};
+         ex1[1] = new double[]{2.500e-01,   3.415e-01,   2.500e-01,   9.151e-02,  -1.665e-16};
+         ex1[2] = new double[]{ 1.443e-01,   2.500e-01,   2.887e-01,   2.500e-01,   1.443e-01};
+         ex1[3] = new double[]{-4.163e-17,   9.151e-02,   2.500e-01,   3.415e-01,   2.500e-01};
+         ex1[4] = new double[]{-5.283e-02,  -1.665e-16,   1.443e-01,   2.500e-01,   1.972e-01};
+
+         double[][] ex2 = new double[5][];
+         ex2[0] = new double[]{8.336e-01,   5.000e-01,   1.711e-01,   0.000e+00,  -1.756e-02 };
+         ex2[1] = new double[]{5.000e-01,   6.625e-01,   5.000e-01,   1.887e-01,   0.000e+00};
+         ex2[2] = new double[]{1.711e-01,   5.000e-01,   6.450e-01,   5.000e-01,   1.711e-01 };
+         ex2[3] = new double[]{0.000e+00,   1.887e-01,   5.000e-01,   6.625e-01,   5.000e-01};
+         ex2[4] = new double[]{-1.756e-02,   0.000e+00,   1.711e-01,   5.000e-01,   8.336e-01};
+
+         // this equals expected ex1
+         aPSD2 = MatrixUtil.nearestPositiveSemidefiniteToA(a, eps);
+
+         double dist = MatrixUtil.frobeniusNorm(MatrixUtil.pointwiseSubtract(ex1, aPSD2));
+         assertTrue(dist < 1E-3);//~1E-5
+
+         System.out.printf("aPSD2=\n%s\n", FormatArray.toString(aPSD2, "%.4e"));
+         System.out.printf("dist of aPSD2 from expected=%.4e\n", dist);
+
+         EVD evd5 = EVD.factorize(new DenseMatrix(aPSD2));
+         System.out.printf("eig(a)=\n%s\n", FormatArray.toString(evd5.getRealEigenvalues(), "%.4e"));
+
+         EVD evd6 = EVD.factorize(new DenseMatrix(ex1));
+         EVD evd7 = EVD.factorize(new DenseMatrix(ex2));
+
+         System.out.printf("eig(ex1)=\n%s\n", FormatArray.toString(evd6.getRealEigenvalues(), "%.4e"));
+         System.out.printf("eig(ex2)=\n%s\n", FormatArray.toString(evd7.getRealEigenvalues(), "%.4e"));
+
+     }
+
+    public void testNearestSymmetricToA() {
+        //nearestSymmetricToA
+        double[][] a0 = new double[4][];
+        a0[0] = new double[]{2,   1, 2,   3};
+        a0[1] = new double[]{1,   5, 6, 2.5};
+        a0[2] = new double[]{2,   6, 3, 3.1};
+        a0[3] = new double[]{3, 2.5, 3.1, 4};
+
+        double[][] a = new double[4][];
+        a[0] = new double[]{2,   0.6, 2,   3};
+        a[1] = new double[]{0.4,  5, 6,   0};
+        a[2] = new double[]{2,   6, 3, 3.1};
+        a[3] = new double[]{3, 2.5, 3.1, 4};
+
+        double[][] b = MatrixUtil.nearestSymmetricToA(a);
+        double distA0B = MatrixUtil.frobeniusNorm(MatrixUtil.pointwiseSubtract(a0, b));
+        double distA0A = MatrixUtil.frobeniusNorm(MatrixUtil.pointwiseSubtract(a0, a));
+        assertTrue(distA0B < distA0A);
+
     }
 
      public void testRank() throws NotConvergedException {
