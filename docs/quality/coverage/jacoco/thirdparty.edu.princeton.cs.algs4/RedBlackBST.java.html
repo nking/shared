@@ -303,7 +303,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L303" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L306" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L306" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L307">            root.color = RED;</span>
 
 <span class="fc" id="L309">        root = deleteMax(root);</span>
@@ -339,8 +339,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L339" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L342" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
-<span class="fc" id="L343">            root.color = RED;</span>
+<span class="pc bpc" id="L342" title="3 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="nc" id="L343">            root.color = RED;</span>
 
 <span class="fc" id="L345">        root = delete(root, key);</span>
 <span class="pc bpc" id="L346" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
@@ -427,10 +427,10 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         // assert isRed(h) &amp;&amp; !isRed(h.left) &amp;&amp; !isRed(h.left.left);
 
 <span class="fc" id="L429">        flipColors(h);</span>
-<span class="fc bfc" id="L430" title="All 2 branches covered.">        if (isRed(h.right.left)) { </span>
-<span class="fc" id="L431">            h.right = rotateRight(h.right);</span>
-<span class="fc" id="L432">            h = rotateLeft(h);</span>
-<span class="fc" id="L433">            flipColors(h);</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if (isRed(h.right.left)) { </span>
+<span class="nc" id="L431">            h.right = rotateRight(h.right);</span>
+<span class="nc" id="L432">            h = rotateLeft(h);</span>
+<span class="nc" id="L433">            flipColors(h);</span>
         }
 <span class="fc" id="L435">        return h;</span>
     }
