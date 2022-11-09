@@ -793,8 +793,21 @@ public class MatrixUtil {
 
         return true;
     }
-   
+
     public static double[][] createATransposedTimesA(double[][] a) {
+        if (a == null || a.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+
+        int m = a.length;
+        int n = a[0].length;
+
+        double[][] out = MatrixUtil.zeros(n, n);
+        createATransposedTimesA(a, out);
+        return out;
+    }
+
+    public static void createATransposedTimesA(double[][] a, double[][] out) {
 
         if (a == null || a.length == 0) {
             throw new IllegalArgumentException("m cannot be null or empty");
@@ -802,7 +815,10 @@ public class MatrixUtil {
         
         int m = a.length;
         int n = a[0].length;
-        
+        if (out.length != n || out[0].length != n) {
+            throw new IllegalArgumentException("out must be size a[0].length X a[0].length");
+        }
+
         /*
         a00  a01     a00  a01 
         a10  a11     a10  a11 
@@ -821,10 +837,6 @@ public class MatrixUtil {
         */
         
         int outCol, i, j;
-        double[][] c = new double[n][n];
-        for (i = 0; i < n; ++i) {
-            c[i] = new double[n];
-        }
         double sum;
         for (i = 0; i < n; i++) {
             for (outCol = 0; outCol < n; outCol++) {
@@ -832,11 +844,9 @@ public class MatrixUtil {
                 for (j = 0; j < m; j++) {
                     sum += (a[j][outCol] * a[j][i]);
                 }
-                c[outCol][i] = sum;
+                out[outCol][i] = sum;
             }
         }
-
-        return c;
     }
     
     public static void multiply(double[] a, double f) {
@@ -4709,6 +4719,28 @@ public class MatrixUtil {
             nullspace[c] = Arrays.copyOf(qT[i], qT[i].length);
         }
         return nullspace;
+    }
+
+    /**
+     * calculate the triple product as a x (b X c).
+     <pre>
+     from Boas "Mathematical Methods in the Physical Sciences", eqn 3.8
+     a X (b X c) = (a dot c)*B - (a dot b) * c.
+
+     also adapted from MASKS example code triple_product.m.
+     "An introduction to 3-D Vision"
+     by Y. Ma, S. Soatto, J. Kosecka, S. Sastry (MASKS)
+     </pre>
+     * @param a array of length 3
+     * @param b array of length 3
+     * @param c array of length 3
+     * @return triple product of a, b, c.
+     */
+    public static double tripleProduct(double[] a, double[] b, double[] c) {
+
+        return c[0]*(a[1]*b[2] - b[1]*a[2])
+                + c[1]*(a[2]*b[0] - b[2]*a[0])
+                + c[2]*(a[0]*b[1] - b[0]*a[1]);
     }
 
 }

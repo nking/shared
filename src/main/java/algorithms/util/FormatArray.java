@@ -8,52 +8,49 @@ import no.uib.cipr.matrix.DenseMatrix;
  * @author nichole
  */
 public class FormatArray {
-    
+
     public static String toString(double[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
+            if (i > 0) {
+                sb.append(" ");
+            }
             sb.append(String.format(decimalFormat, a[i]));
             if (i < (a.length - 1)) {
                 sb.append(",");
             }
-            if (i == (a.length-1)) {
-                sb.append("\n");
-            } else {
-                sb.append(" ");
-            }
         }
+        sb.append("\n");
         return sb.toString();
     }
     
     public static String toString(int[] a, String format) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
+            if (i > 0) {
+                sb.append(" ");
+            }
             sb.append(String.format(format, a[i]));
             if (i < (a.length - 1)) {
                 sb.append(",");
             }
-            if (i == (a.length-1)) {
-                sb.append("\n");
-            } else {
-                sb.append(" ");
-            }
         }
+        sb.append("\n");
         return sb.toString();
     }
     
     public static String toString(boolean[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
+            if (i > 0) {
+                sb.append(" ");
+            }
             sb.append(String.format(decimalFormat, a[i]));
             if (i < (a.length - 1)) {
                 sb.append(",");
             }
-            if (i == (a.length-1)) {
-                sb.append("\n");
-            } else {
-                sb.append(" ");
-            }
         }
+        sb.append("\n");
         return sb.toString();
     }
     
@@ -90,17 +87,19 @@ public class FormatArray {
     public static String toString(Complex[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
+            if (i > 0) {
+                sb.append(" ");
+            }
             sb.append("(").append(String.format(decimalFormat, a[i].re()))
             .append(", ").append(String.format(decimalFormat, a[i].im()))
             .append("j, abs=").append(String.format(decimalFormat, a[i].abs()))
             .append(", p=").append(String.format(decimalFormat, a[i].phase()))
             .append(")");
             if (i < a.length - 1) {
-                sb.append(", ");
-            } else {
-                sb.append("\n");
+                sb.append(",");
             }
         }
+        sb.append("\n");
         return sb.toString();
     }
 
