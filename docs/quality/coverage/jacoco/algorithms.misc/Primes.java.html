@@ -304,7 +304,7 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L304">        int t = 1;</span>
         int div;
                         
-<span class="pc bpc" id="L307" title="1 of 2 branches missed.">        for (long i = 3; i &lt; n; i+=2) {</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">        for (long i = 3; i &lt; n; i+=2) {</span>
 <span class="fc bfc" id="L308" title="All 2 branches covered.">            if (Math.floorMod(n - 1, i) == 0) {</span>
 <span class="fc" id="L309">                u = i;</span>
 <span class="fc" id="L310">                div = (int)((n-1)/u);</span>
@@ -316,9 +316,9 @@ import java.util.concurrent.ThreadLocalRandom;
             }
         }
         
-<span class="pc bpc" id="L319" title="3 of 4 branches missed.">        if (u == 1 &amp;&amp; t == 1) {</span>
+<span class="pc bpc" id="L319" title="1 of 4 branches missed.">        if (u == 1 &amp;&amp; t == 1) {</span>
             // keep u=1
-<span class="nc" id="L321">            t = (int)(Math.log(n-1)/Math.log(2));</span>
+<span class="fc" id="L321">            t = (int)(Math.log(n-1)/Math.log(2));</span>
         }
         //System.out.printf(&quot;(1&lt;&lt;t)*u=%d, (n-1)=%d, n=%d t=%d u=%d\n&quot;, (1&lt;&lt;t)*u, n-1, n, t, u);
         
