@@ -176,7 +176,7 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check
-        if (n.toString().equals(out.toString())) {
+        if (System.identityHashCode(n) == System.identityHashCode(out)) {
             throw new IllegalArgumentException("n cannot be the same as out");
         }
         
@@ -223,7 +223,7 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check
-        if (m.toString().equals(out.toString())) {
+        if (System.identityHashCode(m) == System.identityHashCode(out)) {
             throw new IllegalArgumentException("m cannot be the same as out");
         }
         
@@ -544,7 +544,8 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check:
-        if (out.toString().equals(m.toString()) || out.toString().equals(n.toString())) {
+        if (System.identityHashCode(m) == System.identityHashCode(out) ||
+                System.identityHashCode(n) == System.identityHashCode(out)) {
             throw new IllegalArgumentException("out must be a different object than n and m");
         }
         
@@ -600,7 +601,7 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check:
-        if (out.toString().equals(m.toString())) {
+        if (System.identityHashCode(m) == System.identityHashCode(out)) {
             throw new IllegalArgumentException("out must be a different object than n and m");
         }
         
@@ -656,7 +657,7 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check:
-        if (out.toString().equals(n.toString())) {
+        if (System.identityHashCode(n) == System.identityHashCode(out)) {
             throw new IllegalArgumentException("out must be a different object than n and m");
         }
         
