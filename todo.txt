@@ -3,6 +3,8 @@
 -- look into jcilk
    - does jcilk have cilksan and cilkscale?
 
+-- explore https://studiolab.sagemaker.aws/
+
 -- for multidimensional fast efficient KDE: the fastKDE github project
    LBL-EESA by O'Brien T.A. et al. 2014, 2016.  it uses non-uniform FFT
    and the silverman kernel method.  the code language is python.
@@ -33,6 +35,8 @@
 
 -- add optmization branch to Gumbel.fitGumbelUsingML
    can extend a function to use w/ LBFGS
+
+-- explore https://www.stat.cmu.edu/~larry/all-of-statistics/=Rprograms/
 
 -- consider implementing or a toolbox containing estimators for at least these distributions:
    Frechet,  Weibull, (X) Gumbel, (X) GEV, Rayleigh, (X) gamma distribution, inverse gaussian (wald),
