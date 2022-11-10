@@ -176,8 +176,9 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check
-        if (System.identityHashCode(n) == System.identityHashCode(out)) {
-            throw new IllegalArgumentException("n cannot be the same as out");
+        if (n.hashCode() == out.hashCode()) {
+            System.err.println("warning: n cannot be the same as out. this warning can be a mistake when the " +
+                    "hashcodes for truly different objects collide.");
         }
         
         int mcols = m[0].length;
@@ -223,8 +224,9 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check
-        if (System.identityHashCode(m) == System.identityHashCode(out)) {
-            throw new IllegalArgumentException("m cannot be the same as out");
+        if (m.hashCode() == out.hashCode()) {
+            System.err.println("warning: m cannot be the same as out. this warning can be a mistake when the " +
+                    "hashcodes of truly different objects collide.");
         }
         
         int mcols = m[0].length;
@@ -544,9 +546,9 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check:
-        if (System.identityHashCode(m) == System.identityHashCode(out) ||
-                System.identityHashCode(n) == System.identityHashCode(out)) {
-            throw new IllegalArgumentException("out must be a different object than n and m");
+        if (m.hashCode() == out.hashCode() || n.hashCode() == out.hashCode()) {
+            System.err.println("warning: neither m nor n can be the same as out. this warning can be a mistake when the " +
+                    "hashcodes for truly different objects collide.");
         }
         
         int mrows = m.length;
@@ -601,8 +603,9 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check:
-        if (System.identityHashCode(m) == System.identityHashCode(out)) {
-            throw new IllegalArgumentException("out must be a different object than n and m");
+        if (m.hashCode() == out.hashCode()) {
+            System.err.println("warning: m cannot be the same as out. this warning can be a mistake when the " +
+                    "hashcodes for truly different objects collide.");
         }
         
         int mrows = m.length;
@@ -657,8 +660,9 @@ public class MatrixUtil {
             throw new IllegalArgumentException("n cannot be null or empty");
         }
         // identity check:
-        if (System.identityHashCode(n) == System.identityHashCode(out)) {
-            throw new IllegalArgumentException("out must be a different object than n and m");
+        if (n.hashCode() == out.hashCode()) {
+            System.err.println("warning: n cannot be the same as out. this warning can be a mistake when the " +
+                    "hashcodes for truly different objects collide.");
         }
         
         int mrows = m.length;
