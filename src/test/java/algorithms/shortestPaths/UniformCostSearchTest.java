@@ -26,7 +26,7 @@ public class UniformCostSearchTest extends TestCase {
              b2  c3    1
              b2  g5    1
              c3  g5    1
-             d4  g5    1
+             d4  g5    2
            s  a  b  c  d  g
            0  1  2  3  4  5
         */
@@ -44,7 +44,7 @@ public class UniformCostSearchTest extends TestCase {
          w[1] = new TIntIntHashMap(); w[1].put(2, 3); 
          w[2] = new TIntIntHashMap(); w[2].put(3, 1); w[2].put(5, 1);
          w[3] = new TIntIntHashMap(); w[3].put(5, 1);
-         w[4] = new TIntIntHashMap(); w[4].put(5, 1);
+         w[4] = new TIntIntHashMap(); w[4].put(5, 2);
          
          int dest = 5;
          UniformCostSearch srch = new UniformCostSearch(g, w, 0, dest);
@@ -52,9 +52,11 @@ public class UniformCostSearchTest extends TestCase {
          
          int[] p;
          int dist;
-         // s0  a1  b2  g5
+         // s0  a1  b2  g5 = 6
+         // s0  d2  g5     = 7
          
          p = srch.getShortestPathToVertex(dest);
+         //System.out.printf("p=%s\n", Arrays.toString(p));
          assertTrue(Arrays.equals(new int[]{0, 1, 2, 5}, p));
          dist = srch.getSumOfPath(p);
          assertEquals(5, dist);

@@ -58,8 +58,6 @@ public class UniformCostSearch {
     
     protected int[] dist = null;
     
-    protected int[] visited = null;
-
     protected int[] predecessor = null;   
     
     protected int src = -1;
@@ -138,9 +136,10 @@ public class UniformCostSearch {
      */
     public void find() {
                                
+        HeapNode uNode;
         while (heap.getNumberOfNodes() > 0) {
 
-            HeapNode uNode = heap.extractMin();
+            uNode = heap.extractMin();
             
             int u = ((Integer)uNode.getData()).intValue();
 
@@ -151,8 +150,6 @@ public class UniformCostSearch {
                 return;
             }
 
-            visited[u] = 2;
-            
             // null the entry in nodes so it isn't used in decrease key
             nodes[u] = null;
             
@@ -177,8 +174,7 @@ public class UniformCostSearch {
                 
                 log.log(logLevel, "  v: " + toString(v) + " dist=" + dUPlusWUV);
                                 
-                if (visited[v] == 0) {
-                    visited[v] = 1;
+                if (dUPlusWUV < dist[v]) {
                     log.log(logLevel, "  add to min-heap v=" + v);
                     dist[v] = dUPlusWUV;
                     int key = dist[v];
@@ -187,13 +183,11 @@ public class UniformCostSearch {
                     heap.insert(node);
                     nodes[v] = node;
                     predecessor[v] = u;
-                } else {
-                    if (nodes[v] != null && dist[v] > dUPlusWUV) {
-                        log.log(logLevel, "    decrease key to " + dUPlusWUV);
-                        dist[v] = dUPlusWUV;
-                        predecessor[v] = u;
-                        heap.decreaseKey(nodes[v], dUPlusWUV);
-                    }
+                } else if (nodes[v] != null) {
+                    log.log(logLevel, "    decrease key to " + dUPlusWUV);
+                    dist[v] = dUPlusWUV;
+                    predecessor[v] = u;
+                    heap.decreaseKey(nodes[v], dUPlusWUV);
                 }
                 
                 vNode = vNode.getNext();
@@ -223,11 +217,9 @@ public class UniformCostSearch {
     
         dist = new int[g.length];
         predecessor = new int[g.length];
-        visited = new int[g.length];
         
         Arrays.fill(dist, sentinel);
         Arrays.fill(predecessor, -1);
-        Arrays.fill(visited, 0);
         
         dist[src] = 0;
                 
@@ -352,7 +344,7 @@ public class UniformCostSearch {
     
     private String toString(int u) {
         StringBuffer sb = new StringBuffer();
-        sb.append("node=").append(u).append(": visited=").append(visited[u]).
+        sb.append("node=").append(u).
                append(", dist=").append(dist[u])
                 .append(", prev=").append(predecessor[u])
                 .append(" is in queue=").append(!(nodes[u] == null));
