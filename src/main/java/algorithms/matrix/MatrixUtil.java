@@ -3022,6 +3022,9 @@ public class MatrixUtil {
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power
      * method isn't the right method (consider QR or SVD).
+     * The eigenvalue is returned and the eigenvector is returned by setting it into the elements of x.
+     * A * x = lamba * x where lambda is the eigenvalue corresponding to eigenvector x and x is the
+     * largest eigenvalue of matrix A, that is, the principal eigenvector.
      * @param a a positive definite matrix
      * @param tolerance iterations are stopped when the current multiplication vector
      * difference from previous is smaller than tolerance for each item.
