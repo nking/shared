@@ -239,9 +239,9 @@ public class AStar {
                     int key = f[v];
                     HeapNode node = new HeapNode(key);
                     node.setData(Integer.valueOf(v));
-                    heap.insert(node);
                     nodes[v] = node;
                     predecessor[v] = u;
+                    heap.insert(node);
                 } else if (nodes[v] != null) {
                     //assert(visited[v] == 1);
                     g[v] = gUPlusWUV;

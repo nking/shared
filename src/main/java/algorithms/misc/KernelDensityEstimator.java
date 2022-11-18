@@ -98,7 +98,8 @@ public class KernelDensityEstimator {
     }
 
     /**
-     * estimate the density by using properties of exponentials to make a faster algorithm.
+     * estimate the density by using properties of exponentials (convolution, discrete FFT, fourier pairs ...) 
+     to make a faster algorithm.
      <pre>
      reference:
      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
@@ -108,7 +109,8 @@ public class KernelDensityEstimator {
      the kde = f_hat(x) ~ summation over i=1 to n of (K(|| x - X_i ||/h).
      the kernel estimate is a convolution of the data with the kernel.
      naive implementation is O(n^2).
-     if the kernel K is chosen to be a Gaussian, one can use a property of exponentials to rewrite:
+     if the kernel K is chosen to be a Gaussian, one can use a property of exponentials 
+     (convolution, discrete FFT, fourier pairs ...) to rewrite:
      exp(x - X_i) = exp(x) * exp(-X_i) (neglecting details)
      also note that the discrete FFT is a summation of exponentials.
      convolution theorem: one can use the pointwise multiplication between the fourier paired functions.
@@ -145,7 +147,8 @@ public class KernelDensityEstimator {
 
     /**
      *
-     * estimate the density by using properties of exponentials to make a faster algorithm.
+     * estimate the density by using properties of exponentials 
+     (convolution, discrete FFT, fourier pairs ...) to make a faster algorithm.
      <pre>
      reference:
      Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.
@@ -395,7 +398,8 @@ public class KernelDensityEstimator {
     }
 
     /**
-     estimate the density by using properties of exponentials to make a faster algorithm.
+     estimate the density by using properties of exponentials 
+     (convolution, discrete FFT, fourier pairs ...) to make a faster algorithm.
      <pre>
            reference:
            Silverman, B. W. (1982). Algorithm as 176: Kernel density estimation using the fast Fourier transform. Journal of the Royal Statistical Society. Series C (Applied Statistics), 31(1), 93-99. https://dx.doi.org/10.2307/2347084.

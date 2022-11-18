@@ -577,7 +577,7 @@ public class Histogram {
      *
      *    (sigma_from_all_points)^2 * (1 - (1/nBins)) = (sigma_bin0 * Fnc(bin0))^2 + (sigma_bin1 * Fnc(bin1))^2 + (sigma_bin2 * Fnc(bin2))^2
      *
-     * Not easy to see how to solve, so returning to first principles:
+       TODO: revisit this.  have added wasserman statistics in other methods.
      *     Each bin should have a contribution from all points and then a contribution from its own.
      *     In order for the total to not exceed the sum in quadrature of all points, a bin's sigma squared should
      *     be the ave from all + it's own times (1-1/N) roughly, which is what the equation above suggests.
