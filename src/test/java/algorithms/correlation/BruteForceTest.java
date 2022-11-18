@@ -35,7 +35,7 @@ public class BruteForceTest extends TestCase {
         expectedCOV[2] = new double[]{34.75,   205.00,  110.00};
         
         double[][] cov = BruteForce.covariance(a);
-        
+
         double eps = 1.e-7;
         double diff;
         
@@ -74,7 +74,7 @@ public class BruteForceTest extends TestCase {
             }
         }
         
-        a = MatrixUtil.transpose(a);
+        //a = MatrixUtil.transpose(a);
         
         double[][] expectedCOV = new double[3][3];
         expectedCOV[0] = new double[]{11.50,    50.00,   34.75};

@@ -148,19 +148,15 @@ public class BruteForce {
      */
     public static double[][] covariance2(double[][] a) {
         
-        int n = a[0].length;
-        
-        double[][] cov = MatrixUtil.multiply(a, MatrixUtil.transpose(a));
-        
+        double[][] cov = MatrixUtil.createATransposedTimesA(a);
+
         int i, j;
-        double invN = 1./((double)n - 1.);
-        
-        for (i = 0 ; i < cov.length; ++i) {
-            for (j = 0; j < cov[i].length; ++j) {
-                cov[i][j] *= invN;
-            }
-        }
-        
+        int n = a[0].length;
+        double invN2 = 1./((double)n - 1.);
+        invN2 *= invN2;
+        MatrixUtil.multiply(cov, invN2);
+
+        /*
         System.out.printf("bf cov=\n");
         for ( i = 0; i < cov.length; ++i) {
             for ( j = 0; j < cov[i].length; ++j) {
@@ -169,7 +165,8 @@ public class BruteForce {
             System.out.printf("\n");
         }
         System.out.flush();
-        
+        */
+
         return cov;
     }
    
