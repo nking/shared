@@ -1,5 +1,8 @@
 package algorithms;
 
+import algorithms.misc.MiscMath0;
+
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -56,14 +59,9 @@ public class PermutationsWithAwait {
      */
     private final int[] x;
 
-    /**
-     * becomes true when the run-loop has ended for the permuter thread.
-     * done = 0 is false, done = 1 is true
-     */
-    private volatile int done;
+    private final BigInteger nPermutations;
+    private BigInteger nCurrent;
 
-    //private final BigInteger nPermutations;
-    
     /**
      * permute the given set of numbers in a thread that waits for the getNext()
      * invocation to calculate the next permutation.
@@ -84,6 +82,9 @@ public class PermutationsWithAwait {
      */
     public PermutationsWithAwait(int[] seq) throws InterruptedException {
 
+        nPermutations = MiscMath0.factorialBigInteger(seq.length);
+        nCurrent = BigInteger.ZERO;
+
         this.computationLock = new Semaphore(1);
         computationLock.acquire();
 
@@ -91,11 +92,11 @@ public class PermutationsWithAwait {
 
         int n = seq.length;
         this.x = new int[n];
-        // 0 = false, 1 = true
-        done = 0;
 
         //output(A)
         System.arraycopy(seq, 0, x, 0, n);
+
+        nCurrent = BigInteger.ONE;
 
         availableItem.release();
 
@@ -109,7 +110,7 @@ public class PermutationsWithAwait {
      * else false if there are more permutations to be returned by the getNext() argument.
      */
     public boolean hasNext() {
-        return (done == 0);
+        return (nCurrent.compareTo(nPermutations) == -1);
     }
     
     /**
@@ -123,16 +124,15 @@ public class PermutationsWithAwait {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
 
-        //availableItem.tryAcquire(1, TimeUnit.SECONDS);
-        availableItem.acquire();
-        
-        System.arraycopy(x, 0, out, 0, out.length);
-       
-        computationLock.release();
+        if (nCurrent.compareTo(nPermutations) == -1) {
 
-        //TODO:  correct deadlock error here for case when this method is invoked more than
-        // once after the Thread run loop has finished.
-        //TODO: add unit test for it
+            //availableItem.tryAcquire(1, TimeUnit.SECONDS);
+            availableItem.acquire();
+
+            System.arraycopy(x, 0, out, 0, out.length);
+
+            computationLock.release();
+        }
     }
     
     private class Permuter implements Runnable {
@@ -173,15 +173,15 @@ public class PermutationsWithAwait {
 
                     // output permutation to instance member x
                     System.arraycopy(in, 0, out, 0, n);
-                    
-                    //nCurrent = nCurrent.add(BigInteger.ONE);
+
+                    nCurrent = nCurrent.add(BigInteger.ONE);
 
                     //Releases a permit, increasing the number of available permits by
                     //one to the semaphore.  If any threads are trying to acquire a permit, then one is
                     //selected and given the permit that was just released.  That thread
                     //is (re)enabled for thread scheduling purposes.
                     availableItem.release();
-                                        
+
                     //Swap has occurred ending the for-loop. Simulate the increment 
                     //of the for-loop counter
                     c[i] += 1;
@@ -196,7 +196,6 @@ public class PermutationsWithAwait {
                     i++;
                 }
             }
-            done = 1;
         }
     }
 }

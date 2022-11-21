@@ -39,17 +39,22 @@ public class PermutationsWithAwaitTest extends TestCase {
         int[][] results = new int[(int)np][];
         for (ii = 0; ii < results.length; ++ii) {
             results[ii] = new int[set.length];
+            Arrays.fill(results[ii], -1);
         }
         
         PermutationsWithAwait p = new PermutationsWithAwait(set);
         assertTrue(p.hasNext());
-        
+
         for (i = 0; i < np; ++i) {
             p.getNext(results[(int)i]);
         }
-        //System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
-
-        assertFalse(p.hasNext());
+        boolean done = !p.hasNext();
+        if (!done) {
+            System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
+            System.out.flush();
+            fail("expecting getNext == false");
+        }
+        assertTrue(done);
 
         int[] r, r2;
         TIntList re2;
@@ -67,5 +72,25 @@ public class PermutationsWithAwaitTest extends TestCase {
             expected.remove(re2);
         }
         assertTrue(expected.isEmpty());
+
+        // test that invocations past np do not deadlock
+        p = new PermutationsWithAwait(set);
+        assertTrue(p.hasNext());
+        int n2 = (int)np + 10;
+        results = new int[n2][];
+        for (ii = 0; ii < results.length; ++ii) {
+            results[ii] = new int[set.length];
+            Arrays.fill(results[ii], -1);
+        }
+        for (i = 0; i < n2; ++i) {
+            p.getNext(results[(int)i]);
+        }
+        done = !p.hasNext();
+        if (!done) {
+            System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
+            System.out.flush();
+            fail("expecting getNext == false");
+        }
+        assertTrue(done);
     }
 }
