@@ -3,7 +3,11 @@
 -- look into jcilk
    - does jcilk have cilksan and cilkscale?
 
+-- explore model checking software again
+
 -- explore https://studiolab.sagemaker.aws/
+
+-- consider cache oblivious funnel sort
 
 -- for multidimensional fast efficient KDE: the fastKDE github project
    LBL-EESA by O'Brien T.A. et al. 2014, 2016.  it uses non-uniform FFT

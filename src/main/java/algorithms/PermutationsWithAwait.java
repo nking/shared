@@ -83,24 +83,20 @@ public class PermutationsWithAwait {
      * @throws java.lang.InterruptedException
      */
     public PermutationsWithAwait(int[] seq) throws InterruptedException {
-                
+
+        this.computationLock = new Semaphore(1);
+        computationLock.acquire();
+
+        this.availableItem = new Semaphore(0);
+
         int n = seq.length;
         this.x = new int[n];
-        
-        this.availableItem = new Semaphore(0);
-        this.computationLock = new Semaphore(1);
-
         // 0 = false, 1 = true
         done = 0;
 
-        //nPermutations = MiscMath0.factorialBigInteger(n);
-        
-        computationLock.acquire();
-        
         //output(A)
         System.arraycopy(seq, 0, x, 0, n);
-        //nCurrent = BigInteger.ONE;
-        
+
         availableItem.release();
 
         Thread thread = new Thread(new Permuter(seq, x));
@@ -127,11 +123,16 @@ public class PermutationsWithAwait {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
 
-        availableItem.tryAcquire(1, TimeUnit.SECONDS);
+        //availableItem.tryAcquire(1, TimeUnit.SECONDS);
+        availableItem.acquire();
         
         System.arraycopy(x, 0, out, 0, out.length);
        
-        computationLock.release();        
+        computationLock.release();
+
+        //TODO:  correct deadlock error here for case when this method is invoked more than
+        // once after the Thread run loop has finished.
+        //TODO: add unit test for it
     }
     
     private class Permuter implements Runnable {
@@ -173,8 +174,8 @@ public class PermutationsWithAwait {
                     // output permutation to instance member x
                     System.arraycopy(in, 0, out, 0, n);
                     
-                    //nCurrent = nCurrent.add(BigInteger.ONE);                    
-                    
+                    //nCurrent = nCurrent.add(BigInteger.ONE);
+
                     //Releases a permit, increasing the number of available permits by
                     //one to the semaphore.  If any threads are trying to acquire a permit, then one is
                     //selected and given the permit that was just released.  That thread
