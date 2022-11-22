@@ -225,14 +225,28 @@ public class BayesianCurveFitting {
     /**
      * predict values for test feature matrix phiXTest using randomly generated points
      * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * uses a default machine precision of 1E-7 for equality comparisons in matrices.
      * @param fit model fit made from training data
      * @param phiXTest x value feature matrix for which to predict target t values.
+     *
      * @return a sample predicted from random samples of the model at the points from phiXTest.
      */
     public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest) throws NotConvergedException, NoSuchAlgorithmException {
+        return predictRandomSample(fit, phiXTest, 1E-7);
+    }
+
+    /**
+     * predict values for test feature matrix phiXTest using randomly generated points
+     * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     *                 @param eps machine tolerance to use with matrices for element equivalence
+     * @return a sample predicted from random samples of the model at the points from phiXTest.
+     */
+    public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest, double eps) throws NotConvergedException, NoSuchAlgorithmException {
 
         //  [(M+1))]
-        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-11);
+        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-7);
         double[] u = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, k);
 
         // [phiXTest is [N2 X (M+1)]
