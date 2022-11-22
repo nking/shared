@@ -1,5 +1,8 @@
 -- browse https://github.com/GPflow/GPflow
 
+-- explore best practices with use of java Streams, including parallel
+   Brian Goetz articles are at IBM: https://developer.ibm.com/series/java-streams/
+
 -- look into jcilk
    - does jcilk have cilksan and cilkscale?
 
