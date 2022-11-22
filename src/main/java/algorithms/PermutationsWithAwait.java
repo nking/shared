@@ -79,8 +79,6 @@ public class PermutationsWithAwait {
         //output(A)
         System.arraycopy(seq, 0, x, 0, n);
 
-        nCurrent = BigInteger.ZERO;
-
         availableItem.release();
 
         Thread thread = new Thread(new Permuter(seq, x));
@@ -104,9 +102,10 @@ public class PermutationsWithAwait {
      * get the next permutation of the original set
      * @param out an output array that will hold the results.  note that out.length
      * must be the same length as the set used during construction of this object instance.
+     * @return returns true if a value was set into out, otherwise returns false.
      * @throws InterruptedException thrown when the semaphore acquire throws an InterruptedException
      */
-    public void getNext(int[] out) throws InterruptedException {
+    public boolean getNext(int[] out) throws InterruptedException {
 
         if (out.length != x.length) {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
@@ -122,7 +121,11 @@ public class PermutationsWithAwait {
             nCurrent = nCurrent.add(BigInteger.ONE);
 
             computationLock.release();
+
+            return true;
         }
+
+        return false;
     }
     
     private class Permuter implements Runnable {

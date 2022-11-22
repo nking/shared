@@ -46,8 +46,8 @@ public class PermutationsWithAwaitTest extends TestCase {
         assertTrue(p.hasNext());
 
         for (i = 0; i < np; ++i) {
-            p.getNext(results[(int) i]);
-            System.out.printf("    %d) %s\n", i, Arrays.toString(results[(int) i]));
+            assertTrue(p.getNext(results[(int) i]));
+            //System.out.printf("    %d) %s\n", i, Arrays.toString(results[(int) i]));
         }
         boolean done = !p.hasNext();
         if (!done) {
@@ -56,7 +56,7 @@ public class PermutationsWithAwaitTest extends TestCase {
             fail("expecting done == true");
         }
         assertTrue(done);
-        System.out.printf("results.length=%d, results=\n%s\n", results.length, FormatArray.toString(results, "%d"));
+        //System.out.printf("results.length=%d, results=\n%s\n", results.length, FormatArray.toString(results, "%d"));
         int[] r, r2;
         TIntList re2;
         for (ii = 0; ii < results.length; ++ii) {
@@ -84,7 +84,11 @@ public class PermutationsWithAwaitTest extends TestCase {
             Arrays.fill(results[ii], -1);
         }
         for (i = 0; i < n2; ++i) {
-            p.getNext(results[(int) i]);
+            if (i < np) {
+                assertTrue(p.getNext(results[(int) i]));
+            } else {
+                assertFalse(p.getNext(results[(int) i]));
+            }
         }
         done = !p.hasNext();
         if (!done) {
@@ -102,7 +106,7 @@ public class PermutationsWithAwaitTest extends TestCase {
         p = new PermutationsWithAwait(set);
         int[] r3 = new int[set.length];
         while (p.hasNext()) {
-            p.getNext(r3);
+            assertTrue(p.getNext(r3));
             rs.add(Arrays.toString(r3));
         }
         //System.out.printf("nPerm=%s, nIter=%s\n", p.getCounts()[0], p.getCounts()[1]);
