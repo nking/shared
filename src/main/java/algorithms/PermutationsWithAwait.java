@@ -9,8 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * permute the given set of numbers in a thread that waits for the getNext()
- * invocation to calculate the next permutation.
+ a thread-safe class to permute numbers given in an array.
    <pre>
    The permute code is adapted from 
         from https://en.wikipedia.org/wiki/Heap%27s_algorithm
@@ -27,27 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
        int[] perm = new int[3];
        PermutationsWithAwait p = new PermutationsWithAwait(seq);
        p.getNext(perm);
-      
-       invokes these operations:
-        init:
-          resultLock = 0
-          compLock = 1
-
-        main:
-          compLock acquire: 1 - 1 = 0
-          resultLock release: 0 + 1 = 1
-
-        getNext:
-          if finished, return
-          resultLock acquire: when >0, subtract one
-          compLock release: add 1
-
-        thread,run:
-          while i<n
-            if (c[i] < i)
-              compLock acquire: when >0, subtract one
-              do computations
-              resultLock release
    </pre>
  */
 public class PermutationsWithAwait {
@@ -60,6 +38,11 @@ public class PermutationsWithAwait {
     private final int[] x;
 
     private final BigInteger nPermutations;
+
+    /**
+     * a count of the number of permutations calculated so far.
+     * the variable is guarded between the semaphores availableItemLock and computationLock.
+     */
     private BigInteger nCurrent;
 
     /**
@@ -96,7 +79,7 @@ public class PermutationsWithAwait {
         //output(A)
         System.arraycopy(seq, 0, x, 0, n);
 
-        nCurrent = BigInteger.ONE;
+        nCurrent = BigInteger.ZERO;
 
         availableItem.release();
 
@@ -112,14 +95,19 @@ public class PermutationsWithAwait {
     public boolean hasNext() {
         return (nCurrent.compareTo(nPermutations) == -1);
     }
+
+    String[] getCounts() {
+        return new String[]{nPermutations.toString(), nCurrent.toString()};
+    }
     
     /**
      * get the next permutation of the original set
      * @param out an output array that will hold the results.  note that out.length
      * must be the same length as the set used during construction of this object instance.
-     * @throws InterruptedException 
+     * @throws InterruptedException thrown when the semaphore acquire throws an InterruptedException
      */
     public void getNext(int[] out) throws InterruptedException {
+
         if (out.length != x.length) {
             throw new IllegalArgumentException("out.length must equal original set.length given to constructor");
         }
@@ -130,6 +118,8 @@ public class PermutationsWithAwait {
             availableItem.acquire();
 
             System.arraycopy(x, 0, out, 0, out.length);
+
+            nCurrent = nCurrent.add(BigInteger.ONE);
 
             computationLock.release();
         }
@@ -174,7 +164,7 @@ public class PermutationsWithAwait {
                     // output permutation to instance member x
                     System.arraycopy(in, 0, out, 0, n);
 
-                    nCurrent = nCurrent.add(BigInteger.ONE);
+                    //nCurrent = nCurrent.add(BigInteger.ONE);
 
                     //Releases a permit, increasing the number of available permits by
                     //one to the semaphore.  If any threads are trying to acquire a permit, then one is
