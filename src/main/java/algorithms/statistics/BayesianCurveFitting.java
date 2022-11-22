@@ -246,7 +246,7 @@ public class BayesianCurveFitting {
     public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest, double eps) throws NotConvergedException, NoSuchAlgorithmException {
 
         //  [(M+1))]
-        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-7);
+        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, eps);
         double[] u = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, k);
 
         // [phiXTest is [N2 X (M+1)]
