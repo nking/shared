@@ -73,13 +73,13 @@ public abstract class AbstractTSP {
         
         BigInteger nPerm = MiscMath0.factorialBigInteger(n); // max for n=13 for limit of array length
         totalNPerm = nPerm.divide(new BigInteger(Integer.toString(n)));
-        
+
         //TODO: add in the number of permutations for those not in a 3-set, that is,
         //   the 2 node and 1-node permutations
         totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length
         totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); 
         
-        System.out.printf("nPerm=%s, totalNSubSet=%d  totalNSubSeq=%d\n", 
+        System.out.printf("nPerm (w/o 1st node)=%s, totalNSubSet=%d  totalNSubSeq=%d\n",
             totalNPerm.toString(), totalNSubSet, totalNSubSeq);
         
         int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
@@ -433,8 +433,7 @@ public abstract class AbstractTSP {
      * are pushed onto the stack.
      * @param storeInMemo if true, the permuted path and sum are stored in memo
      */
-    protected void createAndStackSubsetPermutations(long bitstring, double sum, 
-        int nNodesSet, int k, 
+    protected void createAndStackSubsetPermutations(long bitstring, double sum, int nNodesSet, int k,
         Stack<StackP> stack, boolean storeInMemo) throws InterruptedException {
         
         TIntList remaining = new TIntArrayList();
@@ -467,8 +466,9 @@ public abstract class AbstractTSP {
             //System.out.println("    sel2=" + Arrays.toString(sel2));
 
             PermutationsWithAwait permutations = new PermutationsWithAwait(sel2);
-            
-            for (i = 0; i < nPerm; ++i) {
+
+            //for (i = 0; i < nPerm; ++i) {
+            while (permutations.hasNext()) {
                 permutations.getNext(selPerm);
                 sum2 = sum;
                 if (lastNode >= 0) {
@@ -520,7 +520,7 @@ public abstract class AbstractTSP {
         if (sum2 == minCost) {
             minPath.add(path);
         } else if (sum2 < minCost) {
-            minCost = sum2;//3, 2, 4, 1, 5
+            minCost = sum2;
             minPath.clear();
             minPath.add(path);
         }
@@ -585,13 +585,14 @@ public abstract class AbstractTSP {
             iter.advance();
             bitstring = iter.key();
             sum = iter.value();
-            
+
             p.clear();
             readPathIntoBase10(bitstring, p);
-            
+
             System.out.printf("memo: (%s) sum=%.2f min=%.2f\n",
                 Arrays.toString(p.toArray()), sum, minCost);
         }
+        System.out.printf("memo.size()=%d\n", memo.size());
         System.out.flush();
     }
     
@@ -627,6 +628,7 @@ public abstract class AbstractTSP {
         double sum3;
         int i, j, i0, i1;
         
+
         for (i = 0; i < np; ++i) {
 
             permutations.getNext(selPerm);

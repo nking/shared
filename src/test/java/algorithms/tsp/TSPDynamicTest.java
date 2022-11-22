@@ -223,8 +223,8 @@ public class TSPDynamicTest extends TestCase {
         ////[3, 2, 4] =  100010011 = 275, sum = 10
         
         double expectedCost = 42; //8 + 6 + 4 + 2 + 12 + 10
-        int[] expectedTour0 = new int[]{0, 3, 2, 4, 1, 5, 0};
-        int[] expectedTour1 = new int[]{1, 5, 0, 3, 2, 4, 1};
+        int[] expectedTour0 = new int[]{0, 3, 2, 4, 1, 5, 0}; // always starts with node 0, since its a tour start node doesnt matter
+        //int[] expectedTour1 = new int[]{1, 5, 0, 3, 2, 4, 1};
         
         tsp = new TSPDynamic(dist2);
         tsp.solve();

@@ -77,7 +77,7 @@ public class TSPDynamic extends AbstractTSP {
     }
     
     public void solve() throws InterruptedException {
-        
+
         if (minCost != sentinel) {
             reset();
         }
@@ -86,25 +86,26 @@ public class TSPDynamic extends AbstractTSP {
         int n = dist.length;
         
         int nNodesSet = k;
-                 
+
         // handle initialization of memo
         if ((dist.length <= (2*k + 1))) {
             initNodePaths();
             nNodesSet = dist.length - 1;
         } else {
             //dist.length > (k+1)
-            if (k == 2) {
+            //if (k == 2) {
                 // if k=2, init the k=4 paths in memo
                 init4NodePaths();
                 nNodesSet = 4;
-            } else {
+            //}
+            /*else {
                 // k == 3, init the k=3 paths in memo
                 init3NodePaths();
                 nNodesSet = 3;
-            }
+            }*/
         }
-        
-        int nNodesRemaining = (n-1) - nNodesSet;
+
+        int nNodesRemaining = (n - 1) - nNodesSet;
         
         // for the k increasing paths
         Stack<StackP> stack = new Stack<StackP>();
@@ -160,12 +161,12 @@ public class TSPDynamic extends AbstractTSP {
         }
         
         storeInMemo = false;
-        
+
         // for decreasing k, the path composition is still dynamic,
         //    but there is no need to store the results in memo as they 
         //    mostly won't be usable by other unfinished paths.
         while (!stackDecr.isEmpty()) {
-            
+
             currentStackP = stackDecr.pop();
             bitstring2 = currentStackP.bitstring;
             sum2 = currentStackP.sum;
@@ -198,5 +199,6 @@ public class TSPDynamic extends AbstractTSP {
             createAndStackSubsetPermutations(bitstring2, sum2, nNodesSet2, k2, 
                 stackDecr, storeInMemo);
         }
+
     }
 }
