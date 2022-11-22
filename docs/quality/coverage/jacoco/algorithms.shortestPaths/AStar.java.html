@@ -239,9 +239,9 @@ public class AStar {
 <span class="fc" id="L239">                    int key = f[v];</span>
 <span class="fc" id="L240">                    HeapNode node = new HeapNode(key);</span>
 <span class="fc" id="L241">                    node.setData(Integer.valueOf(v));</span>
-<span class="fc" id="L242">                    heap.insert(node);</span>
-<span class="fc" id="L243">                    nodes[v] = node;</span>
-<span class="fc" id="L244">                    predecessor[v] = u;</span>
+<span class="fc" id="L242">                    nodes[v] = node;</span>
+<span class="fc" id="L243">                    predecessor[v] = u;</span>
+<span class="fc" id="L244">                    heap.insert(node);</span>
 <span class="pc bnc" id="L245" title="All 2 branches missed.">                } else if (nodes[v] != null) {</span>
                     //assert(visited[v] == 1);
 <span class="nc" id="L247">                    g[v] = gUPlusWUV;</span>

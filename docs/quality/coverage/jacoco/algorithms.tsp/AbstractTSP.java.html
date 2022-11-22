@@ -73,13 +73,13 @@ import java.util.Stack;
         
 <span class="fc" id="L74">        BigInteger nPerm = MiscMath0.factorialBigInteger(n); // max for n=13 for limit of array length</span>
 <span class="fc" id="L75">        totalNPerm = nPerm.divide(new BigInteger(Integer.toString(n)));</span>
-        
+
         //TODO: add in the number of permutations for those not in a 3-set, that is,
         //   the 2 node and 1-node permutations
 <span class="fc" id="L79">        totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length</span>
 <span class="fc" id="L80">        totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); </span>
         
-<span class="fc" id="L82">        System.out.printf(&quot;nPerm=%s, totalNSubSet=%d  totalNSubSeq=%d\n&quot;, </span>
+<span class="fc" id="L82">        System.out.printf(&quot;nPerm (w/o 1st node)=%s, totalNSubSet=%d  totalNSubSeq=%d\n&quot;,</span>
 <span class="fc" id="L83">            totalNPerm.toString(), totalNSubSet, totalNSubSeq);</span>
         
 <span class="fc" id="L85">        int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);</span>
@@ -433,42 +433,42 @@ import java.util.Stack;
      * are pushed onto the stack.
      * @param storeInMemo if true, the permuted path and sum are stored in memo
      */
-    protected void createAndStackSubsetPermutations(long bitstring, double sum, 
-        int nNodesSet, int k, 
+    protected void createAndStackSubsetPermutations(long bitstring, double sum, int nNodesSet, int k,
         Stack&lt;StackP&gt; stack, boolean storeInMemo) throws InterruptedException {
         
-<span class="fc" id="L440">        TIntList remaining = new TIntArrayList();</span>
-<span class="fc" id="L441">        findUnsetBitsBase10(bitstring, remaining);</span>
+<span class="fc" id="L439">        TIntList remaining = new TIntArrayList();</span>
+<span class="fc" id="L440">        findUnsetBitsBase10(bitstring, remaining);</span>
         //System.out.println(&quot;remaining unset=&quot; + remaining.toString());
    
-<span class="fc" id="L444">        int nPerm = (int)MiscMath0.factorial(k);</span>
+<span class="fc" id="L443">        int nPerm = (int)MiscMath0.factorial(k);</span>
         
-<span class="fc" id="L446">        final int[] sel = new int[k];</span>
-<span class="fc" id="L447">        final int[] sel2 = new int[k];</span>
+<span class="fc" id="L445">        final int[] sel = new int[k];</span>
+<span class="fc" id="L446">        final int[] sel2 = new int[k];</span>
         int s, i;
-<span class="fc" id="L449">        int[] selPerm = new int[k];</span>
+<span class="fc" id="L448">        int[] selPerm = new int[k];</span>
         
-<span class="fc" id="L451">        int lastNode = getBase10NodeIndex(nNodesSet-1, bitstring);</span>
+<span class="fc" id="L450">        int lastNode = getBase10NodeIndex(nNodesSet-1, bitstring);</span>
         
         int j, i0, i1;
         long permi, path2;
         double sum2;
-<span class="fc" id="L456">        SubsetChooser chooser = new SubsetChooser(remaining.size(), k);</span>
+<span class="fc" id="L455">        SubsetChooser chooser = new SubsetChooser(remaining.size(), k);</span>
         while (true) {
-<span class="fc" id="L458">            s = chooser.getNextSubset(sel);</span>
-<span class="fc bfc" id="L459" title="All 2 branches covered.">            if (s == -1) {</span>
-<span class="fc" id="L460">                break;</span>
+<span class="fc" id="L457">            s = chooser.getNextSubset(sel);</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">            if (s == -1) {</span>
+<span class="fc" id="L459">                break;</span>
             }
             //System.out.println(&quot;sel=&quot; + Arrays.toString(sel));
             //transform sel to the bitstring unset indexes
-<span class="fc bfc" id="L464" title="All 2 branches covered.">            for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L465">                sel2[i] = remaining.get(sel[i]);</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">            for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L464">                sel2[i] = remaining.get(sel[i]);</span>
             }
             //System.out.println(&quot;    sel2=&quot; + Arrays.toString(sel2));
 
-<span class="fc" id="L469">            PermutationsWithAwait permutations = new PermutationsWithAwait(sel2);</span>
-            
-<span class="fc bfc" id="L471" title="All 2 branches covered.">            for (i = 0; i &lt; nPerm; ++i) {</span>
+<span class="fc" id="L468">            PermutationsWithAwait permutations = new PermutationsWithAwait(sel2);</span>
+
+            //for (i = 0; i &lt; nPerm; ++i) {
+<span class="fc bfc" id="L471" title="All 2 branches covered.">            while (permutations.hasNext()) {</span>
 <span class="fc" id="L472">                permutations.getNext(selPerm);</span>
 <span class="fc" id="L473">                sum2 = sum;</span>
 <span class="pc bpc" id="L474" title="1 of 2 branches missed.">                if (lastNode &gt;= 0) {</span>
@@ -520,7 +520,7 @@ import java.util.Stack;
 <span class="fc bfc" id="L520" title="All 2 branches covered.">        if (sum2 == minCost) {</span>
 <span class="fc" id="L521">            minPath.add(path);</span>
 <span class="fc bfc" id="L522" title="All 2 branches covered.">        } else if (sum2 &lt; minCost) {</span>
-<span class="fc" id="L523">            minCost = sum2;//3, 2, 4, 1, 5</span>
+<span class="fc" id="L523">            minCost = sum2;</span>
 <span class="fc" id="L524">            minPath.clear();</span>
 <span class="fc" id="L525">            minPath.add(path);</span>
         }
@@ -585,15 +585,16 @@ import java.util.Stack;
 <span class="fc" id="L585">            iter.advance();</span>
 <span class="fc" id="L586">            bitstring = iter.key();</span>
 <span class="fc" id="L587">            sum = iter.value();</span>
-            
+
 <span class="fc" id="L589">            p.clear();</span>
 <span class="fc" id="L590">            readPathIntoBase10(bitstring, p);</span>
-            
+
 <span class="fc" id="L592">            System.out.printf(&quot;memo: (%s) sum=%.2f min=%.2f\n&quot;,</span>
 <span class="fc" id="L593">                Arrays.toString(p.toArray()), sum, minCost);</span>
         }
-<span class="fc" id="L595">        System.out.flush();</span>
-<span class="fc" id="L596">    }</span>
+<span class="fc" id="L595">        System.out.printf(&quot;memo.size()=%d\n&quot;, memo.size());</span>
+<span class="fc" id="L596">        System.out.flush();</span>
+<span class="fc" id="L597">    }</span>
     
     /**
      * 
@@ -609,57 +610,58 @@ import java.util.Stack;
         int nNodesSet2, TIntList nodes, Stack&lt;StackP&gt; stack, boolean storeInMemo) 
         throws InterruptedException {
         
-<span class="fc" id="L612">        int nNodes = nodes.size();</span>
+<span class="fc" id="L613">        int nNodes = nodes.size();</span>
         //int nBitsSet2 = (dist.length - 1) - nNodesRemaining2;
         //int nBitsSet2 = this.numberOfSetNodes(bitstring2);
                 
         // note that this will be -1 if (nNodesSet2-1) &lt; 0
         // it's the last node set into bitstring2
-<span class="fc" id="L618">        int lastNode = getBase10NodeIndex(nNodesSet2-1, bitstring2);</span>
+<span class="fc" id="L619">        int lastNode = getBase10NodeIndex(nNodesSet2-1, bitstring2);</span>
 
-<span class="fc" id="L620">        int np = (int)MiscMath0.factorial(nNodes);</span>
+<span class="fc" id="L621">        int np = (int)MiscMath0.factorial(nNodes);</span>
 
-<span class="fc" id="L622">        int[] selPerm = new int[nNodes];</span>
+<span class="fc" id="L623">        int[] selPerm = new int[nNodes];</span>
             
-<span class="fc" id="L624">        PermutationsWithAwait permutations = new PermutationsWithAwait(nodes.toArray());</span>
+<span class="fc" id="L625">        PermutationsWithAwait permutations = new PermutationsWithAwait(nodes.toArray());</span>
         
         long permi, path3;
         double sum3;
         int i, j, i0, i1;
         
-<span class="fc bfc" id="L630" title="All 2 branches covered.">        for (i = 0; i &lt; np; ++i) {</span>
 
-<span class="fc" id="L632">            permutations.getNext(selPerm);</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">        for (i = 0; i &lt; np; ++i) {</span>
 
-<span class="fc" id="L634">            sum3 = sum2;</span>
-<span class="fc bfc" id="L635" title="All 2 branches covered.">            if (lastNode &gt;= 0) {</span>
-<span class="fc" id="L636">                sum3 += dist[lastNode][selPerm[0]];</span>
+<span class="fc" id="L634">            permutations.getNext(selPerm);</span>
+
+<span class="fc" id="L636">            sum3 = sum2;</span>
+<span class="fc bfc" id="L637" title="All 2 branches covered.">            if (lastNode &gt;= 0) {</span>
+<span class="fc" id="L638">                sum3 += dist[lastNode][selPerm[0]];</span>
             }
             
-<span class="fc" id="L639">            permi = createAMemoNodeBitstring(selPerm);</span>
-<span class="fc bfc" id="L640" title="All 2 branches covered.">            if (memo.containsKey(permi)) {                            </span>
-<span class="fc" id="L641">                sum3 += memo.get(permi);</span>
+<span class="fc" id="L641">            permi = createAMemoNodeBitstring(selPerm);</span>
+<span class="fc bfc" id="L642" title="All 2 branches covered.">            if (memo.containsKey(permi)) {                            </span>
+<span class="fc" id="L643">                sum3 += memo.get(permi);</span>
             } else {
                 // add each edge
-<span class="fc bfc" id="L644" title="All 2 branches covered.">                for (j = 1; j &lt; selPerm.length; ++j) {</span>
-<span class="fc" id="L645">                    i0 = selPerm[j - 1];</span>
-<span class="fc" id="L646">                    i1 = selPerm[j];</span>
-<span class="fc" id="L647">                    sum3 += dist[i0][i1];</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">                for (j = 1; j &lt; selPerm.length; ++j) {</span>
+<span class="fc" id="L647">                    i0 = selPerm[j - 1];</span>
+<span class="fc" id="L648">                    i1 = selPerm[j];</span>
+<span class="fc" id="L649">                    sum3 += dist[i0][i1];</span>
                 }
             }
             
-<span class="fc" id="L651">            path3 = concatenate(bitstring2, nNodesSet2, selPerm);</span>
+<span class="fc" id="L653">            path3 = concatenate(bitstring2, nNodesSet2, selPerm);</span>
             
-<span class="fc bfc" id="L653" title="All 2 branches covered.">            if (storeInMemo) {</span>
-<span class="fc" id="L654">                memo.put(path3, sum3);</span>
+<span class="fc bfc" id="L655" title="All 2 branches covered.">            if (storeInMemo) {</span>
+<span class="fc" id="L656">                memo.put(path3, sum3);</span>
             }
 
-<span class="fc bfc" id="L657" title="All 2 branches covered.">            if (stack != null) {</span>
-<span class="fc" id="L658">                int nRemaining = (dist.length - 1) - (nNodesSet2 + nodes.size());</span>
-<span class="fc" id="L659">                stack.add(new StackP(path3, sum3, nRemaining));</span>
+<span class="fc bfc" id="L659" title="All 2 branches covered.">            if (stack != null) {</span>
+<span class="fc" id="L660">                int nRemaining = (dist.length - 1) - (nNodesSet2 + nodes.size());</span>
+<span class="fc" id="L661">                stack.add(new StackP(path3, sum3, nRemaining));</span>
             }
         }
-<span class="fc" id="L662">    }</span>
+<span class="fc" id="L664">    }</span>
     
     protected static class StackP {
         long bitstring;

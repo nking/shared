@@ -303,8 +303,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L303" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L306" title="3 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
-<span class="nc" id="L307">            root.color = RED;</span>
+<span class="pc bpc" id="L306" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="fc" id="L307">            root.color = RED;</span>
 
 <span class="fc" id="L309">        root = deleteMax(root);</span>
 <span class="pc bpc" id="L310" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
@@ -360,8 +360,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         else {
 <span class="fc bfc" id="L361" title="All 2 branches covered.">            if (isRed(h.left))</span>
 <span class="fc" id="L362">                h = rotateRight(h);</span>
-<span class="fc bfc" id="L363" title="All 4 branches covered.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
-<span class="fc" id="L364">                return null;</span>
+<span class="pc bpc" id="L363" title="1 of 4 branches missed.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
+<span class="nc" id="L364">                return null;</span>
 <span class="fc bfc" id="L365" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L366">                h = moveRedRight(h);</span>
 <span class="fc bfc" id="L367" title="All 2 branches covered.">            if (key.compareTo(h.key) == 0) {</span>

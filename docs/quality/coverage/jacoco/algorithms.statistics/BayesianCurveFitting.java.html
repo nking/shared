@@ -225,46 +225,60 @@ import java.util.logging.Logger;
     /**
      * predict values for test feature matrix phiXTest using randomly generated points
      * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * uses a default machine precision of 1E-7 for equality comparisons in matrices.
      * @param fit model fit made from training data
      * @param phiXTest x value feature matrix for which to predict target t values.
+     *
      * @return a sample predicted from random samples of the model at the points from phiXTest.
      */
     public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest) throws NotConvergedException, NoSuchAlgorithmException {
+<span class="fc" id="L235">        return predictRandomSample(fit, phiXTest, 1E-7);</span>
+    }
+
+    /**
+     * predict values for test feature matrix phiXTest using randomly generated points
+     * from a multivariate normal distribution based upon the model fit mean and covariance.
+     * @param fit model fit made from training data
+     * @param phiXTest x value feature matrix for which to predict target t values.
+     *                 @param eps machine tolerance to use with matrices for element equivalence
+     * @return a sample predicted from random samples of the model at the points from phiXTest.
+     */
+    public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest, double eps) throws NotConvergedException, NoSuchAlgorithmException {
 
         //  [(M+1))]
-<span class="fc" id="L235">        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-11);</span>
-<span class="fc" id="L236">        double[] u = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, k);</span>
+<span class="fc" id="L249">        double[][] k = MatrixUtil.nearestPositiveSemidefiniteToASymmetric(fit.cov, 1.e-7);</span>
+<span class="fc" id="L250">        double[] u = MultivariateNormalDistribution.sampleRandomlyFrom0(fit.mean, k);</span>
 
         // [phiXTest is [N2 X (M+1)]
         // [N2 X (M+1)] [(M+1) X 1]
-<span class="fc" id="L240">        double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, u);</span>
+<span class="fc" id="L254">        double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, u);</span>
 
         //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
-<span class="fc" id="L243">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
+<span class="fc" id="L257">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
-<span class="fc" id="L245">        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);</span>
+<span class="fc" id="L259">        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);</span>
 
         // propagation of errors:
         // sum ys1 along rows, add 1/beta, take sqrt:
-<span class="fc" id="L249">        double[] yErr = new double[ys1.length];</span>
+<span class="fc" id="L263">        double[] yErr = new double[ys1.length];</span>
         int j;
-<span class="fc bfc" id="L251" title="All 2 branches covered.">        for (int i = 0; i &lt; ys1.length; ++i) {</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (j = 0; j &lt; ys1[i].length; ++j) {</span>
-<span class="fc" id="L253">                yErr[i] += ys1[i][j];</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        for (int i = 0; i &lt; ys1.length; ++i) {</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">            for (j = 0; j &lt; ys1[i].length; ++j) {</span>
+<span class="fc" id="L267">                yErr[i] += ys1[i][j];</span>
             }
-<span class="fc" id="L255">            yErr[i] += (1./fit.beta);</span>
-<span class="fc" id="L256">            yErr[i] = Math.sqrt(yErr[i]);</span>
+<span class="fc" id="L269">            yErr[i] += (1./fit.beta);</span>
+<span class="fc" id="L270">            yErr[i] = Math.sqrt(yErr[i]);</span>
         }
-<span class="fc" id="L258">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=\n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L272">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=\n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
 
         //from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
         //N(0, I) ~ Σ^(−1/2) * (X−μ)
 
-<span class="fc" id="L263">        ModelPrediction model = new ModelPrediction();</span>
-<span class="fc" id="L264">        model.yFit = y;</span>
-<span class="fc" id="L265">        model.yErr = yErr;</span>
+<span class="fc" id="L277">        ModelPrediction model = new ModelPrediction();</span>
+<span class="fc" id="L278">        model.yFit = y;</span>
+<span class="fc" id="L279">        model.yErr = yErr;</span>
 
-<span class="fc" id="L267">        return model;</span>
+<span class="fc" id="L281">        return model;</span>
     }
 
     /**
@@ -291,16 +305,16 @@ import java.util.logging.Logger;
         same as x = pinv(a) * b = s * b
         */
 
-<span class="fc" id="L294">        double[] bV0 = MatrixUtil.multiplyMatrixByColumnVector(priorPrecision, priorMean);</span>
+<span class="fc" id="L308">        double[] bV0 = MatrixUtil.multiplyMatrixByColumnVector(priorPrecision, priorMean);</span>
 
-<span class="fc" id="L296">        double[] bV = MatrixUtil.multiplyMatrixByColumnVector(phiXT, t);</span>
-<span class="fc" id="L297">        MatrixUtil.multiply(bV, beta);</span>
+<span class="fc" id="L310">        double[] bV = MatrixUtil.multiplyMatrixByColumnVector(phiXT, t);</span>
+<span class="fc" id="L311">        MatrixUtil.multiply(bV, beta);</span>
 
-<span class="fc" id="L299">        bV = MatrixUtil.add(bV0, bV);</span>
+<span class="fc" id="L313">        bV = MatrixUtil.add(bV0, bV);</span>
 
-<span class="fc" id="L301">        double[] mean = MatrixUtil.multiplyMatrixByColumnVector(s, bV);</span>
+<span class="fc" id="L315">        double[] mean = MatrixUtil.multiplyMatrixByColumnVector(s, bV);</span>
 
-<span class="fc" id="L303">        return mean;</span>
+<span class="fc" id="L317">        return mean;</span>
     }
 
     /**
@@ -319,21 +333,21 @@ import java.util.logging.Logger;
      */
     public static double[][] generatePolynomialPhiX(double[] x, int m) {
 
-<span class="fc" id="L322">        double[][] out = new double[x.length][];</span>
+<span class="fc" id="L336">        double[][] out = new double[x.length][];</span>
         int i;
         int j;
-<span class="fc bfc" id="L325" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
-<span class="fc" id="L326">            out[i] = new double[m + 1];</span>
-<span class="fc" id="L327">            out[i][0] = 1;//(x[i])^0;</span>
-<span class="fc" id="L328">            out[i][1] = x[i];</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc" id="L340">            out[i] = new double[m + 1];</span>
+<span class="fc" id="L341">            out[i][0] = 1;//(x[i])^0;</span>
+<span class="fc" id="L342">            out[i][1] = x[i];</span>
         }
 
-<span class="fc bfc" id="L331" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">            for (j = 2; j &lt;= m; ++j) {</span>
-<span class="fc" id="L333">                out[i][j] = out[i][j - 1] * x[i];</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">            for (j = 2; j &lt;= m; ++j) {</span>
+<span class="fc" id="L347">                out[i][j] = out[i][j - 1] * x[i];</span>
             }
         }
-<span class="fc" id="L336">        return out;</span>
+<span class="fc" id="L350">        return out;</span>
     }
 
     /**
@@ -356,12 +370,12 @@ import java.util.logging.Logger;
         // ctgk github PRML CODE : S^-1=alpha*I + beta * (xT*x)
         // Note: Gram Matrix is in section 6.1 of Bishop's PRML.
 
-<span class="fc" id="L359">        double[][] p1 = MatrixUtil.multiply(xT, x);</span>
-<span class="fc" id="L360">        MatrixUtil.multiply(p1, beta);</span>
+<span class="fc" id="L373">        double[][] p1 = MatrixUtil.multiply(xT, x);</span>
+<span class="fc" id="L374">        MatrixUtil.multiply(p1, beta);</span>
 
-<span class="fc" id="L362">        double[][] sInv = MatrixUtil.pointwiseAdd(priorPrecision, p1);</span>
+<span class="fc" id="L376">        double[][] sInv = MatrixUtil.pointwiseAdd(priorPrecision, p1);</span>
 
-<span class="fc" id="L364">        return sInv;</span>
+<span class="fc" id="L378">        return sInv;</span>
     }
 
     /**
@@ -373,12 +387,12 @@ import java.util.logging.Logger;
      * @return a vector of length m+1 composed of elements xn^0, xn^1, ... xn^m;
      */
     private static double[] generatePhiXn(int m, double xn) {
-<span class="nc" id="L376">        double[] phiXn = new double[m + 1];</span>
-<span class="nc" id="L377">        phiXn[0] = 1;// xn^0=1</span>
-<span class="nc bnc" id="L378" title="All 2 branches missed.">        for (int i = 1; i &lt;= m; ++i) {</span>
-<span class="nc" id="L379">            phiXn[i] = phiXn[i - 1] * xn;</span>
+<span class="nc" id="L390">        double[] phiXn = new double[m + 1];</span>
+<span class="nc" id="L391">        phiXn[0] = 1;// xn^0=1</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">        for (int i = 1; i &lt;= m; ++i) {</span>
+<span class="nc" id="L393">            phiXn[i] = phiXn[i - 1] * xn;</span>
         }
-<span class="nc" id="L381">        return phiXn;</span>
+<span class="nc" id="L395">        return phiXn;</span>
     }
 
 }

@@ -148,29 +148,26 @@ import java.util.Arrays;
      */
     public static double[][] covariance2(double[][] a) {
         
-<span class="fc" id="L151">        int n = a[0].length;</span>
-        
-<span class="fc" id="L153">        double[][] cov = MatrixUtil.multiply(a, MatrixUtil.transpose(a));</span>
-        
+<span class="fc" id="L151">        double[][] cov = MatrixUtil.createATransposedTimesA(a);</span>
+
         int i, j;
-<span class="fc" id="L156">        double invN = 1./((double)n - 1.);</span>
-        
-<span class="fc bfc" id="L158" title="All 2 branches covered.">        for (i = 0 ; i &lt; cov.length; ++i) {</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">            for (j = 0; j &lt; cov[i].length; ++j) {</span>
-<span class="fc" id="L160">                cov[i][j] *= invN;</span>
+<span class="fc" id="L154">        int n = a[0].length;</span>
+<span class="fc" id="L155">        double invN2 = 1./((double)n - 1.);</span>
+<span class="fc" id="L156">        invN2 *= invN2;</span>
+<span class="fc" id="L157">        MatrixUtil.multiply(cov, invN2);</span>
+
+        /*
+        System.out.printf(&quot;bf cov=\n&quot;);
+        for ( i = 0; i &lt; cov.length; ++i) {
+            for ( j = 0; j &lt; cov[i].length; ++j) {
+                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
             }
+            System.out.printf(&quot;\n&quot;);
         }
-        
-<span class="fc" id="L164">        System.out.printf(&quot;bf cov=\n&quot;);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">        for ( i = 0; i &lt; cov.length; ++i) {</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">            for ( j = 0; j &lt; cov[i].length; ++j) {</span>
-<span class="fc" id="L167">                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);</span>
-            }
-<span class="fc" id="L169">            System.out.printf(&quot;\n&quot;);</span>
-        }
-<span class="fc" id="L171">        System.out.flush();</span>
-        
-<span class="fc" id="L173">        return cov;</span>
+        System.out.flush();
+        */
+
+<span class="fc" id="L170">        return cov;</span>
     }
    
 }
