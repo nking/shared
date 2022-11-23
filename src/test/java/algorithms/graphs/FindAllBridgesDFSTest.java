@@ -84,7 +84,7 @@ public class FindAllBridgesDFSTest extends TestCase {
         for (i = 0; i < bridges.getN(); ++i) {
             u = bridges.getX(i);
             v = bridges.getY(i);
-            /*System.out.printf("%d,%d, (%s,%s)\n", u,v,
+            /*System.out.printf("%d,%d, (%s,%s)%n", u,v,
                String.valueOf((char)(u + 97)),
                String.valueOf((char)(v + 97)));*/
             expected.remove(new PairInt(u, v));

@@ -48,7 +48,7 @@ public class ResourceFinder {
             String contents = out.toString();
             out.close();
      * </pre>
-     * 
+     * It is the invoker's responsibility to close the stream.
      * @param jarPath
      * @param filePath
      * @return
@@ -272,9 +272,15 @@ public class ResourceFinder {
         try {
             File file = new File(filePath);
             if (file.exists()) {
-                file.delete();
+                boolean deleted = file.delete();
+                if (!deleted) {
+                    throw new IOException("could not delete file " + file.getPath());
+                }
             }
-            file.createNewFile();
+            boolean dreated = file.createNewFile();
+            if (!dreated) {
+                throw new IOException("could not create new file " + file.getPath());
+            }
 
             fw = new FileWriter(file);
             writer = new BufferedWriter(fw);

@@ -50,7 +50,7 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
                     break;
             }
             
-            System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%s), (%s), (%s)\n",
+            System.out.printf("%nbegin w/ init=(%.3f, %.3f); true=(%s), (%s), (%s)%n",
                 init[0], init[1], 
                 AbstractGeometricMedianFunction.toString(expected[0]),
                 AbstractGeometricMedianFunction.toString(expected[1]),
@@ -67,7 +67,7 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
             double min = opt.findMin(searchStrategy, stopStrategy, f, init, 
                 acceptableMinF);
 
-            System.out.println("min=" + min + " \n   coeffs=" +
+            System.out.println("min=" + min + " %n   coeffs=" +
                 Arrays.toString(init));
             System.out.flush();
             
@@ -126,7 +126,7 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
                     break;
             }
             
-            System.out.printf("\nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
+            System.out.printf("%nbegin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)%n",
                 init[0], init[1], expected[0], expected[1]);
             
             LBFGSSearchStrategy searchStrategy = new LBFGSSearchStrategy(5);
@@ -140,7 +140,7 @@ public class GeometricMedianUnweightedFunctionTest extends TestCase {
             double min = opt.findMin(searchStrategy, stopStrategy, f, init, 
                 acceptableMinF);
 
-            System.out.println("min=" + min + " \n   coeffs=" +
+            System.out.println("min=" + min + " %n   coeffs=" +
                 Arrays.toString(init));
             System.out.flush();
 

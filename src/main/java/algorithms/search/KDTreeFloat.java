@@ -164,16 +164,15 @@ public class KDTreeFloat {
 		
         parent.depth = depth - 1;
 		parent.key = median;
-		parent.left = leftChildren;
-		parent.right = rightChildren;
-		
-		leftChildren.parent = parent;
-	    rightChildren.parent = parent;
 	    
-	    if (parent.left != null) {
+	    if (leftChildren != null) {
+			parent.left = leftChildren;
+			leftChildren.parent = parent;
 	    	parent.nChildren += 1 + parent.left.nChildren;
 	    }
-	    if (parent.right != null) {
+	    if (rightChildren != null) {
+			parent.right = rightChildren;
+			rightChildren.parent = parent;
 	    	parent.nChildren += 1 + parent.right.nChildren;
 	    }
 

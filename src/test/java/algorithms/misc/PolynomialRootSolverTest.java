@@ -67,7 +67,7 @@ public class PolynomialRootSolverTest extends TestCase {
         }
        
         Complex[] roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        //System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
+        //System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
         for (Complex rE : expectedC) {
             for (int i = 0; i < roots2.length; ++i) {
                 Complex r = roots2[i];

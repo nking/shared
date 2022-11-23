@@ -201,7 +201,7 @@ public class XFastTrie<S extends XFastTrieNode<T>, T>
             }
             prefix = w.prefix;
 			t.get(i--).remove(w.prefix);
-			w = (w.parent != null) ? (S)w.parent : null;
+			w = (S)w.parent;
 		}
 		// 4 - update jump pointers
 		w.jump = (w.child[left] == null) ? succ : pred;
@@ -429,7 +429,7 @@ public class XFastTrie<S extends XFastTrieNode<T>, T>
         TIntSet dummyHashCodes = new TIntHashSet();
         S node = dummy;
         //System.out.println("dummy.hashCode=" + dummy.hashCode());
-        System.out.print("\ndummy=");
+        System.out.print("%ndummy=");
         do {
             int dhc = node.hashCode();
             System.out.print(node.x + ", ");

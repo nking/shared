@@ -56,7 +56,7 @@ public class UniformCostSearchTest extends TestCase {
          // s0  d2  g5     = 7
          
          p = srch.getShortestPathToVertex(dest);
-         //System.out.printf("p=%s\n", Arrays.toString(p));
+         //System.out.printf("p=%s%n", Arrays.toString(p));
          assertTrue(Arrays.equals(new int[]{0, 1, 2, 5}, p));
          dist = srch.getSumOfPath(p);
          assertEquals(5, dist);

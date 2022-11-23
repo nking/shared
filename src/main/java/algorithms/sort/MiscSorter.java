@@ -481,7 +481,7 @@ public class MiscSorter {
      */
     protected static void sortBy1stArg2(long[] a1, long[] a2, int[] idxs, int iLo, int iHi) {
         if (iLo < iHi) {
-            int iMid = (iLo + iHi)/2;
+            int iMid = iLo + (int)((iHi - iLo)/2.);
             sortBy1stArg2(a1, a2, idxs, iLo, iMid);
             sortBy1stArg2(a1, a2, idxs, iMid + 1, iHi);
             mergeSortBy1stArg2(a1, a2, idxs, iLo, iMid, iHi);

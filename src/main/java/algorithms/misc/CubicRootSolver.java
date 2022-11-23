@@ -9,7 +9,7 @@ import no.uib.cipr.matrix.NotConvergedException;
  */
 public class CubicRootSolver {
 
-    public static double eps = 1e-7;
+    public final static double eps = 1e-7;
     public static double[] realNonZeroOnly(Complex[] r) {
         int n = 0;
         int i;

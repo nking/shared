@@ -39,7 +39,7 @@ public class LBFGSOptimizationTest extends TestCase {
         double min = opt.findMin(searchStrategy, 
             stopStrategy, f2, init, fLower);
        
-        System.out.println("min=" + min + " \n   coeffs=" +
+        System.out.println("min=" + min + " %n   coeffs=" +
             Arrays.toString(init));
        
         for (int i = 0; i < init.length; ++i) {
@@ -68,7 +68,7 @@ public class LBFGSOptimizationTest extends TestCase {
         double min = opt.findMin(searchStrategy, 
             stopStrategy, f, init, fLower);
        
-        System.out.println("-->min=" + min + " \n   coeffs=" +
+        System.out.println("-->min=" + min + " %n   coeffs=" +
             Arrays.toString(init));
         
         for (int i = 0; i < init.length; ++i) {

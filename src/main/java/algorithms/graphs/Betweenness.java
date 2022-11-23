@@ -223,7 +223,7 @@ public class Betweenness {
          
             //add weights from previous root traversals
             if (rootIndexes.length > 1) {
-            //    log.log(logLevel, "\n  w=" + Arrays.toString(w));
+            //    log.log(logLevel, "%n  w=" + Arrays.toString(w));
                 for (int i = 0; i < w.length; ++i) {
                     w[i] += wG[i];
                 }
@@ -418,7 +418,7 @@ public class Betweenness {
                 //log.log(logLevel, "color=" + Arrays.toString(color));
                 u = queue.remove().intValue();
                 members.add(u);
-                log.log(logLevel, String.format("u=%d\n", u));
+                log.log(logLevel, String.format("u=%d%n", u));
                 SimpleLinkedListNode vNode = adjacencyList[u];
                 // for adjacencyLists that are directionless, edges from u to v and v to u exist,
                 // so need to make one additional check for a pseudo-leaf:
@@ -427,7 +427,7 @@ public class Betweenness {
                 if (isALeafNode) {
                     leaf.add(u);
                     color[u] = 2;
-                    log.log(logLevel, "    LEAF\n");
+                    log.log(logLevel, "    LEAF%n");
                     continue;
                 }
                 while (vNode != null && vNode.getKey() != -1) {
@@ -437,7 +437,7 @@ public class Betweenness {
                         d[v] = d[u] + 1;
                         w[v] = w[u];
                         queue.add(v);
-                        log.log(logLevel, String.format("  v=%d\n", v));
+                        log.log(logLevel, String.format("  v=%d%n", v));
                         if (d[v] < dBest[v]) {
                             dBest[v] = d[v];
                         }
@@ -445,7 +445,7 @@ public class Betweenness {
                         w[v] += w[u];
                     }
                     if (d[u] < d[v]) {
-                        log.log(logLevel, String.format("adding parent=%d of node=%d (d[%d]=%d, d[%d]=%d])\n",
+                        log.log(logLevel, String.format("adding parent=%d of node=%d (d[%d]=%d, d[%d]=%d])%n",
                             u, v, u, d[u], v, d[v]));
                         p[v].add(u);
                     }
@@ -457,7 +457,7 @@ public class Betweenness {
          
             //add weights from previous root traversals
             if (rootIndexes.length > 1) {
-            //    log.log(logLevel, "\n  w=" + Arrays.toString(w));
+            //    log.log(logLevel, "%n  w=" + Arrays.toString(w));
                 for (int i = 0; i < w.length; ++i) {
                     w[i] += wG[i];
                 }
@@ -474,11 +474,11 @@ public class Betweenness {
             PairInt uv;
             while (tIter.hasNext()) {
                 t = tIter.next();
-                log.log(logLevel, String.format("t leaf=%d\n", t));
+                log.log(logLevel, String.format("t leaf=%d%n", t));
                 pIter = p[t].iterator();
                 while (pIter.hasNext()) {
                     i = pIter.next();
-                    log.log(logLevel, String.format("  p=%d\n", i));
+                    log.log(logLevel, String.format("  p=%d%n", i));
                     if (!enqd.contains(i)) {
                         queue.add(i);
                         enqd.add(i);
@@ -487,7 +487,7 @@ public class Betweenness {
                     assert(d[i] < d[t]);
                     uv = new PairInt(i, t);
                     wEdges.put(uv, e);
-                    log.log(logLevel, String.format("  edge=(%d, %d) w=%.3e\n", i, t, e));
+                    log.log(logLevel, String.format("  edge=(%d, %d) w=%.3e%n", i, t, e));
                 }
             }
           //  log.log(logLevel, "w=" + Arrays.toString(w));
@@ -519,7 +519,7 @@ public class Betweenness {
                     }
                     jNode = jNode.getNext();
                 }
-                log.log(logLevel, String.format("  \n   =>%.3f\n", e));
+                log.log(logLevel, String.format("  %n   =>%.3f%n", e));
 
                 pIter = p[i].iterator();
                 while (pIter.hasNext()) {
@@ -528,14 +528,14 @@ public class Betweenness {
                         queue.add(ip);
                         enqd.add(ip);
                     }
-                    log.log(logLevel, String.format("  parent=d[%d]=%d,  child=d[%d]=%d\n", 
+                    log.log(logLevel, String.format("  parent=d[%d]=%d,  child=d[%d]=%d%n",
                         ip, d[ip], i, d[i]));
                     assert(d[ip] < d[i]);
                     e2 = (float) w[ip] / (float) w[i];
                     e2 *= e;
-                    log.log(logLevel, String.format("    e=(%.3f)*(w[%d]/w[%d]=%.3f)\n", e, ip, i, (float) w[ip] / (float) w[i]));
+                    log.log(logLevel, String.format("    e=(%.3f)*(w[%d]/w[%d]=%.3f)%n", e, ip, i, (float) w[ip] / (float) w[i]));
                     uv = new PairInt(ip, i);
-                    log.log(logLevel, String.format("    edge=(%d, %d) w=%.3e\n", ip, i, e2));
+                    log.log(logLevel, String.format("    edge=(%d, %d) w=%.3e%n", ip, i, e2));
                     wEdges.put(uv, e2);
                 }
             }
@@ -614,7 +614,7 @@ public class Betweenness {
                 sb.append(String.format("%d, ", v));
                 vNode = vNode.getNext();
             }
-            sb.append(String.format("]\n"));
+            sb.append(String.format("]%n"));
         }
         System.out.println(sb.toString());
     }*/
@@ -656,17 +656,17 @@ public class Betweenness {
             if (rootIndexes != null) {
                 sb.append(Arrays.toString(rootIndexes));
             }
-            sb.append("\nedges=");
+            sb.append("%nedges=");
             if (edges != null) {
                 TObjectFloatIterator<PairInt> iter = edges.iterator();
                 for (int i = 0; i < edges.size(); ++i) {
                     iter.advance();
                     PairInt e = iter.key();
                     float w = iter.value();
-                    sb.append(String.format("\n  (%d,%d)=%.3e", e.getX(), e.getY(), w));
+                    sb.append(String.format("%n  (%d,%d)=%.3e", e.getX(), e.getY(), w));
                 }
             }
-            sb.append("\nvertex indexes=");
+            sb.append("%nvertex indexes=");
             if (vertexes != null) {
                 sb.append(Arrays.toString(vertexes.toArray()));
             }

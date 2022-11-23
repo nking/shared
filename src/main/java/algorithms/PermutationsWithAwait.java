@@ -27,8 +27,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
        PermutationsWithAwait p = new PermutationsWithAwait(seq);
        p.getNext(perm);
    </pre>
+
+ Note that the class has been made final because it starts a thread within the constructor and
+ any subclass constructor would follow the started thread.
  */
-public class PermutationsWithAwait {
+public final class PermutationsWithAwait {
 
     private final Semaphore availableItem, computationLock;
     

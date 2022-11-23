@@ -78,7 +78,7 @@ public class RedBlackBSTTest extends TestCase {
                 assertTrue(foundIndex > -1);
 
                 assertEquals(nodes.size(), bt.size());
-                //System.out.println("\n* " + idx + " expected next=" + expected);
+                //System.out.println("%n* " + idx + " expected next=" + expected);
 
             }
             

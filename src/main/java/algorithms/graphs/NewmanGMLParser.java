@@ -64,8 +64,8 @@ public class NewmanGMLParser {
         int eIdx, nIdx;
         
         try {
-            
-            in = new BufferedReader(new FileReader(new File(filePath)));
+            reader = new FileReader(new File(filePath));
+            in = new BufferedReader(reader);
 
             // find graph [ which may have an end of line marker and spaces in between
             r = readToEndOf(in, "graph");
@@ -105,11 +105,11 @@ public class NewmanGMLParser {
             }
             
         } finally {
-            if (in != null) {
-                in.close();
-            }
             if (reader != null) {
                 reader.close();
+            }
+            if (in != null) {
+                in.close();
             }
         }
 
@@ -204,8 +204,8 @@ public class NewmanGMLParser {
         if (source == null || target == null) {
             throw new IllegalArgumentException("edge is missing source and/or target: " + content);
         }
-        
-        PairInt e = new PairInt(Integer.valueOf(source), Integer.valueOf(target));
+
+        PairInt e = new PairInt(Integer.parseInt(source), Integer.parseInt(target));
         
         if (!edgeMap.containsKey(e)) {
             edgeMap.put(e, new TFloatArrayList());
@@ -216,7 +216,7 @@ public class NewmanGMLParser {
         if (value == null) {
             edgeMap.get(e).add(1);
         } else {
-            edgeMap.get(e).add(Float.valueOf(value));
+            edgeMap.get(e).add(Float.parseFloat(value));
         }
     }
     
@@ -256,7 +256,7 @@ public class NewmanGMLParser {
             throw new IllegalArgumentException("node is missing id: " + content);
         }
         
-        int idI = Integer.valueOf(id);
+        int idI = Integer.parseInt(id);
         
         if (nodeIdLabelMap.containsKey(idI)) {
             log.warning("node id=" + id + " is in file more than once");

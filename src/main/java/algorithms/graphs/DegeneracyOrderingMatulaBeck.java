@@ -86,7 +86,7 @@ public class DegeneracyOrderingMatulaBeck {
         
         int maxDegree = calculateMaxDegree(adjMap);
         
-        System.out.printf("maxDegree=%d, n=%d\n", maxDegree, n);
+        System.out.printf("maxDegree=%d, n=%d%n", maxDegree, n);
         
         // use a YFastTrie and HashMap to create the bucket queue
         // runtime complexity is O(|V|*log_2(w)) where q=maxDegree
@@ -127,7 +127,7 @@ public class DegeneracyOrderingMatulaBeck {
             out[n-j-1] = v;
             bQ.remove(i, v, bucket);
             
-            //System.out.printf("out=%s\n", Arrays.toString(out));
+            //System.out.printf("out=%s%n", Arrays.toString(out));
               
             // for each neighbor w of v that is not already in L
             adj = adjMap.get(v);
@@ -157,7 +157,7 @@ public class DegeneracyOrderingMatulaBeck {
                 }
                 nW--;
                 if (nW < 0) {
-                    //System.out.printf("vertex w=%d has nW=%d.  bucket size=%d\n",
+                    //System.out.printf("vertex w=%d has nW=%d.  bucket size=%d%n",
                     //    w, nW, bQ.size());
                     //w should remain in bQ until it becomes v
                 } else {
@@ -234,7 +234,7 @@ public class DegeneracyOrderingMatulaBeck {
                 }
                 reverseBucketMap.put(v, nV);
                 
-                //System.out.printf("bM key=%d, val=%d, max=%d\n", nV, v, maxDegree);
+                //System.out.printf("bM key=%d, val=%d, max=%d%n", nV, v, maxDegree);
             }
             
             bucketQueue = new YFastTrie(1 + (int)Math.ceil(Math.log(maxDegree)/Math.log(2)) );
@@ -243,7 +243,7 @@ public class DegeneracyOrderingMatulaBeck {
                 iter.advance();
                 nV = iter.key();
                 bucketQueue.add(nV);
-                //System.out.printf("bQ key=%d\n", nV);
+                //System.out.printf("bQ key=%d%n", nV);
             }
         }
         
@@ -458,7 +458,7 @@ public class DegeneracyOrderingMatulaBeck {
                 }
                 reverseBucketMap.put(v, nV);
                 
-                //System.out.printf("bM key=%d, val=%d, max=%d\n", nV, v, maxDegree);
+                //System.out.printf("bM key=%d, val=%d, max=%d%n", nV, v, maxDegree);
             }
         }
         

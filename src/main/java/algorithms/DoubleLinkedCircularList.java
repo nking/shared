@@ -34,7 +34,7 @@ public class DoubleLinkedCircularList {
         return sentinel;
     }
     
-    public void resetSentinel() {
+    public final void resetSentinel() {
         this.sentinel.setLeft(sentinel);
         this.sentinel.setRight(sentinel);
     }

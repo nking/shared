@@ -398,14 +398,14 @@ public class CPolyTest extends TestCase {
             CPoly poly = new CPoly(coef);
 
             System.out.println("    EXAMPLE 0:  A VERY SIMPLE POLYNOMIAL.");
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             System.out.println("    Zeros of p(x) are:");
             int deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 1.  POLYNOMIAL WITH ZEROS 1,2,...,10.");
+            System.out.println("%n%n    EXAMPLE 1.  POLYNOMIAL WITH ZEROS 1,2,...,10.");
             coef = new double[11];
             zeros_re = new double[coef.length-1];
             zeros_im = new double[coef.length-1];
@@ -421,13 +421,13 @@ public class CPolyTest extends TestCase {
             coef[1] = -10628640;
             coef[0] = 3628800;
             poly = new CPoly(coef);
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 2. ZEROS ON IMAGINARY AXIS DEGREE 3.");
+            System.out.println("%n%n    EXAMPLE 2. ZEROS ON IMAGINARY AXIS DEGREE 3.");
             double[] coef_re = new double[4];
             double[] coef_im = new double[4];
             zeros_re = new double[coef_re.length-1];
@@ -437,13 +437,13 @@ public class CPolyTest extends TestCase {
             coef_re[2] = 0.0;  coef_im[2] = -10001.0001;
             coef_re[3] = 1.0;  coef_im[3] = 0.0;
             poly = new CPoly(coef_re, coef_im);
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 3. ZEROS AT 1+I,1/2*(1+I)....1/(2**-9)*(1+I).");
+            System.out.println("%n%n    EXAMPLE 3. ZEROS AT 1+I,1/2*(1+I)....1/(2**-9)*(1+I).");
             coef_re = new double[] {0, -4.652065399568528E-10, 1.584803612786345E-7, -1.154642632172909E-5,
                                     0, 1.271507365163416E-2, -0.2002119533717632, 0.7567065954208374, 0, -1.998046875, 1};
             coef_im = new double[] {9.094947017729282E-13, -4.652065399568528E-10, 0, 1.154642632172909E-5, -7.820779428584501E-4,
@@ -451,38 +451,38 @@ public class CPolyTest extends TestCase {
             poly = new CPoly(coef_re, coef_im);
             zeros_re = new double[coef_re.length-1];
             zeros_im = new double[coef_re.length-1];
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 4. MULTIPLE ZEROS.");
+            System.out.println("%n%n    EXAMPLE 4. MULTIPLE ZEROS.");
             coef_re = new double[] {288, -1344, 2204, -920, -1587, 2374, -1293, 284, 3, -10, 1};
             coef_im = new double[] {0, 504, -2352, 4334, -3836, 1394, 200, -334, 100, -10, 0};
             poly = new CPoly(coef_re, coef_im);
             zeros_re = new double[coef_re.length-1];
             zeros_im = new double[coef_re.length-1];
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 5. 12 ZEROS EVENLY DISTRIBUTED ON A CIRCLE OF RADIUS"
+            System.out.println("%n%n    EXAMPLE 5. 12 ZEROS EVENLY DISTRIBUTED ON A CIRCLE OF RADIUS"
                     + " 1 CENTERED AT 0+2I.");
             coef_re = new double[] {4095, 0, -67584, 0, 126720, 0, -59136, 0, 7920, 0, -264, 0, 1};
             coef_im = new double[] {0, 24576, 0, -112640, 0, 101376, 0, -25344, 0, 1760, 0, -24, 0};
             poly = new CPoly(coef_re, coef_im);
             zeros_re = new double[coef_re.length-1];
             zeros_im = new double[coef_re.length-1];
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 6. Zeros of the polynomial 1 + 2x + 3x^2 + ... 51*x^50");
+            System.out.println("%n%n    EXAMPLE 6. Zeros of the polynomial 1 + 2x + 3x^2 + ... 51*x^50");
             coef = new double[51];
             for (int i=0; i<=50; i++) {
                 coef[i] = 1+i;
@@ -490,13 +490,13 @@ public class CPolyTest extends TestCase {
             poly = new CPoly(coef);
             zeros_re = new double[coef.length-1];
             zeros_im = new double[coef.length-1];
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);
             }
 
-            System.out.println("\n\n    EXAMPLE 7. Zeros of the polynomial 1 + 2x + 3x^2 + ... 6*x^5");
+            System.out.println("%n%n    EXAMPLE 7. Zeros of the polynomial 1 + 2x + 3x^2 + ... 6*x^5");
             coef = new double[6];
             for (int i=0; i<=5; i++) {
                 coef[i] = 1+i;
@@ -504,7 +504,7 @@ public class CPolyTest extends TestCase {
             poly = new CPoly(coef);
             zeros_re = new double[coef.length-1];
             zeros_im = new double[coef.length-1];
-            System.out.println("    p(x) = \n" + poly);
+            System.out.println("    p(x) = %n" + poly);
             deg = poly.solve(zeros_re, zeros_im);
             for (int i = 0; i < deg; ++i) {
                 System.out.println("        " + zeros_re[i] + "    " + zeros_im[i]);

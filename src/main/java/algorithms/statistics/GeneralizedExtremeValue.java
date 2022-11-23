@@ -132,7 +132,7 @@ public class GeneralizedExtremeValue {
         b[1] /= (double)n;
         b[2] /= (double)n;
 
-        //System.out.printf("b=%s\n", FormatArray.toString(b, "%.3e"));
+        //System.out.printf("b=%s%n", FormatArray.toString(b, "%.3e"));
 
         /* eqn (14) for shape estimator
         c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)
@@ -445,6 +445,7 @@ public class GeneralizedExtremeValue {
     }
 
     /**
+     * NOT READY FOR USE.  I dropped some of the terms needed,soneedtoreplace or redeisgn the method.
      <pre>
      return the error in fitting the GEV curve
 

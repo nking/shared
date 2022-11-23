@@ -227,7 +227,7 @@ public class MaximalIndependentSets {
                 pV = 1./d;
                 
                 r = rand.nextDouble();
-                System.out.printf("r=%.4f, pV=%.4f\n", r, pV);
+                System.out.printf("r=%.4f, pV=%.4f%n", r, pV);
                                 
                 if (r <= pV) {
                     s.add(v);
@@ -257,7 +257,7 @@ public class MaximalIndependentSets {
             nIter++;
         }
         
-        System.out.printf("|V|=%d, nIter=%d\n", nV, nIter);
+        System.out.printf("|V|=%d, nIter=%d%n", nV, nIter);
         
         return indep;
     }
@@ -391,7 +391,7 @@ public class MaximalIndependentSets {
         Set<TIntSet> s = new HashSet<TIntSet>();
         
         for (i = 0; i < matched.length; ++i) {
-            System.out.printf("matched: %s\n", Arrays.toString(matched[i]));
+            System.out.printf("matched: %s%n", Arrays.toString(matched[i]));
             if (matched[i][0] < 0 || matched[i][1] < 0) {
                 continue;
             }
@@ -444,7 +444,7 @@ public class MaximalIndependentSets {
 
         Set<TIntSet> s = new HashSet<TIntSet>();
         for (i = 0; i < matched.length; ++i) {
-            System.out.printf("c matched: %s\n", Arrays.toString(matched[i]));
+            System.out.printf("c matched: %s%n", Arrays.toString(matched[i]));
             if (matched[i][0] < 0 || matched[i][1] < 0) {
                 continue;
             }

@@ -167,7 +167,7 @@ public class PairFloatArray {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
-            sb.append("x=").append(x[i]).append("y=").append(y[i]).append("\n");
+            sb.append("x=").append(x[i]).append("y=").append(y[i]).append("%n");
         }
         return sb.toString();
     }

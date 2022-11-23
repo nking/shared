@@ -270,7 +270,7 @@ public class SubsetChooser {
         while (str.length() < n) {
             str = "0" + str;
         }
-        System.out.format("%d\t%10s\n", x, str);
+        System.out.format("%d\t%10s%n", x, str);
         */
 
         int nBits = 0;
@@ -298,7 +298,7 @@ public class SubsetChooser {
         while (str.length() < n) {
             str = "0" + str;
         }
-        System.out.format("%d\t%10s\n", x, str);
+        System.out.format("%d\t%10s%n", x, str);
         */
 
         int nBits = 0;

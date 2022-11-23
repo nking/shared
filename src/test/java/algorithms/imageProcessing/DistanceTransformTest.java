@@ -294,7 +294,7 @@ public class DistanceTransformTest extends TestCase {
             for (int i = 0; i < w; ++i) {
                 sb2.append(String.format(" %3d", dt[i][j]));
             }
-            sb2.append("\n");
+            sb2.append("%n");
         }
         System.out.println(sb2.toString());
     }
@@ -307,7 +307,7 @@ public class DistanceTransformTest extends TestCase {
             for (int i = 0; i < w; ++i) {
                 sb2.append(" ").append(dtInvM[i][j]);
             }
-            sb2.append("\n");
+            sb2.append("%n");
         }
         System.out.println(sb2.toString());
         */
@@ -453,7 +453,7 @@ public class DistanceTransformTest extends TestCase {
             sb.append(String.format("%2d", col));
         }
         System.out.println(sb.toString());
-        System.out.println("\n");
+        System.out.println("%n");
         */
     }
     

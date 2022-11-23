@@ -177,7 +177,7 @@ public class DisjointForest<T> {
             return x;
         }
         
-        /*System.out.println("\nforest=" + toString());
+        /*System.out.println("%nforest=" + toString());
         System.out.println("x=" + x.member + " x.parent=" + x.parent.member);
         System.out.println("y=" + y.member + " y.parent=" + y.parent.member);
         System.out.flush();*/
@@ -329,7 +329,7 @@ public class DisjointForest<T> {
                 entry = iter.next();
                 p = entry.getKey();
                 t = entry.getValue();
-                sb.append("\n tree p=");
+                sb.append("%n tree p=");
                 if (p.member != null) {
                     sb.append(p.member);
                 } else {
@@ -438,10 +438,10 @@ public class DisjointForest<T> {
                 }
             }
             sb.append(", ");
-            sb.append("\n  nodes=");
+            sb.append("%n  nodes=");
             if (nodes != null) {
                 for (DisjointSet2Node<T> node : nodes){
-                    sb.append("\n   node=").append(node.toString());
+                    sb.append("%n   node=").append(node.toString());
                 }
             }
             sb.append(", ");

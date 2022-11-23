@@ -139,10 +139,10 @@ public class DistanceTest extends TestCase {
         double[] eY = new double[]{1, 2, 6, 5, 7, 3, 5, 4};
         
         //DCov dCov = UnivariateDistance.fastDcov(x, y);
-        //System.out.println("\nfastDcov(X,Y):\n " + dCov.toString());
+        //System.out.println("%nfastDcov(X,Y):%n " + dCov.toString());
         
         DCor dCor2 = UnivariateDistance.fastDcor(x, y);
-        System.out.println("\nfastDcor(X,Y):\n " + dCor2.toString());
+        System.out.println("%nfastDcor(X,Y):%n " + dCor2.toString());
         
         double diff = 0;
         /*for (int i = 0; i < x.length; ++i) {
@@ -189,15 +189,15 @@ public class DistanceTest extends TestCase {
             assertTrue(diff < eps);
         }
         
-        System.out.printf("\n_univariateCovariance:\n");
+        System.out.printf("%n_univariateCovariance:%n");
         System.out.println("XY:" + dcov.toString());
         
         dcov = UnivariateDistance.fastDcov(x, y);
-        System.out.printf("\nfastDCov:\n");
+        System.out.printf("%nfastDCov:%n");
         System.out.println("XY:" + dcov.toString());
         
         DCor dcor = UnivariateDistance.fastDcor(x, y);
-        System.out.printf("\nfastDCor:\n");
+        System.out.printf("%nfastDCor:%n");
         System.out.println("XY:" + dcor.toString());
         
         double[][] a = new double[x.length][2];
@@ -213,7 +213,7 @@ public class DistanceTest extends TestCase {
         }
         
         DCOV dc2 = BruteForceDistance.correlation1(a, b);
-        System.out.println("bf dist. correlation:\n " + dc2.toString());
+        System.out.println("bf dist. correlation:%n " + dc2.toString());
         System.out.flush();
     }
 }

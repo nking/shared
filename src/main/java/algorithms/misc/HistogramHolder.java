@@ -361,7 +361,7 @@ public class HistogramHolder {
             
         }
         
-        sb.append("]\n");
+        sb.append("]%n");
         
         if (xErrors != null) {
             
@@ -374,7 +374,7 @@ public class HistogramHolder {
                 sb.append(yErrors[i]).append(") ");
             }
             
-            sb.append("]\n");
+            sb.append("]%n");
         }      
         
         return sb.toString();

@@ -193,14 +193,14 @@ public class PrimsMinimumSpanningTree<T> {
                 } else {
                     a.put(prev[v], new SimpleLinkedListNode(v));
                 }
-                //System.out.printf("adding %d to %d\n", pi[v], v);
+                //System.out.printf("adding %d to %d%n", pi[v], v);
                 nMSTEdges++;
                 PairInt uv2 = new PairInt(prev[v], v);
                 sum += edgeWeights.get(uv2);
             }
         }
         
-        System.out.printf("%d edges out of %d in minimumspanning tree.  sum=%d\n", 
+        System.out.printf("%d edges out of %d in minimumspanning tree.  sum=%d%n", 
             nMSTEdges, nE, sum);
         
         return a;

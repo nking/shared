@@ -40,7 +40,7 @@ public class StarStructure {
     /**
      * ε is a special label indicating that the vertex is virtual
      */
-    public static int eps = Integer.MAX_VALUE;
+    public final static int eps = Integer.MAX_VALUE;
 
     /** index of root; label of root*/
     public int rootIdx;  

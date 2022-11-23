@@ -58,21 +58,21 @@ public class MultivariateNormalDistributionTest extends TestCase {
         rand.setSeed(seed);
 
         double[] u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, n);
-        log.log(level, String.format("randomly chosen x from unit standard gaussian distr =%s\n",
+        log.log(level, String.format("randomly chosen x from unit standard gaussian distr =%s%n",
                 FormatArray.toString(u, "%.3f")));
 
         double[] x0 = MultivariateNormalDistribution._sampleFrom0(u, m, cov);
         double[] x1 = MultivariateNormalDistribution._sampleFrom1(u, m, cov);
 
-        log.log(level, String.format("compare x0=%s\n", FormatArray.toString(x0, "%.3f")));
-        log.log(level, String.format("compare x1=%s\n", FormatArray.toString(x1, "%.3f")));
+        log.log(level, String.format("compare x0=%s%n", FormatArray.toString(x0, "%.3f")));
+        log.log(level, String.format("compare x1=%s%n", FormatArray.toString(x1, "%.3f")));
 
         double diff;
         for (int i = 0; i < x0.length; ++i) {
             diff = Math.abs(x0[i] - x1[i]);
             // compare diff to stdev2[i] derived from distributions
             if (diff > 2.5*stdev2[i]) {
-                log.log(level, String.format("difference between %f and %f is > 2.5*stdev where stdev=%.3f\n",
+                log.log(level, String.format("difference between %f and %f is > 2.5*stdev where stdev=%.3f%n",
                         x0[i], x1[i], stdev2[i]));
             }
         }
@@ -99,9 +99,9 @@ public class MultivariateNormalDistributionTest extends TestCase {
 
         double[][] _cov = BruteForce.covariance(a);
         log.log(java.util.logging.Level.INFO, String.format(
-                "_cov=\n%s", FormatArray.toString(_cov, "%.1f")));
+                "_cov=%n%s", FormatArray.toString(_cov, "%.1f")));
         log.log(java.util.logging.Level.INFO, String.format(
-                "cov=\n%s", FormatArray.toString(cov, "%.1f")));
+                "cov=%n%s", FormatArray.toString(cov, "%.1f")));
 
         double[] x = MultivariateNormalDistribution.sampleRandomlyFrom0(m, cov);
         

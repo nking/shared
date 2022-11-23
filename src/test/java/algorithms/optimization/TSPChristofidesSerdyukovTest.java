@@ -136,7 +136,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
             iterH.advance();
             int node = iterH.key();
             TIntSet links = iterH.value();
-           // System.out.printf("TunionM: node1=%d, links=%s\n", node, Arrays.toString(links.toArray()));
+           // System.out.printf("TunionM: node1=%d, links=%s%n", node, Arrays.toString(links.toArray()));
             assertTrue(node == 0 || node == 1 || node == 3);
             if (node == 0) {
                 assertTrue(links.containsAll(new int[]{1,2,3,4}));
@@ -154,7 +154,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
         //?? ec: [0, 1, 2, 2, 3, 4, 4]
         HierholzersEulerCircuit hec = new HierholzersEulerCircuit();
         int[] ec = hec.createCircuit(h); // assuming start node = 0.
-        //System.out.printf("ec: %s\n", Arrays.toString(ec));
+        //System.out.printf("ec: %s%n", Arrays.toString(ec));
         assertEquals(7, ec.length);
         assertEquals(0, ec[0]); assertEquals(1, ec[1]); assertEquals(2, ec[2]);
         assertEquals(3, ec[4]); assertEquals(4, ec[5]);
@@ -171,7 +171,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
         }
         t2.add(t2.get(0));
         int[] _t2 = t2.toArray();
-        //System.out.printf("hamiltonian: %s\n", Arrays.toString(_t2));
+        //System.out.printf("hamiltonian: %s%n", Arrays.toString(_t2));
         int[] expectedTSPApprox = new int[]{0, 1, 2, 3, 4, 0};
         assertTrue(Arrays.equals(expectedTSPApprox, _t2));
         
@@ -270,7 +270,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
             hTour, adjCostMap);
                 
         double ratio = (double)approxCost/(double)optimalCost;
-        System.out.printf("approxCost=%d optCost=%d, approx/opt=%.2f, k-approx=%.1f\n", 
+        System.out.printf("approxCost=%d optCost=%d, approx/opt=%.2f, k-approx=%.1f%n",
             approxCost, optimalCost, ratio, 3./2.);
         assertTrue(ratio <= (1.5 + 0.2));
         
@@ -319,7 +319,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
             hTour, adjCostMap);
                 
         double ratio = (double)approxCost/(double)optimalCost;
-        System.out.printf("approxCost=%d optCost=%d, approx/opt=%.2f, k-approx=%.1f\n", 
+        System.out.printf("approxCost=%d optCost=%d, approx/opt=%.2f, k-approx=%.1f%n",
             approxCost, optimalCost, ratio, 3./2.);
         assertTrue(ratio <= 1.5);        
         
@@ -358,7 +358,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
             hTour, adjCostMap);
                 
         double ratio = (double)approxCost/(double)optimalCost;
-        System.out.printf("approxCost=%d optCost=%d, approx/opt=%.2f, k-approx=%.1f\n", 
+        System.out.printf("approxCost=%d optCost=%d, approx/opt=%.2f, k-approx=%.1f%n",
             approxCost, optimalCost, ratio, 3./2.);
         
         assertTrue(ratio <= 1.5);        
@@ -546,7 +546,7 @@ public class TSPChristofidesSerdyukovTest extends TestCase {
                     items = Arrays.copyOfRange(items, 1, 
                         items.length);
                 }
-                //System.out.printf("->%d\n", items.length);
+                //System.out.printf("->%d%n", items.length);
                 
                 for (int j = 0; j < items.length; ++j) {
                     Integer c = Integer.parseInt(items[j].trim());

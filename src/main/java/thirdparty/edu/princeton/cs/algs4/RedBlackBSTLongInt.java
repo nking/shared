@@ -445,8 +445,8 @@ public class RedBlackBSTLongInt {
                 
                 //System.out.println(
                 //    "   x to get h fields except val. " + 
-                //    "\n   x=" + x.toString(findParent(x))
-                //    + "\n   h=" + h.toString(findParent(h))
+                //    "%n   x=" + x.toString(findParent(x))
+                //    + "%n   h=" + h.toString(findParent(h))
                 //);
                 
                 h.key = x.key;

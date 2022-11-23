@@ -24,9 +24,9 @@ public class MiscTest extends TestCase {
         int[] indexes = misc.unweightedIntervalMinimizeLateGreedy(t, d, outputStart, outputLate);
         
         /*
-        System.out.printf("lateness=\n%s\n", FormatArray.toString(outputLate, "%.3f"));
-        System.out.printf("s=\n%s\n", FormatArray.toString(outputStart, "%.3f"));
-        System.out.printf("indexes=\n%s\n", Arrays.toString(indexes));
+        System.out.printf("lateness=%n%s%n", FormatArray.toString(outputLate, "%.3f"));
+        System.out.printf("s=%n%s%n", FormatArray.toString(outputStart, "%.3f"));
+        System.out.printf("indexes=%n%s%n", Arrays.toString(indexes));
         */
         
         int[] expectedOrder = new int[]{0, 1, 2, 3, 4};
@@ -66,7 +66,7 @@ public class MiscTest extends TestCase {
         int i;
         double sum = 0;
         for (i = 0; i < indexes.length; ++i) {
-            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f%n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
             sum += v[indexes[i]];
         }
         //System.out.println("sum of values=" + sum);
@@ -86,7 +86,7 @@ public class MiscTest extends TestCase {
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         sum = 0;
         for (i = 0; i < indexes.length; ++i) {
-            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f%n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
             sum += v[indexes[i]];
         }
         //System.out.println("sum of values=" + sum);
@@ -105,7 +105,7 @@ public class MiscTest extends TestCase {
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         sum = 0;
         for (i = 0; i < indexes.length; ++i) {
-            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f%n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
             sum += v[indexes[i]];
         }
         //System.out.println("sum of values=" + sum);
@@ -124,7 +124,7 @@ public class MiscTest extends TestCase {
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         sum = 0;
         for (i = 0; i < indexes.length; ++i) {
-            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f%n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
             sum += v[indexes[i]];
         }
         //System.out.println("sum of values=" + sum);
@@ -174,9 +174,9 @@ public class MiscTest extends TestCase {
             if (d[idx] < fi) {
                 sum += w[idx];
             }
-            System.out.printf("a%d (%d,%d)\n", idx+1, d[idx], w[idx]);
+            System.out.printf("a%d (%d,%d)%n", idx+1, d[idx], w[idx]);
         }
-        System.out.printf("\nsum of late tasks=%d\n", sum);
+        System.out.printf("%nsum of late tasks=%d%n", sum);
         */
         int[] expected = new int[]{1, 3, 0, 2, 6, 5, 4};
         assertTrue(Arrays.equals(expected, indexes));

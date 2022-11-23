@@ -97,7 +97,7 @@ public class BellmanFord {
                 relax(u, v, wUV);
             }
             
-            /*System.out.printf("    d=[%d, %d, %d, %d, %d]\n   p=[%d, %d, %d, %d, %d]\n",
+            /*System.out.printf("    d=[%d, %d, %d, %d, %d]%n   p=[%d, %d, %d, %d, %d]%n",
                     dist[0], dist[1], dist[2], dist[3], dist[4],
                     predecessor[0], predecessor[1], predecessor[2], predecessor[3], predecessor[4]);
             System.out.flush();*/

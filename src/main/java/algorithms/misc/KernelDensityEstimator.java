@@ -249,7 +249,7 @@ public class KernelDensityEstimator {
             kde.kde[i] = kernel.kernel(x[i], x, h);
             sum += kde.kde[i];
         }
-        System.out.printf("SUM KDE=%.4e\n", sum);
+        System.out.printf("SUM KDE=%.4e%n", sum);
         kde.hx = Arrays.copyOf(x, x.length);
         kde.h = h;
         kde.u = null;
@@ -281,7 +281,7 @@ public class KernelDensityEstimator {
             kde.kde[i] = kernel.kernel(xGrid[i], x, h);
             sum += kde.kde[i];
         }
-        System.out.printf("SUM KDE=%.4e\n", sum);
+        System.out.printf("SUM KDE=%.4e%n", sum);
         kde.hx = Arrays.copyOf(xGrid, xGrid.length);
         kde.h = h;
         kde.u = null;
@@ -354,7 +354,7 @@ public class KernelDensityEstimator {
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
                                                     double minBin, double maxBin) {
 
-        System.out.printf("nBins=%d, binWidth=%.4e min=%.4e, max=%.4e\n", nBins, binWidth, minBin, maxBin);
+        System.out.printf("nBins=%d, binWidth=%.4e min=%.4e, max=%.4e%n", nBins, binWidth, minBin, maxBin);
         System.out.flush();
 
         double[][] hist = new double[2][];
@@ -463,7 +463,7 @@ public class KernelDensityEstimator {
 
         //
         double sum = sumKDE(kd, histBins[1] - histBins[0]);
-        System.out.printf("h=%.4e sumKDE=%.4e\n", h,  sum);
+        System.out.printf("h=%.4e sumKDE=%.4e%n", h,  sum);
 
         KDE kde = new KDE();
         kde.u = Arrays.copyOf(u, u.length);
@@ -620,7 +620,7 @@ public class KernelDensityEstimator {
         // fudge, to be removed when the bug is found
         r = term1/(n*n) + term2 - term3;
 
-        System.out.printf("h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
+        System.out.printf("h=%.4e terms=%.4e %.4e %.4e  r=%.4e%n", h, term1, term2, term3, r);
 
         return r;
 

@@ -98,7 +98,7 @@ public class KruskalsMinimumSpanningTree {
         }
         
         System.out.println("forest stats=" + forest.toString());
-        System.out.printf("%d edges out of %d in minimumspanning tree.  sum=%d\n", 
+        System.out.printf("%d edges out of %d in minimumspanning tree.  sum=%d%n", 
             nMSTEdges, edgeWeights.size(), sum);
         
         return a;

@@ -131,12 +131,14 @@ public class TSPChristofidesSerdyukov {
         
         int u, v;
         LinkedList<Integer> neighbors;
-        Iterator<Integer> iter = mstTree.keySet().iterator();
+        Iterator<Map.Entry<Integer, LinkedList<Integer>>> iter = mstTree.entrySet().iterator();
         Iterator<Integer> iterV;
+        Map.Entry<Integer, LinkedList<Integer>> entry;
         
         while (iter.hasNext()) {
-            u = iter.next();
-            neighbors = mstTree.get(u);
+            entry = iter.next();
+            u = entry.getKey();
+            neighbors = entry.getValue();
             
             iterV = neighbors.iterator();
             while (iterV.hasNext()) {
@@ -212,7 +214,7 @@ public class TSPChristofidesSerdyukov {
         //print(mstTree);
         
         //TIntList treeWalk = prims.getPreorderIndexes();
-        //System.out.printf("treeWalk=%s\n", Arrays.toString(treeWalk.toArray()));
+        //System.out.printf("treeWalk=%s%n", Arrays.toString(treeWalk.toArray()));
         
         return mstTree;
     }
@@ -257,7 +259,7 @@ public class TSPChristofidesSerdyukov {
         for (i = 0; i < assignmentsM.length; ++i) {
             k = assignmentsM[i][0];
             v = assignmentsM[i][1];
-            //System.out.printf("%d, %d\n", k, v);
+            //System.out.printf("%d, %d%n", k, v);
             if (included.contains(k) || included.contains(v)) {
                 continue;
             }
@@ -285,14 +287,17 @@ public class TSPChristofidesSerdyukov {
         int i, u, v;
         
         TIntObjectMap<TIntSet> h = new TIntObjectHashMap<TIntSet>();
-        
-        Iterator<Integer> iterMST = mstTree.keySet().iterator();
+
+        Iterator<Map.Entry<Integer, LinkedList<Integer>>> iterMST = mstTree.entrySet().iterator();
+        Map.Entry<Integer, LinkedList<Integer>> entry;
+
         LinkedList<Integer> lList;
         Iterator<Integer> iterList;
         TIntSet s;
         while (iterMST.hasNext()) {
-            u = iterMST.next();
-            lList = mstTree.get(u);
+            entry = iterMST.next();
+            u = entry.getKey();
+            lList = entry.getValue();
             iterList = lList.iterator();
             while (iterList.hasNext()) {
                 v = iterList.next();
@@ -337,16 +342,18 @@ public class TSPChristofidesSerdyukov {
     }
 
     private void print(Map<Integer, LinkedList<Integer>> mstTree) {
-        Iterator<Integer> intIter = mstTree.keySet().iterator();
+        Iterator<Map.Entry<Integer, LinkedList<Integer>>> intIter = mstTree.entrySet().iterator();
+        Map.Entry<Integer, LinkedList<Integer>> entry;
         Iterator<Integer> intIter2;
         int u, v;
         System.out.println("MST:");
         while (intIter.hasNext()) {
-            u = intIter.next();
-            intIter2 = mstTree.get(u).iterator();
+            entry = intIter.next();
+            u = entry.getKey();
+            intIter2 = entry.getValue().iterator();
             while (intIter2.hasNext()) {
                 v = intIter2.next();
-                System.out.printf("%d:%d\n", u, v);
+                System.out.printf("%d:%d%n", u, v);
             }
         }
     }

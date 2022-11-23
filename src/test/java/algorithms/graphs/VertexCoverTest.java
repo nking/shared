@@ -111,7 +111,7 @@ public class VertexCoverTest extends TestCase {
         
         VertexCover vc = new VertexCover();
         TIntSet cover = vc.approx2(g);
-        //System.out.printf("2-appox set cover=%s\n", Arrays.toString(cover.toArray()));
+        //System.out.printf("2-appox set cover=%s%n", Arrays.toString(cover.toArray()));
         
         TIntSet expected = new TIntHashSet(new int[]{1, 2, 3, 4, 5, 6});
         
@@ -231,7 +231,7 @@ public class VertexCoverTest extends TestCase {
         VertexCover vc = new VertexCover();
         StandardForm standForm = vc.createLinearProgramInStandardForm(adjMap, weights);
         
-        System.out.printf("standForm=\n%s\n", standForm.toString());
+        System.out.printf("standForm=%n%s%n", standForm.toString());
         /*
          minimize: 
                 summation_v_in_V( w(v)*x(v) )
@@ -341,7 +341,7 @@ public class VertexCoverTest extends TestCase {
         VertexCover vc = new VertexCover();
         TIntSet v = vc.approx2Weighted(adjMap, weights);
         
-        System.out.printf("weighted cover=%s\n", Arrays.toString(v.toArray()));
+        System.out.printf("weighted cover=%s%n", Arrays.toString(v.toArray()));
         while (v.contains(vectorMap.get("C"))) {
             // LinearProgramming is using random picks of "entering" indexes in pivot, so try again
             v = vc.approx2Weighted(adjMap, weights);

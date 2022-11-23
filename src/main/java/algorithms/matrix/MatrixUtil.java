@@ -1946,19 +1946,19 @@ public class MatrixUtil {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("u=\n");
+            sb.append("u=%n");
             if (u != null) {
                 sb.append(FormatArray.toString(u, "%.4e"));
             } 
-            sb.append("\ns=\n");
+            sb.append("%ns=%n");
             if (s != null) {
                 sb.append(FormatArray.toString(s, "%.4e"));
             }
-            sb.append("\nsigma=\n");
+            sb.append("%nsigma=%n");
             if (sigma != null) {
                 sb.append(FormatArray.toString(sigma, "%.4e"));
             }
-            sb.append("\nvT=\n");
+            sb.append("%nvT=%n");
             if (vT != null) {
                 sb.append(FormatArray.toString(vT, "%.4e"));
             }
@@ -2884,7 +2884,7 @@ public class MatrixUtil {
             }
         }
         if (!ok) {
-            //System.out.printf("before: evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+            //System.out.printf("before: evd eigenvalues=%s%n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
 
             //still needs a small perturbation to make the eigenvalues all >= eps
             // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
@@ -2898,7 +2898,7 @@ public class MatrixUtil {
             }
             aPSD = MatrixUtil.pointwiseAdd(aPSD, D);
             //evd = EVD.factorize(new DenseMatrix(aPSD));
-            //System.out.printf("after:  evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+            //System.out.printf("after:  evd eigenvalues=%s%n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
         }
         
         return aPSD; 
@@ -3004,7 +3004,7 @@ public class MatrixUtil {
             for (row = 0; row < nR; ++row) {
                 v[row] = z[row] / eig;
             }
-            //System.out.printf("eig=%.3f\n  v=%s\n  z=%s\n", eig, Arrays.toString(v),
+            //System.out.printf("eig=%.3f%n  v=%s%n  z=%s%n", eig, Arrays.toString(v),
             //    Arrays.toString(z));
         }
         return eig;
@@ -3071,7 +3071,7 @@ public class MatrixUtil {
             if (stop == 1) {
                 break;
             }
-            //System.out.printf("nIter=%d eig=%.3f\n  v=%s\n  z=%s\n", nIter, 
+            //System.out.printf("nIter=%d eig=%.3f%n  v=%s%n  z=%s%n", nIter, 
             //    eig, Arrays.toString(v), Arrays.toString(z));
             nIter++;
         }
@@ -3134,10 +3134,10 @@ public class MatrixUtil {
             }
             a = a2;
             
-            System.out.printf("eig[%d]=%.5f x=%s\n", nr, eigs[nr], Arrays.toString(x));
-            System.out.println("  a2=\n");
+            System.out.printf("eig[%d]=%.5f x=%s%n", nr, eigs[nr], Arrays.toString(x));
+            System.out.println("  a2=%n");
             for (int i = 0; i < a2.length; ++i) {
-                System.out.printf("  %s\n", Arrays.toString(a2[i]));
+                System.out.printf("  %s%n", Arrays.toString(a2[i]));
             }
         }
                 
@@ -3199,7 +3199,7 @@ public class MatrixUtil {
             //sInv = svd(s).V * pseudoinverse(svd(s).s) * svd(s).U^T
             sInv = MatrixUtil.pseudoinverseRankDeficient(s, false);
             double[][] chk = MatrixUtil.multiply(s, sInv);
-            System.out.printf("check S*S^-1 ~ I:\n%s\n", FormatArray.toString(chk, "%.5e"));
+            System.out.printf("check S*S^-1 ~ I:%n%s%n", FormatArray.toString(chk, "%.5e"));
         */
         
         // A = S^-1 * delta^power * S
@@ -4206,8 +4206,8 @@ public class MatrixUtil {
                 a.getBlock(block, i, j);
                 transpose(block, blockT);
                 b.setBlock(blockT, j, i);
-                System.out.printf("(%d,%d) blockT=\n%s\n", j, i, FormatArray.toString(blockT, "%.3f"));
-                System.out.printf("b=\n%s\n", FormatArray.toString(b.getA(), "%.3f"));
+                System.out.printf("(%d,%d) blockT=%n%s%n", j, i, FormatArray.toString(blockT, "%.3f"));
+                System.out.printf("b=%n%s%n", FormatArray.toString(b.getA(), "%.3f"));
             }
         }
         */

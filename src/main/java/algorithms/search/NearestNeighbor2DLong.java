@@ -135,7 +135,7 @@ public class NearestNeighbor2DLong {
             
             long index = getInternalIndex(x, y);
             
-            //System.out.format("add %d  (%d, %d)\n", index, x, y);
+            //System.out.format("add %d  (%d, %d)%n", index, x, y);
             
             xbt.add(index);
         }
@@ -281,7 +281,7 @@ public class NearestNeighbor2DLong {
         
         long idx = getInternalIndex(x, y);
         
-        //System.out.format("find  %d  (=%d, %d)\n", idx, x, y);
+        //System.out.format("find  %d  (=%d, %d)%n", idx, x, y);
         
         //O(1)
         long q = xbt.find(idx);

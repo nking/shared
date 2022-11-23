@@ -118,7 +118,7 @@ import java.text.DecimalFormatSymbols;
  *          printing position of the next logical
  *          page.
  *</td></tr>
- *<tr><td>\n</td><td>newline</td><td>Moves the
+ *<tr><td>%n</td><td>newline</td><td>Moves the
  *          printing position to the start of the
  *          next line.
  *</td></tr>

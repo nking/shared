@@ -76,7 +76,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
         int[] assignResult = results.get(0).assignment;
         
-        System.out.printf("result assign=%s\n", Arrays.toString(assignResult));
+        System.out.printf("result assign=%s%n", Arrays.toString(assignResult));
         
         assertTrue(Arrays.equals(assignExpected, assignResult));
         
@@ -112,16 +112,16 @@ public class ApproxGraphSearchZengTest extends TestCase {
         //k3 vertex relabellings
         //i=13 sum=1  :  k1=0,k2=1,k3=0
         mDist = ags.mappingDistance(stars, starDB, assignments);
-        /*System.out.printf("not normalized: mapping dist=%d\n", mDist);
-        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+        /*System.out.printf("not normalized: mapping dist=%d%n", mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d%n",
             stars[13].rootLabel, starDB[13].rootLabel);
-        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d%n",
             stars[13].vLabels.length, starDB[13].vLabels.length);
-        System.out.printf("label(q[14])=__, label(db[14])=%d\n", 
+        System.out.printf("label(q[14])=__, label(db[14])=%d%n",
             starDB[14].rootLabel);
-        System.out.printf("deg(q[14])=__, deg(db[14])=%d\n", 
+        System.out.printf("deg(q[14])=__, deg(db[14])=%d%n",
             starDB[14].vLabels.length);
-        System.out.printf("nQ=%d  nDB=%d\n", stars.length, starDB.length);*/
+        System.out.printf("nQ=%d  nDB=%d%n", stars.length, starDB.length);*/
         assertEquals(1, mDist);
         
         ags.setEdgesAreLabeled(true);
@@ -133,16 +133,16 @@ public class ApproxGraphSearchZengTest extends TestCase {
         //k3 vertex relabellings
         //i=13 ed=2 
         mDist = ags.mappingDistance(stars, starDB, assignments);
-        /*System.out.printf("not normalized: edges, mapping dist=%d\n", mDist);
-        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+        /*System.out.printf("not normalized: edges, mapping dist=%d%n", mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d%n",
             stars[13].rootLabel, starDB[13].rootLabel);
-        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d%n",
             stars[13].vLabels.length, starDB[13].vLabels.length);
-        System.out.printf("label(q[14])=__, label(db[14])=%d\n", 
+        System.out.printf("label(q[14])=__, label(db[14])=%d%n",
             starDB[14].rootLabel);
-        System.out.printf("deg(q[14])=__, deg(db[14])=%d\n", 
+        System.out.printf("deg(q[14])=__, deg(db[14])=%d%n",
             starDB[14].vLabels.length);
-        System.out.printf("nQ=%d  nDB=%d\n", stars.length, starDB.length);*/
+        System.out.printf("nQ=%d  nDB=%d%n", stars.length, starDB.length);*/
         assertEquals(2, mDist);
         
         Norm norm = ApproxGraphSearchZeng.normalize(stars, starDB);
@@ -173,16 +173,16 @@ public class ApproxGraphSearchZengTest extends TestCase {
         //i=13 ed=1  : nVMismatched=1  =>  1*nVMismatched = 1
         //i=14 ed=2  : nVMismatched=1 + 1 vertex relabelling = 2
         mDist = ags.mappingDistance(stars, starDB, assignments);
-        /*System.out.printf("normalized: mapping dist=%d\n", mDist);
-        System.out.printf("swapped=%b, mapping dist=%d\n", swapped, mDist);
-        System.out.printf("swapped=%b, mapping dist=%d\n", swapped, mDist);
-        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+        /*System.out.printf("normalized: mapping dist=%d%n", mDist);
+        System.out.printf("swapped=%b, mapping dist=%d%n", swapped, mDist);
+        System.out.printf("swapped=%b, mapping dist=%d%n", swapped, mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d%n",
             stars[13].rootLabel, starDB[13].rootLabel);
-        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d%n",
             stars[13].vLabels.length, starDB[13].vLabels.length);
-        System.out.printf("label(q[14])=%d, label(db[14])=%d\n", 
+        System.out.printf("label(q[14])=%d, label(db[14])=%d%n",
             stars[14].rootLabel, starDB[14].rootLabel);
-        System.out.printf("deg(q[14])=%d, deg(db[14])=%d\n", 
+        System.out.printf("deg(q[14])=%d, deg(db[14])=%d%n",
             stars[14].vLabels.length, starDB[14].vLabels.length);*/
         assertEquals(3, mDist);
         
@@ -196,15 +196,15 @@ public class ApproxGraphSearchZengTest extends TestCase {
         //k2 vertex insertion/deletion operations 
         //k3 vertex relabellings
         mDist = ags.mappingDistance(stars, starDB, assignments);
-        /*System.out.printf("swapped=%b,has  edges, mapping dist=%d\n", swapped, mDist);
-        System.out.printf("swapped=%b, has edges, mapping dist=%d\n", swapped, mDist);
-        System.out.printf("label(q[13])=%d, label(db[13])=%d\n", 
+        /*System.out.printf("swapped=%b,has  edges, mapping dist=%d%n", swapped, mDist);
+        System.out.printf("swapped=%b, has edges, mapping dist=%d%n", swapped, mDist);
+        System.out.printf("label(q[13])=%d, label(db[13])=%d%n",
             stars[13].rootLabel, starDB[13].rootLabel);
-        System.out.printf("deg(q[13])=%d, deg(db[13])=%d\n", 
+        System.out.printf("deg(q[13])=%d, deg(db[13])=%d%n",
             stars[13].vLabels.length, starDB[13].vLabels.length);
-        System.out.printf("label(q[14])=%d, label(db[14])=%d\n", 
+        System.out.printf("label(q[14])=%d, label(db[14])=%d%n",
             stars[14].rootLabel, starDB[14].rootLabel);
-        System.out.printf("deg(q[14])=%d, deg(db[14])=%d\n", 
+        System.out.printf("deg(q[14])=%d, deg(db[14])=%d%n",
             stars[14].vLabels.length, starDB[14].vLabels.length);*/
         assertEquals(5, mDist);
     }
@@ -235,7 +235,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         mDist = ags.mappingDistance(stars, stars, assignments);
         lM = ags.lowerBoundEditDistance(stars, stars, mDist);
         
-        System.out.printf("same graphs: L_M=%.4f\n", lM);
+        System.out.printf("same graphs: L_M=%.4f%n", lM);
         
         
         Norm norm = ApproxGraphSearchZeng.normalize(stars, starDB);
@@ -256,12 +256,12 @@ public class ApproxGraphSearchZengTest extends TestCase {
         
         mDist = ags.mappingDistance(stars, starDB, assignments);
         lM = ags.lowerBoundEditDistance(stars, starDB, mDist);
-        System.out.printf("V labels only: L_M=%.4f\n", lM);
+        System.out.printf("V labels only: L_M=%.4f%n", lM);
         
         ags.setEdgesAreLabeled(true);
         mDist = ags.mappingDistance(stars, starDB, assignments);
         lM = ags.lowerBoundEditDistance(stars, starDB, mDist);
-        System.out.printf("V and E labeled: L_M=%.4f\n", lM);        
+        System.out.printf("V and E labeled: L_M=%.4f%n", lM);
     }
     
     public void testSuboptimalCP() {
@@ -299,7 +299,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
             }
         }
         
-        System.out.printf("term1=%.2f\n", term1);
+        System.out.printf("term1=%.2f%n", term1);
         
     }
     
@@ -336,21 +336,21 @@ public class ApproxGraphSearchZengTest extends TestCase {
         distM = StarStructure.createDistanceMatrix(stars, stars);
         assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
         tau = ags.suboptimalEditDistanceV(stars, stars, a1, a1, assignments);
-        System.out.printf("normalized, same graphs, suboptimal: tau=%.4f\n", tau);
+        System.out.printf("normalized, same graphs, suboptimal: tau=%.4f%n", tau);
         
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
         rho = ags.refinedSuboptimalEditDistance(stars, stars, q.eLabels, q.eLabels, a1, a1, refinedAssign, tau, distM);
-        System.out.printf("normalized, same graphs, refined suboptimal: rho=%.4f\n", rho);
+        System.out.printf("normalized, same graphs, refined suboptimal: rho=%.4f%n", rho);
         
         //lambda = ags.optimalEditDistance(stars, stars, e1, e1, a1, a1, refinedAssign, tau);
-        //System.out.printf("normalized, same graphs, optimal: lambda=%.4f\n", lambda);
+        //System.out.printf("normalized, same graphs, optimal: lambda=%.4f%n", lambda);
         
         
         ags.setEdgesAreLabeled(useEdges);
         distM = StarStructure.createDistanceMatrix(stars, starDB);
         assignments = ApproxGraphSearchZeng.balancedBipartiteAssignment(distM);
         tau = ags.suboptimalEditDistanceV(stars, starDB, a1, a2, assignments);
-        System.out.printf("normalized, suboptimal: tau=%.4f\n", tau);
+        System.out.printf("normalized, suboptimal: tau=%.4f%n", tau);
         
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
         if (swapped) {
@@ -358,10 +358,10 @@ public class ApproxGraphSearchZengTest extends TestCase {
         } else {
             rho = ags.refinedSuboptimalEditDistance(stars, starDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau, distM);
         }
-        System.out.printf("normalized, refined suboptimal: rho=%.4f\n", rho);
+        System.out.printf("normalized, refined suboptimal: rho=%.4f%n", rho);
 
         //lambda = ags.optimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau);
-        //System.out.printf("normalized, optimal: lambda=%.4f\n", lambda);
+        //System.out.printf("normalized, optimal: lambda=%.4f%n", lambda);
         
         
         ags.setEdgesAreLabeled(true);
@@ -373,7 +373,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
             tau = ags.suboptimalEditDistance(stars, starDB, q.eLabels, dbs.get(0).eLabels, assignments);
         }
         
-        System.out.printf("normalized, edges, suboptimal: tau=%.4f\n", tau);
+        System.out.printf("normalized, edges, suboptimal: tau=%.4f%n", tau);
         
         refinedAssign = Arrays.copyOf(assignments, assignments.length);
         if (swapped) {
@@ -382,10 +382,10 @@ public class ApproxGraphSearchZengTest extends TestCase {
             rho = ags.refinedSuboptimalEditDistance(stars, starDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau, distM);
         }
         
-        System.out.printf("normalized, edges, refined suboptimal: rho=%.4f\n", rho);
+        System.out.printf("normalized, edges, refined suboptimal: rho=%.4f%n", rho);
 
         //lambda = ags.optimalEditDistance(stars, starDB, e1, e2, a1, a2, refinedAssign, tau);
-        //System.out.printf("normalized, edges, optimal: lambda=%.4f\n", lambda);
+        //System.out.printf("normalized, edges, optimal: lambda=%.4f%n", lambda);
         
         System.out.println("expecting L_M <= lambda <= rho <= tau");
         //L_M <= lambda <= rho <= tau
@@ -393,7 +393,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
     }
 
     public void testOptimalEditDistance() throws Exception {
-        System.out.println("\ntestOptimalEditDistance");
+        System.out.println("%ntestOptimalEditDistance");
         //example graphs from Figure 1 of
         //A Coding Method for Efficient Subgraph Querying on Vertex- and Edge-Labeled Graphs
         //Zhu et al, May 2014 PLoS ONE 9(5):e97178
@@ -465,8 +465,8 @@ public class ApproxGraphSearchZengTest extends TestCase {
                     lambda = ags.optimalEditDistance(stars, starsDB, q.eLabels, dbs.get(0).eLabels, a1, a2, refinedAssign, tau);  
                 }
 
-                System.out.printf("normalized, edges=%b, i=%d:\n   lM(lower)=%.2f, "
-                    + "lambda(opt)=%.2f, rho(refSubOpt)=%.2f, tau(subOpt)=%.2f\n", 
+                System.out.printf("normalized, edges=%b, i=%d:%n   lM(lower)=%.2f, "
+                    + "lambda(opt)=%.2f, rho(refSubOpt)=%.2f, tau(subOpt)=%.2f%n",
                     useEdges, i, lM, lambda, rho, tau);  
             }
         }
@@ -522,7 +522,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         //                                3, 2, 1, 4, 0, 5, 6
         
         for (int i = 0; i < results.size(); ++i) {
-            System.out.printf("result(%d=dbi%d) assign=%s\n", 
+            System.out.printf("result(%d=dbi%d) assign=%s%n",
                 i, results.get(i).dbGraphIndex, Arrays.toString(results.get(i).assignment));
         }
         // assertTrue(Arrays.equals(assignExpected, assignResult));

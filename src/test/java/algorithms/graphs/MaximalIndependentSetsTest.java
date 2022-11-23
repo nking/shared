@@ -34,7 +34,7 @@ public class MaximalIndependentSetsTest extends TestCase {
         List<TIntSet> expResult = getTestGraphCubeExpectedMIS();
         
         TIntSet result = MaximalIndependentSets.findOneProbabilistic(adjMap);
-        System.out.printf("result=%s\n", Arrays.toString(result.toArray()));
+        System.out.printf("result=%s%n", Arrays.toString(result.toArray()));
         
         boolean found = false;
         
@@ -62,7 +62,7 @@ public class MaximalIndependentSetsTest extends TestCase {
         List<TIntSet> expResult = getTestGraphCubeExpectedMIS();
         
         TIntSet result = MaximalIndependentSets.findOne(adjMap);
-        System.out.printf("result=%s\n", Arrays.toString(result.toArray()));
+        System.out.printf("result=%s%n", Arrays.toString(result.toArray()));
         
         boolean found = false;
         
@@ -137,7 +137,7 @@ public class MaximalIndependentSetsTest extends TestCase {
         int[] o1;
         int[] o2;
         for (TIntSet mi : mis) {
-            System.out.printf("maximum: %s\n", Arrays.toString(mi.toArray()));
+            System.out.printf("maximum: %s%n", Arrays.toString(mi.toArray()));
             assertTrue(expectedM.contains(mi));
         }
         
@@ -146,7 +146,7 @@ public class MaximalIndependentSetsTest extends TestCase {
         assertEquals(expectedM.size(), mis.size());
         
         for (TIntSet mi : mis) {
-            System.out.printf("maximum2: %s\n", Arrays.toString(mi.toArray()));
+            System.out.printf("maximum2: %s%n", Arrays.toString(mi.toArray()));
             assertTrue(expectedM.contains(mi));
         }
     }

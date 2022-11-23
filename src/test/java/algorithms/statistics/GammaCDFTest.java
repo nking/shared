@@ -29,7 +29,7 @@ public class GammaCDFTest extends TestCase {
         for (int i = 0; i < a.length; ++i) {
             p = GammaCDF.cdf(a[i]*b[i], a[i], b[i]);
             diff = Math.abs(p - expected[i]);
-            //System.out.printf("diff=%.7e  x=%.1e; a=%.1e;  b=%.1e;  p=%.4e\n", diff, 
+            //System.out.printf("diff=%.7e  x=%.1e; a=%.1e;  b=%.1e;  p=%.4e%n", diff,
             //    a[i]*b[i], a[i], b[i], p);
             assertTrue(diff < tol);
         }
@@ -86,14 +86,14 @@ public class GammaCDFTest extends TestCase {
             shape = tolX + rand.nextInt(1000) * rand.nextDouble();
             scale = tolX + rand.nextInt(1000) * rand.nextDouble();
             
-            System.out.printf("alpha=%.4e, scale=%.4e, shape=%.4e\n",
+            System.out.printf("alpha=%.4e, scale=%.4e, shape=%.4e%n",
                 alpha, scale, shape);
             
             x = GammaCDF.inverseCdf(shape, scale, alpha);
             
             p = GammaCDF.cdf(x, shape, scale);
             
-            System.out.printf("   x=%.4e, p=%.4e  |(alpha - p)|=%.4e\n", x, p, alpha - p);
+            System.out.printf("   x=%.4e, p=%.4e  |(alpha - p)|=%.4e%n", x, p, alpha - p);
             
             assertTrue(Math.abs(alpha - p) < tolP);
         }

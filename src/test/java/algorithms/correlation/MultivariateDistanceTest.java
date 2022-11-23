@@ -170,7 +170,7 @@ public class MultivariateDistanceTest extends TestCase {
                     y[i][j] *= y[i][j];
                 }
             }
-            System.out.printf("\nnSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
+            System.out.printf("%nnSample=%d, k=%d, nIter=%d alpha=%.4e%n",
                 nSample, k, nIter, alpha);
             System.out.flush();
             
@@ -180,7 +180,7 @@ public class MultivariateDistanceTest extends TestCase {
             indep1 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
             indep2 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
             
-            System.out.printf("cov=%.4e indep=(%b, %b)\n", dcov[n], indep1, indep2);
+            System.out.printf("cov=%.4e indep=(%b, %b)%n", dcov[n], indep1, indep2);
             System.out.flush();
 
             if (indep1) {
@@ -193,7 +193,7 @@ public class MultivariateDistanceTest extends TestCase {
             ++n;
         }
         
-        System.out.printf("n1True=%d n2True=%d\n", n1True, n2True);
+        System.out.printf("n1True=%d n2True=%d%n", n1True, n2True);
         System.out.flush();
             
         assertTrue(Math.abs(dcov[nSamples.length - 1]) < tolCov);
@@ -253,13 +253,13 @@ public class MultivariateDistanceTest extends TestCase {
                     y[i][j] *= y[i][j];
                 }
             }
-            System.out.printf("\nnSample=%d, k=%d, nIter=%d alpha=%.4e\n", 
+            System.out.printf("%nnSample=%d, k=%d, nIter=%d alpha=%.4e%n",
                 nSample, k, nIter, alpha);
             System.out.flush();
             
             dcov[n] = MultivariateDistance.efficientDCov(x, y, k, rand);
             //estimator should converge to 0 for all k
-            System.out.printf("cov=%.4e\n", dcov[n]);
+            System.out.printf("cov=%.4e%n", dcov[n]);
             System.out.flush();
             
             x2 = MatrixUtil.copySubMatrix(x, 0, x.length-1, 0, 1);
@@ -267,7 +267,7 @@ public class MultivariateDistanceTest extends TestCase {
             indep1 = MultivariateDistance.areIndependent1(x2, y2, k, nIter, alpha, rand);
             indep2 = MultivariateDistance.areIndependent2(x2, y2, k, alpha, rand);
                         
-            System.out.printf("  [*, 0:1] indep=(%b, %b)\n", indep1, indep2);
+            System.out.printf("  [*, 0:1] indep=(%b, %b)%n", indep1, indep2);
             System.out.flush();
             
             indep3 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
@@ -276,7 +276,7 @@ public class MultivariateDistanceTest extends TestCase {
             //   has less power for low dimensional dependency in high dimensional data
             indep4 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
             
-            System.out.printf("  [*,*] indep=(%b, %b)\n", indep3, indep4);
+            System.out.printf("  [*,*] indep=(%b, %b)%n", indep3, indep4);
             System.out.flush();
 
             if (!indep1) {
@@ -297,7 +297,7 @@ public class MultivariateDistanceTest extends TestCase {
             ++n;
         }
         
-        System.out.printf("n1False=%d  n2False=%d  n3False=%d  n4False=%d\n", 
+        System.out.printf("n1False=%d  n2False=%d  n3False=%d  n4False=%d%n",
             n1False, n2False, n3False, n4False);
         System.out.flush();
         

@@ -251,11 +251,11 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
         int NN = coef.length;
         for (int i=0; i<NN; i++) {
             if (coef[i] < 0) {
-                String term = "     - x^" + i + " * " + (-coef[i]) + "\n";
+                String term = "     - x^" + i + " * " + (-coef[i]) + "%n";
                 buffer.append(term);
             }
             else if (coef[i] > 0) {
-                String term = "       x^" + i + " * " + coef[i] + "\n";
+                String term = "       x^" + i + " * " + coef[i] + "%n";
                 buffer.append(term);
             }
             else {

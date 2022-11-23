@@ -45,7 +45,7 @@ public class GumbelTest extends TestCase {
         double[] randDist = Gumbel.sampleRandomlyFrom(mu, sigma, n, rand);
         Arrays.sort(randDist);
         double[] randDistParams = Gumbel.fitUsingMethodOfMoments(randDist);
-        log.info(String.format("randDistParams=%s\n", FormatArray.toString(randDistParams, "%.3f")));
+        log.info(String.format("randDistParams=%s%n", FormatArray.toString(randDistParams, "%.3f")));
 
         curve = Gumbel.generateGumbelCurve(xPoints, mu, sigma);
         
@@ -73,7 +73,7 @@ public class GumbelTest extends TestCase {
         double[] xOrd = x.toArray();
 
         double[] params = Gumbel.fitUsingMethodOfMoments(xOrd);
-        log.info(String.format("params=%s\n", FormatArray.toString(params, "%.3f")));
+        log.info(String.format("params=%s%n", FormatArray.toString(params, "%.3f")));
 
         String filePath = plotter.writeFile("gumbel_mu1_sigma_1");
 
@@ -101,15 +101,15 @@ public class GumbelTest extends TestCase {
             hist.getYHistFloat()[i] /= maxYHist;
         }
         double[] params = Gumbel.fitUsingMethodOfMoments(X);
-        log.info(String.format("Gumbel MME params=%s\n", FormatArray.toString(params, "%.3f")));
+        log.info(String.format("Gumbel MME params=%s%n", FormatArray.toString(params, "%.3f")));
 
         double tol = 1e-3;
 
         double[] params2 = Gumbel.fitUsingMaximumLikelihood(X);
-        log.info(String.format("Gumbel MLE params=%s\n", FormatArray.toString(params2, "%.3f")));
+        log.info(String.format("Gumbel MLE params=%s%n", FormatArray.toString(params2, "%.3f")));
 
         double[] params3 = GeneralizedExtremeValue.fitUsingMethodOfProbabilityWeightedMoments(X);
-        log.info(String.format("GEV MPWME params=%s\n", FormatArray.toString(params3, "%.3f")));
+        log.info(String.format("GEV MPWME params=%s%n", FormatArray.toString(params3, "%.3f")));
 
         // matches results from scipy
         assertTrue(Math.abs(params2[0] - 1231.88073) < tol);

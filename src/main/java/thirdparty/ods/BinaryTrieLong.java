@@ -439,7 +439,7 @@ public class BinaryTrieLong<S extends BinaryTrieNode<T>, T>
         TIntSet dummyHashCodes = new TIntHashSet();
         S node = dummy;
         //System.out.println("dummy.hashCode=" + dummy.hashCode());
-        System.out.print("\ndummy=");
+        System.out.print("%ndummy=");
         do {
             int dhc = node.hashCode();
             System.out.print(node.x + ", ");

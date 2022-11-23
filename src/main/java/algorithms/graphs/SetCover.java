@@ -153,8 +153,8 @@ public class SetCover {
         LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
         double[] primalX = lpSoln.calculatePrimalX();
         double[] dualY = lpSoln.calculateDualY();
-        System.out.printf("primalX=%s\n", FormatArray.toString(primalX, "%.3f"));
-        System.out.printf("dualY=%s\n", FormatArray.toString(dualY, "%.3f"));
+        System.out.printf("primalX=%s%n", FormatArray.toString(primalX, "%.3f"));
+        System.out.printf("dualY=%s%n", FormatArray.toString(dualY, "%.3f"));
         
         return weightedApprox2LgN(nU, sets, weights, primalX);
     }
@@ -252,7 +252,7 @@ public class SetCover {
             while (iter.hasNext()) {
                 idx = iter.next();
                 r = rand.nextDouble();
-                //System.out.printf("%d) r=%.3f, yP[%d]=%.3f\n", i, r, idx, yProbabilities[idx]);              
+                //System.out.printf("%d) r=%.3f, yP[%d]=%.3f%n", i, r, idx, yProbabilities[idx]);
                 if (r <= yProbabilities[idx]) {
                     c.add(idx);
                     rm.add(idx);
@@ -303,7 +303,7 @@ public class SetCover {
                 si = iter.value();
                 idx = iter.key();
                 n = si.size();
-                //System.out.printf("   idx=%d (%s) n=%d\n", idx, si.toString(), n);
+                //System.out.printf("   idx=%d (%s) n=%d%n", idx, si.toString(), n);
                 if (n > 0 && n > maxN) {
                     maxN = n;
                     maxNIdx = idx;
@@ -313,7 +313,7 @@ public class SetCover {
                 break;
             }
             siMaxN = setsMap.remove(maxNIdx);
-            //System.out.printf("max idx=%d (%s)\n", maxNIdx, siMaxN.toString());
+            //System.out.printf("max idx=%d (%s)%n", maxNIdx, siMaxN.toString());
             c.add(maxNIdx);
             
             // remove siMaxN from each set in s.  and store the empty sets as indexes to remove after use of iterator
@@ -419,7 +419,7 @@ public class SetCover {
             .convertLinearProgramToStandardForm(isMaximization, a, b, c, 
             constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf("Linear Program in standard form=\n%s\n", standForm.toString());
+        //System.out.printf("Linear Program in standard form=%n%s%n", standForm.toString());
 
         return standForm;
     }

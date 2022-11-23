@@ -429,6 +429,9 @@ public class HopcroftKarpRT2012 {
                 // l(x) and l(y) are the keys in the heap node
 
                 RightNode yNode = yNodes.get(yIdx);
+                if (yNode == null) {
+                    throw new IllegalStateException("yIdx=" + yIdx + " is missing from map yNodes");
+                }
                 long lOld = yNode.getKey();
                 assert(yNode.index == yIdx);
                 

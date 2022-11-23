@@ -113,7 +113,7 @@ public class CuthillMcKeeTest extends TestCase {
         int[] rcmIdxs = CuthillMcKee.rcm(gE);
         //        0, 8, 5, 7, 3, 6, 2, 4, 1, 9
         
-        System.out.printf("r=%s\n", Arrays.toString(rcmIdxs));
+        System.out.printf("r=%s%n", Arrays.toString(rcmIdxs));
         
         assertTrue(Arrays.equals(expected, rcmIdxs));
     }

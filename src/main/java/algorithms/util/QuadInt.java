@@ -76,8 +76,8 @@ public class QuadInt {
         return hash;
     }
 
-    protected static int fnv321aInit = 0x811c9dc5;
-    protected static int fnv32Prime = 0x01000193;
+    protected final static int fnv321aInit = 0x811c9dc5;
+    protected final static int fnv32Prime = 0x01000193;
 
     protected int fnvHashCode(int i0, int i1, int i2, int i3) {
 

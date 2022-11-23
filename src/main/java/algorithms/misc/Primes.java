@@ -159,7 +159,7 @@ public class Primes {
         
         long d;
                 
-        //System.out.printf("i=%d xi=%d\n", i, x1);
+        //System.out.printf("i=%d xi=%d%n", i, x1);
                 
         while (true) {
             
@@ -174,7 +174,7 @@ public class Primes {
             d = NumberTheory.extendedEuclid(y - x2, n)[0];
             d = Math.abs(d);
             
-            //System.out.printf("i=%d x2=%d, d=(%d,%d) xc=%d\n", 
+            //System.out.printf("i=%d x2=%d, d=(%d,%d) xc=%d%n", 
             //    i, x2, d, NumberTheory.euclid(y-x2, n), xCycle);
                    
             if ((d != 1) && (d != n) && !factors.contains(d)) {
@@ -320,7 +320,7 @@ public class Primes {
             // keep u=1
             t = (int)(Math.log(n-1)/Math.log(2));
         }
-        //System.out.printf("(1<<t)*u=%d, (n-1)=%d, n=%d t=%d u=%d\n", (1<<t)*u, n-1, n, t, u);
+        //System.out.printf("(1<<t)*u=%d, (n-1)=%d, n=%d t=%d u=%d%n", (1<<t)*u, n-1, n, t, u);
         
         assert( (1<<t)*u == (n-1));
                 
@@ -379,7 +379,7 @@ public class Primes {
             nIter++;
         } while ( !probablyPrime(q, s));
         
-        System.out.printf("nIter=%d, max expected=%d prime=%d\n", nIter, maxIter, q);
+        System.out.printf("nIter=%d, max expected=%d prime=%d%n", nIter, maxIter, q);
         
         return q;
     }
@@ -387,7 +387,7 @@ public class Primes {
     static long generateRandomOdd(int bitlength, ThreadLocalRandom rand) {
         // for bit length n=3:  [(1<<(n-1)), (1<<n)-1 ] 4 thru 7, '100' thru '111'
         long q = rand.nextLong((1<<(bitlength - 1)), (1 << bitlength) - 1) ;
-        System.out.printf("bitlength=%d rand=%d\n", bitlength, q);
+        System.out.printf("bitlength=%d rand=%d%n", bitlength, q);
         q <<= 1L;
         q |= 1;
         return q;

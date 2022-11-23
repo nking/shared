@@ -449,9 +449,7 @@ public class DerivGumbel {
         }
 
         double[] yGEV = Gumbel.generateCurve(x, mu, sigma);
-        if (yGEV == null) {
-            return null;
-        }
+
         double yMax = MiscMath0.findMax(yGEV);
         MatrixUtil.multiply(yGEV, 1./yMax);
 

@@ -265,7 +265,7 @@ public class TreeTraversal {
         
         while (node != null) {
             
-            System.out.printf("L=%d, [%d, %s], %s of key %d\n", 
+            System.out.printf("L=%d, [%d, %s], %s of key %d%n", 
                 level, node.getKey(), node.getData() != null ?
                 ((Integer)node.getData()).toString() : "-",
                 lOrR, parent);

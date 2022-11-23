@@ -114,7 +114,7 @@ public class KernelDensityEstimatorTest extends TestCase {
                 data.length);
         double ob = KernelDensityEstimator.optimalBandwidthGaussianKernel(s, data.length);
 
-        System.out.printf("stdev=%.4e,  s=%.4e,  ob=%.4e,  rt=%.4e\n",
+        System.out.printf("stdev=%.4e,  s=%.4e,  ob=%.4e,  rt=%.4e%n",
                 MiscMath0.getAvgAndStDev(data)[1], s, ob, rt);
         return new double[]{rt, ob};
     }
@@ -205,13 +205,13 @@ public class KernelDensityEstimatorTest extends TestCase {
         double h = calcH(data)[0];
         h *= 10;
 
-        System.out.printf("data.length=%d h=%.4e\n", data.length, h);
+        System.out.printf("data.length=%d h=%.4e%n", data.length, h);
 
         double[][] hist = KernelDensityEstimator.createFineHistogram(data, h);
 
         double sum = KernelDensityEstimator.sumHistogram(hist);
         assertTrue(Math.abs(sum - 1.) < 1e-7);
-        System.out.printf("dx=%.4e  sumHist=%.4e  data.length=%d  hist[0].length=%d\n",
+        System.out.printf("dx=%.4e  sumHist=%.4e  data.length=%d  hist[0].length=%d%n",
                 hist[0][1] - hist[0][0], sum, data.length, hist[0].length);
 
         KernelDensityEstimator.KDE kde;
@@ -244,7 +244,7 @@ public class KernelDensityEstimatorTest extends TestCase {
             }
         }
 
-        System.out.printf("min cv=%.4e , i=%d\n", minCV, minCVIdx);
+        System.out.printf("min cv=%.4e , i=%d%n", minCV, minCVIdx);
 
         plotter.writeFile("kde_0");
         plotter2.writeFile("kde_0_1");
@@ -322,12 +322,12 @@ public class KernelDensityEstimatorTest extends TestCase {
         double[][] hist = KernelDensityEstimator.createFineHistogram(data, h);
         double sum = KernelDensityEstimator.sumHistogram(hist);
         assertTrue(Math.abs(sum - 1.) < 1e-7);
-        System.out.printf("dx=%.4e  sumHist=%.4e  data.length=%d  hist[0].length=%d\n",
+        System.out.printf("dx=%.4e  sumHist=%.4e  data.length=%d  hist[0].length=%d%n",
                 hist[0][1] - hist[0][0], sum, data.length, hist[0].length);
 
         KernelDensityEstimator.KDE kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
         double sumK = KernelDensityEstimator.sumKDE(kde.kde, (kde.hx[1] - kde.hx[0]));
-        System.out.printf("dx=%.4e  sumKDE=%.4e  data.length=%d  hist[1].length=%d\n",
+        System.out.printf("dx=%.4e  sumKDE=%.4e  data.length=%d  hist[1].length=%d%n",
                 hist[0][1] - hist[0][0], sumK, data.length, hist[1].length);
 
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
@@ -391,7 +391,7 @@ public class KernelDensityEstimatorTest extends TestCase {
         int nPeaksExpected = 10;
         double h0 = calcH(data)[0];
 
-        System.out.printf("data.length=%d h0=%.4e\n", data.length, h0);
+        System.out.printf("data.length=%d h0=%.4e%n", data.length, h0);
 
         KernelDensityEstimator.KDE kdeFFT0 = KernelDensityEstimator.viaFFTGaussKernel(data, h0);
 
@@ -441,13 +441,13 @@ public class KernelDensityEstimatorTest extends TestCase {
         // start at wider bandwidth:
         double h = 10*h0;
 
-        System.out.printf("data.length=%d h0=%.4e h=%.4e\n", data.length, h0, h);
+        System.out.printf("data.length=%d h0=%.4e h=%.4e%n", data.length, h0, h);
 
         KernelDensityEstimator.KDE kde;
 
         kde = KernelDensityEstimator.viaFFTGaussKernel(data, h);
 
-        System.out.printf("dx=%.4e  data.length=%d  hist[0].length=%d\n",
+        System.out.printf("dx=%.4e  data.length=%d  hist[0].length=%d%n",
                 kde.hx[1] - kde.hx[0], data.length, kde.hx.length);
 
         double cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
@@ -472,16 +472,16 @@ public class KernelDensityEstimatorTest extends TestCase {
             System.out.println("i=" + i + ":");
             cv = KernelDensityEstimator.crossValidationScore(kde.u, kde.hx, h);
             plotter.addPlot(kde.hx, kde.kde, kde.hx, kde.kde, String.format("h=%.4e, cv=%.4e", h, cv));
-            System.out.printf("t3: nPeaks=%d, h=%.4e, cv=%.4e\n", nPeaks, h, cv);
+            System.out.printf("t3: nPeaks=%d, h=%.4e, cv=%.4e%n", nPeaks, h, cv);
             if (cv < minCV) {
                 minCV = cv;
                 minCVIdx = i;
                 minPeaks = nPeaks;
-                System.out.printf(" * min h=%.4e, cv=%.4e\n", h, cv);
+                System.out.printf(" * min h=%.4e, cv=%.4e%n", h, cv);
             }
         }
 
-        System.out.printf("t3: min cv=%.4e , i=%d\n", minCV, minCVIdx);
+        System.out.printf("t3: min cv=%.4e , i=%d%n", minCV, minCVIdx);
         plotter.writeFile("kde_3");
     }
 }

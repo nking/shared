@@ -156,7 +156,7 @@ public class MinCostUnbalancedAssignment {
             sb.append(" index=").append(Integer.toBinaryString(index));
             PathNode prev = pathPredecessor;
             while (prev != null) {
-                String str = String.format("\n   [prev=%s %d %d]", 
+                String str = String.format("%n   [prev=%s %d %d]", 
                     prev.id, (int)prev.getKey(), prev.index);
                 sb.append(str);
                 prev = prev.pathPredecessor;
@@ -1258,7 +1258,7 @@ Matchings in G are integral flows in N_G
         return pathLists;
     }
     
-    private class PathsAndPrices {
+    private static class PathsAndPrices {
         List<PathNode> path;
         TIntFloatMap leftPriceIncreases;
         TIntFloatMap rightPriceIncreases;
@@ -1972,7 +1972,7 @@ Matchings in G are integral flows in N_G
                     node2.index));
                 sb.append(", ");
             }
-            sb.append("]\n");
+            sb.append("]%n");
         }
         log.fine(sb.toString());
     }

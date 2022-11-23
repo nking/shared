@@ -64,7 +64,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
                         nDimensions, rand);
                 }
                 double[] avgAndStDev = MiscMath0.getAvgAndStDev(v[i]);
-                System.out.println("\nv[" + i + "]=" + FormatArray.toString(v[i], "%.3f"));
+                System.out.println("%nv[" + i + "]=" + FormatArray.toString(v[i], "%.3f"));
                 System.out.println("   mean, stDev=" + FormatArray.toString(avgAndStDev, "%.3f"));
                 
                 System.arraycopy(v[i], 0, vl, i*nDimensions, v[i].length);
@@ -82,7 +82,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
             
             for (int i = 0; i < nDimensions; ++i) {
                 double[] avgAndStDev = MiscMath0.getAvgAndStDev(vT[i]);
-                System.out.printf("dimension[%d]: mean,stDev=%s\n", i, FormatArray.toString(avgAndStDev, "%.3f"));
+                System.out.printf("dimension[%d]: mean,stDev=%s%n", i, FormatArray.toString(avgAndStDev, "%.3f"));
             }
             
             double[] w = new double[nSamples];
@@ -108,7 +108,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
 
             
             System.out.println("g.m.=" + FormatArray.toString(init, "%.3f"));
-            System.out.printf("mean diff = %.3f, stdev diff = %.3f, minSum=%.3f\n",
+            System.out.printf("mean diff = %.3f, stdev diff = %.3f, minSum=%.3f%n",
                 avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
           
             double min, max, binSz;
@@ -335,7 +335,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
 
             
             System.out.println("rej2: g.m.=" + FormatArray.toString(init, "%.3f"));
-            System.out.printf("rej2: mean diff = %.3f, stdev diff = %.3f, minSum=%.3f\n",
+            System.out.printf("rej2: mean diff = %.3f, stdev diff = %.3f, minSum=%.3f%n",
                 avgAndStDevFromGM[0], avgAndStDevFromGM[1], minSum);
         }
          

@@ -171,7 +171,7 @@ public class VoronoiFortunesSweep {
                 ymax = yValues[i];
             }
             
-            //printf("\n%f %f\n",xValues[i],yValues[i]);
+            //printf("%n%f %f%n",xValues[i],yValues[i]);
         }
         
         // N log_2 N
@@ -471,7 +471,7 @@ public class VoronoiFortunesSweep {
         }
     }
 
-    private class SiteComp implements Comparator<Site> {
+    private static class SiteComp implements Comparator<Site> {
         @Override
         public int compare(Site o1, Site o2) {
             if (o1.coord.getY() < o2.coord.getY()) {
@@ -501,7 +501,7 @@ public class VoronoiFortunesSweep {
         }
     }
 
-    private class Edge {
+    private static class Edge {
         float a = 0;
         float b = 0;
         float c = 0;
@@ -516,7 +516,7 @@ public class VoronoiFortunesSweep {
         public int site2;
     }
      
-    private class HalfEdge {
+    private static class HalfEdge {
 	    HalfEdge ELleft = null; 
         HalfEdge ELright = null;
 	    Edge ELedge = null;

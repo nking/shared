@@ -14,7 +14,7 @@ public class ObjectSpaceEstimatorTest extends TestCase {
         super(testName);
     }
     
-    private class Vars {
+    private static class Vars {
         long a = 1;
         int b = 1;
         char c = 1;

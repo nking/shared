@@ -205,12 +205,12 @@ public class Gumbel {
                 scaleEst = estimateScaleML(x, avgAndStdev[0], prevScaleEst);
                 locEst = estimateLocML(x, scaleEst);
                 diffScale = scaleEst - prevScaleEst;
-                System.out.printf("locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e\n",
+                System.out.printf("locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e%n",
                         locEst, prevScaleEst, scaleEst, diffScale);
                 prevScaleEst = scaleEst;
                 nIter++;
             } while ((nIter < nIterMax) && Math.abs(diffScale) > tol);
-            System.out.printf("nIter=%d\n", nIter);
+            System.out.printf("nIter=%d%n", nIter);
         } else {
             // non-linear optimization.
             // solving for 2 parameter Gumbel distribution should be convex, so one could use the

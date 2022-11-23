@@ -4,8 +4,8 @@ import algorithms.misc.MiscMath0;
 
 public class GEVYFit implements IYFit {
 
-    protected double[] yfit;
-    protected double[] x;
+    protected double[] yfit = null;
+    protected double[] x = null;
     protected double xScale = 1;
     protected double yScale = 1;
     protected int xPeakIndex = -1;

@@ -209,7 +209,7 @@ public class HypersphereChordLength {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("isConsistentWithNonUniform=").append(isConsistentWithNonUniform);
-            sb.append(String.format("\n1-alpha=%.5f, crit. val.=%.4e \nL1(sphere)=%.4f \nL1(X)=%.4f", 
+            sb.append(String.format("%n1-alpha=%.5f, crit. val.=%.4e %nL1(sphere)=%.4f %nL1(X)=%.4f", 
                 oneMinusAlpha, oneMinusAlphaCritVal, l1MaxSphere, l1MaxX));
             return sb.toString();
         }
@@ -260,11 +260,11 @@ public class HypersphereChordLength {
         //1-alpha for hypersphere chord distribution
         double alphaCV = findCVForAlpha95Percent(nDimensions);
         
-        System.out.printf("c.v. for 1-alpha=%.4e\n", alphaCV);
-        System.out.printf("S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e\n", 
+        System.out.printf("c.v. for 1-alpha=%.4e%n", alphaCV);
+        System.out.printf("S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e%n", 
             minMaxSphere[0], minMaxSphere[1],
             avgAndStDevSphere[0], avgAndStDevSphere[1]);
-        System.out.printf("X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e\n", 
+        System.out.printf("X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e%n", 
             minMaxX[0], minMaxX[1],
             avgAndStDevX[0], avgAndStDevX[1]);
         
@@ -659,57 +659,88 @@ public class HypersphereChordLength {
         //       find d's where alpha=0.95
         
         double r = 1;
-        
+
+        int kInt;
         TDoubleList dList = new TDoubleArrayList();
         if (nDimensions < 2) {
             //fine resolution between 1.9 and 2.0
-            for (double k = 1.99; k <= 2.0; k+=0.001) {
-                dList.add(k);
+            // for (double k = 1.99; k <= 2.0; k+=0.001) {
+            //     dList.add(k);
+            //}
+            for (kInt = 1990; kInt <= 2000; ++kInt) {
+                dList.add(kInt*0.001);
             }
         } else if (nDimensions < 5) {
             //fine resolution between 1.9 and 2.0
-            for (double k = 1.8; k <= 2.0; k+=0.005) {
-                dList.add(k);
+            //for (double k = 1.8; k <= 2.0; k+=0.005) {
+            //    dList.add(k);
+            //}
+            for (kInt = 360; kInt <= 400; ++kInt) {
+                dList.add(kInt*0.005);
             }
         } else if (nDimensions < 8) {
             //fine resolution between 1.76 and 1.88
-            for (double k = 1.76; k <= 1.88; k+=0.01) {
-                dList.add(k);
+            //for (double k = 1.76; k <= 1.88; k+=0.01) {
+            //    dList.add(k);
+            //}
+            for (kInt = 176; kInt <= 188; ++kInt) {
+                dList.add(kInt*0.01);
             }
         } else if (nDimensions <= 10) {
             //fine resolution between 1.76 and 1.88
-            for (double k = 1.74; k <= 1.88; k+=0.01) {
-                dList.add(k);
+            //for (double k = 1.74; k <= 1.88; k+=0.01) {
+            //    dList.add(k);
+            //}
+            for (kInt = 174; kInt <= 188; ++kInt) {
+                dList.add(kInt*0.01);
             }
         }  else if (nDimensions < 100) {
             //fine resolution between 1.5 and ?
-            for (double k = 1.5; k <= 1.75; k+=0.01) {
-                dList.add(k);
+            //for (double k = 1.5; k <= 1.75; k+=0.01) {
+            //    dList.add(k);
+            //}
+            for (kInt = 150; kInt <= 175; ++kInt) {
+                dList.add(kInt*0.01);
             }
         } else if (nDimensions < 800) {
             //fine resolution between 1.5 and ?
-            for (double k = 1.45; k <= 1.6; k+=0.005) {
-                dList.add(k);
+            //for (double k = 1.45; k <= 1.6; k+=0.005) {
+            //    dList.add(k);
+            //}
+            for (kInt = 290; kInt <= 320; ++kInt) {
+                dList.add(kInt*0.005);
             }
         } else if (nDimensions <= 1000) {
             //fine resolution between 1.5 and ?
-            for (double k = 1.45; k <= 1.455; k+=0.001) {
-                dList.add(k);
+            //for (double k = 1.45; k <= 1.455; k+=0.001) {
+            //    dList.add(k);
+            //}
+            for (kInt = 1450; kInt <= 1455; ++kInt) {
+                dList.add(kInt*0.001);
             }
         } else if (nDimensions <= 2000) {
             //fine resolution between 1.5 and ?
-            for (double k = 1.44; k <= 1.456; k+=0.001) {
-                dList.add(k);
+            //for (double k = 1.44; k <= 1.456; k+=0.001) {
+            //    dList.add(k);
+            //}
+            for (kInt = 1440; kInt <= 1456; ++kInt) {
+                dList.add(kInt*0.001);
             }
         } else if (nDimensions <= 3050) {
             //fine resolution between 1.5 and ?
-            for (double k = 1.435; k <= 1.45; k+=0.001) {
-                dList.add(k);
+            //for (double k = 1.435; k <= 1.45; k+=0.001) {
+            //    dList.add(k);
+            //}
+            for (kInt = 1435; kInt <= 1450; ++kInt) {
+                dList.add(kInt*0.001);
             }
         } else if (nDimensions <= 5000) {
             //fine resolution between 1.5 and ?
-            for (double k = 1.42; k <= 1.45; k+=0.001) {
-                dList.add(k);
+            //for (double k = 1.42; k <= 1.45; k+=0.001) {
+            //    dList.add(k);
+            //}
+            for (kInt = 1420; kInt <= 1450; ++kInt) {
+                dList.add(kInt*0.001);
             }
         }
         double[] ds = dList.toArray();

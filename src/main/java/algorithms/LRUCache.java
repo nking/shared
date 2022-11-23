@@ -10,7 +10,9 @@ import java.util.Map;
  * @author nichole
  */
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
-        
+
+    private static final long serialVersionUID = 1800104040800209030L;
+
     private static final boolean accessOrder = true;
     
     private final int initialCapacity;

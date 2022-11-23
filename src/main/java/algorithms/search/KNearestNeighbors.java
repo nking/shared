@@ -224,17 +224,12 @@ public class KNearestNeighbors {
         return (float)Math.sqrt(diffX * diffX) + (diffY * diffY);
     }
     
-    private class PairDist implements Comparable<PairDist>{
+    private static class PairDist implements Comparable<PairDist>{
         PairFloat s1;
         float dist;
         @Override
         public int compareTo(PairDist other) {
-            if (dist < other.dist) {
-                return -1;
-            } else if (dist > other.dist) {
-                return 1;
-            }
-            return 0;
+            return Float.compare(dist, other.dist);
         }
     }
     
@@ -242,8 +237,7 @@ public class KNearestNeighbors {
         return findNearest(k, x, y, Float.MAX_VALUE);
     }
         
-    public List<PairFloat> findNearest(int k, float x, float y,
-        float maxDistance) {
+    public List<PairFloat> findNearest(int k, float x, float y, float maxDistance) {
        
         // O(log_2(N) at best, but some extreme queries are O(N).
         // nearest site(s). (if same distances, returns more than one).
@@ -346,7 +340,7 @@ public class KNearestNeighbors {
         
         float[] xPolygon = null;
         float[] yPolygon = null;
-        
+        // intentionally null for this because the method will ignore ull
         plotter.addPlot(x, y, xPolygon, yPolygon, "points");
         
         int n2 = edges.size();

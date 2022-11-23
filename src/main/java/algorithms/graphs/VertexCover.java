@@ -238,7 +238,7 @@ public class VertexCover {
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         double[] x = soln.computeBasicSolution();
         
-        //System.out.printf("x=%s\n", FormatArray.toString(x, "%.3f"));
+        //System.out.printf("x=%s%n", FormatArray.toString(x, "%.3f"));
         
         TIntSet c = new TIntHashSet();
         int i;
@@ -313,7 +313,7 @@ public class VertexCover {
             .convertLinearProgramToStandardForm(isMaximization, a, b, c, 
             constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf("graph as Linear Program in standard form=\n%s\n", standForm.toString());
+        //System.out.printf("graph as Linear Program in standard form=%n%s%n", standForm.toString());
 
         return standForm;
     }

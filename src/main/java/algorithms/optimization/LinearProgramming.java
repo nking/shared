@@ -230,7 +230,7 @@ public class LinearProgramming {
       
         SlackForm slackForm = initializeSimplex(standForm);
         
-        //System.out.printf("initialized:\n%s\n", slackForm.toString());
+        //System.out.printf("initialized:%n%s%n", slackForm.toString());
         
         if (!slackForm.state.equals(STATE.FEASIBLE) && !slackForm.state.equals(STATE.OPTIMAL)) {
             System.out.println("exiting: " + slackForm.state.name());
@@ -278,7 +278,7 @@ public class LinearProgramming {
                 }
             }
             
-            //System.out.printf("eIdx=%d lIdx=%d minDelta=%.3f\n", eIdx, lIdx, minDelta);
+            //System.out.printf("eIdx=%d lIdx=%d minDelta=%.3f%n", eIdx, lIdx, minDelta);
             
             if (Double.isInfinite(minDelta)) {
                 System.out.println("exit: UNBOUNDED");
@@ -292,13 +292,13 @@ public class LinearProgramming {
             slackForm.computeBasicSolution();
             double z = slackForm.evaluateObjective();
             
-            //System.out.printf("after pivot of eIdx=%d lIdx=%d, z=%.3f:\n%s\n", 
+            //System.out.printf("after pivot of eIdx=%d lIdx=%d, z=%.3f:%n%s%n",
             //    eIdx, lIdx, z, slackForm.toString());
                         
             positiveCIndexes = findPositiveCIndexes(slackForm);
                         
             eIdx = chooseEnteringIndex(slackForm, positiveCIndexes);            
-            //System.out.printf("remaining cIndexes=\n%s\n", positiveCIndexes.toString());
+            //System.out.printf("remaining cIndexes=%n%s%n", positiveCIndexes.toString());
         }
         
         // lines 12-16
@@ -331,7 +331,7 @@ public class LinearProgramming {
     protected SlackForm initializeSimplex(StandardForm standForm) {
         
         SlackForm _slackForm = convertConstraints(standForm);
-        //System.out.printf("init: convert to slackForm =\n%s\n", _slackForm.toString());
+        //System.out.printf("init: convert to slackForm =%n%s%n", _slackForm.toString());
                 
         int m = _slackForm.b.length;
         int n = _slackForm.nIndices.length;
@@ -377,9 +377,9 @@ public class LinearProgramming {
         //let (N, B, A, b, c, v) be the resulting Slack Form for L_aux
         SlackForm slackFormAux = createAuxiliarySlackForm(standForm);
         
-        //System.out.printf("init: L_aux=\n%s\n", slackFormAux.toString());
+        //System.out.printf("init: L_aux=%n%s%n", slackFormAux.toString());
         
-        //System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
+        //System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)%n",
         //    0, slackFormAux.nIndices[0], lIdx, slackFormAux.bIndices[lIdx]);
         
         //L_aux has n+1 nonbasic variables and m basic variables
@@ -389,11 +389,11 @@ public class LinearProgramming {
         //the basic solution is now feasible for L_aux
         double[] xBasicSoln = slackFormAux.computeBasicSolution();
         
-        //System.out.printf("init: L_aux after pivot=\n%s\n",
+        //System.out.printf("init: L_aux after pivot=%n%s%n",
         //    slackFormAux.toString());
         
         boolean isFeasible = slackFormAux.isFeasible();
-        //System.out.printf("init: L_aux basicSoln=%s\n", FormatArray.toString(xBasicSoln, "%.3f"));
+        //System.out.printf("init: L_aux basicSoln=%s%n", FormatArray.toString(xBasicSoln, "%.3f"));
         //System.out.println("   isFeasible=" + isFeasible);
         slackFormAux.state = STATE.FEASIBLE;
          
@@ -428,7 +428,7 @@ public class LinearProgramming {
         
         TIntSet positiveCIndexes = findPositiveCIndexes(slackFormAux);
         
-        //System.out.printf("posIndexes of C=%s\n", Arrays.toString(positiveCIndexes.toArray()));
+        //System.out.printf("posIndexes of C=%s%n", Arrays.toString(positiveCIndexes.toArray()));
         
         double[] delta = new double[slackFormAux.bIndices.length];
         int eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
@@ -453,7 +453,7 @@ public class LinearProgramming {
                 }
             }
             
-            //System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)\n",
+            //System.out.printf("init: pivot eIdx=%d (=x%d), lIdx=%d (=x%d)%n",
             //    eIdx, slackFormAux.nIndices[eIdx], lIdx, slackFormAux.bIndices[lIdx]);
             
             if (Double.isInfinite(minDelta)) {
@@ -463,13 +463,13 @@ public class LinearProgramming {
             
             slackFormAux = pivot(slackFormAux, lIdx, eIdx);
             
-            //System.out.printf("init: after pivot=\n%s\n", slackFormAux.toString());
+            //System.out.printf("init: after pivot=%n%s%n", slackFormAux.toString());
                         
             positiveCIndexes = findPositiveCIndexes(slackFormAux);
             
             eIdx = chooseEnteringIndex(slackFormAux, positiveCIndexes);
             
-            //System.out.printf("positiveIndexes=\n%s\n", positiveCIndexes.toString());
+            //System.out.printf("positiveIndexes=%n%s%n", positiveCIndexes.toString());
         }
         
         xBasicSoln = slackFormAux.computeBasicSolution();
@@ -484,14 +484,14 @@ public class LinearProgramming {
         SlackForm optimal = truncateAuxiliarySlackForm(slackFormAux,
             standForm);
         double[] x = optimal.computeBasicSolution();
-        //System.out.printf("init: after truncation\n%s\n", optimal.toString());
+        //System.out.printf("init: after truncation%n%s%n", optimal.toString());
         
-        //System.out.printf("init: optimal isFeasible=%b\n%s\n", 
+        //System.out.printf("init: optimal isFeasible=%b%n%s%n",
         //    optimal.isFeasible(), optimal.toString());
         
         optimal.state = STATE.OPTIMAL;
         
-        //System.out.printf("init: slack form =\n%s\n", slackFormAux.toString());
+        //System.out.printf("init: slack form =%n%s%n", slackFormAux.toString());
         
         return optimal;
     }
@@ -785,9 +785,9 @@ public class LinearProgramming {
         assert(b2.size() == b.length);
         assert(a2.get(0).size() == a[0].length + nn);
            
-        //System.out.printf("a0=\n%s\n", FormatArray.toString(a,  "%.3f"));
-        //System.out.printf("a2=\n%s\n", print(a2));
-        //System.out.printf("b0=\n%s\n", FormatArray.toString(b,  "%.3f"));
+        //System.out.printf("a0=%n%s%n", FormatArray.toString(a,  "%.3f"));
+        //System.out.printf("a2=%n%s%n", print(a2));
+        //System.out.printf("b0=%n%s%n", FormatArray.toString(b,  "%.3f"));
 
         // handle the constraints: .eq. and .geq.
         TDoubleList aRow, aRow2;
@@ -822,8 +822,8 @@ public class LinearProgramming {
             }
         }
         
-        //System.out.printf("a2=\n%s\n", print(a2));
-        //System.out.printf("b=\n%s\n", FormatArray.toString(b2.toArray(),  "%.3f"));
+        //System.out.printf("a2=%n%s%n", print(a2));
+        //System.out.printf("b=%n%s%n", FormatArray.toString(b2.toArray(),  "%.3f"));
 
         double[][] a3 = copy(a2);
          
@@ -958,11 +958,11 @@ public class LinearProgramming {
     */
     protected SlackForm createAuxiliarySlackForm(StandardForm standForm) {
         
-        //System.out.printf("createAuxiliarySlackForm\n");
+        //System.out.printf("createAuxiliarySlackForm%n");
         
         SlackForm slackForm = convertConstraints(standForm);
         
-        //System.out.printf("SlackForm=%S\n", slackForm.toString());
+        //System.out.printf("SlackForm=%S%n", slackForm.toString());
         
         int m = slackForm.b.length;
         int n = slackForm.c.length;
@@ -1140,7 +1140,7 @@ public class LinearProgramming {
         SlackForm slackForm = new SlackForm(nHatIndices, bHatIndices, 
             aHat, bHat, cHat, vHat);
         
-        //System.out.printf("truncated=\n%s\n", slackForm.toString());
+        //System.out.printf("truncated=%n%s%n", slackForm.toString());
         
         return slackForm;
     }
@@ -1243,7 +1243,7 @@ public class LinearProgramming {
         int n = a.get(0).size();
         int i;
         for (i = 0; i < m; ++i) {
-            sb.append(FormatArray.toString(a.get(i).toArray(), "%.3f")).append("\n");
+            sb.append(FormatArray.toString(a.get(i).toArray(), "%.3f")).append("%n");
         }
         return sb.toString();
     }
@@ -1468,14 +1468,14 @@ public class LinearProgramming {
             double[] y = computeBasicDualSolution();
             int i;
             
-            /*System.out.printf("evaluateDualObjective: y=%s\n",
+            /*System.out.printf("evaluateDualObjective: y=%s%n",
                 FormatArray.toString(y, "%.3f"));
-            System.out.printf("y_n=\n");
+            System.out.printf("y_n=%n");
             for (i = 0; i < nIndices.length; ++i) {
                 System.out.printf("%.3f, ", y[nIndices[i]]);
             }
             System.out.println();
-            System.out.printf("y_b=\n");
+            System.out.printf("y_b=%n");
             for (i = 0; i < bIndices.length; ++i) {
                 System.out.printf("%.3f, ", y[bIndices[i]]);
             }
@@ -1540,10 +1540,10 @@ public class LinearProgramming {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(super.toString());
-            sb.append("nIndices=").append(Arrays.toString(nIndices)).append("\n");
-            sb.append("bIndices=").append(Arrays.toString(bIndices)).append("\n");
+            sb.append("nIndices=").append(Arrays.toString(nIndices)).append("%n");
+            sb.append("bIndices=").append(Arrays.toString(bIndices)).append("%n");
             if (state != null) {
-                sb.append("STATE=").append(state.name()).append("\n");
+                sb.append("STATE=").append(state.name()).append("%n");
             }
             return sb.toString();
         }
@@ -1630,11 +1630,11 @@ public class LinearProgramming {
 
             StringBuilder sb = new StringBuilder();
             
-            sb.append(String.format("v=%.3f\n", v));
-            sb.append("c=").append(FormatArray.toString(c, "%.3f")).append("\n");
+            sb.append(String.format("v=%.3f%n", v));
+            sb.append("c=").append(FormatArray.toString(c, "%.3f")).append("%n");
             
-            sb.append("b=").append(FormatArray.toString(b, "%.3f")).append("\n");
-            sb.append(String.format("a=\n%s", FormatArray.toString(a, "%.3f")));
+            sb.append("b=").append(FormatArray.toString(b, "%.3f")).append("%n");
+            sb.append(String.format("a=%n%s", FormatArray.toString(a, "%.3f")));
             return sb.toString();
         }
     }

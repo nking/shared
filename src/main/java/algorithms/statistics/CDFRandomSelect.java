@@ -119,14 +119,14 @@ public class CDFRandomSelect {
            
         int lowIdx = 0;
         int highIdx = n - 1;
-        int midIdx = (highIdx + lowIdx) >> 1;
+        int midIdx = lowIdx + (int)((highIdx - lowIdx)/2.);
         
         double v;
         int comp;
         
         while (lowIdx != highIdx && highIdx > lowIdx) {
 
-            midIdx = (highIdx + lowIdx) >> 1;
+            midIdx = lowIdx + (int)((highIdx - lowIdx)/2.);
             
             v = cdf[midIdx];
             

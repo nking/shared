@@ -82,7 +82,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
 
                 long expected = nodes.get(i + 1);
                 assertEquals(nodes.size(), bt.size());
-                //System.out.println("\n* " + idx + " expected next=" + expected);
+                //System.out.println("%n* " + idx + " expected next=" + expected);
 
                 bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
@@ -116,7 +116,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
                 assertEquals(idx, vOutput[1]);
                 
                 long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
+                //System.out.println("%n* " + idx + " expected prev=" + expected);
 
                 bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
@@ -227,7 +227,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
 
                 long expected = nodes.get(i + 1);
                 assertEquals(nodes.size(), bt.size());
-                //System.out.println("\n* " + idx + " expected next=" + expected);
+                //System.out.println("%n* " + idx + " expected next=" + expected);
 
                 bt.higher(idx, kOutput);
                 assertTrue(kOutput[0] != -1);
@@ -261,7 +261,7 @@ public class RedBlackBSTLongIntTest extends TestCase {
                 assertEquals(idx, vOutput[1]);
                 
                 long expected = nodes.get(i - 1);
-                //System.out.println("\n* " + idx + " expected prev=" + expected);
+                //System.out.println("%n* " + idx + " expected prev=" + expected);
 
                 bt.lower(idx, kOutput);
                 assertTrue(kOutput[0] != -1);

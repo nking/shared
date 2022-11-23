@@ -30,8 +30,8 @@ public class StringEditDistanceTest extends TestCase {
         StringEditDistance sed = new StringEditDistance();
         int nEdits = sed.calculateWithWagnerFischer(a, b, outIndexes);
         
-        System.out.printf("a=%s\n", a);
-        System.out.printf("b=%s\n", b);
+        System.out.printf("a=%s%n", a);
+        System.out.printf("b=%s%n", b);
         System.out.println("nEdits=" + nEdits);
         assertEquals(nExpected, nEdits);
         

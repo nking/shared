@@ -56,7 +56,7 @@ public class LongestCommonSubsequenceTest extends TestCase {
         
         System.out.println("result=" + new String(result));
         
-        System.out.println("\nCompare to answer:");
+        System.out.println("%nCompare to answer:");
         System.out.println("   0   0   0   0   0   0   0");
         System.out.println("   0  U0  U0  U0 UL1  L1 UL1");
         System.out.println("   0 UL1  L1  L1  U1 UL2  L2");

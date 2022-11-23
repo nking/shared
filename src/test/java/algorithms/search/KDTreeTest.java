@@ -46,7 +46,7 @@ public class KDTreeTest extends TestCase {
                 rt = Math.log(n)/Math.log(2);
                 
                 System.out.format(
-                    "width=%4d, height=%4d n=%10d mem=%10d  w=%2d  rt=%4d\n",
+                    "width=%4d, height=%4d n=%10d mem=%10d  w=%2d  rt=%4d%n",
                     x[lenIdx], y[lenIdx], n, est/MB, w, (int)Math.round(rt));
                 
             }

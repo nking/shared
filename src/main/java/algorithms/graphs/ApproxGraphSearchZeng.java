@@ -341,7 +341,7 @@ SDM, pp 154–163 (2011)
                 + Math.abs(q.vLabels.size() - dbi.vLabels.size());
             
             w2 = l + 2*w;
-            System.out.printf("i=%d lM=%.3f w2=%.3f\n", ii, lM, w2);
+            System.out.printf("i=%d lM=%.3f w2=%.3f%n", ii, lM, w2);
             
             //L′_m(g1, g2) > L + 2θ can filter out g2
             if (lM > w2) {
@@ -484,7 +484,7 @@ SDM, pp 154–163 (2011)
         // or use the maximum for edges to not count them twice
         int cost = costVSubst + Math.max(costEDelSubst, costEIns);
         
-        //System.out.printf("costs vSubst=%d, eDelSubst=%d, eIns=%d ==> c=%d\n",
+        //System.out.printf("costs vSubst=%d, eDelSubst=%d, eIns=%d ==> c=%d%n",
         //    costVSubst, costEDelSubst, costEIns, cost);
         
         return cost;
@@ -540,7 +540,7 @@ SDM, pp 154–163 (2011)
             }
         }
         
-        //System.out.printf("term1=%.2f term2=%.2f\n", term1, term2);
+        //System.out.printf("term1=%.2f term2=%.2f%n", term1, term2);
         
         return term1 + term2;
     }
@@ -601,7 +601,7 @@ SDM, pp 154–163 (2011)
                 d = StarStructure.calculateEditDistanceV(s1, s2);
             }
             sum += d;
-            //System.out.printf("i=%d ed=%d sum=%d\n", i, d, sum);
+            //System.out.printf("i=%d ed=%d sum=%d%n", i, d, sum);
         }
         
         return sum;

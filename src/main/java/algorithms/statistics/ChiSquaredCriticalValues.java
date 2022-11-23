@@ -57,7 +57,7 @@ public class ChiSquaredCriticalValues {
      * One can reject the null hypothesis if the test statistic is greater 
      * than the tabled value.
      */
-    public static double[][] upperTail = new double[100][];
+    static double[][] upperTail = new double[100][];
     static {                      //Z_90, Z_95,  Z_975,  Z_99,  Z_999;
         upperTail[0] = new double[]{2.706, 3.841, 5.024, 6.635, 10.828};
         upperTail[1] = new double[]{4.605, 5.991, 7.378, 9.210, 13.816};
@@ -201,7 +201,7 @@ public class ChiSquaredCriticalValues {
      * One can reject the null hypothesis if the computed test statistic 
         is less than the tabled value.
      */
-    public static double[][] lowerTail = new double[100][];
+    static double[][] lowerTail = new double[100][];
     static {                      //Z_10, Z_05, Z_025, Z_01, Z_001;
         lowerTail[0] = new double[]{.016, .004, .001, .000, .000};
         lowerTail[1] = new double[]{.211, .103, .051, .020, .002};
@@ -367,7 +367,7 @@ public class ChiSquaredCriticalValues {
             p = 0.5 * Math.exp(b2 * z + a2 * z * z);
         }
         
-        System.out.printf("Lin: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f\n",
+        System.out.printf("Lin: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f%n",
             chisqStat, degreesOfFreedom, p, (1 - p));
         System.out.flush();
         
@@ -407,7 +407,7 @@ public class ChiSquaredCriticalValues {
         }
         chisqStat = Math.pow(z + Math.sqrt(degreesOfFreedom), 2.);
 
-        System.out.printf("Lin: df=%d, p=%9.4f => chisq=%12.4f\n",
+        System.out.printf("Lin: df=%d, p=%9.4f => chisq=%12.4f%n",
             degreesOfFreedom, p, chisqStat);
         System.out.flush();
         
@@ -439,7 +439,7 @@ public class ChiSquaredCriticalValues {
         p *= p;
         p *= 0.1;
         
-        System.out.printf("Beh: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f\n",
+        System.out.printf("Beh: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f%n",
             chisqStat, degreesOfFreedom, p, (1 - p));
         System.out.flush();
         

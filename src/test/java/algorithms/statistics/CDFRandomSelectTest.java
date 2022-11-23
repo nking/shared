@@ -244,7 +244,7 @@ public class CDFRandomSelectTest extends TestCase {
         double chiSqStat4 = ChiSquaredCriticalValues.approxChiSqStatLin(
             1./(double)k, dOF);
         
-        System.out.printf("statSq=%.4e\nchiSqStat=%.4e\nchiSqStat3 = %.4e\nchiSqStat4 = %.4e\n ",
+        System.out.printf("statSq=%.4e%nchiSqStat=%.4e%nchiSqStat3 = %.4e%nchiSqStat4 = %.4e%n ",
             statSq, chiSqStat,chiSqStat3, chiSqStat4);
         System.out.flush();
         

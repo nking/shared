@@ -151,8 +151,8 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
                 // n = Math.min(cost.length, cost[0].length)
                 // c = constant >= 1
                 // minunbalanced runtime = O(m * sqrt(n) * log(n * C))
-                System.out.printf("min unbalanced median=%.3e iqr=%.3e\n", miM[0], miM[1]);
-                System.out.printf("hungarian      median=%.3e iqr=%.3e\n", miH[0], miH[1]);
+                System.out.printf("min unbalanced median=%.3e iqr=%.3e%n", miM[0], miM[1]);
+                System.out.printf("hungarian      median=%.3e iqr=%.3e%n", miH[0], miH[1]);
 
                 int c = 0;
                 double mc = 0;
@@ -161,7 +161,7 @@ public class MinCostUnbalancedAssignment3Test extends TestCase {
                     mc = size*size*Math.sqrt(size)*Math.log(size*c)/Math.log(2);
                 }
 
-                System.out.printf("n=%d, n^2=%.0e, n^3=%.0e, n^4=%.0e, O(m * sqrt(n) * log(n * C))=%.0e\n",
+                System.out.printf("n=%d, n^2=%.0e, n^3=%.0e, n^4=%.0e, O(m * sqrt(n) * log(n * C))=%.0e%n",
                         size, Math.pow(size, 2), Math.pow(size, 3), Math.pow(size, 4), mc);
             }
         }

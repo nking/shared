@@ -92,34 +92,34 @@ public class BayesianCurveFitting {
     public static ModelFit fit(double[][] phiX, double[] t, final double alpha, final double beta,
            final double[] priorMean, final double[][] priorCov) throws NotConvergedException {
 
-        log.log(java.util.logging.Level.FINE, String.format("xTrain=phiX=\n%s",
+        log.log(java.util.logging.Level.FINE, String.format("xTrain=phiX=%n%s",
                 FormatArray.toString(phiX, "%.8e")));
 
         double[][] phiXT = MatrixUtil.transpose(phiX);
 
         //[m X m]
         double[][] sInv = calcSInv(priorCov, phiX, phiXT, alpha, beta);
-        log.log(java.util.logging.Level.FINE, String.format("sInv=\n%s", FormatArray.toString(sInv, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("sInv=%n%s", FormatArray.toString(sInv, "%.4f")));
 
         // same result as calcSInv, difference in use of outer product
         //double[][] _sInv = _calcSInv(x, m, alpha, beta); where x is the original training data given to generator
-        //log.log(java.util.logging.Level.FINE, String.format("_sInv=\n%s", FormatArray.toString(_sInv, "%.4f")));
+        //log.log(java.util.logging.Level.FINE, String.format("_sInv=%n%s", FormatArray.toString(_sInv, "%.4f")));
 
         //[m X m]
         double[][] s = MatrixUtil.pseudoinverseRankDeficient(sInv);
-        log.log(java.util.logging.Level.FINE, String.format("s=\n%s", FormatArray.toString(s, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("s=%n%s", FormatArray.toString(s, "%.4f")));
 
         // the mean is roughly similar to a slope term of yTrain/xTrain
         //[(m+1) X 1]
         double[] mean = calcMean(priorMean, priorCov, s, phiXT, t, alpha, beta);
-        log.log(java.util.logging.Level.FINE, String.format("mean=\n%s", FormatArray.toString(mean, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("mean=%n%s", FormatArray.toString(mean, "%.4f")));
 
         //[m+1 X m+1]
         double[][] cov = s;
 
-        log.log(java.util.logging.Level.FINE, String.format("covariance=\n%s", FormatArray.toString(cov, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("covariance=%n%s", FormatArray.toString(cov, "%.4f")));
 
-        log.log(java.util.logging.Level.FINE, String.format("phiX=\n%s", FormatArray.toString(phiX, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("phiX=%n%s", FormatArray.toString(phiX, "%.4f")));
 
         /*
          from Wasserman's "All of Statistics", 2.43 Theorem:
@@ -152,14 +152,14 @@ public class BayesianCurveFitting {
         // [testX.length X (m+1)]  [m+1] = [testX.length]
         // use regression slope term:
         double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, fit.mean);
-        log.log(java.util.logging.Level.FINE, String.format("y=\n%s", FormatArray.toString(y, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("y=%n%s", FormatArray.toString(y, "%.4f")));
 
         //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
         double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);
-        log.log(java.util.logging.Level.FINE, String.format("ys1=\n%s", FormatArray.toString(ys1, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("ys1=%n%s", FormatArray.toString(ys1, "%.4f")));
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
         ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);
-        log.log(java.util.logging.Level.FINE, String.format("ys1=\n%s", FormatArray.toString(ys1, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("ys1=%n%s", FormatArray.toString(ys1, "%.4f")));
 
         // propagation of errors:
         // sum ys1 along rows, add 1/beta, take sqrt:
@@ -172,7 +172,7 @@ public class BayesianCurveFitting {
             yErr[i] += (1./fit.beta);
             yErr[i] = Math.sqrt(yErr[i]);
         }
-        log.log(java.util.logging.Level.FINE, String.format("yErr=\n%s", FormatArray.toString(yErr, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("yErr=%n%s", FormatArray.toString(yErr, "%.4f")));
 
         /*
         Wasserman's eqn 2.10 from All of Statistics:
@@ -269,7 +269,7 @@ public class BayesianCurveFitting {
             yErr[i] += (1./fit.beta);
             yErr[i] = Math.sqrt(yErr[i]);
         }
-        log.log(java.util.logging.Level.FINE, String.format("yErr=\n%s", FormatArray.toString(yErr, "%.4f")));
+        log.log(java.util.logging.Level.FINE, String.format("yErr=%n%s", FormatArray.toString(yErr, "%.4f")));
 
         //from Wasserman's "All of Statistics", 2.43 Theorem:
         //N(0, I) ~ Σ^(−1/2) * (X−μ)

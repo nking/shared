@@ -219,7 +219,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
         
-        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -267,7 +267,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
         
-        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -300,7 +300,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
         
-        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         
@@ -339,7 +339,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
         
-        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -387,7 +387,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
         
-        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -420,7 +420,7 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         double cost = tsp.getMinCost();
         TLongList pathsBitstrings = tsp.getMinPathBitstrings();
         
-        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         
@@ -437,23 +437,23 @@ public class TSPHybridDynamicBruteForceTest extends TestCase {
         BigInteger c;
         
         c = TSPHybridDynamicBruteForce.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
         
         n=14;
         c = TSPHybridDynamicBruteForce.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
         
         n=29;
         c = TSPHybridDynamicBruteForce.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
         
         n=49;
         c = TSPHybridDynamicBruteForce.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
         
         n=731;
         c = TSPHybridDynamicBruteForce.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
         
     }
 }

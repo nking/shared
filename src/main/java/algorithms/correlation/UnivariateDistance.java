@@ -76,8 +76,8 @@ public class UnivariateDistance {
         y = Arrays.copyOf(y, y.length);
         
         /*
-        System.out.printf("X=%s\n", FormatArray.toString(x, "%.3f"));
-        System.out.printf("Y=%s\n", FormatArray.toString(y, "%.3f"));
+        System.out.printf("X=%s%n", FormatArray.toString(x, "%.3f"));
+        System.out.printf("Y=%s%n", FormatArray.toString(y, "%.3f"));
         */
 
         //"the algorithm essentially consists of two sorting steps. 
@@ -87,9 +87,9 @@ public class UnivariateDistance {
         int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);
         
         /*
-        System.out.printf("sortedX=%s\n", FormatArray.toString(x, "%.3f"));
-        System.out.printf("sortedY=%s\n", FormatArray.toString(y, "%.3f"));
-        System.out.printf("indexes=%s\n", Arrays.toString(indexes));
+        System.out.printf("sortedX=%s%n", FormatArray.toString(x, "%.3f"));
+        System.out.printf("sortedY=%s%n", FormatArray.toString(y, "%.3f"));
+        System.out.printf("indexes=%s%n", Arrays.toString(indexes));
         System.out.println("//v = [ x  y  x.∗y ];  [n][3]");
         System.out.println("//csumv is cumulative sum of v along columns; [n + 1][3]");
         */
@@ -196,15 +196,15 @@ public class UnivariateDistance {
             }
 
             /*
-            System.out.printf("\ni=%d, r=%d, gap=%d, idx_s=%d\n", i, r, gap, idx_s);
-            System.out.printf("  idx[0]=%s\n", Arrays.toString(idx[0]));
-            System.out.printf("  idx[1]=%s\n", Arrays.toString(idx[1]));
-            System.out.printf("  iv1=%s\n", FormatArray.toString(iv1, "%.3f"));
-            System.out.printf("  iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
-            System.out.printf("  iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
-            System.out.printf("  iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
+            System.out.printf("%ni=%d, r=%d, gap=%d, idx_s=%d%n", i, r, gap, idx_s);
+            System.out.printf("  idx[0]=%s%n", Arrays.toString(idx[0]));
+            System.out.printf("  idx[1]=%s%n", Arrays.toString(idx[1]));
+            System.out.printf("  iv1=%s%n", FormatArray.toString(iv1, "%.3f"));
+            System.out.printf("  iv2=%s%n", FormatArray.toString(iv2, "%.3f"));
+            System.out.printf("  iv3=%s%n", FormatArray.toString(iv3, "%.3f"));
+            System.out.printf("  iv4=%s%n", FormatArray.toString(iv4, "%.3f"));
             for (z = 0; z < n + 1; ++z) {
-                System.out.printf("  csumv[%d]=%s\n", z, FormatArray.toString(csumv[z], "%.3f"));
+                System.out.printf("  csumv[%d]=%s%n", z, FormatArray.toString(csumv[z], "%.3f"));
             }
             */
 
@@ -216,7 +216,7 @@ public class UnivariateDistance {
                 e2 = Math.min(st2 + i - 1, n);
 
                 /*
-                System.out.printf("\n**j=%d, st1=%d, e1=%d, st2=%d, e2=%d\n",
+                System.out.printf("%n**j=%d, st1=%d, e1=%d, st2=%d, e2=%d%n",
                         j, st1, e1, st2, e2);
                 */
 
@@ -226,23 +226,23 @@ public class UnivariateDistance {
                     idx2 = idx_r[st2 - 1];
 
                     /*
-                    System.out.printf("\n****k=%d, idx1=%d, idx2=%d, st1=%d, e1=%d, st2=%d, e2=%d\n",
+                    System.out.printf("%n****k=%d, idx1=%d, idx2=%d, st1=%d, e1=%d, st2=%d, e2=%d%n",
                             k, idx1, idx2, st1, e1, st2, e2);
-                    System.out.printf("    idx[0]=%s\n", Arrays.toString(idx[0]));
-                    System.out.printf("    idx[1]=%s\n", Arrays.toString(idx[1]));
-                    System.out.printf("    iv1=%s\n", FormatArray.toString(iv1, "%.3f"));
-                    System.out.printf("    iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
-                    System.out.printf("    iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
-                    System.out.printf("    iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
-                    System.out.printf("    (y[%d] >= y[%d]) = %b\n", idx1 - 1, idx2 - 1, (y[idx1 - 1] >= y[idx2 - 1]));
+                    System.out.printf("    idx[0]=%s%n", Arrays.toString(idx[0]));
+                    System.out.printf("    idx[1]=%s%n", Arrays.toString(idx[1]));
+                    System.out.printf("    iv1=%s%n", FormatArray.toString(iv1, "%.3f"));
+                    System.out.printf("    iv2=%s%n", FormatArray.toString(iv2, "%.3f"));
+                    System.out.printf("    iv3=%s%n", FormatArray.toString(iv3, "%.3f"));
+                    System.out.printf("    iv4=%s%n", FormatArray.toString(iv4, "%.3f"));
+                    System.out.printf("    (y[%d] >= y[%d]) = %b%n", idx1 - 1, idx2 - 1, (y[idx1 - 1] >= y[idx2 - 1]));
                     */
 
                     if (y[idx1 - 1] >= y[idx2 - 1]) {
-                        //System.out.printf("    *idx[%d][%d] = %d\n", k - 1, idx_s - 1, idx1);
+                        //System.out.printf("    *idx[%d][%d] = %d%n", k - 1, idx_s - 1, idx1);
                         idx[k - 1][idx_s - 1] = idx1;
                         st1++;
                     } else {
-                        //System.out.printf("    *idx[%d][%d] =%d,  INCR iv1:iv4\n", k - 1, idx_s - 1, idx2);
+                        //System.out.printf("    *idx[%d][%d] =%d,  INCR iv1:iv4%n", k - 1, idx_s - 1, idx2);
                         idx[k - 1][idx_s - 1] = idx2;
                         st2++;
                         iv1[idx2 - 1] += (e1 - st1 + 1);
@@ -251,7 +251,7 @@ public class UnivariateDistance {
                         iv4[idx2 - 1] += (csumv[e1 + 1 - 1][2] - csumv[st1 - 1][2]);
                     } // end if-else
 
-                    //System.out.printf("    (st1 <= e1) = %b, (st2 <= e2) = %b\n",
+                    //System.out.printf("    (st1 <= e1) = %b, (st2 <= e2) = %b%n",
                     //        (st1 <= e1), (st2 <= e2));
 
                 } // end while (( st1 <= e1 ) && ( st2 <= e2 ) )
@@ -264,7 +264,7 @@ public class UnivariateDistance {
                     for (z = (k + 1); z <= kf; ++z) {
                         idx[z - 1][idx_s - 1] = idx_r[c - 1];
 
-                        //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, \n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
+                        //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, %n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
 
                         c++;
                     }
@@ -276,7 +276,7 @@ public class UnivariateDistance {
                     for (z = (k + 1); z <= kf; ++z) {
                         idx[z - 1][idx_s - 1] = idx_r[c - 1];
 
-                        //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, \n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
+                        //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, %n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
 
                         c++;
                     }
@@ -358,10 +358,10 @@ public class UnivariateDistance {
         double covsq = (term1 + term3) - term2;
         
         /*       
-        System.out.printf("iv1=%s\n", FormatArray.toString(iv1, "%.3f"));
-        System.out.printf("iv2=%s\n", FormatArray.toString(iv2, "%.3f"));
-        System.out.printf("iv3=%s\n", FormatArray.toString(iv3, "%.3f"));
-        System.out.printf("iv4=%s\n", FormatArray.toString(iv4, "%.3f"));
+        System.out.printf("iv1=%s%n", FormatArray.toString(iv1, "%.3f"));
+        System.out.printf("iv2=%s%n", FormatArray.toString(iv2, "%.3f"));
+        System.out.printf("iv3=%s%n", FormatArray.toString(iv3, "%.3f"));
+        System.out.printf("iv4=%s%n", FormatArray.toString(iv4, "%.3f"));
         */
         
         /*
@@ -601,9 +601,9 @@ public class UnivariateDistance {
     private static double[] _calcB(double[] y, int[][] idx, int n, int r) {
 
         /*
-        System.out.printf("\n\n*_calcB\n");
-        System.out.printf("idx[0]=%s\n", Arrays.toString(idx[0]));
-        System.out.printf("idx[1]=%s\n", Arrays.toString(idx[1]));
+        System.out.printf("%n%n*_calcB%n");
+        System.out.printf("idx[0]=%s%n", Arrays.toString(idx[0]));
+        System.out.printf("idx[1]=%s%n", Arrays.toString(idx[1]));
         */
                     
         double[] ySorted = new double[n];
@@ -615,7 +615,7 @@ public class UnivariateDistance {
 
         for (z = n; z >= 1; z--) {
             ySorted[c] = y[idx[z - 1][r - 1] - 1];
-            //System.out.printf("ySorted[%d]=y[idx[%d][%d]-1]=y[%d]=%.3f\n",
+            //System.out.printf("ySorted[%d]=y[idx[%d][%d]-1]=y[%d]=%.3f%n",
             //        c, z - 1, r - 1, idx[z - 1][r - 1] - 1, y[idx[z - 1][r - 1] - 1]);
             c++;
         }
@@ -634,9 +634,9 @@ public class UnivariateDistance {
             b_y[idx[z - 1][r - 1] - 1] = (cc * ySorted[c]) + (s - (2. * si[c]));
 
             /*
-            System.out.printf("(s - (2.*si[%d])) = (%.3f - (2. * %.3f)) = %.3f\n",
+            System.out.printf("(s - (2.*si[%d])) = (%.3f - (2. * %.3f)) = %.3f%n",
                     c, s, si[c], (s - (2. * si[c])));
-            System.out.printf("b_y[idx[%d][%d]-1] => b_y[%d] = (%.0f * ySorted[%d]) + (s - (2.*si[%d]) = %.3f\n",
+            System.out.printf("b_y[idx[%d][%d]-1] => b_y[%d] = (%.0f * ySorted[%d]) + (s - (2.*si[%d]) = %.3f%n",
                     z - 1, r - 1, idx[z - 1][r - 1] - 1, cc, c, c, (cc * ySorted[c]) + (s - (2. * si[c])));
             */
 
@@ -912,36 +912,36 @@ public class UnivariateDistance {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("d=").append(d).append("\n");
-            sb.append("covsq=").append(covsq).append("\n");
+            sb.append("d=").append(d).append("%n");
+            sb.append("covsq=").append(covsq).append("%n");
             if (indexes != null) {
-                sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
+                sb.append("indexes=").append(Arrays.toString(indexes)).append("%n");
             }
             if (sortedX != null) {
-                sb.append("sortedX=").append(FormatArray.toString(sortedX, "%.3f")).append("\n");
+                sb.append("sortedX=").append(FormatArray.toString(sortedX, "%.3f")).append("%n");
             }
             if (sortedY != null) {
-                sb.append("sortedY=").append(FormatArray.toString(sortedY, "%.3f")).append("\n");
+                sb.append("sortedY=").append(FormatArray.toString(sortedY, "%.3f")).append("%n");
             }
             if (ai != null) {
-                sb.append("ai=").append(FormatArray.toString(ai, "%.3f")).append("\n");
-                sb.append("a..=").append(aDotDot).append("\n");
+                sb.append("ai=").append(FormatArray.toString(ai, "%.3f")).append("%n");
+                sb.append("a..=").append(aDotDot).append("%n");
             }
             if (bi != null) {
-                sb.append("bi=").append(FormatArray.toString(bi, "%.3f")).append("\n");
-                sb.append("b..=").append(bDotDot).append("\n");
+                sb.append("bi=").append(FormatArray.toString(bi, "%.3f")).append("%n");
+                sb.append("b..=").append(bDotDot).append("%n");
             }
             if (iv1 != null) {
-                sb.append("iv1=").append(Arrays.toString(iv1)).append("\n");
+                sb.append("iv1=").append(Arrays.toString(iv1)).append("%n");
             }
             if (iv2 != null) {
-                sb.append("iv2=").append(Arrays.toString(iv2)).append("\n");
+                sb.append("iv2=").append(Arrays.toString(iv2)).append("%n");
             }
             if (iv3 != null) {
-                sb.append("iv3=").append(Arrays.toString(iv3)).append("\n");
+                sb.append("iv3=").append(Arrays.toString(iv3)).append("%n");
             }
             if (iv4 != null) {
-                sb.append("iv4=").append(Arrays.toString(iv4)).append("\n");
+                sb.append("iv4=").append(Arrays.toString(iv4)).append("%n");
             }
                         
             return sb.toString();
@@ -949,13 +949,13 @@ public class UnivariateDistance {
         
         public String toString2() {
             StringBuilder sb = new StringBuilder();
-            sb.append("d=").append(d).append("\n");
-            sb.append("covsq=").append(covsq).append("\n");
+            sb.append("d=").append(d).append("%n");
+            sb.append("covsq=").append(covsq).append("%n");
             if (ai != null) {
-                sb.append("a..=").append(aDotDot).append("\n");
+                sb.append("a..=").append(aDotDot).append("%n");
             }
             if (bi != null) {
-                sb.append("b..=").append(bDotDot).append("\n");
+                sb.append("b..=").append(bDotDot).append("%n");
             }
                         
             return sb.toString();
@@ -970,18 +970,18 @@ public class UnivariateDistance {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("corSq=").append(corSq).append("\n");
+            sb.append("corSq=").append(corSq).append("%n");
             if (covXYSq != null) {
                 sb.append("covXYSq: ").append(covXYSq.toString());
-                sb.append("\n");
+                sb.append("%n");
             }
             if (covXXSq != null) {
                 sb.append("covXXSq: ").append(covXXSq.toString());
-                sb.append("\n");
+                sb.append("%n");
             }
             if (covYYSq != null) {
                 sb.append("covYYSq: ").append(covYYSq.toString());
-                sb.append("\n");
+                sb.append("%n");
             }            
             return sb.toString();
         }

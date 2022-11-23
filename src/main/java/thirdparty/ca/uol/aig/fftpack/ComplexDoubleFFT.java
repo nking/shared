@@ -27,7 +27,7 @@ public class ComplexDoubleFFT extends ComplexDoubleFFT_Mixed
   * (<em>bt</em>) will multiply the input sequence by <em>norm_factor</em>.
 */
      public double norm_factor;
-     private double wavetable[];
+     private double wavetable[] = null;
      private int ndim;
 
 /**

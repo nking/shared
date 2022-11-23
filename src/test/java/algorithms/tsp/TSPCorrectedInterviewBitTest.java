@@ -54,16 +54,16 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
         cost = solver.getTourCost();
         
         System.out.printf("startNode=%d  optimal: ", startNode);
-        System.out.printf("optimal tour=%s, expected=%s\n ", tour.toString(), Arrays.toString(expectedOptimal));
-        System.out.printf("Tour cost: %.3f, expected=%.3f\n", cost, expectedOptimalCost);
+        System.out.printf("optimal tour=%s, expected=%s%n ", tour.toString(), Arrays.toString(expectedOptimal));
+        System.out.printf("Tour cost: %.3f, expected=%.3f%n", cost, expectedOptimalCost);
         
         TSPGreedy solver2 = new TSPGreedy(startNode, dist);
         solver2.solveIteratively();        
         tour2 = solver2.getTour();
         cost2 = solver2.getTourCost();
         System.out.printf("startNode=%d  greedy: ", startNode);
-        System.out.printf("greedy tour=%s, expected=%s\n ", tour2.toString(), Arrays.toString(expectedGreedy));
-        System.out.printf("Tour cost: %.3f, expected=%.3f\n", cost2, expectedGreedyCost);
+        System.out.printf("greedy tour=%s, expected=%s%n ", tour2.toString(), Arrays.toString(expectedGreedy));
+        System.out.printf("Tour cost: %.3f, expected=%.3f%n", cost2, expectedGreedyCost);
         
         assertEquals(expectedOptimal.length, tour.size());
         assertEquals(expectedGreedy.length, tour2.size());
@@ -118,7 +118,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
             tour = solver.getTour();
             System.out.println("Tour: " + tour);
             cost = solver.getTourCost();
-            System.out.printf("Tour cost: %.1f, expected=%d\n", cost, expectedCost);
+            System.out.printf("Tour cost: %.1f, expected=%d%n", cost, expectedCost);
 
             solver2 = new TSPGreedy(startNode, distanceMatrix);
             solver2.solveRecursively();
@@ -127,7 +127,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
             tour2 = solver2.getTour();
             System.out.println("greedy Tour: " + tour2);
             cost2 = solver2.getTourCost();
-            System.out.printf("greedy Tour cost: %.1f, expected=%d\n", cost2, expectedCost);
+            System.out.printf("greedy Tour cost: %.1f, expected=%d%n", cost2, expectedCost);
 
             assertEquals(expectedTour.length, tour.size());
             assertTrue(Math.abs(expectedCost - cost) < 1e-17);
@@ -187,7 +187,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
             tour = solver.getTour();
             System.out.println("Tour: " + tour);
             cost = solver.getTourCost();
-            System.out.printf("Tour cost: %.1f, expected=%d\n", cost, expectedCost);
+            System.out.printf("Tour cost: %.1f, expected=%d%n", cost, expectedCost);
 
             solver2 = new TSPGreedy(startNode, distanceMatrix);
             solver2.solveRecursively();
@@ -196,7 +196,7 @@ public class TSPCorrectedInterviewBitTest extends TestCase {
             tour2 = solver2.getTour();
             System.out.println("greedy Tour: " + tour2);
             cost2 = solver2.getTourCost();
-            System.out.printf("greedy Tour cost: %.1f, expected=%d\n", cost2, expectedCost);
+            System.out.printf("greedy Tour cost: %.1f, expected=%d%n", cost2, expectedCost);
 
             assertEquals(expectedTour.length, tour.size());
             assertTrue(Math.abs(expectedCost - cost) < 1e-17);

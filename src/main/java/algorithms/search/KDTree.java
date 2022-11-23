@@ -246,23 +246,22 @@ public class KDTree {
 		
 		// left points are  startSortRange through medianX
 		KDTreeNode leftChildren = buildTree(depth, x, y, startSortRange, medianIndex);
-		
+
 		// right points are medianIndex    through stopSortRangeExclusive
 		KDTreeNode rightChildren = buildTree(depth, x, y, medianIndex+1, stopSortRangeExclusive);
 		
 		KDTreeNode parent = new KDTreeNode();
 		
 		parent.key = median;
-		parent.left = leftChildren;
-		parent.right = rightChildren;
-		
-		leftChildren.parent = parent;
-	    rightChildren.parent = parent;
 	    
-	    if (parent.left != null) {
+	    if (leftChildren != null) {
+			parent.left = leftChildren;
+			leftChildren.parent = parent;
 	    	parent.nChildren += 1 + parent.left.nChildren;
 	    }
-	    if (parent.right != null) {
+	    if (rightChildren != null) {
+			parent.right = rightChildren;
+			rightChildren.parent = parent;
 	    	parent.nChildren += 1 + parent.right.nChildren;
 	    }
 	    

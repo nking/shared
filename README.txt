@@ -28,6 +28,9 @@ Then download the latest eclemma file from https://www.jacoco.org/download.html
 into the $JACOCO_HOME directory and unpack it.
 Remember to refresh your environment variables once you've updated them.
 
+Also useful is spotbugs, the successor of findbugs:
+   https://spotbugs.readthedocs.io/en/stable/installing.html
+
 -----
 Build
 -----

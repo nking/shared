@@ -468,19 +468,19 @@ public class CURDecomposition {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("c=\n");
+            sb.append("c=%n");
             if (c != null) {
                 sb.append(FormatArray.toString(c, "%.4e"));
             } 
-            sb.append("\nu=\n");
+            sb.append("%nu=%n");
             if (u != null) {
                 sb.append(FormatArray.toString(u, "%.4e"));
             }
-            sb.append("\nr=\n");
+            sb.append("%nr=%n");
             if (r != null) {
                 sb.append(FormatArray.toString(r, "%.4e"));
             }
-            sb.append("\ncur=\n");
+            sb.append("%ncur=%n");
             if (result != null) {
                 sb.append(FormatArray.toString(result, "%.4e"));
             }
