@@ -449,19 +449,17 @@ import java.util.logging.Logger;
         }
 
 <span class="nc" id="L451">        double[] yGEV = Gumbel.generateCurve(x, mu, sigma);</span>
-<span class="nc bnc" id="L452" title="All 2 branches missed.">        if (yGEV == null) {</span>
-<span class="nc" id="L453">            return null;</span>
-        }
-<span class="nc" id="L455">        double yMax = MiscMath0.findMax(yGEV);</span>
-<span class="nc" id="L456">        MatrixUtil.multiply(yGEV, 1./yMax);</span>
 
-<span class="nc" id="L458">        double sum = 0;</span>
+<span class="nc" id="L453">        double yMax = MiscMath0.findMax(yGEV);</span>
+<span class="nc" id="L454">        MatrixUtil.multiply(yGEV, 1./yMax);</span>
+
+<span class="nc" id="L456">        double sum = 0;</span>
         double diff;
-<span class="nc bnc" id="L460" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L461">            diff = yGEV[i] - normalizedY[i];</span>
-<span class="nc" id="L462">            sum += (diff * diff);</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L459">            diff = yGEV[i] - normalizedY[i];</span>
+<span class="nc" id="L460">            sum += (diff * diff);</span>
         }
-<span class="nc" id="L464">        return sum;</span>
+<span class="nc" id="L462">        return sum;</span>
     }
 
 }

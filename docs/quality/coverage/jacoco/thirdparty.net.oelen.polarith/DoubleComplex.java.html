@@ -503,10 +503,10 @@ public final class DoubleComplex implements Serializable {
         
 <span class="fc" id="L504">        double threshold = (double)(1l &lt;&lt; 52);</span>
 <span class="fc" id="L505">        threshold *= threshold;</span>
-<span class="pc bpc" id="L506" title="1 of 2 branches missed.">        if (maxPrecision &gt; 0) {</span>
-<span class="nc" id="L507">            double precthresh = Math.pow(radix, maxPrecision);</span>
-<span class="nc bnc" id="L508" title="All 2 branches missed.">            if (precthresh &lt; threshold) {</span>
-<span class="nc" id="L509">                threshold = precthresh;</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        if (maxPrecision &gt; 0) {</span>
+<span class="fc" id="L507">            double precthresh = Math.pow(radix, maxPrecision);</span>
+<span class="pc bpc" id="L508" title="1 of 2 branches missed.">            if (precthresh &lt; threshold) {</span>
+<span class="fc" id="L509">                threshold = precthresh;</span>
             }
         }
         

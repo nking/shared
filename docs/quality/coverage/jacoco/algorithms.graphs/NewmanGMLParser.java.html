@@ -64,8 +64,8 @@ import java.util.logging.Logger;
         int eIdx, nIdx;
         
         try {
-            
-<span class="fc" id="L68">            in = new BufferedReader(new FileReader(new File(filePath)));</span>
+<span class="fc" id="L67">            reader = new FileReader(new File(filePath));</span>
+<span class="fc" id="L68">            in = new BufferedReader(reader);</span>
 
             // find graph [ which may have an end of line marker and spaces in between
 <span class="fc" id="L71">            r = readToEndOf(in, &quot;graph&quot;);</span>
@@ -105,11 +105,11 @@ import java.util.logging.Logger;
             }
             
         } finally {
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (in != null) {</span>
-<span class="fc" id="L109">                in.close();</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (reader != null) {</span>
+<span class="fc" id="L109">                reader.close();</span>
             }
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (reader != null) {</span>
-<span class="nc" id="L112">                reader.close();</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (in != null) {</span>
+<span class="fc" id="L112">                in.close();</span>
             }
         }
 
@@ -204,8 +204,8 @@ import java.util.logging.Logger;
 <span class="pc bpc" id="L204" title="2 of 4 branches missed.">        if (source == null || target == null) {</span>
 <span class="nc" id="L205">            throw new IllegalArgumentException(&quot;edge is missing source and/or target: &quot; + content);</span>
         }
-        
-<span class="fc" id="L208">        PairInt e = new PairInt(Integer.valueOf(source), Integer.valueOf(target));</span>
+
+<span class="fc" id="L208">        PairInt e = new PairInt(Integer.parseInt(source), Integer.parseInt(target));</span>
         
 <span class="fc bfc" id="L210" title="All 2 branches covered.">        if (!edgeMap.containsKey(e)) {</span>
 <span class="fc" id="L211">            edgeMap.put(e, new TFloatArrayList());</span>
@@ -216,7 +216,7 @@ import java.util.logging.Logger;
 <span class="fc bfc" id="L216" title="All 2 branches covered.">        if (value == null) {</span>
 <span class="fc" id="L217">            edgeMap.get(e).add(1);</span>
         } else {
-<span class="fc" id="L219">            edgeMap.get(e).add(Float.valueOf(value));</span>
+<span class="fc" id="L219">            edgeMap.get(e).add(Float.parseFloat(value));</span>
         }
 <span class="fc" id="L221">    }</span>
     
@@ -256,7 +256,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L256">            throw new IllegalArgumentException(&quot;node is missing id: &quot; + content);</span>
         }
         
-<span class="fc" id="L259">        int idI = Integer.valueOf(id);</span>
+<span class="fc" id="L259">        int idI = Integer.parseInt(id);</span>
         
 <span class="pc bpc" id="L261" title="1 of 2 branches missed.">        if (nodeIdLabelMap.containsKey(idI)) {</span>
 <span class="nc" id="L262">            log.warning(&quot;node id=&quot; + id + &quot; is in file more than once&quot;);</span>

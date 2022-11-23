@@ -10,43 +10,45 @@ import java.util.Map;
  * @author nichole
  */
 public class LRUCache&lt;K, V&gt; extends LinkedHashMap&lt;K, V&gt; {
-        
+
+    private static final long serialVersionUID = 1800104040800209030L;
+
     private static final boolean accessOrder = true;
     
     private final int initialCapacity;
     
     public LRUCache() {
-<span class="nc" id="L19">        super(3, 0.75f, accessOrder);</span>
-<span class="nc" id="L20">        this.initialCapacity = 3;</span>
-<span class="nc" id="L21">    }</span>
+<span class="nc" id="L21">        super(3, 0.75f, accessOrder);</span>
+<span class="nc" id="L22">        this.initialCapacity = 3;</span>
+<span class="nc" id="L23">    }</span>
     
     public LRUCache(int initialCapacity) {
-<span class="nc" id="L24">        super(initialCapacity, 0.75f, accessOrder);</span>
-<span class="nc" id="L25">        this.initialCapacity = initialCapacity;</span>
-<span class="nc" id="L26">    }</span>
+<span class="nc" id="L26">        super(initialCapacity, 0.75f, accessOrder);</span>
+<span class="nc" id="L27">        this.initialCapacity = initialCapacity;</span>
+<span class="nc" id="L28">    }</span>
     
     public LRUCache(int initialCapacity, float loadFactor) {
-<span class="fc" id="L29">        super(initialCapacity, loadFactor, accessOrder);</span>
-<span class="fc" id="L30">        this.initialCapacity = initialCapacity;</span>
-<span class="fc" id="L31">    }</span>
+<span class="fc" id="L31">        super(initialCapacity, loadFactor, accessOrder);</span>
+<span class="fc" id="L32">        this.initialCapacity = initialCapacity;</span>
+<span class="fc" id="L33">    }</span>
     
     public LRUCache(int initialCapacity, float loadFactor, boolean accessOrder) {
-<span class="nc" id="L34">        super(initialCapacity, loadFactor, accessOrder);</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (!accessOrder) {</span>
-<span class="nc" id="L36">            throw new IllegalArgumentException(&quot;for the Least Recently Accessed Cache, need accessOrder=true&quot;);</span>
+<span class="nc" id="L36">        super(initialCapacity, loadFactor, accessOrder);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (!accessOrder) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;for the Least Recently Accessed Cache, need accessOrder=true&quot;);</span>
         }
-<span class="nc" id="L38">        this.initialCapacity = initialCapacity;</span>
-<span class="nc" id="L39">    }</span>
+<span class="nc" id="L40">        this.initialCapacity = initialCapacity;</span>
+<span class="nc" id="L41">    }</span>
     
     public LRUCache(Map&lt;? extends K, ? extends V&gt; m) {
-<span class="nc" id="L42">        super(3, 0.75f, accessOrder);</span>
-<span class="nc" id="L43">        this.initialCapacity = 3;</span>
-<span class="nc" id="L44">        putAll(m);</span>
-<span class="nc" id="L45">    }</span>
+<span class="nc" id="L44">        super(3, 0.75f, accessOrder);</span>
+<span class="nc" id="L45">        this.initialCapacity = 3;</span>
+<span class="nc" id="L46">        putAll(m);</span>
+<span class="nc" id="L47">    }</span>
     
     @Override
     protected boolean removeEldestEntry(Map.Entry&lt;K, V&gt; eldest) {
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        return size() &gt; initialCapacity;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        return size() &gt; initialCapacity;</span>
     }
 
 }

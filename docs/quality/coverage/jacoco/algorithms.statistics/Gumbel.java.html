@@ -205,12 +205,12 @@ import java.security.SecureRandom;
 <span class="nc" id="L205">                scaleEst = estimateScaleML(x, avgAndStdev[0], prevScaleEst);</span>
 <span class="nc" id="L206">                locEst = estimateLocML(x, scaleEst);</span>
 <span class="nc" id="L207">                diffScale = scaleEst - prevScaleEst;</span>
-<span class="nc" id="L208">                System.out.printf(&quot;locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e\n&quot;,</span>
+<span class="nc" id="L208">                System.out.printf(&quot;locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e%n&quot;,</span>
 <span class="nc" id="L209">                        locEst, prevScaleEst, scaleEst, diffScale);</span>
 <span class="nc" id="L210">                prevScaleEst = scaleEst;</span>
 <span class="nc" id="L211">                nIter++;</span>
 <span class="nc bnc" id="L212" title="All 4 branches missed.">            } while ((nIter &lt; nIterMax) &amp;&amp; Math.abs(diffScale) &gt; tol);</span>
-<span class="nc" id="L213">            System.out.printf(&quot;nIter=%d\n&quot;, nIter);</span>
+<span class="nc" id="L213">            System.out.printf(&quot;nIter=%d%n&quot;, nIter);</span>
 <span class="nc" id="L214">        } else {</span>
             // non-linear optimization.
             // solving for 2 parameter Gumbel distribution should be convex, so one could use the

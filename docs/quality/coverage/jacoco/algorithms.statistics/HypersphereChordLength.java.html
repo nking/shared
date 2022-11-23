@@ -209,7 +209,7 @@ import thirdparty.smile.math.special.Beta;
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(&quot;isConsistentWithNonUniform=&quot;).append(isConsistentWithNonUniform);
-            sb.append(String.format(&quot;\n1-alpha=%.5f, crit. val.=%.4e \nL1(sphere)=%.4f \nL1(X)=%.4f&quot;, 
+            sb.append(String.format(&quot;%n1-alpha=%.5f, crit. val.=%.4e %nL1(sphere)=%.4f %nL1(X)=%.4f&quot;, 
                 oneMinusAlpha, oneMinusAlphaCritVal, l1MaxSphere, l1MaxX));
             return sb.toString();
         }
@@ -260,11 +260,11 @@ import thirdparty.smile.math.special.Beta;
         //1-alpha for hypersphere chord distribution
 <span class="fc" id="L261">        double alphaCV = findCVForAlpha95Percent(nDimensions);</span>
         
-<span class="fc" id="L263">        System.out.printf(&quot;c.v. for 1-alpha=%.4e\n&quot;, alphaCV);</span>
-<span class="fc" id="L264">        System.out.printf(&quot;S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e\n&quot;, </span>
+<span class="fc" id="L263">        System.out.printf(&quot;c.v. for 1-alpha=%.4e%n&quot;, alphaCV);</span>
+<span class="fc" id="L264">        System.out.printf(&quot;S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e%n&quot;, </span>
 <span class="fc" id="L265">            minMaxSphere[0], minMaxSphere[1],</span>
 <span class="fc" id="L266">            avgAndStDevSphere[0], avgAndStDevSphere[1]);</span>
-<span class="fc" id="L267">        System.out.printf(&quot;X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e\n&quot;, </span>
+<span class="fc" id="L267">        System.out.printf(&quot;X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e%n&quot;, </span>
 <span class="fc" id="L268">            minMaxX[0], minMaxX[1],</span>
 <span class="fc" id="L269">            avgAndStDevX[0], avgAndStDevX[1]);</span>
         
@@ -659,67 +659,98 @@ import thirdparty.smile.math.special.Beta;
         //       find d's where alpha=0.95
         
 <span class="fc" id="L661">        double r = 1;</span>
-        
-<span class="fc" id="L663">        TDoubleList dList = new TDoubleArrayList();</span>
-<span class="pc bpc" id="L664" title="1 of 2 branches missed.">        if (nDimensions &lt; 2) {</span>
+
+        int kInt;
+<span class="fc" id="L664">        TDoubleList dList = new TDoubleArrayList();</span>
+<span class="pc bpc" id="L665" title="1 of 2 branches missed.">        if (nDimensions &lt; 2) {</span>
             //fine resolution between 1.9 and 2.0
-<span class="nc bnc" id="L666" title="All 2 branches missed.">            for (double k = 1.99; k &lt;= 2.0; k+=0.001) {</span>
-<span class="nc" id="L667">                dList.add(k);</span>
+            // for (double k = 1.99; k &lt;= 2.0; k+=0.001) {
+            //     dList.add(k);
+            //}
+<span class="nc bnc" id="L670" title="All 2 branches missed.">            for (kInt = 1990; kInt &lt;= 2000; ++kInt) {</span>
+<span class="nc" id="L671">                dList.add(kInt*0.001);</span>
             }
-<span class="fc bfc" id="L669" title="All 2 branches covered.">        } else if (nDimensions &lt; 5) {</span>
+<span class="fc bfc" id="L673" title="All 2 branches covered.">        } else if (nDimensions &lt; 5) {</span>
             //fine resolution between 1.9 and 2.0
-<span class="fc bfc" id="L671" title="All 2 branches covered.">            for (double k = 1.8; k &lt;= 2.0; k+=0.005) {</span>
-<span class="fc" id="L672">                dList.add(k);</span>
+            //for (double k = 1.8; k &lt;= 2.0; k+=0.005) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L678" title="All 2 branches covered.">            for (kInt = 360; kInt &lt;= 400; ++kInt) {</span>
+<span class="fc" id="L679">                dList.add(kInt*0.005);</span>
             }
-<span class="fc bfc" id="L674" title="All 2 branches covered.">        } else if (nDimensions &lt; 8) {</span>
+<span class="fc bfc" id="L681" title="All 2 branches covered.">        } else if (nDimensions &lt; 8) {</span>
             //fine resolution between 1.76 and 1.88
-<span class="fc bfc" id="L676" title="All 2 branches covered.">            for (double k = 1.76; k &lt;= 1.88; k+=0.01) {</span>
-<span class="fc" id="L677">                dList.add(k);</span>
+            //for (double k = 1.76; k &lt;= 1.88; k+=0.01) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L686" title="All 2 branches covered.">            for (kInt = 176; kInt &lt;= 188; ++kInt) {</span>
+<span class="fc" id="L687">                dList.add(kInt*0.01);</span>
             }
-<span class="fc bfc" id="L679" title="All 2 branches covered.">        } else if (nDimensions &lt;= 10) {</span>
+<span class="fc bfc" id="L689" title="All 2 branches covered.">        } else if (nDimensions &lt;= 10) {</span>
             //fine resolution between 1.76 and 1.88
-<span class="fc bfc" id="L681" title="All 2 branches covered.">            for (double k = 1.74; k &lt;= 1.88; k+=0.01) {</span>
-<span class="fc" id="L682">                dList.add(k);</span>
+            //for (double k = 1.74; k &lt;= 1.88; k+=0.01) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L694" title="All 2 branches covered.">            for (kInt = 174; kInt &lt;= 188; ++kInt) {</span>
+<span class="fc" id="L695">                dList.add(kInt*0.01);</span>
             }
-<span class="fc bfc" id="L684" title="All 2 branches covered.">        }  else if (nDimensions &lt; 100) {</span>
+<span class="fc bfc" id="L697" title="All 2 branches covered.">        }  else if (nDimensions &lt; 100) {</span>
             //fine resolution between 1.5 and ?
-<span class="fc bfc" id="L686" title="All 2 branches covered.">            for (double k = 1.5; k &lt;= 1.75; k+=0.01) {</span>
-<span class="fc" id="L687">                dList.add(k);</span>
+            //for (double k = 1.5; k &lt;= 1.75; k+=0.01) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L702" title="All 2 branches covered.">            for (kInt = 150; kInt &lt;= 175; ++kInt) {</span>
+<span class="fc" id="L703">                dList.add(kInt*0.01);</span>
             }
-<span class="fc bfc" id="L689" title="All 2 branches covered.">        } else if (nDimensions &lt; 800) {</span>
+<span class="fc bfc" id="L705" title="All 2 branches covered.">        } else if (nDimensions &lt; 800) {</span>
             //fine resolution between 1.5 and ?
-<span class="fc bfc" id="L691" title="All 2 branches covered.">            for (double k = 1.45; k &lt;= 1.6; k+=0.005) {</span>
-<span class="fc" id="L692">                dList.add(k);</span>
+            //for (double k = 1.45; k &lt;= 1.6; k+=0.005) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L710" title="All 2 branches covered.">            for (kInt = 290; kInt &lt;= 320; ++kInt) {</span>
+<span class="fc" id="L711">                dList.add(kInt*0.005);</span>
             }
-<span class="fc bfc" id="L694" title="All 2 branches covered.">        } else if (nDimensions &lt;= 1000) {</span>
+<span class="fc bfc" id="L713" title="All 2 branches covered.">        } else if (nDimensions &lt;= 1000) {</span>
             //fine resolution between 1.5 and ?
-<span class="fc bfc" id="L696" title="All 2 branches covered.">            for (double k = 1.45; k &lt;= 1.455; k+=0.001) {</span>
-<span class="fc" id="L697">                dList.add(k);</span>
+            //for (double k = 1.45; k &lt;= 1.455; k+=0.001) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L718" title="All 2 branches covered.">            for (kInt = 1450; kInt &lt;= 1455; ++kInt) {</span>
+<span class="fc" id="L719">                dList.add(kInt*0.001);</span>
             }
-<span class="fc bfc" id="L699" title="All 2 branches covered.">        } else if (nDimensions &lt;= 2000) {</span>
+<span class="fc bfc" id="L721" title="All 2 branches covered.">        } else if (nDimensions &lt;= 2000) {</span>
             //fine resolution between 1.5 and ?
-<span class="fc bfc" id="L701" title="All 2 branches covered.">            for (double k = 1.44; k &lt;= 1.456; k+=0.001) {</span>
-<span class="fc" id="L702">                dList.add(k);</span>
+            //for (double k = 1.44; k &lt;= 1.456; k+=0.001) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L726" title="All 2 branches covered.">            for (kInt = 1440; kInt &lt;= 1456; ++kInt) {</span>
+<span class="fc" id="L727">                dList.add(kInt*0.001);</span>
             }
-<span class="fc bfc" id="L704" title="All 2 branches covered.">        } else if (nDimensions &lt;= 3050) {</span>
+<span class="fc bfc" id="L729" title="All 2 branches covered.">        } else if (nDimensions &lt;= 3050) {</span>
             //fine resolution between 1.5 and ?
-<span class="fc bfc" id="L706" title="All 2 branches covered.">            for (double k = 1.435; k &lt;= 1.45; k+=0.001) {</span>
-<span class="fc" id="L707">                dList.add(k);</span>
+            //for (double k = 1.435; k &lt;= 1.45; k+=0.001) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L734" title="All 2 branches covered.">            for (kInt = 1435; kInt &lt;= 1450; ++kInt) {</span>
+<span class="fc" id="L735">                dList.add(kInt*0.001);</span>
             }
-<span class="pc bpc" id="L709" title="1 of 2 branches missed.">        } else if (nDimensions &lt;= 5000) {</span>
+<span class="pc bpc" id="L737" title="1 of 2 branches missed.">        } else if (nDimensions &lt;= 5000) {</span>
             //fine resolution between 1.5 and ?
-<span class="fc bfc" id="L711" title="All 2 branches covered.">            for (double k = 1.42; k &lt;= 1.45; k+=0.001) {</span>
-<span class="fc" id="L712">                dList.add(k);</span>
+            //for (double k = 1.42; k &lt;= 1.45; k+=0.001) {
+            //    dList.add(k);
+            //}
+<span class="fc bfc" id="L742" title="All 2 branches covered.">            for (kInt = 1420; kInt &lt;= 1450; ++kInt) {</span>
+<span class="fc" id="L743">                dList.add(kInt*0.001);</span>
             }
         }
-<span class="fc" id="L715">        double[] ds = dList.toArray();</span>
+<span class="fc" id="L746">        double[] ds = dList.toArray();</span>
         
         int n, idx;
         double[] cdf;
-<span class="fc" id="L719">        double tol = 1e-2;</span>
+<span class="fc" id="L750">        double tol = 1e-2;</span>
         
         // binary search between d=1.5*r and d=2*R for n &lt;= 100
-<span class="fc" id="L722">        cdf = HypersphereChordLength.cdf(ds, r, nDimensions);</span>
+<span class="fc" id="L753">        cdf = HypersphereChordLength.cdf(ds, r, nDimensions);</span>
         //System.out.println(FormatArray.toString(cdf, &quot;%.9f&quot;));
 
         // Type I error rejects a null hypothesis that is actually true.
@@ -727,11 +758,11 @@ import thirdparty.smile.math.special.Beta;
 
         // alpha=0.05 (probability of Type I error)
         // confidence level or a confidence coefficient, (1 - α)100% = 95%
-<span class="fc" id="L730">        idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);</span>
+<span class="fc" id="L761">        idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);</span>
         // confidence interval is interval in x capturing 95% of area 
         //     under curve, e.g. N(0,1): mu +- 1.96*sigma/sqrt(n)
         
-<span class="fc" id="L734">        return ds[idx];</span>
+<span class="fc" id="L765">        return ds[idx];</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -223,7 +223,7 @@ import java.util.logging.Logger;
          
             //add weights from previous root traversals
 <span class="fc bfc" id="L225" title="All 2 branches covered.">            if (rootIndexes.length &gt; 1) {</span>
-            //    log.log(logLevel, &quot;\n  w=&quot; + Arrays.toString(w));
+            //    log.log(logLevel, &quot;%n  w=&quot; + Arrays.toString(w));
 <span class="fc bfc" id="L227" title="All 2 branches covered.">                for (int i = 0; i &lt; w.length; ++i) {</span>
 <span class="fc" id="L228">                    w[i] += wG[i];</span>
                 }
@@ -418,7 +418,7 @@ import java.util.logging.Logger;
                 //log.log(logLevel, &quot;color=&quot; + Arrays.toString(color));
 <span class="fc" id="L419">                u = queue.remove().intValue();</span>
 <span class="fc" id="L420">                members.add(u);</span>
-<span class="fc" id="L421">                log.log(logLevel, String.format(&quot;u=%d\n&quot;, u));</span>
+<span class="fc" id="L421">                log.log(logLevel, String.format(&quot;u=%d%n&quot;, u));</span>
 <span class="fc" id="L422">                SimpleLinkedListNode vNode = adjacencyList[u];</span>
                 // for adjacencyLists that are directionless, edges from u to v and v to u exist,
                 // so need to make one additional check for a pseudo-leaf:
@@ -427,7 +427,7 @@ import java.util.logging.Logger;
 <span class="fc bfc" id="L427" title="All 2 branches covered.">                if (isALeafNode) {</span>
 <span class="fc" id="L428">                    leaf.add(u);</span>
 <span class="fc" id="L429">                    color[u] = 2;</span>
-<span class="fc" id="L430">                    log.log(logLevel, &quot;    LEAF\n&quot;);</span>
+<span class="fc" id="L430">                    log.log(logLevel, &quot;    LEAF%n&quot;);</span>
 <span class="fc" id="L431">                    continue;</span>
                 }
 <span class="pc bpc" id="L433" title="1 of 4 branches missed.">                while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
@@ -437,7 +437,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L437">                        d[v] = d[u] + 1;</span>
 <span class="fc" id="L438">                        w[v] = w[u];</span>
 <span class="fc" id="L439">                        queue.add(v);</span>
-<span class="fc" id="L440">                        log.log(logLevel, String.format(&quot;  v=%d\n&quot;, v));</span>
+<span class="fc" id="L440">                        log.log(logLevel, String.format(&quot;  v=%d%n&quot;, v));</span>
 <span class="pc bpc" id="L441" title="1 of 2 branches missed.">                        if (d[v] &lt; dBest[v]) {</span>
 <span class="fc" id="L442">                            dBest[v] = d[v];</span>
                         }
@@ -445,7 +445,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L445">                        w[v] += w[u];</span>
                     }
 <span class="fc bfc" id="L447" title="All 2 branches covered.">                    if (d[u] &lt; d[v]) {</span>
-<span class="fc" id="L448">                        log.log(logLevel, String.format(&quot;adding parent=%d of node=%d (d[%d]=%d, d[%d]=%d])\n&quot;,</span>
+<span class="fc" id="L448">                        log.log(logLevel, String.format(&quot;adding parent=%d of node=%d (d[%d]=%d, d[%d]=%d])%n&quot;,</span>
 <span class="fc" id="L449">                            u, v, u, d[u], v, d[v]));</span>
 <span class="fc" id="L450">                        p[v].add(u);</span>
                     }
@@ -457,7 +457,7 @@ import java.util.logging.Logger;
          
             //add weights from previous root traversals
 <span class="pc bpc" id="L459" title="1 of 2 branches missed.">            if (rootIndexes.length &gt; 1) {</span>
-            //    log.log(logLevel, &quot;\n  w=&quot; + Arrays.toString(w));
+            //    log.log(logLevel, &quot;%n  w=&quot; + Arrays.toString(w));
 <span class="nc bnc" id="L461" title="All 2 branches missed.">                for (int i = 0; i &lt; w.length; ++i) {</span>
 <span class="nc" id="L462">                    w[i] += wG[i];</span>
                 }
@@ -474,11 +474,11 @@ import java.util.logging.Logger;
             PairInt uv;
 <span class="fc bfc" id="L475" title="All 2 branches covered.">            while (tIter.hasNext()) {</span>
 <span class="fc" id="L476">                t = tIter.next();</span>
-<span class="fc" id="L477">                log.log(logLevel, String.format(&quot;t leaf=%d\n&quot;, t));</span>
+<span class="fc" id="L477">                log.log(logLevel, String.format(&quot;t leaf=%d%n&quot;, t));</span>
 <span class="fc" id="L478">                pIter = p[t].iterator();</span>
 <span class="fc bfc" id="L479" title="All 2 branches covered.">                while (pIter.hasNext()) {</span>
 <span class="fc" id="L480">                    i = pIter.next();</span>
-<span class="fc" id="L481">                    log.log(logLevel, String.format(&quot;  p=%d\n&quot;, i));</span>
+<span class="fc" id="L481">                    log.log(logLevel, String.format(&quot;  p=%d%n&quot;, i));</span>
 <span class="fc bfc" id="L482" title="All 2 branches covered.">                    if (!enqd.contains(i)) {</span>
 <span class="fc" id="L483">                        queue.add(i);</span>
 <span class="fc" id="L484">                        enqd.add(i);</span>
@@ -487,7 +487,7 @@ import java.util.logging.Logger;
 <span class="pc bnc" id="L487" title="All 2 branches missed.">                    assert(d[i] &lt; d[t]);</span>
 <span class="fc" id="L488">                    uv = new PairInt(i, t);</span>
 <span class="fc" id="L489">                    wEdges.put(uv, e);</span>
-<span class="fc" id="L490">                    log.log(logLevel, String.format(&quot;  edge=(%d, %d) w=%.3e\n&quot;, i, t, e));</span>
+<span class="fc" id="L490">                    log.log(logLevel, String.format(&quot;  edge=(%d, %d) w=%.3e%n&quot;, i, t, e));</span>
                 }
             }
           //  log.log(logLevel, &quot;w=&quot; + Arrays.toString(w));
@@ -519,7 +519,7 @@ import java.util.logging.Logger;
                     }
 <span class="fc" id="L520">                    jNode = jNode.getNext();</span>
 <span class="fc" id="L521">                }</span>
-<span class="fc" id="L522">                log.log(logLevel, String.format(&quot;  \n   =&gt;%.3f\n&quot;, e));</span>
+<span class="fc" id="L522">                log.log(logLevel, String.format(&quot;  %n   =&gt;%.3f%n&quot;, e));</span>
 
 <span class="fc" id="L524">                pIter = p[i].iterator();</span>
 <span class="fc bfc" id="L525" title="All 2 branches covered.">                while (pIter.hasNext()) {</span>
@@ -528,14 +528,14 @@ import java.util.logging.Logger;
 <span class="fc" id="L528">                        queue.add(ip);</span>
 <span class="fc" id="L529">                        enqd.add(ip);</span>
                     }
-<span class="fc" id="L531">                    log.log(logLevel, String.format(&quot;  parent=d[%d]=%d,  child=d[%d]=%d\n&quot;, </span>
+<span class="fc" id="L531">                    log.log(logLevel, String.format(&quot;  parent=d[%d]=%d,  child=d[%d]=%d%n&quot;,</span>
 <span class="fc" id="L532">                        ip, d[ip], i, d[i]));</span>
 <span class="pc bnc" id="L533" title="All 2 branches missed.">                    assert(d[ip] &lt; d[i]);</span>
 <span class="fc" id="L534">                    e2 = (float) w[ip] / (float) w[i];</span>
 <span class="fc" id="L535">                    e2 *= e;</span>
-<span class="fc" id="L536">                    log.log(logLevel, String.format(&quot;    e=(%.3f)*(w[%d]/w[%d]=%.3f)\n&quot;, e, ip, i, (float) w[ip] / (float) w[i]));</span>
+<span class="fc" id="L536">                    log.log(logLevel, String.format(&quot;    e=(%.3f)*(w[%d]/w[%d]=%.3f)%n&quot;, e, ip, i, (float) w[ip] / (float) w[i]));</span>
 <span class="fc" id="L537">                    uv = new PairInt(ip, i);</span>
-<span class="fc" id="L538">                    log.log(logLevel, String.format(&quot;    edge=(%d, %d) w=%.3e\n&quot;, ip, i, e2));</span>
+<span class="fc" id="L538">                    log.log(logLevel, String.format(&quot;    edge=(%d, %d) w=%.3e%n&quot;, ip, i, e2));</span>
 <span class="fc" id="L539">                    wEdges.put(uv, e2);</span>
                 }
 <span class="fc" id="L541">            }</span>
@@ -614,7 +614,7 @@ import java.util.logging.Logger;
                 sb.append(String.format(&quot;%d, &quot;, v));
                 vNode = vNode.getNext();
             }
-            sb.append(String.format(&quot;]\n&quot;));
+            sb.append(String.format(&quot;]%n&quot;));
         }
         System.out.println(sb.toString());
     }*/
@@ -656,17 +656,17 @@ import java.util.logging.Logger;
             if (rootIndexes != null) {
                 sb.append(Arrays.toString(rootIndexes));
             }
-            sb.append(&quot;\nedges=&quot;);
+            sb.append(&quot;%nedges=&quot;);
             if (edges != null) {
                 TObjectFloatIterator&lt;PairInt&gt; iter = edges.iterator();
                 for (int i = 0; i &lt; edges.size(); ++i) {
                     iter.advance();
                     PairInt e = iter.key();
                     float w = iter.value();
-                    sb.append(String.format(&quot;\n  (%d,%d)=%.3e&quot;, e.getX(), e.getY(), w));
+                    sb.append(String.format(&quot;%n  (%d,%d)=%.3e&quot;, e.getX(), e.getY(), w));
                 }
             }
-            sb.append(&quot;\nvertex indexes=&quot;);
+            sb.append(&quot;%nvertex indexes=&quot;);
             if (vertexes != null) {
                 sb.append(Arrays.toString(vertexes.toArray()));
             }

@@ -352,7 +352,7 @@ import no.uib.cipr.matrix.SVD;
         
 <span class="fc" id="L353">        int rank = 0;</span>
 <span class="fc bfc" id="L354" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
 <span class="fc" id="L356">                rank++;</span>
             }
         }
@@ -366,7 +366,7 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L366">        double[][] sInvSq = MatrixUtil.zeros(nr, nc);</span>
 <span class="fc" id="L367">        int len = Math.min(nr, nc);</span>
 <span class="fc bfc" id="L368" title="All 2 branches covered.">        for (i = 0; i &lt; len; ++i) {</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">            if (s[i] &gt; eps) {</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">            if (s[i] &gt; eps) {</span>
 <span class="fc" id="L370">                sInvSq[i][i] = 1./(s[i]*s[i]);</span>
             }
         }
@@ -468,19 +468,19 @@ import no.uib.cipr.matrix.SVD;
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append(&quot;c=\n&quot;);
+            sb.append(&quot;c=%n&quot;);
             if (c != null) {
                 sb.append(FormatArray.toString(c, &quot;%.4e&quot;));
             } 
-            sb.append(&quot;\nu=\n&quot;);
+            sb.append(&quot;%nu=%n&quot;);
             if (u != null) {
                 sb.append(FormatArray.toString(u, &quot;%.4e&quot;));
             }
-            sb.append(&quot;\nr=\n&quot;);
+            sb.append(&quot;%nr=%n&quot;);
             if (r != null) {
                 sb.append(FormatArray.toString(r, &quot;%.4e&quot;));
             }
-            sb.append(&quot;\ncur=\n&quot;);
+            sb.append(&quot;%ncur=%n&quot;);
             if (result != null) {
                 sb.append(FormatArray.toString(result, &quot;%.4e&quot;));
             }

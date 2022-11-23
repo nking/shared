@@ -241,14 +241,14 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc bfc" id="L241" title="All 2 branches covered.">            for (int j = 0; j &lt; u.numColumns(); ++j) {</span>
 <span class="fc" id="L242">                System.out.printf(&quot;%12.5e  &quot;, u.get(i, j));</span>
             }
-<span class="fc" id="L244">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L244">            System.out.printf(&quot;%n&quot;);</span>
         }
 <span class="fc" id="L246">        System.out.println(&quot;V_p of SVD(cov) = &quot;);</span>
 <span class="fc bfc" id="L247" title="All 2 branches covered.">        for (int i = 0; i &lt; v.length; ++i) {</span>
 <span class="fc bfc" id="L248" title="All 2 branches covered.">            for (int j = 0; j &lt; v[i].length; ++j) {</span>
 <span class="fc" id="L249">                System.out.printf(&quot;%12.5e  &quot;, v[i][j]);</span>
             }
-<span class="fc" id="L251">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L251">            System.out.printf(&quot;%n&quot;);</span>
         }
         
 <span class="fc" id="L254">        System.out.println(&quot;eigenvalue fractions of total = &quot;);</span>
@@ -267,14 +267,14 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc bfc" id="L267" title="All 2 branches covered.">            for (int j = 0; j &lt; stats.principalDirections[i].length; ++j) {</span>
 <span class="fc" id="L268">                System.out.printf(&quot;%12.5e  &quot;, stats.principalDirections[i][j]);</span>
             }
-<span class="fc" id="L270">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L270">            System.out.printf(&quot;%n&quot;);</span>
         }
 <span class="fc" id="L272">        System.out.println(&quot;principal projections (=u_p*s)=&quot;);</span>
 <span class="fc bfc" id="L273" title="All 2 branches covered.">        for (int i = 0; i &lt; projections.length; ++i) {</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">            for (int j = 0; j &lt; projections[i].length; ++j) {</span>
 <span class="fc" id="L275">                System.out.printf(&quot;%11.3e  &quot;, projections[i][j]);</span>
             }
-<span class="fc" id="L277">            System.out.printf(&quot;\n&quot;);</span>
+<span class="fc" id="L277">            System.out.printf(&quot;%n&quot;);</span>
         }
         
 <span class="fc" id="L280">        System.out.flush();</span>

@@ -119,14 +119,14 @@ import java.util.Random;
            
 <span class="fc" id="L120">        int lowIdx = 0;</span>
 <span class="fc" id="L121">        int highIdx = n - 1;</span>
-<span class="fc" id="L122">        int midIdx = (highIdx + lowIdx) &gt;&gt; 1;</span>
+<span class="fc" id="L122">        int midIdx = lowIdx + (int)((highIdx - lowIdx)/2.);</span>
         
         double v;
         int comp;
         
 <span class="pc bpc" id="L127" title="1 of 4 branches missed.">        while (lowIdx != highIdx &amp;&amp; highIdx &gt; lowIdx) {</span>
 
-<span class="fc" id="L129">            midIdx = (highIdx + lowIdx) &gt;&gt; 1;</span>
+<span class="fc" id="L129">            midIdx = lowIdx + (int)((highIdx - lowIdx)/2.);</span>
             
 <span class="fc" id="L131">            v = cdf[midIdx];</span>
             

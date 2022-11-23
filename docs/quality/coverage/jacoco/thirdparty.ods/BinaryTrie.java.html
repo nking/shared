@@ -271,8 +271,8 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L271">		i--;</span>
 <span class="fc bfc" id="L272" title="All 2 branches covered.">		for (; i &gt;= 0; i--) {</span>
 <span class="fc" id="L273">			c = (ix &gt;&gt;&gt; w-i-1) &amp; 1;</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">			if (v.jump == u) {</span>
-<span class="fc" id="L275">				v.jump = u.child[1-c];</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">			if (v.jump == u) {</span>
+<span class="nc" id="L275">				v.jump = u.child[1-c];</span>
             }
 <span class="fc" id="L277">			v = v.parent;</span>
 		}
@@ -430,7 +430,7 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L430">        TIntSet dummyHashCodes = new TIntHashSet();</span>
 <span class="fc" id="L431">        S node = dummy;</span>
         //System.out.println(&quot;dummy.hashCode=&quot; + dummy.hashCode());
-<span class="fc" id="L433">        System.out.print(&quot;\ndummy=&quot;);</span>
+<span class="fc" id="L433">        System.out.print(&quot;%ndummy=&quot;);</span>
         do {
 <span class="fc" id="L435">            int dhc = node.hashCode();</span>
 <span class="fc" id="L436">            System.out.print(node.x + &quot;, &quot;);</span>

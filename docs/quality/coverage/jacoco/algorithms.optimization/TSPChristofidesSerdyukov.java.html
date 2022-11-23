@@ -131,22 +131,24 @@ import thirdparty.HungarianAlgorithm;
         
         int u, v;
         LinkedList&lt;Integer&gt; neighbors;
-<span class="fc" id="L134">        Iterator&lt;Integer&gt; iter = mstTree.keySet().iterator();</span>
+<span class="fc" id="L134">        Iterator&lt;Map.Entry&lt;Integer, LinkedList&lt;Integer&gt;&gt;&gt; iter = mstTree.entrySet().iterator();</span>
         Iterator&lt;Integer&gt; iterV;
+        Map.Entry&lt;Integer, LinkedList&lt;Integer&gt;&gt; entry;
         
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L138">            u = iter.next();</span>
-<span class="fc" id="L139">            neighbors = mstTree.get(u);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L139">            entry = iter.next();</span>
+<span class="fc" id="L140">            u = entry.getKey();</span>
+<span class="fc" id="L141">            neighbors = entry.getValue();</span>
             
-<span class="fc" id="L141">            iterV = neighbors.iterator();</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
-<span class="fc" id="L143">                v = iterV.next();</span>
-<span class="fc" id="L144">                d[u]++;</span>
-<span class="fc" id="L145">                d[v]++;</span>
+<span class="fc" id="L143">            iterV = neighbors.iterator();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
+<span class="fc" id="L145">                v = iterV.next();</span>
+<span class="fc" id="L146">                d[u]++;</span>
+<span class="fc" id="L147">                d[v]++;</span>
             }
         }
         
-<span class="fc" id="L149">        return d;</span>
+<span class="fc" id="L151">        return d;</span>
     }
 
     /**
@@ -161,60 +163,60 @@ import thirdparty.HungarianAlgorithm;
         TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
 
         int i, u, v, uvCost;
-<span class="fc" id="L164">        float[][] out = new float[oddDVertexes.length][];</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
-<span class="fc" id="L166">            out[i] = new float[oddDVertexes.length];</span>
-<span class="fc" id="L167">            Arrays.fill(out[i], Float.MAX_VALUE);</span>
+<span class="fc" id="L166">        float[][] out = new float[oddDVertexes.length][];</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
+<span class="fc" id="L168">            out[i] = new float[oddDVertexes.length];</span>
+<span class="fc" id="L169">            Arrays.fill(out[i], Float.MAX_VALUE);</span>
         }
   
         // a reverse index map to find where v is in oddDVertexes
-<span class="fc" id="L171">        TIntIntMap rIdxs = new TIntIntHashMap();</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
-<span class="fc" id="L173">            u = oddDVertexes[i];</span>
-<span class="fc" id="L174">            rIdxs.put(u, i);</span>
+<span class="fc" id="L173">        TIntIntMap rIdxs = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {</span>
+<span class="fc" id="L175">            u = oddDVertexes[i];</span>
+<span class="fc" id="L176">            rIdxs.put(u, i);</span>
         }
                 
         int idxV;
         TIntIntMap neighborCost;
         TIntIntIterator iter;
-<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {            </span>
-<span class="fc" id="L181">            u = oddDVertexes[i];</span>
-<span class="fc" id="L182">            neighborCost = adjCostMap.get(u);</span>
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">            if (neighborCost != null) {</span>
-<span class="fc" id="L184">                iter = neighborCost.iterator();</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
-<span class="fc" id="L186">                    iter.advance();</span>
-<span class="fc" id="L187">                    v = iter.key();</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">                    if (!rIdxs.containsKey(v)) {</span>
-<span class="fc" id="L189">                        continue;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        for (i = 0; i &lt; oddDVertexes.length; ++i) {            </span>
+<span class="fc" id="L183">            u = oddDVertexes[i];</span>
+<span class="fc" id="L184">            neighborCost = adjCostMap.get(u);</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">            if (neighborCost != null) {</span>
+<span class="fc" id="L186">                iter = neighborCost.iterator();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L188">                    iter.advance();</span>
+<span class="fc" id="L189">                    v = iter.key();</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                    if (!rIdxs.containsKey(v)) {</span>
+<span class="fc" id="L191">                        continue;</span>
                     }
-<span class="fc" id="L191">                    uvCost = iter.value();</span>
-<span class="fc" id="L192">                    idxV = rIdxs.get(v);</span>
-<span class="fc" id="L193">                    out[i][idxV] = uvCost;</span>
+<span class="fc" id="L193">                    uvCost = iter.value();</span>
+<span class="fc" id="L194">                    idxV = rIdxs.get(v);</span>
+<span class="fc" id="L195">                    out[i][idxV] = uvCost;</span>
                 }
             }
         }
         
-<span class="fc" id="L198">        return out;</span>
+<span class="fc" id="L200">        return out;</span>
     }
 
     protected Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; buildMST(TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
                 
         // finding the max cost in the graph G.  the value is needed for a bit length used by a trie in Prim's MST
-<span class="fc" id="L204">        int maxCost = PrimsMST.maxEdgeCost(adjCostMap);</span>
+<span class="fc" id="L206">        int maxCost = PrimsMST.maxEdgeCost(adjCostMap);</span>
         
-<span class="fc" id="L206">        PrimsMST prims = new PrimsMST();</span>
+<span class="fc" id="L208">        PrimsMST prims = new PrimsMST();</span>
         
-<span class="fc" id="L208">        prims.calculateMinimumSpanningTree(adjCostMap, maxCost);</span>
+<span class="fc" id="L210">        prims.calculateMinimumSpanningTree(adjCostMap, maxCost);</span>
         
         //(1) T = mst(G)
-<span class="fc" id="L211">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree = prims.makeTreeFromPrev();</span>
+<span class="fc" id="L213">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree = prims.makeTreeFromPrev();</span>
         //print(mstTree);
         
         //TIntList treeWalk = prims.getPreorderIndexes();
-        //System.out.printf(&quot;treeWalk=%s\n&quot;, Arrays.toString(treeWalk.toArray()));
+        //System.out.printf(&quot;treeWalk=%s%n&quot;, Arrays.toString(treeWalk.toArray()));
         
-<span class="fc" id="L217">        return mstTree;</span>
+<span class="fc" id="L219">        return mstTree;</span>
     }
     
     /*
@@ -240,7 +242,7 @@ import thirdparty.HungarianAlgorithm;
         int[] oddDVertexes, TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
         
         // building O as a cost matrix for input to the Hungarian algorithm
-<span class="fc" id="L243">        float[][] oCostMatrix = buildCostMatrix(oddDVertexes, adjCostMap);</span>
+<span class="fc" id="L245">        float[][] oCostMatrix = buildCostMatrix(oddDVertexes, adjCostMap);</span>
         // indexes of the oCostMatrix are the values of oddDVertexes
         //   so should be transformed back to vertex numbers after
         //   mincost matching.
@@ -249,34 +251,34 @@ import thirdparty.HungarianAlgorithm;
         // alternatively, can use MinCostUnbalancedAssignment.
         // hungarian algorithm accepts argument: computeAssignments(float[][] matrix).
         // MinCostUnbalancedAssignment needs a Graph g.
-<span class="fc" id="L252">        int[][] assignmentsM = new HungarianAlgorithm().computeAssignments(oCostMatrix);</span>
+<span class="fc" id="L254">        int[][] assignmentsM = new HungarianAlgorithm().computeAssignments(oCostMatrix);</span>
         
-<span class="fc" id="L254">        int i, n = 0, k, v;</span>
-<span class="fc" id="L255">        TIntIntMap keep = new TIntIntHashMap();</span>
-<span class="fc" id="L256">        TIntSet included = new TIntHashSet();</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (i = 0; i &lt; assignmentsM.length; ++i) {</span>
-<span class="fc" id="L258">            k = assignmentsM[i][0];</span>
-<span class="fc" id="L259">            v = assignmentsM[i][1];</span>
-            //System.out.printf(&quot;%d, %d\n&quot;, k, v);
-<span class="pc bpc" id="L261" title="1 of 4 branches missed.">            if (included.contains(k) || included.contains(v)) {</span>
-<span class="nc" id="L262">                continue;</span>
+<span class="fc" id="L256">        int i, n = 0, k, v;</span>
+<span class="fc" id="L257">        TIntIntMap keep = new TIntIntHashMap();</span>
+<span class="fc" id="L258">        TIntSet included = new TIntHashSet();</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        for (i = 0; i &lt; assignmentsM.length; ++i) {</span>
+<span class="fc" id="L260">            k = assignmentsM[i][0];</span>
+<span class="fc" id="L261">            v = assignmentsM[i][1];</span>
+            //System.out.printf(&quot;%d, %d%n&quot;, k, v);
+<span class="pc bpc" id="L263" title="1 of 4 branches missed.">            if (included.contains(k) || included.contains(v)) {</span>
+<span class="nc" id="L264">                continue;</span>
             }
-<span class="fc" id="L264">            keep.put(k, v);</span>
-<span class="fc" id="L265">            included.add(k);</span>
-<span class="fc" id="L266">            included.add(v);</span>
-<span class="fc" id="L267">            n++;</span>
+<span class="fc" id="L266">            keep.put(k, v);</span>
+<span class="fc" id="L267">            included.add(k);</span>
+<span class="fc" id="L268">            included.add(v);</span>
+<span class="fc" id="L269">            n++;</span>
         }
         
-<span class="fc" id="L270">        int[][] m = new int[n][];</span>
-<span class="fc" id="L271">        TIntIntIterator iterK = keep.iterator();</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L273">            iterK.advance();</span>
-<span class="fc" id="L274">            k = iterK.key();</span>
-<span class="fc" id="L275">            v = iterK.value();</span>
-<span class="fc" id="L276">            m[i] = new int[]{oddDVertexes[k], oddDVertexes[v]};</span>
+<span class="fc" id="L272">        int[][] m = new int[n][];</span>
+<span class="fc" id="L273">        TIntIntIterator iterK = keep.iterator();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L275">            iterK.advance();</span>
+<span class="fc" id="L276">            k = iterK.key();</span>
+<span class="fc" id="L277">            v = iterK.value();</span>
+<span class="fc" id="L278">            m[i] = new int[]{oddDVertexes[k], oddDVertexes[v]};</span>
         }
         
-<span class="fc" id="L279">        return m;</span>
+<span class="fc" id="L281">        return m;</span>
     }
 
     protected TIntObjectMap&lt;TIntSet&gt; unionMSTAndAssignments(
@@ -284,71 +286,76 @@ import thirdparty.HungarianAlgorithm;
         
         int i, u, v;
         
-<span class="fc" id="L287">        TIntObjectMap&lt;TIntSet&gt; h = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-        
-<span class="fc" id="L289">        Iterator&lt;Integer&gt; iterMST = mstTree.keySet().iterator();</span>
+<span class="fc" id="L289">        TIntObjectMap&lt;TIntSet&gt; h = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+
+<span class="fc" id="L291">        Iterator&lt;Map.Entry&lt;Integer, LinkedList&lt;Integer&gt;&gt;&gt; iterMST = mstTree.entrySet().iterator();</span>
+        Map.Entry&lt;Integer, LinkedList&lt;Integer&gt;&gt; entry;
+
         LinkedList&lt;Integer&gt; lList;
         Iterator&lt;Integer&gt; iterList;
         TIntSet s;
-<span class="fc bfc" id="L293" title="All 2 branches covered.">        while (iterMST.hasNext()) {</span>
-<span class="fc" id="L294">            u = iterMST.next();</span>
-<span class="fc" id="L295">            lList = mstTree.get(u);</span>
-<span class="fc" id="L296">            iterList = lList.iterator();</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">            while (iterList.hasNext()) {</span>
-<span class="fc" id="L298">                v = iterList.next();</span>
-<span class="fc" id="L299">                s = h.get(u);</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">                if (s == null) {</span>
-<span class="fc" id="L301">                    s = new TIntHashSet();</span>
-<span class="fc" id="L302">                    h.put(u, s);</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        while (iterMST.hasNext()) {</span>
+<span class="fc" id="L298">            entry = iterMST.next();</span>
+<span class="fc" id="L299">            u = entry.getKey();</span>
+<span class="fc" id="L300">            lList = entry.getValue();</span>
+<span class="fc" id="L301">            iterList = lList.iterator();</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">            while (iterList.hasNext()) {</span>
+<span class="fc" id="L303">                v = iterList.next();</span>
+<span class="fc" id="L304">                s = h.get(u);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">                if (s == null) {</span>
+<span class="fc" id="L306">                    s = new TIntHashSet();</span>
+<span class="fc" id="L307">                    h.put(u, s);</span>
                 }
-<span class="fc" id="L304">                s.add(v);</span>
+<span class="fc" id="L309">                s.add(v);</span>
             }
         }
 
-<span class="fc bfc" id="L308" title="All 2 branches covered.">        for (i = 0; i &lt; m.length; ++i) {</span>
-<span class="fc" id="L309">            s = h.get(m[i][0]);</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">            if (s == null) {</span>
-<span class="fc" id="L311">                s = new TIntHashSet();</span>
-<span class="fc" id="L312">                h.put(m[i][0], s);</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        for (i = 0; i &lt; m.length; ++i) {</span>
+<span class="fc" id="L314">            s = h.get(m[i][0]);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            if (s == null) {</span>
+<span class="fc" id="L316">                s = new TIntHashSet();</span>
+<span class="fc" id="L317">                h.put(m[i][0], s);</span>
             }
-<span class="fc" id="L314">            s.add(m[i][1]);</span>
+<span class="fc" id="L319">            s.add(m[i][1]);</span>
         }        
         
-<span class="fc" id="L317">        return h;</span>
+<span class="fc" id="L322">        return h;</span>
     }
     
     public static long totalCost(int[] hamiltonian, TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
-<span class="fc" id="L321">        long sum = 0;</span>
+<span class="fc" id="L326">        long sum = 0;</span>
         int i, u, v, cost;
         TIntIntMap assoc;
-<span class="fc bfc" id="L324" title="All 2 branches covered.">        for (i = 1; i &lt; hamiltonian.length;++i) {</span>
-<span class="fc" id="L325">            u = hamiltonian[i - 1];</span>
-<span class="fc" id="L326">            v = hamiltonian[i];</span>
-<span class="fc" id="L327">            assoc = adjCostMap.get(u);</span>
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">            if (assoc == null) {</span>
-<span class="nc" id="L329">                throw new IllegalStateException(&quot;node &quot; + u + &quot; is not a key in the adjCostMap&quot;);</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        for (i = 1; i &lt; hamiltonian.length;++i) {</span>
+<span class="fc" id="L330">            u = hamiltonian[i - 1];</span>
+<span class="fc" id="L331">            v = hamiltonian[i];</span>
+<span class="fc" id="L332">            assoc = adjCostMap.get(u);</span>
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">            if (assoc == null) {</span>
+<span class="nc" id="L334">                throw new IllegalStateException(&quot;node &quot; + u + &quot; is not a key in the adjCostMap&quot;);</span>
             }
-<span class="pc bpc" id="L331" title="1 of 2 branches missed.">            if (!assoc.containsKey(v)) {</span>
-<span class="nc" id="L332">                throw new IllegalStateException(&quot;node &quot; + v + &quot; is not a value in the adjCostMapfor key=&quot; + u);</span>
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">            if (!assoc.containsKey(v)) {</span>
+<span class="nc" id="L337">                throw new IllegalStateException(&quot;node &quot; + v + &quot; is not a value in the adjCostMapfor key=&quot; + u);</span>
             }
-<span class="fc" id="L334">            sum += assoc.get(v);</span>
+<span class="fc" id="L339">            sum += assoc.get(v);</span>
         }
-<span class="fc" id="L336">        return sum;</span>
+<span class="fc" id="L341">        return sum;</span>
     }
 
     private void print(Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; mstTree) {
-<span class="nc" id="L340">        Iterator&lt;Integer&gt; intIter = mstTree.keySet().iterator();</span>
+<span class="nc" id="L345">        Iterator&lt;Map.Entry&lt;Integer, LinkedList&lt;Integer&gt;&gt;&gt; intIter = mstTree.entrySet().iterator();</span>
+        Map.Entry&lt;Integer, LinkedList&lt;Integer&gt;&gt; entry;
         Iterator&lt;Integer&gt; intIter2;
         int u, v;
-<span class="nc" id="L343">        System.out.println(&quot;MST:&quot;);</span>
-<span class="nc bnc" id="L344" title="All 2 branches missed.">        while (intIter.hasNext()) {</span>
-<span class="nc" id="L345">            u = intIter.next();</span>
-<span class="nc" id="L346">            intIter2 = mstTree.get(u).iterator();</span>
-<span class="nc bnc" id="L347" title="All 2 branches missed.">            while (intIter2.hasNext()) {</span>
-<span class="nc" id="L348">                v = intIter2.next();</span>
-<span class="nc" id="L349">                System.out.printf(&quot;%d:%d\n&quot;, u, v);</span>
+<span class="nc" id="L349">        System.out.println(&quot;MST:&quot;);</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">        while (intIter.hasNext()) {</span>
+<span class="nc" id="L351">            entry = intIter.next();</span>
+<span class="nc" id="L352">            u = entry.getKey();</span>
+<span class="nc" id="L353">            intIter2 = entry.getValue().iterator();</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">            while (intIter2.hasNext()) {</span>
+<span class="nc" id="L355">                v = intIter2.next();</span>
+<span class="nc" id="L356">                System.out.printf(&quot;%d:%d%n&quot;, u, v);</span>
             }
         }
-<span class="nc" id="L352">    }</span>
+<span class="nc" id="L359">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

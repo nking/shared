@@ -193,14 +193,14 @@ import java.util.Arrays;
                 } else {
 <span class="fc" id="L194">                    a.put(prev[v], new SimpleLinkedListNode(v));</span>
                 }
-                //System.out.printf(&quot;adding %d to %d\n&quot;, pi[v], v);
+                //System.out.printf(&quot;adding %d to %d%n&quot;, pi[v], v);
 <span class="fc" id="L197">                nMSTEdges++;</span>
 <span class="fc" id="L198">                PairInt uv2 = new PairInt(prev[v], v);</span>
 <span class="fc" id="L199">                sum += edgeWeights.get(uv2);</span>
             }
         }
         
-<span class="fc" id="L203">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;, </span>
+<span class="fc" id="L203">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d%n&quot;, </span>
 <span class="fc" id="L204">            nMSTEdges, nE, sum);</span>
         
 <span class="fc" id="L206">        return a;</span>

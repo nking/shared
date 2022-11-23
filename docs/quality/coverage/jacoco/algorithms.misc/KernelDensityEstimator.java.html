@@ -249,7 +249,7 @@ import java.util.Arrays;
 <span class="fc" id="L249">            kde.kde[i] = kernel.kernel(x[i], x, h);</span>
 <span class="fc" id="L250">            sum += kde.kde[i];</span>
         }
-<span class="fc" id="L252">        System.out.printf(&quot;SUM KDE=%.4e\n&quot;, sum);</span>
+<span class="fc" id="L252">        System.out.printf(&quot;SUM KDE=%.4e%n&quot;, sum);</span>
 <span class="fc" id="L253">        kde.hx = Arrays.copyOf(x, x.length);</span>
 <span class="fc" id="L254">        kde.h = h;</span>
 <span class="fc" id="L255">        kde.u = null;</span>
@@ -281,7 +281,7 @@ import java.util.Arrays;
 <span class="fc" id="L281">            kde.kde[i] = kernel.kernel(xGrid[i], x, h);</span>
 <span class="fc" id="L282">            sum += kde.kde[i];</span>
         }
-<span class="fc" id="L284">        System.out.printf(&quot;SUM KDE=%.4e\n&quot;, sum);</span>
+<span class="fc" id="L284">        System.out.printf(&quot;SUM KDE=%.4e%n&quot;, sum);</span>
 <span class="fc" id="L285">        kde.hx = Arrays.copyOf(xGrid, xGrid.length);</span>
 <span class="fc" id="L286">        kde.h = h;</span>
 <span class="fc" id="L287">        kde.u = null;</span>
@@ -354,7 +354,7 @@ import java.util.Arrays;
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
                                                     double minBin, double maxBin) {
 
-<span class="fc" id="L357">        System.out.printf(&quot;nBins=%d, binWidth=%.4e min=%.4e, max=%.4e\n&quot;, nBins, binWidth, minBin, maxBin);</span>
+<span class="fc" id="L357">        System.out.printf(&quot;nBins=%d, binWidth=%.4e min=%.4e, max=%.4e%n&quot;, nBins, binWidth, minBin, maxBin);</span>
 <span class="fc" id="L358">        System.out.flush();</span>
 
 <span class="fc" id="L360">        double[][] hist = new double[2][];</span>
@@ -463,7 +463,7 @@ import java.util.Arrays;
 
         //
 <span class="fc" id="L465">        double sum = sumKDE(kd, histBins[1] - histBins[0]);</span>
-<span class="fc" id="L466">        System.out.printf(&quot;h=%.4e sumKDE=%.4e\n&quot;, h,  sum);</span>
+<span class="fc" id="L466">        System.out.printf(&quot;h=%.4e sumKDE=%.4e%n&quot;, h,  sum);</span>
 
 <span class="fc" id="L468">        KDE kde = new KDE();</span>
 <span class="fc" id="L469">        kde.u = Arrays.copyOf(u, u.length);</span>
@@ -620,7 +620,7 @@ import java.util.Arrays;
         // fudge, to be removed when the bug is found
 <span class="fc" id="L621">        r = term1/(n*n) + term2 - term3;</span>
 
-<span class="fc" id="L623">        System.out.printf(&quot;h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n&quot;, h, term1, term2, term3, r);</span>
+<span class="fc" id="L623">        System.out.printf(&quot;h=%.4e terms=%.4e %.4e %.4e  r=%.4e%n&quot;, h, term1, term2, term3, r);</span>
 
 <span class="fc" id="L625">        return r;</span>
 

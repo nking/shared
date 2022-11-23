@@ -153,7 +153,7 @@ import java.util.Arrays;
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
 <span class="fc" id="L155">        int[] origIndexes = sort2(f, s, v);</span>
-        //System.out.printf(&quot;sorted indexes=%s\n&quot;, Arrays.toString(origIndexes));
+        //System.out.printf(&quot;sorted indexes=%s%n&quot;, Arrays.toString(origIndexes));
         
         // p[i] is the largest index such that f[p(i)] &lt; s[i]
         //     p[i] is &lt; i
@@ -180,19 +180,19 @@ import java.util.Arrays;
 <span class="fc" id="L180">                memo[j + 1] = takeWeight;               // better to take j</span>
 <span class="fc" id="L181">                pred[j+1] = p[j];                  // previous is p[j]</span>
             }
-           // System.out.printf(&quot;  M[j+1]=%.2f\n&quot;, memo[j+1]);
+           // System.out.printf(&quot;  M[j+1]=%.2f%n&quot;, memo[j+1]);
         }
          
-        //System.out.printf(&quot;memo=%s\n&quot;, FormatArray.toString(memo, &quot;%.3f&quot;));
-        //System.out.printf(&quot;   p=%s\n&quot;, Arrays.toString(p));
-        //System.out.printf(&quot;pred=%s\n&quot;, Arrays.toString(pred));
+        //System.out.printf(&quot;memo=%s%n&quot;, FormatArray.toString(memo, &quot;%.3f&quot;));
+        //System.out.printf(&quot;   p=%s%n&quot;, Arrays.toString(p));
+        //System.out.printf(&quot;pred=%s%n&quot;, Arrays.toString(pred));
         
 <span class="fc" id="L190">        int[] sched = new int[j];</span>
 <span class="fc" id="L191">        int count = 0;</span>
 <span class="fc" id="L192">        j = pred.length-1;</span>
 <span class="fc bfc" id="L193" title="All 2 branches covered.">        while (j &gt; 0) {</span>
 <span class="fc bfc" id="L194" title="All 2 branches covered.">            if (pred[j] == p[j-1]) {</span>
-                //System.out.printf(&quot;  sched[%d]=%d\n&quot;, j-1, origIndexes[j-1]);
+                //System.out.printf(&quot;  sched[%d]=%d%n&quot;, j-1, origIndexes[j-1]);
 <span class="fc" id="L196">                sched[count++] = origIndexes[j - 1];</span>
             }
 <span class="fc" id="L198">            j = pred[j];</span>
@@ -307,7 +307,7 @@ import java.util.Arrays;
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
 <span class="fc" id="L309">        int[] origIndexes = sort2(f, s, v);</span>
-        //System.out.printf(&quot;sorted indexes=%s\n&quot;, Arrays.toString(origIndexes));
+        //System.out.printf(&quot;sorted indexes=%s%n&quot;, Arrays.toString(origIndexes));
         
 <span class="fc" id="L312">        double[] memo = new double[n];</span>
 <span class="fc" id="L313">        TIntObjectMap&lt;TIntSet&gt; map = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
@@ -369,10 +369,10 @@ import java.util.Arrays;
 <span class="fc" id="L369">        int[] p = new int[f.length+1];</span>
 <span class="fc bfc" id="L370" title="All 2 branches covered.">        for (i = s.length - 1; i &gt; -1; i--) {</span>
 <span class="fc bfc" id="L371" title="All 2 branches covered.">            for (j = i - 1; j &gt; -1; j--) {</span>
-                //System.out.printf(&quot;calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f\n&quot;, i,j, j, f[j], i, s[i]);
+                //System.out.printf(&quot;calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f%n&quot;, i,j, j, f[j], i, s[i]);
 <span class="fc bfc" id="L373" title="All 2 branches covered.">                if (f[j] &lt;= s[i]) {</span>
 <span class="fc" id="L374">                    p[i] = j+1;</span>
-                    //System.out.printf(&quot;   p[%d]=%d\n&quot;, i, p[i]);
+                    //System.out.printf(&quot;   p[%d]=%d%n&quot;, i, p[i]);
 <span class="fc" id="L376">                    break;</span>
                 }
             }
@@ -456,7 +456,7 @@ import java.util.Arrays;
 <span class="fc bfc" id="L456" title="All 2 branches covered.">        for (i = 0; i &lt; indexes2.length; ++i) {</span>
             // transform indexes back to original array indexes
 <span class="fc" id="L458">            scheduled[i] = i2[indexes2[i]];</span>
-            //System.out.printf(&quot;  a%d (%d, %d)\n&quot;, 
+            //System.out.printf(&quot;  a%d (%d, %d)%n&quot;, 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
 <span class="fc" id="L461">            allI.remove(scheduled[i]);</span>
         }
@@ -464,7 +464,7 @@ import java.util.Arrays;
 <span class="fc" id="L464">        TIntIterator iter = allI.iterator();</span>
 <span class="fc bfc" id="L465" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
 <span class="fc" id="L466">            scheduled[i] = iter.next();</span>
-            //System.out.printf(&quot;  a%d (%d, %d)\n&quot;, 
+            //System.out.printf(&quot;  a%d (%d, %d)%n&quot;, 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
 <span class="fc" id="L469">            i++;</span>
         }
@@ -494,7 +494,7 @@ import java.util.Arrays;
         System.out.println(&quot;sorted by decr penalty:&quot;);
         for(i = 0; i &lt; penalties.length; ++i) {
             oIdx = origIndexes[i];
-            System.out.printf(&quot;a%d deadline=%d penalty=%d\n&quot;, oIdx+1, deadlines[i], penalties[i]);
+            System.out.printf(&quot;a%d deadline=%d penalty=%d%n&quot;, oIdx+1, deadlines[i], penalties[i]);
         }
         */
        
@@ -762,9 +762,9 @@ import java.util.Arrays;
                 //if ([s[j],f[j]] overlaps [s[i],f[i]]) 
 <span class="fc bfc" id="L763" title="All 2 branches covered.">                if (s2[i] &lt; f2[j]) {</span>
 <span class="fc" id="L764">                    excl.add(c[j]);</span>
-                    /*System.out.printf(&quot;conflict for i2=%d, j2=%d (s2[%d]&lt;f2[%d])=(%.1f, %.2f)\n&quot;,
+                    /*System.out.printf(&quot;conflict for i2=%d, j2=%d (s2[%d]&lt;f2[%d])=(%.1f, %.2f)%n&quot;,
                         i, j, i, j, s2[i], f2[i]);
-                    System.out.printf(&quot;==&gt; i=%d, j=%d (s2[%d]&lt;f2[%d])=(%.1f, %.2f)\n&quot;,
+                    System.out.printf(&quot;==&gt; i=%d, j=%d (s2[%d]&lt;f2[%d])=(%.1f, %.2f)%n&quot;,
                         indexes[i], indexes[j], indexes[i], indexes[j], 
                         s[indexes[i]], f[indexes[i]]);
                     */

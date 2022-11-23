@@ -67,20 +67,20 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc bfc" id="L67" title="All 2 branches covered.">        while (i &lt; factorsList.size()) {</span>
 <span class="fc" id="L68">            factor = factorsList.get(i);</span>
 <span class="fc" id="L69">            ++i;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">            if (probablyPrime(factor, s)) {</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">            if (probablyPrime(factor, s)) {</span>
 <span class="fc" id="L71">                primeFactors.add(factor);</span>
 <span class="fc" id="L72">                continue;</span>
             }
                         
-<span class="fc" id="L75">            factors2 = pollardRhoFactorization(factor, rand);</span>
-<span class="fc" id="L76">            iter = factors2.iterator();</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
-<span class="fc" id="L78">                factor2 = iter.next();</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">                if (probablyPrime(factor2, s)) {</span>
-<span class="fc" id="L80">                    primeFactors.add(factor2);</span>
-<span class="fc" id="L81">                    continue;</span>
+<span class="nc" id="L75">            factors2 = pollardRhoFactorization(factor, rand);</span>
+<span class="nc" id="L76">            iter = factors2.iterator();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            while (iter.hasNext()) {</span>
+<span class="nc" id="L78">                factor2 = iter.next();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">                if (probablyPrime(factor2, s)) {</span>
+<span class="nc" id="L80">                    primeFactors.add(factor2);</span>
+<span class="nc" id="L81">                    continue;</span>
                 }
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">                if (!factors.contains(factor2)) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                if (!factors.contains(factor2)) {</span>
 <span class="nc" id="L84">                    factorsList.add(factor2);</span>
                 }
             }
@@ -159,7 +159,7 @@ import java.util.concurrent.ThreadLocalRandom;
         
         long d;
                 
-        //System.out.printf(&quot;i=%d xi=%d\n&quot;, i, x1);
+        //System.out.printf(&quot;i=%d xi=%d%n&quot;, i, x1);
                 
         while (true) {
             
@@ -174,7 +174,7 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L174">            d = NumberTheory.extendedEuclid(y - x2, n)[0];</span>
 <span class="fc" id="L175">            d = Math.abs(d);</span>
             
-            //System.out.printf(&quot;i=%d x2=%d, d=(%d,%d) xc=%d\n&quot;, 
+            //System.out.printf(&quot;i=%d x2=%d, d=(%d,%d) xc=%d%n&quot;, 
             //    i, x2, d, NumberTheory.euclid(y-x2, n), xCycle);
                    
 <span class="fc bfc" id="L180" title="All 6 branches covered.">            if ((d != 1) &amp;&amp; (d != n) &amp;&amp; !factors.contains(d)) {</span>
@@ -268,9 +268,9 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc bfc" id="L268" title="All 2 branches covered.">        for (j = 0; j &lt; s; ++j) {</span>
             // 1 &lt;= a &lt;= (n-1)
 <span class="fc" id="L270">            a = rand.nextLong(1, n-1);</span>
-<span class="fc bfc" id="L271" title="All 2 branches covered.">            if (witness(a, n, rand)) {</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">            if (witness(a, n, rand)) {</span>
                 // a is definitely composite
-<span class="fc" id="L273">                return false;</span>
+<span class="nc" id="L273">                return false;</span>
             }
         }
 <span class="fc" id="L276">        return true;</span>
@@ -304,7 +304,7 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L304">        int t = 1;</span>
         int div;
                         
-<span class="fc bfc" id="L307" title="All 2 branches covered.">        for (long i = 3; i &lt; n; i+=2) {</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">        for (long i = 3; i &lt; n; i+=2) {</span>
 <span class="fc bfc" id="L308" title="All 2 branches covered.">            if (Math.floorMod(n - 1, i) == 0) {</span>
 <span class="fc" id="L309">                u = i;</span>
 <span class="fc" id="L310">                div = (int)((n-1)/u);</span>
@@ -316,11 +316,11 @@ import java.util.concurrent.ThreadLocalRandom;
             }
         }
         
-<span class="pc bpc" id="L319" title="1 of 4 branches missed.">        if (u == 1 &amp;&amp; t == 1) {</span>
+<span class="pc bpc" id="L319" title="3 of 4 branches missed.">        if (u == 1 &amp;&amp; t == 1) {</span>
             // keep u=1
-<span class="fc" id="L321">            t = (int)(Math.log(n-1)/Math.log(2));</span>
+<span class="nc" id="L321">            t = (int)(Math.log(n-1)/Math.log(2));</span>
         }
-        //System.out.printf(&quot;(1&lt;&lt;t)*u=%d, (n-1)=%d, n=%d t=%d u=%d\n&quot;, (1&lt;&lt;t)*u, n-1, n, t, u);
+        //System.out.printf(&quot;(1&lt;&lt;t)*u=%d, (n-1)=%d, n=%d t=%d u=%d%n&quot;, (1&lt;&lt;t)*u, n-1, n, t, u);
         
 <span class="pc bnc" id="L325" title="All 2 branches missed.">        assert( (1&lt;&lt;t)*u == (n-1));</span>
                 
@@ -377,9 +377,9 @@ import java.util.concurrent.ThreadLocalRandom;
         do {
 <span class="fc" id="L378">            q = generateRandomOdd(bitLength, rand);</span>
 <span class="fc" id="L379">            nIter++;</span>
-<span class="fc bfc" id="L380" title="All 2 branches covered.">        } while ( !probablyPrime(q, s));</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">        } while ( !probablyPrime(q, s));</span>
         
-<span class="fc" id="L382">        System.out.printf(&quot;nIter=%d, max expected=%d prime=%d\n&quot;, nIter, maxIter, q);</span>
+<span class="fc" id="L382">        System.out.printf(&quot;nIter=%d, max expected=%d prime=%d%n&quot;, nIter, maxIter, q);</span>
         
 <span class="fc" id="L384">        return q;</span>
     }
@@ -387,7 +387,7 @@ import java.util.concurrent.ThreadLocalRandom;
     static long generateRandomOdd(int bitlength, ThreadLocalRandom rand) {
         // for bit length n=3:  [(1&lt;&lt;(n-1)), (1&lt;&lt;n)-1 ] 4 thru 7, '100' thru '111'
 <span class="fc" id="L389">        long q = rand.nextLong((1&lt;&lt;(bitlength - 1)), (1 &lt;&lt; bitlength) - 1) ;</span>
-<span class="fc" id="L390">        System.out.printf(&quot;bitlength=%d rand=%d\n&quot;, bitlength, q);</span>
+<span class="fc" id="L390">        System.out.printf(&quot;bitlength=%d rand=%d%n&quot;, bitlength, q);</span>
 <span class="fc" id="L391">        q &lt;&lt;= 1L;</span>
 <span class="fc" id="L392">        q |= 1;</span>
 <span class="fc" id="L393">        return q;</span>

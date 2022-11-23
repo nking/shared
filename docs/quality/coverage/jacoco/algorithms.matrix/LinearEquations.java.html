@@ -497,7 +497,7 @@ import no.uib.cipr.matrix.*;
 <span class="fc" id="L497">                d[k-1] -= a[k-1][p-1]*r[p-1];</span>
             }
 <span class="pc bpc" id="L499" title="1 of 2 branches missed.">            if (Math.abs(d[k-1]) &lt; eps) {</span>
-<span class="nc" id="L500">                System.err.printf(&quot;Error: number %.3e is smaller than %.3e\n&quot;, </span>
+<span class="nc" id="L500">                System.err.printf(&quot;Error: number %.3e is smaller than %.3e%n&quot;, </span>
 <span class="nc" id="L501">                    Math.abs(d[k-1]), eps);</span>
 <span class="nc" id="L502">                return null;</span>
             }

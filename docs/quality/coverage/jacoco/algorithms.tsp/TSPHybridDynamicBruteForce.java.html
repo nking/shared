@@ -110,8 +110,8 @@ import java.util.Stack;
         //cr0=12 n=4
 <span class="fc" id="L111">        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);</span>
 <span class="fc" id="L112">        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);</span>
-<span class="fc" id="L113">        System.out.printf(&quot;cr0=%d n=%d\n&quot;, cr0, dist.length);</span>
-<span class="fc" id="L114">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n&quot;, </span>
+<span class="fc" id="L113">        System.out.printf(&quot;cr0=%d n=%d%n&quot;, cr0, dist.length);</span>
+<span class="fc" id="L114">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f%n&quot;,</span>
 <span class="fc" id="L115">            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);</span>
 <span class="fc" id="L116">    }</span>
     long cr0;
@@ -204,8 +204,8 @@ import java.util.Stack;
         // if dynamic: O(n^2 * 2^n) 
 <span class="fc" id="L205">        double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);</span>
 <span class="fc" id="L206">        double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);</span>
-<span class="fc" id="L207">        System.out.printf(&quot;c0=%d c1=%d c2=%d n=%d\n&quot;, c0, c1, c2, dist.length);</span>
-<span class="fc" id="L208">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n&quot;, </span>
+<span class="fc" id="L207">        System.out.printf(&quot;c0=%d c1=%d c2=%d n=%d%n&quot;, c0, c1, c2, dist.length);</span>
+<span class="fc" id="L208">        System.out.printf(&quot;    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f%n&quot;,</span>
 <span class="fc" id="L209">            totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);</span>
 <span class="fc" id="L210">    }</span>
        
@@ -219,7 +219,7 @@ import java.util.Stack;
         /*
         TIntList p = new TIntArrayList();
         readPathIntoBase10(bitstring, p);
-        System.out.printf(&quot;bs=%s (%s) sum=%.2f nR=%d\n&quot;,
+        System.out.printf(&quot;bs=%s (%s) sum=%.2f nR=%d%n&quot;,
             Long.toBinaryString(bitstring),
             Arrays.toString(p.toArray()), sum, nNodesRemaining);
         */

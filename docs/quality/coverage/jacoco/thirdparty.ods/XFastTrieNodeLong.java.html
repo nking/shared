@@ -30,8 +30,8 @@ import algorithms.util.ObjectSpaceEstimator;
 <span class="fc" id="L30">        return fnvHashCode(prefix);</span>
     }
      
-<span class="fc" id="L33">    protected static int fnv321aInit = 0x811c9dc5;</span>
-<span class="fc" id="L34">    protected static int fnv32Prime = 0x01000193;</span>
+    protected final static int fnv321aInit = 0x811c9dc5;
+    protected final static int fnv32Prime = 0x01000193;
 
     protected int fnvHashCode(long p) {
 

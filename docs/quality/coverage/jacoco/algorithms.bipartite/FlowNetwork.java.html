@@ -1210,7 +1210,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L1210">                float unitFlow = f.get(p);</span>
 <span class="nc" id="L1211">                float cp = calcNetCost(p);</span>
 
-<span class="nc" id="L1213">                sb.append(String.format(&quot;%d to %d cp=%.2f f=%.2f\n&quot;,</span>
+<span class="nc" id="L1213">                sb.append(String.format(&quot;%d to %d cp=%.2f f=%.2f%n&quot;,</span>
 <span class="nc" id="L1214">                    idx1, idx2, cp, unitFlow));</span>
 <span class="nc" id="L1215">            }</span>
 <span class="nc" id="L1216">        }</span>
@@ -1224,7 +1224,7 @@ import java.util.logging.Logger;
 
 <span class="nc" id="L1225">            float unitFlow = sourceToLeftF.get(idx1);</span>
 <span class="nc" id="L1226">            float cp = calcSourceNetCost(idx1);</span>
-<span class="nc" id="L1227">            sb.append(String.format(&quot;source to %d cp=%.2f f=%.2f\n&quot;,</span>
+<span class="nc" id="L1227">            sb.append(String.format(&quot;source to %d cp=%.2f f=%.2f%n&quot;,</span>
 <span class="nc" id="L1228">                idx1, cp, unitFlow));</span>
 <span class="nc" id="L1229">        }</span>
 <span class="nc" id="L1230">        log.fine(sb.toString());</span>
@@ -1235,7 +1235,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L1235">            int idx1 = iter2.next();</span>
 <span class="nc" id="L1236">            float unitFlow = rightToSinkF.get(idx1);</span>
 <span class="nc" id="L1237">            float cp = calcSinkNetCost(idx1);</span>
-<span class="nc" id="L1238">            sb.append(String.format(&quot;%d to sink cp=%.2f f=%.2f\n&quot;,</span>
+<span class="nc" id="L1238">            sb.append(String.format(&quot;%d to sink cp=%.2f f=%.2f%n&quot;,</span>
 <span class="nc" id="L1239">                idx1, cp, unitFlow));</span>
 <span class="nc" id="L1240">        }</span>
 <span class="nc" id="L1241">        log.fine(sb.toString());</span>

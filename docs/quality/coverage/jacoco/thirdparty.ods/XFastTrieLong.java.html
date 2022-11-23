@@ -206,7 +206,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
             }
 <span class="fc" id="L207">            prefix = w.prefix;</span>
 <span class="fc" id="L208">			t.get(i--).remove(w.prefix);</span>
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">			w = (w.parent != null) ? (S)w.parent : null;</span>
+<span class="fc" id="L209">			w = (S)w.parent;</span>
 		}
 		// 4 - update jump pointers
 <span class="fc bfc" id="L212" title="All 2 branches covered.">		w.jump = (w.child[left] == null) ? succ : pred;</span>
@@ -435,7 +435,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 <span class="fc" id="L435">        TIntSet dummyHashCodes = new TIntHashSet();</span>
 <span class="fc" id="L436">        S node = dummy;</span>
         //System.out.println(&quot;dummy.hashCode=&quot; + dummy.hashCode());
-<span class="fc" id="L438">        System.out.print(&quot;\ndummy=&quot;);</span>
+<span class="fc" id="L438">        System.out.print(&quot;%ndummy=&quot;);</span>
         do {
 <span class="fc" id="L440">            int dhc = node.hashCode();</span>
 <span class="fc" id="L441">            System.out.print(node.x + &quot;, &quot;);</span>

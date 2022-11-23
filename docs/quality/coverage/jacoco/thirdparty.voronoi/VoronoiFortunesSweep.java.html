@@ -171,7 +171,7 @@ public class VoronoiFortunesSweep {
 <span class="fc" id="L171">                ymax = yValues[i];</span>
             }
             
-            //printf(&quot;\n%f %f\n&quot;,xValues[i],yValues[i]);
+            //printf(&quot;%n%f %f%n&quot;,xValues[i],yValues[i]);
         }
         
         // N log_2 N
@@ -471,7 +471,7 @@ public class VoronoiFortunesSweep {
 <span class="nc" id="L471">        }</span>
 <span class="nc" id="L472">    }</span>
 
-    private class SiteComp implements Comparator&lt;Site&gt; {
+    private static class SiteComp implements Comparator&lt;Site&gt; {
         @Override
         public int compare(Site o1, Site o2) {
             if (o1.coord.getY() &lt; o2.coord.getY()) {
@@ -501,7 +501,7 @@ public class VoronoiFortunesSweep {
         }
     }
 
-    private class Edge {
+    private static class Edge {
         float a = 0;
         float b = 0;
         float c = 0;
@@ -516,7 +516,7 @@ public class VoronoiFortunesSweep {
         public int site2;
     }
      
-    private class HalfEdge {
+    private static class HalfEdge {
 	    HalfEdge ELleft = null; 
         HalfEdge ELright = null;
 	    Edge ELedge = null;

@@ -156,7 +156,7 @@ import java.util.logging.Logger;
             sb.append(&quot; index=&quot;).append(Integer.toBinaryString(index));
             PathNode prev = pathPredecessor;
             while (prev != null) {
-                String str = String.format(&quot;\n   [prev=%s %d %d]&quot;, 
+                String str = String.format(&quot;%n   [prev=%s %d %d]&quot;, 
                     prev.id, (int)prev.getKey(), prev.index);
                 sb.append(str);
                 prev = prev.pathPredecessor;
@@ -790,8 +790,8 @@ import java.util.logging.Logger;
             }
 <span class="fc" id="L791">            int idx1 = node1.index;</span>
                                 
-<span class="pc bpc" id="L793" title="1 of 2 branches missed.">            if (terminatingKeys.containsKey(idx1)) {</span>
-<span class="nc" id="L794">                continue;</span>
+<span class="fc bfc" id="L793" title="All 2 branches covered.">            if (terminatingKeys.containsKey(idx1)) {</span>
+<span class="fc" id="L794">                continue;</span>
 <span class="fc bfc" id="L795" title="All 4 branches covered.">            } else if (</span>
                 node1.pathPredecessor != null &amp;&amp;
                 node1.pathPredecessor instanceof RightNode &amp;&amp;
@@ -1258,7 +1258,7 @@ Matchings in G are integral flows in N_G
 <span class="fc" id="L1258">        return pathLists;</span>
     }
     
-    private class PathsAndPrices {
+    private static class PathsAndPrices {
         List&lt;PathNode&gt; path;
         TIntFloatMap leftPriceIncreases;
         TIntFloatMap rightPriceIncreases;
@@ -1972,7 +1972,7 @@ Matchings in G are integral flows in N_G
 <span class="nc" id="L1972">                    node2.index));</span>
 <span class="nc" id="L1973">                sb.append(&quot;, &quot;);</span>
 <span class="nc" id="L1974">            }</span>
-<span class="nc" id="L1975">            sb.append(&quot;]\n&quot;);</span>
+<span class="nc" id="L1975">            sb.append(&quot;]%n&quot;);</span>
 <span class="nc" id="L1976">        }</span>
 <span class="nc" id="L1977">        log.fine(sb.toString());</span>
 <span class="nc" id="L1978">    }</span>

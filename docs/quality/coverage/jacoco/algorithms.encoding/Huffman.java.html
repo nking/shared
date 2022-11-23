@@ -410,7 +410,7 @@ import java.util.Queue;
     
     private HeapNode repairToUniqueIfNeeded(HeapNode t) {
         
-        //System.out.println(&quot;\nrepairToUniqueIfNeeded:&quot;);
+        //System.out.println(&quot;%nrepairToUniqueIfNeeded:&quot;);
         //    TreeTraversal.printLevelOrder(t);
             
         // there is a possible violation of unique prefix code for
@@ -431,7 +431,7 @@ import java.util.Queue;
 <span class="fc" id="L431">            leaf = leaf.getLeft();</span>
         }
         
-        //System.out.printf(&quot;remove leaf=(%d,%d), p=(%d,%d)\n&quot;, 
+        //System.out.printf(&quot;remove leaf=(%d,%d), p=(%d,%d)%n&quot;, 
         //    leaf.getKey(), (Integer)leaf.getData(), p.getKey(), (Integer)p.getData());
 <span class="fc" id="L436">        p.setLeft(null);</span>
         
@@ -449,7 +449,7 @@ import java.util.Queue;
 <span class="nc" id="L449">        TIntIntIterator iter = f.iterator();</span>
 <span class="nc bnc" id="L450" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
 <span class="nc" id="L451">            iter.advance();</span>
-<span class="nc" id="L452">            System.out.printf(&quot;key=%d, v=%d\n&quot;, iter.key(), iter.value());</span>
+<span class="nc" id="L452">            System.out.printf(&quot;key=%d, v=%d%n&quot;, iter.key(), iter.value());</span>
         }
 <span class="nc" id="L454">    }</span>
 

@@ -246,101 +246,100 @@ public class KDTree {
 		
 		// left points are  startSortRange through medianX
 <span class="fc" id="L248">		KDTreeNode leftChildren = buildTree(depth, x, y, startSortRange, medianIndex);</span>
-		
+
 		// right points are medianIndex    through stopSortRangeExclusive
 <span class="fc" id="L251">		KDTreeNode rightChildren = buildTree(depth, x, y, medianIndex+1, stopSortRangeExclusive);</span>
 		
 <span class="fc" id="L253">		KDTreeNode parent = new KDTreeNode();</span>
 		
 <span class="fc" id="L255">		parent.key = median;</span>
-<span class="fc" id="L256">		parent.left = leftChildren;</span>
-<span class="fc" id="L257">		parent.right = rightChildren;</span>
-		
-<span class="fc" id="L259">		leftChildren.parent = parent;</span>
-<span class="fc" id="L260">	    rightChildren.parent = parent;</span>
 	    
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">	    if (parent.left != null) {</span>
-<span class="fc" id="L263">	    	parent.nChildren += 1 + parent.left.nChildren;</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">	    if (leftChildren != null) {</span>
+<span class="fc" id="L258">			parent.left = leftChildren;</span>
+<span class="fc" id="L259">			leftChildren.parent = parent;</span>
+<span class="fc" id="L260">	    	parent.nChildren += 1 + parent.left.nChildren;</span>
 	    }
-<span class="pc bpc" id="L265" title="1 of 2 branches missed.">	    if (parent.right != null) {</span>
-<span class="fc" id="L266">	    	parent.nChildren += 1 + parent.right.nChildren;</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">	    if (rightChildren != null) {</span>
+<span class="fc" id="L263">			parent.right = rightChildren;</span>
+<span class="fc" id="L264">			rightChildren.parent = parent;</span>
+<span class="fc" id="L265">	    	parent.nChildren += 1 + parent.right.nChildren;</span>
 	    }
 	    
-<span class="fc" id="L269">	    return parent;</span>
+<span class="fc" id="L268">	    return parent;</span>
 	}
         
 	public KDTreeNode findNearestNeighbor(int x, int y) {
 
-<span class="fc" id="L274">        KDTreeNode[] best = new KDTreeNode[1];</span>
-<span class="fc" id="L275">        double[] bestDist = new double[]{Double.MAX_VALUE};</span>
+<span class="fc" id="L273">        KDTreeNode[] best = new KDTreeNode[1];</span>
+<span class="fc" id="L274">        double[] bestDist = new double[]{Double.MAX_VALUE};</span>
 
-<span class="fc" id="L277">        nearestNeighborSearch(root, x, y, 0, best, bestDist, false);</span>
+<span class="fc" id="L276">        nearestNeighborSearch(root, x, y, 0, best, bestDist, false);</span>
         
-<span class="fc" id="L279">        return best[0];</span>
+<span class="fc" id="L278">        return best[0];</span>
     }
     
     public KDTreeNode findNearestNeighborNotEquals(int x, int y) {
 
-<span class="fc" id="L284">        KDTreeNode[] best = new KDTreeNode[1];</span>
-<span class="fc" id="L285">        double[] bestDist = new double[]{Double.MAX_VALUE};</span>
+<span class="fc" id="L283">        KDTreeNode[] best = new KDTreeNode[1];</span>
+<span class="fc" id="L284">        double[] bestDist = new double[]{Double.MAX_VALUE};</span>
 
-<span class="fc" id="L287">        nearestNeighborSearch(root, x, y, 0, best, bestDist, true);</span>
+<span class="fc" id="L286">        nearestNeighborSearch(root, x, y, 0, best, bestDist, true);</span>
         
-<span class="fc" id="L289">        return best[0];</span>
+<span class="fc" id="L288">        return best[0];</span>
     }
 	
 	protected KDTreeNode nearestNeighborSearch(KDTreeNode tree, int leftValue, 
         int rightValue, int depth, KDTreeNode[] best, double[] bestDist,
         boolean excludeEquals) {
 
-<span class="fc bfc" id="L296" title="All 2 branches covered.">        if (tree.nChildren == 0 ) {</span>
-<span class="fc" id="L297">			return tree;</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (tree.nChildren == 0 ) {</span>
+<span class="fc" id="L296">			return tree;</span>
 		}
 		
-<span class="fc" id="L300">		int medianValue = tree.getKey();</span>
+<span class="fc" id="L299">		int medianValue = tree.getKey();</span>
 		
 		float diffMedValSq;
 		
 		KDTreeNode subTree1, subTree2;
         int partition;
 
-<span class="fc bfc" id="L307" title="All 2 branches covered.">        if ((depth &amp; 1) == 0) {</span>
-<span class="fc" id="L308">            partition = leftValue;</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        if ((depth &amp; 1) == 0) {</span>
+<span class="fc" id="L307">            partition = leftValue;</span>
         } else {
-<span class="fc" id="L310">            partition = rightValue;</span>
+<span class="fc" id="L309">            partition = rightValue;</span>
         }
         
-<span class="fc" id="L313">        diffMedValSq = medianValue - partition;</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (partition &lt;= medianValue) {</span>
-<span class="fc" id="L315">            subTree1 = tree.left;</span>
-<span class="fc" id="L316">            subTree2 = tree.right;</span>
+<span class="fc" id="L312">        diffMedValSq = medianValue - partition;</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (partition &lt;= medianValue) {</span>
+<span class="fc" id="L314">            subTree1 = tree.left;</span>
+<span class="fc" id="L315">            subTree2 = tree.right;</span>
         } else {
-<span class="fc" id="L318">            subTree1 = tree.right;</span>
-<span class="fc" id="L319">            subTree2 = tree.left;</span>
+<span class="fc" id="L317">            subTree1 = tree.right;</span>
+<span class="fc" id="L318">            subTree2 = tree.left;</span>
         }
-<span class="fc" id="L321">        diffMedValSq *= diffMedValSq;</span>
+<span class="fc" id="L320">        diffMedValSq *= diffMedValSq;</span>
 	
-<span class="fc" id="L323">        KDTreeNode retVal1 = nearestNeighborSearch(</span>
+<span class="fc" id="L322">        KDTreeNode retVal1 = nearestNeighborSearch(</span>
             subTree1, leftValue, rightValue, depth + 1, best, bestDist, 
             excludeEquals);
 		
-<span class="fc" id="L327">        double dist1 = Double.MAX_VALUE;</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">        if (retVal1 != null) {</span>
-<span class="fc" id="L329">            dist1 = distanceSq(retVal1, leftValue, rightValue);</span>
-<span class="fc bfc" id="L330" title="All 2 branches covered.">            if (excludeEquals) {</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">                if (dist1 &gt; 0) {</span>
-<span class="pc bpc" id="L332" title="1 of 2 branches missed.">                    if (dist1 &lt; bestDist[0]) {</span>
-<span class="nc" id="L333">                        bestDist[0] = dist1;</span>
-<span class="nc" id="L334">                        best[0] = retVal1;</span>
+<span class="fc" id="L326">        double dist1 = Double.MAX_VALUE;</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">        if (retVal1 != null) {</span>
+<span class="fc" id="L328">            dist1 = distanceSq(retVal1, leftValue, rightValue);</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">            if (excludeEquals) {</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">                if (dist1 &gt; 0) {</span>
+<span class="pc bpc" id="L331" title="1 of 2 branches missed.">                    if (dist1 &lt; bestDist[0]) {</span>
+<span class="nc" id="L332">                        bestDist[0] = dist1;</span>
+<span class="nc" id="L333">                        best[0] = retVal1;</span>
                     }
                 }
             } else {
-<span class="fc bfc" id="L338" title="All 2 branches covered.">                if (dist1 &lt; bestDist[0]) {</span>
-<span class="fc" id="L339">                    bestDist[0] = dist1;</span>
-<span class="fc" id="L340">                    best[0] = retVal1;</span>
-<span class="pc bpc" id="L341" title="1 of 2 branches missed.">                    if (dist1 == 0) {</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">                if (dist1 &lt; bestDist[0]) {</span>
+<span class="fc" id="L338">                    bestDist[0] = dist1;</span>
+<span class="fc" id="L339">                    best[0] = retVal1;</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">                    if (dist1 == 0) {</span>
                         // this is the point
-<span class="nc" id="L343">                        return retVal1;</span>
+<span class="nc" id="L342">                        return retVal1;</span>
                     }
                 }
             }
@@ -351,74 +350,74 @@ public class KDTree {
         //      the median than it is to retVal1,
         //      search the other tree too.
         
-<span class="fc bfc" id="L354" title="All 2 branches covered.">		if ((2*diffMedValSq) &lt; dist1) {</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		if ((2*diffMedValSq) &lt; dist1) {</span>
             
-<span class="fc" id="L356">			KDTreeNode retVal2 = nearestNeighborSearch(</span>
+<span class="fc" id="L355">			KDTreeNode retVal2 = nearestNeighborSearch(</span>
                 subTree2, leftValue, rightValue, depth + 1, best, bestDist,
                 excludeEquals);
             
-<span class="fc" id="L360">            double dist2 = Double.MAX_VALUE;</span>
+<span class="fc" id="L359">            double dist2 = Double.MAX_VALUE;</span>
             
-<span class="pc bpc" id="L362" title="1 of 2 branches missed.">            if (retVal2 != null) {</span>
-<span class="fc" id="L363">                dist2 = distanceSq(retVal2, leftValue, rightValue);</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">                if (excludeEquals) {</span>
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">                    if (dist2 &gt; 0) {</span>
-<span class="fc bfc" id="L366" title="All 2 branches covered.">                        if (dist2 &lt; bestDist[0]) {</span>
-<span class="fc" id="L367">                            bestDist[0] = dist2;</span>
-<span class="fc" id="L368">                            best[0] = retVal2;</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">            if (retVal2 != null) {</span>
+<span class="fc" id="L362">                dist2 = distanceSq(retVal2, leftValue, rightValue);</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">                if (excludeEquals) {</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">                    if (dist2 &gt; 0) {</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">                        if (dist2 &lt; bestDist[0]) {</span>
+<span class="fc" id="L366">                            bestDist[0] = dist2;</span>
+<span class="fc" id="L367">                            best[0] = retVal2;</span>
                         }
                     }
                 } else {
-<span class="pc bpc" id="L372" title="1 of 2 branches missed.">                    if (dist2 &lt; bestDist[0]) {</span>
-<span class="nc" id="L373">                        bestDist[0] = dist2;</span>
-<span class="nc" id="L374">                        best[0] = retVal2;</span>
-<span class="nc bnc" id="L375" title="All 2 branches missed.">                        if (dist2 == 0) {</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">                    if (dist2 &lt; bestDist[0]) {</span>
+<span class="nc" id="L372">                        bestDist[0] = dist2;</span>
+<span class="nc" id="L373">                        best[0] = retVal2;</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">                        if (dist2 == 0) {</span>
                             // this is the point
-<span class="nc" id="L377">                            return retVal2;</span>
+<span class="nc" id="L376">                            return retVal2;</span>
                         }
                     }
                 }
             }
         }
         
-<span class="fc" id="L384">		return best[0];</span>
+<span class="fc" id="L383">		return best[0];</span>
     }
     
     private double distanceSq(KDTreeNode tree, 
         float leftValue, float rightValue) {
 
-<span class="fc" id="L390">        float diffX = tree.getX() - leftValue;</span>
-<span class="fc" id="L391">        float diffY = tree.getY() - rightValue;</span>
+<span class="fc" id="L389">        float diffX = tree.getX() - leftValue;</span>
+<span class="fc" id="L390">        float diffY = tree.getY() - rightValue;</span>
         
-<span class="fc" id="L393">        return (diffX * diffX) + (diffY * diffY);</span>
+<span class="fc" id="L392">        return (diffX * diffX) + (diffY * diffY);</span>
     }
     
 	public void printTree() {
-<span class="fc" id="L397">		printTree(root, &quot; &quot;);</span>
-<span class="fc" id="L398">	}</span>
+<span class="fc" id="L396">		printTree(root, &quot; &quot;);</span>
+<span class="fc" id="L397">	}</span>
 	private void printTree(KDTreeNode node, String preString) {
-<span class="fc bfc" id="L400" title="All 2 branches covered.">		if (node.left != null) {</span>
-<span class="fc" id="L401">		    printTree(node.left, preString + &quot;:LEFT &quot; + node.getKey());</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">		if (node.left != null) {</span>
+<span class="fc" id="L400">		    printTree(node.left, preString + &quot;:LEFT &quot; + node.getKey());</span>
 		}
-<span class="fc bfc" id="L403" title="All 2 branches covered.">		if (node.right != null) {</span>
-<span class="fc" id="L404">		    printTree(node.right, preString + &quot;:RIGHT &quot; + node.getKey());</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">		if (node.right != null) {</span>
+<span class="fc" id="L403">		    printTree(node.right, preString + &quot;:RIGHT &quot; + node.getKey());</span>
 		}
-<span class="pc bpc" id="L406" title="1 of 4 branches missed.">		if (node.left == null &amp;&amp; node.right == null) {</span>
-<span class="fc" id="L407">			System.out.println(preString + node.getKey() + &quot;(&quot; + node.getX() + &quot;,&quot; + node.getY() + &quot;)&quot;);</span>
-<span class="fc" id="L408">			return;</span>
+<span class="pc bpc" id="L405" title="1 of 4 branches missed.">		if (node.left == null &amp;&amp; node.right == null) {</span>
+<span class="fc" id="L406">			System.out.println(preString + node.getKey() + &quot;(&quot; + node.getX() + &quot;,&quot; + node.getY() + &quot;)&quot;);</span>
+<span class="fc" id="L407">			return;</span>
 		}
-<span class="fc" id="L410">	}</span>
+<span class="fc" id="L409">	}</span>
     
     public static long estimateSizeOnHeap(int numberOfPoints) {
                 
-<span class="fc" id="L414">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
-<span class="fc" id="L415">        est.setNObjRefsFields(1);</span>
+<span class="fc" id="L413">        ObjectSpaceEstimator est = new ObjectSpaceEstimator();</span>
+<span class="fc" id="L414">        est.setNObjRefsFields(1);</span>
         
-<span class="fc" id="L417">        long total = est.estimateSizeOnHeap();</span>
+<span class="fc" id="L416">        long total = est.estimateSizeOnHeap();</span>
         
-<span class="fc" id="L419">        total += numberOfPoints * KDTreeNode.estimateSizeOnHeap();</span>
+<span class="fc" id="L418">        total += numberOfPoints * KDTreeNode.estimateSizeOnHeap();</span>
         
-<span class="fc" id="L421">        return total;</span>
+<span class="fc" id="L420">        return total;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

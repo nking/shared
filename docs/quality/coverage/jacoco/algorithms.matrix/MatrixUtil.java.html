@@ -1946,19 +1946,19 @@ import gnu.trove.set.hash.TIntHashSet;
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append(&quot;u=\n&quot;);
+            sb.append(&quot;u=%n&quot;);
             if (u != null) {
                 sb.append(FormatArray.toString(u, &quot;%.4e&quot;));
             } 
-            sb.append(&quot;\ns=\n&quot;);
+            sb.append(&quot;%ns=%n&quot;);
             if (s != null) {
                 sb.append(FormatArray.toString(s, &quot;%.4e&quot;));
             }
-            sb.append(&quot;\nsigma=\n&quot;);
+            sb.append(&quot;%nsigma=%n&quot;);
             if (sigma != null) {
                 sb.append(FormatArray.toString(sigma, &quot;%.4e&quot;));
             }
-            sb.append(&quot;\nvT=\n&quot;);
+            sb.append(&quot;%nvT=%n&quot;);
             if (vT != null) {
                 sb.append(FormatArray.toString(vT, &quot;%.4e&quot;));
             }
@@ -2884,7 +2884,7 @@ import gnu.trove.set.hash.TIntHashSet;
             }
         }
 <span class="pc bpc" id="L2886" title="1 of 2 branches missed.">        if (!ok) {</span>
-            //System.out.printf(&quot;before: evd eigenvalues=%s\n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
+            //System.out.printf(&quot;before: evd eigenvalues=%s%n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
 
             //still needs a small perturbation to make the eigenvalues all &gt;= eps
             // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
@@ -2898,7 +2898,7 @@ import gnu.trove.set.hash.TIntHashSet;
             }
 <span class="fc" id="L2899">            aPSD = MatrixUtil.pointwiseAdd(aPSD, D);</span>
             //evd = EVD.factorize(new DenseMatrix(aPSD));
-            //System.out.printf(&quot;after:  evd eigenvalues=%s\n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
+            //System.out.printf(&quot;after:  evd eigenvalues=%s%n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
         }
         
 <span class="fc" id="L2904">        return aPSD; </span>
@@ -3004,7 +3004,7 @@ import gnu.trove.set.hash.TIntHashSet;
 <span class="fc bfc" id="L3004" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
 <span class="fc" id="L3005">                v[row] = z[row] / eig;</span>
             }
-            //System.out.printf(&quot;eig=%.3f\n  v=%s\n  z=%s\n&quot;, eig, Arrays.toString(v),
+            //System.out.printf(&quot;eig=%.3f%n  v=%s%n  z=%s%n&quot;, eig, Arrays.toString(v),
             //    Arrays.toString(z));
         }
 <span class="fc" id="L3010">        return eig;</span>
@@ -3071,7 +3071,7 @@ import gnu.trove.set.hash.TIntHashSet;
 <span class="fc bfc" id="L3071" title="All 2 branches covered.">            if (stop == 1) {</span>
 <span class="fc" id="L3072">                break;</span>
             }
-            //System.out.printf(&quot;nIter=%d eig=%.3f\n  v=%s\n  z=%s\n&quot;, nIter, 
+            //System.out.printf(&quot;nIter=%d eig=%.3f%n  v=%s%n  z=%s%n&quot;, nIter, 
             //    eig, Arrays.toString(v), Arrays.toString(z));
 <span class="fc" id="L3076">            nIter++;</span>
         }
@@ -3134,10 +3134,10 @@ import gnu.trove.set.hash.TIntHashSet;
             }
 <span class="fc" id="L3135">            a = a2;</span>
             
-<span class="fc" id="L3137">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
-<span class="fc" id="L3138">            System.out.println(&quot;  a2=\n&quot;);</span>
+<span class="fc" id="L3137">            System.out.printf(&quot;eig[%d]=%.5f x=%s%n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
+<span class="fc" id="L3138">            System.out.println(&quot;  a2=%n&quot;);</span>
 <span class="fc bfc" id="L3139" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc" id="L3140">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
+<span class="fc" id="L3140">                System.out.printf(&quot;  %s%n&quot;, Arrays.toString(a2[i]));</span>
             }
         }
                 
@@ -3199,7 +3199,7 @@ import gnu.trove.set.hash.TIntHashSet;
             //sInv = svd(s).V * pseudoinverse(svd(s).s) * svd(s).U^T
             sInv = MatrixUtil.pseudoinverseRankDeficient(s, false);
             double[][] chk = MatrixUtil.multiply(s, sInv);
-            System.out.printf(&quot;check S*S^-1 ~ I:\n%s\n&quot;, FormatArray.toString(chk, &quot;%.5e&quot;));
+            System.out.printf(&quot;check S*S^-1 ~ I:%n%s%n&quot;, FormatArray.toString(chk, &quot;%.5e&quot;));
         */
         
         // A = S^-1 * delta^power * S
@@ -4206,8 +4206,8 @@ import gnu.trove.set.hash.TIntHashSet;
                 a.getBlock(block, i, j);
                 transpose(block, blockT);
                 b.setBlock(blockT, j, i);
-                System.out.printf(&quot;(%d,%d) blockT=\n%s\n&quot;, j, i, FormatArray.toString(blockT, &quot;%.3f&quot;));
-                System.out.printf(&quot;b=\n%s\n&quot;, FormatArray.toString(b.getA(), &quot;%.3f&quot;));
+                System.out.printf(&quot;(%d,%d) blockT=%n%s%n&quot;, j, i, FormatArray.toString(blockT, &quot;%.3f&quot;));
+                System.out.printf(&quot;b=%n%s%n&quot;, FormatArray.toString(b.getA(), &quot;%.3f&quot;));
             }
         }
         */

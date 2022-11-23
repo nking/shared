@@ -131,7 +131,7 @@ proof of NP-hardness:
 <span class="fc" id="L131">                break;</span>
             }
         }
-        //System.out.printf(&quot;srcIdx=%d, sIdx=%d, ts=%s\n&quot;, srcIdx, sIdx, Arrays.toString(tsIdxs));
+        //System.out.printf(&quot;srcIdx=%d, sIdx=%d, ts=%s%n&quot;, srcIdx, sIdx, Arrays.toString(tsIdxs));
 <span class="pc bnc" id="L135" title="All 2 branches missed.">        assert(sIdx &gt; -1);</span>
         
 <span class="fc" id="L137">        double[] dist = new double[nodes.length];</span>
@@ -193,9 +193,9 @@ proof of NP-hardness:
             }
         }
         
-        //System.out.printf(&quot;src=%d  maxDist=%.3f  maxDistIdx=%d\n&quot;, srcIdx, maxDistS, maxDistIdx);
-        //System.out.printf(&quot;dist=%s\n&quot;, FormatArray.toString(dist, &quot;%.3f&quot;));
-        //System.out.printf(&quot;pred=%s\n&quot;, Arrays.toString(prev));
+        //System.out.printf(&quot;src=%d  maxDist=%.3f  maxDistIdx=%d%n&quot;, srcIdx, maxDistS, maxDistIdx);
+        //System.out.printf(&quot;dist=%s%n&quot;, FormatArray.toString(dist, &quot;%.3f&quot;));
+        //System.out.printf(&quot;pred=%s%n&quot;, Arrays.toString(prev));
         
         // back track from maxS to S then reverse the nodes and return that
 <span class="fc" id="L201">        TIntList path = new TIntArrayList();</span>

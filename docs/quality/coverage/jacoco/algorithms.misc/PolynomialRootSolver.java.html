@@ -62,7 +62,7 @@ import thirdparty.net.oelen.polsolve.pzeros.PZeros;
  */
 <span class="nc" id="L63">public class PolynomialRootSolver {</span>
     
-<span class="fc" id="L65">    public static double eps = 1.e-7;</span>
+    public final static double eps = 1.e-7;
     
     /**
      * solve for the roots of the polynomial equation 
@@ -130,9 +130,9 @@ import thirdparty.net.oelen.polsolve.pzeros.PZeros;
 <span class="fc bfc" id="L130" title="All 2 branches covered.">        for (i = 0; i &lt; nr; ++i) {</span>
 <span class="fc" id="L131">            cRoots[i] = new Complex(root[i].real(), root[i].imag());</span>
         }
-        //System.out.printf(&quot;roots=%s\n&quot;, FormatArray.toString(cRoots, &quot;%.3e&quot;));
-        //System.out.printf(&quot;radius=%s\n&quot;, FormatArray.toString(radius, &quot;%.4e&quot;));
-        //System.out.printf(&quot;err=%s\n&quot;, FormatArray.toString(err, &quot;%b&quot;));
+        //System.out.printf(&quot;roots=%s%n&quot;, FormatArray.toString(cRoots, &quot;%.3e&quot;));
+        //System.out.printf(&quot;radius=%s%n&quot;, FormatArray.toString(radius, &quot;%.4e&quot;));
+        //System.out.printf(&quot;err=%s%n&quot;, FormatArray.toString(err, &quot;%b&quot;));
 
 <span class="fc" id="L137">        return cRoots;</span>
     }
@@ -201,7 +201,7 @@ import thirdparty.net.oelen.polsolve.pzeros.PZeros;
 <span class="fc" id="L201">            MatrixUtil.multiply(coeffs, -1./coeffs[0]);</span>
 <span class="fc" id="L202">            System.arraycopy(coeffs, 1, m[0], 0, coeffs.length-1);</span>
             
-            //System.out.printf(&quot;A=\n%s\n&quot;, FormatArray.toString(m, &quot;%.3e&quot;));
+            //System.out.printf(&quot;A=%n%s%n&quot;, FormatArray.toString(m, &quot;%.3e&quot;));
             
 <span class="fc" id="L206">            EVD evd = EVD.factorize(new DenseMatrix(m));</span>
             

@@ -48,7 +48,7 @@ import java.util.logging.Logger;
             String contents = out.toString();
             out.close();
      * &lt;/pre&gt;
-     * 
+     * It is the invoker's responsibility to close the stream.
      * @param jarPath
      * @param filePath
      * @return
@@ -272,26 +272,32 @@ import java.util.logging.Logger;
         try {
 <span class="fc" id="L273">            File file = new File(filePath);</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">            if (file.exists()) {</span>
-<span class="fc" id="L275">                file.delete();</span>
+<span class="fc" id="L275">                boolean deleted = file.delete();</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                if (!deleted) {</span>
+<span class="nc" id="L277">                    throw new IOException(&quot;could not delete file &quot; + file.getPath());</span>
+                }
             }
-<span class="fc" id="L277">            file.createNewFile();</span>
+<span class="fc" id="L280">            boolean dreated = file.createNewFile();</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">            if (!dreated) {</span>
+<span class="nc" id="L282">                throw new IOException(&quot;could not create new file &quot; + file.getPath());</span>
+            }
 
-<span class="fc" id="L279">            fw = new FileWriter(file);</span>
-<span class="fc" id="L280">            writer = new BufferedWriter(fw);</span>
-<span class="fc" id="L281">            writer.write(fileContent);</span>
+<span class="fc" id="L285">            fw = new FileWriter(file);</span>
+<span class="fc" id="L286">            writer = new BufferedWriter(fw);</span>
+<span class="fc" id="L287">            writer.write(fileContent);</span>
 
-<span class="fc" id="L283">            writer.flush();</span>
+<span class="fc" id="L289">            writer.flush();</span>
 
         } finally {
 
-<span class="pc bpc" id="L287" title="1 of 2 branches missed.">            if (writer != null) {</span>
-<span class="fc" id="L288">                writer.close();</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">            if (writer != null) {</span>
+<span class="fc" id="L294">                writer.close();</span>
             }
-<span class="pc bpc" id="L290" title="1 of 2 branches missed.">            if (fw != null) {</span>
-<span class="fc" id="L291">                fw.close();</span>
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">            if (fw != null) {</span>
+<span class="fc" id="L297">                fw.close();</span>
             }
         }
-<span class="fc" id="L294">        return filePath;</span>
+<span class="fc" id="L300">        return filePath;</span>
     }
 
 }

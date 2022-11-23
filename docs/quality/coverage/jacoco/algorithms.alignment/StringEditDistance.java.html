@@ -156,7 +156,7 @@ import java.util.Arrays;
 <span class="fc" id="L156">                j--;</span>
             }
         }
-        //System.out.printf(&quot;m=%d, n=%d, d=\n%s\n&quot;, m, n, FormatArray.toString(d, &quot;%d&quot;));
+        //System.out.printf(&quot;m=%d, n=%d, d=%n%s%n&quot;, m, n, FormatArray.toString(d, &quot;%d&quot;));
 <span class="fc" id="L160">        return d[m][n];</span>
     }
     
@@ -292,7 +292,7 @@ import java.util.Arrays;
                     }
                 }
             }
-            //System.out.printf(&quot;\n, &quot;);
+            //System.out.printf(&quot;%n, &quot;);
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
 <span class="fc bfc" id="L298" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
@@ -381,7 +381,7 @@ import java.util.Arrays;
                 }
 <span class="fc" id="L382">                dN[i][1] = maximum(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);</span>
             }
-            //System.out.printf(&quot;\n, &quot;);
+            //System.out.printf(&quot;%n, &quot;);
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
 <span class="fc bfc" id="L387" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>

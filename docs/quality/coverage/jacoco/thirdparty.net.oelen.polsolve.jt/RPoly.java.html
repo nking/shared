@@ -251,11 +251,11 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
 <span class="nc" id="L251">        int NN = coef.length;</span>
 <span class="nc bnc" id="L252" title="All 2 branches missed.">        for (int i=0; i&lt;NN; i++) {</span>
 <span class="nc bnc" id="L253" title="All 2 branches missed.">            if (coef[i] &lt; 0) {</span>
-<span class="nc" id="L254">                String term = &quot;     - x^&quot; + i + &quot; * &quot; + (-coef[i]) + &quot;\n&quot;;</span>
+<span class="nc" id="L254">                String term = &quot;     - x^&quot; + i + &quot; * &quot; + (-coef[i]) + &quot;%n&quot;;</span>
 <span class="nc" id="L255">                buffer.append(term);</span>
 <span class="nc" id="L256">            }</span>
 <span class="nc bnc" id="L257" title="All 2 branches missed.">            else if (coef[i] &gt; 0) {</span>
-<span class="nc" id="L258">                String term = &quot;       x^&quot; + i + &quot; * &quot; + coef[i] + &quot;\n&quot;;</span>
+<span class="nc" id="L258">                String term = &quot;       x^&quot; + i + &quot; * &quot; + coef[i] + &quot;%n&quot;;</span>
 <span class="nc" id="L259">                buffer.append(term);</span>
             }
             else {

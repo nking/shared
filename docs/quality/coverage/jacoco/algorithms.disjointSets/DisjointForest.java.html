@@ -177,7 +177,7 @@ import java.util.Set;
 <span class="nc" id="L177">            return x;</span>
         }
         
-        /*System.out.println(&quot;\nforest=&quot; + toString());
+        /*System.out.println(&quot;%nforest=&quot; + toString());
         System.out.println(&quot;x=&quot; + x.member + &quot; x.parent=&quot; + x.parent.member);
         System.out.println(&quot;y=&quot; + y.member + &quot; y.parent=&quot; + y.parent.member);
         System.out.flush();*/
@@ -329,7 +329,7 @@ import java.util.Set;
 <span class="fc" id="L329">                entry = iter.next();</span>
 <span class="fc" id="L330">                p = entry.getKey();</span>
 <span class="fc" id="L331">                t = entry.getValue();</span>
-<span class="fc" id="L332">                sb.append(&quot;\n tree p=&quot;);</span>
+<span class="fc" id="L332">                sb.append(&quot;%n tree p=&quot;);</span>
 <span class="pc bpc" id="L333" title="1 of 2 branches missed.">                if (p.member != null) {</span>
 <span class="fc" id="L334">                    sb.append(p.member);</span>
                 } else {
@@ -438,10 +438,10 @@ import java.util.Set;
                 }
             }
             sb.append(&quot;, &quot;);
-            sb.append(&quot;\n  nodes=&quot;);
+            sb.append(&quot;%n  nodes=&quot;);
             if (nodes != null) {
                 for (DisjointSet2Node&lt;T&gt; node : nodes){
-                    sb.append(&quot;\n   node=&quot;).append(node.toString());
+                    sb.append(&quot;%n   node=&quot;).append(node.toString());
                 }
             }
             sb.append(&quot;, &quot;);

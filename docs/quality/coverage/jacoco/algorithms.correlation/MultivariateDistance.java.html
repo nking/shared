@@ -210,7 +210,7 @@ import java.security.SecureRandom;
             
             // t2 should have cov ~ 0
             // if dependent, t &gt; 0
-<span class="fc" id="L213">            System.out.printf(&quot;   t=%.4e, t2=%.4e\n&quot;, t, t2);</span>
+<span class="fc" id="L213">            System.out.printf(&quot;   t=%.4e, t2=%.4e%n&quot;, t, t2);</span>
 <span class="fc bfc" id="L214" title="All 2 branches covered.">            if (t &gt; t2) {</span>
 <span class="fc" id="L215">                s++;</span>
             }
@@ -218,7 +218,7 @@ import java.security.SecureRandom;
         
 <span class="fc" id="L219">        s = (1. + s)/(1. + nIterations);</span>
         
-<span class="fc" id="L221">        System.out.printf(&quot;t=%.4e, s=%.4e,  1.-alpha=%.4e\n&quot;, t, s, 1.-alpha);</span>
+<span class="fc" id="L221">        System.out.printf(&quot;t=%.4e, s=%.4e,  1.-alpha=%.4e%n&quot;, t, s, 1.-alpha);</span>
 <span class="fc" id="L222">        System.out.flush();</span>
         //reject the independence hypothesis (H0) when s is smaller than critical level α (which is 1-α in this case).
 <span class="fc bfc" id="L224" title="All 2 branches covered.">        return (s &lt; (1.-alpha));</span>
@@ -375,7 +375,7 @@ import java.security.SecureRandom;
 <span class="fc" id="L375">        txx *= invK;</span>
 <span class="fc" id="L376">        tyy *= invK;</span>
         
-<span class="fc" id="L378">        System.out.printf(&quot;   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e\n&quot;, </span>
+<span class="fc" id="L378">        System.out.printf(&quot;   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e%n&quot;, </span>
 <span class="fc" id="L379">            k, txy, sxxyy, s2, s3, txx, tyy);</span>
         
 <span class="fc" id="L381">        double numer = s2 * s3;</span>
@@ -386,8 +386,8 @@ import java.security.SecureRandom;
   // temporary fudge that may be introducing a Type III error.  alphaT seems too large, so exploring the normalization of denom first:
 <span class="fc" id="L387">  denom *= k;</span>
   
-<span class="fc" id="L389">        System.out.printf(&quot;   =&gt;numer=%4e : s2=%.4e s3=%.4e\n&quot;, numer, s2, s3);</span>
-<span class="fc" id="L390">        System.out.printf(&quot;   =&gt;denom=%4e : 1st=%.4e 2nd=%.4e\n&quot;, denom, </span>
+<span class="fc" id="L389">        System.out.printf(&quot;   =&gt;numer=%4e : s2=%.4e s3=%.4e%n&quot;, numer, s2, s3);</span>
+<span class="fc" id="L390">        System.out.printf(&quot;   =&gt;denom=%4e : 1st=%.4e 2nd=%.4e%n&quot;, denom, </span>
 <span class="fc" id="L391">            ((k-1.)/(double)k) * txx * tyy, sxxyy/(double)k);</span>
         
         //NOTE: alphaT seems too large
@@ -405,13 +405,13 @@ import java.security.SecureRandom;
                 
 <span class="fc" id="L406">        double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);</span>
         
-<span class="fc" id="L408">        System.out.printf(&quot;?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,\n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n&quot;,</span>
+<span class="fc" id="L408">        System.out.printf(&quot;?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,%n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)%n&quot;,</span>
 <span class="fc" id="L409">            Math.sqrt(dcorsq), dcorsq, dcorsq*invK, n*dcorsq*invK, </span>
 <span class="fc" id="L410">            alphaT, betaT, 1.-alpha, g);</span>
         
 <span class="fc" id="L412">        double stat = n*(txy + s2*s3);        </span>
         
-<span class="fc" id="L414">        System.out.printf(&quot;Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n&quot;,</span>
+<span class="fc" id="L414">        System.out.printf(&quot;Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e%n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)%n&quot;,</span>
 <span class="fc" id="L415">            Cp, Cq, txy, n, k, s2, s3, stat, alphaT, betaT, 1.-alpha, g);</span>
 <span class="fc" id="L416">        System.out.flush();</span>
         

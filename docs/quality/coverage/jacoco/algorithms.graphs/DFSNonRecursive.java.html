@@ -132,7 +132,7 @@ import java.util.Stack;
 <span class="fc" id="L132">                    current.stage = 1;</span>
 <span class="fc" id="L133">                    stack.push(current);</span>
                     
-                    //System.out.format(&quot;  0: push onto stack u=%d\n&quot;, current.node);
+                    //System.out.format(&quot;  0: push onto stack u=%d%n&quot;, current.node);
                             
 <span class="fc" id="L137">                    SimpleLinkedListNode next = g[current.node];</span>
                     
@@ -150,7 +150,7 @@ import java.util.Stack;
 <span class="fc" id="L150">                            newSnapshot.stage = 0;</span>
 <span class="fc" id="L151">                            stack.push(newSnapshot);</span>
 
-                            //System.out.format(&quot;   0: and push onto stack v=%d\n&quot;, v);
+                            //System.out.format(&quot;   0: and push onto stack v=%d%n&quot;, v);
                             //System.out.println(&quot;   0: [v: &quot; + newSnapshot.toString() + &quot;]&quot;);
   
 <span class="fc" id="L156">                            continue;</span>
@@ -170,14 +170,14 @@ import java.util.Stack;
                         
 <span class="fc" id="L171">                        int v = next.getKey();</span>
                         
-                        //System.out.format(&quot; 1: there is a child link %d\n&quot;, v);
+                        //System.out.format(&quot; 1: there is a child link %d%n&quot;, v);
                         
 <span class="fc" id="L175">                        g[current.node].delete(next);</span>
                         
 <span class="fc" id="L177">                        current.stage = 1;</span>
 <span class="fc" id="L178">                        stack.push(current);</span>
 
-                        //System.out.format(&quot;  0: push onto stack u=%d\n&quot;, current.node);
+                        //System.out.format(&quot;  0: push onto stack u=%d%n&quot;, current.node);
                                                       
 <span class="fc bfc" id="L182" title="All 2 branches covered.">                        if (visited[v] == 0) {</span>
                             
@@ -187,7 +187,7 @@ import java.util.Stack;
 <span class="fc" id="L187">                            newSnapshot.stage = 0;</span>
 <span class="fc" id="L188">                            stack.push(newSnapshot);</span>
 
-                            //System.out.format(&quot;   1: and push onto stack v=%d\n&quot;, v);
+                            //System.out.format(&quot;   1: and push onto stack v=%d%n&quot;, v);
                             //System.out.println(&quot;   1: [v: &quot; + newSnapshot.toString() + &quot;]&quot;);
   
 <span class="fc" id="L193">                            continue;</span>
@@ -201,7 +201,7 @@ import java.util.Stack;
 <span class="fc" id="L201">                    visited[current.node] = 2;</span>
 <span class="fc" id="L202">                    time++;</span>
 <span class="fc" id="L203">                    tf[current.node] = time;</span>
-                    //System.out.format(&quot; 1: end visit to %d, set tf=%d\n&quot;,
+                    //System.out.format(&quot; 1: end visit to %d, set tf=%d%n&quot;,
                     //    current.node, time);
 
 <span class="fc" id="L207">                    break;</span>

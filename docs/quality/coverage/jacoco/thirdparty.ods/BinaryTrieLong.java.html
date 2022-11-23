@@ -175,7 +175,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc bfc" id="L175" title="All 2 branches covered.">		while (v != null) {</span>
 <span class="fc bfc" id="L176" title="All 4 branches covered.">			if ((v.child[left] == null </span>
 	        	&amp;&amp; (v.jump == null ||
-<span class="pc bpc" id="L178" title="1 of 8 branches missed.">                it.longValue(v.jump.x) &gt; ix))</span>
+<span class="fc bfc" id="L178" title="All 8 branches covered.">                it.longValue(v.jump.x) &gt; ix))</span>
 			|| (v.child[right] == null 
 	    		&amp;&amp; (v.jump == null || 
 <span class="fc bfc" id="L181" title="All 2 branches covered.">                (v.jump.x != null &amp;&amp; it.longValue(v.jump.x) &lt; ix))</span>
@@ -202,8 +202,8 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
     public T find(T x) {
 <span class="fc" id="L203">        long ix = it.longValue(x);</span>
 <span class="fc" id="L204">        T v = findValue(ix);</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        if (v == null) {</span>
-<span class="nc" id="L206">            return v;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (v == null) {</span>
+<span class="fc" id="L206">            return v;</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">        } else if (it.longValue(v) == ix) {</span>
 <span class="fc" id="L208">            return v;</span>
         }
@@ -439,7 +439,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc" id="L439">        TIntSet dummyHashCodes = new TIntHashSet();</span>
 <span class="fc" id="L440">        S node = dummy;</span>
         //System.out.println(&quot;dummy.hashCode=&quot; + dummy.hashCode());
-<span class="fc" id="L442">        System.out.print(&quot;\ndummy=&quot;);</span>
+<span class="fc" id="L442">        System.out.print(&quot;%ndummy=&quot;);</span>
         do {
 <span class="fc" id="L444">            int dhc = node.hashCode();</span>
 <span class="fc" id="L445">            System.out.print(node.x + &quot;, &quot;);</span>

@@ -153,8 +153,8 @@ public class SetCover {
 <span class="fc" id="L153">        LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);</span>
 <span class="fc" id="L154">        double[] primalX = lpSoln.calculatePrimalX();</span>
 <span class="fc" id="L155">        double[] dualY = lpSoln.calculateDualY();</span>
-<span class="fc" id="L156">        System.out.printf(&quot;primalX=%s\n&quot;, FormatArray.toString(primalX, &quot;%.3f&quot;));</span>
-<span class="fc" id="L157">        System.out.printf(&quot;dualY=%s\n&quot;, FormatArray.toString(dualY, &quot;%.3f&quot;));</span>
+<span class="fc" id="L156">        System.out.printf(&quot;primalX=%s%n&quot;, FormatArray.toString(primalX, &quot;%.3f&quot;));</span>
+<span class="fc" id="L157">        System.out.printf(&quot;dualY=%s%n&quot;, FormatArray.toString(dualY, &quot;%.3f&quot;));</span>
         
 <span class="fc" id="L159">        return weightedApprox2LgN(nU, sets, weights, primalX);</span>
     }
@@ -252,7 +252,7 @@ public class SetCover {
 <span class="fc bfc" id="L252" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
 <span class="fc" id="L253">                idx = iter.next();</span>
 <span class="fc" id="L254">                r = rand.nextDouble();</span>
-                //System.out.printf(&quot;%d) r=%.3f, yP[%d]=%.3f\n&quot;, i, r, idx, yProbabilities[idx]);              
+                //System.out.printf(&quot;%d) r=%.3f, yP[%d]=%.3f%n&quot;, i, r, idx, yProbabilities[idx]);
 <span class="fc bfc" id="L256" title="All 2 branches covered.">                if (r &lt;= yProbabilities[idx]) {</span>
 <span class="fc" id="L257">                    c.add(idx);</span>
 <span class="fc" id="L258">                    rm.add(idx);</span>
@@ -303,7 +303,7 @@ public class SetCover {
 <span class="fc" id="L303">                si = iter.value();</span>
 <span class="fc" id="L304">                idx = iter.key();</span>
 <span class="fc" id="L305">                n = si.size();</span>
-                //System.out.printf(&quot;   idx=%d (%s) n=%d\n&quot;, idx, si.toString(), n);
+                //System.out.printf(&quot;   idx=%d (%s) n=%d%n&quot;, idx, si.toString(), n);
 <span class="pc bpc" id="L307" title="1 of 4 branches missed.">                if (n &gt; 0 &amp;&amp; n &gt; maxN) {</span>
 <span class="fc" id="L308">                    maxN = n;</span>
 <span class="fc" id="L309">                    maxNIdx = idx;</span>
@@ -313,7 +313,7 @@ public class SetCover {
 <span class="nc" id="L313">                break;</span>
             }
 <span class="fc" id="L315">            siMaxN = setsMap.remove(maxNIdx);</span>
-            //System.out.printf(&quot;max idx=%d (%s)\n&quot;, maxNIdx, siMaxN.toString());
+            //System.out.printf(&quot;max idx=%d (%s)%n&quot;, maxNIdx, siMaxN.toString());
 <span class="fc" id="L317">            c.add(maxNIdx);</span>
             
             // remove siMaxN from each set in s.  and store the empty sets as indexes to remove after use of iterator
@@ -419,7 +419,7 @@ public class SetCover {
 <span class="fc" id="L419">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
             constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf(&quot;Linear Program in standard form=\n%s\n&quot;, standForm.toString());
+        //System.out.printf(&quot;Linear Program in standard form=%n%s%n&quot;, standForm.toString());
 
 <span class="fc" id="L424">        return standForm;</span>
     }

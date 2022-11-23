@@ -57,7 +57,7 @@ tables, or approximations are needed.
      * One can reject the null hypothesis if the test statistic is greater 
      * than the tabled value.
      */
-<span class="fc" id="L60">    public static double[][] upperTail = new double[100][];</span>
+<span class="fc" id="L60">    static double[][] upperTail = new double[100][];</span>
     static {                      //Z_90, Z_95,  Z_975,  Z_99,  Z_999;
 <span class="fc" id="L62">        upperTail[0] = new double[]{2.706, 3.841, 5.024, 6.635, 10.828};</span>
 <span class="fc" id="L63">        upperTail[1] = new double[]{4.605, 5.991, 7.378, 9.210, 13.816};</span>
@@ -201,7 +201,7 @@ tables, or approximations are needed.
      * One can reject the null hypothesis if the computed test statistic 
         is less than the tabled value.
      */
-<span class="fc" id="L204">    public static double[][] lowerTail = new double[100][];</span>
+<span class="fc" id="L204">    static double[][] lowerTail = new double[100][];</span>
     static {                      //Z_10, Z_05, Z_025, Z_01, Z_001;
 <span class="fc" id="L206">        lowerTail[0] = new double[]{.016, .004, .001, .000, .000};</span>
 <span class="fc" id="L207">        lowerTail[1] = new double[]{.211, .103, .051, .020, .002};</span>
@@ -367,7 +367,7 @@ tables, or approximations are needed.
 <span class="fc" id="L367">            p = 0.5 * Math.exp(b2 * z + a2 * z * z);</span>
         }
         
-<span class="fc" id="L370">        System.out.printf(&quot;Lin: chisq_t==%12.4f, df=%d, =&gt; p=%9.4f, 1-p=%9.4f\n&quot;,</span>
+<span class="fc" id="L370">        System.out.printf(&quot;Lin: chisq_t==%12.4f, df=%d, =&gt; p=%9.4f, 1-p=%9.4f%n&quot;,</span>
 <span class="fc" id="L371">            chisqStat, degreesOfFreedom, p, (1 - p));</span>
 <span class="fc" id="L372">        System.out.flush();</span>
         
@@ -407,7 +407,7 @@ tables, or approximations are needed.
         }
 <span class="fc" id="L408">        chisqStat = Math.pow(z + Math.sqrt(degreesOfFreedom), 2.);</span>
 
-<span class="fc" id="L410">        System.out.printf(&quot;Lin: df=%d, p=%9.4f =&gt; chisq=%12.4f\n&quot;,</span>
+<span class="fc" id="L410">        System.out.printf(&quot;Lin: df=%d, p=%9.4f =&gt; chisq=%12.4f%n&quot;,</span>
 <span class="fc" id="L411">            degreesOfFreedom, p, chisqStat);</span>
 <span class="fc" id="L412">        System.out.flush();</span>
         
@@ -439,7 +439,7 @@ tables, or approximations are needed.
         p *= p;
         p *= 0.1;
         
-        System.out.printf(&quot;Beh: chisq_t==%12.4f, df=%d, =&gt; p=%9.4f, 1-p=%9.4f\n&quot;,
+        System.out.printf(&quot;Beh: chisq_t==%12.4f, df=%d, =&gt; p=%9.4f, 1-p=%9.4f%n&quot;,
             chisqStat, degreesOfFreedom, p, (1 - p));
         System.out.flush();
         
