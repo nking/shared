@@ -74,9 +74,9 @@ public class KDTreeFloat {
 	/**
 	 * remove unique values by moving up items underneath them.  returns
 	 * the last index which should be used in the modified arrays given as arguments.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x x coordinates
+	 * @param y y coordinates
+	 * @return the number of indexes usable in x and y after the arrays have been condensed to remove redundant pairs
 	 */
 	static int reduceToUniqueWithMoveUp(float[] x, float[] y) {
 		// reduce points to unique by moving them up if they already exist.
@@ -114,11 +114,11 @@ public class KDTreeFloat {
 	 * build a tree at from given depth for x, y points using a depth-first algorithm.
 	 * Exits from the recursion when npoints = 0, 1 or a leaf.
 	 * 
-	 * @param depth
-	 * @param x
-	 * @param y
+	 * @param depth depth from which to build tree
+	 * @param x x coordinates
+	 * @param y y coodinates
 	 * 
-	 * @return
+	 * @return tree
 	 */
 	protected KDTreeNodeFloat buildTree(int depth, float[] x, float[] y, 
         int startSortRange, int stopSortRangeExclusive) {
@@ -185,8 +185,8 @@ public class KDTreeFloat {
 	 * in other words 
 	 * for indexes : 0 < index have values x < x[index] where x[index] is median x.
 	 * for indexes : index <= n have values x >= x[index] where x[index] is median x.
-	 * @param x
-	 * @param y
+	 * @param x x coordinates
+	 * @param y y coordinates
 	 * @return index that divides the arrays as x<median value and x >= median value
 	 */
 	int partitionByX(float[] x, float[] y, int startSortRange, int stopSortRangeExclusive) {
@@ -213,8 +213,8 @@ public class KDTreeFloat {
 	 * in other words 
 	 * for indexes : 0 < index have values y < y[index] where y[index] is median y.
 	 * for indexes : index <= n have values y >= y[index] where y[index] is median y.
-	 * @param x
-	 * @param y
+	 * @param x x coordinates
+	 * @param y y coordinates
 	 * @return index that divides the arrays as y < median value and y >= median value
 	 */
 	int partitionByY(float[] x, float[] y, int startSortRange, int stopSortRangeExclusive) {
@@ -244,9 +244,9 @@ public class KDTreeFloat {
      * all members would be faster than this which can follow
      * each branch if the equidistant points are left and
      * right of root and close to equidistant to the median split for each level.
-     * @param x
-     * @param y
-     * @return 
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return nearest neighbors
      */
 	public Set<PairFloat> findNearestNeighbor(float x, float y) {
         

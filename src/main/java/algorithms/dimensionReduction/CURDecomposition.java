@@ -85,7 +85,8 @@ public class CURDecomposition {
      * @param k the rank to approximate
      * @return the cur decomposition C, U, and R.  c plays the role of svd's U
      * and R plays he rol of SVD's v^T.
-     * @throws no.uib.cipr.matrix.NotConvergedException 
+     * @throws no.uib.cipr.matrix.NotConvergedException thrown if the MTJ SVD method cannot converge
+     * for a matrix.
      */
     public static CUR calculateDecomposition(double[][] a, int k) throws NotConvergedException {
 

@@ -123,9 +123,10 @@ public class KDTree {
 	/**
 	 * remove non-unique values by moving up items underneath them.  returns
 	 * the last index which should be used in the modified arrays given as arguments.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x x coordinates
+	 * @param y y coordinates
+	 * @return the number of items to use in the modified x and y arrays which have only unique
+	 * pairs in them now.
 	 */
 	static int reduceToUniqueWithMoveUp(int[] x, int[] y) {
 		// reduce points to unique by moving them up if they already exist.
@@ -156,8 +157,8 @@ public class KDTree {
 	 * in other words 
 	 * for indexes : 0 .lt. index have values x .lt. x[index] where x[index] is median x.
 	 * for indexes : index .lte. n have values x .gte. x[index] where x[index] is median x.
-	 * @param x
-	 * @param y
+	 * @param x x coordinates
+	 * @param y y coordinates
 	 * @return index that divides the arrays as x<median value and x >= median value
 	 */
 	int partitionByX(int[] x, int[] y, int startSortRange, int stopSortRangeExclusive) {
@@ -183,8 +184,8 @@ public class KDTree {
 	 * in other words 
 	 * for indexes : 0 .lt. index have values y .lt. y[index] where y[index] is median y.
 	 * for indexes : index .lte. n have values y .gte. y[index] where y[index] is median y.
-	 * @param x
-	 * @param y
+	 * @param x x coordinates
+	 * @param y y coordinates
 	 * @return index that divides the arrays as y .lt. median value and y >= median value
 	 */
 	int partitionByY(int[] x, int[] y, int startSortRange, int stopSortRangeExclusive) {
@@ -207,13 +208,13 @@ public class KDTree {
 	 * build a tree at from given depth for x, y points using a depth-first algorithm.
 	 * Exits from the recursion when npoints = 0, 1 or a leaf.
 	 * 
-	 * @param depth
-	 * @param x
-	 * @param y
-     * @param startSortRange
-     * @param stopSortRangeExclusive
+	 * @param depth depth from which to build tree
+	 * @param x x coordinates
+	 * @param y y coordinates
+     * @param startSortRange index start range to use in partition
+     * @param stopSortRangeExclusive index stop range to use in partition
 	 * 
-	 * @return
+	 * @return tree
 	 */
 	protected KDTreeNode buildTree(int depth, int[] x, int[] y, 
         int startSortRange, int stopSortRangeExclusive) {
@@ -404,7 +405,6 @@ public class KDTree {
 		}
 		if (node.left == null && node.right == null) {
 			System.out.println(preString + node.getKey() + "(" + node.getX() + "," + node.getY() + ")");
-			return;
 		}
 	}
     

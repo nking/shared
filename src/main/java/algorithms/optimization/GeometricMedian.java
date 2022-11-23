@@ -312,7 +312,7 @@ public class GeometricMedian {
      * this methods uses newtonsMethod2 to completion and then uses the 
      * Vardi Zhang (2000) algorithm to update argmin X if it's a point in obs.
      *
-     * Vardi & Zhang 2000:
+     * Vardi and Zhang 2000:
      * "The multivariate L1-median and associated data depth",
        Yehuda Vardi and Cun-Hui Zhang
      *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf

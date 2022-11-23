@@ -235,13 +235,13 @@ public class Primes {
      * is Pr{A|B} which is the alternate form of Bayes’s theorem (equation (C.18)).
      * <pre>
      * Pr{A|B} ≈ 1/(1 + ((2^(-s)) * (ln(n) - 1))).
-     * Pr{A|B} does not exceed 1/2 until s > log_2(log(n)-1).
+     * Pr{A|B} does not exceed 1/2 until s .gt. log_2(log(n)-1).
      * so choose s ≥ log_2(log(n)-1) = math.log(beta/1.443)/math.log(2)
      * where beta is the bitlength of n.
      * 
      * reference: Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * </pre>
-     * @param n number to test for primality, must be odd and > 2.
+     * @param n number to test for primality, must be odd and .gt. 2.
      * @param s number of randomly chosen base numbers to try
      * @return 
      */
@@ -285,7 +285,7 @@ public class Primes {
      * </pre>
      * @param a number in the range [1, n-1] inclusive, that is a random number 
      * which may prove that n is a composite number, and hence not prime
-     * @param n the number being tested for primality.  must be odd and > 2.
+     * @param n the number being tested for primality.  must be odd and .gt. 2.
      * @param rand
      * @return true when n is composite, else false when n is possibly prime.
      */
@@ -356,7 +356,7 @@ public class Primes {
      * generate a prime, naively.
      * <pre>
      * Reference:
-     * Joye, Paillier, & Vaudenay "Efficient Generation of Prime Numbers"
+     * Joye, Paillier, and Vaudenay "Efficient Generation of Prime Numbers"
      * </pre>
      * @param bitLength
      * @param rand

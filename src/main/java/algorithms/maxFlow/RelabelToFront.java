@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * <pre>
  * reference:
- * chap 26, and specifically 26.5 of Cormen, Leiserson, Rivest, & Stein "Introduction to Algorithms".
+ * chap 26, and specifically 26.5 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
  * </pre>
  * 
  * we can interpret a directed graph as a “flow network” and use it to answer 
@@ -146,8 +146,8 @@ public class RelabelToFront {
      * 
      * @param adj graph as an adjacency matrix.  the elements in the matrix are
      * the edge capacities.
-     * @param srcIdx
-     * @param sinkIdx 
+     * @param srcIdx source
+     * @param sinkIdx  sink
      */
     public RelabelToFront(double[][] adj, int srcIdx, int sinkIdx) {
         
@@ -217,8 +217,8 @@ public class RelabelToFront {
     
     /**
      * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
-     * @param u
-     * @param v
+     * @param u index of u vertex in edge uv
+     * @param v index of v vertex in edge uv
      * @return the residual capacity
      */
     protected double calculateResidualCapacity(int u, int v) {
@@ -297,8 +297,8 @@ public class RelabelToFront {
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
-     * @param u
-     * @return 
+     * @param u index of vertiex u
+     * @return excess flow
      */
     protected double calculateExcessFlow(int u) {
         double sumToU = calculateSumOfFlow(u, this.revAdj.get(u));
@@ -313,9 +313,9 @@ public class RelabelToFront {
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
-     * @param u
+     * @param u index of vertex u
      * @param v the neighbors of u
-     * @return 
+     * @return  sum of the flow
      */
     protected double calculateSumOfFlow(int u, TIntSet v) {
         if (u == srcIdx) {
@@ -333,7 +333,7 @@ public class RelabelToFront {
     }
 
     /**
-     * @param uNode
+     * @param uNode node u
      */
     protected void dischargeLoop(VertexNode uNode) {
         /*
@@ -355,7 +355,7 @@ public class RelabelToFront {
 
     /**
      * construct a linked list of all vertexes except src and sink
-     * @return 
+     * @return a linked list of all vertexes except src and sink
      */
     private DoublyLinkedList<VertexNode> constructL() {
         
@@ -476,7 +476,7 @@ public class RelabelToFront {
     
     /**
      * initialize flow to 0 for every edge in capacity map
-     * @return 
+     * @return initialized flow of edges
      */
     private TObjectDoubleMap<PairInt> initFlow() {
         
@@ -508,7 +508,7 @@ public class RelabelToFront {
      * heights of the neighbors of u that are in E_f.
      * @throws java.lang.IllegalArgumentException throws exception if a neighbor
      * of u is eligible for a push operation.
-     * @param u
+     * @param u index of vertex u
      */
     protected void relabel(int u) {
         
@@ -576,8 +576,8 @@ public class RelabelToFront {
     /**
      * The basic operation PUSH(u,v) applies if u is an overflowing vertex, 
      * c_f(u,v) > 0, and h.u = h.v + 1.
-     * @param u
-     * @param v 
+     * @param u index of vertex u
+     * @param v index of vertex v
      * @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
      * not a positive number or h.u != (h.v + 1).
      */

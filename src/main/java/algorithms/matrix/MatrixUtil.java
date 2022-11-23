@@ -72,8 +72,8 @@ public class MatrixUtil {
     
     /**
      * multiply the row vector v by matrix m.
-     * @param v
-     * @param m
+     * @param v vector
+     * @param m matrix
      * @return result is size [1][m[0].length]
      */
     public static double[] multiplyRowVectorByMatrix(double[] v, double[][] m) {
@@ -260,7 +260,7 @@ public class MatrixUtil {
      * multiply matrix m by vector n
      * @param m two dimensional array in row major format
      * @param n one dimensional array
-     * @return 
+     * @return result
      */
     public static float[] multiplyMatrixByColumnVector(float[][] m, float[] n) {
 
@@ -874,9 +874,9 @@ public class MatrixUtil {
     
     /**
      * multiply matrices and return matrix of size mrows X ncols
-     * @param m
-     * @param n
-     * @return 
+     * @param m matrix
+     * @param n matrix
+     * @return result
      */
     public static DenseMatrix multiply(Matrix m, Matrix n) {
 
@@ -945,9 +945,9 @@ public class MatrixUtil {
     /**
      * perform dot product of m and a diagonalized matrix of diag,
      * and return matrix of size mrows X mcols
-     * @param m
-     * @param diag
-     * @return 
+     * @param m matrix
+     * @param diag vector
+     * @return result
      */
     public static double[][] multiplyByDiagonal(
         double[][] m, double[] diag) {
@@ -991,8 +991,8 @@ public class MatrixUtil {
     /**
      * perform dot product of m and a diagonalized matrix of diag,
      * and return matrix of size mrows X mcols
-     * @param m
-     * @param diag
+     * @param m matrix
+     * @param diag diagonal array to use in diagonal matrix
      */
     public static void multiplyByDiagonal(DenseMatrix m, double[] diag) {
 
@@ -1031,8 +1031,8 @@ public class MatrixUtil {
      * calculates the inner product of a and b, which is a as a single row matrix
      * and b as a single column matrix, so is a^T * b.  it's also known as the
      * scalar product or dot product.
-     * @param a
-     * @param b
+     * @param a list
+     * @param b list
      * @return scale result of a^T * b
      */
     public static double innerProduct(TDoubleArrayList a, 
@@ -1053,8 +1053,8 @@ public class MatrixUtil {
     /**
      * calculates the inner product of a and b, which is a as a single row matrix
      * and b as a single column matrix, so is a^T * b.
-     * @param a
-     * @param b
+     * @param a array
+     * @param b array
      * @return scalar result of a^T * b
      */
     public static double innerProduct(double[] a, 
@@ -1113,9 +1113,9 @@ public class MatrixUtil {
     
     /**
      * calculate m[i] - s for each i=[0, m.length).
-     * @param m
-     * @param s
-     * @return 
+     * @param m array
+     * @param s scalar
+     * @return result
      */
     public static double[] subtract(double[] m, double s) {
 
@@ -1131,9 +1131,9 @@ public class MatrixUtil {
     }
     /**
      * calculate s - m[i] for each i=[0, m.length).
-     * @param m
-     * @param s
-     * @return 
+     * @param m array
+     * @param s scalar
+     * @return result
      */
     public static double[] subtract(double s, double[] m) {
 
@@ -1150,9 +1150,9 @@ public class MatrixUtil {
     
     /**
      * calculate s + m[i] for each i=[0, m.length).
-     * @param m
-     * @param s
-     * @return 
+     * @param m array
+     * @param s scalar to add to m
+     * @return resulting array
      */
     public static double[] add(double s, double[] m) {
 
@@ -1441,7 +1441,6 @@ public class MatrixUtil {
      * transpose matrix m into out matrix which must be size m[0].length X m.length.
      * @param m matrix to transpose
      * @param out output matrix to hold transposed m
-     * @return 
      */
     public static void transpose(double[][] m, double[][] out) {
 
@@ -1530,7 +1529,7 @@ public class MatrixUtil {
       * is calculated instead of the rank-deficient;
      * @param a and m X n matrix
      * @return pseudo-inverse of matrix a. dimensions are those of a^T.
-     * @throws NotConvergedException 
+     * @throws NotConvergedException thrown by MTJ when SVD could not converge
      */
     public static double[][] pseudoinverseRankDeficient(double[][] a) throws NotConvergedException {
         return pseudoinverseRankDeficient(a, true);
@@ -1565,7 +1564,7 @@ public class MatrixUtil {
      * and if it is full-rank, the method returns the results form pseudoinverseFullRank(a)
      * instead.
      * @return pseudo-inverse of matrix a. dimensions are those of a^T.
-     * @throws NotConvergedException 
+     * @throws NotConvergedException thrown by MTJ when SVD could not converge
      */
     static double[][] pseudoinverseRankDeficient(double[][] a,
         boolean checkForFullRank) throws NotConvergedException {
@@ -1663,7 +1662,7 @@ public class MatrixUtil {
      * a is a non-singular matrix(i.e. has exactly one solution). 
      * 
      * @return matrix of size [a[0].length][a.length]
-     * @throws NotConvergedException 
+     * @throws NotConvergedException thrown by MTJ when SVD could not converge
      */
     public static double[][] pseudoinverseFullColumnRank(double[][] a) throws NotConvergedException {
         int m = a.length;
@@ -1718,7 +1717,7 @@ public class MatrixUtil {
      * a is a non-singular matrix(i.e. has exactly one solution). 
      * 
      * @return matrix of size [a[0].length][a.length]
-     * @throws NotConvergedException 
+     * @throws NotConvergedException thrown by MTJ when SVD could not converge
      */
     public static double[][] pseudoinverseFullRowRank(double[][] a) throws NotConvergedException {
         int m = a.length;
@@ -1770,7 +1769,7 @@ public class MatrixUtil {
      NOTE: because this uses decomposition, each application using it should decide whether
      * to perform the exterior operations at same time to avoid recomputing
      * any matrices.
-     * @param a
+     * @param a matrix
      * @return true if is invertible
      */
     public static boolean isInvertible(double[][] a) {
@@ -1825,7 +1824,7 @@ public class MatrixUtil {
       NOTE: a positive tolerance level eps is used to find the number of singular values
       above eps instead of 0.
       </pre>
-     * @param a
+     * @param a matrix
      * @param eps a positive number for the tolerance above zero of the pivots or
      * singular values.
      * @return the rank of A
@@ -1871,8 +1870,8 @@ public class MatrixUtil {
      * given a map called adj having keys and values for each key, 
      * create a map where the keys are adj.values and the
      * values are the keys of adj.values.
-     * @param adj
-     * @return 
+     * @param adj a map
+     * @return the reverse map, this is the relationships of key to value are reersed to value to key
      */
     public static TIntObjectMap<TIntSet> createReverseMap(TIntObjectMap<TIntSet> adj) {
         TIntObjectMap<TIntSet> r = new TIntObjectHashMap<TIntSet>();
@@ -1978,8 +1977,8 @@ public class MatrixUtil {
           SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
               and sqrt( SVD(A^TA) eigenvalues )
        </pre>
-     * @param a
-     * @return 
+     * @param a matrix
+     * @return result of SVD of a or aT*a with re-scaled diagonal
      */
     public static SVDProducts performSVD(double[][] a) throws NotConvergedException {
         return performSVD(new DenseMatrix(a));
@@ -1996,8 +1995,8 @@ public class MatrixUtil {
           SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
               and sqrt( SVD(A^TA) eigenvalues )
        </pre>
-     * @param a
-     * @return 
+     * @param a matrix
+     * @return result of SVD of a or aT*a with re-scaled diagonal
      */
     public static SVDProducts performSVD(DenseMatrix a) throws NotConvergedException {
         SVD svd;
@@ -2048,8 +2047,8 @@ public class MatrixUtil {
      * create matrix A^T*A then perform SVD on it.  NOTE that the singular values
      * returned in S will have the square of values of SVD(A).s.
      * @param a the matrix a (internally, a^T*a will be calculated and used)
-     * @return
-     * @throws NotConvergedException 
+     * @return result of SVD of aT*a
+     * @throws NotConvergedException thrown by MTJ if SVD did not converge
      */
     public static SVDProducts performSVDATransposeA(double[][] a) throws NotConvergedException {
         double[][] aTa = MatrixUtil.createATransposedTimesA(a);
@@ -2091,7 +2090,7 @@ public class MatrixUtil {
      * </pre>
      * 
      * @param a a square or rectangular matrix with independent columns.
-     * @return 
+     * @return resulting QR decomposition of a
      */
     public static QR performQRDecomposition(double[][] a) {
         QR qr = QR.factorize(new DenseMatrix(a));
@@ -2105,7 +2104,7 @@ public class MatrixUtil {
         b) points are scaled so that the average distance from the
            origin is sqrt(2).
        Can use the transformation matrix with dot operator: Misc.multiply(xy, tMatrix).
-     * @param xy
+     * @param xy points in format [n X 2]
      * @return a matrix for use for canonical transformation of the points.
      * the format of the result is 
      * <pre>
@@ -2191,12 +2190,12 @@ public class MatrixUtil {
     
     /**
      * 
-     * @param a
+     * @param a matrix
      * @param row0 beginning index, inclusive
      * @param row1 end index, inclusive
      * @param col0 beginning index, inclusive
      * @param col1 end index, inclusive
-     * @return 
+     * @return sub matrix
      */
     public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
         
@@ -2217,7 +2216,7 @@ public class MatrixUtil {
      * copy the section of matrix a from row0 to row1 (inclusive) and 
      * col0 to col1 (inclusive) into output matrix out which must
      * be size (row1-row0+1) X (col1-col0+1)
-     * @param a
+     * @param a matrix
      * @param row0 beginning index, inclusive
      * @param row1 end index, inclusive
      * @param col0 beginning index, inclusive
@@ -2243,7 +2242,7 @@ public class MatrixUtil {
     
     /**
      * 
-     * @param a
+     * @param a matrix
      * @param col index of column to extract
      * @return one dimensional array holding the column col of a
      */
@@ -2256,7 +2255,7 @@ public class MatrixUtil {
     
     /**
      * 
-     * @param a
+     * @param a matrix a
      * @param col index of column to extract
      * @param out one dimensional array holding the column col of a
      */
@@ -2310,7 +2309,7 @@ public class MatrixUtil {
      * invertible.
      * </pre>
      * @param a a square matrix
-     * @return 
+     * @return determinant of a
      */
     public static double determinant(double[][] a) {
 
@@ -2349,7 +2348,7 @@ public class MatrixUtil {
      * LU decomposition.
      * 
      * @param a a square matrix
-     * @return 
+     * @return determinant of a
      */
     public static double determinantFromLU(double[][] a) {
 
@@ -2379,10 +2378,10 @@ public class MatrixUtil {
     
     /**
      * create copy of matrix m except row and col
-     * @param m
-     * @param col
-     * @param row
-     * @return
+     * @param m matrix
+     * @param col column
+     * @param row row
+     * @return extracted copy of matrix minus row and col
      */
     private static double[][] copyExcept(double[][] m, int col, int row) {
 
@@ -2426,8 +2425,8 @@ public class MatrixUtil {
        
        Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
-     * @param v
-     * @return 
+     * @param v vector
+     * @return skew-symmetric matrix of vector v
      */
     public static double[][] skewSymmetric(double[] v) {
         if (v.length != 3) { 
@@ -2452,8 +2451,8 @@ public class MatrixUtil {
        Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
      * the operator is also called "hat operator".
-     * @param v
-     * @param out 
+     * @param v direction vector
+     * @param out output skew-symmetric matrix for v
      */
     public static void skewSymmetric(double[] v, double[][] out) {
         if (v.length != 3) { 
@@ -2483,8 +2482,8 @@ public class MatrixUtil {
 
     /**
      * extract the vector from a skew-symmetric matrix.  the operation is called vee operator.
-     * @param vHat
-     * @return
+     * @param vHat skew-symmetric matrix
+     * @return extracted vector
      */
     public static double[] extractVectorFromSkewSymmetric(double[][] vHat) {
         double[] out = new double[3];
@@ -2531,8 +2530,8 @@ public class MatrixUtil {
     /**
      * normalize vector v by euclidean, that is the square root of the sum of 
      * its squared components.  notation is sometimes ||v||_2.
-     * @param v
-     * @return 
+     * @param v array
+     * @return array v divided by the LP2 norm of v.
      */
     public static double[] normalizeL2(double[] v) {
         return normalizeLP(v, 2);
@@ -2593,8 +2592,8 @@ public class MatrixUtil {
      also see Section 9.2 of Strang's "Introduction to Linear Algebra".
      </pre>
      * 
-     * @param a
-     * @return 
+     * @param a matrix
+     * @return condition number
      */
     public static double conditionNumber(double[][] a) throws NotConvergedException {
         
@@ -2614,10 +2613,10 @@ public class MatrixUtil {
     }
     
     /**
-     * summation = the (1/p) power of sum of 
-     * its (components)^p.
-     * @param v
-     * @return 
+     * summation = the (1/p) power of sum of its (components)^p.
+     * @param v array v
+     * @param p the power of the polynomial of v in the sum
+     * @return he (1/p) power of sum of its (components)^p
      */
     public static double lPSum(double[] v, double p) {
         double sum = 0;
@@ -2636,7 +2635,7 @@ public class MatrixUtil {
     For p-norm = 1, the L1-norm is the maximum absolute column sum of the matrix.
     ||X||_1 = max sum for an arg j where (0.lte.j.lte.n-1) sum_(i=0 to n-1) ( |a[i][j] )
     </pre>
-    @param a
+    @param a matrix
     @return the maximum absolute column sum of the matrix
     */
     public static int lp1Norm(int[][] a) {
@@ -2662,8 +2661,8 @@ public class MatrixUtil {
      * the square root of the sums of the squares of the singular
      * values of a.
      * (The later can be compared to the spectral norm which is the largest singular value of a.)
-     * @param a
-     * @return 
+     * @param a matrix
+     * @return the sum of each element of a squared
      */
     public static double frobeniusNorm(double[][] a) {
         double sum = 0;
@@ -2685,9 +2684,9 @@ public class MatrixUtil {
      *     reference for documentation:
      *     https://math.stackexchange.com/questions/33083/what-is-the-difference-between-the-frobenius-norm-and-the-2-norm-of-a-matrix
      * </pre>
-     * @param r
-     * @return
-     * @throws NotConvergedException
+     * @param r matrix
+     * @return the spectral norm of r, which is the largest singular value of r
+     * @throws NotConvergedException thrown by MTJ when SVD could not converge
      */
     public static double spectralNorm(double[][] r) throws NotConvergedException {
         SVDProducts svd = performSVDATransposeA(r);
@@ -2708,7 +2707,7 @@ public class MatrixUtil {
      * @param eps a tolerance or error above 0 such as machine precision.  must
      * be greater than or equal to 0.  If it is above 0, this method attempts
      * to return a symmetric positive definite matrix.
-     * @return 
+     * @return a matrix which is the nearest positive semidefinite matrix to a
      */
     public static double[][] nearestPositiveSemidefiniteToASymmetric(double[][] a,
         double eps) throws NotConvergedException {
@@ -2778,7 +2777,7 @@ public class MatrixUtil {
      *
      * </pre>
      * @param a a square matrix which can be non-symmetric.
-     * @return
+     * @return a matrix which is the nearest symmetric to a
      */
     public static double[][] nearestSymmetricToA(double[][] a) {
         if (!isSquare(a)) {
@@ -2814,8 +2813,8 @@ public class MatrixUtil {
      * @param eps a tolerance or error above 0 such as machine precision.  must
      * be greater than or equal to 0.  If it is above 0, this method attempts
      * to return a symmetric positive definite matrix.
-     * @return 
-     * @throws no.uib.cipr.matrix.NotConvergedException 
+     * @return matrix which is the nearest positive semidefinite to a
+     * @throws no.uib.cipr.matrix.NotConvergedException  thrown by MTJ when SVD could not converge
      */
     public static double[][] nearestPositiveSemidefiniteToA(double[][] a,
         double eps) throws NotConvergedException {
@@ -2909,8 +2908,8 @@ public class MatrixUtil {
      * its (components)^p.  notation is sometimes ||v||_p.
      * when p = 0, this is the manhattan normalization or taxi-cab normalization,
      * when p = 2, this is the euclidean normalization.
-     * @param v
-     * @return 
+     * @param v array
+     * @return array v normalized by its lp_p sum.
      */
     public static double[] normalizeLP(double[] v, double p) {
         double sum = 0;
@@ -2928,8 +2927,8 @@ public class MatrixUtil {
     /**
      * the outer product of vectors v1 and v2, which is v1 as a single row matrix
      * and v2 as a single column matrix, so is v1 * v2^T.
-     * @param v1
-     * @param v2
+     * @param v1 array 1
+     * @param v2 array 2
      * @return the outer product of v1 and v2 as double array of 
      * size v1.length X v2.length.
      */
@@ -2947,7 +2946,7 @@ public class MatrixUtil {
     
     /**
      * determine the largest eigenvalue using the power method.  note that
-     * matrix A must be diagonalizable, that is, a positive definite matrix.
+     * matrix A must be diagonalize-able, that is, a positive definite matrix.
      * for best results, perform standard normalization on matrix A first
      * because the first initial guess of an eigenvector of a is composed
      * of random values between [0 and 1).
@@ -2963,8 +2962,8 @@ public class MatrixUtil {
      * TODO:consider implementing the inverse power method also to determine the
      * smallest eigenvalue and its eigenvector
      * @param a a positive definite matrix
-     * @param nIterations
-     * @return 
+     * @param nIterations number of iterations to use
+     * @return the largest eigenvalue of a
      */
     public static double powerMethod(double[][] a, int nIterations) {
 
@@ -3030,7 +3029,7 @@ public class MatrixUtil {
      * difference from previous is smaller than tolerance for each item.
      * @param x an initialized vector of size a.length that will be filled by
      * this method to hold the vector used to calculate eig = x^T * a * x
-     * @return 
+     * @return the largest eigenvalue of a
      */
     public static double powerMethod(double[][] a, double tolerance, double[] x) {
         int nR = a.length;
@@ -3094,7 +3093,7 @@ public class MatrixUtil {
      * @param a a positive definite matrix
      * @param tolerance iterations are stopped when the current multiplication vector
      * difference from previous is smaller than tolerance for each item.
-     * @return 
+     * @return the largest eigenvalue of a
      */
     public static double powerMethod(double[][] a, double tolerance) {
         double[] x = new double[a.length];
@@ -3145,13 +3144,13 @@ public class MatrixUtil {
     }
     
     /**
-     * calculate (matrix A)^power using it's eigen decompostion:
+     * calculate (matrix A)^power using its eigen decompostion:
      * A^power = S * (Delta^power) * S^-1
      * where S holds eigenvectors in its columns.  Delta is a diagonal matrix
      * holding the eigenvalues.
      * @param a a square matrix
-     * @param power
-     * @return 
+     * @param power integer power to apply to matrix a
+     * @return  (matrix A)^power
      */
     public double[][] powerOf(double[][] a, int power) throws NotConvergedException {
         if (!isSquare(a)) {
@@ -3222,7 +3221,7 @@ public class MatrixUtil {
      * on Polar Decomposition.
      * @param a a square symmetric positive definite matrix.  If the matrix is not
      *          positive definite matrix, use nearestPositiveSemidefiniteToA() first.
-     * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws no.uib.cipr.matrix.NotConvergedException thrown by MTJ when SVD could not converge
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
 
@@ -3321,8 +3320,8 @@ public class MatrixUtil {
      // e.g. [33, 24]
      //      [48, 57] <--- divide by 2 and the matrix is symmetric
      //
-     * @param a
-     * @return
+     * @param a matrix
+     * @return true if a is symmetric
      */
     public static boolean isSymmetric(double[][] a, double tol) {
         if (!isSquare(a)) {
@@ -3390,10 +3389,13 @@ public class MatrixUtil {
      * x is an approximation so is noted as x^{hat}.
      * the projection p = A*x^{hat}.
      * The matrix projection P = p*b.
+     <pre>
+     Chap 4 of the book "Introduction to Linear Algebra" by W Gilbert Strang
+     </pre>
      * @param a subspace defined by A which is n columns of linearly 
      * independent vectors of length m (they are in real space R^m).
-     * @param b 
-     * @return 
+     * @param b  array b
+     * @return matrix projection P = p*b where p = A*x^{hat}
      */
     public static ProjectionResults projection(double[][] a, double[] b) throws NotConvergedException {
         
@@ -3421,12 +3423,13 @@ public class MatrixUtil {
     
     /**
      * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive,
-     * which means its pivots are positive.  a quick test is that x^T * A * x is strictly positive for every non-zero
+     * which means its pivots are positive.
+     * a quick test is that x^T * A * x is strictly positive for every non-zero
      * column vector x of n real numbers where A is n x n.
      * Every positive definite matrix can be factored into L*D*L^T with positive pivots.
-     * Also note that if a hasnindependent columns (r==n), A^T*A is positive definite.
-     * @param a
-     * @return 
+     * Also note that if a has n independent columns (r==n), A^T*A is positive definite.
+     * @param a matrix a
+     * @return true if a is positive definite
      */
     public static boolean isPositiveDefinite(double[][] a) {
 
@@ -3532,7 +3535,7 @@ public class MatrixUtil {
      *            det A
      *
      * @param m a square invertible matrix.
-     * @return
+     * @return inverse of matrix m
      */
     public static double[][] inverse(double[][] m) {
 
@@ -3554,7 +3557,7 @@ public class MatrixUtil {
      * note that the format must be a[nSamples][nVariables],
      * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
      * and nVariables = 3;
-     * @param a
+     * @param a matrix
      * @return mean of each column as an array of size a[0].length
      */
     public static double[] mean(double[][] a) {
@@ -3580,8 +3583,8 @@ public class MatrixUtil {
      * note that the format must be a[nSamples][nVariables],
      * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
      * and nVariables = 3;
-     * @param a
-     * @return 
+     * @param a vectors of data of nSamples of nVariables in format [nSamples X nVariables]
+     * @return standard deviation of the variables.  length is a[0].length
      */
     public static double[] standardDeviation(double[][] a) {
         int nSamples = a.length;
@@ -3674,9 +3677,9 @@ public class MatrixUtil {
     
     /**
      * pointwise multiplication
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix a
+     * @param b matrix b
+     * @return element-wise multiplication of elements in a and b
      */
     public static double[][] pointwiseMultiplication(double[][] a, double[][] b) {
         int m = a.length;
@@ -3699,9 +3702,9 @@ public class MatrixUtil {
     
     /**
      * pointwise multiplication
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix a
+     * @param b matrix b
+     * @return element-wise multiplication of elements in a and b
      */
     public static int[][] pointwiseMultiplication(int[][] a, int[][] b) {
         int m = a.length;
@@ -3724,9 +3727,9 @@ public class MatrixUtil {
     
     /**
      * pointwise addition
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix a
+     * @param b matrix b
+     * @return element-wise addition of elements in a and b
      */
     public static double[][] pointwiseAdd(double[][] a, double[][] b) {
         double[][] out = MatrixUtil.zeros(a.length, a[0].length);
@@ -3736,8 +3739,8 @@ public class MatrixUtil {
     
     /**
      * pointwise addition
-     * @param a
-     * @param b
+     * @param a matrix a
+     * @param b matrix b
      * @param out the results of element wise add of a + b. Note that it
      * is safe to provide out as the same object as input argument a or b.
      */
@@ -3761,9 +3764,9 @@ public class MatrixUtil {
     }
     
     /** pointwise subtraction
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix a
+     * @param b matrix b
+     * @return element-wise subtraction of elements in a and b
      */
     public static double[][] pointwiseSubtract(double[][] a, double[][] b) {
         double[][] out = MatrixUtil.zeros(a.length, a[0].length);
@@ -3773,8 +3776,8 @@ public class MatrixUtil {
     
     /**
      * pointwise subtraction
-     * @param a
-     * @param b
+     * @param a matrix
+     * @param b matrix
      * @param out the results of element wise subtraction, a - b. Note that it
      */
     public static void pointwiseSubtract(double[][] a, double[][] b, double[][] out) {
@@ -3798,8 +3801,8 @@ public class MatrixUtil {
     
     /**
      * point-wise subtraction
-     * @param a
-     * @param b
+     * @param a matrix a
+     * @param b matrix b
      * @return the results of point-wise subtraction, a - b.
      */
     public static int[][] pointwiseSubtract(int[][] a, int[][] b) {
@@ -3824,8 +3827,8 @@ public class MatrixUtil {
     
     /**
      * pointwise subtraction
-     * @param a
-     * @param b
+     * @param a array
+     * @param b array
      * @param out the results of element wise subtraction, a - b. Note that it
      * is safe to provide out as the same object as input argument a or b.
      */
@@ -3847,9 +3850,9 @@ public class MatrixUtil {
     
     /**
      * pointwise multiplication
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix
+     * @param b matrix
+     * @return  element-wise multiplication of elements in a and b
      */
     public static double[] pointwiseMultiplication(double[] a, double[] b) {
         int m = a.length;
@@ -3868,9 +3871,9 @@ public class MatrixUtil {
     
     /**
      * dot product, summation_over_i(a[i]*b[i])
-     * @param a
-     * @param b
-     * @return 
+     * @param a array
+     * @param b array
+     * @return dot product of a and b which is a.k.a.inner product
      */
     public static double dot(double[] a, double[] b) {
         int m = a.length;
@@ -3888,9 +3891,9 @@ public class MatrixUtil {
     
     /**
      * create an array of zeros
-     * @param nRows
-     * @param nCols
-     * @return 
+     * @param nRows number of rows for new matrix
+     * @param nCols number of columns for new matrix
+     * @return a new empty double array of size [nRows X nCols] in row major notation.
      */
     public static double[][] zeros(int nRows, int nCols) {
         double[][] out = new double[nRows][nCols];
@@ -3912,9 +3915,9 @@ public class MatrixUtil {
     
     /**
      * right divide is pointwise division
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix a
+     * @param b matrix b
+     * @return element-wise division of elements in a and b
      */
     public static double[][] pointwiseDivision(double[][] a, double[][] b) {
         int m = a.length;
@@ -3937,9 +3940,9 @@ public class MatrixUtil {
     
     /**
      * right divide is pointwise division, that is a[i]/b[i] for i = [0, a.length).
-     * @param a
-     * @param b
-     * @return 
+     * @param a array a
+     * @param b array b
+     * @return element-wise division of elements in a and b
      */
     public static double[] pointwiseDivision(double[] a, double[] b) {
         int m = a.length;
@@ -3959,7 +3962,7 @@ public class MatrixUtil {
     /**
      * perform a left-right swap of the columns of a, flipping the matrix
      * vertically.  the method mimics matlab's flipur.
-     * @param a 
+     * @param a  matrix a
      */
     public static void flipLR(double[][] a) {
         int idxHi = a[0].length - 1;
@@ -3984,7 +3987,7 @@ public class MatrixUtil {
     /**
      * perform an up-down swap of the rows of a, flipping the matrix
      * horizontally.  the method mimics matlab's flipud.
-     * @param a 
+     * @param a matrix a
      */
     public static void flipUD(double[][] a) {
         int idxHi = a.length - 1;
@@ -4218,8 +4221,8 @@ public class MatrixUtil {
     /**
      * rewrite matrix a into a vector using the order of all rows of column 0,
      * then all rows of column 1, etc.
-     * @param a
-     * @return 
+     * @param a matrix a
+     * @return matrix a reshaped into an array
      */
     public static double[] reshapeToVector(double[][] a) {
         double[] out = new double[a.length * a[0].length];
@@ -4269,9 +4272,8 @@ public class MatrixUtil {
      * 
      * @param a and m X n matrix
      * @return matrix with dimensions of a^T
-     * @throws NotConvergedException 
      */
-    public static double[][] calculatePreconditionerFromLUP(double[][] a) throws NotConvergedException {
+    public static double[][] calculatePreconditionerFromLUP(double[][] a) {
         
         LUP lup = LinearEquations.LUPDecomposition(a);
         
@@ -4311,9 +4313,8 @@ public class MatrixUtil {
      * 
      * @param a and m X n matrix
      * @return matrix with dimensions of a^T
-     * @throws NotConvergedException 
      */
-    public static double[][] calculatePreconditionerFromColumns(double[][] a) throws NotConvergedException {
+    public static double[][] calculatePreconditionerFromColumns(double[][] a) {
         int m = a.length;
         int n = a[0].length;
         /*
@@ -4339,7 +4340,7 @@ public class MatrixUtil {
      If A is invertible, then H is symmetric positive definite.
      The method follows Strang "Introduction to Linear Algebra" Chapter 7 section G.
      * @param a square matrix
-     * @return 
+     * @return polar decomposition of a
      */
     public static QH performPolarDecomposition(double[][] a) throws NotConvergedException {
         
@@ -4385,10 +4386,10 @@ public class MatrixUtil {
      * given 2 non-decreasing ordered sequences of numbers, find their intersection.
      * The method is called multiset because the sequences may contain more than
      * one element having the same value... the method is used for multisets as multi-sequences.
-     * The runtime complexity is O(max(a.length, b.length).
+     * The runtime complexity is O(max(a.length, b.length)).
      * @param orderedA an increasing sequence of numbers (i.e. ascending sorted). 
      * @param orderedB an increasing sequence of numbers (i.e. sorted by non-decreasing order)
-     * @return 
+     * @return the intersection of orderedA and orderedB
      */
     public static int[] multisetIntersection(int[] orderedA, int[] orderedB) {
         
@@ -4416,7 +4417,7 @@ public class MatrixUtil {
      * The runtime complexity is O(N*log_2(N)) where N is max(a.length, b.length).
      * @param a a sequence of numbers 
      * @param b a sequence of numbers
-     * @return 
+     * @return intersection of a and b
      */
     public static int[] multisetUnorderedIntersection(int[] a, int[] b) {
         
@@ -4470,8 +4471,8 @@ public class MatrixUtil {
     
     /**
      * create a symmetric adjacency map from a
-     * @param a
-     * @return 
+     * @param a an adjacency map
+     * @return a sthe ymmetric adjacency map of a
      */
     public static TIntObjectMap<TIntSet> copyToSymmetricMap(TIntObjectMap<TIntSet> a) {
         TIntObjectMap<TIntSet> out = new TIntObjectHashMap<TIntSet>();
@@ -4581,7 +4582,7 @@ public class MatrixUtil {
      * Usage: pre-multiplying, P*A, results in permuting the rows of A.
      * post-multiplying, A*P, results in permuting the columns of A.
      * @param assignments the permutation vector.
-     * @return 
+     * @return permutation matrix
      */
     public static int[][] createPermutationMatrix(int[] assignments) {
         int n = assignments.length;
@@ -4600,7 +4601,7 @@ public class MatrixUtil {
     /**
      * extract each column of a and append it to an output vector.
      * if a is [mxn], the output vector length will be m*n.
-     * @param a
+     * @param a matrix a
      * @return the output vector of stacked columns of a
      */
     public static double[] stack(double[][] a) {
@@ -4619,10 +4620,11 @@ public class MatrixUtil {
 
     /**
      * Given two matrices A € R^(mxn) and B € R^(kxl), their Kronecker product,
-     * denoted by A⨂B, is a new matrix € R^(mk x nl)
-     * @param a
-     * @param b
-     * @return
+     * denoted by A⨂B, is a new matrix € R^(mk x nl).
+     *
+     * @param a matrix
+     * @param b matrix
+     * @return kronecker product of a and b
      */
     public static double[][] kroneckerProduct(double[][] a, double[][] b) {
 
@@ -4664,8 +4666,8 @@ public class MatrixUtil {
      * Given two vectors A € R^(m) and B € R^(k), their Kronecker product,
      * denoted by A⨂B, is a new matrix € R^(mk).  It is the outer product of the
      * vectors.
-     * @param a
-     * @param b
+     * @param a array a
+     * @param b array b
      * @return the outer product
      */
     public static double[][] kroneckerProduct(double[] a, double[] b) {

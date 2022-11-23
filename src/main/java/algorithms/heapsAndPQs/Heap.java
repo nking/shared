@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Class contains a Fibonacci heap, that is, a loose collection of trees based
  * upon binomial heaps, hence satisfying the minimum heap property:
- *     object.child.key >= object.key.
+ *     object.child.key .geq. object.key.
  *
  * With a Fibonacci heap, the minimum key of the entire heap is always at the
  * top of one of the trees.
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * Fibonacci heap potential = t + 2m
  *     where t = number of trees
  *           m = number of marked nodes.  (marked when node has been recently
- *               made a child of another node and >= 1 of it's own children
+ *               made a child of another node and .geq. 1 of it's own children
  *               have been cut.  root nodes are never marked.)
  *
  * <pre>
@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * best utilized and are usually implemented as O(log_2 N).
  *
  * This was implemented following pseudo-code from
- * "Introduction to Algorithms", by Cormen, Leiserson, Rivest, & Stein
+ * "Introduction to Algorithms", by Cormen, Leiserson, Rivest, and Stein
  * on the Fibonacci Heap.
  * </pre>
  *

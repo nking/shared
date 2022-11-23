@@ -272,8 +272,8 @@ public class Misc {
           max = int.min
           jmax = -1
           for j=[i+1, n) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
-            if (s[j] >= f[i]) { // task j can be appended after task i
-              if (memo[j] > max) {
+            if (s[j] .geq. f[i]) { // task j can be appended after task i
+              if (memo[j] .gt. max) {
                 jmax = j;
                 max = memo[j];
               }
@@ -398,7 +398,7 @@ public class Misc {
      *     early tasks precede late tasks
      *     and early tasks are in monotonically increasing order of deadlines.
      *     (1) put schedule in early first form
-     *     (2) swap sequential pairs in the early list when d_{k} > d_{k+1}
+     *     (2) swap sequential pairs in the early list when d_{k} .gt. d_{k+1}
      *     (3) list the early tasks
      *     (4) list the late tasks in any order
      * 
@@ -422,8 +422,8 @@ public class Misc {
      * (2) create an optimal schedule having the tasks in A as its early tasks.
     
      * @param deadlines values must be between 1 and numTasks, inclusive
-     * @param penalties
-     * @return 
+     * @param penalties penalties for missing a dealine
+     * @return order of scheduled tasks
      */
     public int[] weightedGreedy(int[] deadlines, int[] penalties) {
         
@@ -476,9 +476,9 @@ public class Misc {
      * schedule largest penalties first if they fit before deadline (duration of
      * each task is a time unit of 1).
      * runtime complexity is O(N * log_2(N))
-     * @param deadlines
-     * @param penalties
-     * @return 
+     * @param deadlines deadlines of each task
+     * @param penalties penalties of each task
+     * @return task schedule order
      */
     private int[] greedy(int[] deadlines, int[] penalties) {
                

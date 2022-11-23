@@ -74,8 +74,8 @@ public class NAryTreeNode extends DoublyLinkedNode {
      * NAryTreeNode copied are data, parent and children.  The next and
      * prev attributes are not copied currently, but could be added upon need.
      * The runtime complexity is O(|V|).
-     * @param root
-     * @return 
+     * @param root copy the tree from root
+     * @return the copied tree root
      */
     public static NAryTreeNode copyTree(NAryTreeNode root) {
         

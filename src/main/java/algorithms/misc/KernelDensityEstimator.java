@@ -13,7 +13,7 @@ import java.util.Arrays;
  * https://kdepy.readthedocs.io/en/latest/_modules/KDEpy/FFTKDE.html#FFTKDE
  *
  * TODO: consider implementing
- * "Fast & Accurate Gaussian Kernel Density Estimation", Jeffrey Heer, University of Washiington.
+ * "Fast and Accurate Gaussian Kernel Density Estimation", Jeffrey Heer, University of Washiington.
  * https://idl.cs.washington.edu/files/2021-FastKDE-VIS.pdf
  *
  * TODO: consider using MSER in a 2-D KDE estimator

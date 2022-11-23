@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * have high betweenness scores.
  * <pre>
  * e.g. edge BD in Fig 10.3 below from Chapter 10 of
- * "Mining of Massive Datasets" by Leskovec,  Rajaraman, & Ullman
+ * "Mining of Massive Datasets" by Leskovec,  Rajaraman, and Ullman
  * has a high betweenness score as it lies on the path
  * from A to any node to the right of D, same for C and B and vice versa.
  * 

@@ -1,28 +1,21 @@
 package algorithms.misc;
 
-import algorithms.matrix.MatrixUtil;
 import algorithms.sort.CountingSort;
+import algorithms.sort.MiscSorter;
 import algorithms.util.Errors;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.map.TDoubleIntMap;
-import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.hash.TDoubleIntHashMap;
-import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
+
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Logger;
-import algorithms.sort.MiscSorter;
 
 /**
  *  TODO:  improve this class...
@@ -50,10 +43,10 @@ public class Histogram {
      * create a histogram from the data that has little or no adjustment
      * for min and max.
      *
-     * @param a
-     * @param nBins
-     * @param xHist
-     * @param yHist
+     * @param a array of numbers
+     * @param nBins number of bins to make
+     * @param xHist output array for the x values of the histogram
+     * @param yHist output array for the y values of the histogram
      */
     public static void createHistogram(float[] a, int nBins, float[] xHist, int[] yHist) {
 
@@ -224,11 +217,11 @@ public class Histogram {
     /**
      * WARNING:this is an incomplete method that is lossy too.
      * 
-     * @param a
-     * @param binSize
-     * @param aMin
-     * @param aMax
-     * @return 
+     * @param a array of numbers
+     * @param binSize size of bins to use
+     * @param aMin minimum value of a to include in the histogram
+     * @param aMax maximum value of a to use in the histogram
+     * @return the histogram
      */
     public static HistogramHolder createSimpleHistogram(double[] a, 
         double binSize, double aMin, double aMax) {
@@ -581,14 +574,13 @@ public class Histogram {
      *     Each bin should have a contribution from all points and then a contribution from its own.
      *     In order for the total to not exceed the sum in quadrature of all points, a bin's sigma squared should
      *     be the ave from all + it's own times (1-1/N) roughly, which is what the equation above suggests.
-     *
-     * @param xHist
-     * @param yHist
-     * @param values
+     * @param xHist output array for the x values of the histogram
+     * @param yHist output array for the y values of the histogram
+     * @param values values to calculate histogram for
      * @param valueErrors errors that are on the same scale as the values, that is, these are
      *   NOT percent errors
-     * @param xHistErrorsOutput
-     * @param yHistErrorsOutput
+     * @param xHistErrorsOutput output array for the histogram x errors
+     * @param yHistErrorsOutput output array for the histogram y errors
      */
     public static void calulateHistogramBinErrors(float[] xHist, int[] yHist,
         float[] values, float[] valueErrors, float[] xHistErrorsOutput, 
@@ -676,12 +668,12 @@ public class Histogram {
      * with y above yLimit.  This is meant to determine the error in 
      * calculations of things like fwhm.
      * 
-     * @param xHist
-     * @param yHist
-     * @param xErrors
-     * @param yErrors
-     * @param yMaxFactor
-     * @return
+     * @param xHist  array for the x values of the histogram
+     *      * @param yHist array for the y values of the histogram
+     * @param xErrors array for the errors in the x values of the histogram
+     * @param yErrors array for the errors in the y values of the histogram
+     * @param yMaxFactor factor to use in calculating yLimit
+     * @return error in the histogram bin width
      */
     public static float calculateHistogramWidthYLimitError(float[] xHist, 
         float[] yHist, float[] xErrors, float[] yErrors, float yMaxFactor) {
@@ -758,8 +750,8 @@ public class Histogram {
     
     /**
      * binWidth = 2*IQR * n^(−1/3)
-     * @param values
-     * @return 
+     * @param values numbers to construct histogram from
+     * @return histogram of values
      */
     public static HistogramHolder calculateFreedmanDiaconisHistogram(
         double[] values) {
@@ -780,8 +772,8 @@ public class Histogram {
     /**
      * warning: casts all to float
      * binWidth = 3.49 * stDev * n^(−1/3)
-     * @param values
-     * @return 
+     * @param values numbers
+     * @return histogram of values
      */
     public static HistogramHolder calculateScottsHistogram(
         double[] values, double min, double max) {
@@ -817,11 +809,11 @@ public class Histogram {
     
     /**
      * nBins = log_2(n) + 1:
-     * @param xMin
-     * @param xMax
-     * @param values
-     * @param valueErrors
-     * @return 
+     * @param xMin minimum value in values to use in making the histogram
+     * @param xMax maximum value in values to use in making the histogram.
+     * @param values numbers
+     * @param valueErrors errors of the numbers
+     * @return histogram
      */
     public static HistogramHolder calculateSturgesHistogram(
         final float xMin, final float xMax,
@@ -988,10 +980,10 @@ public class Histogram {
      * if there is more than one peak in the histogram, reduce the histogram
      * to only that peak, else leave unaltered.
      * 
-     * @param hist
-     * @param values
-     * @param valueErrors
-     * @return 
+     * @param hist input histogram
+     * @param values numbers
+     * @param valueErrors errors of values
+     * @return modified histogram
      */
     public static HistogramHolder reduceHistogramToFirstPeak(HistogramHolder 
         hist, float[] values, float[] valueErrors) {
@@ -1068,9 +1060,10 @@ public class Histogram {
 
     /**
      * 
-     * @param indexes
-     * @param imageValues these should be non negative numbers
-     * @return 
+     * @param indexes indexes of imageValues
+     * @param imageValues these should be non-negative numbers
+     * @return array of pairs of imageValue values and counts, sorted by the values into
+     * descending order.
      */
     public static PairIntArray createADescendingSortByKeyArray(
         TIntSet indexes, int[] imageValues) {
@@ -1305,11 +1298,11 @@ public class Histogram {
     
     /**
      * 
-     * @param pointValues
+     * @param pointValues map coordinates and values.
      * @param minBin first bin's pixel value, inclusive
      * @param maxBin last bin's pixel value, inclusive.
-     * @param nBins
-     * @return 
+     * @param nBins number of bins to use inhistogram
+     * @return histogram
      */
     public static int[] createHistogram(Map<PairInt, Integer> pointValues,
         int minBin, int maxBin, int nBins) {
@@ -1336,8 +1329,8 @@ public class Histogram {
 
     /**
      * find max but ignore values such as FLOAT.MAX_VALUE, infinity, and NAN
-     * @param a
-     * @return
+     * @param a values
+     * @return maximum value in a
      */
     public static int findMax(int[] a) {
         int max = Integer.MIN_VALUE;
@@ -1403,7 +1396,7 @@ public class Histogram {
                 x[2] = (0.1,    0.55)
                 x[3] = (0.35,   0.46)
                 </pre>
-     * @return
+     * @return histogram
      */
     public static TIntIntMap createMultidimensionalHistogram(double h, double[][] x) {
         if (x.length == 0 || x[0].length == 0) {
@@ -1441,8 +1434,8 @@ public class Histogram {
      * assumes an approximately normal distribution.
      * for best results, dataLength >= 30.
      * reference: https://en.m.wikipedia.org/wiki/Histogram
-     * @param dataLength
-     * @return
+     * @param dataLength number of numbers
+     * @return number of bins to use in a histogram
      */
     public static int numberOfBinsSturges(int dataLength) {
         //https://en.m.wikipedia.org/wiki/Histogram
@@ -1450,8 +1443,8 @@ public class Histogram {
     }
     /**
      * reference: https://en.m.wikipedia.org/wiki/Histogram
-     * @param dataLength
-     * @return
+     * @param dataLength number of numbers
+     * @return number of bins to use in a histogram
      */
     public static int numberOfBinsRice(int dataLength) {
         //https://en.m.wikipedia.org/wiki/Histogram
@@ -1461,7 +1454,7 @@ public class Histogram {
     /**
      * improvement of sturges formula for non-normal data.
      * reference: https://en.m.wikipedia.org/wiki/Histogram
-     * @return
+     * @return number of bins to use in a histogram
      */
     public static int numberOfBinsDoane(double[] data) {
 
@@ -1480,7 +1473,7 @@ public class Histogram {
     /**
      * this is less sensitive to outliers in data because it uses IQR.
      * reference: https://en.m.wikipedia.org/wiki/Histogram
-     * @return
+     * @return number of bins to use in a histogram
      */
     public static int numberOfBinsFreedmanDiaconis(double[] data) {
 

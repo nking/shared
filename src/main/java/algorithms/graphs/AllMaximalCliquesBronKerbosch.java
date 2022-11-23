@@ -55,7 +55,7 @@ public class AllMaximalCliquesBronKerbosch {
     /**
      * find all maximal cliques in an undirected graph.
      * The worse case runtime complexity is O(3^(n/3)) which is from
-     *  Moon & Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
+     *  Moon and Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
      * <pre>
      * references https://en.m.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
      * algorithm BronKerbosch3(G)
@@ -103,7 +103,7 @@ public class AllMaximalCliquesBronKerbosch {
     /**
      * find all maximal cliques in an undirected graph.
      * The worse case runtime complexity is O(3^(n/3)) which is from
-     *  Moon & Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
+     *  Moon and Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
      * 
      * @param r
      * @param p

@@ -47,7 +47,7 @@ import java.util.Arrays;
 public class FindAllBridgesDFS {
 
     /**
-     * adjacency matrix with connected i->j indicated by the index and each
+     * adjacency matrix with connected i to j indicated by the index and each
      *    node in the linked list, respectively.
      * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
      */
@@ -80,7 +80,7 @@ public class FindAllBridgesDFS {
     protected int time = 0;
     
     /**
-     * @param directedEdges  adjacency matrix with connected i->j indicated 
+     * @param directedEdges  adjacency matrix with connected i to j indicated 
      * by the index and each node in the linked list, respectively.
      * Note that the key of each node is expected to be the same as it's index
      * in the adjacency matrix.

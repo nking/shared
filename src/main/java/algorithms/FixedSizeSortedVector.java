@@ -62,7 +62,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
      *
      * runtime complexity is O(log_2(capacity) + less than capacity).
      *
-     * @param value
+     * @param value value to insert into vector
      * @return true if added, else false
      */
     public boolean add(T value) {
@@ -109,7 +109,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
     /**
      * Insert the value into the list while maintaining the sorted state
      * of the list.
-     * @param value
+     * @param value value to insert into vector
      */
     private void insertIntoOpenSlot(T value) {
 
@@ -190,7 +190,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
      *
      * runtime complexity is O(1)
      *
-     * @return
+     * @return the internal array.  note that this is not a copy, intentionally.
      */
     public T[] getArray() {
 
@@ -201,7 +201,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
      * return the number of items in the internal array.  if the array is not
      * yet filled, the return will be less than the capacity, else will
      * be the same as the capacity.
-     * @return
+     * @return number of items in the vector
      */
     public int getNumberOfItems() {
         return n;
@@ -209,7 +209,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
     
     /**
      * get the maximum size of the vector, given at instantiation.
-     * @return 
+     * @return the capacity of the vector.
      */
     public int getFixedCapacity() {
         return size;

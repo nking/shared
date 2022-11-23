@@ -23,7 +23,7 @@ public class TreeTraversal {
         
       visits: 0, 1, 3, 7, 4, 2, 5, 6
      </pre>
-     * @param root
+     * @param root root of tree
      */
     public void preorderRecursive(BinaryTreeNode root) {
         if (root != null) {
@@ -44,7 +44,7 @@ public class TreeTraversal {
                         
      visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
      </pre>
-     * @param root
+     * @param root tree root
      */
     public void inorderRecursive(BinaryTreeNode root) {
         if (root != null) {
@@ -65,7 +65,7 @@ public class TreeTraversal {
         
      visits: 7, 3, 4, 1, 5, 6, 2, 0
      </pre>
-     * @param root
+     * @param root tree root
      */
     public void postorderRecursive(BinaryTreeNode root) {
         if (root != null) {
@@ -235,7 +235,7 @@ public class TreeTraversal {
                        
      0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
      </pre>
-     * @param node
+     * @param node tree root
      */
     public void levelOrderIterative(BinaryTreeNode node) {
         Queue<BinaryTreeNode> queue = new ArrayDeque<>();
@@ -259,7 +259,7 @@ public class TreeTraversal {
         Queue<Long> nodeParent = new ArrayDeque<>();
         Queue<Character> leftOrRight = new ArrayDeque<>();
         
-        Integer level = Integer.valueOf(0);
+        int level = 0;
         Character lOrR = '-';
         Long parent = -1L;
         
@@ -270,7 +270,7 @@ public class TreeTraversal {
                 ((Integer)node.getData()).toString() : "-",
                 lOrR, parent);
             
-            level = Integer.valueOf(level + 1);
+            ++level;
             
             if (node.getLeft() != null) {
                 queue.add(node.getLeft());
@@ -283,6 +283,10 @@ public class TreeTraversal {
                 nodeLevel.add(level);
                 nodeParent.add(node.getKey());
                 leftOrRight.add('R');
+            }
+            //TODO: rearrange to check empty just once instead of at while loop too
+            if (queue.isEmpty() || nodeLevel.isEmpty()) {
+                break;
             }
             node = queue.poll(); // returns null if empty
             level = nodeLevel.poll();
@@ -357,9 +361,7 @@ public class TreeTraversal {
             if (children == null) {
                 continue;
             }
-            for (NAryTreeNode child : children) {
-                queue.add(child);
-            }
+            queue.addAll(children);
         }
         while (!stack2.isEmpty()) {
             node = stack2.pop();
@@ -380,7 +382,7 @@ public class TreeTraversal {
                        
      0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
      </pre>
-     * @param node
+     * @param node n-ary tree root
      */
     public DoublyLinkedList<NAryTreeNode> getLevelOrderIterative(NAryTreeNode node) {
         Queue<NAryTreeNode> queue = new ArrayDeque<>();
@@ -392,9 +394,8 @@ public class TreeTraversal {
             if (children == null) {
                 continue;
             }
-            for (NAryTreeNode child : children) {
-                queue.add(child);
-            }
+            queue.addAll(children);
+
             node = queue.poll(); // returns null if empty
         }
         return out;
@@ -402,7 +403,7 @@ public class TreeTraversal {
     
     /**
      * 
-     * @param node
+     * @param node tree root
      * @return a double-linked list of nodes in reverse level order traversal.
      */
     public DoublyLinkedList<BinaryTreeNode> getReverseLevelOrderIterative(BinaryTreeNode node) {

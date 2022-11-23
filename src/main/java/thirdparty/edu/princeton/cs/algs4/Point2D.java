@@ -110,11 +110,11 @@ public class Point2D implements Comparable<Point2D> {
     }
 
     /**
-     * Returns true if a->b->c is a counterclockwise turn.
+     * Returns true if a to b to c is a counterclockwise turn.
      * @param a first point
      * @param b second point
      * @param c third point
-     * @return { -1, 0, +1 } if a->b->c is a { clockwise, collinear; counterclocwise } turn.
+     * @return { -1, 0, +1 } if a to b to c is a { clockwise, collinear; counterclockwise } turn.
      */
     public static int ccw(Point2D a, Point2D b, Point2D c) {
         double area2 = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);

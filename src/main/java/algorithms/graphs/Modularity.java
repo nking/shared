@@ -89,7 +89,7 @@ public class Modularity {
      * @param nEdges the number of edges in the original graph.  presumably the code using
      * this method has calculated it once for the original graph already, to pass
      * in to this method over repeated uses.
-     * @return the modularity as defined by girvan & newman 2002 and Newman & Girvan 2004.
+     * @return the modularity as defined by girvan and newman 2002 and Newman and Girvan 2004.
      */
     public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
         originalAdjacencyList, double nEdges) {

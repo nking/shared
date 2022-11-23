@@ -13,7 +13,7 @@ import java.util.Arrays;
    the product of marginal distributions following algorithms in
    <pre>
       "A fast algorithm for computing distance correlation"
-      2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+      2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
       Volume 135, July 2019, Pages 15-24.
       https://arxiv.org/pdf/1810.11332.pdf
    </pre>
@@ -42,7 +42,7 @@ public class UnivariateDistance {
      * computational cost is O(n log(n)) and memory cost is O(n).
      * This algorithm is an implementation/port of the Matlab code from
      * "A fast algorithm for computing distance correlation"
-     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+     * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * https://arxiv.org/pdf/1810.11332.pdf
      * 
@@ -399,7 +399,7 @@ public class UnivariateDistance {
      * calculate the covariance matrix for a using the fast algorithm of
      * <pre>
      * "A fast algorithm for computing distance correlation"
-     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+     * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * </pre>
      * @param a an mxn matrix of data with a sample of a variable per row.
@@ -655,7 +655,7 @@ public class UnivariateDistance {
      * dependence structure when the sample size is large enough."
      *
      * This algorithm is an implementation/port of the Matlab code from "A fast
-     * algorithm for computing distance correlation" 2019 Chaudhuri & Hu,
+     * algorithm for computing distance correlation" 2019 Chaudhuri and Hu,
      * Computational Statistics And Data Analysis, Volume 135, July 2019, Pages
      * 15-24. https://arxiv.org/pdf/1810.11332.pdf
      *
@@ -798,7 +798,7 @@ public class UnivariateDistance {
      * 
      * This algorithm is an implementation/port of the Matlab code from
      * "A fast algorithm for computing distance correlation"
-     * 2019 Chaudhuri & Hu, Computational Statistics And Data Analysis,
+     * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * 
      * Runtime is O(n * lg_2(n)) where n is the number of points in x which is

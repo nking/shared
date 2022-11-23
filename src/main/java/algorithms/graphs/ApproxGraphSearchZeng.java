@@ -26,7 +26,7 @@ import thirdparty.HungarianAlgorithm;
  implementing subgraph and full-graph query methods following the
  algorithms presented as pseudocode in 
  <pre> Comparing Stars: On Approximating Graph Edit Distance
-   Zeng, Tung, Wang, Feng, & Zhou 2009, 
+   Zeng, Tung, Wang, Feng, and Zhou 2009, 
    Proceedings of the VLDB Endowment, Volume 2, Issue 1,
    August 2009 pp 25–36
    https://doi.org/10.14778/1687627.1687631
@@ -69,7 +69,7 @@ public class ApproxGraphSearchZeng {
      * implementing full-graph query method following the
      algorithms presented as pseudocode in 
      <pre> Comparing Stars: On Approximating Graph Edit Distance
-       Zeng, Tung, Wang, Feng, & Zhou 2009, 
+       Zeng, Tung, Wang, Feng, and Zhou 2009, 
        Proceedings of the VLDB Endowment, Volume 2, Issue 1,
        August 2009 pp 25–36
        https://doi.org/10.14778/1687627.1687631
@@ -213,7 +213,7 @@ public class ApproxGraphSearchZeng {
      * Zeng et al. 2009.
       <pre> 
       Comparing Stars: On Approximating Graph Edit Distance
-       Zeng, Tung, Wang, Feng, & Zhou 2009, 
+       Zeng, Tung, Wang, Feng, and Zhou 2009, 
        Proceedings of the VLDB Endowment, Volume 2, Issue 1,
        August 2009 pp 25–36
        https://doi.org/10.14778/1687627.1687631
@@ -531,7 +531,7 @@ SDM, pp 154–163 (2011)
             MatrixUtil.pointwiseSubtract(a1, pA2PT));
         
         //this is a large term, summed from labels being equal.
-        //origins are  BLP paper  by Justice & Hero, eqn(18).
+        //origins are  BLP paper  by Justice and Hero, eqn(18).
         double term1 = 0;
         int i, j;
         for (i = 0; i < c.length; ++i) {

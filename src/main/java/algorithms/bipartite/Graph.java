@@ -57,11 +57,11 @@ public class Graph {
         edgeWeights.putAll(theEdgeWeights);
         
         /*
-        For each vertex x in X, there is a left-dummy arc |- -> x, 
+        For each vertex x in X, there is a left-dummy arc |- to x,
            directed from the source node |- to the node x. 
            The per-unit cost of a left-dummy arc is zero: 
            c(|-, x) := 0. 
-        For each vertex y in Y , there is a right-dummy arc y -> -|, 
+        For each vertex y in Y , there is a right-dummy arc y to -|,
            directed from the node 
            y to the sink node -| and of cost zero: 
            c(y, -|) := 0.            

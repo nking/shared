@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * Note that I adapted a version of the dynamic programming solution to use
  * intervals of weight equal the minimum weights instead of intervals of +1
  * when integrating up to the capacity, and that reduces the runtime by a factor
- * of roughly capacity/minimum(weight) as long a minimum weight > 0.
+ * of roughly capacity/minimum(weight) as long a minimum weight .gt. 0.
  *
  * http://en.wikipedia.org/wiki/Knapsack_problem
 

@@ -54,9 +54,9 @@ public class StringEditDistance {
      * 
      * @param a string to edit
      * @param b target string to change a into.
-     * 
      * @param outIndexes a and b indexes of the solution in pairs (a_i, b_j)
-     * @return 
+     * @return the number of insert, delete, and substitution operations to change
+     *      * one string into another
      */
     public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes) {
         
@@ -400,9 +400,9 @@ public class StringEditDistance {
      * <pre>
      * https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
      * </pre>
-     * @param a
-     * @param b
-     * @return 
+     @param a string to edit
+      * @param b target string to change a into.
+     * @return optimal string metric distance
      */
     public TCharList[] hirschbergOptimal(char[] a, char[] b) {
                 
@@ -553,10 +553,10 @@ public class StringEditDistance {
      *    D( a.substring(0, aMid), b.substring(0, k) )
              + D( reverse( a.substring(aMid + 1, m)), reverse(b.substring(k + 1, n)) ) );
        where D is the score from algorithm NeedlemanWunsch.
-     * @param aMid
-     * @param a
-     * @param b
-     * @return 
+     * @param aMid a midpoint in array y used in calculating the needleman wunsch score
+     @param a string to edit
+     @param b target string to change a into
+     * @return the index maximimizing the needleman wunsch score
      */
     private int argmax(int aMid, char[] a, char[] b) {
         /*

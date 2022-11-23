@@ -320,7 +320,7 @@ public class VertexCover {
 
     /**
      * extract edges from the adjacency map and put them in a 2 dimensional array.
-     * @param adjMap adjacency map of an undirected graph.  edge u->v and v->u are
+     * @param adjMap adjacency map of an undirected graph.  edge u to v and v to u are
      * considered the same edge.
      * @return two dimensional array of the edges.
      */

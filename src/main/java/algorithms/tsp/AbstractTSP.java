@@ -38,7 +38,7 @@ import java.util.Stack;
        evaluation time.
      - A worse case number of keys to store is the permutation of all but one node: n!/n.
      - A long bit-string is limited to 63 bits.
-     - A java array length is limited to signed integer length, 1 &lt&lt 31 -1.
+     - A java array length is limited to signed integer length, 1 .lt. .lt. 31 -1.
      - so to fit more than 1 &lt&lt 31-1 permutations would need to use the bit-string key
        as a concatenation of more than one path bit-string.
        the java BigInteger or the VeryLongBitString could do so.

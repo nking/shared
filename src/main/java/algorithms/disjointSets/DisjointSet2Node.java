@@ -13,7 +13,7 @@ package algorithms.disjointSets;
 
  * 
  * @author nichole
- * @param <T> 
+ * @param <T> parameter type for the container to hold
  */
 public class DisjointSet2Node<T> {
 

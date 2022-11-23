@@ -642,14 +642,7 @@ public class MinCostUnbalancedAssignment {
                 forest.remove(firstKey);
             }
         }
-        
-        /**
-         * node and it's predecessors are copied and node is inserted
-         * into the forest.
-         * @param node
-         * @param lastKey
-         * @return 
-         */
+
         public long add(PathNode node, long lastKey) {
             
             /*

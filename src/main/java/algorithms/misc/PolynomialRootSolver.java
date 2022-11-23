@@ -67,7 +67,7 @@ public class PolynomialRootSolver {
     /**
      * solve for the roots of the polynomial equation 
      * a*x^3 + b*x^2 + c*x + d = 0 using the algorithm MPSolve 
-     * of Bini & Robol ported by Wilco Oelen.
+     * of Bini and Robol ported by Wilco Oelen.
      * NOTE: the 2nd derivative can be useful with the root values
      * for distinguishing local minimum, maximum, and inflection.
      * @param coeffs coefficients of a polynomial given in the order of decreasing 

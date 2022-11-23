@@ -33,7 +33,7 @@ import java.util.Arrays;
  *   Can calculate the critical path by either:
  *     - negating the edge weights and run this code on that, or
  *     - or modify a version of this code to use -infinity in the initialization
- *       method and change '>greater than' to 'less than' in the relax method.
+ *       method and change 'greater than' to 'less than' in the relax method.
  * </pre>
  * @author nichole
  */

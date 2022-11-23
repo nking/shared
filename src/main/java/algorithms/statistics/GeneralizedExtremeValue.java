@@ -20,12 +20,12 @@ import java.security.SecureRandom;
                 sigma                                   (      (sigma))
  
   mu is  the location parameter
-  sigma is the scale parameter and is > 0
+  sigma is the scale parameter and is .gt. 0
   k is the shape parameter
  
  
   if k != 0,
-      1 + (k * (x-mu)/sigma) > 0
+      1 + (k * (x-mu)/sigma) .gt. 0
  
  
   Let z = (x-mu)/sigma
@@ -35,7 +35,7 @@ import java.security.SecureRandom;
       y = y_const * ----- * exp( -z -exp(-z))
                     sigma
       
-      sigma > 0
+      sigma .gt. 0
       k = 0
  
   Extreme Value Type II (Frechet):
@@ -43,10 +43,10 @@ import java.security.SecureRandom;
       y = y_const * ----- * (-----)       * exp( - (-----)  )
                     sigma   (  x  )            (   (  x  )  )
  
-      k  > 0, (1/k)>0
-      sigma > 0
-      x > 0
-      if (1 + k*(x - mu)/sigma) <= 0, y = 0
+      k .gt. 0, (1/k) .gt. 0
+      sigma .gt.  0
+      x .gt. 0
+      if (1 + k*(x - mu)/sigma) .lte. 0, y = 0
  
   Extreme Value Type III (Weibull):
                       k     (x - mu)^(k+1)      (   (x - mu)^k)
@@ -57,10 +57,10 @@ import java.security.SecureRandom;
         = y_const * ----- * (z)^(k+1) * exp( -1*(z)^k )
                     sigma
  
-      k < 0, (1/k)<0
-      sigma > 0
-      x > 0
-       if -(1 + k*(x - mu)/sigma) >= 0, y = 1
+      k .lt. 0, (1/k) .lt. 0
+      sigma .gt. 0
+      x .gt. 0
+       if -(1 + k*(x - mu)/sigma) .geq. 0, y = 1
  
  </pre>
   first implemented in project

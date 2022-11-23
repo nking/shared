@@ -41,7 +41,7 @@ import java.util.Stack;
     by generating for n2=n-1, and the left shift by 1 the result.
     (can use SubsetChooser.java and one of the 2 Permutation*.java classes).)
 
-    n=10, k=3 => count = 84
+    n=10, k=3 .geq. count = 84
 
     Once all of the 3-node path subsets are generated and stored,
     one can consider again that each of the complete permutations of paths

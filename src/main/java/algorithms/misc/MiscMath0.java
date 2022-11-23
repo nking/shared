@@ -674,6 +674,7 @@ public class MiscMath0 {
        q = calculateQuartiles(x);
        iqr = q[2]-q[0];
        inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
+    </pre>
      * @param x
      * @return 
     */
@@ -688,6 +689,7 @@ public class MiscMath0 {
        q = calculateQuartiles(x);
        iqr = q[2]-q[0];
        inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
+    </pre>
      * @param x
      * @return 
     */
@@ -702,6 +704,7 @@ public class MiscMath0 {
        q = calculateQuartiles(x);
        iqr = q[2]-q[0];
        inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
+    </pre>
      * @param x
      * @param k
      * @return 
@@ -1295,7 +1298,7 @@ public class MiscMath0 {
      * computeNDivKTimesNMinusKBigIntegerExact is used and in that case,
      * if the result is larger than Long.MAX_VALUE an exception is thrown.
      *
-     * (Aho & Ullman "Foundations of Computer Science")
+     * (Aho and Ullman "Foundations of Computer Science")
      * @param n
      * @param k
      * @return

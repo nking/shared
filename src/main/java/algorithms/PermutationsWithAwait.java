@@ -3,10 +3,7 @@ package algorithms;
 import algorithms.misc.MiscMath0;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  a thread-safe class to permute numbers given in an array.
@@ -63,8 +60,8 @@ public final class PermutationsWithAwait {
        by Goetz et al.
        </pre>
        
-     * @param seq
-     * @throws java.lang.InterruptedException
+     * @param seq input sequence of numbers to permute
+     * @throws java.lang.InterruptedException thrown if a thread is interrupted
      */
     public PermutationsWithAwait(int[] seq) throws InterruptedException {
 

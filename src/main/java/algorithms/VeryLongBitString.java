@@ -170,9 +170,9 @@ public final class VeryLongBitString {
      * result is out of bounds, -1 is returned and the invoker should
      * handle that.
      * 
-     * @param nthBit
-     * @param arrayIdx
-     * @return 
+     * @param nthBit bit  index
+     * @param arrayIdx array index
+     * @return  item stored in nthBit bit index of item stored at arrayIdx of internal array
      */
     int getBitIdx(long nthBit, int arrayIdx) {
         
@@ -211,7 +211,7 @@ public final class VeryLongBitString {
     
     /**
      * get the '01...' bitstring representation of this object
-     * @return 
+     * @return binary bitstring representation of this object
      */
     @Override
     public String toString() {
@@ -231,7 +231,7 @@ public final class VeryLongBitString {
     
     /**
      * get a list of the bit numbers that are set.
-     * @return 
+     * @return bit nuber of set bits
      */
     public int[] getSetBits() {
         
@@ -292,7 +292,7 @@ public final class VeryLongBitString {
     /**
      * approximate the memory (in Bytes) used by this instance and its member variables, and 
      * return that portion on the stack.
-     * @return 
+     * @return memory used in Bytes
      */
     protected long approximateMemoryUsed_Stack() {
        
@@ -327,7 +327,7 @@ public final class VeryLongBitString {
     /**
      * approximate the memory (in Bytes) used by this instance and its member variables, and 
      * return that portion on the heap.
-     * @return 
+     * @return memory used in Bytes
      */
     protected long approximateMemoryUsed_Heap() {
         
@@ -358,8 +358,8 @@ public final class VeryLongBitString {
     /**
      * perform a bitwise 'AND' on this bitstring and otherBS to find
      * the the intersection of bits in both bitstrings.
-     * @param otherBS
-     * @return 
+     * @param otherBS other bitstring
+     * @return the result of bitwise and of this bitstring and otherBS bitstring
      */
     public VeryLongBitString and(VeryLongBitString otherBS) {
                 
@@ -393,8 +393,8 @@ public final class VeryLongBitString {
      * return the number of bits different between the bit-string
      * otherBS and this and return that count.
      * Note that otherBS must have the same number of bits.
-     * @param otherBS
-     * @return 
+     * @param otherBS other bitstring
+     * @return the nuber of bits that are different in bitwise comparison of otherBS with this bitstring
      */
     public long nBitsDifferent(VeryLongBitString otherBS) {
         
@@ -421,8 +421,8 @@ public final class VeryLongBitString {
     /**
      * perform a bitwise 'or' on this bitstring and otherBS to make
      * a union operation.
-     * @param otherBS
-     * @return 
+     * @param otherBS other bitstring
+     * @return bitwise or of otherBS with this bitstring
      */
     public VeryLongBitString or(VeryLongBitString otherBS) {
                 
@@ -455,8 +455,8 @@ public final class VeryLongBitString {
     /**
      * perform a bitwise 'xor' on this bitstring and otherBS.
      * The result is the bits which are different.
-     * @param otherBS
-     * @return 
+     * @param otherBS other bitstring
+     * @return bitwise xor of otherBS with this bitstring
      */
     public VeryLongBitString xor(VeryLongBitString otherBS) {
                 
@@ -490,8 +490,8 @@ public final class VeryLongBitString {
      * find the bits in this.copy() which are not in otherBS by performing
      * perform a bitwise 'AND' on this bitstring and otherBS to find
      * the intersection bits then clear those bits in the copy of this instance.
-     * @param otherBS
-     * @return 
+     * @param otherBS other bitstring
+     * @return bitwise difference between otherBS and this bitstring
      */
     public VeryLongBitString difference(VeryLongBitString otherBS) {
                 
@@ -525,10 +525,10 @@ public final class VeryLongBitString {
 
     /**
      * where bits2 are set in bits1, unset the bits in bits1.
-     * This is the bitwise 'subtract' operation A & ~B.
-     * @param bs1
-     * @param bs2
-     * @return 
+     * This is the bitwise 'subtract' operation A 'bitwise and' ~B.
+     * @param bs1 a bitstring
+     * @param bs2 another bitstring
+     * @return the difference between otherBS and this bitstring
      */
     public static VeryLongBitString subtract(VeryLongBitString bs1,
         VeryLongBitString bs2) {
@@ -550,7 +550,7 @@ public final class VeryLongBitString {
 
     /**
      * 
-     * @param nthBit
+     * @param nthBit the bit index
      * @return index for next highest bit set, else -1 if there is none.
      */
     public int nextHighestBitSet(int nthBit) {
@@ -597,7 +597,7 @@ public final class VeryLongBitString {
     
     /**
      * returns the index of the lowest bit set ("rightmost), else -1 if no bits are set.
-     * @return 
+     * @return the index of the lowest (rightmost) bit set, else -1 if no bits are set.
      */
     public int leastBitSet() {
         
@@ -624,7 +624,7 @@ public final class VeryLongBitString {
     
     /**
      * returns the index of the highest bit set ("leftmost"), else -1 if no bits are set.
-     * @return 
+     * @return the index of the highest bit set (leftmost) else -1 if no bits are set.
      */
     public int highestBitSet() {
         

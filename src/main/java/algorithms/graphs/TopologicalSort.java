@@ -32,7 +32,7 @@ import algorithms.util.SimpleLinkedListNode;
 public class TopologicalSort {
 
     /**
-     * adjacency matrix with connected i->j indicated by the index and each
+     * adjacency matrix with connected i to j indicated by the index and each
      *    node in the linked list, respectively.
      * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
      */

@@ -15,7 +15,7 @@ import java.security.SecureRandom;
  *    sigma is the scale
  *    k is the shape
  *
- * For Gumbel distribution, k = 0, sigma > 0
+ * For Gumbel distribution, k = 0, sigma .gt. 0
  *
  * Let z = (x-mu)/sigma
  *

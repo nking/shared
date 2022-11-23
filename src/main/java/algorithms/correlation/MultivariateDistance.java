@@ -49,7 +49,7 @@ public class MultivariateDistance {
      * @param y multivariate variable where columns are the variates and 
      * rows are the samples.
      * @param k the number of random projections
-     * @return 
+     * @return  distance covariance
      */
     public static double efficientDCov(double[][] x, double[][] y, int k) throws NoSuchAlgorithmException {
         
@@ -88,7 +88,7 @@ public class MultivariateDistance {
      * rows are the samples.
      * @param k the number of random projections
      * @param rand instance of secure random number generator
-     * @return 
+     * @return distance covariance
      */
     public static double efficientDCov(double[][] x, double[][] y, int k,
         SecureRandom rand) {
@@ -135,15 +135,15 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x.  x.length must be >= 20
-     * @param y.  x.length must be >= 20
+     * @param x  x.length must be >= 20
+     * @param y  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param nIterations the number of iterations for statistic calculations
      * (note that each iteration constructs a new permutation of y, so this
      * step has runtime complexity O(y.length * y[0].length)
      * @param alpha significance level for testing null hypothesis
-     * @return
-     * @throws NoSuchAlgorithmException 
+     * @return true if x and y are independent of one another
+     * @throws NoSuchAlgorithmException thrown if a random algorithm cannot be found
      */
     public static boolean areIndependent1(double[][] x, double[][] y, 
         int k, int nIterations, double alpha) throws NoSuchAlgorithmException {
@@ -168,14 +168,14 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x.  x.length must be >= 20
-     * @param y.  x.length must be >= 20
+     * @param x  x.length must be >= 20
+     * @param y  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param nIterations the number of iterations for statistic calculations
      * (note that each iteration constructs a new permutation of y, so this
      * step has runtime complexity O(y.length * y[0].length)
      * @param alpha significance level for testing null hypothesis
-     * @param rand
+     * @param rand random number generator
      * @return if true, x and y are consistent with independent, else if false
      * x and y are not consistent with independent.
      */
@@ -242,12 +242,12 @@ public class MultivariateDistance {
        "Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA", etc.
      </pre>
-     * @param x.  x.length must be >= 20
-     * @param y.  x.length must be >= 20
+     * @param x  x.length must be >= 20
+     * @param y  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param alpha significance level for testing null hypothesis
-     * @return
-     * @throws NoSuchAlgorithmException 
+     * @return true if x and y are independent of one another
+     * @throws NoSuchAlgorithmException thrown if no random algorithm can be found
      */
     public static boolean areIndependent2(double[][] x, double[][] y, 
         int k, double alpha) throws NoSuchAlgorithmException {
@@ -279,12 +279,12 @@ public class MultivariateDistance {
        "Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA", etc.
      </pre>
-     * @param x.  x.length must be >= 20
-     * @param y.  x.length must be >= 20
+     * @param x  x.length must be >= 20
+     * @param y  x.length must be >= 20
      * @param k the number of random projections for each test statistic.
      * @param alpha significance level for testing null hypothesis
-     * @param rand
-     * @return
+     * @param rand random number generator
+     * @return true if x and y are independent of one another
      */
     public static boolean areIndependent2(double[][] x, double[][] y, 
         int k, double alpha, SecureRandom rand) {

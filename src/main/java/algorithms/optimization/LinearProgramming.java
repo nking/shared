@@ -69,9 +69,9 @@ Simplex Method:
           real numbers: c1...cn; b1,...bm; and aij for a=1:m and j=1:n.
 
                         Find numbers x1,...xn:
-        objective ->    maximize summation_j=1:n(cj*xj)
-        constraints ->   subject to: summation_j=1:n(aij*xj) .leq. bi for i=1:m
-        constraints ->   xj .geq. 0 for j=1:n
+        objective :    maximize summation_j=1:n(cj*xj)
+        constraints :   subject to: summation_j=1:n(aij*xj) .leq. bi for i=1:m
+        constraints :   xj .geq. 0 for j=1:n
                          the later is a nonnegativity constraint
                          
               OR expressed more compactly:
@@ -79,8 +79,8 @@ Simplex Method:
           b = (bi) an m-dimensional vector
           c = (cj) an n-dimensional vector
           x = (xj) an n-dimensional vector
-        objective ->    maximize c^T*x
-        constraints ->   subject to: A*x .leq. b
+        objective :    maximize c^T*x
+        constraints :   subject to: A*x .leq. b
                          x .leq. 0
 
        A feasible solution is the numbers xHat as x1,...xn that satisfy all constraints.
@@ -852,17 +852,17 @@ public class LinearProgramming {
               real numbers: c1...cn; b1,...bm; and aij for a=1:m and j=1:n.
 
                             Find numbers x1,...xn:
-            objective ->    maximize summation_j=1:n(cj*xj)
-            constraints ->   subject to: summation_j=1:n(aij*xj) .leq. bi for i=1:m
-            non-negativity constraints ->   xj .geq. 0 for j=1:n
+            objective :    maximize summation_j=1:n(cj*xj)
+            constraints :   subject to: summation_j=1:n(aij*xj) .leq. bi for i=1:m
+            non-negativity constraints :   xj .geq. 0 for j=1:n
 
             OR expressed more compactly:
               A = (aij) =  mXn matrix
               b = (bi) an m-dimensional vector
               c = (cj) an n-dimensional vector
               x = (xj) an n-dimensional vector
-            objective ->    maximize c^T*x
-            constraints ->   subject to: A*x .leq. b
+            objective :    maximize c^T*x
+            constraints :   subject to: A*x .leq. b
                              x .leq. 0
         */
         int n = standForm.c.length;
@@ -1554,11 +1554,11 @@ public class LinearProgramming {
         example Standard Form:
         
         Find numbers x1,...xn:
-        objective ->    maximize 
+        objective :    maximize
                            c^T*x = summation_j=1:n(cj*xj)
-        constraints ->  subject to: 
+        constraints :  subject to:
                            A*x .leq. b = summation_j=1:n(aij*xj) .leq. bi for i=1:m
-        constraints ->   xj .geq. 0 for j=1:n
+        constraints :   xj .geq. 0 for j=1:n
                          the later is a nonnegativity constraint
         
         where c1...cn; b1,...bm; and aij are real numbers.

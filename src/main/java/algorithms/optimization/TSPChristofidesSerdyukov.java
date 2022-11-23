@@ -38,16 +38,16 @@ import thirdparty.HungarianAlgorithm;
  * <pre>
  * (1) T=MST(G) where G is a complete graph with vertices v and non-negative edge weights w.
         (a complete graph is an undirected graph w/ edge between every pair of nodes)
-        ==> can use PrimsMST
+        so can use PrimsMST
     (2) O = the vertices in T w/ odd degree.  in the subgraph O, connect all 
             vertices to one another.
     (3) M = min weight perfect matching in O
-        ==> can use Hungarian algorithm or MinCostUnbalancedAssignment.java
+        so can use Hungarian algorithm or MinCostUnbalancedAssignment.java
     (4) H = connected multigraph from combining the edges of M and T, such that
         each vertex has even degree.
         (a multigraph may have more than 1 edge between same 2 end nodes).
     (5) EC = form a eulerian circuit
-        ==> can use HierholzersEulerCircuit
+        so can use HierholzersEulerCircuit
     (6) Make the EC circuit into a Hamiltonian circuit by skipping repeated 
           vertices (shortcutting).
  * </pre>

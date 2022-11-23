@@ -192,8 +192,8 @@ YFastTrie
 
     /**
      * runtime complexity is O(log_2(wBits))
-     * @param node
-     * @param index 
+     * @param node node to insert
+     * @param index index of the red black tree in the internal tree map
      */
     private void addToRBTree(int node, int index) {
         
@@ -218,8 +218,8 @@ YFastTrie
     
     /**
      * runtime complexity is O(log_2(wBits))
-     * @param node
-     * @param index 
+     * @param node node to delete
+     *      * @param index index of the red black tree in the internal tree map
      */
     private boolean deleteFromRBTree(int node, int index) {
                 
@@ -252,7 +252,7 @@ YFastTrie
      * runtime complexity is roughly O(log_2(wBits)).
      * @param node a number >= 0 and having bit length 
      * less than or equal to w.
-     * @return 
+     * @return true if node was successfully added to this yfasttrie
      */
     public boolean add(int node) {
 
@@ -293,8 +293,8 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node
-     * @return 
+     * @param node node to remove
+     * @return true if node was found and removed
      */
     public boolean remove(int node) {
         
@@ -359,7 +359,7 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node
+     * @param node node to find in this yfasttrie
      * @return returns node if found, else -1
      */
     public int find(int node) {
@@ -387,7 +387,7 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node
+     * @param node node whose predecessor must be returned
      * @return value preceding node, else -1 if there is not one
      */
     public int predecessor(int node) {
@@ -445,8 +445,8 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node
-     * @return 
+     * @param node node whose successor must be found
+     * @return the successor of node, else -1 if not found
      */
     public int successor(int node) {
                 

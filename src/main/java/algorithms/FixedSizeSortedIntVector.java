@@ -63,7 +63,7 @@ public class FixedSizeSortedIntVector {
      *
      * runtime complexity is O(log_2(capacity) + less than capacity).
      *
-     * @param value
+     * @param value value to insert into vector
      * @return true if added, else false
      */
     public boolean add(int value) {
@@ -122,7 +122,7 @@ public class FixedSizeSortedIntVector {
     /**
      * Insert the value into the list while maintaining the sorted state of the 
      * list.
-     * @param value
+     * @param value insert into vector
      */
     private void insertIntoOpenSlot(int value) {
 
@@ -202,7 +202,7 @@ public class FixedSizeSortedIntVector {
      *
      * runtime complexity is O(1)
      *
-     * @return
+     * @return internal array.  note that this is not a copy, intentionally.
      */
     public int[] getArray() {
 
@@ -216,8 +216,8 @@ public class FixedSizeSortedIntVector {
      *
      * runtime complexity is O(1)
      *
-     * @param index
-     * @return
+     * @param index of vector
+     * @return item at index in vector
      */
     public int getValue(int index) {
 
@@ -232,7 +232,7 @@ public class FixedSizeSortedIntVector {
      * return the number of items in the internal array.  if the array is not
      * yet filled, the return will be less than the capacity, else will
      * be the same as the capacity.
-     * @return
+     * @return number of items
      */
     public int getNumberOfItems() {
         return n;
@@ -248,8 +248,8 @@ public class FixedSizeSortedIntVector {
      * equal to x and leave all elements greater than x in this instance
      * runtime complexity is binary search + copy = O(n) where n is the
      * number of items in this instance.
-     * @param x
-     * @return
+     * @param x value to use in splitting the vector
+     * @return return all values in vector less than x while removing them from the vector,
      */
     public FixedSizeSortedIntVector split(int x) {
 

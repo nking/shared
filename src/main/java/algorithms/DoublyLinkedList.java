@@ -22,7 +22,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
     /**
      * add to end of doubly-linked list.
      * runtime complexity is O(1).
-     * @param node 
+     * @param node node to add
      */
     public void add(T node) {
         if (head == null) {
@@ -46,7 +46,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
     /**
      * insert at end of doubly-linked list.  this method simply invokes add(node).
      * runtime complexity is O(1).
-     * @param node 
+     * @param node node to add to end of list
      */
     public void addLast(T node) {
         add(node);
@@ -55,7 +55,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
     /**
      * insert at beginning of doubly-linked list.
      * runtime complexity is O(1).
-     * @param node 
+     * @param node node to add to beginning of list
      */
     public void addFirst(T node) {
         if (head == null) {
@@ -85,6 +85,9 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
      * @param node the instance of T already in this instance.
      */
     public void unlink(T node) {
+        if (node == null) {
+            return;
+        }
         if (node.prev == null) {
             if (!node.equals(head)) {
                 throw new IllegalStateException("node.prev == null, so it "
@@ -150,7 +153,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
      * doubly-linked list instance.
      * @param node the node in this doubly-linked list in which .equals(node) returns
      * true, else null for no node found.
-     * @return 
+     * @return node to search for in list
      */
     public boolean contains(T node) {
         T found = search(node);
@@ -161,7 +164,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
      * unlink the last element from the list and return it.  
      * for use when want to treat this doubly linked list as LIFO, assuming
      * items were inserted using add().
-     * @return 
+     * @return last node if any
      */
     public T removeLast() {
         T node = tail;
@@ -173,7 +176,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
      * unlink the first element from the list and return it.  
      * for use when want to treat this doubly linked list as FIFO, assuming
      * items were inserted using add().
-     * @return 
+     * @return first node that was in the list
      */
     public T removeFirst() {
         T node = head;
@@ -183,7 +186,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
     
     /**
      * return the first element in the list without removing it from the list.
-     * @return 
+     * @return returns first item in the list (note: it is not a copy of the item, intentionally)
      */
     public T peekFirst() {
         return head;
@@ -191,7 +194,7 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
     
     /**
      * return the last element in the list without removing it from the list.
-     * @return 
+     * @return the last item in the list. (not: it is not a copy of the item, intentionally).
      */
     public T peekLast() {
         return tail;

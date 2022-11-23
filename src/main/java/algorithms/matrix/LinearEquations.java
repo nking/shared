@@ -9,7 +9,7 @@ import no.uib.cipr.matrix.*;
  a class of utility methods for linear algebra.
  <pre>
  note, for solving linear least squares problems, a good resource aside
- * from Strang, Golub & van Loan, and Cormen, Leiserson, Rivest, and Stein is:
+ * from Strang, Golub and van Loan, and Cormen, Leiserson, Rivest, and Stein is:
  “Algorithms for Linear Least Squares Problems”, 
  Bj̈orck 1991, published in Computer Algorithms for Solving Linear Algebraic Equations;
  The State of the Art., Vol. 77 of NATO-ASI Series F: Computer and Systems Sciences, pages 57–92.
@@ -88,9 +88,9 @@ public class LinearEquations {
     
     /**
      * solve for x in A*x=b by LU decomposition
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix
+     * @param b vector
+     * @return the solution x to a * x = b
      */
     public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
         
@@ -159,7 +159,7 @@ public class LinearEquations {
      * further normalized and reduced.
      * @param a a rectangular matrix
      * @param tol tolerance for comparing to zero.  e.g. the machine precision.
-     * @return
+     * @return the reduced echelon matrix of a
      */
     public static double[][] gaussianEliminationViaLU(double[][] a, double tol) throws NotConvergedException {
         a = MatrixUtil.copy(a);
@@ -630,7 +630,7 @@ public class LinearEquations {
      * Algebra" by W Gilbert Strang.)
      *  
      * @return coefficients c where y_i = summation(c_i*x^i) + error
-     * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws no.uib.cipr.matrix.NotConvergedException thrown if MTJ SVD operation did not converge
      */
     public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder, boolean
         solveForFullRank) throws NotConvergedException {

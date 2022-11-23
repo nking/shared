@@ -34,7 +34,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 * k have been removed are called the k-cores of the graph and the degeneracy of 
 * a graph is the largest value k such that it has a k-core.
 * 
- * As Matula & Beck (1983) describe, it is possible to find a vertex ordering 
+ * As Matula and Beck (1983) describe, it is possible to find a vertex ordering 
  * of a finite graph G that optimizes the coloring number of the ordering, in 
  * linear time, by using a bucket queue to repeatedly find and remove the vertex 
  * of smallest degree. 
