@@ -168,7 +168,7 @@ public class UniformCostSearch {
 
             SimpleLinkedListNode vNode = g[u];
             
-            while (vNode != null && vNode.getKey() != -1) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
             
                 v = vNode.getKey();
                

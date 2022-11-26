@@ -141,7 +141,7 @@ public class JohnsonsAllPairs {
             
             SimpleLinkedListNode vNode = g2.g[u];
             
-            while (vNode != null && vNode.getKey() != -1) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
             
                 int v = vNode.getKey();
                 
@@ -172,7 +172,7 @@ public class JohnsonsAllPairs {
                             
             SimpleLinkedListNode v2Node = g[u];
 
-            while (v2Node != null && v2Node.getKey() != -1) {
+            while (v2Node != null && v2Node.getNumberOfKeys() > 0) {
 
                 int v2 = v2Node.getKey();
 

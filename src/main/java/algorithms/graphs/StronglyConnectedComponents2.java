@@ -145,7 +145,7 @@ public class StronglyConnectedComponents2 {
         
         for (int v = 0; v < connected.length; v++) {
             SimpleLinkedListNode uNode = connected[v];
-            while (uNode != null && uNode.getKey() != -1) {
+            while (uNode != null && uNode.getNumberOfKeys() > 0) {
                 int u = uNode.getKey();
                 reversed[u].insert(v);
                 uNode = uNode.getNext();

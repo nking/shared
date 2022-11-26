@@ -108,7 +108,7 @@ public class UnweightedGraphCommunityFinder {
         
         for (int u = 0; u < adjList.length; ++u) {
             SimpleLinkedListNode vNode = adjList[u];
-            while (vNode != null && vNode.getKey() != -1) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
                 int v = vNode.getKey();
                 n++;
                 vNode = vNode.getNext();

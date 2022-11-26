@@ -146,7 +146,7 @@ public class BellmanFord {
         for (int u = 0; u < nV; ++u) {
             SimpleLinkedListNode vNode = dAG[u];            
             TIntIntMap uWgts = weights[u];
-            while (vNode != null && vNode.getKey() != -1 && uWgts != null) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0 && uWgts != null) {
                 int v = vNode.getKey();
                 if (uWgts.containsKey(u)) {
                     throw new IllegalStateException("no weight found for edge "

@@ -197,7 +197,7 @@ public class Betweenness {
                     log.log(logLevel, "    LEAF");
                     continue;
                 }
-                while (vNode != null && vNode.getKey() != -1) {
+                while (vNode != null && vNode.getNumberOfKeys() > 0) {
                     int v = vNode.getKey();
                     if (color[v] == 0) {
                         color[v] = 1;
@@ -267,7 +267,7 @@ public class Betweenness {
                 e = 1;
                 log.log(logLevel, String.format("  e0[%d]=%.3f", i, e));
                 SimpleLinkedListNode jNode = adjacencyList[i];
-                while (jNode != null && jNode.getKey() != -1) {
+                while (jNode != null && jNode.getNumberOfKeys() > 0) {
                     int j = jNode.getKey();
                     ij = new PairInt(i, j);
                     log.log(logLevel, String.format("  i=%d j=%d", i, j));
@@ -430,7 +430,7 @@ public class Betweenness {
                     log.log(logLevel, "    LEAF%n");
                     continue;
                 }
-                while (vNode != null && vNode.getKey() != -1) {
+                while (vNode != null && vNode.getNumberOfKeys() > 0) {
                     int v = vNode.getKey();
                     if (color[v] == 0) {
                         color[v] = 1;
@@ -508,7 +508,7 @@ public class Betweenness {
                 e = 1;
                 log.log(logLevel, String.format("  e0[%d]=%.3f", i, e));
                 SimpleLinkedListNode jNode = adjacencyList[i];
-                while (jNode != null && jNode.getKey() != -1) {
+                while (jNode != null && jNode.getNumberOfKeys() > 0) {
                     int j = jNode.getKey();
                     if (d[i] < d[j]) {
                         ij = new PairInt(i, j);
@@ -591,7 +591,7 @@ public class Betweenness {
         
         //Set<PairInt> uvs = new HashSet<PairInt>();
         SimpleLinkedListNode vNode = adjacencyList[u];
-        while (vNode != null && vNode.getKey() != -1) {
+        while (vNode != null && vNode.getNumberOfKeys() > 0) {
             int v = vNode.getKey();
             if (d[v] > d[u]) {
                 return false;
@@ -609,7 +609,7 @@ public class Betweenness {
             sb.append(String.format("u=%d v=[", u));
             SimpleLinkedListNode vNode = adjacencyList[u];
 
-            while (vNode != null && vNode.getKey() != -1) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
                 int v = vNode.getKey();
                 sb.append(String.format("%d, ", v));
                 vNode = vNode.getNext();

@@ -136,7 +136,7 @@ public class DFSNonRecursive {
                             
                     SimpleLinkedListNode next = g[current.node];
                     
-                    if (next != null && next.getKey() != -1) {
+                    if (next != null && next.getNumberOfKeys() > 0) {
                         
                         int v = next.getKey();
                         
@@ -166,7 +166,7 @@ public class DFSNonRecursive {
                     //   + current.toString());
                     
                     SimpleLinkedListNode next = g[current.node];
-                    if (next != null && next.getKey() != -1) {
+                    if (next != null && next.getNumberOfKeys() > 0) {
                         
                         int v = next.getKey();
                         

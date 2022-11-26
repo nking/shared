@@ -113,7 +113,7 @@ public class DAGShortestPaths {
             
             SimpleLinkedListNode next = g[u];
             
-            while (next != null && next.getKey() != -1) {
+            while (next != null && next.getNumberOfKeys() > 0) {
             
                 int v = next.getKey();
                 

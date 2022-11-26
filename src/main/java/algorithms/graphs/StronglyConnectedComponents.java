@@ -130,7 +130,7 @@ public class StronglyConnectedComponents {
         log.log(logLevel, "u:" + toString(u));
                 
         SimpleLinkedListNode wNode = g[u];
-        while (wNode != null && wNode.getKey() != -1) {
+        while (wNode != null && wNode.getNumberOfKeys() > 0) {
             int v = wNode.getKey();
             log.log(logLevel, "    v=" + toString(v));            
             if (td[v] == -1) {

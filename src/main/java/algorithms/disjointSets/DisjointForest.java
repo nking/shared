@@ -270,7 +270,7 @@ public class DisjointForest<T> {
             uVertex = vertexMap.get(u);
             
             vNode = adjList[u];
-            while (vNode != null && vNode.getKey() != -1) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
                 
                 v = vNode.getKey();
                 

@@ -153,7 +153,7 @@ public class LongestPath {
             
             // add u to prevMap for the next v in tsIdxs to use
             nhbr = nodes[v];
-            while (nhbr != null && nhbr.getKey() != -1) {
+            while (nhbr != null && nhbr.getNumberOfKeys() > 0) {
                 v2 = nhbr.getKey();
                 
                 set = prevMap.get(v2);

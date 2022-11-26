@@ -193,7 +193,7 @@ public class SimpleLinkedListNode {
         int count = 0;
 
         SimpleLinkedListNode latest = this;
-        while (latest != null && latest.key != -1) {
+        while (latest != null && latest.getNumberOfKeys() > 0) {
             if ((count + 1) > n) {
                 n = 2*n;
                 nodeKeys = Arrays.copyOf(nodeKeys, n);

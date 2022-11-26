@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 public class NewmanGMLParser {
 
     private static Logger log = Logger.getLogger("NewmanGMLParser");
-    
+
     public static class GMLGraph {
         String graphType;
         Map<PairInt, TFloatList> edgeWeightMap;

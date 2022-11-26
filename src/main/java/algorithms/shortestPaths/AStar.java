@@ -210,7 +210,7 @@ public class AStar {
 
             SimpleLinkedListNode vNode = graph[u];
             
-            while (vNode != null && vNode.getKey() != -1) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
             
                 int v = vNode.getKey();
                

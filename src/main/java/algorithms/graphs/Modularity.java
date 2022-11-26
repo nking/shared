@@ -132,7 +132,7 @@ public class Modularity {
             }
 
             SimpleLinkedListNode jNode = originalAdjacencyList[i];
-            while (jNode != null && jNode.getKey() != -1) {
+            while (jNode != null && jNode.getNumberOfKeys() > 0) {
                 j = jNode.getKey();
                 c2 = layer.vertexComponents[j];
                 if (c2 == -1) {
