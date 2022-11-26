@@ -1,26 +1,24 @@
 package algorithms.matrix;
 
+import algorithms.graphs.GraphUtil;
+import algorithms.graphs.Laplacian;
 import algorithms.matrix.MatrixUtil.ProjectionResults;
 import algorithms.util.FormatArray;
+import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.EVD;
-import no.uib.cipr.matrix.LowerSymmDenseMatrix;
-import no.uib.cipr.matrix.LowerTriangDenseMatrix;
-import no.uib.cipr.matrix.Matrices;
-import no.uib.cipr.matrix.Matrix;
-import no.uib.cipr.matrix.NotConvergedException;
-import no.uib.cipr.matrix.QR;
-import no.uib.cipr.matrix.UpperTriangDenseMatrix;
-    
+import no.uib.cipr.matrix.*;
+import no.uib.cipr.matrix.sparse.ArpackSym;
+import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
+
 /**
  *
  * @author nichole
@@ -1875,6 +1873,73 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(Math.abs(aF - sum) < tol);
         assertTrue(Math.abs(aV - sum) < tol);
         //aF and aV differ by the definitions: sqrt(square sums of singular values)), and the largest singular value.
+
+    }
+
+    public void testSparseEigen() {
+        // for Fieldler, need the 2 smallest eigenvectors and ArpackSym.Ritz.SA
+        int nEig = 2;
+        ArpackSym.Ritz ritz = ArpackSym.Ritz.SA;
+
+        // making a test out of Fiedler vector, a.k.a. algebraid connectivity example in wikipedia:
+        // https://en.wikipedia.org/wiki/Algebraic_connectivity
+
+        int n = 6;
+        TIntObjectMap<TIntSet> g = new TIntObjectHashMap<>();
+        for (int i = 0; i < n; ++i) {
+            g.put(i, new TIntHashSet());
+        }
+        boolean undirected = true;
+        g.get(1-1).add(2-1);
+        g.get(1-1).add(5-1);
+        g.get(2-1).add(1-1);
+        g.get(2-1).add(3-1);
+        g.get(2-1).add(5-1);
+        g.get(3-1).add(2-1);
+        g.get(3-1).add(4-1);
+        g.get(4-1).add(3-1);
+        g.get(4-1).add(5-1);
+        g.get(4-1).add(6-1);
+        g.get(5-1).add(1-1);
+        g.get(5-1).add(2-1);
+        g.get(5-1).add(4-1);
+        g.get(6-1).add(4-1);
+
+        System.out.println("testSparseEigen");
+
+        LinkedSparseMatrix lS = Laplacian.createInDegreeLaplacianSparse(g);
+        //System.out.printf("L=%s%n", lS.toString());
+
+        Map<Double, DenseVectorSub> eigenVectors = MatrixUtil.sparseEigen(lS, nEig, ritz);
+        /*for (Map.Entry<Double, DenseVectorSub> eigen : eigenVectors.entrySet()) {
+            System.out.printf("eigenvalue=%s eigenvector=%s%n",
+                    eigen.getKey().toString(), eigen.getValue().toString());
+        }*/
+        double maxEig = Double.NEGATIVE_INFINITY;
+        for (Map.Entry<Double, DenseVectorSub> eigen : eigenVectors.entrySet()) {
+            double eig = eigen.getKey();
+            if (eig > maxEig) {
+                maxEig = eig;
+            }
+        }
+        double[] eigenVector = Matrices.getArray(eigenVectors.get(maxEig));
+
+        //An example graph, with 6 vertices, diameter 3, connectivity 1
+        // algebraic connectivity = 0.722
+        // expecting 0.415, 0.309, 0.069,-0.221, 0.221, -0.794
+
+        //double[] expecting = new double[]{-4.148697928979e-01, -3.094416685810e-01, -6.923279531347e-02,
+        //        2.209335208287e-01, -2.209335208287e-01,  7.935442567924e-01};
+        double[] expecting = new double[]{0.415, 0.309, 0.069,-0.221, 0.221, -0.794};
+
+        double tol = 0.01;
+        assertEquals(expecting.length, eigenVector.length);
+        double sign = expecting[0]/eigenVector[0];
+        for (int i = 0; i < eigenVector.length; ++i) {
+            assertTrue(Math.abs((eigenVector[i] * sign) - expecting[i]) < tol);
+        }
+
+        // one can partition the graph by the Fieldler vector
 
     }
 }

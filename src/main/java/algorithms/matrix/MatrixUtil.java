@@ -6,9 +6,11 @@ import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
+import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import no.uib.cipr.matrix.*;
@@ -26,6 +28,9 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import no.uib.cipr.matrix.sparse.ArpackSym;
+import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
+import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
 
 /**
  
@@ -1906,7 +1911,7 @@ public class MatrixUtil {
         
         return r;
     }
-    
+
     /**
      * class to hold the results of the Singular Value Decomposition
      */
@@ -2042,7 +2047,50 @@ public class MatrixUtil {
         out.rank = rank;
         return out;
     }
-    
+
+    /**
+     * use the MTJ arpack to partially solve symmetric eigensystems for eigenvalues.
+     * You can get the eigenvectors using
+     *
+     <pre>
+     see https://github.com/fommil/matrix-toolkits-java/blob/master/src/test/java/no/uib/cipr/matrix/sparse/ArpackSymTest.java
+     Internally, this method does this:
+     For example, to calculate the smallest 2 eigenvectors of matrix A,
+     (1) calculates A^T * A to get the symmetric matrix:
+         LinkedSparseMatrix A = ...;
+         LinkedSparseMatrix AtA = A.transAmult(A, new LinkedSparseMatrix(A.numColumns(), A.numColumns()));
+     (2) Then uses the Arpack solver with the enum for smallest eigenvalues.
+         ArpackSym solver = new ArpackSym(AtA);
+         Map<Double, DenseVectorSub> results = solver.solve(2, ArpackSym.Ritz.SA);
+     * @param A
+     * @param nEigenValues
+     * @param ritz
+        <pre>
+        ArpackSym.Ritz types:
+        BE : compute NEV eigenvalues, half from each end of the spectrum
+        LA : compute the NEV largest (algebraic) eigenvalues.
+        LM : compute the NEV largest (in magnitude) eigenvalues.
+        SA : compute the NEV smallest (algebraic) eigenvalues.
+        SM : compute the NEV smallest (in magnitude) eigenvalues.
+        </pre>
+     * @return nEigenValues eigenvalues solved for the given sparse matrix A and ritz enum.
+     */
+     public static Map<Double, DenseVectorSub> sparseEigen(Matrix A, int nEigenValues, ArpackSym.Ritz ritz) {
+         Matrix AtA;
+         if (A instanceof LinkedSparseMatrix) {
+             AtA = A.transAmult(A, new LinkedSparseMatrix(A.numColumns(), A.numColumns()));
+         } else if (A instanceof FlexCompColMatrix) {
+             AtA = A.transAmult(A, new FlexCompColMatrix(A.numColumns(), A.numColumns()));
+         } else {
+             throw new IllegalArgumentException("Incomplete Method Error.  This method currently can only handle" +
+                     " LinkedSparseMatrix and FlexCompColMatrix");
+         }
+
+         ArpackSym solver = new ArpackSym(AtA);
+
+         return solver.solve(nEigenValues, ritz);
+     }
+
     /**
      * create matrix A^T*A then perform SVD on it.  NOTE that the singular values
      * returned in S will have the square of values of SVD(A).s.

@@ -5,6 +5,14 @@
 
 -- look into jcilk
    - does jcilk have cilksan and cilkscale?
+   - also https://graphit-lang.org/ (can combine with cilk) for improving large graph processing
+
+-- summary of cache strategy types, graph re-ordering algorithms, pull vs push (later requires
+   cache line sharing between threads so needs synchronization) and performance comparisons:
+   -- Esfahani, Kilpatrick, and Vandierendonck 2021, "Locality Analysis of Graph Reordering Algorithms",
+        2021 IEEE Symposium on Workload Characterization.
+   -- 15. Cache-Oblivious Algorithms https://youtu.be/xwE568oVQ1Y
+   -- 18. Domain Specific Languages and Autotuning https://youtu.be/bd-mavr5YlA
 
 -- explore model checking software again
 

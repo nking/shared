@@ -2,6 +2,13 @@ package algorithms.graphs;
 
 import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -82,4 +89,91 @@ public class GraphUtil {
         
         return out;
     }
+
+
+    /**
+     * convert the adjacency graph g in TIntObjectMap<TIntSet> into a graph built with
+     * SimpleLinkedListNode[].  note that this method assumes that the vertexes are ordered such
+     * that the final range of indexes returned is [0, max Vertex number].
+     * @param g
+     * @return
+     */
+    public static SimpleLinkedListNode[] convertGraph(TIntObjectMap<TIntSet> g) {
+        int[] minMax = minAndMaxVertexNumbers(g);
+        int n = minMax[1] + 1;
+
+        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[n];
+        for (int i = 0; i < n; ++i) {
+            g2[i] = new SimpleLinkedListNode();
+        }
+        TIntObjectIterator<TIntSet> iter = g.iterator();
+        TIntIterator iter2;
+        int u, v;
+        while (iter.hasNext()) {
+            iter.advance();
+            u = iter.key();
+            iter2 = iter.value().iterator();
+            while (iter2.hasNext()) {
+                v = iter2.next();
+                g2[u].insert(v);
+            }
+        }
+        return g2;
+    }
+
+    public static int[] minAndMaxVertexNumbers(TIntObjectMap<TIntSet> g) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        TIntObjectIterator<TIntSet> iter = g.iterator();
+        TIntIterator iter2;
+        int u, v;
+        while (iter.hasNext()) {
+            iter.advance();
+            u = iter.key();
+            if (u < min) {
+                min = u;
+            }
+            if (u > max) {
+                max = u;
+            }
+            iter2 = iter.value().iterator();
+            while (iter2.hasNext()) {
+                v = iter2.next();
+                if (v < min) {
+                    min = v;
+                }
+                if (v > max) {
+                    max = v;
+                }
+            }
+        }
+        return new int[]{min, max};
+    }
+
+    /**
+     * convert the adjacency graph g in SimpleLinkedListNode[] into a
+     * graph built with TIntObjectMap<TIntSet>.
+     * @param g
+     * @return
+     */
+    public static TIntObjectMap<TIntSet> convertGraph(SimpleLinkedListNode[] g) {
+        TIntObjectMap<TIntSet> g2 = new TIntObjectHashMap<TIntSet>();
+        int u, v;
+        SimpleLinkedListNode vNode;
+        TIntSet uSet;
+        for (u = 0; u < g.length; ++u) {
+            uSet = g2.get(u);
+            if (uSet == null) {
+                uSet = new TIntHashSet();
+                g2.put(u, uSet);
+            }
+            vNode = g[u];
+            while (vNode != null) {
+                uSet.add(vNode.getKey());
+                vNode = vNode.getNext();
+            }
+        }
+        return g2;
+    }
+
 }
