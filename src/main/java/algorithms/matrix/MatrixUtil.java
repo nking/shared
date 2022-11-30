@@ -7,6 +7,7 @@ import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
+import com.github.fommil.netlib.LAPACK;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -946,6 +947,58 @@ public class MatrixUtil {
         }
         
     }
+    /**
+     * perform dot product of m and a diagonalized matrix of diag,
+     * and return matrix of size mrows X mcols
+     * @param m matrix
+     * @param diag vector
+     * @return result
+     */
+    public static double[][] multiplyByDiagonal(double[][] m, double[] diag) {
+        double[][] out = MatrixUtil.zeros(m.length, m[0].length);
+        multiplyByDiagonal(m, diag, out);
+        return out;
+    }
+
+    /**
+     * multiply the diagonal matrix of diag by the matrix m and return the results in the given output matrix.
+     * @param diag an array holding the diagonal elements of the diagonal matrix.  size is length a.length.
+     * @param a an mxn matrix.
+     * @return
+     */
+    public static double[][] multiplyDiagonalByMatrix(double[] diag, double[][] a) {
+        double[][] out = MatrixUtil.zeros(a.length, a[0].length);
+        multiplyDiagonalByMatrix(diag, a, out);
+        return out;
+    }
+
+    /**
+     * multiply the diagonal matrix of diag by the matrix m and return the results in the given output matrix.
+     * @param diag an array holding the diagonal elements of the diagonal matrix.  size is length a.length.
+     * @param a an mxn matrix.
+     * @param out output matrix of size a.length X a[0].length
+     * @return
+     */
+    public static void multiplyDiagonalByMatrix(double[] diag, double[][] a, double[][] out) {
+        int m = a.length;
+        int n = a[0].length;
+        if (diag.length != m) {
+            throw new IllegalArgumentException("diag must be length a.length");
+        }
+        if (out.length != m) {
+            throw new IllegalArgumentException("out.length must equal a.length");
+        }
+        if (out[0].length != n) {
+            throw new IllegalArgumentException("out[0].length must equal a[0].length");
+        }
+        int i;
+        int j;
+        for (i = 0; i < m; ++i) {
+            for (j = 0; j < n; ++j) {
+                out[i][j] = diag[i] * a[i][j];
+            }
+        }
+    }
     
     /**
      * perform dot product of m and a diagonalized matrix of diag,
@@ -954,8 +1007,7 @@ public class MatrixUtil {
      * @param diag vector
      * @return result
      */
-    public static double[][] multiplyByDiagonal(
-        double[][] m, double[] diag) {
+    public static void multiplyByDiagonal(double[][] m, double[] diag, double[][] out) {
 
         if (m == null || m.length == 0 || m[0].length == 0) {
             throw new IllegalArgumentException("m cannot be null or empty");
@@ -974,23 +1026,24 @@ public class MatrixUtil {
             throw new IllegalArgumentException(
                 "the number of columns in m must equal the number of rows in n");
         }
+
+        if (out.length != mrows || out[0].length != mcols) {
+            throw new IllegalArgumentException(
+                    "out size must be [" + mrows+ " x " + mcols + "]");
+        }
         
         /*
         a b c      p0 0  0
         d e f      0  p1 0
                    0  0  p2        
         */
-        
-        double[][] c = new double[mrows][mcols];
-        
+
         for (int row = 0; row < mrows; row++) {
-            c[row] = new double[mcols];
+            out[row] = new double[mcols];
             for (int mcol = 0; mcol < mcols; mcol++) {
-                c[row][mcol] = m[row][mcol] * diag[mcol];
+                out[row][mcol] = m[row][mcol] * diag[mcol];
             }            
         }
-
-        return c;
     }
     
     /**
@@ -1950,35 +2003,35 @@ public class MatrixUtil {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("u=%n");
+            sb.append("u=\n");
             if (u != null) {
                 sb.append(FormatArray.toString(u, "%.4e"));
-            } 
-            sb.append("%ns=%n");
+            }
+            sb.append("\ns=\n");
             if (s != null) {
                 sb.append(FormatArray.toString(s, "%.4e"));
             }
-            sb.append("%nsigma=%n");
+            sb.append("\nsigma=\n");
             if (sigma != null) {
                 sb.append(FormatArray.toString(sigma, "%.4e"));
             }
-            sb.append("%nvT=%n");
+            sb.append("\nvT=\n");
             if (vT != null) {
                 sb.append(FormatArray.toString(vT, "%.4e"));
             }
             return sb.toString();
         }
-        
+
     }
-    
+
     /**
      * performs SVD on matrix a and if fails to converge, performs SVD on
      * a*a^T and a^T*a separately to get the factorization components for a.
      * <pre>
           SVD(A).U == SVD(A^T).V == SVD(AA^T).U == SVD(AA^T).V
-            
-          SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U 
-          
+
+          SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U
+
           SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
               and sqrt( SVD(A^TA) eigenvalues )
        </pre>
@@ -1988,15 +2041,15 @@ public class MatrixUtil {
     public static SVDProducts performSVD(double[][] a) throws NotConvergedException {
         return performSVD(new DenseMatrix(a));
     }
-    
+
     /**
      * performs SVD on matrix a and if fails to converge, performs SVD on
      * a*a^T and a^T*a separately to get the factorization components for a.
      * <pre>
           SVD(A).U == SVD(A^T).V == SVD(AA^T).U == SVD(AA^T).V
-            
-          SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U 
-          
+
+          SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U
+
           SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
               and sqrt( SVD(A^TA) eigenvalues )
        </pre>
@@ -2018,7 +2071,7 @@ public class MatrixUtil {
             double[][] aTa = MatrixUtil.multiply(MatrixUtil.transpose(_a), _a);
             double[][] aaT = MatrixUtil.multiply(_a, MatrixUtil.transpose(_a));
             //SVD(A).U == SVD(A^T).V == SVD(AA^T).U == SVD(AA^T).V
-            //SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U 
+            //SVD(A).V == SVD(A^T).U == SVD(A^TA).V == SVD(A^TA).U
             //SVD(A) eigenvalues are the same as sqrt( SVD(AA^T) eigenvalues )
             //    and sqrt( SVD(A^TA) eigenvalues )
             svd = SVD.factorize(new DenseMatrix(aTa));
@@ -2102,26 +2155,26 @@ public class MatrixUtil {
         double[][] aTa = MatrixUtil.createATransposedTimesA(a);
         return performSVDATransposeA(new DenseMatrix(aTa));
     }
-    
+
     public static SVDProducts performSVDATransposeA(DenseMatrix aTa) throws NotConvergedException {
-        
+
         SVD svd;
         DenseMatrix u = null;
         DenseMatrix vT = null;
         double[] sDiag = null;
-        
+
         svd = SVD.factorize(aTa);
         vT = svd.getVt();
         u = svd.getU();
         sDiag = svd.getS();
-        
+
         SVDProducts out = new SVDProducts();
         out.u = MatrixUtil.convertToRowMajor(u);
         out.vT = MatrixUtil.convertToRowMajor(vT);
         out.s = sDiag;
         return out;
     }
-    
+
     /**
      * perform QR decomposition (a.k.a. Francis algorithm, a.k.a. Francis QR step)
      * on matrix a using the MTJ library.
@@ -2129,14 +2182,14 @@ public class MatrixUtil {
      * A = Q*R of an orthonormal matrix Q and an upper triangular matrix R.
      * The columns of Q are the eigenvectors of A.
      * A*Q = Q * diag(eigenvalues of A).
-     * 
+     *
      * <pre>
      * To calculate the product of eigenvalue or singular values using
      * QR, see section "Connection to a determinant or a product of eigenvalues"
      * in wikipedia:
      * https://en.wikipedia.org/wiki/QR_decomposition
      * </pre>
-     * 
+     *
      * @param a a square or rectangular matrix with independent columns.
      * @return resulting QR decomposition of a
      */
@@ -2144,7 +2197,7 @@ public class MatrixUtil {
         QR qr = QR.factorize(new DenseMatrix(a));
         return qr;
     }
-    
+
     /**
      * given data points xy, want to create a matrix usable to transform
      * the data points by scaling and translation so that:
@@ -2154,16 +2207,16 @@ public class MatrixUtil {
        Can use the transformation matrix with dot operator: Misc.multiply(xy, tMatrix).
      * @param xy points in format [n X 2]
      * @return a matrix for use for canonical transformation of the points.
-     * the format of the result is 
+     * the format of the result is
      * <pre>
      *  t[0] = new double[]{scale,       0,     -centroidX*scale};
         t[1] = new double[]{0,           scale, -centroidY*scale};
        </pre>
      */
     public static double[][] calculateNormalizationMatrix2X3(double[][] xy) {
-        
+
         int nRows = xy.length;
-        
+
         double cen0 = 0;
         double cen1 = 0;
         for (int i = 0; i < nRows; ++i) {
@@ -2172,7 +2225,7 @@ public class MatrixUtil {
         }
         cen0 /= (double)nRows;
         cen1 /= (double)nRows;
-        
+
         double mean = 0;
         for (int i = 0; i < nRows; ++i) {
             double diffX = xy[i][0] - cen0;
@@ -2181,19 +2234,19 @@ public class MatrixUtil {
             mean += dist;
         }
         mean /= (double)nRows;
-        
+
         /*
         mean * factor = sqrt(2)
         */
         double scale = Math.sqrt(2)/mean;
-                
+
         double[][] t = new double[2][];
         t[0] = new double[]{scale,       0,     -cen0*scale};
         t[1] = new double[]{0,           scale, -cen1*scale};
-        
+
         return t;
     }
-    
+
      public static float[][] copy(float[][] a) {
 
         float[][] c = new float[a.length][a[0].length];
@@ -2202,42 +2255,42 @@ public class MatrixUtil {
             c[i] = new float[a[0].length];
             System.arraycopy(a[i], 0, c[i], 0, a[0].length);
         }
-        
+
         return c;
     }
 
     public static double[][] copy(double[][] a) {
-        
+
         double[][] m = new double[a.length][];
-        
+
         for (int i = 0; i < a.length; ++i) {
             int n0 = a[i].length;
             m[i] = new double[n0];
             System.arraycopy(a[i], 0, m[i], 0, n0);
         }
-        
+
         return m;
     }
-    
+
     public static void copy(double[][] source, double[][] destination) {
-        
+
         int m = source.length;
         int n = source[0].length;
-        
+
         if (destination.length != m) {
             throw new IllegalArgumentException("destination.length must equal source.length");
         }
         if (destination[0].length != n) {
             throw new IllegalArgumentException("destination[0].length must equal source[0].length");
         }
-        
+
         for (int i = 0; i < source.length; ++i) {
             System.arraycopy(source[i], 0, destination[i], 0, n);
-        }        
+        }
     }
-    
+
     /**
-     * 
+     *
      * @param a matrix
      * @param row0 beginning index, inclusive
      * @param row1 end index, inclusive
@@ -2246,22 +2299,22 @@ public class MatrixUtil {
      * @return sub matrix
      */
     public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
-        
+
         int nr2 = row1 - row0 + 1;
         int nc2 = col1 - col0 + 1;
-        
+
         double[][] m = new double[nr2][];
         int i, j;
         for (i = 0; i < nr2; ++i) {
             m[i] = new double[nc2];
             System.arraycopy(a[row0 + i], col0, m[i], 0, nc2);
         }
-        
+
         return m;
     }
-    
+
     /**
-     * copy the section of matrix a from row0 to row1 (inclusive) and 
+     * copy the section of matrix a from row0 to row1 (inclusive) and
      * col0 to col1 (inclusive) into output matrix out which must
      * be size (row1-row0+1) X (col1-col0+1)
      * @param a matrix
@@ -2271,54 +2324,54 @@ public class MatrixUtil {
      * @param col1 end index, inclusive
      * @param out output matrix to hold the copied section
      */
-    public static void copySubMatrix(double[][] a, int row0, int row1, 
+    public static void copySubMatrix(double[][] a, int row0, int row1,
         int col0, int col1, double[][] out) {
-        
+
         int nr2 = row1 - row0 + 1;
         int nc2 = col1 - col0 + 1;
-        
+
         if (out.length != nr2 || out[0].length != nc2) {
             throw new IllegalArgumentException("out dimensions must be "
                     + " row1 - row0 + 1 X col1 - col0 + 1");
         }
-        
+
         int i, j;
         for (i = 0; i < nr2; ++i) {
             System.arraycopy(a[row0 + i], col0, out[i], 0, nc2);
-        }        
+        }
     }
-    
+
     /**
-     * 
+     *
      * @param a matrix
      * @param col index of column to extract
      * @return one dimensional array holding the column col of a
      */
     public static double[] extractColumn(double[][] a, int col) {
-                
+
         double[] m = new double[a.length];
         extractColumn(a, col, m);
         return m;
     }
-    
+
     /**
-     * 
+     *
      * @param a matrix a
      * @param col index of column to extract
      * @param out one dimensional array holding the column col of a
      */
     public static void  extractColumn(double[][] a, int col, double[] out) {
-           
+
         if (out.length != a.length) {
             throw new IllegalArgumentException("out.length must equal a.length");
         }
-        
+
         int i;
         for (i = 0; i < a.length; ++i) {
             out[i] = a[i][col];
-        }        
+        }
     }
-    
+
       /**
      * using cofactors and minors of the matrix, return the determinant.
      * in practice one can use any row as the primary set of cofactors or
@@ -2342,7 +2395,7 @@ public class MatrixUtil {
 
         return determinant(ma);
     }
-    
+
     /**
      * using cofactors and minors of the matrix, return the determinant.
      * in practice one can use any row as the primary set of cofactors or
@@ -2378,9 +2431,9 @@ public class MatrixUtil {
             for (int i = 0; i < a.length; i++) {
 
                 double[][] n = copyExcept(a, i, 0);
-                
+
                 double tmp = a[i][0] * determinant(n);
-                                
+
                 if ((i & 1) == 0) {
                     s +=  tmp;
                 } else {
@@ -2390,11 +2443,11 @@ public class MatrixUtil {
             return s;
         }
     }
-    
+
     /**
      * calculate the determinant of a using the diagonal of U from the
      * LU decomposition.
-     * 
+     *
      * @param a a square matrix
      * @return determinant of a
      */
@@ -2423,7 +2476,7 @@ public class MatrixUtil {
             }
         }
     }
-    
+
     /**
      * create copy of matrix m except row and col
      * @param m matrix
@@ -2444,7 +2497,7 @@ public class MatrixUtil {
             }
 
             n[nc] = new double[m.length - 1];
-            
+
             nr = 0;
             for (int mRow = 0; mRow < m[0].length; mRow++) {
                 if (mRow == row) {
@@ -2459,7 +2512,7 @@ public class MatrixUtil {
 
         return n;
     }
-    
+
     /**
      * constructs the 3x3 skew-symmetric matrices for use in cross products,
      * notation is [v]_x.
@@ -2470,22 +2523,22 @@ public class MatrixUtil {
        |    0   -v[2]   v[1] |
        |  v[2]    0    -v[0] |
        | -v[1]  v[0]      0  |
-       
+
        Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
      * @param v vector
      * @return skew-symmetric matrix of vector v
      */
     public static double[][] skewSymmetric(double[] v) {
-        if (v.length != 3) { 
+        if (v.length != 3) {
             throw new IllegalArgumentException("v.length must be 3");
         }
-        
+
         double[][] out = new double[3][3];
         skewSymmetric(v, out);
         return out;
     }
-    
+
     /**
      * constructs the 3x3 skew-symmetric matrices for use in cross products,
      * notation is [v]_x.
@@ -2495,7 +2548,7 @@ public class MatrixUtil {
        |    0   -v[2]   v[1] |
        |  v[2]    0    -v[0] |
        | -v[1]  v[0]      0  |
-       
+
        Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
      * the operator is also called "hat operator".
@@ -2503,19 +2556,19 @@ public class MatrixUtil {
      * @param out output skew-symmetric matrix for v
      */
     public static void skewSymmetric(double[] v, double[][] out) {
-        if (v.length != 3) { 
+        if (v.length != 3) {
             throw new IllegalArgumentException("v.length must be 3");
         }
-        if (out.length != 3 || out[0].length != 3) { 
+        if (out.length != 3 || out[0].length != 3) {
             throw new IllegalArgumentException("out must be 3X3");
         }
-        
+
         /*
         out[0] = new double[]{0,     -v[2],  v[1]};
         out[1] = new double[]{v[2],     0,  -v[0]};
         out[2] = new double[]{-v[1], v[0],    0};
         */
-        
+
         out[0][0] = 0;
         out[0][1] = -v[2];
         out[0][2] = v[1];
@@ -2525,7 +2578,7 @@ public class MatrixUtil {
         out[2][0] = -v[1];
         out[2][1] = v[0];
         out[2][2] = 0;
-        
+
     }
 
     /**
@@ -2540,7 +2593,7 @@ public class MatrixUtil {
         out[2] = 0.5*(vHat[1][0] - vHat[0][1]);
         return out;
     }
-    
+
     public static double[] crossProduct(double[] p0, double[] p1) {
         if (p0.length != 3 || p1.length != 3) {
             throw new IllegalArgumentException("expecting p0 and p1 lengths to be 3");
@@ -2551,7 +2604,7 @@ public class MatrixUtil {
         out[2] = p0[0]*p1[1] - p0[1]*p1[0];
         return out;
     }
-    
+
     public static boolean areColinear(double[] p0, double[] p1, double eps) {
         if (p0.length != 3 || p1.length != 3) {
             throw new IllegalArgumentException("expecting p0 and p1 lengths to be 3");
@@ -2560,12 +2613,12 @@ public class MatrixUtil {
         double norm = lPSum(cp, 2);
         return Math.abs(norm) < eps;
     }
-    
+
     public static boolean areColinear(double[] p0, double[] p1, double[] p2, double eps) {
         if (p0.length != 3 || p1.length != 3 || p2.length != 3) {
             throw new IllegalArgumentException("expecting p0, p1 and p2 lengths to be 3");
         }
-        //adapted from code by Peter Kovesis for function 
+        //adapted from code by Peter Kovesis for function
         // iscolinear.m.  r =  norm(cross(p2-p1, p3-p1)) < eps
         // https://www.peterkovesi.com/matlabfns/
         double[] p21 = MatrixUtil.subtract(p1, p0);
@@ -2574,9 +2627,9 @@ public class MatrixUtil {
         double norm = lPSum(cp, 2);
         return Math.abs(norm) < eps;
     }
-    
+
     /**
-     * normalize vector v by euclidean, that is the square root of the sum of 
+     * normalize vector v by euclidean, that is the square root of the sum of
      * its squared components.  notation is sometimes ||v||_2.
      * @param v array
      * @return array v divided by the LP2 norm of v.
@@ -2584,9 +2637,9 @@ public class MatrixUtil {
     public static double[] normalizeL2(double[] v) {
         return normalizeLP(v, 2);
     }
-    
+
     /**
-     * normalize each column of matrix a by the square root of the sum of 
+     * normalize each column of matrix a by the square root of the sum of
      * its squared components. ||v||_2 for each column...
      * @param a matrix
      */
@@ -2604,9 +2657,9 @@ public class MatrixUtil {
             }
         }
     }
-    
+
     /**
-     * normalize each row of matrix a by the square root of the sum of 
+     * normalize each row of matrix a by the square root of the sum of
      * its squared components. ||v||_2 for each row...
      * @param a matrix
      */
@@ -2624,7 +2677,7 @@ public class MatrixUtil {
             }
         }
     }
-    
+
     /**
      * calculate the condition number as the largest singular value divided
      * by the singular value for i==(rank-1) of A where the singular values are
@@ -2639,12 +2692,12 @@ public class MatrixUtil {
 
      also see Section 9.2 of Strang's "Introduction to Linear Algebra".
      </pre>
-     * 
+     *
      * @param a matrix
      * @return condition number
      */
     public static double conditionNumber(double[][] a) throws NotConvergedException {
-        
+
         SVDProducts svd = performSVD(a);
         int rm1 = -1;
         for (int i = 0; i < svd.s.length; ++i) {
@@ -2656,10 +2709,298 @@ public class MatrixUtil {
             throw new IllegalStateException("all singular values of a are 0");
         }
         double c = svd.s[0]/svd.s[rm1];
-        
+
         return c;
     }
-    
+
+    /**
+     pre- and post- multiply using the diagonal matrices D_1 and D_2, depending upon the problem.
+         example use of a pre-conditioned matrix A:
+           solve equation A_hat * x_hat = b_hat
+
+         For pre-multiplication:
+                A_hat = D_1 * A * D_2
+                b_hat = (D_2)^-1 * b
+                x_hat = (D_2)^-1 * x  (this isn't done when solving for x in A*x=b)
+         For post-multiplication:
+                x = x_hat * D_2
+     */
+    public static class ConditionedMatrix {
+        /**
+         * A_hat = D_1 * A * D_2
+            where D_1 is diagonal(d1)
+            and D_2 is diagonal(d2)
+         */
+        public double[][] aHat;
+
+        /**
+         * This matrix diagonal can be used to pre-condition (pre-multiply) vector b in A*x=b:
+         * b_hat = D_1 * b
+            where D_1 is diagonal(d1)
+         */
+        public double[] d1;
+
+        /**
+         * This matrix diagonal can be used to post-multiply x_hat in A_hat * x_hat = b_hat.
+         * x = x_hat * D_2
+         * where D_w is diagonal(d2)
+         */
+        public double[] d2;
+
+    }
+
+    /**
+     * apply Ruiz scaling as "equilibration" for matrix a as a linear system in order to
+     * pre-condition it before use.
+     * Note: before using this method, you may want to apply permutations following
+     * Duff And Koster 1999 and HSL 2000 routine MC64.
+     <pre>
+     References:
+     Ruiz 2001 "A Scaling Algorithm to Equilibrate Both Rows and Columns Norms in Matrices"
+     iterative algorithm that has fast linear convergence and assymptotic rate of 1/2.
+
+     Liu, Paul. "An exploration of matrix equilibration." (2015).
+     "equilibration" of a linear system applies scaling and permutations
+     to an ill-conditioned matrix as a pre-processing step to improve
+     the conditioning.
+     The Ruiz algorithm and the Liu algorithm both attempt to minimize the condition number of a
+     matrix by scaling it by the infinity-norm of each row and column of a matrix to value 1.
+     </pre>
+     <pre>
+     A_hat = the scaled matrix = D_1 * A * D_2
+
+     rewrite:  A_hat =  D_1 * A * D_2
+          as:  A_hat * (D_2)^-1 = D_1 * A
+
+     For use in the example solving for x in A * x = b:
+        A_hat * x_hat = b_hat
+        For pre-multiplication:
+            A_hat =  D_1 * A * D_2
+            b_hat = D_1 * b
+            x_hat = (D_2)^-1 * x  (this isn't done when solving for x in A*x=b)
+        For post-multiplication:
+            x = x_hat * D_2
+
+     </pre>
+     * @param a an m X n matrix.
+     * @return the scaled matrix a_hat and the 2 matrices used to scale the matrix.  the
+       matrices can be used to pre-multiply and post-multiply other data structures in a problem.
+     */
+    public static ConditionedMatrix preconditionScaling(double[][] a) {
+
+        /*
+        rows r_i = a_i^T and of dimension n+1 where i=1,...m
+        cols c_j = a_j   and of dimension m?+1 where j=1...n
+        D_R is mxm diagonal matrix = diag( sqrt( ||r_i||_inf ) for i=1,...m
+        D_C is nxn diagonal matrix = diag( sqrt( ||c_j||_inf ) for j=1,...n
+          where ||.||_inf is the infinity norm and is the maximum of absolute values of the internal set
+        if any inf-norm is 0, the inf-norm is replaced by value 1
+        */
+
+        int m = a.length;
+        int n = a[0].length;
+        double eps = 1E-8;
+
+        /*
+        alg:
+          set A_hat(0) = A
+              D_1(0) = I_m
+              D_2(0) = I_n
+          for k=0,1,2,... until convergence do:
+            D_R = diag( sqrt( ||r_i(k)||_inf ) for i=1,...m
+            D_C = diag( sqrt( ||c_j(k)||_inf ) for j=1,...n
+            A_hat(k+1) = (D_R)^-1 * A_hat(k) * (D_C)^-1
+            D_1(k+1) = D_1(k) * (D_R)^-1
+            D_2(k+1) = D_2(k) * (D_C)^-1
+
+          convergence:
+             max_{1<=i<=m} ( | (1 - ||r_i(k)||_inf) | ) <= eps
+             and max_{1<=j<=n} ( | (1 - ||c_j(k)||_inf) | ) <= eps
+
+         rewriting to use prev and current:
+           aHatPrev = A
+           d1Prev = I_m
+           d2Prev = I_n
+           while (true) {
+               dR = diag( sqrt( ||r_i in aHatPrev||_inf ) for i=1,...m
+               dC = diag( sqrt( ||c_j in aHatPrev||_inf ) for j=1,...j
+               aHatCurr = (dR)^-1 * aHatPrev * (dC)^-1
+               d1Curr = d1Prev * (dR)^-1
+               d2Curr = d2Prev * (dC)^-1
+
+               if (conv conditions) {
+                   break;
+               }
+               aHatPrev = aHatCurr
+               d1Prev = d1Curr;
+               d2Prev = d2Curr;
+           }
+        */
+        double[][] aHatCurr = MatrixUtil.zeros(m, n);
+        double[][] tmp = MatrixUtil.zeros(m, n);
+        double[] d1Curr = new double[m];
+        double[] d2Curr = new double[n];
+        double[] rInfNorm = new double[m];
+        double[] cInfNorm = new double[n];
+        double dR;
+        double dC;
+        double[] dRInv = new double[n];
+        double[] dCInv = new double[n];
+
+        // init the prev arrays
+        double[][] aHatPrev = MatrixUtil.copy(a);
+        double[] d1Prev = new double[m];
+        Arrays.fill(d1Prev, 1);
+        double[] d2Prev = new double[n];
+        Arrays.fill(d2Prev, 1);
+
+        int i;
+        double s;
+        double t;
+        final int maxIter = 100;
+        int nIter = 0;
+
+        /*
+        System.out.printf("  %d) aHat=\n%s\n", nIter, FormatArray.toString(a, "%.5e"));
+        try {
+            System.out.printf("    %.3e\n", MatrixUtil.conditionNumber(a));
+        } catch (NotConvergedException e) {
+            e.printStackTrace();
+        }*/
+
+        while (nIter < maxIter) {
+            calculateInfNormForRows(aHatCurr, rInfNorm);
+            calculateInfNormForColumns(aHatCurr, cInfNorm);
+            for (i = 0; i < m; ++i) {
+                dR = Math.sqrt(rInfNorm[i]);
+                if (dR < 1E-11) {// eq 0
+                    dRInv[i] = 1;
+                } else {
+                    dRInv[i] = 1. / dR;
+                }
+            }
+            for (i = 0; i < n; ++i) {
+                dC = Math.sqrt(cInfNorm[i]);
+                if (dC < 1E-11) {// eq 0
+                    dCInv[i] = 1;
+                } else {
+                    dCInv[i] = 1. / dC;
+                }
+            }
+
+            //aHatCurr = (dR)^-1 * aHatPrev * (dC)^-1
+            MatrixUtil.multiplyDiagonalByMatrix(dRInv, aHatPrev, tmp);
+            MatrixUtil.multiplyByDiagonal(tmp, dCInv, aHatCurr);
+
+            /*
+            System.out.printf("  %d)\n", nIter);
+            System.out.printf("      rInfNorm=%s\n", FormatArray.toString(rInfNorm, "%.5e"));
+            System.out.printf("      cInfNorm=%s\n", FormatArray.toString(cInfNorm, "%.5e"));
+            System.out.printf("      dRInv=%s\n", FormatArray.toString(dRInv, "%.5e"));
+            System.out.printf("      dCInv=%s\n", FormatArray.toString(dCInv, "%.5e"));
+            System.out.printf("      aHat=\n%s", FormatArray.toString(aHatCurr, "%.5e"));
+            try {
+                System.out.printf("    c.n.=%.3e\n", MatrixUtil.conditionNumber(aHatCurr));
+            } catch (NotConvergedException e) {
+                e.printStackTrace();
+            }
+            */
+
+            //d1Curr = d1Prev * (dR)^-1
+            for (i = 0; i < m; ++i) {
+                d1Curr[i] = d1Prev[i] * dRInv[i];
+            }
+            //d2Curr = d2Prev * (dC)^-1
+            for (i = 0; i < n; ++i) {
+                d2Curr[i] = d2Prev[i] * dCInv[i];
+            }
+
+            ++nIter;
+            // test convergence
+            s = Double.NEGATIVE_INFINITY;
+            for (i = 0; i < m; ++i) {
+                t = Math.abs(1 - rInfNorm[i]);
+                if (t > s) {
+                    s = t;
+                }
+            }
+            System.out.printf("      s=%.3e\n", s);
+            if (s <= eps) {
+                // test column convergence
+                s = Double.NEGATIVE_INFINITY;
+                for (i = 0; i < n; ++i) {
+                    t = Math.abs(1 - cInfNorm[i]);
+                    if (t > s) {
+                        s = t;
+                    }
+                }
+                if (s <= eps) {
+                    break;
+                }
+            }
+            //aHatPrev = aHatCurr
+            MatrixUtil.copy(aHatCurr, aHatPrev);
+            //d1Prev = d1Curr;
+            System.arraycopy(d1Curr,0, d1Prev, 0, d1Curr.length);
+            //d2Prev = d2Curr;
+            System.arraycopy(d2Curr,0, d2Prev, 0, d2Curr.length);
+        }
+
+        ConditionedMatrix c = new ConditionedMatrix();
+        c.aHat = aHatCurr;
+        c.d1 = d1Curr;
+        c.d2 = d2Curr;
+        return c;
+    }
+
+    /**
+     * calculate the infinity norm for each column of matrix a where the infinity norm
+     * for each col as a set is the maximum absolute value for that col.
+     * @param a an m x n matrix
+     * @param output array of size a.length to be populated with the infinity norms for each column of a
+     */
+    public static void calculateInfNormForColumns(double[][] a, double[] output) {
+        int n = a[0].length;
+        if (output.length != n) {
+            throw new IllegalArgumentException("output.length must equal a[0].length");
+        }
+        Arrays.fill(output, Double.NEGATIVE_INFINITY);
+        double c;
+        int i, j;
+        for (j = 0; j < n; ++j) {
+            for (i = 0; i < a.length; ++i) {
+                c = Math.abs(a[i][j]);
+                if (c > output[j]) {
+                    output[j] = c;
+                }
+            }
+        }
+    }
+
+    /**
+     * calculate the infinity norm for each row of matrix a where the infinity norm
+     * for each row as a set is the maximum absolute value for that row.
+     * @param a an m x n matrix
+     * @param output array of size a.length to be populated with the infinity norms for each row of a
+     */
+    public static void calculateInfNormForRows(double[][] a, double[] output) {
+        int m = a.length;
+        if (output.length != m) {
+            throw new IllegalArgumentException("output.length must equal a.length");
+        }
+        Arrays.fill(output, Double.NEGATIVE_INFINITY);
+        double r;
+        int j;
+        for (int i = 0; i < m; ++i) {
+            for (j = 0; j < a[i].length; ++j) {
+                r = Math.abs(a[i][j]);
+                if (r > output[i]) {
+                    output[i] = r;
+                }
+            }
+        }
+    }
+
     /**
      * summation = the (1/p) power of sum of its (components)^p.
      * @param v array v
@@ -2674,7 +3015,7 @@ public class MatrixUtil {
         sum = Math.pow(sum, 1./p);
         return sum;
     }
-    
+
     /**
     following the convention used by Matlab
     <pre>
@@ -2700,7 +3041,7 @@ public class MatrixUtil {
         }
         return maxSum;
     }
-    
+
     /**
      * calculate the Frobenius Norm of matrix a.
      * It's the square root of the sum of squares of each element.
@@ -2741,7 +3082,7 @@ public class MatrixUtil {
         double norm = Math.sqrt(svd.s[0]);
         return norm;
     }
-    
+
     /**
      * Given a symmetric matrix and a nonnegative number eps, find the
      * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
@@ -2749,7 +3090,7 @@ public class MatrixUtil {
      * References:
      * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
      * Cheng and Higham, 1998
-     * 
+     *
      * </pre>
      * @param a a symmetric matrix
      * @param eps a tolerance or error above 0 such as machine precision.  must
@@ -2769,50 +3110,50 @@ public class MatrixUtil {
         }
 
         // uses the Frobenius norm as a distance.  notation: ||A||_F
-        
-        // spectral decomposition 
+
+        // spectral decomposition
         //  X = Q * diag(tau_i) * Q^T
         //    where tau_i = {    lambda_i for lambda_i >= eps
         //                  { or eps_i    for lambda_i <  eps
         //        where lambda_i are the eigenvalues of A
-        
+
         EVD evd = EVD.factorize(new DenseMatrix(a));
         double[][] leftEV = MatrixUtil.convertToRowMajor(evd.getLeftEigenvectors());
-        
-        double[] tau = Arrays.copyOf(evd.getRealEigenvalues(), 
+
+        double[] tau = Arrays.copyOf(evd.getRealEigenvalues(),
             evd.getRealEigenvalues().length);
-        
+
         int i;
         for (i = 0; i < tau.length; ++i) {
             if (tau[i] < eps) {
                 tau[i] = eps;
             }
         }
-        
+
         double[][] aPSD = MatrixUtil.multiplyByDiagonal(leftEV, tau);
         aPSD = MatrixUtil.multiply(aPSD, MatrixUtil.transpose(leftEV));
-        
+
         /*
-        // another solution for X uses polar decomposition B = UH, 
+        // another solution for X uses polar decomposition B = UH,
         //     where U is orthogonal (U*U^T=I)
         //     and H is symmetric positive definite (H = H^T >= 0)
         //         (with H = Q * diag(lambda_i) * Q^T.
         //         (where Q is svd.v)
         //
-        //   since A is symmetric): 
+        //   since A is symmetric):
         //   answer is X_F = (A + H)/2
-        
+
         // can use polar decompositon on square matrices:
         double[][] b = MatrixUtil.pointwiseAdd(a, MatrixUtil.transpose(a));
         MatrixUtil.multiply(b, 0.5);
-        
+
         QH qh = performPolarDecomposition(b);
-        
+
         //X_F:
         double[][] aPSD2 = MatrixUtil.pointwiseAdd(a, qh.h);
         MatrixUtil.multiply(aPSD2, 0.5);
         */
-        
+
         return aPSD;
     }
 
@@ -2843,7 +3184,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * Given a matrix a that is not necessarily symmetric,
      * and a nonnegative number eps, find the
@@ -2855,7 +3196,7 @@ public class MatrixUtil {
      * <pre>
      * References:
      * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/
-     * 
+     *
      * </pre>
      * @param a a square matrix which can be non-symmetric.
      * @param eps a tolerance or error above 0 such as machine precision.  must
@@ -2877,19 +3218,19 @@ public class MatrixUtil {
         }
 
         // uses the Frobenius norm as a distance.  notation: ||A||_F
-        
+
         //     the symmetric part of A is matrix B = 0.5*(A + A^T)
         //     the skew-symmetric part of A is matrix C = 0.5*(A - A^T)
         //                          note that C = -C^T.
-        
-        // another solution for X uses polar decomposition B = UH, 
+
+        // another solution for X uses polar decomposition B = UH,
         //     where U is orthogonal (U*U^T=I)
         //     and H is symmetric positive definite (H = H^T >= 0)
         //         (with H = Q * diag(lambda_i) * Q^T.
         //
-        //   since A is symmetric): 
+        //   since A is symmetric):
         //   answer is X_F = (A + H)/2
-        
+
         // can use polar decomposition on square matrices:
 
         double[][] b = nearestSymmetricToA(a);
@@ -2914,11 +3255,11 @@ public class MatrixUtil {
         // H is formed from V, S, and V^T of SVD(B)
         QH qh = performPolarDecomposition(b);
         double[][] h = qh.h;
-        
+
         //X = (B + H)/2.
         double[][] aPSD = MatrixUtil.pointwiseAdd(b, h);
         MatrixUtil.multiply(aPSD, 0.5);
-        
+
         // check that all eigenvalues are >= eps
         EVD evd = EVD.factorize(new DenseMatrix(aPSD));
         int i;
@@ -2931,11 +3272,11 @@ public class MatrixUtil {
             }
         }
         if (!ok) {
-            //System.out.printf("before: evd eigenvalues=%s%n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+            //System.out.printf("before: evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
 
             //still needs a small perturbation to make the eigenvalues all >= eps
             // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
-        
+
             double[] e = Arrays.copyOf(eig, eig.length);
             Arrays.sort(e);
             double eigMin = Math.max(-e[0], eps);
@@ -2945,14 +3286,14 @@ public class MatrixUtil {
             }
             aPSD = MatrixUtil.pointwiseAdd(aPSD, D);
             //evd = EVD.factorize(new DenseMatrix(aPSD));
-            //System.out.printf("after:  evd eigenvalues=%s%n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
+            //System.out.printf("after:  evd eigenvalues=%s\n", FormatArray.toString(evd.getRealEigenvalues(), "%.5e"));
         }
-        
-        return aPSD; 
+
+        return aPSD;
     }
-    
+
     /**
-     * normalize vector v by power p, that is the (1/p) power of sum of 
+     * normalize vector v by power p, that is the (1/p) power of sum of
      * its (components)^p.  notation is sometimes ||v||_p.
      * when p = 0, this is the manhattan normalization or taxi-cab normalization,
      * when p = 2, this is the euclidean normalization.
@@ -2971,13 +3312,13 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * the outer product of vectors v1 and v2, which is v1 as a single row matrix
      * and v2 as a single column matrix, so is v1 * v2^T.
      * @param v1 array 1
      * @param v2 array 2
-     * @return the outer product of v1 and v2 as double array of 
+     * @return the outer product of v1 and v2 as double array of
      * size v1.length X v2.length.
      */
     public static double[][] outerProduct(double[] v1, double[] v2) {
@@ -2991,18 +3332,18 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * determine the largest eigenvalue using the power method.  note that
      * matrix A must be diagonalize-able, that is, a positive definite matrix.
      * for best results, perform standard normalization on matrix A first
      * because the first initial guess of an eigenvector of a is composed
      * of random values between [0 and 1).
-     * The method is implemented from pseudocode in Golub and van Loan 
+     * The method is implemented from pseudocode in Golub and van Loan
      * "Matrix Computations".
-     * 
+     *
      * calculates lambda in lambda * v = M * v for some constant eigenvalue lambda.
-     * 
+     *
      * NOTE that the number of necessary iterations is dependent upon
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power
@@ -3020,7 +3361,7 @@ public class MatrixUtil {
         if (!isSquare(a)) {
             throw new IllegalArgumentException("a must be a square matrix");
         }
-        
+
         // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
 
         int nR = a.length;
@@ -3029,7 +3370,7 @@ public class MatrixUtil {
         double norm;
         double eig = 0;
         int row;
-        
+
         Random rand = Misc0.getSecureRandom();
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
@@ -3038,9 +3379,9 @@ public class MatrixUtil {
         for (row = 0; row < nR; ++row) {
             v[row] = rand.nextDouble();
         }
-            
+
         for (int i = 0; i < nIterations; ++i) {
-            
+
             z = MatrixUtil.multiplyMatrixByColumnVector(a, v);
             norm = 0;
             for (row = 0; row < nR; ++row) {
@@ -3051,19 +3392,19 @@ public class MatrixUtil {
             for (row = 0; row < nR; ++row) {
                 v[row] = z[row] / eig;
             }
-            //System.out.printf("eig=%.3f%n  v=%s%n  z=%s%n", eig, Arrays.toString(v),
+            //System.out.printf("eig=%.3f\n  v=%s\n  z=%s\n", eig, Arrays.toString(v),
             //    Arrays.toString(z));
         }
         return eig;
     }
-    
+
     /**
      * determine the largest eigenvalue using the power method.  note that
      * matrix A must be diagonalizable, that is, a positive definite matrix.
      * for best results, perform standard normalization on matrix A first
      * because the first initial guess of an eigenvector of a is composed
      * of random values between [0 and 1).
-     * The method is implemented from pseudocode in Golub and van Loan 
+     * The method is implemented from pseudocode in Golub and van Loan
      * "Matrix Computations".
      * NOTE that the number of necessary iterations is dependent upon
      * how close the largest and second largest eigenvalues are and that ratio
@@ -3086,7 +3427,7 @@ public class MatrixUtil {
         double norm, t;
         double eig = 0;
         int row, stop;
-        
+
         Random rand = Misc0.getSecureRandom();
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
@@ -3095,11 +3436,11 @@ public class MatrixUtil {
         for (row = 0; row < nR; ++row) {
             v[row] = rand.nextDouble();
         }
-        
+
         int nIter = 0;
-        
+
         while (true) {
-                        
+
             z = MatrixUtil.multiplyMatrixByColumnVector(a, v);
             norm = 0;
             for (row = 0; row < nR; ++row) {
@@ -3118,21 +3459,21 @@ public class MatrixUtil {
             if (stop == 1) {
                 break;
             }
-            //System.out.printf("nIter=%d eig=%.3f%n  v=%s%n  z=%s%n", nIter, 
+            //System.out.printf("nIter=%d eig=%.3f\n  v=%s\n  z=%s\n", nIter,
             //    eig, Arrays.toString(v), Arrays.toString(z));
             nIter++;
         }
         System.arraycopy(v, 0, x, 0, v.length);
         return eig;
     }
-    
+
      /**
      * determine the largest eigenvalue using the power method.  note that
      * array a must be diagonalizable, that is, a positive definite matrix.
      * for best results, perform standard normalization on matrix a first
      * because the first initial guess of an eigenvector of a is composed
      * of random values between [0 and 1).
-     * The method is implemented from pseudocode in Golub and van Loan 
+     * The method is implemented from pseudocode in Golub and van Loan
      * "Matrix Computations".
      * NOTE that the number of necessary iterations is dependent upon
      * how close the largest and second largest eigenvalues are and that ratio
@@ -3147,7 +3488,7 @@ public class MatrixUtil {
         double[] x = new double[a.length];
         return powerMethod(a, tolerance, x);
     }
-    
+
     /**
      * determine the eigenvalue pairs using the power method.  note that
      * array a must be diagonalizable, that is, a positive definite matrix.
@@ -3162,16 +3503,16 @@ public class MatrixUtil {
      * @return an array of a.length eigenvectors
      */
     public static double[] powerMethodEigenPairs(double[][] a, double tolerance) {
-        
+
         double[] x = new double[a.length];
         double eig;
         double[] eigs = new double[a.length];
         double[][] x2, a2;
-        
+
         for (int nr = 0; nr < a.length; ++nr) {
-            
+
             eigs[nr] = powerMethod(a, tolerance, x);
-            
+
             x2 = outerProduct(x, x);
             a2 = copy(a);
             for (int i = 0; i < a2.length; ++i) {
@@ -3180,17 +3521,17 @@ public class MatrixUtil {
                 }
             }
             a = a2;
-            
-            System.out.printf("eig[%d]=%.5f x=%s%n", nr, eigs[nr], Arrays.toString(x));
-            System.out.println("  a2=%n");
+
+            System.out.printf("eig[%d]=%.5f x=%s\n", nr, eigs[nr], Arrays.toString(x));
+            System.out.println("  a2=\n");
             for (int i = 0; i < a2.length; ++i) {
-                System.out.printf("  %s%n", Arrays.toString(a2[i]));
+                System.out.printf("  %s\n", Arrays.toString(a2[i]));
             }
         }
-                
+
         return eigs;
     }
-    
+
     /**
      * calculate (matrix A)^power using its eigen decompostion:
      * A^power = S * (Delta^power) * S^-1
@@ -3206,27 +3547,27 @@ public class MatrixUtil {
         }
         double eps = 1E-15;
         MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);
-        
+
         int rank = 0;
         for (double sv : svd.s) {
             if (sv > eps) {
                 rank++;
             }
         }
-        
+
         if (rank < svd.u.length) {
             // this case has eigenvalues that are 0.
             //  det(A - lambda*I) = 0, so is not diagonalizable.
             throw new IllegalStateException("there are eigenvalues with value 0, so matrix a is not diagonalizable");
         }
-        
+
         double[] d = new double[a.length];
         for (int i = 0; i < a.length; ++i) {
             d[i] = Math.pow(svd.s[i], power);
         }
-                
+
         double[][] s = svd.u;
-        
+
         double[][] sInv;
         // check that the eigenvectors are independent.
         // using left divide notation:
@@ -3236,28 +3577,28 @@ public class MatrixUtil {
         //  S.solve(I, sInv) to get sInv using MTJ:
         DenseMatrix _sInv = new DenseMatrix(s.length, s.length);
         _sInv = (DenseMatrix) new DenseMatrix(s).solve(
-             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)), 
+             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)),
              _sInv);
         sInv = MatrixUtil.convertToRowMajor(_sInv);
- 
+
         /*
             // check this condition... S not invertible so check math in A = S^-1 * Delta * S
             //                         where S^-1 is pseudoinverse
             //sInv = svd(s).V * pseudoinverse(svd(s).s) * svd(s).U^T
             sInv = MatrixUtil.pseudoinverseRankDeficient(s, false);
             double[][] chk = MatrixUtil.multiply(s, sInv);
-            System.out.printf("check S*S^-1 ~ I:%n%s%n", FormatArray.toString(chk, "%.5e"));
+            System.out.printf("check S*S^-1 ~ I:\n%s\n", FormatArray.toString(chk, "%.5e"));
         */
-        
+
         // A = S^-1 * delta^power * S
         double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);
-        
+
         return aP;
     }
-    
+
     /**
      * calculate the square root of symmetric positive definite matrix A using SVD.
-     * 
+     *
      * <pre>
      *    [U, S, V] = svd(A)
      *    J = V * S^(1/2) * V^T is a symmetric n×n matrix, such that square root of A = JJ.
@@ -3276,31 +3617,31 @@ public class MatrixUtil {
         if (!MatrixUtil.isPositiveDefinite(a)) {
             throw new IllegalArgumentException("a must be a non-negative definite matrix");
         }
-                
+
         int m = a.length;
         int n = a[0].length;
-        
+
         if (m < n) {
             a = MatrixUtil.transpose(a);
             m = a.length;
             n = a[0].length;
         }
-        
+
         // limit for a number to be significant above 0
         double eps = 1e-16;
 
         DenseMatrix aMatrix = new DenseMatrix(a);
         SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn
-        
+
         // s is an array of size min(m,n)  which is nxn here
         double[] s = svd.getS();
-        
+
         double[][] sMatrix = new double[n][n];
         for (int i = 0; i < n; ++i) {
             sMatrix[i] = new double[n];
             sMatrix[i][i] = Math.sqrt(s[i]);
         }
-        
+
         int rank = 0;
         for (double sv : s) {
             if (sv > eps) {
@@ -3309,31 +3650,31 @@ public class MatrixUtil {
         }
         // the number of distinct non-zero eigenvalues is rank.
         // there are 2^(rank) square roots
-        
+
         /*
-        S has singular values along the diagonal and those are the square roots 
+        S has singular values along the diagonal and those are the square roots
         of positive eigenvalues of A.  the number of them is == the rank of A.
         NOTE the singular values are the eigenvalues of A*A^T of A^T*A.
-        
+
         S = [ sqrt(λ_1)     0        ...
             [     0      sqrt(λ_2)   ...
-        
+
         */
-                
+
         /*
         U is mxm orthonormal columns
         S is mxn with non-negative singular values.  rank is number of non-zero entries
         V is  nxn
-        
+
             [nxn] * [nxn] * [nxn]
         J = V * S^(1/2) * V^T  is [nxn]
-        */       
-                 
+        */
+
         /*
-          a00  a01   s00  0 
+          a00  a01   s00  0
           a10  a11     0  s11
           a20  a21
-        
+
         a_r0_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r0_c1 * s_r1_c1
         a_r1_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r1_c1 * s_r1_c1
         a_r2_c0 * s_r0_c0 + 0(=s_r1_c0)    0(=s_r0_c1) + a_r2_c1 * s_r1_c1
@@ -3344,9 +3685,9 @@ public class MatrixUtil {
         */
         DenseMatrix vT = (DenseMatrix) svd.getVt();
         //DenseMatrix u = (DenseMatrix) svd.getU();
-        
+
         double[][] _vT = Matrices.getArray(vT);
-      
+
         double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);
         j = MatrixUtil.multiply(j, _vT);
 
@@ -3357,7 +3698,7 @@ public class MatrixUtil {
 
         return j;
     }
-    
+
     public static boolean isSquare(double[][] a) {
         return (a.length == a[0].length);
     }
@@ -3394,12 +3735,12 @@ public class MatrixUtil {
 
         return true;
     }
-    
+
     public static boolean isPositiveSymmetric(double[][] a) {
         if (!isSquare(a)) {
             return false;
         }
-                        
+
         double tol = 1e-3;
         int n = a.length;
         int i, j;
@@ -3415,11 +3756,11 @@ public class MatrixUtil {
         }
         return true;
     }
-    
+
     /**
      * holds data structures for having solved for the vector x which is the
      * closest to a given vector b in the subspace defined by A which is
-     * n columns of linearly independent vectors of length m (they are in 
+     * n columns of linearly independent vectors of length m (they are in
      * real space R^m).
      * x is an approximation so is noted as x^{hat}.
      * the projection p = A*x^{hat}.
@@ -3431,8 +3772,8 @@ public class MatrixUtil {
         double[][] pMatrix;
     }
     /**
-     * solve for the vector x which is the closest to a given vector b in the 
-     * subspace defined by A which is n columns of linearly independent vectors 
+     * solve for the vector x which is the closest to a given vector b in the
+     * subspace defined by A which is n columns of linearly independent vectors
      * of length m (they are in real space R^m).
      * x is an approximation so is noted as x^{hat}.
      * the projection p = A*x^{hat}.
@@ -3440,35 +3781,35 @@ public class MatrixUtil {
      <pre>
      Chap 4 of the book "Introduction to Linear Algebra" by W Gilbert Strang
      </pre>
-     * @param a subspace defined by A which is n columns of linearly 
+     * @param a subspace defined by A which is n columns of linearly
      * independent vectors of length m (they are in real space R^m).
      * @param b  array b
      * @return matrix projection P = p*b where p = A*x^{hat}
      */
     public static ProjectionResults projection(double[][] a, double[] b) throws NotConvergedException {
-        
+
         /*
         from Chap 4 of the book "Introduction to Linear Algebra" by W Gilbert Strang,
            x^{hat} = (A^T*A)^-1 * A^T * b
          and p = A * x^{hat}
          and P = p * b
         */
-        
+
         ProjectionResults pr = new ProjectionResults();
-        
-        // A_pseudoinverse = inverse(A^T*A) * A^T 
+
+        // A_pseudoinverse = inverse(A^T*A) * A^T
         // [a[0].length][a.length]
         double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);
-        
+
         pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);
-        
+
         pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);
-        
+
         pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);
-        
+
         return pr;
     }
-    
+
     /**
      * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive,
      * which means its pivots are positive.
@@ -3485,12 +3826,12 @@ public class MatrixUtil {
             System.err.println("matrix is not symmetric in current form");
             //return false;
         }
-        
+
         /*
         from Strang "Introduction to Linear Algebra", chapter 6.5.
-        
-        matrix A is positive definite for every non-zero vector x if x^T*A*x > 0 
-        
+
+        matrix A is positive definite for every non-zero vector x if x^T*A*x > 0
+
         when a symmetric nxn matrix has 1 of these 4, it has all 4:
             1) both eigenvectors are positive
                Note: mathworks recommends a tolerance for error, so all eigenvalues > tolerance above 0.
@@ -3521,7 +3862,7 @@ public class MatrixUtil {
         }
         return true;
     }
-    
+
         /*
          * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
          *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 + 135 + 2 =
@@ -3530,7 +3871,7 @@ public class MatrixUtil {
          *
          *          3 4     7  4    7  3
          *          1 5     2  5    2  1
-         * 
+         *
          *         -5 2     1  2    1 -5
          *          1 5     2  5    2  1
          *
@@ -3545,7 +3886,7 @@ public class MatrixUtil {
         double[][] cofactor = new double[ncols][nrows];
 
         for (int i = 0; i < ncols; i++) {
-            
+
             cofactor[i] = new double[nrows];
 
             boolean si = ((i & 1) == 1); // sign is -
@@ -3567,10 +3908,10 @@ public class MatrixUtil {
          }
         return cofactor;
     }
-    
+
     /**
      * find the equation for which A * A^(-1) = the identity matrix using cramer's rule.
-     * 
+     *
      * note that for a to be invertible, none of its eigenvalues can be 0.
      * also note that if the number of linearly independent vectors os matrix
      * A is equal to the number of columns of A, one can use the spectral
@@ -3598,10 +3939,10 @@ public class MatrixUtil {
 
         return cofactorTransposed;
     }
-    
+
     /**
      * given a as vectors of data of nSamples of nVariables, return the
-     * mean of each of the variables. 
+     * mean of each of the variables.
      * note that the format must be a[nSamples][nVariables],
      * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
      * and nVariables = 3;
@@ -3611,7 +3952,7 @@ public class MatrixUtil {
     public static double[] mean(double[][] a) {
         int nSamples = a.length;
         int nVariables = a[0].length;
-        
+
         int i, j;
         double[] mean = new double[nVariables];
         double sum;
@@ -3624,10 +3965,10 @@ public class MatrixUtil {
         }
         return mean;
     }
-    
+
     /**
      * given a as vectors of data of nSamples of nVariables, return the
-     * mean of each of the variables. 
+     * mean of each of the variables.
      * note that the format must be a[nSamples][nVariables],
      * e.g. a[0] = [10, 100, 1000]', a[1] = [9, 101, 999]; for nSamples = 2
      * and nVariables = 3;
@@ -3637,9 +3978,9 @@ public class MatrixUtil {
     public static double[] standardDeviation(double[][] a) {
         int nSamples = a.length;
         int nVars = a[0].length;
-        
+
         double[] c = mean(a);
-        
+
         double[] out = new double[nVars];
         int i, d;
         double diff;
@@ -3650,12 +3991,12 @@ public class MatrixUtil {
             }
         }
         for (d = 0; d < nVars; ++d) {
-            out[d] = Math.sqrt(out[d]/(nSamples - 1.0)); 
+            out[d] = Math.sqrt(out[d]/(nSamples - 1.0));
         }
-        
+
         return out;
     }
-    
+
     /**
      * calculate a - v*I where A is square matrix and v is a vector.  I is the identity
      * matrix.
@@ -3671,17 +4012,17 @@ public class MatrixUtil {
         if (n != v.length) {
             throw new IllegalArgumentException("v must be same length as a");
         }
-        
+
         double[][] out = copy(a);
-        
+
         int i;
         for (i = 0; i < n; ++i) {
             out[i][i] -= v[i];
         }
-        
+
         return out;
     }
-    
+
     /**
      * calculate the sum of the diagonal elements of a.
      * Note that the trace of matrix A equals the sum of its eigenvalues.
@@ -3694,17 +4035,17 @@ public class MatrixUtil {
         if (n != a[0].length) {
             throw new IllegalArgumentException("a must be a square matrix");
         }
-        
+
         double sum = 0;
-        
+
         int i;
         for (i = 0; i < n; ++i) {
             sum += a[i][i];
         }
-        
+
         return sum;
     }
-    
+
     /**
      * calculate the sum of the diagonal elements of v*I (i.e. sum of all elements of v)
      * @param v a vector to be treated as diagonal elements of an identity matrix.
@@ -3712,17 +4053,17 @@ public class MatrixUtil {
      */
     public static double trace(double[] v) {
         int n = v.length;
-        
+
         double sum = 0;
-        
+
         int i;
         for (i = 0; i < n; ++i) {
             sum += v[i];
         }
-        
+
         return sum;
     }
-    
+
     /**
      * pointwise multiplication
      * @param a matrix a
@@ -3732,11 +4073,11 @@ public class MatrixUtil {
     public static double[][] pointwiseMultiplication(double[][] a, double[][] b) {
         int m = a.length;
         int n = a[0].length;
-        
+
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
-        
+
         int j;
         double[][] out = new double[m][n];
         for (int i = 0; i < m; ++i) {
@@ -3747,7 +4088,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * pointwise multiplication
      * @param a matrix a
@@ -3757,11 +4098,11 @@ public class MatrixUtil {
     public static int[][] pointwiseMultiplication(int[][] a, int[][] b) {
         int m = a.length;
         int n = a[0].length;
-        
+
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
-        
+
         int j;
         int[][] out = new int[m][n];
         for (int i = 0; i < m; ++i) {
@@ -3772,7 +4113,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * pointwise addition
      * @param a matrix a
@@ -3784,7 +4125,7 @@ public class MatrixUtil {
         pointwiseAdd(a, b, out);
         return out;
     }
-    
+
     /**
      * pointwise addition
      * @param a matrix a
@@ -3795,14 +4136,14 @@ public class MatrixUtil {
     public static void pointwiseAdd(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
         int n = a[0].length;
-        
+
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
         if (out.length != m || out[0].length != n) {
             throw new IllegalArgumentException("a and out must have same dimensions");
         }
-        
+
         int i, j;
         for (i = 0; i < out.length; ++i) {
             for (j = 0; j < out[i].length; ++j) {
@@ -3810,7 +4151,7 @@ public class MatrixUtil {
             }
         }
     }
-    
+
     /** pointwise subtraction
      * @param a matrix a
      * @param b matrix b
@@ -3821,7 +4162,7 @@ public class MatrixUtil {
         pointwiseSubtract(a, b, out);
         return out;
     }
-    
+
     /**
      * pointwise subtraction
      * @param a matrix
@@ -3831,14 +4172,14 @@ public class MatrixUtil {
     public static void pointwiseSubtract(double[][] a, double[][] b, double[][] out) {
         int m = a.length;
         int n = a[0].length;
-        
+
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
         if (out.length != m || out[0].length != n) {
             throw new IllegalArgumentException("a and out must have same dimensions");
         }
-        
+
         int i, j;
         for (i = 0; i < out.length; ++i) {
             for (j = 0; j < out[i].length; ++j) {
@@ -3846,7 +4187,7 @@ public class MatrixUtil {
             }
         }
     }
-    
+
     /**
      * point-wise subtraction
      * @param a matrix a
@@ -3856,13 +4197,13 @@ public class MatrixUtil {
     public static int[][] pointwiseSubtract(int[][] a, int[][] b) {
         int m = a.length;
         int n = a[0].length;
-        
+
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
-        
+
         int[][] out = new int[m][];
-        
+
         int i, j;
         for (i = 0; i < out.length; ++i) {
             out[i] = new int[n];
@@ -3872,7 +4213,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * pointwise subtraction
      * @param a array
@@ -3882,20 +4223,20 @@ public class MatrixUtil {
      */
     public static void pointwiseSubtract(double[] a, double[] b, double[] out) {
         int m = a.length;
-        
+
         if (b.length != m) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
         if (out.length != m) {
             throw new IllegalArgumentException("a and out must have same dimensions");
         }
-        
+
         int i;
         for (i = 0; i < out.length; ++i) {
             out[i] = a[i] - b[i];
         }
     }
-    
+
     /**
      * pointwise multiplication
      * @param a matrix
@@ -3904,11 +4245,11 @@ public class MatrixUtil {
      */
     public static double[] pointwiseMultiplication(double[] a, double[] b) {
         int m = a.length;
-        
+
         if (b.length != m) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
-        
+
         int j;
         double[] out = new double[m];
         for (int i = 0; i < m; ++i) {
@@ -3916,7 +4257,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * dot product, summation_over_i(a[i]*b[i])
      * @param a array
@@ -3925,18 +4266,18 @@ public class MatrixUtil {
      */
     public static double dot(double[] a, double[] b) {
         int m = a.length;
-        
+
         if (b.length != m) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
-        
+
         double out = 0;
         for (int i = 0; i < m; ++i) {
             out += a[i] * b[i];
         }
         return out;
     }
-    
+
     /**
      * create an array of zeros
      * @param nRows number of rows for new matrix
@@ -3951,7 +4292,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     public static double[][] createIdentityMatrix(int nRows) {
         double[][] out = new double[nRows][nRows];
         for (int i = 0; i < nRows; ++i) {
@@ -3960,7 +4301,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * right divide is pointwise division
      * @param a matrix a
@@ -3970,11 +4311,11 @@ public class MatrixUtil {
     public static double[][] pointwiseDivision(double[][] a, double[][] b) {
         int m = a.length;
         int n = a[0].length;
-        
+
         if (b.length != m || b[0].length != n) {
             throw new IllegalArgumentException("a and b must have same dimensions");
         }
-        
+
         int j;
         double[][] out = new double[m][n];
         for (int i = 0; i < m; ++i) {
@@ -3985,7 +4326,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * right divide is pointwise division, that is a[i]/b[i] for i = [0, a.length).
      * @param a array a
@@ -3994,11 +4335,11 @@ public class MatrixUtil {
      */
     public static double[] pointwiseDivision(double[] a, double[] b) {
         int m = a.length;
-        
+
         if (b.length != m) {
             throw new IllegalArgumentException("a and b must have same lengths");
         }
-        
+
         int j;
         double[] out = Arrays.copyOf(a, m);
         for (int i = 0; i < m; ++i) {
@@ -4006,7 +4347,7 @@ public class MatrixUtil {
         }
         return out;
     }
-    
+
     /**
      * perform a left-right swap of the columns of a, flipping the matrix
      * vertically.  the method mimics matlab's flipur.
@@ -4017,7 +4358,7 @@ public class MatrixUtil {
         int idxLo = 0;
         int n = idxHi - idxLo + 1;
         int end = idxLo + (n/2);
-        
+
         double swap;
         int col, row, idx2;
         int count = 0;
@@ -4031,7 +4372,7 @@ public class MatrixUtil {
             count++;
         }
     }
-    
+
     /**
      * perform an up-down swap of the rows of a, flipping the matrix
      * horizontally.  the method mimics matlab's flipud.
@@ -4041,7 +4382,7 @@ public class MatrixUtil {
         int idxHi = a.length - 1;
         int idxLo = 0;
         int n = idxHi - idxLo + 1;
-        
+
         int end = idxLo + (n/2);
         double[] swap;
         int count = 0;
@@ -4054,7 +4395,7 @@ public class MatrixUtil {
             count++;
         }
     }
-    
+
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
      * matrix and b is a vector.
@@ -4068,7 +4409,7 @@ public class MatrixUtil {
         forwardSubstitution(lowerTriangular, b, outX);
         return outX;
     }
-    
+
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
      * matrix and b is a vector.
@@ -4080,9 +4421,9 @@ public class MatrixUtil {
      */
     public static void forwardSubstitution(double[][] lowerTriangular, double[] b,
         double[] outX) {
-        
+
         int m = b.length;
-        
+
         if (lowerTriangular[0].length != m) {
             throw new IllegalArgumentException("the number of columns in "
                     + "lowerTriangular must equal the length of b");
@@ -4090,7 +4431,7 @@ public class MatrixUtil {
         if (outX.length != m) {
             throw new IllegalArgumentException("outX.length must equal the length of b");
         }
-                
+
         int i, j;
         for (i = 0; i < m; ++i) {
             outX[i] = b[i];
@@ -4100,7 +4441,7 @@ public class MatrixUtil {
             outX[i] /= lowerTriangular[i][i];
         }
     }
-    
+
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
      * matrix and b is a vector.
@@ -4111,16 +4452,16 @@ public class MatrixUtil {
      * @return x in equation L*x = b
      */
     public static double[] forwardSubstitution(LowerTriangDenseMatrix lowerTriangular, double[] b) {
-        
+
         int m = b.length;
-        
+
         if (lowerTriangular.numColumns() != m) {
             throw new IllegalArgumentException("the number of columns in "
                     + "lowerTriangular must equal the length of b");
         }
-        
+
         double[] x = new double[b.length];
-                
+
         int i, j;
         for (i = 0; i < m; ++i) {
             x[i] = b[i];
@@ -4129,12 +4470,12 @@ public class MatrixUtil {
             }
             x[i] /= lowerTriangular.get(i, i);
         }
-        
+
         return x;
     }
-    
+
     /**
-     * solves for vector x in the equation U*x = y where 
+     * solves for vector x in the equation U*x = y where
      * U is an upper triangular matrix and y is a vector.
      * runtime complexity is approx (y.length)^2.
      * method follows Golub & Van Loan algorithm 4.1-2.
@@ -4143,7 +4484,7 @@ public class MatrixUtil {
      * <pre>
      *     0  1  2
         2  *  *  *
-        1  *  *  
+        1  *  *
         0  *
            0  1  2
      * </pre>
@@ -4151,16 +4492,16 @@ public class MatrixUtil {
      * @return x in equation U*x = y
      */
     public static double[] backwardSubstitution(double[][] upperTriangular, double[] y) {
-        
+
         double[] outX = new double[y.length];
-        
+
         backwardSubstitution(upperTriangular, y, outX);
-        
+
         return outX;
     }
-    
+
     /**
-     * solves for vector x in the equation U*x = y where 
+     * solves for vector x in the equation U*x = y where
      * U is an upper triangular matrix and y is a vector.
      * runtime complexity is approx (y.length)^2.
      * @param upperTriangular the upper triangular matrix
@@ -4168,7 +4509,7 @@ public class MatrixUtil {
      * <pre>
      *     0  1  2
         2  *  *  *
-        1  *  *  
+        1  *  *
         0  *
            0  1  2
      * </pre>
@@ -4177,9 +4518,9 @@ public class MatrixUtil {
      */
     public static void backwardSubstitution(double[][] upperTriangular, double[] y,
         double[] outX) {
-        
+
         int m = y.length;
-        
+
         if (upperTriangular[0].length != m) {
             throw new IllegalArgumentException("the number of columns in "
                     + "upperTriangular must equal the length of y");
@@ -4187,7 +4528,7 @@ public class MatrixUtil {
         if (outX.length != m) {
             throw new IllegalArgumentException("outX.length must equal the length of y");
         }
-                
+
         int i, j;
         for (i = m-1; i >= 0; i--) {
             outX[i] = y[i];
@@ -4195,27 +4536,27 @@ public class MatrixUtil {
                 outX[i] -= (outX[j]*upperTriangular[i][j]);
             }
             outX[i] /= upperTriangular[i][i];
-        }        
+        }
     }
-    
+
     /**
-     * solves for vector x in the equation U*x = y where 
+     * solves for vector x in the equation U*x = y where
      * U is an upper triangular matrix and y is a vector.
      * runtime complexity is approx (y.length)^2.
      * @param upperTriangular the upper triangular matrix
      * @param y vector on righthand side of equation
      * @return x in equation U*x = y
      */
-    public static double[] backwardSubstitution(UpperTriangDenseMatrix upperTriangular, 
+    public static double[] backwardSubstitution(UpperTriangDenseMatrix upperTriangular,
         double[] y) {
-        
+
         int m = y.length;
-        
+
         if (upperTriangular.numColumns() != m) {
             throw new IllegalArgumentException("the number of columns in "
                     + "upperTriangular must equal the length of y");
         }
-        
+
         double[] x = new double[m];
         int i, j;
         for (i = m-1; i >= 0; i--) {
@@ -4227,38 +4568,38 @@ public class MatrixUtil {
         }
         return x;
     }
-            
+
     public static void fill(double[][] a, double value) {
         int i;
         for (i = 0; i < a.length; ++i) {
             Arrays.fill(a[i], value);
         }
     }
-    
+
     public static BlockMatrixIsometric transpose(BlockMatrixIsometric a) {
-        
+
         double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);
-        
+
         BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());
-        
+
         transpose(a.getA(), b.getA());
-        
+
         /*
         double[][] block = MatrixUtil.zeros(a.getBlockSize0(), a.getBlockSize1());
         double[][] blockT = MatrixUtil.zeros(a.getBlockSize1(), a.getBlockSize0());
-        
+
         int nb0 = a.getA().length / a.getBlockSize0();
         int nb1 = a.getA()[0].length / a.getBlockSize1();
-        
+
         int i, j;
-        
+
         for (i = 0; i < nb0; ++i) {
             for (j = 0; j < nb1; ++j) {
                 a.getBlock(block, i, j);
                 transpose(block, blockT);
                 b.setBlock(blockT, j, i);
-                System.out.printf("(%d,%d) blockT=%n%s%n", j, i, FormatArray.toString(blockT, "%.3f"));
-                System.out.printf("b=%n%s%n", FormatArray.toString(b.getA(), "%.3f"));
+                System.out.printf("(%d,%d) blockT=\n%s\n", j, i, FormatArray.toString(blockT, "%.3f"));
+                System.out.printf("b=\n%s\n", FormatArray.toString(b.getA(), "%.3f"));
             }
         }
         */

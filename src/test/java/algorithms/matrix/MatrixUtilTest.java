@@ -226,7 +226,7 @@ public class MatrixUtilTest extends TestCase {
             for (j = 0; j < a1; ++j, v0++) {
                 a[i][j] = v0;
             }
-            System.out.printf("a[%d]=%s%n", i, FormatArray.toString(a[i], "%.0f"));
+            System.out.printf("a[%d]=%s\n", i, FormatArray.toString(a[i], "%.0f"));
         }
         
         /*
@@ -586,13 +586,13 @@ public class MatrixUtilTest extends TestCase {
         
         double diff = Math.abs(eig - eEig);
         
-        System.out.printf("==> eig=%.10f diff=%.10f%n", eig, diff);
+        System.out.printf("==> eig=%.10f diff=%.10f\n", eig, diff);
         
         assertTrue(diff < tol);
         
         eig = MatrixUtil.powerMethod(a, 1.e-3);
         diff = Math.abs(eig - eEig);
-        System.out.printf("===> eig=%.10f diff=%.10f%n", eig, diff);        
+        System.out.printf("===> eig=%.10f diff=%.10f\n", eig, diff);        
         assertTrue(diff < tol);
     }
     
@@ -859,12 +859,12 @@ public class MatrixUtilTest extends TestCase {
          expected = new double[]{0, 1, 0};
          result = MatrixUtil.crossProduct(p0, p1);
          for (int i = 0; i < result.length; ++i) {
-             //System.out.printf("crossproduct [%d] %.6e%n", i, result[i]);
+             //System.out.printf("crossproduct [%d] %.6e\n", i, result[i]);
              assertTrue(Math.abs(result[i] - expected[i]) < eps);
          }
          result = MatrixUtil.normalizeL2(result);
          for (int i = 0; i < result.length; ++i) {
-             //System.out.printf("normalized [%d] %.6e%n", i, result[i]);
+             //System.out.printf("normalized [%d] %.6e\n", i, result[i]);
              assertTrue(Math.abs(result[i] - expected[i]) < eps);
          }
          
@@ -1165,14 +1165,14 @@ public class MatrixUtilTest extends TestCase {
          _l2[3] = new double[]{0.50000,  -0.40000,  -0.20000,   5.00000};
          
          double[][] _m2_r = MatrixUtil.multiply(_l2, MatrixUtil.transpose(_l2));
-         System.out.printf("m2e=%s%n", FormatArray.toString(_m2_r, "%.3f"));
+         System.out.printf("m2e=%s\n", FormatArray.toString(_m2_r, "%.3f"));
          
          double[] _b2 = new double[]{2.49, 0.566, 0.787, -2.209};
          double[] _y2 = new double[]{0.83, 0.1, 0.42, -0.5};
          double[] _x2 = new double[]{0.3, 0, 0.2, -0.1};
          
          double[] _y2_r = MatrixUtil.forwardSubstitution(_l2, _b2);
-         System.out.printf("y2e=%s%ny2=%s%n", FormatArray.toString(_y2, "%.3f"),
+         System.out.printf("y2e=%s\ny2=%s\n", FormatArray.toString(_y2, "%.3f"),
              FormatArray.toString(_y2_r, "%.3f"));
          assertEquals(_y2.length, _y2_r.length);
          for (i = 0; i < _y2.length; ++i) {
@@ -1185,7 +1185,7 @@ public class MatrixUtilTest extends TestCase {
              assertTrue(diff < tol);
          }
          double[] _x2_r = MatrixUtil.backwardSubstitution(MatrixUtil.transpose(_l2), _y2_r);
-         System.out.printf("x2e=%s%nx2=%s%n", FormatArray.toString(_x2, "%.3f"),
+         System.out.printf("x2e=%s\nx2=%s\n", FormatArray.toString(_x2, "%.3f"),
              FormatArray.toString(_x2_r, "%.3f"));
          assertEquals(_x2.length, _x2_r.length);
          for (i = 0; i < _x2.length; ++i) {
@@ -1199,7 +1199,7 @@ public class MatrixUtilTest extends TestCase {
          }
          
          double[] _b2_r = MatrixUtil.multiplyMatrixByColumnVector(_m2_r, _x2_r);
-         System.out.printf("b2e=%s%nb2=%s%n", FormatArray.toString(_b2, "%.3f"),
+         System.out.printf("b2e=%s\nb2=%s\n", FormatArray.toString(_b2, "%.3f"),
              FormatArray.toString(_b2_r, "%.3f"));
          assertEquals(_b2.length, _b2_r.length);
          for (i = 0; i < _b2.length; ++i) {
@@ -1213,7 +1213,7 @@ public class MatrixUtilTest extends TestCase {
              MatrixUtil.transpose(_l2)));
          
          double[] _y2_r2 = MatrixUtil.forwardSubstitution(l2, _b2);
-         //System.out.printf("y2e=%s%ny2=%s%n", FormatArray.toString(_y2, "%.3f"),
+         //System.out.printf("y2e=%s\ny2=%s\n", FormatArray.toString(_y2, "%.3f"),
          //    FormatArray.toString(_y2_r, "%.3f"));
          assertEquals(_y2.length, _y2_r2.length);
          for (i = 0; i < _y2.length; ++i) {
@@ -1221,7 +1221,7 @@ public class MatrixUtilTest extends TestCase {
              assertTrue(diff < tol);
          }
          double[] _x2_r2 = MatrixUtil.backwardSubstitution(l2T, _y2_r2);
-         //System.out.printf("x2e=%s%nx2=%s%n", FormatArray.toString(_x2, "%.3f"),
+         //System.out.printf("x2e=%s\nx2=%s\n", FormatArray.toString(_x2, "%.3f"),
          //    FormatArray.toString(_x2_r, "%.3f"));
          assertEquals(_x2.length, _x2_r2.length);
          for (i = 0; i < _x2.length; ++i) {
@@ -1230,7 +1230,7 @@ public class MatrixUtilTest extends TestCase {
          }
          
          double[] _b2_r2 = MatrixUtil.multiplyMatrixByColumnVector(_m2_r, _x2_r2);
-         //System.out.printf("b2e=%s%nb2=%s%n", FormatArray.toString(_b2, "%.3f"),
+         //System.out.printf("b2e=%s\nb2=%s\n", FormatArray.toString(_b2, "%.3f"),
          //    FormatArray.toString(_b2_r, "%.3f"));
          assertEquals(_b2.length, _b2_r2.length);
          for (i = 0; i < _b2.length; ++i) {
@@ -1292,17 +1292,17 @@ public class MatrixUtilTest extends TestCase {
         
         double[][] aPSD2 = MatrixUtil.nearestPositiveSemidefiniteToA(a, eps);
         
-        System.out.printf("a=%n%s%n", FormatArray.toString(a, "%.5e"));
-        System.out.printf("aPSD=%n%s%n", FormatArray.toString(aPSD, "%.5e"));
-        System.out.printf("aPSD2=%n%s%n", FormatArray.toString(aPSD2, "%.5e"));
+        System.out.printf("a=\n%s\n", FormatArray.toString(a, "%.5e"));
+        System.out.printf("aPSD=\n%s\n", FormatArray.toString(aPSD, "%.5e"));
+        System.out.printf("aPSD2=\n%s\n", FormatArray.toString(aPSD2, "%.5e"));
         
         EVD evd1 = EVD.factorize(new DenseMatrix(a));
         EVD evd2 = EVD.factorize(new DenseMatrix(aPSD));
         EVD evd3 = EVD.factorize(new DenseMatrix(aPSD2));
 
-        System.out.printf("eig(a)=%n%s%n", FormatArray.toString(evd1.getRealEigenvalues(), "%.5e"));
-        System.out.printf("eig(aPSD)=%n%s%n", FormatArray.toString(evd2.getRealEigenvalues(), "%.5e"));
-        System.out.printf("eig(aPSD2)=%n%s%n", FormatArray.toString(evd3.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(a)=\n%s\n", FormatArray.toString(evd1.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(aPSD)=\n%s\n", FormatArray.toString(evd2.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(aPSD2)=\n%s\n", FormatArray.toString(evd3.getRealEigenvalues(), "%.5e"));
         
         
         double[][] aMinusPSD = MatrixUtil.pointwiseSubtract(a, aPSD);
@@ -1313,15 +1313,15 @@ public class MatrixUtilTest extends TestCase {
         double[][] aPSDMinusPSD2 = MatrixUtil.pointwiseSubtract(aPSD, aPSD2);
         double dist3 = MatrixUtil.frobeniusNorm(aPSDMinusPSD2);
         
-        System.out.printf("dist1=%.7e, dist2=%.7e, dist3=%.7e%n", dist1, dist2, dist3);
+        System.out.printf("dist1=%.7e, dist2=%.7e, dist3=%.7e\n", dist1, dist2, dist3);
 
         double[][] g = LinearEquations.choleskyDecompositionViaLDL(aPSD, eps);
         double[][] g2 = LinearEquations.choleskyDecompositionViaLDL(aPSD2, eps);
         EVD evd4 = EVD.factorize(new DenseMatrix(g));
-        System.out.printf("chol(aPSD)=%n%s%n", FormatArray.toString(g, "%.5e"));
-        System.out.printf("chol(aPSD2)=%n%s%n", FormatArray.toString(g2, "%.5e"));
+        System.out.printf("chol(aPSD)=\n%s\n", FormatArray.toString(g, "%.5e"));
+        System.out.printf("chol(aPSD2)=\n%s\n", FormatArray.toString(g2, "%.5e"));
         
-        System.out.printf("eig(g)=%n%s%n", FormatArray.toString(evd4.getRealEigenvalues(), "%.5e"));
+        System.out.printf("eig(g)=\n%s\n", FormatArray.toString(evd4.getRealEigenvalues(), "%.5e"));
 
         a = new double[5][];
         a[0] = new double[]{0,1, 0, 0, 0};
@@ -1350,17 +1350,17 @@ public class MatrixUtilTest extends TestCase {
          double dist = MatrixUtil.frobeniusNorm(MatrixUtil.pointwiseSubtract(ex1, aPSD2));
          assertTrue(dist < 1E-3);//~1E-5
 
-         System.out.printf("aPSD2=%n%s%n", FormatArray.toString(aPSD2, "%.4e"));
-         System.out.printf("dist of aPSD2 from expected=%.4e%n", dist);
+         System.out.printf("aPSD2=\n%s\n", FormatArray.toString(aPSD2, "%.4e"));
+         System.out.printf("dist of aPSD2 from expected=%.4e\n", dist);
 
          EVD evd5 = EVD.factorize(new DenseMatrix(aPSD2));
-         System.out.printf("eig(a)=%n%s%n", FormatArray.toString(evd5.getRealEigenvalues(), "%.4e"));
+         System.out.printf("eig(a)=\n%s\n", FormatArray.toString(evd5.getRealEigenvalues(), "%.4e"));
 
          EVD evd6 = EVD.factorize(new DenseMatrix(ex1));
          EVD evd7 = EVD.factorize(new DenseMatrix(ex2));
 
-         System.out.printf("eig(ex1)=%n%s%n", FormatArray.toString(evd6.getRealEigenvalues(), "%.4e"));
-         System.out.printf("eig(ex2)=%n%s%n", FormatArray.toString(evd7.getRealEigenvalues(), "%.4e"));
+         System.out.printf("eig(ex1)=\n%s\n", FormatArray.toString(evd6.getRealEigenvalues(), "%.4e"));
+         System.out.printf("eig(ex2)=\n%s\n", FormatArray.toString(evd7.getRealEigenvalues(), "%.4e"));
 
      }
 
@@ -1423,27 +1423,27 @@ public class MatrixUtilTest extends TestCase {
          a[1] = new double[]{0.5, 0.5};
          
          MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);
-         System.out.printf("svd(a).u=%n%s%n", FormatArray.toString(svd.u, "%.3e"));
-         System.out.printf("svd(a).vT=%n%s%n", FormatArray.toString(svd.vT, "%.3e"));
-         System.out.printf("svd(a).s=%n%s%n", FormatArray.toString(svd.s, "%.3e"));
+         System.out.printf("svd(a).u=\n%s\n", FormatArray.toString(svd.u, "%.3e"));
+         System.out.printf("svd(a).vT=\n%s\n", FormatArray.toString(svd.vT, "%.3e"));
+         System.out.printf("svd(a).s=\n%s\n", FormatArray.toString(svd.s, "%.3e"));
          
          double[][] q_uvt = MatrixUtil.multiply(svd.u, svd.vT);
-         System.out.printf("Q_uvt = svd(a).u * svd(a).vT=%n%s%n", FormatArray.toString(q_uvt, "%.3e"));
+         System.out.printf("Q_uvt = svd(a).u * svd(a).vT=\n%s\n", FormatArray.toString(q_uvt, "%.3e"));
          
          // a must have independent columns, so that's violated.  just looking at results.
          // The columns of Q are the eigenvectors of A.
          // A*Q = Q * diag(eigenvalues of A).
          QR qr = QR.factorize(new DenseMatrix(a));
-         System.out.printf("%nqr(a).q=%n%s%n", FormatArray.toString(
+         System.out.printf("\nqr(a).q=\n%s\n", FormatArray.toString(
              Matrices.getArray(qr.getQ()), "%.3e"));
-         System.out.printf("qr(a).r=%n%s%n", FormatArray.toString(
+         System.out.printf("qr(a).r=\n%s\n", FormatArray.toString(
              Matrices.getArray(qr.getR()), "%.3e"));
          
          double[][] s, sInv, sInv2, delta, delta2, a2, a3;
          
          s = MatrixUtil.copy(svd.u);
          DenseMatrix _s = new DenseMatrix(s);
-         System.out.printf("s = svd(a).u=%n%s%n", FormatArray.toString(s, "%.3e"));
+         System.out.printf("s = svd(a).u=\n%s\n", FormatArray.toString(s, "%.3e"));
          
          //x = A\B solves the system of linear equations A*x = B for x.
          //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
@@ -1456,14 +1456,14 @@ public class MatrixUtilTest extends TestCase {
          sInv = MatrixUtil.convertToRowMajor(_sInv);
          
          sInv2 = MatrixUtil.inverse(s);
-         System.out.printf("sInv=S\\I:  S.solve(I, sInv)=%n%s%n", 
+         System.out.printf("sInv=S\\I:  S.solve(I, sInv)=\n%s\n", 
              FormatArray.toString(sInv, "%.3e"));
-         System.out.printf("sInv2=MU.inverse(s)=%n%s%n", 
+         System.out.printf("sInv2=MU.inverse(s)=\n%s\n", 
              FormatArray.toString(sInv2, "%.3e"));
                  
          // Delta = sInv * A * s 
          delta = MatrixUtil.multiply(MatrixUtil.multiply(sInv, a), s);
-         System.out.printf("Delta = sInv * A * s=%n%s%n", 
+         System.out.printf("Delta = sInv * A * s=\n%s\n", 
              FormatArray.toString(delta, "%.3e"));
          
          delta2 = MatrixUtil.zeros(svd.s.length, svd.s.length);
@@ -1473,8 +1473,8 @@ public class MatrixUtilTest extends TestCase {
          // A = S * Delta * S^-1
          a2 = MatrixUtil.multiply(MatrixUtil.multiply(s, delta), sInv);
          a3 = MatrixUtil.multiply(MatrixUtil.multiply(s, delta2), sInv);
-         System.out.printf(" A = S * Delta * S^-1%n%s%n", FormatArray.toString(a2, "%.3e"));
-         System.out.printf(" A = S * Delta2(from svd) * S^-1%n%s%n", FormatArray.toString(a3, "%.3e"));
+         System.out.printf(" A = S * Delta * S^-1\n%s\n", FormatArray.toString(a2, "%.3e"));
+         System.out.printf(" A = S * Delta2(from svd) * S^-1\n%s\n", FormatArray.toString(a3, "%.3e"));
      }
      
      public void testNormalizeLP() {
@@ -1908,11 +1908,11 @@ public class MatrixUtilTest extends TestCase {
         System.out.println("testSparseEigen");
 
         LinkedSparseMatrix lS = Laplacian.createInDegreeLaplacianSparse(g);
-        //System.out.printf("L=%s%n", lS.toString());
+        //System.out.printf("L=%s\n", lS.toString());
 
         Map<Double, DenseVectorSub> eigenVectors = MatrixUtil.sparseEigen(lS, nEig, ritz);
         /*for (Map.Entry<Double, DenseVectorSub> eigen : eigenVectors.entrySet()) {
-            System.out.printf("eigenvalue=%s eigenvector=%s%n",
+            System.out.printf("eigenvalue=%s eigenvector=%s\n",
                     eigen.getKey().toString(), eigen.getValue().toString());
         }*/
         double maxEig = Double.NEGATIVE_INFINITY;
@@ -1940,6 +1940,116 @@ public class MatrixUtilTest extends TestCase {
         }
 
         // one can partition the graph by the Fieldler vector
+
+    }
+
+    public static void testMultiplyDiagonals() {
+
+        double[][] a = new double[3][2];
+        a[0] = new double[]{1, 2};
+        a[1] = new double[]{10, 20};
+        a[2] = new double[]{100, 150};
+
+        double[] d1 = new double[]{1, 2, 3};
+        double[] d2 = new double[]{10, 20};
+
+        /*
+        d1 * a:
+         1  0  0  *  1    2       =  1     2
+         0  2  0     10   20         20    40
+         0  0  3     100  150        300   450
+
+        a * d2:
+            1    2    *   10   0    =   10     40
+            10   20       0    20       100    400
+            100  150                    1000   3000
+         */
+        double[][] r1 = MatrixUtil.multiplyDiagonalByMatrix(d1, a);
+        double[][] expected = new double[3][];
+        expected[0] = new double[]{1, 2};
+        expected[1] = new double[]{20, 40};
+        expected[2] = new double[]{300, 450};
+        double tol = 1E-7;
+        int i;
+        int j;
+        assertEquals(expected.length, r1.length);
+        for (i = 0; i < expected.length; ++i) {
+            assertEquals(expected[i].length, r1[i].length);
+            for (j = 0; j < expected[i].length; ++j) {
+                assertTrue(Math.abs(expected[i][j] - r1[i][j]) < tol);
+            }
+        }
+
+        r1 = MatrixUtil.multiplyByDiagonal(a, d2);
+        expected = new double[3][];
+        expected[0] = new double[]{10, 40};
+        expected[1] = new double[]{100, 400};
+        expected[2] = new double[]{1000, 3000};
+        assertEquals(expected.length, r1.length);
+        for (i = 0; i < expected.length; ++i) {
+            assertEquals(expected[i].length, r1[i].length);
+            for (j = 0; j < expected[i].length; ++j) {
+                assertTrue(Math.abs(expected[i][j] - r1[i][j]) < tol);
+            }
+        }
+    }
+
+    public void testInfNorms() {
+
+        double[][] a = new double[3][2];
+        a[0] = new double[]{1, 2};
+        a[1] = new double[]{10, 20};
+        a[2] = new double[]{100, 150};
+
+        double[] rInfNorm = new double[3];
+        double[] cInfNorm = new double[2];
+
+        double[] rEx = new double[]{2, 20, 150};
+        double[] cEx = new double[]{100, 150};
+
+        MatrixUtil.calculateInfNormForRows(a, rInfNorm);
+        MatrixUtil.calculateInfNormForColumns(a, cInfNorm);
+
+        double tol = 1E-7;
+        int i;
+        assertEquals(rEx.length, rInfNorm.length);
+        for (i = 0; i < rEx.length; ++i) {
+            assertTrue(Math.abs(rEx[i] - rInfNorm[i]) < tol);
+        }
+        assertEquals(cEx.length, cInfNorm.length);
+        for (i = 0; i < cEx.length; ++i) {
+            assertTrue(Math.abs(cEx[i] - cInfNorm[i]) < tol);
+        }
+    }
+
+    public void testCondition() {
+
+        // test conditioning with A * x = b
+
+        double[][] a = new double[3][3];
+        a[0] = new double[]{1, 2, 0};
+        a[1] = new double[]{3, 4, 4};
+        a[2] = new double[]{5, 6, 3};
+        int m = 3;
+        int n = 3;
+        double[] b = new double[]{3, 7, 8};
+        double[] expectedX = new double[]{-1.4, 2.2, 0.6};
+
+        //     A    x     b
+        //    mxn  nx1 = mx1
+        double[] x1 = LinearEquations.solveXFromLUDecomposition(a, b);
+
+        MatrixUtil.ConditionedMatrix c = MatrixUtil.preconditionScaling(a);
+        double[][] aHat = c.aHat;
+        double[] bHat = MatrixUtil.pointwiseMultiplication(c.d1, b);
+        double[] xHat = LinearEquations.solveXFromLUDecomposition(aHat, bHat);
+        double[] x2 = MatrixUtil.pointwiseMultiplication(xHat, c.d2);
+
+        System.out.printf("expected=%s", FormatArray.toString(expectedX, "%.3e"));
+        System.out.printf("unconditioned=%s", FormatArray.toString(x1, "%.3e"));
+        System.out.printf("conditioned=%s", FormatArray.toString(x2, "%.3e"));
+
+        // need an ill-conditioned matrix to test
 
     }
 }
