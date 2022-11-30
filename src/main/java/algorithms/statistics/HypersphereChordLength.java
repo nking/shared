@@ -209,7 +209,7 @@ public class HypersphereChordLength {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("isConsistentWithNonUniform=").append(isConsistentWithNonUniform);
-            sb.append(String.format("%n1-alpha=%.5f, crit. val.=%.4e %nL1(sphere)=%.4f %nL1(X)=%.4f", 
+            sb.append(String.format("\n1-alpha=%.5f, crit. val.=%.4e \nL1(sphere)=%.4f \nL1(X)=%.4f", 
                 oneMinusAlpha, oneMinusAlphaCritVal, l1MaxSphere, l1MaxX));
             return sb.toString();
         }
@@ -260,11 +260,11 @@ public class HypersphereChordLength {
         //1-alpha for hypersphere chord distribution
         double alphaCV = findCVForAlpha95Percent(nDimensions);
         
-        System.out.printf("c.v. for 1-alpha=%.4e%n", alphaCV);
-        System.out.printf("S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e%n", 
+        System.out.printf("c.v. for 1-alpha=%.4e\n", alphaCV);
+        System.out.printf("S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e\n", 
             minMaxSphere[0], minMaxSphere[1],
             avgAndStDevSphere[0], avgAndStDevSphere[1]);
-        System.out.printf("X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e%n", 
+        System.out.printf("X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e\n", 
             minMaxX[0], minMaxX[1],
             avgAndStDevX[0], avgAndStDevX[1]);
         

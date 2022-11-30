@@ -56,7 +56,7 @@ public class CubicRootSolverTest extends TestCase {
         }
         
         Complex[] roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        //System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        //System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         double[] dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -85,10 +85,10 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         
-        System.out.printf("mpsolve real=%s%n", FormatArray.toString(dRoots2, "%.3e"));
+        System.out.printf("mpsolve real=%s\n", FormatArray.toString(dRoots2, "%.3e"));
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
             diff = Math.abs(expected[3-i-1] - dRoots2[i]);
@@ -109,7 +109,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -131,7 +131,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -154,9 +154,9 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
-        System.out.printf("mpsolve real=%s%n", FormatArray.toString(dRoots2, "%.3e"));
+        System.out.printf("mpsolve real=%s\n", FormatArray.toString(dRoots2, "%.3e"));
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
             diff = Math.abs(expected[i] - dRoots2[i]);
@@ -177,9 +177,9 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.7e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.7e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
-        System.out.printf("mpsolve real=%s%n", FormatArray.toString(dRoots2, "%.7e"));
+        System.out.printf("mpsolve real=%s\n", FormatArray.toString(dRoots2, "%.7e"));
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
             diff = Math.abs(expected[i] - dRoots2[i]);
@@ -201,7 +201,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -222,7 +222,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -242,7 +242,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -263,7 +263,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -285,7 +285,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {
@@ -307,7 +307,7 @@ public class CubicRootSolverTest extends TestCase {
             assertTrue(diff < tol);
         }
         roots2 = PolynomialRootSolver.solveUsingMPSolve(coeffs);
-        System.out.printf("mpsolve roots=%s%n", FormatArray.toString(roots2, "%.3e"));
+        System.out.printf("mpsolve roots=%s\n", FormatArray.toString(roots2, "%.3e"));
         dRoots2 = PolynomialRootSolver.solveForRealUsingMPSolve(coeffs, eps);
         assertEquals(expected.length, dRoots2.length);
         for (i = 0; i < dRoots2.length; ++i) {

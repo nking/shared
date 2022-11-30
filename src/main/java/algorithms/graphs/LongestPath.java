@@ -131,7 +131,7 @@ public class LongestPath {
                 break;
             }
         }
-        //System.out.printf("srcIdx=%d, sIdx=%d, ts=%s%n", srcIdx, sIdx, Arrays.toString(tsIdxs));
+        //System.out.printf("srcIdx=%d, sIdx=%d, ts=%s\n", srcIdx, sIdx, Arrays.toString(tsIdxs));
         assert(sIdx > -1);
         
         double[] dist = new double[nodes.length];
@@ -193,9 +193,9 @@ public class LongestPath {
             }
         }
         
-        //System.out.printf("src=%d  maxDist=%.3f  maxDistIdx=%d%n", srcIdx, maxDistS, maxDistIdx);
-        //System.out.printf("dist=%s%n", FormatArray.toString(dist, "%.3f"));
-        //System.out.printf("pred=%s%n", Arrays.toString(prev));
+        //System.out.printf("src=%d  maxDist=%.3f  maxDistIdx=%d\n", srcIdx, maxDistS, maxDistIdx);
+        //System.out.printf("dist=%s\n", FormatArray.toString(dist, "%.3f"));
+        //System.out.printf("pred=%s\n", Arrays.toString(prev));
         
         // back track from maxS to S then reverse the nodes and return that
         TIntList path = new TIntArrayList();

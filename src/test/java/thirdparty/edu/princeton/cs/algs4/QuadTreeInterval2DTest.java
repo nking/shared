@@ -635,7 +635,7 @@ public class QuadTreeInterval2DTest extends TestCase {
     private void debug(List<Interval2D<Integer>> treeNodes) {
         StringBuilder sb = new StringBuilder();
         for (Interval2D<Integer> g : treeNodes) {
-            sb.append(g.toString()).append("%n");
+            sb.append(g.toString()).append("\n");
         }
         System.out.println(sb.toString());
     }

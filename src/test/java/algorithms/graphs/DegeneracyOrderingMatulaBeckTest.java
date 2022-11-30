@@ -76,12 +76,12 @@ public class DegeneracyOrderingMatulaBeckTest extends TestCase {
                     //System.out.printf(" %d", v);
                     bQ.remove(i, v, bucket);
                 }
-                //System.out.printf("%n");
+                //System.out.printf("\n");
 
                 // bucket for key i is empty, so key i should have been removed:
                 assertFalse(bQ.contains(i));
             }
-            //System.out.printf("bQ.size=%d%n", bQ.size());
+            //System.out.printf("bQ.size=%d\n", bQ.size());
 
             /*
             [junit] bM key=1, val=5, max=1
@@ -145,7 +145,7 @@ public class DegeneracyOrderingMatulaBeckTest extends TestCase {
         
         int result = DegeneracyOrderingMatulaBeck.findDegeneracyOrder(g, out);
         
-        System.out.printf("k=%d order=%s%n", result, Arrays.toString(out));
+        System.out.printf("k=%d order=%s\n", result, Arrays.toString(out));
     }
     
 }

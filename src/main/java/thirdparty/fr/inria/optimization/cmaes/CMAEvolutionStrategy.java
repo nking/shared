@@ -761,7 +761,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	}
     	String[] s = stopConditions.getMessages();
     	if(!s[0].equals(""))
-    		warning("termination condition satisfied at initialization: %n  " + s[0]);
+    		warning("termination condition satisfied at initialization: \n  " + s[0]);
 
     	initialX = xmean.clone(); // keep finally chosen initialX
     	
@@ -2542,13 +2542,13 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     public String getDataC() {
 	int i, j;
         String s = new String();    
-        s = "%# " + countiter + " " + counteval + " " + sigma + "%n";
+        s = "%# " + countiter + " " + counteval + " " + sigma + "\n";
         for (i = 0; i < N; ++i) {
 	    for (j = 0; j < i; ++j) // ouput correlation in the lower half
 		s += C[i][j] / Math.sqrt(C[i][i] * C[j][j]) + " ";
 	    for (j = i; j < N; ++j) 
 		s += sigma * sigma * C[i][j] + " ";
-	    s += "%n";
+	    s += "\n";
         }
         return s;
     }
@@ -2690,7 +2690,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     public void writeToDefaultFilesHeaders(String fileNamePrefix, int flgAppend) {
         if (options.maxTimeFractionForWriteToDefaultFiles < 0) // overwrites force flag
             return;
-        String s = "(randomSeed=" + seed + ", " + new Date().toString() + ")%n";
+        String s = "(randomSeed=" + seed + ", " + new Date().toString() + ")\n";
         writeToFile(fileNamePrefix + "fit.dat", 
         		"%# iteration evaluations sigma axisratio fitness_of(bestever best median worst) mindii "
         		+ "idxmaxSD maxSD idxminSD minSD " 

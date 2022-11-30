@@ -307,8 +307,8 @@ public class ObjectSpaceEstimator {
         long avail2 = totalMemory - heapUsage2;
         long used2 = heapUsage2 - heapUsage;
     
-        //System.out.format("%d lists with no objects size =%d%n", nLists, used1);
-        //System.out.format("list with %d objects size =%d%n", nObjects, used2);
+        //System.out.format("%d lists with no objects size =%d\n", nLists, used1);
+        //System.out.format("list with %d objects size =%d\n", nObjects, used2);
     
         long nObjectsSize = 
             nObjects * ObjectSpaceEstimator.getReferenceSize();
@@ -418,9 +418,9 @@ public class ObjectSpaceEstimator {
         long avail2 = totalMemory - heapUsage2;
         long used2 = heapUsage2 - heapUsage;
     
-        //System.out.format("%d maps with no objects size =%d%n", nMaps, used1);
+        //System.out.format("%d maps with no objects size =%d\n", nMaps, used1);
         
-        //System.out.format("map with %d objects size =%d%n", nObjects, used2);
+        //System.out.format("map with %d objects size =%d\n", nObjects, used2);
         
         long nObjectsSize = 
             nObjects * ObjectSpaceEstimator.getReferenceSize();

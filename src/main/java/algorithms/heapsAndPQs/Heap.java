@@ -420,7 +420,7 @@ public class Heap {
         if (label != null) {
             char[] c = label.toCharArray();
             writer.write(c, 0, c.length);
-            writer.write("%n");
+            writer.write("\n");
             writer.flush();
         }
         
@@ -435,7 +435,7 @@ public class Heap {
                 writer.write(minimumNode.getData().toString());
             }
         }
-        c = ";  heap=%n".toCharArray();
+        c = ";  heap=\n".toCharArray();
         writer.write(c, 0, c.length);
         writer.flush();
             
@@ -462,7 +462,7 @@ public class Heap {
                 currentLevel++;
                 
                 if (sb.length() > 72) {
-                    sb.append("%n");
+                    sb.append("\n");
                     c = sb.toString().toCharArray();
                     writer.write(c, 0, c.length);
                     if (nIter % 100 == 0) {
@@ -510,7 +510,7 @@ public class Heap {
                 }
                 if (!eol) {
                     if (sb.length() > 72) {
-                        sb.append("%n");
+                        sb.append("\n");
                         c = sb.toString().toCharArray();
                         writer.write(c, 0, c.length);
                         if (nIter % 100 == 0) {
@@ -520,7 +520,7 @@ public class Heap {
                     }
                 }
                 if (eol) {
-                    sb.append("%n");
+                    sb.append("\n");
                     c = sb.toString().toCharArray();
                     writer.write(c, 0, c.length);
                     if ((nIter % 100) == 0) {

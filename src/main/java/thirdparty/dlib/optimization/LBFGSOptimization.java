@@ -122,10 +122,10 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
         assert(0 < rho && rho < sigma && sigma < 1 && maxIter > 0);
         /*
             "\tdouble line_search()" +
-             "%n\tYou have given invalid arguments to this function"
-            + "%n\t sigma:    " + sigma
-            + "%n\t rho:      " + rho 
-            + "%n\t max_iter: " + max_iter 
+             "\n\tYou have given invalid arguments to this function"
+            + "\n\t sigma:    " + sigma
+            + "\n\t rho:      " + rho 
+            + "\n\t max_iter: " + max_iter 
         */
 
         // The bracketing phase of this function is implemented according to block 2.6.2 from

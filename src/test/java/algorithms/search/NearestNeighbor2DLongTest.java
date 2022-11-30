@@ -59,7 +59,7 @@ public class NearestNeighbor2DLongTest extends TestCase {
             chosen.add(p);
             int x = xc*bSz;
             int y = yc*bSz;
-            //System.out.format("%d:%d  %d:%d%n", x, x+bSz, y, y+bSz);
+            //System.out.format("%d:%d  %d:%d\n", x, x+bSz, y, y+bSz);
             draw(pixIdxs, w, h, x, y, bSz, rand);
             count++;
         }

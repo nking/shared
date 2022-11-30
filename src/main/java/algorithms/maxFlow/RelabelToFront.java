@@ -139,7 +139,7 @@ public class RelabelToFront {
         
         initPreFlow();
         
-        //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|%n", eF[srcIdx]);                
+        //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);
     }
     
     /**
@@ -185,7 +185,7 @@ public class RelabelToFront {
         
         initPreFlow();
         
-        //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|%n", eF[srcIdx]);                
+        //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);
     }
     
     public MaxFlowResults findMaxFlow() {
@@ -259,7 +259,7 @@ public class RelabelToFront {
              iter.advance();
              p = iter.key();
              fP = iter.value();
-             System.out.printf("f%s = %.3e%n", p.toString(), fP);
+             System.out.printf("f%s = %.3e\n", p.toString(), fP);
          }
     }
     
@@ -278,16 +278,16 @@ public class RelabelToFront {
              iter.advance();
              p = iter.key();
              cP = iter.value();
-             System.out.printf("c%s = %.3e%n", p.toString(), cP);
+             System.out.printf("c%s = %.3e\n", p.toString(), cP);
          }
     }
     
     protected void printE() {
-         System.out.printf("e=%s%n", FormatArray.toString(eF, "%.3e"));
+         System.out.printf("e=%s\n", FormatArray.toString(eF, "%.3e"));
     }
     
     protected void printH() {
-         System.out.printf("h=%s%n", Arrays.toString(h));
+         System.out.printf("h=%s\n", Arrays.toString(h));
     }
 
     /**
@@ -518,7 +518,7 @@ public class RelabelToFront {
         
         TIntList vs = uNMap.get(u);
         
-        /*System.out.printf("relabel(%d).  N=%s%n", u, Arrays.toString(vs.toArray()));
+        /*System.out.printf("relabel(%d).  N=%s\n", u, Arrays.toString(vs.toArray()));
         print();
         System.out.printf("  for V_f: ");*/
         
@@ -531,7 +531,7 @@ public class RelabelToFront {
             
             inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
             
-            //System.out.printf("  inE=%b h[%d]=%d  h[%d]=%d%n", inE, u, h[u], v, h[v]);
+            //System.out.printf("  inE=%b h[%d]=%d  h[%d]=%d\n", inE, u, h[u], v, h[v]);
             
             // Lemma 26.16
             if (this.h[v] < this.h[u]) {
@@ -563,10 +563,10 @@ public class RelabelToFront {
         assert(h[u] <= (2*uNMap.size() - 1));
         
         //DEBUG
-        /*System.out.printf("%n");        
-        System.out.printf("  minH=%d,  h=%s%n", minH, u, Arrays.toString(h));        
+        /*System.out.printf("\n");
+        System.out.printf("  minH=%d,  h=%s\n", minH, u, Arrays.toString(h));
         if (!(minH < Integer.MAX_VALUE)) {
-            System.out.printf("ERROR in relabel(%d).  N=%s%n",
+            System.out.printf("ERROR in relabel(%d).  N=%s\n",
                 u, Arrays.toString(vs.toArray()));
         }*/
         
@@ -583,7 +583,7 @@ public class RelabelToFront {
      */
     protected void push(int u, int v) {
         
-        //System.out.printf("push(%d, %d)%n", u, v);
+        //System.out.printf("push(%d, %d)\n", u, v);
         
         boolean inE = this.adj.containsKey(u) && this.adj.get(u).contains(v);
         
@@ -606,10 +606,10 @@ public class RelabelToFront {
             f.put(p, fUV);
             
             //DEBUG
-            /*System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e%n", 
+            /*System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e\n",
                 u, v, fUV, u, v, c.get(p), delta);
             if (Math.abs(c.get(p) - fUV) < 1e-7) {
-                System.out.printf("     saturated%n");
+                System.out.printf("     saturated\n");
             }*/
             
         } else {
@@ -628,7 +628,7 @@ public class RelabelToFront {
             f.put(p, fVU);
                         
             //DEBUG
-            //System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u%n", 
+            //System.out.printf("  ==> f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u\n",
             //    v, u, fVU, v, u, c.get(p), delta);
         }
         this.eF[u] -= delta;
@@ -636,13 +636,13 @@ public class RelabelToFront {
         
         /*
         //DEBUG
-        System.out.printf("  eF[%d]=%.3e, eF[%d]=%.3e%n", u, eF[u], v, eF[v]);
+        System.out.printf("  eF[%d]=%.3e, eF[%d]=%.3e\n", u, eF[u], v, eF[v]);
         
         if (Math.abs(this.eF[u]) <1e-7) {
-            System.out.printf("      removes %d from E_f%n", u);
+            System.out.printf("      removes %d from E_f\n", u);
         }
         if (Math.abs(this.eF[v]) <1e-7) {
-            System.out.printf("      removes %d from E_f%n", v);
+            System.out.printf("      removes %d from E_f\n", v);
         }*/
     }
     
@@ -650,7 +650,7 @@ public class RelabelToFront {
 
         /*//DEBUG        
         print();                
-        System.out.printf("discharge(%d)  excess=%.3e%n", u, eF[u]);
+        System.out.printf("discharge(%d)  excess=%.3e\n", u, eF[u]);
         */
         
         TIntList uNList = uNMap.get(u);
@@ -675,9 +675,9 @@ public class RelabelToFront {
             
             /*
             //DEBUG
-            System.out.printf("  nIter=%d eF[%d]=%.3e%n", nIter, u, eF[u]);
+            System.out.printf("  nIter=%d eF[%d]=%.3e\n", nIter, u, eF[u]);
             if (currNList != null) {
-                System.out.printf("  [%d].N=%s u.h=%d [h-1].currNList=%s%n", u, Arrays.toString(uNList.toArray()),
+                System.out.printf("  [%d].N=%s u.h=%d [h-1].currNList=%s\n", u, Arrays.toString(uNList.toArray()),
                     h[u], Arrays.toString(currNList.toArray()));
             }*/
                         
@@ -690,7 +690,7 @@ public class RelabelToFront {
                     
                     v = currNList.get(currNIdx);
                     
-                    //System.out.printf("    <-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false%n", 
+                    //System.out.printf("    <-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false\n", 
                     //    u, v, calculateResidualCapacity(u, v), u, h[u], v, h[v]);
                     
                     push(u, v);
@@ -709,7 +709,7 @@ public class RelabelToFront {
                 
                 backEdgeIdxs.clear();
                 
-                //System.out.printf("    after relabel returning to discharge(%d).  reset u.currN%n", u);
+                //System.out.printf("    after relabel returning to discharge(%d).  reset u.currN\n", u);
                 
                 nIter++;
                 
@@ -724,7 +724,7 @@ public class RelabelToFront {
             
             if (cF > 0) {
                 
-                //System.out.printf("    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b%n", u, v, cF, u, h[u], v, h[v], inE);
+                //System.out.printf("    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n", u, v, cF, u, h[u], v, h[v], inE);
                 
                 push(u, v);
                 
@@ -733,13 +733,13 @@ public class RelabelToFront {
                 backEdgeIdxs.add(new VertexNode(currNIdx));
                 
                 //System.out.printf("did not push to reverse edge for v=%d cF=%.3e"
-                //    + " currNList=%s%n",
+                //    + " currNList=%s\n",
                 //    v, cF, Arrays.toString(currNList.toArray()));
                 
                 currNIdx++;
                 
             } else {
-                //System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN%n", u, v, cF, u, h[u], v, h[v], inE);
+                //System.out.printf("    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN\n", u, v, cF, u, h[u], v, h[v], inE);
                 currNIdx++;
             }
             
@@ -835,7 +835,7 @@ public class RelabelToFront {
         public double flow;
         public void print() {
             if (edgeFlows != null) {
-                System.out.printf("max flow=%.3e from src=%d to sink=%d%n", 
+                System.out.printf("max flow=%.3e from src=%d to sink=%d\n", 
                     flow, srcIdx, sinkIdx);
                 printF(edgeFlows);
             }

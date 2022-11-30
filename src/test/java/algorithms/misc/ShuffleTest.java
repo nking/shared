@@ -51,7 +51,7 @@ public class ShuffleTest extends TestCase {
                 map.put(r, 1);
             }
         }
-        System.out.printf("number of unique random keys = %d, number of draws = %d, expected %d (%.3f)%n", 
+        System.out.printf("number of unique random keys = %d, number of draws = %d, expected %d (%.3f)\n", 
             map.size(), factor*nP, nP,  (float)map.size()/(float)nP);
         System.out.flush();
         
@@ -103,13 +103,13 @@ public class ShuffleTest extends TestCase {
         double[] medianAndIQR = MiscMath0.calcMedianAndIQR(count);
         double[] avgAndStDev = MiscMath0.getAvgAndStDev(count);
                      
-        System.out.printf("median of absolute deviation of x, the median, the min, and the max = %n  %s with r0=%.3f r1=%.3f%n", 
+        System.out.printf("median of absolute deviation of x, the median, the min, and the max = \n  %s with r0=%.3f r1=%.3f\n", 
             FormatArray.toString(mADMinMax, "%.3f"), r0, r1);
         
-        System.out.printf("medianAndIQR = %s%n", 
+        System.out.printf("medianAndIQR = %s\n", 
             FormatArray.toString(medianAndIQR, "%.3f"));
         
-        System.out.printf("avgAndStDev = %s%n", 
+        System.out.printf("avgAndStDev = %s\n", 
             FormatArray.toString(avgAndStDev, "%.3f"));
        
     }
@@ -240,26 +240,26 @@ public class ShuffleTest extends TestCase {
         double[] medianAndIQR = MiscMath0.calcMedianAndIQR(count);
         double[] avgAndStDev = MiscMath0.getAvgAndStDev(count);
              
-        System.out.printf("shuffled %d * %d!%n", factor, a.length);
+        System.out.printf("shuffled %d * %d!\n", factor, a.length);
         
-        System.out.printf("median of absolute deviation of x, the median, the min, and the max = %n  %s with r0=%.3f r1=%.3f%n", 
+        System.out.printf("median of absolute deviation of x, the median, the min, and the max = \n  %s with r0=%.3f r1=%.3f\n", 
             FormatArray.toString(mADMinMax, "%.3f"), r0, r1);
         
-        System.out.printf("medianAndIQR = %s%n", 
+        System.out.printf("medianAndIQR = %s\n", 
             FormatArray.toString(medianAndIQR, "%.3f"));
         
-        System.out.printf("avgAndStDev = %s%n", 
+        System.out.printf("avgAndStDev = %s\n", 
             FormatArray.toString(avgAndStDev, "%.3f"));
        
-        /*System.out.printf("number of permutations in shuffle = %d, expected %d (%.3f)%n", 
+        /*System.out.printf("number of permutations in shuffle = %d, expected %d (%.3f)\n", 
             map.size(), n, (float)map.size()/(float)n);
         keySet = map.keySet();
         for (int key : keySet) {
             v = map.get(key);
-            System.out.printf("%7d (%d)%n", key, v);
+            System.out.printf("%7d (%d)\n", key, v);
         }*/
         
-        System.out.printf("number of permutations in shuffle = %d, expected %d (%.3f)%n", 
+        System.out.printf("number of permutations in shuffle = %d, expected %d (%.3f)\n", 
             map.size(), n, (float)map.size()/(float)n);
         System.out.flush();
     }

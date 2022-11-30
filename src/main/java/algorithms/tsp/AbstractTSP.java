@@ -79,7 +79,7 @@ public abstract class AbstractTSP {
         totalNSubSet = countTotalNumSubSetInvocations(n - 1); // max for n=338 for limit of array length
         totalNSubSeq = countTotalNumSubSeqInvocations(n - 1); 
         
-        System.out.printf("nPerm (w/o 1st node)=%s, totalNSubSet=%d  totalNSubSeq=%d%n",
+        System.out.printf("nPerm (w/o 1st node)=%s, totalNSubSet=%d  totalNSubSeq=%d\n",
             totalNPerm.toString(), totalNSubSet, totalNSubSeq);
         
         int sz = (int)MiscMath0.computeNDivNMinusK(dist.length-1, 3);
@@ -512,7 +512,7 @@ public abstract class AbstractTSP {
         //debug
         /*TIntList p = new TIntArrayList();
         readPathIntoBase10(path, p);
-        System.out.printf("final: bs=%s (%s) sum=%.2f sum2=%.2f, min=%.2f%n",
+        System.out.printf("final: bs=%s (%s) sum=%.2f sum2=%.2f, min=%.2f\n",
             Long.toBinaryString(path),
             Arrays.toString(p.toArray()), sum, sum2, minCost);
          */
@@ -590,10 +590,10 @@ public abstract class AbstractTSP {
             p.clear();
             readPathIntoBase10(bitstring, p);
 
-            System.out.printf("memo: (%s) sum=%.2f min=%.2f%n",
+            System.out.printf("memo: (%s) sum=%.2f min=%.2f\n",
                 Arrays.toString(p.toArray()), sum, minCost);
         }
-        System.out.printf("memo.size()=%d%n", memo.size());
+        System.out.printf("memo.size()=%d\n", memo.size());
         System.out.flush();
     }
     

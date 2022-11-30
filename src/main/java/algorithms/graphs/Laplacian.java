@@ -101,7 +101,7 @@ public class Laplacian {
      */
     public static double[] calculateFieldlerVector(TIntObjectMap<TIntSet> g) {
         LinkedSparseMatrix lS = Laplacian.createInDegreeLaplacianSparse(g);
-        //System.out.printf("L=%s%n", lS.toString());
+        //System.out.printf("L=%s\n", lS.toString());
 
         int nEig = 2;
         ArpackSym.Ritz ritz = ArpackSym.Ritz.SA;

@@ -108,9 +108,9 @@ public class BruteForceDistance {
         
         if (log.isLoggable(LEVEL)) {
             StringBuilder sb = new StringBuilder();
-            sb.append("col means=").append(Arrays.toString(colMeans)).append("%n");
-            sb.append("row means=").append(Arrays.toString(rowMeans)).append("%n");
-            sb.append("grand mean=").append(Double.toString(grandMean)).append("%n");
+            sb.append("col means=").append(Arrays.toString(colMeans)).append("\n");
+            sb.append("row means=").append(Arrays.toString(rowMeans)).append("\n");
+            sb.append("grand mean=").append(Double.toString(grandMean)).append("\n");
             log.log(Level.INFO, sb.toString());
         }
         
@@ -211,11 +211,11 @@ public class BruteForceDistance {
         
         if (log.isLoggable(LEVEL)) {
             StringBuilder sb = new StringBuilder();
-            sb.append("n=").append(n).append("%n");
-            sb.append("dVarXSq=").append(dVarXSq).append("%n");
-            sb.append("dVarYSq=").append(dVarYSq).append("%n");
-            sb.append("dCovXYSq=").append(dCovSq).append("%n");
-            sb.append("dCorSq=").append(corSq).append("%n");
+            sb.append("n=").append(n).append("\n");
+            sb.append("dVarXSq=").append(dVarXSq).append("\n");
+            sb.append("dVarYSq=").append(dVarYSq).append("\n");
+            sb.append("dCovXYSq=").append(dCovSq).append("\n");
+            sb.append("dCorSq=").append(corSq).append("\n");
             log.log(Level.INFO, sb.toString());
         }
         
@@ -236,10 +236,10 @@ public class BruteForceDistance {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("corSq=").append(corSq).append("%n");
-            sb.append("dCovSq: ").append(dCovSq).append("%n");
-            sb.append("dVarXSq: ").append(dVarXSq).append("%n");
-            sb.append("dVarYSq: ").append(dVarYSq).append("%n");
+            sb.append("corSq=").append(corSq).append("\n");
+            sb.append("dCovSq: ").append(dCovSq).append("\n");
+            sb.append("dVarXSq: ").append(dVarXSq).append("\n");
+            sb.append("dVarYSq: ").append(dVarYSq).append("\n");
             return sb.toString();
         }
     }

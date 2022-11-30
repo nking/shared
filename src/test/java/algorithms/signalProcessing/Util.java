@@ -93,7 +93,7 @@ public class Util {
             }
         }
         
-        //System.out.println("max=" + xMax + "%n" +
+        //System.out.println("max=" + xMax + "\n" +
         //   " " + xHalfMax0Idx + " : " + xMaxIdx + " : " + xHalfMax1Idx);
         
         if ((xHalfMax1Idx == -1) || (xHalfMax0Idx == -1)) {

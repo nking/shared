@@ -32,7 +32,7 @@ public class BlockMatrixIsometricTest extends TestCase {
             for (j = 0; j < a1; ++j) {
                 a[i][j] = v0 + (j/b1);
             }
-            //System.out.printf("a[%d]=%s%n", i, FormatArray.toString(a[i], "%.0f"));
+            //System.out.printf("a[%d]=%s\n", i, FormatArray.toString(a[i], "%.0f"));
         }
         
         double[][] aOrig = MatrixUtil.copy(a);

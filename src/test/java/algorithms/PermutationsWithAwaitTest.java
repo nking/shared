@@ -47,16 +47,16 @@ public class PermutationsWithAwaitTest extends TestCase {
 
         for (i = 0; i < np; ++i) {
             assertTrue(p.getNext(results[(int) i]));
-            //System.out.printf("    %d) %s%n", i, Arrays.toString(results[(int) i]));
+            //System.out.printf("    %d) %s\n", i, Arrays.toString(results[(int) i]));
         }
         boolean done = !p.hasNext();
         if (!done) {
-            System.out.printf("results.length=%d, results=%n%s%n", results.length, FormatArray.toString(results, "%d"));
+            System.out.printf("results.length=%d, results=\n%s\n", results.length, FormatArray.toString(results, "%d"));
             System.out.flush();
             fail("expecting done == true");
         }
         assertTrue(done);
-        //System.out.printf("results.length=%d, results=%n%s%n", results.length, FormatArray.toString(results, "%d"));
+        //System.out.printf("results.length=%d, results=\n%s\n", results.length, FormatArray.toString(results, "%d"));
         int[] r, r2;
         TIntList re2;
         for (ii = 0; ii < results.length; ++ii) {
@@ -92,7 +92,7 @@ public class PermutationsWithAwaitTest extends TestCase {
         }
         done = !p.hasNext();
         if (!done) {
-            System.out.printf("results=%n%s%n", FormatArray.toString(results, "%d"));
+            System.out.printf("results=\n%s\n", FormatArray.toString(results, "%d"));
             System.out.flush();
             fail("expecting getNext == false");
         }
@@ -109,7 +109,7 @@ public class PermutationsWithAwaitTest extends TestCase {
             assertTrue(p.getNext(r3));
             rs.add(Arrays.toString(r3));
         }
-        //System.out.printf("nPerm=%s, nIter=%s%n", p.getCounts()[0], p.getCounts()[1]);
+        //System.out.printf("nPerm=%s, nIter=%s\n", p.getCounts()[0], p.getCounts()[1]);
         //System.out.flush();
         assertEquals(nUnique, rs.size());
 

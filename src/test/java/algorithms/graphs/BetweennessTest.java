@@ -42,7 +42,7 @@ public class BetweennessTest extends TestCase {
         /*System.out.println("iterating over each as a source node:");
         for (int ii = 0; ii < nV; ++ii) {
             r = b.girvanNewmanDAG(adjList, ii);
-            System.out.println("result for " + ii + " =%n" + r.toString());
+            System.out.println("result for " + ii + " =\n" + r.toString());
         }*/
         
         TObjectFloatMap<PairInt> expected = new TObjectFloatHashMap<PairInt>();
@@ -56,7 +56,7 @@ public class BetweennessTest extends TestCase {
         expected.put(new PairInt(4, 6), 1.f);
         
         r = b.girvanNewmanDAG(adjList, 0);
-        System.out.println("result=%n" + r.toString());
+        System.out.println("result=\n" + r.toString());
         
         edges = r.getEdges();
         assertNotNull(edges);
@@ -78,13 +78,13 @@ public class BetweennessTest extends TestCase {
         }
                 
         // ------
-        System.out.println("%ncutting edge=(0,2)");
+        System.out.println("\ncutting edge=(0,2)");
         adjList[0].delete(2);
         
         r = b.girvanNewmanDAG(adjList, 0);
         edges = r.getEdges();
         
-        System.out.println("result2=%n" + r.toString());
+        System.out.println("result2=\n" + r.toString());
         expected = new TObjectFloatHashMap<PairInt>();
         expected.put(new PairInt(0, 1), 3.f);
         expected.put(new PairInt(1, 3), 2.f);
@@ -144,7 +144,7 @@ public class BetweennessTest extends TestCase {
         expected.put(new PairInt(4, 6), 1.f);
         
         r = b.girvanNewmanUndirected(adjList2, 0);
-        System.out.println("result=%n" + r.toString());
+        System.out.println("result=\n" + r.toString());
         
         edges = r.getEdges();
         assertNotNull(edges);

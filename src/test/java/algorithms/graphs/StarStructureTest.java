@@ -73,10 +73,10 @@ public class StarStructureTest extends TestCase {
         starDB = norm.sg2;
         boolean swapped = norm.swapped;
         ged = StarStructure.calculateEditDistanceV(stars[14], starDB[14]);
-        System.out.printf("ged=%d%n", ged);
+        System.out.printf("ged=%d\n", ged);
         assertEquals(2, ged);
         ged = StarStructure.calculateEditDistance(stars[14], starDB[14]);
-        System.out.printf("ged=%d%n", ged);
+        System.out.printf("ged=%d\n", ged);
         //assertEquals(4, ged);
     }
 

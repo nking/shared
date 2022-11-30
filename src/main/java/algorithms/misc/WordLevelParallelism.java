@@ -376,7 +376,7 @@ public class WordLevelParallelism {
 
         long comparison = diff & mask1;
 
-        //System.out.printf("tiled1=%30s%ntiled2=%30s%ndiff=%32s%ncomp=%32s%n", Long.toBinaryString(tiled1),
+        //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
         //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
         // 3 operations
@@ -467,7 +467,7 @@ public class WordLevelParallelism {
 
         long comparison = diff & mask1;
 
-        //System.out.printf("tiled1=%30s%ntiled2=%30s%ndiff=%32s%ncomp=%32s%n", Long.toBinaryString(tiled1),
+        //System.out.printf("tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n", Long.toBinaryString(tiled1),
         //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
         return parallelSum(comparison, nTiles, 7);
@@ -739,11 +739,11 @@ public class WordLevelParallelism {
         long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;
         int kShift   = 49;
 
-        /*System.out.printf("%nkMask=%n%63s%n" +
-                "kMult=%n%63s%n" +
-                "kShift=%d%n" +
-                "(tiled * kMult) & kMask=%n%63s%n" +
-                "(((tiled * kMult) & kMask) >> kShift)=%n%63s%n",
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
                 Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
                 Long.toBinaryString((tiled * kMult) & kMask),
                 Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
@@ -859,11 +859,11 @@ sketch overlaps here:
                                         kMask1      =         0b11111111000000000000000000000000000000000000000000000000;
         */
 
-        /*System.out.printf("%nkMask=%n%63s%n" +
-                "kMult=%n%63s%n" +
-                "kShift=%d%n" +
-                "(tiled * kMult) & kMask=%n%63s%n" +
-                "(((tiled * kMult) & kMask) >> kShift)=%n%63s%n",
+        /*System.out.printf("\nkMask=\n%63s\n" +
+                "kMult=\n%63s\n" +
+                "kShift=%d\n" +
+                "(tiled * kMult) & kMask=\n%63s\n" +
+                "(((tiled * kMult) & kMask) >> kShift)=\n%63s\n",
                 Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
                 Long.toBinaryString((tiled * kMult) & kMask),
                 Long.toBinaryString(((tiled * kMult) & kMask) >> kShift));*/
@@ -922,10 +922,10 @@ sketch overlaps here:
         shift tiled down by 6*6, leaving blocks 6:9.
         */
 
-        //System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
         // shift down by the 6 blocks we just sketched:
         tiled >>= 36;
-        //System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 6 at the end to merge the 2 sketches:
         kShift -= 6;
@@ -939,13 +939,13 @@ sketch overlaps here:
         //r = a ^ ((a ^ b) & mask); bin(r)
         //0b10111110'
 
-        //System.out.printf("nTiles=%d, blockSize=6%n", nTiles);
-        //System.out.printf("sketch=%63s%n", Long.toBinaryString(sketch));
-        //System.out.printf("sketch=%63s%n", Long.toBinaryString(sketch2));
+        //System.out.printf("nTiles=%d, blockSize=6\n", nTiles);
+        //System.out.printf("sketch=%63s\n", Long.toBinaryString(sketch));
+        //System.out.printf("sketch=%63s\n", Long.toBinaryString(sketch2));
 
         sketch = sketch ^ ((sketch ^ sketch2) & 0b111111000000L);
 
-        //System.out.printf("merged=%63s%n", Long.toBinaryString(sketch));
+        //System.out.printf("merged=%63s\n", Long.toBinaryString(sketch));
 
         return sketch;
 
@@ -1028,10 +1028,10 @@ sketch overlaps here:
 
         // sketch 5 tiles at a time, and merge after each
 
-        //System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
         // shift down by the 5 blocks we just sketched:
         tiled >>= 25;
-        //System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 5 at the end to merge the 2 sketches:
         kShift -= 5;
@@ -1148,10 +1148,10 @@ sketch overlaps here:
 
         // 15 tiles, each sketch is 4 tiles, would mean 4 sketches
 
-        //System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
         // shift down by the 4 blocks we just sketched:
         tiled >>= 16;
-        //System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+        //System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 4 at the end to merge the 2 sketches:
         kShift -= 4;

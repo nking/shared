@@ -153,7 +153,7 @@ public class Misc {
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
         int[] origIndexes = sort2(f, s, v);
-        //System.out.printf("sorted indexes=%s%n", Arrays.toString(origIndexes));
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
         
         // p[i] is the largest index such that f[p(i)] < s[i]
         //     p[i] is < i
@@ -180,19 +180,19 @@ public class Misc {
                 memo[j + 1] = takeWeight;               // better to take j
                 pred[j+1] = p[j];                  // previous is p[j]
             }
-           // System.out.printf("  M[j+1]=%.2f%n", memo[j+1]);
+           // System.out.printf("  M[j+1]=%.2f\n", memo[j+1]);
         }
          
-        //System.out.printf("memo=%s%n", FormatArray.toString(memo, "%.3f"));
-        //System.out.printf("   p=%s%n", Arrays.toString(p));
-        //System.out.printf("pred=%s%n", Arrays.toString(pred));
+        //System.out.printf("memo=%s\n", FormatArray.toString(memo, "%.3f"));
+        //System.out.printf("   p=%s\n", Arrays.toString(p));
+        //System.out.printf("pred=%s\n", Arrays.toString(pred));
         
         int[] sched = new int[j];
         int count = 0;
         j = pred.length-1;
         while (j > 0) {
             if (pred[j] == p[j-1]) {
-                //System.out.printf("  sched[%d]=%d%n", j-1, origIndexes[j-1]);
+                //System.out.printf("  sched[%d]=%d\n", j-1, origIndexes[j-1]);
                 sched[count++] = origIndexes[j - 1];
             }
             j = pred[j];
@@ -307,7 +307,7 @@ public class Misc {
         // ascending order sort by f
         // runtime complexity is O(log_2(n))
         int[] origIndexes = sort2(f, s, v);
-        //System.out.printf("sorted indexes=%s%n", Arrays.toString(origIndexes));
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
         
         double[] memo = new double[n];
         TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
@@ -369,10 +369,10 @@ public class Misc {
         int[] p = new int[f.length+1];
         for (i = s.length - 1; i > -1; i--) {
             for (j = i - 1; j > -1; j--) {
-                //System.out.printf("calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f%n", i,j, j, f[j], i, s[i]);
+                //System.out.printf("calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
                 if (f[j] <= s[i]) {
                     p[i] = j+1;
-                    //System.out.printf("   p[%d]=%d%n", i, p[i]);
+                    //System.out.printf("   p[%d]=%d\n", i, p[i]);
                     break;
                 }
             }
@@ -456,7 +456,7 @@ public class Misc {
         for (i = 0; i < indexes2.length; ++i) {
             // transform indexes back to original array indexes
             scheduled[i] = i2[indexes2[i]];
-            //System.out.printf("  a%d (%d, %d)%n", 
+            //System.out.printf("  a%d (%d, %d)\n", 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
             allI.remove(scheduled[i]);
         }
@@ -464,7 +464,7 @@ public class Misc {
         TIntIterator iter = allI.iterator();
         while (iter.hasNext()) {
             scheduled[i] = iter.next();
-            //System.out.printf("  a%d (%d, %d)%n", 
+            //System.out.printf("  a%d (%d, %d)\n", 
             //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
             i++;
         }
@@ -494,7 +494,7 @@ public class Misc {
         System.out.println("sorted by decr penalty:");
         for(i = 0; i < penalties.length; ++i) {
             oIdx = origIndexes[i];
-            System.out.printf("a%d deadline=%d penalty=%d%n", oIdx+1, deadlines[i], penalties[i]);
+            System.out.printf("a%d deadline=%d penalty=%d\n", oIdx+1, deadlines[i], penalties[i]);
         }
         */
        
@@ -762,9 +762,9 @@ public class Misc {
                 //if ([s[j],f[j]] overlaps [s[i],f[i]]) 
                 if (s2[i] < f2[j]) {
                     excl.add(c[j]);
-                    /*System.out.printf("conflict for i2=%d, j2=%d (s2[%d]<f2[%d])=(%.1f, %.2f)%n",
+                    /*System.out.printf("conflict for i2=%d, j2=%d (s2[%d]<f2[%d])=(%.1f, %.2f)\n",
                         i, j, i, j, s2[i], f2[i]);
-                    System.out.printf("==> i=%d, j=%d (s2[%d]<f2[%d])=(%.1f, %.2f)%n",
+                    System.out.printf("==> i=%d, j=%d (s2[%d]<f2[%d])=(%.1f, %.2f)\n",
                         indexes[i], indexes[j], indexes[i], indexes[j], 
                         s[indexes[i]], f[indexes[i]]);
                     */

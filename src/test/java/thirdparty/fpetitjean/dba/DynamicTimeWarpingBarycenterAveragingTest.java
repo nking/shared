@@ -38,7 +38,7 @@ public class DynamicTimeWarpingBarycenterAveragingTest extends TestCase {
                 sequences[i][j] = Math.cos(r.nextDouble() * j / 20.0 * Math.PI);
             }
         }
-        System.out.printf("sequence[=%s%n", FormatArray.toString(sequences, "%.3f"));
+        System.out.printf("sequence[=%s\n", FormatArray.toString(sequences, "%.3f"));
 
         double[] averageSequence = DynamicTimeWarpingBarycenterAveraging.performDBA(sequences, 10);
 

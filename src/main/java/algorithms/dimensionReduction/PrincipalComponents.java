@@ -241,14 +241,14 @@ public class PrincipalComponents {
             for (int j = 0; j < u.numColumns(); ++j) {
                 System.out.printf("%12.5e  ", u.get(i, j));
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         System.out.println("V_p of SVD(cov) = ");
         for (int i = 0; i < v.length; ++i) {
             for (int j = 0; j < v[i].length; ++j) {
                 System.out.printf("%12.5e  ", v[i][j]);
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         
         System.out.println("eigenvalue fractions of total = ");
@@ -267,14 +267,14 @@ public class PrincipalComponents {
             for (int j = 0; j < stats.principalDirections[i].length; ++j) {
                 System.out.printf("%12.5e  ", stats.principalDirections[i][j]);
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         System.out.println("principal projections (=u_p*s)=");
         for (int i = 0; i < projections.length; ++i) {
             for (int j = 0; j < projections[i].length; ++j) {
                 System.out.printf("%11.3e  ", projections[i][j]);
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         
         System.out.flush();

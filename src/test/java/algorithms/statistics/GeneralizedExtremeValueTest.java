@@ -186,8 +186,8 @@ public class GeneralizedExtremeValueTest extends TestCase {
                     "loc=" + expectedParams[0] + ", scale=" + expectedParams[1] +
                     " shape=" + expectedParams[2]);
 
-            System.out.printf("given params=%s%n", FormatArray.toString(expectedParams, "%.3e"));
-            System.out.printf("estimated params=%s%n", FormatArray.toString(params, "%.3e"));
+            System.out.printf("given params=%s\n", FormatArray.toString(expectedParams, "%.3e"));
+            System.out.printf("estimated params=%s\n", FormatArray.toString(params, "%.3e"));
         }
         String filePath = plotter.writeFile("gev_3_tests");
     }

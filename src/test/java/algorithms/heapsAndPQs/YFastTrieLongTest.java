@@ -51,7 +51,7 @@ public class YFastTrieLongTest extends TestCase {
                 rt = Math.log(w)/Math.log(2);
                 
                 System.out.format(
-                    "width=%4d, height=%4d n=%10d mem=%10d:%10d  w=%2d  rt=%3d%n",
+                    "width=%4d, height=%4d n=%10d mem=%10d:%10d  w=%2d  rt=%3d\n",
                     x[lenIdx], y[lenIdx], n, est[1]/MB, est[0]/MB,
                     w, (int)Math.round(rt));
             
@@ -62,7 +62,7 @@ public class YFastTrieLongTest extends TestCase {
                 rt = Math.log(w)/Math.log(2);
                 
                 System.out.format(
-                    "width=%4d, height=%4d n=%10d mem=%10d:%10d  w=%2d  rt=%3d%n",
+                    "width=%4d, height=%4d n=%10d mem=%10d:%10d  w=%2d  rt=%3d\n",
                     x[lenIdx], y[lenIdx], n, est[1]/MB, est[0]/MB,
                     w, (int)Math.round(rt));
             }
@@ -132,7 +132,7 @@ public class YFastTrieLongTest extends TestCase {
                 assertTrue(foundIndex > -1);
 
                 long expected = nodes.get(i + 1);
-                //System.out.println("%n* " + idx + " expected next=" + expected);
+                //System.out.println("\n* " + idx + " expected next=" + expected);
 
                 long next = bt.successor(idx);
                 assertTrue(next != -1);
@@ -149,7 +149,7 @@ public class YFastTrieLongTest extends TestCase {
                 assertEquals(idx, foundIndex);
                 
                 long expected = nodes.get(i - 1);
-                //System.out.println("%n* " + idx + " expected prev=" + expected);
+                //System.out.println("\n* " + idx + " expected prev=" + expected);
 
                 long prev = bt.predecessor(idx);
                 assertTrue(prev != -1);

@@ -110,8 +110,8 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         //cr0=12 n=4
         double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);
         double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);
-        System.out.printf("cr0=%d n=%d%n", cr0, dist.length);
-        System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f%n",
+        System.out.printf("cr0=%d n=%d\n", cr0, dist.length);
+        System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n",
             totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
     long cr0;
@@ -204,8 +204,8 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         // if dynamic: O(n^2 * 2^n) 
         double dyn = Math.pow(2, dist.length) + Math.pow(dist.length, 2);
         double dyn1 = Math.pow(2, dist.length-1) + Math.pow(dist.length-1, 2);
-        System.out.printf("c0=%d c1=%d c2=%d n=%d%n", c0, c1, c2, dist.length);
-        System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f%n",
+        System.out.printf("c0=%d c1=%d c2=%d n=%d\n", c0, c1, c2, dist.length);
+        System.out.printf("    totalNPerm=%d totalNSubSet=%d totalNSubSeq=%d  dyn=%.1f dyn1=%.1f\n",
             totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
        
@@ -219,7 +219,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
         /*
         TIntList p = new TIntArrayList();
         readPathIntoBase10(bitstring, p);
-        System.out.printf("bs=%s (%s) sum=%.2f nR=%d%n",
+        System.out.printf("bs=%s (%s) sum=%.2f nR=%d\n",
             Long.toBinaryString(bitstring),
             Arrays.toString(p.toArray()), sum, nNodesRemaining);
         */

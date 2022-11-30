@@ -107,14 +107,14 @@ public class NumberTheoryTest extends TestCase {
             euclid1 = NumberTheory.euclid(z0, n);
             dxy = NumberTheory.extendedEuclid(a, n);
             axny = a*dxy[1] + n*dxy[2];
-            System.out.printf("a=%d, z=%d, gcd=(%d,%d) (gcd, x, y) = (%s) a*x+n*y=%d%n", 
+            System.out.printf("a=%d, z=%d, gcd=(%d,%d) (gcd, x, y) = (%s) a*x+n*y=%d\n", 
                 a, z0, euclid, euclid1, 
                 Arrays.toString(dxy), axny);
         }
         
-        System.out.printf("ee(%d,%d)=%s%n",
+        System.out.printf("ee(%d,%d)=%s\n",
             2,5, Arrays.toString(NumberTheory.extendedEuclid(2, 5)));
-        System.out.printf("ee(%d,%d)=%s%n",
+        System.out.printf("ee(%d,%d)=%s\n",
             3,13, Arrays.toString(NumberTheory.extendedEuclid(3, 13)));
     }
     
@@ -162,7 +162,7 @@ public class NumberTheoryTest extends TestCase {
         int phi = (p-1)*(q-1);//p*q*(p-1)*(q-1); 280
         long e = 3;
         long d = NumberTheory.euclid(e, phi);
-        System.out.printf("phi=%d, e=%d gcd=%d%n", phi, e, d);
+        System.out.printf("phi=%d, e=%d gcd=%d\n", phi, e, d);
         assertEquals(1, d);
         
         // ** step 3 in RSA **
@@ -179,14 +179,14 @@ public class NumberTheoryTest extends TestCase {
         
             //solves for x in the equation a * x ≡ b (mod n) as 'e'
             x = NumberTheory.gcdModularLinearEqnSolver(a, b, phi);
-            System.out.printf("phi=%d, a=%d, b=%d, x=%s%n",
+            System.out.printf("phi=%d, a=%d, b=%d, x=%s\n",
                 phi, a, b, Arrays.toString(x));
             
             if (x.length == 1 && x[0] > 1) {
                 // calculate the multiplicative inverse of e, modulo phi(n)                
 
                 long[] dxy = NumberTheory.extendedEuclid(e, phi);
-                System.out.printf("extEuc(e,phi) dXY=%s%n", Arrays.toString(dxy));
+                System.out.printf("extEuc(e,phi) dXY=%s\n", Arrays.toString(dxy));
                 assertEquals(1, dxy[0]);
                 // finds [1,-93,1] so x=-93
                 //        noticing -93 is equal to -(phi/e)
@@ -203,8 +203,8 @@ public class NumberTheoryTest extends TestCase {
         
         // public pair = (e, n)
         // private pair = (eMultInv, n)
-        System.out.printf("public pair=(%d,%d)%n", e, n);
-        System.out.printf("private pair=(%d,%d)%n", eMultInv, n);
+        System.out.printf("public pair=(%d,%d)\n", e, n);
+        System.out.printf("private pair=(%d,%d)\n", eMultInv, n);
         
         int m = 100;
         
@@ -216,11 +216,11 @@ public class NumberTheoryTest extends TestCase {
         // //(M^e mod n)^d mod n = M
         // this is incorrect due to overflow.  need to use big integer
         //long mDecryp = Math.floorMod((long)Math.pow(mPublicEncryp, eMultInv), n); //40
-        //System.out.printf("m=%d, P(m)=%d, S(P(m))=%d%n", m, mPublicEncryp, mDecryp);
+        //System.out.printf("m=%d, P(m)=%d, S(P(m))=%d\n", m, mPublicEncryp, mDecryp);
         BigInteger c = new BigInteger(Integer.toString((int)mPublicEncryp));
         BigInteger cPowD = c.pow((int)eMultInv);
         BigInteger mDecryp2 = cPowD.mod(new BigInteger(Integer.toString(n)));
-        System.out.printf("biginteger: m=%d, P(m)=%s, S(P(m))=%s%n", m, c.toString(), 
+        System.out.printf("biginteger: m=%d, P(m)=%s, S(P(m))=%s\n", m, c.toString(), 
             mDecryp2.toString());
         assertEquals(Integer.toString(m), mDecryp2.toString());
     }

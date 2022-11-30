@@ -25,7 +25,7 @@ public class BayesianCurveFittingTest extends TestCase {
 
     public void testSampleFromSine() throws NotConvergedException, NoSuchAlgorithmException {
 
-        log.log(java.util.logging.Level.INFO, String.format("%ntestSampleFromSine"));
+        log.log(java.util.logging.Level.INFO, String.format("\ntestSampleFromSine"));
 
         // unit test made from Fig 1.17 of Bishop's PRML
         /*
@@ -146,9 +146,9 @@ public class BayesianCurveFittingTest extends TestCase {
 
         double[][] _cov = BruteForce.covariance(a);
         log.log(java.util.logging.Level.INFO, String.format(
-                "_cov=%n%s", FormatArray.toString(_cov, "%.1f")));
+                "_cov=\n%s", FormatArray.toString(_cov, "%.1f")));
         log.log(java.util.logging.Level.INFO, String.format(
-                "cov=%n%s", FormatArray.toString(cov, "%.1f")));
+                "cov=\n%s", FormatArray.toString(cov, "%.1f")));
 
         // compare Bayesian result to:
         //double[] x = MultivariateNormalDistribution.sampleFrom0(m, cov);

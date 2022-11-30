@@ -63,7 +63,7 @@ public class Dendogram {
         
         while (nC < nV) {
             
-            System.out.printf("nComponents=%d (nV=%d)%n", nC, nV);
+            System.out.printf("nComponents=%d (nV=%d)\n", nC, nV);
             System.out.flush();
 
             Results r = b.girvanNewmanDAG(g, src);
@@ -73,7 +73,7 @@ public class Dendogram {
             if (max == null) {
                 break;
             }
-            System.out.printf("max edge = (%d, %d)%n", max.getX(), max.getY());
+            System.out.printf("max edge = (%d, %d)\n", max.getX(), max.getY());
             
             g[max.getX()].delete(max.getY());
 

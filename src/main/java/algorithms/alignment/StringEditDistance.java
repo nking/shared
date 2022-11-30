@@ -156,7 +156,7 @@ public class StringEditDistance {
                 j--;
             }
         }
-        //System.out.printf("m=%d, n=%d, d=%n%s%n", m, n, FormatArray.toString(d, "%d"));
+        //System.out.printf("m=%d, n=%d, d=\n%s\n", m, n, FormatArray.toString(d, "%d"));
         return d[m][n];
     }
     
@@ -292,7 +292,7 @@ public class StringEditDistance {
                     }
                 }
             }
-            //System.out.printf("%n, ");
+            //System.out.printf("\n, ");
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
             for (i = 1; i <= m; ++i) {
@@ -381,7 +381,7 @@ public class StringEditDistance {
                 }
                 dN[i][1] = maximum(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);
             }
-            //System.out.printf("%n, ");
+            //System.out.printf("\n, ");
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
             for (i = 1; i <= m; ++i) {

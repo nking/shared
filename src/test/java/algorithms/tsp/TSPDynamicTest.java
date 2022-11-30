@@ -230,7 +230,7 @@ public class TSPDynamicTest extends TestCase {
         tsp.solve();
         double cost = tsp.getMinCost();
         
-        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -277,7 +277,7 @@ public class TSPDynamicTest extends TestCase {
         tsp.solve();
         double cost = tsp.getMinCost();
         
-        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -309,7 +309,7 @@ public class TSPDynamicTest extends TestCase {
         tsp.solve();
         double cost = tsp.getMinCost();
         
-        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         
@@ -326,23 +326,23 @@ public class TSPDynamicTest extends TestCase {
         BigInteger c;
         
         c = TSPDynamic.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
         n=14;
         c = TSPDynamic.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
         n=29;
         c = TSPDynamic.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
         n=49;
         c = TSPDynamic.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
         n=731;
         c = TSPDynamic.count2(n);
-        System.out.printf("** dynamic: n=%d c=%s%n", n, c.toString());
+        System.out.printf("** dynamic: n=%d c=%s\n", n, c.toString());
         
     }
 
@@ -420,7 +420,7 @@ public class TSPDynamicTest extends TestCase {
         tsp.solve();
         double cost = tsp.getMinCost();
 
-        System.out.printf("n=%d) minCost=%.2f, expected=%.2f%n", n2, cost, expectedCost);
+        System.out.printf("n=%d) minCost=%.2f, expected=%.2f\n", n2, cost, expectedCost);
 
         TIntList path0 = tsp.getMinPath(0);
         System.out.println(path0.toString());
@@ -443,7 +443,7 @@ public class TSPDynamicTest extends TestCase {
         tsp.solve();
         double cost = tsp.getMinCost();
         
-        System.out.printf("minCost=%.2f, expected=%.2f%n", cost, expectedCost);
+        System.out.printf("minCost=%.2f, expected=%.2f\n", cost, expectedCost);
                 
         TIntList path0 = tsp.getMinPath(0);
         
@@ -635,7 +635,7 @@ public class TSPDynamicTest extends TestCase {
                     items = Arrays.copyOfRange(items, 1, 
                         items.length);
                 }
-                System.out.printf("->%d%n", items.length);
+                System.out.printf("->%d\n", items.length);
                 
                 for (int j = 0; j < items.length; ++j) {
                     Integer c = Integer.parseInt(items[j].trim());

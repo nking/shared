@@ -84,15 +84,15 @@ public class BruteForce {
             }
         }
         
-        /*System.out.printf("bf stand. means=%s%n", Arrays.toString(mean));
+        /*System.out.printf("bf stand. means=%s\n", Arrays.toString(mean));
         
         System.out.flush();
-        System.out.printf("bf stand. diffs=%n");
+        System.out.printf("bf stand. diffs=\n");
         for ( i = 0; i < diffs.length; ++i) {
             for ( j = 0; j < diffs[i].length; ++j) {
                 System.out.printf("%11.3e  ", diffs[i][j]);
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         System.out.flush();
         */
@@ -119,12 +119,12 @@ public class BruteForce {
             }
         }
         
-        /*System.out.printf("bf stand. cov=%n");
+        /*System.out.printf("bf stand. cov=\n");
         for ( i = 0; i < cov.length; ++i) {
             for ( j = 0; j < cov[i].length; ++j) {
                 System.out.printf("%11.3e  ", cov[i][j]);
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         System.out.flush();*/
         
@@ -157,12 +157,12 @@ public class BruteForce {
         MatrixUtil.multiply(cov, invN2);
 
         /*
-        System.out.printf("bf cov=%n");
+        System.out.printf("bf cov=\n");
         for ( i = 0; i < cov.length; ++i) {
             for ( j = 0; j < cov[i].length; ++j) {
                 System.out.printf("%11.3e  ", cov[i][j]);
             }
-            System.out.printf("%n");
+            System.out.printf("\n");
         }
         System.out.flush();
         */

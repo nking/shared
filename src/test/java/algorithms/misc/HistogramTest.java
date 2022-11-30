@@ -812,20 +812,20 @@ public class HistogramTest extends TestCase {
         int nBins1 = 14;
 
         double[][] hist0 = Histogram.createHistogram(data, nBins0);
-        //System.out.printf("bw0=%.4e%n", hist0[0][1] - hist0[0][0]);
+        //System.out.printf("bw0=%.4e\n", hist0[0][1] - hist0[0][0]);
 
         double[][] hist1 = Histogram.createHistogram(data, nBins1);
-        //System.out.printf("bw1=%.4e%n", hist1[0][1] - hist1[0][0]);
+        //System.out.printf("bw1=%.4e\n", hist1[0][1] - hist1[0][0]);
 
         double[] minMax = MiscMath0.getMinMax(data);
         double[][] hist2 = Histogram.createHistogram(data, nBins0, minMax[0] + binSize0/2., minMax[1] + binSize0/2.);
-        //System.out.printf("bw2=%.4e%n", hist2[0][1] - hist2[0][0]);
+        //System.out.printf("bw2=%.4e\n", hist2[0][1] - hist2[0][0]);
 
         double s0 = Histogram.crossValidationRiskEstimator(n, hist0[0][1] - hist0[0][0], hist0[1]);
         double s1 = Histogram.crossValidationRiskEstimator(n, hist1[0][1] - hist1[0][0], hist1[1]);
         double s2 = Histogram.crossValidationRiskEstimator(n, hist2[0][1] - hist2[0][0], hist2[1]);
 
-        //System.out.printf("scores=%.4e, %.4e, %.4e%n", s0, s1, s2);
+        //System.out.printf("scores=%.4e, %.4e, %.4e\n", s0, s1, s2);
 
         assertTrue(s0 < s1);
         assertTrue(s0 < s2);

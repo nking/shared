@@ -112,12 +112,12 @@ public class WordLevelParallelismTest extends TestCase {
                     hb = WordLevelParallelism.highestBitSetIn(value, b);
 
                     if (mb != hb) {
-                        System.out.printf("b=%d, kBits=%d%n", b, kBits);
-                        System.out.printf("value=%63s%n", Long.toBinaryString(value));
-                        //System.out.printf("selected=%s%n", Arrays.toString(selectedIndexes));
+                        System.out.printf("b=%d, kBits=%d\n", b, kBits);
+                        System.out.printf("value=%63s\n", Long.toBinaryString(value));
+                        //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
                         hb = WordLevelParallelism.highestBitSetIn(value, b);
-                        System.out.printf("  hb=%d%n", hb);
-                        System.out.printf("e hb=%d%n", mb);
+                        System.out.printf("  hb=%d\n", hb);
+                        System.out.printf("e hb=%d\n", mb);
                     }
                     assertEquals(mb, hb);
                 }
@@ -170,11 +170,11 @@ public class WordLevelParallelismTest extends TestCase {
             u = WordLevelParallelism.usedBlocksIn(tiled, b);
             hb = WordLevelParallelism.highestBlockSetIn(tiled, nb, b-1);
             if (expectedU != u) {
-                System.out.printf("(2) b=%d, nb=%d%n", b, nb);
-                System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
+                System.out.printf("(2) b=%d, nb=%d\n", b, nb);
+                System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
                 u = WordLevelParallelism.usedBlocksIn(tiled, b);
-                System.out.printf("    u=%63s%n", Long.toBinaryString(u));
-                System.out.printf("e   u=%8s%n", Long.toBinaryString(expectedU));
+                System.out.printf("    u=%63s\n", Long.toBinaryString(u));
+                System.out.printf("e   u=%8s\n", Long.toBinaryString(expectedU));
             }
             assertEquals(expectedU, u);
             assertEquals(nb-1, hb);
@@ -204,12 +204,12 @@ public class WordLevelParallelismTest extends TestCase {
                 u = WordLevelParallelism.usedBlocksIn(tiled, b);
                 hb = WordLevelParallelism.highestBlockSetIn(tiled, nb, b-1);
                 if (expectedU != u) {
-                    System.out.printf("(3)b=%d, nb=%d%n", b, nb);
-                    System.out.printf("tiled=%63s%n", Long.toBinaryString(tiled));
-                    //System.out.printf("selected=%s%n", Arrays.toString(selectedIndexes));
+                    System.out.printf("(3)b=%d, nb=%d\n", b, nb);
+                    System.out.printf("tiled=%63s\n", Long.toBinaryString(tiled));
+                    //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
                     u = WordLevelParallelism.usedBlocksIn(tiled, b);
-                    System.out.printf("    u=%8s%n", Long.toBinaryString(u));
-                    System.out.printf("e   u=%8s%n", Long.toBinaryString(expectedU));
+                    System.out.printf("    u=%8s\n", Long.toBinaryString(u));
+                    System.out.printf("e   u=%8s\n", Long.toBinaryString(expectedU));
                 }
                 assertEquals(expectedU, u);
                 assertEquals(expectedHB, hb);
@@ -241,12 +241,12 @@ public class WordLevelParallelismTest extends TestCase {
 
             // test all combinations of the blocks' flag bits for  [0, nb-1] inclusive
             for (int k = 0; k < nb; ++k) {
-                //System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
                 comp = 0L;
                 if (k == 0) {
                     sketch = WordLevelParallelism.sketch(comp, nb, b-1);
-                    //System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                    //System.out.printf("sketch=%8s%n", Long.toBinaryString(sketch));
+                    //System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
                     assertEquals(0b0, sketch);
                     continue;
                 }
@@ -271,12 +271,12 @@ public class WordLevelParallelismTest extends TestCase {
                     sketch = WordLevelParallelism.sketch(comp, nb, b-1);
 
                     if (expectedSketch != sketch) {
-                        System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
-                        System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                        System.out.printf("selected=%s%n", Arrays.toString(selectedIndexes));
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                        System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
                         sketch = WordLevelParallelism.sketch(comp, nb, b-1);
-                        System.out.printf("  sketch=%8s%n", Long.toBinaryString(sketch));
-                        System.out.printf("e sketch=%8s%n", Long.toBinaryString(expectedSketch));
+                        System.out.printf("  sketch=%8s\n", Long.toBinaryString(sketch));
+                        System.out.printf("e sketch=%8s\n", Long.toBinaryString(expectedSketch));
                     }
                     assertEquals(expectedSketch, sketch);
                 }
@@ -289,12 +289,12 @@ public class WordLevelParallelismTest extends TestCase {
             nb = (int) Math.floor(63. / b);
             // test random combinations of the blocks' flag bits for  [0, nb-1] inclusive
             for (int k = 0; k < nb; ++k) {
-                //System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
                 comp = 0L;
                 if (k == 0) {
                     sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
-                    //System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                    //System.out.printf("sketch=%8s%n", Long.toBinaryString(sketch));
+                    //System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
                     assertEquals(0b0, sketch);
                     continue;
                 }
@@ -313,12 +313,12 @@ public class WordLevelParallelismTest extends TestCase {
                     sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
 
                     if (expectedSketch != sketch) {
-                        System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
-                        System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                        //System.out.printf("selected=%s%n", Arrays.toString(selectedIndexes));
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                        //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
                         sketch = WordLevelParallelism.sketch(comp, nb, b - 1);
-                        System.out.printf("  sketch=%8s%n", Long.toBinaryString(sketch));
-                        System.out.printf("e sketch=%8s%n", Long.toBinaryString(expectedSketch));
+                        System.out.printf("  sketch=%8s\n", Long.toBinaryString(sketch));
+                        System.out.printf("e sketch=%8s\n", Long.toBinaryString(expectedSketch));
                     }
                     assertEquals(expectedSketch, sketch);
                 }
@@ -348,12 +348,12 @@ public class WordLevelParallelismTest extends TestCase {
 
             // test all combinations of the blocks' flag bits for  [0, nb-1] inclusive
             for (int k = 0; k < nb; ++k) {
-                //System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
                 comp = 0L;
                 if (k == 0) {
                     sum = WordLevelParallelism.parallelSum(comp, nb, b-1);
-                    //System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                    //System.out.printf("sketch=%8s%n", Long.toBinaryString(sketch));
+                    //System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
                     assertEquals(0L, sum);
                     continue;
                 }
@@ -375,11 +375,11 @@ public class WordLevelParallelismTest extends TestCase {
                     sum = WordLevelParallelism.parallelSum(comp, nb, b-1);
 
                     if (expectedSum != sum) {
-                        System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
-                        System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                        System.out.printf("selected=%s%n", Arrays.toString(selectedIndexes));
-                        System.out.printf("  sum=%d%n", sum);
-                        System.out.printf("e sum=%d%n", expectedSum);
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                        System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                        System.out.printf("  sum=%d\n", sum);
+                        System.out.printf("e sum=%d\n", expectedSum);
                     }
                     assertEquals(expectedSum, sum);
                 }
@@ -393,12 +393,12 @@ public class WordLevelParallelismTest extends TestCase {
             nb = (int) Math.floor(63. / b);
             // test random combinations of the blocks' flag bits for  [0, nb-1] inclusive
             for (int k = 0; k < nb; ++k) {
-                //System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
+                //System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
                 comp = 0L;
                 if (k == 0) {
                     sum = WordLevelParallelism.parallelSum(comp, nb, b - 1);
-                    //System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                    //System.out.printf("sketch=%8s%n", Long.toBinaryString(sketch));
+                    //System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                    //System.out.printf("sketch=%8s\n", Long.toBinaryString(sketch));
                     assertEquals(0L, sum);
                     continue;
                 }
@@ -418,11 +418,11 @@ public class WordLevelParallelismTest extends TestCase {
                     sum = WordLevelParallelism.parallelSum(comp, nb, b - 1);
 
                     if (expectedSum != sum) {
-                        System.out.printf("b=%d, nb=%d, k=%d%n", b, nb, k);
-                        System.out.printf("comp=%63s%n", Long.toBinaryString(comp));
-                        //System.out.printf("selected=%s%n", Arrays.toString(selectedIndexes));
-                        System.out.printf("  sum=%d%n", sum);
-                        System.out.printf("e sum=%d%n", expectedSum);
+                        System.out.printf("b=%d, nb=%d, k=%d\n", b, nb, k);
+                        System.out.printf("comp=%63s\n", Long.toBinaryString(comp));
+                        //System.out.printf("selected=%s\n", Arrays.toString(selectedIndexes));
+                        System.out.printf("  sum=%d\n", sum);
+                        System.out.printf("e sum=%d\n", expectedSum);
                     }
                     assertEquals(expectedSum, sum);
                 }

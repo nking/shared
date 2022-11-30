@@ -79,7 +79,7 @@ public class GeometricMedianTest extends TestCase {
                         break;
                 }
 
-                System.out.printf("%ntype=%d, ii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)%n",
+                System.out.printf("\ntype=%d, ii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)\n",
                     type, ii, init[0], init[1], 
                     standardizedExpected[0], standardizedExpected[1]);
 
@@ -91,7 +91,7 @@ public class GeometricMedianTest extends TestCase {
                         (GeometricMedianWeightedFunction)f, init);
                 }
 
-                System.out.printf("in standardized units: min=%.4e %n   coeffs=%s%n   expectedMin==%.4e%n",
+                System.out.printf("in standardized units: min=%.4e \n   coeffs=%s\n   expectedMin==%.4e\n",
                     min, Arrays.toString(init), expectedDistStandardized);
                 System.out.flush();
 
@@ -102,7 +102,7 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.printf("in data units: min=%.4e   coeffs=%s%n   expected=%.4e,   %s%n", 
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n   expected=%.4e,   %s\n", 
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
@@ -179,7 +179,7 @@ public class GeometricMedianTest extends TestCase {
                         break;
                 }
 
-                System.out.printf("%ntype=%d, ii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)%n",
+                System.out.printf("\ntype=%d, ii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)\n",
                     type, ii, init[0], init[1], 
                     standardizedExpected[0], standardizedExpected[1]);
 
@@ -191,7 +191,7 @@ public class GeometricMedianTest extends TestCase {
                         (GeometricMedianWeightedFunction)f, init);
                 }
 
-                System.out.printf("in standardized units: min=%.4e %n   coeffs=%s%n   expectedMin==%.4e%n",
+                System.out.printf("in standardized units: min=%.4e \n   coeffs=%s\n   expectedMin==%.4e\n",
                     min, Arrays.toString(init), expectedDistStandardized);
                 System.out.flush();
 
@@ -202,7 +202,7 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.printf("in data units: min=%.4e   coeffs=%s%n  expected=%.4e,   %s%n", 
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s\n", 
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
@@ -300,7 +300,7 @@ public class GeometricMedianTest extends TestCase {
                         break;
                 }
 
-                System.out.printf("%n%d) begin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)%n",
+                System.out.printf("\n%d) begin w/ init=(%.3f, %.3f); true=(%.3f, %.3f)\n",
                     type, init[0], init[1], 
                     standardizedExpected[0], standardizedExpected[1]);
                     //expected[0], expected[1]);
@@ -313,7 +313,7 @@ public class GeometricMedianTest extends TestCase {
                         (GeometricMedianWeightedFunction)f, init);
                 }
 
-                System.out.println("in standardized units: min=" + min + " %n   coeffs=" +
+                System.out.println("in standardized units: min=" + min + " \n   coeffs=" +
                     Arrays.toString(init));
                 System.out.flush();
 
@@ -327,7 +327,7 @@ public class GeometricMedianTest extends TestCase {
 
                 min = f0.f(init);
 
-                System.out.printf("in data units: min=%.4e   coeffs=%s%n  expected=%.4e,   %s", 
+                System.out.printf("in data units: min=%.4e   coeffs=%s\n  expected=%.4e,   %s", 
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
                 System.out.flush();
@@ -426,14 +426,14 @@ public class GeometricMedianTest extends TestCase {
                     break;
             }
 
-            System.out.printf("%nii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)%n",
+            System.out.printf("\nii=%d) begin w/ init=(%.3f, %.3f); standardizedExpected=(%.3f, %.3f)\n",
                     ii, init[0], init[1],
                     standardizedExpected[0], standardizedExpected[1]);
             //expected[0], expected[1]);
 
             double min = gm.newtonsThenVardiZhang(f, init);
 
-            System.out.printf("in standardized units: min=%.4e %n   coeffs=%s%n   expectedMin==%.4e%n",
+            System.out.printf("in standardized units: min=%.4e \n   coeffs=%s\n   expectedMin==%.4e\n",
                 min, Arrays.toString(init), expectedDistStandardized);
             System.out.flush();
                 
@@ -447,7 +447,7 @@ public class GeometricMedianTest extends TestCase {
             
             min = f0.f(init);
 
-            System.out.printf("in data units: min=%.5e   coeffs=%s  expected=%.5e,   %s%n",
+            System.out.printf("in data units: min=%.5e   coeffs=%s  expected=%.5e,   %s\n",
                     min, Arrays.toString(init), expectedDist,
                     AbstractGeometricMedianFunction.toString(expected));
             System.out.flush();
@@ -456,7 +456,7 @@ public class GeometricMedianTest extends TestCase {
 
             /*for (int i = 0; i < init.length; ++i) {
                 double diff = Math.abs(init[i] - expected[i]);
-                System.out.printf("diff=%.4e%n", diff);
+                System.out.printf("diff=%.4e\n", diff);
                 assertTrue(diff <= tol);
             }*/
         }

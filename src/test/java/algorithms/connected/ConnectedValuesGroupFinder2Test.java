@@ -63,7 +63,7 @@ public class ConnectedValuesGroupFinder2Test extends TestCase {
             chosen.add(p);
             int x = xc*bSz;
             int y = yc*bSz;
-            //System.out.format("%d:%d  %d:%d%n", x, x+bSz, y, y+bSz);
+            //System.out.format("%d:%d  %d:%d\n", x, x+bSz, y, y+bSz);
             draw(data, x, y, bSz, v);
             count++;
             v *= 2;

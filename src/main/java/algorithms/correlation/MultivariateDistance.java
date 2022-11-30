@@ -210,7 +210,7 @@ public class MultivariateDistance {
             
             // t2 should have cov ~ 0
             // if dependent, t > 0
-            System.out.printf("   t=%.4e, t2=%.4e%n", t, t2);
+            System.out.printf("   t=%.4e, t2=%.4e\n", t, t2);
             if (t > t2) {
                 s++;
             }
@@ -218,7 +218,7 @@ public class MultivariateDistance {
         
         s = (1. + s)/(1. + nIterations);
         
-        System.out.printf("t=%.4e, s=%.4e,  1.-alpha=%.4e%n", t, s, 1.-alpha);
+        System.out.printf("t=%.4e, s=%.4e,  1.-alpha=%.4e\n", t, s, 1.-alpha);
         System.out.flush();
         //reject the independence hypothesis (H0) when s is smaller than critical level α (which is 1-α in this case).
         return (s < (1.-alpha));
@@ -375,7 +375,7 @@ public class MultivariateDistance {
         txx *= invK;
         tyy *= invK;
         
-        System.out.printf("   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e%n", 
+        System.out.printf("   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e\n", 
             k, txy, sxxyy, s2, s3, txx, tyy);
         
         double numer = s2 * s3;
@@ -386,8 +386,8 @@ public class MultivariateDistance {
   // temporary fudge that may be introducing a Type III error.  alphaT seems too large, so exploring the normalization of denom first:
   denom *= k;
   
-        System.out.printf("   =>numer=%4e : s2=%.4e s3=%.4e%n", numer, s2, s3);
-        System.out.printf("   =>denom=%4e : 1st=%.4e 2nd=%.4e%n", denom, 
+        System.out.printf("   =>numer=%4e : s2=%.4e s3=%.4e\n", numer, s2, s3);
+        System.out.printf("   =>denom=%4e : 1st=%.4e 2nd=%.4e\n", denom, 
             ((k-1.)/(double)k) * txx * tyy, sxxyy/(double)k);
         
         //NOTE: alphaT seems too large
@@ -405,13 +405,13 @@ public class MultivariateDistance {
                 
         double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);
         
-        System.out.printf("?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,%n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)%n",
+        System.out.printf("?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,\n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
             Math.sqrt(dcorsq), dcorsq, dcorsq*invK, n*dcorsq*invK, 
             alphaT, betaT, 1.-alpha, g);
         
         double stat = n*(txy + s2*s3);        
         
-        System.out.printf("Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e%n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)%n",
+        System.out.printf("Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n",
             Cp, Cq, txy, n, k, s2, s3, stat, alphaT, betaT, 1.-alpha, g);
         System.out.flush();
         

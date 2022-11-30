@@ -1210,7 +1210,7 @@ public class FlowNetwork {
                 float unitFlow = f.get(p);
                 float cp = calcNetCost(p);
 
-                sb.append(String.format("%d to %d cp=%.2f f=%.2f%n",
+                sb.append(String.format("%d to %d cp=%.2f f=%.2f\n",
                     idx1, idx2, cp, unitFlow));
             }
         }
@@ -1224,7 +1224,7 @@ public class FlowNetwork {
 
             float unitFlow = sourceToLeftF.get(idx1);
             float cp = calcSourceNetCost(idx1);
-            sb.append(String.format("source to %d cp=%.2f f=%.2f%n",
+            sb.append(String.format("source to %d cp=%.2f f=%.2f\n",
                 idx1, cp, unitFlow));
         }
         log.fine(sb.toString());
@@ -1235,7 +1235,7 @@ public class FlowNetwork {
             int idx1 = iter2.next();
             float unitFlow = rightToSinkF.get(idx1);
             float cp = calcSinkNetCost(idx1);
-            sb.append(String.format("%d to sink cp=%.2f f=%.2f%n",
+            sb.append(String.format("%d to sink cp=%.2f f=%.2f\n",
                 idx1, cp, unitFlow));
         }
         log.fine(sb.toString());

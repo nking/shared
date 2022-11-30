@@ -302,7 +302,7 @@ public strictfp class CPoly {
         int NN = coef_re.length;
         for (int i=0; i<NN; i++) {
             if (Math.abs(coef_re[i]) + Math.abs(coef_im[i]) > 0.0) {
-                String term = "       x^" + i + " * (" + toString(coef_re[i], coef_im[i]) + ")%n";
+                String term = "       x^" + i + " * (" + toString(coef_re[i], coef_im[i]) + ")\n";
                 buffer.append(term);
             }
         }

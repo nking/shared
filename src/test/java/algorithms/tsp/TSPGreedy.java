@@ -142,7 +142,7 @@ public class TSPGreedy {
 
         logger.log(LEVEL, String.format(
         //System.out.printf(
-            "%ntour cost=%.0f%n", minTourCost));
+            "\ntour cost=%.0f\n", minTourCost));
     }
     
     //===================================
@@ -180,7 +180,7 @@ public class TSPGreedy {
 
         logger.log(LEVEL, String.format(
         //System.out.printf(
-            "%ntour cost=%.0f%n", minTourCost));
+            "\ntour cost=%.0f\n", minTourCost));
     }
     /*
     mincost(start)
@@ -226,7 +226,7 @@ public class TSPGreedy {
                     min = distance[prev][c] + distance[c][i];
                     kmin = distance[c][i];
                     nc = i;
-                    //System.out.printf("    nc=%d%n", nc);
+                    //System.out.printf("    nc=%d\n", nc);
                 }
             }
         }

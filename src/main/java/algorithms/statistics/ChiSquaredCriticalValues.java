@@ -367,7 +367,7 @@ public class ChiSquaredCriticalValues {
             p = 0.5 * Math.exp(b2 * z + a2 * z * z);
         }
         
-        System.out.printf("Lin: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f%n",
+        System.out.printf("Lin: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f\n",
             chisqStat, degreesOfFreedom, p, (1 - p));
         System.out.flush();
         
@@ -407,7 +407,7 @@ public class ChiSquaredCriticalValues {
         }
         chisqStat = Math.pow(z + Math.sqrt(degreesOfFreedom), 2.);
 
-        System.out.printf("Lin: df=%d, p=%9.4f => chisq=%12.4f%n",
+        System.out.printf("Lin: df=%d, p=%9.4f => chisq=%12.4f\n",
             degreesOfFreedom, p, chisqStat);
         System.out.flush();
         
@@ -439,7 +439,7 @@ public class ChiSquaredCriticalValues {
         p *= p;
         p *= 0.1;
         
-        System.out.printf("Beh: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f%n",
+        System.out.printf("Beh: chisq_t==%12.4f, df=%d, => p=%9.4f, 1-p=%9.4f\n",
             chisqStat, degreesOfFreedom, p, (1 - p));
         System.out.flush();
         

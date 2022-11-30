@@ -76,11 +76,11 @@ public class RelabelToFrontTest extends TestCase {
         while (uNode != null) {
             
             /*if (count == 0) {
-                System.out.printf("%ncount=%d  start of Fig 26.10(a)%n", count);
+                System.out.printf("\ncount=%d  start of Fig 26.10(a)\n", count);
             } else if (count == 1) {
-                System.out.printf("%ncount=%d  start of Fig 26.10(b) details are in Fig 26.9(a)%n", count);
+                System.out.printf("\ncount=%d  start of Fig 26.10(b) details are in Fig 26.9(a)\n", count);
             } else {
-                System.out.printf("%ncount=%d%n", count);
+                System.out.printf("\ncount=%d\n", count);
             }*/
             
             // assert that all nodes befor u in L have excess==0
@@ -248,7 +248,7 @@ public class RelabelToFrontTest extends TestCase {
         assertTrue(Math.abs(results.flow - 20) < 1e-7);
         
         // add a source and sink w/ inf edge capacities
-        //System.out.println("%nadding artifical src and sink");
+        //System.out.println("\nadding artifical src and sink");
         srcIdx = nV;
         sinkIdx = nV + 1;
         g = new double[nV+2][];

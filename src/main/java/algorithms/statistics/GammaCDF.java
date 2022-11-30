@@ -82,7 +82,7 @@ public class GammaCDF {
                 return x;
             }
                         
-            /*System.out.printf("%d) alpha=%.4f p=%.4f diff=%.4f   x=%.4f delta=%.4f%n", 
+            /*System.out.printf("%d) alpha=%.4f p=%.4f diff=%.4f   x=%.4f delta=%.4f\n", 
                 nIter, alpha, p0, diffP, x, delta);
             System.out.flush();*/
             

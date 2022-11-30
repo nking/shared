@@ -116,7 +116,7 @@ public class Knapsack01 {
             }
         }
         
-        System.out.printf("memo=%n%s%n", FormatArray.toString(memo, "%d"));
+        System.out.printf("memo=\n%s\n", FormatArray.toString(memo, "%d"));
 
         return memo[memo.length - 1][memo[0].length - 1];
     }
@@ -148,7 +148,7 @@ public class Knapsack01 {
         
         int[] ws = getIntervals(capacity, factor);
         
-        System.out.printf("capacity=%d, factor=%d, q1Diff=%d, intervals=%s%n", capacity, 
+        System.out.printf("capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n", capacity,
             factor, q1, Arrays.toString(ws));
                 
         int[][] memo = new int[n + 1][ws.length + 1];
@@ -171,7 +171,7 @@ public class Knapsack01 {
             }
         }
 
-        System.out.printf("memo=%n%s%n", FormatArray.toString(memo, "%d"));
+        System.out.printf("memo=\n%s\n", FormatArray.toString(memo, "%d"));
         
         return memo[memo.length - 1][memo[0].length - 1];
     }
@@ -201,7 +201,7 @@ public class Knapsack01 {
             diffs[i-1] = d;
         }
         int q1 = diffs[(int)(diffs.length*.25)];
-        System.out.printf("median diff=%d  Q1 diff = %d%n", diffs[diffs.length/2],
+        System.out.printf("median diff=%d  Q1 diff = %d\n", diffs[diffs.length/2],
             q1);
         return q1;
     }

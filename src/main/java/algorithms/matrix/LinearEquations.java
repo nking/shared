@@ -497,7 +497,7 @@ public class LinearEquations {
                 d[k-1] -= a[k-1][p-1]*r[p-1];
             }
             if (Math.abs(d[k-1]) < eps) {
-                System.err.printf("Error: number %.3e is smaller than %.3e%n", 
+                System.err.printf("Error: number %.3e is smaller than %.3e\n",
                     Math.abs(d[k-1]), eps);
                 return null;
             }

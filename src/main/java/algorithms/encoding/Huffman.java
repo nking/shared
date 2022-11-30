@@ -410,7 +410,7 @@ public class Huffman {
     
     private HeapNode repairToUniqueIfNeeded(HeapNode t) {
         
-        //System.out.println("%nrepairToUniqueIfNeeded:");
+        //System.out.println("\nrepairToUniqueIfNeeded:");
         //    TreeTraversal.printLevelOrder(t);
             
         // there is a possible violation of unique prefix code for
@@ -431,7 +431,7 @@ public class Huffman {
             leaf = leaf.getLeft();
         }
         
-        //System.out.printf("remove leaf=(%d,%d), p=(%d,%d)%n", 
+        //System.out.printf("remove leaf=(%d,%d), p=(%d,%d)\n", 
         //    leaf.getKey(), (Integer)leaf.getData(), p.getKey(), (Integer)p.getData());
         p.setLeft(null);
         
@@ -449,7 +449,7 @@ public class Huffman {
         TIntIntIterator iter = f.iterator();
         while (iter.hasNext()) {
             iter.advance();
-            System.out.printf("key=%d, v=%d%n", iter.key(), iter.value());
+            System.out.printf("key=%d, v=%d\n", iter.key(), iter.value());
         }
     }
 

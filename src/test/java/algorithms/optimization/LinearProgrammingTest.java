@@ -75,7 +75,7 @@ public class LinearProgrammingTest extends TestCase {
         double z = slackForm2.evaluateObjective();
         double[] x2 = slackForm2.computeBasicSolution();
         
-        //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=%n%s%n", 
+        //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
         //    eIdx, lIdx, slackForm2.toString());
         
         double expectedV = 27;
@@ -105,7 +105,7 @@ public class LinearProgrammingTest extends TestCase {
         z = slackForm2.evaluateObjective();
         
         //System.out.printf("pivoted eIdx=%d, lIdx=%d obj=%.4f"
-        //    + " slackForm=%n%s%n", 
+        //    + " slackForm=\n%s\n", 
         //    eIdx, lIdx, slackForm2.evaluateObjective(), slackForm2.toString());
         
         expectedV = 111/4.;//27.75
@@ -134,7 +134,7 @@ public class LinearProgrammingTest extends TestCase {
         x = slackForm2.computeBasicSolution();
         z = slackForm2.evaluateObjective();
         
-        //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=%n%s%n", 
+        //System.out.printf("pivoted eIdx=%d, lIdx=%d slackForm=\n%s\n", 
         //    eIdx, lIdx, slackForm2.toString());
         
         expectedV = 28;
@@ -185,7 +185,7 @@ public class LinearProgrammingTest extends TestCase {
         
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         
-        //System.out.printf("result=%n%s%n", soln.toString());
+        //System.out.printf("result=\n%s\n", soln.toString());
         
         
         double[] expectedX = new double[]{8, 4, 0, 18, 0, 0};
@@ -244,8 +244,8 @@ public class LinearProgrammingTest extends TestCase {
         double[] xBasicSoln = initSlackForm.computeBasicSolution();
         double eval = initSlackForm.evaluateObjective();
         double vHat = eval;
-        //System.out.printf("createAuxiliarySlackForm=%n%s%n", initSlackForm.toString());
-        //System.out.printf("eval=%.3f%n", eval);
+        //System.out.printf("createAuxiliarySlackForm=\n%s\n", initSlackForm.toString());
+        //System.out.printf("eval=%.3f\n", eval);
         assertTrue(Math.abs(eval - 0) < 1e-11);
     }
     
@@ -270,8 +270,8 @@ public class LinearProgrammingTest extends TestCase {
         double[] xBasicSoln = initSlackForm.computeBasicSolution();
         double eval = initSlackForm.evaluateObjective();
         boolean isFeasible = initSlackForm.isFeasible();
-        System.out.printf("createAuxiliarySlackForm=%n%s%n", initSlackForm.toString());
-        System.out.printf("eval=%.3f isFeasible=%b%n", eval, isFeasible);
+        System.out.printf("createAuxiliarySlackForm=\n%s\n", initSlackForm.toString());
+        System.out.printf("eval=%.3f isFeasible=%b\n", eval, isFeasible);
         assertTrue(Math.abs(eval - 0) < 1e-11);
         
         double[][] expectedA = new double[2][];
@@ -322,7 +322,7 @@ public class LinearProgrammingTest extends TestCase {
         SlackForm soln = lp.initializeSimplex(standForm);
         x = soln.computeBasicSolution();
         
-        System.out.printf("soln=%n%s%n", soln.toString());
+        System.out.printf("soln=\n%s\n", soln.toString());
         
         expectedV = -4./5.;
         expectedC = new double[]{1.800, -0.200};
@@ -396,7 +396,7 @@ public class LinearProgrammingTest extends TestCase {
             isMaximization, a, b, c, 
             constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf("standForm=%n%s%n", standForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
         /*
         maximize  2*x1 - 3*x2 + 3*x3
         subject to 
@@ -438,8 +438,8 @@ public class LinearProgrammingTest extends TestCase {
         }
         
         SlackForm slackForm = LinearProgramming.convertConstraints(standForm);
-        //System.out.printf("standForm=%n%s%n", standForm.toString());
-        //System.out.printf("slackForm=%n%s%n", slackForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
+        //System.out.printf("slackForm=\n%s\n", slackForm.toString());
         
         // slackform b should be same as original linear problem
         assertEquals(b.length, slackForm.b.length);
@@ -561,12 +561,12 @@ public class LinearProgrammingTest extends TestCase {
         StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
             isMaximization, a, b, c, constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf("standForm=%n%s%n", standForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
         
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         
-        //System.out.printf("soln=%n%s%n", soln.toString());
-        //System.out.printf("z=%.3f%n", soln.evaluateObjective());
+        //System.out.printf("soln=\n%s\n", soln.toString());
+        //System.out.printf("z=%.3f\n", soln.evaluateObjective());
         
         /*
         v=16.000
@@ -654,12 +654,12 @@ public class LinearProgrammingTest extends TestCase {
         StandardForm standForm = LinearProgramming.convertLinearProgramToStandardForm(
             isMaximization, a, b, c, constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf("standForm=%n%s%n", standForm.toString());
+        //System.out.printf("standForm=\n%s\n", standForm.toString());
         
         SlackForm soln = lp.solveUsingSimplexMethod(standForm);
         
-        //System.out.printf("soln=%n%s%n", soln.toString());
-        //System.out.printf("z=%.3f%n", soln.evaluateObjective());
+        //System.out.printf("soln=\n%s\n", soln.toString());
+        //System.out.printf("z=%.3f\n", soln.evaluateObjective());
         
         /*
         [junit] soln=
@@ -762,7 +762,7 @@ public class LinearProgrammingTest extends TestCase {
         LinearProgramming lp = new LinearProgramming();
         SlackForm solnPrimal = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("primal slack=%n%s%n", solnPrimal.toString());
+        System.out.printf("primal slack=\n%s\n", solnPrimal.toString());
 
         double expectedObj = 28;
         
@@ -771,9 +771,9 @@ public class LinearProgrammingTest extends TestCase {
         double[] y = solnPrimal.computeBasicDualSolution();
         double objDual = solnPrimal.evaluateDualObjective();
         
-        System.out.printf("primal obj=%.3f%n   x=%s%n", objPrimal, FormatArray.toString(x, "%.3f"));
+        System.out.printf("primal obj=%.3f\n   x=%s\n", objPrimal, FormatArray.toString(x, "%.3f"));
                 
-        System.out.printf("dual obj=%.3f%n   y=%s%n", objDual, FormatArray.toString(y, "%.3f"));
+        System.out.printf("dual obj=%.3f\n   y=%s\n", objDual, FormatArray.toString(y, "%.3f"));
 
         double tol = 1e-7;
         //assertTrue(Math.abs(objPrimal - expectedObj) < tol);
@@ -823,9 +823,9 @@ public class LinearProgrammingTest extends TestCase {
         
         SlackForm solnDual = lp.solveUsingSimplexMethod(dualStandForm);
         
-        System.out.printf("primal slack=%n%s%n", solnPrimal.toString());
+        System.out.printf("primal slack=\n%s\n", solnPrimal.toString());
                 
-        System.out.printf("dual slack=%n%s%n", solnDual.toString());
+        System.out.printf("dual slack=\n%s\n", solnDual.toString());
 
         double expectedObj = 5./3.;
         
@@ -834,9 +834,9 @@ public class LinearProgrammingTest extends TestCase {
         double[] y = solnDual.computeBasicDualSolution();
         double objDual = solnDual.evaluateDualObjective();
         
-        System.out.printf("primal obj=%.3f, x=%s%n", objPrimal, FormatArray.toString(x, "%.3f"));
+        System.out.printf("primal obj=%.3f, x=%s\n", objPrimal, FormatArray.toString(x, "%.3f"));
                 
-        System.out.printf("dual obj=%.3f, y=%s%n", objDual, FormatArray.toString(y, "%.3f"));
+        System.out.printf("dual obj=%.3f, y=%s\n", objDual, FormatArray.toString(y, "%.3f"));
 
         double tol = 1e-7;
         assertTrue(Math.abs(objPrimal - expectedObj) < tol);
@@ -902,7 +902,7 @@ public class LinearProgrammingTest extends TestCase {
         LinearProgramming lp = new LinearProgramming();
         SlackForm solnPrimal = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("%n*primal slack=%n%s%n", solnPrimal.toString());
+        System.out.printf("\n*primal slack=\n%s\n", solnPrimal.toString());
 
         double expectedObj = 4.75;
         double[] expectedY = new double[]{.5/1.6, 0., 1./4.};
@@ -913,10 +913,10 @@ public class LinearProgrammingTest extends TestCase {
         double[] yPrimal = solnPrimal.computeBasicDualSolution();
         double objPrimalDual = solnPrimal.evaluateDualObjective();
         
-        System.out.printf("primal obj=%.3f%n   x=%s%n", objPrimal, FormatArray.toString(x, "%.3f"));
-        System.out.printf("primal dual obj=%.3f%n   y=%s%n", objPrimalDual, FormatArray.toString(yPrimal, "%.4f"));
-        System.out.printf("primal x=%s%n", FormatArray.toString(solnPrimal.calculatePrimalX(), "%.3f"));
-        System.out.printf("dual y=%s%n", FormatArray.toString(solnPrimal.calculateDualY(), "%.3f"));
+        System.out.printf("primal obj=%.3f\n   x=%s\n", objPrimal, FormatArray.toString(x, "%.3f"));
+        System.out.printf("primal dual obj=%.3f\n   y=%s\n", objPrimalDual, FormatArray.toString(yPrimal, "%.4f"));
+        System.out.printf("primal x=%s\n", FormatArray.toString(solnPrimal.calculatePrimalX(), "%.3f"));
+        System.out.printf("dual y=%s\n", FormatArray.toString(solnPrimal.calculateDualY(), "%.3f"));
         
         double tol = 1e-7;
         
@@ -935,17 +935,17 @@ public class LinearProgrammingTest extends TestCase {
             constraintComparisonsD, nonnegativityConstraintsD);
         SlackForm solnDual = lp.solveUsingSimplexMethod(standFormD);
         
-        System.out.printf("%n*dual slack=%n%s%n", solnDual.toString());
+        System.out.printf("\n*dual slack=\n%s\n", solnDual.toString());
                 
         double[] xDualPrimal = solnDual.computeBasicSolution();
         double objDualPrimal = solnDual.evaluateObjective();
         double[] yDual = solnDual.computeBasicDualSolution();
         double objDual = solnDual.evaluateDualObjective();
         
-        System.out.printf("dual primal obj=%.3f%n   x=%s%n", objDualPrimal, FormatArray.toString(xDualPrimal, "%.4f"));
-        System.out.printf("dual obj=%.3f%n   y=%s%n", objDual, FormatArray.toString(yDual, "%.4f"));
+        System.out.printf("dual primal obj=%.3f\n   x=%s\n", objDualPrimal, FormatArray.toString(xDualPrimal, "%.4f"));
+        System.out.printf("dual obj=%.3f\n   y=%s\n", objDual, FormatArray.toString(yDual, "%.4f"));
 
-        System.out.printf("Expected:%n  obj=%.4f%n  x=%s%n  y=%s%n", 
+        System.out.printf("Expected:\n  obj=%.4f\n  x=%s\n  y=%s\n", 
             expectedObj, FormatArray.toString(expectedX, "%.4f"),
             FormatArray.toString(expectedY, "%.4f"));
         

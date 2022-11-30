@@ -206,7 +206,7 @@ public class HypersphereChordLengthTest extends TestCase {
         }
         
         for (j = 0; j < ns.size(); ++j) {
-            System.out.printf("n=%d d(1-alpha=0.095)~%.2f%n", ns.get(j), da.get(j));
+            System.out.printf("n=%d d(1-alpha=0.095)~%.2f\n", ns.get(j), da.get(j));
         }
     }
     
@@ -278,7 +278,7 @@ public class HypersphereChordLengthTest extends TestCase {
         double l1Sum = HypersphereChordLength.calcL1UniformityStatistic(x, m, 
             HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
         
-        System.out.printf("l1Sum = %.4e%n", l1Sum);
+        System.out.printf("l1Sum = %.4e\n", l1Sum);
     }
     
     public void testCalcConfidenceOfNonUniformity_same() throws NoSuchAlgorithmException {
@@ -305,7 +305,7 @@ public class HypersphereChordLengthTest extends TestCase {
             NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
                 HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
 
-            System.out.println("stats=" + stats.toString() + "%n");
+            System.out.println("stats=" + stats.toString() + "\n");
 
             assertFalse(stats.isConsistentWithNonUniform);
         }
@@ -334,7 +334,7 @@ public class HypersphereChordLengthTest extends TestCase {
             NonUniformityStats stats = HypersphereChordLength.calcConfidenceOfNonUniformity(x, m, 
                 HypersphereChordLength.POINT_DISTRIBUTION_TYPE.INTRA_DISTANCE_2, rand);
 
-            //System.out.println("stats=" + stats.toString() + "%n");
+            //System.out.println("stats=" + stats.toString() + "\n");
 
             assertTrue(stats.isConsistentWithNonUniform);
         }

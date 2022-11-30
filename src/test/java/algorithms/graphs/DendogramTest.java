@@ -64,14 +64,14 @@ public class DendogramTest extends TestCase {
         }
         
         for (i = 0; i < ks.size(); ++i) {
-            System.out.printf("k=%d q=%.3f%n", ks.get(i), qs.get(i));
+            System.out.printf("k=%d q=%.3f\n", ks.get(i), qs.get(i));
         }
         
         MinMaxPeakFinder mpf = new MinMaxPeakFinder();
         int[] maxIdxs = mpf.findPeaks(qs.toArray(), 0.f, 2.5f);
         for (i = 0; i < maxIdxs.length; ++i) {
             int idx = maxIdxs[i];
-            System.out.printf("found peak for q=%.3f k=%d%n", qs.get(idx), ks.get(idx));
+            System.out.printf("found peak for q=%.3f k=%d\n", qs.get(idx), ks.get(idx));
         }
         
     }

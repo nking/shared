@@ -171,7 +171,7 @@ public class VoronoiFortunesSweep {
                 ymax = yValues[i];
             }
             
-            //printf("%n%f %f%n",xValues[i],yValues[i]);
+            //printf("\n%f %f\n",xValues[i],yValues[i]);
         }
         
         // N log_2 N

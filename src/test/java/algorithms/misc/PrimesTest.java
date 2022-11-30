@@ -32,8 +32,8 @@ public class PrimesTest extends TestCase {
         expected = new long[]{19, 73};
         result = Primes.pollardRhoFactorization(n);
         resultPrimes = Primes.findPrimeFactors(n);
-        System.out.println("%n1387: " + Arrays.toString(result.toArray()));
-        System.out.println("%n1387: " + Arrays.toString(resultPrimes.toArray()));
+        System.out.println("\n1387: " + Arrays.toString(result.toArray()));
+        System.out.println("\n1387: " + Arrays.toString(resultPrimes.toArray()));
         found = false;
         for (long x : expected) {
             if (result.contains(x)) {
@@ -48,8 +48,8 @@ public class PrimesTest extends TestCase {
         expected = new long[]{3, 5, 11};
         result = Primes.pollardRhoFactorization(n);
         resultPrimes = Primes.findPrimeFactors(n);
-        System.out.println("%n825: " + Arrays.toString(result.toArray()));
-        System.out.println("%n825: " + Arrays.toString(resultPrimes.toArray()));
+        System.out.println("\n825: " + Arrays.toString(result.toArray()));
+        System.out.println("\n825: " + Arrays.toString(resultPrimes.toArray()));
         found = false;
         for (long x : expected) {
             if (result.contains(x)) {
@@ -78,43 +78,43 @@ public class PrimesTest extends TestCase {
         long a, b;
         a = n; b = 75;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 75;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 55;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 55;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 15;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 15;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 5;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 5;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         a = n; b = 3;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
         
         b = n; a = 3;
         r = NumberTheory.extendedEuclid(a, b);
-        System.out.printf("EE(%d,%d)=%s%n", a, b, Arrays.toString(r));
+        System.out.printf("EE(%d,%d)=%s\n", a, b, Arrays.toString(r));
     }
     
     public void testMillerRabin() throws Exception {
@@ -133,13 +133,13 @@ public class PrimesTest extends TestCase {
         // compute x0 = a^u mod n
         x[0] = NumberTheory.modularExponentiation(a, u, n);
         
-        System.out.printf("x[%d]=%d%n", 0, x[0]);
+        System.out.printf("x[%d]=%d\n", 0, x[0]);
         
         boolean c1 = false;
         boolean c2 = false;
         for (i = 1; i <= t; ++i) {
             x[i] = Math.floorMod(x[i - 1]*x[i - 1], n);
-            System.out.printf("x[%d]=%d%n", i, x[i]);
+            System.out.printf("x[%d]=%d\n", i, x[i]);
             if (x[i] == 1 && x[i - 1] != 1 && x[i - 1] != (n-1)) {
                 // x[i-1] is a nontrivial square root of 1, modulo n.
                 // n is composite.
@@ -182,7 +182,7 @@ public class PrimesTest extends TestCase {
             // fail when invoked several times in the Miller-Rabin probablyPrime
             assertTrue(Primes.witness(a, n, rand) || !Primes.probablyPrime(n, s));
           
-            System.out.printf("pollardRhoFactorization(%d)=%s%n",
+            System.out.printf("pollardRhoFactorization(%d)=%s\n",
                n, Arrays.toString(Primes.pollardRhoFactorization(n).toArray()));
         } 
         

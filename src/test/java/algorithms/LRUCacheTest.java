@@ -29,7 +29,7 @@ public class LRUCacheTest extends TestCase {
         Map.Entry<Integer, Integer> entry;
         while (iter.hasNext()) {
             entry = iter.next();
-            System.out.printf("lru: key=%d%n", entry.getKey(), entry.getValue());
+            System.out.printf("lru: key=%d\n", entry.getKey(), entry.getValue());
         }
         for (int i = initialCapacity; i < 2*initialCapacity; ++i) {
             lRUCache.put(i, i);
@@ -42,7 +42,7 @@ public class LRUCacheTest extends TestCase {
         iter = lRUCache.entrySet().iterator();
         while (iter.hasNext()) {
             entry = iter.next();
-            System.out.printf("*lru: key=%d%n", entry.getKey(), entry.getValue());
+            System.out.printf("*lru: key=%d\n", entry.getKey(), entry.getValue());
         }
     }
 }

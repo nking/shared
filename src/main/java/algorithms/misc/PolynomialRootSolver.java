@@ -130,9 +130,9 @@ public class PolynomialRootSolver {
         for (i = 0; i < nr; ++i) {
             cRoots[i] = new Complex(root[i].real(), root[i].imag());
         }
-        //System.out.printf("roots=%s%n", FormatArray.toString(cRoots, "%.3e"));
-        //System.out.printf("radius=%s%n", FormatArray.toString(radius, "%.4e"));
-        //System.out.printf("err=%s%n", FormatArray.toString(err, "%b"));
+        //System.out.printf("roots=%s\n", FormatArray.toString(cRoots, "%.3e"));
+        //System.out.printf("radius=%s\n", FormatArray.toString(radius, "%.4e"));
+        //System.out.printf("err=%s\n", FormatArray.toString(err, "%b"));
 
         return cRoots;
     }
@@ -201,7 +201,7 @@ public class PolynomialRootSolver {
             MatrixUtil.multiply(coeffs, -1./coeffs[0]);
             System.arraycopy(coeffs, 1, m[0], 0, coeffs.length-1);
             
-            //System.out.printf("A=%n%s%n", FormatArray.toString(m, "%.3e"));
+            //System.out.printf("A=\n%s\n", FormatArray.toString(m, "%.3e"));
             
             EVD evd = EVD.factorize(new DenseMatrix(m));
             

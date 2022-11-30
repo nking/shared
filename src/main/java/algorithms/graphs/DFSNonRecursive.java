@@ -132,7 +132,7 @@ public class DFSNonRecursive {
                     current.stage = 1;
                     stack.push(current);
                     
-                    //System.out.format("  0: push onto stack u=%d%n", current.node);
+                    //System.out.format("  0: push onto stack u=%d\n", current.node);
                             
                     SimpleLinkedListNode next = g[current.node];
                     
@@ -150,7 +150,7 @@ public class DFSNonRecursive {
                             newSnapshot.stage = 0;
                             stack.push(newSnapshot);
 
-                            //System.out.format("   0: and push onto stack v=%d%n", v);
+                            //System.out.format("   0: and push onto stack v=%d\n", v);
                             //System.out.println("   0: [v: " + newSnapshot.toString() + "]");
   
                             continue;
@@ -170,14 +170,14 @@ public class DFSNonRecursive {
                         
                         int v = next.getKey();
                         
-                        //System.out.format(" 1: there is a child link %d%n", v);
+                        //System.out.format(" 1: there is a child link %d\n", v);
                         
                         g[current.node].delete(next);
                         
                         current.stage = 1;
                         stack.push(current);
 
-                        //System.out.format("  0: push onto stack u=%d%n", current.node);
+                        //System.out.format("  0: push onto stack u=%d\n", current.node);
                                                       
                         if (visited[v] == 0) {
                             
@@ -187,7 +187,7 @@ public class DFSNonRecursive {
                             newSnapshot.stage = 0;
                             stack.push(newSnapshot);
 
-                            //System.out.format("   1: and push onto stack v=%d%n", v);
+                            //System.out.format("   1: and push onto stack v=%d\n", v);
                             //System.out.println("   1: [v: " + newSnapshot.toString() + "]");
   
                             continue;
@@ -201,7 +201,7 @@ public class DFSNonRecursive {
                     visited[current.node] = 2;
                     time++;
                     tf[current.node] = time;
-                    //System.out.format(" 1: end visit to %d, set tf=%d%n",
+                    //System.out.format(" 1: end visit to %d, set tf=%d\n",
                     //    current.node, time);
 
                     break;

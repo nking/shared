@@ -205,7 +205,7 @@ public class TSPOptimalBruteForce {
         }
         logger.log(LEVEL, String.format(
         //System.out.printf(
-            "memo[%d][%d]=%n%s%n", memo.length, memo[0].length, 
+            "memo[%d][%d]=\n%s\n", memo.length, memo[0].length, 
             FormatArray.toString(memo, "%.1f")));
         
         // r is the number of vertexes within n vertexes, in which the subset bits are set to 1.
@@ -215,7 +215,7 @@ public class TSPOptimalBruteForce {
                 
                 logger.log(LEVEL, String.format(
                 //System.out.printf(
-                    "r=%d subset=%d(%s)%n", r, subset, Integer.toBinaryString(subset)));
+                    "r=%d subset=%d(%s)\n", r, subset, Integer.toBinaryString(subset)));
                 
                 if (notIn(start, subset)) {
                     continue;
@@ -228,7 +228,7 @@ public class TSPOptimalBruteForce {
                     if (next == start || notIn(next, subset)) {
                         logger.log(LEVEL, String.format(
                             //System.out.printf(
-                            "%n"));
+                            "\n"));
                         continue;
                     }
                     
@@ -236,7 +236,7 @@ public class TSPOptimalBruteForce {
                     
                     logger.log(LEVEL, String.format(
                     //System.out.printf(
-                        "   subsetWithoutNext=%d(%s)%n", subsetWithoutNext, 
+                        "   subsetWithoutNext=%d(%s)\n", subsetWithoutNext, 
                         Integer.toBinaryString(subsetWithoutNext)));
                     
                     double minDist = Double.POSITIVE_INFINITY;
@@ -251,13 +251,13 @@ public class TSPOptimalBruteForce {
                             logger.log(LEVEL, String.format(
                             //System.out.printf(
                                "      end=%d(%s) "
-                               + "minDist = memo[end %d][subWONxt %d] + distance[end %d][next %d] = %.1f%n", 
+                               + "minDist = memo[end %d][subWONxt %d] + distance[end %d][next %d] = %.1f\n", 
                                end, Integer.toBinaryString(end), end, subsetWithoutNext, end, next, minDist));
                         }
                     }
                     logger.log(LEVEL, String.format(
                     //System.out.printf(
-                        "      stored as memo[next %d][subset %d]=%.1f%n",
+                        "      stored as memo[next %d][subset %d]=%.1f\n",
                         next, subset, minDist));
                     memo[next][subset] = minDist;
                 }
@@ -274,7 +274,7 @@ public class TSPOptimalBruteForce {
                 minTourCost = tourCost;
                 logger.log(LEVEL, String.format(
                 //System.out.printf(
-                    "      i=%d minTourCost=%.1f%n", i, minTourCost));
+                    "      i=%d minTourCost=%.1f\n", i, minTourCost));
             }
         }
         int lastIndex = start;
@@ -308,7 +308,7 @@ public class TSPOptimalBruteForce {
         Collections.reverse(tour);
 
         solverFinished = true;
-        System.out.printf("c0=%d n=%d%n", c0, this.distance.length);
+        System.out.printf("c0=%d n=%d\n", c0, this.distance.length);
     }
 
     // test bit operation to see if elem is in sbset

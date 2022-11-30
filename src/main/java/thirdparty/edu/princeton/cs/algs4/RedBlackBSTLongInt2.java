@@ -389,7 +389,7 @@ public class RedBlackBSTLongInt2 {
             nodeMap.updateNodeColor(root, BLACK);
         }
         
-        //System.out.format("AFTER deleteMin()%n");
+        //System.out.format("AFTER deleteMin()\n");
         //printPreOrderTraversal(1);
         
         assert(check());
@@ -419,7 +419,7 @@ public class RedBlackBSTLongInt2 {
             return;
         }
 
-        //System.out.format("BEFORE deleteMin(%d)%n", h);
+        //System.out.format("BEFORE deleteMin(%d)\n", h);
         //printPreOrderTraversal(1);
         
         
@@ -454,7 +454,7 @@ public class RedBlackBSTLongInt2 {
         output[1] = balance(h);
         
         //printPreOrderTraversal(1);
-        //System.out.format("AFTER deleteMin(h)%n");
+        //System.out.format("AFTER deleteMin(h)\n");
     }
 
     /**
@@ -488,7 +488,7 @@ public class RedBlackBSTLongInt2 {
             nodeMap.updateNodeColor(root, BLACK);
         }
         
-        //System.out.format("AFTER deleteMax()%n");
+        //System.out.format("AFTER deleteMax()\n");
         //printPreOrderTraversal(1);
         
         assert(check());
@@ -497,7 +497,7 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the maximum key rooted at h
     private void deleteMax(long h, long[] output) { 
     
-        //System.out.format("BEFORE deleteMax(%d)%n", h);
+        //System.out.format("BEFORE deleteMax(%d)\n", h);
         //printPreOrderTraversal(1);
         
         if (isLeftRed(h)) {
@@ -531,7 +531,7 @@ public class RedBlackBSTLongInt2 {
         output[1] = balance(h);
         
         
-        //System.out.format("AFTER deleteMax(h)%n");
+        //System.out.format("AFTER deleteMax(h)\n");
         //printPreOrderTraversal(1);
         
     }
@@ -546,7 +546,7 @@ public class RedBlackBSTLongInt2 {
         
         int sz0 = size();
         
-        //System.out.println("%nbefore delete " + key + " root=" + root);
+        //System.out.println("\nbefore delete " + key + " root=" + root);
         //printPreOrderTraversal();
         
         if (!contains(key)) return;
@@ -583,7 +583,7 @@ public class RedBlackBSTLongInt2 {
     // delete the key-value pair with the given key rooted at h
     private void delete(long h, long key, long[] output) { 
         
-        //System.out.format("delete(%d, %d)%n", h, key);
+        //System.out.format("delete(%d, %d)\n", h, key);
         
         assert(nodeMap.containsKey(key));
         assert(nodeMap.containsKey(h));
@@ -680,8 +680,8 @@ public class RedBlackBSTLongInt2 {
                
                 //System.out.println(
                 //    "   x to get h fields except val. " + 
-                //    "%n   x=" + nodeToString(x)
-                //    + "%n   h=" + hDBG
+                //    "\n   x=" + nodeToString(x)
+                //    + "\n   h=" + hDBG
                 //);
                
                 assert(x != h);
@@ -2097,12 +2097,12 @@ public class RedBlackBSTLongInt2 {
                 long child = nodeMap.getLeft(key);
                 if (!nodeMap.parentIsSet(child)) {
                     System.err.format(
-                        "error in %d.left=%d has no parent%n",
+                        "error in %d.left=%d has no parent\n",
                         key, child);
                     passed = false;
                 } else if (nodeMap.getParent(child) != key) {
                     System.err.format(
-                        "error in left: %d.left=%d but %d.parent=%d%n",
+                        "error in left: %d.left=%d but %d.parent=%d\n",
                         key, child, child, nodeMap.getParent(child));
                     passed = false;
                 }
@@ -2111,12 +2111,12 @@ public class RedBlackBSTLongInt2 {
                 long child = nodeMap.getRight(key);
                 if (!nodeMap.parentIsSet(child)) {
                     System.err.format(
-                        "error in %d.right=%d has no parent%n",
+                        "error in %d.right=%d has no parent\n",
                         key, child);
                     passed = false;
                 } else if (nodeMap.getParent(child) != key) {
                     System.err.format(
-                        "error in right: %d.right=%d but %d.parent=%d%n",
+                        "error in right: %d.right=%d but %d.parent=%d\n",
                         key, child, child, nodeMap.getParent(child));
                     passed = false;
                 }

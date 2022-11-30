@@ -75,7 +75,7 @@ public class UnweightedGraphCommunityFinder {
         }
         
         for (i = 0; i < ks.size(); ++i) {
-            System.out.printf("k=%d q=%.3f%n", ks.get(i), qs.get(i));
+            System.out.printf("k=%d q=%.3f\n", ks.get(i), qs.get(i));
         }
         
         // find the max among the peaks
@@ -89,7 +89,7 @@ public class UnweightedGraphCommunityFinder {
                 maxQ = ks.get(idx);
                 maxQIdx = idx;
             }
-            System.out.printf("found a peak for q=%.3f k=%d%n", qs.get(idx), ks.get(idx));
+            System.out.printf("found a peak for q=%.3f k=%d\n", qs.get(idx), ks.get(idx));
         }
         
         if (maxQIdx == -1) {

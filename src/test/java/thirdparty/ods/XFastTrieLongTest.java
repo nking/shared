@@ -102,7 +102,7 @@ public class XFastTrieLongTest extends TestCase {
                     assertTrue(foundIndex > -1);
 
                     int expected = nodes.get(i + 1);
-                    //System.out.println("%n* " + idx + " expected next=" + expected);
+                    //System.out.println("\n* " + idx + " expected next=" + expected);
 
                     Integer next = bt.successor(idx);
                     //System.out.println(idx + "   next=" + next);
@@ -119,7 +119,7 @@ public class XFastTrieLongTest extends TestCase {
                     assertEquals(idx, found.intValue());
 
                     int expected = nodes.get(i - 1);
-                    //System.out.println("%n* " + idx + " expected prev=" + expected);
+                    //System.out.println("\n* " + idx + " expected prev=" + expected);
 
                     Integer prev = bt.predecessor(idx);
                     assertEquals(expected, prev.intValue());

@@ -97,7 +97,7 @@ public class SetCoverTest extends TestCase {
         LinearProgramming lp = new LinearProgramming();
         LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);
         
-        System.out.printf("lp-soln=%n%s%n", lpSoln.toString());
+        System.out.printf("lp-soln=\n%s\n", lpSoln.toString());
         /*
         for matrix a formed as [nU X sets.size()], 
            the objective is summation over i_(from 0 to sets.size()-1) of (a_i_j * y_i)
@@ -105,14 +105,14 @@ public class SetCoverTest extends TestCase {
         double[] x = lpSoln.computeBasicSolution();
         double[] ys = lpSoln.computeBasicDualSolution();
         
-        System.out.printf("x=%s%n", FormatArray.toString(x, "%.3f"));
-        System.out.printf("ys=%s%n", FormatArray.toString(ys, "%.3f"));
-        System.out.printf("y_n=%n");
+        System.out.printf("x=%s\n", FormatArray.toString(x, "%.3f"));
+        System.out.printf("ys=%s\n", FormatArray.toString(ys, "%.3f"));
+        System.out.printf("y_n=\n");
         for (i = 0; i < lpSoln.nIndices.length; ++i) {
             System.out.printf("%.3f, ", ys[lpSoln.nIndices[i]]);
         }
         System.out.println();
-        System.out.printf("x_b=%n");
+        System.out.printf("x_b=\n");
         for (i = 0; i < lpSoln.bIndices.length; ++i) {
             System.out.printf("%.3f, ", x[lpSoln.bIndices[i]]);
         }
@@ -122,9 +122,9 @@ public class SetCoverTest extends TestCase {
         
         double[] primalX = lpSoln.calculatePrimalX();
         double[] dualY = lpSoln.calculateDualY();
-        System.out.printf("primal x=%s%n", FormatArray.toString(primalX, "%.3f"));
-        System.out.printf("dual y=%s%n", FormatArray.toString(dualY, "%.3f"));
-        System.out.printf("obj=%.4f, %.4f%n", lpSoln.evaluateObjective(),
+        System.out.printf("primal x=%s\n", FormatArray.toString(primalX, "%.3f"));
+        System.out.printf("dual y=%s\n", FormatArray.toString(dualY, "%.3f"));
+        System.out.printf("obj=%.4f, %.4f\n", lpSoln.evaluateObjective(),
             lpSoln.evaluateDualObjective());
 
         assertEquals(expectedYs.length, primalX.length);
@@ -138,7 +138,7 @@ public class SetCoverTest extends TestCase {
         }*/
         SetCover sc = new SetCover();
         TIntSet cover = sc.weightedSetsApprox2LgN(nU, sets, weights);
-        System.out.printf("cover=%s%n", Arrays.toString(cover.toArray()));
+        System.out.printf("cover=%s\n", Arrays.toString(cover.toArray()));
 
         // 4,3,2,0    cost=1+5+3+2=11
         // opt=1,2,3  cost=3+3+5=11      
@@ -155,7 +155,7 @@ public class SetCoverTest extends TestCase {
         double nOptC = optimalCover.length;
         double nC = cover.size();
         double lnN = Math.log(nU);
-        //System.out.printf("%.3f/%.3f=%.3f, ln(%d)=%.3f%n", nC, nOptC, (nC/nOptC), nU, lnN);
+        //System.out.printf("%.3f/%.3f=%.3f, ln(%d)=%.3f\n", nC, nOptC, (nC/nOptC), nU, lnN);
         assertTrue((nC/nOptC) < lnN);
     }
     
@@ -205,9 +205,9 @@ public class SetCoverTest extends TestCase {
             idx = iter.next();
             sum += sWeights[idx];
         }
-        System.out.printf("cover sum=%.3f, expected=%.3f%n", sum, expectedZ);
-        System.out.printf("cover size=%d%n", cover.size());
-        System.out.printf("cover=%s%n", Arrays.toString(cover.toArray()));
+        System.out.printf("cover sum=%.3f, expected=%.3f\n", sum, expectedZ);
+        System.out.printf("cover size=%d\n", cover.size());
+        System.out.printf("cover=%s\n", Arrays.toString(cover.toArray()));
         
     }
     

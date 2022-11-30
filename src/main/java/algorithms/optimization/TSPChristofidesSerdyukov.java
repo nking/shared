@@ -214,7 +214,7 @@ public class TSPChristofidesSerdyukov {
         //print(mstTree);
         
         //TIntList treeWalk = prims.getPreorderIndexes();
-        //System.out.printf("treeWalk=%s%n", Arrays.toString(treeWalk.toArray()));
+        //System.out.printf("treeWalk=%s\n", Arrays.toString(treeWalk.toArray()));
         
         return mstTree;
     }
@@ -259,7 +259,7 @@ public class TSPChristofidesSerdyukov {
         for (i = 0; i < assignmentsM.length; ++i) {
             k = assignmentsM[i][0];
             v = assignmentsM[i][1];
-            //System.out.printf("%d, %d%n", k, v);
+            //System.out.printf("%d, %d\n", k, v);
             if (included.contains(k) || included.contains(v)) {
                 continue;
             }
@@ -353,7 +353,7 @@ public class TSPChristofidesSerdyukov {
             intIter2 = entry.getValue().iterator();
             while (intIter2.hasNext()) {
                 v = intIter2.next();
-                System.out.printf("%d:%d%n", u, v);
+                System.out.printf("%d:%d\n", u, v);
             }
         }
     }

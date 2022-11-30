@@ -203,7 +203,7 @@ public class LinearEquationsTest extends TestCase {
     
     public void testLeastSquares() throws Exception {
         
-        System.out.println("%ntestLeastSquares()");
+        System.out.println("\ntestLeastSquares()");
         
         double[][] xy = new double[5][2];
         xy[0][0] = -1; xy[0][1] = 2;
@@ -241,7 +241,7 @@ public class LinearEquationsTest extends TestCase {
     }
 
     public void testLeastSquares3() throws Exception {
-        System.out.println("%ntestLeastSquares3()");
+        System.out.println("\ntestLeastSquares3()");
          
         //(0, 0), (0, 0), (0, 12)
         double[][] xy = new double[3][2];
@@ -255,7 +255,7 @@ public class LinearEquationsTest extends TestCase {
     }
 
     public void testLeastSquares4() throws Exception {
-        System.out.println("%ntestLeastSquares4()");
+        System.out.println("\ntestLeastSquares4()");
         
         // from Strang's Introduction to Linear Algebra
         //    example 1, chap 4.3
@@ -308,7 +308,7 @@ public class LinearEquationsTest extends TestCase {
         for (int i = 0; i < xy.length; ++i) {
             System.out.printf(" (%.2f,%.2f)", xy[i][0], xy[i][1]);
         }
-        System.out.printf("%n");
+        System.out.printf("\n");
         
         int[] polyOrders = new int[]{0, 1, 2};
         
@@ -335,7 +335,7 @@ public class LinearEquationsTest extends TestCase {
             double[] ac = MatrixUtil.multiplyMatrixByColumnVector(a, c);
             double[] err = MatrixUtil.subtract(ac, y);
         
-            System.out.printf("polyOrder=%d  c=%s  %n    err=%s%n", polyOrder,
+            System.out.printf("polyOrder=%d  c=%s  \n    err=%s\n", polyOrder,
                     Arrays.toString(c), Arrays.toString(err));
         }
         
@@ -365,7 +365,7 @@ public class LinearEquationsTest extends TestCase {
             double[] ac = MatrixUtil.multiplyMatrixByColumnVector(a, c);
             double[] err = MatrixUtil.subtract(ac, y_yx);
 
-            System.out.printf("polyOrder=%d  c_yx=%s  %n    err=%s%n", polyOrder,
+            System.out.printf("polyOrder=%d  c_yx=%s  \n    err=%s\n", polyOrder,
                     Arrays.toString(c), Arrays.toString(err));
 
         }
@@ -396,10 +396,10 @@ public class LinearEquationsTest extends TestCase {
         mTE[2] = new double[]{0, 0, 1};
                 
         LDM ldm = LinearEquations.LDMDecomposition(a);
-        System.out.printf("A=%n%s%n", FormatArray.toString(a, "%.1f"));
-        System.out.printf("L=%n%s%n", FormatArray.toString(ldm.ell, "%.1f"));
-        System.out.printf("M^T=%n%s%n", FormatArray.toString(MatrixUtil.transpose(ldm.m), "%.1f"));
-        System.out.printf("d=%n%s%n", FormatArray.toString(ldm.d, "%.1f"));
+        System.out.printf("A=\n%s\n", FormatArray.toString(a, "%.1f"));
+        System.out.printf("L=\n%s\n", FormatArray.toString(ldm.ell, "%.1f"));
+        System.out.printf("M^T=\n%s\n", FormatArray.toString(MatrixUtil.transpose(ldm.m), "%.1f"));
+        System.out.printf("d=\n%s\n", FormatArray.toString(ldm.d, "%.1f"));
 
         double diff;
         double tol = 1e-7;
@@ -427,7 +427,7 @@ public class LinearEquationsTest extends TestCase {
         double[][] aa = MatrixUtil.multiplyByDiagonal(ldm.ell, ldm.d);
         MatrixUtil.multiply(aa, MatrixUtil.transpose(ldm.m));
         
-        System.out.printf("L*D*M^T=%n%s%n", FormatArray.toString(aa, "%.1f"));
+        System.out.printf("L*D*M^T=\n%s\n", FormatArray.toString(aa, "%.1f"));
         
     }
     
@@ -448,12 +448,12 @@ public class LinearEquationsTest extends TestCase {
         
         double[] dE = new double[]{10, 5, 1};
         
-        System.out.printf("A=%n%s%n", FormatArray.toString(a, "%.1f"));
+        System.out.printf("A=\n%s\n", FormatArray.toString(a, "%.1f"));
         
         LDL ldl = LinearEquations.LDLDecomposition(a);
-        System.out.printf("L=%s%n", FormatArray.toString(ldl.getL(), "%.1f"));
-        System.out.printf("d=%s%n", FormatArray.toString(ldl.getD(), "%.1f"));
-        System.out.printf("A=%n%s%n", FormatArray.toString(a, "%.1f"));
+        System.out.printf("L=%s\n", FormatArray.toString(ldl.getL(), "%.1f"));
+        System.out.printf("d=%s\n", FormatArray.toString(ldl.getD(), "%.1f"));
+        System.out.printf("A=\n%s\n", FormatArray.toString(a, "%.1f"));
         
         double diff;
         double tol = 1e-7;
@@ -476,7 +476,7 @@ public class LinearEquationsTest extends TestCase {
         double[][] aa = MatrixUtil.multiplyByDiagonal(ldl.getL(), ldl.getD());
         MatrixUtil.multiply(aa, MatrixUtil.transpose(ldl.getL()));
         
-        System.out.printf("L*D*L^T=%n%s%n", FormatArray.toString(aa, "%.1f"));
+        System.out.printf("L*D*L^T=\n%s\n", FormatArray.toString(aa, "%.1f"));
         /*
         for (i = 0; i < a.length; ++i) {
             for (j = 0; j < ellE[i].length; ++j) {

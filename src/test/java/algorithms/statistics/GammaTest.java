@@ -37,7 +37,7 @@ public class GammaTest extends TestCase {
             g1 = Gamma.stirlingGamma(i);
             gl1 = Gamma.stirlingLGamma(i);
             
-            //System.out.printf("%d | %11.4f: %11.4f  %11.4f | %11.4f: %11.4f  %11.4f%n",
+            //System.out.printf("%d | %11.4f: %11.4f  %11.4f | %11.4f: %11.4f  %11.4f\n",
             //    i, e, g0, g1, el, gl0, gl1);
             //System.out.flush();
             

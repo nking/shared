@@ -88,8 +88,8 @@ public class HuffmanTest extends TestCase {
         String e = "111101100011101101001";
         
         VeryLongBitString encoded = h.encode(uncoded, s);        
-        System.out.printf("encoded= %s%n", encoded);
-        System.out.printf("expected=%s%n", e);
+        System.out.printf("encoded= %s\n", encoded);
+        System.out.printf("expected=%s\n", e);
         
         for (int i = 0; i < e.length(); ++i) {
             if (e.charAt(e.length() - 1 - i) == '1') {
@@ -106,7 +106,7 @@ public class HuffmanTest extends TestCase {
         assertTrue(uncoded.equals(decoded));
         
         HuffmanEncoding he = h.compress(uncoded);
-        System.out.printf("encoded=%s;  path=%s%n", he.encoded.toString(),
+        System.out.printf("encoded=%s;  path=%s\n", he.encoded.toString(),
             new StringBuilder(he.encoded.toString()).reverse().toString());
         decoded = h.decompress(he.symbolTree, he.encoded);
         System.out.println(" compress, decompress =" + decoded);

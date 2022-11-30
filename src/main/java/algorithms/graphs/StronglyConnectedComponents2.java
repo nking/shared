@@ -116,7 +116,7 @@ public class StronglyConnectedComponents2 {
         for (int i = 0; i < dfs2.td.length; ++i) {
             HeapNode node = heap.extractMin();
             NodeData d = (NodeData) node.getData();
-            //System.out.printf("ti=%d, tf=%d, idx=%d   endTime=%d c=%d%n", 
+            //System.out.printf("ti=%d, tf=%d, idx=%d   endTime=%d c=%d\n", 
             //    node.getKey(), d.tf, d.idx, endTime, c);
             if (node.getKey() <= endTime){
                 components[d.idx] = c;
@@ -125,7 +125,7 @@ public class StronglyConnectedComponents2 {
                 endTime = d.tf;
                 components[d.idx] = c;
             }
-            //System.out.printf("  idx=%d c=%d%n", d.idx, components[d.idx]);
+            //System.out.printf("  idx=%d c=%d\n", d.idx, components[d.idx]);
         }
        
         return components;
