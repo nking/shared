@@ -55,49 +55,43 @@ import no.uib.cipr.matrix.SVD;
  * @author nichole
  */
 public class PrincipalComponents {
-    
+
     /**
      * calculate the principal components of the unit standardized data x
      * using SVD.
-     * NOTE: should standardize the data before using this method,
-     * <pre>
-     *      double[] mean = new double[data[0].length];
-            double[] stDev = new double[data[0].length];
-     * e.g. double[][] x = Standardization.standardUnitNormalization(data, mean, stDev);
-     * </pre>
-     * 
-     * from http://www.cs.toronto.edu/~jepson/csc420/
-     * combined with the book by Strang "Introduction to Linear Algebra" 
-     * and the book by Leskovec, Rajaraman, and Ullman "Mining of Massive Datasets".
-     * also useful:
-     * https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
-     * and https://online.stat.psu.edu/stat505/book/export/html/670
-     * 
-     * NOTE: SVD has the drawbacks that a singular vector specifies a linear
-       combination of all input columns or rows, and there is a
-       a Lack of sparsity in the U, V, and s matrices.
-       See CUR decomposition method in contrast.
-       http://www.mmds.org/mmds/v2.1/ch11-dimred.pdf
+     * NOTE: the data need to be zero centered first.
+     *
+     <pre>
+     the method follows:
+     http://www.cs.toronto.edu/~jepson/csc420/
+     combined with the book by Strang "Introduction to Linear Algebra"
+     and the book by Leskovec, Rajaraman, and Ullman "Mining of Massive Datasets".
+     also useful:
+     https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
+     and https://online.stat.psu.edu/stat505/book/export/html/670
+     </pre>
+
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
      *          x should be zero-centered (mean=0).
      *          if x is a correlation matrix, it should be standardized to unit normalization (which is mean=0, stdev=1)
-     * @param nComponents the number of principal components to return.
-     * @return a few statistics of the SVD of the covariance of A, up to the
-     * nComponents dimension.  Note that if the rank of the SVD(cov(A)) is
-     * less than nComponents, then only the number of components as rank is returned.
+     @param nComponents the number of principal components to return.
+     @return the principal axes, the principal components, and
+     a few statistics of the CUR decomposition of A, up to the
+     nComponents dimension.  Note that if the rank of the A is
+     less than nComponents, then only the number of components as rank is returned.
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
 
         int n = x.length;
         int nDimensions = x[0].length;
-        
+
         if (nComponents > nDimensions) {
-            throw new IllegalArgumentException("x has " + nDimensions + " but " 
-                + " nComponents principal components were requested.");
+            throw new IllegalArgumentException("x has " + nDimensions + " but "
+                    + " nComponents principal components were requested.");
         }
-        
+
         double eps = 1.e-15;
 
         /*
@@ -139,10 +133,11 @@ public class PrincipalComponents {
         */
 
         SVD svd = SVD.factorize(new DenseMatrix(x));
+
         // U is mxm
         // S is mxn
         // V is nxn
-        
+
         double[] s = svd.getS();
         int i;
         int j;
@@ -152,7 +147,7 @@ public class PrincipalComponents {
                 rank++;
             }
         }
-        
+
         if (nComponents > rank) {
             nComponents = rank;
         }
@@ -204,6 +199,134 @@ public class PrincipalComponents {
             c[j] += c[j-1];
         }
         stats.cumulativeProportion = c;
+
+        double ssdP = 0;
+        for (j = nComponents; j < nDimensions; ++j) {
+            ssdP += eig[j];
+        }
+        stats.ssdP = ssdP;
+        stats.fractionVariance = (total - ssdP)/total;
+
+        System.out.printf("ssd_p=%.5e\n", stats.ssdP);
+        System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
+
+        System.out.printf("s fractions of total = \n%s\n",
+                FormatArray.toString(fracs, "%.4e"));
+        System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
+                FormatArray.toString(stats.cumulativeProportion, "%.4e"));
+        System.out.printf("principal directions=\n%s\n", FormatArray.toString(pA, "%.4e"));
+        System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
+        System.out.flush();
+
+        return stats;
+    }
+
+    /**
+     * calculate the principal components of the unit standardized data x
+     * using SVD.
+     * NOTE: the data need to be zero centered first.
+     *
+     <pre>
+     the method follows:
+     http://www.cs.toronto.edu/~jepson/csc420/
+     combined with the book by Strang "Introduction to Linear Algebra"
+     and the book by Leskovec, Rajaraman, and Ullman "Mining of Massive Datasets".
+     http://www.mmds.org/mmds/v2.1/ch11-dimred.pdf
+     also useful:
+     https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
+     and https://online.stat.psu.edu/stat505/book/export/html/670
+     </pre>
+
+     * @param x is a 2-dimensional array of k vectors of length n in format
+     *    double[n][k].  n is the number of samples, and k is the number of
+     *    variables, a.k.a. dimensions.
+     *          x should be zero-centered (mean=0).
+     *          if x is a correlation matrix, it should be standardized to unit normalization (which is mean=0, stdev=1)
+     * @param nComponents the number of principal components to return.
+     * @return the principal axes, the principal components, and
+     * a few statistics of the CUR decomposition of A, up to the
+     * nComponents dimension.  Note that if the rank of the A is
+     * less than nComponents, then only the number of components as rank is returned.
+     */
+    public static PCAStats calcPrincipalComponentsUsingCURDecomp(double[][] x, int nComponents) throws NotConvergedException {
+
+        int n = x.length;
+        int nDimensions = x[0].length;
+        
+        if (nComponents > nDimensions) {
+            throw new IllegalArgumentException("x has " + nDimensions + " but " 
+                + " nComponents principal components were requested.");
+        }
+        
+        double eps = 1.e-15;
+
+        CURDecomposition.CUR cur = CURDecomposition.calculateDecomposition(x, nComponents);
+
+        // U is mxm
+        // S is mxn
+        // V is nxn
+
+        MatrixUtil.SVDProducts svd = cur.getApproximateSVD();
+        double[] s = svd.s;
+        int i;
+        int j;
+        int rank = 0;
+        for (i = 0; i < s.length; ++i) {
+            if (Math.abs(s[i]) > eps) {
+                rank++;
+            }
+        }
+        
+        if (nComponents > rank) {
+            nComponents = rank;
+        }
+
+        double sumEvTrunc = 0;
+        double[] eig = new double[rank];
+        double sumEVTotal = 0;
+        for (i = 0; i < eig.length; ++i) {
+            eig[i] = (s[i] * s[i])/((double)n - 1.);
+            sumEVTotal += eig[i];
+            if (i < rank) {
+                sumEvTrunc = sumEVTotal;
+            }
+        }
+        //residual fractional eigenvalue is 1-(sum_{i=0 to nComponents-1}(s[i]) / sum_{i=0 to n-1}(s[i]))
+        double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);
+
+        // COLUMNS of v are the principal axes, a.k.a. principal directions
+        double[][] vT = svd.vT;
+        double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);
+
+        // // X*V = U * diag(s) = principal components
+        // principal components for "1 sigma".  if need 2 sigma, multiply pc by 2,...
+        double[][] pC = MatrixUtil.zeros(svd.u.length, nComponents);
+        for (i = 0; i < svd.u.length; ++i) {
+            for (j = 0; j < nComponents; ++j) {
+                // row u_i * diag(s[j])
+                pC[i][j] = svd.u[i][j] * svd.s[j];
+            }
+        }
+
+        PCAStats stats = new PCAStats();
+        stats.nComponents = nComponents;
+        stats.principalAxes = pA;
+        stats.principalComponents = pC;
+        stats.eigenValues = eig;
+
+        double total = 0;
+        for (j = 0; j < eig.length; ++j) {
+            total += eig[j];
+        }
+        double[] fracs = new double[rank];
+        for (j = 0; j < rank; ++j) {
+            fracs[j] = eig[j]/total;
+        }
+        double[] c = Arrays.copyOf(fracs, fracs.length);
+        for (j = 1; j < c.length; ++j) {
+            c[j] += c[j-1];
+        }
+        stats.cumulativeProportion = c;
         
         double ssdP = 0;
         for (j = nComponents; j < nDimensions; ++j) {
@@ -215,21 +338,6 @@ public class PrincipalComponents {
         System.out.printf("ssd_p=%.5e\n", stats.ssdP);
         System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
 
-        System.out.println("first few lines U = ");
-        int end = (3 < u.numRows()) ? 3 : u.numRows();
-        for (i = 0; i < end; ++i) {
-            for (j = 0; j < u.numColumns(); ++j) {
-                System.out.printf("%12.5e  ", u.get(i, j));
-            }
-            System.out.printf("\n");
-        }
-        System.out.println("VT = ");
-        for (i = 0; i < vT.length; ++i) {
-            for (j = 0; j < vT[i].length; ++j) {
-                System.out.printf("%12.5e  ", vT[i][j]);
-            }
-            System.out.printf("\n");
-        }
         System.out.printf("s fractions of total = \n%s\n",
                 FormatArray.toString(fracs, "%.4e"));
         System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
