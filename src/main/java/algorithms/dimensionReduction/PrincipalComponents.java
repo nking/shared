@@ -3,8 +3,10 @@ package algorithms.dimensionReduction;
 import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.util.Arrays;
+
+import algorithms.statistics.Covariance;
+import algorithms.util.FormatArray;
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
 
@@ -79,13 +81,15 @@ public class PrincipalComponents {
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
+     *          x should be zero-centered (mean=0).
+     *          if x is a correlation matrix, it should be standardized to unit normalization (which is mean=0, stdev=1)
      * @param nComponents the number of principal components to return.
      * @return a few statistics of the SVD of the covariance of A, up to the
      * nComponents dimension.  Note that if the rank of the SVD(cov(A)) is
-     * less than nComponents, then only that amount is returned.
+     * less than nComponents, then only the number of components as rank is returned.
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
-                
+
         int n = x.length;
         int nDimensions = x[0].length;
         
@@ -95,11 +99,8 @@ public class PrincipalComponents {
         }
         
         double eps = 1.e-15;
-           
+
         /*
-        NOTE that the Strang approach does not assume the data has been
-        standardized to mean 0 and unit variance.
-        
         minimal residual variance basis:
            basis direction b.
            samples are vectors x_j where j = 0 to k
@@ -115,28 +116,38 @@ public class PrincipalComponents {
 
            SSD_p is called the minimum residual variance for any basis of dimension p.
 
-           [U, S, V] = SVD( Cov )
-           the 1st principal direction is the 1st column of U.
-        */
-    
-        //TODO: overload this method to use fast distance covariance
+           SVD( Sample Covariance ) = SVD((1/(n-1)) * X^T*X)
 
-        double[][] cov = BruteForce.covariance(x);
-        assert(nDimensions == cov.length);
-        assert(nDimensions == cov[0].length);
-                        
-        //NOTE: we know that cov is symmetric positive definite, so there are
-        //   many operations special to it one could explore for diagonalization
-        
-        SVD svd = SVD.factorize(new DenseMatrix(cov));
+           SVD(A^T*A).U and V are both == SVD(A).V
+           SVD(A*A^T).U and V are both == SVD(A).U
+
+             A = U * D * V^T  where all U and V^T are from SVD(A), and D is from SVD(A).s
+             A^T A = V * D^2 * V^T
+             SampleCov = (1/(n-1)) * A^T A
+                       = (1/(n-1)) * V * D^2 * V^T
+
+             we also have U * D = X * V from SVD
+
+             Jepson:  B first vector is the first column of V in SVD(C_S)
+                where C_S is the sample covariance and SVD(C_S).V == SVD(C_S).U ~ SVD(X).V
+
+         SVD(C_S) = SVD((1/(n-1)) * X^T*X)
+         SVD(X^T*X).U == SVD(X).V
+            V gives the principal axes or principal directions of the dat
+            X*V = U * D = principal components = projection of the data onto the principal axes
+               and the coords of the newly transformed data are on row_0 for the first data point, etc.
+        */
+
+        SVD svd = SVD.factorize(new DenseMatrix(x));
         // U is mxm
         // S is mxn
         // V is nxn
         
         double[] s = svd.getS();
-        
+        int i;
+        int j;
         int rank = 0;
-        for (int i = 0; i < s.length; ++i) {
+        for (i = 0; i < s.length; ++i) {
             if (Math.abs(s[i]) > eps) {
                 rank++;
             }
@@ -145,138 +156,86 @@ public class PrincipalComponents {
         if (nComponents > rank) {
             nComponents = rank;
         }
-        
-        //eigenvalue_i = lambda_i = (s_i^2)/(n-1)
-        double[] eV = Arrays.copyOf(s, rank);
-        for (int i = 0; i < eV.length; ++i) {
-            eV[i] *= eV[i];
-            eV[i] /= ((double)n - 1.);
+
+        double sumEvTrunc = 0;
+        double[] eig = new double[rank];
+        double sumEVTotal = 0;
+        for (i = 0; i < eig.length; ++i) {
+            eig[i] = (s[i] * s[i])/((double)n - 1.);
+            sumEVTotal += eig[i];
+            if (i < rank) {
+                sumEvTrunc = sumEVTotal;
+            }
         }
-        
-        // COLUMNS of u are the principal axes, a.k.a. principal directions
-        // size is nDimensions x nDimensions
+        //residual fractional eigenvalue is 1-(sum_{i=0 to nComponents-1}(s[i]) / sum_{i=0 to n-1}(s[i]))
+        double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);
+
+        // COLUMNS of v are the principal axes, a.k.a. principal directions
+        double[][] vT = MatrixUtil.convertToRowMajor(svd.getVt());
+        double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);
+
+        // // X*V = U * diag(s) = principal components
         DenseMatrix u = svd.getU();
-        assert(nDimensions == u.numRows());
-        assert(nDimensions == u.numColumns());
-                     
-        // extract the nComponents columns of U as the principal axes, a.k.a. 
-        //  principal directions.  array format: [nDimensions][nComponents]
-        double[][] pa = new double[u.numRows()][nComponents];                                
-        for (int row = 0; row < u.numRows(); ++row) {
-            pa[row] = new double[nComponents];
-            for (int col = 0; col < nComponents; ++col) {
-                pa[row][col] = u.get(row, col);
+        // principal components for "1 sigma".  if need 2 sigma, multiply pc by 2,...
+        double[][] pC = MatrixUtil.zeros(u.numRows(), nComponents);
+        for (i = 0; i < u.numRows(); ++i) {
+            for (j = 0; j < nComponents; ++j) {
+                // row u_i * diag(s[j])
+                pC[i][j] = u.get(i, j) * svd.getS()[j];
             }
         }
-        
-        // NOTE: the principal scores is a vector Y_1 of length n:
-        //     first principal score Y_1 = 
-        //         sum of (first principal direction for each variable dot x[*][variable] )
-        //  The magnitudes of the principal direction coefficients give the 
-        //  contributions of each variable to that component. 
-        //  Because the data have been standardized, they do not depend on the 
-        //  variances of the corresponding variables.      
-        
-        // principal components are the projections of the principal axes on U
-        //   the "1 sigma" lengths are:
-        double[][] projections = new double[pa.length][pa[0].length];
-        for (int row = 0; row < pa.length; ++row) {
-            projections[row] = Arrays.copyOf(pa[row], pa[row].length);
-            for (int col = 0; col < pa[row].length; ++col) {
-                // note, if wanted "3 sigma" instead, use factor 3*s[col] here:
-                projections[row][col] *= s[col];
-            }
-        }
-        
-        // extract the first nComponents of rows of V^T:
-        double[][] v = MatrixUtil.convertToRowMajor(svd.getVt());
-        v = MatrixUtil.copySubMatrix(v, 0, nComponents-1, 0, v[0].length-1);
-        
+
         PCAStats stats = new PCAStats();
         stats.nComponents = nComponents;
-        stats.principalDirections = pa;
-        stats.eigenvalues = eV;
-        stats.vTP = v;
-        
-        stats.s = new double[nComponents];
-        for (int i = 0; i < nComponents; ++i) {
-            stats.s[i] = s[i];
-        }
-                
+        stats.principalAxes = pA;
+        stats.principalComponents = pC;
+        stats.eigenValues = eig;
+
         double total = 0;
-        for (int j = 0; j < rank; ++j) {
-            total += s[j];
+        for (j = 0; j < eig.length; ++j) {
+            total += eig[j];
         }
         double[] fracs = new double[rank];
-        for (int j = 0; j < rank; ++j) {
-            fracs[j] = s[j]/total;
+        for (j = 0; j < rank; ++j) {
+            fracs[j] = eig[j]/total;
         }
         double[] c = Arrays.copyOf(fracs, fracs.length);
-        for (int j = 1; j < c.length; ++j) {
+        for (j = 1; j < c.length; ++j) {
             c[j] += c[j-1];
         }
         stats.cumulativeProportion = c;
         
-        double sum = 0;
-        int p;
-        for (int j = (nComponents+1); j <= nDimensions; ++j) {
-            p = j - 1;
-            sum += s[p];
+        double ssdP = 0;
+        for (j = nComponents; j < nDimensions; ++j) {
+            ssdP += eig[j];
         }
-        stats.ssdP = sum;
-        stats.fractionVariance = (total - sum)/total;
-        
-        System.out.println("singular values of SVD(cov) = sqrts of eigenvalues of cov = ");
-        for (int i = 0; i < rank; ++i) {
-            System.out.printf("%11.3e  ", s[i]);
-        }
-        System.out.println();
-        System.out.println("eigenvalues of cov = ");
-        for (int i = 0; i < eV.length; ++i) {
-            System.out.printf("%11.3e  ", eV[i]);
-        }
-        System.out.println();
-        System.out.println("U of SVD(cov) = ");
-        for (int i = 0; i < u.numRows(); ++i) {
-            for (int j = 0; j < u.numColumns(); ++j) {
+        stats.ssdP = ssdP;
+        stats.fractionVariance = (total - ssdP)/total;
+
+        System.out.printf("ssd_p=%.5e\n", stats.ssdP);
+        System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
+
+        System.out.println("first few lines U = ");
+        int end = (3 < u.numRows()) ? 3 : u.numRows();
+        for (i = 0; i < end; ++i) {
+            for (j = 0; j < u.numColumns(); ++j) {
                 System.out.printf("%12.5e  ", u.get(i, j));
             }
             System.out.printf("\n");
         }
-        System.out.println("V_p of SVD(cov) = ");
-        for (int i = 0; i < v.length; ++i) {
-            for (int j = 0; j < v[i].length; ++j) {
-                System.out.printf("%12.5e  ", v[i][j]);
+        System.out.println("VT = ");
+        for (i = 0; i < vT.length; ++i) {
+            for (j = 0; j < vT[i].length; ++j) {
+                System.out.printf("%12.5e  ", vT[i][j]);
             }
             System.out.printf("\n");
         }
-        
-        System.out.println("eigenvalue fractions of total = ");
-        for (int i = 0; i < fracs.length; ++i) {
-            System.out.printf("%11.3e  ", fracs[i]);
-        }
-        System.out.println();
-        System.out.println("eigenvalue cumulativeProportion= ");
-        for (int i = 0; i < stats.cumulativeProportion.length; ++i) {
-            System.out.printf("%11.3e  ", stats.cumulativeProportion[i]);
-        }
-        System.out.println();
-        
-        System.out.println("principal directions= ");
-        for (int i = 0; i < stats.principalDirections.length; ++i) {
-            for (int j = 0; j < stats.principalDirections[i].length; ++j) {
-                System.out.printf("%12.5e  ", stats.principalDirections[i][j]);
-            }
-            System.out.printf("\n");
-        }
-        System.out.println("principal projections (=u_p*s)=");
-        for (int i = 0; i < projections.length; ++i) {
-            for (int j = 0; j < projections[i].length; ++j) {
-                System.out.printf("%11.3e  ", projections[i][j]);
-            }
-            System.out.printf("\n");
-        }
-        
+        System.out.printf("s fractions of total = \n%s\n",
+                FormatArray.toString(fracs, "%.4e"));
+        System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
+                FormatArray.toString(stats.cumulativeProportion, "%.4e"));
+        System.out.printf("principal directions=\n%s\n", FormatArray.toString(pA, "%.4e"));
+        System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
         
         return stats;
@@ -307,49 +266,36 @@ public class PrincipalComponents {
         ⃗
         then the reconstruction is r(⃗a ) = m⃗ + U ⃗a 
         */
-       
-        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
-        b = MatrixUtil.multiply(b, stats.vTP);
+
+        //TODO: revisit this
+
+        double[][] b = stats.principalComponents;
         
         return b;
     }
     
     public static class PCAStats {
-        /** the number of components requested from the calculation, that is,
-         the first p principal components from the U matrix of the SVD 
-         decomposition of the covariance of x.
-         * NOTE that x given to the algorithm, is a sample of vectors 
-         *    {⃗x_j}_{j=1 to k}, with each ⃗x_j ∈ R^n (each x_j is a vector of 
-         *    n real numbers) that form the matrix X ∈ R^(nxk).
-. 
+
+        /** the number of components requested from the calculation, unless larger than the matrix
+         * rank in which case the value will be the rank.
          */
         int nComponents;
-        
+
         /**
-         * the first nComponents principal directions of x. 
-         * this is obtained from the first p columns of the U matrix of SVD(cov(x)).
-         * the U_p columns have been transposed into rows here:
-         * principalDirections[0] holds 1st principal direction,
-         * principalDirections[1] holds 2nd principal direction, etc.
-         * <pre>
-         *    x * principalDirections * v^T_p gives the principal axes which
-         *       minimize the variance.
-         * </pre>
+         * principal axes a.k.a. principal directions of the data.
+         * These are the first nComponents columns of the SVD V matrix.
+         * When considering X as sample covariance, Note that SVD(A^T*A).U and V are both == SVD(A).V.
          */
-        double[][] principalDirections;
+        double[][] principalAxes;
         
         /**
-         * the first p rows of the V^T matrix of SVD(cov(x)).
-         * <pre>
-         *    x * principalDirections * v^T_p gives the principal axes which
-         *       minimize the variance.
-         * </pre>
+         * principal components are the data projected onto the principal axes.
+         * principal components = X*V = U * D where X = SVD(X).U * diag(SVD(X).s) * SVD(X).vT
          */
-        double[][] vTP;
+        double[][] principalComponents;
         
         /**
-         * the fraction of the total variance Q_p (where p is the dimension
-         * number, that is, nComponents):
+         * the fraction of the total variance Q_p (where p is the dimension number, that is, nComponents):
          * <pre>
          *    Q_p = (SSD_0 − SSD_p)/SSD_0
          * 
@@ -362,7 +308,9 @@ public class PrincipalComponents {
         
         /**
          * the cumulative addition of 
-         *     (sum_of_eigenvalues - eigenvalue_i)/sum_of_eigeneigenvalues
+         *     (sum_of_eigenvalues - eigenvalue_i)/sum_of_eigenvalues
+         *     after truncation.  that is, the sum of eigenvalues is the sum of the truncated number of eigenvalues,
+         *      not the entire number from the original decomposition.
          */
         double[] cumulativeProportion;
         
@@ -372,10 +320,8 @@ public class PrincipalComponents {
         double ssdP;
         
         /**
-         * the first nComponents singular values from the diagonal matrix of
-         * the SVD of covariance of x;
+         * the first nComponents number of eigenValues
          */
-        double[] s;
-        double[] eigenvalues;
+        double[] eigenValues;
     }
 }

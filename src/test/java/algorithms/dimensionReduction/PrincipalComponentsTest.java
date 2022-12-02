@@ -2,7 +2,9 @@ package algorithms.dimensionReduction;
 
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
+import algorithms.statistics.Covariance;
 import algorithms.statistics.Standardization;
+import algorithms.util.FormatArray;
 import algorithms.util.ResourceFinder;
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,18 +35,16 @@ public class PrincipalComponentsTest extends TestCase {
         
         //NOTE: to match the results of the psu tutorial, follow section
         //    Example 11-3: Place Rated (after Standardization)
-        
+
+        /*
         double[] mean = new double[x[0].length];
         double[] stDev = new double[x[0].length];
         x = Standardization.standardUnitNormalization(x, mean, stDev);
-        
-        System.out.println("mean x=");
-        for (i = 0; i < mean.length; ++i) {
-            System.out.printf("%11.3e  ", mean[i]);
-        }
-        System.out.println();
+        System.out.printf("mean x=\n%s\n", FormatArray.toString(mean, "%.5e"));
         System.out.flush();
-        
+         */
+        x = Standardization.zeroCenterMean(x);
+
         /*
         Step 1: Examine the eigenvalues to determine how many principal 
         components should be considered:
@@ -68,44 +68,40 @@ public class PrincipalComponentsTest extends TestCase {
         */
         
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 3);
-        
-        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
-        b = MatrixUtil.multiply(b, stats.vTP);
-        System.out.println("b = x * pr.dir * v^T_p=");
-        for (i = 0; i < b.length; ++i) {
-            for (j = 0; j < b[i].length; ++j) {
-                System.out.printf("%11.3e  ", b[i][j]);
-            }
-            System.out.println();
-        }
+
+        double[][] b = stats.principalComponents;
+        System.out.printf("b = x * pr.dir * v^T_p=\n%s\n", FormatArray.toString(b, "%.5e"));
         System.out.flush();
         
-        double[][] xMinusB = MatrixUtil.copy(x);
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                //xMinusB[i][j] -= mean[j];
-                xMinusB[i][j] -= b[i][0];
+        double[][] cMinusB = MatrixUtil.copy(x);
+        for (i = 0; i < cMinusB.length; ++i) {
+            for (j = 0; j < cMinusB[i].length; ++j) {
+                cMinusB[i][j] -= b[i][0];
             }
         }
-        System.out.println("x:");
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", x[i][j]);
-            }
-            System.out.println();
-        }
+        System.out.printf("cov - Ba=\n%s\n", FormatArray.toString(cMinusB, "%11.3e"));
         System.out.flush();
-        System.out.println("(x - (m + B*a))^2:");
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", xMinusB[i][j]);
+        double cMBSum = 0;
+        for (i = 0; i < cMinusB.length; ++i) {
+            for (j = 0; j < cMinusB[i].length; ++j) {
+                cMBSum += cMinusB[i][j]*cMinusB[i][j];
             }
-            System.out.println();
         }
-        System.out.flush();
+        System.out.printf("sum (x - (m + B*a))^2 = %.5e\n", cMBSum);
+
+        double[] expectedEig = new double[]{0.3775, 0.0511, 0.0279, 0.0230, 0.0168, 0.0120, 0.0085, 0.0039, 0.0018};
+        double[] expectedFracEig = new double[]{0.7227, 0.0977, 0.0535, 0.0440, 0.0321, 0.0229, 0.0162, 0.0075, 0.0034};
+        double[] expectedCumulativeFracEig = new double[]{0.7227, 0.8204, 0.8739, 0.9178, 0.9500, 0.9728,
+            0.9890, 0.9966, 1.00};
+
+        double tol = 1E-3;
+        assertEquals(expectedEig.length, stats.eigenValues.length);
+        for (i = 0; i < expectedEig.length; ++i) {
+            assertTrue(Math.abs(expectedEig[i] - stats.eigenValues[i]) < tol);
+        }
     }
     
-    public void testPCA2() throws Exception {
+    public void estPCA2() throws Exception {
         
         double[][] x = new double[4][2];
         x[0] = new double[]{1, 2};
@@ -142,43 +138,28 @@ public class PrincipalComponentsTest extends TestCase {
         // x is nx2
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
                 
-        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
-        b = MatrixUtil.multiply(b, stats.vTP);
-        System.out.println("b = x * pr.dir * v^T_p=");
-        for (i = 0; i < b.length; ++i) {
-            for (j = 0; j < b[i].length; ++j) {
-                System.out.printf("%11.3e  ", b[i][j]);
-            }
-            System.out.println();
-        }
+        double[][] b = stats.principalComponents;
+        System.out.printf("b = x * pr.dir * v^T_p=\n%s\n", FormatArray.toString(b, "%.5e"));
         System.out.flush();
-        
+
         double[][] xMinusB = MatrixUtil.copy(x);
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
-                //xMinusB[i][j] -= mean[j];
                 xMinusB[i][j] -= b[i][0];
             }
         }
-        System.out.println("x:");
+        System.out.printf("x - Ba=\n%s\n", FormatArray.toString(xMinusB, "%11.3e"));
+        System.out.flush();
+        double xMBSum = 0;
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", x[i][j]);
+                xMBSum += xMinusB[i][j]*xMinusB[i][j];
             }
-            System.out.println();
         }
-        System.out.flush();
-        System.out.println("(x - (m + B*a))^2:");
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", xMinusB[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
+        System.out.printf("sum (x - (m + B*a))^2 = %.5e\n", xMBSum);
     }
     
-    public void testReconstruction() throws Exception {
+    public void estReconstruction() throws Exception {
         
         double d2r = Math.PI/180.;
         double angle, dx, dy;
@@ -248,41 +229,26 @@ public class PrincipalComponentsTest extends TestCase {
         // x is nx2
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
                 
-        double[][] b = MatrixUtil.multiply(x, stats.principalDirections);
-        b = MatrixUtil.multiply(b, stats.vTP);
-        System.out.println("b = x * pr.dir * v^T_p=");
-        for (i = 0; i < b.length; ++i) {
-            for (j = 0; j < b[i].length; ++j) {
-                System.out.printf("%11.3e  ", b[i][j]);
-            }
-            System.out.println();
-        }
+        double[][] b = stats.principalComponents;
+        System.out.printf("b = x * pr.dir * v^T_p=\n%s\n", FormatArray.toString(b, "%.5e"));
         System.out.flush();
-        
+
         double[][] xMinusB = MatrixUtil.copy(x);
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
-                //xMinusB[i][j] -= mean[j];
                 xMinusB[i][j] -= b[i][0];
             }
         }
-        System.out.println("x:");
+        System.out.printf("x - Ba=\n%s\n", FormatArray.toString(xMinusB, "%11.3e"));
+        System.out.flush();
+        double xMBSum = 0;
         for (i = 0; i < xMinusB.length; ++i) {
             for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", x[i][j]);
+                xMBSum += xMinusB[i][j]*xMinusB[i][j];
             }
-            System.out.println();
         }
-        System.out.flush();
-        System.out.println("(x - (m + B*a))^2:");
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", xMinusB[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
-        
+        System.out.printf("sum (x - (m + B*a))^2 = %.5e\n", xMBSum);
+
         // =====================
         System.out.println("=== new points in same reference frame ===");
         
@@ -329,8 +295,8 @@ public class PrincipalComponentsTest extends TestCase {
         stDev = new double[x[0].length];
         x = Standardization.standardUnitNormalization(x, mean, stDev);
         
-        b = MatrixUtil.multiply(x, stats.principalDirections);
-        b = MatrixUtil.multiply(b, stats.vTP);
+        b = MatrixUtil.multiply(x, stats.principalAxes);
+        b = MatrixUtil.multiply(b, stats.principalComponents);
         
         double[][] bReconstruction = PrincipalComponents.reconstruct(x, stats);
         for (i = 0; i < bReconstruction.length; ++i) {
