@@ -141,7 +141,7 @@ public class DistanceTest extends TestCase {
         //DCov dCov = UnivariateDistance.fastDcov(x, y);
         //System.out.println("\nfastDcov(X,Y):\n " + dCov.toString());
         
-        DCor dCor2 = UnivariateDistance.fastDcor(x, y);
+        DCor dCor2 = UnivariateDistance.fastDCor(x, y);
         System.out.println("\nfastDcor(X,Y):\n " + dCor2.toString());
         
         double diff = 0;
@@ -192,11 +192,11 @@ public class DistanceTest extends TestCase {
         System.out.printf("\n_univariateCovariance:\n");
         System.out.println("XY:" + dcov.toString());
         
-        dcov = UnivariateDistance.fastDcov(x, y);
+        dcov = UnivariateDistance.fastDCov(x, y);
         System.out.printf("\nfastDCov:\n");
         System.out.println("XY:" + dcov.toString());
         
-        DCor dcor = UnivariateDistance.fastDcor(x, y);
+        DCor dcor = UnivariateDistance.fastDCor(x, y);
         System.out.printf("\nfastDCor:\n");
         System.out.println("XY:" + dcor.toString());
         

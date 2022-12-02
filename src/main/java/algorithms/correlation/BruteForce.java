@@ -16,6 +16,7 @@ public class BruteForce {
      * calculate the correlation matrix for a using a brute force method
      * @param a an mxn matrix of data with the dimensions being columns
      * and the datum number being rows.
+     * runtime complexity is O(m^2 * n + n^2)
      * <pre>
      * e.g.  a[0] = new double[]{10, 100, 1000}
      *       a[1] = new double[]{ 9, 110, 900}
@@ -27,7 +28,9 @@ public class BruteForce {
         double eps= 1.e-15;
         
         // cor_i_j = cov_i_j / (sqrt(var_i)*sqrt(var_j))
-        
+
+        //The runtime complexity is O(m^2 * n) where m = a.length and n = a[0].length.
+        // cov size is [n X n].
         double[][] cov = covariance(a);
         
         double[][] cor = new double[cov.length][cov[0].length];
@@ -36,6 +39,7 @@ public class BruteForce {
             cor[i] = new double[cov[i].length];
         }
         double si, sj;
+        // runtime complexity is ~2*(n+1)*(n) ~ n^2
         for (i = 0; i < cov.length; ++i) {
             si = (cov[i][i] > eps) ? Math.sqrt(cov[i][i]) : 0;
             for (j = i; j < cov[i].length; ++j) {
@@ -56,6 +60,7 @@ public class BruteForce {
      * calculate the covariance matrix for a using a brute force method.
      * The covariance matrix is also known as auto-covariance matrix, 
      * dispersion matrix, variance matrix, and the variance–covariance matrix.
+     * The runtime complexity is O(m^2 * n) where m = a.length and n = a[0].length.
      * @param a an mxn matrix of data with the dimensions being columns
      * and the datum number being rows.
      * <pre>
@@ -75,7 +80,7 @@ public class BruteForce {
         
         // mean of each column:
         double[] mean = MatrixUtil.mean(a);
-        
+        // r.t. nRows * nCols
         double[][] diffs = new double[nRows][];
         for (i = 0; i < nRows; ++i) {
             diffs[i] = new double[nCols];
@@ -101,7 +106,8 @@ public class BruteForce {
         for (i = 0; i < nCols; ++i) {
             cov[i] = new double[nCols];
         }
-     
+
+        // r.t. nRows^2 * nCols
         double sum;
         int ii;
         for (i = 0; i < nRows; ++i) {

@@ -115,12 +115,12 @@ public class MultivariateUniformDistributionTest extends TestCase {
             UnivariateDistance.DCov dcov;
             UnivariateDistance.DCor dcor;
             
-            dcor = UnivariateDistance.fastDcor(vT[0], vT[1]);
+            dcor = UnivariateDistance.fastDCor(vT[0], vT[1]);
             System.out.println("correlation within points=" + Math.sqrt(dcor.corSq));
             
             // sum_i(sum_j(xi - xj)) and sum_i(sum_j(yi - yj))
             //    fall radially in counts from min value of x-axis
-            dcov = UnivariateDistance.fastDcov(vT[0], vT[1]);
+            dcov = UnivariateDistance.fastDCov(vT[0], vT[1]);
             System.out.println("cov:" + dcov.toString2());
             min = MiscMath0.findMin(dcov.ai);
             max = MiscMath0.findMax(dcov.ai);
@@ -252,7 +252,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
             plotter.writeFile("onSurface_" + onSurface[i] + "_rej2");
             
             //====
-            UnivariateDistance.DCor dcor = UnivariateDistance.fastDcor(xT[0], xT[1]);
+            UnivariateDistance.DCor dcor = UnivariateDistance.fastDCor(xT[0], xT[1]);
             System.out.println("correlation within points=" + Math.sqrt(dcor.corSq));
             
             UnivariateDistance.DCov dcov;
@@ -260,7 +260,7 @@ public class MultivariateUniformDistributionTest extends TestCase {
             HistogramHolder h;
             String str;
             
-            dcov = UnivariateDistance.fastDcov(col1d, col2d);
+            dcov = UnivariateDistance.fastDCov(col1d, col2d);
             System.out.println("rej2: cov:" + dcov.toString2());
             min = MiscMath0.findMin(dcov.ai);
             max = MiscMath0.findMax(dcov.ai);

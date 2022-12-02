@@ -61,10 +61,11 @@ public class UnivariateDistance {
      * algorithm of Huo and Szekely (2016).
      **
      * @param x sample of univariate observations of a variable
-     * @param y second sample of univariate observations (can be of another variable)
+     * @param y second sample of univariate observations (can be of another variable).  the length of y must be the
+     *          same as the length of x.
      * @return covariance of X and Y along with intermediate data.  
      */
-    public static DCov fastDcov(double[] x, double[] y) {
+    public static DCov fastDCov(double[] x, double[] y) {
 
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -816,22 +817,22 @@ public class UnivariateDistance {
      * NOTE that the distance correlation is exactly zero if and only if two 
      * random variables are independent.
      */
-    public static DCor fastDcor(double[] x, double[] y) {
+    public static DCor fastDCor(double[] x, double[] y) {
         DCor dcor = new DCor();
         double tol = 1e-15;
-        dcor.covXXSq = fastDcov(x, x);
+        dcor.covXXSq = fastDCov(x, x);
         if (dcor.covXXSq.covsq < tol) {
             dcor.corSq = 0;
             System.err.println("cov(XX) is 0, so correlation is 0");
             return dcor;
         }
-        dcor.covYYSq = fastDcov(y, y);
+        dcor.covYYSq = fastDCov(y, y);
         if (dcor.covYYSq.covsq < tol) {
             dcor.corSq = 0;
             System.err.println("cov(YY) is 0, so correlation is 0");
             return dcor;
         }
-        dcor.covXYSq = fastDcov(x, y);
+        dcor.covXYSq = fastDCov(x, y);
         if (dcor.covXYSq.covsq < tol) {
             dcor.corSq = 0;
             System.err.println("cov(XY) is 0, so correlation is 0");

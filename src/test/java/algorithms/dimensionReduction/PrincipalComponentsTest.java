@@ -1,11 +1,8 @@
 package algorithms.dimensionReduction;
 
-import algorithms.correlation.BruteForce;
-import algorithms.correlation.MultivariateDistance;
 import algorithms.correlation.UnivariateDistance;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
-import algorithms.statistics.Covariance;
 import algorithms.statistics.Standardization;
 import algorithms.util.FormatArray;
 import algorithms.util.ResourceFinder;
@@ -120,17 +117,23 @@ public class PrincipalComponentsTest extends TestCase {
         //double[][] tmp = MatrixUtil.zeros(stats.principalComponents.length, 2);
         double[] tmp1 = new double[stats.principalComponents.length];
         double[] tmp2 = new double[stats.principalComponents.length];
-        for (i = 0; i < x[0].length; ++i) {
-            for (j = 0; j < stats.principalComponents[0].length; ++j) {
-                for (k = 0; k < stats.principalComponents.length; ++k) {
+        System.out.printf("%d, %d, %d\n", x[0].length, stats.principalComponents[0].length, stats.principalComponents.length);
+        // dCor: runtime for making correlation matrix is m * p * n * 4 * fast Dcov
+        //    ~ O(m * p * n^2 * log_2(n))
+        //     where m = x.length, n = x[0].length, p = number of components chosen
+        // in contrast, BruteForce correlation: O(m^3*p*n^3 + m*p*n^4)
+        for (i = 0; i < x[0].length; ++i) { // i=[0,9)
+            for (j = 0; j < stats.principalComponents[0].length; ++j) {//j=[0,3)
+                for (k = 0; k < stats.principalComponents.length; ++k) { //k=[0,329)
                     //tmp[k][0] = stats.principalComponents[k][j];
                     //tmp[k][1] = x[k][i];
                     tmp1[k] = stats.principalComponents[k][j];
                     tmp2[k] = x[k][i];
                 }
-                //double[][] cor = BruteForce.correlation(tmp);
+                // bruteforce correlation runtime complexity is O(m^2 * n + n^2)
                 //cor[i][j] = BruteForce.correlation(tmp)[0][1];
-                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDcor(tmp1, tmp2).corSq);
+                // fast dcor runtime is O(n*log_2(n))
+                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDCor(tmp1, tmp2).corSq);
             }
         }
         //System.out.printf("cor=\n%s\n", FormatArray.toString(cor, "%.4e"));

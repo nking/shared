@@ -114,7 +114,7 @@ public class MultivariateDistance {
             xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);
             yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);
             
-            dcov = UnivariateDistance.fastDcov(xu, yv);
+            dcov = UnivariateDistance.fastDCov(xu, yv);
             
             meanT += dcov.covsq;
         }
@@ -333,7 +333,7 @@ public class MultivariateDistance {
             xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);
             yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);
             
-            dcor = UnivariateDistance.fastDcor(xu, yv);
+            dcor = UnivariateDistance.fastDCor(xu, yv);
             dcorsq += dcor.corSq;
             
             uPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);
@@ -353,9 +353,9 @@ public class MultivariateDistance {
             s2 += dcor.covXYSq.aDotDot;
             s3 += dcor.covXYSq.bDotDot;
             
-            dcov = UnivariateDistance.fastDcov(xu, xuPrime);
+            dcov = UnivariateDistance.fastDCov(xu, xuPrime);
             txx += dcov.covsq;
-            dcov = UnivariateDistance.fastDcov(yv, yvPrime);
+            dcov = UnivariateDistance.fastDCov(yv, yvPrime);
             tyy += dcov.covsq;
         }
         
