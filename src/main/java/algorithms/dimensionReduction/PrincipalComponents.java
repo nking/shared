@@ -179,6 +179,9 @@ public class PrincipalComponents {
                 pC[i][j] = u.get(i, j) * svd.getS()[j];
             }
         }
+        //checked, same as pC = U * diag(s)
+        //double[][] xv = MatrixUtil.multiply(x, MatrixUtil.transpose(vT));
+        //System.out.printf("xV=\n%s\n", FormatArray.toString(xv, "%.4e"));
 
         PCAStats stats = new PCAStats();
         stats.nComponents = nComponents;
@@ -210,6 +213,7 @@ public class PrincipalComponents {
         System.out.printf("ssd_p=%.5e\n", stats.ssdP);
         System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
 
+        System.out.printf("eig = %s\n", FormatArray.toString(eig, "%.4e"));
         System.out.printf("s fractions of total = \n%s\n",
                 FormatArray.toString(fracs, "%.4e"));
         System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
@@ -218,12 +222,16 @@ public class PrincipalComponents {
         System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
 
+        //checked, same as pC = U * diag(s)
+        //double[][] xv = MatrixUtil.multiply(x, MatrixUtil.transpose(vT));
+        //System.out.printf("xV=\n%s\n", FormatArray.toString(xv, "%.4e"));
+
         return stats;
     }
 
     /**
      * calculate the principal components of the unit standardized data x
-     * using SVD.
+     * using CUR decomposition.
      * NOTE: the data need to be zero centered first.
      *
      <pre>
@@ -338,14 +346,15 @@ public class PrincipalComponents {
         System.out.printf("ssd_p=%.5e\n", stats.ssdP);
         System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
 
+        System.out.printf("eig=%s\n", FormatArray.toString(eig, "%.4e"));
         System.out.printf("s fractions of total = \n%s\n",
                 FormatArray.toString(fracs, "%.4e"));
         System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
                 FormatArray.toString(stats.cumulativeProportion, "%.4e"));
         System.out.printf("principal directions=\n%s\n", FormatArray.toString(pA, "%.4e"));
-        System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
+        System.out.printf("principal components (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
-        
+
         return stats;
     }
     

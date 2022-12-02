@@ -1,5 +1,6 @@
 package algorithms.dimensionReduction;
 
+import algorithms.correlation.BruteForce;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.Covariance;
@@ -43,6 +44,8 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.printf("mean x=\n%s\n", FormatArray.toString(mean, "%.5e"));
         System.out.flush();
          */
+        double[] mean = MatrixUtil.mean(x);
+
         x = Standardization.zeroCenterMean(x);
 
         /*
@@ -66,39 +69,68 @@ public class PrincipalComponentsTest extends TestCase {
             Furthermore, the first four principal components explain 72%, while 
             the first five principal components explain 82% of the variation.         
         */
+
+        System.out.printf("x is [%d X %x]\n", x.length, x[0].length);
         
         PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 3);
 
-        double[][] b = stats.principalComponents;
-        System.out.printf("b = x * pr.dir * v^T_p=\n%s\n", FormatArray.toString(b, "%.5e"));
-        System.out.flush();
-        
-        double[][] cMinusB = MatrixUtil.copy(x);
-        for (i = 0; i < cMinusB.length; ++i) {
-            for (j = 0; j < cMinusB[i].length; ++j) {
-                cMinusB[i][j] -= b[i][0];
-            }
-        }
-        System.out.printf("cov - Ba=\n%s\n", FormatArray.toString(cMinusB, "%11.3e"));
-        System.out.flush();
-        double cMBSum = 0;
-        for (i = 0; i < cMinusB.length; ++i) {
-            for (j = 0; j < cMinusB[i].length; ++j) {
-                cMBSum += cMinusB[i][j]*cMinusB[i][j];
-            }
-        }
-        System.out.printf("sum (x - (m + B*a))^2 = %.5e\n", cMBSum);
+        System.out.printf("mean of A =\n%s\n", FormatArray.toString(mean, "%.4e"));
+        System.out.printf("pA=\n%s\n", FormatArray.toString(stats.principalAxes, "%.4e"));
+        System.out.printf("pC=\n%s\n", FormatArray.toString(stats.principalComponents, "%.4e"));
 
         double[] expectedEig = new double[]{0.3775, 0.0511, 0.0279, 0.0230, 0.0168, 0.0120, 0.0085, 0.0039, 0.0018};
         double[] expectedFracEig = new double[]{0.7227, 0.0977, 0.0535, 0.0440, 0.0321, 0.0229, 0.0162, 0.0075, 0.0034};
         double[] expectedCumulativeFracEig = new double[]{0.7227, 0.8204, 0.8739, 0.9178, 0.9500, 0.9728,
             0.9890, 0.9966, 1.00};
+        double[] expectedPA0 = new double[]{
+                0.03551, 0.0933, 0.4078, 0.1004, 0.1501, 0.0321, 0.8743, 0.1590, 0.0195
+        };
 
         double tol = 1E-3;
         assertEquals(expectedEig.length, stats.eigenValues.length);
         for (i = 0; i < expectedEig.length; ++i) {
             assertTrue(Math.abs(expectedEig[i] - stats.eigenValues[i]) < tol);
         }
+
+
+        /*
+        correlation between stats.pC and the original variables:
+
+        	            Principal Component
+            Variable	1	2	3
+            --------   --  --  --
+            Climate	0.190	0.017	0.207
+            Housing	0.544	0.020	0.204
+            Health	0.782	-0.605	0.144
+            Crime	0.365	0.294	0.585
+            Transportation	0.585	0.085	0.234
+            Education	0.394	-0.273	0.027
+            Arts	0.985	0.126	-0.111
+            Recreation	0.520	0.402	0.519
+            Economy	0.142	0.150	0.239
+         */
+        // projected [297 X 9]
+        // X [297 X 9]
+        // correlation between projected and X
+        int k;
+        double[][] cor = MatrixUtil.zeros(x[0].length, stats.principalComponents[0].length);
+        double[][] tmp = MatrixUtil.zeros(stats.principalComponents.length, 2);
+        for (i = 0; i < x[0].length; ++i) {
+            for (j = 0; j < stats.principalComponents[0].length; ++j) {
+                for (k = 0; k < stats.principalComponents.length; ++k) {
+                    tmp[k][0] = stats.principalComponents[k][j];
+                    tmp[k][1] = x[k][i];
+                }
+                //double[][] cor = BruteForce.correlation(tmp);
+                cor[i][j] = BruteForce.correlation(tmp)[0][1];
+            }
+        }
+        System.out.printf("cor=\n%s\n", FormatArray.toString(cor, "%.4e"));
+
+        // correlation values furthest from 0 (positive or negative)
+        // are the most strongly correlated.
+        // for this table just printed, |correlation| >= 0.5 are significant.
+        
     }
     
     public void estPCA2() throws Exception {
@@ -111,32 +143,14 @@ public class PrincipalComponentsTest extends TestCase {
         
         int i, j;
         
-        double[] mean = MatrixUtil.mean(x);
-        System.out.println("mean x=");
-        for (i = 0; i < mean.length; ++i) {
-            System.out.printf("%11.3e  ", mean[i]);
-        }
-        System.out.println();
-        System.out.flush();
-        
-        /*double[] mean = new double[x[0].length];
-        double[] stDev = new double[x[0].length];
-        x = Standardization.standardUnitNormalization(x, mean, stDev);
-        
-        System.out.println("mean x=");
-        for (i = 0; i < mean.length; ++i) {
-            System.out.printf("%11.3e  ", mean[i]);
-        }
-        System.out.println();
-        System.out.flush();
-        */
-        
+        double[][] xZC = Standardization.zeroCenterMean(x);
+
         double n = x.length;
         
         // U is 2x2,  U_p is 2x1
         // V is 2x2, V_P is 2x1, V^T_p is 1x2
         // x is nx2
-        PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
+        PCAStats stats = PrincipalComponents.calcPrincipalComponents(xZC, 1);
                 
         double[][] b = stats.principalComponents;
         System.out.printf("b = x * pr.dir * v^T_p=\n%s\n", FormatArray.toString(b, "%.5e"));
