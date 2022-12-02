@@ -122,6 +122,52 @@ public class MultivariateDistance {
         
         return meanT;
     }
+
+    /**
+     * calculate the correlation matrix between the data for variables in x1 and x2
+     * where x1 is a dataset of size [nSamples, nVariables1] and
+     * x2 is a dataset of [nSamples, nVariables2].
+     * the resulting correlation matrix is size [nVariables1 X nVariables2].
+     * The runtime complexity is ~ O(m * p * n^2 * log_2(n))
+     *  where m1 = x.length, n = x1[0].length, p = x2[0].length
+     <pre>
+     example use:
+         x1 = [300 X 9] dataset of 300 samples of 9 variables.
+         x2 = [300 X 3] dataset of x1 projected onto 3 principal axes.
+         dCor = [9X3] fastDCor(x1, x2) correlation matrix to look at the correlation of the principle axes
+            with each variable from x1.
+
+     This algorithm follows
+     * "A fast algorithm for computing distance correlation"
+     * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
+     * Volume 135, July 2019, Pages 15-24.
+
+     TODO: consider making a faster version of this correlation.
+     </pre>
+     * @param x1 dataset where each column is x1.length samples of a variable.
+     *           note that x1.length must be equal to x2.length.
+     * @param x2 dataset where each column is x2.length samples of a variable.
+     *      note that x2.length must be equal to x1.length.
+     * @return correlation matrix between variables in x1 and x2
+     * correlation values furthest from 0 are the most strongly correlated if any.
+     */
+    public static double[][] fastDCor(double[][] x1, double[][] x2) {
+        double[][] dCor = MatrixUtil.zeros(x1[0].length, x2[0].length);
+        double[] tmp1 = new double[x2.length];
+        double[] tmp2 = new double[x2.length];
+        int i, j, k;
+        for (i = 0; i < x1[0].length; ++i) {
+            for (j = 0; j < x2[0].length; ++j) {
+                for (k = 0; k < x2.length; ++k) {
+                    tmp1[k] = x2[k][j];
+                    tmp2[k] = x1[k][i];
+                }
+                // fast dcor runtime is O(n*log_2(n))
+                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDCor(tmp1, tmp2).corSq);
+            }
+        }
+        return dCor;
+    }
     
     /**
      * test for independence of x and y using permutations of y (approximating the null distribution) 

@@ -1,8 +1,10 @@
 package algorithms.dimensionReduction;
 
+import algorithms.correlation.MultivariateDistance;
 import algorithms.correlation.UnivariateDistance;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
 import algorithms.statistics.Standardization;
 import algorithms.util.FormatArray;
 import algorithms.util.ResourceFinder;
@@ -112,38 +114,56 @@ public class PrincipalComponentsTest extends TestCase {
         // X [297 X 9]
         // correlation between projected and X
         int k;
-        //double[][] cor = MatrixUtil.zeros(x[0].length, stats.principalComponents[0].length);
-        double[][] dCor = MatrixUtil.zeros(x[0].length, stats.principalComponents[0].length);
-        //double[][] tmp = MatrixUtil.zeros(stats.principalComponents.length, 2);
-        double[] tmp1 = new double[stats.principalComponents.length];
-        double[] tmp2 = new double[stats.principalComponents.length];
-        System.out.printf("%d, %d, %d\n", x[0].length, stats.principalComponents[0].length, stats.principalComponents.length);
-        // dCor: runtime for making correlation matrix is m * p * n * 4 * fast Dcov
-        //    ~ O(m * p * n^2 * log_2(n))
-        //     where m = x.length, n = x[0].length, p = number of components chosen
-        // in contrast, BruteForce correlation: O(m^3*p*n^3 + m*p*n^4)
-        for (i = 0; i < x[0].length; ++i) { // i=[0,9)
-            for (j = 0; j < stats.principalComponents[0].length; ++j) {//j=[0,3)
-                for (k = 0; k < stats.principalComponents.length; ++k) { //k=[0,329)
-                    //tmp[k][0] = stats.principalComponents[k][j];
-                    //tmp[k][1] = x[k][i];
-                    tmp1[k] = stats.principalComponents[k][j];
-                    tmp2[k] = x[k][i];
+        double[][] dCor = MultivariateDistance.fastDCor(x, stats.principalComponents);
+
+        // correlation and fast distance correlation are similar, except dCor ~ abs(cor)
+        System.out.printf("dCor=\n%s\n", FormatArray.toString(dCor, "%.4e"));
+
+        double[][] expectedCorr = new double[9][];
+        expectedCorr[0] = new double[]{0.190,	0.017,	0.207};
+        expectedCorr[1] = new double[]{0.544,	0.020,	0.204};
+        expectedCorr[2] = new double[]{0.782,	-0.605,	0.144};
+        expectedCorr[3] = new double[]{0.365,	0.294,	0.585};
+        expectedCorr[4] = new double[]{0.585,	0.085,	0.234};
+        expectedCorr[5] = new double[]{0.394,	-0.273,	0.027};
+        expectedCorr[6] = new double[]{0.985,	0.126,	-0.111};
+        expectedCorr[7] = new double[]{0.520,	0.402,	0.519};
+        expectedCorr[8] = new double[]{0.142,	0.150,	0.239};
+
+        double diff, e;
+        assertEquals(expectedCorr.length, dCor.length);
+        int n10 = 0;
+        int n20 = 0;
+        int n30 = 0;
+        int n40 = 0;
+        for (i = 0; i < expectedCorr.length; ++i) {
+            assertEquals(expectedCorr[i].length, dCor[i].length);
+            for (j = 0; j < expectedCorr[i].length; ++j) {
+                // these are roughly equivalent... diff is 10-20% of expected
+                e = Math.abs(expectedCorr[i][j]);
+                diff = Math.abs(e - dCor[i][j]);
+                if (diff <= 0.1*e) {
+                    ++n10;
+                } else
+                if (diff <= 0.2*e) {
+                    ++n20;
+                } else
+                if (diff <= 0.3*e) {
+                    ++n30;
+                } else
+                if (diff <= 0.4*e) {
+                    ++n40;
                 }
-                // bruteforce correlation runtime complexity is O(m^2 * n + n^2)
-                //cor[i][j] = BruteForce.correlation(tmp)[0][1];
-                // fast dcor runtime is O(n*log_2(n))
-                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDCor(tmp1, tmp2).corSq);
+                //System.out.printf("%.3e %.3e => %.3e => %.3e\n", expectedCorr[i][j], dCor[i][j], diff, 0.1*e);
             }
         }
-        //System.out.printf("cor=\n%s\n", FormatArray.toString(cor, "%.4e"));
-        // cor and dCor are similar, except dCor ~ abs(cor)
-        System.out.printf("dCor=\n%s\n", FormatArray.toString(dCor, "%.4e"));
+        System.out.printf("out of %d: %d within 10%% of expected, then %d within 20%% of expected, " +
+                        "then %d within 30%% of expected, then %d within 40%% of expected\n",
+                expectedCorr.length*expectedCorr[0].length, n10, n20, n30, n40);
 
         // correlation values furthest from 0 (positive or negative)
         // are the most strongly correlated.
         // for this table just printed, |correlation| >= 0.5 are significant.
-
     }
     
     public void estPCA2() throws Exception {

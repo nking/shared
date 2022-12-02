@@ -40,7 +40,7 @@ public class UnivariateDistance {
      * This measure can detect the presence of a dependence structure when the 
      * sample size is large enough."
      * computational cost is O(n log(n)) and memory cost is O(n).
-     * This algorithm is an implementation/port of the Matlab code from
+     * This algorithm is ported from the Matlab code in
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
@@ -655,7 +655,7 @@ public class UnivariateDistance {
      * vectors and are independent. This measure can detect the presence of a
      * dependence structure when the sample size is large enough."
      *
-     * This algorithm is an implementation/port of the Matlab code from "A fast
+     * This algorithm is ported from the Matlab code in "A fast
      * algorithm for computing distance correlation" 2019 Chaudhuri and Hu,
      * Computational Statistics And Data Analysis, Volume 135, July 2019, Pages
      * 15-24. https://arxiv.org/pdf/1810.11332.pdf
@@ -797,7 +797,7 @@ public class UnivariateDistance {
      * This measure can detect the presence of a dependence structure when the 
      * sample size is large enough."
      * 
-     * This algorithm is an implementation/port of the Matlab code from
+     * This algorithm is ported from the Matlab code in
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
