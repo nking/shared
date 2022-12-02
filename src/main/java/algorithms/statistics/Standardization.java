@@ -22,7 +22,7 @@ public class Standardization {
     
     /**
      * performs "standard unit normalization" on the points, that is,
-     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * transforms the data to have a mean of 0 and a standard deviation of 1 (unit variance)
      * for each dimension.
      * 
      * @param data nDimensional data points in format [ point_0 in all dimensions,
@@ -125,7 +125,7 @@ public class Standardization {
     
      /**
      * performs "standard unit normalization" on the points, that is,
-     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * transforms the data to have a mean of 0 and a standard deviation of 1 (unit variance)
      * for each dimension.
      * the input data must have format [nSamples][nVariables], e.g.
      * data[0] = [10, 100, 1000];
@@ -144,13 +144,13 @@ public class Standardization {
     public static double[][] standardUnitNormalization(double[][] data, 
         double[] outputMean, double[] outputStandardDeviation) {
         
-        int nSamples = data.length;
-        int nVars = data[0].length;
+        int m = data.length;
+        int n = data[0].length;
         
-        if (outputMean.length != nVars) {
+        if (outputMean.length != n) {
             throw new IllegalArgumentException("outputMean.length must equal data[0].length");
         }
-        if (outputStandardDeviation.length != nVars) {
+        if (outputStandardDeviation.length != n) {
             throw new IllegalArgumentException("outputStandardDeviation.length must equal data[0].length");
         }
         
@@ -158,36 +158,60 @@ public class Standardization {
         // then calculate the standard deviation and divide the data by it.
         double[][] out = MatrixUtil.copy(data);
         
-        double[] c = MatrixUtil.mean(out);
-        System.arraycopy(c, 0, outputMean, 0, c.length);
-                
-        int i, d;
-        for (i = 0; i < out.length; ++i) {
-            for (d = 0; d < out[i].length; ++d) {
-                out[i][d] -= c[d];
+        double[] mean = MatrixUtil.mean(out);
+        System.arraycopy(mean, 0, outputMean, 0, mean.length);
+
+        int i;
+        int j;
+        for (j = 0; j < n; ++j) {
+            for (i = 0; i < m; ++i) {
+                out[i][j] = data[i][j] - mean[j];
             }
         }
         
         Arrays.fill(outputStandardDeviation, 0);
-                
-        for (i = 0; i < nSamples; ++i) {
-            for (d = 0; d < nVars; ++d) {
+
+        for (j = 0; j < n; ++j) {
+            for (i = 0; i < m; ++i) {
                 //mean has already been subtracted:
-                outputStandardDeviation[d] += (out[i][d]*out[i][d]);
+                outputStandardDeviation[j] += (out[i][j]*out[i][j]);
             }
         }
-        for (d = 0; d < nVars; ++d) {
-            outputStandardDeviation[d] = Math.sqrt(outputStandardDeviation[d]/(nSamples - 1.0)); 
+        for (j = 0; j < n; ++j) {
+            outputStandardDeviation[j] = Math.sqrt(outputStandardDeviation[j]/(m - 1.0));
         }
-        
-        for (i = 0; i < nSamples; ++i) {
-            for (d = 0; d < nVars; ++d) {
-                if (outputStandardDeviation[d] > 0.) {
-                    out[i][d] /= outputStandardDeviation[d];
+
+        for (j = 0; j < n; ++j) {
+            for (i = 0; i < m; ++i) {
+                if (outputStandardDeviation[j] > 0.) {
+                    out[i][j] /= outputStandardDeviation[j];
                 }
             }
         }
         
+        return out;
+    }
+
+    /**
+     * calculate the mean of each column of data and subtract it from each value in the respective column of data.
+     * @param data
+     * @return
+     */
+    public static double[][] zeroCenterMean(double[][] data) {
+        int m = data.length;
+        int n = data[0].length;
+
+        double[][] out = MatrixUtil.zeros(m, n);
+
+        double[] mean = MatrixUtil.mean(data);
+
+        int i;
+        int j;
+        for (j = 0; j < n; ++j) {
+            for (i = 0; i < m; ++i) {
+                out[i][j] = data[i][j] - mean[j];
+            }
+        }
         return out;
     }
 }

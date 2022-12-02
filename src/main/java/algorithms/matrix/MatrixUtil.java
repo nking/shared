@@ -2782,6 +2782,9 @@ public class MatrixUtil {
             x = x_hat * D_2
 
      </pre>
+     TODO: see LAPack xGEBAL
+        can access it in MTJ using LAPack.getInstance()
+        see more in com.github.fommil.netlib.
      * @param a an m X n matrix.
      * @return the scaled matrix a_hat and the 2 matrices used to scale the matrix.  the
        matrices can be used to pre-multiply and post-multiply other data structures in a problem.

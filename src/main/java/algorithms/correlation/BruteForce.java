@@ -36,9 +36,9 @@ public class BruteForce {
             cor[i] = new double[cov[i].length];
         }
         double si, sj;
-        for (i = 0; i < cor.length; ++i) {
+        for (i = 0; i < cov.length; ++i) {
             si = (cov[i][i] > eps) ? Math.sqrt(cov[i][i]) : 0;
-            for (j = i; j < cor[i].length; ++j) {
+            for (j = i; j < cov[i].length; ++j) {
                 sj = (cov[j][j] > eps) ? Math.sqrt(cov[j][j]) : 0;
                 if (si > eps && sj > eps) {
                     cor[i][j] = cov[i][j]/(si*sj);

@@ -93,7 +93,9 @@ public class LinearEquations {
      * @return the solution x to a * x = b
      */
     public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
-        
+
+        //TODO: overload mehod to implement Golub and van Loan Theorem 4.2-1
+
         int n = a.length;
         
         DenseVector x = new DenseVector(n);
