@@ -1,6 +1,8 @@
 package algorithms.dimensionReduction;
 
 import algorithms.correlation.BruteForce;
+import algorithms.correlation.MultivariateDistance;
+import algorithms.correlation.UnivariateDistance;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.Covariance;
@@ -113,24 +115,32 @@ public class PrincipalComponentsTest extends TestCase {
         // X [297 X 9]
         // correlation between projected and X
         int k;
-        double[][] cor = MatrixUtil.zeros(x[0].length, stats.principalComponents[0].length);
-        double[][] tmp = MatrixUtil.zeros(stats.principalComponents.length, 2);
+        //double[][] cor = MatrixUtil.zeros(x[0].length, stats.principalComponents[0].length);
+        double[][] dCor = MatrixUtil.zeros(x[0].length, stats.principalComponents[0].length);
+        //double[][] tmp = MatrixUtil.zeros(stats.principalComponents.length, 2);
+        double[] tmp1 = new double[stats.principalComponents.length];
+        double[] tmp2 = new double[stats.principalComponents.length];
         for (i = 0; i < x[0].length; ++i) {
             for (j = 0; j < stats.principalComponents[0].length; ++j) {
                 for (k = 0; k < stats.principalComponents.length; ++k) {
-                    tmp[k][0] = stats.principalComponents[k][j];
-                    tmp[k][1] = x[k][i];
+                    //tmp[k][0] = stats.principalComponents[k][j];
+                    //tmp[k][1] = x[k][i];
+                    tmp1[k] = stats.principalComponents[k][j];
+                    tmp2[k] = x[k][i];
                 }
                 //double[][] cor = BruteForce.correlation(tmp);
-                cor[i][j] = BruteForce.correlation(tmp)[0][1];
+                //cor[i][j] = BruteForce.correlation(tmp)[0][1];
+                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDcor(tmp1, tmp2).corSq);
             }
         }
-        System.out.printf("cor=\n%s\n", FormatArray.toString(cor, "%.4e"));
+        //System.out.printf("cor=\n%s\n", FormatArray.toString(cor, "%.4e"));
+        // cor and dCor are similar, except dCor ~ abs(cor)
+        System.out.printf("dCor=\n%s\n", FormatArray.toString(dCor, "%.4e"));
 
         // correlation values furthest from 0 (positive or negative)
         // are the most strongly correlated.
         // for this table just printed, |correlation| >= 0.5 are significant.
-        
+
     }
     
     public void estPCA2() throws Exception {
