@@ -77,4 +77,48 @@ public class Misc0 {
         
         return out;
     }
+
+    public static Number[] convertToNumberArray(float[] a) {
+        if (a == null) {
+            return new Number[0];
+        }
+        Number[] aa = new Number[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            aa[i] = a[i];
+        }
+        return aa;
+    }
+
+    public static Number[] convertToNumberArray(int[] a) {
+        if (a == null) {
+            return new Number[0];
+        }
+        Number[] aa = new Number[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            aa[i] = a[i];
+        }
+        return aa;
+    }
+
+    public static Number[] convertToNumberArray(double[] a) {
+        if (a == null) {
+            return new Number[0];
+        }
+        Number[] aa = new Number[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            aa[i] = a[i];
+        }
+        return aa;
+    }
+
+    public static Number[] convertToNumberArray(short[] a) {
+        if (a == null) {
+            return new Number[0];
+        }
+        Number[] aa = new Number[a.length];
+        for (int i = 0; i < a.length; ++i) {
+            aa[i] = a[i];
+        }
+        return aa;
+    }
 }

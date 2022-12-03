@@ -1,5 +1,6 @@
 package algorithms.util;
 
+import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -42,14 +43,14 @@ public class PolygonAndPointPlotter {
     protected float minX, maxX, minY, maxY;
 
     public PolygonAndPointPlotter(float minX, float maxX, float minY, 
-        float maxY) throws FileNotFoundException, IOException {
+        float maxY) throws IOException {
 
         plotContent = getTemplateHtmlPlot();
 
         setDataMinMax(plotContent, minX, maxX, minY, maxY);
     }
 
-    public PolygonAndPointPlotter() throws FileNotFoundException, IOException {
+    public PolygonAndPointPlotter() throws IOException {
 
         plotContent = getTemplateHtmlPlot();
     }
@@ -84,115 +85,67 @@ public class PolygonAndPointPlotter {
         float[] xPoints, int[] yPoints, float[] xPolygon, int[] yPolygon, 
         String plotLabel) {
 
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-        
-    	float[] y0 = new float[n0];
-    	float[] y1 = new float[n1];
-        
-        for (int i = 0; i < n0; i++) {
-            y0[i] = yPoints[i];
-        }
-        
-        for (int i = 0; i < n1; i++) {
-            y1[i] = yPolygon[i];
-        }
-        
-        addPlot(minX, maxX, minY, maxY, xPoints, y0, null, null,
-            xPolygon, y1, plotLabel);
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     
     public void addPlot(float minX, float maxX, float minY, float maxY,
         int[] xPoints, float[] yPoints, int[] xPolygon, float[] yPolygon, 
         String plotLabel) {
 
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-        
-    	float[] x0 = new float[n0];
-    	float[] x1 = new float[n1];
-        
-        for (int i = 0; i < n0; i++) {
-            x0[i] = xPoints[i];
-        }
-        
-        for (int i = 0; i < n1; i++) {
-            x1[i] = xPolygon[i];
-        }
-        
-        addPlot(minX, maxX, minY, maxY, x0, yPoints, null, null,
-            x1, yPolygon, plotLabel);
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     
     public void addPlot(float minX, float maxX, float minY, float maxY,
         int[] xPoints, int[] yPoints, int[] xPolygon, int[] yPolygon, 
         String plotLabel) {
 
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-        
-        float[] x0 = new float[n0];
-    	float[] y0 = new float[n0];
-        float[] x1 = new float[n1];
-    	float[] y1 = new float[n1];
-        
-        for (int i = 0; i < n0; i++) {
-            x0[i] = xPoints[i];
-            y0[i] = yPoints[i];
-        }
-        
-        for (int i = 0; i < n1; i++) {
-            x1[i] = xPolygon[i];
-            y1[i] = yPolygon[i];
-        }
-        
-        addPlot(minX, maxX, minY, maxY, x0, y0, null, null,
-            x1, y1, plotLabel);
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     
     public void addPlot(float minX, float maxX, float minY, float maxY,
         float[] xPoints, float[] yPoints, float[] xPolygon, float[] yPolygon, 
         String plotLabel) {
 
-        addPlot(minX, maxX, minY, maxY, xPoints, yPoints, null, null,
-            xPolygon, yPolygon, plotLabel);
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
+    }
+
+    public void addPlot(double minX, double maxX, double minY, double maxY,
+                        double[] xPoints, double[] yPoints, double[] xPolygon, double[] yPolygon,
+                        String plotLabel) {
+
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
 
     public void addPlot(float[] xPoints, int[] yPoints, float[] xPolygon, 
         int[] yPolygon, String plotLabel) {
-        
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-      
-    	float[] yy = new float[n0];
-        for (int i = 0; i < n0; i++) {
-    		yy[i] = (float)yPoints[i];
-    	}
-        
-    	float[] yp = new float[n1];
-    	for (int i = 0; i < n1; i++) {
-    		yp[i] = (float)yPolygon[i];
-    	}
-        
-    	addPlot(xPoints, yy, null, null, xPolygon, yp,  plotLabel);
+
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     public void addPlot(int[] xPoints, float[] yPoints, int[] xPolygon, 
         float[] yPolygon, String plotLabel) {
-        
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-      
-    	float[] xx = new float[n0];
-        for (int i = 0; i < n0; i++) {
-    		xx[i] = (float)xPoints[i];
-    	}
-        
-    	float[] xp = new float[n1];
-    	for (int i = 0; i < n1; i++) {
-    		xp[i] = (float)xPolygon[i];
-    	}
-        
-    	addPlot(xx, yPoints, null, null, xp, yPolygon, plotLabel);
+
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
 
     public void addPlot(float[] xPoints, float[] yPoints, float[] xPolygon, 
@@ -203,44 +156,20 @@ public class PolygonAndPointPlotter {
     
     public void addPlot(int[] xPoints, int[] yPoints, int[] xPolygon, 
         int[] yPolygon, String plotLabel) {
-        
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-        
-        float[] x0 = new float[n0];
-    	float[] y0 = new float[n0];
-    	for (int i = 0; i < n0; i++) {
-    		x0[i] = (float)xPoints[i];
-    		y0[i] = (float)yPoints[i];
-    	}
-        float[] x1 = new float[n1];
-    	float[] y1 = new float[n1];
-    	for (int i = 0; i < n1; i++) {
-    		x1[i] = (float)xPolygon[i];
-    		y1[i] = (float)yPolygon[i];
-    	}
-        
-        float[] Null = null;
-        
-        addPlot(x0, y0, Null, Null, x1, y1, plotLabel);
+
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     
     public void addPlot(float[] xPoints, float[] yPoints, int[] xPolygon, 
         int[] yPolygon, String plotLabel) {
-        
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-        
-        float[] x1 = new float[n1];
-    	float[] y1 = new float[n1];
-    	for (int i = 0; i < n1; i++) {
-    		x1[i] = (float)xPolygon[i];
-    		y1[i] = (float)yPolygon[i];
-    	}
-        
-        float[] Null = null;
-        
-        addPlot(xPoints, yPoints, Null, Null, x1, y1, plotLabel);
+
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     
     public void addPlotWithLines(float[] xPoints, float[] yPoints, 
@@ -259,22 +188,15 @@ public class PolygonAndPointPlotter {
             "WithLines");
     }
 
-    public static float[] convert(double[] a) {
-        if (a == null) {
-            return null;
-        }
-        float[] b = new float[a.length];
-        for (int i = 0; i < a.length; ++i) {
-            b[i] = (float)a[i];
-        }
-        return b;
-    }
-
     public void addPlot(double[] xPoints, double[] yPoints,
                         double[] xErrPoints, double[] yErrPoints,
                         double[] xPolygon, double[] yPolygon,
                         String plotLabel) {
-        addPlot(convert(xPoints), convert(yPoints), convert(xErrPoints), convert(yErrPoints), convert(xPolygon), convert(yPolygon), plotLabel);
+
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                Misc0.convertToNumberArray(xErrPoints), Misc0.convertToNumberArray(yErrPoints),
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
     }
     
     public void addPlot(float[] xPoints, float[] yPoints, 
@@ -289,46 +211,65 @@ public class PolygonAndPointPlotter {
             float minY0 = MiscMath0.findMin(yPoints);
             float maxY0 = MiscMath0.findMax(yPoints);
 
-            addPlot(minX0, maxX0, minY0, maxY0, xPoints, yPoints, 
-                xErrPoints, yErrPoints, xPolygon, yPolygon, plotLabel);
+            addPlot(minX0, maxX0, minY0, maxY0,
+                    Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                    Misc0.convertToNumberArray(xErrPoints), Misc0.convertToNumberArray(yErrPoints),
+                    Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
 
         } else {
 
-            addPlot(minX, maxX, minY, maxY, xPoints, yPoints, 
-                xErrPoints, yErrPoints, xPolygon, yPolygon, plotLabel);
-
+            addPlot(minX, maxX, minY, maxY,
+                    Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                    Misc0.convertToNumberArray(xErrPoints), Misc0.convertToNumberArray(yErrPoints),
+                    Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
         }
     }
 
-    /**
-     *
-     * @param xmn
-     * @param xmx
-     * @param ymn
-     * @param ymx
-     * @param xPoints
-     * @param yPoints
-     * @param xErrPoints can be null
-     * @param yErrPoints can be null
-     * @param xPolygon can be null
-     * @param yPolygon can be null
-     * @param plotLabel 
-     */
-    public void addPlot(float xmn, float xmx, float ymn, float ymx,
-        float[] xPoints, float[] yPoints, 
-        float[] xErrPoints, float[] yErrPoints,
-        float[] xPolygon, float[] yPolygon, String plotLabel) {
+    public void addPlot(Number xmn, Number xmx, Number ymn, Number ymx,
+                        Number[] xPoints, Number[] yPoints,
+                        Number[] xErrPoints, Number[] yErrPoints,
+                        Number[] xPolygon, Number[] yPolygon, String plotLabel) {
+
+        if (!dataMinMaxAreSet) {
+            xmn = MiscMath0.findMin(xPoints);
+            xmx = MiscMath0.findMax(xPoints);
+            ymn = MiscMath0.findMin(yPoints);
+            ymx = MiscMath0.findMax(yPoints);
+            // do not set dataMinMaxAreSet to true to let the next plot scale as needed
+
+            if (xmn.doubleValue() < 0) {
+                xmn = 1.1 * xmn.doubleValue();
+            } else {
+                xmn = 0.9 * xmn.doubleValue();
+            }
+            if (xmx.doubleValue() < 0) {
+                xmx = 0.9 * xmx.doubleValue();
+            } else {
+                xmx = 1.1 * xmx.doubleValue();
+            }
+
+            if (ymn.doubleValue() < 0) {
+                ymn = 1.1 * ymn.doubleValue();
+            } else {
+                ymn = 0.9 * ymn.doubleValue();
+            }
+            if (ymx.doubleValue() < 0) {
+                ymx = 0.9 * ymx.doubleValue();
+            } else {
+                ymx = 1.1 * ymx.doubleValue();
+            }
+        }
 
         StringBuffer dataSB = new StringBuffer("\n");
-        
+
         //  ===== add plotLabel data =====
         dataSB.append("var data_plot_label_").append(plotNumber)
-            .append(" = '").append(plotLabel).append("';\n");
+                .append(" = '").append(plotLabel).append("';\n");
 
         //  ===== add points data =====
         if (xPoints == null) {
             dataSB.append("var data_points_").append(plotNumber)
-                .append(" = undefined;\n");
+                    .append(" = undefined;\n");
         } else {
             dataSB.append("var data_points_").append(plotNumber).append(" = [\n");
             for (int i = 0; i < xPoints.length; i++) {
@@ -346,7 +287,7 @@ public class PolygonAndPointPlotter {
 
         if (xPolygon == null) {
             dataSB.append("var data_polygon_").append(plotNumber)
-                .append(" = undefined;\n");
+                    .append(" = undefined;\n");
         } else {
             //  ===== add polygon =====
             dataSB.append("var data_polygon_").append(plotNumber).append(" = [\n");
@@ -358,32 +299,32 @@ public class PolygonAndPointPlotter {
                     dataSB.append(", ");
                 }
                 dataSB.append("    {x:").append(xStr)
-                    .append(", y:").append(yStr).append("}");
+                        .append(", y:").append(yStr).append("}");
             }
             dataSB.append("],\n ");
             dataSB.append("];\n");
         }
 
         dataSB.append("var xmin_").append(plotNumber).append("=")
-            .append(xmn).append(";\n");
+                .append(xmn).append(";\n");
         dataSB.append("var xmax_").append(plotNumber).append("=")
-            .append(xmx).append(";\n");
+                .append(xmx).append(";\n");
         dataSB.append("var ymin_").append(plotNumber).append("=")
-            .append(ymn).append(";\n");
+                .append(ymn).append(";\n");
         dataSB.append("var ymax_").append(plotNumber).append("=")
-            .append(ymx).append(";\n");
+                .append(ymx).append(";\n");
 
         // ======= add RENDER statement ==========
         dataSB.append("\nrenderPlot('plot").append(plotNumber)
-            .append("', data_points_").append(plotNumber)
-            .append(", data_polygon_").append(plotNumber)
-            .append(", data_plot_label_").append(plotNumber)
-            .append(", ")
-            .append(" xmin_").append(plotNumber).append(", ")
-            .append(" xmax_").append(plotNumber).append(", ")
-            .append(" ymin_").append(plotNumber).append(", ")
-            .append(" ymax_").append(plotNumber)
-            .append( ");\n\n");
+                .append("', data_points_").append(plotNumber)
+                .append(", data_polygon_").append(plotNumber)
+                .append(", data_plot_label_").append(plotNumber)
+                .append(", ")
+                .append(" xmin_").append(plotNumber).append(", ")
+                .append(" xmax_").append(plotNumber).append(", ")
+                .append(" ymin_").append(plotNumber).append(", ")
+                .append(" ymax_").append(plotNumber)
+                .append( ");\n\n");
 
         String srchFor = "/* === DO NOT REMOVE THIS == END DATA */";
         int insertOffset = plotContent.indexOf(srchFor);
@@ -413,24 +354,11 @@ public class PolygonAndPointPlotter {
     public void addPlot(double[] xPoints, double[] yPoints, double[] xPolygon, 
         double[] yPolygon, String plotLabel) {
 
-        int n0 = (xPoints != null) ? xPoints.length : 0;
-        int n1 = (xPolygon != null) ? xPolygon.length : 0;
-        
-        float[] xx = new float[n0];
-        float[] yy = new float[n0];
-    	for (int i = 0; i < n0; i++) {
-    		xx[i] = (float)xPoints[i];
-            yy[i] = (float)yPoints[i];
-    	}
-        
-        float[] xp = new float[n1];
-        float[] yp = new float[n1];
-        for (int i = 0; i < n1; i++) {
-            xp[i] = (float) xPolygon[i];
-            yp[i] = (float) yPolygon[i];
-        }
-        
-        addPlot(xx, yy, null, null, xp, yp, plotLabel);
+        addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(xPoints), Misc0.convertToNumberArray(yPoints),
+                null, null,
+                Misc0.convertToNumberArray(xPolygon), Misc0.convertToNumberArray(yPolygon), plotLabel);
+
     }
     
     protected final StringBuffer getTemplateHtmlPlot() throws FileNotFoundException, IOException {

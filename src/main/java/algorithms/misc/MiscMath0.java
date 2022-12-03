@@ -1519,6 +1519,36 @@ public class MiscMath0 {
         return sum3/sum2;
     }
 
+    public static Number findMin(Number[] x) {
+        if (x == null) {
+            return null;
+        }
+        double min = Double.POSITIVE_INFINITY;
+        Number m = null;
+        for (int i = 0; i < x.length; ++i) {
+            if (x[i].doubleValue() < min) {
+                min = x[i].doubleValue();
+                m = x[i];
+            }
+        }
+        return m;
+    }
+
+    public static Number findMax(Number[] x) {
+        if (x == null) {
+            return null;
+        }
+        double max = Double.NEGATIVE_INFINITY;
+        Number m = null;
+        for (int i = 0; i < x.length; ++i) {
+            if (x[i].doubleValue() > max) {
+                max = x[i].doubleValue();
+                m = x[i];
+            }
+        }
+        return m;
+    }
+
     public int sign(int v) {
         return v >>> 31;
     }
