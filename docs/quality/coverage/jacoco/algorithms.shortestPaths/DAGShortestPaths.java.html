@@ -33,7 +33,7 @@ import java.util.Arrays;
  *   Can calculate the critical path by either:
  *     - negating the edge weights and run this code on that, or
  *     - or modify a version of this code to use -infinity in the initialization
- *       method and change '&gt;greater than' to 'less than' in the relax method.
+ *       method and change 'greater than' to 'less than' in the relax method.
  * &lt;/pre&gt;
  * @author nichole
  */
@@ -113,7 +113,7 @@ public class DAGShortestPaths {
             
 <span class="fc" id="L114">            SimpleLinkedListNode next = g[u];</span>
             
-<span class="pc bpc" id="L116" title="1 of 4 branches missed.">            while (next != null &amp;&amp; next.getKey() != -1) {</span>
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">            while (next != null &amp;&amp; next.getNumberOfKeys() &gt; 0) {</span>
             
 <span class="fc" id="L118">                int v = next.getKey();</span>
                 

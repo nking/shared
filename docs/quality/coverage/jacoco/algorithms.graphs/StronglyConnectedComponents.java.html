@@ -130,7 +130,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L130">        log.log(logLevel, &quot;u:&quot; + toString(u));</span>
                 
 <span class="fc" id="L132">        SimpleLinkedListNode wNode = g[u];</span>
-<span class="pc bpc" id="L133" title="1 of 4 branches missed.">        while (wNode != null &amp;&amp; wNode.getKey() != -1) {</span>
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">        while (wNode != null &amp;&amp; wNode.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc" id="L134">            int v = wNode.getKey();</span>
 <span class="fc" id="L135">            log.log(logLevel, &quot;    v=&quot; + toString(v));            </span>
 <span class="fc bfc" id="L136" title="All 2 branches covered.">            if (td[v] == -1) {</span>

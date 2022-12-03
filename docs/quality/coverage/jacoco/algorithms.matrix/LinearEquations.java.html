@@ -9,7 +9,7 @@ import no.uib.cipr.matrix.*;
  a class of utility methods for linear algebra.
  &lt;pre&gt;
  note, for solving linear least squares problems, a good resource aside
- * from Strang, Golub &amp; van Loan, and Cormen, Leiserson, Rivest, and Stein is:
+ * from Strang, Golub and van Loan, and Cormen, Leiserson, Rivest, and Stein is:
  “Algorithms for Linear Least Squares Problems”, 
  Bj̈orck 1991, published in Computer Algorithms for Solving Linear Algebraic Equations;
  The State of the Art., Vol. 77 of NATO-ASI Series F: Computer and Systems Sciences, pages 57–92.
@@ -88,21 +88,23 @@ import no.uib.cipr.matrix.*;
     
     /**
      * solve for x in A*x=b by LU decomposition
-     * @param a
-     * @param b
-     * @return 
+     * @param a matrix
+     * @param b vector
+     * @return the solution x to a * x = b
      */
     public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
+
+        //TODO: overload mehod to implement Golub and van Loan Theorem 4.2-1
+
+<span class="fc" id="L99">        int n = a.length;</span>
         
-<span class="fc" id="L97">        int n = a.length;</span>
+<span class="fc" id="L101">        DenseVector x = new DenseVector(n);</span>
+<span class="fc" id="L102">        DenseVector _b = new DenseVector(b);</span>
         
-<span class="fc" id="L99">        DenseVector x = new DenseVector(n);</span>
-<span class="fc" id="L100">        DenseVector _b = new DenseVector(b);</span>
-        
-<span class="fc" id="L102">        DenseMatrix aa = new DenseMatrix(a);</span>
-<span class="fc" id="L103">        x = (DenseVector)aa.solve(_b, x);</span>
+<span class="fc" id="L104">        DenseMatrix aa = new DenseMatrix(a);</span>
+<span class="fc" id="L105">        x = (DenseVector)aa.solve(_b, x);</span>
                         
-<span class="fc" id="L105">        return x.getData();</span>
+<span class="fc" id="L107">        return x.getData();</span>
     }
 
     /**
@@ -121,37 +123,37 @@ import no.uib.cipr.matrix.*;
      * that is det(A) = u[0][0] * u[1][1]...*u[n-1][n-1].
      */
     public static LU LUDecomposition(double[][] a) {
-<span class="fc" id="L124">        int n = a.length;</span>
-<span class="fc" id="L125">        assertSquareMatrix(a, &quot;a&quot;);</span>
+<span class="fc" id="L126">        int n = a.length;</span>
+<span class="fc" id="L127">        assertSquareMatrix(a, &quot;a&quot;);</span>
         
-<span class="fc" id="L127">        a = MatrixUtil.copy(a);</span>
+<span class="fc" id="L129">        a = MatrixUtil.copy(a);</span>
         
         //nXn for both:
-<span class="fc" id="L130">        double[][] ell = new double[n][];</span>
-<span class="fc" id="L131">        double[][] u = new double[n][];</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L133">            ell[i] = new double[n];</span>
-<span class="fc" id="L134">            u[i] = new double[n];</span>
-<span class="fc" id="L135">            ell[i][i] = 1;</span>
-<span class="fc" id="L136">            u[i][i] = 1;</span>
+<span class="fc" id="L132">        double[][] ell = new double[n][];</span>
+<span class="fc" id="L133">        double[][] u = new double[n][];</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L135">            ell[i] = new double[n];</span>
+<span class="fc" id="L136">            u[i] = new double[n];</span>
+<span class="fc" id="L137">            ell[i][i] = 1;</span>
+<span class="fc" id="L138">            u[i][i] = 1;</span>
         }
         
-<span class="fc bfc" id="L139" title="All 2 branches covered.">        for (int k = 0; k &lt; n; k++) {</span>
-<span class="fc" id="L140">            u[k][k] = a[k][k];</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (int k = 0; k &lt; n; k++) {</span>
+<span class="fc" id="L142">            u[k][k] = a[k][k];</span>
             
-<span class="fc bfc" id="L142" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
-<span class="fc" id="L143">                ell[i][k] = a[i][k]/u[k][k];</span>
-<span class="fc" id="L144">                u[k][i] = a[k][i];</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
+<span class="fc" id="L145">                ell[i][k] = a[i][k]/u[k][k];</span>
+<span class="fc" id="L146">                u[k][i] = a[k][i];</span>
             }
             
-<span class="fc bfc" id="L147" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">                for (int j = k+1; j &lt; n; j++) {</span>
-<span class="fc" id="L149">                    a[i][j] -= (ell[i][k] * u[k][j]); </span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                for (int j = k+1; j &lt; n; j++) {</span>
+<span class="fc" id="L151">                    a[i][j] -= (ell[i][k] * u[k][j]); </span>
                 }
             }
         }
                 
-<span class="fc" id="L154">        return new LU(ell, u);</span>
+<span class="fc" id="L156">        return new LU(ell, u);</span>
     }
 
     /**
@@ -159,12 +161,12 @@ import no.uib.cipr.matrix.*;
      * further normalized and reduced.
      * @param a a rectangular matrix
      * @param tol tolerance for comparing to zero.  e.g. the machine precision.
-     * @return
+     * @return the reduced echelon matrix of a
      */
     public static double[][] gaussianEliminationViaLU(double[][] a, double tol) throws NotConvergedException {
-<span class="fc" id="L165">        a = MatrixUtil.copy(a);</span>
-<span class="fc" id="L166">        int m = a.length;</span>
-<span class="fc" id="L167">        int n = a[0].length;</span>
+<span class="fc" id="L167">        a = MatrixUtil.copy(a);</span>
+<span class="fc" id="L168">        int m = a.length;</span>
+<span class="fc" id="L169">        int n = a[0].length;</span>
 
         /*
         //  following Algorithm 4.2-1 of &quot;Matrix Computations&quot;, Golub and van Loan
@@ -219,53 +221,53 @@ import no.uib.cipr.matrix.*;
 
         int j;
         int i;
-<span class="fc" id="L222">        DenseMatrix aM = new DenseMatrix(a);</span>
-<span class="fc" id="L223">        DenseLU luM = no.uib.cipr.matrix.DenseLU.factorize(aM);</span>
-<span class="fc" id="L224">        UpperTriangDenseMatrix uM = luM.getU();</span>
-<span class="fc" id="L225">        UnitLowerTriangDenseMatrix lM = luM.getL();</span>
+<span class="fc" id="L224">        DenseMatrix aM = new DenseMatrix(a);</span>
+<span class="fc" id="L225">        DenseLU luM = no.uib.cipr.matrix.DenseLU.factorize(aM);</span>
+<span class="fc" id="L226">        UpperTriangDenseMatrix uM = luM.getU();</span>
+<span class="fc" id="L227">        UnitLowerTriangDenseMatrix lM = luM.getL();</span>
 
-<span class="fc" id="L227">        double[][] ell = Matrices.getArray(lM);</span>
-<span class="fc" id="L228">        double[][] u = Matrices.getArray(uM);</span>
+<span class="fc" id="L229">        double[][] ell = Matrices.getArray(lM);</span>
+<span class="fc" id="L230">        double[][] u = Matrices.getArray(uM);</span>
 
-<span class="fc" id="L230">        double[][] ellInv = MatrixUtil.pseudoinverseFullColumnRank(ell);</span>
+<span class="fc" id="L232">        double[][] ellInv = MatrixUtil.pseudoinverseFullColumnRank(ell);</span>
 
         // calculate U = L^-1 * A in full, not the nxn or mxm version
-<span class="fc" id="L233">        u = MatrixUtil.multiply(ellInv, a);</span>
+<span class="fc" id="L235">        u = MatrixUtil.multiply(ellInv, a);</span>
 
         int c;
         double[] t;
         // normalize all rows in u so that pivots are &quot;1&quot;
-<span class="fc" id="L238">        makePivots1(u, tol);</span>
+<span class="fc" id="L240">        makePivots1(u, tol);</span>
 
         // zero-out any repeated rows
-<span class="fc bfc" id="L241" title="All 2 branches covered.">        for (i = u.length - 1; i &gt; 0; --i) {</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">            for (j = i - 1; j &gt; -1; --j) {</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">                if (identicalRows(u, j, i, tol)) {</span>
-<span class="fc" id="L244">                    Arrays.fill(u[i], 0.);</span>
-<span class="fc" id="L245">                    break;</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (i = u.length - 1; i &gt; 0; --i) {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            for (j = i - 1; j &gt; -1; --j) {</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">                if (identicalRows(u, j, i, tol)) {</span>
+<span class="fc" id="L246">                    Arrays.fill(u[i], 0.);</span>
+<span class="fc" id="L247">                    break;</span>
                 }
             }
         }
 
         // subtract pivot columns from lower rows
-<span class="fc bfc" id="L251" title="All 2 branches covered.">        for (i = u.length - 1; i &gt; 0; --i) {</span>
-<span class="fc" id="L252">            c = 0;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (i = u.length - 1; i &gt; 0; --i) {</span>
+<span class="fc" id="L254">            c = 0;</span>
             // skip past zeroes
-<span class="fc bfc" id="L254" title="All 4 branches covered.">            while (c &lt; n &amp;&amp; Math.abs(u[i][c]) &lt; tol) {</span>
-<span class="fc" id="L255">                ++c;</span>
+<span class="fc bfc" id="L256" title="All 4 branches covered.">            while (c &lt; n &amp;&amp; Math.abs(u[i][c]) &lt; tol) {</span>
+<span class="fc" id="L257">                ++c;</span>
             }
-<span class="fc bfc" id="L257" title="All 2 branches covered.">            if (c &lt; n) {</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">            if (c &lt; n) {</span>
                 // this is the pivot column in row i.
                 // search lower rows and subtract this pivot row from them if not already 0 in pivot column
-<span class="fc bfc" id="L260" title="All 2 branches covered.">                for (j = i - 1; j &gt; -1; --j) {</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">                    if (Math.abs(u[j][c]) &gt; tol) {</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">                for (j = i - 1; j &gt; -1; --j) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                    if (Math.abs(u[j][c]) &gt; tol) {</span>
                         // subtract pivot row
                         // e.g.   1  3  1  0  &lt;== subtr 3*R1
                         //        0  1  1  1
-<span class="fc" id="L265">                        t = Arrays.copyOf(u[i], n);</span>
-<span class="fc" id="L266">                        MatrixUtil.multiply(t, u[j][c]);</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">                        for (int k = 0; k &lt; n; ++k) {</span>
-<span class="fc" id="L268">                            u[j][k] -= t[k];</span>
+<span class="fc" id="L267">                        t = Arrays.copyOf(u[i], n);</span>
+<span class="fc" id="L268">                        MatrixUtil.multiply(t, u[j][c]);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">                        for (int k = 0; k &lt; n; ++k) {</span>
+<span class="fc" id="L270">                            u[j][k] -= t[k];</span>
                         }
                     }
                 }
@@ -278,39 +280,39 @@ import no.uib.cipr.matrix.*;
         //     of U which is the determinant of A.
         // when A has less than n pivots, det A = 0.
 
-<span class="fc" id="L281">        return u;</span>
+<span class="fc" id="L283">        return u;</span>
     }
 
     static void makePivots1(double[][] u, double tol) {
-<span class="fc" id="L285">        int m = u.length;</span>
-<span class="fc" id="L286">        int n = u[0].length;</span>
+<span class="fc" id="L287">        int m = u.length;</span>
+<span class="fc" id="L288">        int n = u[0].length;</span>
         int c;
         int i;
         int j;
         double f;
-<span class="fc bfc" id="L291" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L292">            c = 0;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L294">            c = 0;</span>
             // skip past zeroes
-<span class="pc bpc" id="L294" title="1 of 4 branches missed.">            while (c &lt; n &amp;&amp; Math.abs(u[i][c]) &lt; tol) {</span>
-<span class="fc" id="L295">                ++c;</span>
+<span class="pc bpc" id="L296" title="1 of 4 branches missed.">            while (c &lt; n &amp;&amp; Math.abs(u[i][c]) &lt; tol) {</span>
+<span class="fc" id="L297">                ++c;</span>
             }
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">            if (c &lt; n) {</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">            if (c &lt; n) {</span>
                 // this is the pivot column in row i.
-<span class="fc" id="L299">                f = 1./u[i][c];</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">                for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L301">                    u[i][j] *= f;</span>
+<span class="fc" id="L301">                f = 1./u[i][c];</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">                for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L303">                    u[i][j] *= f;</span>
                 }
             }
         }
-<span class="fc" id="L305">    }</span>
+<span class="fc" id="L307">    }</span>
 
     private static boolean identicalRows(double[][] u, int r1, int r2, double tol) {
-<span class="fc bfc" id="L308" title="All 2 branches covered.">        for (int i = 0; i &lt; u[r1].length; ++i) {</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">            if (Math.abs(u[r1][i] - u[r2][i]) &gt; tol) {</span>
-<span class="fc" id="L310">                return false;</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (int i = 0; i &lt; u[r1].length; ++i) {</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">            if (Math.abs(u[r1][i] - u[r2][i]) &gt; tol) {</span>
+<span class="fc" id="L312">                return false;</span>
             }
         }
-<span class="fc" id="L313">        return true;</span>
+<span class="fc" id="L315">        return true;</span>
     }
 
     /**
@@ -339,43 +341,43 @@ import no.uib.cipr.matrix.*;
      */
     public static LDM LDMDecomposition(double[][] a) {
         
-<span class="fc" id="L342">        int n = a.length;</span>
+<span class="fc" id="L344">        int n = a.length;</span>
         
-<span class="fc" id="L344">        assertSquareMatrix(a, &quot;a&quot;);</span>
+<span class="fc" id="L346">        assertSquareMatrix(a, &quot;a&quot;);</span>
         
         // need to have a in row echelon reduced state for this:
         //assertSymmetrix(a);
         
-<span class="fc" id="L349">        double[][] ell = MatrixUtil.zeros(n, n);</span>
-<span class="fc" id="L350">        double[][] m = MatrixUtil.zeros(n, n);</span>
-<span class="fc" id="L351">        double[] d = new double[n];</span>
+<span class="fc" id="L351">        double[][] ell = MatrixUtil.zeros(n, n);</span>
+<span class="fc" id="L352">        double[][] m = MatrixUtil.zeros(n, n);</span>
+<span class="fc" id="L353">        double[] d = new double[n];</span>
         
         int k, i, p;
-<span class="fc bfc" id="L354" title="All 2 branches covered.">        for (k = 1; k &lt;= n; ++k) {</span>
-<span class="fc" id="L355">            d[k-1] = a[k-1][k-1];</span>
-<span class="fc bfc" id="L356" title="All 2 branches covered.">            for (p = 1; p &lt;= (k-1); ++p) {</span>
-<span class="fc" id="L357">                d[k-1] -= (ell[k-1][p-1]*d[p-1]*m[k-1][p-1]);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        for (k = 1; k &lt;= n; ++k) {</span>
+<span class="fc" id="L357">            d[k-1] = a[k-1][k-1];</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">            for (p = 1; p &lt;= (k-1); ++p) {</span>
+<span class="fc" id="L359">                d[k-1] -= (ell[k-1][p-1]*d[p-1]*m[k-1][p-1]);</span>
             }
             // error in the 1st edition of Matrix Computations; i=k to n, but they use i=k+1 to n
-<span class="fc bfc" id="L360" title="All 2 branches covered.">            for (i = k/*k+1*/; i &lt;= n; ++i) {</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">            for (i = k/*k+1*/; i &lt;= n; ++i) {</span>
                 
-<span class="fc" id="L362">                ell[i-1][k-1] = a[i-1][k-1];</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">                for (p = 1; p &lt;= (k-1); ++p) {</span>
-<span class="fc" id="L364">                    ell[i-1][k-1] -= (ell[i-1][p-1]*d[p-1]*m[k-1][p-1]);</span>
+<span class="fc" id="L364">                ell[i-1][k-1] = a[i-1][k-1];</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">                for (p = 1; p &lt;= (k-1); ++p) {</span>
+<span class="fc" id="L366">                    ell[i-1][k-1] -= (ell[i-1][p-1]*d[p-1]*m[k-1][p-1]);</span>
                 }
-<span class="fc" id="L366">                ell[i-1][k-1] /= d[k-1];</span>
+<span class="fc" id="L368">                ell[i-1][k-1] /= d[k-1];</span>
                 
-<span class="fc" id="L368">                m[i-1][k-1] = a[k-1][i-1];</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">                for (p = 1; p &lt;= (k-1); ++p) {</span>
-<span class="fc" id="L370">                    m[i-1][k-1] -= (ell[k-1][p-1]*d[p-1]*m[i-1][p-1]);</span>
+<span class="fc" id="L370">                m[i-1][k-1] = a[k-1][i-1];</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">                for (p = 1; p &lt;= (k-1); ++p) {</span>
+<span class="fc" id="L372">                    m[i-1][k-1] -= (ell[k-1][p-1]*d[p-1]*m[i-1][p-1]);</span>
                 }
-<span class="fc" id="L372">                m[i-1][k-1] /= d[k-1];</span>
+<span class="fc" id="L374">                m[i-1][k-1] /= d[k-1];</span>
             }
         }
         
-<span class="fc" id="L376">        LDM ldm = new LDM(ell, d, m);</span>
+<span class="fc" id="L378">        LDM ldm = new LDM(ell, d, m);</span>
         
-<span class="fc" id="L378">        return ldm;</span>
+<span class="fc" id="L380">        return ldm;</span>
     }
     
     /**
@@ -386,14 +388,14 @@ import no.uib.cipr.matrix.*;
     * diagonal entries.  a = G*G^T.
     */
     public static double[][] choleskyDecompositionViaMTJ(double[][] a) {
-<span class="nc" id="L389">        int n = a.length;</span>
+<span class="nc" id="L391">        int n = a.length;</span>
         
-<span class="nc" id="L391">        assertSquareMatrix(a, &quot;a&quot;);</span>
+<span class="nc" id="L393">        assertSquareMatrix(a, &quot;a&quot;);</span>
         
-<span class="nc" id="L393">        DenseCholesky chol = new DenseCholesky(n, false);</span>
-<span class="nc" id="L394">        chol = chol.factor(new LowerSPDDenseMatrix(new DenseMatrix(a)));</span>
-<span class="nc" id="L395">        LowerTriangDenseMatrix ell = chol.getL();</span>
-<span class="nc" id="L396">        return Matrices.getArray(ell);</span>
+<span class="nc" id="L395">        DenseCholesky chol = new DenseCholesky(n, false);</span>
+<span class="nc" id="L396">        chol = chol.factor(new LowerSPDDenseMatrix(new DenseMatrix(a)));</span>
+<span class="nc" id="L397">        LowerTriangDenseMatrix ell = chol.getL();</span>
+<span class="nc" id="L398">        return Matrices.getArray(ell);</span>
     }
     
     /**
@@ -412,21 +414,21 @@ import no.uib.cipr.matrix.*;
     */
     public static double[][] choleskyDecompositionViaLDL(double[][] a, double eps) {
         
-<span class="fc" id="L415">        int n = a.length;</span>
+<span class="fc" id="L417">        int n = a.length;</span>
         
-<span class="fc" id="L417">        assertSquareMatrix(a, &quot;a&quot;);</span>
+<span class="fc" id="L419">        assertSquareMatrix(a, &quot;a&quot;);</span>
         
         //assertPositiveDefinite(a, &quot;a&quot;);
         
-<span class="fc" id="L421">        LDL ldl = LDLDecomposition(a, eps);</span>
+<span class="fc" id="L423">        LDL ldl = LDLDecomposition(a, eps);</span>
         
-<span class="fc" id="L423">        double[] d = Arrays.copyOf(ldl.getD(), ldl.getD().length);</span>
-<span class="fc bfc" id="L424" title="All 2 branches covered.">        for (int i = 0; i &lt; d.length; ++i) {</span>
-<span class="fc" id="L425">            d[i] = Math.sqrt(d[i]);</span>
+<span class="fc" id="L425">        double[] d = Arrays.copyOf(ldl.getD(), ldl.getD().length);</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">        for (int i = 0; i &lt; d.length; ++i) {</span>
+<span class="fc" id="L427">            d[i] = Math.sqrt(d[i]);</span>
         }
-<span class="fc" id="L427">        double[][] g = MatrixUtil.multiplyByDiagonal(ldl.getL(), d);</span>
+<span class="fc" id="L429">        double[][] g = MatrixUtil.multiplyByDiagonal(ldl.getL(), d);</span>
         
-<span class="fc" id="L429">        return g;</span>
+<span class="fc" id="L431">        return g;</span>
     }
        
     /**
@@ -447,8 +449,8 @@ import no.uib.cipr.matrix.*;
      * L and M and the diagonal matrix D as a an array of the diagonal.
      */
     public static LDL LDLDecomposition(double[][] a) {
-<span class="fc" id="L450">        double eps = 1.e-7;</span>
-<span class="fc" id="L451">        return LDLDecomposition(a, eps);</span>
+<span class="fc" id="L452">        double eps = 1.e-7;</span>
+<span class="fc" id="L453">        return LDLDecomposition(a, eps);</span>
     }
         
     /**
@@ -473,51 +475,51 @@ import no.uib.cipr.matrix.*;
      */
     public static LDL LDLDecomposition(double[][] a, double eps) {
         
-<span class="fc" id="L476">        int m = a.length;</span>
-<span class="fc" id="L477">        int n = a[0].length;</span>
+<span class="fc" id="L478">        int m = a.length;</span>
+<span class="fc" id="L479">        int n = a[0].length;</span>
         
-<span class="fc" id="L479">        assertSquareMatrix(a, &quot;a&quot;);</span>
+<span class="fc" id="L481">        assertSquareMatrix(a, &quot;a&quot;);</span>
                 
         // need to have a in row echelon reduced state for this:
         //assertSymmetrix(a);
         
         //NOTE: if need to conserve memory, can remove the copy statement,
         //    and add to javadoc comments that a is modified in place.
-<span class="fc" id="L486">        a = MatrixUtil.copy(a);</span>
-<span class="fc" id="L487">        double[] r = new double[m];</span>
-<span class="fc" id="L488">        double[] d = new double[m];</span>
+<span class="fc" id="L488">        a = MatrixUtil.copy(a);</span>
+<span class="fc" id="L489">        double[] r = new double[m];</span>
+<span class="fc" id="L490">        double[] d = new double[m];</span>
         
         int k, i, p;
-<span class="fc bfc" id="L491" title="All 2 branches covered.">        for (k = 1; k &lt;= m; ++k) {</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">            for (p = 1; p &lt;= (k-1); ++p) {</span>
-<span class="fc" id="L493">                r[p-1] = d[p-1]*a[k-1][p-1];</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">        for (k = 1; k &lt;= m; ++k) {</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">            for (p = 1; p &lt;= (k-1); ++p) {</span>
+<span class="fc" id="L495">                r[p-1] = d[p-1]*a[k-1][p-1];</span>
             }
-<span class="fc" id="L495">            d[k-1] = a[k-1][k-1];</span>
-<span class="fc bfc" id="L496" title="All 2 branches covered.">            for (p = 1; p &lt;= (k-1); ++p) {</span>
-<span class="fc" id="L497">                d[k-1] -= a[k-1][p-1]*r[p-1];</span>
+<span class="fc" id="L497">            d[k-1] = a[k-1][k-1];</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">            for (p = 1; p &lt;= (k-1); ++p) {</span>
+<span class="fc" id="L499">                d[k-1] -= a[k-1][p-1]*r[p-1];</span>
             }
-<span class="pc bpc" id="L499" title="1 of 2 branches missed.">            if (Math.abs(d[k-1]) &lt; eps) {</span>
-<span class="nc" id="L500">                System.err.printf(&quot;Error: number %.3e is smaller than %.3e%n&quot;, </span>
-<span class="nc" id="L501">                    Math.abs(d[k-1]), eps);</span>
-<span class="nc" id="L502">                return null;</span>
+<span class="pc bpc" id="L501" title="1 of 2 branches missed.">            if (Math.abs(d[k-1]) &lt; eps) {</span>
+<span class="nc" id="L502">                System.err.printf(&quot;Error: number %.3e is smaller than %.3e\n&quot;,</span>
+<span class="nc" id="L503">                    Math.abs(d[k-1]), eps);</span>
+<span class="nc" id="L504">                return null;</span>
             }
-<span class="fc bfc" id="L504" title="All 2 branches covered.">            for (i = k; i &lt;= m; ++i) {</span>
-<span class="fc bfc" id="L505" title="All 2 branches covered.">                for (p = 1; p &lt;= (k-1); ++p) {</span>
-<span class="fc" id="L506">                    a[i-1][k-1] -= a[i-1][p-1]*r[p-1];</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">            for (i = k; i &lt;= m; ++i) {</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">                for (p = 1; p &lt;= (k-1); ++p) {</span>
+<span class="fc" id="L508">                    a[i-1][k-1] -= a[i-1][p-1]*r[p-1];</span>
                 }
-<span class="fc" id="L508">                a[i-1][k-1] /= d[k-1];</span>
+<span class="fc" id="L510">                a[i-1][k-1] /= d[k-1];</span>
             }
         }
         
-<span class="fc bfc" id="L512" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc bfc" id="L513" title="All 2 branches covered.">            for (k = i+1; k &lt; m; ++k) {</span>
-<span class="fc" id="L514">                a[i][k] = 0;</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc bfc" id="L515" title="All 2 branches covered.">            for (k = i+1; k &lt; m; ++k) {</span>
+<span class="fc" id="L516">                a[i][k] = 0;</span>
             }
         }
         
-<span class="fc" id="L518">        LDL ld = new LDL(a, d);</span>
+<span class="fc" id="L520">        LDL ld = new LDL(a, d);</span>
         
-<span class="fc" id="L520">        return ld;</span>
+<span class="fc" id="L522">        return ld;</span>
     }
     
     
@@ -537,46 +539,46 @@ import no.uib.cipr.matrix.*;
      * L and U and the condensed permutation array p, where P*A=L*U.
      */
     public static LUP LUPDecomposition(double[][] a) {
-<span class="fc" id="L540">        int n = a.length;</span>
-<span class="fc" id="L541">        assertSquareMatrix(a, &quot;a&quot;);</span>
+<span class="fc" id="L542">        int n = a.length;</span>
+<span class="fc" id="L543">        assertSquareMatrix(a, &quot;a&quot;);</span>
         
-<span class="fc" id="L543">        a = MatrixUtil.copy(a);</span>
+<span class="fc" id="L545">        a = MatrixUtil.copy(a);</span>
         
-<span class="fc" id="L545">        int[] pi = new int[n];</span>
-<span class="fc bfc" id="L546" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {            </span>
-<span class="fc" id="L547">            pi[i] = i;</span>
+<span class="fc" id="L547">        int[] pi = new int[n];</span>
+<span class="fc bfc" id="L548" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {            </span>
+<span class="fc" id="L549">            pi[i] = i;</span>
         }
         
         double p;
         double temp;
-<span class="fc" id="L552">        int k2 = -1;</span>
+<span class="fc" id="L554">        int k2 = -1;</span>
         double swap;
         int swapI;
-<span class="fc bfc" id="L555" title="All 2 branches covered.">        for (int k = 0; k &lt; n; k++) {</span>
-<span class="fc" id="L556">            p = 0;</span>
-<span class="fc bfc" id="L557" title="All 2 branches covered.">            for (int i = k; i &lt; n; i++) {</span>
-<span class="fc" id="L558">                temp = Math.abs(a[i][k]);</span>
-<span class="fc bfc" id="L559" title="All 2 branches covered.">                if (temp &gt; p) {</span>
-<span class="fc" id="L560">                    p = temp;</span>
-<span class="fc" id="L561">                    k2 = i;</span>
+<span class="fc bfc" id="L557" title="All 2 branches covered.">        for (int k = 0; k &lt; n; k++) {</span>
+<span class="fc" id="L558">            p = 0;</span>
+<span class="fc bfc" id="L559" title="All 2 branches covered.">            for (int i = k; i &lt; n; i++) {</span>
+<span class="fc" id="L560">                temp = Math.abs(a[i][k]);</span>
+<span class="fc bfc" id="L561" title="All 2 branches covered.">                if (temp &gt; p) {</span>
+<span class="fc" id="L562">                    p = temp;</span>
+<span class="fc" id="L563">                    k2 = i;</span>
                 }
             }
-<span class="pc bpc" id="L564" title="1 of 2 branches missed.">            if (p == 0.) {</span>
-<span class="nc" id="L565">                throw new IllegalStateException(&quot;Error: a is a singular matrix&quot;);</span>
+<span class="pc bpc" id="L566" title="1 of 2 branches missed.">            if (p == 0.) {</span>
+<span class="nc" id="L567">                throw new IllegalStateException(&quot;Error: a is a singular matrix&quot;);</span>
             }
-<span class="pc bnc" id="L567" title="All 2 branches missed.">            assert(k2 &gt;= 0);</span>
-<span class="fc" id="L568">            swapI = pi[k2];</span>
-<span class="fc" id="L569">            pi[k2] = pi[k];</span>
-<span class="fc" id="L570">            pi[k] = swapI;</span>
-<span class="fc bfc" id="L571" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L572">                swap = a[k2][i];</span>
-<span class="fc" id="L573">                a[k2][i] = a[k][i];</span>
-<span class="fc" id="L574">                a[k][i] = swap;</span>
+<span class="pc bnc" id="L569" title="All 2 branches missed.">            assert(k2 &gt;= 0);</span>
+<span class="fc" id="L570">            swapI = pi[k2];</span>
+<span class="fc" id="L571">            pi[k2] = pi[k];</span>
+<span class="fc" id="L572">            pi[k] = swapI;</span>
+<span class="fc bfc" id="L573" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L574">                swap = a[k2][i];</span>
+<span class="fc" id="L575">                a[k2][i] = a[k][i];</span>
+<span class="fc" id="L576">                a[k][i] = swap;</span>
             }
-<span class="fc bfc" id="L576" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
-<span class="fc" id="L577">                a[i][k] /= a[k][k];</span>
-<span class="fc bfc" id="L578" title="All 2 branches covered.">                for (int j = k+1; j &lt; n; j++) {</span>
-<span class="fc" id="L579">                    a[i][j] -= (a[i][k] * a[k][j]);</span>
+<span class="fc bfc" id="L578" title="All 2 branches covered.">            for (int i = k+1; i &lt; n; i++) {</span>
+<span class="fc" id="L579">                a[i][k] /= a[k][k];</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">                for (int j = k+1; j &lt; n; j++) {</span>
+<span class="fc" id="L581">                    a[i][j] -= (a[i][k] * a[k][j]);</span>
                 }
             }
         }
@@ -585,25 +587,25 @@ import no.uib.cipr.matrix.*;
         //   pack as arguments.
         //   the original pseudocode uses only a and modifies the original in place
         //     to conserve space.
-<span class="fc" id="L588">        double[][] ell = new double[n][];</span>
-<span class="fc" id="L589">        double[][] u = new double[n][];</span>
-<span class="fc bfc" id="L590" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L591">            ell[i] = new double[n];</span>
-<span class="fc" id="L592">            u[i] = new double[n];</span>
-<span class="fc" id="L593">            u[i][i] = 1;</span>
-<span class="fc" id="L594">            ell[i][i] = 1;</span>
+<span class="fc" id="L590">        double[][] ell = new double[n][];</span>
+<span class="fc" id="L591">        double[][] u = new double[n][];</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L593">            ell[i] = new double[n];</span>
+<span class="fc" id="L594">            u[i] = new double[n];</span>
+<span class="fc" id="L595">            u[i][i] = 1;</span>
+<span class="fc" id="L596">            ell[i][i] = 1;</span>
         }
-<span class="fc bfc" id="L596" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L597" title="All 2 branches covered.">            for (int j = 0; j &lt; n; ++j) {</span>
-<span class="fc bfc" id="L598" title="All 2 branches covered.">                if (i &gt; j) {</span>
-<span class="fc" id="L599">                    ell[i][j] = a[i][j];</span>
+<span class="fc bfc" id="L598" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L599" title="All 2 branches covered.">            for (int j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L600" title="All 2 branches covered.">                if (i &gt; j) {</span>
+<span class="fc" id="L601">                    ell[i][j] = a[i][j];</span>
                 } else {
-<span class="fc" id="L601">                    u[i][j] = a[i][j];</span>
+<span class="fc" id="L603">                    u[i][j] = a[i][j];</span>
                 }
             }
         }
         
-<span class="fc" id="L606">        return new LUP(ell, u, pi);</span>
+<span class="fc" id="L608">        return new LUP(ell, u, pi);</span>
     }
     
     /**
@@ -630,11 +632,11 @@ import no.uib.cipr.matrix.*;
      * Algebra&quot; by W Gilbert Strang.)
      *  
      * @return coefficients c where y_i = summation(c_i*x^i) + error
-     * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws no.uib.cipr.matrix.NotConvergedException thrown if MTJ SVD operation did not converge
      */
     public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder, boolean
         solveForFullRank) throws NotConvergedException {
-<span class="fc" id="L637">        return _leastSquaresPolynomial(xy, polyOrder, solveForFullRank);</span>
+<span class="fc" id="L639">        return _leastSquaresPolynomial(xy, polyOrder, solveForFullRank);</span>
     }
     
     /**
@@ -653,7 +655,7 @@ import no.uib.cipr.matrix.*;
      * @return coefficients c where y_i = summation(c_i*x^i) + error
      */
     public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder) throws NotConvergedException {
-<span class="nc" id="L656">        return _leastSquaresPolynomial(xy, polyOrder, false);</span>
+<span class="nc" id="L658">        return _leastSquaresPolynomial(xy, polyOrder, false);</span>
     }
     
     /**
@@ -683,52 +685,52 @@ import no.uib.cipr.matrix.*;
     public static double[] _leastSquaresPolynomial(double[][] xy, int polyOrder,
         boolean solveFullRank) throws NotConvergedException {
         
-<span class="pc bpc" id="L686" title="1 of 2 branches missed.">        if (polyOrder &lt; 0) {</span>
-<span class="nc" id="L687">            throw new IllegalArgumentException(&quot;polyOrder must be 0 or larger&quot;);</span>
+<span class="pc bpc" id="L688" title="1 of 2 branches missed.">        if (polyOrder &lt; 0) {</span>
+<span class="nc" id="L689">            throw new IllegalArgumentException(&quot;polyOrder must be 0 or larger&quot;);</span>
         }
-<span class="fc" id="L689">        int nRows = xy.length;</span>
+<span class="fc" id="L691">        int nRows = xy.length;</span>
         
-<span class="pc bpc" id="L691" title="1 of 2 branches missed.">        if (polyOrder &gt; nRows) {</span>
-<span class="nc" id="L692">            throw new IllegalArgumentException(&quot;polyOrder should be smaller &quot;</span>
+<span class="pc bpc" id="L693" title="1 of 2 branches missed.">        if (polyOrder &gt; nRows) {</span>
+<span class="nc" id="L694">            throw new IllegalArgumentException(&quot;polyOrder should be smaller &quot;</span>
                     + &quot; than or equal to the number of data rows&quot;);
         }
         
         // create matrix A
-<span class="fc" id="L697">        double[][] a = new double[nRows][];</span>
+<span class="fc" id="L699">        double[][] a = new double[nRows][];</span>
         double x;
-<span class="fc bfc" id="L699" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L700">            a[i] = new double[polyOrder + 1];</span>
-<span class="fc" id="L701">            a[i][0] = 1;</span>
+<span class="fc bfc" id="L701" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L702">            a[i] = new double[polyOrder + 1];</span>
+<span class="fc" id="L703">            a[i][0] = 1;</span>
         }
-<span class="fc bfc" id="L703" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L704">            x = xy[i][0];</span>
-<span class="fc bfc" id="L705" title="All 2 branches covered.">            for (int k = 0; k &lt; polyOrder; ++k) {</span>
-<span class="fc" id="L706">                a[i][k + 1] = x * a[i][k];</span>
+<span class="fc bfc" id="L705" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L706">            x = xy[i][0];</span>
+<span class="fc bfc" id="L707" title="All 2 branches covered.">            for (int k = 0; k &lt; polyOrder; ++k) {</span>
+<span class="fc" id="L708">                a[i][k + 1] = x * a[i][k];</span>
             }
         }
         
         double[][] aPInv;
-<span class="fc bfc" id="L711" title="All 2 branches covered.">        if (solveFullRank) {</span>
+<span class="fc bfc" id="L713" title="All 2 branches covered.">        if (solveFullRank) {</span>
             //AX=b has no solution
             //using A_pseudoinverse = inverse(A^T*A) * A^T
-<span class="fc" id="L714">            aPInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
+<span class="fc" id="L716">            aPInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
         } else {
             // uses SVD of a in pseudo-inverse
             // Note that if A^-1 exists, then the pseudo-inverse of A is equal to the
             //inverse of A.
             // method is valid for  rows .lte. rank,
             // but for rows .gt. rank, the null-space needs to be solved instead.
-<span class="fc" id="L721">            aPInv = MatrixUtil.pseudoinverseRankDeficient(a);</span>
+<span class="fc" id="L723">            aPInv = MatrixUtil.pseudoinverseRankDeficient(a);</span>
         }
         
-<span class="fc" id="L724">        double[] y = new double[nRows];</span>
-<span class="fc bfc" id="L725" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L726">            y[i] = xy[i][1];</span>
+<span class="fc" id="L726">        double[] y = new double[nRows];</span>
+<span class="fc bfc" id="L727" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L728">            y[i] = xy[i][1];</span>
         }
         
-<span class="fc" id="L729">        double[] c = MatrixUtil.multiplyMatrixByColumnVector(aPInv, y);</span>
+<span class="fc" id="L731">        double[] c = MatrixUtil.multiplyMatrixByColumnVector(aPInv, y);</span>
         
-<span class="fc" id="L731">        return c;</span>
+<span class="fc" id="L733">        return c;</span>
     }
     
     public static class LU {
@@ -789,30 +791,30 @@ import no.uib.cipr.matrix.*;
     }
     
     private static void assertSquareMatrix(double[][] a, String name) {
-<span class="fc" id="L792">        int n = a.length;</span>
-<span class="pc bpc" id="L793" title="1 of 2 branches missed.">        if (a[0].length != n) {</span>
-<span class="nc" id="L794">            throw new IllegalArgumentException(name + &quot; must be a square matrix&quot;);</span>
+<span class="fc" id="L794">        int n = a.length;</span>
+<span class="pc bpc" id="L795" title="1 of 2 branches missed.">        if (a[0].length != n) {</span>
+<span class="nc" id="L796">            throw new IllegalArgumentException(name + &quot; must be a square matrix&quot;);</span>
         }
-<span class="fc" id="L796">    }</span>
+<span class="fc" id="L798">    }</span>
     
     private static void assertPositiveDefinite(double[][] a, String name) {
-<span class="nc" id="L799">        int n = a.length;</span>
-<span class="nc bnc" id="L800" title="All 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
-<span class="nc" id="L801">            throw new IllegalArgumentException(name + &quot; must be a positive definite matrix&quot;);</span>
+<span class="nc" id="L801">        int n = a.length;</span>
+<span class="nc bnc" id="L802" title="All 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
+<span class="nc" id="L803">            throw new IllegalArgumentException(name + &quot; must be a positive definite matrix&quot;);</span>
         }
-<span class="nc" id="L803">    }</span>
+<span class="nc" id="L805">    }</span>
 
     private static void assertArrayLength(int n, double[] a, String name) {
-<span class="pc bpc" id="L806" title="1 of 2 branches missed.">        if (a.length != n) {</span>
-<span class="nc" id="L807">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
+<span class="pc bpc" id="L808" title="1 of 2 branches missed.">        if (a.length != n) {</span>
+<span class="nc" id="L809">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
         }
-<span class="fc" id="L809">    }</span>
+<span class="fc" id="L811">    }</span>
 
     private static void assertArrayLength(int n, int[] a, String name) {
-<span class="pc bpc" id="L812" title="1 of 2 branches missed.">        if (a.length != n) {</span>
-<span class="nc" id="L813">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
+<span class="pc bpc" id="L814" title="1 of 2 branches missed.">        if (a.length != n) {</span>
+<span class="nc" id="L815">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
         }
-<span class="fc" id="L815">    }</span>
+<span class="fc" id="L817">    }</span>
 
 } 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -209,7 +209,7 @@ import thirdparty.smile.math.special.Beta;
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(&quot;isConsistentWithNonUniform=&quot;).append(isConsistentWithNonUniform);
-            sb.append(String.format(&quot;%n1-alpha=%.5f, crit. val.=%.4e %nL1(sphere)=%.4f %nL1(X)=%.4f&quot;, 
+            sb.append(String.format(&quot;\n1-alpha=%.5f, crit. val.=%.4e \nL1(sphere)=%.4f \nL1(X)=%.4f&quot;, 
                 oneMinusAlpha, oneMinusAlphaCritVal, l1MaxSphere, l1MaxX));
             return sb.toString();
         }
@@ -260,11 +260,11 @@ import thirdparty.smile.math.special.Beta;
         //1-alpha for hypersphere chord distribution
 <span class="fc" id="L261">        double alphaCV = findCVForAlpha95Percent(nDimensions);</span>
         
-<span class="fc" id="L263">        System.out.printf(&quot;c.v. for 1-alpha=%.4e%n&quot;, alphaCV);</span>
-<span class="fc" id="L264">        System.out.printf(&quot;S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e%n&quot;, </span>
+<span class="fc" id="L263">        System.out.printf(&quot;c.v. for 1-alpha=%.4e\n&quot;, alphaCV);</span>
+<span class="fc" id="L264">        System.out.printf(&quot;S: min, max L1=%.4e : %.4e,  m=%.4e, stDev=%.4e\n&quot;, </span>
 <span class="fc" id="L265">            minMaxSphere[0], minMaxSphere[1],</span>
 <span class="fc" id="L266">            avgAndStDevSphere[0], avgAndStDevSphere[1]);</span>
-<span class="fc" id="L267">        System.out.printf(&quot;X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e%n&quot;, </span>
+<span class="fc" id="L267">        System.out.printf(&quot;X: min, max L1=%.4e : %.4e,  m=%.4e,, stDev=%.4e\n&quot;, </span>
 <span class="fc" id="L268">            minMaxX[0], minMaxX[1],</span>
 <span class="fc" id="L269">            avgAndStDevX[0], avgAndStDevX[1]);</span>
         

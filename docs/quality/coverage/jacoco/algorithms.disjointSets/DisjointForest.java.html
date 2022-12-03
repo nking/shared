@@ -38,8 +38,8 @@ import java.util.Set;
     /**
      * make a set out of the given node and add it to the internal forest.
      * runtime complexity is O(1).
-     * @param x
-     * @return
+     * @param x disjoint set mode
+     * @return a new set composed of only x
      */
     public RootedTreeDisjointSet&lt;T&gt; makeSet(DisjointSet2Node&lt;T&gt; x) {
 <span class="fc" id="L45">        x.setParent(x);</span>
@@ -68,7 +68,7 @@ import java.util.Set;
      * For most purposes, α(n) = O(1) so then the amoritized running time is O(1).
      * &lt;/pre&gt;
      * 
-     * @param x
+     * @param x disjoint set node
      * @return top-most parent in ancestry of x.
      */
     public DisjointSet2Node&lt;T&gt; findSet(DisjointSet2Node&lt;T&gt; x) {
@@ -100,8 +100,8 @@ import java.util.Set;
           
        Runtime complexity is O(1).
        
-     * @param x
-     * @param y
+     * @param x disjoint set x
+     * @param y disjoint set y
      * @return the root found to be the one with equal number of nodes or more nodes
      */
     private DisjointSet2Node&lt;T&gt; link(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
@@ -130,8 +130,8 @@ import java.util.Set;
           
        Runtime complexity is O(1).
        
-     * @param x
-     * @param y
+     * @param x disjoint set x
+     * @param y disjoint set y
      * @return the root found to be the one with equal number of nodes or more nodes
      */
     private DisjointSet2Node&lt;T&gt; linkChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
@@ -163,9 +163,9 @@ import java.util.Set;
      * The method is also known as &quot;union-find&quot; because it uses findSet 
      * as the first steps before link.
      * 
-     * @param x
-     * @param y
-     * @return
+     * @param x disjoint set x
+     * @param y disjoint set y
+     * @return the union of x and y
      */
     public DisjointSet2Node&lt;T&gt; union(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
@@ -177,7 +177,7 @@ import java.util.Set;
 <span class="nc" id="L177">            return x;</span>
         }
         
-        /*System.out.println(&quot;%nforest=&quot; + toString());
+        /*System.out.println(&quot;\nforest=&quot; + toString());
         System.out.println(&quot;x=&quot; + x.member + &quot; x.parent=&quot; + x.parent.member);
         System.out.println(&quot;y=&quot; + y.member + &quot; y.parent=&quot; + y.parent.member);
         System.out.flush();*/
@@ -205,9 +205,9 @@ import java.util.Set;
      * The method is also known as &quot;union-find&quot; because it uses findSet 
      * as the first steps before link.
      * 
-     * @param x
-     * @param y
-     * @return
+     * @param x disjoint set x
+     * @param y disjoint set y
+     * @return the reference to the union of x and y as x or y, preferring y if x==y
      */
     public DisjointSet2Node&lt;T&gt; unionChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
@@ -241,7 +241,7 @@ import java.util.Set;
      * given the adjacency list of a graph, return the disjoint connected 
      * components.  implemented from pseudocode in Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
-     * @param adjList
+     * @param adjList graph adjacency list
      * @return the connected components as a list of the disjoint sets of 
      * vertex numbers.
      */
@@ -270,7 +270,7 @@ import java.util.Set;
 <span class="fc" id="L270">            uVertex = vertexMap.get(u);</span>
             
 <span class="fc" id="L272">            vNode = adjList[u];</span>
-<span class="fc bfc" id="L273" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+<span class="fc bfc" id="L273" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
                 
 <span class="fc" id="L275">                v = vNode.getKey();</span>
                 
@@ -329,7 +329,7 @@ import java.util.Set;
 <span class="fc" id="L329">                entry = iter.next();</span>
 <span class="fc" id="L330">                p = entry.getKey();</span>
 <span class="fc" id="L331">                t = entry.getValue();</span>
-<span class="fc" id="L332">                sb.append(&quot;%n tree p=&quot;);</span>
+<span class="fc" id="L332">                sb.append(&quot;\n tree p=&quot;);</span>
 <span class="pc bpc" id="L333" title="1 of 2 branches missed.">                if (p.member != null) {</span>
 <span class="fc" id="L334">                    sb.append(p.member);</span>
                 } else {
@@ -368,7 +368,7 @@ import java.util.Set;
         /**
          * create a new tree with the representative and parent being the node.
          * the node is added to the internal set holding tree nodes too.
-         * @param node 
+         * @param node  disjoint set node
          */
         public RootedTreeDisjointSet(DisjointSet2Node&lt;T&gt; node) {
             this.parent = node;
@@ -381,15 +381,15 @@ import java.util.Set;
             nodes = new HashSet&lt;DisjointSet2Node&lt;T&gt;&gt;();
         }
         
-        /**
+        /*
          * find the least common ancestor for node x and y in a tree using
          * Tarjan's off-line least common ancestor algorithm.
          * implemented from pseudocode in Cormen, Leiserson, Rivest, and Stein Introduction to 
          * Algorithms.
-         * 
+         *
          * @param x
          * @param y
-         * @return 
+         * @return
          
         public DisjointSet2Node&lt;T&gt; lca(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
             
@@ -438,10 +438,10 @@ import java.util.Set;
                 }
             }
             sb.append(&quot;, &quot;);
-            sb.append(&quot;%n  nodes=&quot;);
+            sb.append(&quot;\n  nodes=&quot;);
             if (nodes != null) {
                 for (DisjointSet2Node&lt;T&gt; node : nodes){
-                    sb.append(&quot;%n   node=&quot;).append(node.toString());
+                    sb.append(&quot;\n   node=&quot;).append(node.toString());
                 }
             }
             sb.append(&quot;, &quot;);

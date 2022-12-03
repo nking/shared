@@ -97,7 +97,7 @@ public class BellmanFord {
 <span class="fc" id="L97">                relax(u, v, wUV);</span>
             }
             
-            /*System.out.printf(&quot;    d=[%d, %d, %d, %d, %d]%n   p=[%d, %d, %d, %d, %d]%n&quot;,
+            /*System.out.printf(&quot;    d=[%d, %d, %d, %d, %d]\n   p=[%d, %d, %d, %d, %d]\n&quot;,
                     dist[0], dist[1], dist[2], dist[3], dist[4],
                     predecessor[0], predecessor[1], predecessor[2], predecessor[3], predecessor[4]);
             System.out.flush();*/
@@ -146,7 +146,7 @@ public class BellmanFord {
 <span class="fc bfc" id="L146" title="All 2 branches covered.">        for (int u = 0; u &lt; nV; ++u) {</span>
 <span class="fc" id="L147">            SimpleLinkedListNode vNode = dAG[u];            </span>
 <span class="fc" id="L148">            TIntIntMap uWgts = weights[u];</span>
-<span class="pc bpc" id="L149" title="2 of 6 branches missed.">            while (vNode != null &amp;&amp; vNode.getKey() != -1 &amp;&amp; uWgts != null) {</span>
+<span class="pc bpc" id="L149" title="2 of 6 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0 &amp;&amp; uWgts != null) {</span>
 <span class="fc" id="L150">                int v = vNode.getKey();</span>
 <span class="pc bpc" id="L151" title="1 of 2 branches missed.">                if (uWgts.containsKey(u)) {</span>
 <span class="nc" id="L152">                    throw new IllegalStateException(&quot;no weight found for edge &quot;</span>

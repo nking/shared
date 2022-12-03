@@ -118,7 +118,7 @@ import java.text.DecimalFormatSymbols;
  *          printing position of the next logical
  *          page.
  *&lt;/td&gt;&lt;/tr&gt;
- *&lt;tr&gt;&lt;td&gt;%n&lt;/td&gt;&lt;td&gt;newline&lt;/td&gt;&lt;td&gt;Moves the
+ *&lt;tr&gt;&lt;td&gt;\n&lt;/td&gt;&lt;td&gt;newline&lt;/td&gt;&lt;td&gt;Moves the
  *          printing position to the start of the
  *          next line.
  *&lt;/td&gt;&lt;/tr&gt;
@@ -435,7 +435,7 @@ import java.text.DecimalFormatSymbols;
  * @version 1
  * Release 1: Initial release.
  * Release 2: Asterisk field widths and precisions    
- *            %n$ and *m$
+ *            \n$ and *m$
  *            Bug fixes
  *              g format fix (2 digits in e form corrupt)
  *              rounding in f format implemented
@@ -2868,7 +2868,7 @@ public class PrintfFormat {
       }
     }
     /**
-     * Store the digits &lt;code&gt;n&lt;/code&gt; in %n$ forms.
+     * Store the digits &lt;code&gt;n&lt;/code&gt; in \n$ forms.
      */
     private void setArgPosition() {
       int xPos;

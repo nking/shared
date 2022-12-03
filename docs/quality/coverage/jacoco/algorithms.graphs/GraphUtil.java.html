@@ -2,6 +2,13 @@
 
 import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -14,7 +21,7 @@ import java.util.Iterator;
  * 
  * @author nichole
  */
-<span class="nc" id="L17">public class GraphUtil {</span>
+<span class="nc" id="L24">public class GraphUtil {</span>
     
     /**
      * create an adjacency list from the given graph knowing that the vertexes 
@@ -29,11 +36,11 @@ import java.util.Iterator;
     public static SimpleLinkedListNode[] createAdjacencyList(
         NewmanGMLParser.GMLGraph g) {
         
-<span class="fc" id="L32">        int nV = g.nodeIdLabelMap.size();</span>
+<span class="fc" id="L39">        int nV = g.nodeIdLabelMap.size();</span>
         
-<span class="fc" id="L34">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
+<span class="fc" id="L41">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
         
-<span class="fc" id="L36">        return out;</span>
+<span class="fc" id="L43">        return out;</span>
     }
     
     /**
@@ -50,37 +57,124 @@ import java.util.Iterator;
     public static SimpleLinkedListNode[] createAdjacencyList2(
         NewmanGMLParser.GMLGraph g) {
         
-<span class="fc" id="L53">        int[] vs = g.nodeIdLabelMap.keys();</span>
-<span class="fc" id="L54">        Arrays.sort(vs, 0, vs.length);</span>
-<span class="fc" id="L55">        int nV = vs[vs.length - 1] + 1;</span>
+<span class="fc" id="L60">        int[] vs = g.nodeIdLabelMap.keys();</span>
+<span class="fc" id="L61">        Arrays.sort(vs, 0, vs.length);</span>
+<span class="fc" id="L62">        int nV = vs[vs.length - 1] + 1;</span>
         
-<span class="fc" id="L57">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
+<span class="fc" id="L64">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
         
-<span class="fc" id="L59">        return out;</span>
+<span class="fc" id="L66">        return out;</span>
     }
     
     private static SimpleLinkedListNode[] createAdjacencyList(
         NewmanGMLParser.GMLGraph g, final int nVertexes) {
         
-<span class="fc" id="L65">        SimpleLinkedListNode[] out = new SimpleLinkedListNode[nVertexes];</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (int v = 0; v &lt; nVertexes; ++v) {</span>
-<span class="fc" id="L67">            out[v] = new SimpleLinkedListNode();</span>
+<span class="fc" id="L72">        SimpleLinkedListNode[] out = new SimpleLinkedListNode[nVertexes];</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (int v = 0; v &lt; nVertexes; ++v) {</span>
+<span class="fc" id="L74">            out[v] = new SimpleLinkedListNode();</span>
         }
         
         //Entry&lt;PairInt, TFloatList&gt;entry;
         PairInt uv;
         //TFloatList wList;
         //Iterator&lt;Entry&lt;PairInt, TFloatList&gt;&gt; iter = g.edgeWeightMap.entrySet().iterator();
-<span class="fc" id="L74">        Iterator&lt;PairInt&gt; iter = g.edgeWeightMap.keySet().iterator();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L81">        Iterator&lt;PairInt&gt; iter = g.edgeWeightMap.keySet().iterator();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
             //entry = iter.next();
             //uv = entry.getKey();
             //wList = entry.getValue();
-<span class="fc" id="L79">            uv = iter.next();</span>
-<span class="fc" id="L80">            out[uv.getX()].insert(uv.getY());</span>
+<span class="fc" id="L86">            uv = iter.next();</span>
+<span class="fc" id="L87">            out[uv.getX()].insert(uv.getY());</span>
         }
         
-<span class="fc" id="L83">        return out;</span>
+<span class="fc" id="L90">        return out;</span>
     }
+
+
+    /**
+     * convert the adjacency graph g in TIntObjectMap&lt;TIntSet&gt; into a graph built with
+     * SimpleLinkedListNode[].  note that this method assumes that the vertexes are ordered such
+     * that the final range of indexes returned is [0, max Vertex number].
+     * @param g
+     * @return
+     */
+    public static SimpleLinkedListNode[] convertGraph(TIntObjectMap&lt;TIntSet&gt; g) {
+<span class="fc" id="L102">        int[] minMax = minAndMaxVertexNumbers(g);</span>
+<span class="fc" id="L103">        int n = minMax[1] + 1;</span>
+
+<span class="fc" id="L105">        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[n];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L107">            g2[i] = new SimpleLinkedListNode();</span>
+        }
+<span class="fc" id="L109">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+        TIntIterator iter2;
+        int u, v;
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L113">            iter.advance();</span>
+<span class="fc" id="L114">            u = iter.key();</span>
+<span class="fc" id="L115">            iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L117">                v = iter2.next();</span>
+<span class="fc" id="L118">                g2[u].insert(v);</span>
+            }
+        }
+<span class="fc" id="L121">        return g2;</span>
+    }
+
+    public static int[] minAndMaxVertexNumbers(TIntObjectMap&lt;TIntSet&gt; g) {
+<span class="fc" id="L125">        int min = Integer.MAX_VALUE;</span>
+<span class="fc" id="L126">        int max = Integer.MIN_VALUE;</span>
+<span class="fc" id="L127">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+        TIntIterator iter2;
+        int u, v;
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L131">            iter.advance();</span>
+<span class="fc" id="L132">            u = iter.key();</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (u &lt; min) {</span>
+<span class="fc" id="L134">                min = u;</span>
+            }
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (u &gt; max) {</span>
+<span class="fc" id="L137">                max = u;</span>
+            }
+<span class="fc" id="L139">            iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L141">                v = iter2.next();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                if (v &lt; min) {</span>
+<span class="fc" id="L143">                    min = v;</span>
+                }
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">                if (v &gt; max) {</span>
+<span class="nc" id="L146">                    max = v;</span>
+                }
+            }
+        }
+<span class="fc" id="L150">        return new int[]{min, max};</span>
+    }
+
+    /**
+     * convert the adjacency graph g in SimpleLinkedListNode[] into a
+     * graph built with TIntObjectMap&lt;TIntSet&gt;.
+     * @param g
+     * @return
+     */
+    public static TIntObjectMap&lt;TIntSet&gt; convertGraph(SimpleLinkedListNode[] g) {
+<span class="fc" id="L160">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+        int u, v;
+        SimpleLinkedListNode vNode;
+        TIntSet uSet;
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (u = 0; u &lt; g.length; ++u) {</span>
+<span class="fc" id="L165">            uSet = g2.get(u);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">            if (uSet == null) {</span>
+<span class="fc" id="L167">                uSet = new TIntHashSet();</span>
+<span class="fc" id="L168">                g2.put(u, uSet);</span>
+            }
+<span class="fc" id="L170">            vNode = g[u];</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            while (vNode != null) {</span>
+<span class="fc" id="L172">                uSet.add(vNode.getKey());</span>
+<span class="fc" id="L173">                vNode = vNode.getNext();</span>
+            }
+        }
+<span class="fc" id="L176">        return g2;</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

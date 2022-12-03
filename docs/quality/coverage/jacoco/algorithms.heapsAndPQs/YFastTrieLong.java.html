@@ -184,7 +184,7 @@ YFastTrie
      * find, etc, and is by default choosing the model for the fast runtime
      * which may be expensive in space requirements.
      * 
-     * @param wBits 
+     * @param wBits the maximum number of bits needed for a single nuber to be inserted into thei yfasttrie
      */
 <span class="fc" id="L189">    public YFastTrieLong(int wBits) {</span>
         
@@ -260,8 +260,8 @@ YFastTrie
 
     /**
      * 
-     * @param node
-     * @param index 
+     * @param node node to add to this yfasttrie
+     * @param index index of the internal red black tree map
      */
     private void addToRBTree(long node, long index) {
         
@@ -285,8 +285,8 @@ YFastTrie
     
     /**
      * 
-     * @param node
-     * @param index 
+     * @param node node to delete from this yfasttrie
+     * @param index index of internal reb-black tree map
      */
     private boolean deleteFromRBTree(long node, long index) {
                 
@@ -370,8 +370,8 @@ YFastTrie
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
      * 
-     * @param node
-     * @return 
+     * @param node node to remove
+     * @return true if node was found and removed
      */
     public boolean remove(long node) {
         
@@ -446,7 +446,7 @@ YFastTrie
      * runtime complexity is at most O(log_2(w)) but since the map might not
      * be completely populated, the complexity might be smaller.
      * 
-     * @param node
+     * @param node node to find
      * @return the value of the node if present, else -1
      */
     public long find(long node) {
@@ -481,7 +481,7 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @param node
+     * @param node node for which the predecessor must be returned
      * @return value preceding node, else -1 if there is not one
      */
     public long predecessor(long node) {
@@ -549,7 +549,7 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @param node
+     * @param node node for which the successor must be returned
      * @return the next node in the ordered data strucure, else -1 if no such
      * node exists.
      */
@@ -712,7 +712,7 @@ YFastTrie
     
     /**
      * get the current number of values stored in the data structure.
-     * @return 
+     * @return number of items in this yfasttrie instance
      */
     public int size() {
 <span class="fc" id="L718">        return n;</span>

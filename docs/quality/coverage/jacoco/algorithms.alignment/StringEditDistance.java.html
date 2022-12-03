@@ -54,9 +54,9 @@ import java.util.Arrays;
      * 
      * @param a string to edit
      * @param b target string to change a into.
-     * 
      * @param outIndexes a and b indexes of the solution in pairs (a_i, b_j)
-     * @return 
+     * @return the number of insert, delete, and substitution operations to change
+     *      * one string into another
      */
     public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes) {
         
@@ -156,7 +156,7 @@ import java.util.Arrays;
 <span class="fc" id="L156">                j--;</span>
             }
         }
-        //System.out.printf(&quot;m=%d, n=%d, d=%n%s%n&quot;, m, n, FormatArray.toString(d, &quot;%d&quot;));
+        //System.out.printf(&quot;m=%d, n=%d, d=\n%s\n&quot;, m, n, FormatArray.toString(d, &quot;%d&quot;));
 <span class="fc" id="L160">        return d[m][n];</span>
     }
     
@@ -292,7 +292,7 @@ import java.util.Arrays;
                     }
                 }
             }
-            //System.out.printf(&quot;%n, &quot;);
+            //System.out.printf(&quot;\n, &quot;);
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
 <span class="fc bfc" id="L298" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
@@ -381,7 +381,7 @@ import java.util.Arrays;
                 }
 <span class="fc" id="L382">                dN[i][1] = maximum(dN[i-1][0] + c, dN[i-1][1] + cDel, dN[i][0] + cIns);</span>
             }
-            //System.out.printf(&quot;%n, &quot;);
+            //System.out.printf(&quot;\n, &quot;);
             
             // for i = 1 to m do Copy N[i, 0] = N[i, 1]
 <span class="fc bfc" id="L387" title="All 2 branches covered.">            for (i = 1; i &lt;= m; ++i) {</span>
@@ -400,9 +400,9 @@ import java.util.Arrays;
      * &lt;pre&gt;
      * https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
      * &lt;/pre&gt;
-     * @param a
-     * @param b
-     * @return 
+     @param a string to edit
+      * @param b target string to change a into.
+     * @return optimal string metric distance
      */
     public TCharList[] hirschbergOptimal(char[] a, char[] b) {
                 
@@ -553,10 +553,10 @@ import java.util.Arrays;
      *    D( a.substring(0, aMid), b.substring(0, k) )
              + D( reverse( a.substring(aMid + 1, m)), reverse(b.substring(k + 1, n)) ) );
        where D is the score from algorithm NeedlemanWunsch.
-     * @param aMid
-     * @param a
-     * @param b
-     * @return 
+     * @param aMid a midpoint in array y used in calculating the needleman wunsch score
+     @param a string to edit
+     @param b target string to change a into
+     * @return the index maximimizing the needleman wunsch score
      */
     private int argmax(int aMid, char[] a, char[] b) {
         /*

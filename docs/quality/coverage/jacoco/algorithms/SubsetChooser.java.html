@@ -270,23 +270,24 @@ public class SubsetChooser {
         while (str.length() &lt; n) {
             str = &quot;0&quot; + str;
         }
-        System.out.format(&quot;%d\t%10s%n&quot;, x, str);
+        System.out.format(&quot;%d\t%10s
+&quot;, x, str);
         */
 
-<span class="fc" id="L276">        int nBits = 0;</span>
-<span class="fc" id="L277">        int nOneBits = 0;</span>
-<span class="fc" id="L278">        long xp = x64;</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">        while (xp &gt; 0) {</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">            if ((xp &amp; 1) == 1) {</span>
-<span class="fc" id="L281">                int idx2 = n - 1 - nBits;</span>
-<span class="fc" id="L282">                selected[nOneBits] = idx2;</span>
-<span class="fc" id="L283">                nOneBits++;</span>
+<span class="fc" id="L277">        int nBits = 0;</span>
+<span class="fc" id="L278">        int nOneBits = 0;</span>
+<span class="fc" id="L279">        long xp = x64;</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        while (xp &gt; 0) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">            if ((xp &amp; 1) == 1) {</span>
+<span class="fc" id="L282">                int idx2 = n - 1 - nBits;</span>
+<span class="fc" id="L283">                selected[nOneBits] = idx2;</span>
+<span class="fc" id="L284">                nOneBits++;</span>
             }
-<span class="fc" id="L285">            xp = xp &gt;&gt; 1;</span>
-<span class="fc" id="L286">            nBits++;</span>
+<span class="fc" id="L286">            xp = xp &gt;&gt; 1;</span>
+<span class="fc" id="L287">            nBits++;</span>
         }
 
-<span class="fc" id="L289">        return nOneBits;</span>
+<span class="fc" id="L290">        return nOneBits;</span>
     }
 
     protected int selectBigInteger(int[] selected) {
@@ -298,23 +299,24 @@ public class SubsetChooser {
         while (str.length() &lt; n) {
             str = &quot;0&quot; + str;
         }
-        System.out.format(&quot;%d\t%10s%n&quot;, x, str);
+        System.out.format(&quot;%d\t%10s
+&quot;, x, str);
         */
 
-<span class="fc" id="L304">        int nBits = 0;</span>
-<span class="fc" id="L305">        int nOneBits = 0;</span>
-<span class="fc" id="L306">        BigInteger xp = new BigInteger(x.toByteArray());</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">        while (xp.compareTo(BigInteger.ZERO) &gt; 0) {</span>
-<span class="fc bfc" id="L308" title="All 2 branches covered.">            if (xp.and(BigInteger.ONE).equals(BigInteger.ONE)) {</span>
-<span class="fc" id="L309">                int idx2 = n - 1 - nBits;</span>
-<span class="fc" id="L310">                selected[nOneBits] = idx2;</span>
-<span class="fc" id="L311">                nOneBits++;</span>
+<span class="fc" id="L306">        int nBits = 0;</span>
+<span class="fc" id="L307">        int nOneBits = 0;</span>
+<span class="fc" id="L308">        BigInteger xp = new BigInteger(x.toByteArray());</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        while (xp.compareTo(BigInteger.ZERO) &gt; 0) {</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            if (xp.and(BigInteger.ONE).equals(BigInteger.ONE)) {</span>
+<span class="fc" id="L311">                int idx2 = n - 1 - nBits;</span>
+<span class="fc" id="L312">                selected[nOneBits] = idx2;</span>
+<span class="fc" id="L313">                nOneBits++;</span>
             }
-<span class="fc" id="L313">            xp = xp.shiftRight(1);</span>
-<span class="fc" id="L314">            nBits++;</span>
+<span class="fc" id="L315">            xp = xp.shiftRight(1);</span>
+<span class="fc" id="L316">            nBits++;</span>
         }
 
-<span class="fc" id="L317">        return nOneBits;</span>
+<span class="fc" id="L319">        return nOneBits;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

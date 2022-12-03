@@ -22,7 +22,7 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
     /**
      * add to end of doubly-linked list.
      * runtime complexity is O(1).
-     * @param node 
+     * @param node node to add
      */
     public void add(T node) {
 <span class="fc bfc" id="L28" title="All 2 branches covered.">        if (head == null) {</span>
@@ -46,7 +46,7 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
     /**
      * insert at end of doubly-linked list.  this method simply invokes add(node).
      * runtime complexity is O(1).
-     * @param node 
+     * @param node node to add to end of list
      */
     public void addLast(T node) {
 <span class="fc" id="L52">        add(node);</span>
@@ -55,7 +55,7 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
     /**
      * insert at beginning of doubly-linked list.
      * runtime complexity is O(1).
-     * @param node 
+     * @param node node to add to beginning of list
      */
     public void addFirst(T node) {
 <span class="fc bfc" id="L61" title="All 2 branches covered.">        if (head == null) {</span>
@@ -85,45 +85,48 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
      * @param node the instance of T already in this instance.
      */
     public void unlink(T node) {
-<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (node.prev == null) {</span>
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">            if (!node.equals(head)) {</span>
-<span class="nc" id="L90">                throw new IllegalStateException(&quot;node.prev == null, so it &quot;</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L89">            return;</span>
+        }
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (node.prev == null) {</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (!node.equals(head)) {</span>
+<span class="nc" id="L93">                throw new IllegalStateException(&quot;node.prev == null, so it &quot;</span>
                 + &quot;should be equal to this.head but is not.   The state of node &quot;
                 + &quot;and this instance are not consistent.&quot;);
             }
-<span class="fc" id="L94">            head = (T) head.next;</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (head == null) {</span>
-<span class="fc" id="L96">                tail = null;</span>
+<span class="fc" id="L97">            head = (T) head.next;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            if (head == null) {</span>
+<span class="fc" id="L99">                tail = null;</span>
             } else {
-<span class="fc" id="L98">                head.prev = null;</span>
+<span class="fc" id="L101">                head.prev = null;</span>
             }
             // node is now unlinked from this instance
-<span class="fc" id="L101">            node.next = null;</span>
-<span class="fc" id="L102">            node.prev = null;</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        } else if (node.next == null) {</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            if (!node.equals(tail)) {</span>
-<span class="nc" id="L105">                throw new IllegalStateException(&quot;node.next == null, so it &quot;</span>
+<span class="fc" id="L104">            node.next = null;</span>
+<span class="fc" id="L105">            node.prev = null;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        } else if (node.next == null) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            if (!node.equals(tail)) {</span>
+<span class="nc" id="L108">                throw new IllegalStateException(&quot;node.next == null, so it &quot;</span>
                 + &quot;should be equal to this.tail but is not.   The state of node &quot;
                 + &quot;and this instance are not consistent.&quot;);
             }
-<span class="fc" id="L109">            tail = (T) tail.prev;</span>
+<span class="fc" id="L112">            tail = (T) tail.prev;</span>
             // tail cannot be null because node.prev was not == null
-<span class="fc" id="L111">            tail.next = null;</span>
+<span class="fc" id="L114">            tail.next = null;</span>
             // node is now unlinked from this instance
-<span class="fc" id="L113">            node.next = null;</span>
-<span class="fc" id="L114">            node.prev = null;</span>
+<span class="fc" id="L116">            node.next = null;</span>
+<span class="fc" id="L117">            node.prev = null;</span>
         } else {
-<span class="fc" id="L116">            T prv = (T) node.prev;</span>
-<span class="fc" id="L117">            T nxt = (T) node.next;</span>
-<span class="fc" id="L118">            prv.next = nxt;</span>
+<span class="fc" id="L119">            T prv = (T) node.prev;</span>
+<span class="fc" id="L120">            T nxt = (T) node.next;</span>
+<span class="fc" id="L121">            prv.next = nxt;</span>
             // nxt cannot be null because node.next was not == null
-<span class="fc" id="L120">            nxt.prev = prv;</span>
+<span class="fc" id="L123">            nxt.prev = prv;</span>
             // node is now unlinked from this instance
-<span class="fc" id="L122">            node.next = null;</span>
-<span class="fc" id="L123">            node.prev = null;</span>
+<span class="fc" id="L125">            node.next = null;</span>
+<span class="fc" id="L126">            node.prev = null;</span>
         }
-<span class="fc" id="L125">        n--;</span>
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L128">        n--;</span>
+<span class="fc" id="L129">    }</span>
     
     /**
      * search for an identical node in this doubly-linked list instance.  Note that the runtime
@@ -134,14 +137,14 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
      * true, else null for no node found.
      */
     public T search(T node) {
-<span class="fc" id="L137">        T current = head;</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        while (current != null) {</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">            if (current.equals(node)) {</span>
-<span class="fc" id="L140">                return current;</span>
+<span class="fc" id="L140">        T current = head;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        while (current != null) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            if (current.equals(node)) {</span>
+<span class="fc" id="L143">                return current;</span>
             }
-<span class="fc" id="L142">            current = (T) current.next;</span>
+<span class="fc" id="L145">            current = (T) current.next;</span>
         }
-<span class="fc" id="L144">        return null;</span>
+<span class="fc" id="L147">        return null;</span>
     }
     
     /**
@@ -150,66 +153,66 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
      * doubly-linked list instance.
      * @param node the node in this doubly-linked list in which .equals(node) returns
      * true, else null for no node found.
-     * @return 
+     * @return node to search for in list
      */
     public boolean contains(T node) {
-<span class="fc" id="L156">        T found = search(node);</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">        return (found != null);</span>
+<span class="fc" id="L159">        T found = search(node);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        return (found != null);</span>
     }
     
     /**
      * unlink the last element from the list and return it.  
      * for use when want to treat this doubly linked list as LIFO, assuming
      * items were inserted using add().
-     * @return 
+     * @return last node if any
      */
     public T removeLast() {
-<span class="nc" id="L167">        T node = tail;</span>
-<span class="nc" id="L168">        unlink(node);</span>
-<span class="nc" id="L169">        return node;</span>
+<span class="nc" id="L170">        T node = tail;</span>
+<span class="nc" id="L171">        unlink(node);</span>
+<span class="nc" id="L172">        return node;</span>
     }
     
     /**
      * unlink the first element from the list and return it.  
      * for use when want to treat this doubly linked list as FIFO, assuming
      * items were inserted using add().
-     * @return 
+     * @return first node that was in the list
      */
     public T removeFirst() {
-<span class="fc" id="L179">        T node = head;</span>
-<span class="fc" id="L180">        unlink(node);</span>
-<span class="fc" id="L181">        return node;</span>
+<span class="fc" id="L182">        T node = head;</span>
+<span class="fc" id="L183">        unlink(node);</span>
+<span class="fc" id="L184">        return node;</span>
     }
     
     /**
      * return the first element in the list without removing it from the list.
-     * @return 
+     * @return returns first item in the list (note: it is not a copy of the item, intentionally)
      */
     public T peekFirst() {
-<span class="fc" id="L189">        return head;</span>
+<span class="fc" id="L192">        return head;</span>
     }
     
     /**
      * return the last element in the list without removing it from the list.
-     * @return 
+     * @return the last item in the list. (not: it is not a copy of the item, intentionally).
      */
     public T peekLast() {
-<span class="fc" id="L197">        return tail;</span>
+<span class="fc" id="L200">        return tail;</span>
     }
     
     
     public void clear() {
-<span class="fc" id="L202">        head = null;</span>
-<span class="fc" id="L203">        tail = null;</span>
-<span class="fc" id="L204">        n = 0;</span>
-<span class="fc" id="L205">    }</span>
+<span class="fc" id="L205">        head = null;</span>
+<span class="fc" id="L206">        tail = null;</span>
+<span class="fc" id="L207">        n = 0;</span>
+<span class="fc" id="L208">    }</span>
     
     public int size() {
-<span class="fc" id="L208">        return n;</span>
+<span class="fc" id="L211">        return n;</span>
     }
     
     public boolean isEmpty() {
-<span class="fc bfc" id="L212" title="All 2 branches covered.">        return (n == 0);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        return (n == 0);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

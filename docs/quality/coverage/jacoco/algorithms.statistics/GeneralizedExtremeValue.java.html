@@ -20,12 +20,12 @@ import java.security.SecureRandom;
                 sigma                                   (      (sigma))
  
   mu is  the location parameter
-  sigma is the scale parameter and is &gt; 0
+  sigma is the scale parameter and is .gt. 0
   k is the shape parameter
  
  
   if k != 0,
-      1 + (k * (x-mu)/sigma) &gt; 0
+      1 + (k * (x-mu)/sigma) .gt. 0
  
  
   Let z = (x-mu)/sigma
@@ -35,7 +35,7 @@ import java.security.SecureRandom;
       y = y_const * ----- * exp( -z -exp(-z))
                     sigma
       
-      sigma &gt; 0
+      sigma .gt. 0
       k = 0
  
   Extreme Value Type II (Frechet):
@@ -43,10 +43,10 @@ import java.security.SecureRandom;
       y = y_const * ----- * (-----)       * exp( - (-----)  )
                     sigma   (  x  )            (   (  x  )  )
  
-      k  &gt; 0, (1/k)&gt;0
-      sigma &gt; 0
-      x &gt; 0
-      if (1 + k*(x - mu)/sigma) &lt;= 0, y = 0
+      k .gt. 0, (1/k) .gt. 0
+      sigma .gt.  0
+      x .gt. 0
+      if (1 + k*(x - mu)/sigma) .lte. 0, y = 0
  
   Extreme Value Type III (Weibull):
                       k     (x - mu)^(k+1)      (   (x - mu)^k)
@@ -57,10 +57,10 @@ import java.security.SecureRandom;
         = y_const * ----- * (z)^(k+1) * exp( -1*(z)^k )
                     sigma
  
-      k &lt; 0, (1/k)&lt;0
-      sigma &gt; 0
-      x &gt; 0
-       if -(1 + k*(x - mu)/sigma) &gt;= 0, y = 1
+      k .lt. 0, (1/k) .lt. 0
+      sigma .gt. 0
+      x .gt. 0
+       if -(1 + k*(x - mu)/sigma) .geq. 0, y = 1
  
  &lt;/pre&gt;
   first implemented in project
@@ -132,7 +132,7 @@ public class GeneralizedExtremeValue {
 <span class="fc" id="L132">        b[1] /= (double)n;</span>
 <span class="fc" id="L133">        b[2] /= (double)n;</span>
 
-        //System.out.printf(&quot;b=%s%n&quot;, FormatArray.toString(b, &quot;%.3e&quot;));
+        //System.out.printf(&quot;b=%s\n&quot;, FormatArray.toString(b, &quot;%.3e&quot;));
 
         /* eqn (14) for shape estimator
         c = ((2*b1 - b0)/(3*b2-b0)) - math.log(2)/math.log(3)

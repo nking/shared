@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * Note that I adapted a version of the dynamic programming solution to use
  * intervals of weight equal the minimum weights instead of intervals of +1
  * when integrating up to the capacity, and that reduces the runtime by a factor
- * of roughly capacity/minimum(weight) as long a minimum weight &gt; 0.
+ * of roughly capacity/minimum(weight) as long a minimum weight .gt. 0.
  *
  * http://en.wikipedia.org/wiki/Knapsack_problem
 
@@ -116,7 +116,7 @@ Variants of Knapsack:
             }
         }
         
-<span class="fc" id="L119">        System.out.printf(&quot;memo=%n%s%n&quot;, FormatArray.toString(memo, &quot;%d&quot;));</span>
+<span class="fc" id="L119">        System.out.printf(&quot;memo=\n%s\n&quot;, FormatArray.toString(memo, &quot;%d&quot;));</span>
 
 <span class="fc" id="L121">        return memo[memo.length - 1][memo[0].length - 1];</span>
     }
@@ -148,7 +148,7 @@ Variants of Knapsack:
         
 <span class="fc" id="L149">        int[] ws = getIntervals(capacity, factor);</span>
         
-<span class="fc" id="L151">        System.out.printf(&quot;capacity=%d, factor=%d, q1Diff=%d, intervals=%s%n&quot;, capacity, </span>
+<span class="fc" id="L151">        System.out.printf(&quot;capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n&quot;, capacity,</span>
 <span class="fc" id="L152">            factor, q1, Arrays.toString(ws));</span>
                 
 <span class="fc" id="L154">        int[][] memo = new int[n + 1][ws.length + 1];</span>
@@ -171,7 +171,7 @@ Variants of Knapsack:
             }
         }
 
-<span class="fc" id="L174">        System.out.printf(&quot;memo=%n%s%n&quot;, FormatArray.toString(memo, &quot;%d&quot;));</span>
+<span class="fc" id="L174">        System.out.printf(&quot;memo=\n%s\n&quot;, FormatArray.toString(memo, &quot;%d&quot;));</span>
         
 <span class="fc" id="L176">        return memo[memo.length - 1][memo[0].length - 1];</span>
     }
@@ -201,7 +201,7 @@ Variants of Knapsack:
 <span class="fc" id="L201">            diffs[i-1] = d;</span>
         }
 <span class="fc" id="L203">        int q1 = diffs[(int)(diffs.length*.25)];</span>
-<span class="fc" id="L204">        System.out.printf(&quot;median diff=%d  Q1 diff = %d%n&quot;, diffs[diffs.length/2],</span>
+<span class="fc" id="L204">        System.out.printf(&quot;median diff=%d  Q1 diff = %d\n&quot;, diffs[diffs.length/2],</span>
 <span class="fc" id="L205">            q1);</span>
 <span class="fc" id="L206">        return q1;</span>
     }

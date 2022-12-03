@@ -16,7 +16,7 @@ import java.util.List;
     
     /**
      * sort a from index idxLo to idxHi, inclusive.
-     * @param a
+     * @param a items to sort
      */
     public static void sort(float[] a) {
 <span class="fc" id="L22">        sort(a, 0, a.length - 1);</span>
@@ -143,8 +143,8 @@ import java.util.List;
 
     /**
      * sort a by ascending values and perform the same swap operation on b.
-     * @param a
-     * @param b 
+     * @param a items to sort
+     * @param b items to be sorted by same order as a
      */
     public static void sortBy1stArg(float[] a, int[] b) {
         
@@ -369,10 +369,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     * @param b items to be sorted by same order as a
+     * @param idxLo low index of a
+     * @param idxHi high index of a
      */
     public static void sortBy1stArg(TIntList a, TDoubleList b, 
         TIntList c, int idxLo, int idxHi) {
@@ -444,10 +444,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TFloatList a, TIntList b,  
         TIntList c, int idxLo, int idxHi) {
@@ -519,10 +519,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     *      * @param b items to be sorted by same order as a
+     *      * @param idxLo low index of a sort range, inclusive
+     *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TFloatList a, int[] b, int idxLo, int idxHi) {
         
@@ -583,10 +583,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TFloatList a, TIntList b, 
         int idxLo, int idxHi) {
@@ -645,10 +645,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static &lt;T&gt; void sortBy1stArg(TFloatList a, List&lt;T&gt; b, 
         int idxLo, int idxHi) {
@@ -707,10 +707,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TIntList a, TIntList b, int idxLo, int idxHi) {
         
@@ -767,165 +767,165 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     * @param abc items to sort
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortByA(IntIntDouble[] abc, int idxLo, 
         int idxHi) {
         
-<span class="pc bpc" id="L778" title="1 of 2 branches missed.">        if (abc == null) {</span>
-<span class="nc" id="L779">            throw new IllegalArgumentException(&quot;abc cannot be null&quot;);</span>
+<span class="pc bpc" id="L777" title="1 of 2 branches missed.">        if (abc == null) {</span>
+<span class="nc" id="L778">            throw new IllegalArgumentException(&quot;abc cannot be null&quot;);</span>
         }
         
-<span class="pc bpc" id="L782" title="1 of 2 branches missed.">        if (abc.length &lt; 2) {</span>
-<span class="nc" id="L783">            return;</span>
+<span class="pc bpc" id="L781" title="1 of 2 branches missed.">        if (abc.length &lt; 2) {</span>
+<span class="nc" id="L782">            return;</span>
         }
         
-<span class="fc bfc" id="L786" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc bfc" id="L785" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
 
-<span class="fc" id="L788">            int x = abc[idxLo].getA();</span>
-<span class="fc" id="L789">            int store = idxLo;</span>
-<span class="fc" id="L790">            int idxMid = idxHi + 1;</span>
+<span class="fc" id="L787">            int x = abc[idxLo].getA();</span>
+<span class="fc" id="L788">            int store = idxLo;</span>
+<span class="fc" id="L789">            int idxMid = idxHi + 1;</span>
 
             while (true) {
                 do {
-<span class="fc" id="L794">                    store++;     </span>
-<span class="fc bfc" id="L795" title="All 4 branches covered.">                } while ((store &lt;= idxHi) &amp;&amp; (abc[store].getA() &lt; x));</span>
+<span class="fc" id="L793">                    store++;     </span>
+<span class="fc bfc" id="L794" title="All 4 branches covered.">                } while ((store &lt;= idxHi) &amp;&amp; (abc[store].getA() &lt; x));</span>
                 do {
-<span class="fc" id="L797">                    idxMid--;</span>
-<span class="fc bfc" id="L798" title="All 2 branches covered.">                } while (abc[idxMid].getA() &gt; x);</span>
-<span class="pc bpc" id="L799" title="1 of 2 branches missed.">                if (store &gt; idxMid) {</span>
-<span class="fc" id="L800">                    break;</span>
+<span class="fc" id="L796">                    idxMid--;</span>
+<span class="fc bfc" id="L797" title="All 2 branches covered.">                } while (abc[idxMid].getA() &gt; x);</span>
+<span class="pc bpc" id="L798" title="1 of 2 branches missed.">                if (store &gt; idxMid) {</span>
+<span class="fc" id="L799">                    break;</span>
                 }
-<span class="nc" id="L802">                IntIntDouble swap = abc[store];</span>
-<span class="nc" id="L803">                abc[store] = abc[idxMid];</span>
-<span class="nc" id="L804">                abc[idxMid] = swap;</span>
-<span class="nc" id="L805">            }</span>
-<span class="fc" id="L806">            IntIntDouble swap = abc[idxLo];</span>
-<span class="fc" id="L807">            abc[idxLo] = abc[idxMid];</span>
-<span class="fc" id="L808">            abc[idxMid] = swap;</span>
+<span class="nc" id="L801">                IntIntDouble swap = abc[store];</span>
+<span class="nc" id="L802">                abc[store] = abc[idxMid];</span>
+<span class="nc" id="L803">                abc[idxMid] = swap;</span>
+<span class="nc" id="L804">            }</span>
+<span class="fc" id="L805">            IntIntDouble swap = abc[idxLo];</span>
+<span class="fc" id="L806">            abc[idxLo] = abc[idxMid];</span>
+<span class="fc" id="L807">            abc[idxMid] = swap;</span>
          
-<span class="fc" id="L810">            sortByA(abc, idxLo, idxMid - 1);</span>
+<span class="fc" id="L809">            sortByA(abc, idxLo, idxMid - 1);</span>
 
-<span class="fc" id="L812">            sortByA(abc, idxMid + 1, idxHi);</span>
+<span class="fc" id="L811">            sortByA(abc, idxMid + 1, idxHi);</span>
         }
-<span class="fc" id="L814">    }</span>
+<span class="fc" id="L813">    }</span>
     
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     *@param idxLo low index of a sort range, inclusive
+     *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sort(float[] a, int idxLo, int idxHi) {
         
-<span class="pc bpc" id="L825" title="1 of 2 branches missed.">        if (a == null) {</span>
-<span class="nc" id="L826">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+<span class="pc bpc" id="L824" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L825">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L828" title="1 of 2 branches missed.">        if (a.length &lt; 2) {</span>
-<span class="nc" id="L829">            return;</span>
+<span class="pc bpc" id="L827" title="1 of 2 branches missed.">        if (a.length &lt; 2) {</span>
+<span class="nc" id="L828">            return;</span>
         }
-<span class="fc bfc" id="L831" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
 
-<span class="fc" id="L833">            float x = a[idxLo];</span>
-<span class="fc" id="L834">            int store = idxLo;</span>
-<span class="fc" id="L835">            int idxMid = idxHi + 1;</span>
+<span class="fc" id="L832">            float x = a[idxLo];</span>
+<span class="fc" id="L833">            int store = idxLo;</span>
+<span class="fc" id="L834">            int idxMid = idxHi + 1;</span>
 
             while (true) {
                 do {
-<span class="fc" id="L839">                    store++;     </span>
-<span class="fc bfc" id="L840" title="All 4 branches covered.">                } while ((store &lt;= idxHi) &amp;&amp; (a[store] &lt; x));</span>
+<span class="fc" id="L838">                    store++;     </span>
+<span class="fc bfc" id="L839" title="All 4 branches covered.">                } while ((store &lt;= idxHi) &amp;&amp; (a[store] &lt; x));</span>
                 do {
-<span class="fc" id="L842">                    idxMid--;</span>
-<span class="fc bfc" id="L843" title="All 2 branches covered.">                } while (a[idxMid] &gt; x);</span>
-<span class="fc bfc" id="L844" title="All 2 branches covered.">                if (store &gt; idxMid) {</span>
-<span class="fc" id="L845">                    break;</span>
+<span class="fc" id="L841">                    idxMid--;</span>
+<span class="fc bfc" id="L842" title="All 2 branches covered.">                } while (a[idxMid] &gt; x);</span>
+<span class="fc bfc" id="L843" title="All 2 branches covered.">                if (store &gt; idxMid) {</span>
+<span class="fc" id="L844">                    break;</span>
                 }
-<span class="fc" id="L847">                float swap = a[store];</span>
-<span class="fc" id="L848">                a[store] = a[idxMid];</span>
-<span class="fc" id="L849">                a[idxMid] = swap;</span>
-<span class="fc" id="L850">            }</span>
-<span class="fc" id="L851">            float swap = a[idxLo];</span>
-<span class="fc" id="L852">            a[idxLo] = a[idxMid];</span>
-<span class="fc" id="L853">            a[idxMid] = swap;</span>
+<span class="fc" id="L846">                float swap = a[store];</span>
+<span class="fc" id="L847">                a[store] = a[idxMid];</span>
+<span class="fc" id="L848">                a[idxMid] = swap;</span>
+<span class="fc" id="L849">            }</span>
+<span class="fc" id="L850">            float swap = a[idxLo];</span>
+<span class="fc" id="L851">            a[idxLo] = a[idxMid];</span>
+<span class="fc" id="L852">            a[idxMid] = swap;</span>
          
-<span class="fc" id="L855">            sort(a, idxLo, idxMid - 1);</span>
+<span class="fc" id="L854">            sort(a, idxLo, idxMid - 1);</span>
 
-<span class="fc" id="L857">            sort(a, idxMid + 1, idxHi);</span>
+<span class="fc" id="L856">            sort(a, idxMid + 1, idxHi);</span>
         }
-<span class="fc" id="L859">    }</span>
+<span class="fc" id="L858">    }</span>
     
     /**
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static &lt;T extends Object&gt; void descendingSort(int[] a, T[] b, int idxLo, int idxHi) {
         
-<span class="nc bnc" id="L872" title="All 2 branches missed.">        if (a == null) {</span>
-<span class="nc" id="L873">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+<span class="nc bnc" id="L871" title="All 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L872">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
         }
-<span class="nc bnc" id="L875" title="All 2 branches missed.">        if (b == null) {</span>
-<span class="nc" id="L876">            throw new IllegalArgumentException(&quot;b cannot be null&quot;);</span>
+<span class="nc bnc" id="L874" title="All 2 branches missed.">        if (b == null) {</span>
+<span class="nc" id="L875">            throw new IllegalArgumentException(&quot;b cannot be null&quot;);</span>
         }
-<span class="nc bnc" id="L878" title="All 2 branches missed.">        if (a.length != b.length) {</span>
-<span class="nc" id="L879">            throw new IllegalArgumentException(&quot;a and b must be same length&quot;);</span>
+<span class="nc bnc" id="L877" title="All 2 branches missed.">        if (a.length != b.length) {</span>
+<span class="nc" id="L878">            throw new IllegalArgumentException(&quot;a and b must be same length&quot;);</span>
         }
-<span class="nc bnc" id="L881" title="All 2 branches missed.">        if (a.length &lt; 2) {</span>
-<span class="nc" id="L882">            return;</span>
+<span class="nc bnc" id="L880" title="All 2 branches missed.">        if (a.length &lt; 2) {</span>
+<span class="nc" id="L881">            return;</span>
         }
         
-<span class="nc bnc" id="L885" title="All 2 branches missed.">        if (idxLo &lt; idxHi) {</span>
+<span class="nc bnc" id="L884" title="All 2 branches missed.">        if (idxLo &lt; idxHi) {</span>
 
-<span class="nc" id="L887">            int x = a[idxLo];</span>
-<span class="nc" id="L888">            int store = idxLo;</span>
-<span class="nc" id="L889">            int idxMid = idxHi + 1;</span>
+<span class="nc" id="L886">            int x = a[idxLo];</span>
+<span class="nc" id="L887">            int store = idxLo;</span>
+<span class="nc" id="L888">            int idxMid = idxHi + 1;</span>
 
             while (true) {
                 do {
-<span class="nc" id="L893">                    store++;     </span>
-<span class="nc bnc" id="L894" title="All 4 branches missed.">                } while ((store &lt;= idxHi) &amp;&amp; (a[store] &gt; x));</span>
+<span class="nc" id="L892">                    store++;     </span>
+<span class="nc bnc" id="L893" title="All 4 branches missed.">                } while ((store &lt;= idxHi) &amp;&amp; (a[store] &gt; x));</span>
                 do {
-<span class="nc" id="L896">                    idxMid--;</span>
-<span class="nc bnc" id="L897" title="All 2 branches missed.">                } while (a[idxMid] &lt; x);</span>
+<span class="nc" id="L895">                    idxMid--;</span>
+<span class="nc bnc" id="L896" title="All 2 branches missed.">                } while (a[idxMid] &lt; x);</span>
                 
-<span class="nc bnc" id="L899" title="All 2 branches missed.">                if (store &gt; idxMid) {</span>
-<span class="nc" id="L900">                    break;</span>
+<span class="nc bnc" id="L898" title="All 2 branches missed.">                if (store &gt; idxMid) {</span>
+<span class="nc" id="L899">                    break;</span>
                 }
-<span class="nc" id="L902">                int swap = a[store];</span>
-<span class="nc" id="L903">                a[store] = a[idxMid];</span>
-<span class="nc" id="L904">                a[idxMid] = swap;</span>
-<span class="nc" id="L905">                T swap2 = b[store];</span>
-<span class="nc" id="L906">                b[store] = b[idxMid];</span>
-<span class="nc" id="L907">                b[idxMid] = swap2;</span>
-<span class="nc" id="L908">            }</span>
-<span class="nc" id="L909">            int swap = a[idxLo];</span>
-<span class="nc" id="L910">            a[idxLo] = a[idxMid];</span>
-<span class="nc" id="L911">            a[idxMid] = swap;</span>
-<span class="nc" id="L912">            T swap2 = b[idxLo];</span>
-<span class="nc" id="L913">            b[idxLo] = b[idxMid];</span>
-<span class="nc" id="L914">            b[idxMid] = swap2;</span>
+<span class="nc" id="L901">                int swap = a[store];</span>
+<span class="nc" id="L902">                a[store] = a[idxMid];</span>
+<span class="nc" id="L903">                a[idxMid] = swap;</span>
+<span class="nc" id="L904">                T swap2 = b[store];</span>
+<span class="nc" id="L905">                b[store] = b[idxMid];</span>
+<span class="nc" id="L906">                b[idxMid] = swap2;</span>
+<span class="nc" id="L907">            }</span>
+<span class="nc" id="L908">            int swap = a[idxLo];</span>
+<span class="nc" id="L909">            a[idxLo] = a[idxMid];</span>
+<span class="nc" id="L910">            a[idxMid] = swap;</span>
+<span class="nc" id="L911">            T swap2 = b[idxLo];</span>
+<span class="nc" id="L912">            b[idxLo] = b[idxMid];</span>
+<span class="nc" id="L913">            b[idxMid] = swap2;</span>
          
-<span class="nc" id="L916">            descendingSort(a, b, idxLo, idxMid - 1);</span>
+<span class="nc" id="L915">            descendingSort(a, b, idxLo, idxMid - 1);</span>
 
-<span class="nc" id="L918">            descendingSort(a, b, idxMid + 1, idxHi);</span>
+<span class="nc" id="L917">            descendingSort(a, b, idxMid + 1, idxHi);</span>
         }
-<span class="nc" id="L920">    }</span>
+<span class="nc" id="L919">    }</span>
     
     /**
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     * @param b items to sort
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void descendingSort(int[] a, int[] b, int idxLo, int idxHi) {
         
@@ -983,11 +983,11 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param &lt;T&gt;
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     * @param &lt;T&gt; type of items in list b
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static &lt;T extends Object&gt; void descendingSort(
         TIntList a, List&lt;T&gt; b, int idxLo, int idxHi) {
@@ -1046,9 +1046,9 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     @param idxLo low index of a sort range, inclusive
+      * @param idxHi high index of a sort range, inclusive
      */
     public static &lt;S extends Number, T extends Object&gt; void descendingSort(
         List&lt;S&gt; a, List&lt;T&gt; b, int idxLo, int idxHi) {
@@ -1107,9 +1107,9 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     @param idxLo low index of a sort range, inclusive
+      * @param idxHi high index of a sort range, inclusive
      */
     public static void descendingSort(double[] a, int idxLo, int idxHi) {
         
@@ -1155,10 +1155,10 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive, by ascending values and
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(float[] a, int[] b, int idxLo, int idxHi) {
         
@@ -1208,10 +1208,10 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive, by ascending values and
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TDoubleList a, int[] b, int idxLo, int idxHi) {
         
@@ -1261,10 +1261,10 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive, by ascending values and
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(int[] a, int[] b, int idxLo, int idxHi) {
 <span class="nc" id="L1270">        MiscSorter.sortBy1stArg(a, b, idxLo, idxHi); </span>
@@ -1273,10 +1273,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(int[] a, Object[][] b, int idxLo, int idxHi) {
         
@@ -1335,8 +1335,8 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
+     @param a items to sort
+      * @param b items to be sorted by same order as a
      */
     public static &lt;T, S&gt; void sortBy1stArg(float[] a, List&lt;T&gt; b, List&lt;S&gt; c) {
         
@@ -1359,10 +1359,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static &lt;T, S&gt; void sortBy1stArg(float[] a, List&lt;T&gt; b, List&lt;S&gt; c, int idxLo, int idxHi) {
         
@@ -1432,10 +1432,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(int[] a, Object[] b, int idxLo, int idxHi) {
         
@@ -1494,10 +1494,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static &lt;T&gt; void sortBy1stArg(float[] a, List&lt;T&gt; b, int idxLo, int idxHi) {
         
@@ -1556,10 +1556,10 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      * @param b items to be sorted by same order as a
+     * @param idxLo low index of a sort range, inclusive
+     * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(float[] a, Object[] b, int idxLo, int idxHi) {
         
@@ -1619,13 +1619,13 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive.
      * It's an adaption of the optimized
      * qsort3 from the book &quot;Programming in Pearls&quot; by Jon Bentley.
-     * @param a
+     * @param a items to sort
      * @param b an array that will receive the same swap operations as are 
      * performed on a
      * @param c an array that will receive the same swap operations as are 
      * performed on a
-     * @param idxLo
-     * @param idxHi 
+     * @param idxLo low index of a sort range, inclusive
+     *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sort(float[] a, int[] b, int[] c, int idxLo, int idxHi) {
         
@@ -1687,7 +1687,7 @@ import java.util.List;
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a 
+     * @param a items to sort
      */
     public static void sortByDimension1FirstSecond(int[][] a) {
 <span class="pc bpc" id="L1693" title="1 of 2 branches missed.">        if (a == null) {</span>
@@ -1705,7 +1705,7 @@ import java.util.List;
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a 
+     * @param a items to sort
      * @param idxLo the first index in [0][index] to sort
      * @param idxHi the last index in [0][index] to sort, inclusive
      */
@@ -1766,7 +1766,7 @@ import java.util.List;
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a 
+     * @param a items to sort
      */
     public static void sortByDimension1FirstSecondThird(int[][] a) {
 <span class="pc bpc" id="L1772" title="1 of 2 branches missed.">        if (a == null) {</span>
@@ -1784,7 +1784,7 @@ import java.util.List;
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a 
+     * @param a items to sort
      * @param idxLo the first index in [0][index] to sort
      * @param idxHi the last index in [0][index] to sort, inclusive
      */
@@ -2005,11 +2005,11 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive, with next sorting by b and c
      * and all swap operations performed on all 3 arrays.  
-     * @param a
-     * @param b
-     * @param c
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     *      * @param b items to be sorted
+     * @param c items to be sorted
+     *      * @param idxLo low index of a sort range, inclusive
+     *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stThen2ndThen3rd(float[] a, float[] b, float[] c, 
         int idxLo, int idxHi) {
@@ -2042,9 +2042,9 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive, with next sorting by b and c
      * and all swap operations performed on all 3 arrays.  
-     * @param a
-     * @param b
-     * @param c
+     @param a items to sort
+      *      * @param b items to be sorted
+      * @param c items to be sorted
      */
     public static void sortBy1stThen2ndThen3rd(
         TIntList a, TIntList b, TIntList c) {
@@ -2073,11 +2073,11 @@ import java.util.List;
     /**
      * sort a from index idxLo to idxHi, inclusive, with next sorting by b and c
      * and all swap operations performed on all 3 arrays.  
-     * @param a
-     * @param b
-     * @param c
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      *      * @param b items to be sorted
+      * @param c items to be sorted
+     *      * @param idxLo low index of a sort range, inclusive
+     *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stThen2ndThen3rd(
         TIntList a, TIntList b, TIntList c, 
@@ -2263,12 +2263,12 @@ import java.util.List;
      * sort a from index idxLo to idxHi, inclusive, with ties sorted by b
      * and all swap operations performed on all arrays. The sorts are
      * ascending.
-     * @param a
-     * @param b
-     * @param c
-     * @param d
-     * @param idxLo
-     * @param idxHi 
+     @param a items to sort
+      *      * @param b items to be sorted
+      * @param c items to be sorted
+     * @param d items to be sorted
+     *      * @param idxLo low index of a sort range, inclusive
+     *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stThen2nd(double[] a, double[] b, int[] c, int[] d, 
         int idxLo, int idxHi) {
@@ -2315,11 +2315,11 @@ import java.util.List;
     
     /**
      * sorts a, b, and c by the values of a only
-     * @param a
-     * @param b
-     * @param c
-     * @param idxLo
-     * @param idxHi 
+     * @param a items to sort
+     *      *      * @param b items to be sorted
+     *      * @param c items to be sorted
+     *      *      * @param idxLo low index of a sort range, inclusive
+     *      *      * @param idxHi high index of a sort range, inclusive
      */
     public static void sort(float[] a, float[] b, float[] c, int idxLo, 
         int idxHi) {

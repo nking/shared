@@ -47,7 +47,7 @@ import java.util.Arrays;
 <span class="fc" id="L47">public class DFS {</span>
 
     /**
-     * adjacency matrix with connected i-&gt;j indicated by the index and each
+     * adjacency matrix with connected i to j indicated by the index and each
      *    node in the linked list, respectively.
      * for example, adjacent to node 3 is found via directedEdges[3] as all in the linked list.
      */
@@ -74,7 +74,7 @@ import java.util.Arrays;
 <span class="fc" id="L74">    protected int time = 0;</span>
     
     /**
-     * @param directedEdges  adjacency matrix with connected i-&gt;j indicated 
+     * @param directedEdges  adjacency matrix with connected i to j indicated 
      * by the index and each node in the linked list, respectively.
      * Note that the key of each node is expected to be the same as it's index
      * in the adjacency matrix.
@@ -126,7 +126,7 @@ import java.util.Arrays;
 
 <span class="fc" id="L127">        SimpleLinkedListNode next = g[u];</span>
         
-<span class="fc bfc" id="L129" title="All 4 branches covered.">        while (next != null &amp;&amp; next.getKey() != -1) {</span>
+<span class="fc bfc" id="L129" title="All 4 branches covered.">        while (next != null &amp;&amp; next.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc" id="L130">            int v = next.getKey();</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">            if (visited[v] == 0) {</span>
 <span class="fc" id="L132">                predecessor[v] = u;</span>

@@ -108,9 +108,9 @@ import java.util.logging.Logger;
         
 <span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (log.isLoggable(LEVEL)) {</span>
 <span class="fc" id="L110">            StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L111">            sb.append(&quot;col means=&quot;).append(Arrays.toString(colMeans)).append(&quot;%n&quot;);</span>
-<span class="fc" id="L112">            sb.append(&quot;row means=&quot;).append(Arrays.toString(rowMeans)).append(&quot;%n&quot;);</span>
-<span class="fc" id="L113">            sb.append(&quot;grand mean=&quot;).append(Double.toString(grandMean)).append(&quot;%n&quot;);</span>
+<span class="fc" id="L111">            sb.append(&quot;col means=&quot;).append(Arrays.toString(colMeans)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L112">            sb.append(&quot;row means=&quot;).append(Arrays.toString(rowMeans)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L113">            sb.append(&quot;grand mean=&quot;).append(Double.toString(grandMean)).append(&quot;\n&quot;);</span>
 <span class="fc" id="L114">            log.log(Level.INFO, sb.toString());</span>
         }
         
@@ -211,11 +211,11 @@ import java.util.logging.Logger;
         
 <span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (log.isLoggable(LEVEL)) {</span>
 <span class="fc" id="L213">            StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L214">            sb.append(&quot;n=&quot;).append(n).append(&quot;%n&quot;);</span>
-<span class="fc" id="L215">            sb.append(&quot;dVarXSq=&quot;).append(dVarXSq).append(&quot;%n&quot;);</span>
-<span class="fc" id="L216">            sb.append(&quot;dVarYSq=&quot;).append(dVarYSq).append(&quot;%n&quot;);</span>
-<span class="fc" id="L217">            sb.append(&quot;dCovXYSq=&quot;).append(dCovSq).append(&quot;%n&quot;);</span>
-<span class="fc" id="L218">            sb.append(&quot;dCorSq=&quot;).append(corSq).append(&quot;%n&quot;);</span>
+<span class="fc" id="L214">            sb.append(&quot;n=&quot;).append(n).append(&quot;\n&quot;);</span>
+<span class="fc" id="L215">            sb.append(&quot;dVarXSq=&quot;).append(dVarXSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L216">            sb.append(&quot;dVarYSq=&quot;).append(dVarYSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L217">            sb.append(&quot;dCovXYSq=&quot;).append(dCovSq).append(&quot;\n&quot;);</span>
+<span class="fc" id="L218">            sb.append(&quot;dCorSq=&quot;).append(corSq).append(&quot;\n&quot;);</span>
 <span class="fc" id="L219">            log.log(Level.INFO, sb.toString());</span>
         }
         
@@ -236,10 +236,10 @@ import java.util.logging.Logger;
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append(&quot;corSq=&quot;).append(corSq).append(&quot;%n&quot;);
-            sb.append(&quot;dCovSq: &quot;).append(dCovSq).append(&quot;%n&quot;);
-            sb.append(&quot;dVarXSq: &quot;).append(dVarXSq).append(&quot;%n&quot;);
-            sb.append(&quot;dVarYSq: &quot;).append(dVarYSq).append(&quot;%n&quot;);
+            sb.append(&quot;corSq=&quot;).append(corSq).append(&quot;\n&quot;);
+            sb.append(&quot;dCovSq: &quot;).append(dCovSq).append(&quot;\n&quot;);
+            sb.append(&quot;dVarXSq: &quot;).append(dVarXSq).append(&quot;\n&quot;);
+            sb.append(&quot;dVarYSq: &quot;).append(dVarYSq).append(&quot;\n&quot;);
             return sb.toString();
         }
     }

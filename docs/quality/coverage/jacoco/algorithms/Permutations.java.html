@@ -19,7 +19,7 @@ import java.util.Arrays;
      * NOTE that set.length at most can be 12 due to the limit in the 
      * length of an array in java (which is outPermutations.length).
      * other methods can be created upon need.
-     * @param outPermutations        
+     * @param outPermutations output variable to fill with the permutations
     */
     public static void permute(int[] set, int[][] outPermutations) {
         
@@ -27,7 +27,7 @@ import java.util.Arrays;
 <span class="fc" id="L27">        int n = set.length;</span>
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (n &gt; 12) {</span>
 <span class="nc" id="L29">            throw new IllegalArgumentException(&quot;set.length must be 12 or less &quot;</span>
-            + &quot; so that factorial(s.ength) can fit in a java array&quot;);
+            + &quot; so that factorial(s.length) can fit in a java array&quot;);
         }
 <span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (outPermutations.length != np) {</span>
 <span class="nc" id="L33">            throw new IllegalArgumentException(&quot;outPermutations length must be set.length!&quot;);</span>

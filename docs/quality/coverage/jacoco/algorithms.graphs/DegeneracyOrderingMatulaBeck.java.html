@@ -34,7 +34,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 * k have been removed are called the k-cores of the graph and the degeneracy of 
 * a graph is the largest value k such that it has a k-core.
 * 
- * As Matula &amp; Beck (1983) describe, it is possible to find a vertex ordering 
+ * As Matula and Beck (1983) describe, it is possible to find a vertex ordering 
  * of a finite graph G that optimizes the coloring number of the ordering, in 
  * linear time, by using a bucket queue to repeatedly find and remove the vertex 
  * of smallest degree. 
@@ -86,7 +86,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         
 <span class="fc" id="L87">        int maxDegree = calculateMaxDegree(adjMap);</span>
         
-<span class="fc" id="L89">        System.out.printf(&quot;maxDegree=%d, n=%d%n&quot;, maxDegree, n);</span>
+<span class="fc" id="L89">        System.out.printf(&quot;maxDegree=%d, n=%d\n&quot;, maxDegree, n);</span>
         
         // use a YFastTrie and HashMap to create the bucket queue
         // runtime complexity is O(|V|*log_2(w)) where q=maxDegree
@@ -127,7 +127,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 <span class="fc" id="L127">            out[n-j-1] = v;</span>
 <span class="fc" id="L128">            bQ.remove(i, v, bucket);</span>
             
-            //System.out.printf(&quot;out=%s%n&quot;, Arrays.toString(out));
+            //System.out.printf(&quot;out=%s\n&quot;, Arrays.toString(out));
               
             // for each neighbor w of v that is not already in L
 <span class="fc" id="L133">            adj = adjMap.get(v);</span>
@@ -157,7 +157,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
                 }
 <span class="fc" id="L158">                nW--;</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">                if (nW &lt; 0) {</span>
-                    //System.out.printf(&quot;vertex w=%d has nW=%d.  bucket size=%d%n&quot;,
+                    //System.out.printf(&quot;vertex w=%d has nW=%d.  bucket size=%d\n&quot;,
                     //    w, nW, bQ.size());
                     //w should remain in bQ until it becomes v
                 } else {
@@ -234,7 +234,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
                 }
                 reverseBucketMap.put(v, nV);
                 
-                //System.out.printf(&quot;bM key=%d, val=%d, max=%d%n&quot;, nV, v, maxDegree);
+                //System.out.printf(&quot;bM key=%d, val=%d, max=%d\n&quot;, nV, v, maxDegree);
             }
             
             bucketQueue = new YFastTrie(1 + (int)Math.ceil(Math.log(maxDegree)/Math.log(2)) );
@@ -243,7 +243,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
                 iter.advance();
                 nV = iter.key();
                 bucketQueue.add(nV);
-                //System.out.printf(&quot;bQ key=%d%n&quot;, nV);
+                //System.out.printf(&quot;bQ key=%d\n&quot;, nV);
             }
         }
         
@@ -458,7 +458,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
                 }
                 reverseBucketMap.put(v, nV);
                 
-                //System.out.printf(&quot;bM key=%d, val=%d, max=%d%n&quot;, nV, v, maxDegree);
+                //System.out.printf(&quot;bM key=%d, val=%d, max=%d\n&quot;, nV, v, maxDegree);
             }
         }
         

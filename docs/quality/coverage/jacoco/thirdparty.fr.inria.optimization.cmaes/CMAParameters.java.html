@@ -64,16 +64,16 @@ public class CMAParameters implements java.io.Serializable {
 	int supplemented; // after supplementation it is undecidable whether a parameter was 
 	                  // explicitly set from outside, therefore another supplementation is not advisable
 	int locked; // lock when lambda is used to new data structures
-	int lambda;          /* -&gt; mu, &lt;- N */
-	int mu;              /* -&gt; weights, (lambda) */
-	double mucov;        /* -&gt; ccov */
-	double mueff;        /* &lt;- weights */
-	double[] weights;    /* &lt;- mu, -&gt; mueff, mucov, ccov */
-	double damps;        /* &lt;- cs, maxeval, lambda */
-	double cs;           /* -&gt; damp, &lt;- N */
-	double cc;           /* &lt;- N */
-	double ccov;         /* &lt;- mucov, &lt;- N, &lt;- diagonalcov */
-	double ccovsep;      /* &lt;- ccov */
+	int lambda;          /*  mu, &lt;- N */
+	int mu;              /*  weights, (lambda) */
+	double mucov;        /*  ccov */
+	double mueff;        /*  weights */
+	double[] weights;    /*  mu, mueff, mucov, ccov */
+	double damps;        /*  cs, maxeval, lambda */
+	double cs;           /*  damp,  N */
+	double cc;           /*  N */
+	double ccov;         /*  mucov, N, diagonalcov */
+	double ccovsep;      /* ccov */
 
 	double chiN;
 

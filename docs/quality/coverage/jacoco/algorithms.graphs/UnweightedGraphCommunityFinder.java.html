@@ -75,7 +75,7 @@ import java.util.List;
 <span class="fc" id="L75">        }</span>
         
 <span class="fc bfc" id="L77" title="All 2 branches covered.">        for (i = 0; i &lt; ks.size(); ++i) {</span>
-<span class="fc" id="L78">            System.out.printf(&quot;k=%d q=%.3f%n&quot;, ks.get(i), qs.get(i));</span>
+<span class="fc" id="L78">            System.out.printf(&quot;k=%d q=%.3f\n&quot;, ks.get(i), qs.get(i));</span>
         }
         
         // find the max among the peaks
@@ -89,7 +89,7 @@ import java.util.List;
 <span class="fc" id="L89">                maxQ = ks.get(idx);</span>
 <span class="fc" id="L90">                maxQIdx = idx;</span>
             }
-<span class="fc" id="L92">            System.out.printf(&quot;found a peak for q=%.3f k=%d%n&quot;, qs.get(idx), ks.get(idx));</span>
+<span class="fc" id="L92">            System.out.printf(&quot;found a peak for q=%.3f k=%d\n&quot;, qs.get(idx), ks.get(idx));</span>
         }
         
 <span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (maxQIdx == -1) {</span>
@@ -108,7 +108,7 @@ import java.util.List;
         
 <span class="fc bfc" id="L109" title="All 2 branches covered.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
 <span class="fc" id="L110">            SimpleLinkedListNode vNode = adjList[u];</span>
-<span class="fc bfc" id="L111" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+<span class="fc bfc" id="L111" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc" id="L112">                int v = vNode.getKey();</span>
 <span class="fc" id="L113">                n++;</span>
 <span class="fc" id="L114">                vNode = vNode.getNext();</span>

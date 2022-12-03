@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * &lt;pre&gt;
  * reference:
- * chap 26, and specifically 26.5 of Cormen, Leiserson, Rivest, &amp; Stein &quot;Introduction to Algorithms&quot;.
+ * chap 26, and specifically 26.5 of Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot;.
  * &lt;/pre&gt;
  * 
  * we can interpret a directed graph as a “flow network” and use it to answer 
@@ -139,15 +139,15 @@ import java.util.Arrays;
         
 <span class="fc" id="L140">        initPreFlow();</span>
         
-        //System.out.printf(&quot;after initPreFlow excess[srcIdx]=%.3e = -|f*|%n&quot;, eF[srcIdx]);                
+        //System.out.printf(&quot;after initPreFlow excess[srcIdx]=%.3e = -|f*|\n&quot;, eF[srcIdx]);
 <span class="fc" id="L143">    }</span>
     
     /**
      * 
      * @param adj graph as an adjacency matrix.  the elements in the matrix are
      * the edge capacities.
-     * @param srcIdx
-     * @param sinkIdx 
+     * @param srcIdx source
+     * @param sinkIdx  sink
      */
 <span class="fc" id="L152">    public RelabelToFront(double[][] adj, int srcIdx, int sinkIdx) {</span>
         
@@ -185,7 +185,7 @@ import java.util.Arrays;
         
 <span class="fc" id="L186">        initPreFlow();</span>
         
-        //System.out.printf(&quot;after initPreFlow excess[srcIdx]=%.3e = -|f*|%n&quot;, eF[srcIdx]);                
+        //System.out.printf(&quot;after initPreFlow excess[srcIdx]=%.3e = -|f*|\n&quot;, eF[srcIdx]);
 <span class="fc" id="L189">    }</span>
     
     public MaxFlowResults findMaxFlow() {
@@ -217,8 +217,8 @@ import java.util.Arrays;
     
     /**
      * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
-     * @param u
-     * @param v
+     * @param u index of u vertex in edge uv
+     * @param v index of v vertex in edge uv
      * @return the residual capacity
      */
     protected double calculateResidualCapacity(int u, int v) {
@@ -259,7 +259,7 @@ import java.util.Arrays;
 <span class="nc" id="L259">             iter.advance();</span>
 <span class="nc" id="L260">             p = iter.key();</span>
 <span class="nc" id="L261">             fP = iter.value();</span>
-<span class="nc" id="L262">             System.out.printf(&quot;f%s = %.3e%n&quot;, p.toString(), fP);</span>
+<span class="nc" id="L262">             System.out.printf(&quot;f%s = %.3e\n&quot;, p.toString(), fP);</span>
          }
 <span class="nc" id="L264">    }</span>
     
@@ -278,16 +278,16 @@ import java.util.Arrays;
 <span class="nc" id="L278">             iter.advance();</span>
 <span class="nc" id="L279">             p = iter.key();</span>
 <span class="nc" id="L280">             cP = iter.value();</span>
-<span class="nc" id="L281">             System.out.printf(&quot;c%s = %.3e%n&quot;, p.toString(), cP);</span>
+<span class="nc" id="L281">             System.out.printf(&quot;c%s = %.3e\n&quot;, p.toString(), cP);</span>
          }
 <span class="nc" id="L283">    }</span>
     
     protected void printE() {
-<span class="nc" id="L286">         System.out.printf(&quot;e=%s%n&quot;, FormatArray.toString(eF, &quot;%.3e&quot;));</span>
+<span class="nc" id="L286">         System.out.printf(&quot;e=%s\n&quot;, FormatArray.toString(eF, &quot;%.3e&quot;));</span>
 <span class="nc" id="L287">    }</span>
     
     protected void printH() {
-<span class="nc" id="L290">         System.out.printf(&quot;h=%s%n&quot;, Arrays.toString(h));</span>
+<span class="nc" id="L290">         System.out.printf(&quot;h=%s\n&quot;, Arrays.toString(h));</span>
 <span class="nc" id="L291">    }</span>
 
     /**
@@ -297,8 +297,8 @@ import java.util.Arrays;
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
-     * @param u
-     * @return 
+     * @param u index of vertiex u
+     * @return excess flow
      */
     protected double calculateExcessFlow(int u) {
 <span class="nc" id="L304">        double sumToU = calculateSumOfFlow(u, this.revAdj.get(u));</span>
@@ -313,9 +313,9 @@ import java.util.Arrays;
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
-     * @param u
+     * @param u index of vertex u
      * @param v the neighbors of u
-     * @return 
+     * @return  sum of the flow
      */
     protected double calculateSumOfFlow(int u, TIntSet v) {
 <span class="nc bnc" id="L321" title="All 2 branches missed.">        if (u == srcIdx) {</span>
@@ -333,7 +333,7 @@ import java.util.Arrays;
     }
 
     /**
-     * @param uNode
+     * @param uNode node u
      */
     protected void dischargeLoop(VertexNode uNode) {
         /*
@@ -355,7 +355,7 @@ import java.util.Arrays;
 
     /**
      * construct a linked list of all vertexes except src and sink
-     * @return 
+     * @return a linked list of all vertexes except src and sink
      */
     private DoublyLinkedList&lt;VertexNode&gt; constructL() {
         
@@ -476,7 +476,7 @@ import java.util.Arrays;
     
     /**
      * initialize flow to 0 for every edge in capacity map
-     * @return 
+     * @return initialized flow of edges
      */
     private TObjectDoubleMap&lt;PairInt&gt; initFlow() {
         
@@ -508,7 +508,7 @@ import java.util.Arrays;
      * heights of the neighbors of u that are in E_f.
      * @throws java.lang.IllegalArgumentException throws exception if a neighbor
      * of u is eligible for a push operation.
-     * @param u
+     * @param u index of vertex u
      */
     protected void relabel(int u) {
         
@@ -518,7 +518,7 @@ import java.util.Arrays;
         
 <span class="fc" id="L519">        TIntList vs = uNMap.get(u);</span>
         
-        /*System.out.printf(&quot;relabel(%d).  N=%s%n&quot;, u, Arrays.toString(vs.toArray()));
+        /*System.out.printf(&quot;relabel(%d).  N=%s\n&quot;, u, Arrays.toString(vs.toArray()));
         print();
         System.out.printf(&quot;  for V_f: &quot;);*/
         
@@ -531,7 +531,7 @@ import java.util.Arrays;
             
 <span class="pc bpc" id="L532" title="1 of 4 branches missed.">            inE = this.adj.containsKey(u) &amp;&amp; this.adj.get(u).contains(v);</span>
             
-            //System.out.printf(&quot;  inE=%b h[%d]=%d  h[%d]=%d%n&quot;, inE, u, h[u], v, h[v]);
+            //System.out.printf(&quot;  inE=%b h[%d]=%d  h[%d]=%d\n&quot;, inE, u, h[u], v, h[v]);
             
             // Lemma 26.16
 <span class="fc bfc" id="L537" title="All 2 branches covered.">            if (this.h[v] &lt; this.h[u]) {</span>
@@ -563,10 +563,10 @@ import java.util.Arrays;
 <span class="pc bnc" id="L563" title="All 2 branches missed.">        assert(h[u] &lt;= (2*uNMap.size() - 1));</span>
         
         //DEBUG
-        /*System.out.printf(&quot;%n&quot;);        
-        System.out.printf(&quot;  minH=%d,  h=%s%n&quot;, minH, u, Arrays.toString(h));        
+        /*System.out.printf(&quot;\n&quot;);
+        System.out.printf(&quot;  minH=%d,  h=%s\n&quot;, minH, u, Arrays.toString(h));
         if (!(minH &lt; Integer.MAX_VALUE)) {
-            System.out.printf(&quot;ERROR in relabel(%d).  N=%s%n&quot;,
+            System.out.printf(&quot;ERROR in relabel(%d).  N=%s\n&quot;,
                 u, Arrays.toString(vs.toArray()));
         }*/
         
@@ -576,14 +576,14 @@ import java.util.Arrays;
     /**
      * The basic operation PUSH(u,v) applies if u is an overflowing vertex, 
      * c_f(u,v) &gt; 0, and h.u = h.v + 1.
-     * @param u
-     * @param v 
+     * @param u index of vertex u
+     * @param v index of vertex v
      * @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
      * not a positive number or h.u != (h.v + 1).
      */
     protected void push(int u, int v) {
         
-        //System.out.printf(&quot;push(%d, %d)%n&quot;, u, v);
+        //System.out.printf(&quot;push(%d, %d)\n&quot;, u, v);
         
 <span class="pc bpc" id="L588" title="1 of 4 branches missed.">        boolean inE = this.adj.containsKey(u) &amp;&amp; this.adj.get(u).contains(v);</span>
         
@@ -606,10 +606,10 @@ import java.util.Arrays;
 <span class="fc" id="L606">            f.put(p, fUV);</span>
             
             //DEBUG
-            /*System.out.printf(&quot;  ==&gt; f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e%n&quot;, 
+            /*System.out.printf(&quot;  ==&gt; f(%d,%d)=%.3e, c(%d,%d)=%.3e, delta=%.3e\n&quot;,
                 u, v, fUV, u, v, c.get(p), delta);
             if (Math.abs(c.get(p) - fUV) &lt; 1e-7) {
-                System.out.printf(&quot;     saturated%n&quot;);
+                System.out.printf(&quot;     saturated\n&quot;);
             }*/
             
 <span class="fc" id="L615">        } else {</span>
@@ -628,7 +628,7 @@ import java.util.Arrays;
 <span class="fc" id="L628">            f.put(p, fVU);</span>
                         
             //DEBUG
-            //System.out.printf(&quot;  ==&gt; f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u%n&quot;, 
+            //System.out.printf(&quot;  ==&gt; f(%d,%d)=%.3e, c(%d,%d)=%.3e delta=%.3e for v,u\n&quot;,
             //    v, u, fVU, v, u, c.get(p), delta);
         }
 <span class="fc" id="L634">        this.eF[u] -= delta;</span>
@@ -636,13 +636,13 @@ import java.util.Arrays;
         
         /*
         //DEBUG
-        System.out.printf(&quot;  eF[%d]=%.3e, eF[%d]=%.3e%n&quot;, u, eF[u], v, eF[v]);
+        System.out.printf(&quot;  eF[%d]=%.3e, eF[%d]=%.3e\n&quot;, u, eF[u], v, eF[v]);
         
         if (Math.abs(this.eF[u]) &lt;1e-7) {
-            System.out.printf(&quot;      removes %d from E_f%n&quot;, u);
+            System.out.printf(&quot;      removes %d from E_f\n&quot;, u);
         }
         if (Math.abs(this.eF[v]) &lt;1e-7) {
-            System.out.printf(&quot;      removes %d from E_f%n&quot;, v);
+            System.out.printf(&quot;      removes %d from E_f\n&quot;, v);
         }*/
 <span class="fc" id="L647">    }</span>
     
@@ -650,7 +650,7 @@ import java.util.Arrays;
 
         /*//DEBUG        
         print();                
-        System.out.printf(&quot;discharge(%d)  excess=%.3e%n&quot;, u, eF[u]);
+        System.out.printf(&quot;discharge(%d)  excess=%.3e\n&quot;, u, eF[u]);
         */
         
 <span class="fc" id="L656">        TIntList uNList = uNMap.get(u);</span>
@@ -675,9 +675,9 @@ import java.util.Arrays;
             
             /*
             //DEBUG
-            System.out.printf(&quot;  nIter=%d eF[%d]=%.3e%n&quot;, nIter, u, eF[u]);
+            System.out.printf(&quot;  nIter=%d eF[%d]=%.3e\n&quot;, nIter, u, eF[u]);
             if (currNList != null) {
-                System.out.printf(&quot;  [%d].N=%s u.h=%d [h-1].currNList=%s%n&quot;, u, Arrays.toString(uNList.toArray()),
+                System.out.printf(&quot;  [%d].N=%s u.h=%d [h-1].currNList=%s\n&quot;, u, Arrays.toString(uNList.toArray()),
                     h[u], Arrays.toString(currNList.toArray()));
             }*/
                         
@@ -690,7 +690,7 @@ import java.util.Arrays;
                     
 <span class="fc" id="L691">                    v = currNList.get(currNIdx);</span>
                     
-                    //System.out.printf(&quot;    &lt;-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false%n&quot;, 
+                    //System.out.printf(&quot;    &lt;-*cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=false\n&quot;, 
                     //    u, v, calculateResidualCapacity(u, v), u, h[u], v, h[v]);
                     
 <span class="fc" id="L696">                    push(u, v);</span>
@@ -709,7 +709,7 @@ import java.util.Arrays;
                 
 <span class="fc" id="L710">                backEdgeIdxs.clear();</span>
                 
-                //System.out.printf(&quot;    after relabel returning to discharge(%d).  reset u.currN%n&quot;, u);
+                //System.out.printf(&quot;    after relabel returning to discharge(%d).  reset u.currN\n&quot;, u);
                 
 <span class="fc" id="L714">                nIter++;</span>
                 
@@ -724,7 +724,7 @@ import java.util.Arrays;
             
 <span class="fc bfc" id="L725" title="All 2 branches covered.">            if (cF &gt; 0) {</span>
                 
-                //System.out.printf(&quot;    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b%n&quot;, u, v, cF, u, h[u], v, h[v], inE);
+                //System.out.printf(&quot;    *cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d  inE=%b\n&quot;, u, v, cF, u, h[u], v, h[v], inE);
                 
 <span class="fc" id="L729">                push(u, v);</span>
                 
@@ -733,13 +733,13 @@ import java.util.Arrays;
 <span class="fc" id="L733">                backEdgeIdxs.add(new VertexNode(currNIdx));</span>
                 
                 //System.out.printf(&quot;did not push to reverse edge for v=%d cF=%.3e&quot;
-                //    + &quot; currNList=%s%n&quot;,
+                //    + &quot; currNList=%s\n&quot;,
                 //    v, cF, Arrays.toString(currNList.toArray()));
                 
 <span class="fc" id="L739">                currNIdx++;</span>
                 
             } else {
-                //System.out.printf(&quot;    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN%n&quot;, u, v, cF, u, h[u], v, h[v], inE);
+                //System.out.printf(&quot;    cf(%d,%d)=%.3e, h[%d]=%d, h[%d]=%d inE=%b. incr u.currN\n&quot;, u, v, cF, u, h[u], v, h[v], inE);
 <span class="fc" id="L743">                currNIdx++;</span>
             }
             
@@ -835,7 +835,7 @@ import java.util.Arrays;
         public double flow;
         public void print() {
             if (edgeFlows != null) {
-                System.out.printf(&quot;max flow=%.3e from src=%d to sink=%d%n&quot;, 
+                System.out.printf(&quot;max flow=%.3e from src=%d to sink=%d\n&quot;, 
                     flow, srcIdx, sinkIdx);
                 printF(edgeFlows);
             }

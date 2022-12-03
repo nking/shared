@@ -63,7 +63,7 @@ public class Dendogram {
         
 <span class="fc bfc" id="L64" title="All 2 branches covered.">        while (nC &lt; nV) {</span>
             
-<span class="fc" id="L66">            System.out.printf(&quot;nComponents=%d (nV=%d)%n&quot;, nC, nV);</span>
+<span class="fc" id="L66">            System.out.printf(&quot;nComponents=%d (nV=%d)\n&quot;, nC, nV);</span>
 <span class="fc" id="L67">            System.out.flush();</span>
 
 <span class="fc" id="L69">            Results r = b.girvanNewmanDAG(g, src);</span>
@@ -73,7 +73,7 @@ public class Dendogram {
 <span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if (max == null) {</span>
 <span class="nc" id="L74">                break;</span>
             }
-<span class="fc" id="L76">            System.out.printf(&quot;max edge = (%d, %d)%n&quot;, max.getX(), max.getY());</span>
+<span class="fc" id="L76">            System.out.printf(&quot;max edge = (%d, %d)\n&quot;, max.getX(), max.getY());</span>
             
 <span class="fc" id="L78">            g[max.getX()].delete(max.getY());</span>
 

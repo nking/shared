@@ -389,7 +389,7 @@ import java.util.Stack;
 <span class="fc" id="L389">            nodeMap.updateNodeColor(root, BLACK);</span>
         }
         
-        //System.out.format(&quot;AFTER deleteMin()%n&quot;);
+        //System.out.format(&quot;AFTER deleteMin()\n&quot;);
         //printPreOrderTraversal(1);
         
 <span class="pc bnc" id="L395" title="All 2 branches missed.">        assert(check());</span>
@@ -419,7 +419,7 @@ import java.util.Stack;
 <span class="fc" id="L419">            return;</span>
         }
 
-        //System.out.format(&quot;BEFORE deleteMin(%d)%n&quot;, h);
+        //System.out.format(&quot;BEFORE deleteMin(%d)\n&quot;, h);
         //printPreOrderTraversal(1);
         
         
@@ -436,8 +436,8 @@ import java.util.Stack;
 <span class="fc" id="L436">        long left = nodeMap.getLeft(h);</span>
         //assert(parent == h);
         
-<span class="fc bfc" id="L439" title="All 2 branches covered.">        if (output.length == 3) {</span>
-<span class="fc" id="L440">            output[2] = left;</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">        if (output.length == 3) {</span>
+<span class="nc" id="L440">            output[2] = left;</span>
         }
         
 <span class="fc" id="L443">        deleteMin(left, output);</span>
@@ -454,7 +454,7 @@ import java.util.Stack;
 <span class="fc" id="L454">        output[1] = balance(h);</span>
         
         //printPreOrderTraversal(1);
-        //System.out.format(&quot;AFTER deleteMin(h)%n&quot;);
+        //System.out.format(&quot;AFTER deleteMin(h)\n&quot;);
 <span class="fc" id="L458">    }</span>
 
     /**
@@ -488,7 +488,7 @@ import java.util.Stack;
 <span class="fc" id="L488">            nodeMap.updateNodeColor(root, BLACK);</span>
         }
         
-        //System.out.format(&quot;AFTER deleteMax()%n&quot;);
+        //System.out.format(&quot;AFTER deleteMax()\n&quot;);
         //printPreOrderTraversal(1);
         
 <span class="pc bnc" id="L494" title="All 2 branches missed.">        assert(check());</span>
@@ -497,7 +497,7 @@ import java.util.Stack;
     // delete the key-value pair with the maximum key rooted at h
     private void deleteMax(long h, long[] output) { 
     
-        //System.out.format(&quot;BEFORE deleteMax(%d)%n&quot;, h);
+        //System.out.format(&quot;BEFORE deleteMax(%d)\n&quot;, h);
         //printPreOrderTraversal(1);
         
 <span class="fc bfc" id="L503" title="All 2 branches covered.">        if (isLeftRed(h)) {</span>
@@ -531,7 +531,7 @@ import java.util.Stack;
 <span class="fc" id="L531">        output[1] = balance(h);</span>
         
         
-        //System.out.format(&quot;AFTER deleteMax(h)%n&quot;);
+        //System.out.format(&quot;AFTER deleteMax(h)\n&quot;);
         //printPreOrderTraversal(1);
         
 <span class="fc" id="L537">    }</span>
@@ -546,7 +546,7 @@ import java.util.Stack;
         
 <span class="fc" id="L547">        int sz0 = size();</span>
         
-        //System.out.println(&quot;%nbefore delete &quot; + key + &quot; root=&quot; + root);
+        //System.out.println(&quot;\nbefore delete &quot; + key + &quot; root=&quot; + root);
         //printPreOrderTraversal();
         
 <span class="pc bpc" id="L552" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
@@ -583,7 +583,7 @@ import java.util.Stack;
     // delete the key-value pair with the given key rooted at h
     private void delete(long h, long key, long[] output) { 
         
-        //System.out.format(&quot;delete(%d, %d)%n&quot;, h, key);
+        //System.out.format(&quot;delete(%d, %d)\n&quot;, h, key);
         
 <span class="pc bnc" id="L588" title="All 2 branches missed.">        assert(nodeMap.containsKey(key));</span>
 <span class="pc bnc" id="L589" title="All 2 branches missed.">        assert(nodeMap.containsKey(h));</span>
@@ -680,8 +680,8 @@ import java.util.Stack;
                
                 //System.out.println(
                 //    &quot;   x to get h fields except val. &quot; + 
-                //    &quot;%n   x=&quot; + nodeToString(x)
-                //    + &quot;%n   h=&quot; + hDBG
+                //    &quot;\n   x=&quot; + nodeToString(x)
+                //    + &quot;\n   h=&quot; + hDBG
                 //);
                
 <span class="pc bnc" id="L687" title="All 2 branches missed.">                assert(x != h);</span>
@@ -699,11 +699,11 @@ import java.util.Stack;
 <span class="pc bpc" id="L699" title="1 of 2 branches missed.">                if (nodeMap.parentIsSet(x)) {</span>
 <span class="fc" id="L700">                    long minParent = nodeMap.getParent(x);</span>
 <span class="pc bpc" id="L701" title="1 of 2 branches missed.">                    if (nodeMap.leftIsSet(minParent)</span>
-<span class="nc bnc" id="L702" title="All 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
+<span class="pc bpc" id="L702" title="1 of 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
 <span class="nc" id="L703">                        nodeMap.unsetLeft(minParent);</span>
 <span class="pc bpc" id="L704" title="1 of 2 branches missed.">                    } else if (nodeMap.rightIsSet(minParent)</span>
-<span class="nc bnc" id="L705" title="All 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
-<span class="nc" id="L706">                        nodeMap.unsetRight(minParent);</span>
+<span class="pc bpc" id="L705" title="1 of 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
+<span class="fc" id="L706">                        nodeMap.unsetRight(minParent);</span>
                     }
 <span class="fc" id="L708">                    nodeMap.unsetParent(x);</span>
                 }
@@ -712,7 +712,7 @@ import java.util.Stack;
                 }
                 
 <span class="pc bpc" id="L714" title="2 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
-<span class="nc" id="L715">                    hRightExists = false;</span>
+<span class="fc" id="L715">                    hRightExists = false;</span>
                 }
                 
 <span class="pc bpc" id="L718" title="1 of 2 branches missed.">                if (xParentExists) {</span>
@@ -2097,12 +2097,12 @@ import java.util.Stack;
 <span class="fc" id="L2097">                long child = nodeMap.getLeft(key);</span>
 <span class="pc bpc" id="L2098" title="1 of 2 branches missed.">                if (!nodeMap.parentIsSet(child)) {</span>
 <span class="nc" id="L2099">                    System.err.format(</span>
-                        &quot;error in %d.left=%d has no parent%n&quot;,
+                        &quot;error in %d.left=%d has no parent\n&quot;,
 <span class="nc" id="L2101">                        key, child);</span>
 <span class="nc" id="L2102">                    passed = false;</span>
 <span class="pc bpc" id="L2103" title="1 of 2 branches missed.">                } else if (nodeMap.getParent(child) != key) {</span>
 <span class="nc" id="L2104">                    System.err.format(</span>
-                        &quot;error in left: %d.left=%d but %d.parent=%d%n&quot;,
+                        &quot;error in left: %d.left=%d but %d.parent=%d\n&quot;,
 <span class="nc" id="L2106">                        key, child, child, nodeMap.getParent(child));</span>
 <span class="nc" id="L2107">                    passed = false;</span>
                 }
@@ -2111,12 +2111,12 @@ import java.util.Stack;
 <span class="fc" id="L2111">                long child = nodeMap.getRight(key);</span>
 <span class="pc bpc" id="L2112" title="1 of 2 branches missed.">                if (!nodeMap.parentIsSet(child)) {</span>
 <span class="nc" id="L2113">                    System.err.format(</span>
-                        &quot;error in %d.right=%d has no parent%n&quot;,
+                        &quot;error in %d.right=%d has no parent\n&quot;,
 <span class="nc" id="L2115">                        key, child);</span>
 <span class="nc" id="L2116">                    passed = false;</span>
 <span class="pc bpc" id="L2117" title="1 of 2 branches missed.">                } else if (nodeMap.getParent(child) != key) {</span>
 <span class="nc" id="L2118">                    System.err.format(</span>
-                        &quot;error in right: %d.right=%d but %d.parent=%d%n&quot;,
+                        &quot;error in right: %d.right=%d but %d.parent=%d\n&quot;,
 <span class="nc" id="L2120">                        key, child, child, nodeMap.getParent(child));</span>
 <span class="nc" id="L2121">                    passed = false;</span>
                 }
@@ -2314,15 +2314,15 @@ import java.util.Stack;
 <span class="pc bnc" id="L2314" title="All 2 branches missed.">        assert(x != h);</span>
 <span class="fc" id="L2315">        nodeMap.put(x, xVal, hClr, hSize);</span>
      
-<span class="pc bpc" id="L2317" title="1 of 2 branches missed.">        if (hParentExists) {</span>
+<span class="fc bfc" id="L2317" title="All 2 branches covered.">        if (hParentExists) {</span>
 <span class="fc" id="L2318">            nodeMap.updateParent(x, hParent);</span>
 <span class="pc bpc" id="L2319" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(hParent) </span>
 <span class="pc bpc" id="L2320" title="1 of 2 branches missed.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
-<span class="nc" id="L2321">                nodeMap.updateLeft(hParent, x);</span>
+<span class="fc" id="L2321">                nodeMap.updateLeft(hParent, x);</span>
             } else {
-<span class="pc bnc" id="L2323" title="All 2 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
+<span class="nc bnc" id="L2323" title="All 2 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
 <span class="nc bnc" id="L2324" title="All 2 branches missed.">                    &amp;&amp; nodeMap.getRight(hParent) == h);</span>
-<span class="fc" id="L2325">                nodeMap.updateRight(hParent, x);</span>
+<span class="nc" id="L2325">                nodeMap.updateRight(hParent, x);</span>
             }
         } else {
             //h is root
@@ -2333,14 +2333,14 @@ import java.util.Stack;
 <span class="fc" id="L2333">            nodeMap.updateLeft(x, hLeft);</span>
         }
 <span class="pc bpc" id="L2335" title="1 of 2 branches missed.">        if (hRightExists) {</span>
-<span class="fc" id="L2336">            nodeMap.updateParent(hRight, x);</span>
-<span class="fc" id="L2337">            nodeMap.updateRight(x, hRight);</span>
+<span class="nc" id="L2336">            nodeMap.updateParent(hRight, x);</span>
+<span class="nc" id="L2337">            nodeMap.updateRight(x, hRight);</span>
         }
         
 <span class="fc" id="L2340">        nodeMap.remove(h); </span>
         
-<span class="pc bpc" id="L2342" title="1 of 2 branches missed.">        if (h == root) {</span>
-<span class="nc" id="L2343">            root = x;</span>
+<span class="fc bfc" id="L2342" title="All 2 branches covered.">        if (h == root) {</span>
+<span class="fc" id="L2343">            root = x;</span>
         }
 <span class="fc" id="L2345">    }</span>
     

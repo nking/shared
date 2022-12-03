@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Class contains a Fibonacci heap, that is, a loose collection of trees based
  * upon binomial heaps, hence satisfying the minimum heap property:
- *     object.child.key &gt;= object.key.
+ *     object.child.key .geq. object.key.
  *
  * With a Fibonacci heap, the minimum key of the entire heap is always at the
  * top of one of the trees.
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * Fibonacci heap potential = t + 2m
  *     where t = number of trees
  *           m = number of marked nodes.  (marked when node has been recently
- *               made a child of another node and &gt;= 1 of it's own children
+ *               made a child of another node and .geq. 1 of it's own children
  *               have been cut.  root nodes are never marked.)
  *
  * &lt;pre&gt;
@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * best utilized and are usually implemented as O(log_2 N).
  *
  * This was implemented following pseudo-code from
- * &quot;Introduction to Algorithms&quot;, by Cormen, Leiserson, Rivest, &amp; Stein
+ * &quot;Introduction to Algorithms&quot;, by Cormen, Leiserson, Rivest, and Stein
  * on the Fibonacci Heap.
  * &lt;/pre&gt;
  *
@@ -420,7 +420,7 @@ import java.util.logging.Logger;
 <span class="pc bpc" id="L420" title="1 of 2 branches missed.">        if (label != null) {</span>
 <span class="fc" id="L421">            char[] c = label.toCharArray();</span>
 <span class="fc" id="L422">            writer.write(c, 0, c.length);</span>
-<span class="fc" id="L423">            writer.write(&quot;%n&quot;);</span>
+<span class="fc" id="L423">            writer.write(&quot;\n&quot;);</span>
 <span class="fc" id="L424">            writer.flush();</span>
         }
         
@@ -435,7 +435,7 @@ import java.util.logging.Logger;
 <span class="nc" id="L435">                writer.write(minimumNode.getData().toString());</span>
             }
         }
-<span class="fc" id="L438">        c = &quot;;  heap=%n&quot;.toCharArray();</span>
+<span class="fc" id="L438">        c = &quot;;  heap=\n&quot;.toCharArray();</span>
 <span class="fc" id="L439">        writer.write(c, 0, c.length);</span>
 <span class="fc" id="L440">        writer.flush();</span>
             
@@ -462,7 +462,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L462">                currentLevel++;</span>
                 
 <span class="pc bpc" id="L464" title="1 of 2 branches missed.">                if (sb.length() &gt; 72) {</span>
-<span class="nc" id="L465">                    sb.append(&quot;%n&quot;);</span>
+<span class="nc" id="L465">                    sb.append(&quot;\n&quot;);</span>
 <span class="nc" id="L466">                    c = sb.toString().toCharArray();</span>
 <span class="nc" id="L467">                    writer.write(c, 0, c.length);</span>
 <span class="nc bnc" id="L468" title="All 2 branches missed.">                    if (nIter % 100 == 0) {</span>
@@ -510,7 +510,7 @@ import java.util.logging.Logger;
                 }
 <span class="fc bfc" id="L511" title="All 2 branches covered.">                if (!eol) {</span>
 <span class="pc bpc" id="L512" title="1 of 2 branches missed.">                    if (sb.length() &gt; 72) {</span>
-<span class="nc" id="L513">                        sb.append(&quot;%n&quot;);</span>
+<span class="nc" id="L513">                        sb.append(&quot;\n&quot;);</span>
 <span class="nc" id="L514">                        c = sb.toString().toCharArray();</span>
 <span class="nc" id="L515">                        writer.write(c, 0, c.length);</span>
 <span class="nc bnc" id="L516" title="All 2 branches missed.">                        if (nIter % 100 == 0) {</span>
@@ -520,7 +520,7 @@ import java.util.logging.Logger;
                     }
                 }
 <span class="fc bfc" id="L522" title="All 2 branches covered.">                if (eol) {</span>
-<span class="fc" id="L523">                    sb.append(&quot;%n&quot;);</span>
+<span class="fc" id="L523">                    sb.append(&quot;\n&quot;);</span>
 <span class="fc" id="L524">                    c = sb.toString().toCharArray();</span>
 <span class="fc" id="L525">                    writer.write(c, 0, c.length);</span>
 <span class="pc bpc" id="L526" title="1 of 2 branches missed.">                    if ((nIter % 100) == 0) {</span>

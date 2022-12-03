@@ -92,34 +92,34 @@ import java.util.logging.Logger;
     public static ModelFit fit(double[][] phiX, double[] t, final double alpha, final double beta,
            final double[] priorMean, final double[][] priorCov) throws NotConvergedException {
 
-<span class="fc" id="L95">        log.log(java.util.logging.Level.FINE, String.format(&quot;xTrain=phiX=%n%s&quot;,</span>
+<span class="fc" id="L95">        log.log(java.util.logging.Level.FINE, String.format(&quot;xTrain=phiX=\n%s&quot;,</span>
 <span class="fc" id="L96">                FormatArray.toString(phiX, &quot;%.8e&quot;)));</span>
 
 <span class="fc" id="L98">        double[][] phiXT = MatrixUtil.transpose(phiX);</span>
 
         //[m X m]
 <span class="fc" id="L101">        double[][] sInv = calcSInv(priorCov, phiX, phiXT, alpha, beta);</span>
-<span class="fc" id="L102">        log.log(java.util.logging.Level.FINE, String.format(&quot;sInv=%n%s&quot;, FormatArray.toString(sInv, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L102">        log.log(java.util.logging.Level.FINE, String.format(&quot;sInv=\n%s&quot;, FormatArray.toString(sInv, &quot;%.4f&quot;)));</span>
 
         // same result as calcSInv, difference in use of outer product
         //double[][] _sInv = _calcSInv(x, m, alpha, beta); where x is the original training data given to generator
-        //log.log(java.util.logging.Level.FINE, String.format(&quot;_sInv=%n%s&quot;, FormatArray.toString(_sInv, &quot;%.4f&quot;)));
+        //log.log(java.util.logging.Level.FINE, String.format(&quot;_sInv=\n%s&quot;, FormatArray.toString(_sInv, &quot;%.4f&quot;)));
 
         //[m X m]
 <span class="fc" id="L109">        double[][] s = MatrixUtil.pseudoinverseRankDeficient(sInv);</span>
-<span class="fc" id="L110">        log.log(java.util.logging.Level.FINE, String.format(&quot;s=%n%s&quot;, FormatArray.toString(s, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L110">        log.log(java.util.logging.Level.FINE, String.format(&quot;s=\n%s&quot;, FormatArray.toString(s, &quot;%.4f&quot;)));</span>
 
         // the mean is roughly similar to a slope term of yTrain/xTrain
         //[(m+1) X 1]
 <span class="fc" id="L114">        double[] mean = calcMean(priorMean, priorCov, s, phiXT, t, alpha, beta);</span>
-<span class="fc" id="L115">        log.log(java.util.logging.Level.FINE, String.format(&quot;mean=%n%s&quot;, FormatArray.toString(mean, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L115">        log.log(java.util.logging.Level.FINE, String.format(&quot;mean=\n%s&quot;, FormatArray.toString(mean, &quot;%.4f&quot;)));</span>
 
         //[m+1 X m+1]
 <span class="fc" id="L118">        double[][] cov = s;</span>
 
-<span class="fc" id="L120">        log.log(java.util.logging.Level.FINE, String.format(&quot;covariance=%n%s&quot;, FormatArray.toString(cov, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L120">        log.log(java.util.logging.Level.FINE, String.format(&quot;covariance=\n%s&quot;, FormatArray.toString(cov, &quot;%.4f&quot;)));</span>
 
-<span class="fc" id="L122">        log.log(java.util.logging.Level.FINE, String.format(&quot;phiX=%n%s&quot;, FormatArray.toString(phiX, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L122">        log.log(java.util.logging.Level.FINE, String.format(&quot;phiX=\n%s&quot;, FormatArray.toString(phiX, &quot;%.4f&quot;)));</span>
 
         /*
          from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
@@ -152,14 +152,14 @@ import java.util.logging.Logger;
         // [testX.length X (m+1)]  [m+1] = [testX.length]
         // use regression slope term:
 <span class="fc" id="L154">        double[] y = MatrixUtil.multiplyMatrixByColumnVector(phiXTest, fit.mean);</span>
-<span class="fc" id="L155">        log.log(java.util.logging.Level.FINE, String.format(&quot;y=%n%s&quot;, FormatArray.toString(y, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L155">        log.log(java.util.logging.Level.FINE, String.format(&quot;y=\n%s&quot;, FormatArray.toString(y, &quot;%.4f&quot;)));</span>
 
         //[testX.length X (m+1)] [(m+1)X(m+1)]  = [testX.length X (m+1)]
 <span class="fc" id="L158">        double[][] ys1 = MatrixUtil.multiply(phiXTest, fit.cov);</span>
-<span class="fc" id="L159">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=%n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L159">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=\n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
         //[testX.length X (m+1)] * [testX.length X (m+1)]  = [testX.length X (m+1)]
 <span class="fc" id="L161">        ys1 = MatrixUtil.pointwiseMultiplication(ys1, phiXTest);</span>
-<span class="fc" id="L162">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=%n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L162">        log.log(java.util.logging.Level.FINE, String.format(&quot;ys1=\n%s&quot;, FormatArray.toString(ys1, &quot;%.4f&quot;)));</span>
 
         // propagation of errors:
         // sum ys1 along rows, add 1/beta, take sqrt:
@@ -172,7 +172,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L172">            yErr[i] += (1./fit.beta);</span>
 <span class="fc" id="L173">            yErr[i] = Math.sqrt(yErr[i]);</span>
         }
-<span class="fc" id="L175">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=%n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L175">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=\n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
 
         /*
         Wasserman's eqn 2.10 from All of Statistics:
@@ -269,7 +269,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L269">            yErr[i] += (1./fit.beta);</span>
 <span class="fc" id="L270">            yErr[i] = Math.sqrt(yErr[i]);</span>
         }
-<span class="fc" id="L272">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=%n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
+<span class="fc" id="L272">        log.log(java.util.logging.Level.FINE, String.format(&quot;yErr=\n%s&quot;, FormatArray.toString(yErr, &quot;%.4f&quot;)));</span>
 
         //from Wasserman's &quot;All of Statistics&quot;, 2.43 Theorem:
         //N(0, I) ~ Σ^(−1/2) * (X−μ)

@@ -48,8 +48,8 @@ public class DoubleLinkedCircularList {
     * 
     * Example:
     *
-        sentinel -&gt; 2nd inserted -&gt; 1st inserted -&gt; [ sentinel.right ]
-        sentinel &lt;- 2nd inserted &lt;- 1st inserted &lt;- [ sentinel.right ]
+        sentinel to 2nd inserted to 1st inserted to [ sentinel.right ]
+        sentinel from 2nd inserted from 1st inserted from [ sentinel.right ]
     *
     * &lt;pre&gt;
     * subsequent traversal by FIFO should use :
@@ -60,7 +60,7 @@ public class DoubleLinkedCircularList {
     * 
     * runtime complexity is O(1).
     * &lt;/pre&gt;
-    * @param node
+    * @param node node to insert
     * @return inserted child node instance
     */
     public HeapNode insert(HeapNode node) {
@@ -87,8 +87,8 @@ public class DoubleLinkedCircularList {
     /**
      * remove first found node with key.
      * runtime complexity is O(n).
-     * @param key
-     * @return 
+     * @param key key of node to remove
+     * @return true if key was found and removed
      */
     public boolean remove(long key) {
 <span class="fc" id="L94">        HeapNode cn = search(key);</span>
@@ -100,7 +100,7 @@ public class DoubleLinkedCircularList {
      * remove node by connecting it's relationships to one another and removing
      * self.
      * runtime complexity is O(1).
-     * @param node 
+     * @param node  node to remove from heap
      */
     public void remove(HeapNode node) {
 <span class="pc bpc" id="L106" title="1 of 2 branches missed.">    	if (node == null) {</span>
@@ -137,8 +137,8 @@ public class DoubleLinkedCircularList {
      * 
      * runtime complexity is O(1).
      * &lt;/pre&gt;
-     * @param existingNode
-     * @param insertNode 
+     * @param existingNode node already present in heap
+     * @param insertNode the new node to be inserted into the heap
      */
     public void insertAfter(HeapNode existingNode, HeapNode insertNode) {
         
@@ -166,8 +166,8 @@ public class DoubleLinkedCircularList {
      * runtime complexity is up to O(n), so if this method is often used,
      * should choose another data structure for the logic.
      * 
-     * @param key
-     * @return 
+     * @param key key of node to search for in heap
+     * @return the node having key 
      */
     public HeapNode search(long key) {
         

@@ -116,7 +116,7 @@ import java.util.Arrays;
 <span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; dfs2.td.length; ++i) {</span>
 <span class="fc" id="L117">            HeapNode node = heap.extractMin();</span>
 <span class="fc" id="L118">            NodeData d = (NodeData) node.getData();</span>
-            //System.out.printf(&quot;ti=%d, tf=%d, idx=%d   endTime=%d c=%d%n&quot;, 
+            //System.out.printf(&quot;ti=%d, tf=%d, idx=%d   endTime=%d c=%d\n&quot;, 
             //    node.getKey(), d.tf, d.idx, endTime, c);
 <span class="fc bfc" id="L121" title="All 2 branches covered.">            if (node.getKey() &lt;= endTime){</span>
 <span class="fc" id="L122">                components[d.idx] = c;</span>
@@ -125,7 +125,7 @@ import java.util.Arrays;
 <span class="fc" id="L125">                endTime = d.tf;</span>
 <span class="fc" id="L126">                components[d.idx] = c;</span>
             }
-            //System.out.printf(&quot;  idx=%d c=%d%n&quot;, d.idx, components[d.idx]);
+            //System.out.printf(&quot;  idx=%d c=%d\n&quot;, d.idx, components[d.idx]);
         }
        
 <span class="fc" id="L131">        return components;</span>
@@ -145,7 +145,7 @@ import java.util.Arrays;
         
 <span class="fc bfc" id="L146" title="All 2 branches covered.">        for (int v = 0; v &lt; connected.length; v++) {</span>
 <span class="fc" id="L147">            SimpleLinkedListNode uNode = connected[v];</span>
-<span class="pc bpc" id="L148" title="1 of 4 branches missed.">            while (uNode != null &amp;&amp; uNode.getKey() != -1) {</span>
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">            while (uNode != null &amp;&amp; uNode.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc" id="L149">                int u = uNode.getKey();</span>
 <span class="fc" id="L150">                reversed[u].insert(v);</span>
 <span class="fc" id="L151">                uNode = uNode.getNext();</span>

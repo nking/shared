@@ -176,7 +176,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
                         
             // re-calculate any values of fDerEval that are 0, using finite difference:
 <span class="fc" id="L178">            usedFiniteDifference = false;</span>
-<span class="fc" id="L179">           System.out.printf(&quot;[gm=(%s)  f=%.3e der=(%s)]%n&quot;,</span>
+<span class="fc" id="L179">           System.out.printf(&quot;[gm=(%s)  f=%.3e der=(%s)]\n&quot;,</span>
 <span class="fc" id="L180">                AbstractGeometricMedianFunction.toString(prevGeoMedian1),</span>
 <span class="fc" id="L181">                prevFEval,</span>
 <span class="fc" id="L182">                AbstractGeometricMedianFunction.toString(fDerEval));</span>
@@ -192,7 +192,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
                 }
             }
 <span class="fc bfc" id="L194" title="All 2 branches covered.">            if (usedFiniteDifference) {</span>
-<span class="fc" id="L195">                System.out.printf(&quot;  [finite difference=(%s)]%n&quot;,</span>
+<span class="fc" id="L195">                System.out.printf(&quot;  [finite difference=(%s)]\n&quot;,</span>
 <span class="fc" id="L196">                    AbstractGeometricMedianFunction.toString(fDerEval));</span>
 <span class="fc" id="L197">                System.out.flush();</span>
                 
@@ -236,7 +236,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 <span class="fc" id="L236">            fDerEval = function.der(geoMedian1);</span>
 <span class="fc" id="L237">            fEval2 = function.evaluateGeoMedianPerDimension(geoMedian1);</span>
             
-<span class="fc" id="L239">            System.out.printf(&quot;f=%.3e  der=%s%n  =&gt; gm=(%s)%n  prevf=%.3e %s%n  prevgm=(%s)%n&quot;,</span>
+<span class="fc" id="L239">            System.out.printf(&quot;f=%.3e  der=%s\n  =&gt; gm=(%s)\n  prevf=%.3e %s\n  prevgm=(%s)\n&quot;,</span>
 <span class="fc" id="L240">                fEval, AbstractGeometricMedianFunction.toString(fDerEval),</span>
 <span class="fc" id="L241">                AbstractGeometricMedianFunction.toString(geoMedian1),</span>
 <span class="fc" id="L242">                prevFEval, AbstractGeometricMedianFunction.toString(prevFEval2),</span>
@@ -312,7 +312,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
      * this methods uses newtonsMethod2 to completion and then uses the 
      * Vardi Zhang (2000) algorithm to update argmin X if it's a point in obs.
      *
-     * Vardi &amp; Zhang 2000:
+     * Vardi and Zhang 2000:
      * &quot;The multivariate L1-median and associated data depth&quot;,
        Yehuda Vardi and Cun-Hui Zhang
      *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf
@@ -342,7 +342,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
             
 <span class="fc" id="L343">            f0 = newtonsMethod2(function, geoMedian);</span>
 
-<span class="fc" id="L345">            System.out.printf(&quot;%d) newton's f=%.7e gm=%s%n&quot;, nIter, f0, </span>
+<span class="fc" id="L345">            System.out.printf(&quot;%d) newton's f=%.7e gm=%s\n&quot;, nIter, f0,</span>
 <span class="fc" id="L346">                AbstractGeometricMedianFunction.toString(geoMedian));</span>
             
 <span class="fc" id="L348">            function.isMedian(geoMedian, isMedian);</span>
@@ -362,7 +362,7 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
 <span class="fc" id="L362">                break;</span>
             }
             
-<span class="fc" id="L365">            System.out.printf(&quot;  vz f=%.7e gm=%s checks=%s%n&quot;, f1, </span>
+<span class="fc" id="L365">            System.out.printf(&quot;  vz f=%.7e gm=%s checks=%s\n&quot;, f1,</span>
 <span class="fc" id="L366">                AbstractGeometricMedianFunction.toString(geoMedian),</span>
 <span class="fc" id="L367">                Arrays.toString(checks));</span>
 <span class="fc" id="L368">            System.out.flush();</span>

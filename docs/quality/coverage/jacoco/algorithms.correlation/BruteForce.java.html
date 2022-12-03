@@ -16,6 +16,7 @@ import java.util.Arrays;
      * calculate the correlation matrix for a using a brute force method
      * @param a an mxn matrix of data with the dimensions being columns
      * and the datum number being rows.
+     * runtime complexity is O(m^2 * n + n^2)
      * &lt;pre&gt;
      * e.g.  a[0] = new double[]{10, 100, 1000}
      *       a[1] = new double[]{ 9, 110, 900}
@@ -24,38 +25,42 @@ import java.util.Arrays;
      */
     public static double[][] correlation(double[][] a) {
         
-<span class="nc" id="L27">        double eps= 1.e-15;</span>
+<span class="fc" id="L28">        double eps= 1.e-15;</span>
         
         // cor_i_j = cov_i_j / (sqrt(var_i)*sqrt(var_j))
+
+        //The runtime complexity is O(m^2 * n) where m = a.length and n = a[0].length.
+        // cov size is [n X n].
+<span class="fc" id="L34">        double[][] cov = covariance(a);</span>
         
-<span class="nc" id="L31">        double[][] cov = covariance(a);</span>
-        
-<span class="nc" id="L33">        double[][] cor = new double[cov.length][cov[0].length];</span>
+<span class="fc" id="L36">        double[][] cor = new double[cov.length][cov[0].length];</span>
         int i, j;
-<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (i = 0; i &lt; cov.length; ++i) {</span>
-<span class="nc" id="L36">            cor[i] = new double[cov[i].length];</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (i = 0; i &lt; cov.length; ++i) {</span>
+<span class="fc" id="L39">            cor[i] = new double[cov[i].length];</span>
         }
         double si, sj;
-<span class="nc bnc" id="L39" title="All 2 branches missed.">        for (i = 0; i &lt; cor.length; ++i) {</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">            si = (cov[i][i] &gt; eps) ? Math.sqrt(cov[i][i]) : 0;</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">            for (j = i; j &lt; cor[i].length; ++j) {</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">                sj = (cov[j][j] &gt; eps) ? Math.sqrt(cov[j][j]) : 0;</span>
-<span class="nc bnc" id="L43" title="All 4 branches missed.">                if (si &gt; eps &amp;&amp; sj &gt; eps) {</span>
-<span class="nc" id="L44">                    cor[i][j] = cov[i][j]/(si*sj);</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">                    if (i != j) {</span>
-<span class="nc" id="L46">                        cor[j][i] = cor[i][j];</span>
+        // runtime complexity is ~2*(n+1)*(n) ~ n^2
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (i = 0; i &lt; cov.length; ++i) {</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">            si = (cov[i][i] &gt; eps) ? Math.sqrt(cov[i][i]) : 0;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            for (j = i; j &lt; cov[i].length; ++j) {</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">                sj = (cov[j][j] &gt; eps) ? Math.sqrt(cov[j][j]) : 0;</span>
+<span class="pc bpc" id="L47" title="2 of 4 branches missed.">                if (si &gt; eps &amp;&amp; sj &gt; eps) {</span>
+<span class="fc" id="L48">                    cor[i][j] = cov[i][j]/(si*sj);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">                    if (i != j) {</span>
+<span class="fc" id="L50">                        cor[j][i] = cor[i][j];</span>
                     }
                 }
             }
         }
         
-<span class="nc" id="L52">        return cor;</span>
+<span class="fc" id="L56">        return cor;</span>
     }
     
     /**
      * calculate the covariance matrix for a using a brute force method.
      * The covariance matrix is also known as auto-covariance matrix, 
      * dispersion matrix, variance matrix, and the variance–covariance matrix.
+     * The runtime complexity is O(m^2 * n) where m = a.length and n = a[0].length.
      * @param a an mxn matrix of data with the dimensions being columns
      * and the datum number being rows.
      * &lt;pre&gt;
@@ -68,67 +73,68 @@ import java.util.Arrays;
      */
     public static double[][] covariance(double[][] a) {
         
-<span class="fc" id="L71">        int nRows = a.length;</span>
-<span class="fc" id="L72">        int nCols = a[0].length;</span>
+<span class="fc" id="L76">        int nRows = a.length;</span>
+<span class="fc" id="L77">        int nCols = a[0].length;</span>
         
         int i, j;
         
         // mean of each column:
-<span class="fc" id="L77">        double[] mean = MatrixUtil.mean(a);</span>
-        
-<span class="fc" id="L79">        double[][] diffs = new double[nRows][];</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L81">            diffs[i] = new double[nCols];</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">            for (j = 0; j &lt; nCols; ++j) {</span>
-<span class="fc" id="L83">                diffs[i][j] = (a[i][j] - mean[j]);</span>
+<span class="fc" id="L82">        double[] mean = MatrixUtil.mean(a);</span>
+        // r.t. nRows * nCols
+<span class="fc" id="L84">        double[][] diffs = new double[nRows][];</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L86">            diffs[i] = new double[nCols];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            for (j = 0; j &lt; nCols; ++j) {</span>
+<span class="fc" id="L88">                diffs[i][j] = (a[i][j] - mean[j]);</span>
             }
         }
         
-        /*System.out.printf(&quot;bf stand. means=%s%n&quot;, Arrays.toString(mean));
+        /*System.out.printf(&quot;bf stand. means=%s\n&quot;, Arrays.toString(mean));
         
         System.out.flush();
-        System.out.printf(&quot;bf stand. diffs=%n&quot;);
+        System.out.printf(&quot;bf stand. diffs=\n&quot;);
         for ( i = 0; i &lt; diffs.length; ++i) {
             for ( j = 0; j &lt; diffs[i].length; ++j) {
                 System.out.printf(&quot;%11.3e  &quot;, diffs[i][j]);
             }
-            System.out.printf(&quot;%n&quot;);
+            System.out.printf(&quot;\n&quot;);
         }
         System.out.flush();
         */
         
-<span class="fc" id="L100">        double[][] cov = new double[nCols][];</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (i = 0; i &lt; nCols; ++i) {</span>
-<span class="fc" id="L102">            cov[i] = new double[nCols];</span>
+<span class="fc" id="L105">        double[][] cov = new double[nCols][];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (i = 0; i &lt; nCols; ++i) {</span>
+<span class="fc" id="L107">            cov[i] = new double[nCols];</span>
         }
-     
+
+        // r.t. nRows^2 * nCols
         double sum;
         int ii;
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">            for (j = i; j &lt; nCols; ++j) {</span>
-<span class="fc" id="L109">                sum = 0;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            for (j = i; j &lt; nCols; ++j) {</span>
+<span class="fc" id="L115">                sum = 0;</span>
                 // multiply diffs[*][i] by diffs[*][j]
-<span class="fc bfc" id="L111" title="All 2 branches covered.">                for (ii = 0; ii &lt; nRows; ++ii) {</span>
-<span class="fc" id="L112">                    sum += (diffs[ii][i] * diffs[ii][j]);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">                for (ii = 0; ii &lt; nRows; ++ii) {</span>
+<span class="fc" id="L118">                    sum += (diffs[ii][i] * diffs[ii][j]);</span>
                 }
-<span class="fc" id="L114">                sum /= ((double)(nRows-1.));</span>
-<span class="fc" id="L115">                cov[i][j] = sum;</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">                if (i != j) {</span>
-<span class="fc" id="L117">                    cov[j][i] = sum;</span>
+<span class="fc" id="L120">                sum /= ((double)(nRows-1.));</span>
+<span class="fc" id="L121">                cov[i][j] = sum;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                if (i != j) {</span>
+<span class="fc" id="L123">                    cov[j][i] = sum;</span>
                 }
             }
         }
         
-        /*System.out.printf(&quot;bf stand. cov=%n&quot;);
+        /*System.out.printf(&quot;bf stand. cov=\n&quot;);
         for ( i = 0; i &lt; cov.length; ++i) {
             for ( j = 0; j &lt; cov[i].length; ++j) {
                 System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
             }
-            System.out.printf(&quot;%n&quot;);
+            System.out.printf(&quot;\n&quot;);
         }
         System.out.flush();*/
         
-<span class="fc" id="L131">        return cov;</span>
+<span class="fc" id="L137">        return cov;</span>
     }
     
     /**
@@ -148,26 +154,26 @@ import java.util.Arrays;
      */
     public static double[][] covariance2(double[][] a) {
         
-<span class="fc" id="L151">        double[][] cov = MatrixUtil.createATransposedTimesA(a);</span>
+<span class="fc" id="L157">        double[][] cov = MatrixUtil.createATransposedTimesA(a);</span>
 
         int i, j;
-<span class="fc" id="L154">        int n = a[0].length;</span>
-<span class="fc" id="L155">        double invN2 = 1./((double)n - 1.);</span>
-<span class="fc" id="L156">        invN2 *= invN2;</span>
-<span class="fc" id="L157">        MatrixUtil.multiply(cov, invN2);</span>
+<span class="fc" id="L160">        int n = a[0].length;</span>
+<span class="fc" id="L161">        double invN2 = 1./((double)n - 1.);</span>
+<span class="fc" id="L162">        invN2 *= invN2;</span>
+<span class="fc" id="L163">        MatrixUtil.multiply(cov, invN2);</span>
 
         /*
-        System.out.printf(&quot;bf cov=%n&quot;);
+        System.out.printf(&quot;bf cov=\n&quot;);
         for ( i = 0; i &lt; cov.length; ++i) {
             for ( j = 0; j &lt; cov[i].length; ++j) {
                 System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
             }
-            System.out.printf(&quot;%n&quot;);
+            System.out.printf(&quot;\n&quot;);
         }
         System.out.flush();
         */
 
-<span class="fc" id="L170">        return cov;</span>
+<span class="fc" id="L176">        return cov;</span>
     }
    
 }

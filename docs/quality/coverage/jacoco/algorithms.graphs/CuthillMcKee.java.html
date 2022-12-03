@@ -25,7 +25,7 @@ is symmetric).   The reduction of the bandwidth of a matrix
 reduces storage and computational costs.
  
 From &quot;The Reverse Cuthill-McKee Algorithm in Distributed-Memory&quot;
-2016 Azad, Jacquelin, Buluc &amp; Ng
+2016 Azad, Jacquelin, Buluc and Ng
  
 Since obtaining a reordering to minimize bandwidth is an NP-complete problem, 
 various heuristics are used in practice such as Cuthill-McKee, 
@@ -51,11 +51,11 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
-       2016 Azad, Jacquelin, Buluc &amp; Ng
+       2016 Azad, Jacquelin, Buluc and Ng
 
      * &lt;/pre&gt;
      * @param gE undirected adjacency graph
-     * @return 
+     * @return Cuthill-McKee ordering
      */
     public static int[] cuthillMcKeeOrdering(Set&lt;PairInt&gt; gE) {
         
@@ -76,11 +76,11 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
-       2016 Azad, Jacquelin, Buluc &amp; Ng
+       2016 Azad, Jacquelin, Buluc and Ng
 
      * &lt;/pre&gt;
      * @param gE undirected adjacency graph
-     * @return 
+     * @return reverse Cuthill-McKee ordering
      */
     public static int[] rcm(Set&lt;PairInt&gt; gE) {
         
@@ -105,11 +105,11 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
-       2016 Azad, Jacquelin, Buluc &amp; Ng
+       2016 Azad, Jacquelin, Buluc and Ng
 
      * &lt;/pre&gt;
      * @param adjMap undirected adjacency graph
-     * @return 
+     * @return reverse Cuthill-McKee ordering
      */
     public static int[] rcm(TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
@@ -132,11 +132,11 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
-       2016 Azad, Jacquelin, Buluc &amp; Ng
+       2016 Azad, Jacquelin, Buluc and Ng
 
      * &lt;/pre&gt;
      * @param adjMap undirected adjacency graph
-     * @return 
+     * @return Cuthill-McKee ordering
      */
     public static int[] cuthillMcKeeOrdering(TIntObjectMap&lt;TIntSet&gt; adjMap) {
                 
@@ -224,12 +224,12 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
-       2016 Azad, Jacquelin, Buluc &amp; Ng
+       2016 Azad, Jacquelin, Buluc and Ng
 
      * &lt;/pre&gt;
      * @param a symmetric adjacency matrix where entry a[i][j] &gt; 0 indicates an edge
      * between vertexes i and j and the graph is undirected.
-     * @return 
+     * @return reverse Cuthill-McKee ordering
      */
     public static int[] rcm(int[][] a) {
         
@@ -254,12 +254,12 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
-       2016 Azad, Jacquelin, Buluc &amp; Ng
+       2016 Azad, Jacquelin, Buluc and Ng
 
      * &lt;/pre&gt;
      * @param a symmetric adjacency matrix where entry a[i][j] &gt; 0 indicates an edge
      * between vertexes i and j and the graph is undirected.
-     * @return 
+     * @return Cuthill-McKee ordering
      */
     public static int[] cuthillMcKeeOrdering(int[][] a) {
 <span class="nc" id="L265">        TIntObjectMap&lt;TIntSet&gt; adjMap = createSymmetricAdjMap(a);</span>
@@ -271,7 +271,7 @@ TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
      * (u and v are vertex indexes).  The rewriting is to avoid double counting
      * in other methods.
      * @param adjMap
-     * @return 
+     * @return the adjacency map rewritten so that u is less than v
      */
     static Set&lt;PairInt&gt; uniqueEdges(TIntObjectMap&lt;TIntSet&gt; adjMap) {
     

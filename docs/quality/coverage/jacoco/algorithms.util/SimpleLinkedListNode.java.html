@@ -193,7 +193,7 @@ public class SimpleLinkedListNode {
 <span class="fc" id="L193">        int count = 0;</span>
 
 <span class="fc" id="L195">        SimpleLinkedListNode latest = this;</span>
-<span class="pc bpc" id="L196" title="1 of 4 branches missed.">        while (latest != null &amp;&amp; latest.key != -1) {</span>
+<span class="pc bpc" id="L196" title="1 of 4 branches missed.">        while (latest != null &amp;&amp; latest.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc bfc" id="L197" title="All 2 branches covered.">            if ((count + 1) &gt; n) {</span>
 <span class="fc" id="L198">                n = 2*n;</span>
 <span class="fc" id="L199">                nodeKeys = Arrays.copyOf(nodeKeys, n);</span>

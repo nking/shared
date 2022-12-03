@@ -23,7 +23,7 @@ import java.util.Stack;
         
       visits: 0, 1, 3, 7, 4, 2, 5, 6
      &lt;/pre&gt;
-     * @param root
+     * @param root root of tree
      */
     public void preorderRecursive(BinaryTreeNode root) {
 <span class="fc bfc" id="L29" title="All 2 branches covered.">        if (root != null) {</span>
@@ -44,7 +44,7 @@ import java.util.Stack;
                         
      visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
      &lt;/pre&gt;
-     * @param root
+     * @param root tree root
      */
     public void inorderRecursive(BinaryTreeNode root) {
 <span class="fc bfc" id="L50" title="All 2 branches covered.">        if (root != null) {</span>
@@ -65,7 +65,7 @@ import java.util.Stack;
         
      visits: 7, 3, 4, 1, 5, 6, 2, 0
      &lt;/pre&gt;
-     * @param root
+     * @param root tree root
      */
     public void postorderRecursive(BinaryTreeNode root) {
 <span class="fc bfc" id="L71" title="All 2 branches covered.">        if (root != null) {</span>
@@ -235,7 +235,7 @@ import java.util.Stack;
                        
      0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
      &lt;/pre&gt;
-     * @param node
+     * @param node tree root
      */
     public void levelOrderIterative(BinaryTreeNode node) {
 <span class="fc" id="L241">        Queue&lt;BinaryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
@@ -259,18 +259,18 @@ import java.util.Stack;
 <span class="nc" id="L259">        Queue&lt;Long&gt; nodeParent = new ArrayDeque&lt;&gt;();</span>
 <span class="nc" id="L260">        Queue&lt;Character&gt; leftOrRight = new ArrayDeque&lt;&gt;();</span>
         
-<span class="nc" id="L262">        Integer level = Integer.valueOf(0);</span>
+<span class="nc" id="L262">        int level = 0;</span>
 <span class="nc" id="L263">        Character lOrR = '-';</span>
 <span class="nc" id="L264">        Long parent = -1L;</span>
         
 <span class="nc bnc" id="L266" title="All 2 branches missed.">        while (node != null) {</span>
             
-<span class="nc" id="L268">            System.out.printf(&quot;L=%d, [%d, %s], %s of key %d%n&quot;, </span>
+<span class="nc" id="L268">            System.out.printf(&quot;L=%d, [%d, %s], %s of key %d\n&quot;, </span>
 <span class="nc bnc" id="L269" title="All 2 branches missed.">                level, node.getKey(), node.getData() != null ?</span>
 <span class="nc" id="L270">                ((Integer)node.getData()).toString() : &quot;-&quot;,</span>
                 lOrR, parent);
             
-<span class="nc" id="L273">            level = Integer.valueOf(level + 1);</span>
+<span class="nc" id="L273">            ++level;</span>
             
 <span class="nc bnc" id="L275" title="All 2 branches missed.">            if (node.getLeft() != null) {</span>
 <span class="nc" id="L276">                queue.add(node.getLeft());</span>
@@ -284,12 +284,16 @@ import java.util.Stack;
 <span class="nc" id="L284">                nodeParent.add(node.getKey());</span>
 <span class="nc" id="L285">                leftOrRight.add('R');</span>
             }
-<span class="nc" id="L287">            node = queue.poll(); // returns null if empty</span>
-<span class="nc" id="L288">            level = nodeLevel.poll();</span>
-<span class="nc" id="L289">            lOrR = leftOrRight.poll();</span>
-<span class="nc" id="L290">            parent = nodeParent.poll();</span>
+            //TODO: rearrange to check empty just once instead of at while loop too
+<span class="nc bnc" id="L288" title="All 4 branches missed.">            if (queue.isEmpty() || nodeLevel.isEmpty()) {</span>
+<span class="nc" id="L289">                break;</span>
+            }
+<span class="nc" id="L291">            node = queue.poll(); // returns null if empty</span>
+<span class="nc" id="L292">            level = nodeLevel.poll();</span>
+<span class="nc" id="L293">            lOrR = leftOrRight.poll();</span>
+<span class="nc" id="L294">            parent = nodeParent.poll();</span>
         }
-<span class="nc" id="L292">    }</span>
+<span class="nc" id="L296">    }</span>
 
 
     /**
@@ -309,25 +313,25 @@ import java.util.Stack;
      &lt;/pre&gt;
      */
     public void reverseLevelOrderIterative(BinaryTreeNode node) {
-<span class="fc" id="L312">        Queue&lt;BinaryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();//FIFO</span>
-<span class="fc" id="L313">        Stack&lt;BinaryTreeNode&gt; stack2 = new Stack&lt;&gt;();</span>
-<span class="fc" id="L314">        queue.add(node);</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
-<span class="fc" id="L316">            node = queue.remove();//retrieves first in list</span>
-<span class="fc" id="L317">            stack2.push(node);</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">            if (node.getLeft() != null) {</span>
-<span class="fc" id="L319">                queue.add(node.getLeft());</span>
+<span class="fc" id="L316">        Queue&lt;BinaryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();//FIFO</span>
+<span class="fc" id="L317">        Stack&lt;BinaryTreeNode&gt; stack2 = new Stack&lt;&gt;();</span>
+<span class="fc" id="L318">        queue.add(node);</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+<span class="fc" id="L320">            node = queue.remove();//retrieves first in list</span>
+<span class="fc" id="L321">            stack2.push(node);</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">            if (node.getLeft() != null) {</span>
+<span class="fc" id="L323">                queue.add(node.getLeft());</span>
             }
-<span class="fc bfc" id="L321" title="All 2 branches covered.">            if (node.getRight() != null) {</span>
-<span class="fc" id="L322">                queue.add(node.getRight());</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">            if (node.getRight() != null) {</span>
+<span class="fc" id="L326">                queue.add(node.getRight());</span>
             }
         }
-<span class="fc bfc" id="L325" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
-<span class="fc" id="L326">            node = stack2.pop();</span>
-<span class="fc" id="L327">            System.out.printf(&quot;%d, &quot;, node.getData());</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
+<span class="fc" id="L330">            node = stack2.pop();</span>
+<span class="fc" id="L331">            System.out.printf(&quot;%d, &quot;, node.getData());</span>
         }
-<span class="fc" id="L329">        System.out.println();</span>
-<span class="fc" id="L330">    }</span>
+<span class="fc" id="L333">        System.out.println();</span>
+<span class="fc" id="L334">    }</span>
     
     /**
      * given a tree represented by node, return a doubly-linked list of nodes
@@ -342,30 +346,28 @@ import java.util.Stack;
      */
     public DoublyLinkedList&lt;NAryTreeNode&gt; getReverseLevelOrderIterative2(NAryTreeNode node) {
         
-<span class="fc" id="L345">        DoublyLinkedList&lt;NAryTreeNode&gt; out = new DoublyLinkedList&lt;NAryTreeNode&gt;();</span>
+<span class="fc" id="L349">        DoublyLinkedList&lt;NAryTreeNode&gt; out = new DoublyLinkedList&lt;NAryTreeNode&gt;();</span>
         
-<span class="fc" id="L347">        Queue&lt;NAryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();//FIFO</span>
-<span class="fc" id="L348">        Stack&lt;NAryTreeNode&gt; stack2 = new Stack&lt;&gt;();</span>
-<span class="fc" id="L349">        queue.add(node);</span>
+<span class="fc" id="L351">        Queue&lt;NAryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();//FIFO</span>
+<span class="fc" id="L352">        Stack&lt;NAryTreeNode&gt; stack2 = new Stack&lt;&gt;();</span>
+<span class="fc" id="L353">        queue.add(node);</span>
         
         Set&lt;NAryTreeNode&gt; children;
         
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
-<span class="fc" id="L354">            node = queue.remove();//retrieves first in list</span>
-<span class="fc" id="L355">            stack2.push(node);</span>
-<span class="fc" id="L356">            children = node.getChildren();</span>
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">            if (children == null) {</span>
-<span class="nc" id="L358">                continue;</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+<span class="fc" id="L358">            node = queue.remove();//retrieves first in list</span>
+<span class="fc" id="L359">            stack2.push(node);</span>
+<span class="fc" id="L360">            children = node.getChildren();</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">            if (children == null) {</span>
+<span class="nc" id="L362">                continue;</span>
             }
-<span class="fc bfc" id="L360" title="All 2 branches covered.">            for (NAryTreeNode child : children) {</span>
-<span class="fc" id="L361">                queue.add(child);</span>
-<span class="fc" id="L362">            }</span>
+<span class="fc" id="L364">            queue.addAll(children);</span>
         }
-<span class="fc bfc" id="L364" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
-<span class="fc" id="L365">            node = stack2.pop();</span>
-<span class="fc" id="L366">            out.add(node);</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        while (!stack2.isEmpty()) {</span>
+<span class="fc" id="L367">            node = stack2.pop();</span>
+<span class="fc" id="L368">            out.add(node);</span>
         }
-<span class="fc" id="L368">        return out;</span>
+<span class="fc" id="L370">        return out;</span>
     }
     
     /**
@@ -380,51 +382,50 @@ import java.util.Stack;
                        
      0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
      &lt;/pre&gt;
-     * @param node
+     * @param node n-ary tree root
      */
     public DoublyLinkedList&lt;NAryTreeNode&gt; getLevelOrderIterative(NAryTreeNode node) {
-<span class="fc" id="L386">        Queue&lt;NAryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
-<span class="fc" id="L387">        DoublyLinkedList&lt;NAryTreeNode&gt; out = new DoublyLinkedList&lt;NAryTreeNode&gt;();</span>
+<span class="fc" id="L388">        Queue&lt;NAryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L389">        DoublyLinkedList&lt;NAryTreeNode&gt; out = new DoublyLinkedList&lt;NAryTreeNode&gt;();</span>
         Set&lt;NAryTreeNode&gt; children;
-<span class="fc bfc" id="L389" title="All 2 branches covered.">        while (node != null) {</span>
-<span class="fc" id="L390">            out.add(node);</span>
-<span class="fc" id="L391">            children = node.getChildren();</span>
-<span class="pc bpc" id="L392" title="1 of 2 branches missed.">            if (children == null) {</span>
-<span class="nc" id="L393">                continue;</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">        while (node != null) {</span>
+<span class="fc" id="L392">            out.add(node);</span>
+<span class="fc" id="L393">            children = node.getChildren();</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">            if (children == null) {</span>
+<span class="nc" id="L395">                continue;</span>
             }
-<span class="fc bfc" id="L395" title="All 2 branches covered.">            for (NAryTreeNode child : children) {</span>
-<span class="fc" id="L396">                queue.add(child);</span>
-<span class="fc" id="L397">            }</span>
-<span class="fc" id="L398">            node = queue.poll(); // returns null if empty</span>
+<span class="fc" id="L397">            queue.addAll(children);</span>
+
+<span class="fc" id="L399">            node = queue.poll(); // returns null if empty</span>
         }
-<span class="fc" id="L400">        return out;</span>
+<span class="fc" id="L401">        return out;</span>
     }
     
     /**
      * 
-     * @param node
+     * @param node tree root
      * @return a double-linked list of nodes in reverse level order traversal.
      */
     public DoublyLinkedList&lt;BinaryTreeNode&gt; getReverseLevelOrderIterative(BinaryTreeNode node) {
-<span class="nc" id="L409">        DoublyLinkedList&lt;BinaryTreeNode&gt; out = new DoublyLinkedList&lt;BinaryTreeNode&gt;();</span>
-<span class="nc" id="L410">        Queue&lt;BinaryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();//FIFO</span>
-<span class="nc" id="L411">        Stack&lt;BinaryTreeNode&gt; stack2 = new Stack&lt;&gt;();</span>
-<span class="nc" id="L412">        queue.add(node);</span>
-<span class="nc bnc" id="L413" title="All 2 branches missed.">        while (!queue.isEmpty()) {</span>
-<span class="nc" id="L414">            node = queue.remove();//retrieves first in list</span>
-<span class="nc" id="L415">            stack2.push(node);</span>
-<span class="nc bnc" id="L416" title="All 2 branches missed.">            if (node.getLeft() != null) {</span>
-<span class="nc" id="L417">                queue.add(node.getLeft());</span>
+<span class="nc" id="L410">        DoublyLinkedList&lt;BinaryTreeNode&gt; out = new DoublyLinkedList&lt;BinaryTreeNode&gt;();</span>
+<span class="nc" id="L411">        Queue&lt;BinaryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();//FIFO</span>
+<span class="nc" id="L412">        Stack&lt;BinaryTreeNode&gt; stack2 = new Stack&lt;&gt;();</span>
+<span class="nc" id="L413">        queue.add(node);</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        while (!queue.isEmpty()) {</span>
+<span class="nc" id="L415">            node = queue.remove();//retrieves first in list</span>
+<span class="nc" id="L416">            stack2.push(node);</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">            if (node.getLeft() != null) {</span>
+<span class="nc" id="L418">                queue.add(node.getLeft());</span>
             }
-<span class="nc bnc" id="L419" title="All 2 branches missed.">            if (node.getRight() != null) {</span>
-<span class="nc" id="L420">                queue.add(node.getRight());</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">            if (node.getRight() != null) {</span>
+<span class="nc" id="L421">                queue.add(node.getRight());</span>
             }
         }
-<span class="nc bnc" id="L423" title="All 2 branches missed.">        while (!stack2.isEmpty()) {</span>
-<span class="nc" id="L424">            node = stack2.pop();</span>
-<span class="nc" id="L425">            out.add(node);</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        while (!stack2.isEmpty()) {</span>
+<span class="nc" id="L425">            node = stack2.pop();</span>
+<span class="nc" id="L426">            out.add(node);</span>
         }
-<span class="nc" id="L427">        return out;</span>
+<span class="nc" id="L428">        return out;</span>
     }
 
 }

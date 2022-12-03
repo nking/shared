@@ -238,7 +238,7 @@ import java.util.Set;
 <span class="fc" id="L238">        SlackForm soln = lp.solveUsingSimplexMethod(standForm);</span>
 <span class="fc" id="L239">        double[] x = soln.computeBasicSolution();</span>
         
-        //System.out.printf(&quot;x=%s%n&quot;, FormatArray.toString(x, &quot;%.3f&quot;));
+        //System.out.printf(&quot;x=%s\n&quot;, FormatArray.toString(x, &quot;%.3f&quot;));
         
 <span class="fc" id="L243">        TIntSet c = new TIntHashSet();</span>
         int i;
@@ -313,14 +313,14 @@ import java.util.Set;
 <span class="fc" id="L313">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
             constraintComparisons, nonnegativityConstraints);
         
-        //System.out.printf(&quot;graph as Linear Program in standard form=%n%s%n&quot;, standForm.toString());
+        //System.out.printf(&quot;graph as Linear Program in standard form=\n%s\n&quot;, standForm.toString());
 
 <span class="fc" id="L318">        return standForm;</span>
     }
 
     /**
      * extract edges from the adjacency map and put them in a 2 dimensional array.
-     * @param adjMap adjacency map of an undirected graph.  edge u-&gt;v and v-&gt;u are
+     * @param adjMap adjacency map of an undirected graph.  edge u to v and v to u are
      * considered the same edge.
      * @return two dimensional array of the edges.
      */

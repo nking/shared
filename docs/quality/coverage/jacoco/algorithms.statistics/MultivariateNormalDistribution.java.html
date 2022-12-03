@@ -149,40 +149,40 @@ import no.uib.cipr.matrix.*;
         
         /*{
             // check
-            System.out.printf(&quot;check k=%n&quot;);
+            System.out.printf(&quot;check k=\n&quot;);
             for ( i = 0; i &lt; k.length; ++i) {
                 for ( j = 0; j &lt; k[i].length; ++j) {
                     System.out.printf(&quot;%11.3e  &quot;, k[i][j]);
                 }
-                System.out.printf(&quot;%n&quot;);
+                System.out.printf(&quot;\n&quot;);
             }
-            System.out.printf(&quot;check ksq=%n&quot;);
+            System.out.printf(&quot;check ksq=\n&quot;);
             for ( i = 0; i &lt; ksq.length; ++i) {
                 for ( j = 0; j &lt; ksq[i].length; ++j) {
                     System.out.printf(&quot;%11.3e  &quot;, ksq[i][j]);
                 }
-                System.out.printf(&quot;%n&quot;);
+                System.out.printf(&quot;\n&quot;);
             }
             double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(ksq), 
                 ksq);
-            System.out.printf(&quot;check cov(ksq^T*ksq)=%n&quot;);
+            System.out.printf(&quot;check cov(ksq^T*ksq)=\n&quot;);
             for ( i = 0; i &lt; cov.length; ++i) {
                 for ( j = 0; j &lt; cov[i].length; ++j) {
                     System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
                 }
-                System.out.printf(&quot;%n&quot;);
+                System.out.printf(&quot;\n&quot;);
             }
             
-            System.out.printf(&quot;u=%n&quot;);
+            System.out.printf(&quot;u=\n&quot;);
             for ( i = 0; i &lt; u.length; ++i) {
                 System.out.printf(&quot;%11.3e  &quot;, u[i]);
             }
-            System.out.printf(&quot;%n&quot;);
-            System.out.printf(&quot;d=%n&quot;);
+            System.out.printf(&quot;\n&quot;);
+            System.out.printf(&quot;d=\n&quot;);
             for ( i = 0; i &lt; d.length; ++i) {
                 System.out.printf(&quot;%11.3e  &quot;, d[i]);
             }
-            System.out.printf(&quot;%n&quot;);
+            System.out.printf(&quot;\n&quot;);
             System.out.flush();            
         }
         */
@@ -308,12 +308,12 @@ import no.uib.cipr.matrix.*;
             double[][] lu = MatrixUtil.convertToRowMajor(lt);
             double[][] cov = MatrixUtil.multiply(MatrixUtil.transpose(lu),
                     lu);
-            System.out.printf(&quot;cov check of decomp  L^T * L =%n&quot;);
+            System.out.printf(&quot;cov check of decomp  L^T * L =\n&quot;);
             for ( i = 0; i &lt; cov.length; ++i) {
                 for ( j = 0; j &lt; cov[i].length; ++j) {
                     System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
                 }
-                System.out.printf(&quot;%n&quot;);
+                System.out.printf(&quot;\n&quot;);
             }
             System.out.flush();
         }*/

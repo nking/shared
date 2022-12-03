@@ -376,7 +376,7 @@
 
 <span class="fc" id="L377">        long comparison = diff &amp; mask1;</span>
 
-        //System.out.printf(&quot;tiled1=%30s%ntiled2=%30s%ndiff=%32s%ncomp=%32s%n&quot;, Long.toBinaryString(tiled1),
+        //System.out.printf(&quot;tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n&quot;, Long.toBinaryString(tiled1),
         //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
         // 3 operations
@@ -467,7 +467,7 @@
 
 <span class="nc" id="L468">        long comparison = diff &amp; mask1;</span>
 
-        //System.out.printf(&quot;tiled1=%30s%ntiled2=%30s%ndiff=%32s%ncomp=%32s%n&quot;, Long.toBinaryString(tiled1),
+        //System.out.printf(&quot;tiled1=%30s\ntiled2=%30s\ndiff=%32s\ncomp=%32s\n&quot;, Long.toBinaryString(tiled1),
         //        Long.toBinaryString(tiled2), Long.toBinaryString(diff), Long.toBinaryString(comparison));
 
 <span class="nc" id="L473">        return parallelSum(comparison, nTiles, 7);</span>
@@ -739,11 +739,11 @@
 <span class="fc" id="L739">        long kMask   = 0b11111110000000000000000000000000000000000000000000000000L;</span>
 <span class="fc" id="L740">        int kShift   = 49;</span>
 
-        /*System.out.printf(&quot;%nkMask=%n%63s%n&quot; +
-                &quot;kMult=%n%63s%n&quot; +
-                &quot;kShift=%d%n&quot; +
-                &quot;(tiled * kMult) &amp; kMask=%n%63s%n&quot; +
-                &quot;(((tiled * kMult) &amp; kMask) &gt;&gt; kShift)=%n%63s%n&quot;,
+        /*System.out.printf(&quot;\nkMask=\n%63s\n&quot; +
+                &quot;kMult=\n%63s\n&quot; +
+                &quot;kShift=%d\n&quot; +
+                &quot;(tiled * kMult) &amp; kMask=\n%63s\n&quot; +
+                &quot;(((tiled * kMult) &amp; kMask) &gt;&gt; kShift)=\n%63s\n&quot;,
                 Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
                 Long.toBinaryString((tiled * kMult) &amp; kMask),
                 Long.toBinaryString(((tiled * kMult) &amp; kMask) &gt;&gt; kShift));*/
@@ -859,11 +859,11 @@ sketch overlaps here:
                                         kMask1      =         0b11111111000000000000000000000000000000000000000000000000;
         */
 
-        /*System.out.printf(&quot;%nkMask=%n%63s%n&quot; +
-                &quot;kMult=%n%63s%n&quot; +
-                &quot;kShift=%d%n&quot; +
-                &quot;(tiled * kMult) &amp; kMask=%n%63s%n&quot; +
-                &quot;(((tiled * kMult) &amp; kMask) &gt;&gt; kShift)=%n%63s%n&quot;,
+        /*System.out.printf(&quot;\nkMask=\n%63s\n&quot; +
+                &quot;kMult=\n%63s\n&quot; +
+                &quot;kShift=%d\n&quot; +
+                &quot;(tiled * kMult) &amp; kMask=\n%63s\n&quot; +
+                &quot;(((tiled * kMult) &amp; kMask) &gt;&gt; kShift)=\n%63s\n&quot;,
                 Long.toBinaryString(kMask), Long.toBinaryString(kMult), kShift,
                 Long.toBinaryString((tiled * kMult) &amp; kMask),
                 Long.toBinaryString(((tiled * kMult) &amp; kMask) &gt;&gt; kShift));*/
@@ -922,10 +922,10 @@ sketch overlaps here:
         shift tiled down by 6*6, leaving blocks 6:9.
         */
 
-        //System.out.printf(&quot;tiled=%63s%n&quot;, Long.toBinaryString(tiled));
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
         // shift down by the 6 blocks we just sketched:
 <span class="fc" id="L927">        tiled &gt;&gt;= 36;</span>
-        //System.out.printf(&quot;tiled=%63s%n&quot;, Long.toBinaryString(tiled));
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 6 at the end to merge the 2 sketches:
 <span class="fc" id="L931">        kShift -= 6;</span>
@@ -939,13 +939,13 @@ sketch overlaps here:
         //r = a ^ ((a ^ b) &amp; mask); bin(r)
         //0b10111110'
 
-        //System.out.printf(&quot;nTiles=%d, blockSize=6%n&quot;, nTiles);
-        //System.out.printf(&quot;sketch=%63s%n&quot;, Long.toBinaryString(sketch));
-        //System.out.printf(&quot;sketch=%63s%n&quot;, Long.toBinaryString(sketch2));
+        //System.out.printf(&quot;nTiles=%d, blockSize=6\n&quot;, nTiles);
+        //System.out.printf(&quot;sketch=%63s\n&quot;, Long.toBinaryString(sketch));
+        //System.out.printf(&quot;sketch=%63s\n&quot;, Long.toBinaryString(sketch2));
 
 <span class="fc" id="L946">        sketch = sketch ^ ((sketch ^ sketch2) &amp; 0b111111000000L);</span>
 
-        //System.out.printf(&quot;merged=%63s%n&quot;, Long.toBinaryString(sketch));
+        //System.out.printf(&quot;merged=%63s\n&quot;, Long.toBinaryString(sketch));
 
 <span class="fc" id="L950">        return sketch;</span>
 
@@ -1028,10 +1028,10 @@ sketch overlaps here:
 
         // sketch 5 tiles at a time, and merge after each
 
-        //System.out.printf(&quot;tiled=%63s%n&quot;, Long.toBinaryString(tiled));
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
         // shift down by the 5 blocks we just sketched:
 <span class="fc" id="L1033">        tiled &gt;&gt;= 25;</span>
-        //System.out.printf(&quot;tiled=%63s%n&quot;, Long.toBinaryString(tiled));
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 5 at the end to merge the 2 sketches:
 <span class="fc" id="L1037">        kShift -= 5;</span>
@@ -1148,10 +1148,10 @@ sketch overlaps here:
 
         // 15 tiles, each sketch is 4 tiles, would mean 4 sketches
 
-        //System.out.printf(&quot;tiled=%63s%n&quot;, Long.toBinaryString(tiled));
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
         // shift down by the 4 blocks we just sketched:
 <span class="fc" id="L1153">        tiled &gt;&gt;= 16;</span>
-        //System.out.printf(&quot;tiled=%63s%n&quot;, Long.toBinaryString(tiled));
+        //System.out.printf(&quot;tiled=%63s\n&quot;, Long.toBinaryString(tiled));
 
         // change the shift to reserve space of 4 at the end to merge the 2 sketches:
 <span class="fc" id="L1157">        kShift -= 4;</span>

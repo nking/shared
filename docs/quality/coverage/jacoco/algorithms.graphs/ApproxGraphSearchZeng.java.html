@@ -26,7 +26,7 @@ import thirdparty.HungarianAlgorithm;
  implementing subgraph and full-graph query methods following the
  algorithms presented as pseudocode in 
  &lt;pre&gt; Comparing Stars: On Approximating Graph Edit Distance
-   Zeng, Tung, Wang, Feng, &amp; Zhou 2009, 
+   Zeng, Tung, Wang, Feng, and Zhou 2009, 
    Proceedings of the VLDB Endowment, Volume 2, Issue 1,
    August 2009 pp 25–36
    https://doi.org/10.14778/1687627.1687631
@@ -69,7 +69,7 @@ in information theory, GED is seeking the matched configuration of vertices
      * implementing full-graph query method following the
      algorithms presented as pseudocode in 
      &lt;pre&gt; Comparing Stars: On Approximating Graph Edit Distance
-       Zeng, Tung, Wang, Feng, &amp; Zhou 2009, 
+       Zeng, Tung, Wang, Feng, and Zhou 2009, 
        Proceedings of the VLDB Endowment, Volume 2, Issue 1,
        August 2009 pp 25–36
        https://doi.org/10.14778/1687627.1687631
@@ -213,7 +213,7 @@ in information theory, GED is seeking the matched configuration of vertices
      * Zeng et al. 2009.
       &lt;pre&gt; 
       Comparing Stars: On Approximating Graph Edit Distance
-       Zeng, Tung, Wang, Feng, &amp; Zhou 2009, 
+       Zeng, Tung, Wang, Feng, and Zhou 2009, 
        Proceedings of the VLDB Endowment, Volume 2, Issue 1,
        August 2009 pp 25–36
        https://doi.org/10.14778/1687627.1687631
@@ -341,7 +341,7 @@ SDM, pp 154–163 (2011)
 <span class="fc" id="L341">                + Math.abs(q.vLabels.size() - dbi.vLabels.size());</span>
             
 <span class="fc" id="L343">            w2 = l + 2*w;</span>
-<span class="fc" id="L344">            System.out.printf(&quot;i=%d lM=%.3f w2=%.3f%n&quot;, ii, lM, w2);</span>
+<span class="fc" id="L344">            System.out.printf(&quot;i=%d lM=%.3f w2=%.3f\n&quot;, ii, lM, w2);</span>
             
             //L′_m(g1, g2) &gt; L + 2θ can filter out g2
 <span class="fc bfc" id="L347" title="All 2 branches covered.">            if (lM &gt; w2) {</span>
@@ -484,7 +484,7 @@ SDM, pp 154–163 (2011)
         // or use the maximum for edges to not count them twice
 <span class="fc" id="L485">        int cost = costVSubst + Math.max(costEDelSubst, costEIns);</span>
         
-        //System.out.printf(&quot;costs vSubst=%d, eDelSubst=%d, eIns=%d ==&gt; c=%d%n&quot;,
+        //System.out.printf(&quot;costs vSubst=%d, eDelSubst=%d, eIns=%d ==&gt; c=%d\n&quot;,
         //    costVSubst, costEDelSubst, costEIns, cost);
         
 <span class="fc" id="L490">        return cost;</span>
@@ -531,7 +531,7 @@ SDM, pp 154–163 (2011)
 <span class="fc" id="L531">            MatrixUtil.pointwiseSubtract(a1, pA2PT));</span>
         
         //this is a large term, summed from labels being equal.
-        //origins are  BLP paper  by Justice &amp; Hero, eqn(18).
+        //origins are  BLP paper  by Justice and Hero, eqn(18).
 <span class="fc" id="L535">        double term1 = 0;</span>
         int i, j;
 <span class="fc bfc" id="L537" title="All 2 branches covered.">        for (i = 0; i &lt; c.length; ++i) {</span>
@@ -540,7 +540,7 @@ SDM, pp 154–163 (2011)
             }
         }
         
-        //System.out.printf(&quot;term1=%.2f term2=%.2f%n&quot;, term1, term2);
+        //System.out.printf(&quot;term1=%.2f term2=%.2f\n&quot;, term1, term2);
         
 <span class="fc" id="L545">        return term1 + term2;</span>
     }
@@ -601,7 +601,7 @@ SDM, pp 154–163 (2011)
 <span class="fc" id="L601">                d = StarStructure.calculateEditDistanceV(s1, s2);</span>
             }
 <span class="fc" id="L603">            sum += d;</span>
-            //System.out.printf(&quot;i=%d ed=%d sum=%d%n&quot;, i, d, sum);
+            //System.out.printf(&quot;i=%d ed=%d sum=%d\n&quot;, i, d, sum);
         }
         
 <span class="fc" id="L607">        return sum;</span>

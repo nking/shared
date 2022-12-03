@@ -761,7 +761,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
     	}
 <span class="fc" id="L762">    	String[] s = stopConditions.getMessages();</span>
 <span class="pc bpc" id="L763" title="1 of 2 branches missed.">    	if(!s[0].equals(&quot;&quot;))</span>
-<span class="nc" id="L764">    		warning(&quot;termination condition satisfied at initialization: %n  &quot; + s[0]);</span>
+<span class="nc" id="L764">    		warning(&quot;termination condition satisfied at initialization: \n  &quot; + s[0]);</span>
 
 <span class="fc" id="L766">    	initialX = xmean.clone(); // keep finally chosen initialX</span>
     	
@@ -2542,13 +2542,13 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
     public String getDataC() {
 	int i, j;
 <span class="nc" id="L2544">        String s = new String();    </span>
-<span class="nc" id="L2545">        s = &quot;%# &quot; + countiter + &quot; &quot; + counteval + &quot; &quot; + sigma + &quot;%n&quot;;</span>
+<span class="nc" id="L2545">        s = &quot;%# &quot; + countiter + &quot; &quot; + counteval + &quot; &quot; + sigma + &quot;\n&quot;;</span>
 <span class="nc bnc" id="L2546" title="All 2 branches missed.">        for (i = 0; i &lt; N; ++i) {</span>
 <span class="nc bnc" id="L2547" title="All 2 branches missed.">	    for (j = 0; j &lt; i; ++j) // ouput correlation in the lower half</span>
 <span class="nc" id="L2548">		s += C[i][j] / Math.sqrt(C[i][i] * C[j][j]) + &quot; &quot;;</span>
 <span class="nc bnc" id="L2549" title="All 2 branches missed.">	    for (j = i; j &lt; N; ++j) </span>
 <span class="nc" id="L2550">		s += sigma * sigma * C[i][j] + &quot; &quot;;</span>
-<span class="nc" id="L2551">	    s += &quot;%n&quot;;</span>
+<span class="nc" id="L2551">	    s += &quot;\n&quot;;</span>
         }
 <span class="nc" id="L2553">        return s;</span>
     }
@@ -2628,7 +2628,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
      *  
      * @see #writeToDefaultFiles() */
     public void writeToDefaultFiles(int flgForce) {
-<span class="pc bpc" id="L2631" title="1 of 4 branches missed.">        if (flgForce &gt; 0 &amp;&amp; countiter != citerlastwritten) </span>
+<span class="pc bpc" id="L2631" title="2 of 4 branches missed.">        if (flgForce &gt; 0 &amp;&amp; countiter != citerlastwritten) </span>
 <span class="fc" id="L2632">            citerlastwritten = -1; // force writing if something new is there</span>
 <span class="pc bpc" id="L2633" title="1 of 2 branches missed.">        if (flgForce &gt;= 2)</span>
 <span class="nc" id="L2634">            citerlastwritten = -1; // force writing </span>
@@ -2646,8 +2646,8 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
 <span class="fc bfc" id="L2646" title="All 2 branches covered.">        if (citerlastwritten &gt;= 0) { // negative value forces writing</span>
 <span class="pc bpc" id="L2647" title="1 of 2 branches missed.">            if (state &lt; 1)</span>
 <span class="nc" id="L2648">                return;</span>
-<span class="fc bfc" id="L2649" title="All 2 branches covered.">            if (countiter == citerlastwritten)</span>
-<span class="fc" id="L2650">                return; </span>
+<span class="pc bpc" id="L2649" title="1 of 2 branches missed.">            if (countiter == citerlastwritten)</span>
+<span class="nc" id="L2650">                return; </span>
 <span class="pc bpc" id="L2651" title="1 of 2 branches missed.">            if (options.maxTimeFractionForWriteToDefaultFiles &lt;= 0)</span>
 <span class="nc" id="L2652">                return;</span>
 <span class="pc bpc" id="L2653" title="1 of 6 branches missed.">            if (countiter &gt; 4 &amp;&amp; stopConditions.index == 0  // has no effect if stopCondition.test() was not called</span>
@@ -2690,7 +2690,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
     public void writeToDefaultFilesHeaders(String fileNamePrefix, int flgAppend) {
 <span class="pc bpc" id="L2691" title="1 of 2 branches missed.">        if (options.maxTimeFractionForWriteToDefaultFiles &lt; 0) // overwrites force flag</span>
 <span class="nc" id="L2692">            return;</span>
-<span class="fc" id="L2693">        String s = &quot;(randomSeed=&quot; + seed + &quot;, &quot; + new Date().toString() + &quot;)%n&quot;;</span>
+<span class="fc" id="L2693">        String s = &quot;(randomSeed=&quot; + seed + &quot;, &quot; + new Date().toString() + &quot;)\n&quot;;</span>
 <span class="fc" id="L2694">        writeToFile(fileNamePrefix + &quot;fit.dat&quot;, </span>
         		&quot;%# iteration evaluations sigma axisratio fitness_of(bestever best median worst) mindii &quot;
         		+ &quot;idxmaxSD maxSD idxminSD minSD &quot; 

@@ -210,7 +210,7 @@ public class AStar {
 
 <span class="fc" id="L211">            SimpleLinkedListNode vNode = graph[u];</span>
             
-<span class="pc bpc" id="L213" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+<span class="pc bpc" id="L213" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
             
 <span class="fc" id="L215">                int v = vNode.getKey();</span>
                

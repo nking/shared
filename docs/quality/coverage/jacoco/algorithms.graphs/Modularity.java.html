@@ -89,7 +89,7 @@ NOTE: Newman generates random graphs for testing too:
      * @param nEdges the number of edges in the original graph.  presumably the code using
      * this method has calculated it once for the original graph already, to pass
      * in to this method over repeated uses.
-     * @return the modularity as defined by girvan &amp; newman 2002 and Newman &amp; Girvan 2004.
+     * @return the modularity as defined by girvan and newman 2002 and Newman and Girvan 2004.
      */
     public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
         originalAdjacencyList, double nEdges) {
@@ -132,7 +132,7 @@ NOTE: Newman generates random graphs for testing too:
             }
 
 <span class="fc" id="L134">            SimpleLinkedListNode jNode = originalAdjacencyList[i];</span>
-<span class="fc bfc" id="L135" title="All 4 branches covered.">            while (jNode != null &amp;&amp; jNode.getKey() != -1) {</span>
+<span class="fc bfc" id="L135" title="All 4 branches covered.">            while (jNode != null &amp;&amp; jNode.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc" id="L136">                j = jNode.getKey();</span>
 <span class="fc" id="L137">                c2 = layer.vertexComponents[j];</span>
 <span class="pc bpc" id="L138" title="1 of 2 branches missed.">                if (c2 == -1) {</span>

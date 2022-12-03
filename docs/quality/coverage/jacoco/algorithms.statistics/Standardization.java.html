@@ -22,7 +22,7 @@ import java.util.Arrays;
     
     /**
      * performs &quot;standard unit normalization&quot; on the points, that is,
-     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * transforms the data to have a mean of 0 and a standard deviation of 1 (unit variance)
      * for each dimension.
      * 
      * @param data nDimensional data points in format [ point_0 in all dimensions,
@@ -125,7 +125,7 @@ import java.util.Arrays;
     
      /**
      * performs &quot;standard unit normalization&quot; on the points, that is,
-     * re-scales data to have a mean of 0 and a standard deviation of 1 (unit variance)
+     * transforms the data to have a mean of 0 and a standard deviation of 1 (unit variance)
      * for each dimension.
      * the input data must have format [nSamples][nVariables], e.g.
      * data[0] = [10, 100, 1000];
@@ -144,13 +144,13 @@ import java.util.Arrays;
     public static double[][] standardUnitNormalization(double[][] data, 
         double[] outputMean, double[] outputStandardDeviation) {
         
-<span class="fc" id="L147">        int nSamples = data.length;</span>
-<span class="fc" id="L148">        int nVars = data[0].length;</span>
+<span class="fc" id="L147">        int m = data.length;</span>
+<span class="fc" id="L148">        int n = data[0].length;</span>
         
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (outputMean.length != nVars) {</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (outputMean.length != n) {</span>
 <span class="nc" id="L151">            throw new IllegalArgumentException(&quot;outputMean.length must equal data[0].length&quot;);</span>
         }
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != nVars) {</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (outputStandardDeviation.length != n) {</span>
 <span class="nc" id="L154">            throw new IllegalArgumentException(&quot;outputStandardDeviation.length must equal data[0].length&quot;);</span>
         }
         
@@ -158,37 +158,61 @@ import java.util.Arrays;
         // then calculate the standard deviation and divide the data by it.
 <span class="fc" id="L159">        double[][] out = MatrixUtil.copy(data);</span>
         
-<span class="fc" id="L161">        double[] c = MatrixUtil.mean(out);</span>
-<span class="fc" id="L162">        System.arraycopy(c, 0, outputMean, 0, c.length);</span>
-                
-        int i, d;
-<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">            for (d = 0; d &lt; out[i].length; ++d) {</span>
-<span class="fc" id="L167">                out[i][d] -= c[d];</span>
+<span class="fc" id="L161">        double[] mean = MatrixUtil.mean(out);</span>
+<span class="fc" id="L162">        System.arraycopy(mean, 0, outputMean, 0, mean.length);</span>
+
+        int i;
+        int j;
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L168">                out[i][j] = data[i][j] - mean[j];</span>
             }
         }
         
-<span class="fc" id="L171">        Arrays.fill(outputStandardDeviation, 0);</span>
-                
-<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L172">        Arrays.fill(outputStandardDeviation, 0);</span>
+
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
                 //mean has already been subtracted:
-<span class="fc" id="L176">                outputStandardDeviation[d] += (out[i][d]*out[i][d]);</span>
+<span class="fc" id="L177">                outputStandardDeviation[j] += (out[i][j]*out[i][j]);</span>
             }
         }
-<span class="fc bfc" id="L179" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L180">            outputStandardDeviation[d] = Math.sqrt(outputStandardDeviation[d]/(nSamples - 1.0)); </span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L181">            outputStandardDeviation[j] = Math.sqrt(outputStandardDeviation[j]/(m - 1.0));</span>
         }
-        
-<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">                if (outputStandardDeviation[d] &gt; 0.) {</span>
-<span class="fc" id="L186">                    out[i][d] /= outputStandardDeviation[d];</span>
+
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">                if (outputStandardDeviation[j] &gt; 0.) {</span>
+<span class="fc" id="L187">                    out[i][j] /= outputStandardDeviation[j];</span>
                 }
             }
         }
         
-<span class="fc" id="L191">        return out;</span>
+<span class="fc" id="L192">        return out;</span>
+    }
+
+    /**
+     * calculate the mean of each column of data and subtract it from each value in the respective column of data.
+     * @param data
+     * @return
+     */
+    public static double[][] zeroCenterMean(double[][] data) {
+<span class="fc" id="L201">        int m = data.length;</span>
+<span class="fc" id="L202">        int n = data[0].length;</span>
+
+<span class="fc" id="L204">        double[][] out = MatrixUtil.zeros(m, n);</span>
+
+<span class="fc" id="L206">        double[] mean = MatrixUtil.mean(data);</span>
+
+        int i;
+        int j;
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L212">                out[i][j] = data[i][j] - mean[j];</span>
+            }
+        }
+<span class="fc" id="L215">        return out;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
