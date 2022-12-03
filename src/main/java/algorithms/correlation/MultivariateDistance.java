@@ -128,8 +128,12 @@ public class MultivariateDistance {
      * where x1 is a dataset of size [nSamples, nVariables1] and
      * x2 is a dataset of [nSamples, nVariables2].
      * the resulting correlation matrix is size [nVariables1 X nVariables2].
-     * The runtime complexity is ~ O(m * p * n^2 * log_2(n))
-     *  where m1 = x.length, n = x1[0].length, p = x2[0].length
+     <pre>
+     The runtime complexity is ~ O(m * p * n^2 * log_2(n))
+         where m1 = x.length, n = x1[0].length, p = x2[0].length
+
+     (In contrast a brute force correlation on matrices x1 and x2 has runtime complexity O(m^3*p*n^3 + m*p*n^4)
+     </pre>
      <pre>
      example use:
          x1 = [300 X 9] dataset of 300 samples of 9 variables.
@@ -141,6 +145,11 @@ public class MultivariateDistance {
      * "A fast algorithm for computing distance correlation"
      * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
+     *
+     For speculation on comparing distance correlation values to the linear Pearson correlation,
+     see Edelmann, Dominic & Móri, Tamás & Szekely, Gabor. (2021).
+     On relationships between the Pearson and the distance correlation coefficients.
+     Statistics & Probability Letters. 169. 108960. 10.1016/j.spl.2020.108960.
 
      TODO: consider making a faster version of this correlation.
      </pre>
@@ -158,6 +167,7 @@ public class MultivariateDistance {
         int i, j, k;
         for (i = 0; i < x1[0].length; ++i) {
             for (j = 0; j < x2[0].length; ++j) {
+                // copy each column vector to calculate correlation
                 for (k = 0; k < x2.length; ++k) {
                     tmp1[k] = x2[k][j];
                     tmp2[k] = x1[k][i];

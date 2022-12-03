@@ -5,6 +5,7 @@ import algorithms.matrix.MatrixUtil;
 import java.util.Arrays;
 
 import algorithms.statistics.Covariance;
+import algorithms.statistics.Standardization;
 import algorithms.util.FormatArray;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
@@ -70,12 +71,17 @@ public class PrincipalComponents {
      https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
      and https://online.stat.psu.edu/stat505/book/export/html/670
      </pre>
-
+     <pre>
+     NOTE:
+     variance-covariance(standardized data) == correlation(unstandardized data) == correlation(zero mean centered data).
+     therefore, pca using the standardized data == pca using the correlation matrix.
+     Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
+     </pre>
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
-     *          x should be zero-centered (mean=0).
-     *          if x is a correlation matrix, it should be standardized to unit normalization (which is mean=0, stdev=1)
+     *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
+     *    If the variance and scale of the variables are different, then unit standard normalization should be used.
      @param nComponents the number of principal components to return.
      @return the principal axes, the principal components, and
      a few statistics of the CUR decomposition of A, up to the
@@ -218,7 +224,7 @@ public class PrincipalComponents {
                 FormatArray.toString(fracs, "%.4e"));
         System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
                 FormatArray.toString(stats.cumulativeProportion, "%.4e"));
-        System.out.printf("principal directions=\n%s\n", FormatArray.toString(pA, "%.4e"));
+        System.out.printf("principal axes=\n%s\n", FormatArray.toString(pA, "%.4e"));
         System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
 
@@ -244,12 +250,17 @@ public class PrincipalComponents {
      https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
      and https://online.stat.psu.edu/stat505/book/export/html/670
      </pre>
-
+     <pre>
+     NOTE:
+     variance-covariance(standardized data) == correlation(unstandardized data) == correlation(zero mean centered data).
+     therefore, pca using the standardized data == pca using the correlation matrix.
+     Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
+     </pre>
      * @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
-     *          x should be zero-centered (mean=0).
-     *          if x is a correlation matrix, it should be standardized to unit normalization (which is mean=0, stdev=1)
+     *          x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
+     *      If the variance and scale of the variables are different, then unit standard normalization should be used.
      * @param nComponents the number of principal components to return.
      * @return the principal axes, the principal components, and
      * a few statistics of the CUR decomposition of A, up to the
@@ -351,7 +362,7 @@ public class PrincipalComponents {
                 FormatArray.toString(fracs, "%.4e"));
         System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
                 FormatArray.toString(stats.cumulativeProportion, "%.4e"));
-        System.out.printf("principal directions=\n%s\n", FormatArray.toString(pA, "%.4e"));
+        System.out.printf("principal axes=\n%s\n", FormatArray.toString(pA, "%.4e"));
         System.out.printf("principal components (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
 

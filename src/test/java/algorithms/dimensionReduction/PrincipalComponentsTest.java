@@ -1,5 +1,6 @@
 package algorithms.dimensionReduction;
 
+import algorithms.correlation.BruteForce;
 import algorithms.correlation.MultivariateDistance;
 import algorithms.correlation.UnivariateDistance;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
@@ -15,6 +16,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import junit.framework.TestCase;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.EVD;
+import no.uib.cipr.matrix.SVD;
 
 /**
  *
@@ -164,6 +168,41 @@ public class PrincipalComponentsTest extends TestCase {
         // correlation values furthest from 0 (positive or negative)
         // are the most strongly correlated.
         // for this table just printed, |correlation| >= 0.5 are significant.
+
+        // principal component scores = principal components
+        // X * pa^T
+        //  [nx9] * [9x3] *= [nX3]
+        //double[][] y = MatrixUtil.multiply(x, MatrixUtil.transpose(stats.principalAxes));
+        //System.out.printf("principal component scores=\n%s\n", FormatArray.toString(y, "%.4e"));
+
+        // variance-covariance(standardized data) == correlation(unstandardized data).
+        //                                        == correlation(zero mean centered data).
+        // therefore, pca using the standardized data == pca using the correlation matrix.
+        // eigen of cov(standardized) == eigen of cor(unstandardized)
+
+        double[][] x2 = readPlaces();
+        double[][] cor = BruteForce.correlation(x);
+
+        double[] outMean = new double[x2[0].length];
+        double[] outS = new double[x2[0].length];
+        double[][] z = Standardization.standardUnitNormalization(x2, outMean, outS);
+        double[][] cov = BruteForce.covariance(z);
+
+        EVD evdCov = EVD.factorize(new DenseMatrix(cov));
+        EVD evdCor = EVD.factorize(new DenseMatrix(cor));
+        System.out.printf("EVD(cov(z))=\n%s\n", FormatArray.toString(evdCov.getRealEigenvalues(), "%.3e"));
+        System.out.printf("EVD(cor(x2s))=\n%s\n", FormatArray.toString(evdCor.getRealEigenvalues(), "%.3e"));
+
+        /*
+        cov = (1/(n-1)) * X^T*X where X has been zero-centered
+        cor_i_j = cov(X_i, X_j) / (sigma_i * sigma_j)
+        */
+
+        System.out.println("unit standardized Z:");
+        PCAStats stats2 = PrincipalComponents.calcPrincipalComponents(z, 5);
+        System.out.printf("Z pA=\n%s\n", FormatArray.toString(stats2.principalAxes, "%.4e"));
+        System.out.printf("Z pC=\n%s\n", FormatArray.toString(stats2.principalComponents, "%.4e"));
+
     }
     
     public void estPCA2() throws Exception {
