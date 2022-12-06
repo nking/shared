@@ -175,14 +175,16 @@ public class PrincipalComponents {
         double[][] vT = MatrixUtil.convertToRowMajor(svd.getVt());
         double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);
 
-        // // X*V = U * diag(s) = principal components
+        // X*V = U * diag(s) = principal components
         DenseMatrix u = svd.getU();
+        double[][] uP = MatrixUtil.zeros(u.numRows(), nComponents);
         // principal components for "1 sigma".  if need 2 sigma, multiply pc by 2,...
         double[][] pC = MatrixUtil.zeros(u.numRows(), nComponents);
         for (i = 0; i < u.numRows(); ++i) {
             for (j = 0; j < nComponents; ++j) {
                 // row u_i * diag(s[j])
                 pC[i][j] = u.get(i, j) * svd.getS()[j];
+                uP[i][j] = u.get(i, j);
             }
         }
         //checked, same as pC = U * diag(s)
@@ -194,6 +196,8 @@ public class PrincipalComponents {
         stats.principalAxes = pA;
         stats.principalComponents = pC;
         stats.eigenValues = eig;
+        stats.uP = uP;
+        stats._s = Arrays.copyOf(s, s.length);
 
         double total = 0;
         for (j = 0; j < eig.length; ++j) {
@@ -216,14 +220,21 @@ public class PrincipalComponents {
         stats.ssdP = ssdP;
         stats.fractionVariance = (total - ssdP)/total;
 
+        System.out.printf("nComponents==%d\n", nComponents);
         System.out.printf("ssd_p=%.5e\n", stats.ssdP);
         System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
 
         System.out.printf("eig = %s\n", FormatArray.toString(eig, "%.4e"));
+        System.out.printf("s = %s\n", FormatArray.toString(s, "%.4e"));
         System.out.printf("s fractions of total = \n%s\n",
                 FormatArray.toString(fracs, "%.4e"));
         System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
                 FormatArray.toString(stats.cumulativeProportion, "%.4e"));
+
+        //System.out.printf("x=\n%s\n", FormatArray.toString(x, "%.4e"));
+        //System.out.printf("v=\n%s\n", FormatArray.toString(MatrixUtil.transpose(vT), "%.4e"));
+        //System.out.printf("u=\n%s\n", FormatArray.toString(u, "%.4e"));
+
         System.out.printf("principal axes=\n%s\n", FormatArray.toString(pA, "%.4e"));
         System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
@@ -415,7 +426,7 @@ public class PrincipalComponents {
          * When considering X as sample covariance, Note that SVD(A^T*A).U and V are both == SVD(A).V.
          */
         double[][] principalAxes;
-        
+
         /**
          * principal components are the data projected onto the principal axes.
          * principal components = X*V = U * D where X = SVD(X).U * diag(SVD(X).s) * SVD(X).vT
@@ -451,5 +462,17 @@ public class PrincipalComponents {
          * the first nComponents number of eigenValues
          */
         double[] eigenValues;
+
+        /**
+         * the singular values of SVD(A)
+         */
+        double[] _s;
+
+        /**
+         * the first p eigenvectors of the left eigenvector matrix
+         * (which is p columns of U from A = SVD(A).U * SVD(A).D * SVD(A).V^T
+         */
+        double[][] uP;
+
     }
 }
