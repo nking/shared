@@ -247,7 +247,7 @@ public class PrincipalComponentsTest extends TestCase {
                                            ...
           grouping by terms of a:
           M rows are | (-2*x0*(b00 + b01 + b02 +...))    ( a0*(2*b00*(b00 + b01 + b02 +...))    a1*(2*b01*(b00 + b01 + b02 +...)) ...
-             which will be [n x (p + 1)]
+             note that M will be [n x (p + 1)]
 
           then can use SVD(M).VT[n-1]
           or for an exact solution, can place the 0 order terms on the left as y in for M * a = y and solve a = pInv(M)*y
