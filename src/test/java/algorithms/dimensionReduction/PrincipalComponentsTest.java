@@ -214,6 +214,9 @@ public class PrincipalComponentsTest extends TestCase {
         objective is (x_j - B*a_j)^2
                   = (x_j)^2 - 2*(x_j)*(B*a_j) + (B*a_j)^2
 
+        He proves that B is the first p columns of SVD(X).U, but doesn't solve for a_j, so here is my attempt
+        to solve for a_j, then a comparison of the residuals using B*a_j to those using B*ones(p,1).
+
         looking for a closed form solution:
           set deriv of objective to 0:
             d/da_j(objective) = - 2*(x_j).*(B*ones(p, 1)) + 2*(B*a_j).*(B*ones(p, 1))
