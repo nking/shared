@@ -20,7 +20,6 @@ public class FormatArray {
                 sb.append(",");
             }
         }
-        sb.append("\n");
         return sb.toString();
     }
     
@@ -35,7 +34,6 @@ public class FormatArray {
                 sb.append(",");
             }
         }
-        sb.append("\n");
         return sb.toString();
     }
     
@@ -50,7 +48,6 @@ public class FormatArray {
                 sb.append(",");
             }
         }
-        sb.append("\n");
         return sb.toString();
     }
     
@@ -99,7 +96,6 @@ public class FormatArray {
                 sb.append(",");
             }
         }
-        sb.append("\n");
         return sb.toString();
     }
 
