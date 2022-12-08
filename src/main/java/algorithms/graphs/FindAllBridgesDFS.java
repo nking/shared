@@ -69,6 +69,9 @@ public class FindAllBridgesDFS {
      */
     protected final int[] tf;
    
+    /**
+     *
+     */
     protected final int[] predecessor;
     
     /**
@@ -77,10 +80,13 @@ public class FindAllBridgesDFS {
      */
     protected final int[] tdLow;
 
+    /**
+     *
+     */
     protected int time = 0;
     
     /**
-     * @param directedEdges  adjacency matrix with connected i to j indicated 
+     @param directedEdges  adjacency matrix with connected i to j indicated 
      * by the index and each node in the linked list, respectively.
      * Note that the key of each node is expected to be the same as it's index
      * in the adjacency matrix.
@@ -105,7 +111,7 @@ public class FindAllBridgesDFS {
 
     /**
      * find all bridges using DFS.
-     * @return the bridges as (u, v) pairs of edges.
+     @return the bridges as (u, v) pairs of edges.
      */
     public PairIntArray walk() {
         int u, v;
@@ -126,6 +132,7 @@ public class FindAllBridgesDFS {
     
     /**
      * alterative pattern for walking code
+     @param vertexOrder
      */
     void _walk(int[] vertexOrder) {
         for (int u : vertexOrder) {
@@ -167,7 +174,7 @@ public class FindAllBridgesDFS {
     
     /**
      * get predecessor indexes
-     * @return get predecessor indexes
+     @return get predecessor indexes
      */
     public int[] getPredecessorIndexes() {
         if (predecessor == null) {
@@ -178,7 +185,7 @@ public class FindAllBridgesDFS {
     
     /**
      * return the indexes in order of the starts of their traversals
-     * @return 
+     @return 
      */
     public int[] getOrderedBeginIndexes() {
         return sortForIndexes(td);
@@ -203,16 +210,24 @@ public class FindAllBridgesDFS {
     
     /**
      * return the indexes in order of the ends of their traversal
-     * @return 
+     @return 
      */
     public int[] getOrderedEndIndexes() {
         return sortForIndexes(tf);
     }
     
+    /**
+     *
+     @return
+     */
     public int[] getTd() {
         return td;
     }
 
+    /**
+     *
+     @return
+     */
     public int[] getTf() {
         return tf;
     }

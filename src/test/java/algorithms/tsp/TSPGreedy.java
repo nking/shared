@@ -53,7 +53,7 @@ public class TSPGreedy {
      * vertex will always be 0, as the start node does not matter for a
      * solution including a cycle with all vertexes.
      * 
-     * @param distance 
+     @param distance 
      */
     public TSPGreedy(double[][] distance) {
         this(0, distance);

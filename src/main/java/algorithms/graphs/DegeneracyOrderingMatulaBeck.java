@@ -67,11 +67,11 @@ public class DegeneracyOrderingMatulaBeck {
         
       </pre>
  
-     * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
+     @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
      * set of indexes of vertexes for the neighbors of the key.  note: the method
      * expects that the adjacency map has a key for every vertex listed in the values.
-     * @param out output array of size |V|
-     * @return the degeneracy of the graph.
+     @param out output array of size |V|
+     @return the degeneracy of the graph.
      */
     public static int findDegeneracyOrder(TIntObjectMap<TIntSet> adjMap, int[] out) {
                 
@@ -171,6 +171,11 @@ public class DegeneracyOrderingMatulaBeck {
         return k;
     }
     
+    /**
+     *
+     @param adjMap
+     @return
+     */
     protected static int calculateMaxDegree(TIntObjectMap<TIntSet> adjMap) {
         
         int n = adjMap.size();
@@ -266,7 +271,7 @@ public class DegeneracyOrderingMatulaBeck {
          * extract the minimum from the internal priority queue called bucketQueue.
          * note that the internal bucketMap size is out of sync w/ bucketQueue 
          * size until remove is invoked.
-         * @return 
+         @return 
          */
         @Override
         public int extractMinimumPt1() {
@@ -286,8 +291,8 @@ public class DegeneracyOrderingMatulaBeck {
 
         /**
          * find whether the bucket queue contains the degree key i.
-         * @param i
-         * @return 
+         @param i
+         @return 
          */
         @Override
         public boolean contains(int i) {
@@ -296,8 +301,8 @@ public class DegeneracyOrderingMatulaBeck {
         
         /**
          * find whether the bucket queue contains the vertex v.
-         * @param v
-         * @return 
+         @param v
+         @return 
          */
         @Override
         public boolean containsVertex(int v) {
@@ -312,8 +317,8 @@ public class DegeneracyOrderingMatulaBeck {
         /**
          * remove value v from the bucket queue for key k.  this method also
          * removes key entries in bucketMap and bucketQueue if the bucket empties.
-         * @param k
-         * @param v 
+         @param k
+         @param v 
          */
         @Override
         public void remove(int k, int v) {
@@ -336,9 +341,9 @@ public class DegeneracyOrderingMatulaBeck {
 
         /**
          * 
-         * @param item
-         * @param fromDBucket the bucket degree number to remove item from
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param fromDBucket the bucket degree number to remove item from
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int fromDBucket, int toDBucket) {
@@ -380,8 +385,8 @@ public class DegeneracyOrderingMatulaBeck {
         
         /**
          * remove item from current bucket that its in, and move it to toDBucket.
-         * @param item
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int toDBucket) {
@@ -480,7 +485,7 @@ public class DegeneracyOrderingMatulaBeck {
         /**
          * this is purely a minimum() invocation.  The invoker uses remove 
          * afterwards to remove the entry from the bucket values.
-         * @return 
+         @return 
          */
         @Override
         public int extractMinimumPt1() {
@@ -489,8 +494,8 @@ public class DegeneracyOrderingMatulaBeck {
 
         /**
          * find whether the bucket queue contains the degree key i.
-         * @param i
-         * @return 
+         @param i
+         @return 
          */
         @Override
         public boolean contains(int i) {
@@ -499,8 +504,8 @@ public class DegeneracyOrderingMatulaBeck {
         
         /**
          * find whether the bucket queue contains the vertex v.
-         * @param v
-         * @return 
+         @param v
+         @return 
          */
         @Override
         public boolean containsVertex(int v) {
@@ -515,8 +520,8 @@ public class DegeneracyOrderingMatulaBeck {
         /**
          * remove value v from the bucket queue for key k.  this method also
          * removes key entries in bucketMap and bucketQueue if the bucket empties.
-         * @param k
-         * @param v 
+         @param k
+         @param v 
          */
         @Override
         public void remove(int k, int v) {
@@ -538,9 +543,9 @@ public class DegeneracyOrderingMatulaBeck {
 
         /**
          * 
-         * @param item
-         * @param fromDBucket the bucket degree number to remove item from
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param fromDBucket the bucket degree number to remove item from
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int fromDBucket, int toDBucket) {
@@ -576,8 +581,8 @@ public class DegeneracyOrderingMatulaBeck {
         
         /**
          * remove item from current bucket that its in, and move it to toDBucket.
-         * @param item
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int toDBucket) {
@@ -592,16 +597,16 @@ public class DegeneracyOrderingMatulaBeck {
         /**
          * find whether the bucket queue contains the degree key i.
          *
-         * @param i
-         * @return
+         @param i
+         @return
          */
         boolean contains(int i);
 
         /**
          * find whether the bucket queue contains the vertex v.
          *
-         * @param v
-         * @return
+         @param v
+         @return
          */
         boolean containsVertex(int v);
 
@@ -610,7 +615,7 @@ public class DegeneracyOrderingMatulaBeck {
          * bucketQueue. note that the internal bucketMap size is out of sync w/
          * bucketQueue size until remove is invoked.
          *
-         * @return
+         @return
          */
         int extractMinimumPt1();
 
@@ -622,9 +627,9 @@ public class DegeneracyOrderingMatulaBeck {
 
         /**
          *
-         * @param item
-         * @param fromDBucket the bucket degree number to remove item from
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param fromDBucket the bucket degree number to remove item from
+         @param toDBucket the bucket degree number to add item to
          */
         void moveItem(int item, int fromDBucket, int toDBucket);
 
@@ -632,8 +637,8 @@ public class DegeneracyOrderingMatulaBeck {
          * remove item from current bucket that its in, and move it to
          * toDBucket.
          *
-         * @param item
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param toDBucket the bucket degree number to add item to
          */
         void moveItem(int item, int toDBucket);
 
@@ -642,8 +647,8 @@ public class DegeneracyOrderingMatulaBeck {
          * removes key entries in bucketMap and bucketQueue if the bucket
          * empties.
          *
-         * @param k
-         * @param v
+         @param k
+         @param v
          */
         void remove(int k, int v);
 

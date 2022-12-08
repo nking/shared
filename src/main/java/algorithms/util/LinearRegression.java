@@ -40,9 +40,9 @@ public class LinearRegression {
        robustly fitting a line to sample points in the plane (simple linear 
        regression) by choosing the median of the slopes of all lines through pairs of points. 
        ...  This estimator can be computed efficiently, and is insensitive to outliers. It can be significantly more accurate than non-robust simple linear regression (least squares) for skewed and heteroskedastic data, and competes well against least squares even for normally distributed data in terms of statistical power.[10] It has been called "the most popular nonparametric technique for estimating a linear trend".
-     * @param x
-     * @param y
-     * @return 
+     @param x
+     @param y
+     @return 
      */
     public float[] calculateTheilSenEstimatorParams(int[] x, int[] y) {
         
@@ -122,6 +122,12 @@ public class LinearRegression {
         return new float[]{yIntercept, median};
     }
     
+    /**
+     *
+     @param xy1
+     @param xy2
+     @return
+     */
     public float[] calculateParamsForLinearRegression(PairIntArray xy1, 
         PairIntArray xy2) {
         
@@ -135,6 +141,12 @@ public class LinearRegression {
         return calculateTheilSenEstimatorParams(dx, dy);
     }
     
+    /**
+     *
+     @param xy1
+     @param xy2
+     @return
+     */
     public String plotTheLinearRegression(PairIntArray xy1, PairIntArray xy2) {
         
         int n = xy1.getN();
@@ -151,9 +163,9 @@ public class LinearRegression {
      * make a plot of the linear regression of arrays x and y.
      * NOTE: a side effect of the method is that x and y become partially
      * sorted.
-     * @param x
-     * @param y 
-     * @return file name
+     @param x
+     @param y 
+     @return file name
      */
     public String plotTheLinearRegression(int[] x, int[] y) {
                         
@@ -220,9 +232,9 @@ public class LinearRegression {
      * linear regression of the x and y points.
      * NOTE: a side effect of the method is that x and y become partially
      * sorted.
-     * @param x
-     * @param y
-     * @return 
+     @param x
+     @param y
+     @return 
      */
     public float[] calculateTheilSenEstimatorParams(float[] x, float[] y) {
         
@@ -318,9 +330,9 @@ public class LinearRegression {
      * linear regression of the x and y points.
      * NOTE: a side effect of the method is that x and y become partially
      * sorted.
-     * @param x
-     * @param y
-     * @return 
+     @param x
+     @param y
+     @return 
      */
     public double[] calculateTheilSenEstimatorParams(double[] x, double[] y) {
         
@@ -418,9 +430,9 @@ public class LinearRegression {
      * linear regression of the x and y points.
      * NOTE: a side effect of the method is that x and y become partially
      * sorted.
-     * @param x
-     * @param y
-     * @return 
+     @param x
+     @param y
+     @return 
      */
     public float[] calculateTheilSenEstimatorMedian(float[] x, float[] y) {
         
@@ -494,6 +506,12 @@ public class LinearRegression {
         return new float[]{xMedian, yMedian};
     }
     
+    /**
+     *
+     @param xy1
+     @param xy2
+     @return
+     */
     public float[] calculateParamsForLinearRegression(PairFloatArray xy1, 
         PairFloatArray xy2) {
         
@@ -507,6 +525,12 @@ public class LinearRegression {
         return calculateTheilSenEstimatorParams(dx, dy);
     }
     
+    /**
+     *
+     @param xy1
+     @param xy2
+     @return
+     */
     public String plotTheLinearRegression(PairFloatArray xy1, PairFloatArray xy2) {
         
         int n = xy1.getN();
@@ -523,9 +547,9 @@ public class LinearRegression {
      * make a plot of the linear regression of arrays x and y.
      * NOTE: a side effect of the method is that x and y become partially
      * sorted.
-     * @param x
-     * @param y 
-     * @return plot file name
+     @param x
+     @param y 
+     @return plot file name
      */
     public String plotTheLinearRegression(float[] x, float[] y) {
             
@@ -542,9 +566,13 @@ public class LinearRegression {
      * make a plot of the linear regression of arrays x and y.
      * NOTE: a side effect of the method is that x and y become partially
      * sorted.
-     * @param x
-     * @param y 
-     * @return plot file name
+     @param x
+     @param y 
+     @param xMin 
+     @param xMax 
+     @param yMin 
+     @param yMax 
+     @return plot file name
      */
     public String plotTheLinearRegression(float[] x, float[] y, int xMin, int xMax, int yMin, int yMax) {
                         

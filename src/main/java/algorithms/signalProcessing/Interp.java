@@ -6,6 +6,12 @@ package algorithms.signalProcessing;
  */
 public class Interp {
     
+    /**
+     *
+     @param input
+     @param binFactor
+     @return
+     */
     public float[] bin(float[] input, int binFactor) {
         
         if (input == null) {
@@ -44,6 +50,12 @@ public class Interp {
         return out;
     }
 
+    /**
+     *
+     @param input
+     @param binFactor
+     @return
+     */
     public float[] unbin(float[] input, int binFactor) {
 
         if (input == null) {
@@ -71,6 +83,14 @@ public class Interp {
         return out;
     }
   
+    /**
+     *
+     @param input
+     @param outLength
+     @param minValue
+     @param maxValue
+     @return
+     */
     public float[] linearInterp(float[] input,
         int outLength, float minValue, float maxValue) {
 

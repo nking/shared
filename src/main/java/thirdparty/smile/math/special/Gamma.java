@@ -65,6 +65,8 @@ public class Gamma {
 
     /**
      * Gamma function. Lanczos approximation (6 terms).
+     @param x
+     @return 
      */
     public static double gamma(double x) {
         double xcopy = x;
@@ -90,6 +92,8 @@ public class Gamma {
 
     /**
      * The log of the Gamma function. Lanczos approximation (6 terms)
+     @param x
+     @return 
      */
     public static double lgamma(double x) {
         double xcopy = x;
@@ -126,6 +130,9 @@ public class Gamma {
      * is the lower incomplete gamma function of arguments (s, x) divided by the 
      * gamma function of argument (s).
      * P(s,x) = <i><big>&#8747;</big><sub><small>0</small></sub><sup><small>x</small></sup> e<sup>-t</sup> t<sup>(s-1)</sup> dt</i>
+     @param s
+     @param x
+     @return 
      */
     public static double regularizedIncompleteGamma(double s, double x) {
         if (s < 0.0) {
@@ -152,6 +159,9 @@ public class Gamma {
     /**
      * Regularized Upper/Complementary Incomplete Gamma Function
      * Q(s,x) = 1 - P(s,x) = 1 - <i><big>&#8747;</big><sub><small>0</small></sub><sup><small>x</small></sup> e<sup>-t</sup> t<sup>(s-1)</sup> dt</i>
+     @param s
+     @param x
+     @return 
      */
     public static double regularizedUpperIncompleteGamma(double s, double x) {
         if (s < 0.0) {
@@ -183,6 +193,9 @@ public class Gamma {
     /**
      * Regularized Incomplete Gamma Function P(a,x) = <i><big>&#8747;</big><sub><small>0</small></sub><sup><small>x</small></sup> e<sup>-t</sup> t<sup>(a-1)</sup> dt</i>.
      * Series representation of the function - valid for x < a + 1
+     @param a
+     @param x
+     @return 
      */
     private static double regularizedIncompleteGammaSeries(double a, double x) {
         if (a < 0.0 || x < 0.0 || x >= a + 1) {
@@ -220,6 +233,9 @@ public class Gamma {
      * Regularized Incomplete Gamma Function P(a,x) = <i><big>&#8747;</big><sub><small>0</small></sub><sup><small>x</small></sup> e<sup>-t</sup> t<sup>(a-1)</sup> dt</i>.
      * Continued Fraction representation of the function - valid for x &ge; a + 1
      * This method follows the general procedure used in Numerical Recipes.
+     @param a
+     @param x
+     @return 
      */
     private static double regularizedIncompleteGammaFraction(double a, double x) {
         if (a < 0.0 || x < 0.0 || x < a + 1) {
@@ -269,6 +285,8 @@ public class Gamma {
 
     /**
      * The digamma function is defined as the logarithmic derivative of the gamma function.
+     @param x
+     @return 
      */
     public static double digamma(double x) {
         final double C7[][] = {
@@ -329,6 +347,9 @@ public class Gamma {
 
     /**
      * The inverse of regularized incomplete gamma function.
+     @param a
+     @param p
+     @return 
      */
     public static double inverseRegularizedIncompleteGamma(double a, double p) {
         if (a <= 0.0) {
@@ -394,7 +415,8 @@ public class Gamma {
      /**
      * The factorial of n.
      *
-     * @return factorial returned as double but is, numerically, an integer.
+     @param n
+     @return factorial returned as double but is, numerically, an integer.
      * Numerical rounding may make this an approximation after n = 21.
      */
     public static double factorial(int n) {
@@ -412,6 +434,8 @@ public class Gamma {
 
     /**
      * The log of factorial of n.
+     @param n
+     @return 
      */
     public static double lfactorial(int n) {
         if (n < 0) {

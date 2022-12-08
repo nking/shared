@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 /**
  *
  * @author nichole
+ @param <T>
  */
 public class BinaryTrieNode<T> {
     T x;
@@ -13,6 +14,9 @@ public class BinaryTrieNode<T> {
     BinaryTrieNode<T>[] child = null;
     BinaryTrieNode<T> jump = null;
 
+    /**
+     *
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public BinaryTrieNode() {
         Class cls = this.getClass();
@@ -24,6 +28,10 @@ public class BinaryTrieNode<T> {
         return "{" + String.valueOf(x) + "}";
     }
     
+    /**
+     *
+     @return
+     */
     public String toString2() {
         
         StringBuilder sb = new StringBuilder();
@@ -53,6 +61,10 @@ public class BinaryTrieNode<T> {
         return sb.toString();
     }
 
+    /**
+     *
+     @return
+     */
     public static long estimateSizeOnHeap() {
         
         ObjectSpaceEstimator est = new ObjectSpaceEstimator();

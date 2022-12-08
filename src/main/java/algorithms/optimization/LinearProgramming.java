@@ -189,10 +189,17 @@ public class LinearProgramming {
      */
     private static double eps = 1e-11;
     
+    /**
+     *
+     */
     public LinearProgramming() {
         this(System.nanoTime());
     }
     
+    /**
+     *
+     @param randomSeed
+     */
     public LinearProgramming(long randomSeed) {
         //seed = 180328550254112L;
         System.out.println("seed=" + randomSeed);
@@ -223,8 +230,8 @@ public class LinearProgramming {
        occasionally leads to a solution which is not optimal.
        TODO: consider a pattern for try again or at least document it for the user.
         
-     * @param standForm
-     * @return 
+     @param standForm
+     @return 
      */
     public SlackForm solveUsingSimplexMethod(StandardForm standForm) {
       
@@ -325,8 +332,8 @@ public class LinearProgramming {
      * <pre>
      * The method is implemented from pseudocode in Section 29.3 of Cormen, Leiserson, Rivest, and Stein
      * </pre>
-     * @param standForm
-     * @return 
+     @param standForm
+     @return 
      */
     protected SlackForm initializeSimplex(StandardForm standForm) {
         
@@ -505,12 +512,12 @@ public class LinearProgramming {
      * <pre>
      * The method is implemented from pseudocode in Section 29.3of Cormen, Leiserson, Rivest, and Stein
      * </pre>
-     * @param slackForm
-     * @param lIdx the leaving index of x. the "leaving variable" is the basic 
+     @param slackForm
+     @param lIdx the leaving index of x. the "leaving variable" is the basic 
      * variable in the constraint, on the lhs (so it's an index in bIndices).
-     * @param eIdx the exiting index of x.  the "entering variable" is the 
+     @param eIdx the exiting index of x.  the "entering variable" is the 
      * non-basic variable in the constraint, on the rhs (so it's an index in nIndices).
-     * @return 
+     @return 
      */
     protected SlackForm pivot(SlackForm slackForm, int lIdx /*m*/, int eIdx /*n*/) {
                         
@@ -605,6 +612,12 @@ public class LinearProgramming {
         return out;
     }
 
+    /**
+     *
+     @param nHatIndices
+     @param cHat
+     @param aHat
+     */
     protected void sortRHS(int[] nHatIndices, double[] cHat, double[][] aHat) {
         
         int[] idxs = new int[nHatIndices.length];
@@ -628,6 +641,12 @@ public class LinearProgramming {
         }
     }
 
+    /**
+     *
+     @param bHatIndices
+     @param bHat
+     @param aHat
+     */
     protected void sortLHS(int[] bHatIndices, double[] bHat, double[][] aHat) {
         int[] idxs = new int[bHatIndices.length];
         int i;
@@ -650,8 +669,8 @@ public class LinearProgramming {
     /**
      * finds the smallest value in b and returns its index;  if b.length is 0
      * or if b contains only Double.POSITIVE_INFINITY, -1 is returned.
-     * @param b an array of double numbers.
-     * @return returns the index of the smallest value in b, but if b.length is 0
+     @param b an array of double numbers.
+     @return returns the index of the smallest value in b, but if b.length is 0
      * or if b contains only Double.POSITIVE_INFINITY, -1 is returned.
      */
     protected int findMinIndex(double[] b) {
@@ -694,10 +713,10 @@ public class LinearProgramming {
               nonnegativity constraints:
                   x1, x2, and x3 .geq. 0
      </pre>
-     * @param a constraint coefficients
-     * @param b the constants in each constraint.
-     * @param c objective coefficients
-     * @param constraintComparisons an index of size c.length containing indicators
+     @param a constraint coefficients
+     @param b the constants in each constraint.
+     @param c objective coefficients
+     @param constraintComparisons an index of size c.length containing indicators
      * for whether the constraint is .leq., .eq., or .geq..
      * -1 is used for .leq., 0 for .eq. and +1 for .geq.
      * <pre>
@@ -706,11 +725,11 @@ public class LinearProgramming {
      *    x1 - 2*x2 .leq. 4
      * would have constraintComparisons = [0, -1]
      * </pre>
-     * @param isMaximization true if the linear program goal is to maximize the objective,
+     @param isMaximization true if the linear program goal is to maximize the objective,
      * else false if the goal is to minimize the objective.
-     * @param nonnegativityConstraints indicates whether x_j has a non-negativity
+     @param nonnegativityConstraints indicates whether x_j has a non-negativity
      * constraint
-     * @return 
+     @return 
      */
     public static StandardForm convertLinearProgramToStandardForm(
         boolean isMaximization,
@@ -840,11 +859,11 @@ public class LinearProgramming {
      * The slack form constraints are slack variable = b_i - summation_j=1:n(a_i_j * x_j),
      * and so the negative sign read in the written slack form is not present
      * in the matrix 'a'.
-     * @param standForm a linear program with an objective of maximization,
+     @param standForm a linear program with an objective of maximization,
        subject to constraints that are inequality constraints of the form .leq.
        and non-negativity constraints on x.
        
-     * @return 
+     @return 
      */
     public static SlackForm convertConstraints(StandardForm standForm) {
         /*
@@ -956,6 +975,13 @@ public class LinearProgramming {
               objective function to -x0.
     </pre>    
     */
+
+    /**
+     *
+     @param standForm
+     @return
+     */
+
     protected SlackForm createAuxiliarySlackForm(StandardForm standForm) {
         
         //System.out.printf("createAuxiliarySlackForm\n");
@@ -1145,6 +1171,12 @@ public class LinearProgramming {
         return slackForm;
     }
 
+    /**
+     *
+     @param slackForm
+     @param positiveCIndexes
+     @return
+     */
     protected int chooseEnteringIndex(SlackForm slackForm, TIntSet positiveCIndexes) {
         
         /*
@@ -1174,8 +1206,8 @@ public class LinearProgramming {
     /**
      * find the indexes eligible to be entering variable indexes.  They are
      * found as the indexes of the c coefficients which are still positive.
-     * @param slackForm
-     * @return 
+     @param slackForm
+     @return 
      */
     protected TIntSet findPositiveCIndexes(SlackForm slackForm) {
         TIntSet cs = new TIntHashSet();
@@ -1263,6 +1295,13 @@ public class LinearProgramming {
      */
     public static class StandardForm extends FormTuple {
     
+        /**
+         *
+         @param a
+         @param b
+         @param c
+         @param v
+         */
         public StandardForm(double[][] a, double[] b, double[] c, double v) {
             super(a, b, c, v);
         }
@@ -1271,7 +1310,7 @@ public class LinearProgramming {
          * when x has been calculated, evaluate the objective.
          * see eqn (29.42) of Cormen, Leiserson, Rivest, and Stein
          * <pre> z = v + summation_j_in_nIndices(c_j*x_j) </pre>
-         * @return 
+         @return 
          */
         @Override
         public double evaluateObjective() {
@@ -1286,6 +1325,10 @@ public class LinearProgramming {
             return sum;
         }
     
+        /**
+         *
+         @return
+         */
         public boolean isFeasible() {
             /*
             satifies constraints
@@ -1320,7 +1363,7 @@ public class LinearProgramming {
         /**
          * using the present forms, sets all rhs x's to 0 to solve for the lhs x's.
          * The x vector is returned.
-         * @return 
+         @return 
          */
         @Override
         public double[] computeBasicSolution() {
@@ -1356,22 +1399,47 @@ public class LinearProgramming {
          */
         public final int[] bIndices;
         
+        /**
+         *
+         */
         public static enum STATE {
-            UNBOUNDED, UNFEASIBLE, FEASIBLE, OPTIMAL;
+
+            /**
+             *
+             */
+            UNBOUNDED,
+
+            /**
+             *
+             */
+            UNFEASIBLE,
+
+            /**
+             *
+             */
+            FEASIBLE,
+
+            /**
+             *
+             */
+            OPTIMAL;
         }
         
+        /**
+         *
+         */
         protected STATE state;
         
         /**
          * 
-         * @param nIndices denotes the indices of the nonbasic variables (rhs vars).
+         @param nIndices denotes the indices of the nonbasic variables (rhs vars).
          * nIndices.length = n.
-         * @param bIndices denotes the indices of the basic variables (lhs vars).
+         @param bIndices denotes the indices of the basic variables (lhs vars).
          * bIndices.length = m.
-         * @param a
-         * @param b
-         * @param c
-         * @param v 
+         @param a
+         @param b
+         @param c
+         @param v 
          */
         public SlackForm(int[] nIndices, int[] bIndices, double[][] a, 
             double[] b, double[] c, double v) {
@@ -1391,15 +1459,15 @@ public class LinearProgramming {
         
         /**
          * 
-         * @param nIndices denotes the indices of the nonbasic variables (rhs vars).
+         @param nIndices denotes the indices of the nonbasic variables (rhs vars).
          * nIndices.length = n.
-         * @param bIndices denotes the indices of the basic variables (lhs vars).
+         @param bIndices denotes the indices of the basic variables (lhs vars).
          * bIndices.length = m.
-         * @param a
-         * @param b
-         * @param c
-         * @param v
-         * @param state 
+         @param a
+         @param b
+         @param c
+         @param v
+         @param state 
          */
         public SlackForm(int[] nIndices, int[] bIndices, double[][] a, 
             double[] b, double[] c, double v, STATE state) {
@@ -1407,6 +1475,10 @@ public class LinearProgramming {
             this.state = state;
         }
     
+        /**
+         *
+         @return
+         */
         public boolean isFeasible() {
             /*
             satifies constraints
@@ -1441,7 +1513,7 @@ public class LinearProgramming {
          * when x has been calculated, evaluate the objective.
          * see eqn (29.42) of Cormen, Leiserson, Rivest, and Stein
          * <pre> z = v + summation_j_in_nIndices(c_j*x_j) </pre>
-         * @return 
+         @return 
          */
         @Override
         public double evaluateObjective() {
@@ -1455,15 +1527,28 @@ public class LinearProgramming {
             return sum;
         }
         
+        /**
+         *
+         @return
+         */
         public double[] calculatePrimalX() {
             double[] x = this.computeBasicSolution();
             return Arrays.copyOf(x, c.length);
         }
+
+        /**
+         *
+         @return
+         */
         public double[] calculateDualY() {
             double[] y = computeBasicDualSolution();
             return Arrays.copyOfRange(y, y.length - b.length, y.length);
         }
         
+        /**
+         *
+         @return
+         */
         public double evaluateDualObjective() {
             double[] y = computeBasicDualSolution();
             int i;
@@ -1492,7 +1577,7 @@ public class LinearProgramming {
         /**
          * using the present forms, sets all rhs x's to 0 to solve for the lhs x's.
          * The x vector is returned.
-         * @return 
+         @return 
          */
         @Override
         public double[] computeBasicSolution() {
@@ -1519,7 +1604,7 @@ public class LinearProgramming {
         }
         
         /**
-         * @return 
+         @return 
          */
         public double[] computeBasicDualSolution() {
             
@@ -1586,12 +1671,12 @@ public class LinearProgramming {
         public double v = 0;
         
         /**         
-         * @param a mXn matrix of constraint coefficients.   Careful with the signs
+         @param a mXn matrix of constraint coefficients.   Careful with the signs
          * of the values for the SlackForm. see eqn (29.43) of Cormen, Leiserson, Rivest, and Stein  
          * <pre> x_i = b_i - summation_j(a_i_j*x_j) for i in bIndices. </pre>
-         * @param b m-dimensional vector of constraint inequalities
-         * @param c n-dimensional vector of objective coefficients.
-         * @param v an optional term sometimes present in the objective.  can be 0 if no v is used.
+         @param b m-dimensional vector of constraint inequalities
+         @param c n-dimensional vector of objective coefficients.
+         @param v an optional term sometimes present in the objective.  can be 0 if no v is used.
          */
         public FormTuple(double[][] a, double[] b, double[] c, double v) {
             
@@ -1615,12 +1700,16 @@ public class LinearProgramming {
             MatrixUtil.multiply(c, -1.);
         }
         
+        /**
+         *
+         @return
+         */
         public abstract double evaluateObjective();
         
         /**
          * using the present forms, sets all rhs x's to 0 to solve for the lhs x's.
          * The x vector is returned.
-         * @return 
+         @return 
          */
         public abstract double[] computeBasicSolution();
         

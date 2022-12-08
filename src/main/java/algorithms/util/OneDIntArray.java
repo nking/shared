@@ -9,7 +9,16 @@ import java.util.Arrays;
  * @author nichole
  */
 public class OneDIntArray {
+
+    /**
+     *
+     */
     public int[] a;
+
+    /**
+     *
+     @param t
+     */
     public OneDIntArray(int[] t) {
         a = t;
     }
@@ -33,9 +42,20 @@ public class OneDIntArray {
         return hash;
     }
 
+    /**
+     *
+     */
     protected final static int fnv321aInit = 0x811c9dc5;
+
+    /**
+     *
+     */
     protected final static int fnv32Prime = 0x01000193;
 
+    /**
+     *
+     @return
+     */
     protected int fnvHashCode() {
 
         /*

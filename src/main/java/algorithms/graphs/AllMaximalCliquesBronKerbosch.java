@@ -27,7 +27,7 @@ public class AllMaximalCliquesBronKerbosch {
     
     /**
      * 
-     * @param adjMap adjacency map for an undirected graph. 
+     @param adjMap adjacency map for an undirected graph. 
      */
     public AllMaximalCliquesBronKerbosch(TIntObjectMap<TIntSet> adjMap) {
         this.adjMap = adjMap;
@@ -61,7 +61,7 @@ public class AllMaximalCliquesBronKerbosch {
      * algorithm BronKerbosch3(G)
      * </pre>
      * 
-     * @return 
+     @return 
      */
     public List<TIntSet> bronKerBosch() {
         
@@ -105,10 +105,10 @@ public class AllMaximalCliquesBronKerbosch {
      * The worse case runtime complexity is O(3^(n/3)) which is from
      *  Moon and Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
      * 
-     * @param r
-     * @param p
-     * @param x
-     * @param results array to add results to 
+     @param r
+     @param p
+     @param x
+     @param results array to add results to 
      */
     public void bronKerBosch(TIntSet r, TIntSet p, TIntSet x, List<TIntSet> results) {
         if (p.isEmpty() && x.isEmpty()) {
@@ -140,6 +140,12 @@ public class AllMaximalCliquesBronKerbosch {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     protected TIntSet intersection(TIntSet a, TIntSet b) {
         //  (0,1,2,3)  {1,2,4}  C=A-B=0,3  A-C=1,2
         TIntSet c = new TIntHashSet(a);

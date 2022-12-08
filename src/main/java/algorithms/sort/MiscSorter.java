@@ -26,8 +26,8 @@ public class MiscSorter {
      * use merge sort to sort a1 in decreasing value order and return the 
      * indexes of the original a1 indexes in the sorted order.
      * 
-     * @param a1
-     * @return indexes 
+     @param a1
+     @return indexes 
      */
     public static int[] mergeSortDecreasing(double[] a1) {
         int[] indexes = new int[a1.length];
@@ -44,8 +44,8 @@ public class MiscSorter {
      * use merge sort to sort a1 in increasing value order and return the 
      * indexes of the original a1 indexes in the sorted order.
      * 
-     * @param a1
-     * @return indexes 
+     @param a1
+     @return indexes 
      */
     public static int[] mergeSortIncreasing(double[] a1) {
         int[] indexes = new int[a1.length];
@@ -63,9 +63,9 @@ public class MiscSorter {
      * by a2 and return the indexes of the original indexes 
      * (i.e. 0 through a1.length-1) in the sorted order.
      * 
-     * @param a1
-     * @param a2
-     * @return indexes 
+     @param a1
+     @param a2
+     @return indexes 
      */
     public static int[] mergeBy1stArgThen2nd(double[] a1, double[] a2) {
         
@@ -87,8 +87,8 @@ public class MiscSorter {
      * use quicksort to sort a by ascending values and
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a
-     * @param b
+     @param a
+     @param b
      */
     public static void sortBy1stArg(int[] a, int[] b) {
         
@@ -111,8 +111,8 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArgThen2nd(float[] a1, float[] a2) {
         if (a1 == null) {
@@ -130,10 +130,10 @@ public class MiscSorter {
     
      
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     public static void sortBy1stArgThen2nd(float[] a1, float[] a2, int idxLo, 
         int idxHi) {
@@ -204,6 +204,11 @@ public class MiscSorter {
         }
     }
 
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(int[] a, float[] b) {
         
         if (a == null) {
@@ -222,8 +227,8 @@ public class MiscSorter {
     /**
      * use mergesort to sort by increasing values of a and apply same swaps to
      * b.
-     * @param a
-     * @param b 
+     @param a
+     @param b 
      */
     public static void sortBy1stArg2(int[] a, int[] b) {
         
@@ -245,10 +250,10 @@ public class MiscSorter {
        sort a from index idxLo to idxHi, inclusive, by ascending values and
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a
-     * @param b
-     * @param idxLo
-     * @param idxHi 
+     @param a
+     @param b
+     @param idxLo
+     @param idxHi 
      */
     public static void sortBy1stArg(int[] a, int[] b, int idxLo, int idxHi) {
         
@@ -300,8 +305,8 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortByDecr(int[] a1, int[] a2) {
         if (a1 == null) {
@@ -319,6 +324,11 @@ public class MiscSorter {
               
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     */
     public static void sortBy1stArgDecrThen2ndIncr(int[] a1, int[] a2) {
         
         if (a1 == null) {
@@ -341,8 +351,8 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortByDecr(float[] a1, int[] a2) {
         if (a1 == null) {
@@ -365,8 +375,8 @@ public class MiscSorter {
      * 
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArg(float[] a1, float[] a2) {
         if (a1 == null) {
@@ -383,10 +393,10 @@ public class MiscSorter {
     }
     
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     public static void sortBy1stArg(float[] a1, float[] a2, int idxLo, 
         int idxHi) {
@@ -451,9 +461,9 @@ public class MiscSorter {
      * The original indexes, sorted by the same swaps as a1 and a2 are returned.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @return the original indexes, sorted by the same swaps that a1 and a2 received.
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @return the original indexes, sorted by the same swaps that a1 and a2 received.
      */
     public static int[] sortBy1stArg2(long[] a1, long[] a2) {
         if (a1.length != a2.length) {
@@ -473,11 +483,11 @@ public class MiscSorter {
      * The original indexes, sorted by the same swaps as a1 and a2 are returned.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param idxs the original indexes, sorted by the same swaps that a1 and a2 received.
-     * @param iLo
-     * @param iHi
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param idxs the original indexes, sorted by the same swaps that a1 and a2 received.
+     @param iLo
+     @param iHi
      */
     protected static void sortBy1stArg2(long[] a1, long[] a2, int[] idxs, int iLo, int iHi) {
         if (iLo < iHi) {
@@ -569,10 +579,10 @@ public class MiscSorter {
     /**
      * use mergesort to sort a1 by increasing values and apply same changes to
      * a2.
-     * @param a1
-     * @param a2
-     * @param idxLo
-     * @param idxHi 
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi 
      */
     public static void sortBy1stArg2(int[] a1, int[] a2, int idxLo, int idxHi) {
 
@@ -588,6 +598,13 @@ public class MiscSorter {
         }
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stArg(int[] a1, float[] a2, int idxLo, int idxHi) {
 
         if (idxLo < idxHi) {
@@ -602,6 +619,13 @@ public class MiscSorter {
         }
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stArgDecrThen2ndIncr(int[] a1, int[] a2, 
         int idxLo, int idxHi) {
 
@@ -623,8 +647,8 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
        @param idxLo smallest index to participate in sort
        @param idxHi largest index to participate n sort
     */
@@ -648,8 +672,8 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
        @param idxLo smallest index to participate in sort
        @param idxHi largest index to participate n sort
     */
@@ -899,8 +923,8 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArgThen2nd(int[] a1, int[] a2) {
         if (a1 == null) {
@@ -921,9 +945,9 @@ public class MiscSorter {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param a3 array of points sorted by same order as a1 and a2, useful to pass in
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param a3 array of points sorted by same order as a1 and a2, useful to pass in
      * the original index ordering for example.
      */
     public static void sortBy1stArgThen2nd(int[] a1, int[] a2, int[] a3) {
@@ -948,12 +972,12 @@ public class MiscSorter {
     }
     
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also and break ties in a1
-     * @param indexes array of original indexes of a1 and a2, progressively sorted
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also and break ties in a1
+     @param indexes array of original indexes of a1 and a2, progressively sorted
      * by same swaps.
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     private static void sortBy1stArgThen2nd(double[] a1, double[] a2, int[] indexes, int idxLo,
         int idxHi) {
@@ -970,10 +994,10 @@ public class MiscSorter {
     }
     
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     public static void sortBy1stArgThen2nd(int[] a1, int[] a2, int idxLo,
         int idxHi) {
@@ -990,12 +1014,12 @@ public class MiscSorter {
     }
     
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also and act as tie breaker
-     * @param a3 array of points sorted by same order as a1 and a2, useful to pass in
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also and act as tie breaker
+     @param a3 array of points sorted by same order as a1 and a2, useful to pass in
      * the original index ordering for example.
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     public static void sortBy1stArgThen2nd(int[] a1, int[] a2, int[] a3, int idxLo,
         int idxHi) {
@@ -1206,10 +1230,11 @@ public class MiscSorter {
        same changes to a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param idxLo
-     * @param idxHi 
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param idxLo
+     @param idxHi 
+     @param ascendingSort 
      */
     private static void sortBy1stArg(double[] a1, int[] a2, int idxLo, 
         int idxHi, boolean ascendingSort) {

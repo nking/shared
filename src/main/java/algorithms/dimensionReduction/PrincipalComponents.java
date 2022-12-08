@@ -76,7 +76,7 @@ public class PrincipalComponents {
      therefore, pca using the standardized data == pca using the correlation matrix.
      Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
      </pre>
-     * @param x is a 2-dimensional array of k vectors of length n in format
+     @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
@@ -86,6 +86,7 @@ public class PrincipalComponents {
      a few statistics of the CUR decomposition of A, up to the
      nComponents dimension.  Note that if the rank of the A is
      less than nComponents, then only the number of components as rank is returned.
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
         return calcPrincipalComponents(x, nComponents, false);
@@ -111,7 +112,7 @@ public class PrincipalComponents {
      therefore, pca using the standardized data == pca using the correlation matrix.
      Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
      </pre>
-     * @param x is a 2-dimensional array of k vectors of length n in format
+     @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
@@ -122,10 +123,12 @@ public class PrincipalComponents {
      determine the number of principal components.  Note that the closest cumulative fraction to prop is used
      rather than meeting and possibly exceeding prop.
      e.g.  prop of 80% to 90% w/ useEVProp = true.
+     @param prop
      @return the principal axes, the principal components, and
      a few statistics of the CUR decomposition of A, up to the
      nComponents dimension.  Note that if the rank of the A is
      less than nComponents, then only the number of components as rank is returned.
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static PCAStats calcPrincipalComponents(double[][] x, boolean useEVProp,
                                                    double prop) throws NotConvergedException {
@@ -258,7 +261,7 @@ public class PrincipalComponents {
      therefore, pca using the standardized data == pca using the correlation matrix.
      Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
      </pre>
-     * @param x is a 2-dimensional array of k vectors of length n in format
+     @param x is a 2-dimensional array of k vectors of length n in format
      *    double[n][k].  n is the number of samples, and k is the number of
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
@@ -270,6 +273,7 @@ public class PrincipalComponents {
      a few statistics of the CUR decomposition of A, up to the
      nComponents dimension.  Note that if the rank of the A is
      less than nComponents, then only the number of components as rank is returned.
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents, boolean useCUR) throws NotConvergedException {
 
@@ -424,12 +428,12 @@ public class PrincipalComponents {
      *            a_0 = arg min_{a} ||⃗x − (m⃗_s + U _p * a)||^2
      * </pre>
      *
-     * @param m the means of each column of x (used in the zero-correction of x).  the length is k
+     @param m the means of each column of x (used in the zero-correction of x).  the length is k
      *          where k is the number of columns in x before
      *          dimension reduction.
-     * @param stats the statistics of the principal axes derived from
+     @param stats the statistics of the principal axes derived from
      * SVD of the covariance of the training data.
-     * @return the reconstruction of x.  size is [n x k]
+     @return the reconstruction of x.  size is [n x k]
      */
     public static double[][] reconstruct(double[] m, PCAStats stats) {
 
@@ -475,6 +479,9 @@ public class PrincipalComponents {
         return re;
     }
     
+    /**
+     *
+     */
     public static class PCAStats {
 
         /** the number of components requested from the calculation, unless larger than the matrix

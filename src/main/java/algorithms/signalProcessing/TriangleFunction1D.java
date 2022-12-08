@@ -25,10 +25,10 @@ public class TriangleFunction1D {
      * "continuity"  : (c(k + N) = c(k))
      * </pre>
      *
-     * @param input
-     * @param j level associated with input image. The output is calculated
+     @param input
+     @param j level associated with input image. The output is calculated
      * using 2^j as spacing for interpolation points.
-     * @return a sampling of input, interpolated over spacings 2^j.
+     @return a sampling of input, interpolated over spacings 2^j.
      */
     public float[] calculateNextLevel(float[] input, int j) {
 
@@ -53,10 +53,10 @@ public class TriangleFunction1D {
      * "continuity"  : (c(k + N) = c(k))
      * </pre>
      *
-     * @param input
-     * @param j level associated with input image. The output is calculated
+     @param input
+     @param j level associated with input image. The output is calculated
      * using 2^j as spacing for interpolation points.
-     * @return a sampling of input, interpolated over spacings 2^j.
+     @return a sampling of input, interpolated over spacings 2^j.
      */
     public float[] subtractLevels(float[] input, int j) {
 

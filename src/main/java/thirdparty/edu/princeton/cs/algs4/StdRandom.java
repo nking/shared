@@ -90,7 +90,7 @@ public final class StdRandom {
      * number for each execution of the program.
      * Ordinarily, you should call this method at most once per program.
      *
-     * @param s the seed
+     @param s the seed
      */
     public static void setSeed(long s) {
         seed   = s;
@@ -100,7 +100,7 @@ public final class StdRandom {
     /**
      * Returns the seed of the pseudorandom number generator.
      *
-     * @return the seed
+     @return the seed
      */
     public static long getSeed() {
         return seed;
@@ -109,7 +109,7 @@ public final class StdRandom {
     /**
      * Returns a random real number uniformly in [0, 1).
      *
-     * @return a random real number uniformly in [0, 1)
+     @return a random real number uniformly in [0, 1)
      */
     public static double uniform() {
         return random.nextDouble();
@@ -118,8 +118,8 @@ public final class StdRandom {
     /**
      * Returns a random integer uniformly in [0, n).
      * 
-     * @param n number of possible integers
-     * @return a random integer uniformly between 0 (inclusive) and <tt>N</tt> (exclusive)
+     @param n number of possible integers
+     @return a random integer uniformly between 0 (inclusive) and <tt>N</tt> (exclusive)
      * @throws IllegalArgumentException if <tt>n <= 0</tt>
      */
     public static int uniform(int n) {
@@ -135,7 +135,7 @@ public final class StdRandom {
     /**
      * Returns a random real number uniformly in [0, 1).
      * 
-     * @return     a random real number uniformly in [0, 1)
+     @return     a random real number uniformly in [0, 1)
      * @deprecated Replaced by {@link #uniform()}.
      */
     @Deprecated
@@ -146,9 +146,9 @@ public final class StdRandom {
     /**
      * Returns a random integer uniformly in [a, b).
      * 
-     * @param  a the left endpoint
-     * @param  b the right endpoint
-     * @return a random integer uniformly in [a, b)
+     @param  a the left endpoint
+     @param  b the right endpoint
+     @return a random integer uniformly in [a, b)
      * @throws IllegalArgumentException if <tt>b <= a</tt>
      * @throws IllegalArgumentException if <tt>b - a >= Integer.MAX_VALUE</tt>
      */
@@ -161,9 +161,9 @@ public final class StdRandom {
     /**
      * Returns a random real number uniformly in [a, b).
      * 
-     * @param  a the left endpoint
-     * @param  b the right endpoint
-     * @return a random real number uniformly in [a, b)
+     @param  a the left endpoint
+     @param  b the right endpoint
+     @return a random real number uniformly in [a, b)
      * @throws IllegalArgumentException unless <tt>a < b</tt>
      */
     public static double uniform(double a, double b) {
@@ -175,8 +175,8 @@ public final class StdRandom {
      * Returns a random boolean from a Bernoulli distribution with success
      * probability <em>p</em>.
      *
-     * @param  p the probability of returning <tt>true</tt>
-     * @return <tt>true</tt> with probability <tt>p</tt> and
+     @param  p the probability of returning <tt>true</tt>
+     @return <tt>true</tt> with probability <tt>p</tt> and
      *         <tt>false</tt> with probability <tt>p</tt>
      * @throws IllegalArgumentException unless <tt>p >= 0.0</tt> and <tt>p <= 1.0</tt>
      */
@@ -190,7 +190,7 @@ public final class StdRandom {
      * Returns a random boolean from a Bernoulli distribution with success
      * probability 1/2.
      * 
-     * @return <tt>true</tt> with probability 1/2 and
+     @return <tt>true</tt> with probability 1/2 and
      *         <tt>false</tt> with probability 1/2
      */
     public static boolean bernoulli() {
@@ -200,7 +200,7 @@ public final class StdRandom {
     /**
      * Returns a random real number from a standard Gaussian distribution.
      * 
-     * @return a random real number from a standard Gaussian distribution
+     @return a random real number from a standard Gaussian distribution
      *         (mean 0 and standard deviation 1).
      */
     public static double gaussian() {
@@ -221,9 +221,9 @@ public final class StdRandom {
      * Returns a random real number from a Gaussian distribution with mean &mu;
      * and standard deviation &sigma;.
      * 
-     * @param  mu the mean
-     * @param  sigma the standard deviation
-     * @return a real number distributed according to the Gaussian distribution
+     @param  mu the mean
+     @param  sigma the standard deviation
+     @return a real number distributed according to the Gaussian distribution
      *         with mean <tt>mu</tt> and standard deviation <tt>sigma</tt>
      */
     public static double gaussian(double mu, double sigma) {
@@ -234,8 +234,8 @@ public final class StdRandom {
      * Returns a random integer from a geometric distribution with success
      * probability <em>p</em>.
      * 
-     * @param  p the parameter of the geometric distribution
-     * @return a random integer from a geometric distribution with success
+     @param  p the parameter of the geometric distribution
+     @return a random integer from a geometric distribution with success
      *         probability <tt>p</tt>; or <tt>Integer.MAX_VALUE</tt> if
      *         <tt>p</tt> is (nearly) equal to <tt>1.0</tt>.
      * @throws IllegalArgumentException unless <tt>p >= 0.0</tt> and <tt>p <= 1.0</tt>
@@ -250,8 +250,8 @@ public final class StdRandom {
     /**
      * Returns a random integer from a Poisson distribution with mean &lambda;.
      *
-     * @param  lambda the mean of the Poisson distribution
-     * @return a random integer from a Poisson distribution with mean <tt>lambda</tt>
+     @param  lambda the mean of the Poisson distribution
+     @return a random integer from a Poisson distribution with mean <tt>lambda</tt>
      * @throws IllegalArgumentException unless <tt>lambda > 0.0</tt> and not infinite
      */
     public static int poisson(double lambda) {
@@ -274,7 +274,7 @@ public final class StdRandom {
     /**
      * Returns a random real number from the standard Pareto distribution.
      *
-     * @return a random real number from the standard Pareto distribution
+     @return a random real number from the standard Pareto distribution
      */
     public static double pareto() {
         return pareto(1.0);
@@ -284,8 +284,8 @@ public final class StdRandom {
      * Returns a random real number from a Pareto distribution with
      * shape parameter &alpha;.
      *
-     * @param  alpha shape parameter
-     * @return a random real number from a Pareto distribution with shape
+     @param  alpha shape parameter
+     @return a random real number from a Pareto distribution with shape
      *         parameter <tt>alpha</tt>
      * @throws IllegalArgumentException unless <tt>alpha > 0.0</tt>
      */
@@ -298,7 +298,7 @@ public final class StdRandom {
     /**
      * Returns a random real number from the Cauchy distribution.
      *
-     * @return a random real number from the Cauchy distribution.
+     @return a random real number from the Cauchy distribution.
      */
     public static double cauchy() {
         return Math.tan(Math.PI * (uniform() - 0.5));
@@ -307,8 +307,8 @@ public final class StdRandom {
     /**
      * Returns a random integer from the specified discrete distribution.
      *
-     * @param  probabilities the probability of occurrence of each integer
-     * @return a random integer from a discrete distribution:
+     @param  probabilities the probability of occurrence of each integer
+     @return a random integer from a discrete distribution:
      *         <tt>i</tt> with probability <tt>probabilities[i]</tt>
      * @throws NullPointerException if <tt>probabilities</tt> is <tt>null</tt>
      * @throws IllegalArgumentException if sum of array entries is not (very nearly) equal to <tt>1.0</tt>
@@ -341,8 +341,8 @@ public final class StdRandom {
     /**
      * Returns a random integer from the specified discrete distribution.
      *
-     * @param  frequencies the frequency of occurrence of each integer
-     * @return a random integer from a discrete distribution:
+     @param  frequencies the frequency of occurrence of each integer
+     @return a random integer from a discrete distribution:
      *         <tt>i</tt> with probability proportional to <tt>frequencies[i]</tt>
      * @throws NullPointerException if <tt>frequencies</tt> is <tt>null</tt>
      * @throws IllegalArgumentException if all array entries are <tt>0</tt>
@@ -379,8 +379,8 @@ public final class StdRandom {
      * Returns a random real number from an exponential distribution
      * with rate &lambda;.
      * 
-     * @param  lambda the rate of the exponential distribution
-     * @return a random real number from an exponential distribution with
+     @param  lambda the rate of the exponential distribution
+     @return a random real number from an exponential distribution with
      *         rate <tt>lambda</tt>
      * @throws IllegalArgumentException unless <tt>lambda > 0.0</tt>
      */
@@ -393,7 +393,7 @@ public final class StdRandom {
     /**
      * Rearranges the elements of the specified array in uniformly random order.
      *
-     * @param  a the array to shuffle
+     @param  a the array to shuffle
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      */
     public static void shuffle(Object[] a) {
@@ -410,7 +410,7 @@ public final class StdRandom {
     /**
      * Rearranges the elements of the specified array in uniformly random order.
      *
-     * @param  a the array to shuffle
+     @param  a the array to shuffle
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      */
     public static void shuffle(double[] a) {
@@ -427,7 +427,7 @@ public final class StdRandom {
     /**
      * Rearranges the elements of the specified array in uniformly random order.
      *
-     * @param  a the array to shuffle
+     @param  a the array to shuffle
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      */
     public static void shuffle(int[] a) {
@@ -445,9 +445,9 @@ public final class StdRandom {
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
      *
-     * @param  a the array to shuffle
-     * @param  lo the left endpoint (inclusive)
-     * @param  hi the right endpoint (inclusive)
+     @param  a the array to shuffle
+     @param  lo the left endpoint (inclusive)
+     @param  hi the right endpoint (inclusive)
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      * @throws IndexOutOfBoundsException unless <tt>(0 <= lo) && (lo <= hi) && (hi < a.length)</tt>
      * 
@@ -468,9 +468,9 @@ public final class StdRandom {
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
      *
-     * @param  a the array to shuffle
-     * @param  lo the left endpoint (inclusive)
-     * @param  hi the right endpoint (inclusive)
+     @param  a the array to shuffle
+     @param  lo the left endpoint (inclusive)
+     @param  hi the right endpoint (inclusive)
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      * @throws IndexOutOfBoundsException unless <tt>(0 <= lo) && (lo <= hi) && (hi < a.length)</tt>
      */
@@ -490,9 +490,9 @@ public final class StdRandom {
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
      *
-     * @param  a the array to shuffle
-     * @param  lo the left endpoint (inclusive)
-     * @param  hi the right endpoint (inclusive)
+     @param  a the array to shuffle
+     @param  lo the left endpoint (inclusive)
+     @param  hi the right endpoint (inclusive)
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      * @throws IndexOutOfBoundsException unless <tt>(0 <= lo) && (lo <= hi) && (hi < a.length)</tt>
      */
@@ -511,6 +511,7 @@ public final class StdRandom {
 
     /**
      * Unit test.
+     @param args
      */
     public static void main(String[] args) {
         

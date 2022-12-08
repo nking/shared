@@ -30,8 +30,8 @@ public class GraphUtil {
      * vertex u to vertex v, only one is present in the adjacency list for that
      * directional edge in the returned adjacency list.
      * runtime complexity is O(|V| + |E|).
-     * @param g
-     * @return 
+     @param g
+     @return 
      */
     public static SimpleLinkedListNode[] createAdjacencyList(
         NewmanGMLParser.GMLGraph g) {
@@ -51,8 +51,8 @@ public class GraphUtil {
      * Note that even if more than one edge is present in the direction from 
      * vertex u to vertex v, only one is present in the adjacency list for that
      * directional edge in the returned adjacency list.
-     * @param g
-     * @return 
+     @param g
+     @return 
      */
     public static SimpleLinkedListNode[] createAdjacencyList2(
         NewmanGMLParser.GMLGraph g) {
@@ -92,11 +92,11 @@ public class GraphUtil {
 
 
     /**
-     * convert the adjacency graph g in TIntObjectMap<TIntSet> into a graph built with
+     * convert the adjacency graph g in TIntObjectMap TIntSet  into a graph built with
      * SimpleLinkedListNode[].  note that this method assumes that the vertexes are ordered such
      * that the final range of indexes returned is [0, max Vertex number].
-     * @param g
-     * @return
+     @param g
+     @return
      */
     public static SimpleLinkedListNode[] convertGraph(TIntObjectMap<TIntSet> g) {
         int[] minMax = minAndMaxVertexNumbers(g);
@@ -121,6 +121,11 @@ public class GraphUtil {
         return g2;
     }
 
+    /**
+     *
+     @param g
+     @return
+     */
     public static int[] minAndMaxVertexNumbers(TIntObjectMap<TIntSet> g) {
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
@@ -152,9 +157,9 @@ public class GraphUtil {
 
     /**
      * convert the adjacency graph g in SimpleLinkedListNode[] into a
-     * graph built with TIntObjectMap<TIntSet>.
-     * @param g
-     * @return
+     * graph built with TIntObjectMap TIntSet .
+     @param g
+     @return
      */
     public static TIntObjectMap<TIntSet> convertGraph(SimpleLinkedListNode[] g) {
         TIntObjectMap<TIntSet> g2 = new TIntObjectHashMap<TIntSet>();

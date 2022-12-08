@@ -21,6 +21,11 @@ public class PathNodes {
         
     private final SinkNode sinkNode;
     
+    /**
+     *
+     @param nLeft
+     @param nRight
+     */
     public PathNodes(int nLeft, int nRight) {
         
         rightNodes = new TIntObjectHashMap<RightNode>();
@@ -53,6 +58,10 @@ public class PathNodes {
         sinkNode.index = nRight;       
     }
     
+    /**
+     *
+     @param key
+     */
     public void resetNodeExceptData(long key) {
      
         for (int i = 0; i < leftNodes.size(); ++i) {
@@ -74,28 +83,28 @@ public class PathNodes {
     }
 
     /**
-     * @return the rightNodes
+     @return the rightNodes
      */
     public TIntObjectMap<RightNode> getRightNodes() {
         return rightNodes;
     }
 
     /**
-     * @return the leftNodes
+     @return the leftNodes
      */
     public TIntObjectMap<LeftNode> getLeftNodes() {
         return leftNodes;
     }
 
     /**
-     * @return the sourceNode
+     @return the sourceNode
      */
     public SourceNode getSourceNode() {
         return sourceNode;
     }
 
     /**
-     * @return the sinkNode
+     @return the sinkNode
      */
     public SinkNode getSinkNode() {
         return sinkNode;

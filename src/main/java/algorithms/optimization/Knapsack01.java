@@ -86,9 +86,10 @@ public class Knapsack01 {
      * as an interval in summing up to the capacity, hence reduces the runtime
      * complexity by roughly that as a factor.
      * 
-     * @param values
-     * @param weights
-     * @param capacity
+     @param values
+     @param weights
+     @param capacity
+     @return 
      */
     public static int solveDynamically(int[] values, int[] weights, int capacity) {
 
@@ -126,10 +127,10 @@ public class Knapsack01 {
      * weight up to capacity (in contrast to +1 intervals in standard impl).
      * It's scaling the data to reduce the runtime complexity, but at the
      * expense of accuracy.
-     * @param values
-     * @param weights
-     * @param capacity
-     * @return 
+     @param values
+     @param weights
+     @param capacity
+     @return 
      */
     static int approxDynamically(int[] values, int[] weights, int capacity) {
 

@@ -22,8 +22,8 @@ public class Primes {
      * the Pollard-Rho algorithm and repeating on factors until they're
      * prime.
      * 
-     * @param n
-     * @return
+     @param n
+     @return
      * @throws NoSuchAlgorithmException 
      */
     public static TLongSet findPrimeFactors(final long n) 
@@ -39,9 +39,9 @@ public class Primes {
      * the Pollard-Rho algorithm and repeating on factors until they're
      * prime.  it should return at least 1 prime.
      * 
-     * @param n
-     * @param rand
-     * @return returns at least one prime factor of n
+     @param n
+     @param rand
+     @return returns at least one prime factor of n
      * @throws NoSuchAlgorithmException 
      */
     public static TLongSet findPrimeFactors(final long n, ThreadLocalRandom rand) 
@@ -105,8 +105,8 @@ public class Primes {
      * One can use probablyPrime to test for primality and use
      * pollardRhoFactorization() on the non-prime factor.
      * 
-     * @param n
-     * @return 
+     @param n
+     @return 
      * @throws java.security.NoSuchAlgorithmException 
      */
     public static TLongSet pollardRhoFactorization(final long n) throws NoSuchAlgorithmException {
@@ -132,9 +132,9 @@ public class Primes {
      * One can use probablyPrime to test for primality and use
      * pollardRhoFactorization() on the non-prime factor.
      * 
-     * @param n
-     * @param rand
-     * @return 
+     @param n
+     @param rand
+     @return 
      * @throws java.security.NoSuchAlgorithmException 
      */
     public static TLongSet pollardRhoFactorization(final long n, ThreadLocalRandom rand) 
@@ -241,9 +241,9 @@ public class Primes {
      * 
      * reference: Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * </pre>
-     * @param n number to test for primality, must be odd and .gt. 2.
-     * @param s number of randomly chosen base numbers to try
-     * @return 
+     @param n number to test for primality, must be odd and .gt. 2.
+     @param s number of randomly chosen base numbers to try
+     @return 
      */
     public static boolean probablyPrime(long n, int s) {
         
@@ -283,11 +283,11 @@ public class Primes {
      * <pre>
      * a^(n-1) ≢ 1 (mod n)
      * </pre>
-     * @param a number in the range [1, n-1] inclusive, that is a random number 
+     @param a number in the range [1, n-1] inclusive, that is a random number 
      * which may prove that n is a composite number, and hence not prime
-     * @param n the number being tested for primality.  must be odd and .gt. 2.
-     * @param rand
-     * @return true when n is composite, else false when n is possibly prime.
+     @param n the number being tested for primality.  must be odd and .gt. 2.
+     @param rand
+     @return true when n is composite, else false when n is possibly prime.
      */
     static boolean witness(long a, long n, ThreadLocalRandom rand) {
         
@@ -347,6 +347,11 @@ public class Primes {
         return false;
     }
     
+    /**
+     *
+     @param bitlength
+     @return
+     */
     public static long naivePrimeGenerator(int bitlength) {
         ThreadLocalRandom rand = ThreadLocalRandom.current();
         return naivePrimeGenerator(bitlength, rand);
@@ -358,9 +363,9 @@ public class Primes {
      * Reference:
      * Joye, Paillier, and Vaudenay "Efficient Generation of Prime Numbers"
      * </pre>
-     * @param bitLength
-     * @param rand
-     * @return 
+     @param bitLength
+     @param rand
+     @return 
      */
     public static long naivePrimeGenerator(int bitLength, ThreadLocalRandom rand) {
         if (bitLength < 2) {
@@ -420,8 +425,8 @@ public class Primes {
      * uses Theorem 31.37 (Prime number theorem) of Cormen, Leiserson, Rivest, and Stein
      * Introduction to Algorithms.
      * The method is off by less than 6% at n = 1E9.
-     * @param n
-     * @return 
+     @param n
+     @return 
      */
     public static int numberOfPrimes(int n) {
         return (int)Math.floor((double)n/Math.log(n));
@@ -431,7 +436,7 @@ public class Primes {
     /**
      * assuming that the platform word size is either 32 bit or 64 bit, return the
      * largest prime less than the word size
-     * @return 
+     @return 
      */
     public static long getLargestPrimeForPlatformWordSize() {
         // see http://en.wikipedia.org/wiki/Mersenne_prime

@@ -17,8 +17,17 @@ public class PairInt {
     private int x = Integer.MIN_VALUE;
     private int y = Integer.MIN_VALUE;
     
+    /**
+     *
+     */
     public PairInt() {
     }
+
+    /**
+     *
+     @param xPoint
+     @param yPoint
+     */
     public PairInt(int xPoint, int yPoint) {
         x = xPoint;
         y = yPoint;
@@ -26,27 +35,50 @@ public class PairInt {
     
     /**
      * constructor which rounds to the nearest integer
-     * @param xPoint
-     * @param yPoint 
+     @param xPoint
+     @param yPoint 
      */
     public PairInt(double xPoint, double yPoint) {
         x = (int)Math.round(xPoint);
         y = (int)Math.round(yPoint);
     }
     
+    /**
+     *
+     @param xPoint
+     */
     public void setX(int xPoint) {
         x = xPoint;
     }
+
+    /**
+     *
+     @param yPoint
+     */
     public void setY(int yPoint) {
         y = yPoint;
     }
+
+    /**
+     *
+     @return
+     */
     public int getX() {
         return x;
     }
+
+    /**
+     *
+     @return
+     */
     public int getY() {
         return y;
     }
     
+    /**
+     *
+     @return
+     */
     public PairInt copy() {
         PairInt c = new PairInt(x, y);
         return c;
@@ -72,9 +104,22 @@ public class PairInt {
         return hash;
     }
 
+    /**
+     *
+     */
     protected final static int fnv321aInit = 0x811c9dc5;
+
+    /**
+     *
+     */
     protected final static int fnv32Prime = 0x01000193;
 
+    /**
+     *
+     @param i0
+     @param i1
+     @return
+     */
     protected int fnvHashCode(int i0, int i1) {
 
         /*

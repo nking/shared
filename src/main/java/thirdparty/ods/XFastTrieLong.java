@@ -26,6 +26,14 @@ Edits were made to the code in project
 and then moved to this project
 
 */
+
+/**
+ *
+ * @author nichole
+ @param <S>
+ @param <T>
+ */
+
 @SuppressWarnings("unchecked")
 public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T> 
 	extends BinaryTrieLong<S, T> {
@@ -35,7 +43,12 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
 	 */
     protected final List<TLongObjectHashMap<S>> t;
 	
-	public XFastTrieLong(S sampleNode, Longizer<T> it)  {
+    /**
+     *
+     @param sampleNode
+     @param it
+     */
+    public XFastTrieLong(S sampleNode, Longizer<T> it)  {
 		super(sampleNode, it);
         t = new ArrayList<TLongObjectHashMap<S>>();
 		S nil = (S)new XFastTrieNodeLong<T>();
@@ -46,6 +59,12 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
 		t.get(0).put(0, r);
 	}
     
+    /**
+     *
+     @param sampleNode
+     @param it
+     @param smallerWordSize
+     */
     public XFastTrieLong(S sampleNode, Longizer<T> it,
         int smallerWordSize)  {
 		super(sampleNode, it, smallerWordSize);
@@ -58,7 +77,11 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
 		t.get(0).put(0, r);
 	}
 
-	@SuppressWarnings("unchecked")
+    /**
+     *
+     @param it
+     */
+    @SuppressWarnings("unchecked")
 	public XFastTrieLong(Longizer<T> it)  {
 		this((S)new XFastTrieNodeLong<T>(), it);
 	}
@@ -69,8 +92,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * bits set in the constructor, else is 32
      * and l is the prefix tree already filled leading
      * up to the value x.
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
 	public boolean add(T x) {
         final long ix = it.longValue(x);
@@ -155,8 +178,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * and l is the prefix tree already filled leading
      * up to the value x.
      * 
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     @Override
 	public boolean remove(T x) {
@@ -223,8 +246,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
     /**
      * find node with key ix.
      * runtime complexity is O(1)
-     * @param ix
-     * @return 
+     @param ix
+     @return 
      */
 	protected S findNode(long ix) {
         if (ix > maxC) {
@@ -238,8 +261,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
     /**
      * find node key, with key x.
      * runtime complexity is O(1).
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
 	public T find(T x) {
         
@@ -256,8 +279,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
 	 * Find the key of the node that contains the successor of x.
 	 * runtime complexity is O(log_2(w)) where w is the number of
      * bits set in the constructor, else is 32.
-     * @param x
-	 * @return The node before the node that contains x w.r.t. 
+     @param x
+	 @return The node before the node that contains x w.r.t. 
      * nodes in the internal the linked list.
 	 */
     @Override
@@ -269,7 +292,12 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
         return null;
     }
    
-	protected T successor(long ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected T successor(long ix) {
         S q = successorNode(ix);
         if (q != null) {
             return q.x;
@@ -277,12 +305,22 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
         return null;
     }
     
-	protected S successorNode(T x) {
+    /**
+     *
+     @param x
+     @return
+     */
+    protected S successorNode(T x) {
         long ix = it.longValue(x);
         return successorNode(ix);
     }
     
-	protected S successorNode(long ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected S successorNode(long ix) {
         if (ix > maxC) {
             throw new IllegalArgumentException("w=" + w
                + " so max value can search for is " + maxC);
@@ -318,8 +356,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
 	 * Find the key of the node that contains the predecessor of x.
 	 * runtime complexity is O(log_2(w)) where w is the number of
      * bits set in the constructor, else is 32.
-     * @param x
-	 * @return The node before the node that contains x w.r.t. 
+     @param x
+	 @return The node before the node that contains x w.r.t. 
      * nodes in the internal the linked list.
 	 */
     @Override
@@ -332,7 +370,12 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
         return null;
     }
     
-	protected T predecessor(long ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected T predecessor(long ix) {
         S q = predecessorNode(ix);
         if (q != null) {
             return q.x;
@@ -340,12 +383,22 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
         return null;
     }
     
-	protected S predecessorNode(T x) {
+    /**
+     *
+     @param x
+     @return
+     */
+    protected S predecessorNode(T x) {
         long ix = it.longValue(x);
         return predecessorNode(ix);
     }
     
-	protected S predecessorNode(long ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected S predecessorNode(long ix) {
 		
         if (ix > maxC) {
             throw new IllegalArgumentException("w=" + w
@@ -393,7 +446,10 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
 		return (pred != null) ? (S)pred : null;
 	}
 
-	public void clear() {
+    /**
+     *
+     */
+    public void clear() {
 		super.clear();
 		for (TLongObjectHashMap<S> m : t) 
 			m.clear();
@@ -403,7 +459,7 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * find the key of the minimum value node.
      * runtime complexity is O(log_2(w)) where w is the number of
      * bits set in the constructor, else is 32.
-     * @return 
+     @return 
      */
     @Override
     public T minimum() {
@@ -417,7 +473,7 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * find the key of the minimum value node.
      * runtime complexity is O(log_2(w)) where w is the number of
      * bits set in the constructor, else is 32.
-     * @return 
+     @return 
      */
     @Override
     public T maximum() {
@@ -473,6 +529,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * times the number of added nodes.
      * A factor of 5 is used here.
      * Also, the primitive long keys for the hash map are added here too.
+     @param numberOfEntries
+     @return 
      */
     public static long estimateSizeOfTriePrefixNodes(int numberOfEntries) {
         
@@ -500,8 +558,8 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
        needed and the separate method should be
        used for those: estimateSizeOfTrieNodes()
        
-     * @param numberOfEntries
-     * @return 
+     @param numberOfEntries
+     @return 
      */
     public static long estimateSizeOnHeap(int numberOfEntries) {
         return estimateSizeOnHeap(numberOfEntries, 62);
@@ -511,9 +569,9 @@ public class XFastTrieLong<S extends XFastTrieNodeLong<T>, T>
      * estimate the size of an instance of this class on the heap with
      * n number of inserted entries.
        * 
-     * @param numberOfEntries
-     * @param wNumberOfBits
-     * @return 
+     @param numberOfEntries
+     @param wNumberOfBits
+     @return 
      */
     public static long estimateSizeOnHeap(int numberOfEntries,
         int wNumberOfBits) {

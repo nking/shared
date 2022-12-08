@@ -34,23 +34,43 @@ breadth-first search:
  */
 public class BeamSearch {
 
+    /**
+     *
+     */
     protected int[] d = null;
 
+    /**
+     *
+     */
     protected int[] predecessor = null;
 
+    /**
+     *
+     */
     protected int[] color = null;
 
+    /**
+     *
+     */
     protected SimpleLinkedListNode[] adjacencyList = null;
 
     // source index
+
+    /**
+     *
+     */
     protected final int s;
+
+    /**
+     *
+     */
     protected final int beamSize;
 
     /**
      * constructor with adjacency list, with default equal cost edges.
-     * @param theAdjacencyList
-     * @param sourceNodeIndex start index for search
-     * @param beamSize in the breadth-first search, for each set of child nodes, 
+     @param theAdjacencyList
+     @param sourceNodeIndex start index for search
+     @param beamSize in the breadth-first search, for each set of child nodes, 
      * only the smallest cost nodes are expanded to continue search and the
      * limited number of those smallest cost nodes is beamSize.
      */
@@ -77,9 +97,9 @@ public class BeamSearch {
     
     /**
      * constructor with edge costs in adjacency list.
-     * @param theAdjacencyList adjacency list that includes edge costs
-     * @param sourceNodeIndex start index for search
-     * @param beamSize in the breadth-first search, for each set of child nodes, 
+     @param theAdjacencyList adjacency list that includes edge costs
+     @param sourceNodeIndex start index for search
+     @param beamSize in the breadth-first search, for each set of child nodes, 
      * only the smallest cost nodes are expanded to continue search and the
      * limited number of those smallest cost nodes is beamSize.
      */
@@ -106,7 +126,7 @@ public class BeamSearch {
 
     /**
      * add source index to the bfs tree.
-     * @return list of indexes searched
+     @return list of indexes searched
      */
     public TIntList search() {
 
@@ -166,18 +186,38 @@ public class BeamSearch {
         return searched;
     }
 
+    /**
+     *
+     @param nodeIndex
+     */
     protected void setColorToWhite(int nodeIndex) {
         color[nodeIndex] = 0;
         //System.out.println(nodeIndex + " = white");
     }
+
+    /**
+     *
+     @param nodeIndex
+     */
     protected void setColorToGray(int nodeIndex) {
         color[nodeIndex] = 1;
         //System.out.println(nodeIndex + " = gray");
     }
+
+    /**
+     *
+     @param nodeIndex
+     */
     protected void setColorToBlack(int nodeIndex) {
         color[nodeIndex] = 2;
         //System.out.println(nodeIndex + " = black");
     }
+
+    /**
+     *
+     @param nodeIndex
+     @return
+     */
     protected boolean isColorWhite(int nodeIndex) {
         return (color[nodeIndex] == 0);
     }

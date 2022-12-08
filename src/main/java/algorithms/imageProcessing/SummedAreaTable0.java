@@ -32,6 +32,11 @@ import algorithms.matrix.MatrixUtil;
  */
 public class SummedAreaTable0 {
     
+    /**
+     *
+     @param img
+     @return
+     */
     public double[][] createAbsoluteSummedAreaTable(double[][] img) {
 
         int w = img.length;
@@ -67,9 +72,9 @@ public class SummedAreaTable0 {
     }
     
     /**
-     * @param imgS
-     * @param d diameter of window in x and y
-     * @return 
+     @param imgS
+     @param d diameter of window in x and y
+     @return 
      */
     public double[][] applyMeanOfWindowFromSummedAreaTable(double[][] imgS, 
         int d) {
@@ -103,12 +108,12 @@ public class SummedAreaTable0 {
      * for x and y and return that value and the number of pixels in the
      * window in the output variable, output.
      * NOTE GreyscaleImage, x, and y are in column major format
-     * @param imgS
-     * @param startX coordinate for x start of window
-     * @param stopX coordinate for x stop of window
-     * @param startY coordinate for y start of window
-     * @param stopY coordinate for y stop of window
-     * @param output one dimensional array of size 2 in which the
+     @param imgS
+     @param startX coordinate for x start of window
+     @param stopX coordinate for x stop of window
+     @param startY coordinate for y start of window
+     @param stopY coordinate for y stop of window
+     @param output one dimensional array of size 2 in which the
      * sum of the window will be returned and the number of pixels in the 
      * window.  int[]{sum, nPixels}
      */
@@ -168,11 +173,11 @@ public class SummedAreaTable0 {
      * dimension d and return that value and the number of pixels in the
      * aperture in the output variable, output.
      * NOTE GreyscaleImage, x, and y are in column major format
-     * @param imgS
-     * @param x coordinate for x center of window
-     * @param y coordinate for y center of window
-     * @param d diameter of window in x and y
-     * @param output one dimensional array of size 2 in which the
+     @param imgS
+     @param x coordinate for x center of window
+     @param y coordinate for y center of window
+     @param d diameter of window in x and y
+     @param output one dimensional array of size 2 in which the
      * sum of the window will be returned and the number of pixels in the 
      * window.  int[]{sum, nPixels}
      */

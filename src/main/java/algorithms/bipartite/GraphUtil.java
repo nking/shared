@@ -21,7 +21,7 @@ public class GraphUtil {
      * that is remove integer gaps.  any edge weights that had the
      * same value as one another before, still have the same
      * value as one another afterwards.
-     * @param g 
+     @param g 
      */
     public static void condenseEdgeWeights(Graph g) {
                 

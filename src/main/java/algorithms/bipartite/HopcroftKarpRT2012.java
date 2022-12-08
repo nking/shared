@@ -37,10 +37,17 @@ public class HopcroftKarpRT2012 {
     
     private final int maxNumberOfBitsInWeight;
     
+    /**
+     *
+     */
     public HopcroftKarpRT2012() {
         this.maxNumberOfBitsInWeight = 31;
     }
     
+    /**
+     *
+     @param maxNumberOfBitsInWeight
+     */
     public HopcroftKarpRT2012(int maxNumberOfBitsInWeight) {
         if (maxNumberOfBitsInWeight > 31 ||  maxNumberOfBitsInWeight < 2) {
             throw new IllegalArgumentException(
@@ -56,6 +63,7 @@ public class HopcroftKarpRT2012 {
      size of the matching whose target size may be less than the maximum 
      matchable.  
      @param g
+     @param s
      @return 
     */
     public TIntIntMap findMaxMatching(Graph g, int s) {
@@ -181,14 +189,14 @@ public class HopcroftKarpRT2012 {
      * 
      * implementing section 3.4, pg 22 of Ramshaw and Tarjan 2012.
      * 
-     * @param rM the residual digraph built from the matching 
+     @param rM the residual digraph built from the matching 
      * graph M of graph G.
      * 
-     * @return a forest of trees whose forest array indexes 
+     @return a forest of trees whose forest array indexes 
      * are the path lengths and whose items hold at the root, the
      * remaining maidens, that is unmatched left nodes (a.k.a. G's
      * X nodes).
-     * @param lambda the length to use for a counting sort of
+     @param lambda the length to use for a counting sort of
      * augmenting path lengths
      */
     protected boolean buildForestAndAugment(final ResidualDigraph rM, int lambda) {
@@ -387,11 +395,17 @@ public class HopcroftKarpRT2012 {
     note that any yNodes inserted into the heap internally,
     have their keys updated.
     
-     * @param heap
-     * @param forest
-     * @param rM
-     * @param yNodes
-     * @param xNode 
+     @param heap
+     @param forest
+     @param rM
+     @param yNodes
+     @param xNode 
+     @param prevKey 
+     @param augmentedLeft 
+     @param topNode 
+     @param augmentedRight 
+     @param visitedY 
+     @return  
      */
     private long scanAndAdd(MinHeapForRT2012 heap, Forest forest,
         ResidualDigraph rM, TIntObjectMap<RightNode> yNodes, 

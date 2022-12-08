@@ -31,21 +31,21 @@ contains code and/or text from opendatastructures.org.
 http://github.com/patmorin/ods
  * @author morin
  * 
- * @param <T>
+ @param <T>
  * @see SortedSSet<T>
  */
 public interface SSet<T> {
 	
 	/**
-	 * @return the number of elements in this SSet
+	 @return the number of elements in this SSet
 	 */
 	public int size();
 
 	/**
 	 * Find the smallest element in the SSet that is greater than or equal to x.
 	 * 
-	 * @param x
-	 * @return the smallest element in the SSet that is greater than or equal to
+	 @param x
+	 @return the smallest element in the SSet that is greater than or equal to
 	 *         x or null if no such element exists
 	 */
 	public T find(T x);
@@ -53,8 +53,8 @@ public interface SSet<T> {
 	/**
 	 * Add the element x to the SSet
 	 * 
-	 * @param x
-	 * @return true if the element was added or false if x was already in the
+	 @param x
+	 @return true if the element was added or false if x was already in the
 	 *         set
 	 */
 	public boolean add(T x);
@@ -62,35 +62,35 @@ public interface SSet<T> {
 	/**
 	 * Remove the element x from the SSet
 	 * 
-	 * @param x
-	 * @return true if x was removed and false if x was not removed (because x
+	 @param x
+	 @return true if x was removed and false if x was not removed (because x
 	 *         was not present)
 	 */
 	public boolean remove(T x);
 
     /**
      * find the key of the node before the value x.
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     public T predecessor(T x);
     
     /**
      * find the key of the node after the value x.
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     public T successor(T x);
 	
     /**
      * find the minimum key within the nodes.
-     * @return 
+     @return 
      */
     public T minimum();
     
     /**
      * find the maximum key within the nodes.
-     * @return 
+     @return 
      */
     public T maximum();
     

@@ -91,10 +91,10 @@ public class NearestNeighbor2D {
     
     /**
      * 
-     * @param points non-negative coordinates
-     * @param maxX maximum x value of any data point including
+     @param points non-negative coordinates
+     @param maxX maximum x value of any data point including
      *    those to be queries
-     * @param maxY maximum y value of any data point including
+     @param maxY maximum y value of any data point including
      *    those to be queries
      */
     public NearestNeighbor2D(Set<PairInt> points,
@@ -135,11 +135,11 @@ public class NearestNeighbor2D {
     
     /**
      * 
-     * @param pointIdxs pixel indexes formed from relationship
+     @param pointIdxs pixel indexes formed from relationship
      *   pixIdx = (row * width) + col
-     * @param imgWidth maximum x value of any data point including
+     @param imgWidth maximum x value of any data point including
      *    those to be queries
-     * @param maxY maximum y value of any data point including
+     @param maxY maximum y value of any data point including
      *    those to be queries
      */
     public NearestNeighbor2D(TIntSet pointIdxs, int imgWidth, int maxY) {
@@ -178,10 +178,19 @@ public class NearestNeighbor2D {
         }
     }
     
+    /**
+     *
+     */
     public void doNotUseCache() {
         useCache = false;
     }
     
+    /**
+     *
+     @param col
+     @param row
+     @return
+     */
     protected int getInternalIndex(int col, int row) {
         long t = ((long)width * row) + col;
         if (t > Integer.MAX_VALUE) {
@@ -191,11 +200,21 @@ public class NearestNeighbor2D {
         return (int)t;
     }
     
+    /**
+     *
+     @param internalIndex
+     @return
+     */
     protected int getRow(int internalIndex) {
         int row = (internalIndex/width);        
         return row;
     }
     
+    /**
+     *
+     @param internalIndex
+     @return
+     */
     protected int getCol(int internalIndex) {
         //int row = (internalIndex/width);
         //int col = (internalIndex - (row * width));
@@ -220,10 +239,11 @@ public class NearestNeighbor2D {
          each row in the worst case.
           
      Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));            
-     </ore>
+     </pre>
     
-     * @param x non-negative x coord to query for
-     * @param y non-negative y coord to query for
+     @param x non-negative x coord to query for
+     @param y non-negative y coord to query for
+     @return 
      */
     public Set<PairInt> findClosest(final int x, final int y) {
         
@@ -238,10 +258,10 @@ public class NearestNeighbor2D {
      * with ability to return more than one at same distance within a tolerance
      * of that distance.  
      * TODO: calculate the runtime complexity bounds....
-     * @param x non-negative x coord to query for
-     * @param y non-negative y coord to query for
-     * @param tolerance
-     * @return 
+     @param x non-negative x coord to query for
+     @param y non-negative y coord to query for
+     @param tolerance
+     @return 
      */
     public Set<PairInt> findClosestWithinTolerance(int x, int y,
         double tolerance) {
@@ -563,10 +583,11 @@ public class NearestNeighbor2D {
          each row in the worst case.
           
      Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));            
-     </ore>
+     </pre>
     
-     * @param x non-negative x coord to query for
-     * @param y non-negative y coord to query for
+     @param x non-negative x coord to query for
+     @param y non-negative y coord to query for
+     @return 
      */
     public Set<PairInt> findClosestNotEqual(final int x, final int y) {
         
@@ -583,12 +604,12 @@ public class NearestNeighbor2D {
          worst case: 
          
       Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));
-     </ore>
+     </pre>
     
-     * @param x
-     * @param y
-     * @param dMax
-     * @return a set of points within dMax that are the 
+     @param x
+     @param y
+     @param dMax
+     @return a set of points within dMax that are the 
      * closest points, else returns an empty set
      */
     public Set<PairInt> findClosest(int x, int y, int dMax) {
@@ -605,12 +626,13 @@ public class NearestNeighbor2D {
          worst case: 
          
       Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));
-     </ore>
+     </pre>
     
-     * @param x
-     * @param y
-     * @param dMax
-     * @return a set of points within dMax that are the 
+     @param x
+     @param y
+     @param dMax
+     @param includeEquals
+     @return a set of points within dMax that are the 
      * closest points, else returns an empty set
      */
     private Set<PairInt> findClosest(int x, int y, int dMax, boolean includeEquals) {

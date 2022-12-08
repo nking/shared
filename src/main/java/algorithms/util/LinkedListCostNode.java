@@ -9,32 +9,65 @@ package algorithms.util;
  */
 public class LinkedListCostNode extends SimpleLinkedListNode {
     
+    /**
+     *
+     */
     public final static int DEFAULT_COST = Integer.MAX_VALUE;
     
+    /**
+     *
+     */
     protected int cost = DEFAULT_COST;
     
+    /**
+     *
+     */
     public LinkedListCostNode() {
         super();
     }
     
+    /**
+     *
+     @param insertKey
+     @param cost
+     */
     public LinkedListCostNode(int insertKey, int cost) {
         super(insertKey);
         this.cost = cost;
     }
     
+    /**
+     *
+     @param insertKey
+     */
     public LinkedListCostNode(int insertKey) {
         super(insertKey);
     }
     
+    /**
+     *
+     @return
+     */
     public int getCost() {
         return cost;
     }
     
+    /**
+     *
+     @param insertKey
+     @return
+     */
     @Override
     public SimpleLinkedListNode insert(int insertKey) {
         return insert(insertKey, DEFAULT_COST);
     }
     
+    /**
+     *
+     @param insertKey
+     @param insertCost
+     @return
+     */
     public LinkedListCostNode insert(int insertKey, int insertCost) {
          if (insertKey == -1) {
             throw new IllegalArgumentException(
@@ -64,11 +97,22 @@ public class LinkedListCostNode extends SimpleLinkedListNode {
         return node;
     }
     
+    /**
+     *
+     @param insertKey
+     @return
+     */
     @Override
     public SimpleLinkedListNode insertIfDoesNotAlreadyExist(int insertKey) {
         return insertIfDoesNotAlreadyExist(insertKey, DEFAULT_COST);
     }
     
+    /**
+     *
+     @param insertKey
+     @param insertCost
+     @return
+     */
     public LinkedListCostNode insertIfDoesNotAlreadyExist(int insertKey, int insertCost) {
         
         if (insertKey == -1) {
@@ -93,6 +137,10 @@ public class LinkedListCostNode extends SimpleLinkedListNode {
         return insert(insertKey, insertCost);
     }
     
+    /**
+     *
+     @param node
+     */
     public void delete(LinkedListCostNode node) {
 
         if (key == -1) {
@@ -132,7 +180,7 @@ public class LinkedListCostNode extends SimpleLinkedListNode {
     /**
      * delete the first node found with key == deleteKey.
      * 
-     * @param deleteKey 
+     @param deleteKey 
      */
     @Override
     public void delete(int deleteKey) {
@@ -171,6 +219,10 @@ public class LinkedListCostNode extends SimpleLinkedListNode {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public static long approximateMemoryUsed() {
         
         String arch = System.getProperty("sun.arch.data.model");
@@ -200,8 +252,8 @@ public class LinkedListCostNode extends SimpleLinkedListNode {
     
     /**
      * only the key is used for this equals identity
-     * @param arg0
-     * @return 
+     @param arg0
+     @return 
      */
     @Override
     public boolean equals(Object arg0) {

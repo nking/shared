@@ -50,9 +50,9 @@ public class MaximalIndependentSets {
         
       https://en.wikipedia.org/wiki/Maximal_independent_set#Listing_all_maximal_independent_sets
       </pre>
-     * @param adjMap  adjacency map of undirected graph G with key = vertex u and value = set of
+     @param adjMap  adjacency map of undirected graph G with key = vertex u and value = set of
      * neighbors connected to u. 
-     * @return returns a maximal independent set of undirected graph G defined by adjMap
+     @return returns a maximal independent set of undirected graph G defined by adjMap
      */
     public static TIntSet findOneProbabilistic(TIntObjectMap<TIntSet> adjMap){
         
@@ -285,9 +285,9 @@ public class MaximalIndependentSets {
 
       https://en.wikipedia.org/wiki/Maximal_independent_set#Listing_all_maximal_independent_sets
       </pre>
-     * @param adjMap and adjacency map with key = vertex u and value = set of
+     @param adjMap and adjacency map with key = vertex u and value = set of
      * neighbors connected to u.
-     * @return returns a maximal independent set of graph G defined by adjMap
+     @return returns a maximal independent set of graph G defined by adjMap
      */
     public static TIntSet findOne(TIntObjectMap<TIntSet> adjMap){
         /*
@@ -337,9 +337,9 @@ public class MaximalIndependentSets {
      * The method internally builds a bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     * @param adjMap directed graph G as an adjacency map
-     * @param nV the number of vertexes
-     * @return returns a list of all maximum independent sets.  note that a
+     @param adjMap directed graph G as an adjacency map
+     @param nV the number of vertexes
+     @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.
      */
     public static List<TIntSet> findAllMaximum(TIntObjectMap<TIntSet> adjMap, int nV) {
@@ -412,9 +412,9 @@ public class MaximalIndependentSets {
      * the maximum matching bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     * @param adjMap directed graph G as an adjacency map
-     * @param nV the number of vertexes
-     * @return returns a list of all maximum independent sets.  note that a
+     @param adjMap directed graph G as an adjacency map
+     @param nV the number of vertexes
+     @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.
      */
     public static List<TIntSet> findAllMaximum2(TIntObjectMap<TIntSet> adjMap, int nV) {
@@ -464,8 +464,9 @@ public class MaximalIndependentSets {
      * The method internally builds a bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     * @param adjMap directed graph G as an adjacency map
-     * @return returns a list of all maximum independent sets.  note that a
+     @param s
+     @param adjMap directed graph G as an adjacency map
+     @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.
      */
     static List<TIntSet> findAllMaximum(Set<TIntSet> s, TIntObjectMap<TIntSet> adjMap) {
@@ -633,9 +634,9 @@ public class MaximalIndependentSets {
      * creates subgraph of adjMap out of vertexes vP.  note that
        it also creates edges uv and vu as G is undirected, and
        in order to make the degree counting easier where needed.
-     * @param vP
-     * @param adjMap
-     * @return 
+     @param vP
+     @param adjMap
+     @return 
      */
     static TIntObjectMap<TIntSet> subgraph(TIntSet vP, TIntObjectMap<TIntSet> adjMap) {
         

@@ -19,6 +19,19 @@ and then moved to this project
 
 */
 
+/**
+ *
+ * @author nichole
+ @param <T>
+ */
+
+
 public interface Longizer<T> {
-	public long longValue(T x);
+
+    /**
+     *
+     @param x
+     @return
+     */
+    public long longValue(T x);
 }

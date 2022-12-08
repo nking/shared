@@ -58,10 +58,10 @@ public class TSPChristofidesSerdyukov {
     /**
      * find a Hamiltonian tour of the given graph (simple cycle including all vertexes once) 
      * that is 3/2 - approximate for minimum total cost.
-     * @param nVertexes
-     * @param adjCostMap a graph represented as an adjacency cost map which obeys
+     @param nVertexes
+     @param adjCostMap a graph represented as an adjacency cost map which obeys
      * the triangle inequality.x
-     * @return the Hamiltonian cycle within a factor of no more than 1.5 of the
+     @return the Hamiltonian cycle within a factor of no more than 1.5 of the
      * optimal tour's minimum cost.  the array returned contains the vertex numbers
      * from the adjacency cost map.
      */
@@ -107,9 +107,9 @@ public class TSPChristofidesSerdyukov {
     
     /**
      * return an array of the indexes which have odd degrees.
-     * @param degrees array where indexes are the vertex number and values are
+     @param degrees array where indexes are the vertex number and values are
      * the degree for the vertex.
-     * @return array of indexes in degrees which have odd values stored in the degrees array.
+     @return array of indexes in degrees which have odd values stored in the degrees array.
      */
     protected int[] oddPassFilter(int[] degrees) {
         int[] odd = new int[degrees.length];
@@ -124,6 +124,12 @@ public class TSPChristofidesSerdyukov {
         return odd;
     }
 
+    /**
+     *
+     @param mstTree
+     @param nVertexes
+     @return
+     */
     protected int[] calculateDegrees(Map<Integer, LinkedList<Integer>> mstTree, 
         int nVertexes) {
         
@@ -154,9 +160,9 @@ public class TSPChristofidesSerdyukov {
     /**
      * create a cost matrix from the vertexes listed in oddDVertexes where the
      * adjacency and costs are within adjCostMap.
-     * @param oddDVertexes values are the vertex numbers with odd degrees
-     * @param adjCostMap the cost map within the original adjacency map.
-     * @return a cost matrix whose indexes are relative to oddDVertexes.
+     @param oddDVertexes values are the vertex numbers with odd degrees
+     @param adjCostMap the cost map within the original adjacency map.
+     @return a cost matrix whose indexes are relative to oddDVertexes.
      * Note that non-existing connections have a cost of Float.MAX_VALUE.
      */
     protected float[][] buildCostMatrix(int[] oddDVertexes, 
@@ -200,6 +206,11 @@ public class TSPChristofidesSerdyukov {
         return out;
     }
 
+    /**
+     *
+     @param adjCostMap
+     @return
+     */
     protected Map<Integer, LinkedList<Integer>> buildMST(TIntObjectMap<TIntIntMap> adjCostMap) {
                 
         // finding the max cost in the graph G.  the value is needed for a bit length used by a trie in Prim's MST
@@ -234,9 +245,9 @@ public class TSPChristofidesSerdyukov {
      * perfect min-cost bipartite matchings of the subgraph of G induced by the
      * odd vertexes.  The results are in a double array where each row
      * is a pair of matching vertexes in context of graph G.
-     * @param oddDVertexes
-     * @param adjCostMap
-     * @return 
+     @param oddDVertexes
+     @param adjCostMap
+     @return 
      */
     protected int[][] bipartiteMinCostMatchingFromSubgraph(
         int[] oddDVertexes, TIntObjectMap<TIntIntMap> adjCostMap) {
@@ -281,6 +292,12 @@ public class TSPChristofidesSerdyukov {
         return m;
     }
 
+    /**
+     *
+     @param mstTree
+     @param m
+     @return
+     */
     protected TIntObjectMap<TIntSet> unionMSTAndAssignments(
         Map<Integer, LinkedList<Integer>> mstTree, int[][] m) {
         
@@ -322,6 +339,12 @@ public class TSPChristofidesSerdyukov {
         return h;
     }
     
+    /**
+     *
+     @param hamiltonian
+     @param adjCostMap
+     @return
+     */
     public static long totalCost(int[] hamiltonian, TIntObjectMap<TIntIntMap> adjCostMap) {
         long sum = 0;
         int i, u, v, cost;

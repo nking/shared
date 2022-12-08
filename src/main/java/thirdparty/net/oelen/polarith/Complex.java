@@ -19,104 +19,179 @@ import java.io.Serializable;
 // on complex numbers. The public members re, im are final
 // and hence cannot be modified.
 
+/**
+ *
+ * @author nichole
+ */
+
 public final class Complex implements Serializable {
     private static final long serialVersionUID = Hash64.hash("Complex_v1.0");
     
+    /**
+     *
+     */
     public static final Complex ZERO = new Complex(0.0, 0.0);
+
+    /**
+     *
+     */
     public static final Complex ONE = new Complex(1.0, 0.0);
+
+    /**
+     *
+     */
     public static final Complex I = new Complex(0.0, 1.0);
     
+    /**
+     *
+     */
     public final double re;
+
+    /**
+     *
+     */
     public final double im;
 
+    /**
+     *
+     @param re
+     @param im
+     */
     public Complex(double re, double im) {
         this.re = re;
         this.im = im;
     }
 
+    /**
+     *
+     @param re
+     */
     public Complex(double re) {
         this.re = re;
         this.im = 0.0;
     }
 
+    /**
+     *
+     */
     public Complex() {
         this.re = 0.0;
         this.im = 0.0;
     }
 
-
-
+    /**
+     *
+     @param re
+     @return
+     */
     public Complex add(double re) {
         return new Complex(this.re + re, this.im);
     }
 
-
+    /**
+     *
+     @param re
+     @param im
+     @return
+     */
     public Complex add(double re, double im) {
         return new Complex(this.re + re, this.im + im);
     }
 
-
+    /**
+     *
+     @param a
+     @return
+     */
     public Complex add(Complex a) {
         return new Complex(this.re + a.re, this.im + a.im);
     }
 
-
-
-    
+    /**
+     *
+     @return
+     */
     public Complex add1() {
         return new Complex(this.re + 1.0, this.im);
     }
 
-
-
-
+    /**
+     *
+     @param re
+     @return
+     */
     public Complex sub(double re) {
         return new Complex(this.re - re, this.im);
     }
 
-
+    /**
+     *
+     @param re
+     @param im
+     @return
+     */
     public Complex sub(double re, double im) {
         return new Complex(this.re - re, this.im - im);
     }
 
-
+    /**
+     *
+     @param a
+     @return
+     */
     public Complex sub(Complex a) {
         return new Complex(this.re - a.re, this.im - a.im);
     }
 
-
-
-
+    /**
+     *
+     @return
+     */
     public Complex sub1() {
         return new Complex(this.re - 1.0, this.im);
     }
 
-
-
-
+    /**
+     *
+     @param re
+     @return
+     */
     public Complex mul(double re) {
         return new Complex(this.re * re, this.im * re);
     }
 
+    /**
+     *
+     @param re
+     @param im
+     @return
+     */
     public Complex mul(double re, double im) {
         return new Complex(this.re * re - this.im * im, this.im * re + this.re * im);
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public Complex mul(Complex a) {
         return new Complex(this.re * a.re - this.im * a.im, this.im * a.re + this.re * a.im);
     }
 
-
-
-
-
+    /**
+     *
+     @return
+     */
     public Complex sqr() {
         return new Complex(this.re * this.re - this.im * this.im, 2 * this.im * this.re);
     }
 
-
-
-
+    /**
+     *
+     @param re
+     @return
+     */
     public Complex div(double re) {
         return new Complex(this.re/re, this.im/re);
     }
@@ -127,6 +202,12 @@ public final class Complex implements Serializable {
     private static final double THRESH_MAX = 0.5 * Math.sqrt(Double.MAX_VALUE);
     private static final double THRESH_MIN = 1.0/THRESH_MAX;
     
+    /**
+     *
+     @param re
+     @param im
+     @return
+     */
     public Complex div(double re, double im) {
         double are = Math.abs(re);
         double aim = Math.abs(im);
@@ -165,9 +246,11 @@ public final class Complex implements Serializable {
         return new Complex((this.re*re + this.im*im)*rr, (this.im*re - this.re*im)*rr);
     }
 
-    
-    
-    
+    /**
+     *
+     @param a
+     @return
+     */
     public Complex div(Complex a) {
         double are = Math.abs(a.re);
         double aim = Math.abs(a.im);
@@ -184,11 +267,10 @@ public final class Complex implements Serializable {
         return new Complex((this.re*a.re + this.im*a.im)*rr, (this.im*a.re - this.re*a.im)*rr);
     }
     
-    
-    
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public Complex recip() {
         double are = Math.abs(re);
         double aim = Math.abs(im);
@@ -209,10 +291,10 @@ public final class Complex implements Serializable {
         }
     }
     
-    
-
-
-
+    /**
+     *
+     @return
+     */
     public double abs() {
         double are = Math.abs(re);
         double aim = Math.abs(im);
@@ -241,40 +323,52 @@ public final class Complex implements Serializable {
         }
     }
 
-
-
+    /**
+     *
+     @return
+     */
     public double abs1() {
         double are = Math.abs(re);
         double aim = Math.abs(im);
         return are + aim;
     }
 
-
-
+    /**
+     *
+     @return
+     */
     public double real() {
         return this.re;
     }
 
-
-
+    /**
+     *
+     @return
+     */
     public double imag() {
         return this.im;
     }
     
-    
-    
+    /**
+     *
+     @return
+     */
     public Complex neg() {
         return new Complex(-re, -im);
     }
     
-    
-    
+    /**
+     *
+     @return
+     */
     public Complex conj() {
         return new Complex(re, -im);
     }
     
-    
-    
+    /**
+     *
+     @return
+     */
     public boolean isZero() {
         return re==0.0 && im==0.0;
     }
@@ -316,8 +410,11 @@ public final class Complex implements Serializable {
         return "" + re + (imIsNeg ? " + i*" : " - i*") + i;
     }
     
-    
-    
+    /**
+     *
+     @param arr
+     @return
+     */
     public static double[] toReal(Complex[] arr) {
         double[] arr_re = new double[arr.length];
         for (int i=0; i<arr.length; i++) {
@@ -326,8 +423,11 @@ public final class Complex implements Serializable {
         return arr_re;
     }
     
-    
-    
+    /**
+     *
+     @param arr
+     @return
+     */
     public static double[] toImag(Complex[] arr) {
         double[] arr_im = new double[arr.length];
         for (int i=0; i<arr.length; i++) {

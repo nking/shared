@@ -21,7 +21,9 @@ public class UnivariateNormalDistribution {
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
          using the inverse CDF of the standard normal.
-     * @return 
+     @param n
+     @return 
+     * @throws java.security.NoSuchAlgorithmException 
      */
     public static double[] randomSampleOfUnitStandard(int n) throws NoSuchAlgorithmException {
         SecureRandom rand = SecureRandom.getInstanceStrong();
@@ -43,9 +45,9 @@ public class UnivariateNormalDistribution {
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
           using the inverse CDF of the standard normal.
-     * @param rand
-     * @param n
-     * @return n randomly sampled x's
+     @param rand
+     @param n
+     @return n randomly sampled x's
      */
     public static double[] randomSampleOfUnitStandard(Random rand, int n) {
         double t;
@@ -65,11 +67,11 @@ public class UnivariateNormalDistribution {
     /**
      * return a random sample of size n of a gaussian distribution that has 
      * the given mean and sigma.
-     * @param mean the location parameter of the gaussian.  it's the mean.
-     * @param sigma the shape parameter of the gaussian.  it's the standard deviation.
-     * @param rand
-     * @param n
-     * @return 
+     @param mean the location parameter of the gaussian.  it's the mean.
+     @param sigma the shape parameter of the gaussian.  it's the standard deviation.
+     @param rand
+     @param n
+     @return 
      */
     public static double[] randomSampleOf(double mean, double sigma,
                                           Random rand, int n) {

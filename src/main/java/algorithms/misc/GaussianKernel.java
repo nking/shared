@@ -1,14 +1,18 @@
 package algorithms.misc;
 
+/**
+ *
+ * @author nichole
+ */
 public class GaussianKernel implements IKernel {
 
     /**
      * calculate (1./(h * n * Math.sqrt(2. * Math.PI)) * summation over i of exp(-0.5*( (x - xTilde[i])/h)^2 )
      * runtime complexity is O(xTilde.length).
-     * @param x the grid point
-     * @param xTilde the observed data
-     * @param h
-     * @return
+     @param x the grid point
+     @param xTilde the observed data
+     @param h
+     @return
      */
     public double kernel(double x, double[] xTilde, double h) {
         int nS = xTilde.length;
@@ -25,8 +29,8 @@ public class GaussianKernel implements IKernel {
 
     /**
      * calculate (1./(Math.sqrt(2. * Math.PI)) * exp(-0.5*( z^2 )
-     * @param z
-     * @return
+     @param z
+     @return
      */
     public double kernel(double z) {
         double ch = 1./(Math.sqrt(2. * Math.PI));
@@ -35,8 +39,8 @@ public class GaussianKernel implements IKernel {
 
     /**
      * derivative of the kernel w.r.t. x
-     * @param x
-     * @return
+     @param x
+     @return
      */
     public double dKdx(double x) {
         double c = (1./Math.sqrt(2. * Math.PI));
@@ -45,8 +49,8 @@ public class GaussianKernel implements IKernel {
     }
     /**
      * 2nd derivative of the kernel w.r.t. x
-     * @param x
-     * @return
+     @param x
+     @return
      */
     public double d2Kdx2(double x) {
         double c = (1./Math.sqrt(2. * Math.PI));

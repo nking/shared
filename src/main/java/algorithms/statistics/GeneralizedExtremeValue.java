@@ -74,22 +74,36 @@ import java.security.SecureRandom;
  */
 public class GeneralizedExtremeValue {
 
+    /**
+     *
+     */
     protected final double[] x;
+
+    /**
+     *
+     */
     protected final double[] y;
 
+    /**
+     *
+     */
     protected final double[] dx;
+
+    /**
+     *
+     */
     protected final double[] dy;
 
     /**
      * calculate a rough estimate of GEV distribution parameters for the given x.
-     * Note that the methods works best for sample sizes > 50.
+     * Note that the methods works best for sample sizes .gt. 50.
      * <pre>
      * references:
      *     "Estimation of the Generalized Extreme-Value Distribution by the Method of Probability Weighted Moments"
      *    Hosking, Wallis, and Wood 1984
      * </pre>
-     * @param x ordered statistic of an observed GEV distribution where X is ordered from min to max.
-     * @return
+     @param x ordered statistic of an observed GEV distribution where X is ordered from min to max.
+     @return
      */
     public static double[] fitUsingMethodOfProbabilityWeightedMoments(double[] x) {
 
@@ -161,6 +175,13 @@ public class GeneralizedExtremeValue {
         return new double[]{locationEst, scaleEst, shapeEst};
     }
 
+    /**
+     *
+     @param xPoints
+     @param yPoints
+     @param dXPoints
+     @param dYPoints
+     */
     public GeneralizedExtremeValue(double[] xPoints, double[] yPoints, double[] dXPoints, double[] dYPoints) {
         this.x = xPoints;
         this.y = yPoints;
@@ -170,11 +191,11 @@ public class GeneralizedExtremeValue {
 
     /**
      * generate a normalized GEV
-     * @param parameters mu, sigma, and k
-     where mu is  the location parameter, sigma is the scale parameter and is > 0,
+     @param parameters mu, sigma, and k
+     where mu is  the location parameter, sigma is the scale parameter and is .gt. 0,
      and k is the shape parameter.
-     * @param yConst normalization factor
-     * @return
+     @param yConst normalization factor
+     @return
      */
     public double[] generateNormalizedCurve(double[] parameters, double yConst) {
         if (parameters == null) {
@@ -189,10 +210,10 @@ public class GeneralizedExtremeValue {
 
     /**
      * generate a GEV curve
-     * @param parameters mu, sigma, and k
-    where mu is  the location parameter, sigma is the scale parameter and is > 0,
+     @param parameters mu, sigma, and k
+    where mu is  the location parameter, sigma is the scale parameter and is .gt. 0,
     and k is the shape parameter.
-     * @return
+     @return
      */
     public double[] generateNormalizedCurve(double[] parameters) {
         if (parameters == null) {
@@ -205,6 +226,13 @@ public class GeneralizedExtremeValue {
         return generateNormalizedCurve(parameters[0], parameters[1], parameters[2]);
     }
 
+    /**
+     *
+     @param mu
+     @param sigma
+     @param k
+     @return
+     */
     public double[] generateNormalizedCurve(double mu, double sigma, double k) {
 
         double[] yGEV = generateCurve(x, mu, sigma, k);
@@ -218,11 +246,11 @@ public class GeneralizedExtremeValue {
      * generate a GEV curve w/ parameters k, sigma, and mu and then multiply it
      * by yConst so that the highest peak has value yConst
      *
-     * @param k shape parameter
-     * @param sigma scale parameter, > 0
-     * @param mu location parameter
-     * @param yConst
-     * @return
+     @param k shape parameter
+     @param sigma scale parameter, .gt. 0
+     @param mu location parameter
+     @param yConst
+     @return
      */
     public double[] generateNormalizedCurve(double mu, double sigma, double k, double yConst) {
 
@@ -244,7 +272,7 @@ public class GeneralizedExtremeValue {
      *               sigma                                   (      (sigma))
      *
      * mu is  the location parameter
-     * sigma is the scale parameter and is > 0
+     * sigma is the scale parameter and is .gt. 0
      * k is the shape parameter
      *
      *
@@ -259,6 +287,16 @@ public class GeneralizedExtremeValue {
      *   then y = (yconst/sigma) * f1 * f2
      *</pre>
      */
+
+    /**
+     *
+     @param xPoint
+     @param mu
+     @param sigma
+     @param k
+     @return
+     */
+
     public static Double generateYGEV(double xPoint, double mu, double sigma, double k) {
 
         if (sigma == 0) {
@@ -307,6 +345,13 @@ public class GeneralizedExtremeValue {
         }
     }
 
+    /**
+     *
+     @param xPoint
+     @param mu
+     @param sigma
+     @return
+     */
     public static Double generateYEVTypeI(double xPoint, double mu, double sigma) {
 
         if (sigma == 0) {
@@ -320,6 +365,14 @@ public class GeneralizedExtremeValue {
         return ((1./sigma) * Math.exp(a));
     }
 
+    /**
+     *
+     @param x1
+     @param mu
+     @param sigma
+     @param k
+     @return
+     */
     public double[] generateCurve(double[] x1, double mu, double sigma, double k) {
 
         if (sigma == 0) {
@@ -376,6 +429,13 @@ public class GeneralizedExtremeValue {
         return yGEV;
     }
 
+    /**
+     *
+     @param x1
+     @param mu
+     @param sigma
+     @return
+     */
     public static double[] generateEVTypeICurve(double[] x1, double mu, double sigma) {
         if (sigma == 0) {
             throw new IllegalArgumentException("sigma must be > 0");
@@ -391,6 +451,12 @@ public class GeneralizedExtremeValue {
         return yGEV;
     }
 
+    /**
+     *
+     @param yGEV
+     @param mu
+     @return
+     */
     public double determineYConstant(double[] yGEV, double mu) {
 
         int index = MiscMath0.findYMaxIndex(y);
@@ -401,6 +467,13 @@ public class GeneralizedExtremeValue {
         return determineYConstant(yGEV, mu, index);
     }
 
+    /**
+     *
+     @param yGEV
+     @param mu
+     @param index
+     @return
+     */
     public double determineYConstant(double[] yGEV, double mu, int index) {
 
         double yConst = y[index]/yGEV[index];
@@ -411,9 +484,9 @@ public class GeneralizedExtremeValue {
     /**
      * calculate sum of the square of the differences between the curves.
      *
-     * @param y1 the y data array
-     * @param yGEV the generated GEV y model array
-     * @return the mean error of the fit
+     @param y1 the y data array
+     @param yGEV the generated GEV y model array
+     @return the mean error of the fit
      */
     public static double sumOfSquaredDiff(double[] y1, double[] yGEV) {
         double chiSum = 0.;
@@ -428,9 +501,9 @@ public class GeneralizedExtremeValue {
     /**
      * calculate sum of ( square(y1 - yGEV)/yGEV )
      *
-     * @param y1 the y data array
-     * @param yGEV the generated GEV y model array
-     * @return the mean error of the fit
+     @param y1 the y data array
+     @param yGEV the generated GEV y model array
+     @return the mean error of the fit
      */
     public static double chisq(double[] y1, double[] yGEV) {
 
@@ -453,7 +526,9 @@ public class GeneralizedExtremeValue {
        (err_y_fit)^2 =  (err_x)^2|--------|   + (err_k)^2|--------|   + (err_s)^2|-------|   + (err_m)^2|------|
                                  |   dx   |              |   dk   |              |  ds   |              |  dm  |
      </pre>
-     * @return
+     @param yFit
+     @param xPoint
+     @return
      */
     public static double calculateFittingErrorSquared(GEVYFit yFit, double xPoint) {
 
@@ -506,20 +581,20 @@ public class GeneralizedExtremeValue {
 
     /**
       <pre>
-      calculate the error in an area / height calculation for y=0 to y > yLimitFraction where y is
+      calculate the error in an area / height calculation for y=0 to y .gt. yLimitFraction where y is
       yLimitFraction to to the right of the peak.  This is useful for determining errors for things
       like FWHM for example.
      
-      For FWHM we have sum of f = sum(X_i*Y_i)_(i < yLimit)/ Y_i
+      For FWHM we have sum of f = sum(X_i*Y_i)_(i .lt. yLimit)/ Y_i
 
           err^2 = xError^2*(Y_i/Y_i) = xError^2
 
           it reduces to the sum of the errors in x.  no pde's...
      </pre>
      
-     * @param yFit
-     * @param yMaxFactor
-     * @return
+     @param yFit
+     @param yMaxFactor
+     @return
      */
     public static double calculateWidthFittingError(GEVYFit yFit, double yMaxFactor) {
 
@@ -570,16 +645,17 @@ public class GeneralizedExtremeValue {
      *         x = location + scale*(1 - exp(-shape * y))/shape
      *     when shape= 0
      *         x = location + scale * y
-     *     where y = -log(-log(p));  0 < p < 1
+     *     where y = -log(-log(p));  0 .lt. p .lt. 1
      * </pre>
-     * @param p random variate drawn from U(0,1) where U is the uniform distribution.
+     @param p random variate drawn from U(0,1) where U is the uniform distribution.
      *          NOTE that p must be greater than 0 and less 1, so consider
      *          using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
      *          In other words, p drawn from U(1e-16, 1. - 1e-16).
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @param shape parameter of the distribution function
-     * @return
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @param shape parameter of the distribution function
+     @return
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double inverseCdf(double p, double location, double scale, double shape) throws NoSuchAlgorithmException {
 
@@ -601,16 +677,17 @@ public class GeneralizedExtremeValue {
      *         x = location + scale*(1 - exp(-shape * y))/shape
      *     when shape= 0
      *         x = location + scale * y
-     *     where y = -log(-log(p));  0 < p < 1
+     *     where y = -log(-log(p));  0 .lt. p .lt. 1
      * </pre>
-     * @param p random variate drawn from U(0,1) where U is the uniform distribution.
+     @param p random variate drawn from U(0,1) where U is the uniform distribution.
      *    NOTE that p must be greater than 0 and less 1, so consider
      *    using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
      *    In other words, p drawn from U(1e-16, 1. - 1e-16).
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @param shape parameter of the distribution function
-     * @return
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @param shape parameter of the distribution function
+     @param rand
+     @return
      */
     public static double inverseCdf(double p, double location, double scale, double shape, SecureRandom rand) {
         if (p <= 0) {
@@ -639,16 +716,17 @@ public class GeneralizedExtremeValue {
      *         x = location + scale*(1 - exp(-shape * y))/shape
      *     when shape= 0
      *         x = location + scale * y
-     *     where y = -log(-log(p));  0 < p < 1
+     *     where y = -log(-log(p));  0 .lt. p .lt. 1
      * </pre>
-     * @param p array of random variates drawn from U(0,1) where U is the uniform distribution.
+     @param p array of random variates drawn from U(0,1) where U is the uniform distribution.
      *    NOTE that p elements must be greater than 0 and less 1, so consider
      *    using a number such as eps=1-11 up to 1e-16 for an offset from 0 or 1.
      *    In other words, p elements drawn from U(1e-16, 1. - 1e-16).
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @param shape parameter of the distribution function
-     * @return
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @param shape parameter of the distribution function
+     @param rand
+     @return
      */
     public static double[] inverseCdf(double[] p, double location, double scale, double shape, SecureRandom rand) {
         int n = p.length;
@@ -678,12 +756,14 @@ public class GeneralizedExtremeValue {
      *         x = location + scale*(1 - exp(-shape * y))/shape
      *     when shape= 0
      *         x = location + scale * y
-     *     where y = -log(-log(p));  0 < p < 1
+     *     where y = -log(-log(p));  0 .lt. p .lt. 1
      * </pre>
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @param shape parameter of the distribution function
-     * @return array of randomly drawn numbers from the GEV
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @param shape parameter of the distribution function
+     @param nDraws
+     @return array of randomly drawn numbers from the GEV
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double[] sampleRandomlyFrom(double location, double scale, double shape,
                                               int nDraws) throws NoSuchAlgorithmException {
@@ -705,12 +785,14 @@ public class GeneralizedExtremeValue {
      *         x = location + scale*(1 - exp(-shape * y))/shape
      *     when shape= 0
      *         x = location + scale * y
-     *     where y = -log(-log(p));  0 < p < 1
+     *     where y = -log(-log(p));  0 .lt. p .lt. 1
      * </pre>
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @param shape parameter of the distribution function
-     * @return array of randomly drawn numbers from the GEV
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @param shape parameter of the distribution function
+     @param nDraws
+     @param rand
+     @return array of randomly drawn numbers from the GEV
      */
     public static double[] sampleRandomlyFrom(double location, double scale, double shape,
                                               int nDraws, SecureRandom rand) {
@@ -728,6 +810,14 @@ public class GeneralizedExtremeValue {
         return inverseCdf(p, location, scale, shape, rand);
     }
 
+    /**
+     *
+     @param x1
+     @param mu
+     @param sigma
+     @param k
+     @return
+     */
     public static double[] generateNormalizedCurve(double[] x1, double mu, double sigma, double k) {
 
         if (sigma == 0) {
@@ -745,6 +835,14 @@ public class GeneralizedExtremeValue {
         return yGEV;
     }
 
+    /**
+     *
+     @param x1
+     @param mu
+     @param sigma
+     @param k
+     @return
+     */
     public static double[] _genCurve(double[] x1, double mu, double sigma, double k) {
         if (sigma == 0) {
             throw new IllegalArgumentException("sigma must be > 0");
@@ -763,6 +861,14 @@ public class GeneralizedExtremeValue {
         return yGEV;
     }
 
+    /**
+     *
+     @param x1
+     @param mu
+     @param sigma
+     @param k
+     @return
+     */
     public static double[] genCurve(double[] x1, double mu, double sigma, double k) {
 
         if (sigma == 0) {

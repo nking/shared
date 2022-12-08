@@ -45,10 +45,17 @@ public class SetCover {
      */
     private static double eps = 1e-11;
     
+    /**
+     *
+     */
     public SetCover() {
         this(System.nanoTime());
     }
     
+    /**
+     *
+     @param randomSeed
+     */
     public SetCover(long randomSeed) {
         //seed = 180328550254112L;
         System.out.println("seed=" + randomSeed);
@@ -63,12 +70,12 @@ public class SetCover {
      * TODO: revisit this for element weights.
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U. U is the universe of elements in sets.
+     @param nU the number of items in U. U is the universe of elements in sets.
      * items in U are the sequential range of integers from 0 to nU-1.
-     * @param sets a list of sets for which each set contains integers from the range
+     @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each element.
-     * @return the list of indexes of sets which comprise the cover, that is the
+     @param weights the weights of each element.
+     @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
@@ -85,12 +92,12 @@ public class SetCover {
      * cover (== nU).
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U. U is the universe of elements in sets.
+     @param nU the number of items in U. U is the universe of elements in sets.
      * items in U are the sequential range of integers from 0 to nU-1.
-     * @param sets a list of sets for which each set contains integers from the range
+     @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each set in sets.
-     * @return the list of indexes of sets which comprise the cover, that is the
+     @param weights the weights of each set in sets.
+     @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
@@ -165,14 +172,14 @@ public class SetCover {
      * cover (== nU).
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U. U is the universe of elements in sets.
+     @param nU the number of items in U. U is the universe of elements in sets.
      * items in U are the sequential range of integers from 0 to nU-1.
-     * @param sets a list of sets for which each set contains integers from the range
+     @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each set in sets.
-     * @param yProbabilities coefficients of the optimal solution to LinearProgram
+     @param weights the weights of each set in sets.
+     @param yProbabilities coefficients of the optimal solution to LinearProgram
      * for the given sets and weights.
-     * @return the list of indexes of sets which comprise the cover, that is the
+     @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
@@ -281,8 +288,8 @@ public class SetCover {
      *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
      * and Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms" chap 35.3.
      * </pre>
-     * @param sets
-     * @return the list of indexes of sets which comprise the cover.
+     @param sets
+     @return the list of indexes of sets which comprise the cover.
      */
     public TIntList approxLgN(List<TIntSet> sets) {
         
@@ -335,6 +342,11 @@ public class SetCover {
         return c;
     }
 
+    /**
+     *
+     @param s
+     @return
+     */
     protected TIntObjectMap<TIntSet> copy(List<TIntSet> s) {
         TIntObjectMap<TIntSet> c = new TIntObjectHashMap<TIntSet>(s.size());
         int i;
@@ -352,6 +364,13 @@ public class SetCover {
         return c;
     }
 
+    /**
+     *
+     @param nX
+     @param sets
+     @param weights
+     @return
+     */
     protected static LinearProgramming.StandardForm 
         createLinearProgramInStandardFormForWeightedSets(
         int nX, List<TIntSet> sets, double[] weights) {
@@ -424,6 +443,13 @@ public class SetCover {
         return standForm;
     }
 
+    /**
+     *
+     @param nU
+     @param sets
+     @param weights
+     @return
+     */
     public static double[] calcSetWeightsFromElementWeights(int nU,
         List<TIntSet> sets, double[] weights) {
         double[] weightsSets = new double[sets.size()];

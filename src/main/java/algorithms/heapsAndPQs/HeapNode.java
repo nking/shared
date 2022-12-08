@@ -2,6 +2,10 @@ package algorithms.heapsAndPQs;
 
 import algorithms.DoubleLinkedCircularList;
 
+/**
+ *
+ * @author nichole
+ */
 public class HeapNode {
     
 	/* fields needed for node in circular, doubly linked list */
@@ -22,9 +26,16 @@ public class HeapNode {
     private int numberOfChildren = 0;
     private boolean mark = false;
 
+    /**
+     *
+     */
     public HeapNode() {
     }
     
+    /**
+     *
+     @param key
+     */
     public HeapNode(long key) {
         this.key = key;
     }
@@ -36,7 +47,7 @@ public class HeapNode {
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex).
      *
-     * @param child
+     @param child
      */
     public void addChild(HeapNode child) {
     	if (children == null) {
@@ -47,6 +58,9 @@ public class HeapNode {
     	numberOfChildren++;
     }
     
+    /**
+     *
+     */
     public void removeChildren() {
         this.children = null;
     }
@@ -55,7 +69,7 @@ public class HeapNode {
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex)
      *
-     * @param child
+     @param child
      */
     public void removeChild(HeapNode child) {
     	if (children == null) {
@@ -70,7 +84,7 @@ public class HeapNode {
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex)
      *
-     * @param childKey
+     @param childKey
      */
     public void removeChild(long childKey) {
     	if (children == null) {
@@ -85,7 +99,7 @@ public class HeapNode {
      * accessed synchronously only (children are not protected by mutex 
      * and are not copied out)
      * 
-     * @return
+     @return
      */
     public DoubleLinkedCircularList getChildren() {
     	if (children == null) {
@@ -95,84 +109,84 @@ public class HeapNode {
     }
 
     /**
-     * @return the key
+     @return the key
      */
     public long getKey() {
         return key;
     }
 
     /**
-     * @return the right
+     @return the right
      */
     public HeapNode getRight() {
         return right;
     }
 
     /**
-     * @return the left
+     @return the left
      */
     public HeapNode getLeft() {
         return left;
     }
 
     /**
-     * @return the parent
+     @return the parent
      */
     public HeapNode getParent() {
         return parent;
     }
 
     /**
-     * @return the numberOfChildren
+     @return the numberOfChildren
      */
     public int getNumberOfChildren() {
         return numberOfChildren;
     }
 
     /**
-     * @return the mark
+     @return the mark
      */
     public boolean isMark() {
         return mark;
     }
 
     /**
-     * @return the data
+     @return the data
      */
     public Object getData() {
         return data;
     }
 
     /**
-     * @param key the key to set
+     @param key the key to set
      */
     public void setKey(long key) {
         this.key = key;
     }
 
     /**
-     * @param right the right to set
+     @param right the right to set
      */
     public void setRight(HeapNode right) {
         this.right = right;
     }
 
     /**
-     * @param theLeft the left to set
+     @param theLeft the left to set
      */
     public void setLeft(HeapNode theLeft) {
         left = theLeft;
     }
 
     /**
-     * @param theParent the parent to set
+     @param theParent the parent to set
      */
     public void setParent(HeapNode theParent) {
         parent = theParent;
     }
 
     /**
-     * @param children the children to set
+     @param children the children to set
      */
     public void setChildren(DoubleLinkedCircularList children) {
         this.children = children;
@@ -182,26 +196,30 @@ public class HeapNode {
     }
 
     /**
-     * @param numberOfChildren the numberOfChildren to set
+     @param numberOfChildren the numberOfChildren to set
      */
     public void setNumberOfChildren(int numberOfChildren) {
         this.numberOfChildren = numberOfChildren;
     }
 
     /**
-     * @param data the data to set
+     @param data the data to set
      */
     public void setData(Object data) {
         this.data = data;
     }
 
     /**
-     * @param mark the mark to set
+     @param mark the mark to set
      */
     public void setMark(boolean mark) {
         this.mark = mark;
     }
 
+    /**
+     *
+     @return
+     */
     @SuppressWarnings({"rawtypes"})
     public static Class getType() {
         return HeapNode.class;

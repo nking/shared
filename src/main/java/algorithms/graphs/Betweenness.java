@@ -112,9 +112,9 @@ public class Betweenness {
             Network Community Detection" by Leskovec, Lang, and Mahoney
      
      </pre>
-     * @param adjacencyList an adjacency list for an unweighted DAG.
-     * @param s source node to begin the graph traversal
-     * @return scores for the edges of the graph, calculated using the Girvan-Newman algorithm.
+     @param adjacencyList an adjacency list for an unweighted DAG.
+     @param s source node to begin the graph traversal
+     @return scores for the edges of the graph, calculated using the Girvan-Newman algorithm.
      */
     public Results girvanNewmanDAG(SimpleLinkedListNode[] adjacencyList, final int s) {
         
@@ -355,9 +355,9 @@ public class Betweenness {
             Network Community Detection" by Leskovec, Lang, and Mahoney
      
      </pre>
-     * @param adjacencyList an adjacency list for an unweighted DAG.
-     * @param s source node to begin the graph traversal
-     * @return scores for the edges of the graph, calculated using the Girvan-Newman algorithm.
+     @param adjacencyList an adjacency list for an unweighted DAG.
+     @param s source node to begin the graph traversal
+     @return scores for the edges of the graph, calculated using the Girvan-Newman algorithm.
      */
     public Results girvanNewmanUndirected(SimpleLinkedListNode[] adjacencyList, final int s) {
         
@@ -618,6 +618,11 @@ public class Betweenness {
         }
         System.out.println(sb.toString());
     }*/
+
+    /**
+     *
+     */
+
     
     public static class Results {
         
@@ -628,21 +633,21 @@ public class Betweenness {
         private TIntSet vertexes = null;
        
         /**
-         * @return the betweenness scores for the edges
+         @return the betweenness scores for the edges
          */
         public TObjectFloatMap<PairInt> getEdges() {
             return edges;
         }
 
         /**
-         * @return the src
+         @return the src
          */
         public int[] getRootIndexes() {
             return rootIndexes;
         }
 
         /**
-         * @return the vertexes visited by the algorithm.  any vertex given
+         @return the vertexes visited by the algorithm.  any vertex given
          * to algorithm that was not connected to source s is not present in this.
          */
         public TIntSet getVertexes() {

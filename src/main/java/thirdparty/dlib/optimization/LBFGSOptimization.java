@@ -26,13 +26,13 @@ public class LBFGSOptimization {
   
     /**
      * 
-     * @param searchStrategy an object that defines a search strategy
-     * @param stopStrategy an object that defines a stop strategy
-     * @param f function returning a double
-     * @param x coefficients used by f and der
-     * @param minF stop_strategy decides that an acceptable 
+     @param searchStrategy an object that defines a search strategy
+     @param stopStrategy an object that defines a stop strategy
+     @param f function returning a double
+     @param x coefficients used by f and der
+     @param minF stop_strategy decides that an acceptable 
      * point has been found or f(#x) less than min_f
-     * @return the return value from optimized run of function f.
+     @return the return value from optimized run of function f.
      */
     public double findMin(LBFGSSearchStrategy searchStrategy,
         ObjectiveDeltaStopStrategy stopStrategy, 
@@ -323,6 +323,9 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
         }
     }
     
+    /**
+     *
+     */
     public static class LineSearchFunction {
                 
         private double scalarR = 0;
@@ -331,10 +334,20 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
         private IFunction funct;
         private double[] matrixR = null;
         
+        /**
+         *
+         @return
+         */
         public IFunction getFunction() {
             return funct;
         }
         
+        /**
+         *
+         @param f
+         @param start_
+         @param direction_
+         */
         public LineSearchFunction(
             IFunction f, double[] start_, double[] direction_) { 
             this.funct = f;
@@ -342,6 +355,13 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
             this.direction = direction_;
         }
 
+        /**
+         *
+         @param f
+         @param start_
+         @param direction_
+         @param r
+         */
         public LineSearchFunction(
             IFunction f, double[] start_, double[] direction_, double[] r) { 
             this.funct = f;
@@ -351,6 +371,14 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
         }
         
         //make_line_search_function(f, x, s, fValue),
+
+        /**
+         *
+         @param f
+         @param start_
+         @param direction_
+         @param fValue
+         */
         public LineSearchFunction(
             IFunction f, double[] start_, double[] direction_, double fValue) { 
             this.funct = f;
@@ -359,6 +387,12 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
             this.scalarR = fValue;
         }
         
+        /**
+         *
+         @param x
+         @param isGradient
+         @return
+         */
         public double operator(double x, boolean isGradient) {
             
             //return get_value(f(start + x*direction));
@@ -380,6 +414,11 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
             }            
         }
         
+        /**
+         *
+         @param x
+         @return
+         */
         public double get_value(double[] x) {
             
             if (matrixR != null) {

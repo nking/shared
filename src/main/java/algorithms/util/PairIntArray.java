@@ -20,12 +20,25 @@ import java.util.Set;
  */
 public class PairIntArray {
     
+    /**
+     *
+     */
     protected int[] x = null;
     
+    /**
+     *
+     */
     protected int[] y = null;
     
+    /**
+     *
+     */
     protected int n = 0;
     
+    /**
+     *
+     @param capacity
+     */
     public PairIntArray(int capacity) {
         
         x = new int[capacity];
@@ -33,6 +46,9 @@ public class PairIntArray {
         y = new int[capacity];
     }
     
+    /**
+     *
+     */
     public PairIntArray() {
         
         x = new int[10];
@@ -40,10 +56,19 @@ public class PairIntArray {
         y = new int[10];
     }
     
+    /**
+     *
+     @return
+     */
     public int getN() {
         return n;
     }
     
+    /**
+     *
+     @param xPoint
+     @param yPoint
+     */
     public void add(int xPoint, int yPoint) {
         
         expandIfNeeded(n + 1);
@@ -54,6 +79,10 @@ public class PairIntArray {
         n++;
     }
     
+    /**
+     *
+     @param xy
+     */
     public void add(PairInt xy) {
         
         expandIfNeeded(n + 1);
@@ -64,6 +93,10 @@ public class PairIntArray {
         n++;
     }
     
+    /**
+     *
+     @param other
+     */
     public void addAll(PairIntArray other) {
         
         expandIfNeeded(n + other.getN());        
@@ -74,6 +107,10 @@ public class PairIntArray {
         n += other.getN();
     }
     
+    /**
+     *
+     @param other
+     */
     public void addAll(Set<PairInt> other) {
         
         expandIfNeeded(n + other.size());        
@@ -85,8 +122,8 @@ public class PairIntArray {
     
     /**
      * remove indexes from idxLo to idxHi, inclusive
-     * @param idxLo
-     * @param idxHi 
+     @param idxLo
+     @param idxHi 
      */
     public void removeRange(int idxLo, int idxHi) {
         
@@ -120,6 +157,10 @@ public class PairIntArray {
         n -= nRemove;
     }
     
+    /**
+     *
+     @param numberOfInserts
+     */
     public void insertSpaceAtTopOfArrays(int numberOfInserts) {
         
         if (x.length >= (n + numberOfInserts)) {
@@ -145,6 +186,12 @@ public class PairIntArray {
         n += numberOfInserts;
     }
     
+    /**
+     *
+     @param index
+     @param xPoint
+     @param yPoint
+     */
     public void set(int index, int xPoint, int yPoint) {
         
         if (index < 0) {
@@ -157,6 +204,10 @@ public class PairIntArray {
         y[index] = yPoint;
     }
     
+    /**
+     *
+     @param other
+     */
     public void swapContents(PairIntArray other) {
         
         int[] swap = x;
@@ -172,6 +223,11 @@ public class PairIntArray {
         other.n = swap2;
     }
     
+    /**
+     *
+     @param index
+     @return
+     */
     public int getX(int index) {
         if (index > (n - 1) || (index < 0)) {
             throw new IllegalArgumentException(
@@ -181,6 +237,11 @@ public class PairIntArray {
         return x[index];
     }
     
+    /**
+     *
+     @param index
+     @return
+     */
     public int getY(int index) {
         if (index > (n - 1) || (index < 0)) {
             throw new IllegalArgumentException(
@@ -190,14 +251,26 @@ public class PairIntArray {
         return y[index];
     }
     
+    /**
+     *
+     @return
+     */
     public int[] getX() {
         return x;
     }
     
+    /**
+     *
+     @return
+     */
     public int[] getY() {
         return y;
     }
     
+    /**
+     *
+     @param nTotal
+     */
     protected void expandIfNeeded(int nTotal) {
         
         if (nTotal > x.length) {
@@ -214,6 +287,9 @@ public class PairIntArray {
         }
     }
     
+    /**
+     *
+     */
     public void reverse() {
         
         if (n < 2) {
@@ -234,12 +310,22 @@ public class PairIntArray {
         }
     }
     
+    /**
+     *
+     @param offset
+     */
     public void rotateLeft(int offset) {
         Rotate r = new Rotate();
         r.rotate2(x, n, offset);
         r.rotate2(y, n, offset);
     }
     
+    /**
+     *
+     @param index
+     @param xPoint
+     @param yPoint
+     */
     public void insert(int index, int xPoint, int yPoint) {
         if (index < 0 || (index > n)) {
             throw new IllegalArgumentException("index is out of bounds of arrays");
@@ -259,6 +345,11 @@ public class PairIntArray {
         n++;
     }
 
+    /**
+     *
+     @param insertAtIndex
+     @param insert
+     */
     public void insertAll(int insertAtIndex, PairIntArray insert) {
         
         if (insertAtIndex < 0) {
@@ -315,7 +406,7 @@ public class PairIntArray {
     /**
      * reverse the indexes from 0 to lastSwapIdx, inclusive.
      * 
-     * @param lastSwapIdx 
+     @param lastSwapIdx 
      */
     public void reverse0toIdx(int lastSwapIdx) {
         
@@ -339,7 +430,7 @@ public class PairIntArray {
     /**
      * reverse the values between index firstSwapIdx and the last index in arrays.
      * 
-     * @param firstSwapIdx 
+     @param firstSwapIdx 
      */
     public void reverseIdxtoEnd(int firstSwapIdx) {
         
@@ -371,9 +462,9 @@ public class PairIntArray {
     
     /**
      * copy inclusively the range startIdx through stopIdx.
-     * @param startIdx first index copied
-     * @param stopIdx last index copied
-     * @return 
+     @param startIdx first index copied
+     @param stopIdx last index copied
+     @return 
      */
     public PairIntArray copyRange(int startIdx, int stopIdx) {
         
@@ -397,6 +488,10 @@ public class PairIntArray {
         return sub;
     }
     
+    /**
+     *
+     @return
+     */
     public PairIntArray copy() {
         
         PairIntArray clone = new PairIntArray(n);
@@ -409,6 +504,10 @@ public class PairIntArray {
         return clone;
     }
     
+    /**
+     *
+     @return
+     */
     public PairFloatArray toPairFloatArray() {
         PairFloatArray out = new PairFloatArray();
         for (int i = 0; i < n; i++) {

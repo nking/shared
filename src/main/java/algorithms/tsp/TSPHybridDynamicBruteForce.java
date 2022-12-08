@@ -65,7 +65,10 @@ import java.util.Stack;
  */
 public class TSPHybridDynamicBruteForce extends AbstractTSP {
    
-    
+    /**
+     *
+     @param dist
+     */
     public TSPHybridDynamicBruteForce(double[][] dist) {
         super(dist);
     }
@@ -73,6 +76,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes in each path.
+     * @throws java.lang.InterruptedException
      */
     public void solveRecursively() throws InterruptedException {
         if (minCost != sentinel) {
@@ -119,6 +123,7 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
     /**
      * this version is still roughly factorial.  its re-use of solving sub-problems
      * is only for the first 3 nodes in each path.
+     * @throws java.lang.InterruptedException
      */
     public void solveIteratively() throws InterruptedException {
         if (minCost != sentinel) {
@@ -209,6 +214,10 @@ public class TSPHybridDynamicBruteForce extends AbstractTSP {
             totalNPerm, totalNSubSet, totalNSubSeq, dyn, dyn1);
     }
        
+    /**
+     *
+     @return
+     */
     public TLongList getMinPathBitstrings() {
         return new TLongArrayList(minPath);
     }

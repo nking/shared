@@ -19,25 +19,46 @@ public class DoubleLinkedCircularList {
     //appears between head and tail
     private final HeapNode sentinel;
     
+    /**
+     */
     public final static long sentinelKey = Long.MIN_VALUE;
+    
+    /**
+     */
     public final static long noValue = Long.MIN_VALUE + 1;
+    
+    /**
+     */
     public final static long minValue = Long.MIN_VALUE + 2;
 
+    /**
+     *
+     */
     protected long number = 0;
     
+    /**
+     */
     public DoubleLinkedCircularList() {
         sentinel = new HeapNode(sentinelKey);
         resetSentinel();
     }
 
+    /**
+     @return 
+     */
     public HeapNode getSentinel() {
         return sentinel;
     }
     
+    /**
+     */
     public final void resetSentinel() {
         this.sentinel.setLeft(sentinel);
         this.sentinel.setRight(sentinel);
     }
+    
+    /**
+     */
     public void resetNumber() {
         this.number = 0;
     }
@@ -60,8 +81,8 @@ public class DoubleLinkedCircularList {
     * 
     * runtime complexity is O(1).
     * </pre>
-    * @param node node to insert
-    * @return inserted child node instance
+    @param node node to insert
+    @return inserted child node instance
     */
     public HeapNode insert(HeapNode node) {
         if (node == null) {
@@ -87,8 +108,8 @@ public class DoubleLinkedCircularList {
     /**
      * remove first found node with key.
      * runtime complexity is O(n).
-     * @param key key of node to remove
-     * @return true if key was found and removed
+     @param key key of node to remove
+     @return true if key was found and removed
      */
     public boolean remove(long key) {
         HeapNode cn = search(key);
@@ -100,7 +121,7 @@ public class DoubleLinkedCircularList {
      * remove node by connecting it's relationships to one another and removing
      * self.
      * runtime complexity is O(1).
-     * @param node  node to remove from heap
+     @param node  node to remove from heap
      */
     public void remove(HeapNode node) {
     	if (node == null) {
@@ -137,8 +158,8 @@ public class DoubleLinkedCircularList {
      * 
      * runtime complexity is O(1).
      * </pre>
-     * @param existingNode node already present in heap
-     * @param insertNode the new node to be inserted into the heap
+     @param existingNode node already present in heap
+     @param insertNode the new node to be inserted into the heap
      */
     public void insertAfter(HeapNode existingNode, HeapNode insertNode) {
         
@@ -158,6 +179,9 @@ public class DoubleLinkedCircularList {
         number++;
     }
     
+    /**
+     @return
+     */
     public long getNumberOfNodes() {
         return number;
     }
@@ -166,8 +190,8 @@ public class DoubleLinkedCircularList {
      * runtime complexity is up to O(n), so if this method is often used,
      * should choose another data structure for the logic.
      * 
-     * @param key key of node to search for in heap
-     * @return the node having key 
+     @param key key of node to search for in heap
+     @return the node having key 
      */
     public HeapNode search(long key) {
         

@@ -3,6 +3,8 @@ package thirdparty.ods;
 import algorithms.util.ObjectSpaceEstimator;
 
 /**
+ * @author nichole
+ @param <T>
  */
 public class XFastTrieNode<T> extends BinaryTrieNode<T> {
     

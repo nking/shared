@@ -40,31 +40,61 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
      */
     protected boolean use4Neighbors = true;
 
+    /**
+     *
+     */
     protected int minimumNumberInCluster = 3;
 
+    /**
+     *
+     */
     protected Logger log = Logger.getLogger(this.getClass().getName());
 
+    /**
+     *
+     */
     protected boolean debug = false;
     
+    /**
+     *
+     */
     protected TIntSet excludeValues = null;
 
+    /**
+     *
+     */
     public ConnectedValuesGroupFinder2() {
 
         this.log = Logger.getLogger(this.getClass().getName());
     }
 
+    /**
+     *
+     @param setDebugToTrue
+     */
     public void setDebug(boolean setDebugToTrue) {
         this.debug = setDebugToTrue;
     }
 
+    /**
+     *
+     @param n
+     */
     public void setMinimumNumberInCluster(int n) {
         this.minimumNumberInCluster = n;
     }
 
+    /**
+     *
+     */
     public void setToUse8Neighbors() {
         use4Neighbors = false;
     }
     
+    /**
+     *
+     @param values
+     */
     public void setValuesToExclude(TIntSet values) {
         this.excludeValues = values;
     }
@@ -76,7 +106,8 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
      * user has set that to 8 neighbors. The runtime complexity is essentially
      * O(pixIdxs.size()).
      *
-     * @param data
+     @param data
+     @return 
      */
     public List<TLongSet> findGroups(int[][] data) {
 
@@ -87,6 +118,10 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
         return groupList;
     }
 
+    /**
+     *
+     @param data
+     */
     protected void findClustersIterative(int[][] data) {
 
         int w = data.length;
@@ -199,6 +234,11 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
         return key;
     }
 
+    /**
+     *
+     @param uPoint
+     @param vPoint
+     */
     protected void processPair(long uPoint, long vPoint) {
         
         if (pixKeyMap.containsKey(uPoint) && pixKeyMap.containsKey(vPoint)) {

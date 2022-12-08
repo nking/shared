@@ -59,6 +59,10 @@ strictfp class Convex {
     ************************************************************************* 
     * Output variable:                                                      *
     *     IL  : maximum integer such that IL<I, H(IL)=.TRUE.                *
+     @param i
+     @param lo
+     @param h
+     @return 
     *************************************************************************/
     private static int left(int i, int lo, boolean[] h) {
         if (i == lo) {
@@ -91,6 +95,10 @@ strictfp class Convex {
     ************************************************************************* 
     * Output variable:                                                      *
     *     IR  : minimum integer such that IR>I, H(IR)=.TRUE.                *
+     @param i
+     @param up
+     @param h
+     @return 
     *************************************************************************/
     
     private static int right(int i, int up, boolean[] h) {
@@ -128,6 +136,11 @@ strictfp class Convex {
     *            TOLER, i.e., if                                            *
     *            (A(I)-A(IL))*(IR-I)-(A(IR)-A(I))*(I-IL)>TOLER.             *
     *     .FALSE.,  otherwise.                                              *
+     @param il
+     @param a
+     @param i
+     @param ir
+     @return 
     *************************************************************************/
     
     private static boolean ctest(int il, int i, int ir, double[] a) {
@@ -158,6 +171,11 @@ strictfp class Convex {
     *     H    : vector defining the vertices of the convex hull, i.e.,     *
     *            H(j) is .TRUE. if (j,A(j)) is a vertex of the convex hull  *
     *            This vector is used also as output.                        *
+     @param lo
+     @param i
+     @param a
+     @param up
+     @param h
     *************************************************************************/
     
     private static void cmerge(int lo, int i, int up, double a[], boolean[] h) {
@@ -210,6 +228,9 @@ strictfp class Convex {
     * Compute the convex hull of the data set a[]. The result     *
     * is in the bool vector h[]. The algorithm successively       *
     * merges adjacent convex hulls of sizes 2, 4, 8, ...          *
+     @param n
+     @param a
+     @param h
     ***************************************************************/
     
     static void cnvex(int n, double a[], boolean[] h) {

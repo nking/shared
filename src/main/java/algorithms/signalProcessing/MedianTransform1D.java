@@ -20,9 +20,9 @@ public class MedianTransform1D {
      * Note that the length of outputCoeff is one less than 
      * outputTransformed because the iteration stops and cannot calculate the
      * next difference.
-     * @param input
-     * @param outputTransformed
-     * @param outputCoeff 
+     @param input
+     @param outputTransformed
+     @param outputCoeff 
      */
     public void multiscalePyramidalMedianTransform2(
         float[] input,
@@ -86,9 +86,9 @@ public class MedianTransform1D {
      * "Handbook of Astronomical Data Analysis" by
      * Jean-Luc Starck and Fionn Murtagh
      * 
-     * @param c0
-     * @param mmCoeff
-     * @return 
+     @param c0
+     @param mmCoeff
+     @return 
      */
     public float[] reconstructPyramidalMultiscaleMedianTransform(
         OneDFloatArray c0, List<OneDFloatArray> mmCoeff) {

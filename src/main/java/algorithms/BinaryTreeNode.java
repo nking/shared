@@ -13,6 +13,9 @@ public class BinaryTreeNode extends DoublyLinkedNode {
     private BinaryTreeNode right;
     private BinaryTreeNode parent;
 
+    /**
+     @param data
+     */
     public BinaryTreeNode(int data) {
         this.data = data;
     }
@@ -22,56 +25,56 @@ public class BinaryTreeNode extends DoublyLinkedNode {
     }
 
     /**
-     * @return the data
+     @return the data
      */
     public int getData() {
         return data;
     }
 
     /**
-     * @return the left
+     @return the left
      */
     public BinaryTreeNode getLeft() {
         return left;
     }
 
     /**
-     * @return the right
+     @return the right
      */
     public BinaryTreeNode getRight() {
         return right;
     }
 
     /**
-     * @return the parent
+     @return the parent
      */
     public BinaryTreeNode getParent() {
         return parent;
     }
 
     /**
-     * @param data the data to set
+     @param data the data to set
      */
     public void setData(int data) {
         this.data = data;
     }
 
     /**
-     * @param left the left to set
+     @param left the left to set
      */
     public void setLeft(BinaryTreeNode left) {
         this.left = left;
     }
 
     /**
-     * @param right the right to set
+     @param right the right to set
      */
     public void setRight(BinaryTreeNode right) {
         this.right = right;
     }
 
     /**
-     * @param parent the parent to set
+     @param parent the parent to set
      */
     public void setParent(BinaryTreeNode parent) {
         this.parent = parent;

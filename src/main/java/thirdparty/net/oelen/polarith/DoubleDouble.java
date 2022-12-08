@@ -71,6 +71,9 @@ import java.util.Arrays;
  */
 public final strictfp class DoubleDouble implements Serializable, Comparable, Cloneable {
     
+    /**
+     *
+     */
     public static final long serialVersionUID = Hash64.hash("DoubleDouble_v1.0");
 
     /**
@@ -107,12 +110,40 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * A few simple numerical constants.
      */
     public static final DoubleDouble ZERO = new DoubleDouble();
+
+    /**
+     *
+     */
     public static final DoubleDouble ONE = new DoubleDouble(1.0);
+
+    /**
+     *
+     */
     public static final DoubleDouble TWO = new DoubleDouble(2.0);
+
+    /**
+     *
+     */
     public static final DoubleDouble TEN = new DoubleDouble(10.0);
+
+    /**
+     *
+     */
     public static final DoubleDouble MAXINT = new DoubleDouble(Integer.MAX_VALUE);
+
+    /**
+     *
+     */
     public static final DoubleDouble MAXLONG = new DoubleDouble(Long.MAX_VALUE);
+
+    /**
+     *
+     */
     public static final DoubleDouble MININT = new DoubleDouble(Integer.MIN_VALUE);
+
+    /**
+     *
+     */
     public static final DoubleDouble MINLONG = new DoubleDouble(Long.MIN_VALUE);
 
     /**
@@ -133,8 +164,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts the string argument to a DoubleDouble number.
      *
-     * @param str a string containing a representation of a numeric value
-     * @return the extended precision version of the value
+     @param str a string containing a representation of a numeric value
+     @return the extended precision version of the value
      * @throws NumberFormatException if <tt>s</tt> is not a valid representation
      * of a number
      */
@@ -149,8 +180,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts the <tt>double</tt> argument to a DoubleDouble number.
      *
-     * @param x a numeric value
-     * @return the extended precision version of the value
+     @param x a numeric value
+     @return the extended precision version of the value
      */
     public static DoubleDouble valueOf(double x) {
         return new DoubleDouble(x);
@@ -162,8 +193,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts the <tt>long</tt> argument to a DoubleDouble number.
      *
-     * @param x a numeric value
-     * @return the extended precision version of the value
+     @param x a numeric value
+     @return the extended precision version of the value
      */
     public static DoubleDouble valueOf(long x) {
         return new DoubleDouble(x);
@@ -175,8 +206,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts the <tt>int</tt> argument to a DoubleDouble number.
      *
-     * @param x a numeric value
-     * @return the extended precision version of the value
+     @param x a numeric value
+     @return the extended precision version of the value
      */
     public static DoubleDouble valueOf(int x) {
         return new DoubleDouble(x);
@@ -222,7 +253,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Creates a new DoubleDouble with value x.
      *
-     * @param x the value to initialize
+     @param x the value to initialize
      */
     public DoubleDouble(double x) {
         hi = x;
@@ -233,7 +264,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Creates a new DoubleDouble with value i.
      *
-     * @param i the value to initialize
+     @param i the value to initialize
      */
     public DoubleDouble(int i) {
         hi = i;
@@ -245,7 +276,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Creates a new DoubleDouble with value l.
      *
-     * @param l the value to initialize
+     @param l the value to initialize
      */
     public DoubleDouble(long l) { 
         hi = l & 0xfffffffffffff800l;
@@ -262,8 +293,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Creates a new DoubleDouble with value (hi, lo).
      *
-     * @param hi the high-order component
-     * @param lo the high-order component
+     @param hi the high-order component
+     @param lo the high-order component
      */
     private DoubleDouble(double hi, double lo) {
         // This method does no normalization of a number, it assumes
@@ -280,7 +311,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Creates a new DoubleDouble with value equal to the argument.
      *
-     * @param str the value to initialize by
+     @param str the value to initialize by
      * @throws NumberFormatException if <tt>str</tt> is not a valid
      * representation of a number
      */
@@ -297,7 +328,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Creates and returns a copy of this value.
      *
-     * @return a copy of this value
+     @return a copy of this value
      * @throws CloneNotSupportedException but in practice this never
      * will occur for a DoubleDouble object
      */
@@ -326,8 +357,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Returns a double[] array with approximate values of the supplied
      * DoubleDouble array. Null values are converted to 0.0.
      *
-     * @param arr The DoubleDouble[] array to be converted to double[].
-     * @return A double[] array with approximate values of the input array.
+     @param arr The DoubleDouble[] array to be converted to double[].
+     @return A double[] array with approximate values of the input array.
      */
     public static double[] toDouble(DoubleDouble[] arr) {
         double[] a = new double[arr.length];
@@ -344,8 +375,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Returns a DoubleDouble[] array with values of the supplied
      * double array.
      *
-     * @param arr The double[] array to be converted to DoubleDouble[].
-     * @return A DoubleDouble[] array with values of the input array.
+     @param arr The double[] array to be converted to DoubleDouble[].
+     @return A DoubleDouble[] array with values of the input array.
      */
     public static DoubleDouble[] toDoubleDouble(double[] arr) {
         DoubleDouble[] a = new DoubleDouble[arr.length];
@@ -364,12 +395,12 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * supplied (null value is given), then the needed array is
      * created. Null values are converted to 0.0.
      *
-     * @param a The output double[] array, in which the approximate converted
+     @param a The output double[] array, in which the approximate converted
      * values are stored. A null-value may be supplied. In that case an output
      * array is created. If the output array is too short, then only part of
      * the DoubleDouble values is converted.
-     * @param arr The DoubleDouble[] array to be converted to double[].
-     * @return A double[] array with approximate values of the input array.
+     @param arr The DoubleDouble[] array to be converted to double[].
+     @return A double[] array with approximate values of the input array.
      * This can be the supplied input array or a newly allocated one.
      */
     public static double[] toDouble(double[] a, DoubleDouble[] arr) {
@@ -389,12 +420,12 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * supplied (null value is given), then the needed array is
      * created.
      *
-     * @param a The output DoubleDouble[] array, in which the converted
+     @param a The output DoubleDouble[] array, in which the converted
      * values are stored. A null-value may be supplied. In that case an
      * output array is created. If the output array is too short, then 
      * only part of the values is converted.
-     * @param arr The double[] array to be converted to DoubleDouble[].
-     * @return A DoubleDouble[] array with values of the input array.
+     @param arr The double[] array to be converted to DoubleDouble[].
+     @return A DoubleDouble[] array with values of the input array.
      * This can be the supplied input array or a newly allocated one.
      */
     public static DoubleDouble[] toDoubleDouble(DoubleDouble[] a, double[] arr) {
@@ -411,8 +442,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this + y)</tt>.
      *
-     * @param y the addend
-     * @return <tt>(this + y)</tt>
+     @param y the addend
+     @return <tt>(this + y)</tt>
      */
     public DoubleDouble add(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -432,8 +463,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this + y)</tt>.
      *
-     * @param y the addend
-     * @return <tt>(this + y)</tt>
+     @param y the addend
+     @return <tt>(this + y)</tt>
      */
     public DoubleDouble add(long y) {
         if (hi!=hi) {
@@ -464,8 +495,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * ulp(), while the standard add() method can have an error of two
      * ulp().
      *
-     * @param y the addend
-     * @return <tt>(this + y)</tt>
+     @param y the addend
+     @return <tt>(this + y)</tt>
      */
     public DoubleDouble addStrict(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -496,8 +527,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this + y)</tt>.
      *
-     * @param y the addend
-     * @return <tt>(this + y)</tt>
+     @param y the addend
+     @return <tt>(this + y)</tt>
      */
     public DoubleDouble add(double y) {
         if (hi!=hi || y!=y) {
@@ -518,8 +549,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this + y)</tt>.
      *
-     * @param y the addend
-     * @return <tt>(this + y)</tt>
+     @param y the addend
+     @return <tt>(this + y)</tt>
      */
     public DoubleDouble add(int y) {
         if (hi!=hi) {
@@ -540,7 +571,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this + 1)</tt>.
      *
-     * @return <tt>(this + 1)</tt>
+     @return <tt>(this + 1)</tt>
      */
     public DoubleDouble add1() {
         if (hi!=hi) {
@@ -561,8 +592,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this - y)</tt>.
      *
-     * @param y the subtrahend
-     * @return <tt>(this - y)</tt>
+     @param y the subtrahend
+     @return <tt>(this - y)</tt>
      */
     public DoubleDouble sub(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -582,8 +613,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this - y)</tt>.
      *
-     * @param y the subtrahend
-     * @return <tt>(this - y)</tt>
+     @param y the subtrahend
+     @return <tt>(this - y)</tt>
      */
     public DoubleDouble sub(long y) {
         if (hi!=hi) {
@@ -614,8 +645,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * ulp(), while the standard sub() method can have an error of two
      * ulp().
      *
-     * @param y the addend
-     * @return <tt>(this - y)</tt>
+     @param y the addend
+     @return <tt>(this - y)</tt>
      */
     public DoubleDouble subStrict(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -647,8 +678,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this - y)</tt>.
      *
-     * @param y the subtrahend
-     * @return <tt>(this - y)</tt>
+     @param y the subtrahend
+     @return <tt>(this - y)</tt>
      */
     public DoubleDouble sub(double y) {
         if (hi!=hi || y!=y) {
@@ -669,8 +700,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this - y)</tt>.
      *
-     * @param y the subtrahend
-     * @return <tt>(this - y)</tt>
+     @param y the subtrahend
+     @return <tt>(this - y)</tt>
      */
     public DoubleDouble sub(int y) {
         if (hi!=hi) {
@@ -691,7 +722,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this - 1)</tt>.
      *
-     * @return <tt>(this - 1)</tt>
+     @return <tt>(this - 1)</tt>
      */
     public DoubleDouble sub1() {
         if (hi!=hi) {
@@ -712,7 +743,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>-this</tt>.
      *
-     * @return <tt>-this</tt>
+     @return <tt>-this</tt>
      */
     public DoubleDouble neg() {
         if (hi!=hi) {
@@ -727,8 +758,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y)</tt>.
      *
-     * @param y the multiplicand
-     * @return <tt>(this * y)</tt>
+     @param y the multiplicand
+     @return <tt>(this * y)</tt>
      */
     public DoubleDouble mul(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -758,8 +789,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y)</tt>.
      *
-     * @param y the multiplicand
-     * @return <tt>(this * y)</tt>
+     @param y the multiplicand
+     @return <tt>(this * y)</tt>
      */
     public DoubleDouble mul(long y) {
         if (hi!=hi) {
@@ -796,8 +827,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y)</tt>.
      *
-     * @param y the multiplicand
-     * @return <tt>(this * y)</tt>
+     @param y the multiplicand
+     @return <tt>(this * y)</tt>
      */
     public DoubleDouble mul(double y) {
         if (hi!=hi || y!=y) {
@@ -826,8 +857,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y)</tt>.
      *
-     * @param y the multiplicand
-     * @return <tt>(this * y)</tt>
+     @param y the multiplicand
+     @return <tt>(this * y)</tt>
      */
     public DoubleDouble mul(int y) {
         if (hi!=hi) {
@@ -859,8 +890,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * 1, 2, 4, 8, and so on. A special much more efficient method for
      * multiplication is used in these cases.
      *
-     * @param y the multiplicand
-     * @return <tt>(this * y)</tt>
+     @param y the multiplicand
+     @return <tt>(this * y)</tt>
      */
     public DoubleDouble mulPowerOf2(double y) {
         if (hi!=hi) {
@@ -875,8 +906,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this / y)</tt>.
      *
-     * @param y the divisor
-     * @return <tt>(this / y)</tt>
+     @param y the divisor
+     @return <tt>(this / y)</tt>
      */
     public DoubleDouble div(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -908,8 +939,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this / y)</tt>.
      *
-     * @param y the divisor
-     * @return <tt>(this / y)</tt>
+     @param y the divisor
+     @return <tt>(this / y)</tt>
      */
     public DoubleDouble div(long y) {
         if (hi!=hi) {
@@ -953,8 +984,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * within one ulp, the div() method sometimes may have one bit less
      * of accuracy, but in normal situations it works well.
      *
-     * @param y the divisor
-     * @return <tt>(this / y)</tt>
+     @param y the divisor
+     @return <tt>(this / y)</tt>
      */
     public DoubleDouble divStrict(DoubleDouble y) {
         if (hi!=hi || y.hi!=y.hi) {
@@ -991,8 +1022,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this / y)</tt>.
      *
-     * @param y the divisor
-     * @return <tt>(this / y)</tt>
+     @param y the divisor
+     @return <tt>(this / y)</tt>
      */
     public DoubleDouble div(double y) {
         if (hi!=hi || y!=y) {
@@ -1026,8 +1057,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this / y)</tt>.
      *
-     * @param y the divisor
-     * @return <tt>(this / y)</tt>
+     @param y the divisor
+     @return <tt>(this / y)</tt>
      */
     public DoubleDouble div(int y) {
         if (hi!=hi) {
@@ -1062,8 +1093,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * 1, 2, 4, 8, and so on. A special much more efficient method for
      * multiplication is used in these cases.
      *
-     * @param y the divisor
-     * @return <tt>(this * y)</tt>
+     @param y the divisor
+     @return <tt>(this * y)</tt>
      */
     public DoubleDouble divPowerOf2(double y) {
         if (hi!=hi) {
@@ -1079,7 +1110,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>1 / this</tt>.
      *
-     * @return the reciprocal of this value
+     @return the reciprocal of this value
      */
     public DoubleDouble recip() {
         if (hi!=hi) {
@@ -1114,8 +1145,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * calling div() on that value. This method allows a single double to be
      * divided by a DoubleDouble at DoubleDouble precision.
      *
-     * @param y the divisor
-     * @return <tt>(y / this)</tt>
+     @param y the divisor
+     @return <tt>(y / this)</tt>
      */
     public DoubleDouble recip(double y) {
         if (hi!=hi || y!=y) {
@@ -1144,8 +1175,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * calling div() on that value. This method allows a single long to be
      * divided by a DoubleDouble at DoubleDouble precision.
      *
-     * @param y the divisor
-     * @return <tt>(y / this)</tt>
+     @param y the divisor
+     @return <tt>(y / this)</tt>
      */
     public DoubleDouble recip(long y) {
         if (hi!=hi) {
@@ -1189,8 +1220,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * calling div() on that value. This method allows a single integer to be
      * divided by a DoubleDouble at DoubleDouble precision.
      *
-     * @param y the divisor
-     * @return <tt>(y / this)</tt>
+     @param y the divisor
+     @return <tt>(y / this)</tt>
      */
     public DoubleDouble recip(int y) {
         if (hi!=hi) {
@@ -1217,7 +1248,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Computes the square of this value.
      *
-     * @return the square of this value.
+     @return the square of this value.
      */
     public DoubleDouble sqr() {
         if (hi!=hi) {
@@ -1240,9 +1271,9 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y + yy)</tt>.
      *
-     * @param y the multiplicand
-     * @param yy the addend
-     * @return <tt>(this * y + yy)</tt>
+     @param y the multiplicand
+     @param yy the addend
+     @return <tt>(this * y + yy)</tt>
      */
     public DoubleDouble muladd(DoubleDouble y, DoubleDouble yy) {
         if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {
@@ -1281,9 +1312,9 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y - yy)</tt>.
      *
-     * @param y the multiplicand
-     * @param yy the addend
-     * @return <tt>(this * y - yy)</tt>
+     @param y the multiplicand
+     @param yy the addend
+     @return <tt>(this * y - yy)</tt>
      */
     public DoubleDouble mulsub(DoubleDouble y, DoubleDouble yy) {
         if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {
@@ -1322,9 +1353,9 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this + y * yy)</tt>.
      *
-     * @param y the first factor of the product
-     * @param yy the second facvtor of the product
-     * @return <tt>(this + y*yy)</tt>
+     @param y the first factor of the product
+     @param yy the second facvtor of the product
+     @return <tt>(this + y*yy)</tt>
      */
     public DoubleDouble addmul(DoubleDouble y, DoubleDouble yy) {
         if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {
@@ -1363,9 +1394,9 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this - y * yy)</tt>.
      *
-     * @param y the first factor of the product
-     * @param yy the second facvtor of the product
-     * @return <tt>(this - y*yy)</tt>
+     @param y the first factor of the product
+     @param yy the second facvtor of the product
+     @return <tt>(this - y*yy)</tt>
      */
     public DoubleDouble submul(DoubleDouble y, DoubleDouble yy) {
         if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {
@@ -1404,9 +1435,9 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Returns a DoubleDouble whose value is <tt>(this * y * yy)</tt>.
      *
-     * @param y the multiplicand
-     * @param yy the addend
-     * @return <tt>(this * y * yy)</tt>
+     @param y the multiplicand
+     @param yy the addend
+     @return <tt>(this * y * yy)</tt>
      */
     public DoubleDouble mulmul(DoubleDouble y, DoubleDouble yy) {
         if (hi!=hi || y.hi!=y.hi || yy.hi!=yy.hi) {
@@ -1459,7 +1490,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * <li>If this value is NaN, returns NaN.
      * </ul>
      *
-     * @return the largest (closest to positive infinity) value that is not
+     @return the largest (closest to positive infinity) value that is not
      * greater than the argument and is equal to a mathematical integer.
      */
     public DoubleDouble floor() {
@@ -1487,7 +1518,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * <li>If this value is NaN, returns NaN.
      * </ul>
      *
-     * @return the smallest (closest to negative infinity) value that is not
+     @return the smallest (closest to negative infinity) value that is not
      * less than the argument and is equal to a mathematical integer.
      */
     public DoubleDouble ceil() {
@@ -1514,7 +1545,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * <li>If this value is NaN, returns NaN.
      * </ul>
      *
-     * @return the integer which is largest in absolute value and not further
+     @return the integer which is largest in absolute value and not further
      * from zero than this value
      */
     public DoubleDouble trunc() {
@@ -1536,7 +1567,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * <li>if this value is NaN, returns 0
      * </ul>
      *
-     * @return an integer indicating the sign of this value
+     @return an integer indicating the sign of this value
      */
     public int signum() {
         if (hi > 0.0 || (hi == 0.0 && lo > 0.0)) {
@@ -1561,7 +1592,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * <li>If this value is NaN, returns NaN.
      * </ul>
      *
-     * @return this value rounded to the nearest integer.
+     @return this value rounded to the nearest integer.
      */
     public DoubleDouble round() {
         if (hi!=hi) {
@@ -1581,7 +1612,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * <li>If this value is NaN, it is returned.
      * </ul>
      *
-     * @return the absolute value of this value
+     @return the absolute value of this value
      */
     public DoubleDouble abs() {
         if (hi!=hi) {
@@ -1602,7 +1633,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Computes the positive square root of this value. If the number is NaN or
      * negative, NaN is returned. 
      *
-     * @return the positive square root of this number. If the argument is NaN
+     @return the positive square root of this number. If the argument is NaN
      * or less than zero, the result is NaN.
      */
     public DoubleDouble sqrt() {
@@ -1641,7 +1672,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * accuracy within one ulp, the sqrt() method sometimes may have one bit
      * less of accuracy, but in normal situations it works well.
      *
-     * @return the positive square root of this number. If the argument is NaN
+     @return the positive square root of this number. If the argument is NaN
      * or less than zero, the result is NaN.
      */
     
@@ -1729,8 +1760,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Computes the value of this number raised to an integral power. Follows
      * semantics of Java Math.pow as closely as possible.
      *
-     * @param exp the integer exponent
-     * @return x raised to the integral power exp
+     @param exp the integer exponent
+     @return x raised to the integral power exp
      */
     public DoubleDouble pow(int exp) {
         if (hi!=hi) {
@@ -1817,8 +1848,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Computes y-th root of a DoubleDouble. The number y
      * must be positive.
      *
-     * @param y the integer telling which root is taken
-     * @return this, raised to the power 1/y.
+     @param y the integer telling which root is taken
+     @return this, raised to the power 1/y.
      */
     public DoubleDouble root(int y) {
         if (y <=0 || hi != hi) {
@@ -1945,6 +1976,11 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     // 0.693147180559945309417232121458174
     // 1.03972077083991796412584818218727
     // 1.03972077083991796312584818218727
+
+    /**
+     *
+     @return
+     */
     public DoubleDouble exp() {
         if (hi!=hi) {
             return NaN;
@@ -2059,11 +2095,10 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
         return new DoubleDouble(c * r, d * r);
     }
     
-    
-    
-    
-    
-
+    /**
+     *
+     @return
+     */
     public DoubleDouble log() {
         if (hi!=hi || hi <= 0.0) {
             return NaN;
@@ -2202,7 +2237,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts this value to the nearest double-precision number.
      *
-     * @return the nearest double-precision number to this value
+     @return the nearest double-precision number to this value
      */
     public double doubleValue() {
         return hi + lo;
@@ -2219,7 +2254,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Converts this value to the absolute value of the
      * nearest double-precision number.
      *
-     * @return the absolute value of the nearest double-precision 
+     @return the absolute value of the nearest double-precision 
      * number to this value
      */
     public double dabs() {
@@ -2233,7 +2268,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts this value to the nearest integer.
      *
-     * @return the nearest integer to this value
+     @return the nearest integer to this value
      */
     public int intValue() {
         double fhi;
@@ -2260,7 +2295,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Converts this value to the nearest integer.
      *
-     * @return the nearest integer to this value
+     @return the nearest integer to this value
      */
     public long longValue() {
         double fhi, flo = 0.0;
@@ -2298,7 +2333,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is equal to 0.
      *
-     * @return true if this value is equal to 0
+     @return true if this value is equal to 0
      */
     public boolean isZero() {
         return hi == 0.0 && lo == 0.0;
@@ -2310,7 +2345,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is equal to 1.
      *
-     * @return true if this value is equal to 1
+     @return true if this value is equal to 1
      */
     public boolean isOne() {
         return hi == 1.0 && lo == 0.0;
@@ -2322,7 +2357,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is less than 0.
      *
-     * @return true if this value is less than 0
+     @return true if this value is less than 0
      */
     public boolean isNegative() {
         return hi < 0.0 || (hi == 0.0 && lo < 0.0);
@@ -2334,7 +2369,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is greater than 0.
      *
-     * @return true if this value is greater than 0
+     @return true if this value is greater than 0
      */
     public boolean isPositive() {
         return hi > 0.0 || (hi == 0.0 && lo > 0.0);
@@ -2346,7 +2381,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is NaN.
      *
-     * @return true if this value is NaN
+     @return true if this value is NaN
      */
     public boolean isNaN() {
         return hi!=hi;
@@ -2358,9 +2393,9 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is close to another value.
      *
-     * @param b a DoubleDouble value, to be compared with this
-     * @param eps a specification of the relatieve precision
-     * @return true if this value is close to the other value with relative
+     @param b a DoubleDouble value, to be compared with this
+     @param eps a specification of the relatieve precision
+     @return true if this value is close to the other value with relative
      * precision, given by eps.
      */
     public boolean isNear(DoubleDouble b, double eps) {
@@ -2378,8 +2413,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is equal to another <tt>DoubleDouble</tt> value.
      *
-     * @param y a DoubleDouble value
-     * @return true if this value = y
+     @param y a DoubleDouble value
+     @return true if this value = y
      */
     public boolean equals(DoubleDouble y) {
         return hi == y.hi && lo == y.lo;
@@ -2391,8 +2426,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is equal to a given <tt>double</tt> value.
      *
-     * @param y a double value
-     * @return true if this value = y
+     @param y a double value
+     @return true if this value = y
      */
     public boolean equals(double y) {
         return hi == y && lo == 0;
@@ -2404,8 +2439,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is equal to a given <tt>long</tt> value.
      *
-     * @param y a long value
-     * @return true if this value = y
+     @param y a long value
+     @return true if this value = y
      */
     public boolean equals(long y) {
         double yhi = y & 0xfffffffffffff800l;
@@ -2423,8 +2458,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Tests whether this value is equal to a given <tt>int</tt> value.
      *
-     * @param y an int value
-     * @return true if this value = y
+     @param y an int value
+     @return true if this value = y
      */
     public boolean equals(int y) {
         return hi == y && lo == 0;
@@ -2437,8 +2472,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than another <tt>DoubleDouble</tt>
      * value.
      *
-     * @param y a DoubleDouble value
-     * @return true if this value > y
+     @param y a DoubleDouble value
+     @return true if this value > y
      */
     public boolean gt(DoubleDouble y) {
         return (hi > y.hi) || (hi == y.hi && lo > y.lo);
@@ -2451,8 +2486,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than a given <tt>double</tt>
      * value.
      *
-     * @param y a double value
-     * @return true if this value > y
+     @param y a double value
+     @return true if this value > y
      */
     public boolean gt(double y) {
         return (hi > y) || (hi == y && lo > 0.0);
@@ -2465,8 +2500,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than a given
      * <tt>long</tt> value.
      *
-     * @param y a long value
-     * @return true if this value >= y
+     @param y a long value
+     @return true if this value >= y
      */
     public boolean gt(long y) {
         double yhi = y & 0xfffffffffffff800l;
@@ -2485,8 +2520,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than a given <tt>int</tt>
      * value.
      *
-     * @param y an int value
-     * @return true if this value > y
+     @param y an int value
+     @return true if this value > y
      */
     public boolean gt(int y) {
         return (hi > y) || (hi == y && lo > 0.0);
@@ -2499,8 +2534,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than or equals to another
      * <tt>DoubleDouble</tt> value.
      *
-     * @param y a DoubleDouble value
-     * @return true if this value >= y
+     @param y a DoubleDouble value
+     @return true if this value >= y
      */
     public boolean ge(DoubleDouble y) {
         return (hi > y.hi) || (hi == y.hi && lo >= y.lo);
@@ -2513,8 +2548,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than or equals to a given
      * <tt>double</tt> value.
      *
-     * @param y a double value
-     * @return true if this value >= y
+     @param y a double value
+     @return true if this value >= y
      */
     public boolean ge(double y) {
         return (hi > y) || (hi == y && lo >= 0.0);
@@ -2527,8 +2562,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than or equals to a given
      * <tt>long</tt> value.
      *
-     * @param y a long value
-     * @return true if this value >= y
+     @param y a long value
+     @return true if this value >= y
      */
     public boolean ge(long y) {
         double yhi = y & 0xfffffffffffff800l;
@@ -2547,8 +2582,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is greater than or equals to a given
      * <tt>int</tt> value.
      *
-     * @param y an int value
-     * @return true if this value >= y
+     @param y an int value
+     @return true if this value >= y
      */
     public boolean ge(int y) {
         return (hi > y) || (hi == y && lo >= 0.0);
@@ -2561,8 +2596,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than another <tt>DoubleDouble</tt>
      * value.
      *
-     * @param y a DoubleDouble value
-     * @return true if this value < y
+     @param y a DoubleDouble value
+     @return true if this value < y
      */
     public boolean lt(DoubleDouble y) {
         return (hi < y.hi) || (hi == y.hi && lo < y.lo);
@@ -2575,8 +2610,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than a given <tt>double</tt>
      * value.
      *
-     * @param y a double value
-     * @return true if this value < y
+     @param y a double value
+     @return true if this value < y
      */
     public boolean lt(double y) {
         return (hi < y) || (hi == y && lo < 0.0);
@@ -2589,8 +2624,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than a given
      * <tt>long</tt> value.
      *
-     * @param y a long value
-     * @return true if this value <= y
+     @param y a long value
+     @return true if this value <= y
      */
     public boolean lt(long y) { 
         double yhi = y & 0xfffffffffffff800l;
@@ -2609,8 +2644,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than a given <tt>int</tt>
      * value.
      *
-     * @param y an int value
-     * @return true if this value < y
+     @param y an int value
+     @return true if this value < y
      */
     public boolean lt(int y) {
         return (hi < y) || (hi == y && lo < 0.0);
@@ -2623,8 +2658,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than or equal to another
      * <tt>DoubleDouble</tt> value.
      *
-     * @param y a DoubleDouble value
-     * @return true if this value <= y
+     @param y a DoubleDouble value
+     @return true if this value <= y
      */
     public boolean le(DoubleDouble y) {
         return (hi < y.hi) || (hi == y.hi && lo <= y.lo);
@@ -2637,8 +2672,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than or equal to a given
      * <tt>double</tt> value.
      *
-     * @param y a double value
-     * @return true if this value <= y
+     @param y a double value
+     @return true if this value <= y
      */
     public boolean le(double y) {
         return (hi < y) || (hi == y && lo <= 0.0);
@@ -2651,8 +2686,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than or equal to a given
      * <tt>long</tt> value.
      *
-     * @param y a long value
-     * @return true if this value <= y
+     @param y a long value
+     @return true if this value <= y
      */
     public boolean le(long y) { 
         double yhi = y & 0xfffffffffffff800l;
@@ -2671,8 +2706,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Tests whether this value is less than or equal to a given
      * <tt>int</tt> value.
      *
-     * @param y an int value
-     * @return true if this value <= y
+     @param y an int value
+     @return true if this value <= y
      */
     public boolean le(int y) {
         return (hi < y) || (hi == y && lo <= 0.0);
@@ -2684,7 +2719,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Compares two DoubleDouble objects numerically.
      *
-     * @return -1,0 or 1 depending on whether this value is less than, equal to
+     @return -1,0 or 1 depending on whether this value is less than, equal to
      * or greater than the value of <tt>o</tt>
      */
     @Override
@@ -2767,7 +2802,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Dumps the components of this number to a string.
      *
-     * @return a string showing the components of the number
+     @return a string showing the components of the number
      */
     public String dump() {
         return "DD<" + hi + ", " + lo + ">";
@@ -2808,7 +2843,7 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * Prints a DoubleDouble in the decimal number system to a String.
      * Normal notation is used for numbers in the range 0.001 to 1e10,
      * numbers outside of this range are printed in scientific notation.
-     * @return The String, representing the number.
+     @return The String, representing the number.
      */
     @Override
     public String toString() {
@@ -2820,21 +2855,21 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
     /**
      * Prints this DoubleDouble to a String. This method provides a lot
      * of flexibility on how to print the number.
-     * @param radix The radix of the number system in which this DoubleDouble
+     @param radix The radix of the number system in which this DoubleDouble
      * is printed. The exponent (if scientific notation is used) is always
      * printed in the decimal system. E.g. in the hexadecimal system, the
      * number A.BCDEFe20 stands for A.BCDEF*power, where power is 16^20 in
      * the decimal system.
-     * @param maxPrecision The maximum number of digits in the given radix to
+     @param maxPrecision The maximum number of digits in the given radix to
      * be printed. If the value 0 is supplied, then the number of digits is
      * such that the entire precision of the number is used (for radix 10 this
      * means that 31 digits are printed, for radix 16, this means that 26 
      * digits are printed). If a value is supplied, which uses more than the
      * precision of a DoubleDouble, then the number of digits is limited as if
      * the value 0 were aupplied.
-     * @param sci A boolean, telling whether normal notation or scientific
+     @param sci A boolean, telling whether normal notation or scientific
      * notation with exponents needs to be used.
-     * @return 
+     @return 
      */
     public String toString(int radix, int maxPrecision, boolean sci) {
         if (hi!=hi) {
@@ -3012,8 +3047,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
      * [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>} [ <tt>.</tt> {<i>digit</i>} ] [ ( <tt>e</tt> | <tt>E</tt> ) [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>}+
      * <pre>
      *
-     * @param str the string to parse
-     * @return the value of the parsed number
+     @param str the string to parse
+     @return the value of the parsed number
      * @throws NumberFormatException if <tt>str</tt> is not a valid
      * representation of a number
      */

@@ -44,8 +44,8 @@ public class VertexCover {
      * and the copied nodes are returned in a Set.  At this time, the identity
      * of each NAryTreeNode in the original root and copied root will not be
      * the same, so only the data properties should be used for identity in the returned set.
-     * @param root a n-ary tree root.
-     * @return an exact vertex cover of the tree, excluding leaves.
+     @param root a n-ary tree root.
+     @return an exact vertex cover of the tree, excluding leaves.
      * Note that a copy of the tree is made internally (excluding prev and next attributes)
      * and the copied nodes are returned in a Set.  At this time, the identity
      * of each NAryTreeNode in the original root and copied root will not be
@@ -124,8 +124,8 @@ public class VertexCover {
      *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
      * Also see Section 35.1 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
      * </pre>
-     * @param adjMap adjacency map for an undirected graph.
-     * @return the vertex cover for undirected graph adjMap, no larger than twice that of optimal.
+     @param adjMap adjacency map for an undirected graph.
+     @return the vertex cover for undirected graph adjMap, no larger than twice that of optimal.
      */
     public TIntSet approx2(TIntObjectMap<TIntSet> adjMap) {
         
@@ -209,9 +209,9 @@ public class VertexCover {
      * The algorithm implements pseudocode from
      * Section 35.4 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
      * </pre>
-     * @param adjMap adjacency map for an undirected graph.
-     * @param weights the weights of each vertex
-     * @return the minimum weighted vertex cover for graph G represented by adjMap with vertex weights.
+     @param adjMap adjacency map for an undirected graph.
+     @param weights the weights of each vertex
+     @return the minimum weighted vertex cover for graph G represented by adjMap with vertex weights.
      */
     public TIntSet approx2Weighted(TIntObjectMap<TIntSet> adjMap, double[] weights) {
         
@@ -250,6 +250,11 @@ public class VertexCover {
         return c;
     }
 
+    /**
+     *
+     @param adjMap
+     @return
+     */
     protected TIntObjectMap<TIntSet> copy(TIntObjectMap<TIntSet> adjMap) {
         
         TIntObjectMap<TIntSet> c = new TIntObjectHashMap<TIntSet>();
@@ -265,6 +270,12 @@ public class VertexCover {
         return c;
     }
 
+    /**
+     *
+     @param adjMap
+     @param weights
+     @return
+     */
     protected StandardForm createLinearProgramInStandardForm(
         TIntObjectMap<TIntSet> adjMap, double[] weights) {
         
@@ -320,9 +331,9 @@ public class VertexCover {
 
     /**
      * extract edges from the adjacency map and put them in a 2 dimensional array.
-     * @param adjMap adjacency map of an undirected graph.  edge u to v and v to u are
+     @param adjMap adjacency map of an undirected graph.  edge u to v and v to u are
      * considered the same edge.
-     * @return two dimensional array of the edges.
+     @return two dimensional array of the edges.
      */
     protected int[][] extractEdges(TIntObjectMap<TIntSet> adjMap) {
         Set<PairInt> edges = new HashSet<PairInt>();

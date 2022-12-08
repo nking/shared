@@ -23,6 +23,11 @@ public class FibonacciHeapWrapper {
     
     private int n = 0;
     
+    /**
+     *
+     @param nEstimate
+     @param maxC
+     */
     public FibonacciHeapWrapper(int nEstimate, int maxC) {
         
         int pow2 = (int)Math.ceil(Math.log(nEstimate)/Math.log(2));
@@ -51,7 +56,7 @@ public class FibonacciHeapWrapper {
     
     /**
      * runtime is O(1).  makes no attempt to consolidate tree.
-     * @param node 
+     @param node 
      */
     public void insert(HeapNode node) {
         
@@ -86,8 +91,8 @@ public class FibonacciHeapWrapper {
      * O(1) for decrease key, else the runtime is a 
      * delete and insert as O(log_2(n)).
      * 
-     * @param node
-     * @param key2 
+     @param node
+     @param key2 
      */
     public void decreaseKey(HeapNode node, long key2) {
         
@@ -129,7 +134,7 @@ public class FibonacciHeapWrapper {
     
     /**
      * runtime is O(log_2 N) or better.
-     * @return 
+     @return 
      */
     public HeapNode extractMin() {
         
@@ -155,7 +160,7 @@ public class FibonacciHeapWrapper {
     
     /**
      * runtime complexity is O(log_2(n))
-     * @param node 
+     @param node 
      */
     public void remove(HeapNode node) {
         
@@ -173,6 +178,10 @@ public class FibonacciHeapWrapper {
         n--;
     }
     
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
         return n;
     }

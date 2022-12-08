@@ -60,10 +60,10 @@ public class UnivariateDistance {
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
      **
-     * @param x sample of univariate observations of a variable
-     * @param y second sample of univariate observations (can be of another variable).  the length of y must be the
+     @param x sample of univariate observations of a variable
+     @param y second sample of univariate observations (can be of another variable).  the length of y must be the
      *          same as the length of x.
-     * @return covariance of X and Y along with intermediate data.  
+     @return covariance of X and Y along with intermediate data.  
      */
     public static DCov fastDCov(double[] x, double[] y) {
 
@@ -403,7 +403,7 @@ public class UnivariateDistance {
      * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * </pre>
-     * @param a an mxn matrix of data with a sample of a variable per row.
+     @param a an mxn matrix of data with a sample of a variable per row.
      * <pre>
      * e.g.  row 0 holds a sample of variable x, row 1 holds a sample of variable y, 
      * etc. so that the array format is [nVariables][nSample]
@@ -411,7 +411,7 @@ public class UnivariateDistance {
      *      a[1] = new double[]{y_0, y_1, y_2, ... y_n}
      *      ...
      * </pre>
-     * @return the covariance matrix as a double array of size [a.length][a.length]
+     @return the covariance matrix as a double array of size [a.length][a.length]
      */
     /*public static double[][] multivariateCovariance(double[][] a) {
     
@@ -490,9 +490,9 @@ public class UnivariateDistance {
     /**
      * checks the descending sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
      * "A fast algorithm for computing distance correlation" by Chaudhuri and Hu, 2018
-     * @param x
-     * @param y
-     * @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
+     @param x
+     @param y
+     @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
      */
     static double[][] _sortCheck(double[] x, double[] y) {
         
@@ -671,9 +671,9 @@ public class UnivariateDistance {
      * the intermediate steps to show the merge steps clearly. The complete
      * algorithm is present as fastDcov.
      *
-     * @param x
-     * @param y
-     * @return
+     @param x
+     @param y
+     @return
      */
     public static DCov _univariateCovariance(double[] x, double[] y) {
 
@@ -811,9 +811,9 @@ public class UnivariateDistance {
      * 
      * runtime is  O(n*log_2(n)).
      * 
-     * @param x sample of univariate observations of a variable
-     * @param y second sample of univariate observations (can be of another variable)
-     * @return the distance correlation of X and Y.  also returns intermediate data.
+     @param x sample of univariate observations of a variable
+     @param y second sample of univariate observations (can be of another variable)
+     @return the distance correlation of X and Y.  also returns intermediate data.
      * NOTE that the distance correlation is exactly zero if and only if two 
      * random variables are independent.
      */
@@ -842,8 +842,19 @@ public class UnivariateDistance {
         return dcor;
     }
   
+    /**
+     *
+     */
     public static class DCov {
+
+        /**
+         *
+         */
         public double covsq;
+
+        /**
+         *
+         */
         public double d;
         int[] indexes;
         double[] sortedX;
@@ -948,6 +959,10 @@ public class UnivariateDistance {
             return sb.toString();
         }
         
+        /**
+         *
+         @return
+         */
         public String toString2() {
             StringBuilder sb = new StringBuilder();
             sb.append("d=").append(d).append("\n");
@@ -963,10 +978,29 @@ public class UnivariateDistance {
         }
     }
   
+    /**
+     *
+     */
     public static class DCor {
+
+        /**
+         *
+         */
         public DCov covXYSq;
+
+        /**
+         *
+         */
         public DCov covXXSq;
+
+        /**
+         *
+         */
         public DCov covYYSq;
+
+        /**
+         *
+         */
         public double corSq;
         @Override
         public String toString() {

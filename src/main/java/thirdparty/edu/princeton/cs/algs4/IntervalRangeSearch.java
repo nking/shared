@@ -25,13 +25,18 @@ import java.util.List;
  the value of the new interval, but the key range does not
  change.
   
- * @param <T> the data type used in the Intervals
- * @param <Value> the data type of the key associated with each
+ @param <T> the data type used in the Intervals
+ @param <Value> the data type of the key associated with each
  * tree interval.
  ******************************************************************************/
 public class IntervalRangeSearch<T extends Comparable<T>, Value> extends
     RangeSearch<Interval<T>, Value> {
     
+    /**
+     *
+     @param interval
+     @return
+     */
     public Queue<Interval<T>> range0(Interval<T> interval) {
         Queue<Interval<T>> list = new Queue<Interval<T>>();
         //System.out.println("root=" + root);
@@ -40,12 +45,21 @@ public class IntervalRangeSearch<T extends Comparable<T>, Value> extends
         return list;
     }
     
+    /**
+     *
+     @return
+     */
     public List<Interval<T>> getAllIntervals() {
         List<Interval<T>> list = new ArrayList<Interval<T>>();
         IntervalRangeSearch.this.getAllIntervals(root, list);
         return list;
     }
     
+    /**
+     *
+     @param outputIntervals
+     @param outputValues
+     */
     public void getAllIntervals(List<Interval<T>> outputIntervals, 
         List<Value> outputValues) {
         getAllIntervals(root, outputIntervals, outputValues);

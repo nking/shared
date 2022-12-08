@@ -34,7 +34,7 @@ public class NearestNeighbor1D {
     
     /**
      * 
-     * @param maxX maximum x value of any data point including
+     @param maxX maximum x value of any data point including
      *    those to be queries
      */
     public NearestNeighbor1D(int maxX) {
@@ -53,6 +53,10 @@ public class NearestNeighbor1D {
             new XFastTrieNode<Integer>(), it, maxW);
     }
     
+    /**
+     *
+     @param index
+     */
     public void insert(int index) {
         xbt.add(Integer.valueOf(index));
     }
@@ -65,7 +69,8 @@ public class NearestNeighbor1D {
      Note: maxW = 1 + Math.ceil(Math.log(maxX)/Math.log(2));            
      </pre>
     
-     * @param x
+     @param x
+     @return 
      */
     public TIntSet findClosest(final int x) {        
         return findClosest(x, Integer.MAX_VALUE);
@@ -78,11 +83,11 @@ public class NearestNeighbor1D {
          the trie, else 2 * O(log_2(maxW)).
                      
       Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));
-     </ore>
+     </pre>
     
-     * @param x
-     * @param dMax
-     * @return a set of values within dMax that are the 
+     @param x
+     @param dMax
+     @return a set of values within dMax that are the 
      * closest points, else returns an empty set
      */
     public TIntSet findClosest(int x, int dMax) {

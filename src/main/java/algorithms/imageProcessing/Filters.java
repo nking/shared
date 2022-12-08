@@ -21,9 +21,9 @@ public class Filters {
     
     /**
      * @author nichole
-     * @param img
-     * @param size
-     * @return
+     @param img
+     @param size
+     @return
      */
     public static float[][] maximumFilter(float[][] img, int size) {
 
@@ -45,9 +45,9 @@ public class Filters {
     
     /**
      * @author nichole
-     * @param img
-     * @param size
-     * @return
+     @param img
+     @param size
+     @return
      */
     public static float[] maximumFilter(float[] img, int size) {
 
@@ -113,6 +113,11 @@ public class Filters {
     IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
     -- end scipy, skimage copyright ---
+     @param img
+     @param minDistance
+     @param thresholdRel
+     @param outputKeypoints1
+     @param outputKeypoints0
     */
     public void peakLocalMax(float[][] img, int minDistance,
         float thresholdRel,
@@ -285,6 +290,10 @@ public class Filters {
     IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
     -- end scipy, skimage copyright ---
+     @param img
+     @param minDistance
+     @param outputKeypoints
+     @param thresholdRel
     */
     public void peakLocalMax(float[] img, int minDistance, float thresholdRel,
         TIntList outputKeypoints) {

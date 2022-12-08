@@ -31,8 +31,8 @@ public class BruteForceDistance {
      * euclidean distance matrix
      * (ported from https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
      * 
-     * @param a
-     * @return 
+     @param a
+     @return 
      */
     public static double[][] distanceMatrix(double[][] a) {
         int n = a.length;
@@ -138,11 +138,11 @@ public class BruteForceDistance {
      * also see:
      * https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
      * https://numbersandcode.com/some-interesting-observations-with-distance-correlation-coefficients
-     * @param X data in double array format with number of rows n being same as
+     @param X data in double array format with number of rows n being same as
      * nRows for Y, though the number of dimensions, that is nCols can be different.
-     * @param Y data in double array format with number of rows n being same as
+     @param Y data in double array format with number of rows n being same as
      * nRows for X, though the number of dimensions, that is nCols can be different.
-     * @return returns distance correlation and intermediate data.
+     @return returns distance correlation and intermediate data.
      * (i) If E(|X|p + |Y|q) .lt. infinity, then 0 .lte. R .lte. 1, 
      *     and R(X, Y ) = 0 if and only if X and Y are independent.
        (ii) 0 .lte. R_n .lte. 1.
@@ -228,6 +228,9 @@ public class BruteForceDistance {
         return dc;
     }
     
+    /**
+     *
+     */
     public static class DCOV {
         double dCovSq;
         double dVarXSq;

@@ -6,7 +6,15 @@ package algorithms.statistics;
  */
 public interface IYFit {
 
+    /**
+     *
+     @return
+     */
     public String[] getParameterNames();
 
+    /**
+     *
+     @return
+     */
     public double[] getParameters();
 }

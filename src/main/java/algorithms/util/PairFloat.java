@@ -9,21 +9,50 @@ public class PairFloat {
     private float x;
     private float y;
     
+    /**
+     *
+     */
     public PairFloat() {
     }
+
+    /**
+     *
+     @param xPoint
+     @param yPoint
+     */
     public PairFloat(float xPoint, float yPoint) {
         x = xPoint;
         y = yPoint;
     }
+
+    /**
+     *
+     @param xPoint
+     */
     public void setX(float xPoint) {
         x = xPoint;
     }
+
+    /**
+     *
+     @param yPoint
+     */
     public void setY(float yPoint) {
         y = yPoint;
     }
+
+    /**
+     *
+     @return
+     */
     public float getX() {
         return x;
     }
+
+    /**
+     *
+     @return
+     */
     public float getY() {
         return y;
     }
@@ -48,9 +77,22 @@ public class PairFloat {
         return hash;
     }
 
+    /**
+     *
+     */
     protected final static int fnv321aInit = 0x811c9dc5;
+
+    /**
+     *
+     */
     protected final static int fnv32Prime = 0x01000193;
 
+    /**
+     *
+     @param i0
+     @param i1
+     @return
+     */
     protected int fnvHashCode(float i0, float i1) {
 
         /*

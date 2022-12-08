@@ -21,6 +21,8 @@ import java.util.List;
  * 
  *     public void insert(T x, T y, Value value)
  *     public List<Value> query2D(Interval2D<T> rect)
+ @param <T>
+ @param <Value>
  */
 public class QuadTree<T extends Comparable<T>, Value>  {
     
@@ -43,6 +45,9 @@ public class QuadTree<T extends Comparable<T>, Value>  {
 
   /***********************************************************************
     *  Insert (x, y) into appropriate quadrant
+     @param x
+     @param y
+     @param value
     ***************************************************************************/
     @SuppressWarnings({"unchecked"})
     public void insert(T x, T y, Value value) {
@@ -63,6 +68,8 @@ public class QuadTree<T extends Comparable<T>, Value>  {
 
   /***********************************************************************
     *  Range search.
+     @param rect
+     @return 
     ***************************************************************************/
     @SuppressWarnings({"unchecked"})
     public List<Value> query2D(Interval2D<T> rect) {
@@ -98,6 +105,9 @@ public class QuadTree<T extends Comparable<T>, Value>  {
 
    /***************************************************************************
     *  helper comparison functions
+     @param k1
+     @param k2
+     @return 
     ***************************************************************************/
 
     private boolean less(T k1, T k2) { return k1.compareTo(k2) <  0; }
@@ -106,6 +116,7 @@ public class QuadTree<T extends Comparable<T>, Value>  {
 
    /***************************************************************************
     *  test client
+     @param args
     ***************************************************************************/
     public static void main(String[] args) {
         int M = Integer.parseInt(args[0]);   // queries

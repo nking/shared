@@ -70,12 +70,16 @@ public class TSPDynamic extends AbstractTSP {
     
     /**
      * 
-     * @param dist the distance matrix of a graph which obeys the triangle inequality.
+     @param dist the distance matrix of a graph which obeys the triangle inequality.
      */
     public TSPDynamic(double[][] dist) {
         super(dist);
     }
     
+    /**
+     *
+     * @throws InterruptedException
+     */
     public void solve() throws InterruptedException {
 
         if (minCost != sentinel) {

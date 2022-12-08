@@ -13,9 +13,9 @@ package thirdparty.fr.inria.optimization.cmaes.fitness;
 public interface IObjectiveFunctionParallel {
 
     /** 
-     * @param pop is an array of search points to be evaluated, where
+     @param pop is an array of search points to be evaluated, where
      * pop[i] is the i-th point. 
-     * @return array of objective function values. The i-th value 
+     @return array of objective function values. The i-th value 
      * is the objective function value of pop[i].
      * */ 
     double[] valuesOf(double pop[][]);

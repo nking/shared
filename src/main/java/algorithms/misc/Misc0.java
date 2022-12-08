@@ -20,7 +20,7 @@ public class Misc0 {
      * get an instance of SecureRandom, trying first
      * the algorithm SHA1PRNG, else the
      * default constructor.
-     * @return 
+     @return 
      */
     public static SecureRandom getSecureRandom() {
         
@@ -36,6 +36,13 @@ public class Misc0 {
         return sr;
     }
     
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @param height
+     @return
+     */
     public static double[][] convertToBinary(TIntSet pixIdxs, int width, int height) {
         
         double[][] out = new double[width][height];
@@ -57,6 +64,13 @@ public class Misc0 {
         return out;
     }
     
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @param height
+     @return
+     */
     public static double[][] convertToBinary(TLongSet pixIdxs, int width, int height) {
         
         double[][] out = new double[width][height];
@@ -78,6 +92,11 @@ public class Misc0 {
         return out;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static Number[] convertToNumberArray(float[] a) {
         if (a == null) {
             return new Number[0];
@@ -89,6 +108,11 @@ public class Misc0 {
         return aa;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static Number[] convertToNumberArray(int[] a) {
         if (a == null) {
             return new Number[0];
@@ -100,6 +124,11 @@ public class Misc0 {
         return aa;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static Number[] convertToNumberArray(double[] a) {
         if (a == null) {
             return new Number[0];
@@ -111,6 +140,11 @@ public class Misc0 {
         return aa;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static Number[] convertToNumberArray(short[] a) {
         if (a == null) {
             return new Number[0];

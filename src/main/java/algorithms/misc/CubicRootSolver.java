@@ -9,7 +9,16 @@ import no.uib.cipr.matrix.NotConvergedException;
  */
 public class CubicRootSolver {
 
+    /**
+     *
+     */
     public final static double eps = 1e-7;
+
+    /**
+     *
+     @param r
+     @return
+     */
     public static double[] realNonZeroOnly(Complex[] r) {
         int n = 0;
         int i;
@@ -34,9 +43,9 @@ public class CubicRootSolver {
      * The given coefficients are transformed internally to those used by Pearson in 
      * "Handbook of Applied Mathematics" which uses t^3 + (3q_p)*t + (2r_p) = 0.
      * 
-     * @param p0 coefficient p for the first order term.
-     * @param q0 coefficient q for the zero order term.
-     * @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     @param p0 coefficient p for the first order term.
+     @param q0 coefficient q for the zero order term.
+     @return returns the roots of the polynomial w/ the given depressed cubic parameters.
      * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     static Complex[] solveUsingDepressedCubic0(final double p0, final double q0) {
@@ -86,9 +95,9 @@ public class CubicRootSolver {
      * https://www.wikiwand.com/en/Cubic_equation#/google_vignette
      * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic
      * NOTE: only solving for the real, rational roots.
-     * @param p coefficient p for the first order term.
-     * @param q coefficient q for the zero order term.
-     * @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     @param p coefficient p for the first order term.
+     @param q coefficient q for the zero order term.
+     @return returns the roots of the polynomial w/ the given depressed cubic parameters.
      * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     public static double[] solveUsingDepressedCubic(double p, double q) {
@@ -187,8 +196,8 @@ public class CubicRootSolver {
     /**
      * calculates coefficients for the reduced form of the cubic equation
      * called the depressed cubic.
-     * @param cubicCoeff
-     * @return a, b, c, p, q.  returns null if cubicCoeff[0] = 0.
+     @param cubicCoeff
+     @return a, b, c, p, q.  returns null if cubicCoeff[0] = 0.
      */
     static double[] calcDepressedCubicCoefficients(double[] cubicCoeff) {
         if (cubicCoeff.length != 4) {
@@ -225,9 +234,10 @@ public class CubicRootSolver {
      * https://www.mathemania.com/lesson/cardanos-formula-solving-cubic-equations/
      * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic
      * NOTE: only solving for the real roots.
-     * @param coeffs an array holding a, b, c , d for the equation 
+     @param coeffs an array holding a, b, c , d for the equation 
      * a*x^3 + b*x^2 + c*x + d = 0.
-     * @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[] solve(double[] coeffs) throws NotConvergedException {
         if (coeffs.length != 4) {
@@ -272,9 +282,10 @@ public class CubicRootSolver {
      * using the general formula, given coefficients a, b, c, d. returns x.
      * following
      * https://www.wikiwand.com/en/Cubic_equation#/General_cubic_formula
-     * @param coeffs an array holding a, b, c , d for the equation 
+     @param coeffs an array holding a, b, c , d for the equation 
      * a*x^3 + b*x^2 + c*x + d = 0.
-     * @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[] solveUsingGeneral(double[] coeffs) throws NotConvergedException {
         

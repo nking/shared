@@ -11,45 +11,106 @@ public class QuadInt {
     private int c = Integer.MIN_VALUE;
     private int d = Integer.MIN_VALUE;
     
+    /**
+     *
+     */
     public QuadInt() {
     }
+
+    /**
+     *
+     @param aPoint
+     @param bPoint
+     @param cPoint
+     @param dPoint
+     */
     public QuadInt(int aPoint, int bPoint, int cPoint, int dPoint) {
         a = aPoint;
         b = bPoint;
         c = cPoint;
         d = dPoint;
     }
+
+    /**
+     *
+     @param ab
+     @param cd
+     */
     public QuadInt(PairInt ab, PairInt cd) {
         a = ab.getX();
         b = ab.getY();
         c = cd.getX();
         d = cd.getY();
     }
+
+    /**
+     *
+     @param aPoint
+     */
     public void setA(int aPoint) {
         a = aPoint;
     }
+
+    /**
+     *
+     @param bPoint
+     */
     public void setB(int bPoint) {
         b = bPoint;
     }
+
+    /**
+     *
+     @param cPoint
+     */
     public void setC(int cPoint) {
         c = cPoint;
     }
+
+    /**
+     *
+     @param dPoint
+     */
     public void setD(int dPoint) {
         d = dPoint;
     }
+
+    /**
+     *
+     @return
+     */
     public int getA() {
         return a;
     }
+
+    /**
+     *
+     @return
+     */
     public int getB() {
         return b;
     }
+
+    /**
+     *
+     @return
+     */
     public int getC() {
         return c;
     }
+
+    /**
+     *
+     @return
+     */
     public int getD() {
         return d;
     }
     
+    /**
+     *
+     @return
+     */
     public QuadInt copy() {
         QuadInt cp = new QuadInt(a, b, c, d);
         return cp;
@@ -76,9 +137,24 @@ public class QuadInt {
         return hash;
     }
 
+    /**
+     *
+     */
     protected final static int fnv321aInit = 0x811c9dc5;
+
+    /**
+     *
+     */
     protected final static int fnv32Prime = 0x01000193;
 
+    /**
+     *
+     @param i0
+     @param i1
+     @param i2
+     @param i3
+     @return
+     */
     protected int fnvHashCode(int i0, int i1, int i2, int i3) {
 
         /*

@@ -25,8 +25,8 @@ public class Complement {
        Chap 34 Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
        </pre>
        runtime complexity is O(|V|^2).
-     * @param g an undirected graph
-     * @return 
+     @param g an undirected graph
+     @return 
      */
     public static Set<PairInt> graphComplement(TIntObjectMap<TIntSet> g) {
         Set<PairInt> edges = extractEdges(g);
@@ -41,8 +41,8 @@ public class Complement {
        Chap 34 Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
        </pre>
        runtime complexity is O(|V|^2).
-     * @param edges edges of an undirected graph
-     * @return 
+     @param edges edges of an undirected graph
+     @return 
      */
     public static Set<PairInt> graphComplement(Set<PairInt> edges) {
         TIntSet vertices = extractVertices(edges);
@@ -70,9 +70,9 @@ public class Complement {
      * given undirected graph g=(V,E) and a subset s of the vertices V,
      * return the complement of s.
      * runtime complexity is O(|V| + |E|)... between best case O(|V| + |E|) and worse case O(|V| * |E|).
-     * @param g undirected graph g=(V,E)
-     * @param s subset of vertices in graph g.
-     * @return the complement of s, that is, V - {s}.
+     @param g undirected graph g=(V,E)
+     @param s subset of vertices in graph g.
+     @return the complement of s, that is, V - {s}.
      */
     public static TIntSet setComplement(TIntObjectMap<TIntSet> g, TIntSet s) {
         TIntSet vertices = extractVertices(g);
@@ -80,6 +80,11 @@ public class Complement {
         return vertices;
     }
 
+    /**
+     *
+     @param g
+     @return
+     */
     public static Set<PairInt> extractEdges(TIntObjectMap<TIntSet> g) {
         TIntObjectIterator<TIntSet> iter = g.iterator();
         Set<PairInt> edges = new HashSet<PairInt>();
@@ -103,6 +108,11 @@ public class Complement {
         return edges;
     }
 
+    /**
+     *
+     @param edges
+     @return
+     */
     public static TIntSet extractVertices(Set<PairInt> edges) {
         TIntSet vs = new TIntHashSet();
         for (PairInt uv : edges){
@@ -112,6 +122,11 @@ public class Complement {
         return vs;
     }
     
+    /**
+     *
+     @param g
+     @return
+     */
     public static TIntSet extractVertices(TIntObjectMap<TIntSet> g) {
         TIntSet vs = new TIntHashSet();
         TIntObjectIterator<TIntSet> iter = g.iterator();

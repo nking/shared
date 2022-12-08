@@ -18,20 +18,37 @@ import java.util.Arrays;
  *</pre>
  * 
  * @author nichole
- * @param <T> class type to be held and sorted by this class.  It must implement
+ @param <T> class type to be held and sorted by this class.  It must implement
  * Comparable.
  */
 @SuppressWarnings({"unchecked"})
 public class FixedSizeVector<T> {
 
+    /**
+     *
+     */
     protected T[] a = null;
 
+    /**
+     *
+     */
     protected final int capacity;
 
+    /**
+     *
+     */
     protected int n;
 
+    /**
+     *
+     */
     protected int lastIdx;
 
+    /**
+     *
+     @param fixedCapacity
+     @param classTypeToHold
+     */
     public FixedSizeVector(int fixedCapacity, Class<T> classTypeToHold) {
 
         if (fixedCapacity < 1) {
@@ -55,7 +72,7 @@ public class FixedSizeVector<T> {
      *
      * runtime complexity is O(log_2(capacity) + less than capacity).
      *
-     * @param value value to insert into vector
+     @param value value to insert into vector
      */
     public void add(T value) {
 
@@ -74,6 +91,11 @@ public class FixedSizeVector<T> {
         a[lastIdx] = value;
     }
     
+    /**
+     *
+     @param itemIndex
+     @return
+     */
     public T get(int itemIndex) {
         
         if (itemIndex < 0 || itemIndex >= capacity) {
@@ -115,7 +137,7 @@ public class FixedSizeVector<T> {
      *
      * runtime complexity is O(N)
      *
-     * @return the internal array.  note that this is not a copy, intentionally.
+     @return the internal array.  note that this is not a copy, intentionally.
      */
     T[] getArray() {
 
@@ -126,7 +148,7 @@ public class FixedSizeVector<T> {
      * return the number of items in the internal array.  if the array is not
      * yet filled, the return will be less than the capacity, else will
      * be the same as the capacity.
-     * @return number of elements in vector
+     @return number of elements in vector
      */
     public int size() {
         return n;
@@ -134,7 +156,7 @@ public class FixedSizeVector<T> {
     
     /**
      * get the maximum size of the vector, given at instantiation.
-     * @return capacity
+     @return capacity
      */
     public int getFixedCapacity() {
         return capacity;

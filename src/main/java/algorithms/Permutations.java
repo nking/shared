@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 /**
  *
+ * @author nichole
  */
 public class Permutations {
     
@@ -15,11 +16,11 @@ public class Permutations {
         who reference:
         Sedgewick, Robert. "a talk on Permutation Generation Algorithms
         http://www.cs.princeton.edu/~rs/talks/perms.pdf
-     * @param set the set of numbers to generate all permuations for.
+     @param set the set of numbers to generate all permuations for.
      * NOTE that set.length at most can be 12 due to the limit in the 
      * length of an array in java (which is outPermutations.length).
      * other methods can be created upon need.
-     * @param outPermutations output variable to fill with the permutations
+     @param outPermutations output variable to fill with the permutations
     */
     public static void permute(int[] set, int[][] outPermutations) {
         

@@ -68,8 +68,8 @@ public class DistanceTransform {
        * ISBN 978-0-306-47025-7
      *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
      * 
-     * @param input
-     * @return 
+     @param input
+     @return 
      */
     public int[][] applyMeijsterEtAl(int[][] input) {
         
@@ -125,10 +125,10 @@ public class DistanceTransform {
        * ISBN 978-0-306-47025-7
      *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
      * 
-     * @param points
-     * @param width
-     * @param height
-     * @return 
+     @param points
+     @param width
+     @param height
+     @return 
      */
     public int[][] applyMeijsterEtAl(Set<PairInt> points, final int width, final int height) {
         
@@ -181,10 +181,10 @@ public class DistanceTransform {
        * ISBN 978-0-306-47025-7
      *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
      * 
-     * @param points pixel indexes
-     * @param width
-     * @param height
-     * @return 
+     @param points pixel indexes
+     @param width
+     @param height
+     @return 
      */
     public int[][] applyMeijsterEtAl(TLongSet points, final int width, final int height) {
         
@@ -401,8 +401,8 @@ public class DistanceTransform {
        * ISBN 978-0-306-47025-7
      *  * https://www.rug.nl/research/portal/files/3059926/2002CompImagVisMeijster.pdf
      * 
-     * @param input
-     * @return 
+     @param input
+     @return 
      */
     public int[] applyMeijsterEtAl1D(int[] input) {
         

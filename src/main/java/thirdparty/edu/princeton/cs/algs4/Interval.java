@@ -10,6 +10,7 @@ package thirdparty.edu.princeton.cs.algs4;
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
+ @param <T>
  */
 public class Interval<T extends Comparable<T>> implements 
     Comparable<Interval<T>> {
@@ -17,6 +18,11 @@ public class Interval<T extends Comparable<T>> implements
     private final T min;    // min endpoint
     private final T max;    // max endpoint
 
+    /**
+     *
+     @param min
+     @param max
+     */
     public Interval(T min, T max) {
         if (less(max, min)) {
             throw new RuntimeException(
@@ -27,21 +33,43 @@ public class Interval<T extends Comparable<T>> implements
     }
 
     // return min endpoint
+
+    /**
+     *
+     @return
+     */
     public T min() {
         return min;
     }
 
     // return max endpoint
+
+    /**
+     *
+     @return
+     */
     public T max() {
         return max;
     }
 
     // is x between min and max
+
+    /**
+     *
+     @param x
+     @return
+     */
     public boolean contains(T x) {
         return !less(x, min) && !less(max, x);
     }
 
     // does this interval a intersect interval b?
+
+    /**
+     *
+     @param b
+     @return
+     */
     public boolean intersects(Interval<T> b) {
         Interval<T> a  = this;
         if (less(a.max, b.min)) return false;
@@ -50,6 +78,12 @@ public class Interval<T extends Comparable<T>> implements
     }
 
     // does this interval a equal interval b?
+
+    /**
+     *
+     @param b
+     @return
+     */
     public boolean equals(Interval<T> b) {
         Interval<T> a  = this;
         return a.min.equals(b.min) && a.max.equals(b.max);
@@ -84,6 +118,11 @@ public class Interval<T extends Comparable<T>> implements
     }
 
     // test client
+
+    /**
+     *
+     @param args
+     */
     public static void main(String[] args) {
         int n = Integer.parseInt(args[0]);
 

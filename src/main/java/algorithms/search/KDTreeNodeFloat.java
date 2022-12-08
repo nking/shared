@@ -1,5 +1,9 @@
 package algorithms.search;
 
+/**
+ *
+ * @author nichole
+ */
 public class KDTreeNodeFloat {
 
 	KDTreeNodeFloat right = null;
@@ -13,35 +17,35 @@ public class KDTreeNodeFloat {
     int depth = 0;
     
     /**
-     * @return the x
+     @return the x
      */
     public float getX() {
         return x;
     }
     
     /**
-     * @param theX
+     @param theX
      */
     public void setX(float theX) {
         x = theX;
     }
 
     /**
-     * @return the y
+     @return the y
      */
     public float getY() {
         return y;
     }
     
     /**
-     * @param theY
+     @param theY
      */
     public void setY(float theY) {
         y = theY;
     }
 
     /**
-     * @return the key
+     @return the key
      */
     public float getKey() {
         return key;

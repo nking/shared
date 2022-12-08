@@ -16,6 +16,10 @@ public class NAryTreeNode extends DoublyLinkedNode {
     private final Set<NAryTreeNode> children = new HashSet<NAryTreeNode>();
     private NAryTreeNode parent;
 
+    /**
+     *
+     @param data
+     */
     public NAryTreeNode(int data) {
         this.data = data;
     }
@@ -25,28 +29,28 @@ public class NAryTreeNode extends DoublyLinkedNode {
     }
 
     /**
-     * @return the data
+     @return the data
      */
     public int getData() {
         return data;
     }
 
     /**
-     * @return the left
+     @return the left
      */
     public Set<NAryTreeNode> getChildren() {
         return children;
     }
 
     /**
-     * @return the parent
+     @return the parent
      */
     public NAryTreeNode getParent() {
         return parent;
     }
 
     /**
-     * @param data the data to set
+     @param data the data to set
      */
     public void setData(int data) {
         this.data = data;
@@ -55,7 +59,7 @@ public class NAryTreeNode extends DoublyLinkedNode {
     /**
      * add a child node to this node.  a side-effect that should be idempotent is
      * that the method also sets the child's parent to this instance.
-     * @param child a child node to set
+     @param child a child node to set
      */
     public void addChild(NAryTreeNode child) {
         children.add(child);
@@ -63,7 +67,7 @@ public class NAryTreeNode extends DoublyLinkedNode {
     }
 
     /**
-     * @param parent the parent to set
+     @param parent the parent to set
      */
     public void setParent(NAryTreeNode parent) {
         this.parent = parent;
@@ -74,8 +78,8 @@ public class NAryTreeNode extends DoublyLinkedNode {
      * NAryTreeNode copied are data, parent and children.  The next and
      * prev attributes are not copied currently, but could be added upon need.
      * The runtime complexity is O(|V|).
-     * @param root copy the tree from root
-     * @return the copied tree root
+     @param root copy the tree from root
+     @return the copied tree root
      */
     public static NAryTreeNode copyTree(NAryTreeNode root) {
         

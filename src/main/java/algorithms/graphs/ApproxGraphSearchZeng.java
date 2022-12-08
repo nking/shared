@@ -58,6 +58,7 @@ public class ApproxGraphSearchZeng {
     /**
      * set the property edgesAreLabeled to true or false (default is false),
      * to add the cost of edge insert, delete, and substitutions into edit distances.
+     @param labeled
      */
     public void setEdgesAreLabeled(boolean labeled) {
         this.edgesAreLabeled = labeled;
@@ -79,17 +80,17 @@ public class ApproxGraphSearchZeng {
     The best-case runtime complexity is Θ(n^3), while the worse is exponential 
     * in terms of n for the optimal search, where n is the number of vertices.
     * This method implements Algorithm 3 of the paper.
-     * @param q the query graph
-     * @param db list of graphs in a database
-     * @param w graph edit distance threshold for the matches in the search.
+     @param q the query graph
+     @param db list of graphs in a database
+     @param w graph edit distance threshold for the matches in the search.
      * the lower bound, sub-optimal, refined sub-optimal, and optimal
      * costs are less than or equal to w.
-     * @param useAsFilterWithoutOptimal if true, the algorithm will return
+     @param useAsFilterWithoutOptimal if true, the algorithm will return
      * db graphs that passed the bounds of graph edit distances within the 
      * given threshold w and the algorithm will not execute the exponential
      * optimal algorithm.  if false, the algorithm will run the filters
      * and then the optimal graph search and return the results.
-     * @return graphs all db_i in db s.t. db_i is the same as the query graph q
+     @return graphs all db_i in db s.t. db_i is the same as the query graph q
      * within a graph edit distance threshold w
      * @throws java.lang.InterruptedException
      */
@@ -269,17 +270,17 @@ SDM, pp 154–163 (2011)
 * 
      * </pre>
   
-     * @param q the query graph
-     * @param db list of graphs in a database
-     * @param w graph edit distance threshold used in the search when comparing
+     @param q the query graph
+     @param db list of graphs in a database
+     @param w graph edit distance threshold used in the search when comparing
      * the query with each database graph.
      * the total threshold for the lower bound is abs(|V_q|-|V_db_i|) + abs(|E_q|-|E_db_i|) + 2*w.
-     * @param useAsFilterWithoutOptimal if true, the algorithm will return
+     @param useAsFilterWithoutOptimal if true, the algorithm will return
      * db graphs that passed the bounds of graph edit distances within the 
      * given threshold w and the algorithm will not execute the exponential
      * optimal algorithm.  if false, the algorithm will run the filters
      * and then the optimal graph search and return the results.
-     * @return all graphs db_i in db s.t. db_i is the same as the query graph Q
+     @return all graphs db_i in db s.t. db_i is the same as the query graph Q
      */
     public List<Result> approxSubSearch(Graph q, List<Graph> db, double w,
         boolean useAsFilterWithoutOptimal) {
@@ -376,13 +377,13 @@ SDM, pp 154–163 (2011)
       Chapter 3., pg 45, Algorithm 1 of Feng 2017, PHD Thesis in CSE, UNSW, AU,
       "Efficiently Computing Graph Similarity and Graph Connectivity"
      </pre>
-     * @param sg1 star structures for graph g1
-     * @param sg2 star structures for graph g2
-     * @param e1Labels map having key = edge in graph g1, value = edge label
-     * @param e2Labels map having key = edge in graph g2, value = edge label
+     @param sg1 star structures for graph g1
+     @param sg2 star structures for graph g2
+     @param e1Labels map having key = edge in graph g1, value = edge label
+     @param e2Labels map having key = edge in graph g2, value = edge label
      @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
-     * @return 
+     @return 
      */
     protected double suboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
         TObjectIntMap<PairInt> e1Labels, TObjectIntMap<PairInt> e2Labels,
@@ -500,13 +501,13 @@ SDM, pp 154–163 (2011)
       Chapter 3., pg 45, Algorithm 1 of Feng 2017, PHD Thesis in CSE, UNSW, AU,
       "Efficiently Computing Graph Similarity and Graph Connectivity"
      </pre>
-     * @param sg1 star structures for graph g1
-     * @param sg2 star structures for graph g2
-     * @param a1 adjacency matrix for graph g1
-     * @param a2 adjacency matrix for graph g2
+     @param sg1 star structures for graph g1
+     @param sg2 star structures for graph g2
+     @param a1 adjacency matrix for graph g1
+     @param a2 adjacency matrix for graph g2
      @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
-     * @return 
+     @return 
      */
     protected double suboptimalEditDistanceV(StarStructure[] sg1, StarStructure[] sg2,
         int[][] a1, int[][] a2, int[] assignments) {
@@ -548,11 +549,11 @@ SDM, pp 154–163 (2011)
     /**
      * calculate Lm(g1, g2) = μ(g1, g2) / max{4, [max{δ(g1), δ(g2)} + 1]}
      * following Sect 4.2.2 of Zeng et al. 2009.
-     * @param sg1 star structures for graph g1
-     * @param sg2 star structures for graph g2
-     * @param mappingDist mapping distance calculated using Definition 4.3 in
+     @param sg1 star structures for graph g1
+     @param sg2 star structures for graph g2
+     @param mappingDist mapping distance calculated using Definition 4.3 in
      * Section 4.2.1 in Zeng et al. 2009.
-     * @return 
+     @return 
      */
     protected double lowerBoundEditDistance(StarStructure[] sg1, StarStructure[] sg2,
         int mappingDist) {
@@ -580,11 +581,11 @@ SDM, pp 154–163 (2011)
      * The distance ζ between S_1 and S_2 is the summation of the edit distance
      * over an assignment of vertexes solved by bipartite matching of the
      * vertex labels.
-     * @param sg1 star structures for graph g1
-     * @param sg2 star structures for graph g2
-     * @param assignments array of bipartite assignments.
+     @param sg1 star structures for graph g1
+     @param sg2 star structures for graph g2
+     @param assignments array of bipartite assignments.
      * assignments[0] is the matching sg1[0] to sg2[assignments[0]];
-     * @return 
+     @return 
      */
     protected int mappingDistance(StarStructure[] sg1, StarStructure[] sg2,
         int[] assignments) {
@@ -609,8 +610,8 @@ SDM, pp 154–163 (2011)
 
     /**
      * find the maximum degree of a vertex for the graph g.
-     * @param sg
-     * @return 
+     @param sg
+     @return 
      */
     private int maxDegree(StarStructure[] sg) {
         int max = 0, deg;
@@ -666,10 +667,10 @@ SDM, pp 154–163 (2011)
      * C_i,j = 1 if l_g(vi) = l_h(uj)(vi ∈ V(g), uj ∈ V(h)), 
      *       otherwise C_i,j = 0.
      * TODO: revise to include consideration for edge labels.
-     * @param sg1
-     * @param sg2
-     * @param assignments
-     * @return 
+     @param sg1
+     @param sg2
+     @param assignments
+     @return 
      */
     private int[][] createLabelMatrix(StarStructure[] sg1, StarStructure[] sg2, 
         int[] assignments) {
@@ -697,18 +698,18 @@ SDM, pp 154–163 (2011)
      * vertex assignments and calculating the
      * suboptimal distance, keeping the permuted assignments that result in
      * the smallest edit distance.
-     * @param sg1 star structures for graph g1
-     * @param sg2 star structures for graph g2
-     * @param e1Labels map having key = edge in graph g1, value = edge label
-     * @param e2Labels map having key = edge in graph g2, value = edge label
-     * @param a1 adjacency matrix for graph g1
-     * @param a2 adjacency matrix for graph g2
-     * @param refinedAssign input initial vertex assignments and output
+     @param sg1 star structures for graph g1
+     @param sg2 star structures for graph g2
+     @param e1Labels map having key = edge in graph g1, value = edge label
+     @param e2Labels map having key = edge in graph g2, value = edge label
+     @param a1 adjacency matrix for graph g1
+     @param a2 adjacency matrix for graph g2
+     @param refinedAssign input initial vertex assignments and output
      * refined vertex assignments.
-     * @param tau the sub-optimal edit distance C(g,h,P) where
+     @param tau the sub-optimal edit distance C(g,h,P) where
      * P is formed from the given assignments in refinedAssign.
-     * @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
-     * @return
+     @param distM cost matrix for bipartite assignments of vertexes in sg1 to sg2
+     @return
      */
     protected double refinedSuboptimalEditDistance(StarStructure[] sg1, StarStructure[] sg2,
         TObjectIntMap<PairInt> e1Labels, TObjectIntMap<PairInt> e2Labels, int[][] a1, int[][] a2,
@@ -801,17 +802,17 @@ SDM, pp 154–163 (2011)
      * to find the one which results in the minimum C(g, h, P).  
      * (see section 4.3 of Zeng et al. 2009).
      * the runtime complexity is n!.
-     * @param sg1 star structures for graph g1
-     * @param sg2 star structures for graph g2
-     * @param e1Labels map having key = edge in graph g1, value = edge label
-     * @param e2Labels map having key = edge in graph g2, value = edge label
-     * @param a1 adjacency matrix for graph g1
-     * @param a2 adjacency matrix for graph g2
-     * @param refinedAssign input initial vertex assignments and output
+     @param sg1 star structures for graph g1
+     @param sg2 star structures for graph g2
+     @param e1Labels map having key = edge in graph g1, value = edge label
+     @param e2Labels map having key = edge in graph g2, value = edge label
+     @param a1 adjacency matrix for graph g1
+     @param a2 adjacency matrix for graph g2
+     @param refinedAssign input initial vertex assignments and output
      * refined vertex assignments.
-     * @param tau the sub-optimal edit distance C(g,h,P) where
+     @param tau the sub-optimal edit distance C(g,h,P) where
      * P is formed from the given assignments in refinedAssign.
-     * @return
+     @return
      * @throws java.lang.InterruptedException exception thrown if thread is 
      * interrupted.  The permutation code is running in a separate thread using
      * a semaphore model to pause and continue execution.
@@ -844,6 +845,11 @@ SDM, pp 154–163 (2011)
         return min;
     }
 
+    /**
+     *
+     @param assign
+     @return
+     */
     protected TIntIntMap reverseAssignment(int[] assign) {
         TIntIntMap r = new TIntIntHashMap();
         for (int i = 0; i < assign.length; ++i) {
@@ -911,16 +917,28 @@ SDM, pp 154–163 (2011)
      * an undirected attributed graph
      */
     public static class Graph {
+
+        /**
+         *
+         */
         public final TIntIntMap vLabels;
+
+        /**
+         *
+         */
         public final TObjectIntMap<PairInt> eLabels;
+
+        /**
+         *
+         */
         public final TIntObjectMap<TIntSet> adjMap;
         /**
          * construct a graph instance using given data structures.  Note that this
          * method copies by reference and does not copy by value into new
          * data structures (can use MatrixUtil.copy() methods).
-         * @param adjMap
-         * @param vLabels
-         * @param eLabels 
+         @param adjMap
+         @param vLabels
+         @param eLabels 
          */
         public Graph(TIntObjectMap<TIntSet> adjMap, TIntIntMap vLabels, TObjectIntMap<PairInt> eLabels) {
             this.vLabels = vLabels;
@@ -944,6 +962,11 @@ SDM, pp 154–163 (2011)
             return c;
         }
         
+        /**
+         *
+         @param g
+         @return
+         */
         public static Graph copy(Graph g) {
             return new Graph(Graph.copy(g.adjMap), Graph.copy(g.vLabels),
                 Graph.copy(g.eLabels));
@@ -977,10 +1000,35 @@ SDM, pp 154–163 (2011)
         }
     }
     
+    /**
+     *
+     */
     public static class Result {
         
+        /**
+         *
+         */
         public static enum BOUND {
-            LOWER, SUBOPTIMAL, REFINED_SUBOPTIMAL, OPTIMAL
+
+            /**
+             *
+             */
+            LOWER,
+
+            /**
+             *
+             */
+            SUBOPTIMAL,
+
+            /**
+             *
+             */
+            REFINED_SUBOPTIMAL,
+
+            /**
+             *
+             */
+            OPTIMAL
         }
         
         /**
@@ -988,12 +1036,28 @@ SDM, pp 154–163 (2011)
          */
         public final int[] assignment;
         
+        /**
+         *
+         */
         public final int dbGraphIndex;
         
+        /**
+         *
+         */
         public final double editCost;
         
+        /**
+         *
+         */
         public final BOUND bound;
         
+        /**
+         *
+         @param dbGraphIndex
+         @param bound
+         @param assign
+         @param editCost
+         */
         public Result(int dbGraphIndex, BOUND bound, int[] assign, double editCost) {
             this.bound = bound;
             this.dbGraphIndex = dbGraphIndex;

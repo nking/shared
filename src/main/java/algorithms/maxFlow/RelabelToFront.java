@@ -98,10 +98,23 @@ public class RelabelToFront {
     /** excess flow for a node: flow in exceeds flow out.*/
     protected final double[] eF;
     
+    /**
+     *
+     */
     protected final int srcIdx;
     
+    /**
+     *
+     */
     protected final int sinkIdx;
 
+    /**
+     *
+     @param adj
+     @param cap
+     @param srcIdx
+     @param sinkIdx
+     */
     public RelabelToFront(TIntObjectMap<TIntSet> adj, 
         TObjectDoubleMap<PairInt> cap, int srcIdx, int sinkIdx) {
         
@@ -144,10 +157,10 @@ public class RelabelToFront {
     
     /**
      * 
-     * @param adj graph as an adjacency matrix.  the elements in the matrix are
+     @param adj graph as an adjacency matrix.  the elements in the matrix are
      * the edge capacities.
-     * @param srcIdx source
-     * @param sinkIdx  sink
+     @param srcIdx source
+     @param sinkIdx  sink
      */
     public RelabelToFront(double[][] adj, int srcIdx, int sinkIdx) {
         
@@ -188,6 +201,10 @@ public class RelabelToFront {
         //System.out.printf("after initPreFlow excess[srcIdx]=%.3e = -|f*|\n", eF[srcIdx]);
     }
     
+    /**
+     *
+     @return
+     */
     public MaxFlowResults findMaxFlow() {
         
         VertexNode u = ell.peekFirst();
@@ -217,9 +234,9 @@ public class RelabelToFront {
     
     /**
      * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
-     * @param u index of u vertex in edge uv
-     * @param v index of v vertex in edge uv
-     * @return the residual capacity
+     @param u index of u vertex in edge uv
+     @param v index of v vertex in edge uv
+     @return the residual capacity
      */
     protected double calculateResidualCapacity(int u, int v) {
         return calculateResidualCapacity(new PairInt(u, v));
@@ -227,8 +244,8 @@ public class RelabelToFront {
     
     /**
      * if (u,v) in E: c_f(u,v)=c(u,v)-f(u,v); else if (v,u) in E c_f(u,v)=f(v,u), else=0
-     * @param p edge (u, v)
-     * @return the residual capacity
+     @param p edge (u, v)
+     @return the residual capacity
      */
     protected double calculateResidualCapacity(PairInt p) {
         
@@ -247,10 +264,17 @@ public class RelabelToFront {
         }
     }
     
+    /**
+     *
+     */
     protected void printF() {
         printF(f);
     }
     
+    /**
+     *
+     @param flow
+     */
     protected static void printF(TObjectDoubleMap<PairInt> flow) {
          TObjectDoubleIterator<PairInt> iter = flow.iterator();
          PairInt p;
@@ -263,6 +287,9 @@ public class RelabelToFront {
          }
     }
     
+    /**
+     *
+     */
     protected void print() {
         printF();
         printC();
@@ -270,6 +297,9 @@ public class RelabelToFront {
         printH();
     }
     
+    /**
+     *
+     */
     protected void printC() {
          TObjectDoubleIterator<PairInt> iter = c.iterator();
          PairInt p;
@@ -282,10 +312,16 @@ public class RelabelToFront {
          }
     }
     
+    /**
+     *
+     */
     protected void printE() {
          System.out.printf("e=%s\n", FormatArray.toString(eF, "%.3e"));
     }
     
+    /**
+     *
+     */
     protected void printH() {
          System.out.printf("h=%s\n", Arrays.toString(h));
     }
@@ -293,12 +329,12 @@ public class RelabelToFront {
     /**
      * sum(flow into u) - sum(flow out of u).
       capacity constraint: for all (u,v) in E, 0 .lte. f(u,v) .lte. c(u,v).
-      residual network: E_f={(u,v) pairs of V in which c_f(u,v) > 0;  
+      residual network: E_f={(u,v) pairs of V in which c_f(u,v) .gt. 0;  
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
-     * @param u index of vertiex u
-     * @return excess flow
+     @param u index of vertiex u
+     @return excess flow
      */
     protected double calculateExcessFlow(int u) {
         double sumToU = calculateSumOfFlow(u, this.revAdj.get(u));
@@ -309,13 +345,13 @@ public class RelabelToFront {
     /**
      * sum(flow into u) - sum(flow out of u).
       capacity constraint: for all (u,v) in E, 0 .lte. f(u,v) .lte. c(u,v).
-      residual network: E_f={(u,v) pairs of V in which c_f(u,v) > 0;  
+      residual network: E_f={(u,v) pairs of V in which c_f(u,v) .gt. 0;  
           the pairs can be existing edges in E or their reversals.
       f_p(u,v): { if (u,v) is on path p, f_p(u,v) = c_f(p), else f_p(u,v):=0.  
       note that p is an augmenting path in G_f
-     * @param u index of vertex u
-     * @param v the neighbors of u
-     * @return  sum of the flow
+     @param u index of vertex u
+     @param v the neighbors of u
+     @return  sum of the flow
      */
     protected double calculateSumOfFlow(int u, TIntSet v) {
         if (u == srcIdx) {
@@ -333,7 +369,7 @@ public class RelabelToFront {
     }
 
     /**
-     * @param uNode node u
+     @param uNode node u
      */
     protected void dischargeLoop(VertexNode uNode) {
         /*
@@ -355,7 +391,7 @@ public class RelabelToFront {
 
     /**
      * construct a linked list of all vertexes except src and sink
-     * @return a linked list of all vertexes except src and sink
+     @return a linked list of all vertexes except src and sink
      */
     private DoublyLinkedList<VertexNode> constructL() {
         
@@ -476,7 +512,7 @@ public class RelabelToFront {
     
     /**
      * initialize flow to 0 for every edge in capacity map
-     * @return initialized flow of edges
+     @return initialized flow of edges
      */
     private TObjectDoubleMap<PairInt> initFlow() {
         
@@ -498,6 +534,11 @@ public class RelabelToFront {
         return out;
     }
 
+    /**
+     *
+     @param adj
+     @return
+     */
     protected TIntObjectMap<TIntSet> createIncomingEdgesVertexMap(TIntObjectMap<TIntSet> adj) {
         return MatrixUtil.createReverseMap(adj);
     }
@@ -508,7 +549,7 @@ public class RelabelToFront {
      * heights of the neighbors of u that are in E_f.
      * @throws java.lang.IllegalArgumentException throws exception if a neighbor
      * of u is eligible for a push operation.
-     * @param u index of vertex u
+     @param u index of vertex u
      */
     protected void relabel(int u) {
         
@@ -575,11 +616,11 @@ public class RelabelToFront {
     
     /**
      * The basic operation PUSH(u,v) applies if u is an overflowing vertex, 
-     * c_f(u,v) > 0, and h.u = h.v + 1.
-     * @param u index of vertex u
-     * @param v index of vertex v
-     * @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
-     * not a positive number or h.u != (h.v + 1).
+     * c_f(u,v) .gt. 0, and h.u = h.v + 1.
+     @param u index of vertex u
+     @param v index of vertex v
+     @throws java.lang.IllegalArgumentException throws exception cf_(u,v) is
+     not a positive number or h.u != (h.v + 1).
      */
     protected void push(int u, int v) {
         
@@ -646,6 +687,10 @@ public class RelabelToFront {
         }*/
     }
     
+    /**
+     *
+     @param u
+     */
     protected void discharge(int u) {
 
         /*//DEBUG        
@@ -828,11 +873,34 @@ public class RelabelToFront {
         return map;
     }
 
+    /**
+     *
+     */
     public static class MaxFlowResults {
+
+        /**
+         *
+         */
         public TObjectDoubleMap<PairInt> edgeFlows;
+
+        /**
+         *
+         */
         public int srcIdx;
+
+        /**
+         *
+         */
         public int sinkIdx;
+
+        /**
+         *
+         */
         public double flow;
+
+        /**
+         *
+         */
         public void print() {
             if (edgeFlows != null) {
                 System.out.printf("max flow=%.3e from src=%d to sink=%d\n", 

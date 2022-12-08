@@ -30,10 +30,10 @@ public class HypersphereChordLength {
     /**
      * M points selected uniformly and independently from the surface of a
         n-dimensional hypersphere of radius R.
-     * @param d pairwise euclidean distances
-     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
-     * @param n the number of dimensions of the hypersphere
-     * @return vector of the probabilities
+     @param d pairwise euclidean distances
+     @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     @param n the number of dimensions of the hypersphere
+     @return vector of the probabilities
      */
     public static double[] pdf(double[] d, double r, int n) {
         
@@ -65,10 +65,10 @@ public class HypersphereChordLength {
     /**
      * M points selected uniformly and independently from the surface of a
         n-dimensional hypersphere of radius R.
-     * @param d pairwise euclidean distances
-     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
-     * @param n the number of dimensions of the hypersphere
-     * @return 
+     @param d pairwise euclidean distances
+     @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     @param n the number of dimensions of the hypersphere
+     @return 
      */
     public static double[] cdf(double[] d, double r, int n) {
         
@@ -110,10 +110,10 @@ public class HypersphereChordLength {
     
     /**
      *
-     * @param k the k-th moment
-     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
-     * @param n the number of dimensions of the hypersphere
-     * @return 
+     @param k the k-th moment
+     @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     @param n the number of dimensions of the hypersphere
+     @return 
      */
     public static double momentAboutOrigin(int k, double r, int n) {
         
@@ -137,9 +137,9 @@ public class HypersphereChordLength {
     
     /**
      *
-     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
-     * @param n the number of dimensions of the hypersphere
-     * @return 
+     @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     @param n the number of dimensions of the hypersphere
+     @return 
      */
     public static double meanOfChordLengthDistribution(double r, int n) {
         
@@ -167,9 +167,9 @@ public class HypersphereChordLength {
     
     /**
      *
-     * @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
-     * @param n the number of dimensions of the hypersphere
-     * @return 
+     @param r radius of the n-dimensional hypersphere.  e.g.use r=1 for unit standard.
+     @param n the number of dimensions of the hypersphere
+     @return 
      */
     public static double varianceOfChordLengthDistribution(double r, int n) {
         
@@ -196,10 +196,25 @@ public class HypersphereChordLength {
         return (r*r)*(2. - ((term1*term4)/(term3*term2)));
     }
     
+    /**
+     *
+     */
     public static enum POINT_DISTRIBUTION_TYPE {
-        INTRA_DISTANCE_2, POINT_DISTANCE_3
+
+        /**
+         *
+         */
+        INTRA_DISTANCE_2,
+
+        /**
+         *
+         */
+        POINT_DISTANCE_3
     }
     
+    /**
+     *
+     */
     public static class NonUniformityStats {
         double oneMinusAlpha;
         double oneMinusAlphaCritVal;
@@ -224,6 +239,11 @@ public class HypersphereChordLength {
     </pre>
     * TODO: determine the number of iterations to calculate L1's in some manner.
     * It's currently set to a value of 100 internally.
+     @param x
+     @param m
+     @param type
+     @param rand
+     @return 
     */
     public static NonUniformityStats calcConfidenceOfNonUniformity(double[][] x, int m,
         POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
@@ -363,16 +383,16 @@ public class HypersphereChordLength {
           than L1(g) then S can be declared as non-uniform with confidence 
           (100 − α)%.
     </pre>
-     * @param x data points in format [nSamples][nDimensions] that are to be
+     @param x data points in format [nSamples][nDimensions] that are to be
      * tested as uniformly distributed on an nDimensions hypersphere
      * (note, there may be some confusion in definitions as the literature using 
      * von Mises–Fisher distributions for the hypersphere have a multiplier
      * that includes a dimension that is then multiplied by an n-sphere of dimension n-1).
-     * @param m the number of points to choose from x.length in calculating L1
-     * @param type type of distance distribution to create internally using 
+     @param m the number of points to choose from x.length in calculating L1
+     @param type type of distance distribution to create internally using 
      * methods outlined about form Section IV. of 2020 Sidiropoulos.
-     * @param rand
-     * @return the calculated L1 statistic from eqn (26) of the paper.
+     @param rand
+     @return the calculated L1 statistic from eqn (26) of the paper.
     */
     public static double calcL1UniformityStatistic(double[][] x, int m,
         POINT_DISTRIBUTION_TYPE type, SecureRandom rand) {
@@ -438,9 +458,9 @@ public class HypersphereChordLength {
                using model (2) above.
            x is the chord length d, so the integration is from d=0 to d=2 (presumably 2*r with r=1).
     </pre>
-     * @param d array of point distances, sorted by non-decreasing order.
-     * @param nDimensions
-     * @return the calculated L1 statistic from eqn (26) of the paper.
+     @param d array of point distances, sorted by non-decreasing order.
+     @param nDimensions
+     @return the calculated L1 statistic from eqn (26) of the paper.
     */
     public static double calcL1UniformityStatistic(double[] d, int nDimensions) {
         
@@ -551,10 +571,10 @@ public class HypersphereChordLength {
     
     /**
      * randomly choose m numbers from 0 to n-1, inclusive.
-     * @param m
-     * @param n
-     * @param rand
-     * @return
+     @param m
+     @param n
+     @param rand
+     @return
      */
     static int[] chooseM(int m, int n, SecureRandom rand) {
              
@@ -621,9 +641,9 @@ public class HypersphereChordLength {
      * calculate the distance of each point from the origin.
      * assumes points are already w.r.t origin as they are being tested for
      * uniformity on the unit sphere
-     * @param x points on the unit sphere
-     * @param idx subset of indexes of x to calculate the distances for.
-     * @return 
+     @param x points on the unit sphere
+     @param idx subset of indexes of x to calculate the distances for.
+     @return 
      */
     private static double[] calculateDistancesFromOrigin(double[][] x, int[] idx) {
                 
@@ -648,8 +668,8 @@ public class HypersphereChordLength {
     /**
      * a rough critical value for which alpha is 95% for a unit
      * radius nDimension hypersphere.
-     * @param nDimensions the number of dimensions of the hypersphere
-     * @return  rough critical value for 95% quantile 
+     @param nDimensions the number of dimensions of the hypersphere
+     @return  rough critical value for 95% quantile 
      */
     public static double findCVForAlpha95Percent(int nDimensions) {
         

@@ -5,6 +5,10 @@ import algorithms.misc.MiscMath0;
 
 import java.util.logging.Logger;
 
+/**
+ *
+ * @author nichole
+ */
 public class DerivGumbel {
 
     /*<pre>
@@ -78,90 +82,209 @@ public class DerivGumbel {
      * </pre>
      */
 
+    /**
+     *
+     */
+
+
     protected static Logger log = Logger.getLogger(DerivGumbel.class.getName());
 
+    /**
+     *
+     @param sigma
+     @return
+     */
     protected static double calcDZDX(double sigma) {
         return 1./sigma;
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDZDSigma(double mu, double sigma, double x) {
         return -(x-mu)/(sigma*sigma);
     }
+
+    /**
+     *
+     @param sigma
+     @return
+     */
     protected static double calcDZDMu(double sigma) {
         return -1./sigma;
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcZ(double mu, double sigma, double x) {
         return (x-mu)/sigma;
     }
 
     /**
      * f1 = exp(-z)
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param mu
+     @param sigma
+     @param x
+     @return
      */
     protected static double calcF1(double mu, double sigma, double x) {
         return Math.exp(-1. * calcZ(mu, sigma, x));
     }
     /**
      * f1 = exp(-z)
-     * @param z
-     * @return
+     @param z
+     @return
      */
     protected static double calcF1(double z) {
         return Math.exp(-z);
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DX(double mu, double sigma, double x) {
         //f1 * (-1) * dz/dx
         double f1 = calcF1(mu, sigma, x);
         return calcDF1DX(f1, sigma);
     }
+
+    /**
+     *
+     @param f1
+     @param sigma
+     @return
+     */
     protected static double calcDF1DX(double f1, double sigma) {
         //f1 * (-1) * dz/dx
         double dzdx = calcDZDX(sigma);
         return -1. * f1 * dzdx;
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DSigma(double mu, double sigma, double x) {
         //f1 * (-1) * dz/dsigma
         double f1 = calcF1(mu, sigma, x);
         return calcDF1DSigma(f1, mu, sigma, x);
     }
+
+    /**
+     *
+     @param f1
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DSigma(double f1, double mu, double sigma, double x) {
         //f1 * (-1) * dz/dsigma
         double dzdsigma = calcDZDSigma(mu, sigma, x);
         return -1. * f1 * dzdsigma;
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DMu(double mu, double sigma, double x) {
         //f1 * (-1) * dz/dmu
         double f1 = calcF1(mu, sigma, x);
         return calcDF1DMu(f1, sigma);
     }
+
+    /**
+     *
+     @param f1
+     @param sigma
+     @return
+     */
     protected static double calcDF1DMu(double f1, double sigma) {
         //f1 * (-1) * dz/dmu
         double dzdmu = calcDZDMu(sigma);
         return -1. * f1 * dzdmu;
     }
 
+    /**
+     *
+     @param f1
+     @return
+     */
     protected static double calcF2(double f1) {
         //exp(-f1)
         return Math.exp(-f1);
     }
+
+    /**
+     *
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
     protected static double calcDF2DX(double f1, double f2, double sigma) {
         //f2 * (-1) * df1/dx
         double df1dx = calcDF1DX(f1, sigma);
         return -f2 * df1dx;
     }
+
+    /**
+     *
+     @param f1
+     @param f2
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF2DSigma(double f1, double f2, double mu, double sigma, double x) {
         //f2 * (-1) * df1/dsigma
         double df1dsigma = calcDF1DSigma(f1, mu, sigma, x);
         return -f2 * df1dsigma;
     }
+
+    /**
+     *
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
     protected static double calcDF2DMu(double f1, double f2, double sigma) {
         //f2 * (-1) * df1/dmu
         double df1dmu = calcDF1DMu(f1, sigma);
         return -f2 * df1dmu;
     }
 
+    /**
+     *
+     @param yConst
+     @param z
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
     public static double derivWRTX(double yConst, double z, double f1, double f2, double sigma) {
 
         /*
@@ -177,6 +300,14 @@ public class DerivGumbel {
         return dfdx;
     }
 
+    /**
+     *
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     public static double derivWRTMu(double yConst, double mu, double sigma, double x) {
 
         /*
@@ -190,6 +321,16 @@ public class DerivGumbel {
 
         return derivWRTMu(z, f1, f2, yConst, sigma);
     }
+
+    /**
+     *
+     @param z
+     @param f1
+     @param f2
+     @param yConst
+     @param sigma
+     @return
+     */
     public static double derivWRTMu(double z, double f1, double f2, double yConst, double sigma) {
 
         /*
@@ -205,6 +346,14 @@ public class DerivGumbel {
         return dfdmu;
     }
 
+    /**
+     *
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     public static double derivWRTSigma(double yConst, double mu, double sigma, double x) {
 
         /*
@@ -222,6 +371,17 @@ public class DerivGumbel {
         return derivWRTSigma(z, f1, f2, yConst, mu, sigma, x);
     }
 
+    /**
+     *
+     @param z
+     @param f1
+     @param f2
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     public static double derivWRTSigma(double z, double f1, double f2, double yConst, double mu, double sigma, double x) {
 
         /*
@@ -242,6 +402,14 @@ public class DerivGumbel {
         return dfdsigma;
     }
 
+    /**
+     *
+     @param yConst
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
     public static double calcYFit(double yConst, double f1, double f2, double sigma) {
         /*
          *           yconst
@@ -258,11 +426,11 @@ public class DerivGumbel {
      * The first, d0, was computed with param - delta.
      * The second, d1, was computed with param.
      * The third, d2, was computed with param + delta.
-     * @param d0
-     * @param d1
-     * @param d2
-     * @param delta
-     * @return
+     @param d0
+     @param d1
+     @param d2
+     @param delta
+     @return
      */
     protected static Double estimateDerivUsingDelta(Double d0, Double d1, Double d2, double delta) {
 
@@ -302,10 +470,11 @@ public class DerivGumbel {
     /**
      * calculate d/dsigma of Gumbel using the finite difference method
      *
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param mu
+     @param sigma
+     @param x
+     @param factor
+     @return
      */
     static Double estimateDerivUsingDeltaSigma(double mu, double sigma, double x, double factor) {
 
@@ -319,10 +488,11 @@ public class DerivGumbel {
     /**
      * estimate d/dmu of GEV using the difference between GEVs given minor changes in k
      *
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param mu
+     @param sigma
+     @param x
+     @param factor
+     @return
      */
     static Double estimateDerivUsingDeltaMu(double mu, double sigma, double x, double factor) {
 
@@ -340,11 +510,13 @@ public class DerivGumbel {
      * resuse in other equations, but has to trust that dydsigma was derived with the
      * same mu, sigma, and x.
      * 
-     * @param mu
-     * @param sigma
-     * @param x
-     * @param dydsigma
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydsigma
+     @param factor
+     @return
      */
     public static double estimateDY2DSigmaDSigma(double yConst, double mu, double sigma, double x, double dydsigma, double factor) {
 
@@ -365,11 +537,13 @@ public class DerivGumbel {
      * the method accepts dydsigma as a given to allow easier
      * reuse in other equations, but has to trust that dydmu was derived with the
      * same k, sigma, mu, and x.
-
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydmu
+     @param factor
+     @return
      */
     public static double estimateDY2DMuDMu(double yConst, double mu, double sigma, double x, double dydmu, double factor) {
 
@@ -392,10 +566,13 @@ public class DerivGumbel {
      * resuse in other equations, but has to trust that dydmu was derived with the
      * same k, sigma, mu, and x.
      *
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydmu
+     @param factor
+     @return
      */
     public static double estimateDY2DMuDSigma(double yConst, double mu, double sigma, double x, double dydmu, double factor) {
 
@@ -419,11 +596,13 @@ public class DerivGumbel {
      * same k, sigma, mu, and x.
      * 
      * 
-     * @param mu
-     * @param sigma
-     * @param x
-     * @param dydsigma
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydsigma
+     @param factor
+     @return
      */
     public static double estimateDY2DSigmaDMu(double yConst, double mu, double sigma, double x, double dydsigma, double factor) {
 
@@ -439,6 +618,14 @@ public class DerivGumbel {
         return (d != null) ? d.doubleValue() : 0;
     }
 
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @param normalizedY
+     @return
+     */
     public static Double sumSquaredDifferences(final double mu, final double sigma, final double[] x,
         final double[] normalizedY) {
 

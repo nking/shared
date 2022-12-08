@@ -39,7 +39,7 @@ public class StringEditDistance {
      * "The String-to-String Correction Problem".
      * This uses dynamic programming with time O(a.length * b.length)
      * and space O(a.length * b.length).
-     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&rep=rep1&type=pdf
+     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
      * 
      * Also, see Levenshtein Distance:
      * https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -52,10 +52,10 @@ public class StringEditDistance {
      * Jaro-Winkler distance, and dynamic time warping
      * (see thirdparty.fpetitjean.dba.DynamicTimeWarpingBarycenterAveraging in this project).
      * 
-     * @param a string to edit
-     * @param b target string to change a into.
-     * @param outIndexes a and b indexes of the solution in pairs (a_i, b_j)
-     * @return the number of insert, delete, and substitution operations to change
+     @param a string to edit
+     @param b target string to change a into.
+     @param outIndexes a and b indexes of the solution in pairs (a_i, b_j)
+     @return the number of insert, delete, and substitution operations to change
      *      * one string into another
      */
     public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes) {
@@ -167,7 +167,7 @@ public class StringEditDistance {
      * This uses dynamic programming with time O(a.length * b.length)
      * and space O(a.length).
      * <pre>
-     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&rep=rep1&type=pdf
+     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
      * 
      * for space complexity reduction, lecture slides of
      * CS 473: Fundamental Algorithms, Spring 2011
@@ -179,10 +179,10 @@ public class StringEditDistance {
      * Also, see Levenshtein Distance:
      * https://en.wikipedia.org/wiki/Levenshtein_distance
      * </pre>
-     * @param a string to edit
-     * @param b target string to change a into.
+     @param a string to edit
+     @param b target string to change a into.
      * 
-     * @return the edit distance which is the minimum number of deletes of 
+     @return the edit distance which is the minimum number of deletes of 
      * characters in string a and inserts of characters into string b to turn
      * string a into string b.
      */
@@ -334,10 +334,10 @@ public class StringEditDistance {
      * see also
      * LongestCommonSubsequence.java
      * </pre>
-     * @param a string to edit
-     * @param b target string to change a into.
+     @param a string to edit
+     @param b target string to change a into.
      * 
-     * @return the edit distance which is the minimum number of deletes of 
+     @return the edit distance which is the minimum number of deletes of 
      * characters in string a and inserts of characters into string b to turn
      * string a into string b.
      */
@@ -401,8 +401,8 @@ public class StringEditDistance {
      * https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
      * </pre>
      @param a string to edit
-      * @param b target string to change a into.
-     * @return optimal string metric distance
+      @param b target string to change a into.
+     @return optimal string metric distance
      */
     public TCharList[] hirschbergOptimal(char[] a, char[] b) {
                 
@@ -553,10 +553,10 @@ public class StringEditDistance {
      *    D( a.substring(0, aMid), b.substring(0, k) )
              + D( reverse( a.substring(aMid + 1, m)), reverse(b.substring(k + 1, n)) ) );
        where D is the score from algorithm NeedlemanWunsch.
-     * @param aMid a midpoint in array y used in calculating the needleman wunsch score
+     @param aMid a midpoint in array y used in calculating the needleman wunsch score
      @param a string to edit
      @param b target string to change a into
-     * @return the index maximimizing the needleman wunsch score
+     @return the index maximimizing the needleman wunsch score
      */
     private int argmax(int aMid, char[] a, char[] b) {
         /*

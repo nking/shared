@@ -88,9 +88,9 @@ public class LinearEquations {
     
     /**
      * solve for x in A*x=b by LU decomposition
-     * @param a matrix
-     * @param b vector
-     * @return the solution x to a * x = b
+     @param a matrix
+     @param b vector
+     @return the solution x to a * x = b
      */
     public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
 
@@ -112,10 +112,10 @@ public class LinearEquations {
      * P is the Identity matrix.   uses Gaussian elimination and the Schur
      * complement while making recursive subdivision subdivisions.
      * The runtime is O(n^3).
-     * @param a square two dimensional array in row major format.  
+     @param a square two dimensional array in row major format.  
      * a is a non-singular matrix(i.e. has exactly one solution).  the rank of
      * a is n (it's dimensions are m x n).
-     * @return LU a wrapper holding the 2 two-dimensional row major output arrays.
+     @return LU a wrapper holding the 2 two-dimensional row major output arrays.
      * L and U.  they are both size nXn where n=a.length.
      * L is a unit lower triangular matrix (has 1's on the diagonal) and U
      * is an upper triangular matrix whose diagonals are the matrix pivots.
@@ -159,9 +159,10 @@ public class LinearEquations {
     /**
      * create the reduced row echelon form of matrix a as the Upper right matrix from the LU decomposition,
      * further normalized and reduced.
-     * @param a a rectangular matrix
-     * @param tol tolerance for comparing to zero.  e.g. the machine precision.
-     * @return the reduced echelon matrix of a
+     @param a a rectangular matrix
+     @param tol tolerance for comparing to zero.  e.g. the machine precision.
+     @return the reduced echelon matrix of a
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[][] gaussianEliminationViaLU(double[][] a, double tol) throws NotConvergedException {
         a = MatrixUtil.copy(a);
@@ -334,9 +335,9 @@ public class LinearEquations {
      * Golub and va Loan, "Matrix Computations", Section 5.1
      * </pre>
      * 2n^3/3 flops.
-     * @param a two dimensional array in row major format.  
+     @param a two dimensional array in row major format.  
      * a is a symmetric matrix with dimensions n x n.
-     * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
+     @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
      * L and M and the diagonal matrix D as a an array of the diagonal.
      */
     public static LDM LDMDecomposition(double[][] a) {
@@ -383,8 +384,8 @@ public class LinearEquations {
     /**
      * compute the cholesky decomposition for symmetric positive definite matrix
      * a using the MTJ library.
-     * @param a symmetric positive definite matrix 
-     * @return lower triangular matrix G  which G is a lower triangular matrix with positive
+     @param a symmetric positive definite matrix 
+     @return lower triangular matrix G  which G is a lower triangular matrix with positive
     * diagonal entries.  a = G*G^T.
     */
     public static double[][] choleskyDecompositionViaMTJ(double[][] a) {
@@ -402,14 +403,14 @@ public class LinearEquations {
      * compute the cholesky decomposition for symmetric positive definite matrix
      * a.
      * reference:
-     * golub & van loan "matrix computations, theorem 5.2-3.
+     * golub and van loan "matrix computations, theorem 5.2-3.
      * This method uses LDL decomposition to compute G in 
      * a = G*G^T where G is a lower triangular matrix with positive
     * diagonal entries.
     * 
-     * @param a symmetric positive definite matrix 
-     * @param eps value for an error tolerance around zero used in the LDL decomposition.
-     * @return lower triangular matrix G  which G is a lower triangular matrix with positive
+     @param a symmetric positive definite matrix 
+     @param eps value for an error tolerance around zero used in the LDL decomposition.
+     @return lower triangular matrix G  which G is a lower triangular matrix with positive
     * diagonal entries.  a = G*G^T.
     */
     public static double[][] choleskyDecompositionViaLDL(double[][] a, double eps) {
@@ -443,9 +444,9 @@ public class LinearEquations {
      * Golub and van Loan, "Matrix Computations", Algorithm 5.1.2
      * </pre>
      * n^3/6 flops.
-     * @param a two dimensional array in row major format.  
+     @param a two dimensional array in row major format.  
      * a is a symmetric matrix with dimensions n x n.
-     * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
+     @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
      * L and M and the diagonal matrix D as a an array of the diagonal.
      */
     public static LDL LDLDecomposition(double[][] a) {
@@ -465,10 +466,10 @@ public class LinearEquations {
      * Golub and van Loan, "Matrix Computations", Algorithm 5.1.2
      * </pre>
      * n^3/6 flops.
-     * @param a two dimensional array in row major format.  
+     @param a two dimensional array in row major format.  
      * a is a symmetric matrix with dimensions n x n.
-     * @param eps value for a tolerance of an error around 0.
-     * @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
+     @param eps value for a tolerance of an error around 0.
+     @return LDM a wrapper holding the 2 two-dimensional row major output arrays.
      * L and M and the diagonal matrix D as a an array of the diagonal.
      * Note that the method will return null when an intermediary calculation 
      * is smaller than eps.
@@ -532,10 +533,10 @@ public class LinearEquations {
      * uses Gaussian elimination and the Schur
      * complement while making recursive subdivision subdivisions.
      * The runtime is O(n^3).
-     * @param a square two dimensional array in row major format.  
+     @param a square two dimensional array in row major format.  
      * a is a non-singular matrix (i.e. has exactly one solution).  the rank of
      * a is n (it's dimensions are m x n).
-     * @return LUP a wrapper holding the 2 two-dimensional row major output arrays.
+     @return LUP a wrapper holding the 2 two-dimensional row major output arrays.
      * L and U and the condensed permutation array p, where P*A=L*U.
      */
     public static LUP LUPDecomposition(double[][] a) {
@@ -618,10 +619,10 @@ public class LinearEquations {
      * is implemented as thirdparty.scipy.optimization.ElastticNet.
      * This method follows pseudocode in chapter 28 of Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
-     * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
-     * @param polyOrder the order of a polynomial to fit.  should be .lte. the
+     @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
+     @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
-     * @param solveForFullRank
+     @param solveForFullRank
      * when 'True' AX=b has no solution (e.g. xy.length is larger than xy[0].length)
      * and the algorithm uses (inverse(A^T*A) * A^T) for the pseudo-inverse
      * (see Chap 4.3 from the book "Introduction to Linear
@@ -631,7 +632,7 @@ public class LinearEquations {
      * create a pseudoinverse (see Chap 7 from the book "Introduction to Linear
      * Algebra" by W Gilbert Strang.)
      *  
-     * @return coefficients c where y_i = summation(c_i*x^i) + error
+     @return coefficients c where y_i = summation(c_i*x^i) + error
      * @throws no.uib.cipr.matrix.NotConvergedException thrown if MTJ SVD operation did not converge
      */
     public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder, boolean
@@ -649,10 +650,11 @@ public class LinearEquations {
      * is implemented as thirdparty.scipy.optimization.ElastticNet.
      * This method follows pseudocode in chapter 28 of Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
-     * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
-     * @param polyOrder the order of a polynomial to fit.  should be .lte. the
+     @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
+     @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
-     * @return coefficients c where y_i = summation(c_i*x^i) + error
+     @return coefficients c where y_i = summation(c_i*x^i) + error
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[] leastSquaresPolynomial(double[][] xy, int polyOrder) throws NotConvergedException {
         return _leastSquaresPolynomial(xy, polyOrder, false);
@@ -668,10 +670,10 @@ public class LinearEquations {
      * is implemented as thirdparty.scipy.optimization.ElastticNet.
      * This method follows pseudocode in chapter 28 of Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
-     * @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
-     * @param polyOrder the order of a polynomial to fit.  should be .lte. the
+     @param xy two dimensional array of format row0=[x0,y0], row1=[x1,y1], etc.
+     @param polyOrder the order of a polynomial to fit.  should be .lte. the
      * number of rows.
-     * @param solveFullRank
+     @param solveFullRank
      * when 'True' AX=b has no solution (e.g. xy.length is larger than xy[0].length)
      * and the algorithm uses (inverse(A^T*A) * A^T) for the pseudo-inverse
      * (see Chap 4.3 from the book "Introduction to Linear
@@ -680,7 +682,8 @@ public class LinearEquations {
      * when solveForFullRank is set to 'False' this method uses the SVD to
      * create a pseudoinverse (see Chap 7 from the book "Introduction to Linear
      * Algebra" by W Gilbert Strang.)
-     * @return coefficients c where y_i = summation(c_i*x^i) + error
+     @return coefficients c where y_i = summation(c_i*x^i) + error
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[] _leastSquaresPolynomial(double[][] xy, int polyOrder,
         boolean solveFullRank) throws NotConvergedException {
@@ -733,19 +736,38 @@ public class LinearEquations {
         return c;
     }
     
+    /**
+     *
+     */
     public static class LU {
         double[][] ell;
         double[][] u;
+
+        /**
+         *
+         @param ell
+         @param u
+         */
         public LU(double[][] ell, double[][] u) {
             this.ell = ell;
             this.u = u;
         }
     }
     
+    /**
+     *
+     */
     public static class LUP {
         double[][] ell;
         double[][] u;
         int[] p;
+
+        /**
+         *
+         @param ell
+         @param u
+         @param p
+         */
         public LUP(double[][] ell, double[][] u, int[] p) {
             this.ell = ell;
             this.u = u;
@@ -760,6 +782,13 @@ public class LinearEquations {
         double[][] ell;
         double[] d;
         double[][] m;
+
+        /**
+         *
+         @param ell
+         @param d
+         @param m
+         */
         public LDM(double[][] ell, double[] d, double[][] m) {
             this.ell = ell;
             this.d = d;
@@ -767,23 +796,32 @@ public class LinearEquations {
         }
     }
     
+    /**
+     *
+     */
     public static class LDL {
         private double[][] ell;
         private double[] d;
+
+        /**
+         *
+         @param ell
+         @param d
+         */
         public LDL(double[][] ell, double[] d) {
             this.ell = ell;
             this.d = d;
         }
 
         /**
-         * @return the L
+         @return the L
          */
         public double[][] getL() {
             return ell;
         }
 
         /**
-         * @return the d
+         @return the d
          */
         public double[] getD() {
             return d;

@@ -40,6 +40,11 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
 // Below follows documentation of all public methods, which are provided
 // by the PZeros class.
 
+/**
+ *
+ * @author nichole
+ */
+
 public strictfp class PZeros {
     private static int MAX_ITERATIONS = 10000;
     
@@ -54,7 +59,7 @@ public strictfp class PZeros {
      * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
      * polynomial is equal to the length of the supplied array minus 1.
      *
-     * @param coef An array of real coefficients in order of increasing power.
+     @param coef An array of real coefficients in order of increasing power.
      */
     public PZeros(double[] coef) {
         degree = coef.length - 1;
@@ -75,7 +80,7 @@ public strictfp class PZeros {
      * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
      * polynomial is equal to the length of the supplied array minus 1.
      *
-     * @param coef An array of real coefficients in order of increasing power.
+     @param coef An array of real coefficients in order of increasing power.
      */
     public PZeros(String[] coef) {
         degree = coef.length - 1;
@@ -96,7 +101,7 @@ public strictfp class PZeros {
      * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
      * polynomial is equal to the length of the supplied array minus 1.
      *
-     * @param coef An array of real coefficients in order of increasing power.
+     @param coef An array of real coefficients in order of increasing power.
      */
     public PZeros(DoubleDouble[] coef) {
         degree = coef.length - 1;
@@ -122,11 +127,11 @@ public strictfp class PZeros {
      * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
      * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
      *
-     * @param coef_re An array containing the real part of the coefficients 
+     @param coef_re An array containing the real part of the coefficients 
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the real
      * part of all coefficients equals 0 in that case.
-     * @param coef_im An array containing the imaginary part of the coefficients
+     @param coef_im An array containing the imaginary part of the coefficients
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the imaginary
      * part of all coefficients equals 0 in that case.
@@ -194,11 +199,11 @@ public strictfp class PZeros {
      * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
      * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
      *
-     * @param coef_re An array containing the real part of the coefficients 
+     @param coef_re An array containing the real part of the coefficients 
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the real
      * part of all coefficients equals 0 in that case.
-     * @param coef_im An array containing the imaginary part of the coefficients
+     @param coef_im An array containing the imaginary part of the coefficients
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the imaginary
      * part of all coefficients equals 0 in that case.
@@ -266,11 +271,11 @@ public strictfp class PZeros {
      * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
      * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
      *
-     * @param coef_re An array containing the real part of the coefficients 
+     @param coef_re An array containing the real part of the coefficients 
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the real
      * part of all coefficients equals 0 in that case.
-     * @param coef_im An array containing the imaginary part of the coefficients
+     @param coef_im An array containing the imaginary part of the coefficients
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the imaginary
      * part of all coefficients equals 0 in that case.
@@ -333,7 +338,7 @@ public strictfp class PZeros {
      * D*x^3 + E*x^4 can be created with coef[] = {A, B, C, D, E}. The degree of the
      * polynomial is equal to the length of the supplied array minus 1.
      *
-     * @param coef An array of complex coefficients in order of increasing power.
+     @param coef An array of complex coefficients in order of increasing power.
      */
     public PZeros(DoubleComplex[] coef) {
         degree = coef.length - 1;
@@ -354,7 +359,7 @@ public strictfp class PZeros {
      * D*x^3 + E*x^4 can be created with coef[] = {A, B, C, D, E}. The degree of the
      * polynomial is equal to the length of the supplied array minus 1.
      *
-     * @param coef An array of complex coefficients in order of increasing power.
+     @param coef An array of complex coefficients in order of increasing power.
      */
     public PZeros(Complex[] coef) {
         degree = coef.length - 1;
@@ -371,7 +376,7 @@ public strictfp class PZeros {
     /**
      * Returns the degree of the polynomial.
      *
-     * @return The degree of the polynomial.
+     @return The degree of the polynomial.
      */
     public int degree() {
         return degree;
@@ -387,16 +392,16 @@ public strictfp class PZeros {
      * in preallocated arrays, which are passed as arguments. DoubleDouble
      * 105-bit precision is used for the calculations and the results also are
      * returned at DoubleDouble precision.
-     * @param root Array, in which the zeros will be stored after computation of 
+     @param root Array, in which the zeros will be stored after computation of 
      * the zeros. This array must have a length of at least N elements, where N 
      * is the degree of the polynomial.
-     * @param radius Array, which gives an indication of the accuracy of the found
+     @param radius Array, which gives an indication of the accuracy of the found
      * roots. For each root, a radius is returned. The root is assured to be in the
      * disk with the corresponding radius, centered around the returned root.
-     * @param err Array, which specifies whether the root and its corresponding
+     @param err Array, which specifies whether the root and its corresponding
      * radius of accuracy could be determined correctly. If err[i] is true, then
      * the program did not converge for root[i].
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could
@@ -429,16 +434,16 @@ public strictfp class PZeros {
      * in preallocated arrays, which are passed as arguments. Standard 53-bits
      * precision is used for the calculations and the results also are returned as
      * standard 53-bits precision numbers.
-     * @param root Array, in which the zeros will be stored after computation of 
+     @param root Array, in which the zeros will be stored after computation of 
      * the zeros. This array must have a length of at least N elements, where N 
      * is the degree of the polynomial.
-     * @param radius Array, which gives an indication of the accuracy of the found
+     @param radius Array, which gives an indication of the accuracy of the found
      * roots. For each root, a radius is returned. The root is assured to be in the
      * disk with the corresponding radius, centered around the returned root.
-     * @param err Array, which specifies whether the root and its corresponding
+     @param err Array, which specifies whether the root and its corresponding
      * radius of accuracy could be determined correctly. If err[i] is true, then
      * the program did not converge for root[i].
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could

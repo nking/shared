@@ -57,9 +57,17 @@ import java.util.Arrays;
  */
 public class KDTree {
 	
-	protected KDTreeNode root = null;
+    /**
+     *
+     */
+    protected KDTreeNode root = null;
 		
-	public KDTree(int[] x, int[] y) {
+    /**
+     *
+     @param x
+     @param y
+     */
+    public KDTree(int[] x, int[] y) {
 		
 		if (x == null) {
 			throw new IllegalArgumentException("x cannot be null");
@@ -84,6 +92,12 @@ public class KDTree {
         this.root = buildTree(0, x, y, 0, lastUsableIndex);
     }
 
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @param height
+     */
     public KDTree(TLongSet pixIdxs, int width, int height) {
 		
 		if (pixIdxs == null || pixIdxs.size() < 2) {
@@ -116,16 +130,20 @@ public class KDTree {
         this.root = buildTree(0, x, y, 0, lastUsableIndex);
     }
     
-	public KDTreeNode getRoot() {
+    /**
+     *
+     @return
+     */
+    public KDTreeNode getRoot() {
 		return root;
 	}
 	
 	/**
 	 * remove non-unique values by moving up items underneath them.  returns
 	 * the last index which should be used in the modified arrays given as arguments.
-	 * @param x x coordinates
-	 * @param y y coordinates
-	 * @return the number of items to use in the modified x and y arrays which have only unique
+	 @param x x coordinates
+	 @param y y coordinates
+	 @return the number of items to use in the modified x and y arrays which have only unique
 	 * pairs in them now.
 	 */
 	static int reduceToUniqueWithMoveUp(int[] x, int[] y) {
@@ -153,13 +171,15 @@ public class KDTree {
 	
 	/**
 	 * sort by x and return index of median x value for which all points 
-	 * below are less than median x and >= for all points above median x index,
+	 * below are less than median x and .geq. for all points above median x index,
 	 * in other words 
 	 * for indexes : 0 .lt. index have values x .lt. x[index] where x[index] is median x.
 	 * for indexes : index .lte. n have values x .gte. x[index] where x[index] is median x.
-	 * @param x x coordinates
-	 * @param y y coordinates
-	 * @return index that divides the arrays as x<median value and x >= median value
+	 @param x x coordinates
+	 @param y y coordinates
+     @param startSortRange
+     @param stopSortRangeExclusive
+	 @return index that divides the arrays as x .lt. median value and x .geq. median value
 	 */
 	int partitionByX(int[] x, int[] y, int startSortRange, int stopSortRangeExclusive) {
 				 
@@ -180,13 +200,15 @@ public class KDTree {
 	
 	/**
 	 * sort by y and return index of median y value for which all points 
-	 * below are less than median y and >= for all points above median y index,
+	 * below are less than median y and .geq. for all points above median y index,
 	 * in other words 
 	 * for indexes : 0 .lt. index have values y .lt. y[index] where y[index] is median y.
 	 * for indexes : index .lte. n have values y .gte. y[index] where y[index] is median y.
-	 * @param x x coordinates
-	 * @param y y coordinates
-	 * @return index that divides the arrays as y .lt. median value and y >= median value
+	 @param x x coordinates
+	 @param y y coordinates
+     @param startSortRange
+     @param stopSortRangeExclusive
+	 @return index that divides the arrays as y .lt. median value and y .geq. median value
 	 */
 	int partitionByY(int[] x, int[] y, int startSortRange, int stopSortRangeExclusive) {
 				
@@ -208,13 +230,13 @@ public class KDTree {
 	 * build a tree at from given depth for x, y points using a depth-first algorithm.
 	 * Exits from the recursion when npoints = 0, 1 or a leaf.
 	 * 
-	 * @param depth depth from which to build tree
-	 * @param x x coordinates
-	 * @param y y coordinates
-     * @param startSortRange index start range to use in partition
-     * @param stopSortRangeExclusive index stop range to use in partition
+	 @param depth depth from which to build tree
+	 @param x x coordinates
+	 @param y y coordinates
+     @param startSortRange index start range to use in partition
+     @param stopSortRangeExclusive index stop range to use in partition
 	 * 
-	 * @return tree
+	 @return tree
 	 */
 	protected KDTreeNode buildTree(int depth, int[] x, int[] y, 
         int startSortRange, int stopSortRangeExclusive) {
@@ -269,7 +291,13 @@ public class KDTree {
 	    return parent;
 	}
         
-	public KDTreeNode findNearestNeighbor(int x, int y) {
+    /**
+     *
+     @param x
+     @param y
+     @return
+     */
+    public KDTreeNode findNearestNeighbor(int x, int y) {
 
         KDTreeNode[] best = new KDTreeNode[1];
         double[] bestDist = new double[]{Double.MAX_VALUE};
@@ -279,6 +307,12 @@ public class KDTree {
         return best[0];
     }
     
+    /**
+     *
+     @param x
+     @param y
+     @return
+     */
     public KDTreeNode findNearestNeighborNotEquals(int x, int y) {
 
         KDTreeNode[] best = new KDTreeNode[1];
@@ -289,7 +323,18 @@ public class KDTree {
         return best[0];
     }
 	
-	protected KDTreeNode nearestNeighborSearch(KDTreeNode tree, int leftValue, 
+    /**
+     *
+     @param tree
+     @param leftValue
+     @param rightValue
+     @param depth
+     @param best
+     @param bestDist
+     @param excludeEquals
+     @return
+     */
+    protected KDTreeNode nearestNeighborSearch(KDTreeNode tree, int leftValue, 
         int rightValue, int depth, KDTreeNode[] best, double[] bestDist,
         boolean excludeEquals) {
 
@@ -393,7 +438,10 @@ public class KDTree {
         return (diffX * diffX) + (diffY * diffY);
     }
     
-	public void printTree() {
+    /**
+     *
+     */
+    public void printTree() {
 		printTree(root, " ");
 	}
 	private void printTree(KDTreeNode node, String preString) {
@@ -408,6 +456,11 @@ public class KDTree {
 		}
 	}
     
+    /**
+     *
+     @param numberOfPoints
+     @return
+     */
     public static long estimateSizeOnHeap(int numberOfPoints) {
                 
         ObjectSpaceEstimator est = new ObjectSpaceEstimator();

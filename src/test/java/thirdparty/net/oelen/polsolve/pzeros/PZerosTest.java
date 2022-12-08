@@ -23,7 +23,7 @@ public class PZerosTest extends TestCase {
     /**
      * Constructor, used for testing purposes.
      *
-     * @param testPolynomial A String array, as specified in the TestPolynomials
+     @param testPolynomial A String array, as specified in the TestPolynomials
      * class. This is converted to a polynomial, useful for solving/testing.
      */
     public void run1(String[] testPolynomial) {
@@ -136,8 +136,8 @@ public class PZerosTest extends TestCase {
      *
      * factor * (z-roots[0]) * (z-roots[1]) * . . . * (z-roots[n-1]).
      *
-     * @param factor The constant scaling factor, mentioned above.
-     * @param roots The set of complex roots. The degree of the polynomial is
+     @param factor The constant scaling factor, mentioned above.
+     @param roots The set of complex roots. The degree of the polynomial is
      * equal to the length of this array.
      */
     public void run00(DoubleDouble factor, DoubleDouble[] roots) {
@@ -163,8 +163,8 @@ public class PZerosTest extends TestCase {
      *
      * factor * (z-roots[0]) * (z-roots[1]) * . . . * (z-roots[n-1]).
      *
-     * @param factor The constant scaling factor, mentioned above.
-     * @param roots The set of complex roots. The degree of the polynomial is
+     @param factor The constant scaling factor, mentioned above.
+     @param roots The set of complex roots. The degree of the polynomial is
      * equal to the length of this array.
      */
     public void run2(double factor, double[] roots) {
@@ -190,8 +190,8 @@ public class PZerosTest extends TestCase {
      *
      * factor * (z-roots[0]) * (z-roots[1]) * . . . * (z-roots[n-1]).
      *
-     * @param factor The constant scaling factor, mentioned above.
-     * @param roots The set of complex roots. The degree of the polynomial is
+     @param factor The constant scaling factor, mentioned above.
+     @param roots The set of complex roots. The degree of the polynomial is
      * equal to the length of this array.
      */
     public void run01(String factor, String[] roots) {
@@ -217,8 +217,8 @@ public class PZerosTest extends TestCase {
      *
      * factor * (z-roots[0]) * (z-roots[1]) * . . . * (z-roots[n-1]).
      *
-     * @param factor The constant scaling factor, mentioned above.
-     * @param roots The set of complex roots. The degree of the polynomial is
+     @param factor The constant scaling factor, mentioned above.
+     @param roots The set of complex roots. The degree of the polynomial is
      * equal to the length of this array.
      */
     public void run02(DoubleComplex factor, DoubleComplex[] roots) {
@@ -244,8 +244,8 @@ public class PZerosTest extends TestCase {
      *
      * factor * (z-roots[0]) * (z-roots[1]) * . . . * (z-roots[n-1]).
      *
-     * @param factor The constant scaling factor, mentioned above.
-     * @param roots The set of complex roots. The degree of the polynomial is
+     @param factor The constant scaling factor, mentioned above.
+     @param roots The set of complex roots. The degree of the polynomial is
      * equal to the length of this array.
      */
     public void run03(Complex factor, Complex[] roots) {
@@ -268,13 +268,13 @@ public class PZerosTest extends TestCase {
      * used to create a polynomial with a set of real roots and a set of
      * conjugate complex roots.
      *
-     * @param factor_re The real part of the constant scaling factor, which is
+     @param factor_re The real part of the constant scaling factor, which is
      * used to multiply the monic polynomial, derived from the given roots (see
      * below).
-     * @param factor_im The imaginary part of the constant scaling factor, which
+     @param factor_im The imaginary part of the constant scaling factor, which
      * is used to multiply the monic polynomial, derived from the given roots.
-     * @param roots_re The real part of the set of complex roots.
-     * @param roots_im The imaginary part of the set of complex roots. The
+     @param roots_re The real part of the set of complex roots.
+     @param roots_im The imaginary part of the set of complex roots. The
      * parameter roots_re and roots_im must have the same length. The degree of
      * the derived polynomial is equal to the length of these arrays.
      */
@@ -298,13 +298,13 @@ public class PZerosTest extends TestCase {
      * used to create a polynomial with a set of real roots and a set of
      * conjugate complex roots.
      *
-     * @param factor_re The real part of the constant scaling factor, which is
+     @param factor_re The real part of the constant scaling factor, which is
      * used to multiply the monic polynomial, derived from the given roots (see
      * below).
-     * @param factor_im The imaginary part of the constant scaling factor, which
+     @param factor_im The imaginary part of the constant scaling factor, which
      * is used to multiply the monic polynomial, derived from the given roots.
-     * @param roots_re The real part of the set of complex roots.
-     * @param roots_im The imaginary part of the set of complex roots. The
+     @param roots_re The real part of the set of complex roots.
+     @param roots_im The imaginary part of the set of complex roots. The
      * parameter roots_re and roots_im must have the same length. The degree of
      * the derived polynomial is equal to the length of these arrays.
      */
@@ -330,16 +330,16 @@ public class PZerosTest extends TestCase {
      * tester. It uses double double precision arithmatic as well for computing
      * roots.
      *
-     * @param roots A pre-allocated array, in which the roots are stored. This
+     @param roots A pre-allocated array, in which the roots are stored. This
      * array must have a length of at least the degree of the polynomial.
-     * @param rad Array, which gives an indication of the accuracy of the found
+     @param rad Array, which gives an indication of the accuracy of the found
      * roots. For each root, a radius is returned. The root is assured to be in
      * the disk with the corresponding radius, centered around the returned
      * root.
-     * @param err Array, which specifies whether the root and its corresponding
+     @param err Array, which specifies whether the root and its corresponding
      * radius of accuracy could be determined correctly. If err[i] is true, then
      * the program did not converge for root[i].
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could
@@ -361,9 +361,9 @@ public class PZerosTest extends TestCase {
      * tester. It uses double double precision arithmatic as well for computing
      * roots.
      *
-     * @param roots A pre-allocated array, in which the roots are stored. This
+     @param roots A pre-allocated array, in which the roots are stored. This
      * array must have a length of at least the degree of the polynomial.
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could
@@ -386,16 +386,16 @@ public class PZerosTest extends TestCase {
      * solved from the double double precision coefficients, stored in the
      * tester. It uses normal double precision arithmatic for computing roots.
      *
-     * @param roots A pre-allocated array, in which the roots are stored. This
+     @param roots A pre-allocated array, in which the roots are stored. This
      * array must have a length of at least the degree of the polynomial.
-     * @param rad Array, which gives an indication of the accuracy of the found
+     @param rad Array, which gives an indication of the accuracy of the found
      * roots. For each root, a radius is returned. The root is assured to be in
      * the disk with the corresponding radius, centered around the returned
      * root.
-     * @param err Array, which specifies whether the root and its corresponding
+     @param err Array, which specifies whether the root and its corresponding
      * radius of accuracy could be determined correctly. If err[i] is true, then
      * the program did not converge for root[i].
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could
@@ -416,9 +416,9 @@ public class PZerosTest extends TestCase {
      * solved from the double double precision coefficients, stored in the
      * tester. It uses normal double precision arithmatic for computing roots.
      *
-     * @param roots A pre-allocated array, in which the roots are stored. This
+     @param roots A pre-allocated array, in which the roots are stored. This
      * array must have a length of at least the degree of the polynomial.
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could
@@ -438,7 +438,7 @@ public class PZerosTest extends TestCase {
     /**
      * Returns the degree of the polynomial.
      *
-     * @return The degree of the polynomial.
+     @return The degree of the polynomial.
      */
     int degree() {
         return -1 + ((coefReal != null) ? coefReal.length : coefComplex.length);
@@ -448,7 +448,7 @@ public class PZerosTest extends TestCase {
      * Creates a new PZerosTester, with the real part of the coefficients
      * retained only. The imaginary part is set to 0.
      *
-     * @return PZerosTester with the imaginary part of the coefficients set to
+     @return PZerosTester with the imaginary part of the coefficients set to
      * 0.
      */
     public void keepRealPart() {

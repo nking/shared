@@ -37,7 +37,7 @@ public class RealDoubleFFT_Odd extends RealDoubleFFT_Mixed
   * factorization of <em>n</em> together with a tabulation of the trigonometric functions
   * are computed and stored.
   *
-  * @param  n  the size of a real data sequence. When (<em>n</em>+1) is a multiplication of small
+  @param  n  the size of a real data sequence. When (<em>n</em>+1) is a multiplication of small
   * numbers (4, 2, 3, 5), this FFT transform is very efficient.
 */
      public RealDoubleFFT_Odd(int n)
@@ -55,7 +55,7 @@ public class RealDoubleFFT_Odd extends RealDoubleFFT_Mixed
   * Forward sine FFT transform. It computes the discrete sine transform of
   * an odd sequence.
   *
-  * @param x an array which contains the sequence to be transformed. After FFT,
+  @param x an array which contains the sequence to be transformed. After FFT,
   * <em>x</em> contains the transform coeffients.
 */
      public void ft(double x[])
@@ -65,7 +65,7 @@ public class RealDoubleFFT_Odd extends RealDoubleFFT_Mixed
 /**
   * Backward sine FFT transform. It is the unnormalized inverse transform of <em>ft</em>.
   *
-  * @param x an array which contains the sequence to be transformed. After FFT,
+  @param x an array which contains the sequence to be transformed. After FFT,
   * <em>x</em> contains the transform coeffients.
 */
      public void bt(double x[])

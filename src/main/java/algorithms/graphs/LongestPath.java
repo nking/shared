@@ -42,9 +42,9 @@ public class LongestPath {
      * </pre>
      * runtime complexity is O(|V| + |E|).
      *
-     * @param g input weighted DAG where key = a directed edge of vertexes (u,v)
+     @param g input weighted DAG where key = a directed edge of vertexes (u,v)
      * and key = weight of the key edge where the weights are non-negative).
-     * @return vertex indexes of longest path through the DAG.
+     @return vertex indexes of longest path through the DAG.
      */
     public static int[] solve(TObjectDoubleMap<PairInt> g) {
         // convert g to an adjacency list where every vertex has an entry even if empty.
@@ -67,10 +67,10 @@ public class LongestPath {
      * </pre>
      * runtime complexity is O(|V| + |E|)
      *
-     * @param g input weighted DAG where key = a directed edge of vertexes (u,v)
+     @param g input weighted DAG where key = a directed edge of vertexes (u,v)
      * and key = weight of the key edge where the weights are non-negative).
-     * @param srcIdx the graph vertex index for the start (a.k.a. source) node.
-     * @return vertex indexes of longest path through the DAG.
+     @param srcIdx the graph vertex index for the start (a.k.a. source) node.
+     @return vertex indexes of longest path through the DAG.
      */
     public static int[] solve(TObjectDoubleMap<PairInt> g, int srcIdx) {
         
@@ -97,12 +97,12 @@ public class LongestPath {
      * https://en.m.wikipedia.org/wiki/Longest_path_problem
      * </pre>
      *
-     * @param g input weighted DAG where key = a directed edge of vertexes (u,v)
+     @param g input weighted DAG where key = a directed edge of vertexes (u,v)
      * and key = weight of the key edge where the weights are non-negative).
-     * @param nodes an adjacency list extracted from graph g.
-     * @param tsIdxs the topologically sorted vertexes of graph g.
-     * @param srcIdx the graph vertex index for the start (a.k.a. source) node.
-     * @return vertex indexes of longest path through the DAG.
+     @param nodes an adjacency list extracted from graph g.
+     @param tsIdxs the topologically sorted vertexes of graph g.
+     @param srcIdx the graph vertex index for the start (a.k.a. source) node.
+     @return vertex indexes of longest path through the DAG.
      */
     static int[] solve(TObjectDoubleMap<PairInt> g, 
         SimpleLinkedListNode[] nodes, int[] tsIdxs, int srcIdx) {

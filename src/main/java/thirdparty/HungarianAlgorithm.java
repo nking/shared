@@ -30,9 +30,9 @@ public class HungarianAlgorithm {
     /**
      * NOTE: matrix is modified as a side effect.
      *
-     * @param matrix cost matrix w/ first dimension being rows and 2nd being
+     @param matrix cost matrix w/ first dimension being rows and 2nd being
      * columns.
-     * @return minimum cost bipartite matching
+     @return minimum cost bipartite matching
      */
     public int[][] computeAssignments(float[][] matrix) {
 
@@ -147,7 +147,7 @@ public class HungarianAlgorithm {
      * the first step of the hungarian algorithm is to find the smallest element
      * in each row and subtract it's values from all elements in that row
      *
-     * @param matrix
+     @param matrix
      */
     private void reduceMatrix(float[][] matrix) {
 
@@ -190,9 +190,9 @@ public class HungarianAlgorithm {
      * that row then star the zero, cover the column and row and go onto the
      * next column
      *
-     * @param costMatrix
-     * @param starsByRow
-     * @param starsByCol
+     @param costMatrix
+     @param starsByRow
+     @param starsByCol
      */
     private void initStars(float costMatrix[][], int[] starsByRow, int[] starsByCol) {
 
@@ -228,8 +228,8 @@ public class HungarianAlgorithm {
      * coveredCols is populated as 1's where starsByCol is already assigned,
      * else coveredCols has a 0.
      *
-     * @param starsByCol
-     * @param coveredCols
+     @param starsByCol
+     @param coveredCols
      */
     private void coverColumnsOfStarredZeroes(int[] starsByCol, int[] coveredCols) {
         for (int j = 0; j < starsByCol.length; j++) {
@@ -243,11 +243,11 @@ public class HungarianAlgorithm {
      * row index, assignable column index}.
      *
      * runtime complexity is |V|^2 which is matrix.length^2
-     * @param matrix
-     * @param primesByRow
-     * @param coveredRows
-     * @param coveredCols
-     * @return
+     @param matrix
+     @param primesByRow
+     @param coveredRows
+     @param coveredCols
+     @return
      */
     private int[] primeSomeUncoveredZero(float matrix[][], int[] primesByRow,
         int[] coveredRows, int[] coveredCols) {
@@ -276,10 +276,10 @@ public class HungarianAlgorithm {
 
     /**
      *
-     * @param unpairedZeroPrime the unassigned {row index, col index}
-     * @param starsByRow array holding columns that are assignable
-     * @param starsByCol array holding rows that are assignable
-     * @param primesByRow array holding the assignable columns
+     @param unpairedZeroPrime the unassigned {row index, col index}
+     @param starsByRow array holding columns that are assignable
+     @param starsByCol array holding rows that are assignable
+     @param primesByRow array holding the assignable columns
      */
     private void incrementSetOfStarredZeroes(int[] unpairedZeroPrime,
         int[] starsByRow, int[] starsByCol, int[] primesByRow) {
@@ -320,10 +320,10 @@ public class HungarianAlgorithm {
      * return true if successfully unset a previously assigned row, else returns
      * false.
      *
-     * @param matrix
-     * @param coveredRows
-     * @param coveredCols
-     * @return
+     @param matrix
+     @param coveredRows
+     @param coveredCols
+     @return
      */
     private boolean makeMoreZeroes(float[][] matrix, int[] coveredRows,
         int[] coveredCols) {

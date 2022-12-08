@@ -17,6 +17,12 @@ tables, or approximations are needed.
 
  * @author nichole
  */
+
+/**
+ *
+ * @author nichole
+ */
+
 public class ChiSquaredCriticalValues {
     
     /*
@@ -40,12 +46,69 @@ public class ChiSquaredCriticalValues {
         table and reject the null hypothesis if the computed test statistic 
         is less than the tabled value.
     */
+
+    /**
+     *
+     */
+
     
     public static enum PROB_UT {
-        Z_90, Z_95, Z_975, Z_99, Z_999;
+
+        /**
+         *
+         */
+        Z_90,
+
+        /**
+         *
+         */
+        Z_95,
+
+        /**
+         *
+         */
+        Z_975,
+
+        /**
+         *
+         */
+        Z_99,
+
+        /**
+         *
+         */
+        Z_999;
     }
+
+    /**
+     *
+     */
     public static enum PROB_LT {
-        Z_10, Z_05, Z_025, Z_01, Z_001;
+
+        /**
+         *
+         */
+        Z_10,
+
+        /**
+         *
+         */
+        Z_05,
+
+        /**
+         *
+         */
+        Z_025,
+
+        /**
+         *
+         */
+        Z_01,
+
+        /**
+         *
+         */
+        Z_001;
     }
     
     /**
@@ -165,12 +228,12 @@ public class ChiSquaredCriticalValues {
      * find the upper-tail critical value to compare to a test statistic.
      * One can reject the null hypothesis if the computed test statistic 
         is greater than the table value.
-     * @param probability the probability to look-up in the table.  
+     @param probability the probability to look-up in the table.  
      * e.g. for a one-sided test, this probability is the same as 1 minus the significance 
      * level alpha.  For a two-sided test, this probability is the same as the significance 
      * level 1 minus alpha/2.
-     * @param degreesOfFreedom
-     * @return 
+     @param degreesOfFreedom
+     @return 
      */
     public static double upperTailStatistic(PROB_UT probability, int degreesOfFreedom) {
         if (degreesOfFreedom < 1 || degreesOfFreedom > 100) {
@@ -309,12 +372,12 @@ public class ChiSquaredCriticalValues {
      * find the lower-tail critical value to compare to a test statistic.
      * One can reject the null hypothesis if the computed test statistic 
         is less than the table value.
-     * @param probability the probability to look-up in the table.  
+     @param probability the probability to look-up in the table.  
      * e.g. for a one-sided test, this probability is the same as the significance 
      * level alpha.  For a two-sided test, this probability is the same as the significance 
      * level alpha/2.
-     * @param degreesOfFreedom
-     * @return 
+     @param degreesOfFreedom
+     @return 
      */
     public static double lowerTailStatistic(PROB_LT probability, int degreesOfFreedom) {
         if (degreesOfFreedom < 1 || degreesOfFreedom > 100) {
@@ -343,9 +406,9 @@ public class ChiSquaredCriticalValues {
         it's inverse"  1988, Lin, J.T., The Statistician 37, 3-5
         https://www.jstor.org/stable/2348373?seq=1#metadata_info_tab_contents
         
-     * @param chisqStat
-     * @param degreesOfFreedom
-     * @return 
+     @param chisqStat
+     @param degreesOfFreedom
+     @return 
      */
     public static double approxPValueLin(double chisqStat, int degreesOfFreedom) {
         if (degreesOfFreedom < 1) {
@@ -381,9 +444,9 @@ public class ChiSquaredCriticalValues {
         it's inverse"  1988, Lin, J.T., The Statistician 37, 3-5
         https://www.jstor.org/stable/2348373?seq=1#metadata_info_tab_contents
         
-     * @param p the p-value OR (1-p)
-     * @param degreesOfFreedom
-     * @return 
+     @param p the p-value OR (1-p)
+     @param degreesOfFreedom
+     @return 
      */
     public static double approxChiSqStatLin(double p, int degreesOfFreedom) {
         if (degreesOfFreedom < 1) {
@@ -419,9 +482,9 @@ public class ChiSquaredCriticalValues {
      * "Exploring How to Simply Approximate the P-value of a Chi-squared Statistic"
      * 2018, Beh, E., Australian Journal of Statistics, Vol. 47 No. 3
      * https://doi.org/10.17713/ajs.v47i3.757
-     * @param chisqStat
-     * @param degreesOfFreedom
-     * @return 
+     @param chisqStat
+     @param degreesOfFreedom
+     @return 
     public static double approxUpperTailPValueBeh(double chisqStat, int degreesOfFreedom) {
         
         double p;

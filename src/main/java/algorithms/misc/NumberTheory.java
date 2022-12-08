@@ -19,9 +19,9 @@ public class NumberTheory {
      *
      * runtime complexity is (?)
      * 
-     * @param a
-     * @param b
-     * @return
+     @param a
+     @param b
+     @return
      */
     public static int euclid(int a, int b) {
         int t;
@@ -38,9 +38,9 @@ public class NumberTheory {
      *
      * runtime complexity is (?)
      * 
-     * @param a
-     * @param b
-     * @return
+     @param a
+     @param b
+     @return
      */
     public static long euclid(long a, long b) {
         long swap;
@@ -61,10 +61,10 @@ public class NumberTheory {
      * <pre>
      * Section 31.4, Cormen, Leiserson, Rivest, and Stein Introduction to Computer Algorithms.
      * </pre>
-     * @param a positive number greater than 0
-     * @param b positive number greater than 0
-     * @param n
-     * @return 
+     @param a positive number greater than 0
+     @param b positive number greater than 0
+     @param n
+     @return 
      */
     public static long[] gcdModularLinearEqnSolver(long a, long b, long n) {
         
@@ -107,10 +107,10 @@ public class NumberTheory {
      * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen, Leiserson, Rivest, and Stein Introduction
      * to Algorithms (a.k.a. CLRS).
      * </pre>
-     * @param a non-negative integer
-     * @param b non-negative integer
-     * @param n positive integer
-     * @return 
+     @param a non-negative integer
+     @param b non-negative integer
+     @param n positive integer
+     @return 
      */
     public static int modularExponentiation(int a, int b, int n) {
         
@@ -142,10 +142,10 @@ public class NumberTheory {
      * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen, Leiserson, Rivest, and Stein Introduction
      * to Algorithms (a.k.a. CLRS).
      * </pre>
-     * @param a non-negative integer
-     * @param b non-negative integer
-     * @param n positive integer
-     * @return 
+     @param a non-negative integer
+     @param b non-negative integer
+     @param n positive integer
+     @return 
      */
     public static long modularExponentiation(long a, long b, long n) {
         
@@ -184,9 +184,9 @@ public class NumberTheory {
      * 
      * if a .gt. b .geq. 0, runtime complexity is O(log_2(b)).
      * 
-     * @param a
-     * @param b
-     * @return returns d, x, and y where
+     @param a
+     @param b
+     @return returns d, x, and y where
      * d = gcd(a, b) = a*x + b*y where x and y may be zero or negative.
      * x and y are useful for forming multiplicative inverses.
      * 
@@ -212,9 +212,9 @@ public class NumberTheory {
      * reference:
      * https://en.m.wikipedia.org/wiki/Least_common_multiple
      * </pre>
-     * @param a
-     * @param b
-     * @return 
+     @param a
+     @param b
+     @return 
      */
     public static long leastCommonMultiple(long a, long b) {
         if (a == 0 && b == 0) {

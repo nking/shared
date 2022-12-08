@@ -47,6 +47,13 @@ public class Graph {
     private TObjectIntHashMap<PairInt> sourceEdgeWeights = null;
     private TObjectIntHashMap<PairInt> sinkEdgeWeights = null;
 
+    /**
+     *
+     @param nLeftVertices
+     @param nRightVertices
+     @param theEdgeWeights
+     @param createSourceAndSinkEdges
+     */
     public Graph(int nLeftVertices, int nRightVertices,
         TObjectIntMap<PairInt> theEdgeWeights, 
         boolean createSourceAndSinkEdges) {
@@ -86,49 +93,49 @@ public class Graph {
     }
     
     /**
-     * @return the number of left vertices
+     @return the number of left vertices
      */
     public int getNLeft() {
         return nLeft;
     }
 
     /**
-     * @return the number of right vertices
+     @return the number of right vertices
      */
     public int getNRight() {
         return nRight;
     }
 
     /**
-     * @return the edgeWeights
+     @return the edgeWeights
      */
     public TObjectIntHashMap<PairInt> getEdgeWeights() {
         return edgeWeights;
     }
 
     /**
-     * @return the sourceEdgeWeights
+     @return the sourceEdgeWeights
      */
     public TObjectIntHashMap<PairInt> getSourceEdgeWeights() {
         return sourceEdgeWeights;
     }
 
     /**
-     * @return the sinkEdgeWeights
+     @return the sinkEdgeWeights
      */
     public TObjectIntHashMap<PairInt> getSinkEdgeWeights() {
         return sinkEdgeWeights;
     }
 
     /**
-     * @return the sourceNode
+     @return the sourceNode
      */
     public int getSourceNode() {
         return sourceNode;
     }
 
     /**
-     * @return the sinkNode
+     @return the sinkNode
      */
     public int getSinkNode() {
         return sinkNode;

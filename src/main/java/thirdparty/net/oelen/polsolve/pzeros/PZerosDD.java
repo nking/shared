@@ -70,6 +70,17 @@ strictfp class PZerosDD {
     *     AGAIN : this variable is .true. if the computed value p(z) is     *
     *             reliable, i.e., (3) is not satisfied in Z. AGAIN is       *
     *             .false., otherwise.                                       *
+     @param n
+     @param again
+     @param apoly
+     @param apolyr
+     @param poly
+     @param z
+     @param outIndex
+     @param small
+     @param eps
+     @param radius
+     @return 
     *************************************************************************/
     // Version for a polynomial with complex coefficients.
     private static DoubleComplex newton(int n, DoubleComplex[] poly, double[] apoly, double[] apolyr,
@@ -282,6 +293,10 @@ strictfp class PZerosDD {
     *************************************************************************
     * Output variable:                                                      *
     *     ABCORR: Aberth's correction (compare (1))                         *
+     @param n
+     @param j
+     @param root
+     @return 
     *************************************************************************/
     
     /* The pseudocode below is left here for documentation purposes, the real
@@ -366,6 +381,12 @@ strictfp class PZerosDD {
     * 0 and having suitable radii. The computation of the number of circles *
     * and of the corresponding radii is performed by computing the upper    *
     * convex hull of the set (i,log(A(i))), i=1,...,n+1.                    *
+     @param n
+     @param a
+     @param y
+     @param radius
+     @param big
+     @return 
     *************************************************************************/
     private static int start(int n, double[] a, DoubleComplex[] y, double[] radius, double big) {
         int i, iold, nzeros, j, jj;
@@ -446,6 +467,10 @@ strictfp class PZerosDD {
     *************************************************************************
     *   SORT  the vector X, according to nonincreasing real parts,          *
     *   the same permutation is applied to vectors Y and E.                 *
+     @param n
+     @param x
+     @param y
+     @param e
     *************************************************************************/
     private static void sort(int n, DoubleComplex[] x, double[] y, boolean[] e) {
         for (int k = 0; k < n - 1; k++) {
@@ -595,6 +620,20 @@ strictfp class PZerosDD {
     *           condition                                                   *
     *************************************************************************
     ******         WARNING:   2 is the output unit                    *******
+     @param n
+     @param init
+     @param eps
+     @param poly
+     @param radius
+     @param root
+     @param nitmax
+     @param big
+     @param err
+     @param iter
+     @param needSort
+     @param apolyr
+     @param apoly
+     @return 
     *************************************************************************/
     // Version for polynomial with real coefficients.
     static int polzeros(int n, DoubleDouble[] poly, double eps, double big,

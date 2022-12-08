@@ -303,8 +303,8 @@ public class CURDecompositionTest extends TestCase {
     
     /**
      * 
-     * @param a
-     * @return 
+     @param a
+     @return 
      */
     public static double trace(double[][] a, int n) {
         double sum = 0;

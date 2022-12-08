@@ -65,14 +65,33 @@ import java.util.Arrays;
  */
 public abstract class AbstractGeometricMedianFunction implements IFunction {
         
+    /**
+     *
+     */
     public static double eps = 1e-17;
     
+    /**
+     *
+     @return
+     */
     public abstract int getNDimensions();
     
+    /**
+     *
+     @return
+     */
     public abstract double[] getObs();
     
+    /**
+     *
+     @return
+     */
     public abstract double getFDEps();
     
+    /**
+     *
+     @return
+     */
     public int getNData() {
         return getObs().length/getNDimensions();
     }
@@ -81,7 +100,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
      * calculate centroid of data. the centroid can be used
      * as a possible starting point for the search.
      *
-     * @return an array of the centroids of the observations for each dimension
+     @return an array of the centroids of the observations for each dimension
      */
      public double[] calculateCentroid() {
 
@@ -101,8 +120,8 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
      *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
-     * @param geoMedian
-     * @return array of geometric median - observations.  the array is ordered
+     @param geoMedian
+     @return array of geometric median - observations.  the array is ordered
      * in the same manner as obs and is the same length.
      */     
     public double[] calculateDifferences(final double[] geoMedian) {
@@ -138,10 +157,8 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
      *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
-     * @param geoMedian
-     * @param output output array of length obs.length to hold results
-     * @return array of geometric median - observations.  the array is ordered
-     * in the same manner as obs and is the same length.
+     @param geoMedian
+     @param output output array of length obs.length to hold results
      */
     void calculateDifferences(final double[] geoMedian, double[] output) {
         double[] diffs = calculateDifferences(geoMedian);
@@ -154,9 +171,9 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
      * || X-obs ||_2, that is, the X which minimizes the sum of the differences, 
      * where _2 is notation for using L2 distances.
      *
-     * @param geoMedian input variable holding coordinates of current
+     @param geoMedian input variable holding coordinates of current
      * estimate of geometric median.
-     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
      * ||^2)/n
      */
     double evaluateGeoMedian(double[] geoMedian) {
@@ -192,9 +209,9 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
      * || X-obs ||_2, that is, the X which minimizes the sum of the differences, 
      * where _2 is notation for using L2 distances.
      *
-     * @param geoMedian input variable holding coordinates of current
+     @param geoMedian input variable holding coordinates of current
      * estimate of geometric median.
-     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
      * ||^2)/n
      */
     public double[] evaluateGeoMedianPerDimension(double[] geoMedian) {
@@ -226,9 +243,9 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     /**
      * calculate the sum of squared differences for each point.
      * Note: the result is length nData, not obs.length or 1.
-     * @param diffs the differences between each point and the current
+     @param diffs the differences between each point and the current
      * geometric-median coordinates.
-     * @return for each point, the sum of differences.
+     @return for each point, the sum of differences.
      */
     public double[] calculateSSDPerPoint(double[] diffs) {
         
@@ -256,6 +273,8 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     adapted from dlib optimization.h
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
+     @param coeffs
+     @return 
     */
     public double[] finiteDifference(double[] coeffs) {
 
@@ -294,6 +313,9 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     adapted from dlib optimization.h
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
+     @param coeffs
+     @param dimensionNumber
+     @return 
     */
     public double finiteDifference(double[] coeffs, int dimensionNumber) {
 
@@ -325,6 +347,11 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
         return der;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static String toString(double[] a) {
         StringBuilder sb = new StringBuilder("[");
         for (int i=0;i<a.length;i++) {
@@ -339,8 +366,8 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     
     /**
      * 
-     * @param geoMedian
-     * @param isMedian output array holding values of 0 when obs_i does not
+     @param geoMedian
+     @param isMedian output array holding values of 0 when obs_i does not
      * equal the geoMedian, else has value 0.    should be initialized to be
      * same length as obs.
      */

@@ -44,8 +44,8 @@ public class ORSetCoverReader {
     
     /**
      * get [nSets, nItems]
-     * @param filename
-     * @return 
+     @param filename
+     @return 
      */
     public static int[] getSCPDatasetNumberOfRowsCols(String filename) {
         if (filename.startsWith("scpe1")) {

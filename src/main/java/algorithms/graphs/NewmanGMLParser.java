@@ -32,12 +32,22 @@ public class NewmanGMLParser {
 
     private static Logger log = Logger.getLogger("NewmanGMLParser");
 
+    /**
+     *
+     */
     public static class GMLGraph {
         String graphType;
         Map<PairInt, TFloatList> edgeWeightMap;
         TIntObjectMap<String> nodeIdLabelMap;
     }
         
+    /**
+     *
+     @param filePath
+     @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static GMLGraph readGraph(String filePath) 
         throws FileNotFoundException, IOException {
         
@@ -122,9 +132,9 @@ public class NewmanGMLParser {
     
     /**
      * note: assumes srch characters each fit into 1 code point.
-     * @param in
-     * @param srch
-     * @return
+     @param in
+     @param srch
+     @return
      * @throws IOException 
      */
     static boolean readToEndOf(BufferedReader in, String srch) throws IOException {
@@ -146,10 +156,10 @@ public class NewmanGMLParser {
     
     /**
      * read everything up to first [ as type, then everything up until last ] as content
-     * @param in
-     * @param type
-     * @param content
-     * @return
+     @param in
+     @param type
+     @param content
+     @return
      * @throws IOException 
      */
     static boolean readTypeAndContent(BufferedReader in, StringBuilder type, 
@@ -176,8 +186,8 @@ public class NewmanGMLParser {
      * the value by default is "1" if not present.
      * NOTE: the other attributes such as label are not currently stored.
      * 
-     * @param content
-     * @param edgeMap 
+     @param content
+     @param edgeMap 
      */
     private static void parseAndStoreEdge(String content, Map<PairInt, TFloatList> edgeMap) {
         
@@ -225,8 +235,8 @@ public class NewmanGMLParser {
      * attributes id and label.  if label is not present, a string
      * representation of id's value is stored for it.
      * 
-     * @param content
-     * @param nodeIdLabelMap 
+     @param content
+     @param nodeIdLabelMap 
      */
     private static void parseAndStoreNode(String content, 
         TIntObjectMap<String> nodeIdLabelMap) {

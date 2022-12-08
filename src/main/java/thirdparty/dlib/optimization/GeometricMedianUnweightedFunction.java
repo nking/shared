@@ -76,11 +76,11 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
      * class holding the objective and derivative of the geometric-median for use
      * with search algorithms such as the LBFGs.
      * 
-     * @param observations the observations from all dimensions in format of
+     @param observations the observations from all dimensions in format of
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
      *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
-     * @param numberOfDimensions the number of data dimensions present in
+     @param numberOfDimensions the number of data dimensions present in
      * observations array.
      */
     public GeometricMedianUnweightedFunction(double[] observations, int numberOfDimensions) {
@@ -116,9 +116,9 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
           where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)  
       </pre>
      *
-     * @param geoMedian input variable holding coordinates of current
+     @param geoMedian input variable holding coordinates of current
      * estimate of geometric median.
-     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
      * ||^2)/n
      */
     @Override
@@ -200,14 +200,26 @@ public class GeometricMedianUnweightedFunction extends AbstractGeometricMedianFu
         return dfDX;
     }
     
+    /**
+     *
+     @return
+     */
     public int getNDimensions() {
         return nDimensions;
     }
     
+    /**
+     *
+     @return
+     */
     public double[] getObs() {
         return obs;
     }
     
+    /**
+     *
+     @return
+     */
     public double getFDEps() {
         return fDEps;
     }

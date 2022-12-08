@@ -91,11 +91,11 @@ public class SubsetChooser {
     /**
      * constructor with the number of indexes to choose from, n, and the size of
      * the subset, k.
-     * @param n the number of indexes that the selector will choose from
-     * @param k the subset size of selected indexes.  the maximum value currently
-     * accepted is 12.
-     * @throws ArithmeticException thrown when number of combinations is out of 
-     * range of type long
+     @param n the number of indexes that the selector will choose from
+     @param k the subset size of selected indexes.  the maximum value currently
+     accepted is 12.
+     @throws ArithmeticException thrown when number of combinations is out of 
+     range of type long
      */
     public SubsetChooser(int n, int k) {
         
@@ -152,8 +152,8 @@ public class SubsetChooser {
      * given a constructed array, populates it with the next selected subset
      * of indexes and returns the number of values placed in the subset.
      * Returns a -1 when there are no more subsets to return;
-     * @param outputIndexes
-     * @return
+     @param outputIndexes
+     @return
      */
     public int getNextSubset(int[] outputIndexes) {
 
@@ -170,6 +170,11 @@ public class SubsetChooser {
         
     }
     
+    /**
+     *
+     @param outputIndexes
+     @return
+     */
     protected int getNextSubsetBigInteger(int[] outputIndexes) {
 
         if (outputIndexes == null || outputIndexes.length != k) {
@@ -192,8 +197,8 @@ public class SubsetChooser {
      * given a constructed array, populates it with the next selected subset
      * of indexes and returns the number of values placed in the subset.
      * Returns a -1 when there are no more subsets to return;
-     * @param outputIndexes
-     * @return
+     @param outputIndexes
+     @return
      */
     protected int getNextSubset64(int[] outputIndexes) {
 
@@ -213,6 +218,10 @@ public class SubsetChooser {
         return nValues;
     }
     
+    /**
+     *
+     @return
+     */
     public long getNextSubset64Bitstring() {
 
         if (count > np) {
@@ -227,8 +236,8 @@ public class SubsetChooser {
     }
 
     /**
-     * @param x0
-     * @return
+     @param x0
+     @return
      */
     private long nextSubset64(long x0) {
 
@@ -243,8 +252,8 @@ public class SubsetChooser {
     }
 
     /**
-     * @param x0
-     * @return
+     @param x0
+     @return
      */
     private BigInteger nextSubsetBigInteger(BigInteger x0) {
 
@@ -261,6 +270,11 @@ public class SubsetChooser {
         return x0;
     }
 
+    /**
+     *
+     @param selected
+     @return
+     */
     protected int select64(int[] selected) {
 
         // interpret the bit string x:  1 is 'selected' and 0 is not
@@ -290,6 +304,11 @@ public class SubsetChooser {
         return nOneBits;
     }
 
+    /**
+     *
+     @param selected
+     @return
+     */
     protected int selectBigInteger(int[] selected) {
 
         // interpret the bit string x:  1 is 'selected' and 0 is not

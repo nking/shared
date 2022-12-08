@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  * Also helpful is 
  * http://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm
  * and
- * http://github.com/indy256/codelibrary/blob/master/java/src/MaxMatchingHopcroftKarp.java     * @param g
+ * http://github.com/indy256/codelibrary/blob/master/java/src/MaxMatchingHopcroftKarp.java     @param g
 
  * The runtime complexity is O(sqrt(V) * E) where V is the number of vertexes
  * and E is the number of Edges.
@@ -69,11 +69,11 @@ public class HopcroftKarp {
      * of augmenting the matching M until no new augmenting
      * paths can be found.  the matching M is returned.
      * The code below follows:
-      http://github.com/indy256/codelibrary/blob/master/java/src/MaxMatchingHopcroftKarp.java     * @param g
+      http://github.com/indy256/codelibrary/blob/master/java/src/MaxMatchingHopcroftKarp.java     @param g
       which uses the unlicense:
       http://github.com/indy256/codelibrary/blob/master/UNLICENSE
-     * @param g     
-     * @return matching from perspective int[uIndex] = vIndex
+     @param g     
+     @return matching from perspective int[uIndex] = vIndex
      */
     public int[] hopcroftKarpV0(GraphWithoutWeights g) {
        
@@ -113,10 +113,10 @@ public class HopcroftKarp {
     
     /**
      * note, this depends upon g
-     * @param g
-     * @param match12
-     * @param match21
-     * @param dist 
+     @param g
+     @param match12
+     @param match21
+     @param dist 
      */
     private void bfs(GraphWithoutWeights g, int[] match12, int[] match21, 
             int[] dist) {

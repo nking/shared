@@ -264,13 +264,13 @@ public class MinCostUnbalancedAssignment {
      * match the left and right vertices in graph g by
      * minimum cost assignment and return the mappings.
      * 
-     * @param g bipartite graph with integer weights having
+     @param g bipartite graph with integer weights having
      * values greater than zero.  Also note that the graph g has to be constructed to have
        node numbers 0 up to the numbers of left and right nodes defined in the Graph g.
        TODO: create a static utility method in this class to rewrite edge weight vertex numbers
        for that format if needed and another static method to transform the  vertex numbers back
        to the orginal reference frame.
-     * @return map of indexes of left nodes matched to indexes of
+     @return map of indexes of left nodes matched to indexes of
      * right nodes
      */
     public TIntIntMap flowAssign(Graph g) {
@@ -422,6 +422,16 @@ public class MinCostUnbalancedAssignment {
         return m;
     }
     
+    /**
+     *
+     @param gFlow
+     @param s
+     @param eps
+     @param epsLarge
+     @param q
+     @param isFirstInvoc
+     @return
+     */
     protected int refine(FlowNetwork gFlow, int s, float eps, 
         float epsLarge, int q, boolean isFirstInvoc) {
         
@@ -604,6 +614,9 @@ public class MinCostUnbalancedAssignment {
         return 0;
     }
     
+    /**
+     *
+     */
     public static class Forest {
     
         // replaces the array DoubleLinkedCircularList[]
@@ -624,14 +637,27 @@ public class MinCostUnbalancedAssignment {
         private TIntObjectMap<DoubleLinkedCircularList> forest =
             new TIntObjectHashMap<DoubleLinkedCircularList>();
        
+        /**
+         *
+         @param upperKeyLimit
+         */
         public Forest(int upperKeyLimit) {
             this.upperKeyLimit = upperKeyLimit;
         }
         
+        /**
+         *
+         @param key
+         @return
+         */
         public DoubleLinkedCircularList get(int key) {
             return forest.get(key);
         }
         
+        /**
+         *
+         @param key
+         */
         public void removeFirstItem(int key) {
             Integer firstKey = orderedKeys.getFirst();
             if (firstKey == null) {
@@ -643,6 +669,12 @@ public class MinCostUnbalancedAssignment {
             }
         }
 
+        /**
+         *
+         @param node
+         @param lastKey
+         @return
+         */
         public long add(PathNode node, long lastKey) {
             
             /*
@@ -686,6 +718,10 @@ public class MinCostUnbalancedAssignment {
             return lastKey;
         }
         
+        /**
+         *
+         @return
+         */
         public List<Integer> getKeys() {
             return new ArrayList<Integer>(orderedKeys);
         }
@@ -700,17 +736,17 @@ public class MinCostUnbalancedAssignment {
      * 
      * The minHeap extractMin could be improved with multi-level buckets.
      * 
-     * @param gFlow
-     * @param rF
-     * @param surplus
-     * @param deficit
-     * @param eps
-     * @param terminatingKeys
-     * @param lambda
-     * @param isFirstInvoc
-     * @terminatingKeys map of keu=surplus index, value = terminating 
+     @param gFlow
+     @param rF
+     @param surplus
+     @param deficit
+     @param eps
+     @param terminatingKeys
+     @param lambda
+     @param isFirstInvoc
+     @param terminatingKeys map of key=surplus index, value = terminating 
      * deficit forest index
-     * @return 
+     @return 
      */
     protected Forest buildForest2(
         final FlowNetwork gFlow, ResidualDigraph2 rF,
@@ -942,9 +978,9 @@ public class MinCostUnbalancedAssignment {
      * Note that if the maximum matched size does not reach
      * the requested size s, but has not grown during internal
      * iterations, the result is returned for that smaller size.
-     * @param g
-     * @param s
-     * @return 
+     @param g
+     @param s
+     @return 
      */
     protected TIntIntMap hopcroftKarp(Graph g, int s) {
                 
@@ -1124,6 +1160,11 @@ Matchings in G are integral flows in N_G
         return true;
     }
     
+    /**
+     *
+     @param node
+     @return
+     */
     public static List<PathNode> extractNodes(PathNode node) {
         
         List<PathNode> nodes = new ArrayList<PathNode>();
@@ -1219,9 +1260,9 @@ Matchings in G are integral flows in N_G
     
     /**
      * NOTE any paths in the tree with only a single link are discarded
-     * @param forest
-     * @param forestIdx
-     * @return 
+     @param forest
+     @param forestIdx
+     @return 
      */
     private List<List<PathNode>> extractPathNodes(Forest forest,
         int forestIdx) {
@@ -1849,7 +1890,7 @@ Matchings in G are integral flows in N_G
      * NOTE: the weights were condensed to make the min Heaps
      * faster, so corrections for that must be done before user
      * can use the flow network results
-     * @return 
+     @return 
      */
     protected FlowNetwork getFinalFlowNetwork() {
         return finalFN;
@@ -2078,6 +2119,11 @@ Matchings in G are integral flows in N_G
         return map;
     }
 
+    /**
+     *
+     @param cost
+     @return
+     */
     public static Graph convert(int[][] cost) {
 
         int n1 = cost.length;

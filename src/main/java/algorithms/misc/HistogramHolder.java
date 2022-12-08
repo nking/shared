@@ -21,12 +21,37 @@ import java.io.IOException;
  */
 public class HistogramHolder {
 
+    /**
+     *
+     */
     protected float[] xHist = null;
+
+    /**
+     *
+     */
     protected int[] yHist = null;
+
+    /**
+     *
+     */
     protected float[] yHistFloat = null;
+
+    /**
+     *
+     */
     protected float[] yErrors = null;
+
+    /**
+     *
+     */
     protected float[] xErrors = null;
     
+    /**
+     *
+     @param maxXToUse
+     @param nPartitions
+     @return
+     */
     public float[] getHistArea(float maxXToUse, int nPartitions) {
         
         if (yHistFloat == null) {
@@ -75,9 +100,9 @@ public class HistogramHolder {
      * integrate the area of the histogram and the area of the restricted
      * range of the histogram (from x0 to x1, inclusive) and then return
      * the value of the restricted range over the total.
-     * @param x0
-     * @param x1
-     * @return 
+     @param x0
+     @param x1
+     @return 
      */
     public float getHistAreaFractionOfTotal(float x0, float x1) {
         
@@ -116,7 +141,7 @@ public class HistogramHolder {
     
     /**
      * integrate the area under the curve of the histogram.
-     * @return 
+     @return 
      */
     public float getHistArea() {
         
@@ -146,6 +171,10 @@ public class HistogramHolder {
         return sumTot;
     }
 
+    /**
+     *
+     @return
+     */
     public int calculateHalfYMaxIndexPastYMax() {
 
         if (yHistFloat == null) {
@@ -165,6 +194,13 @@ public class HistogramHolder {
         return halfMaxIndex;
     }
     
+    /**
+     *
+     @param label
+     @param outputFileNumber
+     @return
+     * @throws IOException
+     */
     public String plotHistogram(String label, 
         long outputFileNumber) throws IOException {
                 
@@ -187,6 +223,13 @@ public class HistogramHolder {
         return plotter.writeFile(outputFileNumber);
     }
     
+    /**
+     *
+     @param label
+     @param outputFileSuffix
+     @return
+     * @throws IOException
+     */
     public String plotHistogram(String label, 
         String outputFileSuffix) throws IOException {
                 
@@ -212,6 +255,15 @@ public class HistogramHolder {
         return plotter.writeFile(outputFileSuffix);
     }
     
+    /**
+     *
+     @param xMin
+     @param xMax
+     @param label
+     @param outputFileSuffix
+     @return
+     * @throws IOException
+     */
     public String plotHistogram(float xMin, float xMax, String label, 
         String outputFileSuffix) throws IOException {
                 
@@ -234,6 +286,13 @@ public class HistogramHolder {
         return plotter.writeFile(outputFileSuffix);
     }
     
+    /**
+     *
+     @param label
+     @param outputFileSuffix
+     @return
+     * @throws IOException
+     */
     public String plotLogHistogram(String label, 
         String outputFileSuffix) throws IOException {
                 
@@ -262,63 +321,63 @@ public class HistogramHolder {
     }
 
     /**
-     * @return the xHist
+     @return the xHist
      */
     public float[] getXHist() {
         return xHist;
     }
 
     /**
-     * @return the yHist
+     @return the yHist
      */
     public int[] getYHist() {
         return yHist;
     }
 
     /**
-     * @return the yHistFloat
+     @return the yHistFloat
      */
     public float[] getYHistFloat() {
         return yHistFloat;
     }
 
     /**
-     * @return the yErrors
+     @return the yErrors
      */
     public float[] getYErrors() {
         return yErrors;
     }
 
     /**
-     * @return the xErrors
+     @return the xErrors
      */
     public float[] getXErrors() {
         return xErrors;
     }
 
     /**
-     * @param xHist the xHist to set
+     @param xHist the xHist to set
      */
     public void setXHist(float[] xHist) {
         this.xHist = xHist;
     }
 
     /**
-     * @param yHist the yHist to set
+     @param yHist the yHist to set
      */
     public void setYHist(int[] yHist) {
         this.yHist = yHist;
     }
 
     /**
-     * @param yHistFloat the yHistFloat to set
+     @param yHistFloat the yHistFloat to set
      */
     public void setYHistFloat(float[] yHistFloat) {
         this.yHistFloat = yHistFloat;
     }
     
     /**
-     * @param yHistInt the yHistFloat to set
+     @param yHistInt the yHistFloat to set
      */
     public void setYHistFloat(int[] yHistInt) {
         this.yHistFloat = new float[yHistInt.length];
@@ -328,14 +387,14 @@ public class HistogramHolder {
     }
 
     /**
-     * @param yErrors the yErrors to set
+     @param yErrors the yErrors to set
      */
     public void setYErrors(float[] yErrors) {
         this.yErrors = yErrors;
     }
 
     /**
-     * @param xErrors the xErrors to set
+     @param xErrors the xErrors to set
      */
     public void setXErrors(float[] xErrors) {
         this.xErrors = xErrors;

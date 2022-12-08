@@ -54,8 +54,8 @@ public class Interval1D {
     /**
      * Initializes a closed interval [min, max].
      *
-     * @param  min the smaller endpoint
-     * @param  max the larger endpoint
+     @param  min the smaller endpoint
+     @param  max the larger endpoint
      * @throws IllegalArgumentException if the min endpoint is greater than the max endpoint
      * @throws IllegalArgumentException if either <tt>min</tt> or <tt>max</tt>
      *         is <tt>Double.NaN</tt>, <tt>Double.POSITIVE_INFINITY</tt> or
@@ -82,7 +82,7 @@ public class Interval1D {
     /**
      * Returns the left endpoint of this interval.
      *
-     * @return the left endpoint of this interval
+     @return the left endpoint of this interval
      * @deprecated Replaced by {@link #min()}.
      */
     public double left() { 
@@ -91,7 +91,7 @@ public class Interval1D {
 
     /**
      * Returns the right endpoint of this interval.
-     * @return the right endpoint of this interval
+     @return the right endpoint of this interval
      * @deprecated Replaced by {@link #max()}.
      */
     public double right() { 
@@ -101,7 +101,7 @@ public class Interval1D {
     /**
      * Returns the min endpoint of this interval.
      *
-     * @return the min endpoint of this interval
+     @return the min endpoint of this interval
      */
     public double min() { 
         return min;
@@ -110,7 +110,7 @@ public class Interval1D {
     /**
      * Returns the max endpoint of this interval.
      *
-     * @return the max endpoint of this interval
+     @return the max endpoint of this interval
      */
     public double max() { 
         return max;
@@ -119,8 +119,8 @@ public class Interval1D {
     /**
      * Returns true if this interval intersects the specified interval.
      *
-     * @param  that the other interval
-     * @return <tt>true</tt> if this interval intersects the argument interval;
+     @param  that the other interval
+     @return <tt>true</tt> if this interval intersects the argument interval;
      *         <tt>false</tt> otherwise
      */
     public boolean intersects(Interval1D that) {
@@ -132,8 +132,8 @@ public class Interval1D {
     /**
      * Returns true if this interval contains the specified value.
      *
-     * @param x the value
-     * @return <tt>true</tt> if this interval contains the value <tt>x</tt>;
+     @param x the value
+     @return <tt>true</tt> if this interval contains the value <tt>x</tt>;
      *         <tt>false</tt> otherwise
      */
     public boolean contains(double x) {
@@ -143,7 +143,7 @@ public class Interval1D {
     /**
      * Returns the length of this interval.
      *
-     * @return the length of this interval (max - min)
+     @return the length of this interval (max - min)
      */
     public double length() {
         return max - min;
@@ -152,7 +152,7 @@ public class Interval1D {
     /**
      * Returns a string representation of this interval.
      *
-     * @return a string representation of this interval in the form [min, max]
+     @return a string representation of this interval in the form [min, max]
      */
     public String toString() {
         return "[" + min + ", " + max + "]";
@@ -161,8 +161,8 @@ public class Interval1D {
     /**
      * Compares this transaction to the specified object.
      *
-     * @param  other the other interval
-     * @return <tt>true</tt> if this interval equals the other interval;
+     @param  other the other interval
+     @return <tt>true</tt> if this interval equals the other interval;
      *         <tt>false</tt> otherwise
      */
     public boolean equals(Object other) {
@@ -176,7 +176,7 @@ public class Interval1D {
     /**
      * Returns an integer hash code for this interval.
      *
-     * @return an integer hash code for this interval
+     @return an integer hash code for this interval
      */
     public int hashCode() {
         int hash1 = ((Double) min).hashCode();
@@ -219,6 +219,7 @@ public class Interval1D {
 
     /**
      * Unit tests the <tt>Interval1D</tt> data type.
+     @param args
      */
     public static void main(String[] args) {
         Interval1D[] intervals = new Interval1D[4];

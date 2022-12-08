@@ -35,7 +35,7 @@ public class KernelDensityEstimatorTest extends TestCase {
     /**
      * get a very small test data set. the values are already sorted, ascending.
      *
-     * @return
+     @return
      */
     private double[] getData0() {
         // test data from https://en.wikipedia.org/wiki/Kernel_density_estimation#Example

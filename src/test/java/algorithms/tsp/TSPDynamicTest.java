@@ -456,9 +456,9 @@ public class TSPDynamicTest extends TestCase {
     
     /**
      * 
-     * @param expectedBestTour
-     * @param dist
-     * @return The minimal cost is 291
+     @param expectedBestTour
+     @param dist
+     @return The minimal cost is 291
      * @throws Exception 
      */
     private double populateATT48_15_cities(TIntList expectedBestTour, 
@@ -534,8 +534,8 @@ public class TSPDynamicTest extends TestCase {
     /**
      * read expected best tour, transformed to starting index=0
      * (the file has city indexes that start with 1).
-     * @param filePath
-     * @param expectedBestTour
+     @param filePath
+     @param expectedBestTour
      * @throws Exception 
      */
     private void readBestTour(String filePath, 

@@ -10,8 +10,19 @@ import java.util.Arrays;
  */
 public class LongestCommonSubsequence {
     
+    /**
+     *
+     */
     protected final static byte UP = (byte)1;
+
+    /**
+     *
+     */
     protected final static byte UPLEFT = (byte)2;
+
+    /**
+     *
+     */
     protected final static byte LEFT = (byte)3;
     
     /**
@@ -20,10 +31,10 @@ public class LongestCommonSubsequence {
      *
      * The solution takes time O(m * n) and uses dynamic programming.
      
-     * @param x one string
-     * @param y another string
-     * @param printToStdOut
-     * @return 
+     @param x one string
+     @param y another string
+     @param printToStdOut
+     @return 
      */
     public static char[] calculateWithCormenEtAl(char[] x, char[] y, boolean printToStdOut) {
         
@@ -109,13 +120,13 @@ public class LongestCommonSubsequence {
     
     /**
      * back track through the matrix to get the letters.  runtime complexity O(m + n).
-     * @param b
-     * @param x
-     * @param row
-     * @param col
-     * @param str
-     * @param currentLength
-     * @return 
+     @param b
+     @param x
+     @param row
+     @param col
+     @param str
+     @param currentLength
+     @return 
      */
     private static int getLCS(final byte[][]b, char[]x, int row, int col, char[] str, 
         int currentLength) {

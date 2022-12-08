@@ -77,7 +77,10 @@ public class CMAParameters implements java.io.Serializable {
 
 	double chiN;
 
-	public CMAParameters() { 
+    /**
+     *
+     */
+    public CMAParameters() { 
 		mucov = -1;
 		ccov = -1; 
 	}
@@ -86,7 +89,8 @@ public class CMAParameters implements java.io.Serializable {
 	 *  Checks strategy parameter setting with respect to principle 
 	 *  consistency. Returns a string with description of the first
 	 *  error found, otherwise an empty string "".  
-	 *  */
+	 *
+     @return  */
 	public String check() {
 		if (lambda <= 1)
 			return "offspring population size lambda must be greater than onem is " + lambda;
@@ -111,8 +115,8 @@ public class CMAParameters implements java.io.Serializable {
 	}
 	/** get default parameter setting depending on given dimension N
 	 * 
-	 * @param N dimension
-	 * @return default parameter setting
+	 @param N dimension
+	 @return default parameter setting
 	 * @see #getDefaults(int, int)
 	 */
 	public CMAParameters getDefaults(int N) {
@@ -136,9 +140,9 @@ public class CMAParameters implements java.io.Serializable {
      * int also_the_same = cma.getParameterDefaults(42).getMu();
 	 * </PRE>
 	 * 
-	 * @param N
-	 * @param lambda
-	 * @return default parameter setting
+	 @param N
+	 @param lambda
+	 @return default parameter setting
      * @see #getDefaults(int, int)
 	 */
 	public CMAParameters getDefaults(int N, int lambda) {
@@ -151,8 +155,8 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Supplements all default parameter values that were not explicitly set already. 
 	 * Also checks whether the values that were already explicitly set are fine. 
-	 * @param N search space dimension
-	 * @param opts {@link CMAOptions} where stopMaxFunEvals and 
+	 @param N search space dimension
+	 @param opts {@link CMAOptions} where stopMaxFunEvals and 
 	 * stopMaxIter are used to set step-size damping parameter damps. This is of minor relevance.
 	 */
 	public void supplementRemainders(int N, CMAOptions opts) {
@@ -217,7 +221,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Getter for property mu.
 	 * 
-	 * @return Value of property mu.
+	 @return Value of property mu.
 	 * 
 	 */
 	public int getMu() {
@@ -227,7 +231,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Setter for parent number mu, be aware of the recombinationType when setting mu 
 	 * 
-	 * @param mu
+	 @param mu
 	 *            New value for the number of parents mu.
 	 * @see #setRecombination(int, CMAParameters.RecombinationType)
 	 * @see #setRecombinationWeights(CMAParameters.RecombinationType)
@@ -241,7 +245,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Getter for offspring population size lambda, no check, whether lambda was already set properly
 	 * 
-	 * @return Value of lambda
+	 @return Value of lambda
 	 * 
 	 */
 	public int getLambda() {
@@ -253,7 +257,7 @@ public class CMAParameters implements java.io.Serializable {
 	 * Setter for offspring population size alias sample size
 	 * alias lambda, use setPopulationSize() for outside use.
 	 * 
-	 * @param lambda  set population size
+	 @param lambda  set population size
 	 * @see #setPopulationSize() 
 	 */
 	void setLambda(int lambda) {
@@ -261,7 +265,8 @@ public class CMAParameters implements java.io.Serializable {
 			error("parameters cannot be set anymore");
 		this.lambda = lambda; 
 	}
-	/** @see #getLambda() */
+	/**
+     @return  *  @see #getLambda() */
 	public int getPopulationSize() {
 		return getLambda();
 	}
@@ -272,18 +277,36 @@ public class CMAParameters implements java.io.Serializable {
 	 * subsequently learning rates for the covariance matrix etc. are
 	 * chosen accordingly  
 	 * 
-	 * @param lambda is the offspring population size
+	 @param lambda is the offspring population size
 	 */
 	public void setPopulationSize(int lambda) {
 		setLambda(lambda);
 	}
 	
-	public enum RecombinationType {superlinear, linear, equal};
+    /**
+     *
+     */
+    public enum RecombinationType {
+
+            /**
+             *
+             */
+            superlinear, 
+
+            /**
+             *
+             */
+            linear, 
+
+            /**
+             *
+             */
+            equal};
 	RecombinationType recombinationType = RecombinationType.superlinear; // otherwise null
 	/**
 	 * Getter for property weights.
 	 * 
-	 * @return Value of property weights.
+	 @return Value of property weights.
 	 * 
 	 */
 	public double[] getWeights() {
@@ -294,7 +317,7 @@ public class CMAParameters implements java.io.Serializable {
 	 * Recombination weights can be equal, linearly 
 	 * decreasing, or super-linearly decreasing (default). The respective parameter value is 
 	 * in enum RecombinationType. 
-	 * @param recombinationType
+	 @param recombinationType
 	 * @see #setRecombination 
 	 * @see #setMu
 	 */
@@ -311,8 +334,8 @@ public class CMAParameters implements java.io.Serializable {
 	 * The respective parameter value is 
 	 * in enum RecombinationType. 
 	 * For equal recombination weights mu=lambda/4 is appropriate, otherwise mu=lambda/2. 
-	 * @param mu
-	 * @param recombinationType
+	 @param mu
+	 @param recombinationType
 	 */
 	public void setRecombination(int mu, RecombinationType recombinationType) {
 		if (locked != 0)
@@ -324,7 +347,8 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Setter for recombination weights
 	 *
-	 * @param mu is the number of parents, number of weights > 0 
+	 @param mu is the number of parents, number of weights > 0 
+     @param recombinationType 
 	 */
 	private void setWeights(int mu, RecombinationType recombinationType) {
 		double[] w = new double[mu];
@@ -341,7 +365,8 @@ public class CMAParameters implements java.io.Serializable {
 		setWeights(w);
 	}
 
-	/** normalizes recombination weights vector and sets mueff **/
+	/** normalizes recombination weights vector and sets mueff
+     @param weights **/
 	protected void setWeights(double[] weights) {
 		//assert locked == 0;
 		//NLK: commented out assert because this method
@@ -369,7 +394,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Getter for property mueff, the "variance effective selection mass".
 	 * 
-	 * @return Value of property mueff.
+	 @return Value of property mueff.
 	 * 
 	 */
 	public double getMueff() {
@@ -381,7 +406,7 @@ public class CMAParameters implements java.io.Serializable {
 	 * mixing between rank-one and rank-mu update. For
 	 * mucov = 1, no rank-mu updated takes place. 
 	 * 
-	 * @return Value of property mucov.
+	 @return Value of property mucov.
 	 * 
 	 */
 	public double getMucov() {
@@ -391,7 +416,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Setter for mucov.
 	 * 
-	 * @param mucov
+	 @param mucov
 	 *            New value of mucov.
 	 * @see #getMucov()  
 	 */
@@ -404,10 +429,10 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Getter for property covariance matrix learning rate ccov
 	 * 
-	 * @param flgdiag 
+	 @param flgdiag 
 	 *        boolean, true for getting the learning rate when 
 	 *        only the diagonal of the covariance matrix is updated
-	 * @return Value of property ccov.
+	 @return Value of property ccov.
 	 * 
 	 */
 	public double getCcov(boolean flgdiag) {
@@ -418,7 +443,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Getter for property covariance matrix learning rate ccov
 	 * 
-	 * @return Value of property ccov.
+	 @return Value of property ccov.
 	 * 
 	 */
 	public double getCcov() {
@@ -431,7 +456,7 @@ public class CMAParameters implements java.io.Serializable {
 	 * matrix adaptation takes place and only <EM>Cumulation Step-Size 
 	 * Adaptation (CSA)</EM> is conducted, also know as <EM>Path Length Control</EM>.
 	 * 
-	 * @param ccov
+	 @param ccov
 	 *            New value of property ccov.
 	 * @see #getCcov()
 	 */
@@ -443,7 +468,7 @@ public class CMAParameters implements java.io.Serializable {
 	 * Getter for step-size damping damps.  The damping damps
 	 * determines the amount of step size change. 
 	 * 
-	 * @return Value of damps.
+	 @return Value of damps.
 	 * 
 	 */
 	public double getDamps() {
@@ -453,7 +478,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Setter for damps.
 	 * 
-	 * @param damps
+	 @param damps
 	 *            New value of damps.
 	 * @see #getDamps()
 	 */
@@ -468,7 +493,7 @@ public class CMAParameters implements java.io.Serializable {
 	 * distribution cumulation (for evolution path
 	 * p<sub>c</sub>).
 	 * 
-	 * @return Value of cc.
+	 @return Value of cc.
 	 * 
 	 */
 	public double getCc() {
@@ -478,6 +503,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Setter for cc to default value.
 	 * 
+     @param cc
 	 */
 	public void setCc(double cc) {
 		this.cc = cc;
@@ -486,7 +512,7 @@ public class CMAParameters implements java.io.Serializable {
 	/**
 	 * Getter for cs, parameter for the backward time horizon for the cumulation for sigma.
 	 * 
-	 * @return Value of property cs.
+	 @return Value of property cs.
 	 * 
 	 */
 	public double getCs() {
@@ -495,6 +521,7 @@ public class CMAParameters implements java.io.Serializable {
 
 	/**
 	 * Setter for cs to default value.
+     @param cs
 	 * @see #getCs()
 	 */
 	public void setCs(double cs) {

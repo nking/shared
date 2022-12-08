@@ -17,10 +17,21 @@ import java.util.Arrays;
 public class StackIntLarge {
     
     // circular array
+
+    /**
+     *
+     */
     protected int[] a = null;
     
+    /**
+     *
+     */
     protected int idxLast = -1;
     
+    /**
+     *
+     @param capacity
+     */
     public StackIntLarge(int capacity) {
         
         if (capacity < 1) {
@@ -30,6 +41,10 @@ public class StackIntLarge {
         a = new int[capacity];
     }
     
+    /**
+     *
+     @param value
+     */
     public void push(int value) {
         
         expandIfNeeded();
@@ -46,6 +61,10 @@ public class StackIntLarge {
         a[idxLast] = value;
     }
     
+    /**
+     *
+     @return
+     */
     public int pop() {
         
         if (idxLast == -1) {
@@ -61,6 +80,10 @@ public class StackIntLarge {
         return a[idxLast + 1];        
     }
     
+    /**
+     *
+     @return
+     */
     public int peek() {
         
         if (idxLast == -1) {
@@ -70,10 +93,18 @@ public class StackIntLarge {
         return a[idxLast];
     }
     
+    /**
+     *
+     @return
+     */
     public boolean isEmpty() {
         return (size() == 0);
     }
     
+    /**
+     *
+     @return
+     */
     public int size() {
      
         if (idxLast == -1) {

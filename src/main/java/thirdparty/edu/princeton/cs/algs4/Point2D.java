@@ -49,8 +49,8 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Initializes a new point (x, y).
-     * @param x the x-coordinate
-     * @param y the y-coordinate
+     @param x the x-coordinate
+     @param y the y-coordinate
      * @throws IllegalArgumentException if either <tt>x</tt> or <tt>y</tt>
      *    is <tt>Double.NaN</tt>, <tt>Double.POSITIVE_INFINITY</tt> or
      *    <tt>Double.NEGATIVE_INFINITY</tt>
@@ -69,7 +69,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the x-coordinate.
-     * @return the x-coordinate
+     @return the x-coordinate
      */
     public double x() {
         return x;
@@ -77,7 +77,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the y-coordinate.
-     * @return the y-coordinate
+     @return the y-coordinate
      */
     public double y() {
         return y;
@@ -85,7 +85,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the polar radius of this point.
-     * @return the polar radius of this point in polar coordiantes: sqrt(x*x + y*y)
+     @return the polar radius of this point in polar coordiantes: sqrt(x*x + y*y)
      */
     public double r() {
         return Math.sqrt(x*x + y*y);
@@ -93,7 +93,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the angle of this point in polar coordinates.
-     * @return the angle (in radians) of this point in polar coordiantes (between -pi/2 and pi/2)
+     @return the angle (in radians) of this point in polar coordiantes (between -pi/2 and pi/2)
      */
     public double theta() {
         return Math.atan2(y, x);
@@ -101,7 +101,8 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the angle between this point and that point.
-     * @return the angle in radians (between -pi and pi) between this point and that point (0 if equal)
+     @param that
+     @return the angle in radians (between -pi and pi) between this point and that point (0 if equal)
      */
     private double angleTo(Point2D that) {
         double dx = that.x - this.x;
@@ -111,10 +112,10 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns true if a to b to c is a counterclockwise turn.
-     * @param a first point
-     * @param b second point
-     * @param c third point
-     * @return { -1, 0, +1 } if a to b to c is a { clockwise, collinear; counterclockwise } turn.
+     @param a first point
+     @param b second point
+     @param c third point
+     @return { -1, 0, +1 } if a to b to c is a { clockwise, collinear; counterclockwise } turn.
      */
     public static int ccw(Point2D a, Point2D b, Point2D c) {
         double area2 = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);
@@ -125,10 +126,10 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns twice the signed area of the triangle a-b-c.
-     * @param a first point
-     * @param b second point
-     * @param c third point
-     * @return twice the signed area of the triangle a-b-c
+     @param a first point
+     @param b second point
+     @param c third point
+     @return twice the signed area of the triangle a-b-c
      */
     public static double area2(Point2D a, Point2D b, Point2D c) {
         return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);
@@ -136,8 +137,8 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the Euclidean distance between this point and that point.
-     * @param that the other point
-     * @return the Euclidean distance between this point and that point
+     @param that the other point
+     @return the Euclidean distance between this point and that point
      */
     public double distanceTo(Point2D that) {
         double dx = this.x - that.x;
@@ -147,8 +148,8 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns the square of the Euclidean distance between this point and that point.
-     * @param that the other point
-     * @return the square of the Euclidean distance between this point and that point
+     @param that the other point
+     @return the square of the Euclidean distance between this point and that point
      */
     public double distanceSquaredTo(Point2D that) {
         double dx = this.x - that.x;
@@ -161,8 +162,8 @@ public class Point2D implements Comparable<Point2D> {
      * Formally, the invoking point (x0, y0) is less than the argument point (x1, y1)
      * if and only if either y0 < y1 or if y0 = y1 and x0 < x1.
      *
-     * @param  that the other point
-     * @return the value <tt>0</tt> if this string is equal to the argument
+     @param  that the other point
+     @return the value <tt>0</tt> if this string is equal to the argument
      *         string (precisely when <tt>equals()</tt> returns <tt>true</tt>);
      *         a negative integer if this point is less than the argument
      *         point; and a positive integer if this point is greater than the
@@ -179,7 +180,7 @@ public class Point2D implements Comparable<Point2D> {
     /**
      * Compares two points by polar angle (between 0 and 2pi) with respect to this point.
      *
-     * @return the comparator
+     @return the comparator
      */
     public Comparator<Point2D> polarOrder() {
         return new PolarOrder();
@@ -188,7 +189,7 @@ public class Point2D implements Comparable<Point2D> {
     /**
      * Compares two points by atan2() angle (between -pi and pi) with respect to this point.
      *
-     * @return the comparator
+     @return the comparator
      */
     public Comparator<Point2D> atan2Order() {
         return new Atan2Order();
@@ -197,7 +198,7 @@ public class Point2D implements Comparable<Point2D> {
     /**
      * Compares two points by distance to this point.
      *
-     * @return the comparator
+     @return the comparator
      */
     public Comparator<Point2D> distanceToOrder() {
         return new DistanceToOrder();
@@ -278,8 +279,8 @@ public class Point2D implements Comparable<Point2D> {
     /**       
      * Compares this point to the specified point.
      *       
-     * @param  other the other point
-     * @return <tt>true</tt> if this point equals <tt>other</tt>;
+     @param  other the other point
+     @return <tt>true</tt> if this point equals <tt>other</tt>;
      *         <tt>false</tt> otherwise
      */
     @Override
@@ -293,7 +294,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Return a string representation of this point.
-     * @return a string representation of this point in the format (x, y)
+     @return a string representation of this point in the format (x, y)
      */
     @Override
     public String toString() {
@@ -302,7 +303,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Returns an integer hash code for this point.
-     * @return an integer hash code for this point
+     @return an integer hash code for this point
      */
     @Override
     public int hashCode() {
@@ -323,6 +324,7 @@ public class Point2D implements Comparable<Point2D> {
 
     /**
      * Unit tests the point data type.
+     @param args
      */
     public static void main(String[] args) {
         int x0 = Integer.parseInt(args[0]);

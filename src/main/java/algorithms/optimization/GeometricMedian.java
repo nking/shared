@@ -87,10 +87,10 @@ public class GeometricMedian {
      * One should use instead, the method newtonsThenVardiZhang which checks for 
      * that and updates the solution if needed.
      * 
-     * @param function
+     @param function
      *  @param init input output variable holding the estimates for the
      * geometric median in all dimensions.
-     * @return the minimum of the sum of the squared sum of thedifferences of
+     @return the minimum of the sum of the squared sum of thedifferences of
      * the observed points from the geometric median.
      */
     public double newtonsMethod2(AbstractGeometricMedianFunction function,
@@ -284,9 +284,10 @@ public class GeometricMedian {
      * if init is a root of the function, and error is errorTolerance or smaller,
        then the function derivative evaluated at the root plus and at the root minus
        the error will have opposing signs.
-     * @param function
-     * @param init
-     * @return 
+     @param function
+     @param init
+     @param errorTolerance
+     @return 
      */
     public boolean verify(AbstractGeometricMedianFunction function,
         double[] init, double errorTolerance) {
@@ -317,10 +318,10 @@ public class GeometricMedian {
        Yehuda Vardi and Cun-Hui Zhang
      *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf
      * 
-     * @param function
-     * @param geoMedian input output variable holding the estimates for the
+     @param function
+     @param geoMedian input output variable holding the estimates for the
      * geometric median in all dimensions.
-     * @return the minimum of the sum of the squared sum of the differences of
+     @return the minimum of the sum of the squared sum of the differences of
      * the observed points from the geometric median.
      */
     public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
@@ -468,9 +469,9 @@ public class GeometricMedian {
         by Pengcheng Jia
         https://surface.syr.edu/cgi/viewcontent.cgi?article=1673&context=etd
         
-     * @param function
-     * @param init
-     * @return 
+     @param function
+     @param init
+     @return 
      */
     /*public double levenbergMarquardt(AbstractGeometricMedianFunction function,
         double[] init) {

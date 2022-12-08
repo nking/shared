@@ -14,6 +14,8 @@ import java.util.Stack;
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
+ @param <T>
+ @param <Value>
  */
 public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
     
@@ -34,6 +36,8 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
 
   /***********************************************************************
     *  Insert (x, y) into appropriate quadrant
+     @param box
+     @param value
     ***************************************************************************/
     public void insert(Interval2D<T> box, Value value) {
         root = insert(root, box, value);
@@ -64,6 +68,10 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
         return h;
     }
 
+    /**
+     *
+     @param box
+     */
     public void remove(Interval2D<T> box) {
         List<Node<T>> parents = new ArrayList<Node<T>>();
         remove(root, box, parents);
@@ -175,6 +183,8 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
     
   /***********************************************************************
     *  Range search.
+     @param rect
+     @return 
     ***************************************************************************/
 
     public List<Interval2D<T>> query2D(Interval2D<T> rect) {
@@ -243,7 +253,8 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
 
     /**
      * using pre-order traversal, return all nodes
-     * @param output
+     @param output
+     @param output2
      */
     protected void getAllNodes(List<Interval2D<T>> output,
         List<Value> output2) {
@@ -251,7 +262,9 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
     }
     /**
      * using pre-order traversal, return all nodes
-     * @param output
+     @param node
+     @param output
+     @param output2
      */
     protected void getAllNodes(Node<T> node, List<Interval2D<T>> output,
         List<Value> output2) {

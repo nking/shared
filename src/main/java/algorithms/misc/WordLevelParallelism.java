@@ -29,9 +29,9 @@ public class WordLevelParallelism {
      * where computing RMQ(i, j) requires computing
      * the largest number k where 2^k ≤ (j–i+1), k = msb(j – i + 1).
      *
-     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
-     * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
+     @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
      */
     public static long highestOneBitIn(long tiled) {
         //NOTE: java's Long.highestOneBit() uses 14 operations
@@ -57,11 +57,11 @@ public class WordLevelParallelism {
      *  The operation is ~33 to a few times that operations.
      *  Consider using instead Long.highestOneBitIn() which uses the Henry S. Warren, Jr.'s Hacker's Delight
      *  bit twiddling for 14 operations.
-     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
-     * @param nTiles        the number of tiles packed into the bitarray tiled.
-     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
-     * @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
+     @param nTiles        the number of tiles packed into the bitarray tiled.
+     @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     @return the index of the highest nonzero bit in tiled.  returns a negative number if no bits are set in tiled.
      */
     public static long highestOneBitIn(long tiled, int nTiles, int tileBitLength) {
 
@@ -90,11 +90,11 @@ public class WordLevelParallelism {
           see also lecture notes http://web.stanford.edu/class/cs166/lectures/16/Small16.pdf
      </pre>
      * the method is ~ 21 operations.
-     * @param tiled the bitarray of tiled integers.
-     * @param nTiles the number of tiles embedded in tiled.
-     * @param tileBitLength the length of each tile in tiled, not counting the surrounding single flag bits.
+     @param tiled the bitarray of tiled integers.
+     @param nTiles the number of tiles embedded in tiled.
+     @param tileBitLength the length of each tile in tiled, not counting the surrounding single flag bits.
      *                      the block size is tileBitLength + 1.
-     * @return return the largest index of the block within tiled that contains a set bit, else returns a
+     @return return the largest index of the block within tiled that contains a set bit, else returns a
      * negative number if there are no set bits in tiled.  the block size is tileBitLength + 1.
      */
     static long highestBlockSetIn(long tiled, int nTiles, int tileBitLength) {
@@ -135,10 +135,10 @@ public class WordLevelParallelism {
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param values          array of bitstrings, each of length bitstringLength
-     * @param bitstringLength the bitlength of each value in values.  the tile for each will be bitstringLength + 1
+     @param values          array of bitstrings, each of length bitstringLength
+     @param bitstringLength the bitlength of each value in values.  the tile for each will be bitstringLength + 1
      *                        bits long.  the total tiled result will be values.length * (bitstringLength + 1) bits.
-     * @return the bitarray holding the bitarray of replicated values with '0' separators.
+     @return the bitarray holding the bitarray of replicated values with '0' separators.
      */
     public static long createTiledBitstring0(int[] values, int bitstringLength) {
         if (bitstringLength < 1 || bitstringLength > 63) {
@@ -178,9 +178,9 @@ public class WordLevelParallelism {
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param nTiles          the number of tiles of bitstringLength for which this mask will be calculated.
-     * @param bitstringLength the bit-length of each tile
-     * @return the bitarray holding the bitarray of '1' separators for nTiles of length bitstringLength.
+     @param nTiles          the number of tiles of bitstringLength for which this mask will be calculated.
+     @param bitstringLength the bit-length of each tile
+     @return the bitarray holding the bitarray of '1' separators for nTiles of length bitstringLength.
      * e.g. for nTiles=2 and bitstringLength=7, the resulting bitmask is 0b1000000010000000
      * which is 16 bits.
      */
@@ -223,11 +223,11 @@ public class WordLevelParallelism {
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value           bitstring of length .lte. bitstringLength
-     * @param nTiles          the number of copies of value to set in the returned bitarray
-     * @param bitstringLength the length of tiling before the 1's are concatenated as separators.
+     @param value           bitstring of length .lte. bitstringLength
+     @param nTiles          the number of copies of value to set in the returned bitarray
+     @param bitstringLength the length of tiling before the 1's are concatenated as separators.
      *                        e.g. for a bitstringLength of 5 and nTiles=10, the resulting bitarray is length 10*(5+1)=60 bits
-     * @return the bitarray holding the bitarray of replicated values with '1' separators.
+     @return the bitarray holding the bitarray of replicated values with '1' separators.
      */
     public static long createTiledBitstring1(int value, int nTiles, int bitstringLength) {
         if (bitstringLength < 1 || bitstringLength > 63) {
@@ -272,14 +272,14 @@ public class WordLevelParallelism {
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 63 bit limit.
      *
-     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
+     @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
      *                      tiled1 is 0b0010010001100111, where 0's have been concatenated onto the high end of
      *                      each tileBitLength bitstring, making a bitstring of length 16.
-     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
-     * @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
-     * @param tileBitLength the length of each tile in the bit arrays.
-     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
+     @param tileBitLength the length of each tile in the bit arrays.
+     @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
      * in tiled2.
      */
@@ -313,13 +313,13 @@ public class WordLevelParallelism {
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 63 bit limit.
      *
-     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
+     @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 0's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
      *                      tiled1 is 0b0010010001100111, where 0's have been concatenated onto the high end of
      *                      each tileBitLength bitstring, making a bitstring of length 16.
-     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
-     * @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
-     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     @param nTiles        the number of tiles in the bitarray tiled1 or tiled2 (which should be the same number of tiles).
+     @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
      * in tiled2.
      */
@@ -348,18 +348,19 @@ public class WordLevelParallelism {
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
      *                      e.g. For bitstring 0b0010100 replicated 2 times using a bitlength of 7 bits,
      *                      the resulting tiled1 is bitstring of length 16 bits which has 2 blocks of size 8 bits,
      *                      = 0b10010100_10010100.
-     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
      *                      tiled2 is 0b00100100_01100111, where 0's have been concatenated onto the high end of
      *                      each tileBitLength bitstring, making a bitstring of length 16.
-     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     @param nTiles
+     @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
      *                      because it includes the gap bit between tiles.
-     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
-     * @return The calculated rank is the number of flags of blocks in tiled2 that are less than or equal to those
+     @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
+     @return The calculated rank is the number of flags of blocks in tiled2 that are less than or equal to those
      * in the query (which is replicated in tiled1).
      */
     public static long rank(long tiled1, long tiled2, int nTiles, int tileBitLength, long mask1) {
@@ -403,14 +404,15 @@ public class WordLevelParallelism {
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 63 bit limit.
      *
-     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
      *                      tiled1 is 0b1010010011100111, where 1's have been concatenated onto the high end of
      *                      each tileBitLength bitstring, making a bitstring of length 16.
-     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
-     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     @param nTiles
+     @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
      *                      because it includes the gap bit between tiles.
-     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
      * in tiled2.
      */
@@ -443,13 +445,14 @@ public class WordLevelParallelism {
      * from nTiles in order for the compare bitMask to fit within the limits of the tiled bit length
      * and the 63 bit limit.
      *
-     * @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
+     @param tiled1        a bit array holding numbers of length tileBitLength (called tiles) separated by 1's.
      *                      e.g. For bitstrings 0b0100100 and 0b1100111 which are 7 bits long,
      *                      tiled1 is 0b1010010011100111, where 1's have been concatenated onto the high end of
      *                      each tileBitLength bitstring, making a bitstring of length 16.
-     * @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
-     * @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
-     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     @param tiled2        a bit array holding numbers of length tileBitLength separated by 0's.
+     @param nTiles
+     @param mask1         the 1's mask (same used in setting the gap bits in tiled1)
+     @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
      * in tiled2.
      */
@@ -482,11 +485,12 @@ public class WordLevelParallelism {
      Then edited here to allow block sizes other than 8.
      </pre>
      * This is 3 operations.
-     * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
+     @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
      *                      are summed in this method.
-     * @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
+     @param nTiles
+     @param tileBitLength the length of each tile in the bit arrays.  the block size is tileBitLength + 1
      *                      because it includes the gap bit between tiles.
-     * @return a bit array of same size as tiled1 and tiled2 in which the bit of each
+     @return a bit array of same size as tiled1 and tiled2 in which the bit of each
      * tile is 1 if the tile in tiled1 1 is greater than or equal to the tile at the same position
      * in tiled2.
      */
@@ -636,9 +640,10 @@ public class WordLevelParallelism {
      Then edited here to allow block sizes other than 8.
      </pre>
      * this is ~ 6 operations.
-     * @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
+     @param comparison    a bit array with flags at the MSB of each block.  The flags that are set bits
      *                      are summed in this method.
-     * @return the sum of the set bits of the MSB of each 8-bit block.
+     @param nTiles
+     @return the sum of the set bits of the MSB of each 8-bit block.
      */
     static long parallelSum8(long comparison, int nTiles) {
 
@@ -677,11 +682,11 @@ public class WordLevelParallelism {
 
      </pre>
      The method is ~ 3 operations.
-     * @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
+     @param tiled         a bitarray of concatenated bitstrings of length tileBitLength separated by flag bits.
      *                      the portion of tiled read is the first nTiles * (tileBitLength + 1) bits.
-     * @param nTiles        the number of tiles packed into the bitarray tiled.
-     * @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
-     * @return
+     @param nTiles        the number of tiles packed into the bitarray tiled.
+     @param tileBitLength the size of a tile before a gap is appended to it.  the block size is tileBitlength + 1.
+     @return
      */
     public static long sketch(long tiled, int nTiles, int tileBitLength) {
 
@@ -718,9 +723,10 @@ public class WordLevelParallelism {
      Then edited here to allow block sizes other than 8.
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
      * and embedded tile size of 6 bits
-     * @return
+     @param nTiles
+     @return
      */
     public static long sketch8(long tiled, int nTiles) {
 
@@ -782,10 +788,10 @@ public class WordLevelParallelism {
      also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 7 bits
      * and embedded tile size of 6 bits
-     * @param nTiles the number of tiles of block size 7 embedded in tiled.  maximum nTiles is 9.
-     * @return
+     @param nTiles the number of tiles of block size 7 embedded in tiled.  maximum nTiles is 9.
+     @return
      */
     public static long sketch7(long tiled, final int nTiles) {
 
@@ -883,11 +889,11 @@ sketch overlaps here:
 
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 6 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 6 bits
      * and embedded tile size of 5 bits
-     * @param nTiles the number of tiles of block size 6 embedded in tiled.  the maximum number for the java unsigned
+     @param nTiles the number of tiles of block size 6 embedded in tiled.  the maximum number for the java unsigned
      *               long is 10 tiles of block size 6.
-     * @return
+     @return
      */
     public static long sketch6(long tiled, final int nTiles) {
 
@@ -997,12 +1003,12 @@ sketch overlaps here:
      also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 5 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 5 bits
      * and embedded tile size of 4 bits
-     * @param nTiles the number of tiles of block size 5 embedded in tiled.  the maximum number of 12 for nTiles for
+     @param nTiles the number of tiles of block size 5 embedded in tiled.  the maximum number of 12 for nTiles for
      *               block size of 5 is limited by the java unsigned long and the location of the mask bits needed after
      *               the sketch multiplier.
-     * @return
+     @return
      */
     public static long sketch5(long tiled, final int nTiles) {
 
@@ -1116,12 +1122,12 @@ sketch overlaps here:
      also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 4 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 4 bits
      * and embedded tile size of 3 bits
-     * @param nTiles the number of tiles of block size 4 embedded in tiled.  the maximum number of 15 for nTiles for
+     @param nTiles the number of tiles of block size 4 embedded in tiled.  the maximum number of 15 for nTiles for
      *               block size of 4 is limited by the java unsigned long and the location of the mask bits needed after
      *               the sketch multiplier.
-     * @return
+     @return
      */
     public static long sketch4(long tiled, final int nTiles) {
 
@@ -1202,12 +1208,12 @@ sketch overlaps here:
      also used      https://graphics.stanford.edu/~seander/bithacks.html#MaskedMerge
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 3 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 3 bits
      * and embedded tile size of 2 bits
-     * @param nTiles the number of tiles of block size 3 embedded in tiled.  the maximum number of 21 for nTiles for
+     @param nTiles the number of tiles of block size 3 embedded in tiled.  the maximum number of 21 for nTiles for
      *               block size of 3 is limited by the java unsigned long and the location of the mask bits needed after
      *               the sketch multiplier.
-     * @return
+     @return
      */
     public static long sketch3(long tiled, final int nTiles) {
 
@@ -1239,10 +1245,10 @@ sketch overlaps here:
      https://stackoverflow.com/questions/30539347/2d-morton-code-encode-decode-64bits
      </pre>
      *
-     * @param tiled a bitarray packed full of tiles separated by flags with a block size of 2 bits
+     @param tiled a bitarray packed full of tiles separated by flags with a block size of 2 bits
      * and embedded tile size of 1 bits
      *
-     * @return
+     @return
      */
     public static long sketch2(final long tiled) {
 
@@ -1280,9 +1286,9 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value a bitlength number.
-     * @param valueBitLength the bit length of value.  range is [1,8] inclusive
-     * @return the highest bit set in value.  the bit number is w.r.t. 0.
+     @param value a bitlength number.
+     @param valueBitLength the bit length of value.  range is [1,8] inclusive
+     @return the highest bit set in value.  the bit number is w.r.t. 0.
      * e.g. if blockSize is 8, the return value range is [0,7] inclusive.
      * the result is a negative number if there are no bits set in value.
      */
@@ -1771,7 +1777,7 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
-     * @param value a 4-bit number
+     @param value a 4-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn4(long value) {
@@ -1850,7 +1856,7 @@ sketch overlaps here:
     /**
      * Given a 3-bit value, returns the index of the highest 1 bit within that
      * value.
-     * @param value a 3-bit number
+     @param value a 3-bit number
      @return the highest set bit in value, or -1 for no set bits
      */
      static long highestBitSetIn3(long value) {
@@ -1990,6 +1996,9 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
+     @param value
+     @param blockSize
+     @return 
      */
     public static long usedBlocksIn(long value, int blockSize) {
         switch(blockSize) {
@@ -2036,6 +2045,8 @@ sketch overlaps here:
      Then edited here to allow block sizes other than 8.
      </pre>
      The method is 5 operations.
+     @param value
+     @return 
      */
     static long usedBlocksIn8(long value) {
 
@@ -2108,6 +2119,8 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
+     @param value
+     @return 
      */
     static long usedBlocksIn7(long value) {
 
@@ -2148,6 +2161,8 @@ sketch overlaps here:
      and code in http://web.stanford.edu/class/cs166/lectures/16/code/msb64/MSB64.cpp
      Then edited here to allow block sizes other than 8.
      </pre>
+     @param value
+     @return 
      */
     static long usedBlocksIn6(long value) {
 
@@ -2262,8 +2277,8 @@ sketch overlaps here:
     /**
      * returns the maximum number of blockSize tiles that can fit into a java unsigned
      * long (= 63 bits).
-     * @param blockSize the size of blocks
-     * @return the maximum number of blockSize tiles that can fit into a java unsigned
+     @param blockSize the size of blocks
+     @return the maximum number of blockSize tiles that can fit into a java unsigned
      long (= 63 bits).
      */
     public static int maxNumberOfTiles(int blockSize) {

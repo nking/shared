@@ -47,6 +47,15 @@ public class ContourPlotter {
         return content;
     }
     
+    /**
+     *
+     @param pixValueMap
+     @param width
+     @param height
+     @param fileName
+     @return
+     * @throws IOException
+     */
     public String writeFile(TLongFloatMap pixValueMap, int width, int height,
         String fileName) throws IOException {
         
@@ -140,6 +149,13 @@ public class ContourPlotter {
         content.append("</script>\n");
     }
     
+    /**
+     *
+     @param fileContent
+     @param fileName
+     @return
+     * @throws IOException
+     */
     protected String writeToFile(String fileContent, String fileName) throws IOException {
 
         return ResourceFinder.writeToCWD(fileContent, fileName);

@@ -115,14 +115,32 @@ public class VoronoiFortunesSweep {
     
     private HalfEdge[] ELhash = null;
     
+    /**
+     *
+     */
     public VoronoiFortunesSweep() {
         allEdges = new LinkedList<GraphEdge>();
     }
     
+    /**
+     *
+     @return
+     */
     public LinkedList<GraphEdge> getAllEdges() {
         return allEdges;
     }
     
+    /**
+     *
+     @param xValues
+     @param yValues
+     @param minX
+     @param maxX
+     @param minY
+     @param maxY
+     @param minDist
+     @return
+     */
     public boolean generateVoronoi(float[] xValues, float[] yValues, float minX, 
         float maxX, float minY, float maxY, float minDist) {
         
@@ -409,6 +427,10 @@ public class VoronoiFortunesSweep {
         return true;
     }
 
+    /**
+     *
+     @param fileNumber
+     */
     public void plot(int fileNumber) {
         
         try {
@@ -492,10 +514,18 @@ public class VoronoiFortunesSweep {
         Arrays.sort(sites, comp);
     }
     
+    /**
+     *
+     */
     public class Site {
         PairFloat coord;
         int	sitenbr;
 	    int	refcnt;
+
+        /**
+         *
+         @return
+         */
         public PairFloat getCoord() {
             return coord;
         }
@@ -510,9 +540,39 @@ public class VoronoiFortunesSweep {
 	    int edgenbr;
     }
     
+    /**
+     *
+     */
     public class GraphEdge {
-        public float x1, y1, x2, y2;
-	    public int site1;
+
+        /**
+         *
+         */
+        public float x1,
+
+        /**
+         *
+         */
+        y1,
+
+        /**
+         *
+         */
+        x2,
+
+        /**
+         *
+         */
+        y2;
+
+        /**
+         *
+         */
+        public int site1;
+
+        /**
+         *
+         */
         public int site2;
     }
      
@@ -586,6 +646,10 @@ public class VoronoiFortunesSweep {
         return newEdge;
     }
     
+    /**
+     *
+     @return
+     */
     public Site[] getSites() {
         return sites;
     }

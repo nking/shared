@@ -32,10 +32,21 @@ public class JohnsonsAllPairs {
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
     */
+
+    /**
+     *
+     */
+
     protected TIntIntMap[] w = null;
     
+    /**
+     *
+     */
     protected int[][] dist = null;
 
+    /**
+     *
+     */
     protected int[][] predecessor = null;   
         
     private int sentinel = Integer.MAX_VALUE;
@@ -64,13 +75,13 @@ public class JohnsonsAllPairs {
     
     /**
      * 
-     * @param graph directed weighted graph where the main index of the object array
+     @param graph directed weighted graph where the main index of the object array
      * is the vertex number, and each vertex has a linked list of outgoing 
      * edges connecting to the vertexes held in each linked list node key.
      * Note that all vertexes, including edge vertexes, must be present as an
      * index of the array graph, i.e. all vertexes must have numerical value 
      * less than dAG.length.
-     * @param weights the edge weights in format of outer array index being the
+     @param weights the edge weights in format of outer array index being the
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
      * 
@@ -114,7 +125,7 @@ public class JohnsonsAllPairs {
     
     /**
      * find the shortest paths between all pairs of vertices in an edge-weighted, directed graph. 
-     * @return returns false if a negative cycle is present, else returns true 
+     @return returns false if a negative cycle is present, else returns true 
      * and the results are usable.
      */
     public boolean find() {
@@ -234,9 +245,9 @@ public class JohnsonsAllPairs {
     
     /**
      * get shortest path from source to destIndex
-     * @param srcVertex
-     * @param destVertex
-     * @return 
+     @param srcVertex
+     @param destVertex
+     @return 
      */
     public int[] getShortestPathToVertex(int srcVertex, int destVertex) {
         if (destVertex < 0 || destVertex >= g.length) {
@@ -270,6 +281,11 @@ public class JohnsonsAllPairs {
         return p;
     }
     
+    /**
+     *
+     @param vertexes
+     @return
+     */
     public int getSumOfPath(int[] vertexes) {
         if (vertexes == null) {
             throw new IllegalArgumentException("vertexes cannot be null");
@@ -295,9 +311,24 @@ public class JohnsonsAllPairs {
         return sum;
     }
 
+    /**
+     *
+     */
     public static class G {
+
+        /**
+         *
+         */
         public SimpleLinkedListNode[] g;
+
+        /**
+         *
+         */
         public TIntIntMap[] w;
+
+        /**
+         *
+         */
         public int newNode;
     }
   

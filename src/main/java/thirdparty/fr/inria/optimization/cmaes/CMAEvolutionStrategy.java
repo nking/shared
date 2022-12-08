@@ -219,12 +219,14 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	double lastcounteval;
     	/** true whenever a termination criterion was met. clear() 
     	 * re-sets this value to false. 
+             @return 
     	 * @see #clear() 
     	 */
     	public boolean isTrue() {
     		return test() > 0;
     	}
-    	/** evaluates to NOT isTrue(). 
+    	/** evaluates to NOT isTrue().
+             @return 
     	 * @see #isTrue()
     	 */
     	public boolean isFalse() {
@@ -232,7 +234,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	}
     	/** greater than zero whenever a termination criterion was satisfied, zero otherwise. 
     	 * clear() re-sets this value to zero. 
-    	 * @return number of generated termination condition messages */
+    	 @return number of generated termination condition messages */
     	public int getNumber() {
     		return test();
     	}
@@ -242,7 +244,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	 * The messages start with one of "Fitness:", "TolFun:", "TolFunHist:", 
     	 * "TolX:", "TolUpX:", "MaxFunEvals:", "MaxIter:", "ConditionNumber:", 
     	 * "NoEffectAxis:", "NoEffectCoordinate:". 
-    	 * @return String[] s with messages of termination conditions.
+    	 @return String[] s with messages of termination conditions.
     	 *   s[0].equals("") is true if no termination condition is satisfied yet
     	 */
     	public String[] getMessages() { 
@@ -273,7 +275,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	 * Tests termination criteria and evaluates to  greater than zero when a
     	 * termination criterion is satisfied. Repeated tests append the met criteria repeatedly, 
     	 * only if the evaluation count has changed. 
-    	 * @return number of termination criteria satisfied
+    	 @return number of termination criteria satisfied
     	 */
     	int test() { 
     		if (state < 0)
@@ -471,6 +473,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         double[] deltaFitHist = new double[5];
         int idxDeltaFitHist = 0;
     }
+
+    /**
+     *
+     */
     protected FitnessCollector fit = new FitnessCollector();
 
     double recentFunctionValue; 
@@ -494,22 +500,30 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
     
     /** retrieves options and strategy parameters from properties input, see file <tt>CMAEvolutionStrategy.properties</tt> 
-     *  for valid properties */
+     *  for valid properties
+     @param properties */
     public CMAEvolutionStrategy(Properties properties) {
         setFromProperties(properties); 
         state = -1;
     }
     /** reads properties (options, strategy parameter settings) from 
      * file <code>propertiesFileName</code>
-     * */
+     *
+     @param propertiesFileName */
     public CMAEvolutionStrategy(String propertiesFileName) {
         this.propertiesFileName = propertiesFileName; 
         state = -1;
     }
 
-    /** @param dimension    search space dimension, dimension of the
+    /*@param dimension    search space dimension, dimension of the
      *       objective functions preimage, number of variables
      */
+
+    /**
+     *
+     @param dimension
+     */
+
     public CMAEvolutionStrategy(int dimension) {
         setDimension(dimension);
         state = -1;
@@ -532,13 +546,13 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * <code>parameters.supplementRemainders()</code>. If <code>init</code> was not called before, it is called once in
      * <code>samplePopulation()</code>. The return value is only provided for sake of convenience. 
      * 
-     * @param dimension
-     * @param initialX double[] can be of size one, where all variables are set to the 
+     @param dimension
+     @param initialX double[] can be of size one, where all variables are set to the 
      * same value, or of size dimension
-     * @param initialStandardDeviations can be of size one, where all standard
+     @param initialStandardDeviations can be of size one, where all standard
      * deviations are set to the same value, or of size dimension
      * 
-     * @return <code>double[] fitness</code> of length population size lambda to assign and pass
+     @return <code>double[] fitness</code> of length population size lambda to assign and pass
      * objective function values to <code>{@link #updateDistribution(double[])}</code>
      * 
      * @see #init()
@@ -563,9 +577,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
     /** 
      * 
-     * @param x null or x.length==1 or x.length==dim, only for the second case x is expanded
-     * @param dim
-     * @return <code>null</code> or <code>double[] x</code> with <code>x.length==dim</code>
+     @param x null or x.length==1 or x.length==dim, only for the second case x is expanded
+     @param dim
+     @return <code>null</code> or <code>double[] x</code> with <code>x.length==dim</code>
      */
     private double[] expandToDimension(double[] x, int dim) {
     	if (x == null)
@@ -579,14 +593,16 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
 
     /**
-     * @param dimension search space dimension 
+     @param dimension search space dimension 
+     @return  
      * @see #init(int, double[], double[])
      * */
     public double[] init(int dimension) { 
     	setDimension(dimension);
     	return init();
     }
-    /** 
+    /**
+     @return 
      * @see #init(int, double[], double[])
      * */
     public double[] init() {
@@ -779,6 +795,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** get default parameters in new CMAParameters instance, dimension must 
      * have been set before calling getDefaults
      * 
+     @return 
      * @see CMAParameters#getDefaults(int)
      */
     public CMAParameters getParameterDefaults() {
@@ -787,6 +804,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /** get default parameters in new CMAParameters instance
      * 
+     @param N
+     @return 
      * @see CMAParameters#getDefaults(int)
      */
     public CMAParameters getParameterDefaults(int N) {
@@ -797,6 +816,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * input file CMAEvolutionStrategy.properties and
      * sets options and strategy parameter settings
      * accordingly. Options values can be changed at any time using this function. 
+     @return 
      */
     public Properties readProperties() {
         
@@ -823,7 +843,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     Properties properties = new Properties();
     /** reads properties from fileName and sets strategy parameters and options
      * accordingly
-     * @param fileName of properties file
+     @param fileName of properties file
+     @return 
      */
     public Properties readProperties(String fileName) {
         this.propertiesFileName = fileName;
@@ -875,7 +896,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** reads properties from Properties class 
      * input and sets options and parameters accordingly
      * 
-     * @param properties java.util.Properties key-value hash table
+     @param properties java.util.Properties key-value hash table
      * @see #readProperties()
      */
     public void setFromProperties(Properties properties) {
@@ -955,7 +976,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
                 return ar2[ar.length/2];
         }
         
-        /** @return Maximum value of 1-D double array */
+        /*@return Maximum value of 1-D double array */
         public double max(double ar[]) {
             int i;
             double m;
@@ -967,7 +988,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return m;
         }
 
-        /** sqrt(a^2 + b^2) without under/overflow. **/
+        /** sqrt(a^2 + b^2) without under/overflow.
+             @param a
+             @param b
+             @return  **/
         public double hypot(double a, double b) {
             double r  = 0;
             if (Math.abs(a) > Math.abs(b)) {
@@ -979,15 +1003,15 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             }
             return r;
          }
-        /** @return index of minium value of 1-D double array */
+        /*@return index of minium value of 1-D double array */
         public int minidx(double ar[]) {
             return minidx(ar, ar.length-1);
         }
         
-        /** @return index of minium value of 1-D double 
+        /*@return index of minium value of 1-D double 
          *   array between index 0 and maxidx 
-         * @param ar double[] 
-         * @param maxidx last index to be considered */
+         @param ar double[] 
+         @param maxidx last index to be considered */
         public int minidx(double[] ar, int maxidx) {
             int i, idx;
             idx = 0;
@@ -998,10 +1022,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return idx;
         }
 
-        /** @return index of minium value of 1-D double 
+        /*@return index of minium value of 1-D double 
          *   array between index 0 and maxidx 
-         * @param ar double[] 
-         * @param maxidx last index to be considered */
+         @param ar double[] 
+         @param maxidx last index to be considered */
         protected int minidx(IntDouble[] ar, int maxidx) {
             int i, idx;
             idx = 0;
@@ -1012,7 +1036,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return idx;
         }
 
-        /** @return index of maximum value of 1-D double array */
+        /*@return index of maximum value of 1-D double array */
         public int maxidx(double ar[]) {
             int i, idx;
             idx = 0;
@@ -1022,7 +1046,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             }
             return idx;
         }
-        /** @return Minimum value of 1-D double array */
+        /*@return Minimum value of 1-D double array */
         public double min(double ar[]) {
             int i;
             double m;
@@ -1034,7 +1058,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return m;
         }
         
-        /** @return Maximum value of 1-D Object array where the object implements Comparator 
+        /*@return Maximum value of 1-D Object array where the object implements Comparator 
          *    Example: max(Double arx, arx[0]) */
         public Double max(Double ar[], Comparator<Double> c) {
             int i;
@@ -1047,7 +1071,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return m;
         }
         
-        /** @return Maximum value of 1-D IntDouble array */
+        /*@return Maximum value of 1-D IntDouble array */
         public IntDouble max(IntDouble ar[]) {
             int i;
             IntDouble m;
@@ -1059,7 +1083,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return m;
         }
         
-        /** @return Minimum value of 1-D IntDouble array */
+        /*@return Minimum value of 1-D IntDouble array */
         public IntDouble min(IntDouble ar[]) {
             int i;
             IntDouble m;
@@ -1071,7 +1095,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             return m;
         }
         
-        /** @return Minimum value of 1-D Object array defining a Comparator */
+        /*@return Minimum value of 1-D Object array defining a Comparator */
         public Double min(Double ar[], Comparator<Double> c) {
             int i;
             Double m;
@@ -1084,7 +1108,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         }
         
         /**
-         * @return Diagonal of an 2-D double array
+             @param ar
+         @return Diagonal of an 2-D double array
          */
         public double[] diag(double ar[][]) {
             int i;
@@ -1095,7 +1120,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         }
         
         /**
-         * @return 1-D double array of absolute values of an 1-D double array
+             @param v
+         @return 1-D double array of absolute values of an 1-D double array
          */
         public double[] abs(double v[]) {
             double res[] = new double[v.length];
@@ -1453,9 +1479,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /** not really in use so far, just clones and copies
      * 
-     * @param popx genotype
-     * @param popy phenotype, repaired
-     * @return popy
+     @param popx genotype
+     @param popy phenotype, repaired
+     @return popy
      */
     double[][] genoPhenoTransformation(double[][] popx, double[][] popy) {
     	if (popy == null || popy == popx || popy.length != popx.length) 
@@ -1468,9 +1494,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
     /** not really in use so far, just clones and copies
      * 
-     * @param popx genotype
-     * @param popy phenotype, repaired
-     * @return popy
+     @param popx genotype
+     @param popy phenotype, repaired
+     @return popy
      */
     double[][] phenoGenoTransformation(double[][] popx, double[][] popy) {
     	if (popy == null || popy == popx || popy.length != popx.length) 
@@ -1484,9 +1510,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /** not really in use so far, just clones and copies
      * 
-     * @param x genotype
-     * @param y phenotype
-     * @return y
+     @param x genotype
+     @param y phenotype
+     @return y
      */
     double[] genoPhenoTransformation(double[] x, double[] y) {
     	if (y == null || y == x || y.length != x.length) {
@@ -1499,9 +1525,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
     /** not really in use so far, just clones and copies
      * 
-     * @param x genotype
-     * @param y phenotype
-     * @return y
+     @param x genotype
+     @param y phenotype
+     @return y
      */
     double[] phenoGenoTransformation(double[] x, double[] y) {
     	if (y == null || y == x || y.length != x.length) {
@@ -1515,7 +1541,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     
     /**
      * Samples the recent search distribution lambda times
-     * @return double[][] population, lambda times dimension array of sampled solutions, 
+     @return double[][] population, lambda times dimension array of sampled solutions, 
      *   where <code>lambda == parameters.getPopulationSize()</code> 
      * @see #resampleSingle(int)
      * @see #updateDistribution(double[])
@@ -1596,6 +1622,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      *   fitness[i] = fitfun.valueof(pop[i]);
      * </PRE>
      *
+     @param index
+     @return 
      * @see #samplePopulation()
      */
     public double[] resampleSingle(int index) {
@@ -1626,9 +1654,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** compute Mahalanobis norm of x - mean w.r.t. the current distribution 
      * (using covariance matrix times squared step-size for the inner product). 
      * TODO: to be tested. 
-     * @param x
-     * @param mean
-     * @return Malanobis norm of x - mean: sqrt((x-mean)' C^-1 (x-mean)) / sigma
+     @param x
+     @param mean
+     @return Malanobis norm of x - mean: sqrt((x-mean)' C^-1 (x-mean)) / sigma
      */
     public double mahalanobisNorm(double[] x, double[] mean) {
     	double yi, snorm = 0;
@@ -1652,8 +1680,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 	 * This might become updateDistribution(double[][], double[], popsize)
      * in future. 
      * 
-     * @param population  double[lambda][N], lambda solutions
-     * @param functionValues  double[lambda], respective objective values of population
+     @param population  double[lambda][N], lambda solutions
+     @param functionValues  double[lambda], respective objective values of population
      * 
      * @see #samplePopulation()
      * @see #updateDistribution(double[])
@@ -1669,9 +1697,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * ordering of the elements in population. The first nInjected elements do not need to originate 
      * from #samplePopulation() or can have been modified (TODO: to be tested). 
      * 
-     * @param population  double[lambda][N], lambda solutions
-     * @param functionValues  double[lambda], respective objective values of population
-     * @param nInjected  int, first nInjected solutions of population were not sampled by 
+     @param population  double[lambda][N], lambda solutions
+     @param functionValues  double[lambda], respective objective values of population
+     @param nInjected  int, first nInjected solutions of population were not sampled by 
      * samplePopulation() or modified afterwards
      * 
      * @see #samplePopulation()
@@ -1697,6 +1725,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** update of the search distribution after samplePopulation(). functionValues 
      * determines the selection order (ranking) for the solutions in the previously sampled 
      * population. This is just a different interface for updateDistribution(double[][], double[]).  
+     @param functionValues
      * @see #samplePopulation()
      * @see #updateDistribution(double[][], double[])
      */
@@ -1914,9 +1943,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** assigns lhs to a different instance with the same values, 
      * sort of smart clone, but it may be that clone is as smart already 
      * 
-     * @param rhs
-     * @param lhs
-     * @return
+     @param rhs
+     @param lhs
+     @return
      */
     double[] assignNew(double[] rhs, double[] lhs) {
     	assert rhs != null; // will produce an error anyway
@@ -1938,6 +1967,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** ratio between length of longest and shortest axis 
      * of the distribution ellipsoid, which is the square root
      * of the largest divided by the smallest eigenvalue of the covariance matrix 
+     @return 
      */
     public double getAxisRatio() {
         return axisratio;
@@ -1947,7 +1977,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * Remark that the distribution mean was not evaluated 
      * but is expected to have an even better function value. 
      * <p>Example: getBestSolution 
-     * @return best solution (search point) found so far 
+     @return best solution (search point) found so far 
      * @see #getBestRecentSolution() 
      * @see #getBestX() 
      * @see #getMeanX() */
@@ -1957,8 +1987,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     
     /** eventually replaces the best-ever solution 
      * 
-     * @param fitness function value computed for the solution {@link #getMeanX()}
-     * @return best-ever solution
+     @param fitness function value computed for the solution {@link #getMeanX()}
+     @return best-ever solution
      */
     public CMASolution setFitnessOfMeanX(double fitness) {
     	xmean_fit = fitness;
@@ -1970,7 +2000,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** get best evaluated search point found so far. 
      * Remark that the distribution mean was not evaluated 
      * but is expected to have an even better function value. 
-     * @return best search point found so far as double[]
+     @return best search point found so far as double[]
      * @see #getMeanX() */
     public double[] getBestX() {
         if (state < 0)
@@ -1979,7 +2009,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
 
     /** objective function value of best solution found so far.
-     * @return objective function value of best solution found so far
+     @return objective function value of best solution found so far
      * @see #getBestSolution()
      */
     public double getBestFunctionValue() {
@@ -1990,6 +2020,12 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /* * evaluation count when the best solution was found
      * 
      */
+
+    /**
+     *
+     @return
+     */
+
     public long getBestEvaluationNumber() {
     	return bestever_eval;
     }
@@ -2000,7 +2036,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * mis-attributed good fitness values.
      * Remark that the distribution mean was not evaluated 
      * but is expected to have an better function value. 
-     * @return best solution (search point) in recent iteration 
+     @return best solution (search point) in recent iteration 
      * @see #getBestSolution() 
      * @see #getBestRecentX() 
      * @see #getMeanX() */
@@ -2011,7 +2047,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
 
     /** best search point of the recent iteration. 
-     * @return Returns the recentFunctionValue.
+     @return Returns the recentFunctionValue.
      * @see #getBestRecentFunctionValue()
      */
     public double[] getBestRecentX() {
@@ -2021,7 +2057,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** objective function value of the,
      * best solution in the 
      * recent iteration (population)
-     * @return Returns the recentFunctionValue.
+     @return Returns the recentFunctionValue.
      * @see #getBestEvaluationNumber()
      * @see #getBestFunctionValue()
      */
@@ -2031,7 +2067,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /** objective function value of the, 
      * worst solution of the recent iteration.
-     * @return Returns the recentMaxFunctionValue.
+     @return Returns the recentMaxFunctionValue.
      */
     public double getWorstRecentFunctionValue() {
         return recentMaxFunctionValue;
@@ -2045,7 +2081,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * <em>not</em> a copy. Therefore it should not be change it, without 
      * deep knowledge of the code (the effect of a mean change depends on
      * the chosen transscription/implementation of the algorithm). 
-     * @return mean value of the current search distribution
+     @return mean value of the current search distribution
      * @see #getBestX() 
      * @see #getBestRecentX() 
      */
@@ -2053,12 +2089,17 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         return xmean.clone();
     }
 
+    /**
+     *
+     @return
+     */
     public int getDimension() {
         return N;
     }
 
     /**
      * number of objective function evaluations counted so far
+     @return 
      */
     public long getCountEval() {
         return counteval;
@@ -2066,6 +2107,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /**
      * number of iterations conducted so far 
+     @return 
      */
     public long getCountIter() {
         return countiter;
@@ -2074,7 +2116,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** the final setting of initial <code>x</code> can 
      * be retrieved only after <code>init()</code> was called
      * 
-     * @return <code>double[] initialX</code> start point chosen for 
+     @return <code>double[] initialX</code> start point chosen for 
      * distribution mean value <code>xmean</code>
      */ 
     public double[] getInitialX() {
@@ -2085,28 +2127,30 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     
     
 
-    /** get used random number generator instance */
+    /** get used random number generator instance
+     @return  */
     public Random getRand() {
         return rand;
     }
 
     /** get properties previously read from a property file.
      * 
-     * @return java.util.Properties key-value hash table
+     @return java.util.Properties key-value hash table
      * @see #readProperties()
      */
     public Properties getProperties() {
         return properties;
     }
        
-    /**@see #setSeed(long) */
+    /**
+     @return  * @see #setSeed(long) */
     public long getSeed() {
         return seed;
     }
 //    /** Set lower and upper boundary in all variables 
 //     * 
-//     * @param xlow
-//     * @param xup
+//     @param xlow
+//     @param xup
 //     */
 //    public void setBoundaries(double xlow, double xup) {
 //        int len = 1;
@@ -2121,8 +2165,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 //    }
 //    /** sets lower and upper boundaries in all variables. 
 //     * 
-//     * @param xlow lower boundary double[], can be 1-D or of length of the number of variables (dimension). 
-//     * @param xup see xlow
+//     @param xlow lower boundary double[], can be 1-D or of length of the number of variables (dimension). 
+//     @param xup see xlow
 //     */
 //    public void setBoundaries(double[] xlow, double[] xup) {
 //        if( xlow == null || xup ==  null)
@@ -2141,12 +2185,15 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /**
      * number of objective function evaluations counted so far
+     @param c
+     @return 
      */
     public long setCountEval(long c) {
         return counteval = c;
     }
 
-/** search space dimensions must be set before the optimization is started. */
+/** search space dimensions must be set before the optimization is started.
+     @param n */
     public void setDimension(int n) {
         if ((lockDimension > 0 || state >= 0) && N != n)
             error("dimension cannot be changed anymore or contradicts to initialX");
@@ -2154,6 +2201,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
 
     /** sets typicalX value, the same value in each coordinate
+     @param x
      * @see #setTypicalX(double[])
      */
     public void setTypicalX(double x) {
@@ -2166,6 +2214,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * or {@link #setInitialX(double[])} function call. 
      * Otherwise the initialX is sampled normally distributed from typicalX with initialStandardDeviations
      * 
+     @param x
      * @see #setTypicalX(double)
      * @see #setInitialX(double[])
      * @see #setInitialStandardDeviations(double[])
@@ -2187,12 +2236,20 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	lockDimension = 1;
     }
 
+    /**
+     *
+     @param startsigma
+     */
     public void setInitialStandardDeviation(double startsigma) {
     	if (state >= 0)
     		error("standard deviations cannot be set anymore");
         this.startsigma = new double[]{startsigma};
     }
 
+    /**
+     *
+     @param startsigma
+     */
     public void setInitialStandardDeviations(double[] startsigma) {
         // assert startsigma != null; // assert should not be used for public arg check
     	if (state >= 0)
@@ -2213,7 +2270,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
 
     /** sets <code>initialX</code> to the same value in each coordinate
      * 
-     * @param x value
+     @param x value
      * @see #setInitialX(double[])
      */
     public void setInitialX(double x) {
@@ -2226,8 +2283,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * between <code>l</code> and <code>u</code>, 
      * dimension needs to have been set before
      * 
-     * @param l double lower value
-     * @param u double upper value 
+     @param l double lower value
+     @param u double upper value 
      * @see #setInitialX(double[])
      * @see #setInitialX(double[], double[])
      * */
@@ -2245,8 +2302,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** set initial seach point <code>x</code> coordinate-wise uniform 
      * between <code>l</code> and <code>u</code>, 
      * dimension needs to have been set before
-     * @param l double lower value
-     * @param u double upper value */
+     @param l double lower value
+     @param u double upper value */
     public void setInitialX(double[] l, double[] u) {
     	if (state >= 0)
     		error("initial x cannot be set anymore");
@@ -2262,7 +2319,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     /** set initial search point to input value <code>x</code>. <code>x.length==1</code> is possible, otherwise 
      * the search space dimension is set to <code>x.length</code> irrevocably
      * 
-     * @param x double[] initial point
+     @param x double[] initial point
      * @see #setInitialX(double)
      * @see #setInitialX(double, double) 
      */
@@ -2284,6 +2341,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         lockDimension = 1; // because xmean is set up
     }
     
+    /**
+     *
+     @param rand
+     */
     public void setRand(Random rand) {
         this.rand = rand;
     }
@@ -2329,6 +2390,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
          * and smallest eigenvalue of covariance matrix C
          * <li> 0.1 time, overall elapsed time in seconds
          * <li> 0.0 in eig, overall time spent within eigendecompostion
+     @return 
          * @see #getPrintAnnotation()
          * */
     public String getPrintLine() {
@@ -2419,7 +2481,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             
         }
 
-        /** returns an annotation string for the printings of method println(). */
+        /** returns an annotation string for the printings of method println().
+     @return  */
     public String getPrintAnnotation() {
         String s = new String(
         "Iteration,#Fevals: rb Function Value Delta( best ,worst) |idx: Max SD idx: Min SD  | minsigD  sigma Axisratio | time, in eig");
@@ -2428,7 +2491,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         return s;
     }
 
-        /** returns an informative initial message of the CMA-ES optimizer */
+        /** returns an informative initial message of the CMA-ES optimizer
+     @return  */
     public String helloWorld() {
         String s = new String(
                 "(" + sp.getMu() + "," + sp.getLambda() 
@@ -2443,6 +2507,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
     /** calls System.out.println(s) and writes s to the file outcmaesdisp.dat 
      * by default, if writeDisplayToFile option is > 0
+     @param s
      * @see #getPrintLine() 
      */
     public void println(String s) {
@@ -2471,6 +2536,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             println(helloWorld());
     }
 
+    /**
+     *
+     @return
+     */
     public String getDataRowFitness() {
         String s = new String();    
         s = countiter + " " + counteval + " " + sigma + " " + axisratio + " "
@@ -2491,6 +2560,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         return s;
     }
 
+    /**
+     *
+     @return
+     */
     public String getDataRowXRecentBest() {
         int idx = 0;
         if (mode == SINGLE_MODE)
@@ -2504,6 +2577,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         return s;
     }
 
+    /**
+     *
+     @return
+     */
     public String getDataRowXMean() {
         String s = new String();    
         s = countiter + " " + counteval + " " + sigma + " 0 0 ";
@@ -2512,7 +2589,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
         }
         return s;
     }
-    /** 6-th to last column are sorted axis lengths axlen */
+    /** 6-th to last column are sorted axis lengths axlen
+     @return  */
     public String getDataRowAxlen() {
     	String s = new String();    
     	s = countiter + " " + counteval + " " + sigma + " " + axisratio + " " 
@@ -2524,6 +2602,11 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     	}
     	return s;
     }
+
+    /**
+     *
+     @return
+     */
     public String getDataRowStddev() {
     	String s = new String();    
     	s = countiter + " " + counteval + " " + sigma + " " 
@@ -2538,7 +2621,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * evaluation number, and sigma. In the remaining rows the upper
      * triangular part contains variances and covariances
      * sigma*sigma*c_ij. The lower part contains correlations c_ij /
-     * sqrt(c_ii * c_jj).  */
+     * sqrt(c_ii * c_jj).
+     @return  */
     public String getDataC() {
 	int i, j;
         String s = new String();    
@@ -2556,9 +2640,9 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     private String[] fileswritten = new String[]{""}; // also (re-)initialized in init()
     /** writes a string to a file, overwrites first, appends afterwards. 
      * <p>Example: cma.writeToFile("cmaescorr.dat", cma.writeC()); 
-     * @param filename is a String giving the name of the file to be written
-     * @param data is a String of text/data to be written
-     * @param flgAppend for flgAppend>0 old data are not overwritten
+     @param filename is a String giving the name of the file to be written
+     @param data is a String of text/data to be written
+     @param flgAppend for flgAppend>0 old data are not overwritten
      */
     public void writeToFile(String filename, String data, int flgAppend) {
         boolean appendflag = flgAppend > 0;
@@ -2622,7 +2706,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * for writing can be controlled in the properties file. For negative values
      * no writing takes place, overruling the <code>flgForce</code> input parameter below.
      *  
-     * @param flgForce 0==write depending on time spent with writing, 
+     @param flgForce 0==write depending on time spent with writing, 
      * 1==write if the iteration count has changed, 
      * 2==write always, overruled by negative values of maxTimeFractionForWriteToDefaultFiles property
      *  
@@ -2638,7 +2722,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * writes data to files <tt>fileNamePrefix</tt>fit.dat, ...xmean.dat
      * ...xbest.dat, ...std.dat, ...axlen.dat.
      * @see #writeToDefaultFiles() 
-     * @param fileNamePrefix prefix String for filenames created to write data */
+     @param fileNamePrefix prefix String for filenames created to write data */
     public void writeToDefaultFiles(String fileNamePrefix) {
 
         if (options.maxTimeFractionForWriteToDefaultFiles < 0) // overwrites force flag
@@ -2677,7 +2761,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     }
     /** writes header lines to the default files. Could become XML if needed. 
      * 
-     * @param flgAppend == 0 means overwrite files,  == 1 means append to files
+     @param flgAppend == 0 means overwrite files,  == 1 means append to files
      */
     public void writeToDefaultFilesHeaders(int flgAppend) {
         writeToDefaultFilesHeaders(options.outputFileNamesPrefix, flgAppend);
@@ -2686,7 +2770,8 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      * Writes headers (column annotations) to files <prefix>fit.dat, ...xmean.dat
      * ...xbest.dat, ...std.dat, ...axlen.dat, and in case the first data
      * line, usually with the initial values. 
-     * @param fileNamePrefix String for filenames created to write data */
+     @param fileNamePrefix String for filenames created to write data
+     @param flgAppend */
     public void writeToDefaultFilesHeaders(String fileNamePrefix, int flgAppend) {
         if (options.maxTimeFractionForWriteToDefaultFiles < 0) // overwrites force flag
             return;

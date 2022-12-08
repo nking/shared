@@ -47,12 +47,13 @@ public class TSPPrimsMST {
      * NOTE: user must ensure that the range of keys in the adjCostMap is
      * between 0 and nVertexes - 1.
      *
-     * @param nVertexes
-     * @param adjCostMap an adjacency map which upholds the triangle inequality.
+     @param nVertexes
+     @param adjCostMap an adjacency map which upholds the triangle inequality.
      * The map format is:
      * key = vertex index1, 
      *   value = map with key = index2 and value = 
      *   cost for edge index1 to index2. 
+     @return  
      */
     public int[] approxTSPTour(
         final int nVertexes,
@@ -82,6 +83,14 @@ public class TSPPrimsMST {
         return tour;
     }
 
+    /**
+     *
+     @param x1
+     @param y1
+     @param x2
+     @param y2
+     @return
+     */
     protected int distance(int x1, int y1, int x2, int y2) {
         int diffX = x1 - x2;
         int diffY = y1 - y2;

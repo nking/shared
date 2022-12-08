@@ -31,8 +31,8 @@ public class CountingSort {
      * <pre>
      * runtime complexity: Math.max(n, max(a) - min(a))
      * </pre>
-     * @param a
-     * @return  
+     @param a
+     @return  
      */
     public static int[] sort(int[] a) {
 
@@ -47,8 +47,8 @@ public class CountingSort {
      * <pre>
      * runtime complexity: Math.max(n, max(a) - min(a))
      * </pre>
-     * @param a input and output array a
-     * @return the original indexes of a, sorted
+     @param a input and output array a
+     @return the original indexes of a, sorted
      */
     public static int[] sortAndReturnIndexes(final int[] a) {
 
@@ -114,8 +114,8 @@ public class CountingSort {
      * changes of item position to b.
      * runtime complexity: Math.max(n, max(a) - min(a))
      * 
-     * @param a
-     * @param b
+     @param a
+     @param b
      */
     public static void sort(final int[] a, final int[] b) {
 
@@ -150,8 +150,8 @@ public class CountingSort {
      * and apply the same changes of item position to b.
      * runtime complexity: Math.max(n, max(a) - min(a))
      * 
-     * @param a
-     * @param b
+     @param a
+     @param b
      */
     public static void sortByDecr(final int[] a, final int[] b) {
 

@@ -24,20 +24,37 @@ import java.util.Arrays;
    and license.
    * 
  * @author nichole
- * @param <T> class type to be held and sorted by this class.  It must implement
+ @param <T> class type to be held and sorted by this class.  It must implement
  * Comparable.
  */
 @SuppressWarnings({"unchecked"})
 public class FixedSizeSortedVector<T extends Comparable<T>> {
 
+    /**
+     *
+     */
     protected T[] a = null;
 
+    /**
+     *
+     */
     protected final int size;
 
+    /**
+     *
+     */
     protected int n;
 
+    /**
+     *
+     */
     protected int availSlot;
 
+    /**
+     *
+     @param fixedCapacity
+     @param classTypeToHold
+     */
     public FixedSizeSortedVector(int fixedCapacity, Class<T> classTypeToHold) {
 
         if (fixedCapacity < 1) {
@@ -62,8 +79,8 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
      *
      * runtime complexity is O(log_2(capacity) + less than capacity).
      *
-     * @param value value to insert into vector
-     * @return true if added, else false
+     @param value value to insert into vector
+     @return true if added, else false
      */
     public boolean add(T value) {
 
@@ -109,7 +126,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
     /**
      * Insert the value into the list while maintaining the sorted state
      * of the list.
-     * @param value value to insert into vector
+     @param value value to insert into vector
      */
     private void insertIntoOpenSlot(T value) {
 
@@ -190,7 +207,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
      *
      * runtime complexity is O(1)
      *
-     * @return the internal array.  note that this is not a copy, intentionally.
+     @return the internal array.  note that this is not a copy, intentionally.
      */
     public T[] getArray() {
 
@@ -201,7 +218,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
      * return the number of items in the internal array.  if the array is not
      * yet filled, the return will be less than the capacity, else will
      * be the same as the capacity.
-     * @return number of items in the vector
+     @return number of items in the vector
      */
     public int getNumberOfItems() {
         return n;
@@ -209,7 +226,7 @@ public class FixedSizeSortedVector<T extends Comparable<T>> {
     
     /**
      * get the maximum size of the vector, given at instantiation.
-     * @return the capacity of the vector.
+     @return the capacity of the vector.
      */
     public int getFixedCapacity() {
         return size;

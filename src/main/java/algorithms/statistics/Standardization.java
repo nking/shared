@@ -25,13 +25,13 @@ public class Standardization {
      * transforms the data to have a mean of 0 and a standard deviation of 1 (unit variance)
      * for each dimension.
      * 
-     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     @param data nDimensional data points in format [ point_0 in all dimensions,
      *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
-     * @param nDimensions the number of dimensions of a point
-     * @param outputMean the mean of the input data per dimension
-     * @param outputStandardDeviation the standard deviation of the mean subtracted
+     @param nDimensions the number of dimensions of a point
+     @param outputMean the mean of the input data per dimension
+     @param outputStandardDeviation the standard deviation of the mean subtracted
      * data per dimension.
-     * @return an array holding the standardized data in format of data array, 
+     @return an array holding the standardized data in format of data array, 
      * e.g. point_0_0, point_0_1, point_0_2...point_0_{nDimensions-1}].
      * Note that the results should have a mean of 0 and a standard deviation
      * of 1 or 0.
@@ -87,13 +87,13 @@ public class Standardization {
      * multiplies by the given standardDeviation and adds the given mean.
      * for each dimension.
      * 
-     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     @param data nDimensional data points in format [ point_0 in all dimensions,
      *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
-     * @param nDimensions the number of dimensions of a point
-     * @param mean the mean of the unnormalized input data per dimension
-     * @param standardDeviation the standard deviation of the mean subtracted
+     @param nDimensions the number of dimensions of a point
+     @param mean the mean of the unnormalized input data per dimension
+     @param standardDeviation the standard deviation of the mean subtracted
      * unnormalized data per dimension.
-     * @return an array holding the de-normalized data in format similar to data array.
+     @return an array holding the de-normalized data in format similar to data array.
      */
     public static double[] standardUnitDenormalization(final double[] data, 
         final int nDimensions, final double[] mean, final double[] standardDeviation) {
@@ -132,14 +132,14 @@ public class Standardization {
      * data[1] = [9,  101, 999];
      *   for nSamples=2 and nVariables = 3;
      * 
-     * @param data the input data must have format [nSamples][nVariables], e.g.
+     @param data the input data must have format [nSamples][nVariables], e.g.
      * data[0] = [10, 100, 1000];
      * data[1] = [9,  101, 999];
      *   for nSamples=2 and nVariables = 3;
-     * @param outputMean the mean of the input data per variable (a.k.a. dimension)
-     * @param outputStandardDeviation the standard deviation of the mean subtracted
+     @param outputMean the mean of the input data per variable (a.k.a. dimension)
+     @param outputStandardDeviation the standard deviation of the mean subtracted
      * data per dimension.
-     * @return an array holding (data - mean)/stdev
+     @return an array holding (data - mean)/stdev
      */
     public static double[][] standardUnitNormalization(double[][] data, 
         double[] outputMean, double[] outputStandardDeviation) {
@@ -194,8 +194,8 @@ public class Standardization {
 
     /**
      * calculate the mean of each column of data and subtract it from each value in the respective column of data.
-     * @param data
-     * @return
+     @param data
+     @return
      */
     public static double[][] zeroCenterMean(double[][] data) {
         int m = data.length;

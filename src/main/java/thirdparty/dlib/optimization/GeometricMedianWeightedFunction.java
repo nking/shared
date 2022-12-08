@@ -107,13 +107,13 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
    
     /**
      *
-     * @param observations the observations from all dimensions in format of
+     @param observations the observations from all dimensions in format of
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3 observations={x0, y0, z0, x1, y1, z1, ...
      * x_(nPoints-1), y_(nPoints-1), z_(nPoints-1),].
-     * @param numberOfDimensions the number of data dimensions present in
+     @param numberOfDimensions the number of data dimensions present in
      * observations array.
-     * @param multiplicities factor per point given by user, acting as a 
+     @param multiplicities factor per point given by user, acting as a 
      * multiplicity of each point essentially.  it's a weight vector.
        <pre>
      * the weight w_i as defined by m_i/d_i
@@ -154,9 +154,9 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      *   C_w(X) = summation_i_1_to_n( eta_i*d_i(X) )
            where d_i is the euclidean distance between a point obs_i and X in all dimensions.
      *
-     * @param geoMedian input variable holding coordinates of current estimate
+     @param geoMedian input variable holding coordinates of current estimate
      * of geometric median.
-     * @return evaluation of the cost function for the given geometric-median
+     @return evaluation of the cost function for the given geometric-median
      */
     @Override
     public double f(double[] geoMedian) {
@@ -196,8 +196,8 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
        ...
        
        </pre>
-     * @param geoMedian coordinates of current estimate of geometric median
-     * @return evaluation of the derivative
+     @param geoMedian coordinates of current estimate of geometric median
+     @return evaluation of the derivative
      */
     @Override
     public double[] der(double[] geoMedian) {
@@ -251,13 +251,13 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
      * </pre>
      * 
      * 
-     * @param isMedian array of length super.getNData() indicating whether an 
+     @param isMedian array of length super.getNData() indicating whether an 
      * observation is equal to the given geomedian in all dimensions.
-     * @param geoMedian array of length getNDimensions() holding the estimate
+     @param geoMedian array of length getNDimensions() holding the estimate
      * of the geometric median.
-     * @param checks output array of size 2 holding the conditions to check after the algorithm
+     @param checks output array of size 2 holding the conditions to check after the algorithm
      * has completed.  checks[0 = (T(X)==X); checks[1]=(X.lte.eta(X))
-     * @return 
+     @return 
      */
     public double vardiZhang(int[] isMedian, double[] geoMedian, boolean[] checks) {
         
@@ -372,16 +372,28 @@ public class GeometricMedianWeightedFunction extends AbstractGeometricMedianFunc
         return f(geoMedian);
     }
 
+    /**
+     *
+     @return
+     */
     @Override
     public int getNDimensions() {
         return nDimensions;
     }
 
+    /**
+     *
+     @return
+     */
     @Override
     public double[] getObs() {
         return obs;
     }
     
+    /**
+     *
+     @return
+     */
     @Override
     public double getFDEps() {
         return fDEps;

@@ -76,7 +76,7 @@ public strictfp class CPoly {
      * D*x^3 + E*x^4 gives coefficients[] = {A, B, C, D, E}. The degree of the
      * polynomial is equal to the length of the supplied array minus 1.
      *
-     * @param coef An array of real coefficients in order of increasing power.
+     @param coef An array of real coefficients in order of increasing power.
      */
     public CPoly(double[] coef) {
         coef_re = coef.clone();
@@ -101,11 +101,11 @@ public strictfp class CPoly {
      * {1,2,3} and {11,22,33,44,55} has degree 4 and can be written as
      * (1+11i) + (2+22i)*x + (3+33i)*x^2 + 44i*x^3 + 55i*x^4
      *
-     * @param coef_re An array containing the real part of the coefficients 
+     @param coef_re An array containing the real part of the coefficients 
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the real
      * part of all coefficients equals 0 in that case.
-     * @param coef_im An array containing the imaginary part of the coefficients
+     @param coef_im An array containing the imaginary part of the coefficients
      * in order of increasing power. If the supplied array equals null, then
      * the degree is determined by the length of the other array and the imaginary
      * part of all coefficients equals 0 in that case.
@@ -161,11 +161,11 @@ public strictfp class CPoly {
     /**
      * Evaluates the polynomial at a complex point, specified by the
      * arguments.
-     * @param xre The real part of the point at which the polynomial
+     @param xre The real part of the point at which the polynomial
      * is evaluated.
-     * @param xim The imaginary part of the point at which the polynomial
+     @param xim The imaginary part of the point at which the polynomial
      * is evaluated.
-     * @return A double[] array, with the value at index 0 being the
+     @return A double[] array, with the value at index 0 being the
      * real part of the evaluated value and the value at index 1 being
      * the imaginary part of the evaluated value.
      */
@@ -194,15 +194,15 @@ public strictfp class CPoly {
      * polynomial without the need to allocate many small 2-element arrays
      * for storing the result.
      *
-     * @param result A double-array with at least two elements, in which
+     @param result A double-array with at least two elements, in which
      * the result of the evaluation is stored. The value at index 0 is
      * replaced by the real part of the polynomial value and the value at
      * index 1 is replaced by the imaginary part of the polynomial value.
      * If the supplied array contains more than 2 elements, then the elements
      * with index 2 or larger are not touched at all.
-     * @param xre The real part of the argument at which the polynomial is
+     @param xre The real part of the argument at which the polynomial is
      * evaluated.
-     * @param xim The imaginary part of the argument at which the polynomial is
+     @param xim The imaginary part of the argument at which the polynomial is
      * evaluated.
      */
     public void eval(double[] result, double xre, double xim) {
@@ -227,21 +227,21 @@ public strictfp class CPoly {
      * Evaluates the polynomial and the derivative of the polynomial
      * simultaneously for the given value of x.
      *
-     * @param result A double-array with at least two elements, in which
+     @param result A double-array with at least two elements, in which
      * the result of the evaluation is stored. The value at index 0 is
      * replaced by the real part of the polynomial value and the value at
      * index 1 is replaced by the imaginary part of the polynomial value.
      * If the supplied array contains more than 2 elements, then the elements
      * with index 2 or larger are not touched at all.
-     * @param dresult A double-array with at least two elements, in which
+     @param dresult A double-array with at least two elements, in which
      * the result of the evaluation is stored. The value at index 0 is
      * replaced by the real part of the derivative value and the value at
      * index 1 is replaced by the imaginary part of the derivative value.
      * If the supplied array contains more than 2 elements, then the elements
      * with index 2 or larger are not touched at all.
-     * @param xre The real part of the argument at which the derivative is
+     @param xre The real part of the argument at which the derivative is
      * evaluated.
-     * @param xim The imaginary part of the argument at which the derivative is
+     @param xim The imaginary part of the argument at which the derivative is
      * evaluated.
      */
     public void eval_deriv(double[] result, double[] dresult, double xre, double xim) {
@@ -279,7 +279,7 @@ public strictfp class CPoly {
     
     /**
      * Get the degree of the polynomial.
-     * @return The degree of the polynomial.
+     @return The degree of the polynomial.
      */
     public int degree() {
         return coef_re.length - 1;
@@ -293,7 +293,7 @@ public strictfp class CPoly {
     /**
      * Creates a String representation of this polynomial.
      *
-     * @return The String representation of this object.
+     @return The String representation of this object.
 	*
      */
     @Override
@@ -351,13 +351,13 @@ public strictfp class CPoly {
     /**
      * This method computes the roots of the polynomial and stores the roots
      * in preallocated arrays, which are passed as arguments.
-     * @param zeror Array, in which the real parts of the zeros will be stored
+     @param zeror Array, in which the real parts of the zeros will be stored
      * after computation of the zeros. This array must have a length of at
      * least N elements, where N is the degree of the polynomial.
-     * @param zeroi Array, in which the imaginary parts of the zeros will be stored
+     @param zeroi Array, in which the imaginary parts of the zeros will be stored
      * after computation of the zeros. This array must have a length of at
      * least N elements, where N is the degree of the polynomial.
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could
@@ -455,9 +455,9 @@ public strictfp class CPoly {
      * 1969. (as noted in PDF scan of original ACM document).
      * </p>
      *
-     * @param zeros_re Array, which will be filled with the real part of the zeros.
-     * @param zeros_im Array, which will be filled with the imaginary part of the zeros.
-     * @return The degree of the polynomial if all is OK.
+     @param zeros_re Array, which will be filled with the real part of the zeros.
+     @param zeros_im Array, which will be filled with the imaginary part of the zeros.
+     @return The degree of the polynomial if all is OK.
 	*
      */
     private int cpoly(double[] zeros_re, double[] zeros_im) {
@@ -587,13 +587,15 @@ outer:
      * class variables PVr, and PVi with the real and imaginary parts of the
      * result. Uses the method of Horner Recurrence.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param Sr The real component of the point at which to evaluate this
+     @param NN The number of coefficients to use in the evaluation.
+     @param Sr The real component of the point at which to evaluate this
      * polynomial.
-     * @param Si The imaginary component of the point at which to evaluate this
+     @param Si The imaginary component of the point at which to evaluate this
      * polynomial.
-     * @param Pr, Pi Real & Imaginary coefficients of the polynomial.
-     * @param Qr, Qi Arrays to contain partial sums.
+     @param Pr, Pi Real & Imaginary coefficients of the polynomial.
+     @param Pi
+     @param Qr, Qi Arrays to contain partial sums.
+     @param Qi
 	*
      */
     private void polyEv(int NN, double Sr, double Si, double[] Pr, double[] Pi,
@@ -623,13 +625,14 @@ outer:
      * Bounds the error in evaluating the polynomial by the method of Horner
      * Recurrance.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param Qr Real part of partial sum from evaluate().
-     * @param Qi Imaginary part of partial sum from evaluate().
-     * @param MS Modulus of the point being evaluated.
-     * @param MP Modulus of the polynomial value.
-     * @param ARE Error bounds on complex addition.
-     * @param MRE Error bounds on complex multiplication.
+     @param NN The number of coefficients to use in the evaluation.
+     @param Qr Real part of partial sum from evaluate().
+     @param Qi Imaginary part of partial sum from evaluate().
+     @param MS Modulus of the point being evaluated.
+     @param MP Modulus of the polynomial value.
+     @param ARE Error bounds on complex addition.
+     @param MRE Error bounds on complex multiplication.
+     @return 
      *
      */
     private static double errEv(int NN, double[] Qr, double[] Qi, double MS, double MP,
@@ -648,9 +651,10 @@ outer:
     /**
      * Computes a lower bound on the moduli of the zeros of a polynomial.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param PT The modulus of the coefficients of the polynomial.
-     * @param Q Array filled in on output.
+     @param NN The number of coefficients to use in the evaluation.
+     @param PT The modulus of the coefficients of the polynomial.
+     @param Q Array filled in on output.
+     @return 
      *
      */
     private static double cauchy(int NN, double[] PT, double[] Q) {
@@ -710,8 +714,9 @@ outer:
      * interfering with the convergence criterion. The factor is a power of the
      * BASE.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param PT The modulus of the coefficients of the polynomial.
+     @param NN The number of coefficients to use in the evaluation.
+     @param PT The modulus of the coefficients of the polynomial.
+     @return 
      *
      */
     private static int scale(int NN, double[] PT) {
@@ -762,10 +767,10 @@ outer:
      * variables Tr and Ti to avoid overhead of creating a Complex object during
      * root finding. Results are stored in class variables Tr and Ti.
      *
-     * @param Ar The real part of the complex numerator.
-     * @param Ai The imaginary part of the complex numerator.
-     * @param Br The real part of the complex denominator.
-     * @param Bi The imaginary part of the complex denominator.
+     @param Ar The real part of the complex numerator.
+     @param Ai The imaginary part of the complex numerator.
+     @param Br The real part of the complex denominator.
+     @param Bi The imaginary part of the complex denominator.
      *
      */
     private void cdiv(double Ar, double Ai, double Br, double Bi) {
@@ -804,8 +809,9 @@ outer:
      * slightly different from the ACM algorithm, but the NR version appears to
      * be slightly more robust.
      *
-     * @param re The real part of the complex number.
-     * @param im The imaginary part of the complex number.
+     @param re The real part of the complex number.
+     @param im The imaginary part of the complex number.
+     @return 
      *
      */
     private static double cmod(double re, double im) {
@@ -838,10 +844,12 @@ outer:
      * Computes the derivative polynomial as the intial H polynomial and
      * computes L1 no-shift H polynomials.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param L1 Number of Level 1 shifts to make.
-     * @param Pr, Pi The coefficients of the polynomial.
-     * @param Hr, Hi Arrays containing output ?
+     @param NN The number of coefficients to use in the evaluation.
+     @param L1 Number of Level 1 shifts to make.
+     @param Pr, Pi The coefficients of the polynomial.
+     @param Pi
+     @param Hr, Hi Arrays containing output ?
+     @param Hi
      *
      */
     private void noShift(int NN, int L1, double[] Pr, double[] Pi, double[] Hr, double[] Hi) {
@@ -890,13 +898,15 @@ outer:
     /**
      * Computes T = -P(S)/H(S). Sets class variables Tr, Ti.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param Sr The real part of the point we are evaluating the polynomial at.
-     * @param Si The imaginary part of the point we are evaluating the
+     @param NN The number of coefficients to use in the evaluation.
+     @param Sr The real part of the point we are evaluating the polynomial at.
+     @param Si The imaginary part of the point we are evaluating the
      * polynomial at.
-     * @param Hr, Hi Arrays containing ?
-     * @param QHr, QHi Arrays containing partial sums of H(S) polynomial.
-     * @return True if H(S) is essentially zero.
+     @param Hr, Hi Arrays containing ?
+     @param Hi
+     @param QHr, QHi Arrays containing partial sums of H(S) polynomial.
+     @param QHi
+     @return True if H(S) is essentially zero.
      *
      */
     private boolean calcT(int NN, double Sr, double Si, double[] Hr, double[] Hi,
@@ -932,11 +942,14 @@ outer:
     /**
      * Calculates the next shifted H polynomial.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param bool Set to true if H(S) is essentially zero.
-     * @param Hr, Hi Arrays containing ?
-     * @param QPr, QPi
-     * @param QHr, QHi
+     @param NN The number of coefficients to use in the evaluation.
+     @param bool Set to true if H(S) is essentially zero.
+     @param Hr, Hi Arrays containing ?
+     @param Hi
+     @param QPr, QPi
+     @param QPi
+     @param QHr, QHi
+     @param QHi
      *
      */
     private void nextH(int NN, boolean bool, double[] Hr, double[] Hi,
@@ -975,13 +988,17 @@ outer:
      * initial iteration. If the iteration converges it contains the final
      * iteration on exit. Also uses and sets class variables Sr, Si.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param L3 Limit of steps in stage 3.
-     * @param Pr, Pi The coefficients of the polynomial.
-     * @param QPr, QPi
-     * @param Hr, Hi Arrays containing ?
-     * @param QHr, QHi
-     * @return True if iteration converges.
+     @param NN The number of coefficients to use in the evaluation.
+     @param L3 Limit of steps in stage 3.
+     @param Pr, Pi The coefficients of the polynomial.
+     @param Pi
+     @param QPr, QPi
+     @param Hr, Hi Arrays containing ?
+     @param QPi
+     @param QHr, QHi
+     @param Hi
+     @param QHi
+     @return True if iteration converges.
      *
      */
     private boolean vrShift(int NN, int L3, double[] Pr, double[] Pi,
@@ -1075,13 +1092,19 @@ outer:
      * zero if successfull. Uses and sets the class variables Sr and Si. Sets
      * class variables Zr, Zi to approximate zero if convergence is true.
      *
-     * @param NN The number of coefficients to use in the evaluation.
-     * @param L2 Limit of fixed shift steps.
-     * @param Pr, Pi The coefficients of the polynomial.
-     * @param QPr, QPi
-     * @param Hr, Hi Arrays containing ?
-     * @param QHr, QHi
-     * @return True if convergence of stage 3 iteration is successfull.
+     @param NN The number of coefficients to use in the evaluation.
+     @param L2 Limit of fixed shift steps.
+     @param Pr, Pi The coefficients of the polynomial.
+     @param Pi
+     @param QPr, QPi
+     @param Hr, Hi Arrays containing ?
+     @param QPi
+     @param QHr, QHi
+     @param Hi
+     @param QHi
+     @param SHr
+     @param SHi
+     @return True if convergence of stage 3 iteration is successfull.
      *
      */
     private boolean fxShift(int NN, int L2, double[] Pr, double[] Pi,

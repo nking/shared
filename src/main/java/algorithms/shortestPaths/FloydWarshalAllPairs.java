@@ -21,29 +21,45 @@ import java.util.Arrays;
  * D is an nxn matrix of d[i][j] where each entry is the weight of the shortest path between i and j.
  *  
  *     d[i][j]_k = w[i][j]                                   if k = 0
- *               = min( d[i][k]_(k-1) + d[k][j]_(k-1) )      if k >= 1
+ *               = min( d[i][k]_(k-1) + d[k][j]_(k-1) )      if k .geq. 1
  *
  * 
  * @author nichole
  */
 public class FloydWarshalAllPairs {
     
+    /**
+     *
+     */
     protected int[][] dist = null;
     
+    /**
+     *
+     */
     protected int[][] prev = null;
     
+    /**
+     *
+     */
     protected boolean debug = false;
     
+    /**
+     *
+     */
     public FloydWarshalAllPairs() {
     }
     
+    /**
+     *
+     @param useDebug
+     */
     public void setDebug(boolean useDebug) {
         this.debug = useDebug;
     }
     
     /**
      * find the shortest paths between pairs of vertexes.
-     * @param w a square matrix of w[i][j] where each entry is the edge 
+     @param w a square matrix of w[i][j] where each entry is the edge 
        weight if any between i and j.  It has values 0 if i==j and inf 
        where there is no connection.
      */
@@ -113,6 +129,12 @@ public class FloydWarshalAllPairs {
         }
     }
     
+    /**
+     *
+     @param srcIndex
+     @param destIndex
+     @return
+     */
     public int[] getPath(int srcIndex, int destIndex) {
         if (srcIndex > (prev.length - 1)) {
             throw new IllegalArgumentException("srcIndex is out of bounds of prev array");

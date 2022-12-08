@@ -28,7 +28,7 @@ public class RPolyTest extends TestCase {
     /**
      * Constructor, used for testing purposes.
      * 
-     * @param testPolynomial A String array, as specified in the TestPolynomials
+     @param testPolynomial A String array, as specified in the TestPolynomials
      * class. This is converted to a polynomial, useful for solving/testing.
      */
     public void init0(String[] testPolynomial) {
@@ -114,7 +114,7 @@ public class RPolyTest extends TestCase {
      * Constructor, mainly used for testing purposes. The coefficients
      * of the polynomial are provided as a single array of real values.
      *
-     * @param coefs The array of coefficients of the polynomial. The degree N
+     @param coefs The array of coefficients of the polynomial. The degree N
      * of the polynomial is equal to coefs.length-1, coefs[0] is the constant
      * term and coefs[N] is the coefficients of x^N.
      */
@@ -132,9 +132,9 @@ public class RPolyTest extends TestCase {
      * can be created, based on a set of given real roots and a constant scaling
      * factor.
      *
-     * @param coefN The constant scaling factor, which is used to multiply the
+     @param coefN The constant scaling factor, which is used to multiply the
      * monic polynomial, derived from the given roots (see below).
-     * @param roots A set of roots, which define a monic polynomial, whose
+     @param roots A set of roots, which define a monic polynomial, whose
      * degree is equal to the length of the array.
      */
     public void init2(double coefN, double[] roots) {
@@ -163,11 +163,11 @@ public class RPolyTest extends TestCase {
      * used to create a polynomial with a set of real roots and a set of
      * conjugate complex roots.
      *
-     * @param coefN The constant scaling factor, which is used to multiuply the
+     @param coefN The constant scaling factor, which is used to multiuply the
      * monic polynomial, derived from the given roots (see below).
-     * @param roots A set of real roots, which define part of the polynomial.
-     * @param roots_re The real part of a set of conjugate complex roots.
-     * @param roots_im The imaginary part of a set of conjugate complex roots.
+     @param roots A set of real roots, which define part of the polynomial.
+     @param roots_re The real part of a set of conjugate complex roots.
+     @param roots_im The imaginary part of a set of conjugate complex roots.
      * For each pair of numbers roots_re[k], roots_im[k], two zeros are added!
      * One of them is roots_re[k] + i*roots_im[k] and the other of them is
      * roots_re[k] - i*roots_im[k]. This assures that the polynomial ends up
@@ -219,13 +219,13 @@ public class RPolyTest extends TestCase {
      * the roots of the polynomial. This tester derives the 
      * coefficients of the polynomial to be solved from the double
      * double precision coefficients, stored in the tester.
-     * @param roots_re A pre-allocated array, in which the real part
+     @param roots_re A pre-allocated array, in which the real part
      * of the roots is stored. This array must have a length of at
      * least the degree of the polynomial.
-     * @param roots_im A pre-allocated array, in which the imaginary
+     @param roots_im A pre-allocated array, in which the imaginary
      * part of the roots is stored. This array must have a length of at
      * least the degree of the polynomial.
-     * @return If all zeros could be isolated, then the degree of the
+     @return If all zeros could be isolated, then the degree of the
      * polynomial is returned. If a value less than the degree of the
      * polynomial is returned, then only part of the roots could be
      * isolated, or none at all.
@@ -244,7 +244,7 @@ public class RPolyTest extends TestCase {
     /**
      * Returns the degree of the polynomial.
      *
-     * @return The degree of the polynomial.
+     @return The degree of the polynomial.
      */
     int degree() {
         return coef.length - 1;

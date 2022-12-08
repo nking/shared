@@ -12,20 +12,35 @@ adapted from http://algs4.cs.princeton.edu/92search/
  
  
  *
- 
+ @param <Key>
+ @param <Value> 
  ******************************************************************************/
 
 public class RangeSearch<Key extends Comparable<Key>, Value>  {
 
+    /**
+     *
+     */
     protected RangeSearchNode<Key, Value> root;   // root of the BST
     
     //BST helper node data type
+
+    /**
+     *
+     @param <T>
+     @param <S>
+     */
     protected class RangeSearchNode<T, S> {
         T key;              // key
         S val;              // associated data
         RangeSearchNode<T, S> left, right;   // left and right subtrees
         int N;              // node count of descendents
 
+        /**
+         *
+         @param key
+         @param val
+         */
         public RangeSearchNode(T key, S val) {
             this.key = key;
             this.val = val;
@@ -45,6 +60,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     
    /***************************************************************************
     *  BST search
+     @param key
+     @return 
     ***************************************************************************/
 
     public boolean contains(Key key) {
@@ -54,8 +71,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     /**
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param key
-     * @return value associated with the given key
+     @param key
+     @return value associated with the given key
                if no such value, return null
     */
     public Value get(Key key) {
@@ -65,9 +82,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     /**
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @return 
+     @param x
+     @param key
+     @return 
      */
     private Value get(RangeSearchNode<Key, Value> x, Key key) {
         if (x == null) return null;
@@ -90,9 +107,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param key
-     * @param val
-     * @return the value that was replaced with given val
+     @param key
+     @param val
+     @return the value that was replaced with given val
      * if the Key intersected with another, preventing 
      * an insert of Key, but updating existing with val.
      * Note that the return is null when the insert
@@ -118,10 +135,11 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param <Value2>
-     * @param key
-     * @param val
-     * @return 
+     @param <Value2>
+     @param key
+     @param val
+     @param compareVal
+     @return 
      */
     public <Value2 extends Comparable<Value>> boolean 
         putIfLessThan(Key key, Value val, Value2 compareVal) {
@@ -142,14 +160,14 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity at worst is O(lg2(N)).
      *
-     * @param <Value2>
-     * @param x
-     * @param key
-     * @param val
-     * @param compareVal
-     * @param replaced
-     * @param inserted
-     * @return 
+     @param <Value2>
+     @param x
+     @param key
+     @param val
+     @param compareVal
+     @param replaced
+     @param inserted
+     @return 
      */
     @SuppressWarnings({"unchecked"})
     private <Value2 extends Comparable<Value>> 
@@ -196,11 +214,11 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @param val
-     * @param replaced
-     * @return 
+     @param x
+     @param key
+     @param val
+     @param replaced
+     @return 
      */
     private RangeSearchNode<Key, Value> put(RangeSearchNode<Key, Value> x, 
         Key key, Value val, Object[] replaced) {
@@ -262,11 +280,11 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     /**
      * runtime complexity at most is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @param val
-     * @param replaced
-     * @return 
+     @param x
+     @param key
+     @param val
+     @param replaced
+     @return 
      */
     private RangeSearchNode<Key, Value> putRoot(
         RangeSearchNode<Key, Value> x, Key key, Value val,
@@ -292,6 +310,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     *  deletion
     
     * runtime complexity worse case is O(lg2(N)).
+     @param a
+     @param b
+     @return 
     ***************************************************************************/
     private RangeSearchNode<Key, Value> joinLR(RangeSearchNode<Key, Value> a, 
         RangeSearchNode<Key, Value> b) { 
@@ -314,9 +335,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     /**
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @return 
+     @param x
+     @param key
+     @return 
      */
     private RangeSearchNode<Key, Value> remove(RangeSearchNode<Key, Value> x, Key key) {
         if (x == null) return null; 
@@ -334,8 +355,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * remove and return value associated with given key; if no such key, 
      * return null
      * 
-     * @param key
-     * @return 
+     @param key
+     @return 
      */
     public Value remove(Key key) {
         Value val = get(key);
@@ -352,9 +373,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity is O(1) to O(lg2(N)).
      *
-     * @param min
-     * @param max
-     * @return 
+     @param min
+     @param max
+     @return 
      */
     public Iterable<Key> range(Key min, Key max) {
         return range(new Interval<Key>(min, max));
@@ -364,8 +385,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity is O(1) to O(lg2(N)).
      * 
-     * @param interval
-     * @return 
+     @param interval
+     @return 
      */
     public Iterable<Key> range(Interval<Key> interval) { 
         Queue<Key> list = new Queue<Key>();
@@ -377,9 +398,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity is O(1) to O(lg2(N)).
      * 
-     * @param x
-     * @param interval
-     * @param list 
+     @param x
+     @param interval
+     @param list 
      */
     private void range(RangeSearchNode<Key, Value> x, Interval<Key> interval, 
         Queue<Key> list) {
@@ -396,7 +417,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      *
      * runtime complexity is O(1)
      * 
-     * @return the smallest key
+     @return the smallest key
      */
     public Key min() {
         Key key = null;
@@ -409,7 +430,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      *
      * runtime complexity is O(1)
      * 
-     * @return the largest key
+     @return the largest key
      */
     public Key max() {
         Key key = null;
@@ -424,7 +445,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     /**
      * runtime complexity is O(1)
      * 
-     * @return number of nodes in subtree rooted at x
+     @return number of nodes in subtree rooted at x
      */
     public int size() { return size(root); }
     private int size(RangeSearchNode<Key, Value> x) { 
@@ -436,7 +457,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * height of tree (empty tree height = 0)
      * 
      * runtime complexity is O(lg_2(N))
-     * @return 
+     @return 
      */
     public int height() { return height(root); }
     private int height(RangeSearchNode<Key, Value> x) {
@@ -453,7 +474,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * fix subtree count field.
      * 
      * runtime complexity O(1)
-     * @param x 
+     @param x 
      */
     private void fix(RangeSearchNode<Key, Value> x) {
         if (x == null) return;                 // check needed for remove
@@ -464,8 +485,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * right rotate
      * 
      * runtime complexity O(1)
-     * @param h
-     * @return 
+     @param h
+     @return 
      */
     private RangeSearchNode<Key, Value> rotR(RangeSearchNode<Key, Value> h) {
         RangeSearchNode<Key, Value> x = h.left;
@@ -490,8 +511,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
      * 
      * runtime complexity is O(1).
      * 
-     * @param h
-     * @return 
+     @param h
+     @return 
      */
     private RangeSearchNode<Key, Value> rotL(RangeSearchNode<Key, Value> h) {
         
@@ -508,6 +529,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
 
    /***************************************************************************
     *  Debugging functions that test the integrity of the tree
+     @return 
     ***************************************************************************/
 
     // check integrity of subtree count fields
@@ -536,6 +558,9 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
 
    /***************************************************************************
     *  helper comparison functions
+     @param k1
+     @param k2
+     @return 
     ***************************************************************************/
 
     private boolean less(Key k1, Key k2) {
@@ -545,6 +570,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
 
    /***************************************************************************
     *  test client
+     @param args
     ***************************************************************************/
     public static void main(String[] args) {
         /*

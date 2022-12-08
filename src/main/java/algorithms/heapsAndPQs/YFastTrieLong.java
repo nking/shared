@@ -184,7 +184,7 @@ YFastTrie
      * find, etc, and is by default choosing the model for the fast runtime
      * which may be expensive in space requirements.
      * 
-     * @param wBits the maximum number of bits needed for a single nuber to be inserted into thei yfasttrie
+     @param wBits the maximum number of bits needed for a single nuber to be inserted into thei yfasttrie
      */
     public YFastTrieLong(int wBits) {
         
@@ -249,6 +249,11 @@ YFastTrie
         xft = new XFastTrieLong<XFastTrieNodeLong<Long>, Long>(clsNode, it, w);
     }
     
+    /**
+     *
+     @param index
+     @return
+     */
     protected RedBlackBSTLongInt2 getTreeMap(long index) {
         RedBlackBSTLongInt2 tree = rbs.get(index);
         if (tree == null) {
@@ -260,8 +265,8 @@ YFastTrie
 
     /**
      * 
-     * @param node node to add to this yfasttrie
-     * @param index index of the internal red black tree map
+     @param node node to add to this yfasttrie
+     @param index index of the internal red black tree map
      */
     private void addToRBTree(long node, long index) {
         
@@ -285,8 +290,9 @@ YFastTrie
     
     /**
      * 
-     * @param node node to delete from this yfasttrie
-     * @param index index of internal reb-black tree map
+     @param node node to delete from this yfasttrie
+     @param index index of internal reb-black tree map
+     @return 
      */
     private boolean deleteFromRBTree(long node, long index) {
                 
@@ -324,9 +330,9 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @param node a number >= 0 and having bit length 
+     @param node a number .geq. 0 and having bit length 
      * less than or equal to w.
-     * @return true if successfully added node.
+     @return true if successfully added node.
      */
     public boolean add(long node) {
 
@@ -370,8 +376,8 @@ YFastTrie
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
      * 
-     * @param node node to remove
-     * @return true if node was found and removed
+     @param node node to remove
+     @return true if node was found and removed
      */
     public boolean remove(long node) {
         
@@ -446,8 +452,8 @@ YFastTrie
      * runtime complexity is at most O(log_2(w)) but since the map might not
      * be completely populated, the complexity might be smaller.
      * 
-     * @param node node to find
-     * @return the value of the node if present, else -1
+     @param node node to find
+     @return the value of the node if present, else -1
      */
     public long find(long node) {
                 
@@ -481,8 +487,8 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @param node node for which the predecessor must be returned
-     * @return value preceding node, else -1 if there is not one
+     @param node node for which the predecessor must be returned
+     @return value preceding node, else -1 if there is not one
      */
     public long predecessor(long node) {
     
@@ -549,8 +555,8 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @param node node for which the successor must be returned
-     * @return the next node in the ordered data strucure, else -1 if no such
+     @param node node for which the successor must be returned
+     @return the next node in the ordered data strucure, else -1 if no such
      * node exists.
      */
     public long successor(long node) {
@@ -610,7 +616,7 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @return minimum, else -1 if empty
+     @return minimum, else -1 if empty
      */
     public long minimum() {
         
@@ -633,7 +639,7 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @return maximum, else -1 if empty
+     @return maximum, else -1 if empty
      */
     public long maximum() {
         
@@ -670,7 +676,7 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @return minimum, else -1 if empty
+     @return minimum, else -1 if empty
      */
     public long extractMinimum() {
         
@@ -694,7 +700,7 @@ YFastTrie
      * + O(l-w)
      * where w is the maximum bit length and l is a level in the prefix tree.
      * 
-     * @return maximum, else -1 if empty
+     @return maximum, else -1 if empty
      */
     public long extractMaximum() {
         
@@ -712,12 +718,16 @@ YFastTrie
     
     /**
      * get the current number of values stored in the data structure.
-     * @return number of items in this yfasttrie instance
+     @return number of items in this yfasttrie instance
      */
     public int size() {
         return n;
     }
 
+    /**
+     *
+     @return
+     */
     protected long getBinSz() {
         return binSz;
     }
@@ -749,11 +759,11 @@ YFastTrie
      *       so has the same need for an upper and lower estimate.
      * </pre>
      * 
-     * @param numberOfEntries amount of space for this object's instance
+     @param numberOfEntries amount of space for this object's instance
      * with n entries in Bytes on the heap.
-     * @param maxNumberOfBits all entries must have bit lengths .lte. this
+     @param maxNumberOfBits all entries must have bit lengths .lte. this
      * 
-     * @return array with 2 estimates, (1) estimate using all bins and a
+     @return array with 2 estimates, (1) estimate using all bins and a
      * factor of 5 for creating trie prefix nodes,
        (2) estimate from using 1/4 of the bins and a factor of 3 for creating
        the trie prefix nodes.

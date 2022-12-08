@@ -2,31 +2,89 @@ package algorithms.statistics;
 
 import algorithms.misc.MiscMath0;
 
+/**
+ *
+ * @author nichole
+ */
 public class GEVYFit implements IYFit {
 
+    /**
+     *
+     */
     protected double[] yfit = null;
+
+    /**
+     *
+     */
     protected double[] x = null;
+
+    /**
+     *
+     */
     protected double xScale = 1;
+
+    /**
+     *
+     */
     protected double yScale = 1;
+
+    /**
+     *
+     */
     protected int xPeakIndex = -1;
+
+    /**
+     *
+     */
     protected double k;
+
+    /**
+     *
+     */
     protected double sigma;
+
+    /**
+     *
+     */
     protected double mu;
+
+    /**
+     *
+     */
     protected double chiSqSum = Double.POSITIVE_INFINITY;
+
+    /**
+     *
+     */
     protected double chiSqStatistic = Double.POSITIVE_INFINITY;
     double kSolutionResolution;
     double sigmaSolutionResolution;
     double muSolutionResolution;
+
+    /**
+     *
+     */
     protected double yDataErrSq;
 
+    /**
+     *
+     */
     protected String[] parameterNames = new String[]{
         "mu", "sigma", "k"
     };
 
+    /**
+     *
+     @return
+     */
     public String[] getParameterNames() {
         return parameterNames;
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getParameters() {
         return new double[]{mu, sigma, k};
     }
@@ -41,6 +99,10 @@ public class GEVYFit implements IYFit {
         return sb.toString();
     }
 
+    /**
+     *
+     @return
+     */
     public double getXPeak() {
         if (xPeakIndex == -1) {
             xPeakIndex = MiscMath0.findYMaxIndex(yfit);
@@ -48,6 +110,10 @@ public class GEVYFit implements IYFit {
         return xScale*x[xPeakIndex];
     }
     
+    /**
+     *
+     @return
+     */
     public int getXPeakIndex() {
         if (xPeakIndex == -1) {
             xPeakIndex = MiscMath0.findYMaxIndex(yfit);
@@ -55,42 +121,82 @@ public class GEVYFit implements IYFit {
         return xPeakIndex;
     }
     
+    /**
+     *
+     @return
+     */
     public double[] getYFit() {
         return yfit;
     }
 
+    /**
+     *
+     @return
+     */
     public double getK() {
         return k;
     }
 
+    /**
+     *
+     @return
+     */
     public double getSigma() {
         return sigma;
     }
 
+    /**
+     *
+     @return
+     */
     public double getMu() {
         return mu;
     }
 
+    /**
+     *
+     @return
+     */
     public double getKResolution() {
         return kSolutionResolution;
     }
 
+    /**
+     *
+     @return
+     */
     public double getSigmaResolution() {
         return sigmaSolutionResolution;
     }
     
+    /**
+     *
+     @return
+     */
     public double getMuSolutionResolution() {
         return muSolutionResolution;
     }
 
+    /**
+     *
+     @return
+     */
     public double getChiSqSum() {
         return chiSqSum;
     }
 
+    /**
+     *
+     @return
+     */
     public double getYDataErrSq() {
         return yDataErrSq;
     }
 
+    /**
+     *
+     @return
+     */
     public double getChiSqStatistic() {
         // minus one if mean was computed from the data
         if (yfit == null) {
@@ -99,10 +205,26 @@ public class GEVYFit implements IYFit {
         return chiSqSum / (yfit.length - 3 - 1);
     }
 
+    /**
+     *
+     @param index
+     @param isStepFunction
+     @return
+     */
     protected double calculateArea(int index, boolean isStepFunction) {
         return calculateArea(x, yfit, index, isStepFunction, xScale, yScale);
     }
 
+    /**
+     *
+     @param x
+     @param y
+     @param xyIndex
+     @param isStepFunction
+     @param xScaleFactor
+     @param yScaleFactor
+     @return
+     */
     protected static double calculateArea(double[] x, double[] y, int xyIndex,
          boolean isStepFunction, double xScaleFactor, double yScaleFactor) {
 
@@ -172,81 +294,98 @@ public class GEVYFit implements IYFit {
         return area;
     }
 
+    /**
+     *
+     @param index
+     @return
+     */
     public double getX(int index) {
         return xScale*x[index];
     }
 
     /**
-     * @param yfit the yfit to set
+     @param yfit the yfit to set
      */
     public void setYFit(double[] yfit) {
         this.yfit = yfit;
     }
 
+    /**
+     *
+     @param scale
+     */
     public void setYScale(double scale) {
         this.yScale = scale;
     }
 
     /**
-     * @return the x array of the fit
+     @return the x array of the fit
      */
     public double[] getX() {
         return x;
     }
 
     /**
-     * @param x array of the fit
+     @param x array of the fit
      */
     public void setX(double[] x) {
         this.x = x;
     }
 
+    /**
+     *
+     @param scale
+     */
     public void setXScale(double scale) {
         this.xScale = scale;
     }
 
     /**
-     * @param k the k to set
+     @param k the k to set
      */
     public void setK(double k) {
         this.k = k;
     }
 
     /**
-     * @param sigma the sigma to set
+     @param sigma the sigma to set
      */
     public void setSigma(double sigma) {
         this.sigma = sigma;
     }
 
     /**
-     * @param mu the mu to set
+     @param mu the mu to set
      */
     public void setMu(double mu) {
         this.mu = mu;
     }
 
     /**
-     * @param chiSq the chiSqSum to set
+     @param chiSq the chiSqSum to set
      */
     public void setChiSqSum(double chiSq) {
         this.chiSqSum = chiSq;
     }
 
     /**
-     * @param chiSqStat the chiSqStatistic to set
+     @param chiSqStat the chiSqStatistic to set
      */
     public void setChiSqStatistic(double chiSqStat) {
         this.chiSqStatistic = chiSqStat;
     }
 
     /**
-     * @param yErrSq the yDataErrSq to set
+     @param yErrSq the yDataErrSq to set
      */
     public void setYDataErrSq(double yErrSq) {
         this.yDataErrSq = yErrSq;
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getOriginalScaleX() {
         if (x == null) {
             return null;
@@ -258,6 +397,10 @@ public class GEVYFit implements IYFit {
         return xsc;
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getOriginalScaleYFit() {
         if (yfit == null) {
             return null;
@@ -269,10 +412,18 @@ public class GEVYFit implements IYFit {
         return ysc;
     }
 
+    /**
+     *
+     @return
+     */
     public double getXScale() {
         return xScale;
     }
 
+    /**
+     *
+     @return
+     */
     public double getYScale() {
         return yScale;
     }

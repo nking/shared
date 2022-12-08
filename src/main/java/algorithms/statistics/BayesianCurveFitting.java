@@ -62,11 +62,12 @@ public class BayesianCurveFitting {
     /**
      * fit the training data
      * the likelihood and the prior are both Gaussian.
-     * @param phiX training data feature matrix
-     * @param t training data label vector
-     * @param alpha the precision of the prior. the precision is the reciprocal of the variance.
-     * @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
-     * @return the model fit data structures.
+     @param phiX training data feature matrix
+     @param t training data label vector
+     @param alpha the precision of the prior. the precision is the reciprocal of the variance.
+     @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
+     @return the model fit data structures.
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static ModelFit fit(double[][] phiX, double[] t, final double alpha, final double beta) throws NotConvergedException {
 
@@ -81,13 +82,14 @@ public class BayesianCurveFitting {
     /**
      * fit the training data.
      * the likelihood and the prior are both Gaussian.
-     * @param phiX training data feature matrix
-     * @param t training data label vector
-     * @param alpha the precision of the prior. the precision is the reciprocal of the variance.
-     * @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
-     * @param priorMean the prior mean
-     * @param priorCov the prior covariance
-     * @return the model fit data structures
+     @param phiX training data feature matrix
+     @param t training data label vector
+     @param alpha the precision of the prior. the precision is the reciprocal of the variance.
+     @param beta the precision of the likelihood.  the precision is the reciprocal of the variance
+     @param priorMean the prior mean
+     @param priorCov the prior covariance
+     @return the model fit data structures
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static ModelFit fit(double[][] phiX, double[] t, final double alpha, final double beta,
            final double[] priorMean, final double[][] priorCov) throws NotConvergedException {
@@ -143,9 +145,10 @@ public class BayesianCurveFitting {
 
     /**
      * predict the labels given the model and x test data.
-     * @param fit model fit made from training data
-     * @param phiXTest x value feature matrix for which to predict target t values.
-     * @return
+     @param fit model fit made from training data
+     @param phiXTest x value feature matrix for which to predict target t values.
+     @return
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static ModelPrediction predict(ModelFit fit, double[][] phiXTest) throws NotConvergedException {
 
@@ -202,11 +205,14 @@ public class BayesianCurveFitting {
     /**
      * predict values for test feature matrix phiXTest using randomly generated points
      * from a multivariate normal distribution based upon the model fit mean and covariance.
-     * @param fit model fit made from training data
-     * @param phiXTest x value feature matrix for which to predict target t values.
-     * @return nSamples predicted from random samples of the model at the points from phiXTest.
+     @param fit model fit made from training data
+     @param phiXTest x value feature matrix for which to predict target t values.
+     @param nSamples
+     @return nSamples predicted from random samples of the model at the points from phiXTest.
      * the return matrix size is [nSamples X phiXTest.length] so that each row is a sample
      * generated for phiXTest.
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double[][] predictRandomSample(ModelFit fit, double[][] phiXTest, int nSamples) throws NotConvergedException, NoSuchAlgorithmException {
 
@@ -226,10 +232,12 @@ public class BayesianCurveFitting {
      * predict values for test feature matrix phiXTest using randomly generated points
      * from a multivariate normal distribution based upon the model fit mean and covariance.
      * uses a default machine precision of 1E-7 for equality comparisons in matrices.
-     * @param fit model fit made from training data
-     * @param phiXTest x value feature matrix for which to predict target t values.
+     @param fit model fit made from training data
+     @param phiXTest x value feature matrix for which to predict target t values.
      *
-     * @return a sample predicted from random samples of the model at the points from phiXTest.
+     @return a sample predicted from random samples of the model at the points from phiXTest.
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest) throws NotConvergedException, NoSuchAlgorithmException {
         return predictRandomSample(fit, phiXTest, 1E-7);
@@ -238,10 +246,12 @@ public class BayesianCurveFitting {
     /**
      * predict values for test feature matrix phiXTest using randomly generated points
      * from a multivariate normal distribution based upon the model fit mean and covariance.
-     * @param fit model fit made from training data
-     * @param phiXTest x value feature matrix for which to predict target t values.
+     @param fit model fit made from training data
+     @param phiXTest x value feature matrix for which to predict target t values.
      *                 @param eps machine tolerance to use with matrices for element equivalence
-     * @return a sample predicted from random samples of the model at the points from phiXTest.
+     @return a sample predicted from random samples of the model at the points from phiXTest.
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static ModelPrediction predictRandomSample(ModelFit fit, double[][] phiXTest, double eps) throws NotConvergedException, NoSuchAlgorithmException {
 
@@ -289,7 +299,15 @@ public class BayesianCurveFitting {
      * method fit().
      * </pre>
      *
-     * @return size [(m+1)]
+     @param priorMean
+     @param priorPrecision
+     @param s
+     @param phiXT
+     @param alpha
+     @param t
+     @param beta
+     @return size [(m+1)]
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     protected static double[] calcMean(final double[] priorMean, final double[][] priorPrecision,
             final double[][] s, final double[][] phiXT, final double[] t,  final double alpha, final double beta) throws NotConvergedException {
@@ -325,9 +343,9 @@ public class BayesianCurveFitting {
             | ...                                  |
             | x[n-1]  (x[n-1])^1  ...  (x[n-1])^m  |
      </pre>
-     * @param x array of data points
-     * @param m order of polynomial fit
-     * @return a matrix where each column is x to the order j where j is the column number
+     @param x array of data points
+     @param m order of polynomial fit
+     @return a matrix where each column is x to the order j where j is the column number
      * and ranges from 0 to m, inclusive.
      * output size is [N X (M+1)] where M is m and N is x.length.
      */
@@ -355,11 +373,12 @@ public class BayesianCurveFitting {
      * <pre>
      * This method
      * </pre>
-     * @param x phi(x)
-     * @param xT phi(x)^T
-     * @param alpha noise to add to the generated gaussian.
-     * @param beta the precision, that is, the reciprocal of the variance.
-     * @return S^-1 = alpha * I + beta * (xT*x)
+     @param priorPrecision
+     @param x phi(x)
+     @param xT phi(x)^T
+     @param alpha noise to add to the generated gaussian.
+     @param beta the precision, that is, the reciprocal of the variance.
+     @return S^-1 = alpha * I + beta * (xT*x)
      */
     protected static double[][] calcSInv(final double[][] priorPrecision,
                                          final double[][] x, final double[][] xT, final double alpha, final double beta) {
@@ -382,9 +401,9 @@ public class BayesianCurveFitting {
      * generate vector phiXn from data point xn up to order m where phiXn is
      *   ɸ_i(x) = x^i for i=0 to m.
      *   see comments under eqn 1.72 of Bishop's PRML.
-     * @param m the largest order of the polynomial used to fit training data x, t.
-     * @param xn point n in vector of training data x.
-     * @return a vector of length m+1 composed of elements xn^0, xn^1, ... xn^m;
+     @param m the largest order of the polynomial used to fit training data x, t.
+     @param xn point n in vector of training data x.
+     @return a vector of length m+1 composed of elements xn^0, xn^1, ... xn^m;
      */
     private static double[] generatePhiXn(int m, double xn) {
         double[] phiXn = new double[m + 1];

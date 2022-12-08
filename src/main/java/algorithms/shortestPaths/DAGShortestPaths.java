@@ -50,29 +50,46 @@ public class DAGShortestPaths {
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
     */
+
+    /**
+     *
+     */
+
     protected TIntIntMap[] w = null;
     
+    /**
+     *
+     */
     protected int[] dist = null;
 
+    /**
+     *
+     */
     protected int[] predecessor = null;   
     
+    /**
+     *
+     */
     protected int src = -1;
     
+    /**
+     *
+     */
     public DAGShortestPaths() {
     }
     
     /**
      * find the single shortest path in dAG with edge weights w starting from s.
-     * @param dAG directed acyclic graph where the main index of the object array
+     @param dAG directed acyclic graph where the main index of the object array
      * is the vertex number, and each vertex has a linked list of outgoing 
      * edges connecting to the vertexes held in each linked list node key.
      * Note that all vertexes, including edge vertexes, must be present as an
      * index of the array dAG, i.e. all vertexes must have numerical value 
      * less than dAG.length.
-     * @param weights the edge weights in format of outer array index being the
+     @param weights the edge weights in format of outer array index being the
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
-     * @param sourceVertex the source vertex index
+     @param sourceVertex the source vertex index
      */
     public void find(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex) {
         
@@ -165,8 +182,8 @@ public class DAGShortestPaths {
     
     /**
      * get shortest path from source to destIndex
-     * @param destVertex
-     * @return 
+     @param destVertex
+     @return 
      */
     public int[] getShortestPathToVertex(int destVertex) {
         if (destVertex < 0 || destVertex >= g.length) {
@@ -199,6 +216,11 @@ public class DAGShortestPaths {
         return p;
     }
     
+    /**
+     *
+     @param vertexes
+     @return
+     */
     public int getSumOfPath(int[] vertexes) {
         if (vertexes == null) {
             throw new IllegalArgumentException("vertexes cannot be null");

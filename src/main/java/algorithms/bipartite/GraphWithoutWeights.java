@@ -26,12 +26,21 @@ public class GraphWithoutWeights {
     private TIntObjectMap<TIntSet> adjacencyMap = new
         TIntObjectHashMap<TIntSet>();
 
+    /**
+     *
+     @param nLeftVertices
+     @param nRightVertices
+     */
     public GraphWithoutWeights(int nLeftVertices, 
         int nRightVertices) {
         this.nLeft = nLeftVertices;
         this.nRight = nRightVertices;
     }
     
+    /**
+     *
+     @param g
+     */
     public GraphWithoutWeights(Graph g) {
         
         this.nLeft = g.getNLeft();
@@ -59,21 +68,21 @@ public class GraphWithoutWeights {
     }
     
     /**
-     * @return the number of left vertices
+     @return the number of left vertices
      */
     public int getNLeft() {
         return nLeft;
     }
 
     /**
-     * @return the number of right vertices
+     @return the number of right vertices
      */
     public int getNRight() {
         return nRight;
     }
 
     /**
-     * @return the adjacencyMap
+     @return the adjacencyMap
      */
     public TIntObjectMap<TIntSet> getAdjacencyMap() {
         return adjacencyMap;

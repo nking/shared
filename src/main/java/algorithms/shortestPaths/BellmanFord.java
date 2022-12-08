@@ -28,10 +28,19 @@ public class BellmanFord {
     
     private int nV;
     
+    /**
+     *
+     */
     protected int[] dist = null;
 
+    /**
+     *
+     */
     protected int[] predecessor = null;   
     
+    /**
+     *
+     */
     protected int src = -1;
     
     private static int sentinel = Integer.MAX_VALUE;
@@ -40,16 +49,16 @@ public class BellmanFord {
     
     /**
      * 
-     * @param dAG directed acyclic graph where the main index of the object array
+     @param dAG directed acyclic graph where the main index of the object array
      * is the vertex number, and each vertex has a linked list of outgoing 
      * edges connecting to the vertexes held in each linked list node key.
      * Note that all vertexes, including edge vertexes, must be present as an
      * index of the array dAG, i.e. all vertexes must have numerical value 
      * less than dAG.length.
-     * @param weights the edge weights in format of outer array index being the
+     @param weights the edge weights in format of outer array index being the
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
-     * @param sourceVertex the source vertex index
+     @param sourceVertex the source vertex index
      */
     public BellmanFord(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, int sourceVertex) {
     
@@ -67,7 +76,7 @@ public class BellmanFord {
     /**
      * find the single shortest paths in dAG with edge weights w starting from s.
      * 
-     * @return returns false if a negative cycle is present, else returns true 
+     @return returns false if a negative cycle is present, else returns true 
      * and the results are usable.
      */
     public boolean find() {
@@ -161,8 +170,8 @@ public class BellmanFord {
     
     /**
      * get shortest path from source to destIndex
-     * @param destVertex
-     * @return 
+     @param destVertex
+     @return 
      */
     public int[] getShortestPathToVertex(int destVertex) {
         if (destVertex < 0 || destVertex >= nV) {
@@ -195,6 +204,11 @@ public class BellmanFord {
         return p;
     }
     
+    /**
+     *
+     @param vertexes
+     @return
+     */
     public int getSumOfPath(int[] vertexes) {
         if (vertexes == null) {
             throw new IllegalArgumentException("vertexes cannot be null");

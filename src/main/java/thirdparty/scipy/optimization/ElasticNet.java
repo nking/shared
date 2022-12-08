@@ -99,8 +99,21 @@ public class ElasticNet {
     private double[] Xy = null;
 
     // coef selection = 0 for 'cyclic' else '1' for random.
+
+    /**
+     *
+     */
     public static enum Selection {
-        CYCLIC, RANDOM;
+
+        /**
+         *
+         */
+        CYCLIC,
+
+        /**
+         *
+         */
+        RANDOM;
     }
     private Selection selection = Selection.CYCLIC;
 
@@ -133,8 +146,8 @@ public class ElasticNet {
       when l1_ratio .eq. 1, the penalty is the lasso penalty.
       note, should not use l1_ratio .lte. 0.01.
      NOTE also, that for alpha .eq. 0, the algorithm does not converge well.
-     * @param alpha
-     * @param l1Ratio
+     @param alpha
+     @param l1Ratio
      */
     public ElasticNet(double alpha, double l1Ratio) {
 
@@ -159,9 +172,9 @@ public class ElasticNet {
       when l1_ratio .eq. 1, the penalty is the lasso penalty.
       note, should not use l1_ratio .lte. 0.01.
       NOTE also, that for alpha .eq. 0, the algorithm does not converge well.
-     * @param alpha
-     * @param l1Ratio
-     * @param maxIter
+     @param alpha
+     @param l1Ratio
+     @param maxIter
      */
     public ElasticNet(double alpha, double l1Ratio, int maxIter) {
 
@@ -184,7 +197,7 @@ public class ElasticNet {
     /**
      * default is 0 produces no extra logging, v=1 results in more logging,
      * while v >= 2 produces most logging.
-     * @param v
+     @param v
      */
     public void setVerbosity(int v) {
         this.verbose = v;
@@ -192,10 +205,10 @@ public class ElasticNet {
 
     /**
      *
-     * @param x each column of x is the data and any operation performed
+     @param x each column of x is the data and any operation performed
      * upon it.  for example, to fit a 2nd order polynomial,
      * x[*][0] is xdata[*] and x[*][1] is xdata[*]^2.
-     * @param y
+     @param y
      */
     public void fit(double[][] x, double[] y) {
 
@@ -319,6 +332,10 @@ public class ElasticNet {
         setIntercept(XMean, yMean, XStdv);
     }
 
+    /**
+     *
+     @param sel
+     */
     public void setSeletion(Selection sel) {
         if (sel == null) {
             throw new IllegalArgumentException("sel cannot be null");
@@ -329,10 +346,10 @@ public class ElasticNet {
     /**
      * Predict using the linear model
      * 
-     * @param testData 2 dimensional data of format [nSamples[nFeatures]
+     @param testData 2 dimensional data of format [nSamples[nFeatures]
      * where features is the coefficients for polynomial regression, for
      * example.
-     * @return 
+     @return 
      */
     public double[] predict(double[][] testData) {
         return decision_function(testData);            
@@ -343,9 +360,9 @@ public class ElasticNet {
 
         The confidence score for a sample is the signed distance of that
         sample to the hyperplane.
-      
-     * @param testData
-     * @return 
+     @param XD      
+     @param testData
+     @return 
      */
     private double[] decision_function(double[][] XD) {
     
@@ -368,30 +385,57 @@ public class ElasticNet {
         return scores;
     }
     
+    /**
+     *
+     @return
+     */
     public double getIntercept() {
         return intercept;
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getCoef() {
         return coef;
     }
     
+    /**
+     *
+     @return
+     */
     public double getDualGap() {
         return dualGap;
     }
 
+    /**
+     *
+     @param n
+     */
     public void setNMaxIter(int n) {
         this.nMaxIter = n;
     }
 
+    /**
+     *
+     @param tolerance
+     */
     public void setTol(double tolerance) {
         this.tol = tolerance;
     }
 
+    /**
+     *
+     @param pos
+     */
     public void setPositiveParam(boolean pos) {
         this.positive = pos;
     }
     
+    /**
+     *
+     */
     public void setToUseWarmStart() {
         this.warmStart = true;
     }
@@ -481,6 +525,12 @@ public class ElasticNet {
         return true;
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     public static boolean allClose(double[] a, double[] b) {
         double rtol = 1.e-5;
         double atol = 1.e-8;
@@ -498,26 +548,27 @@ public class ElasticNet {
      * NOTE that for now, y2 and this.y are restricted to being a single
      * dimension, that is, a vector.
      *
-     * @param X2
-     * @param y2
-     * @param l1Ratio2
-     * @param eps2
-     * @param nAlphas2
-     * @param alphas2
-     * @param thisXy
-     * @param fitIntercept2
-     * @param normalize2
-     * @param copyX2
-     * @param verbose2
-     * @param tol2
-     * @param positive2
-     * @param XMean2
-     * @param XStdv2
-     * @param returnNIter
-     * @param coef2
-     * @param nMaxIter2
-     * @param selection2
-     * @return
+     @param X2
+     @param y2
+     @param l1Ratio2
+     @param eps2
+     @param nAlphas2
+     @param alphas2
+     @param Xy2
+     @param thisXy
+     @param fitIntercept2
+     @param copyX2
+     @param verbose2
+     @param tol2
+     @param positive2
+     @param XMean2
+     @param XStdv2
+     @param returnNIter
+     @param coefInit
+     @param coef2
+     @param nMaxIter2
+     @param selection2
+     @return
      */
     private PathResults enetPath(
         double[][] X2, double[] y2,
@@ -700,13 +751,13 @@ public class ElasticNet {
 
     /**
      *
-     * @param X2
-     * @param y2
-     * @param Xy2  can be null
-     * @param normalize2
-     * @param fitIntercept2
-     * @param doCopy
-     * @return
+     @param X2
+     @param y2
+     @param Xy2  can be null
+     @param normalize2
+     @param fitIntercept2
+     @param doCopy
+     @return
      */
     private PreFitResults preFit(double[][] X2, double[] y2, double[] Xy2,
         boolean normalize2,
@@ -742,16 +793,17 @@ public class ElasticNet {
 
     /**
      * Compute the grid of alpha values for elastic net parameter search
-     * @param X2
-     * @param Y2
-     * @param Xy2 can be null
-     * @param l1Ratio2
-     * @param fitIntercept2
-     * @param eps2
-     * @param nAlphas2
-     * @param normalize2
-     * @param copyX2
-     * @return 
+     @param X2
+     @param y2
+     @param Y2
+     @param Xy2 can be null
+     @param l1Ratio2
+     @param fitIntercept2
+     @param eps2
+     @param nAlphas2
+     @param normalize2
+     @param copyX2
+     @return 
      */
     private double[] _alphaGrid(double[][] X2, double[] y2,
         double[] Xy2, double l1Ratio2, boolean fitIntercept2,
@@ -831,7 +883,16 @@ public class ElasticNet {
               Manoj Kumar <manojkumarsivaraj334@gmail.com>
 
      License: BSD 3 clause
-
+     @param w
+     @param useRandom
+     @param beta2
+     @param alpha2
+     @param y2
+     @param tol2
+     @param X2
+     @param positive2
+     @param nMaxIter2
+     @return 
     */
     private CDescResults enet_coordinate_descent(
         double[] w,
@@ -1098,6 +1159,10 @@ public class ElasticNet {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public TIntArrayList _nIters() {
         return nIter;
     }

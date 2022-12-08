@@ -42,6 +42,11 @@ import java.math.RoundingMode;
  */
 public class MiscMath0 {
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static float[] calculateOuterRoundedMinAndMax(float[] a) {
 
         // find the powers of 10 for the data min and max
@@ -120,8 +125,8 @@ public class MiscMath0 {
      *     roundDownByLargestPower(-3.1) returns -4.0
      *     roundDownByLargestPower(31.1) returns 30.0
      *
-     * @param f
-     * @return
+     @param f
+     @return
      */
     public static float roundDownByLargestPower(float f) {
 
@@ -144,6 +149,11 @@ public class MiscMath0 {
         return (float)r;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findPowerOf10(float a) {
 
         if (a == 0) {
@@ -167,6 +177,11 @@ public class MiscMath0 {
         }
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findPowerOf10_2(float a) {
 
         if (a == 0) {
@@ -194,8 +209,8 @@ public class MiscMath0 {
 
     /**
      * find max but ignore values such as FLOAT.MAX_VALUE, infinity, and NAN
-     * @param a
-     * @return
+     @param a
+     @return
      */
     public static int findYMaxIndex(float[] a) {
         if (a == null || a.length == 0) {
@@ -215,8 +230,8 @@ public class MiscMath0 {
     
     /**
      * find max but ignore values such as infinity, and NAN
-     * @param a
-     * @return
+     @param a
+     @return
      */
     public static int findYMaxIndex(double[] a) {
         if (a == null || a.length == 0) {
@@ -234,6 +249,11 @@ public class MiscMath0 {
         return index;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findYMaxIndex(int[] a) {
         if (a == null || a.length == 0) {
             return -1;
@@ -249,6 +269,11 @@ public class MiscMath0 {
         return index;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findYMaxIndex(TIntList a) {
         if (a == null || a.size() == 0) {
             return -1;
@@ -264,6 +289,11 @@ public class MiscMath0 {
         return index;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findYMaxIndex(long[] a) {
     
         if (a == null || a.length == 0) {
@@ -280,6 +310,11 @@ public class MiscMath0 {
         return index;
     }
  
+    /**
+     *
+     @param a
+     @return
+     */
     public static float findMin(float[] a) {
         float min = Float.POSITIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
@@ -290,6 +325,11 @@ public class MiscMath0 {
         return min;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double findMin(double[] a) {
         double min = Double.POSITIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
@@ -300,6 +340,11 @@ public class MiscMath0 {
         return min;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findMin(int[] a) {
         int min = Integer.MAX_VALUE;
         for (int i = 0; i < a.length; i++) {
@@ -312,8 +357,8 @@ public class MiscMath0 {
 
     /**
      * find max 
-     * @param a
-     * @return
+     @param a
+     @return
      */
     public static int findMax(int[] a) {
         int max = Integer.MIN_VALUE;
@@ -325,6 +370,11 @@ public class MiscMath0 {
         return max;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findMax(int[][] a) {
         int max = Integer.MIN_VALUE;
         for (int i = 0; i < a.length; i++) {
@@ -337,6 +387,11 @@ public class MiscMath0 {
         return max;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static int findMin(int[][] a) {
         int min = Integer.MAX_VALUE;
         for (int i = 0; i < a.length; i++) {
@@ -349,6 +404,11 @@ public class MiscMath0 {
         return min;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static float findMax(float[][] a) {
         float max = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
@@ -361,6 +421,11 @@ public class MiscMath0 {
         return max;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static float findMin(float[][] a) {
         float min = Float.POSITIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
@@ -375,8 +440,8 @@ public class MiscMath0 {
 
     /**
      * find max 
-     * @param a
-     * @return
+     @param a
+     @return
      */
     public static float findMax(float[] a) {
         float max = Float.NEGATIVE_INFINITY;
@@ -388,6 +453,11 @@ public class MiscMath0 {
         return max;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double findMax(double[] a) {
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < a.length; i++) {
@@ -398,6 +468,11 @@ public class MiscMath0 {
         return max;
     }
     
+    /**
+     *
+     @param img
+     @return
+     */
     public static double findMin(double[][] img) {
         
         double min = Double.POSITIVE_INFINITY;
@@ -414,6 +489,11 @@ public class MiscMath0 {
         return min;
     }
     
+    /**
+     *
+     @param img
+     @return
+     */
     public static double findMax(double[][] img) {
         
         double max = Double.NEGATIVE_INFINITY;
@@ -434,11 +514,11 @@ public class MiscMath0 {
      * for the given histogram, returns the indexes of the primary peak and
      * any peaks which are larger than frac*maxPeak above their neighboring
      * values.
-     * @param h
-     * @param frac the fraction of the y value of the maximum peak that is used
+     @param h
+     @param frac the fraction of the y value of the maximum peak that is used
      * as a critical limit that any other peaks must have in excess of their
      * neighboring points.  For example, 0.1.
-     * @return 
+     @return 
      */
     public static List<Integer> findStrongPeakIndexes(HistogramHolder h, float frac) {
         
@@ -546,6 +626,12 @@ public class MiscMath0 {
         return peaks;
     }
 
+    /**
+     *
+     @param hist
+     @param fracMax
+     @return
+     */
     public static List<Integer> findStrongPeakIndexesDescSort(
         HistogramHolder hist, float fracMax) {
 
@@ -581,8 +667,8 @@ public class MiscMath0 {
     /**
      * given an array of points, return the average and standard deviation from
      * the average
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     public static double[] getAvgAndStDev(int[] x) {
         
@@ -592,8 +678,9 @@ public class MiscMath0 {
     /**
      * given an array of points, return the average and standard deviation from
      * the average
-     * @param x
-     * @return 
+     @param x
+     @param length
+     @return 
      */
     public static double[] getAvgAndStDev(int[] x, int length) {
         
@@ -617,8 +704,9 @@ public class MiscMath0 {
     /**
      * given an array of points, return the average and standard deviation from
      * the average
-     * @param x
-     * @return 
+     @param x
+     @param length
+     @return 
      */
     public static double[] getAvgAndStDev(long[] x, int length) {
         
@@ -650,8 +738,8 @@ public class MiscMath0 {
      * Q3 = median of x[n/2] through x[n-1] = x[(int)0.75*n];
      * </pre>
      * The IQR is Q3 - Q1;
-     * @param x
-     * @return an array holding Q1, Q2, Q3, min and max
+     @param x
+     @return an array holding Q1, Q2, Q3, min and max
      */
     public static double[] calculateQuartiles(double[] x) {
         
@@ -675,8 +763,8 @@ public class MiscMath0 {
        iqr = q[2]-q[0];
        inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
     </pre>
-     * @param x
-     * @return 
+     @param x
+     @return 
     */
     public static int[] findInliersUsingTukeyFences(double[] x) {
         return findInliersUsingTukeyFences(x, 1.5);
@@ -690,8 +778,8 @@ public class MiscMath0 {
        iqr = q[2]-q[0];
        inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
     </pre>
-     * @param x
-     * @return 
+     @param x
+     @return 
     */
     public static int[] findFarInliersUsingTukeyFences(double[] x) {
         return findInliersUsingTukeyFences(x, 3);
@@ -705,9 +793,9 @@ public class MiscMath0 {
        iqr = q[2]-q[0];
        inliers are in the range [q[0] - k*iqr, q[2] + k*iqr], inclusive.
     </pre>
-     * @param x
-     * @param k
-     * @return 
+     @param x
+     @param k
+     @return 
     */
     public static int[] findInliersUsingTukeyFences(double[] x, double k) {
         // from https://en.m.wikipedia.org/wiki/Outlier
@@ -739,8 +827,8 @@ public class MiscMath0 {
      * use stDev = k*MAD where k is a constant scale factor.  
      * For gaussian k~1.4826.
        Then and outlier is outside the range [median - 3*MAD, median + 3*MAD].
-     * @param x
-     * @return an array holding the median of absolute deviation of x, 
+     @param x
+     @return an array holding the median of absolute deviation of x, 
      * the median, the min, and the max.
      */
     public static double[] calculateMedianOfAbsoluteDeviation(double[] x) {
@@ -766,8 +854,8 @@ public class MiscMath0 {
     
     /**
      * calculate the median and the interquartile range
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     public static double[] calcMedianAndIQR(double[] x) {
         x = Arrays.copyOf(x, x.length);
@@ -782,8 +870,8 @@ public class MiscMath0 {
     /**
      * given an array of points, return the average and standard deviation from
      * the average
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     public static double[] getAvgAndStDev(double[] x) {
         
@@ -804,6 +892,10 @@ public class MiscMath0 {
         return new double[]{avgX, stdDevX};
     }    
 
+    /**
+     *
+     @return
+     */
     public static PairIntArray get20NeighborOffsets() {
         
         PairIntArray r2Offsets = new PairIntArray();
@@ -819,8 +911,8 @@ public class MiscMath0 {
 
      /**
      *
-     * @param a
-     * @return
+     @param a
+     @return
      */
     public static int[] findMinMaxValues(int[][] a) {
         
@@ -845,8 +937,8 @@ public class MiscMath0 {
     /**
      * find the minima and maxima of x and y and return them as
      * int[]{xMin, xMax, yMin, yMax}
-     * @param points
-     * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
+     @param points
+     @return minMaxXY int[]{xMin, xMax, yMin, yMax}
      */
     public static int[] findMinMaxXY(Collection<PairInt> points) {
         
@@ -877,7 +969,9 @@ public class MiscMath0 {
     /**
      * find the minima and maxima of x and y and return them as
      * int[]{xMin, xMax, yMin, yMax}
-     * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
+     @param pixelIdxs
+     @param imgWidth
+     @return minMaxXY int[]{xMin, xMax, yMin, yMax}
      */
     public static int[] findMinMaxXY(TIntSet pixelIdxs, int imgWidth) {
         
@@ -912,8 +1006,8 @@ public class MiscMath0 {
     /**
      * find the minima and maxima of x and y and return them as
      * int[]{xMin, xMax, yMin, yMax}
-     * @param points
-     * @return minMaxXY int[]{xMin, xMax, yMin, yMax}
+     @param points
+     @return minMaxXY int[]{xMin, xMax, yMin, yMax}
      */
     public static int[] findMinMaxXY(PairIntArray points) {
         
@@ -943,8 +1037,8 @@ public class MiscMath0 {
     
     /**
      * test for whether n is a power of 2.
-     * @param n a non-negative number.
-     * @return true if is a power of , else false.
+     @param n a non-negative number.
+     @return true if is a power of , else false.
      */
     public static boolean isAPowerOf2(int n) {
         // bitmask test e.g. 128 & 0x7f = 0
@@ -955,9 +1049,9 @@ public class MiscMath0 {
      * convert integer a to the given base. 
      * java.lang.Integer already has radix toString operations,
      * so this is just here for convenience.
-     * @param a
-     * @param base
-     * @return 
+     @param a
+     @param base
+     @return 
      */
     public static String convertToBase(int a, int base) {
         StringBuilder sb = new StringBuilder();
@@ -973,8 +1067,8 @@ public class MiscMath0 {
      * get fractional part of a.  
      * e.g. for a = 385.55, fractional part = 0.55.
      * for a = -385.55, fractional part = -0.55.
-     * @param a 
-     * @return 
+     @param a 
+     @return 
      */
     public static double getFractionalPart(double a) {
         if (a < 0) {
@@ -986,8 +1080,8 @@ public class MiscMath0 {
     /**
      * determine the number of bits, that is, the msb position + 1.
      * Note that a value of 0 returns a bit length of 1.
-     * @param v
-     * @return 
+     @param v
+     @return 
      */
     public static int numberOfBits(int v) {
         
@@ -1002,8 +1096,8 @@ public class MiscMath0 {
     /**
      * determine the number of bits, that is the msb position + 1.
      * Note that a value of 0 returns a bit length of 1.
-     * @param v
-     * @return 
+     @param v
+     @return 
      */
     public static int numberOfBits(long v) {
         if (v < 0) {
@@ -1022,8 +1116,8 @@ public class MiscMath0 {
      https://en.wikipedia.org/wiki/Hamming_weight
      method popcount64c
      </pre>
-     * @param x the bitstring with the set bits to count
-     * @return the number of bits set in x
+     @param x the bitstring with the set bits to count
+     @return the number of bits set in x
      */
     public static int numberOfSetBits(long x) {
         //put count of each 2 bits into those 2 bits, where the mask is 62 bits of repeated '10's
@@ -1039,8 +1133,9 @@ public class MiscMath0 {
     
     /**
      * 
-     * @param v
-     * @return 
+     @param v
+     @param nBits
+     @return 
      */
     public static int bitReverse(int v, int nBits) {
 
@@ -1075,6 +1170,7 @@ public class MiscMath0 {
     @param endpoint : If true, `stop` is the last sample. 
         Otherwise, it is not included.
         Default is True.
+     @return 
     */
     public static TDoubleArrayList logspace(float start, float stop, int num,
         boolean endpoint) {
@@ -1111,6 +1207,7 @@ public class MiscMath0 {
     @param endpoint : If true, `stop` is the last sample. 
         Otherwise, it is not included.
         Default is True.
+     @return 
     */
     public static TFloatArrayList linspace(
         float start, float stop, int num,
@@ -1136,10 +1233,10 @@ public class MiscMath0 {
     /**
      * calculates the mean of the data per dimension and returns it as a point 
      * in all dimensions.
-     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     @param data nDimensional data points in format [ point_0 in all dimensions,
      *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
-     * @param nDimensions the number of dimensions of a point
-     * @return an array holding the mean per dimension, e.g. point_0_0,
+     @param nDimensions the number of dimensions of a point
+     @return an array holding the mean per dimension, e.g. point_0_0,
      * point_0_1, point_0_2...point_0_{nDimensions-1}]
      */
     public static double[] mean(double[] data, int nDimensions) {
@@ -1164,8 +1261,8 @@ public class MiscMath0 {
     }
     /**
      * calculates the mean of the data
-     * @param data data points
-     * @return the sample mean
+     @param data data points
+     @return the sample mean
      */
     public static double mean(double[] data) {
 
@@ -1182,10 +1279,10 @@ public class MiscMath0 {
     /**
      * calculates the mean per dimension and standard deviation per dimension
      * of the data and returns them in a double array of size [2][nDimensions] 
-     * @param data nDimensional data points in format [ point_0 in all dimensions,
+     @param data nDimensional data points in format [ point_0 in all dimensions,
      *   point_1 in all dimensions, ... point_{n-1} in all dimensions[
-     * @param nDimensions the number of dimensions of a point
-     * @return the standard deviation of the data in each dimension.  return format
+     @param nDimensions the number of dimensions of a point
+     @return the standard deviation of the data in each dimension.  return format
      * is a double array of size [2][nDimensions] 
      */
     public static double[][] standardDeviation(double[] data, int nDimensions) {
@@ -1216,6 +1313,11 @@ public class MiscMath0 {
         return out;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double[] cumulativeSum(double[] a) {
         
         double[] s = Arrays.copyOf(a, a.length);
@@ -1227,6 +1329,11 @@ public class MiscMath0 {
         return s;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static int[] cumulativeSum(int[] a) {
         
         int[] s = Arrays.copyOf(a, a.length);
@@ -1238,6 +1345,11 @@ public class MiscMath0 {
         return s;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double[][] cumulativeSumMatlabPort(double[][] a) {
         if (a.length > 1) {
             return cumulativeSumAlongColumns(a);
@@ -1247,6 +1359,11 @@ public class MiscMath0 {
         throw new IllegalArgumentException("a must have at least one dimension of size > 1");
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double[][] cumulativeSumAlongColumns(double[][] a) {
         
         double[][] s = new double[a.length][a[0].length];
@@ -1263,6 +1380,11 @@ public class MiscMath0 {
         return s;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double[][] cumulativeSumAlongRows(double[][] a) {
         
         double[][] s = new double[a.length][a[0].length];
@@ -1279,6 +1401,11 @@ public class MiscMath0 {
         return s;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static TIntIntMap makeFrequencyMap(int[] a) {
         TIntIntMap f = new TIntIntHashMap();
         int c;
@@ -1299,9 +1426,9 @@ public class MiscMath0 {
      * if the result is larger than Long.MAX_VALUE an exception is thrown.
      *
      * (Aho and Ullman "Foundations of Computer Science")
-     * @param n
-     * @param k
-     * @return
+     @param n
+     @param k
+     @return
      * @throws ArithmeticException thrown when result is out of range of type long
      */
     public static long computeNDivKTimesNMinusK(int n, int k) {
@@ -1331,9 +1458,9 @@ public class MiscMath0 {
      /**
      * compute n!/(n-k)!... needed for large numbers
      *
-     * @param n
-     * @param k
-     * @return
+     @param n
+     @param k
+     @return
      */
     public static long computeNDivNMinusK(int n, int k) {
 
@@ -1350,9 +1477,9 @@ public class MiscMath0 {
     
     /**
      * compute n!/k!(n-k)!
-     * @param n
-     * @param k
-     * @return 
+     @param n
+     @param k
+     @return 
      * @throws ArithmeticException thrown when result is out of range of type long
      */
     public static BigInteger computeNDivKTimesNMinusKBigInteger(int n, int k) {
@@ -1386,8 +1513,8 @@ public class MiscMath0 {
     /**
      * compute n!
      *
-     * @param n
-     * @return
+     @param n
+     @return
      */
     public static long factorial(int n) {
 
@@ -1409,8 +1536,8 @@ public class MiscMath0 {
     /**
      * compute n!
      *
-     * @param n
-     * @return
+     @param n
+     @return
      */
     public static BigInteger factorialBigInteger(int n) {
 
@@ -1433,8 +1560,8 @@ public class MiscMath0 {
      * (MSB is in lowest memory address).
      * these are signed values stored as twos complement and can be input
      * to BigInteger's constructor.
-     * @param value
-     * @return 
+     @param value
+     @return 
      */
     public static byte[] writeToBigEndianBytes(long value) {
     
@@ -1456,6 +1583,11 @@ public class MiscMath0 {
         return bytes;
     }
 
+    /**
+     *
+     @param d
+     @return
+     */
     public static double[] getMinMax(double[] d) {
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
@@ -1470,6 +1602,11 @@ public class MiscMath0 {
         return new double[]{min, max};
     }
     
+    /**
+     *
+     @param d
+     @return
+     */
     public static float[] getMinMax(float[] d) {
         float min = Float.POSITIVE_INFINITY;
         float max = Float.NEGATIVE_INFINITY;
@@ -1495,8 +1632,8 @@ public class MiscMath0 {
      *           where kappa_2 is the 2nd cumulant = variance.
      *          kappa_3 = central moment which is skewness
      * </pre>
-     * @param data
-     * @return
+     @param data
+     @return
      */
     public static double calcSampleSkewness(double[] data) {
         double mean = MiscMath0.mean(data);
@@ -1519,6 +1656,11 @@ public class MiscMath0 {
         return sum3/sum2;
     }
 
+    /**
+     *
+     @param x
+     @return
+     */
     public static Number findMin(Number[] x) {
         if (x == null) {
             return null;
@@ -1534,6 +1676,11 @@ public class MiscMath0 {
         return m;
     }
 
+    /**
+     *
+     @param x
+     @return
+     */
     public static Number findMax(Number[] x) {
         if (x == null) {
             return null;
@@ -1549,6 +1696,11 @@ public class MiscMath0 {
         return m;
     }
 
+    /**
+     *
+     @param v
+     @return
+     */
     public int sign(int v) {
         return v >>> 31;
     }
@@ -1559,8 +1711,8 @@ public class MiscMath0 {
     };
     /**
      * determine the number of bits without branching and using only an int
-     * @param v
-     * @return 
+     @param v
+     @return 
      */
     public static int numberOfBitsWOB(int v) {
         if (v == 0) {
@@ -1587,18 +1739,29 @@ public class MiscMath0 {
    
     /**
      * http://en.wikipedia.org/wiki/Mersenne_prime
-     * @param powerOf2
-     * @return 
+     @param powerOf2
+     @return 
      */
     public static long getMarsennePrime(int powerOf2) {
         return (1L << powerOf2) - 1;
     }
     
+    /**
+     *
+     @param z
+     @return
+     */
     public static double acosh(double z) {
         //https://mathworld.wolfram.com/InverseHyperbolicCosine.html
         return Math.log(z + Math.sqrt(z + 1) * Math.sqrt(z - 1));
     }
 
+    /**
+     *
+     @param x
+     @param y
+     @return
+     */
     public static double areaOfTriangle(double[] x, double[] y) {
         if (x.length != 3 || y.length != 3) {
             throw new IllegalArgumentException("x and y must be lengths 3");
@@ -1616,11 +1779,20 @@ public class MiscMath0 {
         return 0.5 * ((x1 * y2) - (y1 * x2));
     }
     
+    /**
+     *
+     @param z
+     @return
+     */
     public static double asinh(double z) {
         //https://mathworld.wolfram.com/InverseHyperbolicSine.html
         return Math.log(z + Math.sqrt(z*z + 1));
     }
     
+    /**
+     *
+     @param a
+     */
     public static void reverse(int[] a) {
         
         int n = a.length;
@@ -1646,12 +1818,17 @@ public class MiscMath0 {
      * <pre>
      *     Chap 19 of "Statistical Distributions" by Evans et al.
      * </pre>
-     * @return
+     @return
      */
     public static double eulerMascheroniConstant() {
         return 0.5772156649;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static float[] convertDoubleToFloat(double[] a) {
         if (a == null) {
             return null;
@@ -1663,6 +1840,11 @@ public class MiscMath0 {
         return b;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static double[] convertFloatToDouble(float[] a) {
         if (a == null) {
             return null;
@@ -1673,6 +1855,12 @@ public class MiscMath0 {
         }
         return b;
     }
+
+    /**
+     *
+     @param a
+     @return
+     */
     public static double[] convertIntToDouble(int[] a) {
         if (a == null) {
             return null;
@@ -1688,14 +1876,14 @@ public class MiscMath0 {
      * determine whether any 3 points in X are colinear.
      * note that the method has not been edited for large number of points
      * in X yet.
-     * @param X data points in format [2 X nPoints] or [3 X nPoints]
+     @param X data points in format [2 X nPoints] or [3 X nPoints]
      *          where row 0 are the 'x dimension' points,
      *          and row 1 are the 'y dimension' points.
      *          if row 2 is present, it is ignored as it is expected
      *          to be the z-axis of homogenous points (= value 1) and
      *          hence is not used.
-     * @param tol
-     * @return
+     @param tol
+     @return
      */
     public static boolean areColinear(double[][] X, double tol) {
         if (X.length != 3 && X.length != 2) {
@@ -1724,14 +1912,14 @@ public class MiscMath0 {
 
     /**
      * given 3 pairs of points, determine whether they are colinear.
-     * @param tol
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @param x3
-     * @param y3
-     * @return
+     @param tol
+     @param x1
+     @param y1
+     @param x2
+     @param y2
+     @param x3
+     @param y3
+     @return
      */
     public static boolean areColinear(double x1, double y1, double x2, double y2,
                                       double x3, double y3, double tol) {

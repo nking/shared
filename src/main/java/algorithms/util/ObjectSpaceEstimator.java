@@ -115,12 +115,16 @@ public class ObjectSpaceEstimator {
     private final static int[] doubleSz = new int[]{8, 8, 8, 16};
 
     /**
-     * @param nBoolean  the number of boolean primitives
+     @param nBoolean  the number of boolean primitives
      */
     public void setNBooleanFields(int nBoolean) {
         this.nBoolean = nBoolean;
     }
     
+    /**
+     *
+     @return
+     */
     public static long getWordSize() {
         if (is32Bit) {
             return 4;
@@ -129,6 +133,10 @@ public class ObjectSpaceEstimator {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public static long getObjectOverhead() {
         if (is32Bit) {
             return 8;
@@ -137,6 +145,10 @@ public class ObjectSpaceEstimator {
         }
     }
 
+    /**
+     *
+     @return
+     */
     public static long getObjectReferenceSize() {
         int index;
         long overhead;
@@ -151,6 +163,10 @@ public class ObjectSpaceEstimator {
         return refSz[index];
     }
     
+    /**
+     *
+     @return
+     */
     public static long getArrayReferenceSize() {
         int index;
         long overhead;
@@ -165,70 +181,70 @@ public class ObjectSpaceEstimator {
     }
     
     /**
-     * @param nByte  the number of byte primitives
+     @param nByte  the number of byte primitives
      */
     public void setNByteFields(int nByte) {
         this.nByte = nByte;
     }
 
     /**
-     * @param nChar the number of char primitives to set
+     @param nChar the number of char primitives to set
      */
     public void setNCharFields(int nChar) {
         this.nChar = nChar;
     }
 
     /**
-     * @param nShort  the number of short primitives
+     @param nShort  the number of short primitives
      */
     public void setNShortFields(int nShort) {
         this.nShort = nShort;
     }
 
     /**
-     * @param nInt  the number of int primitives
+     @param nInt  the number of int primitives
      */
     public void setNIntFields(int nInt) {
         this.nInt = nInt;
     }
 
     /**
-     * @param nFloat  the number of float primitives
+     @param nFloat  the number of float primitives
      */
     public void setNFloatFields(int nFloat) {
         this.nFloat = nFloat;
     }
 
     /**
-     * @param nObjRefs  the number of object references
+     @param nObjRefs  the number of object references
      */
     public void setNObjRefsFields(int nObjRefs) {
         this.nObjRefs = nObjRefs;
     }
 
     /**
-     * @param nArrayRefs  the number of array references to set
+     @param nArrayRefs  the number of array references to set
      */
     public void setNArrayRefsFields(int nArrayRefs) {
         this.nArrayRefs = nArrayRefs;
     }
 
     /**
-     * @param nLong  the number of long primitives
+     @param nLong  the number of long primitives
      */
     public void setNLongFields(int nLong) {
         this.nLong = nLong;
     }
 
     /**
-     * @param nDouble the number of double primitives
+     @param nDouble the number of double primitives
      */
     public void setNDoubleFields(int nDouble) {
         this.nDouble = nDouble;
     }
 
     /**
-     * @param nReturnAddress the nReturnAddress to set
+     @param nReturnAddress the nReturnAddress to set
      */
     public void setNReturnAddress(int nReturnAddress) {
         this.nReturnAddress = nReturnAddress;
@@ -241,8 +257,8 @@ public class ObjectSpaceEstimator {
      * If only one string estimate is needed, consider using 
      * estimateAStringSize()
      * 
-     * @param numberOfStrings
-     * @param maximumNumberOfLetters 
+     @param numberOfStrings
+     @param maximumNumberOfLetters 
      */
     public void setNStrings(int numberOfStrings, int maximumNumberOfLetters) {
         nStrings = numberOfStrings;
@@ -252,7 +268,7 @@ public class ObjectSpaceEstimator {
     /**
      * A rough estimate of an instance of ArrayList without objects in it.
      * 
-     * @return 
+     @return 
      */
     public static long estimateArrayList() {
         
@@ -332,7 +348,7 @@ public class ObjectSpaceEstimator {
      * a rough estimate of an instance of TLongLongHashMap without objects
      * in it.
      * 
-     * @return 
+     @return 
      */
     public static long estimateTLongLongHashMap() {
         
@@ -362,7 +378,7 @@ public class ObjectSpaceEstimator {
      * a rough estimate of an instance of TLongObjectHashMap without objects
      * in it.
     
-     * @return 
+     @return 
      */
     public static long estimateTLongObjectHashMap() {
         int index;
@@ -446,7 +462,7 @@ public class ObjectSpaceEstimator {
      * Note that the string estimates are the maximum size in memory they could 
      * occupy and do not include consideration for pooling.
      * 
-     * @return total size in bytes for the object placed on the heap.
+     @return total size in bytes for the object placed on the heap.
      */
     public long estimateSizeOnHeap() {
         return estimateSize(true);
@@ -460,7 +476,7 @@ public class ObjectSpaceEstimator {
      * Note that the string estimates will not be in the stack estimate as they
      * are purely heap objects.
      * 
-     * @return total size in bytes for the object places on the stack.
+     @return total size in bytes for the object places on the stack.
      */
     public long estimateSizeOnStack() {
         return estimateSize(false);
@@ -516,6 +532,10 @@ public class ObjectSpaceEstimator {
         return total;
     }
    
+    /**
+     *
+     @return
+     */
     public static long estimateLongSize() {
         
         int idx;
@@ -528,6 +548,10 @@ public class ObjectSpaceEstimator {
         return longSz[idx];
     }
     
+    /**
+     *
+     @return
+     */
     public static long estimateIntSize() {
         
         int idx;
@@ -540,6 +564,11 @@ public class ObjectSpaceEstimator {
         return intSz[idx];
     }
 
+    /**
+     *
+     @param maxNumberOfLetters
+     @return
+     */
     public static long estimateAStringSize(int maxNumberOfLetters) {
         
         // strings are always on the heap

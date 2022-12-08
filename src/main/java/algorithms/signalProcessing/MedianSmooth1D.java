@@ -27,9 +27,9 @@ public class MedianSmooth1D {
      * NOTE: the border points outside of the window retain their 
      * initial values.
      *
-     * @param input
-     * @param window
-     * @return
+     @param input
+     @param window
+     @return
      */
     public float[] calculate(float[] input, int window) {
 
@@ -128,7 +128,7 @@ public class MedianSmooth1D {
          * For best use, append(v) the first size-1 items and thereafter use
          * insertIntoOpenSlot(v).
          *
-         * @param value
+         @param value
          */
         public void append(float value) {
 
@@ -156,7 +156,7 @@ public class MedianSmooth1D {
          * in the list, an IllegalArgumentException will be thrown.
          * runtime is usually O(log_2(N)) + less than O(N), but once per class lifetime
          * the sort may occur here adding O(N*log_2(N)).
-         * @param value
+         @param value
          */
         public void insertIntoOpenSlot(float value) {
 
@@ -228,7 +228,7 @@ public class MedianSmooth1D {
          * NOTE: this could be made O(1) runtime complexity 
          * at the expense
          * of 3 * space complexity.
-         * @param value
+         @param value
          */
         public void remove(float value) {
 
@@ -261,7 +261,7 @@ public class MedianSmooth1D {
          * get median from the internal array.  Note that this will
          * throw an IllegalArgumentException if the list is not full.
          * runtime is O(1)
-         * @return median
+         @return median
          */
          public float getMedian() {
 

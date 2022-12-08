@@ -19,8 +19,8 @@ public class Errors {
     /**
      * make assumption that errors are dominated by shot noise and return sqrt(y[i]).
      *
-     * @param y
-     * @return
+     @param y
+     @return
      */
     public static float[] populateYErrorsBySqrt(float[] y) {
 
@@ -48,8 +48,8 @@ public class Errors {
     /**
      * make assumption that errors are dominated by shot noise and return sqrt(y[i]).
      *
-     * @param y
-     * @return
+     @param y
+     @return
      */
     public static double[] populateYErrorsBySqrt(double[] y) {
 
@@ -74,6 +74,14 @@ public class Errors {
         return dy;
     }
 
+    /**
+     *
+     @param x
+     @param y
+     @param sigma
+     @param mu
+     @return
+     */
     public static float[] calculateYErrorsByGaussian(float[] x, float[] y, float sigma, float mu) {
 
         /*                  1
@@ -117,8 +125,8 @@ public class Errors {
      * finer than half the distance between a point and it's nearest neighbor and
      * returns errors based upon that.
      *
-     * @param x
-     * @return
+     @param x
+     @return
      */
     public static float[] populateXErrorsByPointSeparation(float[] x) {
 

@@ -16,21 +16,42 @@ public class ObjectiveDeltaStopStrategy {
     
     private int curIter = 0;
     
+    /**
+     *
+     @param eps
+     */
     public ObjectiveDeltaStopStrategy(double eps) {
         this.minDelta = eps;
     }
     
+    /**
+     *
+     @param eps
+     @param maxIter
+     */
     public ObjectiveDeltaStopStrategy(double eps, int maxIter) {
         this.minDelta = eps;
         this.maxIter = maxIter;
     }
     
+    /**
+     *
+     @return
+     */
     public ObjectiveDeltaStopStrategy beVerbose() {
         this.verbose = true;
         return this;
     }
     
     //x is coefficients for polynomial function, f_value, g
+
+    /**
+     *
+     @param x
+     @param fValue
+     @param g
+     @return
+     */
     public boolean shouldContinueSearch(double[] x, double fValue,
         double[] g) {
 

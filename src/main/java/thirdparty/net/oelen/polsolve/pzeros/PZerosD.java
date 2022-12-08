@@ -65,6 +65,17 @@ strictfp class PZerosD {
     *     AGAIN : this variable is .true. if the computed value p(z) is     *
     *             reliable, i.e., (3) is not satisfied in Z. AGAIN is       *
     *             .false., otherwise.                                       *
+     @param n
+     @param poly
+     @param outIndex
+     @param apoly
+     @param z
+     @param apolyr
+     @param small
+     @param radius
+     @param eps
+     @param again
+     @return 
     *************************************************************************/
     // Version for a polynomial with complex coefficients.
     // All complex arithmetic is broken down in real arithmetic.
@@ -385,6 +396,10 @@ strictfp class PZerosD {
     *************************************************************************
     * Output variable:                                                      *
     *     ABCORR: Aberth's correction (compare (1))                         *
+     @param n
+     @param j
+     @param root
+     @return 
     *************************************************************************/
     
     /* The pseudocode below is left here for documentation purposes, the real
@@ -469,6 +484,12 @@ strictfp class PZerosD {
     * 0 and having suitable radii. The computation of the number of circles *
     * and of the corresponding radii is performed by computing the upper    *
     * convex hull of the set (i,log(A(i))), i=1,...,n+1.                    *
+     @param n
+     @param big
+     @param y
+     @param radius
+     @param a
+     @return 
     *************************************************************************/
     
     private static int start(int n, double[] a, Complex[] y, double[] radius, double big) {
@@ -552,6 +573,10 @@ strictfp class PZerosD {
     *************************************************************************
     *   SORT  the vector X, according to nonincreasing real parts,          *
     *   the same permutation is applied to vectors Y and E.                 *
+     @param n
+     @param x
+     @param e
+     @param y
     *************************************************************************/
     
     private static void sort(int n, Complex[] x, double[] y, boolean[] e) {
@@ -702,6 +727,20 @@ strictfp class PZerosD {
     *           condition                                                   *
     *************************************************************************
     ******         WARNING:   2 is the output unit                    *******
+     @param n
+     @param poly
+     @param root
+     @param big
+     @param eps
+     @param nitmax
+     @param radius
+     @param iter
+     @param apoly
+     @param err
+     @param needSort
+     @param init
+     @param apolyr
+     @return 
     *************************************************************************/
     // Version for polynomial with real coefficients.
     static int polzeros(int n, double[] poly, double eps, double big,

@@ -62,8 +62,9 @@ public class DynamicTimeWarpingBarycenterAveraging {
      * Performs the DBA averaging by first finding the median over a sample,
      * then doing n iterations of the update.
      *
-     * @param sequences set of sequences to average
-     * @param nIterations the number of iterations to run it for (default 15)
+     @param sequences set of sequences to average
+     @param nIterations the number of iterations to run it for (default 15)
+     @return 
      */
     public static double[] performDBA(double[][] sequences, int nIterations) {
 
@@ -94,7 +95,8 @@ public class DynamicTimeWarpingBarycenterAveraging {
      * Performs the DBA averaging by first finding the median over a sample,
      * then doing n iterations of the update
      *
-     * @param sequences set of sequences to average
+     @param sequences set of sequences to average
+     @return 
      */
     public static double[] performDBA(double[][] sequences) {
         return performDBA(sequences, 15);
@@ -102,9 +104,9 @@ public class DynamicTimeWarpingBarycenterAveraging {
 
     /**
      * 
-     * @param sequences input array of rows of sequences
-     * @param mat output array to hold cost matrices
-     * @return 
+     @param sequences input array of rows of sequences
+     @param mat output array to hold cost matrices
+     @return 
      */
     private static int approximateMedoidIndex(double[][] sequences, double[][] mat) {
         /*
@@ -151,10 +153,10 @@ public class DynamicTimeWarpingBarycenterAveraging {
 
     /**
      * calculate dynamic time warping similarity measure.
-     * @param S
-     * @param T
-     * @param costMatrix
-     * @return 
+     @param S
+     @param T
+     @param costMatrix
+     @return 
      */
     public static double DTW(double[] S, double[] T, double[][] costMatrix) {
         int i, j;

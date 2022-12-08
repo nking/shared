@@ -21,9 +21,9 @@ public class ROC {
 
        Runtime is O(n*log_2(n)).
        
-     * @param fScores
-     * @param labels
-     * @return 
+     @param fScores
+     @param labels
+     @return 
      */
     public static ROCResults calcAUCAndPoints(double[] fScores, boolean[] labels) {
         
@@ -93,6 +93,11 @@ public class ROC {
         “An introduction to ROC analysis” by Fawcett, 2006, 
      Pattern Recognition Letters 27, 61–874
        https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf
+     @param x1
+     @param x2
+     @param y1
+     @param y2
+     @return 
     */
     //public static double multiClassAUCHandTill2001() {
         /*
@@ -139,6 +144,9 @@ public class ROC {
         return npc;
     }
     
+    /**
+     *
+     */
     public static class ROCResults {
         double[] sortedFScores;
         int[] indexes;

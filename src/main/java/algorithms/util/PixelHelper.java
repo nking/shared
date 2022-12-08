@@ -14,20 +14,45 @@ import java.util.HashSet;
  */
 public class PixelHelper {
     
+    /**
+     *
+     @param p
+     @param width
+     @return
+     */
     public long toPixelIndex(PairInt p, int width) {
         return ((long)width * p.getY()) + p.getX();
     }
     
+    /**
+     *
+     @param x
+     @param y
+     @param width
+     @return
+     */
     public long toPixelIndex(int x, int y, int width) {
         return ((long)width * y) + x;
     }
     
+    /**
+     *
+     @param pixIdx
+     @param width
+     @param outputXY
+     */
     public void toPixelCoords(long pixIdx, int width, 
         int[] outputXY) {
         outputXY[1] = (int)(pixIdx/width);
         outputXY[0] = (int)(pixIdx - (outputXY[1] * width));
     }
 
+    /**
+     *
+     @param points
+     @param width
+     @return
+     */
     public TLongSet convert(Set<PairInt> points, int width) {
         TLongSet set = new TLongHashSet();
         for (PairInt p : points) {
@@ -37,6 +62,12 @@ public class PixelHelper {
         return set;
     }
 
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @return
+     */
     @SuppressWarnings({"unchecked"})
     public Set<PairInt> convert(TIntSet pixIdxs, int width) {
         HashSet<PairInt> set = new HashSet<PairInt>();
@@ -50,6 +81,12 @@ public class PixelHelper {
         return set;
     }
     
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @return
+     */
     @SuppressWarnings({"unchecked"})
     public Set<PairInt> convert(TLongSet pixIdxs, int width) {
         HashSet<PairInt> set = new HashSet<PairInt>();

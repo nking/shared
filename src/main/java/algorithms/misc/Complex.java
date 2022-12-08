@@ -43,6 +43,12 @@ public class Complex {
     private final double im;   // the imaginary part
 
     // create a new object with the given real and imaginary parts
+
+    /**
+     *
+     @param real
+     @param imag
+     */
     public Complex(double real, double imag) {
         re = real;
         im = imag;
@@ -57,10 +63,26 @@ public class Complex {
     }
 
     // return abs/modulus/magnitude and angle/phase/argument
+
+    /**
+     *
+     @return
+     */
     public double abs()   { return Math.hypot(re, im); }  // Math.sqrt(re*re + im*im)
+
+    /**
+     *
+     @return
+     */
     public double phase() { return Math.atan2(im, re); }  // between -pi and pi
 
     // return a new Complex object whose value is (this + b)
+
+    /**
+     *
+     @param b
+     @return
+     */
     public Complex plus(Complex b) {
         Complex a = this;             // invoking object
         double real = a.re + b.re;
@@ -69,6 +91,12 @@ public class Complex {
     }
     
     // return a new Complex object whose value is (this + b)
+
+    /**
+     *
+     @param b
+     @return
+     */
     public Complex plus(double b) {
         Complex a = this;             // invoking object
         double real = a.re + b;
@@ -77,6 +105,12 @@ public class Complex {
     }
 
     // return a new Complex object whose value is (this - b)
+
+    /**
+     *
+     @param b
+     @return
+     */
     public Complex minus(Complex b) {
         Complex a = this;
         double real = a.re - b.re;
@@ -84,11 +118,21 @@ public class Complex {
         return new Complex(real, imag);
     }
     
+    /**
+     *
+     @return
+     */
     public Complex copy() {
         return new Complex(this.re, this.im);
     }
 
     // return a new Complex object whose value is (this * b)
+
+    /**
+     *
+     @param b
+     @return
+     */
     public Complex times(Complex b) {
         Complex a = this;
         double real = a.re * b.re - a.im * b.im;
@@ -98,50 +142,109 @@ public class Complex {
 
     // scalar multiplication
     // return a new object whose value is (this * alpha)
+
+    /**
+     *
+     @param alpha
+     @return
+     */
     public Complex times(double alpha) {
         return new Complex(alpha * re, alpha * im);
     }
 
     // return a new Complex object whose value is the conjugate of this
+
+    /**
+     *
+     @return
+     */
     public Complex conjugate() {  return new Complex(re, -im); }
 
     // return a new Complex object whose value is the reciprocal of this
+
+    /**
+     *
+     @return
+     */
     public Complex reciprocal() {
         double scale = re*re + im*im;
         return new Complex(re / scale, -im / scale);
     }
 
     // return the real or imaginary part
+
+    /**
+     *
+     @return
+     */
     public double re() { return re; }
+
+    /**
+     *
+     @return
+     */
     public double im() { return im; }
 
     // return a / b
+
+    /**
+     *
+     @param b
+     @return
+     */
     public Complex divided(Complex b) {
         Complex a = this;
         return a.times(b.reciprocal());
     }
 
     // return a new Complex object whose value is the complex exponential of this
+
+    /**
+     *
+     @return
+     */
     public Complex exp() {
         return new Complex(Math.exp(re) * Math.cos(im), Math.exp(re) * Math.sin(im));
     }
 
     // return a new Complex object whose value is the complex sine of this
+
+    /**
+     *
+     @return
+     */
     public Complex sin() {
         return new Complex(Math.sin(re) * Math.cosh(im), Math.cos(re) * Math.sinh(im));
     }
 
     // return a new Complex object whose value is the complex cosine of this
+
+    /**
+     *
+     @return
+     */
     public Complex cos() {
         return new Complex(Math.cos(re) * Math.cosh(im), -Math.sin(re) * Math.sinh(im));
     }
 
     // return a new Complex object whose value is the complex tangent of this
+
+    /**
+     *
+     @return
+     */
     public Complex tan() {
         return sin().divided(cos());
     }
     
     // a static version of plus
+
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     public static Complex plus(Complex a, Complex b) {
         double real = a.re + b.re;
         double imag = a.im + b.im;
@@ -153,8 +256,8 @@ public class Complex {
      * get the (1/n) power of this instance
      * from Boas "mathematical methods in the physical sciences"
        chap 2, section 13
-     * @param n the number to take the (1/n) power of this instance
-     * @return 
+     @param n the number to take the (1/n) power of this instance
+     @return 
      */
     public Complex nthRoot(double n) {
         // r^(1/n) * (cos(theta/n) + i*sin(theta/n))
@@ -167,7 +270,7 @@ public class Complex {
      * get the natural log of this instance
      * from Boas "mathematical methods in the physical sciences"
        chap 2, section 13
-     * @return 
+     @return 
      */
     public Complex naturalLog() {
         double r = abs();
@@ -179,8 +282,8 @@ public class Complex {
      * get this instance raised to the power b
      * from Boas "mathematical methods in the physical sciences"
        chap 2, section 13
-     * @param b the power to apply to this instance
-     * @return 
+     @param b the power to apply to this instance
+     @return 
      */
     public Complex power(Complex b) {
         // a^b = e^(b*ln(a))

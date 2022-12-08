@@ -21,6 +21,9 @@ public class FFT {
     
     private boolean performNormalization = true;
     
+    /**
+     *
+     */
     public void setToNotNormalize() {
         performNormalization = false;
     }
@@ -30,6 +33,8 @@ public class FFT {
      * runtime complexity is O(N*log(N)).
      * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode)
      * ability added
+     @param x
+     @return 
      */ 
     public Complex[] fft(Complex[] x) {
         
@@ -41,10 +46,10 @@ public class FFT {
      * ability added.  Note that the length of x must be a power of 2.
      * runtime complexity is O(N*log(N)).
      * 
-     * @param x
-     * @param forward run the transform in forward if true, else perform inverse 
+     @param x
+     @param forward run the transform in forward if true, else perform inverse 
      * transform.
-     * @return 
+     @return 
      */
     protected Complex[] fft(Complex[] x, boolean forward) {
        
@@ -136,6 +141,8 @@ public class FFT {
      * compute the inverse FFT of x[], assuming its length is a power of 2
      * runtime complexity is O(N).
      * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode for forward transform)
+     @param x
+     @return 
      */
     public Complex[] ifft(Complex[] x) {
         
@@ -143,6 +150,11 @@ public class FFT {
         
     }
 
+    /**
+     *
+     @param x
+     @return
+     */
     protected double[] bitReverseCopy(double[] x) {
         
         int n = x.length;
@@ -161,6 +173,11 @@ public class FFT {
         return r;
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     protected double[] bitReverseCopy(int[] x) {
         
         int n = x.length;
@@ -179,6 +196,11 @@ public class FFT {
         return r;
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     protected Complex[] bitReverseCopy(Complex[] x) {
         
         int n = x.length;
@@ -203,6 +225,8 @@ public class FFT {
      * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode for forward transform).
      * Note that the result cannot be inverted because only the real portion is 
      * returned and inverse FFT needs the real and complex components.
+     @param x
+     @return 
      */
     public double[] fft(int[] x) {
 
@@ -231,6 +255,8 @@ public class FFT {
      * (adapted from  Cormen, Leiserson, Rivest, and Stein pseudocode for forward transform).
      * Note that the result cannot be inverted because only the real portion is
      * returned and inverse FFT needs the real and complex components.
+     @param x
+     @return 
      */
     public double[] fft(double[] x) {
 
@@ -255,6 +281,8 @@ public class FFT {
 
     /**
      * the main body of FFT
+     @param bitReversedX
+     @return 
      */
     double[] _fft_body(double[] bitReversedX) {
 

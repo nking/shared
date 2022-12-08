@@ -17,10 +17,10 @@ public class Frequency {
      * 
      * runtime complexity is O(N*log_2(N))
      * 
-     * @param input
-     * @param outputValues
-     * @param outputCounts
-     * @param excludeZeros 
+     @param input
+     @param outputValues
+     @param outputCounts
+     @param excludeZeros 
      */
     public void calcFrequency(int[][] input, TIntList outputValues,
         TIntList outputCounts, boolean excludeZeros) {

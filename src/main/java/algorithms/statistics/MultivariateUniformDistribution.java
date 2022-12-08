@@ -155,9 +155,9 @@ public class MultivariateUniformDistribution {
           and the interior of the circle (a disk) is a 2-ball.
      </pre>
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @param rand
-     * @return vector p of size d defined as uniform points on a space S^d
+     @param d number of dimensions.
+     @param rand
+     @return vector p of size d defined as uniform points on a space S^d
      * by a stochastic process in which all p_i ∈ S have equal probability
      * P_i = c to be generated.
      */
@@ -192,8 +192,8 @@ public class MultivariateUniformDistribution {
           and the interior of the circle (a disk) is a 2-ball.
      </pre>
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @return vector of size d
+     @param d number of dimensions.
+     @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
     public static double[] generateOnUnitStandardNSphere(int d) 
@@ -230,8 +230,9 @@ public class MultivariateUniformDistribution {
           and the interior of the circle (a disk) is a 2-ball.
      </pre>
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @return vector of size d
+     @param d number of dimensions.
+     @param rand
+     @return vector of size d
      */
     public static double[] generateInUnitStandardNBall(int d, SecureRandom rand) {
         
@@ -261,8 +262,8 @@ public class MultivariateUniformDistribution {
           and the interior of the circle (a disk) is a 2-ball.
      </pre>
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @return vector of size d
+     @param d number of dimensions.
+     @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
     public static double[] generateInUnitStandardNBall(int d) 
@@ -303,13 +304,13 @@ public class MultivariateUniformDistribution {
           and the interior of the circle (a disk) is a 2-ball.
      </pre>
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @param rand
-     * @param onSurface when true the method generates points on the 
+     @param d number of dimensions.
+     @param rand
+     @param onSurface when true the method generates points on the 
      * unit hyper-sphere that and assumes that d has already been incremented to d+1,
      * else when false the method generates points within the unit hyper-sphere
      * that is within the d-ball.
-     * @return vector of length d normalized by squart root of sum of squares.
+     @return vector of length d normalized by squart root of sum of squares.
      */
     public static double[] _generateUnitStandardNSphere(int d, SecureRandom rand, boolean onSurface) 
         {
@@ -496,11 +497,11 @@ These are details from Nengo issue above and source code below:
      * used for high order dimensions because the percentage of points rejected
      * for being larger than a distance of '1' from the origin becomes larger
      * and that increases the number of iterations.
-     * @param d number of dimensions of the n-sphere or n-ball
-     * @param n number of points to generate (where 1 point has d-dimension real number components)
-     * @param rand
-     * @param onSurface
-     * @return an array of length n, of d-dimension vectors of points randomly
+     @param d number of dimensions of the n-sphere or n-ball
+     @param n number of points to generate (where 1 point has d-dimension real number components)
+     @param rand
+     @param onSurface
+     @return an array of length n, of d-dimension vectors of points randomly
      * generated on a uniform n-sphere if onSurface=true, else uniformly randomly 
      * generated points within an n-ball.
      */
@@ -540,6 +541,11 @@ These are details from Nengo issue above and source code below:
         return s;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double distSquaredFromOrigin(double[] a) {
         double sum = 0;
         for (double b : a) {

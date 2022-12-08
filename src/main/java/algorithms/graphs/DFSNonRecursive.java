@@ -68,12 +68,15 @@ public class DFSNonRecursive {
 
     private int time;
 
+    /**
+     *
+     */
     public DFSNonRecursive() {
         
     }
 
     /**
-     * @param directedEdges  adjacency matrix with connected i to j indicated
+     @param directedEdges  adjacency matrix with connected i to j indicated
      * by the index and each node in the linked list, respectively.
      * Note that the key of each node is expected to be the same as it's index
      * in the adjacency matrix.
@@ -243,7 +246,7 @@ public class DFSNonRecursive {
     
     /**
      * get predecessor indexes
-     * @return get predecessor indexes
+     @return get predecessor indexes
      */
     public int[] getPredecessorIndexes() {
         if (predecessor == null) {
@@ -254,7 +257,7 @@ public class DFSNonRecursive {
     
     /**
      * return the indexes in order of the starts of their traversals
-     * @return 
+     @return 
      */
     public int[] getOrderedBeginIndexes() {
         if (td == null) {
@@ -282,7 +285,7 @@ public class DFSNonRecursive {
     
     /**
      * return the indexes in order of the ends of their traversal
-     * @return 
+     @return 
      */
     public int[] getOrderedEndIndexes() {
         if (tf == null) {
@@ -291,6 +294,10 @@ public class DFSNonRecursive {
         return sortForIndexes(tf);
     }
     
+    /**
+     *
+     @return
+     */
     public int[] getTd() {
         if (td == null) {
             return null;
@@ -298,6 +305,10 @@ public class DFSNonRecursive {
         return td;
     }
 
+    /**
+     *
+     @return
+     */
     public int[] getTf() {
         if (tf == null) {
             return null;

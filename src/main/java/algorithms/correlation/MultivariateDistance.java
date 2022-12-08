@@ -44,12 +44,13 @@ public class MultivariateDistance {
      "Some computationally efficient methods in statistics and their 
      applications in parameter estimation and hypotheses testing"
      https://smartech.gatech.edu/bitstream/handle/1853/60120/HUANG-DISSERTATION-2017.pdf
-     * @param x multivariate variable where the columns are the variates and 
+     @param x multivariate variable where the columns are the variates and 
      * rows are the samples.
-     * @param y multivariate variable where columns are the variates and 
+     @param y multivariate variable where columns are the variates and 
      * rows are the samples.
-     * @param k the number of random projections
-     * @return  distance covariance
+     @param k the number of random projections
+     @return  distance covariance
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double efficientDCov(double[][] x, double[][] y, int k) throws NoSuchAlgorithmException {
         
@@ -82,13 +83,13 @@ public class MultivariateDistance {
      "Some computationally efficient methods in statistics and their 
      applications in parameter estimation and hypotheses testing"
      https://smartech.gatech.edu/bitstream/handle/1853/60120/HUANG-DISSERTATION-2017.pdf
-     * @param x multivariate variable where the columns are the variates and 
+     @param x multivariate variable where the columns are the variates and 
      * rows are the samples.
-     * @param y multivariate variable where columns are the variates and 
+     @param y multivariate variable where columns are the variates and 
      * rows are the samples.
-     * @param k the number of random projections
-     * @param rand instance of secure random number generator
-     * @return distance covariance
+     @param k the number of random projections
+     @param rand instance of secure random number generator
+     @return distance covariance
      */
     public static double efficientDCov(double[][] x, double[][] y, int k,
         SecureRandom rand) {
@@ -147,17 +148,17 @@ public class MultivariateDistance {
      * Volume 135, July 2019, Pages 15-24.
      *
      For speculation on comparing distance correlation values to the linear Pearson correlation,
-     see Edelmann, Dominic & Móri, Tamás & Szekely, Gabor. (2021).
+     see Edelmann, Dominic and Móri, Tamás and Szekely, Gabor. (2021).
      On relationships between the Pearson and the distance correlation coefficients.
-     Statistics & Probability Letters. 169. 108960. 10.1016/j.spl.2020.108960.
+     Statistics and Probability Letters. 169. 108960. 10.1016/j.spl.2020.108960.
 
      TODO: consider making a faster version of this correlation.
      </pre>
-     * @param x1 dataset where each column is x1.length samples of a variable.
+     @param x1 dataset where each column is x1.length samples of a variable.
      *           note that x1.length must be equal to x2.length.
-     * @param x2 dataset where each column is x2.length samples of a variable.
+     @param x2 dataset where each column is x2.length samples of a variable.
      *      note that x2.length must be equal to x1.length.
-     * @return correlation matrix between variables in x1 and x2
+     @return correlation matrix between variables in x1 and x2
      * correlation values furthest from 0 are the most strongly correlated if any.
      */
     public static double[][] fastDCor(double[][] x1, double[][] x2) {
@@ -191,14 +192,14 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x  x.length must be >= 20
-     * @param y  x.length must be >= 20
-     * @param k the number of random projections for each test statistic.
-     * @param nIterations the number of iterations for statistic calculations
+     @param x  x.length must be .geq. 20
+     @param y  x.length must be .geq. 20
+     @param k the number of random projections for each test statistic.
+     @param nIterations the number of iterations for statistic calculations
      * (note that each iteration constructs a new permutation of y, so this
      * step has runtime complexity O(y.length * y[0].length)
-     * @param alpha significance level for testing null hypothesis
-     * @return true if x and y are independent of one another
+     @param alpha significance level for testing null hypothesis
+     @return true if x and y are independent of one another
      * @throws NoSuchAlgorithmException thrown if a random algorithm cannot be found
      */
     public static boolean areIndependent1(double[][] x, double[][] y, 
@@ -224,15 +225,15 @@ public class MultivariateDistance {
      <pre>
      runtime complexity is 
      </pre>
-     * @param x  x.length must be >= 20
-     * @param y  x.length must be >= 20
-     * @param k the number of random projections for each test statistic.
-     * @param nIterations the number of iterations for statistic calculations
+     @param x  x.length must be .geq. 20
+     @param y  x.length must be .geq. 20
+     @param k the number of random projections for each test statistic.
+     @param nIterations the number of iterations for statistic calculations
      * (note that each iteration constructs a new permutation of y, so this
      * step has runtime complexity O(y.length * y[0].length)
-     * @param alpha significance level for testing null hypothesis
-     * @param rand random number generator
-     * @return if true, x and y are consistent with independent, else if false
+     @param alpha significance level for testing null hypothesis
+     @param rand random number generator
+     @return if true, x and y are consistent with independent, else if false
      * x and y are not consistent with independent.
      */
     public static boolean areIndependent1(double[][] x, double[][] y, 
@@ -298,11 +299,11 @@ public class MultivariateDistance {
        "Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA", etc.
      </pre>
-     * @param x  x.length must be >= 20
-     * @param y  x.length must be >= 20
-     * @param k the number of random projections for each test statistic.
-     * @param alpha significance level for testing null hypothesis
-     * @return true if x and y are independent of one another
+     @param x  x.length must be .geq. 20
+     @param y  x.length must be .geq. 20
+     @param k the number of random projections for each test statistic.
+     @param alpha significance level for testing null hypothesis
+     @return true if x and y are independent of one another
      * @throws NoSuchAlgorithmException thrown if no random algorithm can be found
      */
     public static boolean areIndependent2(double[][] x, double[][] y, 
@@ -335,12 +336,12 @@ public class MultivariateDistance {
        "Learning Eigenfunctions Links Spectral Embedding
         and Kernel PCA", etc.
      </pre>
-     * @param x  x.length must be >= 20
-     * @param y  x.length must be >= 20
-     * @param k the number of random projections for each test statistic.
-     * @param alpha significance level for testing null hypothesis
-     * @param rand random number generator
-     * @return true if x and y are independent of one another
+     @param x  x.length must be .geq. 20
+     @param y  x.length must be .geq. 20
+     @param k the number of random projections for each test statistic.
+     @param alpha significance level for testing null hypothesis
+     @param rand random number generator
+     @return true if x and y are independent of one another
      */
     public static boolean areIndependent2(double[][] x, double[][] y, 
         int k, double alpha, SecureRandom rand) {
@@ -478,6 +479,11 @@ public class MultivariateDistance {
         return true;        
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double _calcC(double a) {
         double b = (a + 1.)/2.;
         double numer = Math.pow(Math.PI, b);
@@ -485,6 +491,11 @@ public class MultivariateDistance {
         return numer/denom;
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double _calcCapitalC(double a) {
         double b1 = (a + 1.)/2.;
         double b2 = a/2.;

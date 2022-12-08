@@ -8,8 +8,15 @@ import algorithms.DoublyLinkedList.DoublyLinkedNode;
  */
 public class VertexNode extends DoublyLinkedNode {
     
+    /**
+     *
+     */
     public final int vertex;
     
+    /**
+     *
+     @param v
+     */
     public VertexNode(int v) {
         vertex = v;
     }

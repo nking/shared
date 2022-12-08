@@ -19,6 +19,19 @@ and then moved to this project
 
 */
 
+/**
+ *
+ * @author nichole
+ @param <T>
+ */
+
+
 public interface Integerizer<T> {
-	public int intValue(T x);
+
+    /**
+     *
+     @param x
+     @return
+     */
+    public int intValue(T x);
 }

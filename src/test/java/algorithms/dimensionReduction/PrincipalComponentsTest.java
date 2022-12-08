@@ -381,7 +381,7 @@ public class PrincipalComponentsTest extends TestCase {
      * array has n=329 and dimensions=9.
      * the dimensions are 
      *     climate housing health crime trans educate arts recreate econ
-     * @return
+     @return
      * @throws IOException 
      */
     private double[][] readPlaces() throws IOException {

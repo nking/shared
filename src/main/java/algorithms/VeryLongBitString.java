@@ -25,17 +25,34 @@ public final class VeryLongBitString {
     
     private final long[] bitstring;
     
+    /**
+     *
+     */
     protected final long nBits;
     
+    /**
+     *
+     */
     protected static final long ITEM_BIT_LENGTH = 64L;
     
     // the length of an array in java is limited to Integer.MAX_VALUE
+
+    /**
+     *
+     */
     protected static final long N_MAX_BITS = Integer.MAX_VALUE * ITEM_BIT_LENGTH;
     
+    /**
+     *
+     */
     protected final long capacityBits;
     
     private long nSetBits = 0;
    
+    /**
+     *
+     @param nBits
+     */
     public VeryLongBitString(long nBits) {
         
         if (nBits > N_MAX_BITS) {
@@ -51,6 +68,12 @@ public final class VeryLongBitString {
         this.nBits = nBits;
     }
     
+    /**
+     *
+     @param bitstrings
+     @param nBits
+     @param nSetBits
+     */
     protected VeryLongBitString(long[] bitstrings, long nBits, long 
         nSetBits) {
         
@@ -67,10 +90,18 @@ public final class VeryLongBitString {
         this.nSetBits = nSetBits;
     }
     
+    /**
+     *
+     @return
+     */
     public long getCapacity() {
         return capacityBits;
     }
     
+    /**
+     *
+     @param nthBit
+     */
     public void setBit(long nthBit) {
         
         int idx = getRowNumber(nthBit);
@@ -90,6 +121,10 @@ public final class VeryLongBitString {
         }
     }
     
+    /**
+     *
+     @param nthBit
+     */
     public void clearBit(long nthBit) {
         
         int idx = getRowNumber(nthBit);
@@ -106,6 +141,10 @@ public final class VeryLongBitString {
         }
     }
     
+    /**
+     *
+     @param nthBit
+     */
     public void toggleBit(long nthBit) {
         
         int idx = getRowNumber(nthBit);
@@ -131,14 +170,27 @@ public final class VeryLongBitString {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public long getNSetBits() {
         return nSetBits;
     }
     
+    /**
+     *
+     @return
+     */
     public long getInstantiatedBitSize() {
         return nBits;
     }
     
+    /**
+     *
+     @param nthBit
+     @return
+     */
     public boolean isSet(long nthBit) {
         
         int idx = getRowNumber(nthBit);
@@ -148,6 +200,11 @@ public final class VeryLongBitString {
         return ((bitstring[idx] & (1L << bitIdx)) != 0);
     }
     
+    /**
+     *
+     @param nthBit
+     @return
+     */
     public boolean isNotSet(long nthBit) {
         
         int idx = getRowNumber(nthBit);
@@ -157,6 +214,11 @@ public final class VeryLongBitString {
         return ((bitstring[idx] & (1L << bitIdx)) == 0);
     }
          
+    /**
+     *
+     @param n
+     @return
+     */
     protected int getRowNumber(long n) {
         
         int nthElement = (int)(n/ITEM_BIT_LENGTH);
@@ -170,9 +232,9 @@ public final class VeryLongBitString {
      * result is out of bounds, -1 is returned and the invoker should
      * handle that.
      * 
-     * @param nthBit bit  index
-     * @param arrayIdx array index
-     * @return  item stored in nthBit bit index of item stored at arrayIdx of internal array
+     @param nthBit bit  index
+     @param arrayIdx array index
+     @return  item stored in nthBit bit index of item stored at arrayIdx of internal array
      */
     int getBitIdx(long nthBit, int arrayIdx) {
         
@@ -185,6 +247,9 @@ public final class VeryLongBitString {
         return bitIdx;
     }
     
+    /**
+     *
+     */
     public void clearAllBits() {
         
         Arrays.fill(bitstring, 0);
@@ -192,6 +257,10 @@ public final class VeryLongBitString {
         nSetBits = 0;
     }
     
+    /**
+     *
+     @return
+     */
     public VeryLongBitString copy() {
         
         VeryLongBitString c = new VeryLongBitString(bitstring, 
@@ -200,6 +269,10 @@ public final class VeryLongBitString {
         return c;
     }
     
+    /**
+     *
+     @param other
+     */
     public void resetAllTo(VeryLongBitString other) {
         if (other.nBits != nBits) {
             throw new IllegalArgumentException("nBits must be the same in both to use this method");
@@ -211,7 +284,7 @@ public final class VeryLongBitString {
     
     /**
      * get the '01...' bitstring representation of this object
-     * @return binary bitstring representation of this object
+     @return binary bitstring representation of this object
      */
     @Override
     public String toString() {
@@ -222,6 +295,9 @@ public final class VeryLongBitString {
         return sb.toString();
     }
     
+    /**
+     *
+     */
     protected void recountNSetBits() {
         nSetBits = 0;
         for (int i = 0; i < bitstring.length; ++i) {
@@ -231,7 +307,7 @@ public final class VeryLongBitString {
     
     /**
      * get a list of the bit numbers that are set.
-     * @return bit nuber of set bits
+     @return bit nuber of set bits
      */
     public int[] getSetBits() {
         
@@ -292,7 +368,7 @@ public final class VeryLongBitString {
     /**
      * approximate the memory (in Bytes) used by this instance and its member variables, and 
      * return that portion on the stack.
-     * @return memory used in Bytes
+     @return memory used in Bytes
      */
     protected long approximateMemoryUsed_Stack() {
        
@@ -327,7 +403,7 @@ public final class VeryLongBitString {
     /**
      * approximate the memory (in Bytes) used by this instance and its member variables, and 
      * return that portion on the heap.
-     * @return memory used in Bytes
+     @return memory used in Bytes
      */
     protected long approximateMemoryUsed_Heap() {
         
@@ -358,8 +434,8 @@ public final class VeryLongBitString {
     /**
      * perform a bitwise 'AND' on this bitstring and otherBS to find
      * the the intersection of bits in both bitstrings.
-     * @param otherBS other bitstring
-     * @return the result of bitwise and of this bitstring and otherBS bitstring
+     @param otherBS other bitstring
+     @return the result of bitwise and of this bitstring and otherBS bitstring
      */
     public VeryLongBitString and(VeryLongBitString otherBS) {
                 
@@ -393,8 +469,8 @@ public final class VeryLongBitString {
      * return the number of bits different between the bit-string
      * otherBS and this and return that count.
      * Note that otherBS must have the same number of bits.
-     * @param otherBS other bitstring
-     * @return the nuber of bits that are different in bitwise comparison of otherBS with this bitstring
+     @param otherBS other bitstring
+     @return the nuber of bits that are different in bitwise comparison of otherBS with this bitstring
      */
     public long nBitsDifferent(VeryLongBitString otherBS) {
         
@@ -421,8 +497,8 @@ public final class VeryLongBitString {
     /**
      * perform a bitwise 'or' on this bitstring and otherBS to make
      * a union operation.
-     * @param otherBS other bitstring
-     * @return bitwise or of otherBS with this bitstring
+     @param otherBS other bitstring
+     @return bitwise or of otherBS with this bitstring
      */
     public VeryLongBitString or(VeryLongBitString otherBS) {
                 
@@ -455,8 +531,8 @@ public final class VeryLongBitString {
     /**
      * perform a bitwise 'xor' on this bitstring and otherBS.
      * The result is the bits which are different.
-     * @param otherBS other bitstring
-     * @return bitwise xor of otherBS with this bitstring
+     @param otherBS other bitstring
+     @return bitwise xor of otherBS with this bitstring
      */
     public VeryLongBitString xor(VeryLongBitString otherBS) {
                 
@@ -490,8 +566,8 @@ public final class VeryLongBitString {
      * find the bits in this.copy() which are not in otherBS by performing
      * perform a bitwise 'AND' on this bitstring and otherBS to find
      * the intersection bits then clear those bits in the copy of this instance.
-     * @param otherBS other bitstring
-     * @return bitwise difference between otherBS and this bitstring
+     @param otherBS other bitstring
+     @return bitwise difference between otherBS and this bitstring
      */
     public VeryLongBitString difference(VeryLongBitString otherBS) {
                 
@@ -526,9 +602,9 @@ public final class VeryLongBitString {
     /**
      * where bits2 are set in bits1, unset the bits in bits1.
      * This is the bitwise 'subtract' operation A 'bitwise and' ~B.
-     * @param bs1 a bitstring
-     * @param bs2 another bitstring
-     * @return the difference between otherBS and this bitstring
+     @param bs1 a bitstring
+     @param bs2 another bitstring
+     @return the difference between otherBS and this bitstring
      */
     public static VeryLongBitString subtract(VeryLongBitString bs1,
         VeryLongBitString bs2) {
@@ -550,8 +626,8 @@ public final class VeryLongBitString {
 
     /**
      * 
-     * @param nthBit the bit index
-     * @return index for next highest bit set, else -1 if there is none.
+     @param nthBit the bit index
+     @return index for next highest bit set, else -1 if there is none.
      */
     public int nextHighestBitSet(int nthBit) {
         
@@ -597,7 +673,7 @@ public final class VeryLongBitString {
     
     /**
      * returns the index of the lowest bit set ("rightmost), else -1 if no bits are set.
-     * @return the index of the lowest (rightmost) bit set, else -1 if no bits are set.
+     @return the index of the lowest (rightmost) bit set, else -1 if no bits are set.
      */
     public int leastBitSet() {
         
@@ -624,7 +700,7 @@ public final class VeryLongBitString {
     
     /**
      * returns the index of the highest bit set ("leftmost"), else -1 if no bits are set.
-     * @return the index of the highest bit set (leftmost) else -1 if no bits are set.
+     @return the index of the highest bit set (leftmost) else -1 if no bits are set.
      */
     public int highestBitSet() {
         

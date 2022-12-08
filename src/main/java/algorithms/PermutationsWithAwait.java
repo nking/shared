@@ -60,7 +60,7 @@ public final class PermutationsWithAwait {
        by Goetz et al.
        </pre>
        
-     * @param seq input sequence of numbers to permute
+     @param seq input sequence of numbers to permute
      * @throws java.lang.InterruptedException thrown if a thread is interrupted
      */
     public PermutationsWithAwait(int[] seq) throws InterruptedException {
@@ -87,7 +87,7 @@ public final class PermutationsWithAwait {
     
     /**
      * check whether all permutations have been returned in getNext() invocations.
-     * @return true if all permutations have been returned in getNext() invocations,
+     @return true if all permutations have been returned in getNext() invocations,
      * else false if there are more permutations to be returned by the getNext() argument.
      */
     public boolean hasNext() {
@@ -100,9 +100,9 @@ public final class PermutationsWithAwait {
     
     /**
      * get the next permutation of the original set
-     * @param out an output array that will hold the results.  note that out.length
+     @param out an output array that will hold the results.  note that out.length
      * must be the same length as the set used during construction of this object instance.
-     * @return returns true if a value was set into out, otherwise returns false.
+     @return returns true if a value was set into out, otherwise returns false.
      * @throws InterruptedException thrown when the semaphore acquire throws an InterruptedException
      */
     public boolean getNext(int[] out) throws InterruptedException {

@@ -9,6 +9,12 @@ import no.uib.cipr.matrix.DenseMatrix;
  */
 public class FormatArray {
 
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(double[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
@@ -23,6 +29,12 @@ public class FormatArray {
         return sb.toString();
     }
     
+    /**
+     *
+     @param a
+     @param format
+     @return
+     */
     public static String toString(int[] a, String format) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
@@ -37,6 +49,12 @@ public class FormatArray {
         return sb.toString();
     }
     
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(boolean[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
@@ -51,6 +69,12 @@ public class FormatArray {
         return sb.toString();
     }
     
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(double[][] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
@@ -66,6 +90,12 @@ public class FormatArray {
         return sb.toString();
     }
     
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(DenseMatrix a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.numRows(); ++i) {
@@ -81,6 +111,12 @@ public class FormatArray {
         return sb.toString();
     }
     
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(Complex[] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
@@ -99,6 +135,12 @@ public class FormatArray {
         return sb.toString();
     }
 
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(int[][] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {
@@ -114,6 +156,12 @@ public class FormatArray {
         return sb.toString();
     }
     
+    /**
+     *
+     @param a
+     @param decimalFormat
+     @return
+     */
     public static String toString(float[][] a, String decimalFormat) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < a.length; ++i) {

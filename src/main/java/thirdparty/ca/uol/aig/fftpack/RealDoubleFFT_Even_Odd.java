@@ -27,8 +27,16 @@ public class RealDoubleFFT_Even_Odd extends RealDoubleFFT_Mixed
   * (<em>bt</em>) will multiply the input sequence by <em>norm_factor</em>.
 */
      public double norm_factor;
-     protected double wavetable[];
-     protected int ndim;
+
+    /**
+     *
+     */
+    protected double wavetable[];
+
+    /**
+     *
+     */
+    protected int ndim;
 
 /**
   * Construct a wavenumber table with size <em>n</em>.
@@ -36,7 +44,7 @@ public class RealDoubleFFT_Even_Odd extends RealDoubleFFT_Mixed
   * factorization of <em>n</em> together with a tabulation of the trigonometric functions
   * are computed and stored.
   *
-  * @param  n  the size of a real data sequence. When <em>n</em> is a multiplication of small
+  @param  n  the size of a real data sequence. When <em>n</em> is a multiplication of small
   * numbers(4, 2, 3, 5), this FFT transform is very efficient.
 */
      public RealDoubleFFT_Even_Odd(int n)
@@ -54,7 +62,7 @@ public class RealDoubleFFT_Even_Odd extends RealDoubleFFT_Mixed
   * Forward FFT transform of quarter wave data. It computes the coeffients in 
   * cosine series representation with only odd wave numbers.
   *
-  * @param x an array which contains the sequence to be transformed. After FFT,
+  @param x an array which contains the sequence to be transformed. After FFT,
   * <em>x</em> contains the transform coeffients.
 */
      public void ft(double x[])
@@ -66,7 +74,7 @@ public class RealDoubleFFT_Even_Odd extends RealDoubleFFT_Mixed
   * Backward FFT transform of quarter wave data. It is the unnormalized inverse transform
   * of <em>ft</em>.
   *
-  * @param x an array which contains the sequence to be tranformed. After FFT, <em>x</em> contains
+  @param x an array which contains the sequence to be tranformed. After FFT, <em>x</em> contains
   * the transform coeffients.
 */
      public void bt(double x[])

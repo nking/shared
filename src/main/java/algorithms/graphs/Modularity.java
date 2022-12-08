@@ -82,14 +82,14 @@ public class Modularity {
      * are rare.
      * NOTE: communities are disjoint sets for Girvan-Newman 2002 and 2004
      *
-     * @param originalAdjacencyList
-     * @param layer the results of an iteration of the girvan-newman algorithm
+     @param originalAdjacencyList
+     @param layer the results of an iteration of the girvan-newman algorithm
      * followed by use of DisjointForest.connectedComponents to find the disjoint
      * sets of connected nodes.
-     * @param nEdges the number of edges in the original graph.  presumably the code using
+     @param nEdges the number of edges in the original graph.  presumably the code using
      * this method has calculated it once for the original graph already, to pass
      * in to this method over repeated uses.
-     * @return the modularity as defined by girvan and newman 2002 and Newman and Girvan 2004.
+     @return the modularity as defined by girvan and newman 2002 and Newman and Girvan 2004.
      */
     public double girvanNewman2002(Dendogram.DendogramLayer layer, SimpleLinkedListNode[] 
         originalAdjacencyList, double nEdges) {

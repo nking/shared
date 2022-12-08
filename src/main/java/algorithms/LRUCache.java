@@ -8,6 +8,8 @@ import java.util.Map;
  * recently accessed cache".
  * 
  * @author nichole
+ @param <K>
+ @param <V>
  */
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
@@ -17,21 +19,39 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
     
     private final int initialCapacity;
     
+    /**
+     *
+     */
     public LRUCache() {
         super(3, 0.75f, accessOrder);
         this.initialCapacity = 3;
     }
     
+    /**
+     *
+     @param initialCapacity
+     */
     public LRUCache(int initialCapacity) {
         super(initialCapacity, 0.75f, accessOrder);
         this.initialCapacity = initialCapacity;
     }
     
+    /**
+     *
+     @param initialCapacity
+     @param loadFactor
+     */
     public LRUCache(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor, accessOrder);
         this.initialCapacity = initialCapacity;
     }
     
+    /**
+     *
+     @param initialCapacity
+     @param loadFactor
+     @param accessOrder
+     */
     public LRUCache(int initialCapacity, float loadFactor, boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
         if (!accessOrder) {
@@ -40,6 +60,10 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
         this.initialCapacity = initialCapacity;
     }
     
+    /**
+     *
+     @param m
+     */
     public LRUCache(Map<? extends K, ? extends V> m) {
         super(3, 0.75f, accessOrder);
         this.initialCapacity = 3;

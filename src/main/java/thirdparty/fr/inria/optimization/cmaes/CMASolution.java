@@ -14,10 +14,19 @@ public class CMASolution implements ISolutionPoint, java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 6257830429350615236L;
 
-	public CMASolution() {
+    /**
+     *
+     */
+    public CMASolution() {
 	}
 
-	public CMASolution(double[] x, double fitnessValue, long evaluation) {
+    /**
+     *
+     @param x
+     @param fitnessValue
+     @param evaluation
+     */
+    public CMASolution(double[] x, double fitnessValue, long evaluation) {
         // super(); // cave: default values for fields overwrite super()
         this.functionValue = fitnessValue;
         this.x = x.clone(); // deep copy, see http://java.sun.com/docs/books/jls/third_edition/html/arrays.html 10.7
@@ -27,10 +36,20 @@ public class CMASolution implements ISolutionPoint, java.io.Serializable {
 	/* * as I do not know how to inherit clone in a decent way
 	 * and clone even might produce shallow copies
 	 */
+
+    /**
+     *
+     @return
+     */
+
 	public CMASolution deepCopy() {
 		return new CMASolution(x, functionValue, evaluation); 
 	}
 
+    /**
+     *
+     @param x
+     */
     public CMASolution(double[] x) {
 	    this.x = x;
 	}

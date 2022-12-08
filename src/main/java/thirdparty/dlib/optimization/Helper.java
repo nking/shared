@@ -9,6 +9,9 @@ import java.util.Arrays;
  */
 public class Helper {
    
+    /**
+     *
+     */
     public static class FunctionPoly implements IFunction {
 
         /**
@@ -20,6 +23,11 @@ public class Helper {
          */
         final double[] yp;
         
+        /**
+         *
+         @param xData
+         @param yData
+         */
         public FunctionPoly(double[] xData, double[] yData) {
             if (xData.length != yData.length) {
                 throw new IllegalArgumentException(
@@ -31,9 +39,9 @@ public class Helper {
         
         /**
          * 
-         * @param coeffs input and output array holding the polynomial coefficients
+         @param coeffs input and output array holding the polynomial coefficients
          * before and after this function.
-         * @return 
+         @return 
          */
         @Override
         public double f(double[] coeffs) {
@@ -184,10 +192,20 @@ public class Helper {
         private final IFunction f;
         private final double eps;
    
+        /**
+         *
+         @param f
+         */
         public CentralDifferences(IFunction f) {
             this.f = f;
             this.eps = 1.e-7;
         }
+
+        /**
+         *
+         @param f
+         @param eps
+         */
         public CentralDifferences(IFunction f, double eps) {
             this.f = f;
             this.eps = eps;
@@ -208,6 +226,8 @@ public class Helper {
         adapted from dlib optimization.h
         Copyright (C) 2008  Davis E. King (davis@dlib.net)
         License: Boost Software License   See LICENSE.txt for the full license.
+         @param coeffs
+         @return 
         */
         private double[] derivative(double[] coeffs) {
         

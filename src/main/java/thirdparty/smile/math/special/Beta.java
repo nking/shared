@@ -51,6 +51,9 @@ public class Beta {
     /**
      * Beta function, also called the Euler integral of the first kind.
      * The beta function is symmetric, i.e. B(x,y)==B(y,x).
+     @param x
+     @param y
+     @return 
      */
     public static double beta(double x, double y) {
         return exp(lgamma(x) + lgamma(y) - lgamma(x + y));
@@ -59,6 +62,10 @@ public class Beta {
     /**
      * Regularized Incomplete Beta function.
      * Continued Fraction approximation (see Numerical recipies for details)
+     @param alpha
+     @param beta
+     @param x
+     @return 
      */
     public static double regularizedIncompleteBetaFunction(double alpha, double beta, double x) {
         // This function is often used to calculate p-value of model fitting.
@@ -102,6 +109,10 @@ public class Beta {
     /**
      * Incomplete fraction summation used in the method regularizedIncompleteBeta
      * using a modified Lentz's method.
+     @param alpha
+     @param beta
+     @param x
+     @return 
      */
     private static double incompleteFractionSummation(double alpha, double beta, double x) {
         final int MAXITER = 500;
@@ -160,6 +171,10 @@ public class Beta {
 
     /**
      * Inverse of regularized incomplete beta function.
+     @param alpha
+     @param p
+     @param beta
+     @return 
      */
     public static double inverseRegularizedIncompleteBetaFunction(double alpha, double beta, double p) {
         final double EPS = 1.0E-8;

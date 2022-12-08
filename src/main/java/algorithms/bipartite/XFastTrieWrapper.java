@@ -29,6 +29,10 @@ public class XFastTrieWrapper {
         
     private int n = 0;
     
+    /**
+     *
+     @param maxC
+     */
     public XFastTrieWrapper(int maxC) {
             
         w = 1 + (int)Math.ceil(Math.log(maxC)/Math.log(2));
@@ -47,6 +51,10 @@ public class XFastTrieWrapper {
         xft = new XFastTrie<XFastTrieNode<Integer>, Integer>(node, it, w);
     }
     
+    /**
+     *
+     @return
+     */
     public int getW() {
         return w;
     }
@@ -61,7 +69,7 @@ public class XFastTrieWrapper {
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
      */
     public void insert(HeapNode node) {
         
@@ -102,7 +110,8 @@ public class XFastTrieWrapper {
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
+     @param key2 
      */
     public void decreaseKey(HeapNode node, long key2) {
 
@@ -151,7 +160,7 @@ public class XFastTrieWrapper {
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @return node 
+     @return node 
      */
     public HeapNode extractMin() {
         
@@ -177,6 +186,10 @@ public class XFastTrieWrapper {
         return node;
     }
     
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
         return n;
     }

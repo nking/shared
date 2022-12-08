@@ -23,8 +23,9 @@ public class DisjointSet2Helper {
      /**
      * make a set out of the given node.
      * runtime complexity is O(1).
-     * @param x
-     * @return
+     @param <T>
+     @param x
+     @return
      */
     public <T> DisjointSet2Node<T> makeSet(DisjointSet2Node<T> x) {
         x.setParent(x);
@@ -50,8 +51,9 @@ public class DisjointSet2Helper {
      * For most purposes, α(n) = O(1) so then the amoritized running time is O(1).
      * </pre>
      * 
-     * @param x
-     * @return
+     @param <T>
+     @param x
+     @return
      */
     public <T> DisjointSet2Node<T> findSet(DisjointSet2Node<T> x) {
                 
@@ -81,10 +83,10 @@ public class DisjointSet2Helper {
       the one with largest rank.
           
        Runtime complexity is O(1).
-       
-     * @param x
-     * @param y
-     * @return the root found to be the one with equal number of nodes or more nodes
+     @param <T>       
+     @param x
+     @param y
+     @return the root found to be the one with equal number of nodes or more nodes
      */
     private <T> DisjointSet2Node<T> link(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -111,10 +113,10 @@ public class DisjointSet2Helper {
       the y as the parent.
           
        Runtime complexity is O(1).
-       
-     * @param x
-     * @param y
-     * @return the root found to be the one with equal number of nodes or more nodes
+     @param <T>       
+     @param x
+     @param y
+     @return the root found to be the one with equal number of nodes or more nodes
      */
     private <T> DisjointSet2Node<T> linkChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -138,9 +140,10 @@ public class DisjointSet2Helper {
      * The method is also known as "union-find" because it uses findSet 
      * as the first steps before link.
      * 
-     * @param x
-     * @param y
-     * @return
+     @param <T>
+     @param x
+     @param y
+     @return
      */
     public <T> DisjointSet2Node<T> union(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -160,9 +163,10 @@ public class DisjointSet2Helper {
      * The method is also known as "union-find" because it uses findSet 
      * as the first steps before link.
      * 
-     * @param x
-     * @param y
-     * @return
+     @param <T>
+     @param x
+     @param y
+     @return
      */
     public <T> DisjointSet2Node<T> unionChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -175,6 +179,12 @@ public class DisjointSet2Helper {
         return parent;
     }
     
+    /**
+     *
+     @param <T>
+     @param x
+     @return
+     */
     public static <T> String print(DisjointSet2Node<T> x) {
                 
         StringBuilder sb = new StringBuilder();

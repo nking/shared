@@ -88,6 +88,10 @@ public class ResidualDigraph2 {
     private TIntSet backwardLinksSinkRM =
         new TIntHashSet();
     
+    /**
+     *
+     @param gFlow
+     */
     public ResidualDigraph2(FlowNetwork gFlow) {
     
         this.nLeft = gFlow.getNLeft();
@@ -151,6 +155,10 @@ public class ResidualDigraph2 {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public int countOfForwardBipartiteLinks() {
         int n = 0;
         
@@ -166,7 +174,7 @@ public class ResidualDigraph2 {
     }
   
     /**
-     * @return the forwardLinksRM
+     @return the forwardLinksRM
      */
     public TIntObjectMap<TIntSet> getForwardLinksRM() {
         return forwardLinksRM;
@@ -175,21 +183,21 @@ public class ResidualDigraph2 {
     /**
      * key is Right (==Y) index node, and value is
      * Left (==X) index node.
-     * @return the backwardLinksRM
+     @return the backwardLinksRM
      */
     public TIntIntMap getBackwardLinksRM() {
         return backwardLinksRM;
     }
 
     /**
-     * @return the sourceNode
+     @return the sourceNode
      */
     public int getSourceNode() {
         return sourceNode;
     }
 
     /**
-     * @return the sinkNode
+     @return the sinkNode
      */
     public int getSinkNode() {
         return sinkNode;
@@ -199,14 +207,14 @@ public class ResidualDigraph2 {
      * the arcs that are initialized from being connected
      * to matched nodes, that is Left nodes that
      * are in "saturated" arcs.
-     * @return the forwardLinksSourceRM
+     @return the forwardLinksSourceRM
      */
     public TIntSet getForwardLinksSourceRM() {
         return forwardLinksSourceRM;
     }
 
     /**
-     * @return the backwardLinksSourceRM
+     @return the backwardLinksSourceRM
      */
     public TIntSet getBackwardLinksSourceRM() {
         return backwardLinksSourceRM;
@@ -216,14 +224,14 @@ public class ResidualDigraph2 {
      * the arcs that are initialized from being connected
      * to matched nodes, that is Right nodes that
      * are in "saturated" arcs.
-     * @return the forwardLinksSinkRM
+     @return the forwardLinksSinkRM
      */
     public TIntSet getForwardLinksSinkRM() {
         return forwardLinksSinkRM;
     }
 
     /**
-     * @return the backwardLinksSinkRM
+     @return the backwardLinksSinkRM
      */
     public TIntSet getBackwardLinksSinkRM() {
         return backwardLinksSinkRM;

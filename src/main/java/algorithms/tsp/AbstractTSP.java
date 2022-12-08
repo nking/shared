@@ -39,7 +39,7 @@ import java.util.Stack;
      - A worse case number of keys to store is the permutation of all but one node: n!/n.
      - A long bit-string is limited to 63 bits.
      - A java array length is limited to signed integer length, 1 .lt. .lt. 31 -1.
-     - so to fit more than 1 &lt&lt 31-1 permutations would need to use the bit-string key
+     - so to fit more than 1 .lt. .lt. 31-1 permutations would need to use the bit-string key
        as a concatenation of more than one path bit-string.
        the java BigInteger or the VeryLongBitString could do so.
        - also, the values for those keys would need to be referenced in an O(1) manner also if possible.
@@ -52,17 +52,60 @@ import java.util.Stack;
  */
 public abstract class AbstractTSP {
 
+    /**
+     *
+     */
     protected double minCost = Double.POSITIVE_INFINITY;
+
+    /**
+     *
+     */
     protected final TLongList minPath = new TLongArrayList();
+
+    /**
+     *
+     */
     protected final int startNode = 0;
+
+    /**
+     *
+     */
     protected final double[][] dist;
+
+    /**
+     *
+     */
     protected final TLongDoubleMap memo;
+
+    /**
+     *
+     */
     protected final double sentinel = Double.POSITIVE_INFINITY;
+
+    /**
+     *
+     */
     protected final BigInteger totalNPerm;
+
+    /**
+     *
+     */
     protected final long totalNSubSet;
+
+    /**
+     *
+     */
     protected final long totalNSubSeq;
+
+    /**
+     *
+     */
     protected final int w; // number of bits a city takes in a path where path is a bitstring of type long
 
+    /**
+     *
+     @param dist
+     */
     public AbstractTSP(double[][] dist) {
         if (dist.length < 3) {
             throw new IllegalArgumentException("dist.length must be >= 3");
@@ -89,6 +132,9 @@ public abstract class AbstractTSP {
         memo = new TLongDoubleHashMap(sz);
     }
     
+    /**
+     *
+     */
     protected void reset() {
         minCost = sentinel;
         minPath.clear();
@@ -98,8 +144,8 @@ public abstract class AbstractTSP {
     /**
      * roughly counting k-permutations for a dynamic approach where k is
      * increased by a factor of 2 each time and begins with k=3.
-     * @param n
-     * @return
+     @param n
+     @return
      */
     protected static BigInteger count3(int n) {
         n = n - 1;
@@ -121,8 +167,8 @@ public abstract class AbstractTSP {
     /**
      * roughly counting k-permutations for a dynamic approach where k is
      * increased by a factor of 2 each time and begins with k=3.
-     * @param n
-     * @return
+     @param n
+     @return
      */
     protected static BigInteger count2(int n) {
         n = n - 1;
@@ -142,6 +188,12 @@ public abstract class AbstractTSP {
     }
   
     // total number of subsetchooser invocations.  max n = 507 for count < Integer.MAX_VALUE
+
+    /**
+     *
+     @param n
+     @return
+     */
     protected long countTotalNumSubSeqInvocations(int n) {
         int k = 3;
         int n2 = n;
@@ -153,6 +205,11 @@ public abstract class AbstractTSP {
         return c;
     }
 
+    /**
+     *
+     @param n
+     @return
+     */
     protected long countTotalNumSubSetInvocations(int n) {
         int k = 3;
         int n2 = n;
@@ -169,11 +226,11 @@ public abstract class AbstractTSP {
      * uses path node bit-string length w to read the set bits and
      * return the base 10 number (which can be used with the distance matrix
      * or in writing the final solution of ordered nodes).
-     * @param path
-     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
+     @param path
+     @param pathNodeNumber number of the node within the path.  NOTE: this excludes
      * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
      * 2nd node in the final solution for the completed path for the algorithm instance).
-     * @return the base10 node number for pathNodeNumber >= 0.
+     @return the base10 node number for pathNodeNumber .geq. 0.
      * if pathNodeNumber is less than 0, -1 is returned.
      */
     protected int getBase10NodeIndex(final long pathNodeNumber, final long path) {
@@ -197,9 +254,9 @@ public abstract class AbstractTSP {
     /**
      * write the base 10 indexes s into a bit-string in the encoding used by the
      * memo.
-     * @param s base 10 node indexes in the order to set into the bit-string path.
+     @param s base 10 node indexes in the order to set into the bit-string path.
      * NOTE that s should not contain the startNode.
-     * @return
+     @return
      */
     protected long createAMemoNodeBitstring(int[] s) {
         long path = concatenate(0, 0, s);
@@ -209,12 +266,12 @@ public abstract class AbstractTSP {
     /**
      * for the pathNodeNumber which is the order number of the node in the path
      * (e.g. second node in the path), set the node number to be the base10Node.
-     * @param base10Node
-     * @param path
-     * @param pathNodeNumber number of the node within the path.  NOTE: this excludes
+     @param base10Node
+     @param path
+     @param pathNodeNumber number of the node within the path.  NOTE: this excludes
      * start node 0 and end node 0 (pathNodeNumber=0 corresponds to the
      * 2nd node in the final solution for the completed path for the algorithm instance).
-     * @return
+     @return
      */
     protected long setBits(final int base10Node, final long path, final int pathNodeNumber) {
         long bitstring = path; // 11 10 01
@@ -235,8 +292,8 @@ public abstract class AbstractTSP {
     /**
      * read the given bit-string encoded for use with memo, to find the
      * set bits and return the nodes as a base10 bit-string (without the path order information).
-     * @param bitstring
-     * @return
+     @param bitstring
+     @return
      */
     protected long findSetBitsBase10(long bitstring) {
         long base10nodes = 0;
@@ -264,8 +321,8 @@ public abstract class AbstractTSP {
      * unset bits and return the nodes as a base10 bit-string.
      * Note that bit 0 is not read as that is the implicit startNode
      * which is excluded from bit-string operations.
-     * @param bitstring
-     * @return
+     @param bitstring
+     @return
      */
     protected long findUnsetBitsBase10(long bitstring) {
         long base10nodesSet = findSetBitsBase10(bitstring);
@@ -285,8 +342,8 @@ public abstract class AbstractTSP {
      * unset bits and return the nodes as a base10 bit-string.
      * Note that bit 0 is not read as that is the implicit startNode
      * which is excluded from bit-string operations.
-     * @param bitstring
-     * @param out list to hold the output node indexes
+     @param bitstring
+     @param out list to hold the output node indexes
      */
     protected void findUnsetBitsBase10(long bitstring, TIntList out) {
         out.clear();
@@ -306,8 +363,8 @@ public abstract class AbstractTSP {
      * information about the path node order.
      * Note that bit 0 is not read as that is the implicit startNode
      * which is excluded from bit-string operations.
-     * @param bitstring
-     * @param out list to hold the output node indexes
+     @param bitstring
+     @param out list to hold the output node indexes
      */
     protected void findSetBitsBase10(long bitstring, TIntList out) {
         out.clear();
@@ -323,8 +380,8 @@ public abstract class AbstractTSP {
 
     /**
      * read path into base10 node numbers, preserving order of path
-     * @param bitstring
-     * @param out
+     @param bitstring
+     @param out
      */
     protected void readPathIntoBase10(long bitstring, TIntList out) {
         out.clear();
@@ -347,10 +404,11 @@ public abstract class AbstractTSP {
     }
 
     /**
-     * @param path encoded bit-string of ordered path nodes used in the memo.
-     * @param nPathNodesSet the number of nodes currently set in the path
-     * @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
+     @param path encoded bit-string of ordered path nodes used in the memo.
+     @param nPathNodesSet the number of nodes currently set in the path
+     @param base10Nodes base 10 node indexes in the order to set into the bit-string path.
      * NOTE that s should not contain the startNode.
+     @return 
      */
     protected long concatenate(long path, int nPathNodesSet, int[] base10Nodes) {
         assert (numberOfSetNodes(path) == nPathNodesSet);
@@ -367,7 +425,8 @@ public abstract class AbstractTSP {
     
     /**
      * initialize memo with permutations for all unset path nodes, where the
-     * number of unset path nodes < 4.
+     * number of unset path nodes .lt. 4.
+     * @throws java.lang.InterruptedException
      */
     protected void initNodePaths() throws InterruptedException {
         assert(memo.isEmpty());
@@ -394,7 +453,8 @@ public abstract class AbstractTSP {
 
     /**
      * initialize memo with permutations for all subsets of 4 path nodes, where the
-     * number of unset path nodes is > 4.
+     * number of unset path nodes is .gt. 4.
+     * @throws java.lang.InterruptedException
      */
     protected void init4NodePaths() throws InterruptedException {  
         initKNodePaths(4);
@@ -402,7 +462,8 @@ public abstract class AbstractTSP {
     
     /**
      * initialize memo with permutations for all subsets of 3 path nodes, where the
-     * number of unset path nodes is > 3.
+     * number of unset path nodes is .gt. 3.
+     * @throws java.lang.InterruptedException
      */
     protected void init3NodePaths() throws InterruptedException {  
         initKNodePaths(3);
@@ -410,8 +471,9 @@ public abstract class AbstractTSP {
     
     /**
      * initialize memo with permutations for all subsets of 3 path nodes, where the
-     * number of unset path nodes is > 3.
-     * @param k
+     * number of unset path nodes is .gt. 3.
+     @param k
+     * @throws java.lang.InterruptedException
      */
     protected void initKNodePaths(final int k) throws InterruptedException {        
         assert(memo.isEmpty());
@@ -425,13 +487,14 @@ public abstract class AbstractTSP {
     
     /**
      * 
-     * @param bitstring bit-string of ordered path nodes in format for memo key
-     * @param sum the cost of the ordered path thus far
-     * @param nNodesSet the number of nodes set in bitstring
-     * @param k the length of subsets to choose from the unset bits of bitstring
-     * @param stack can be null.  if not null, the permuted path and its cost
+     @param bitstring bit-string of ordered path nodes in format for memo key
+     @param sum the cost of the ordered path thus far
+     @param nNodesSet the number of nodes set in bitstring
+     @param k the length of subsets to choose from the unset bits of bitstring
+     @param stack can be null.  if not null, the permuted path and its cost
      * are pushed onto the stack.
-     * @param storeInMemo if true, the permuted path and sum are stored in memo
+     @param storeInMemo if true, the permuted path and sum are stored in memo
+     * @throws java.lang.InterruptedException
      */
     protected void createAndStackSubsetPermutations(long bitstring, double sum, int nNodesSet, int k,
         Stack<StackP> stack, boolean storeInMemo) throws InterruptedException {
@@ -499,6 +562,11 @@ public abstract class AbstractTSP {
         }
     }
 
+    /**
+     *
+     @param path
+     @param sum
+     */
     protected void compareToMin(long path, double sum) {
 //        assert (numberOfSetNodes(path) == (dist.length - 1));
 
@@ -527,14 +595,27 @@ public abstract class AbstractTSP {
         }
     }
  
+    /**
+     *
+     @return
+     */
     public double getMinCost() {
         return this.minCost;
     }
 
+    /**
+     *
+     @return
+     */
     public int getNumberOfMinPaths() {
         return minPath.size();
     }
 
+    /**
+     *
+     @param idx
+     @return
+     */
     public TIntList getMinPath(int idx) {
         long path = minPath.get(idx);
         TIntList out = new TIntArrayList();
@@ -546,8 +627,8 @@ public abstract class AbstractTSP {
 
     /**
      *
-     * @param path a memo bit-string
-     * @return
+     @param path a memo bit-string
+     @return
      */
     protected int numberOfUnsetNodes(long path) {
         // composed of w-bit bit-strings
@@ -563,8 +644,8 @@ public abstract class AbstractTSP {
 
     /**
      *
-     * @param path a memo bit-string
-     * @return
+     @param path a memo bit-string
+     @return
      */
     protected int numberOfSetNodes(long path) {
         int nUnset = numberOfUnsetNodes(path);
@@ -572,10 +653,17 @@ public abstract class AbstractTSP {
         return nSet;
     }
 
+    /**
+     *
+     @return
+     */
     public int getMemoLength() {
         return memo.size();
     }
     
+    /**
+     *
+     */
     protected void printMemo() {
         TLongDoubleIterator iter = memo.iterator();
         long bitstring;
@@ -599,12 +687,12 @@ public abstract class AbstractTSP {
     
     /**
      * 
-     * @param bitstring2 the ordered path nodes in format for memo keys
-     * @param sum2 the cost of the path of the ordered nodes in bitstring2
-     * @param nNodesSet2 the number of nodes set in bitstring2
-     * @param nodes nodes to permute
-     * @param stack can be null
-     * @param storeInMemo
+     @param bitstring2 the ordered path nodes in format for memo keys
+     @param sum2 the cost of the path of the ordered nodes in bitstring2
+     @param nNodesSet2 the number of nodes set in bitstring2
+     @param nodes nodes to permute
+     @param stack can be null
+     @param storeInMemo
      * @throws InterruptedException 
      */
     protected void createAndStackPermutations(long bitstring2, double sum2, 
@@ -664,10 +752,20 @@ public abstract class AbstractTSP {
         }
     }
     
+    /**
+     *
+     */
     protected static class StackP {
         long bitstring;
         double sum;
         int nNodesRemaining;
+
+        /**
+         *
+         @param path
+         @param cost
+         @param nRemaining
+         */
         public StackP(long path, double cost, int nRemaining) {
             this.bitstring = path;
             this.sum = cost;

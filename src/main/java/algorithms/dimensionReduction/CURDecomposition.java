@@ -81,9 +81,9 @@ public class CURDecomposition {
      * Also, for very large matrices, consider implementing in CDFRandomSelect.java
      * the integer transformation and storage in YFastTrie.
      * 
-     * @param a is an mxn matrix.
-     * @param k the rank to approximate
-     * @return the cur decomposition C, U, and R.  c plays the role of svd's U
+     @param a is an mxn matrix.
+     @param k the rank to approximate
+     @return the cur decomposition C, U, and R.  c plays the role of svd's U
      * and R plays he rol of SVD's v^T.
      * @throws no.uib.cipr.matrix.NotConvergedException thrown if the MTJ SVD method cannot converge
      * for a matrix.
@@ -182,9 +182,9 @@ public class CURDecomposition {
      * (a.k.a. calculating Marginal probability mass function of the contingency table).
      * runtime is O(N) where N = mxn.
      * NOTE: the Frobenius norm is the square root of the sum of the squares of 
-     * all elements of a matrix (2.2-4 of Golub & van Loan).
-     * @param a an mxn matrix.
-     * @return  the column and row PDFs of matrix a where a row PDF is the
+     * all elements of a matrix (2.2-4 of Golub and van Loan).
+     @param a an mxn matrix.
+     @return  the column and row PDFs of matrix a where a row PDF is the
      * Frobenius norm of the column divided by the Frobenius norm of the
      * matrix, and the row PDF is similar but calculated for rows instead of
      * columns.
@@ -391,6 +391,9 @@ public class CURDecomposition {
        return u;
     }
     
+    /**
+     *
+     */
     public static class CUR {
         private double[][] c;
         private double[][] u;
@@ -402,33 +405,37 @@ public class CURDecomposition {
         private SVDProducts svd = null;
 
         /**
-         * @return the c
+         @return the c
          */
         public double[][] getC() {
             return c;
         }
 
         /**
-         * @return the u
+         @return the u
          */
         public double[][] getU() {
             return u;
         }
 
         /**
-         * @return the r
+         @return the r
          */
         public double[][] getR() {
             return r;
         }
 
         /**
-         * @return the result
+         @return the result
          */
         public double[][] getResult() {
             return result;
         }
         
+        /**
+         *
+         @return
+         */
         public SVDProducts getApproximateSVD() {
             if (svd != null) {
                 return svd;
@@ -490,11 +497,17 @@ public class CURDecomposition {
         }
     }
     
+    /**
+     *
+     */
     public static class PDFs {
         double[] colPDF;
         double[] rowPDF;
     }
     
+    /**
+     *
+     */
     public static class CDFs {
         int[] colsSelected;
         int[] rowsSelected;
@@ -503,6 +516,9 @@ public class CURDecomposition {
         double[] rowCDF;
     }
     
+    /**
+     *
+     */
     public static class SelectedFromA {
         int[] indexesUnique;
         double[][] r;

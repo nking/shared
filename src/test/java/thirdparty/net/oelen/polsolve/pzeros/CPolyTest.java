@@ -26,7 +26,7 @@ public class CPolyTest extends TestCase {
     /**
      * Constructor, used for testing purposes.
      * 
-     * @param testPolynomial A String array, as specified in the TestPolynomials
+     @param testPolynomial A String array, as specified in the TestPolynomials
      * class. This is converted to a polynomial, useful for solving/testing.
      */
     public void init0(String[] testPolynomial) {
@@ -117,12 +117,12 @@ public class CPolyTest extends TestCase {
      * used to create a polynomial with a set of real roots and a set of
      * conjugate complex roots.
      *
-     * @param coefN_re The real part of the constant scaling factor, which is 
+     @param coefN_re The real part of the constant scaling factor, which is 
      * used to multiuply the monic polynomial, derived from the given roots (see below).
-     * @param coefN_im The imaginary part of the constant scaling factor, which
+     @param coefN_im The imaginary part of the constant scaling factor, which
      * is used to multiuply the monic polynomial, derived from the given roots.
-     * @param roots_re The real part of the set of complex roots.
-     * @param roots_im The imaginary part of the set of complex roots.
+     @param roots_re The real part of the set of complex roots.
+     @param roots_im The imaginary part of the set of complex roots.
      * The parameter roots_re and roots_im must have the same length. The degree
      * of the derived polynomial is equal to the length of these arrays.
      */
@@ -164,13 +164,13 @@ public class CPolyTest extends TestCase {
      * the roots of the polynomial. This tester derives the 
      * coefficients of the polynomial to be solved from the double
      * double precision coefficients, stored in the tester.
-     * @param r_re A pre-allocated array, in which the real part
+     @param r_re A pre-allocated array, in which the real part
      * of the roots is stored. This array must have a length of at
      * least the degree of the polynomial.
-     * @param r_im A pre-allocated array, in which the imaginary
+     @param r_im A pre-allocated array, in which the imaginary
      * part of the roots is stored. This array must have a length of at
      * least the degree of the polynomial.
-     * @return If all zeros could be isolated, then the degree of the
+     @return If all zeros could be isolated, then the degree of the
      * polynomial is returned. If a value less than the degree of the
      * polynomial is returned, then only part of the roots could be
      * isolated, or none at all.
@@ -194,7 +194,7 @@ public class CPolyTest extends TestCase {
     /**
      * Returns the degree of the polynomial.
      *
-     * @return The degree of the polynomial.
+     @return The degree of the polynomial.
      */
     int degree() {
         return coef_re.length - 1;

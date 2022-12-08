@@ -24,19 +24,44 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+/**
+ *
+ * @author nichole
+ @param <S>
+ @param <T>
+ */
 @SuppressWarnings({"unchecked"})
 public class BinaryTrie<S extends BinaryTrieNode<T>, T> 
     implements SSet<T> {
 	
-	protected static final int prev = 0;
-	protected static final int next = 1;
-	protected static final int left = 0;
-	protected static final int right = 1;
+    /**
+     *
+     */
+    protected static final int prev = 0;
+
+    /**
+     *
+     */
+    protected static final int next = 1;
+
+    /**
+     *
+     */
+    protected static final int left = 0;
+
+    /**
+     *
+     */
+    protected static final int right = 1;
 	
         /**
          * w is trie word size
          */
 	protected int w = 30;
+
+    /**
+     *
+     */
     protected final int maxC;
 	
 	/**
@@ -69,7 +94,7 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * of BinaryTrieNode,
      * make sure the class is public and if it's an
      * inner class, it has to be static too.
-	 * @return
+	 @return
 	 */
 	protected S newNode() {
 		try {
@@ -85,10 +110,10 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 
     /**
      * 
-     * @param sampleNode a node instance that is used for 
+     @param sampleNode a node instance that is used for 
      * its class type when creating other nodes, such as the 
      * root and linked-list sentinel nodes.
-     * @param it class to provide the inner node key which
+     @param it class to provide the inner node key which
      * prefixes are extracted from
      */
 	public BinaryTrie(S sampleNode, Integerizer<T> it) {
@@ -106,12 +131,12 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * constructor that accepts a sample node type for
      * internal nodes and accepts the maximum number of bits
      * that a value added will have.
-     * @param sampleNode a node instance that is used for 
+     @param sampleNode a node instance that is used for 
      * its class type when creating other nodes, such as the 
      * root and linked-list sentinel nodes.
-     * @param it class to provide inner node keys which the
+     @param it class to provide inner node keys which the
      * prefixes are extracted from
-     * @param maxNumBits maximum number of bits a value that is
+     @param maxNumBits maximum number of bits a value that is
      * added to the trie will have when it is known to be less than
      * 32 (else, can use default constructor);
      */
@@ -137,8 +162,8 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * add x to the tree.  runtime complexity is O(w)
      * where w is the number of
      * bits set in the constructor, else is 32.
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     @Override
 	public boolean add(T x) {
@@ -195,8 +220,8 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * runtime complexity is O(w)
      * where w is the number of
      * bits set in the constructor, else is 32.
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     @Override
     public T find(T x) {
@@ -210,7 +235,12 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
         return null;
     }
     
-	protected T findValue(int ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected T findValue(int ix) {
 		int i, c = 0;
 		if (ix > maxC) {
             throw new IllegalArgumentException("w=" + w
@@ -236,8 +266,8 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * runtime complexity is O(w) 
      * where w is the number of
      * bits set in the constructor, else is 32.
-     * @param x
-     * @return 
+     @param x
+     @return 
      */
     @Override
 	public boolean remove(T x) {
@@ -280,6 +310,11 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 		return true;
 	}
     
+    /**
+     *
+     @param ix
+     @return
+     */
     protected T predecessor(int ix) {
         S q = predecessorNode(ix);
         if (q != null) {
@@ -293,8 +328,8 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 	 * runtime complexity is O(w) 
      * where w is the number of
      * bits set in the constructor, else is 32.
-     * @param x
-	 * @return The node before the node that contains x w.r.t. 
+     @param x
+	 @return The node before the node that contains x w.r.t. 
      * nodes in the internal the linked list.
 	 */
     @Override
@@ -306,12 +341,22 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
         return null;
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     protected S predecessorNode(T x) {
 		int i, c = 0, ix = it.intValue(x);
         return predecessorNode(ix); 
    }
     
-	protected S predecessorNode(int ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected S predecessorNode(int ix) {
 		int i, c = 0;
         if (ix > maxC) {
             throw new IllegalArgumentException("w=" + w
@@ -329,6 +374,11 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 		return (pred != null) ? (S)pred : null;
 	}
     
+    /**
+     *
+     @param ix
+     @return
+     */
     protected T successor(int ix) {
         S q = successorNode(ix);
         if (q != null) {
@@ -343,8 +393,8 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * where w is the number of
      * bits set in the constructor, else is 32.
      * 
-     * @param x
-	 * @return The key of the node before the node that contains x w.r.t. 
+     @param x
+	 @return The key of the node before the node that contains x w.r.t. 
      * nodes in the internal the linked list.
 	 */
     @Override
@@ -356,12 +406,22 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
         return null;
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     protected S successorNode(T x) {
 		int i, c = 0, ix = it.intValue(x);
         return successorNode(ix);
     }
     
-	protected S successorNode(int ix) {
+    /**
+     *
+     @param ix
+     @return
+     */
+    protected S successorNode(int ix) {
 		int i, c = 0;
         if (ix > maxC) {
             throw new IllegalArgumentException("w=" + w
@@ -383,7 +443,7 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * find the maximum key within the nodes. 
      * runtime complexity is O(w) where w is the number of
      * bits set in the constructor, else is 32.
-     * @return 
+     @return 
      */
     @Override
     public T maximum() {
@@ -399,7 +459,7 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
      * find the minimum key within the nodes. 
      * runtime complexity is O(w) where w is the maximum
      * word size set in the constructor, else 32.
-     * @return 
+     @return 
      */
     @Override
     public T minimum() {
@@ -415,7 +475,10 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
 		return n;
 	}
 	
-	public void clear() {
+    /**
+     *
+     */
+    public void clear() {
 		n = 0;
 		r.child[0] = r.child[1] = null;
 		r.jump = dummy;
@@ -482,6 +545,11 @@ public class BinaryTrie<S extends BinaryTrieNode<T>, T>
         }        
     }
     
+    /**
+     *
+     @param numberOfNodes
+     @return
+     */
     public static long estimateSizeOnHeap(int numberOfNodes) {
         
 	// int prev = 0;

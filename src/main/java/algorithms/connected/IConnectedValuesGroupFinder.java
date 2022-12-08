@@ -15,12 +15,27 @@ import java.util.List;
  */
 public interface IConnectedValuesGroupFinder {
 
+    /**
+     *
+     @param setDebugToTrue
+     */
     public void setDebug(boolean setDebugToTrue);
 
+    /**
+     *
+     @param n
+     */
     public void setMinimumNumberInCluster(int n);
 
+    /**
+     *
+     */
     public void setToUse8Neighbors();
     
+    /**
+     *
+     @param values
+     */
     public void setValuesToExclude(TIntSet values);
 
     /**
@@ -30,7 +45,8 @@ public interface IConnectedValuesGroupFinder {
      * user has set that to 8 neighbors. The runtime complexity is essentially
      * O(pixIdxs.size()).
      *
-     * @param data
+     @param data
+     @return 
      */
     public List<TLongSet> findGroups(int[][] data);
 

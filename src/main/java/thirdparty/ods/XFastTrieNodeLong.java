@@ -3,6 +3,9 @@ package thirdparty.ods;
 import algorithms.util.ObjectSpaceEstimator;
 
 /**
+ * @author nichole
+ @param <T>
+ @param <T>
  */
 public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
     
@@ -30,9 +33,21 @@ public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
         return fnvHashCode(prefix);
     }
      
+    /**
+     *
+     */
     protected final static int fnv321aInit = 0x811c9dc5;
+
+    /**
+     *
+     */
     protected final static int fnv32Prime = 0x01000193;
 
+    /**
+     *
+     @param p
+     @return
+     */
     protected int fnvHashCode(long p) {
 
         /*
@@ -69,7 +84,10 @@ public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
         return hash;
     }
 
-    
+    /**
+     *
+     @return
+     */
     public static long estimateSizeOnHeap() {
         
         long total = BinaryTrieNode.estimateSizeOnHeap();

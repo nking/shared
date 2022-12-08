@@ -178,6 +178,8 @@ public class RedBlackBSTLongInt {
 
    /***************************************************************************
     *  Node helper methods.
+     @param x
+     @return 
     ***************************************************************************/
     // is node x red; false if x is null ?
     private boolean isRed(Node x) {
@@ -194,7 +196,7 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the number of key-value pairs in this symbol table.
-     * @return the number of key-value pairs in this symbol table
+     @return the number of key-value pairs in this symbol table
      */
     public int size() {
         return size(root);
@@ -202,7 +204,7 @@ public class RedBlackBSTLongInt {
 
    /**
      * Is this symbol table empty?
-     * @return {@code true} if this symbol table is empty and {@code false} otherwise
+     @return {@code true} if this symbol table is empty and {@code false} otherwise
      */
     public boolean isEmpty() {
         return root == null;
@@ -215,8 +217,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the value associated with the given key.
-     * @param key the key
-     * @param output if output[0] == -1, then key was not present, else the
+     @param key the key
+     @param output if output[0] == -1, then key was not present, else the
      *    returned value is found in output[1]
      */
     public void get(long key, int[] output) {
@@ -243,8 +245,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Does this symbol table contain the given key?
-     * @param key the key
-     * @return {@code true} if this symbol table contains {@code key} and
+     @param key the key
+     @return {@code true} if this symbol table contains {@code key} and
      *     {@code false} otherwise
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
@@ -262,8 +264,8 @@ public class RedBlackBSTLongInt {
      * Inserts the specified key-value pair into the symbol table, overwriting the old 
      * value with the new value if the symbol table already contains the specified key.
      *
-     * @param key the key
-     * @param val the value
+     @param key the key
+     @param val the value
      */
     public void put(long key, int val) {
         
@@ -400,7 +402,7 @@ public class RedBlackBSTLongInt {
      * Removes the specified key and its associated value from this symbol table     
      * (if the key is in this symbol table).    
      *
-     * @param  key the key
+     @param  key the key
      */
     public void delete(long key) { 
         
@@ -469,6 +471,8 @@ public class RedBlackBSTLongInt {
 
    /***************************************************************************
     *  Red-black tree helper functions.
+     @param h
+     @return 
     ***************************************************************************/
 
     // make a left-leaning link lean to the right
@@ -569,7 +573,7 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the height of the BST (for debugging).
-     * @return the height of the BST (a 1-node tree has height 0)
+     @return the height of the BST (a 1-node tree has height 0)
      */
     public int height() {
         return height(root);
@@ -585,7 +589,7 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the smallest key in the symbol table.
-     * @return the smallest key in the symbol table
+     @return the smallest key in the symbol table
      * @throws NoSuchElementException if the symbol table is empty
      */
     public long min() {
@@ -604,7 +608,7 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the largest key in the symbol table.
-     * @return the largest key in the symbol table
+     @return the largest key in the symbol table
      * @throws NoSuchElementException if the symbol table is empty
      */
     public long max() {
@@ -623,8 +627,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the largest key in the symbol table less than or equal to {@code key}.
-     * @param key the key
-     * @param output if output[0] == -1, the key was not present, 
+     @param key the key
+     @param output if output[0] == -1, the key was not present, 
      * else output[1] holds the largest key in the symbol table less than or equal to {@code key}
      @throws NoSuchElementException if the tree is empty
      */
@@ -647,8 +651,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the largest key in the symbol table less than {@code key}.
-     * @param key the key
-     * @param output if output[0] == -1, the key was not present, 
+     @param key the key
+     @param output if output[0] == -1, the key was not present, 
      * else output[1] holds the largest key in the symbol table less than or equal to {@code key}
      @throws NoSuchElementException if the tree is empty
      */
@@ -694,10 +698,10 @@ public class RedBlackBSTLongInt {
      * higher, as suggested by Cormen, Leiserson, Rivest, and Stein in
      * the book "Introduction to Algorithms".
      * 
-     * @param x
-     * @param key
-     * @param stack
-     * @return 
+     @param x
+     @param key
+     @param stack
+     @return 
      */
     private Node lower(Node x, long key, List<Node> stack) { 
         
@@ -756,8 +760,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the smallest key in the symbol table greater than or equal to {@code key}.
-     * @param key the key
-     * @param output if output[0] == -1, the key was not present, 
+     @param key the key
+     @param output if output[0] == -1, the key was not present, 
      * else output[1] holds
      * the smallest key in the symbol table greater than or equal to {@code key}
      * @throws NoSuchElementException if the tree is empty
@@ -781,8 +785,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Returns the smallest key in the symbol table greater than {@code key}.
-     * @param key the key
-     * @param output if output[0] == -1, the key was not present, 
+     @param key the key
+     @param output if output[0] == -1, the key was not present, 
      * else output[1] holds
      * the smallest key in the symbol table greater than or equal to {@code key}
      * @throws NoSuchElementException if the tree is empty
@@ -823,9 +827,10 @@ public class RedBlackBSTLongInt {
      * NOTE: the method uses in part, a pattern adapted from the Cormen, Leiserson, Rivest, and Stein
      * book "Introduction to Algorithms" for their Red Black Tree.
      * 
-     * @param x
-     * @param key
-     * @return 
+     @param x
+     @param key
+     @param stack
+     @return 
      */
     private Node higher(Node x, long key, List<Node> stack) {  
                         
@@ -890,8 +895,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Return the kth smallest key in the symbol table.
-     * @param k the order statistic
-     * @return the {@code k}th smallest key in the symbol table
+     @param k the order statistic
+     @return the {@code k}th smallest key in the symbol table
      * @throws IllegalArgumentException unless {@code k} is between 0 and
      *     <em>n</em>–1
      */
@@ -916,8 +921,8 @@ public class RedBlackBSTLongInt {
 
     /**
      * Return the number of keys in the symbol table strictly less than {@code key}.
-     * @param key the key
-     * @return the number of keys in the symbol table strictly less than {@code key}
+     @param key the key
+     @return the number of keys in the symbol table strictly less than {@code key}
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public int rank(long key) {
@@ -942,7 +947,7 @@ public class RedBlackBSTLongInt {
      * Returns all keys in the symbol table as an {@code Iterable}.
      * To iterate over all of the keys in the symbol table named {@code st},
      * use the foreach notation: {@code for (Key key : st.keys())}.
-     * @return all keys in the symbol table as an {@code Iterable}
+     @return all keys in the symbol table as an {@code Iterable}
      */
     public TLongList keys() {
         if (isEmpty()) return new TLongArrayList();
@@ -953,9 +958,9 @@ public class RedBlackBSTLongInt {
      * Returns all keys in the symbol table in the given range,
      * as an {@code Iterable}.
      *
-     * @param  lo minimum endpoint
-     * @param  hi maximum endpoint
-     * @return all keys in the sybol table between {@code lo} 
+     @param  lo minimum endpoint
+     @param  hi maximum endpoint
+     @return all keys in the sybol table between {@code lo} 
      *    (inclusive) and {@code hi} (inclusive) as an {@code Iterable}
      * @throws IllegalArgumentException if either {@code lo} or {@code hi}
      *    is {@code null}
@@ -983,9 +988,9 @@ public class RedBlackBSTLongInt {
     /**
      * Returns the number of keys in the symbol table in the given range.
      *
-     * @param  lo minimum endpoint
-     * @param  hi maximum endpoint
-     * @return the number of keys in the sybol table between {@code lo} 
+     @param  lo minimum endpoint
+     @param  hi maximum endpoint
+     @return the number of keys in the sybol table between {@code lo} 
      *    (inclusive) and {@code hi} (inclusive)
      * @throws IllegalArgumentException if either {@code lo} or {@code hi}
      *    is {@code null}
@@ -1000,6 +1005,7 @@ public class RedBlackBSTLongInt {
 
    /***************************************************************************
     *  Check integrity of red-black tree data structure.
+     @return 
     ***************************************************************************/
     protected boolean check() {
         if (!isBST())            System.out.println("Not in symmetric order");
@@ -1099,6 +1105,11 @@ public class RedBlackBSTLongInt {
             System.out.println("node=" + node.toString(p));
         }
     }
+
+    /**
+     *
+     @param topNode
+     */
     public void printPreOrderTraversal2(Node topNode) {
         Node[] nodes = getPreOrderTraversalIterative(topNode, 0);
         for (Node node : nodes) {
@@ -1150,6 +1161,8 @@ public class RedBlackBSTLongInt {
     /**
      * visit each node using pattern left subtree, root, right subtree
      * in an iterative manner rather than invoking the method recursively.
+     @param node
+     @return 
      */
     protected Node[] getInOrderTraversalIterative(Node node) {
         
@@ -1189,6 +1202,9 @@ public class RedBlackBSTLongInt {
     /**
      * visit each node using pattern: root, left subtree, right subtree
      * in an iterative manner rather than invoking the method recursively.
+     @param node
+     @param addExtraToSize
+     @return 
      */
     protected Node[] getPreOrderTraversalIterative(Node node, int addExtraToSize) {
        
@@ -1239,6 +1255,8 @@ public class RedBlackBSTLongInt {
     /**
      * visit each node using pattern: left subtree, right subtree, root subtree
      * in an iterative manner rather than invoking the method recursively.
+     @param node
+     @return 
      */
     protected Node[] getPostOrderTraversalIterative(Node node) {
         
@@ -1285,6 +1303,10 @@ public class RedBlackBSTLongInt {
         return array;
     }
     
+    /**
+     *
+     @return
+     */
     public static long estimateNodeSizeOnHeap() {
         return Node.estimateSizeOnHeap();
     }
@@ -1293,10 +1315,10 @@ public class RedBlackBSTLongInt {
      * estimate the size that an instance of RedBlackBSTLongInt with
      * n entries would occupy in heap space in Bytes.
      * 
-     * @param numberOfEntries amount of space for this object's instance
+     @param numberOfEntries amount of space for this object's instance
      * with n entries in Bytes on the heap.
      * 
-     * @return 
+     @return 
      */
     public static long estimateSizeOnHeap(int numberOfEntries) {
         

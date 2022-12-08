@@ -37,9 +37,9 @@ public class KernelDensityEstimator {
      * <pre>
      *     Silverman 1981, "Kernel Density Estimation Using theFast Fourier Transform"
      * </pre>
-     * @param standardDeviation
-     * @param nSample
-     * @return
+     @param standardDeviation
+     @param nSample
+     @return
      */
     public static double optimalBandwidthGaussianKernel(double standardDeviation, int nSample) {
         return 1.06 * standardDeviation * Math.pow(nSample, -1./5);
@@ -53,17 +53,20 @@ public class KernelDensityEstimator {
      *     and
      *     https://rdrr.io/r/stats/bandwidth.html
      </pre>
-     * @param standardDeviation
-     * @param nSample
-     * @param IQR the interquartile range which is the ordered statistic divided into 4 equal parts, each summed,
+     @param standardDeviation
+     @param nSample
+     @param IQR the interquartile range which is the ordered statistic divided into 4 equal parts, each summed,
      *            then iqr = the 3rd quartile minus the first quartile = sum[3] - sum[0].
      *            see MiscMath0.calcMedianAndIQR()
-     * @return
+     @return
      */
     public static double ruleOfThumbBandwidthGaussianKernel(double standardDeviation, double IQR, int nSample) {
         return 0.9 * Math.min(standardDeviation, IQR/1.34) * Math.pow(nSample, -1./5);
     }
 
+    /**
+     *
+     */
     public static class KDE {
 
         /**
@@ -121,9 +124,13 @@ public class KernelDensityEstimator {
      and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
-     * @param x observed data
-     * @param h bandwidth
-     * @return
+     @param x observed data
+     @param h bandwidth
+     @param histNBins
+     @param histMaxBin
+     @param histMinBin
+     @param histBinWidth
+     @return
      */
     public static KDE viaFFTGaussKernel(double[] x, double h, int histNBins, double histBinWidth, double histMinBin,
                                         double histMaxBin) {
@@ -169,9 +176,9 @@ public class KernelDensityEstimator {
      and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
-     * @param x data observed
-     * @param h bandwidth
-     * @return
+     @param x data observed
+     @param h bandwidth
+     @return
      */
     public static KDE viaFFTGaussKernel(double[] x, double h) {
 
@@ -234,9 +241,9 @@ public class KernelDensityEstimator {
      reference: Wasserman's "All of Statistics", eqn (20.21)
      </pre>
      runtime complexity is O(n^2) where n = x.length.
-     * @param x data observed
-     * @param h bandwidth
-     * @return
+     @param x data observed
+     @param h bandwidth
+     @return
      */
     public static KDE viaGaussKernel(double[] x, double h) {
         int n = x.length;
@@ -265,10 +272,10 @@ public class KernelDensityEstimator {
      reference: Wasserman's "All of Statistics", eqn (20.21)
      </pre>
      runtime complexity is O(n*m) where n = x.length and m=xGrid.length
-     * @param x data observed
-     * @param xGrid the grid of data at which to apply the kernel.
-     * @param h bandwidth
-     * @return
+     @param x data observed
+     @param xGrid the grid of data at which to apply the kernel.
+     @param h bandwidth
+     @return
      */
     public static KDE viaGaussKernel(double[] x, double[] xGrid, double h) {
         int n = xGrid.length;
@@ -289,6 +296,11 @@ public class KernelDensityEstimator {
         return kde;
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     protected static Complex[] convertToComplex(double[] a) {
         Complex[] c = new Complex[a.length];
         for (int i = 0; i < a.length; ++i) {
@@ -301,8 +313,9 @@ public class KernelDensityEstimator {
      * calculate a fine resolution histogram for x, for a larger data range than x's.
      * (NOTE that if the data are circular, a method can be created to calculate the histogram
      * using the same data range as x, not larger)
-     * @param x
-     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     @param x
+     @param h
+     @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
     public static double[][] createFineHistogram(double[] x, double h) {
@@ -347,8 +360,13 @@ public class KernelDensityEstimator {
      * calculate a fine resolution histogram for x, for a larger data range than x's.
      * (NOTE that if the data are circular, a method can be created to calculate the histogram
      * using the same data range as x, not larger)
-     * @param x
-     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     @param x
+     @param h
+     @param nBins
+     @param minBin
+     @param binWidth
+     @param maxBin
+     @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
@@ -383,8 +401,8 @@ public class KernelDensityEstimator {
     /**
      * calculate a substitute for the fine resolution histogram for x for use in the
      * risk estimator that uses cross-validation.
-     * @param x
-     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     @param x
+     @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
     protected static double[] createFineHistogramSubstitute(double[] x) {
@@ -421,9 +439,10 @@ public class KernelDensityEstimator {
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
      * The Gaussian Kernel with discrete fast fourier transforms is O(s*log(s)).
-     * @param u the FFT of the histogram of the data.
-     * @param histBins the x bins of the histogram of the data that were used to create u
-     * @return kernel density estimate
+     @param u the FFT of the histogram of the data.
+     @param histBins the x bins of the histogram of the data that were used to create u
+     @param h
+     @return kernel density estimate
      */
     public static KDE viaFFTGaussKernel(Complex[] u, double[] histBins, double h) {
 
@@ -482,6 +501,13 @@ public class KernelDensityEstimator {
         return sum;
     }
 
+    /**
+     *
+     @param histBins
+     @param dataMinMax
+     @param h
+     @return
+     */
     protected static boolean assertHistRange(double[] histBins, double[] dataMinMax, double h) {
         if (histBins.length < 3) {
             throw new IllegalArgumentException("histBins.length must be >= 3");
@@ -518,11 +544,11 @@ public class KernelDensityEstimator {
      the1-Dimensional  KDE estimator f_hat(x) = (1/n) * sum_i=0_to_{N-1} ( (1/h) * K((x - X_i)/h).
      runtime complexity is O(xTilde.length).
      </pre>
-     * @param kernel
-     * @param x
-     * @param xTilde the observed data
-     * @param h the kernel bandwidth
-     * @return the kde at x
+     @param kernel
+     @param x
+     @param xTilde the observed data
+     @param h the kernel bandwidth
+     @return the kde at x
      */
     public static double univariateKernelDensityEstimate(IKernel kernel, double x, double[] xTilde, double h) {
         return kernel.kernel(x, xTilde, h);
@@ -551,10 +577,10 @@ public class KernelDensityEstimator {
      https://arxiv.org/abs/0812.0051,
      eqn (2).
      </pre>
-     * @param u fft of the histogram of the data.
-     * @param histBins the x axis of the histogram of the data.
-     * @param h the bandwidth to use
-     * @return the cross validation score
+     @param u fft of the histogram of the data.
+     @param histBins the x axis of the histogram of the data.
+     @param h the bandwidth to use
+     @return the cross validation score
      */
     public static double crossValidationScore(Complex[] u, double[] histBins, double h) {
 
@@ -656,7 +682,7 @@ public class KernelDensityEstimator {
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
      </pre>
-     * @return
+     @return
      */
     static double riskEstimatorLeaveOneOut() {
 
@@ -684,7 +710,7 @@ public class KernelDensityEstimator {
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
      </pre>
-     * @return
+     @return
      */
     static double riskEstimatorDataSplitting() {
 
@@ -712,7 +738,7 @@ public class KernelDensityEstimator {
      36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU.
      see eqn (20.24) of Wasserman's "All of Statistics"
      </pre>
-     * @return
+     @return
      */
     static double riskEstimatorGaussianKernel() {
 

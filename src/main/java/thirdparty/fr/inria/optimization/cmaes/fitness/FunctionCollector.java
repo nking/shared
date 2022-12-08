@@ -10,7 +10,13 @@ import java.util.Random;
  */
 public class FunctionCollector extends AbstractObjectiveFunction {
 
-	public FunctionCollector (double function_number, 
+    /**
+     *
+     @param function_number
+     @param flgRotate
+     @param axisratio
+     */
+    public FunctionCollector (double function_number, 
 			int flgRotate, 
 			double axisratio) {
 
@@ -55,6 +61,8 @@ public class FunctionCollector extends AbstractObjectiveFunction {
 	
 	/** implements the fitness function evaluation according to interface {@link IObjectiveFunction}
 	 * 
+     @param x
+     @return 
 	 */ 
 	@Override
 	public double valueOf(double[] x) {
@@ -67,7 +75,13 @@ public class FunctionCollector extends AbstractObjectiveFunction {
 		}
 		return funs[actFun] == null ? funs[0].valueOf(x) : funs[actFun].valueOf(x);
 	}
-	public boolean isFeasible(double x[]) { // unfortunate code duplication
+
+    /**
+     *
+     @param x
+     @return
+     */
+    public boolean isFeasible(double x[]) { // unfortunate code duplication
     	//int i;
     	//for (i = 0; i < x.length; ++i)
     	//	if (x[i] < 0.01)

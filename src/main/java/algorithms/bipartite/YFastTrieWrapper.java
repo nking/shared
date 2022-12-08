@@ -27,6 +27,10 @@ public class YFastTrieWrapper {
         
     private int n = 0;
     
+    /**
+     *
+     @param maxC
+     */
     public YFastTrieWrapper(int maxC) {
             
         w = 1 + (int)Math.ceil(Math.log(maxC)/Math.log(2));
@@ -37,6 +41,10 @@ public class YFastTrieWrapper {
         
     }
     
+    /**
+     *
+     @return
+     */
     public int getW() {
         return w;
     }
@@ -51,7 +59,7 @@ public class YFastTrieWrapper {
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
      */
     public void insert(HeapNode node) {
         
@@ -92,7 +100,8 @@ public class YFastTrieWrapper {
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
+     @param key2 
      */
     public void decreaseKey(HeapNode node, long key2) {
 
@@ -134,7 +143,7 @@ public class YFastTrieWrapper {
     /**
      * runtime complexity is roughly O(log_2(w)) where w is the bitlength of the
        maximum value stored in the trie, set at construction time.
-     * @param node 
+     @param node 
      */
     public void remove(HeapNode node) {
 
@@ -165,7 +174,7 @@ public class YFastTrieWrapper {
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @return node 
+     @return node 
      */
     public HeapNode extractMin() {
         
@@ -191,6 +200,10 @@ public class YFastTrieWrapper {
         return node;
     }
     
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
         return n;
     }

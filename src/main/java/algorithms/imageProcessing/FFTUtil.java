@@ -20,6 +20,12 @@ import thirdparty.ca.uol.aig.fftpack.ComplexDoubleFFT;
  */
 public class FFTUtil {
    
+    /**
+     *
+     @param input
+     @param forward
+     @return
+     */
     public Complex[][] create2DFFT(double[][] input, boolean forward) {
 
         // performs normalization by default
@@ -28,10 +34,10 @@ public class FFTUtil {
 
     /**
      * perform fft on input.
-     * @param input
-     * @param doNormalize
-     * @param forward
-     * @return
+     @param input
+     @param doNormalize
+     @param forward
+     @return
      */
     public Complex[][] create2DFFT(final double[][] input, boolean doNormalize,
         boolean forward) {
@@ -47,6 +53,12 @@ public class FFTUtil {
         return create2DFFT(input2, doNormalize, forward);
     }
 
+    /**
+     *
+     @param input
+     @param forward
+     @return
+     */
     public Complex[][] create2DFFT(Complex[][] input, boolean forward) {
 
         // performs normalization by default
@@ -58,10 +70,10 @@ public class FFTUtil {
      * else is
      *
      * perform fft on input.
-     * @param input
-     * @param doNormalize
-     * @param forward
-     * @return
+     @param input
+     @param doNormalize
+     @param forward
+     @return
      */
     public Complex[][] create2DFFT(final Complex[][] input, boolean doNormalize,
         boolean forward) {
@@ -136,9 +148,9 @@ public class FFTUtil {
      * else is
      *
      * perform fft on input.
-     * @param input
-     * @param forward
-     * @return
+     @param input
+     @param forward
+     @return
      */
     public Complex[] create1DFFT(final Complex[] input, boolean forward) {
 
@@ -154,9 +166,9 @@ public class FFTUtil {
      * else is
      *
      * perform fft on input.
-     * @param input
-     * @param forward
-     * @return
+     @param input
+     @param forward
+     @return
      */
     public Complex[] create1DFFTNormalized(final Complex[] input, boolean forward) {
 
@@ -179,9 +191,9 @@ public class FFTUtil {
      * else is
      *
      * perform fft on input.
-     * @param input
-     * @param forward
-     * @return
+     @param input
+     @param forward
+     @return
      */
     public Complex[] create1DFFT(final double[] input, boolean forward) {
 
@@ -196,9 +208,9 @@ public class FFTUtil {
      * runtime complexity: is O(N*lg_2(N))
      *
      * perform fft on input.
-     * @param input
-     * @param forward
-     * @return
+     @param input
+     @param forward
+     @return
      */
     public Complex[] create1DFFTNormalized(final double[] input, boolean forward) {
 
@@ -212,11 +224,11 @@ public class FFTUtil {
     /**
      * perform a 2-dimension FFT using the JFFTPack library.
      *
-     * @param input double array of complex data in format double[nRows][2*nColumns]
+     @param input double array of complex data in format double[nRows][2*nColumns]
      * where the column elements are alternately the complex real number and the
      * complex imaginary number.
-     * @param forward
-     * @return two dimensional complex array of size Complex[nRows][input.nCols/2)
+     @param forward
+     @return two dimensional complex array of size Complex[nRows][input.nCols/2)
      */
     public Complex1D[] create2DFFT2(Complex1D[] input, boolean forward) {
 
@@ -229,11 +241,12 @@ public class FFTUtil {
      *
      * runtime complexity: is O(N*lg_2(N)) for N not power of 2.
      *
-     * @param input double array of complex data in format double[nRows][2*nColumns]
+     @param input double array of complex data in format double[nRows][2*nColumns]
      * where the column elements are alternately the complex real number and the
      * complex imaginary number.
-     * @param forward
-     * @return two dimensional complex array of size Complex[nRows][input.nCols/2)
+     @param performNormalization
+     @param forward
+     @return two dimensional complex array of size Complex[nRows][input.nCols/2)
      */
     public Complex1D[] create2DFFT2(Complex1D[] input, boolean performNormalization,
         boolean forward) {
@@ -305,11 +318,11 @@ public class FFTUtil {
      *
      * runtime complexity: is O(N*lg_2(N)) for N not power of 2.
      *
-     * @param input double array of complex data in format double[nRows][2*nColumns]
+     @param input double array of complex data in format double[nRows][2*nColumns]
      * where the column elements are alternately the complex real number and the
      * complex imaginary number.
-     * @param forward
-     * @return two dimensional complex array of size Complex[nRows][input.nCols/2)
+     @param forward
+     @return two dimensional complex array of size Complex[nRows][input.nCols/2)
      */
     public Complex1D create1DFFT2(Complex1D input, boolean forward) {
 
@@ -330,6 +343,11 @@ public class FFTUtil {
         return output;
     }
 
+    /**
+     *
+     @param input
+     @return
+     */
     public Complex1D[] copyToComplex1D(Complex[][] input) {
 
         int n0 = input.length;
@@ -349,6 +367,11 @@ public class FFTUtil {
         return output;
     }
     
+    /**
+     *
+     @param input
+     @return
+     */
     public Complex1D copyToComplex1D(Complex[] input) {
 
         int n0 = input.length;
@@ -364,6 +387,11 @@ public class FFTUtil {
         return output;
     }
     
+    /**
+     *
+     @param input
+     @return
+     */
     public Complex1D copyToComplex1D(double[] input) {
 
         int n0 = input.length;
@@ -375,6 +403,11 @@ public class FFTUtil {
         return output;
     }
     
+    /**
+     *
+     @param input
+     @return
+     */
     public Complex[] copyToComplex(Complex1D input) {
 
         int n0 = input.x.length;
@@ -387,6 +420,11 @@ public class FFTUtil {
         return output;
     }
     
+    /**
+     *
+     @param input
+     @return
+     */
     public Complex[][] copyToComplex(Complex1D[] input) {
 
         int n0 = input.length;
@@ -403,6 +441,11 @@ public class FFTUtil {
         return output;
     }
 
+    /**
+     *
+     @param input
+     @return
+     */
     public Complex[][] copy(Complex[][] input) {
 
         int n0 = input.length;
@@ -415,6 +458,11 @@ public class FFTUtil {
         return output;
     }
 
+    /**
+     *
+     @param fftData
+     @return
+     */
     public double[] extractAbs(Complex[] fftData) {
         double[] a = new double[fftData.length];
         for (int i = 0; i < fftData.length; ++i) {

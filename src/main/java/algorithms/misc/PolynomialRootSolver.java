@@ -62,6 +62,9 @@ import thirdparty.net.oelen.polsolve.pzeros.PZeros;
  */
 public class PolynomialRootSolver {
     
+    /**
+     *
+     */
     public final static double eps = 1.e-7;
     
     /**
@@ -70,9 +73,9 @@ public class PolynomialRootSolver {
      * of Bini and Robol ported by Wilco Oelen.
      * NOTE: the 2nd derivative can be useful with the root values
      * for distinguishing local minimum, maximum, and inflection.
-     * @param coeffs coefficients of a polynomial given in the order of decreasing 
+     @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
-     * @return
+     @return
      * @throws IOException convergence failure
      */
     public static Complex[] solveUsingMPSolve(double[] coeffs) throws IOException {
@@ -140,10 +143,11 @@ public class PolynomialRootSolver {
     /**
      * solve for the real roots using MPSolve.  also reduces to unique within tolerance
      * (no repeated multiplicity).  also sorts the values.
-     * @param coeffs coefficients of a polynomial given in the order of decreasing 
+     @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
-     * @param toleranceForZero the value for which any number less than is considered 0.
-     * @return     
+     @param toleranceForZero the value for which any number less than is considered 0.
+     @return     
+     * @throws java.io.IOException     
      */
     public static double[] solveForRealUsingMPSolve(double[] coeffs,
         double toleranceForZero) throws IOException {
@@ -159,10 +163,10 @@ public class PolynomialRootSolver {
      * and using matrix eigenvalue decomposition to find the eigenvalues as the roots.
      * The code is adapted from numpy.roots() source code.
  
-     * @param coeffs coefficients of a polynomial given in the order of decreasing 
+     @param coeffs coefficients of a polynomial given in the order of decreasing 
      * exponential, e.g. expecting [4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
      * 
-     * @return
+     @return
      * @throws NotConvergedException 
      */
     public static Complex[] solveUsingCompanionMatrix(double[] coeffs) throws NotConvergedException {
@@ -232,6 +236,12 @@ public class PolynomialRootSolver {
         return roots;
     }
     
+    /**
+     *
+     @param p
+     @param eps
+     @return
+     */
     public static int[] nonzero(double[] p, double eps) {
         TIntList idx = new TIntArrayList();
         for (int i = 0; i < p.length; ++i) {
@@ -244,9 +254,9 @@ public class PolynomialRootSolver {
     
     /**
      * solve for the real roots using a companion matrix.
-     * @param coeffs
-     * @param toleranceForZero the value for which any number less than is considered 0.
-     * @return
+     @param coeffs
+     @param toleranceForZero the value for which any number less than is considered 0.
+     @return
      * @throws NotConvergedException 
      */
     public static double[] solveForRealUsingCompanionMatrix(double[] coeffs,
@@ -257,6 +267,12 @@ public class PolynomialRootSolver {
         return parseForRealOnly(roots, toleranceForZero);
     }
     
+    /**
+     *
+     @param roots
+     @param toleranceForZero
+     @return
+     */
     public static double[] reduceToUniqueRoots(double[] roots, double toleranceForZero) {
         TDoubleList keep = new TDoubleArrayList();
         int j;
@@ -280,6 +296,12 @@ public class PolynomialRootSolver {
         return keep.toArray();
     }
     
+    /**
+     *
+     @param roots
+     @param toleranceForZero
+     @return
+     */
     public static double[] parseForRealOnly(Complex[] roots, double toleranceForZero) {
         if (roots == null || roots.length == 0) {
             return new double[]{};

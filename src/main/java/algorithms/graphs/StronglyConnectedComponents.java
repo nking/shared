@@ -88,8 +88,8 @@ public class StronglyConnectedComponents {
     
     /**
      *  find the strongly connected components.
-     * @param graph graph in the form of an adjacency list
-     * @return strongly connected components as a list of linked-lists.  Note
+     @param graph graph in the form of an adjacency list
+     @return strongly connected components as a list of linked-lists.  Note
      * that the return order of the vertices in the list and their 
      * linked-lists is the reverse of the topological sort.
      * 

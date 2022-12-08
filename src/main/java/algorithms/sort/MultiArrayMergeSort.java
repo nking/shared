@@ -17,8 +17,8 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArgThen2nd(float[] a1, float[] a2) {
         MiscSorter.sortBy1stArgThen2nd(a1, a2);
@@ -29,8 +29,8 @@ public class MultiArrayMergeSort {
      * 
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArg(float[] a1, float[] a2) {
         sortBy1stArg(a1, a2, 0, a1.length - 1);
@@ -41,8 +41,8 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArgThen2nd(int[] a1, int[] a2) {
         MiscSorter.sortBy1stArgThen2nd(a1, a2);
@@ -54,10 +54,10 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also, and its used
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also, and its used
      * for sorting when a1's are equal.
-     * @param a3 array of points to apply a1 sorting to also
+     @param a3 array of points to apply a1 sorting to also
      */
     public static void sortBy1stArgThen2nd(int[] a1, int[] a2, int[] a3) {
         if (a1 == null) {
@@ -80,6 +80,12 @@ public class MultiArrayMergeSort {
         sortBy1stArgThen2nd(a1, a2, a3, 0, a1.length - 1);
     }
         
+    /**
+     *
+     @param a1
+     @param a2
+     @param a3
+     */
     public static void sortBy1stArgThen2nd(float[] a1, float[] a2, int[] a3) {
         
         if (a1 == null) {
@@ -107,7 +113,7 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of x.
      * runtime is O(N * log_2(N))
      *
-     * @param xy array of points to be sorted
+     @param xy array of points to be sorted
      */
     public static void sortByYThenX(PairIntArray xy) {
         
@@ -123,10 +129,10 @@ public class MultiArrayMergeSort {
      * is increasing in value for higher indexes for the same a.  swap
      * operations for a and b logic are performed on c and d too.
      * 
-     * @param a
-     * @param b
-     * @param c
-     * @param d 
+     @param a
+     @param b
+     @param c
+     @param d 
      */
     public static void sortBy1stDescThen2ndAsc(int[] a, double[] b, 
         Integer[][] c, int[] d) {
@@ -164,9 +170,9 @@ public class MultiArrayMergeSort {
      * is increasing in value for higher indexes for the same a.  swap
      * operations for a and b logic are performed on c and d too.
      * 
-     * @param a
-     * @param b
-     * @param c
+     @param a
+     @param b
+     @param c
      */
     public static void sortBy1stDescThen2ndAsc(int[] a, double[] b, int[] c) {
         
@@ -192,10 +198,10 @@ public class MultiArrayMergeSort {
     }
    
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     public static void sortBy1stArg(float[] a1, float[] a2, int idxLo, 
         int idxHi) {
@@ -204,11 +210,11 @@ public class MultiArrayMergeSort {
     }
     
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param a3 array of points to apply a1 sorting to also
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param a3 array of points to apply a1 sorting to also
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     private static void sortBy1stArgThen2nd(int[] a1, int[] a2, int[] a3, 
         int idxLo, int idxHi) {
@@ -225,11 +231,11 @@ public class MultiArrayMergeSort {
     }
     
     /**
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
-     * @param a3 array of points to apply a1 sorting to also
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
+     @param a3 array of points to apply a1 sorting to also
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     private static void sortBy1stArgThen2nd(float[] a1, float[] a2, int[] a3, 
         int idxLo, int idxHi) {
@@ -246,9 +252,9 @@ public class MultiArrayMergeSort {
     }
     
     /**
-     * @param xy array of points to be sorted
-     * @param idxLo starting index of sorting of a1, inclusive
-     * @param idxHi stopping index of sorting of a1, inclusive
+     @param xy array of points to be sorted
+     @param idxLo starting index of sorting of a1, inclusive
+     @param idxHi stopping index of sorting of a1, inclusive
      */
     private static void sortByYThenX(PairIntArray xy, int idxLo, int idxHi) {
 
@@ -455,8 +461,8 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortByDecr(int[] a1, int[] a2) {
         if (a1 == null) {
@@ -479,8 +485,8 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortByDecr(Double[] a1, Float[] a2) {
         if (a1 == null) {
@@ -498,6 +504,11 @@ public class MultiArrayMergeSort {
               
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     */
     public static void sortByDecr(float[] a1, int[] a2) {
         MiscSorter.sortByDecr(a1, a2);        
     }
@@ -507,8 +518,8 @@ public class MultiArrayMergeSort {
      * Ties are further sorted by increasing values of a2.
      * runtime is O(N * log_2(N))
      *
-     * @param a1 array of points to be sorted
-     * @param a2 array of points to apply a1 sorting to also
+     @param a1 array of points to be sorted
+     @param a2 array of points to apply a1 sorting to also
      */
     public static void sortByDecr(double[] a1, int[] a2) {
         if (a1 == null) {
@@ -526,6 +537,13 @@ public class MultiArrayMergeSort {
               
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi
+     */
     public static void sortByDecr(int[] a1, int[] a2, int idxLo, int idxHi) {
 
         if (idxLo < idxHi) {
@@ -540,6 +558,13 @@ public class MultiArrayMergeSort {
         }
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi
+     */
     public static void sortByDecr(Double[] a1, Float[] a2, int idxLo, int idxHi) {
 
         if (idxLo < idxHi) {
@@ -554,10 +579,24 @@ public class MultiArrayMergeSort {
         }
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi
+     */
     public static void sortByDecr(float[] a1, int[] a2, int idxLo, int idxHi) {
         MiscSorter.sortByDecr(a1, a2, idxLo, idxHi);        
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param idxLo
+     @param idxHi
+     */
     public static void sortByDecr(double[] a1, int[] a2, int idxLo, int idxHi) {
 
         if (idxLo < idxHi) {
@@ -700,6 +739,14 @@ public class MultiArrayMergeSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     @param idxLo
+     @param idxHi
+     */
     protected static void sortBy1stDescThen2ndAsc(int[] a, double[] b, 
         int[] c, int idxLo, int idxHi) {
         
@@ -715,6 +762,15 @@ public class MultiArrayMergeSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     @param d
+     @param idxLo
+     @param idxHi
+     */
     protected static void sortBy1stDescThen2ndAsc(int[] a, double[] b, 
         Integer[][] c, int[] d, int idxLo, int idxHi) {
         
@@ -730,6 +786,13 @@ public class MultiArrayMergeSort {
         }
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param a3
+     @param a4
+     */
     public static void sortBy1stThen2ndThen3rd(int[] a1, int[] a2, float[] a3, 
         int[] a4) {
         
@@ -747,6 +810,15 @@ public class MultiArrayMergeSort {
         sortBy1stThen2ndThen3rd(a1, a2, a3, a4, 0, a1.length - 1);
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param a3
+     @param a4
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stThen2ndThen3rd(int[] a1, int[] a2, float[] a3, 
         int[] a4, int idxLo, int idxHi) {
         
@@ -762,6 +834,15 @@ public class MultiArrayMergeSort {
         }
     }
     
+    /**
+     *
+     @param a1
+     @param a2
+     @param a3
+     @param a4
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stAscThen2ndDesc(double[] a1, int[] a2, 
         Integer[][] a3, int[] a4, int idxLo, int idxHi) {
         

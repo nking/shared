@@ -37,10 +37,10 @@ public class Gumbel {
 
     /**
      * generate a point in the Gumbel cumulative distribution
-     * @param x a general element, that is a quantile, of the larger range of general variate X
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param x a general element, that is a quantile, of the larger range of general variate X
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double cdf(double x, double location, double scale) {
         double z = (x - location) / scale;
@@ -50,10 +50,10 @@ public class Gumbel {
     /**
      * calculate the probability of a point in the Gumbel discrete probability density function
      * This uses the minimum Gumbel distribution and has a right leaning distribution.
-     * @param x a general element, that is a quantile, of the larger range of general variate X
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param x a general element, that is a quantile, of the larger range of general variate X
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double pdfForMinimum(double x, double location, double scale) {
         double z = (x - location) / scale;
@@ -63,10 +63,10 @@ public class Gumbel {
     /**
      * calculate the probability of a point in the Gumbel discrete probability density function
      * This uses the maximum Gumbel distribution and has a left leaning distribution.
-     * @param x a general element, that is a quantile, of the larger range of general variate X
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param x a general element, that is a quantile, of the larger range of general variate X
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double pdf(double x, double location, double scale) {
         double z = (x - location) / scale;
@@ -76,10 +76,10 @@ public class Gumbel {
     /**
      * calculate the inverse CDF of the Gumbel, that is, a random variate x given the
      * probability alpha.
-     * @param alpha random variate drawn from U(0,1) where U is the uniform distribution.
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param alpha random variate drawn from U(0,1) where U is the uniform distribution.
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double inverseCdf(double alpha, double location, double scale) {
         return location - scale*Math.log(-Math.log(alpha));
@@ -87,10 +87,11 @@ public class Gumbel {
 
     /**
      * sample from a Gumbel distribution G(location, scale).
-     * @param location
-     * @param scale
-     * @param nDraws number of random draws to make
-     * @return a fair sampling from a Gumbel distribution G(location, scale).
+     @param location
+     @param scale
+     @param nDraws number of random draws to make
+     @param rand
+     @return a fair sampling from a Gumbel distribution G(location, scale).
      */
     public static double[] sampleRandomlyFrom(double location, double scale,
         int nDraws, SecureRandom rand) {
@@ -112,12 +113,20 @@ public class Gumbel {
     }
 
     /**
-     * @param x ordered statistic of an observed Gumbel distribution.
+     @param x ordered statistic of an observed Gumbel distribution.
+     @return 
      */
     public static double[] empiricalCdf(double[] x) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
+    /**
+     *
+     @param x
+     @param location
+     @param scale
+     @return
+     */
     public static double[] generateCurve(double[] x, double location, double scale) {
         double[] y = new double[x.length];
         for (int i = 0; i < x.length; ++i) {
@@ -136,8 +145,8 @@ public class Gumbel {
      *     and
      *     https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
      * </pre>
-     * @param x ordered statistic of an observed Gumbel distribution.
-     * @return
+     @param x ordered statistic of an observed Gumbel distribution.
+     @return
      */
     public static double[] fitUsingMethodOfMoments(double[] x) {
 
@@ -171,8 +180,8 @@ public class Gumbel {
      *    and
      *    https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
      * </pre>
-     * @param x ordered values for which to find the best fitting Gumbel distribution parameters
-     * @return
+     @param x ordered values for which to find the best fitting Gumbel distribution parameters
+     @return
      */
     public static double[] fitUsingMaximumLikelihood(double[] x) {
 
@@ -247,10 +256,10 @@ public class Gumbel {
      * <pre>
      *     reference is Chap 19 of "Statistical Distributions" by Evans et al.
      * </pre>
-     * @param x1
-     * @param mu
-     * @param sigma
-     * @return
+     @param x1
+     @param mu
+     @param sigma
+     @return
      */
     public static double[] generateGumbelCurve(double[] x1, double mu, double sigma) {
         if (sigma <= 0) {

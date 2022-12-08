@@ -331,7 +331,7 @@ public class KDTreeTest extends TestCase {
     
     /**
      * Test suite
-     * @return static Test
+     @return static Test
     */
     public static Test suite(){
         System.out.println("Creating a TestSuite for"
@@ -342,7 +342,7 @@ public class KDTreeTest extends TestCase {
 
     /**
      * Set up a Junit test runner
-     * @param args Not used.
+     @param args Not used.
     */
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

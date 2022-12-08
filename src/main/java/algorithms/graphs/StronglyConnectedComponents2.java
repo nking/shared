@@ -26,8 +26,8 @@ public class StronglyConnectedComponents2 {
      * 
      * RT complexity for worse case is O(|V| + |E|).
      * 
-     * @param connected adjacency of connected components
-     * @return an array of component numbers that correspond to the indexes of 
+     @param connected adjacency of connected components
+     @return an array of component numbers that correspond to the indexes of 
      * connected.
      * e.g. [0,1,1,0,2] says that vertexes 0 and 3 are strongly connected, 
      * and vertexes 1 and 2 are strongly connected...

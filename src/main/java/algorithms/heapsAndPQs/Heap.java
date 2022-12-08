@@ -46,6 +46,9 @@ import java.util.logging.Logger;
  */
 public class Heap {
 
+    /**
+     *
+     */
     protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	/** circular doubly linked list of minimum nodes for their respective
@@ -61,7 +64,7 @@ public class Heap {
      * insert node into heap.  runtime is O(1).  makes no attempt to consolidate
      * tree.
      *
-     * @param node
+     @param node
      */
     public void insert(HeapNode node) {
     	if (node.getKey() == DoubleLinkedCircularList.noValue) {
@@ -86,10 +89,18 @@ public class Heap {
         n++;
     }
 
+    /**
+     *
+     @return
+     */
     public boolean isEmpty() {
         return (minimumNode == null);
     }
     
+    /**
+     *
+     @return
+     */
     public HeapNode peekMin() {
         return minimumNode;
     }
@@ -97,7 +108,7 @@ public class Heap {
     /**
      * extract minimum from the heap.
      * runtime is O(log_2 N) or better.
-     * @return
+     @return
      */
     public HeapNode extractMin() {
 
@@ -144,6 +155,10 @@ public class Heap {
         return z;
     }
 
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
         return n;
     }
@@ -234,8 +249,8 @@ public class Heap {
      *
      * runtime is O(1)
      *
-     * @param x
-     * @param decreaseToThisKey
+     @param x
+     @param decreaseToThisKey
      */
     public void decreaseKey(HeapNode x, long decreaseToThisKey) {
         if (decreaseToThisKey > x.getKey()) {
@@ -256,8 +271,8 @@ public class Heap {
     /**
      * removes child node from tree and starts a new one with it.
      *
-     * @param x
-     * @param y
+     @param x
+     @param y
      */
     protected void cut(HeapNode x, HeapNode y) {
         // remove x from child list of y and decrement y.degree
@@ -272,7 +287,7 @@ public class Heap {
     /**
      * c*O(1)
      *
-     * @param y
+     @param y
      */
     protected void cascadingCut(HeapNode y) {
         HeapNode z = y.getParent();
@@ -287,6 +302,11 @@ public class Heap {
     }
 
     // runtime is that of extractMin, O(lg2(n))
+
+    /**
+     *
+     @param x
+     */
     public void remove(HeapNode x) {
         // runtime O(1)
         decreaseKey(x, DoubleLinkedCircularList.minValue);
@@ -298,8 +318,8 @@ public class Heap {
      * searches the rootList and children using in-order traversal to
      * find the node with the given key.
      *
-     * @param key
-     * @return
+     @param key
+     @return
      */
     HeapNode search(long key) {
 
@@ -333,10 +353,17 @@ public class Heap {
         return null;
     }
 
+    /**
+     *
+     @return
+     */
     public DoubleLinkedCircularList getRootList() {
         return rootList ;
     }
 
+    /**
+     *
+     */
     public void printRootList() {
         StringBuilder sb = new StringBuilder(
             String.format("(n=%d rootList.n=%d) ", n, rootList.getNumberOfNodes()));
@@ -394,6 +421,10 @@ public class Heap {
         }
     }
     
+    /**
+     *
+     @param label
+     */
     public void printHeapToTestOut(String label) {
                 
         if (debugWriter == null) {
@@ -413,6 +444,12 @@ public class Heap {
         }
     }
     
+    /**
+     *
+     @param label
+     @param writer
+     * @throws IOException
+     */
     public void printHeap(String label, BufferedWriter writer) throws IOException {
         
         int bufferSize = 1024;//2 * 72 * 4;

@@ -59,14 +59,30 @@ public class KNearestNeighbors {
     private float ymin = Float.MAX_VALUE;
     private float ymax = Float.NEGATIVE_INFINITY;
         
+    /**
+     *
+     @param x
+     @param y
+     */
     public KNearestNeighbors(int[] x, int[] y) {
         init(x, y);
     }
     
+    /**
+     *
+     @param x
+     @param y
+     */
     public KNearestNeighbors(float[] x, float[] y) {
         init(x, y);
     }
     
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @param height
+     */
     public KNearestNeighbors(TLongSet pixIdxs, int width, int height) {
         init(pixIdxs, width, height);
     }
@@ -233,10 +249,25 @@ public class KNearestNeighbors {
         }
     }
     
+    /**
+     *
+     @param k
+     @param x
+     @param y
+     @return
+     */
     public List<PairFloat> findNearest(int k, float x, float y) {
         return findNearest(k, x, y, Float.MAX_VALUE);
     }
         
+    /**
+     *
+     @param k
+     @param x
+     @param y
+     @param maxDistance
+     @return
+     */
     public List<PairFloat> findNearest(int k, float x, float y, float maxDistance) {
        
         // O(log_2(N) at best, but some extreme queries are O(N).
@@ -322,6 +353,11 @@ public class KNearestNeighbors {
         return output;
     }
     
+    /**
+     *
+     @param fileNumber
+     * @throws IOException
+     */
     public void debug(int fileNumber) throws IOException {
         
         Site[] sites = voronoi.getSites();

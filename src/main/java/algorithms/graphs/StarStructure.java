@@ -44,6 +44,10 @@ public class StarStructure {
 
     /** index of root; label of root*/
     public int rootIdx;  
+
+    /**
+     *
+     */
     public int rootLabel;
     /** the adjacent vertexes of root in V[i] treated as leaves.  
     vLabels values are labels.  vLabels is sorted by value already.
@@ -60,8 +64,8 @@ public class StarStructure {
     /**
      * convert the graph vertex rootIndex and it's immediate neighbors into
      * a star structure.
-     * @param g
-     * @param rootIndex the vertex index in g that will be the root of the star structure.
+     @param g
+     @param rootIndex the vertex index in g that will be the root of the star structure.
      */
     public StarStructure(Graph g, int rootIndex) {
         init(g, rootIndex);
@@ -84,6 +88,14 @@ public class StarStructure {
             eL.toArray(), vLIdxs.toArray());
     }
     
+    /**
+     *
+     @param rIdx
+     @param rLabel
+     @param vLabels
+     @param eLabels
+     @param vIndexes
+     */
     public StarStructure(int rIdx, int rLabel, int[] vLabels, 
         int[] eLabels, int[] vIndexes) {
         sortAndSet(rIdx, rLabel, vLabels, eLabels, vIndexes);
@@ -97,11 +109,11 @@ public class StarStructure {
     by ascending sort on vLabels.  All results are stored in this instance.
     NOTE: the design uses specialization of labeling, but could be refactored to use 
     composition.
-     * @param rIdx
-     * @param rLabel
-     * @param vLabels
-     * @param eLabels
-     * @param vIndexes indexes of the vertexes of vLabels in the context of the original graph g.
+     @param rIdx
+     @param rLabel
+     @param vLabels
+     @param eLabels
+     @param vIndexes indexes of the vertexes of vLabels in the context of the original graph g.
     */
     protected void sortAndSet(int rIdx, int rLabel, int[] vLabels, int[] eLabels, int[] vIndexes) {
         MultiArrayMergeSort.sortBy1stArgThen2nd(vLabels, eLabels, vIndexes);
@@ -114,9 +126,9 @@ public class StarStructure {
     
     /**
      * Lemma 4.1
-     * @param s1
-     * @param s2
-     * @return edit distance for transforming s1 into s2.  the cost includes
+     @param s1
+     @param s2
+     @return edit distance for transforming s1 into s2.  the cost includes
      * vertex insert, delete, and substitutions, and edge substitutions.
      */
     public static int calculateEditDistance(StarStructure s1, StarStructure s2) {
@@ -154,9 +166,9 @@ public class StarStructure {
      * for the graph model with vertex labeling, but no edge labeling,
      * calculate the edit distance between star structures s1 and s2.
      * Lemma 4.1
-     * @param s1
-     * @param s2
-     * @return edit distance for transforming s1 into s2.  the cost includes
+     @param s1
+     @param s2
+     @return edit distance for transforming s1 into s2.  the cost includes
      * vertex insert, delete, and substitutions, and edge substitutions.
      */
     public static int calculateEditDistanceV(StarStructure s1, StarStructure s2) {
@@ -192,9 +204,9 @@ public class StarStructure {
     
     /**
      * calculating d(L1, L2) + d(L1E, L2E)
-     * @param s1
-     * @param s2
-     * @return edit distance for transforming s1 into s2.  the cost includes
+     @param s1
+     @param s2
+     @return edit distance for transforming s1 into s2.  the cost includes
      * vertex insert, delete, and substitutions, and edge substitutions where
      * all operations cost +1.
      */
@@ -346,9 +358,9 @@ public class StarStructure {
     /**
      * the edit distance for use with sub-graph search.
      * section 5.2.1 of Zeng et al. 2009.
-     * @param s1
-     * @param s2
-     * @return 
+     @param s1
+     @param s2
+     @return 
      */
     public static int calculateEditDistanceNoRelabeling(StarStructure s1, StarStructure s2) {
         int t = 0;
@@ -368,9 +380,9 @@ public class StarStructure {
      * for the graph model with vertex labeling, but no edge labeling, calculate
      * the edit distance for use with sub-graph search.
      * section 5.2.1 of Zeng et al. 2009.
-     * @param s1
-     * @param s2
-     * @return 
+     @param s1
+     @param s2
+     @return 
      */
     public static int calculateEditDistanceNoRelabelingV(StarStructure s1, StarStructure s2) {
         int t = 0;
@@ -396,9 +408,9 @@ public class StarStructure {
     /**create edit distance matrix for S(g_1) to S(g_2) from 
     StarStructure.calculateEditDistance.
     * for use with approx full-graph search and graphs with vertex and edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrix(StarStructure[] sg1, StarStructure[] sg2) {
         int m = sg1.length;
@@ -423,9 +435,9 @@ public class StarStructure {
      * create edit distance matrix for S(g_1) to S(g_2) from 
     StarStructure.calculateEditDistance.
     * for use with approx full-graph search and graphs with vertex labels and no edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrixV(StarStructure[] sg1, StarStructure[] sg2) {
         int m = sg1.length;
@@ -448,9 +460,9 @@ public class StarStructure {
 
     /**create edit distance matrix for S(g_1) to S(g_2) for use with
      * approx sub-graph search and graphs with vertex and edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrixNoRelabeling(StarStructure[] sg1, StarStructure[] sg2) {
         int m = sg1.length;
@@ -475,9 +487,9 @@ public class StarStructure {
      * create edit distance matrix for S(g_1) to S(g_2) from 
     StarStructure.calculateEditDistance.
     * for use with approx sub-graph search and graphs with vertex labels, but no edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrixNoRelabelingV(StarStructure[] sg1, StarStructure[] sg2) {
         int m = sg1.length;
@@ -499,9 +511,9 @@ public class StarStructure {
     }
     
     /**create multi-set of |V| star structures from graph g with |V| vertices
-     * @param g graph holding adjacency map, vertex labels, and edge labels.
+     @param g graph holding adjacency map, vertex labels, and edge labels.
      * Note that g must use vertices 0 through g.vLabels.size() - 1, inclusive.
-     * @return star structures for each vertex
+     @return star structures for each vertex
      */
     public static StarStructure[] createStarStructureMultiset(Graph g) {
         int n = g.vLabels.size();
@@ -521,6 +533,11 @@ public class StarStructure {
         return out;
     }
     
+    /**
+     *
+     @param s
+     @return
+     */
     public static StarStructure[] copy(StarStructure[] s) {
         int n = s.length;
         StarStructure[] c = new StarStructure[n];
@@ -531,6 +548,10 @@ public class StarStructure {
         return c;
     }
     
+    /**
+     *
+     @return
+     */
     public StarStructure copy() {
         return new StarStructure(rootIdx, rootLabel, 
             Arrays.copyOf(vLabels, vLabels.length), 
@@ -541,9 +562,9 @@ public class StarStructure {
     /**
      * calculate the sum of the degree of the vertices which are adjacent to 
      * vertex v, i.e., support (v) = s(v) = ∑ d(u).
-     * @param sg the graph as an array of star structures.
-     * @param vIdx the index of vertex v in the star structure array sg.
-     * @return 
+     @param sg the graph as an array of star structures.
+     @param vIdx the index of vertex v in the star structure array sg.
+     @return 
      */
     public static int calculateSupport(StarStructure[] sg, int vIdx) {
         int s = 0, jIdx;

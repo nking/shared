@@ -29,19 +29,38 @@ package thirdparty.edu.princeton.cs.algs4;
  *
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
+ @param <T>
  */
 public class Interval2D<T extends Comparable<T>> 
     implements Comparable<Interval2D<T>> { 
     
+    /**
+     *
+     */
     public final Interval<T> intervalX;   // x-interval
+
+    /**
+     *
+     */
     public final Interval<T> intervalY;   // y-interval
    
+    /**
+     *
+     @param intervalX
+     @param intervalY
+     */
     public Interval2D(Interval<T> intervalX, Interval<T> intervalY) {
         this.intervalX = intervalX;
         this.intervalY = intervalY;
     }
 
     // does this 2D interval a intersect b?
+
+    /**
+     *
+     @param b
+     @return
+     */
     public boolean intersects(Interval2D<T> b) {
         if (intervalX.intersects(b.intervalX)) return true;
         if (intervalY.intersects(b.intervalY)) return true;
@@ -49,6 +68,13 @@ public class Interval2D<T extends Comparable<T>>
     }
 
     // does this 2D interval contain (x, y)?
+
+    /**
+     *
+     @param x
+     @param y
+     @return
+     */
     public boolean contains(T x, T y) {
         return intervalX.contains(x) && intervalY.contains(y);
     }
@@ -86,6 +112,11 @@ public class Interval2D<T extends Comparable<T>>
     }
 
     // test client
+
+    /**
+     *
+     @param args
+     */
     public static void main(String[] args) {
         Interval<Double> intervalX = new Interval<Double>(0.0, 1.0);
         Interval<Double> intervalY = new Interval<Double>(5.0, 6.0);

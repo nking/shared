@@ -66,18 +66,19 @@ import java.util.Arrays;
  * 
 * 
  * @author nichole
+ @param <T>
  */
 public class PrimsMinimumSpanningTree<T> {
     
     /**
      * find a minimum spanning tree using Prim's algorithm.
-     * @param graph an adjacency list for the graph, where the index of the array
+     @param graph an adjacency list for the graph, where the index of the array
      * is the vertex number and the keys within each vertex's list node are the
      * vertex on the other end of an edge.
-     * @param edgeWeights map of edge weights with key being pairs of the
+     @param edgeWeights map of edge weights with key being pairs of the
      * vertex numbers.
-     * @param r root node of final mst
-     * @return a minimum spanning tree of the weighted given graph
+     @param r root node of final mst
+     @return a minimum spanning tree of the weighted given graph
      */
     public static TIntObjectMap<SimpleLinkedListNode> mst(
         SimpleLinkedListNode[] graph, TObjectIntMap<PairInt> edgeWeights,

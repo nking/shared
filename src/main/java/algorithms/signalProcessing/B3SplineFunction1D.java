@@ -25,8 +25,8 @@ public class B3SplineFunction1D {
      * "periodicity" : (c(k + N) = c(N))
      * "continuity"  : (c(k + N) = c(k))
      * </pre>
-     * @param input
-     * @return
+     @param input
+     @return
     */
     public float[] calculate(float[] input) {
 
@@ -45,9 +45,9 @@ public class B3SplineFunction1D {
     /**
      * interpolate values around (idx) using a B3 spline.
      *
-     * @param idx
-     * @param data
-     * @return
+     @param idx
+     @param data
+     @return
      */
     public float interpolate1DX(int idx, float[] data) {
 

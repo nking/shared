@@ -47,12 +47,12 @@ public class PrimsMST {
     
     /**
      * 
-     * @param adjCostMap key=vertex1 index, 
+     @param adjCostMap key=vertex1 index, 
      *   value=map with key = vertex2 index and
      *   value = cost of edge between vertex1 and vertex2.  Note that the 
      *   algorithm assumes the map key values are 0 through the number of vertexes
      *   without gaps.
-     * @param maximumWeightInGraph the maximum value of any weight in the graph.
+     @param maximumWeightInGraph the maximum value of any weight in the graph.
      * This sets the word size of the YFastTrie used as the min priority q which
      * is used by default if the VM has enough memory (a large number of items
      * requires more memory).  If the YFastTrie is expected to consume more 
@@ -154,6 +154,10 @@ public class PrimsMST {
         //System.out.println(Arrays.toString(prev));
     }
     
+    /**
+     *
+     @return
+     */
     public int[] getPredeccessorArray() {
         if (prev == null) {
             return null;
@@ -161,6 +165,10 @@ public class PrimsMST {
         return Arrays.copyOf(prev, prev.length);
     }
     
+    /**
+     *
+     @return
+     */
     public int findRoot() {
         // in prev array, since all vertices are connected, all except one
         // should have a predecessor.
@@ -174,6 +182,10 @@ public class PrimsMST {
         return root;
     }
     
+    /**
+     *
+     @return
+     */
     public Map<Integer, LinkedList<Integer>> makeTreeFromPrev() {
         Map<Integer, LinkedList<Integer>> tree = new HashMap<Integer, LinkedList<Integer>>();
         int parent;
@@ -197,7 +209,7 @@ public class PrimsMST {
      * walk the tree in prev as a pre-order traversal and return the indexes
      * of the nodes in that order.
      * The pre-order traversal visits subtrees of root, then left, then right.
-     * @return 
+     @return 
      */
     public TIntList getPreorderIndexes() {
         if (prev == null) {
@@ -262,9 +274,9 @@ public class PrimsMST {
     
     /**
      * 
-     * @param adjCostMap adjacency map with cost.  key=index1, value = map
+     @param adjCostMap adjacency map with cost.  key=index1, value = map
      * with key=index2 and value=cost.
-     * @return maximum cost found in adjCostMap
+     @return maximum cost found in adjCostMap
      */
     public static int maxEdgeCost(TIntObjectMap<TIntIntMap> adjCostMap) {
         int max = Integer.MIN_VALUE;

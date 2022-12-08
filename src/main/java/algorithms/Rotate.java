@@ -22,8 +22,8 @@ public class Rotate {
      * The problem and suggested solution are from "Programming Pearls", 
      * Chapter 2, Problem B.
      * 
-     * @param a array of numbers treated as a circular array.
-     * @param left the number of spaces for which to shift left the values 
+     @param a array of numbers treated as a circular array.
+     @param left the number of spaces for which to shift left the values 
      * within array a. 
      */
     public void rotate(int[] a, int left) {
@@ -61,6 +61,11 @@ public class Rotate {
 
     }
     
+    /**
+     *
+     @param a
+     @param left
+     */
     public void rotate2(int[] a, int left) {
         rotate2(a, a.length, left);
     }
@@ -83,9 +88,9 @@ public class Rotate {
      * The problem and suggested solution are from "Programming Pearls", 
      * Chapter 2, Problem B.
      * 
-     * @param a array of numbers treated as a circular array.
-     * @param n the number of items in the array to sort (i.e. ignoring beyond index n-1).
-     * @param left the number of spaces for which to shift left the values 
+     @param a array of numbers treated as a circular array.
+     @param n the number of items in the array to sort (i.e. ignoring beyond index n-1).
+     @param left the number of spaces for which to shift left the values 
      * within array a.
      */
     public void rotate2(int[] a, int n, int left) {
@@ -229,9 +234,9 @@ public class Rotate {
     /**
      * reverse the array between indexes idxLo and idxHi, inclusive.
      * 
-     * @param a array of numbers
-     * @param idxLo the smallest index of the range to reverse in array a
-     * @param idxHi the largest index, inclusive, of the range to reverse in 
+     @param a array of numbers
+     @param idxLo the smallest index of the range to reverse in array a
+     @param idxHi the largest index, inclusive, of the range to reverse in 
      * array a
      */
     public void reverse(int[] a, int idxLo, int idxHi) {

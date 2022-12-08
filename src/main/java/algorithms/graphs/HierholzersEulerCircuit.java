@@ -41,8 +41,8 @@ public class HierholzersEulerCircuit {
      create a euler circuit from a directed graph.
      Euler circuit is a path that traverses every edge of a graph, and the path 
      ends on the starting vertex.
-     * @param g adjacency list of directed graph
-     * @return 
+     @param g adjacency list of directed graph
+     @return 
      */
     public int[] createCircuit(TIntObjectMap<TIntSet> g) {
         if (g.isEmpty()) {
@@ -59,9 +59,9 @@ public class HierholzersEulerCircuit {
      create a euler circuit from a directed graph.
      Euler circuit is a path that traverses every edge of a graph, and the path 
      ends on the starting vertex.
-     * @param g adjacency list of directed graph
-     * @param startNode
-     * @return 
+     @param g adjacency list of directed graph
+     @param startNode
+     @return 
      */
     public int[] createCircuit(TIntObjectMap<TIntSet> g, int startNode) {
         if (g.isEmpty()) {

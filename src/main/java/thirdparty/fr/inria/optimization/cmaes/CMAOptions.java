@@ -138,7 +138,7 @@ public class CMAOptions implements java.io.Serializable {
 
         /** This is the only place where the reading of a new option needs to be declared 
          * 
-         * @param properties
+         @param properties
          */
         void setOptions(Properties properties) {
             String s;
@@ -172,7 +172,8 @@ public class CMAOptions implements java.io.Serializable {
 		 *  if the string is null or empty. This method should become generic with respect to the
 		 *  type of second argument.  
 		 *  @param s string where the first token is read from
-		 *  @param def double default value, in case the string is empty*/
+		 *  @param def double default value, in case the string is empty
+     @return */
 		public Double getFirstToken(String s, Double def) {
 		    if (s == null)
 		        return def;
@@ -182,7 +183,9 @@ public class CMAOptions implements java.io.Serializable {
 		    return Double.valueOf(ar[0]);
 		}
 
-		/** should become generic with type argument?  */
+		/** should become generic with type argument?
+     @param s
+     @return  */
 		public String getFirstToken(String s) {
 		    if (s == null)
 		        return ""; 
@@ -194,7 +197,8 @@ public class CMAOptions implements java.io.Serializable {
 		 *  if the string is null or empty. This method should become generic with respect to the
 		 *  type of second argument.  
 		 *  @param s string where the first token is read from
-		 *  @param def Integer default value, in case the string is empty*/
+		 *  @param def Integer default value, in case the string is empty
+     @return */
 		public Integer getFirstToken(String s, Integer def) {
 		    if (s == null)
 		        return def;
@@ -231,7 +235,10 @@ public class CMAOptions implements java.io.Serializable {
 		        return s;
 		    }
 
-		/** Returns def if s==null or empty, code dublicate, should become generic */
+		/** Returns def if s==null or empty, code dublicate, should become generic
+     @param s
+     @param def
+     @return  */
 		private Long getFirstToken(String s, Long def) {
 		    if (s == null)
 		        return def;

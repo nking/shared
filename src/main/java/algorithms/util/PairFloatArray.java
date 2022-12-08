@@ -18,12 +18,25 @@ import java.util.Arrays;
  */
 public class PairFloatArray {
     
+    /**
+     *
+     */
     protected float[] x = null;
     
+    /**
+     *
+     */
     protected float[] y = null;
     
+    /**
+     *
+     */
     protected int n = 0;
     
+    /**
+     *
+     @param capacity
+     */
     public PairFloatArray(int capacity) {
         
         x = new float[capacity];
@@ -31,6 +44,9 @@ public class PairFloatArray {
         y = new float[capacity];
     }
     
+    /**
+     *
+     */
     public PairFloatArray() {
         
         x = new float[10];
@@ -38,15 +54,29 @@ public class PairFloatArray {
         y = new float[10];
     }
     
+    /**
+     *
+     @param x
+     @param y
+     */
     public PairFloatArray(float[] x, float[] y) {
         this.x = x;
         this.y = y;
     }
     
+    /**
+     *
+     @return
+     */
     public int getN() {
         return n;
     }
     
+    /**
+     *
+     @param xPoint
+     @param yPoint
+     */
     public void add(float xPoint, float yPoint) {
         
         expandIfNeeded(n + 1);
@@ -57,6 +87,12 @@ public class PairFloatArray {
         n++;
     }
     
+    /**
+     *
+     @param index
+     @param xPoint
+     @param yPoint
+     */
     public void set(int index, float xPoint, float yPoint) {
         
         if (index < 0) {
@@ -69,6 +105,11 @@ public class PairFloatArray {
         y[index] = yPoint;
     }
   
+    /**
+     *
+     @param index
+     @return
+     */
     public float getX(int index) {
         if (index > (n - 1)) {
             throw new IllegalArgumentException("index is out of range");
@@ -76,6 +117,11 @@ public class PairFloatArray {
         return x[index];
     }
     
+    /**
+     *
+     @param index
+     @return
+     */
     public float getY(int index) {
         if (index > (n - 1)) {
             throw new IllegalArgumentException("index is out of range");
@@ -83,14 +129,26 @@ public class PairFloatArray {
         return y[index];
     }
     
+    /**
+     *
+     @return
+     */
     public float[] getX() {
         return x;
     }
     
+    /**
+     *
+     @return
+     */
     public float[] getY() {
         return y;
     }
     
+    /**
+     *
+     @param nTotal
+     */
     protected void expandIfNeeded(int nTotal) {
         
         if (nTotal > x.length) {
@@ -107,6 +165,10 @@ public class PairFloatArray {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public PairFloatArray copy() {
         
         PairFloatArray clone = new PairFloatArray(n);
@@ -121,8 +183,8 @@ public class PairFloatArray {
     
     /**
      * remove indexes from idxLo to idxHi, inclusive
-     * @param idxLo first index to be removed, inclusive
-     * @param idxHi last index to be removed, inclusive
+     @param idxLo first index to be removed, inclusive
+     @param idxHi last index to be removed, inclusive
      */
     public void removeRange(int idxLo, int idxHi) {
         
@@ -156,6 +218,10 @@ public class PairFloatArray {
         n -= nRemove;
     }
     
+    /**
+     *
+     @return
+     */
     public PairIntArray toPairIntArray() {
         PairIntArray out = new PairIntArray();
         for (int i = 0; i < n; i++) {

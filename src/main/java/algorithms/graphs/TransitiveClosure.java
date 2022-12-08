@@ -27,19 +27,29 @@ import java.util.Arrays;
  */
 public class TransitiveClosure {
     
+    /**
+     *
+     */
     protected boolean debug = false;
     
+    /**
+     *
+     */
     public TransitiveClosure() {
     }
     
+    /**
+     *
+     @param useDebug
+     */
     public void setDebug(boolean useDebug) {
         this.debug = useDebug;
     }
     
     /**
      * runtime complexity is O(n^3) where n is w.length
-     * @param w a square adjacency matrix for a DAG with |V|=w.length.
-     * @return 
+     @param w a square adjacency matrix for a DAG with |V|=w.length.
+     @return 
      */
     public boolean[][] calc(boolean[][] w) {
                 
@@ -86,6 +96,11 @@ public class TransitiveClosure {
         return t;
     }
     
+    /**
+     *
+     @param w
+     @return
+     */
     public static VeryLongBitString[] convert(boolean[][] w) {
         int n = w.length;
 
@@ -106,8 +121,8 @@ public class TransitiveClosure {
     
     /**
      * runtime complexity is O(n^3) where n is w.length.
-     * @param w a square adjacency matrix for a DAG with |V|=w.length.
-     * @return 
+     @param w a square adjacency matrix for a DAG with |V|=w.length.
+     @return 
      */
     public VeryLongBitString[] calc(VeryLongBitString[] w) {
                 

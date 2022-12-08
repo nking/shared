@@ -188,6 +188,11 @@ public class FlowNetwork {
     // the graph used in path algorithms.
     private PathNodes pathNodes = null;
     
+    /**
+     *
+     @param g
+     @param m
+     */
     public FlowNetwork(Graph g, TIntIntMap m) {
 
         this.nLeft = g.getNLeft();
@@ -264,10 +269,18 @@ public class FlowNetwork {
         
     }
     
+    /**
+     *
+     @return
+     */
     public int getMaxC() {
         return maxC;
     }
     
+    /**
+     *
+     @return
+     */
     public int getMinC() {
         return minC;
     }
@@ -276,7 +289,7 @@ public class FlowNetwork {
      * <pre>
      * cp(f) = c(f) - |f|*(pd(|-) - pd(-|))
      * </pre>
-     * @return 
+     @return 
      */
     public double calcNetCost() {
         
@@ -291,7 +304,7 @@ public class FlowNetwork {
     /**
      * total flow out of the source (or equivalently,
      * into the sink or equivalently out of all bipartite arcs).
-     * @return 
+     @return 
      */
     public double calcTotalFlow() {
         
@@ -319,7 +332,7 @@ public class FlowNetwork {
     
     /**
      * c(f) = summation over arcs of (f(v,w) * c(v,w))
-     * @return 
+     @return 
      */
     public double calcFluxCost() {
         
@@ -361,16 +374,39 @@ public class FlowNetwork {
         return sum;
     }
     
+    /**
+     *
+     @param idx
+     @return
+     */
     public float getSourceToLeftFlow(int idx) {
         return sourceToLeftF.get(idx);
     }
+
+    /**
+     *
+     @param idx
+     @return
+     */
     public float getRightToSinkFlow(int idx) {
         return rightToSinkF.get(idx);
     }
+
+    /**
+     *
+     @param idx
+     @return
+     */
     public int getSourceToLeftCost(int idx) {
         return sourceToLeftC.get(idx);
     }
     
+    /**
+     *
+     @param u
+     @param v
+     @return
+     */
     public float calcNetCost(int u, int v) {
 
         if (u == sourceNode) {
@@ -389,6 +425,12 @@ public class FlowNetwork {
         return cp;
     }
     
+    /**
+     *
+     @param u
+     @param v
+     @return
+     */
     public float getFlow(int u, int v) {
 
         if (u == sourceNode) {
@@ -400,6 +442,11 @@ public class FlowNetwork {
         return f.get(new PairInt(u, v));
     }
     
+    /**
+     *
+     @param v
+     @return
+     */
     protected float calcSourceNetCost(int v) {
 
         int cost = sourceToLeftC.get(v);
@@ -411,6 +458,11 @@ public class FlowNetwork {
         return cp;
     }
 
+    /**
+     *
+     @param u
+     @return
+     */
     protected float calcSinkNetCost(int u) {
 
         int cost = rightToSinkC.get(u);
@@ -422,6 +474,11 @@ public class FlowNetwork {
         return cp;
     }
 
+    /**
+     *
+     @param p
+     @return
+     */
     public float calcNetCost(PairInt p) {
         return calcNetCost(p.getX(), p.getY());
     }
@@ -429,8 +486,8 @@ public class FlowNetwork {
     /**
      * assertion, pg 44, I1.
      * The flux f on NG is a flow of value |f|=s
-     * @param s
-     * @return 
+     @param s
+     @return 
      */
     boolean assertFlowValue(int s) {
                 
@@ -466,9 +523,9 @@ public class FlowNetwork {
     /**
      * assert pg 52, I1'.
      * assert that flux f on NG is a flow of value |f|=s
-     * @param nMatchingsHK the number of matched
+     @param nMatchingsHK the number of matched
      * nodes from hopcroft-karp before refine is invoked.
-     * @return the number of surplus nodes which is the same
+     @return the number of surplus nodes which is the same
      * as the number of deficit nodes.  this may be smaller
      * than nMatchingsHK after an iteration of refine
      */
@@ -508,6 +565,10 @@ public class FlowNetwork {
         return (Math.abs(flow - (nMatchingsHK - nSurplus)) < 1);
     }
     
+    /**
+     *
+     @return
+     */
     public boolean printSurplusAndDeficit() {
     
         TIntHashSet surplus = new TIntHashSet();
@@ -568,8 +629,8 @@ public class FlowNetwork {
     /**
      * assert pg 44, I2.
      * the prices at all nodes are multiples of eps
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean assertPricesAreQuantizedEps(float eps) {
         
@@ -590,8 +651,8 @@ public class FlowNetwork {
     /**
      * raise prices on all nodes so that every arc becomes eps-proper, 
      * for the resulting pseudoflow f
-     * @param eps
-     * @param q
+     @param eps
+     @param q
      */
     public void raisePricesUntilEpsProper(float eps, int q) {
         
@@ -703,8 +764,8 @@ public class FlowNetwork {
     /**
      * Every arc of NG, idle or saturated, is eps-proper.
      * all bipartite arcs are asserted, but not sink and source
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean integralBipartiteFlowIsEpsProper(float eps) {
         
@@ -740,8 +801,8 @@ public class FlowNetwork {
      * assert pg 44 I3.
      * Every arc of NG, idle or saturated, is eps-proper.
      * all bipartite arcs and sink and source arcs should be eps-proper.
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean integralFlowIsEpsProper(float eps) {
         
@@ -828,7 +889,7 @@ public class FlowNetwork {
     
     /**
      * Every arc of the network flow, idle or saturated, is proper.
-     * @return 
+     @return 
      */
     public boolean integralFlowIsProper() {
         
@@ -862,8 +923,8 @@ public class FlowNetwork {
     /**
      * assert pg 44, I4.
      * Every saturated bipartite arc is eps-snug.
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean assertSaturatedBipartiteIsEpsSnug(float eps) {
         
@@ -901,6 +962,10 @@ public class FlowNetwork {
         return true;
     }
     
+    /**
+     *
+     @param surplus
+     */
     public void getSurplusLeftIndexes(TIntSet surplus) {
 
         for (int i = 0; i < nLeft; ++i) {
@@ -926,6 +991,10 @@ public class FlowNetwork {
         }
     }  
     
+    /**
+     *
+     @param deficit
+     */
     public void getDeficitRightIndexes(TIntSet deficit) {
 
         // key = right, values = left
@@ -996,89 +1065,161 @@ public class FlowNetwork {
      0 < cp(v,w) <= eps
      NOTE that eps-tight arcs are just barely eps-proper.
     */
+
+    /**
+     *
+     @return
+     */
+
     
     public TIntObjectHashMap<TIntSet> getForwardArcs() {
         return forwardArcs;
     }
 
+    /**
+     *
+     @return
+     */
     public TObjectIntHashMap<PairInt> getCosts() {
         return c;
     }
 
+    /**
+     *
+     @return
+     */
     public TObjectFloatHashMap<PairInt> getFlow() {
         return f;
     }
 
+    /**
+     *
+     @param idx
+     @param value
+     */
     public void setLeftPrice(int idx, float value) {
         pLeft[idx] = value;
     }
 
+    /**
+     *
+     @param idx
+     @param value
+     */
     public void setRightPrice(int idx, float value) {
         log.fine("add to right " + idx + " : " + pRight[idx] 
             + "  + " + value + " = " + (pRight[idx] + value));
         pRight[idx] = value;
     }
     
+    /**
+     *
+     @param idx
+     @param value
+     */
     public void addToLeftPrice(int idx, float value) {
         log.fine("add to left " + idx + " : " + pLeft[idx] 
             + " + " + value + " = " + (pLeft[idx] + value));
         pLeft[idx] += value;
     }
 
+    /**
+     *
+     @param value
+     */
     public void addToSourcePrice(float value) {
         log.fine("add to source : " + pLeft[sourceNode] 
             + " + " + value + " = " + (pLeft[sourceNode] + value));
         pLeft[sourceNode] += value;
     }
 
+    /**
+     *
+     @param value
+     */
     public void addToSinkPrice(float value) {
         log.fine("add to sink : " + pLeft[sinkNode] 
             + " + " + value + " = " + (pLeft[sinkNode] + value));
         pLeft[sinkNode] += value;
     }
 
+    /**
+     *
+     @param idx
+     @param value
+     */
     public void addToRightPrice(int idx, float value) {
         pRight[idx] += value;
     }
     
+    /**
+     *
+     @param idx
+     @return
+     */
     public float getLeftPrice(int idx) {
         return pLeft[idx];
     }
 
+    /**
+     *
+     @param idx
+     @return
+     */
     public float getRightPrice(int idx) {
         return pRight[idx];
     }
 
     /**
-     * @return the number of left vertices
+     @return the number of left vertices
      */
     public int getNLeft() {
         return nLeft;
     }
 
     /**
-     * @return the number of right vertices
+     @return the number of right vertices
      */
     public int getNRight() {
         return nRight;
     }
     
+    /**
+     *
+     @return
+     */
     public int getSinkNode() {
         return sinkNode;
     }
     
+    /**
+     *
+     @return
+     */
     public int getSourceNode() {
         return sourceNode;
     }
 
+    /**
+     *
+     @return
+     */
     public TIntSet getSourceForwardArcs() {
         return sourceForwardArcs;
     }
 
+    /**
+     *
+     @return
+     */
     public TIntSet getSinkForwardArcs() {
         return sinkForwardArcs;
     }
 
+    /**
+     *
+     @param idx
+     */
     public void augmentSourceToLeftFlowAndArc(int idx) {
         
         if (sourceToLeftC.containsKey(idx)) {
@@ -1100,6 +1241,10 @@ public class FlowNetwork {
         }
     }
     
+    /**
+     *
+     @param idx
+     */
     public void augmentRightToSinkFlowAndArc(int idx) {
             
         if (rightToSinkF.containsKey(idx)) {
@@ -1121,6 +1266,11 @@ public class FlowNetwork {
         }
     }
     
+    /**
+     *
+     @param idx1
+     @param idx2
+     */
     public void augmentFlowAndArc(int idx1, int idx2) {
         
         assert(forwardArcs.containsKey(idx1)
@@ -1147,6 +1297,10 @@ public class FlowNetwork {
         }
     }
         
+    /**
+     *
+     @return
+     */
     public int calculateNumberOfSaturatedArcs() {
     
         int n = 0;
@@ -1171,6 +1325,9 @@ public class FlowNetwork {
         return n;
     }
 
+    /**
+     *
+     */
     public void printSaturatedLinks() {
 
         TIntObjectIterator<TIntSet> iter = forwardArcs.iterator();
@@ -1194,6 +1351,9 @@ public class FlowNetwork {
         
     }
     
+    /**
+     *
+     */
     public void printNetCosts() {
 
         StringBuilder sb = new StringBuilder();
@@ -1241,6 +1401,10 @@ public class FlowNetwork {
         log.fine(sb.toString());
     }
 
+    /**
+     *
+     @return
+     */
     public TIntIntMap extractMatches() {
 
         TIntIntMap m = new TIntIntHashMap();
@@ -1268,7 +1432,7 @@ public class FlowNetwork {
     /**
      * given value, modify prices such that
      * //pd^~(v) = math.floor(pd(v) + value)
-     * @param value
+     @param value
      */
     public void addToAllPrices(float value) {
 
@@ -1281,6 +1445,11 @@ public class FlowNetwork {
         }
     }
 
+    /**
+     *
+     @param outPutSurplus
+     @param outPutDeficit
+     */
     public void zeroTheMatchedBipartiteFlow(TIntSet outPutSurplus, 
         TIntSet outPutDeficit) {
         
@@ -1309,12 +1478,19 @@ public class FlowNetwork {
         }
     }
 
+    /**
+     *
+     */
     public void createPathNodes() {
         if (pathNodes == null) {
             pathNodes = new PathNodes(nLeft, nRight);
         }
     }
     
+    /**
+     *
+     @param key
+     */
     public void resetPathNodes(long key) {
         if (pathNodes == null) {
             pathNodes = new PathNodes(nLeft, nRight);
@@ -1323,6 +1499,10 @@ public class FlowNetwork {
         }
     }
     
+    /**
+     *
+     @return
+     */
     public PathNodes getPathNodes() {
         return pathNodes;
     }

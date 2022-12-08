@@ -85,23 +85,52 @@ public class AStar {
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
     */
+
+    /**
+     *
+     */
+
     protected TIntIntMap[] w = null;
     
     // f(n) = g(n) + h(n)
+
+    /**
+     *
+     */
     protected int[] f = null;
     
     // g(n) = distance from source to node n
+
+    /**
+     *
+     */
     protected int[] g = null;
     
     // h(n) = heuristic distance from node n to destination
+
+    /**
+     *
+     */
     protected int[] h = null;
     
+    /**
+     *
+     */
     protected int[] visited = null;
 
+    /**
+     *
+     */
     protected int[] predecessor = null;   
     
+    /**
+     *
+     */
     protected int src = -1;
 
+    /**
+     *
+     */
     protected int dest = -1;
     
     private int sentinel = Integer.MAX_VALUE;
@@ -110,9 +139,17 @@ public class AStar {
     private int maxValue = sentinel - 1;
 
     // key is cost of path so far plus the edge weight
+
+    /**
+     *
+     */
     protected MinHeapForRT2012 heap = null;
 
     // refs to nodes internal to heap for decrease key operations
+
+    /**
+     *
+     */
     protected HeapNode[] nodes = null;
     
     private Logger log = Logger.getLogger(getClass().getSimpleName());
@@ -121,16 +158,16 @@ public class AStar {
     
     /**
      *
-     * @param dAG directed acyclic graph where the main index of the object array
+     @param dAG directed acyclic graph where the main index of the object array
      * is the vertex number, and each vertex has a linked list of outgoing 
      * edges connecting to the vertexes held in each linked list node key.
      * Note that all vertexes, including edge vertexes, must be present as an
      * index of the array dAG, i.e. all vertexes must have numerical value 
      * less than dAG.length.
-     * @param weights the edge weights in format of outer array index being the
+     @param weights the edge weights in format of outer array index being the
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
-     * @param heuristics an array of feasible heuristics with the array index 
+     @param heuristics an array of feasible heuristics with the array index 
      * being the node index.
      <pre>
      for more information, see:
@@ -138,8 +175,8 @@ public class AStar {
         http://ai.stanford.edu/~latombe/cs121/2011/slides/D-heuristic-search.pdf
         https://michael.kim/blog/puzzle
      </pre>
-     * @param sourceVertex the source vertex index
-     * @param destVertex the destination vertex index
+     @param sourceVertex the source vertex index
+     @param destVertex the destination vertex index
      */
     public AStar(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, 
         int[] heuristics,
@@ -326,8 +363,8 @@ public class AStar {
     
     /**
      * get shortest path from source to idx
-     * @param idx
-     * @return 
+     @param idx
+     @return 
      */
     public int getDistanceFromSrc(int idx) {
         if (idx < 0 || idx >= graph.length) {
@@ -341,8 +378,8 @@ public class AStar {
     
     /**
      * get shortest path from source to destIndex
-     * @param destVertex
-     * @return 
+     @param destVertex
+     @return 
      */
     public int[] getShortestPathToVertex(int destVertex) {
         if (destVertex < 0 || destVertex >= graph.length) {
@@ -378,6 +415,11 @@ public class AStar {
         return p;
     }
     
+    /**
+     *
+     @param vertexes
+     @return
+     */
     public int getSumOfPath(int[] vertexes) {
         if (vertexes == null) {
             throw new IllegalArgumentException("vertexes cannot be null");

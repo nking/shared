@@ -8,6 +8,12 @@ package thirdparty.fr.inria.optimization.cmaes.fitness;
 public abstract class AbstractObjectiveFunction implements 
 IObjectiveFunction,
 IObjectiveFunctionParallel  { 
+
+    /**
+     *
+     @param x
+     @return
+     */
     abstract public double valueOf(double[] x);
     public double [] valuesOf(double[][] pop) {
         double [] res = new double[pop.length];
@@ -15,6 +21,12 @@ IObjectiveFunctionParallel  {
             res[i] = valueOf(pop[i]);
         return res;
     }
+
+    /**
+     *
+     @param x
+     @return
+     */
     public boolean isFeasible(double[] x) {
     	return true;
     }

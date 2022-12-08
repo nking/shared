@@ -21,13 +21,14 @@ public class MultivariateNormalDistribution {
      * sample from a multivariate normal distribution N(m⃗, K) following
      * Strang's SVD in machine learning, that is using sqrt(K) for a factor to
      * the generated unit standard normal distribution.
-     * @param m vector of means for multivariate distribution.
-     * @param k double array of covariance matrix for multivariate distribution.
+     @param m vector of means for multivariate distribution.
+     @param k double array of covariance matrix for multivariate distribution.
      * must be a symmetric positive definite matrix.
-     * @param nSamples number of samples to generate of length m.length.  e.g. if m is length 2 and
+     @param nSamples number of samples to generate of length m.length.  e.g. if m is length 2 and
      *                   sampleSize is 3, the method returns 3 rows of length 2.
-     * @return a fair sampling from a normal distribution N(M, K) os length sampleSize.
+     @return a fair sampling from a normal distribution N(M, K) os length sampleSize.
      * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double[][] sampleRandomlyFrom0(double[] m, double[][] k, int nSamples) throws NotConvergedException, NoSuchAlgorithmException {
 
@@ -42,12 +43,13 @@ public class MultivariateNormalDistribution {
      * sample from a multivariate normal distribution N(m⃗, K) following
      * Strang's SVD in machine learning, that is using sqrt(K) for a factor to
      * the generated unit standard normal distribution.
-     * @param m vector of means for multivariate distribution.
-     * @param k double array of covariance matrix for multivariate distribution.
+     @param m vector of means for multivariate distribution.
+     @param k double array of covariance matrix for multivariate distribution.
      * must be a symmetric positive definite matrix.
      *          If it isn't, use MatrixUtil.nearestPositiveSemidefiniteToA() first.
-     * @return a fair sampling from a normal distribution N(M, K).
+     @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double[] sampleRandomlyFrom0(double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
 
@@ -91,12 +93,14 @@ public class MultivariateNormalDistribution {
      *     sigma is the covariance, and Z is N(O, I) which is the
      *     unit standard normal distribution.
      * </pre>
-     * @param m vector of means for multivariate distribution.
-     * @param k double array of covariance matrix for multivariate distribution.
+     @param u
+     @param m vector of means for multivariate distribution.
+     @param k double array of covariance matrix for multivariate distribution.
      *          k should be a symmetric positive definite matrix.
      *          if it isn't, use MatrixUtil.nearestPositiveSemidefiniteToA() first.
-     * @return a fair sampling from a normal distribution N(M, K).
+     @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     static double[] _sampleFrom0(double[] u, double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
         
@@ -202,11 +206,12 @@ public class MultivariateNormalDistribution {
      * sample from a multivariate normal distribution N(m⃗, K) using 
      * the Cholesky decomposition for a factor to
      * the generated unit standard normal distribution.
-     * @param m vector of means for multivariate distribution.
-     * @param k double array of covariance matrix for multivariate distribution.
+     @param m vector of means for multivariate distribution.
+     @param k double array of covariance matrix for multivariate distribution.
      * must be a symmetric positive definite matrix.
-     * @return a fair sampling from a normal distribution N(M, K).
+     @return a fair sampling from a normal distribution N(M, K).
      * @throws no.uib.cipr.matrix.NotConvergedException
+     * @throws java.security.NoSuchAlgorithmException
      */
     public static double[] sampleRandomlyFrom1(double[] m, double[][] k) throws NotConvergedException, NoSuchAlgorithmException {
         
@@ -234,10 +239,10 @@ public class MultivariateNormalDistribution {
 
     /**
      *
-     * @param u random selection of x from randomSampleOfUnitStandard
-     * @param m
-     * @param k
-     * @return
+     @param u random selection of x from randomSampleOfUnitStandard
+     @param m
+     @param k
+     @return
      * @throws NotConvergedException
      * @throws NoSuchAlgorithmException
      */

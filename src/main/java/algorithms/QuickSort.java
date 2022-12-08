@@ -16,12 +16,17 @@ public class QuickSort {
     
     /**
      * sort a from index idxLo to idxHi, inclusive.
-     * @param a items to sort
+     @param a items to sort
      */
     public static void sort(float[] a) {
         sort(a, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void descendingSort(int[] a, int[] b) {
         
         if (a == null) {
@@ -37,6 +42,12 @@ public class QuickSort {
         descendingSort(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param a
+     @param b
+     */
     public static <T extends Object> void descendingSort(int[] a, T[] b) {
         
         if (a == null) {
@@ -52,6 +63,11 @@ public class QuickSort {
         descendingSort(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void descendingSort(TIntList a, List<? extends Object> b) {
         
         if (a == null) {
@@ -67,6 +83,11 @@ public class QuickSort {
         descendingSort(a, b, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void descendingSort(List<? extends Number> a, List<? extends Object> b) {
         
         if (a == null) {
@@ -82,6 +103,10 @@ public class QuickSort {
         descendingSort(a, b, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param a
+     */
     public static void descendingSort(double[] a) {
         
         if (a == null) {
@@ -91,6 +116,11 @@ public class QuickSort {
         descendingSort(a, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(int[] a, Object[][] b) {
         
         if (a == null) {
@@ -106,10 +136,20 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(int[] a, int[] b) {
         MiscSorter.sortBy1stArg(a, b);    
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(TFloatList a, int[] b) {
         if (b.length != a.size()) {
             throw new IllegalArgumentException("a and b must be the same length");
@@ -117,6 +157,10 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.size() - 1);    
     }
     
+    /**
+    ascending sort of abc
+    @param abc array to sort
+    */
     public static void sortByA(IntIntDouble[] abc) {
         
         if (abc == null) {
@@ -126,6 +170,12 @@ public class QuickSort {
         sortByA(abc, 0, abc.length - 1);
     }
     
+    /**
+    ascending sort of a
+    @param a array to sort
+    @param b array to sort using order of a
+    @param <T> paramter type of objects in list b
+    */
     public static <T> void sortBy1stArg(int[] a, List<T> b) {
     
         if (a == null) {
@@ -143,8 +193,8 @@ public class QuickSort {
 
     /**
      * sort a by ascending values and perform the same swap operation on b.
-     * @param a items to sort
-     * @param b items to be sorted by same order as a
+     @param a items to sort
+     @param b items to be sorted by same order as a
      */
     public static void sortBy1stArg(float[] a, int[] b) {
         
@@ -161,6 +211,11 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(int[] a, Object[] b) {
         
         if (a == null) {
@@ -176,6 +231,11 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(float[] a, Object[] b) {
         
         if (a == null) {
@@ -191,6 +251,11 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(TDoubleList a, int[] b) {
         
         if (a == null) {
@@ -206,6 +271,11 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(TFloatList a, TIntList b) {
 
         if (a == null) {
@@ -221,6 +291,12 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param a
+     @param b
+     */
     public static <T> void sortBy1stArg(TFloatList a, List<T> b) {
 
         if (a == null) {
@@ -236,6 +312,12 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     */
     public static void sortBy1stArg(TFloatList a, TIntList b, TIntList c) {
 
         if (a == null) {
@@ -254,6 +336,12 @@ public class QuickSort {
         sortBy1stArg(a, b, c, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     */
     public static void sortBy1stArg(TIntList a, TDoubleList b,
         TIntList c) {
         
@@ -276,6 +364,11 @@ public class QuickSort {
         sortBy1stArg(a, b, c, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stArg(TIntList a, TIntList b) {
         
         if (a == null) {
@@ -291,10 +384,28 @@ public class QuickSort {
         sortBy1stArg(a, b, 0, a.size() - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param <S>
+     @param a
+     @param b
+     @param c
+     */
     public static <T, S> void sortBy1stArgDesc(int[] a, List<T> b, List<S> c) {
         sortBy1stArgDesc(a, b, c, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param <S>
+     @param a
+     @param b
+     @param c
+     @param idxLo
+     @param idxHi
+     */
     public static <T, S> void sortBy1stArgDesc(int[] a, List<T> b, List<S> c, int idxLo, 
         int idxHi) {
         
@@ -369,10 +480,11 @@ public class QuickSort {
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
-     * @param b items to be sorted by same order as a
-     * @param idxLo low index of a
-     * @param idxHi high index of a
+     @param a items to sort
+     @param b items to be sorted by same order as a
+     @param c items to be sorted by same order as a
+     @param idxLo low index of a
+     @param idxHi high index of a
      */
     public static void sortBy1stArg(TIntList a, TDoubleList b, 
         TIntList c, int idxLo, int idxHi) {
@@ -444,10 +556,11 @@ public class QuickSort {
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
-     * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param b items to be sorted by same order as a
+     @param c items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TFloatList a, TIntList b,  
         TIntList c, int idxLo, int idxHi) {
@@ -519,10 +632,10 @@ public class QuickSort {
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
-     *      * @param b items to be sorted by same order as a
-     *      * @param idxLo low index of a sort range, inclusive
-     *      * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TFloatList a, int[] b, int idxLo, int idxHi) {
         
@@ -584,9 +697,9 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+      @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TFloatList a, TIntList b, 
         int idxLo, int idxHi) {
@@ -646,9 +759,10 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param <T> parameter type of objects in b
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static <T> void sortBy1stArg(TFloatList a, List<T> b, 
         int idxLo, int idxHi) {
@@ -708,9 +822,9 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+      @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TIntList a, TIntList b, int idxLo, int idxHi) {
         
@@ -767,9 +881,9 @@ public class QuickSort {
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param abc items to sort
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param abc items to sort
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortByA(IntIntDouble[] abc, int idxLo, 
         int idxHi) {
@@ -815,9 +929,9 @@ public class QuickSort {
     /**
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
-     *@param idxLo low index of a sort range, inclusive
-     *      * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sort(float[] a, int idxLo, int idxHi) {
         
@@ -861,10 +975,11 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
+     @param <T>
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static <T extends Object> void descendingSort(int[] a, T[] b, int idxLo, int idxHi) {
         
@@ -922,10 +1037,10 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
-     * @param b items to sort
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param b items to sort
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void descendingSort(int[] a, int[] b, int idxLo, int idxHi) {
         
@@ -983,11 +1098,11 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param <T> type of items in list b
+     @param <T> type of items in list b
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static <T extends Object> void descendingSort(
         TIntList a, List<T> b, int idxLo, int idxHi) {
@@ -1046,9 +1161,12 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
+     @param <S>
+     @param a items to sort
+     @param b items to sort by order of a
+     @param <T> type of items in list b
      @param idxLo low index of a sort range, inclusive
-      * @param idxHi high index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static <S extends Number, T extends Object> void descendingSort(
         List<S> a, List<T> b, int idxLo, int idxHi) {
@@ -1107,9 +1225,9 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive and by descending values.  
      * The swap operations performed on a are performed on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
+     @param a items to sort
      @param idxLo low index of a sort range, inclusive
-      * @param idxHi high index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void descendingSort(double[] a, int idxLo, int idxHi) {
         
@@ -1156,9 +1274,9 @@ public class QuickSort {
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(float[] a, int[] b, int idxLo, int idxHi) {
         
@@ -1209,9 +1327,9 @@ public class QuickSort {
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(TDoubleList a, int[] b, int idxLo, int idxHi) {
         
@@ -1262,9 +1380,9 @@ public class QuickSort {
      * perform the same operations on b.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(int[] a, int[] b, int idxLo, int idxHi) {
         MiscSorter.sortBy1stArg(a, b, idxLo, idxHi); 
@@ -1274,9 +1392,9 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(int[] a, Object[][] b, int idxLo, int idxHi) {
         
@@ -1336,7 +1454,10 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
+     @param b items to be sorted by same order as a
+     @param <T> type of items in list b
+     @param <S> type of items in list c
+     @param c
      */
     public static <T, S> void sortBy1stArg(float[] a, List<T> b, List<S> c) {
         
@@ -1360,9 +1481,12 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param <T> type of items in list b
+     @param <S> type of items in list c
+     @param c
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static <T, S> void sortBy1stArg(float[] a, List<T> b, List<S> c, int idxLo, int idxHi) {
         
@@ -1433,9 +1557,9 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(int[] a, Object[] b, int idxLo, int idxHi) {
         
@@ -1495,9 +1619,10 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param <T> type of items in list b
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static <T> void sortBy1stArg(float[] a, List<T> b, int idxLo, int idxHi) {
         
@@ -1557,9 +1682,9 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.  Uses the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
      @param a items to sort
-      * @param b items to be sorted by same order as a
-     * @param idxLo low index of a sort range, inclusive
-     * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted by same order as a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stArg(float[] a, Object[] b, int idxLo, int idxHi) {
         
@@ -1619,13 +1744,13 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive.
      * It's an adaption of the optimized
      * qsort3 from the book "Programming in Pearls" by Jon Bentley.
-     * @param a items to sort
-     * @param b an array that will receive the same swap operations as are 
-     * performed on a
-     * @param c an array that will receive the same swap operations as are 
-     * performed on a
-     * @param idxLo low index of a sort range, inclusive
-     *      * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param b an array that will receive the same swap operations as are 
+     performed on a
+     @param c an array that will receive the same swap operations as are 
+     performed on a
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sort(float[] a, int[] b, int[] c, int idxLo, int idxHi) {
         
@@ -1687,7 +1812,7 @@ public class QuickSort {
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a items to sort
+     @param a items to sort
      */
     public static void sortByDimension1FirstSecond(int[][] a) {
         if (a == null) {
@@ -1705,9 +1830,9 @@ public class QuickSort {
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a items to sort
-     * @param idxLo the first index in [0][index] to sort
-     * @param idxHi the last index in [0][index] to sort, inclusive
+     @param a items to sort
+     @param idxLo the first index in [0][index] to sort
+     @param idxHi the last index in [0][index] to sort, inclusive
      */
     public static void sortByDimension1FirstSecond(int[][] a, int idxLo, int idxHi) {
         if (a == null) {
@@ -1766,7 +1891,7 @@ public class QuickSort {
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a items to sort
+     @param a items to sort
      */
     public static void sortByDimension1FirstSecondThird(int[][] a) {
         if (a == null) {
@@ -1784,9 +1909,9 @@ public class QuickSort {
     /**
      * sorts along [0][index] and if there is a tie the value [1][index] is
      * used to decide order.
-     * @param a items to sort
-     * @param idxLo the first index in [0][index] to sort
-     * @param idxHi the last index in [0][index] to sort, inclusive
+     @param a items to sort
+     @param idxLo the first index in [0][index] to sort
+     @param idxHi the last index in [0][index] to sort, inclusive
      */
     public static void sortByDimension1FirstSecondThird(int[][] a, int idxLo, int idxHi) {
         if (a == null) {
@@ -1869,6 +1994,13 @@ public class QuickSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     @param d
+     */
     public static void sortBy1stThen2ndThen3rd(float[] a, float[] b, 
         float[] c, int[] d) {
     
@@ -1883,6 +2015,15 @@ public class QuickSort {
         sortBy1stThen2ndThen3rd(a, b, c, d, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     @param d
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stThen2ndThen3rd(float[] a, float[] b, 
         float[] c, int[] d, int idxLo, int idxHi) {
     
@@ -2005,11 +2146,11 @@ public class QuickSort {
     /**
      * sort a from index idxLo to idxHi, inclusive, with next sorting by b and c
      * and all swap operations performed on all 3 arrays.  
-     * @param a items to sort
-     *      * @param b items to be sorted
-     * @param c items to be sorted
-     *      * @param idxLo low index of a sort range, inclusive
-     *      * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param b items to be sorted
+     @param c items to be sorted
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stThen2ndThen3rd(float[] a, float[] b, float[] c, 
         int idxLo, int idxHi) {
@@ -2043,8 +2184,8 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive, with next sorting by b and c
      * and all swap operations performed on all 3 arrays.  
      @param a items to sort
-      *      * @param b items to be sorted
-      * @param c items to be sorted
+     @param b items to be sorted
+     @param c items to be sorted
      */
     public static void sortBy1stThen2ndThen3rd(
         TIntList a, TIntList b, TIntList c) {
@@ -2074,10 +2215,10 @@ public class QuickSort {
      * sort a from index idxLo to idxHi, inclusive, with next sorting by b and c
      * and all swap operations performed on all 3 arrays.  
      @param a items to sort
-      *      * @param b items to be sorted
-      * @param c items to be sorted
-     *      * @param idxLo low index of a sort range, inclusive
-     *      * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted
+     @param c items to be sorted
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stThen2ndThen3rd(
         TIntList a, TIntList b, TIntList c, 
@@ -2109,6 +2250,11 @@ public class QuickSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stThen2nd(float[] a, float[] b) {
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
@@ -2125,6 +2271,11 @@ public class QuickSort {
         sortBy1stThen2nd(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param a
+     @param b
+     */
     public static void sortBy1stThen2nd(int[] a, int[] b) {
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
@@ -2141,6 +2292,11 @@ public class QuickSort {
         sortBy1stThen2nd(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param a
+     */
     public static <T extends PairInt> void sortByYThenX(T[] a) {
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
@@ -2151,6 +2307,12 @@ public class QuickSort {
         sortByYThenX(a, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param a
+     @param b
+     */
     public static <T extends PairInt> void 
     sortByDecrYThenIncrX(T[] a, int[] b) {
         
@@ -2167,6 +2329,14 @@ public class QuickSort {
         sortByDecrYThenIncrX(a, b, 0, a.length - 1);
     }
     
+    /**
+     *
+     @param <T>
+     @param a
+     @param b
+     @param idxLo
+     @param idxHi
+     */
     public static <T extends PairInt> void 
     sortByDecrYThenIncrX(T[] a, int[] b, int idxLo, int idxHi) {
         
@@ -2187,6 +2357,13 @@ public class QuickSort {
         }
     }
     
+    /**
+     *
+     @param <T>
+     @param a
+     @param idxLo
+     @param idxHi
+     */
     public static <T extends PairInt> void sortByYThenX(T[] a, int idxLo, int idxHi) {
         
         if (a == null) {
@@ -2203,6 +2380,13 @@ public class QuickSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stThen2nd(float[] a, float[] b, int idxLo, int idxHi) {
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
@@ -2223,6 +2407,13 @@ public class QuickSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param idxLo
+     @param idxHi
+     */
     public static void sortBy1stThen2nd(int[] a, int[] b, int idxLo, int idxHi) {
         if (a == null) {
             throw new IllegalArgumentException("a cannot be null");
@@ -2243,6 +2434,12 @@ public class QuickSort {
         }
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @param c
+     */
     public static void sortBy1stThen2nd(TFloatList a, TFloatList b, 
         TIntList c) {
         
@@ -2264,11 +2461,11 @@ public class QuickSort {
      * and all swap operations performed on all arrays. The sorts are
      * ascending.
      @param a items to sort
-      *      * @param b items to be sorted
-      * @param c items to be sorted
-     * @param d items to be sorted
-     *      * @param idxLo low index of a sort range, inclusive
-     *      * @param idxHi high index of a sort range, inclusive
+     @param b items to be sorted
+     @param c items to be sorted
+     @param d items to be sorted
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sortBy1stThen2nd(double[] a, double[] b, int[] c, int[] d, 
         int idxLo, int idxHi) {
@@ -2315,11 +2512,11 @@ public class QuickSort {
     
     /**
      * sorts a, b, and c by the values of a only
-     * @param a items to sort
-     *      *      * @param b items to be sorted
-     *      * @param c items to be sorted
-     *      *      * @param idxLo low index of a sort range, inclusive
-     *      *      * @param idxHi high index of a sort range, inclusive
+     @param a items to sort
+     @param b items to be sorted
+     @param c items to be sorted
+     @param idxLo low index of a sort range, inclusive
+     @param idxHi high index of a sort range, inclusive
      */
     public static void sort(float[] a, float[] b, float[] c, int idxLo, 
         int idxHi) {

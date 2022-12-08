@@ -34,12 +34,12 @@ public class Misc {
      * 
      * runtime complexity O(N * log_2(N)).
      * 
-     * @param duration duration of task
-     * @param deadline deadline for task
-     * @param outputStart output array to hold start times for the resulting scheduled index order 
-     * @param outputLate output array to hold lateness for the resulting scheduled index order.
+     @param duration duration of task
+     @param deadline deadline for task
+     @param outputStart output array to hold start times for the resulting scheduled index order 
+     @param outputLate output array to hold lateness for the resulting scheduled index order.
      * if is on time, element will be 0.
-     * @return indexes for scheduling order
+     @return indexes for scheduling order
      */
     public int[] unweightedIntervalMinimizeLateGreedy(double[] duration, double[] deadline,
         double[] outputStart, double[] outputLate) {
@@ -95,9 +95,9 @@ public class Misc {
      * 
      * runtime complexity is O(N * log_2(N)).
      * 
-     * @param s start times for tasks
-     * @param f finish times for tasks
-     * @return indexes for scheduled non-conflicting tasks
+     @param s start times for tasks
+     @param f finish times for tasks
+     @return indexes for scheduled non-conflicting tasks
      */
     public int[] unweightedIntervalNoConflicts(double[] s, double[] f) {
         int n = s.length;
@@ -137,10 +137,10 @@ public class Misc {
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
      
-     * @param s interval start times
-     * @param f interval finish times
-     * @param v interval weights
-     * @return indexes of scheduled intervals.
+     @param s interval start times
+     @param f interval finish times
+     @param v interval weights
+     @return indexes of scheduled intervals.
      */
     public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
         //interval [si, fi] of start and finish times
@@ -291,10 +291,10 @@ public class Misc {
         }
      * </pre>
      * 
-     * @param s interval start times
-     * @param f interval finish times
-     * @param v interval weights
-     * @return indexes of scheduled intervals.
+     @param s interval start times
+     @param f interval finish times
+     @param v interval weights
+     @return indexes of scheduled intervals.
      */
     public int[] weightedIntervalBottomUp2(double[] s, double[] f, double[] v) {
         //interval [si, fi] of start and finish times
@@ -410,7 +410,7 @@ public class Misc {
      * 
      * N_t(A) = number of tasks t=0,1,2...n in set A whose deadline is t or earlier.
      * 
-     * if N_t(A) > t then there is no way to schedule all tasks within deadline.
+     * if N_t(A) .gt. t then there is no way to schedule all tasks within deadline.
      * 
      * the problem of maximizing the sum of penalties for the early tasks
      *  is the same as minimizing the sum of penalties for the late tasks.
@@ -421,9 +421,9 @@ public class Misc {
      *     tasks A.
      * (2) create an optimal schedule having the tasks in A as its early tasks.
     
-     * @param deadlines values must be between 1 and numTasks, inclusive
-     * @param penalties penalties for missing a dealine
-     * @return order of scheduled tasks
+     @param deadlines values must be between 1 and numTasks, inclusive
+     @param penalties penalties for missing a dealine
+     @return order of scheduled tasks
      */
     public int[] weightedGreedy(int[] deadlines, int[] penalties) {
         
@@ -476,9 +476,9 @@ public class Misc {
      * schedule largest penalties first if they fit before deadline (duration of
      * each task is a time unit of 1).
      * runtime complexity is O(N * log_2(N))
-     * @param deadlines deadlines of each task
-     * @param penalties penalties of each task
-     * @return task schedule order
+     @param deadlines deadlines of each task
+     @param penalties penalties of each task
+     @return task schedule order
      */
     private int[] greedy(int[] deadlines, int[] penalties) {
                
@@ -722,9 +722,9 @@ public class Misc {
      * created, and then the one before it, etc until the first is visited).
      * The left-edge algorithm runtime is similar to this interval partitioning greedy algorithm.
      * 
-     * @param s start times
-     * @param f finish times
-     * @return indexes of resources to schedule the requests on.
+     @param s start times
+     @param f finish times
+     @return indexes of resources to schedule the requests on.
      */
     public int[] intervalPartitionGreedy(double[] s, double[] f) {     
         

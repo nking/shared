@@ -13,7 +13,7 @@ package algorithms.disjointSets;
 
  * 
  * @author nichole
- * @param <T> parameter type for the container to hold
+ @param <T> parameter type for the container to hold
  */
 public class DisjointSet2Node<T> {
 
@@ -32,51 +32,85 @@ public class DisjointSet2Node<T> {
     */
     protected int rank = 0;
     
+    /**
+     *
+     */
     protected Object data = null;
 
+    /**
+     *
+     @param member
+     */
     public DisjointSet2Node(T member) {
         this.member = member;
     }
     
+    /**
+     *
+     */
     public DisjointSet2Node() {
     }
    
     /**
      * get the member data
-     * @return 
+     @return 
      */
     public T getMember() {
         return member;
     }
 
+    /**
+     *
+     @param member
+     */
     public void setMember(T member) {
         this.member = member;
     }
     
+    /**
+     *
+     @param data
+     */
     public void setDeta(Object data) {
         this.data = data;
     }
     
+    /**
+     *
+     @return
+     */
     public Object getObject() {
         return data;
     }
 
     /**
      * get the set representative
-     * @return 
+     @return 
      */
     public DisjointSet2Node<T> getParent() {
         return parent;
     }
 
+    /**
+     *
+     @param theParent
+     */
     public void setParent(DisjointSet2Node<T> theParent) {
         this.parent = theParent;
     }
 
+    /**
+     *
+     @return
+     */
     public int getRank() {
         return rank;
     }
 
+    /**
+     *
+     @param rank
+     */
     public void setRank(int rank) {
         this.rank = rank;
     }

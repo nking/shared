@@ -87,8 +87,8 @@ public class Gamma {
     private static final double SQRT2PI_E7 = 0.0022857491179850424; //sqrt(2*pi)/e**7
     /**
      * 
-     * @param x min allowed value is -1.719e2, max allowed value is 1.716e2
-     * @return 
+     @param x min allowed value is -1.719e2, max allowed value is 1.716e2
+     @return 
      */
     public static final double lanczosGamma9(double x) {
         if (x < -1.719e2 || x >1.716e2) {
@@ -104,26 +104,51 @@ public class Gamma {
         return (SQRT2PI_E7 * a) * Math.pow((x+7.5)/Math.E, x + .5);        
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double lgamma(double x) {
         x--;// NOTE:  this is to match python's math.gamma output
         return _lgamma(x);
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double lanczosLGamma9(double x) {
         x--;// NOTE:  this is to match python's math.gamma output
         return _lanczosLGamma9(x);
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double lanczosLGamma15(double x) {
         x--;// NOTE:  this is to match python's math.gamma output
         return _lanczosLGamma15(x);
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double stirlingGamma(double x) {
         x--;// NOTE:  this is to match python's math.gamma output
         return _stirlingGamma(x);
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double stirlingLGamma(double x) {
         x--;// NOTE:  this is to match python's math.gamma output
         return _stirlingLGamma(x);
@@ -285,6 +310,11 @@ public class Gamma {
         2.5260757449731984E302,
     };
 
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double factorial(double x) {
         if (x <= -1) {
             return Double.NaN;
@@ -465,12 +495,12 @@ public class Gamma {
         2) With a shape parameter α = k and an inverse scale parameter β = 1/θ, 
            called a rate parameter.
         3) With a shape parameter k and a mean parameter μ = kθ = α/β.
-     * following https://en.wikipedia.org/wiki/Gamma_distribution
-     * 
-     * @param x
-     * @param shape
-     * @param scale
-     * @return 
+       following https://en.wikipedia.org/wiki/Gamma_distribution
+       </pre>
+     @param x
+     @param shape
+     @param scale
+     @return 
      */
     public static double gammaScaleDistributionPDF(double x, double shape, double scale) {
         double numer = Math.pow(x, shape - 1.) * Math.exp(-x/scale);
@@ -492,11 +522,11 @@ public class Gamma {
            called a rate parameter.
         3) With a shape parameter k and a mean parameter μ = kθ = α/β.
      * following https://en.wikipedia.org/wiki/Gamma_distribution
-     * 
-     * @param x
-     * @param shape
-     * @param rate
-     * @return 
+       </pre>
+     @param x
+     @param shape
+     @param rate
+     @return 
      */
     public static double gammaRateDistributionPDF(double x, double shape, double rate) {
         double numer = Math.pow(rate, shape) * Math.pow(x, shape - 1.) * Math.exp(-x * rate);

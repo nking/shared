@@ -31,6 +31,10 @@ public class Dendogram {
     
     private Dendogram() {originalGraph=null;layers=null;}
     
+    /**
+     *
+     @param adjList
+     */
     public Dendogram(final SimpleLinkedListNode[] adjList) {
         originalGraph = copyGraph(adjList);
         layers = new ArrayList<DendogramLayer>(adjList.length);
@@ -44,6 +48,11 @@ public class Dendogram {
         return c;
     }
     
+    /**
+     *
+     @param src
+     @return
+     */
     public int createUsingGirvanNewman(int src) {
         
         if (originalGraph == null || layers == null) {
@@ -86,6 +95,9 @@ public class Dendogram {
         return nC;
     }
     
+    /**
+     *
+     */
     public static class DendogramLayer {
         /**
          * the number of components (a.k.a. communities) in graph layer
@@ -150,7 +162,7 @@ public class Dendogram {
     }
 
     /**
-     * @return the layers
+     @return the layers
      */
     public List<DendogramLayer> getLayers() {
         return layers;

@@ -22,9 +22,9 @@ public class ATrousWaveletTransform1D {
        The method uses recursive convolution operations, including previous
        result to make next.
        </pre>
-     * @param input
-     * @param outputTransformed
-     * @param outputCoeff 
+     @param input
+     @param outputTransformed
+     @param outputCoeff 
      */
     public void calculateWithTriangleScalingFunction(float[] input,
         List<OneDFloatArray> outputTransformed, List<OneDFloatArray> outputCoeff) {
@@ -86,9 +86,9 @@ public class ATrousWaveletTransform1D {
        * ...
        * outputTransformed[8] = sqrt( 8 + 1 ) = sqrt(9) = 3 convolution
        * </pre>
-     * @param input
-     * @param outputTransformed
-     * @param outputCoeff 
+     @param input
+     @param outputTransformed
+     @param outputCoeff 
      */
     public void calculateWithB3SplineScalingFunction(float[] input,
         List<OneDFloatArray> outputTransformed, List<OneDFloatArray> outputCoeff) {
@@ -126,6 +126,12 @@ public class ATrousWaveletTransform1D {
         
     }
     
+    /**
+     *
+     @param c0
+     @param mmCoeff
+     @return
+     */
     public float[] reconstruct(float[] c0, List<OneDFloatArray> mmCoeff) {
 
         int nr = mmCoeff.size();
@@ -178,7 +184,7 @@ public class ATrousWaveletTransform1D {
        http://www.uni-kl.de/AG-Heinrich/EMS.pdf)
        suggests different sampling methods, so may change this in the future.
         
-     * @return 
+     @return 
      */
     /*
     private float estimateLocalNoise(float[] data, int pixIdx, int xOffset) {

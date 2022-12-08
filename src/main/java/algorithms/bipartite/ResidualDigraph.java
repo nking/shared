@@ -43,6 +43,11 @@ public class ResidualDigraph {
      */
     private TIntIntMap backwardLinksRM = new TIntIntHashMap();
 
+    /**
+     *
+     @param g
+     @param m
+     */
     public ResidualDigraph(Graph g, TIntIntMap m) {                
         
         this.nLeft = g.getNLeft();
@@ -78,6 +83,10 @@ public class ResidualDigraph {
         }
     }
             
+    /**
+     *
+     @param g
+     */
     public ResidualDigraph(GraphWithoutWeights g) {                
     
         this.nLeft = g.getNLeft();
@@ -105,6 +114,10 @@ public class ResidualDigraph {
         }
     }
  
+    /**
+     *
+     @return
+     */
     public int countOfForwardBipartiteLinks() {
         int n = 0;
         
@@ -117,33 +130,37 @@ public class ResidualDigraph {
     }
     
     /**
-     * @return nLeft number of left nodes
+     @return nLeft number of left nodes
      */
     public int getNLeft() {
         return nLeft;
     }
 
    /**
-     * @return number of right nodes
+     @return number of right nodes
      */
     public int getNRight() {
         return nRight;
     }
     
     /**
-     * @return the forwardLinksRM
+     @return the forwardLinksRM
      */
     public TIntObjectMap<TIntSet> getForwardLinksRM() {
         return forwardLinksRM;
     }
 
     /**
-     * @return the backwardLinksRM
+     @return the backwardLinksRM
      */
     public TIntIntMap getBackwardLinksRM() {
         return backwardLinksRM;
     }
 
+    /**
+     *
+     @return
+     */
     public TIntIntMap extractMatchings() {
 
         TIntIntMap m = new TIntIntHashMap();

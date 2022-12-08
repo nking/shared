@@ -68,7 +68,7 @@ public class LBFGSSearchStrategy {
     
     /**
      * 
-     * @param maxSize L-BFGS works by remembering a certain number of position and gradient 
+     @param maxSize L-BFGS works by remembering a certain number of position and gradient 
                   pairs.  It uses this remembered information to compute search directions.
                   The max_size argument determines how many of these pairs will be remembered.
                   Typically, using between 3 and 30 pairs performs well for many problems.
@@ -87,7 +87,7 @@ public class LBFGSSearchStrategy {
      * for use of Wolfe conditions to constrain step length during line search.
      * Wolfe conditions are valuable in Newton methods, while Goldstein
      * conditions are valuable in  quasi-Newton methods.
-     * @return 
+     @return 
      */
     public double get_wolfe_rho() { return 0.01; }
 
@@ -95,10 +95,14 @@ public class LBFGSSearchStrategy {
      * for use of Wolfe conditions to constrain step length during line search.
      * Wolfe conditions are valuable in Newton methods, while Goldstein
      * conditions are valuable in  quasi-Newton methods.
-     * @return 
+     @return 
      */
     public double get_wolfe_sigma() { return 0.9; }
 
+    /**
+     *
+     @return
+     */
     public long get_max_line_search_iterations() { return 100; }
 
     double[] get_next_direction (

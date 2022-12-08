@@ -62,6 +62,9 @@ import java.util.Queue;
  */
 public class Huffman {
 
+    /**
+     *
+     */
     public static class HuffmanEncoding {
         
         /**
@@ -89,6 +92,9 @@ public class Huffman {
          */
         public VeryLongBitString encoded = null;
         
+        /**
+         *
+         */
         public void print() {
             System.out.println("freqMap:");
             if (freqMap != null) {
@@ -107,6 +113,9 @@ public class Huffman {
         }
     }
     
+    /**
+     *
+     */
     protected static class EncodingSymbols {
         
         /**
@@ -124,6 +133,9 @@ public class Huffman {
          */
         TIntIntMap codeSymbolMap = null;
         
+        /**
+         *
+         */
         public void print() {
             System.out.println("codeSymbolMap:");
             if (codeSymbolMap != null) {
@@ -144,8 +156,8 @@ public class Huffman {
      * text string c, though can be as high as O(n * log_2(n)) if Fibonacci heap
      * is used.
      *
-     * @param c text to encode
-     * @return returns the Huffman encoded text and the symbol code map.
+     @param c text to encode
+     @return returns the Huffman encoded text and the symbol code map.
      */
     public HuffmanEncoding compress(String c) {
 
@@ -181,11 +193,11 @@ public class Huffman {
     }
 
     /**
-     * @param f map with key=code-point, value=frequency of code-point in 
+     @param f map with key=code-point, value=frequency of code-point in 
      * original text.
-     * @param sumF the sum of all frequencies in f.  it's used to assign
+     @param sumF the sum of all frequencies in f.  it's used to assign
      * a maximum bit-length needed by an internal YFastTrie data structure.
-     * @return 
+     @return 
      */
     protected HeapNode buildFrequencyCodeTree(TIntIntMap f, int sumF) {
         
@@ -231,11 +243,11 @@ public class Huffman {
     
     /**
      * 
-     * @param f map with key=code-point, value=frequency of code-point in 
+     @param f map with key=code-point, value=frequency of code-point in 
      * original text.
-     * @param sumF the sum of all frequencies in f.  it's used to assign
+     @param sumF the sum of all frequencies in f.  it's used to assign
      * a maximum bit-length needed by an internal YFastTrie data structure.
-     * @return 
+     @return 
      */
     protected EncodingSymbols buildSymbolCodeTree(TIntIntMap f, int sumF) {
         
@@ -304,10 +316,10 @@ public class Huffman {
 
     /**
      * encode the text c, given the code symbol map.
-     * @param c uncoded text to be encoded.
-     * @param codeSymbolMap map with key = alphabet code point, value = 
+     @param c uncoded text to be encoded.
+     @param codeSymbolMap map with key = alphabet code point, value = 
      * bit-string symbol.
-     * @return returns the encoding of text 'c', stored as a VeryLongBitString.
+     @return returns the encoding of text 'c', stored as a VeryLongBitString.
      */
     VeryLongBitString encode(String c, TIntIntMap codeSymbolMap) {
         
@@ -366,9 +378,9 @@ public class Huffman {
      * decode the Huffman encoded tree. runtime complexity is O(N) where N is
      * the number of characters in the original text.
      *
-     * @param symbolTree the symbol code map
-     * @param encoded text
-     * @return returns the decoded text.
+     @param symbolTree the symbol code map
+     @param encoded text
+     @return returns the decoded text.
      */
     public String decompress(HeapNode symbolTree, VeryLongBitString encoded) {
         

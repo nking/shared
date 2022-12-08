@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class UnweightedGraphCommunityFinder {
 
+    /**
+     *
+     */
     public static class BestDivision {
         DendogramLayer layer;
         float modularity;
@@ -35,13 +38,13 @@ public class UnweightedGraphCommunityFinder {
      * NOTE: see notes for Newman 2006 spectral modularity algorithms in
      * this project's directory docs/miscNotes.
      
-     * @return the largest modularity in the dendogram made from hierarchical
+     @return the largest modularity in the dendogram made from hierarchical
      * subgraphs made from iterative removal of the maximum edge 
      * from the graph where the score is calculated
      * by the Girvan-Newman 2002 algorithm.
      * 
-     * @param adjList unweighted graph adjacency list.
-     * @param src the source vertex to start calculations with if known.  has
+     @param adjList unweighted graph adjacency list.
+     @param src the source vertex to start calculations with if known.  has
      * to be a valid vertex in the graph, but a random choice does affect the 
      * results adversely.
      */

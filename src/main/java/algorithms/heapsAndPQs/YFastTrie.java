@@ -83,6 +83,11 @@ YFastTrie
        one with same key value, the values in the red black tree
        will be linked lists.
     */
+
+    /**
+     *
+     */
+
     
     protected int n = 0;
     
@@ -105,6 +110,10 @@ YFastTrie
     //    the value is the tree holds the number of times that number is present.
     private final TIntObjectMap<TreeMap<Integer, Integer>> rbs;
 
+    /**
+     *
+     @param wBits
+     */
     public YFastTrie(int wBits) {
         
         if (wBits < 31 && wBits > 1) {
@@ -180,6 +189,12 @@ YFastTrie
     }
     
     // runtime complexity is O(1)
+
+    /**
+     *
+     @param index
+     @return
+     */
     protected TreeMap<Integer, Integer> getTreeMap(int index) {
         Integer key = Integer.valueOf(index);
         TreeMap<Integer, Integer> map = rbs.get(key);
@@ -192,8 +207,8 @@ YFastTrie
 
     /**
      * runtime complexity is O(log_2(wBits))
-     * @param node node to insert
-     * @param index index of the red black tree in the internal tree map
+     @param node node to insert
+     @param index index of the red black tree in the internal tree map
      */
     private void addToRBTree(int node, int index) {
         
@@ -218,8 +233,9 @@ YFastTrie
     
     /**
      * runtime complexity is O(log_2(wBits))
-     * @param node node to delete
-     *      * @param index index of the red black tree in the internal tree map
+     @param node node to delete
+     *      @param index index of the red black tree in the internal tree map
+     @return 
      */
     private boolean deleteFromRBTree(int node, int index) {
                 
@@ -250,9 +266,9 @@ YFastTrie
     
     /**
      * runtime complexity is roughly O(log_2(wBits)).
-     * @param node a number >= 0 and having bit length 
+     @param node a number .geq. 0 and having bit length 
      * less than or equal to w.
-     * @return true if node was successfully added to this yfasttrie
+     @return true if node was successfully added to this yfasttrie
      */
     public boolean add(int node) {
 
@@ -293,8 +309,8 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node node to remove
-     * @return true if node was found and removed
+     @param node node to remove
+     @return true if node was found and removed
      */
     public boolean remove(int node) {
         
@@ -359,8 +375,8 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node node to find in this yfasttrie
-     * @return returns node if found, else -1
+     @param node node to find in this yfasttrie
+     @return returns node if found, else -1
      */
     public int find(int node) {
                 
@@ -387,8 +403,8 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node node whose predecessor must be returned
-     * @return value preceding node, else -1 if there is not one
+     @param node node whose predecessor must be returned
+     @return value preceding node, else -1 if there is not one
      */
     public int predecessor(int node) {
     
@@ -445,8 +461,8 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @param node node whose successor must be found
-     * @return the successor of node, else -1 if not found
+     @param node node whose successor must be found
+     @return the successor of node, else -1 if not found
      */
     public int successor(int node) {
                 
@@ -506,7 +522,7 @@ YFastTrie
 
     /**
      * runtime complexity is roughly O(log_2(wBits)).
-     * @return minimum, else -1 if empty
+     @return minimum, else -1 if empty
      */
     public int minimum() {
         
@@ -524,7 +540,7 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @return maximum, else -1 if empty
+     @return maximum, else -1 if empty
      */
     public int maximum() {
         
@@ -552,7 +568,7 @@ YFastTrie
     /**
      * runtime complexity is roughly O(log_2(wBits)).
      * 
-     * @return minumum, else -1 if empty
+     @return minumum, else -1 if empty
      */
     public int extractMinimum() {
         
@@ -571,7 +587,7 @@ YFastTrie
     
     /**
      * runtime complexity is roughly O(log_2(wBits)).
-     * @return maximum, else -1 if empty
+     @return maximum, else -1 if empty
      */
     public int extractMaximum() {
         
@@ -595,6 +611,10 @@ YFastTrie
         return n;
     }
 
+    /**
+     *
+     @return
+     */
     protected int getBinSz() {
         return binSz;
     }
@@ -626,11 +646,11 @@ YFastTrie
      *       so has the same need for an upper and lower estimate.
      * </pre>
      * 
-     * @param numberOfEntries amount of space for this object's instance
+     @param numberOfEntries amount of space for this object's instance
      * with n entries in Bytes on the heap.
-     * @param maxNumberOfBits all entries must have bit lengths .lte. this
+     @param maxNumberOfBits all entries must have bit lengths .lte. this
      * 
-     * @return array with 2 estimates, (1) estimate using all bins and a
+     @return array with 2 estimates, (1) estimate using all bins and a
      * factor of 5 for creating trie prefix nodes,
        (2) estimate from using 1/4 of the bins and a factor of 3 for creating
        the trie prefix nodes.

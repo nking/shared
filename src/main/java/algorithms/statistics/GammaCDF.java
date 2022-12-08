@@ -9,6 +9,13 @@ package algorithms.statistics;
  */
 public class GammaCDF {
     
+    /**
+     *
+     @param x
+     @param shape
+     @param scale
+     @return
+     */
     public static double cdf(double x, double shape, double scale) {
      
         // from https://www.mathworks.com/help/stats/gamcdf.html
@@ -26,6 +33,13 @@ public class GammaCDF {
         return thirdparty.smile.math.special.Gamma.regularizedIncompleteGamma(shape, x/scale);
     }
     
+    /**
+     *
+     @param shape
+     @param scale
+     @param alpha
+     @return
+     */
     public static double inverseCdf(double shape, double scale, double alpha) {
      
         if (alpha < 0 || alpha > 0.999) {

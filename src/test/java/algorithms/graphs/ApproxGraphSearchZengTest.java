@@ -580,8 +580,8 @@ public class ApproxGraphSearchZengTest extends TestCase {
        Journal of Computer and System Sciences, Volume 82, Issue 6, 2016, Pages 1112-1143,
        https://doi.org/10.1016/j.jcss.2016.04.002.
     
-     * @param outputDB list of graphs representing the database
-     * @return graph representing the query graph
+     @param outputDB list of graphs representing the database
+     @return graph representing the query graph
      */
     public static Graph getG0(List<Graph> outputDB) {
         
@@ -699,8 +699,8 @@ public class ApproxGraphSearchZengTest extends TestCase {
        Zhu et al, May 2014 PLoS ONE 9(5):e97178
        DOI:10.1371/journal.pone.0097178
     
-     * @param outputDB list of graphs representing the database
-     * @return graph representing the query graph
+     @param outputDB list of graphs representing the database
+     @return graph representing the query graph
      */
     public static Graph getG1(List<Graph> outputDB) {
         

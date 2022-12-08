@@ -51,8 +51,8 @@ public class MinHeapForRT2012 {
     
     /**
      * 
-     * @param maxValue estimate of maximum value to store.
-     * @param approxN approximate number of nodes expected
+     @param maxValue estimate of maximum value to store.
+     @param approxN approximate number of nodes expected
      * to be in the heap as a rough maximum at a given time.
      * (it's used to help determine which algorithm to use
      * internally).
@@ -65,7 +65,7 @@ public class MinHeapForRT2012 {
      * 
      * The Fibonacci Heap has O(1) operations excepting
      * extractMin which is O(lg_2(N_nodes)).
-     * @param maxNumberOfBits
+     @param maxNumberOfBits
      * 
      */
     public MinHeapForRT2012(int maxValue, int approxN, int maxNumberOfBits) {
@@ -110,7 +110,7 @@ public class MinHeapForRT2012 {
      * tree already filled leading up to the value node.  The performance of 
      * the YFastTrie increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
      */
     public void insert(HeapNode node) {
         
@@ -137,7 +137,7 @@ public class MinHeapForRT2012 {
      If using a FibonacciHeap, the runtime complexity is O(log_2 N) or better
        where N is the number of entries in the heap.
         
-     * @return extracted node which is the minimum in the queue
+     @return extracted node which is the minimum in the queue
      */
     public HeapNode extractMin() {
         
@@ -153,7 +153,7 @@ public class MinHeapForRT2012 {
     /**
      * extract min-key from Fibonacci heap.
      * runtime is O(log_2 N) or better.
-     * @return 
+     @return 
      */
     private HeapNode extractMin1() {
         // runtime is O(log_2 N) or better
@@ -169,7 +169,7 @@ public class MinHeapForRT2012 {
      * extract min-key from YFastTrie min priority queue.
      * runtime complexity is O(log log(M)) where M is the number of bits 
      * of the maximum value that the trie can hold (set during construction). 
-     * @return 
+     @return 
      */
     private HeapNode extractMin2() { 
         // runtime is runtime complexity is 
@@ -178,7 +178,7 @@ public class MinHeapForRT2012 {
     
     /**
      * insert into Fibonacci heap. r.t. complexity is O(1)
-     * @param node 
+     @param node 
      */
     private void insert1(HeapNode node) {
          
@@ -199,7 +199,7 @@ public class MinHeapForRT2012 {
      * up to the value x.  The performance of the YFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node
+     @param node
      */
     private void insert2(HeapNode node) {
          
@@ -217,6 +217,8 @@ public class MinHeapForRT2012 {
      If using a FibonacciHeap, the runtime complexity is O(1) if the node
      and the new key reside in same heap in the group of heaps, else
      the remove and insert makes the runtime complexity O(log_2(n)).
+     @param node
+     @param key2
      */
     public void decreaseKey(HeapNode node, long key2) {
     
@@ -251,6 +253,7 @@ public class MinHeapForRT2012 {
      If using a FibonacciHeap, the runtime complexity is O(log_2(n)).
      If using YFT, runtime complexity is O(log_2(w)) where w is the bitlength
      of the maximum value storable in the trie set at construction time.
+     @param node
      */
     public void remove(HeapNode node) {
     
@@ -267,7 +270,7 @@ public class MinHeapForRT2012 {
     /**
      * remove from Fibonacci heap.
      * runtime complexity is O(lg_2(n))
-     * @param node 
+     @param node 
      */
     private void remove1(HeapNode node) {
 
@@ -281,6 +284,7 @@ public class MinHeapForRT2012 {
      * remove node from YFastTrie min priority queue.
      * runtime complexity is O(log log(M)) where M is the number of bits 
      * of the maximum value that the trie can hold (set during construction). 
+     @param node
      */
     private void remove2(HeapNode node) {
 
@@ -290,6 +294,10 @@ public class MinHeapForRT2012 {
         heap2.remove(node);
     }
     
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
         
         switch(algorithm) {

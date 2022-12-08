@@ -1,5 +1,9 @@
 package algorithms.misc;
 
+/**
+ *
+ * @author nichole
+ */
 public class PseudoRNG {
 
     //TODO: add tests from
@@ -13,8 +17,8 @@ public class PseudoRNG {
      "XorShift RNGs"
      referenced by Goetz et al. "Java Concurrency in Practice", Listing 12.4.
      </pre>
-     * @param y
-     * @return
+     @param y
+     @return
      */
     public static int xorShift(int y) {
         y ^= (y << 6);
@@ -30,8 +34,8 @@ public class PseudoRNG {
      "XorShift RNGs"
      referenced by Goetz et al. "Java Concurrency in Practice", Listing 12.4.
      </pre>
-     * @param y
-     * @return
+     @param y
+     @return
      */
     public static long xorShift(long y) {
         y ^= (y << 13);

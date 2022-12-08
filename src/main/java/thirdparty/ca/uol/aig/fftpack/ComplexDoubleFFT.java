@@ -36,7 +36,7 @@ public class ComplexDoubleFFT extends ComplexDoubleFFT_Mixed
   * factorization of <em>n</em> together with a tabulation of the trigonometric functions
   * are computed and stored.
   *
-  * @param  n  the size of a complex data sequence. When <em>n</em> is a multiplication of small
+  @param  n  the size of a complex data sequence. When <em>n</em> is a multiplication of small
   * numbers (4, 2, 3, 5), this FFT transform is very efficient.
 */
      public ComplexDoubleFFT(int n)
@@ -53,7 +53,7 @@ public class ComplexDoubleFFT extends ComplexDoubleFFT_Mixed
 /**
   * Forward complex FFT transform. 
   *
-  * @param x  2*<em>n</em> real double data representing <em>n</em> complex double data.
+  @param x  2*<em>n</em> real double data representing <em>n</em> complex double data.
   * As an input parameter, <em>x</em> is an array of 2*<em>n</em> real
   * data representing <em>n</em> complex data. As an output parameter, <em>x</em> represents <em>n</em>
   * FFT'd complex data. Their relation as follows:
@@ -73,7 +73,7 @@ public class ComplexDoubleFFT extends ComplexDoubleFFT_Mixed
 /**
   * Forward complex FFT transform.  
   *
-  * @param x  an array of <em>n</em> Complex data
+  @param x  an array of <em>n</em> Complex data
 */
      public void ft(Complex1D x)
      {
@@ -96,7 +96,7 @@ public class ComplexDoubleFFT extends ComplexDoubleFFT_Mixed
 /**
   * Backward complex FFT transform. It is the unnormalized inverse transform of <em>ft</em>(double[]).
   *
-  * @param x  2*<em>n</em> real double data representing <em>n</em> complex double data.
+  @param x  2*<em>n</em> real double data representing <em>n</em> complex double data.
   *
   * As an input parameter, <em>x</em> is an array of 2*<em>n</em>
   * real data representing <em>n</em> complex data. As an output parameter, <em>x</em> represents
@@ -118,7 +118,7 @@ public class ComplexDoubleFFT extends ComplexDoubleFFT_Mixed
   * Backward complex FFT transform. It is the unnormalized inverse transform of <em>ft</em>(Complex1D[]). 
   *
   *
-  * @param x  an array of <em>n</em> Complex data
+  @param x  an array of <em>n</em> Complex data
 */
      public void bt(Complex1D x)
      {

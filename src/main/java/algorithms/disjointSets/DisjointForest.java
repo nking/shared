@@ -27,6 +27,7 @@ import java.util.Set;
  * for COS 423 Princeton University.
  * 
  * @author nichole
+ @param <T>
  */
 public class DisjointForest<T> {
 
@@ -38,8 +39,8 @@ public class DisjointForest<T> {
     /**
      * make a set out of the given node and add it to the internal forest.
      * runtime complexity is O(1).
-     * @param x disjoint set mode
-     * @return a new set composed of only x
+     @param x disjoint set mode
+     @return a new set composed of only x
      */
     public RootedTreeDisjointSet<T> makeSet(DisjointSet2Node<T> x) {
         x.setParent(x);
@@ -68,8 +69,8 @@ public class DisjointForest<T> {
      * For most purposes, α(n) = O(1) so then the amoritized running time is O(1).
      * </pre>
      * 
-     * @param x disjoint set node
-     * @return top-most parent in ancestry of x.
+     @param x disjoint set node
+     @return top-most parent in ancestry of x.
      */
     public DisjointSet2Node<T> findSet(DisjointSet2Node<T> x) {
                 
@@ -100,9 +101,9 @@ public class DisjointForest<T> {
           
        Runtime complexity is O(1).
        
-     * @param x disjoint set x
-     * @param y disjoint set y
-     * @return the root found to be the one with equal number of nodes or more nodes
+     @param x disjoint set x
+     @param y disjoint set y
+     @return the root found to be the one with equal number of nodes or more nodes
      */
     private DisjointSet2Node<T> link(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -130,9 +131,9 @@ public class DisjointForest<T> {
           
        Runtime complexity is O(1).
        
-     * @param x disjoint set x
-     * @param y disjoint set y
-     * @return the root found to be the one with equal number of nodes or more nodes
+     @param x disjoint set x
+     @param y disjoint set y
+     @return the root found to be the one with equal number of nodes or more nodes
      */
     private DisjointSet2Node<T> linkChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -163,9 +164,9 @@ public class DisjointForest<T> {
      * The method is also known as "union-find" because it uses findSet 
      * as the first steps before link.
      * 
-     * @param x disjoint set x
-     * @param y disjoint set y
-     * @return the union of x and y
+     @param x disjoint set x
+     @param y disjoint set y
+     @return the union of x and y
      */
     public DisjointSet2Node<T> union(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -205,9 +206,9 @@ public class DisjointForest<T> {
      * The method is also known as "union-find" because it uses findSet 
      * as the first steps before link.
      * 
-     * @param x disjoint set x
-     * @param y disjoint set y
-     * @return the reference to the union of x and y as x or y, preferring y if x==y
+     @param x disjoint set x
+     @param y disjoint set y
+     @return the reference to the union of x and y as x or y, preferring y if x==y
      */
     public DisjointSet2Node<T> unionChooseY(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
         
@@ -231,7 +232,7 @@ public class DisjointForest<T> {
     }
   
     /**
-     * @return the trees
+     @return the trees
      */
     public Map<DisjointSet2Node<T>, RootedTreeDisjointSet<T>> getTrees() {
         return trees;
@@ -241,8 +242,8 @@ public class DisjointForest<T> {
      * given the adjacency list of a graph, return the disjoint connected 
      * components.  implemented from pseudocode in Cormen, Leiserson, Rivest, and Stein Introduction
      * To Algorithms.
-     * @param adjList graph adjacency list
-     * @return the connected components as a list of the disjoint sets of 
+     @param adjList graph adjacency list
+     @return the connected components as a list of the disjoint sets of 
      * vertex numbers.
      */
     public static List<TIntSet> connectedComponents(final SimpleLinkedListNode[] 
@@ -350,6 +351,7 @@ public class DisjointForest<T> {
      * is a member of the nodes of this set
      *
      * @author nichole
+     @param <T>
      */
     public static class RootedTreeDisjointSet<T> {
 
@@ -368,7 +370,7 @@ public class DisjointForest<T> {
         /**
          * create a new tree with the representative and parent being the node.
          * the node is added to the internal set holding tree nodes too.
-         * @param node  disjoint set node
+         @param node  disjoint set node
          */
         public RootedTreeDisjointSet(DisjointSet2Node<T> node) {
             this.parent = node;
@@ -377,6 +379,9 @@ public class DisjointForest<T> {
             nodes.add(node);
         }
 
+        /**
+         *
+         */
         public RootedTreeDisjointSet() {
             nodes = new HashSet<DisjointSet2Node<T>>();
         }
@@ -387,9 +392,9 @@ public class DisjointForest<T> {
          * implemented from pseudocode in Cormen, Leiserson, Rivest, and Stein Introduction to 
          * Algorithms.
          *
-         * @param x
-         * @param y
-         * @return
+         @param x
+         @param y
+         @return
          
         public DisjointSet2Node<T> lca(DisjointSet2Node<T> x, DisjointSet2Node<T> y) {
             
@@ -406,6 +411,12 @@ public class DisjointForest<T> {
                         then return ancestor[ findSet(v) ]
             
         }*/
+
+        /**
+         *
+         @return
+         */
+
 
         public Set<DisjointSet2Node<T>> getNodes() {
             return nodes;

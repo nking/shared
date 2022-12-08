@@ -36,7 +36,7 @@ public class RealDoubleFFT extends RealDoubleFFT_Mixed
   * factorization of <em>n</em> together with a tabulation of the trigonometric functions
   * are computed and stored.
   *
-  * @param  n  the size of a real data sequence. When <em>n</em> is a multiplication of small
+  @param  n  the size of a real data sequence. When <em>n</em> is a multiplication of small
   * numbers (4, 2, 3, 5), this FFT transform is very efficient.
 */
      public RealDoubleFFT(int n)
@@ -53,7 +53,7 @@ public class RealDoubleFFT extends RealDoubleFFT_Mixed
 /**
   * Forward real FFT transform. It computes the discrete transform of a real data sequence.
   *
-  * @param x an array which contains the sequence to be transformed. After FFT,
+  @param x an array which contains the sequence to be transformed. After FFT,
   * <em>x</em> contains the transform coeffients used to construct <em>n</em> complex FFT coeffients.
   * <br>
   * The real part of the first complex FFT coeffients is <em>x</em>[0]; its imaginary part
@@ -81,10 +81,10 @@ public class RealDoubleFFT extends RealDoubleFFT_Mixed
 /**
   * Forward real FFT transform. It computes the discrete transform of a real data sequence.
   *
-  * @param x an array which contains the sequence to be transformed. After FFT,
+  @param x an array which contains the sequence to be transformed. After FFT,
   * <em>x</em> contains the transform coeffients used to construct <em>n</em> complex FFT coeffients.
   * <br>
-  * @param y the first complex (<em>n</em>+1)/2 (when <em>n</em> is odd) or (<em>n</em>/2+1) (when 
+  @param y the first complex (<em>n</em>+1)/2 (when <em>n</em> is odd) or (<em>n</em>/2+1) (when 
   * <em>n</em> is even) FFT coeffients.
   * The remaining complex FFT coeffients can be obtained by the symmetry relation:
   * the (<em>n</em>-<em>k</em>)-th complex FFT coeffient is the conjugate of <em>n</em>-th complex FFT coeffient.
@@ -126,7 +126,7 @@ public class RealDoubleFFT extends RealDoubleFFT_Mixed
 /**
   * Backward real FFT transform. It is the unnormalized inverse transform of <em>ft</em>(double[]).
   *
-  * @param x an array which contains the sequence to be transformed. After FFT,
+  @param x an array which contains the sequence to be transformed. After FFT,
   * <em>x</em> contains the transform coeffients. Also see the comments of <em>ft</em>(double[])
   * for the relation between <em>x</em> and complex FFT coeffients.
 */
@@ -139,9 +139,9 @@ public class RealDoubleFFT extends RealDoubleFFT_Mixed
 /**
   * Backward real FFT transform. It is the unnormalized inverse transform of <em>ft</em>(Complex1D, double[]).
   *
-  * @param x  an array which contains the sequence to be transformed. When <em>n</em> is odd, it contains the first 
+  @param x  an array which contains the sequence to be transformed. When <em>n</em> is odd, it contains the first 
   * (<em>n</em>+1)/2 complex data; when <em>n</em> is even, it contains (<em>n</em>/2+1) complex data.
-  * @param y  the real FFT coeffients.
+  @param y  the real FFT coeffients.
   * <br>
   * Also see the comments of <em>ft</em>(double[]) for the relation
   * between <em>x</em> and complex FFT coeffients.
