@@ -1,5 +1,6 @@
 package algorithms.signalProcessing;
 
+import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
 import algorithms.util.OneDFloatArray;
 import algorithms.util.PolygonAndPointPlotter;
@@ -102,12 +103,12 @@ public class ATrousWaveletTransform1DTest extends TestCase {
         plotter.addPlot(0.f, input.length, 0.f, 10, 
             x, input, x, input, 
             "input");
-        plotter.addPlot(0.f, input.length, 0.f, 10, 
-            x, 
-            outputTransformed.get(outputTransformed.size() - 1).a, 
-            diffX, diffSq,
-            x, 
-            outputTransformed.get(outputTransformed.size() - 1).a, 
+        plotter.addPlot(0.f, input.length, 0.f, 10,
+                Misc0.convertToNumberArray(x),
+                Misc0.convertToNumberArray(outputTransformed.get(outputTransformed.size() - 1).a),
+                Misc0.convertToNumberArray(diffX), Misc0.convertToNumberArray(diffSq),
+                Misc0.convertToNumberArray(x),
+                Misc0.convertToNumberArray(outputTransformed.get(outputTransformed.size() - 1).a),
             "transformed");
         plotter.addPlot(0.f, input.length, 
             0.9f*MiscMath0.findMin(outputCoeff.get(outputTransformed.size() - 1).a), 

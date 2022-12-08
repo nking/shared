@@ -410,7 +410,9 @@ public class KernelDensityEstimatorTest extends TestCase {
 
         float[] x0 = MiscMath0.convertDoubleToFloat(kde0.hx);
         float[] y0 = MiscMath0.convertDoubleToFloat(kde0.kde);
-        plotter.addPlot(minX, maxX, minY, maxY, x0, y0, null, null, null, null,
+        plotter.addPlot(minX, maxX, minY, maxY,
+                Misc0.convertToNumberArray(x0), Misc0.convertToNumberArray(y0),
+                null, null, null, null,
                 String.format("0: h=%.4f", h0));
         plotter.addPlot(kde00.hx, kde00.kde, null, null, String.format("00: h=%.4f", h0));
 

@@ -3,6 +3,7 @@ package algorithms.statistics;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
+import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
@@ -141,20 +142,23 @@ public class GumbelTest extends TestCase {
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter((float)0, (float)maxX, 0f, 1.f);
 
         plotter.addPlot((float)0, (float)maxX, 0f, 1.1f,
-                hist.getXHist(), hist.getYHistFloat(),
+                Misc0.convertToNumberArray(hist.getXHist()), Misc0.convertToNumberArray(hist.getYHistFloat()),
                 null, null,
-                randHist.getXHist(), randHist.getYHistFloat(), "loc=" + params[0] + ", scale=" + params[1]);
+                Misc0.convertToNumberArray(randHist.getXHist()), Misc0.convertToNumberArray(randHist.getYHistFloat()),
+                "loc=" + params[0] + ", scale=" + params[1]);
 
         plotter.addPlot((float)0, (float)maxX, 0f, 1.1f,
-                hist.getXHist(), hist.getYHistFloat(),
+                Misc0.convertToNumberArray(hist.getXHist()), Misc0.convertToNumberArray(hist.getYHistFloat()),
                 null, null,
-                randHist.getXHist(), MiscMath0.convertDoubleToFloat(gev0y),
+                Misc0.convertToNumberArray(randHist.getXHist()),
+                Misc0.convertToNumberArray(MiscMath0.convertDoubleToFloat(gev0y)),
                 "gev loc=" + params3[0] + ", scale=" + params3[1] + ", shape=" + params3[2]);
 
         plotter.addPlot((float)0, (float)maxX, 0f, 1.1f,
-                hist.getXHist(), hist.getYHistFloat(),
+                Misc0.convertToNumberArray(hist.getXHist()), Misc0.convertToNumberArray(hist.getYHistFloat()),
                 null, null,
-                randHist.getXHist(), MiscMath0.convertDoubleToFloat(gev1y),
+                Misc0.convertToNumberArray(randHist.getXHist()),
+                Misc0.convertToNumberArray(MiscMath0.convertDoubleToFloat(gev1y)),
                 "gev loc=-5.19, scale=3.21, shape=7.13");
 
         String filePath = plotter.writeFile("gumbel_smc");

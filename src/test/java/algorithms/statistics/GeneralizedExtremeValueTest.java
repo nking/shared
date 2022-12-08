@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
+import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
@@ -180,9 +181,9 @@ public class GeneralizedExtremeValueTest extends TestCase {
 
             plotter.addPlot(hist.getXHist()[0], hist.getXHist()[hist.getXHist().length - 1],
                     0f, 1.1f,
-                    hist.getXHist(), hist.getYHistFloat(),
+                    Misc0.convertToNumberArray(hist.getXHist()), Misc0.convertToNumberArray(hist.getYHistFloat()),
                     null, null,
-                    hist.getXHist(), MiscMath0.convertDoubleToFloat(yGEV),
+                    Misc0.convertToNumberArray(hist.getXHist()), Misc0.convertToNumberArray(MiscMath0.convertDoubleToFloat(yGEV)),
                     "loc=" + expectedParams[0] + ", scale=" + expectedParams[1] +
                     " shape=" + expectedParams[2]);
 
