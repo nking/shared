@@ -455,10 +455,11 @@ public class CURDecomposition {
             
             svd2.sigma = MatrixUtil.multiply(MatrixUtil.transpose(svd2.u), result);
             svd2.sigma = MatrixUtil.multiply(svd2.sigma, MatrixUtil.transpose(svd2.vT));
-            
-            svd2.s = new double[u[0].length];
-            for (int i = 0; i < svd2.s.length; ++i) {
-                svd2.s[i] = svd2.sigma[i][i];
+
+            int sn = Math.min(svd2.sigma.length, svd2.sigma[0].length);
+            svd2.s = new double[sn];
+            for (int i = 0; i < sn; ++i) {
+                svd2.s[i] = svd2.sigma[i][i];// sigma is [m X n]
             }
             
             svd = svd2;

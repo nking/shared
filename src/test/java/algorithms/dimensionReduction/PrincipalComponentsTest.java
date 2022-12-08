@@ -29,7 +29,9 @@ public class PrincipalComponentsTest extends TestCase {
         super(testName);
     }
     
-    public void testPCA() throws Exception {
+    public void testPCAZC() throws Exception {
+
+        System.out.println("testPCAZC");
         
         // from:
         // https://online.stat.psu.edu/stat505/book/export/html/670
@@ -191,7 +193,35 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.printf("ssd=%.4e\n", ssd);
         System.out.flush();
 
-        // ==================================
+        // quick look at the CUR method
+        boolean useCUR = true;
+        PCAStats stats2 = PrincipalComponents.calcPrincipalComponents(xZC, stats.nComponents, useCUR);
+        System.out.printf("principal axes (SVD)=\n%s\n", FormatArray.toString(stats.principalAxes, "%.4e"));
+        System.out.printf("principal axes (CUR)=\n%s\n", FormatArray.toString(stats2.principalAxes, "%.4e"));
+        //System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
+        System.out.flush();
+
+        // quick look at the number of components for 85%
+        boolean useEVProp = true;
+        double prop = 0.85;
+        PCAStats stats3 = PrincipalComponents.calcPrincipalComponents(xZC, useEVProp, prop);
+        assertEquals(3, stats3.nComponents);
+
+    }
+
+    public void testPCAUSN() throws Exception {
+
+        System.out.println("testPCAUSN");
+
+        // from:
+        // https://online.stat.psu.edu/stat505/book/export/html/670
+
+        double[][] x = readPlaces();
+
+        int i, j;
+
+        //NOTE: to match the results of the psu tutorial, follow section
+        //    Example 11-5
 
         // correlation values furthest from 0 (positive or negative)
         // are the most strongly correlated.
@@ -268,10 +298,6 @@ public class PrincipalComponentsTest extends TestCase {
         plot.writeFile("_pca_");
     }
 
-    public void estEigenFaces() throws NotConvergedException {
-        // see the curvature scale-space project
-    }
-    
     public void testReconstruction() throws Exception {
 
         System.out.println("testReconstruction");

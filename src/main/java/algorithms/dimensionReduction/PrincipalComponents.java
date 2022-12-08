@@ -88,7 +88,7 @@ public class PrincipalComponents {
      less than nComponents, then only the number of components as rank is returned.
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
-        return calcPrincipalComponents(x, nComponents, true);
+        return calcPrincipalComponents(x, nComponents, false);
     }
 
     /**
@@ -116,23 +116,19 @@ public class PrincipalComponents {
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
      *    If the variance and scale of the variables are different, then unit standard normalization should be used.
-     @param nComponents the number of principal components to return.
+     @param useEVProp if true, uses the cumulative fraction of eigenvalues in combination with the
+     proportion prop to determine the number of principal components to calculate, else if false,
+     uses the cumulative fraction of singular values in combination with the proportaion prop to
+     determine the number of principal components.  Note that the closest cumulative fraction to prop is used
+     rather than meeting and possibly exceeding prop.
+     e.g.  prop of 80% to 90% w/ useEVProp = true.
      @return the principal axes, the principal components, and
      a few statistics of the CUR decomposition of A, up to the
      nComponents dimension.  Note that if the rank of the A is
      less than nComponents, then only the number of components as rank is returned.
      */
-    public static PCAStats calcPrincipalComponents(double[][] x, int nComponents, boolean useSVD) throws NotConvergedException {
-
-        int n = x.length;
-        int nDimensions = x[0].length;
-
-        if (nComponents > nDimensions) {
-            throw new IllegalArgumentException("x has " + nDimensions + " but "
-                    + " nComponents principal components were requested.");
-        }
-
-        double eps = 1.e-15;
+    public static PCAStats calcPrincipalComponents(double[][] x, boolean useEVProp,
+                                                   double prop) throws NotConvergedException {
 
         /*
         minimal residual variance basis:
@@ -171,6 +167,10 @@ public class PrincipalComponents {
             X*V = U * D = principal components = projection of the data onto the principal axes
                and the coords of the newly transformed data are on row_0 for the first data point, etc.
         */
+        int n = x.length;
+        int nDimensions = x[0].length;
+
+        double eps = 1.e-15;
 
         // U is mxm
         // S is mxn
@@ -179,7 +179,118 @@ public class PrincipalComponents {
         double[][] u;
         double[] s;
         double[][] vT;
-        if (useSVD) {
+        SVD svd = SVD.factorize(new DenseMatrix(x));
+        s = svd.getS();
+        vT = MatrixUtil.convertToRowMajor(svd.getVt());
+        u = MatrixUtil.convertToRowMajor(svd.getU());
+
+        int i;
+        int j;
+        int rank = 0;
+        for (i = 0; i < s.length; ++i) {
+            if (Math.abs(s[i]) > eps) {
+                rank++;
+            }
+        }
+
+        double[] eig = new double[rank];
+        double sumEVTotal = 0;
+        double sumSTotal = 0;
+        for (i = 0; i < eig.length; ++i) {
+            eig[i] = (s[i] * s[i])/((double)n - 1.);
+            sumEVTotal += eig[i];
+            sumSTotal += s[i];
+        }
+
+        double[] fracs = new double[rank];
+        if (useEVProp) {
+            for (j = 0; j < fracs.length; ++j) {
+                fracs[j] = eig[j]/sumEVTotal;
+            }
+        } else {
+            for (j = 0; j < fracs.length; ++j) {
+                fracs[j] = s[j]/sumSTotal;
+            }
+        }
+
+        // find smallest diff between cumulative fraction and prop
+
+        double[] c = Arrays.copyOf(fracs, fracs.length);
+        int idxM = 0;
+        double diff = Math.abs(c[0] - prop);
+        double min = diff;
+        for (j = 1; j < c.length; ++j) {
+            c[j] += c[j-1];
+            diff = Math.abs(c[j] - prop);
+            if (diff < min) {
+                idxM = j;
+                min = diff;
+            }
+        }
+        int nComponents = idxM + 1;
+
+        System.out.printf("nComponents=%d\n", nComponents);
+        System.out.printf("eig = %s\n", FormatArray.toString(eig, "%.4e"));
+        System.out.printf("s = %s\n", FormatArray.toString(s, "%.4e"));
+        System.out.printf("fractions (eig or s) of total = %s\n", FormatArray.toString(fracs, "%.4e"));
+        System.out.printf("cumulative proportion=\n%s\n", FormatArray.toString(c, "%.4e"));
+
+        return calcPrincipalComponents(x, nComponents, u, s, vT, eps);
+    }
+
+    /**
+     * calculate the principal components of the unit standardized data x
+     * using Singular Value Decomposition or CUR Decomposition.
+     * NOTE: the data need to be zero centered first.
+     *
+     <pre>
+     the method follows:
+     http://www.cs.toronto.edu/~jepson/csc420/
+     combined with the book by Strang "Introduction to Linear Algebra"
+     and the book by Leskovec, Rajaraman, and Ullman "Mining of Massive Datasets".
+     also useful:
+     https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
+     and https://online.stat.psu.edu/stat505/book/export/html/670
+     </pre>
+     <pre>
+     NOTE:
+     variance-covariance(standardized data) == correlation(unstandardized data) == correlation(zero mean centered data).
+     therefore, pca using the standardized data == pca using the correlation matrix.
+     Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
+     </pre>
+     * @param x is a 2-dimensional array of k vectors of length n in format
+     *    double[n][k].  n is the number of samples, and k is the number of
+     *    variables, a.k.a. dimensions.
+     *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
+     *    If the variance and scale of the variables are different, then unit standard normalization should be used.
+     @param nComponents the number of principal components to return.
+     @param useCUR if true, uses CUR decomposition instead of Singular Value Decomposition.  CUR decomposition
+     is useful for very large datasets.
+     @return the principal axes, the principal components, and
+     a few statistics of the CUR decomposition of A, up to the
+     nComponents dimension.  Note that if the rank of the A is
+     less than nComponents, then only the number of components as rank is returned.
+     */
+    public static PCAStats calcPrincipalComponents(double[][] x, int nComponents, boolean useCUR) throws NotConvergedException {
+
+        int n = x.length;
+        int nDimensions = x[0].length;
+
+        if (nComponents > nDimensions) {
+            throw new IllegalArgumentException("x has " + nDimensions + " but "
+                    + " nComponents principal components were requested.");
+        }
+
+        double eps = 1.e-15;
+
+        // U is mxm
+        // S is mxn
+        // V is nxn
+
+        double[][] u;
+        double[] s;
+        double[][] vT;
+        if (!useCUR) {
             SVD svd = SVD.factorize(new DenseMatrix(x));
             s = svd.getS();
             vT = MatrixUtil.convertToRowMajor(svd.getVt());
@@ -191,6 +302,24 @@ public class PrincipalComponents {
             vT = svd.vT;
             u = svd.u;
         }
+
+        return calcPrincipalComponents(x, nComponents, u, s, vT, eps);
+    }
+
+    private static PCAStats calcPrincipalComponents(double[][] x, int nComponents,
+        double[][] u, double[] s, double[][] vT, double eps) {
+
+        int n = x.length;
+        int nDimensions = x[0].length;
+
+        if (nComponents > nDimensions) {
+            throw new IllegalArgumentException("x has " + nDimensions + " but "
+                    + " nComponents principal components were requested.");
+        }
+
+        // U is mxm
+        // S is mxn
+        // V is nxn
 
         int i;
         int j;
@@ -205,18 +334,38 @@ public class PrincipalComponents {
             nComponents = rank;
         }
 
+        // re-doing these for output stats
+
         double sumEvTrunc = 0;
         double[] eig = new double[rank];
         double sumEVTotal = 0;
+        double sumSTotal = 0;
         for (i = 0; i < eig.length; ++i) {
             eig[i] = (s[i] * s[i])/((double)n - 1.);
             sumEVTotal += eig[i];
-            if (i < rank) {
+            sumSTotal += s[i];
+            if (i < nComponents) {
                 sumEvTrunc = sumEVTotal;
             }
         }
+
+        double[] eigFracs = new double[rank];
+        double[] sFracs = new double[rank];
+        for (j = 0; j < eig.length; ++j) {
+            eigFracs[j] = eig[j]/sumEVTotal;
+            sFracs[j] = s[j]/sumSTotal;
+        }
         //residual fractional eigenvalue is 1-(sum_{i=0 to nComponents-1}(s[i]) / sum_{i=0 to n-1}(s[i]))
         double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);
+
+        double[] cEig = Arrays.copyOf(eigFracs, eigFracs.length);
+        for (j = 1; j < cEig.length; ++j) {
+            cEig[j] += cEig[j-1];
+        }
+        double[] cSingular = Arrays.copyOf(sFracs, sFracs.length);
+        for (j = 1; j < cSingular.length; ++j) {
+            cSingular[j] += cSingular[j-1];
+        }
 
         // COLUMNS of v are the principal axes, a.k.a. principal directions
 
@@ -244,50 +393,20 @@ public class PrincipalComponents {
         stats.eigenValues = eig;
         stats.uP = uP;
         stats._s = Arrays.copyOf(s, s.length);
-
-        double total = 0;
-        for (j = 0; j < eig.length; ++j) {
-            total += eig[j];
-        }
-        double[] fracs = new double[rank];
-        for (j = 0; j < rank; ++j) {
-            fracs[j] = eig[j]/total;
-        }
-        double[] c = Arrays.copyOf(fracs, fracs.length);
-        for (j = 1; j < c.length; ++j) {
-            c[j] += c[j-1];
-        }
-        stats.cumulativeProportion = c;
+        stats.cumulativeProportion = cEig;
 
         double ssdP = 0;
-        for (j = nComponents; j < nDimensions; ++j) {
+        for (j = nComponents; j < eig.length; ++j) {
             ssdP += eig[j];
         }
         stats.ssdP = ssdP;
-        stats.fractionVariance = (total - ssdP)/total;
+        stats.fractionVariance = (sumEVTotal - ssdP)/sumEVTotal;
 
-        System.out.printf("nComponents==%d\n", nComponents);
         System.out.printf("ssd_p=%.5e\n", stats.ssdP);
         System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
-
-        System.out.printf("eig = %s\n", FormatArray.toString(eig, "%.4e"));
-        System.out.printf("s = %s\n", FormatArray.toString(s, "%.4e"));
-        System.out.printf("s fractions of total = \n%s\n",
-                FormatArray.toString(fracs, "%.4e"));
-        System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
-                FormatArray.toString(stats.cumulativeProportion, "%.4e"));
-
-        //System.out.printf("x=\n%s\n", FormatArray.toString(x, "%.4e"));
-        //System.out.printf("v=\n%s\n", FormatArray.toString(MatrixUtil.transpose(vT), "%.4e"));
-        //System.out.printf("u=\n%s\n", FormatArray.toString(u, "%.4e"));
-
         System.out.printf("principal axes=\n%s\n", FormatArray.toString(pA, "%.4e"));
         System.out.printf("principal projections (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
         System.out.flush();
-
-        //checked, same as pC = U * diag(s)
-        //double[][] xv = MatrixUtil.multiply(x, MatrixUtil.transpose(vT));
-        //System.out.printf("xV=\n%s\n", FormatArray.toString(xv, "%.4e"));
 
         return stats;
     }
