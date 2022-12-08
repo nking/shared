@@ -65,7 +65,7 @@ public class BruteForceTest extends TestCase {
         a[3] = new double[]{69.0,   660.0, 46.0};
         a[4] = new double[]{73.0,   600.0, 55.0};
         
-        double[] mean = MatrixUtil.mean(a);
+        double[] mean = MatrixUtil.columnMeans(a);
         double[] stdev = MatrixUtil.standardDeviation(a);
         double[] expectedMean = new double[]{68.0,   600.0, 40.0};
         for (i = 0; i < a.length; ++i) {

@@ -2,10 +2,8 @@ package algorithms.dimensionReduction;
 
 import algorithms.correlation.BruteForce;
 import algorithms.correlation.MultivariateDistance;
-import algorithms.correlation.UnivariateDistance;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
-import algorithms.misc.MiscMath0;
 import algorithms.statistics.Standardization;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
@@ -14,13 +12,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.EVD;
-import no.uib.cipr.matrix.SVD;
+import no.uib.cipr.matrix.NotConvergedException;
 
 /**
  *
@@ -51,9 +48,20 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.printf("mean x=\n%s\n", FormatArray.toString(mean, "%.5e"));
         System.out.flush();
          */
-        double[] mean = MatrixUtil.mean(x);
 
-        x = Standardization.zeroCenterMean(x);
+        double[] mean = MatrixUtil.columnMeans(x);
+
+        double[][] xZC = Standardization.zeroCenterMean(x);
+
+        /*
+        double[] mean = MatrixUtil.rowMeans(x);
+        double m;
+        for (i = 0 ; i < x.length; ++i) {
+            m = mean[i];
+            for (j = 0 ; j < x[i].length; ++j) {
+                x[i][j] -= m;
+            }
+        }*/
 
         /*
         Step 1: Examine the eigenvalues to determine how many principal 
@@ -77,9 +85,9 @@ public class PrincipalComponentsTest extends TestCase {
             the first five principal components explain 82% of the variation.         
         */
 
-        System.out.printf("x is [%d X %x]\n", x.length, x[0].length);
+        System.out.printf("xZX is [%d X %x]\n", xZC.length, xZC[0].length);
         
-        PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 3);
+        PCAStats stats = PrincipalComponents.calcPrincipalComponents(xZC, 3);
 
         System.out.printf("mean of A =\n%s\n", FormatArray.toString(mean, "%.4e"));
         System.out.printf("pA=\n%s\n", FormatArray.toString(stats.principalAxes, "%.4e"));
@@ -120,7 +128,7 @@ public class PrincipalComponentsTest extends TestCase {
         // X [297 X 9]
         // correlation between projected and X
         int k;
-        double[][] dCor = MultivariateDistance.fastDCor(x, stats.principalComponents);
+        double[][] dCor = MultivariateDistance.fastDCor(xZC, stats.principalComponents);
 
         // correlation and fast distance correlation are similar, except dCor ~ abs(cor)
         System.out.printf("dCor=\n%s\n", FormatArray.toString(dCor, "%.4e"));
@@ -167,6 +175,24 @@ public class PrincipalComponentsTest extends TestCase {
                         "then %d within 30%% of expected, then %d within 40%% of expected\n",
                 expectedCorr.length*expectedCorr[0].length, n10, n20, n30, n40);
 
+        double[][] xR = PrincipalComponents.reconstruct(mean,stats);
+
+        int n = x.length;
+        int p = stats.nComponents;
+        k = x[0].length;
+        double ssd = 0;
+        for (i = 0; i < n; ++i) {
+            for (j = 0; j < p; ++j) {
+                diff = x[i][j] - xR[i][j];
+                ssd += (diff * diff);
+                System.out.printf("x[%d][%d] = %.4e   diff = %.4e\n", i, j, x[i][j], diff);
+            }
+        }
+        System.out.printf("ssd=%.4e\n", ssd);
+        System.out.flush();
+
+        // ==================================
+
         // correlation values furthest from 0 (positive or negative)
         // are the most strongly correlated.
         // for this table just printed, |correlation| >= 0.5 are significant.
@@ -181,6 +207,8 @@ public class PrincipalComponentsTest extends TestCase {
         //                                        == correlation(zero mean centered data).
         // therefore, pca using the standardized data == pca using the correlation matrix.
         // eigen of cov(standardized) == eigen of cor(unstandardized)
+
+        System.out.printf("\ntestPCA using unit normal standardization\n");
 
         double[][] x2 = readPlaces();
         double[][] cor = BruteForce.correlation(x);
@@ -205,113 +233,9 @@ public class PrincipalComponentsTest extends TestCase {
         System.out.printf("Z pA=\n%s\n", FormatArray.toString(stats2.principalAxes, "%.4e"));
         System.out.printf("Z pC=\n%s\n", FormatArray.toString(stats2.principalComponents, "%.4e"));
 
-        /*
-        following Jepson lecture to find coefficients a_j to minimize the objective:
-        solve for a_j, knowing x_j and assuming B is stats.U_P
-        // x_j is [n X 1]
-        // B is [n X p]
-        // a_j is [p X 1]
-        objective is (x_j - B*a_j)^2
-                  = (x_j)^2 - 2*(x_j)*(B*a_j) + (B*a_j)^2
-
-        He proves that B is the first p columns of SVD(X).U, but doesn't solve for a_j, so here is my attempt
-        to solve for a_j, then a comparison of the residuals using B*a_j to those using B*ones(p,1).
-
-        looking for a closed form solution:
-          set deriv of objective to 0:
-            d/da_j(objective) = - 2*(x_j).*(B*ones(p, 1)) + 2*(B*a_j).*(B*ones(p, 1))
-
-            in the factored, if the polynomial order of a_j was larger than 1 and linear in the orders,
-            could group by polynomial powers of a_j
-            and use Vandermonde matrix (V = matrix with columns of x^0  x^1  x^2).
-
-            since the factored only has polynomial order of 1 for a_j and all other variables are known,
-            can use DLT to form the solution in terms of M * a = 0
-
-            deriv =  - 2*(x_j).*(B*ones(p, 1)) + 2*(B*a_j)*(B*ones(p, 1))
-
-            2*B*a_j = |(2*b00*a0 + 2*b01*a1 + 2*b02*a2)|
-                      |(2*b10*a0 + 2*b11*a1 + 2*b12*a2)|
-                                ...
-            B*ones(p, 1) = |(b00 + b01 + b02 +...)|
-                           |(b10 + b11 + b12 +...)|
-                               ...
-         =>   -2*(x_j).*(B*ones(p, 1)) = |-2*x0*(b00 + b01 + b02 +...)|
-                                       |-2*x1*(b10 + b11 + b12 +...)|
-                                              ...
-         =>   2*(B*a_j).*(B*ones(p, 1)) = |(2*b00*a0 + 2*b01*a1 + 2*b02*a2).*(b00 + b01 + b02 +...)|
-                                        |(2*b10*a0 + 2*b11*a1 + 2*b12*a2).*(b10 + b11 + b12 +...)|
-                                          ...
-                                      = |( a0*(2*b00*(b00 + b01 + b02 +...)) + a1*(2*b01*(b00 + b01 + b02 +...))
-                                           + a2*(2*b02*(b00 + b01 + b02 +...)) + ...) |
-                                           ...
-          grouping by terms of a:
-          M rows are | (-2*x0*(b00 + b01 + b02 +...))    ( a0*(2*b00*(b00 + b01 + b02 +...))    a1*(2*b01*(b00 + b01 + b02 +...)) ...
-             note that M will be [n x (p + 1)]
-
-          then can use SVD(M).VT[n-1]
-          or for an exact solution, can place the 0 order terms on the left as y in for M * a = y and solve a = pInv(M)*y
-
-          a_j is one column and is [pX1]
-          A is j columns of a_j and is [p X k] where k is x[0].length.
-          then B*A = [nXp][pXk]=[nXk] which is same size as x
-
-          evaluate the objective for each column, summing the square of the differences
-         */
-        double[][] b = stats.uP; // [n X p]
-        int n = x.length;
-        int p = stats.nComponents;;
-        //double[][] a = MatrixUtil.zeros(p, x[0].length);
-        double[][] aT = MatrixUtil.zeros(x[0].length, p);
-        int ii;
-        double sumB;
-        double[] xj, baj;
-        double[] ones = new double[p];
-        Arrays.fill(ones, 1);
-        double[] ssd = new double[n];
-        double[] ssd1 = new double[n];
-        double ssdTotal = 0;
-        double[] b1 = MatrixUtil.multiplyMatrixByColumnVector(b, ones);
-        for (j = 0; j < x[0].length; ++j) {
-            // form the design matrix for DLT:
-            double[][] mj = MatrixUtil.zeros(n, p+1);
-            for (i = 0; i < x.length; ++i) {
-                sumB = 0;
-                for (ii = 0; ii < p; ++ii) {
-                    sumB += b[i][ii];
-                }
-                sumB *= 2;
-                //mj = | (-2*x0*(b00 + b01 + b02 +...))    ( a0*(2*b00*(b00 + b01 + b02 +...))    a1*(2*b01*(b00 + b01 + b02 +...))   ...
-                mj[i][0] = -sumB * x[i][j];
-                for (ii = 0; ii < p; ++ii) {
-                    mj[i][ii+1] = sumB * b[i][ii];
-                }
-            }
-            // mj is populated now, so solve for a_j
-            SVD svd = SVD.factorize(new DenseMatrix(mj));
-            //vT is p X p
-            // set aj into column j of matrix a, which is row j of aT
-            aT[j] = Arrays.copyOf(MatrixUtil.convertToRowMajor(svd.getVt())[p - 1], p);
-            System.out.printf("a_%d = %s\n", j, FormatArray.toString(aT[j], "%.4e"));
-
-            // evaluate the objective for this column j
-            // x_j - B*a_j
-            xj = MatrixUtil.extractColumn(x, j);
-            baj = MatrixUtil.multiplyMatrixByColumnVector(b, aT[j]);
-            for (i = 0; i < x.length; ++i) {
-                diff = xj[i] - baj[i];
-                ssd[j] += (diff * diff);
-                diff = xj[i] - b1[i];
-                ssd1[j] += (diff * diff);
-            }
-            // ssd[j] should be similar to ssd_p
-            ssdTotal += ssd[j];
-            // ssd1[j] does not use a_j.  can see that ssd1 is larger than ssd
-            System.out.printf("ssd[%d]=%.4e  ssd1=%.4e total=%.4e\n", j, ssd[j], ssd1[j], ssdTotal);
-        }
     }
     
-    public void estPCA2() throws Exception {
+    public void testPCA2() throws Exception {
         
         double[][] x = new double[4][2];
         x[0] = new double[]{1, 2};
@@ -332,23 +256,33 @@ public class PrincipalComponentsTest extends TestCase {
         plot.addPlot(xZCT[0], xZCT[1], null, null, "X-m");
 
         double n = x.length;
-        
-        // U is 2x2,  U_p is 2x1
+        int p = 1;
+        // x is 4 X 2.
+        // p = 1
+        // U is 4x4,  U_p is 4x1
         // V is 2x2, V_P is 2x1, V^T_p is 1x2
-        // x is nx2
-        PCAStats stats = PrincipalComponents.calcPrincipalComponents(xZC, 1);
+        // U_p * diag(s) = [4x1][1x1]=[4x1]
+        // X * V_p = [4x2]*[2x1]=[4x1]
+        PCAStats stats = PrincipalComponents.calcPrincipalComponents(xZC, p);
 
         plot.writeFile("_pca_");
     }
+
+    public void estEigenFaces() throws NotConvergedException {
+        // see the curvature scale-space project
+    }
     
-    public void estReconstruction() throws Exception {
+    public void testReconstruction() throws Exception {
+
+        System.out.println("testReconstruction");
         
         double d2r = Math.PI/180.;
         double angle, dx, dy;
         double[][] x = new double[4][2];
        
         angle = -30;//-45;
-        double x1=3./Math.sqrt(2); double y1=1./Math.sqrt(2);
+        double x1 = 3./Math.sqrt(2);
+        double y1 = 1./Math.sqrt(2);
         dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
         dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
         double xt1 = dx;
@@ -379,29 +313,14 @@ public class PrincipalComponentsTest extends TestCase {
         
         int i, j;
         
-        System.out.println("x0:");
-        for (i = 0; i < x.length; ++i) {
-            for (j = 0; j < x[i].length; ++j) {
-                System.out.printf("%11.3e  ", x[i][j]);
-            }
-            System.out.println();
-        }
+        System.out.printf("x0:\n%s\n", FormatArray.toString(x, "%11.3e"));
         System.out.flush();
-        
-        double[] mean = new double[x[0].length];
-        double[] stDev = new double[x[0].length];
-        x = Standardization.standardUnitNormalization(x, mean, stDev);
-        
-        System.out.println("mean x=");
-        for (i = 0; i < mean.length; ++i) {
-            System.out.printf("%11.3e  ", mean[i]);
-        }
-        System.out.println();
-        System.out.println("stdev x=");
-        for (i = 0; i < stDev.length; ++i) {
-            System.out.printf("%11.3e  ", stDev[i]);
-        }
-        System.out.println();
+
+        double[] mean = MatrixUtil.columnMeans(x);
+
+        double[][] xZC = Standardization.zeroCenterMean(x);
+
+        System.out.printf("mean = \n%s\n", FormatArray.toString(mean, "%11.3e"));
         System.out.flush();
         
         double n = x.length;
@@ -409,126 +328,26 @@ public class PrincipalComponentsTest extends TestCase {
         // U is 2x2,  U_p is 2x1
         // V is 2x2, V_P is 2x1, V^T_p is 1x2
         // x is nx2
-        PCAStats stats = PrincipalComponents.calcPrincipalComponents(x, 1);
+        PCAStats stats = PrincipalComponents.calcPrincipalComponents(xZC, 2);
                 
         double[][] b = stats.principalComponents;
-        System.out.printf("b = x * v^T_p=\n%s\n", FormatArray.toString(b, "%.5e"));
+
+        double[][] xR = PrincipalComponents.reconstruct(mean, stats);
+
+        int p = stats.nComponents;
+        int k = x[0].length;
+        double diff;
+        double ssd = 0;
+        for (i = 0; i < n; ++i) {
+            for (j = 0; j < p; ++j) {
+                diff = x[i][j] - xR[i][j];
+                ssd += (diff * diff);
+                System.out.printf("x[%d][%d] = %.4e   diff = %.4e\n", i, j, x[i][j], diff);
+            }
+        }
+        System.out.printf("ssd=%.4e\n", ssd);
         System.out.flush();
 
-        double[][] xMinusB = MatrixUtil.copy(x);
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                xMinusB[i][j] -= b[i][0];
-            }
-        }
-        System.out.printf("x - Ba=\n%s\n", FormatArray.toString(xMinusB, "%11.3e"));
-        System.out.flush();
-        double xMBSum = 0;
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                xMBSum += xMinusB[i][j]*xMinusB[i][j];
-            }
-        }
-        System.out.printf("sum (x - (m + B*a))^2 = %.5e\n", xMBSum);
-
-        // =====================
-        System.out.println("=== new points in same reference frame ===");
-        
-        angle = -30;//-45;
-        x1=10./Math.sqrt(2); y1=1./Math.sqrt(2);
-        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
-        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
-        xt1 = dx;
-        yt1 = dy;
-        
-        x1=10./Math.sqrt(2); y1=-1./Math.sqrt(2);
-        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
-        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
-        xt2 = dx;
-        yt2 = dy;
-        
-        x1=15./Math.sqrt(2); y1=1./Math.sqrt(2);
-        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
-        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
-        xt3 = dx;
-        yt3 = dy;
-        
-        x1=15./Math.sqrt(2); y1=-1./Math.sqrt(2);
-        dx= x1*Math.cos(angle*d2r) + y1*Math.sin(angle*d2r);
-        dy= -x1*Math.sin(angle*d2r) + y1*Math.cos(angle*d2r);
-        xt4 = dx;
-        yt4 = dy;
-        
-        x[0] = new double[]{xt1, yt1};
-        x[1] = new double[]{xt2, yt2};
-        x[2] = new double[]{xt3, yt3};
-        x[3] = new double[]{xt4, yt4};
-        
-        System.out.println("*x0:");
-        for (i = 0; i < x.length; ++i) {
-            for (j = 0; j < x[i].length; ++j) {
-                System.out.printf("%11.3e  ", x[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
-        
-        mean = new double[x[0].length];
-        stDev = new double[x[0].length];
-        x = Standardization.standardUnitNormalization(x, mean, stDev);
-        
-        b = MatrixUtil.multiply(x, MatrixUtil.transpose(stats.principalAxes));
-
-        double[][] bReconstruction = PrincipalComponents.reconstruct(x, stats);
-        for (i = 0; i < bReconstruction.length; ++i) {
-            for (j = 0; j < bReconstruction[i].length; ++j) {
-                bReconstruction[i][j] *= stDev[j];
-                bReconstruction[i][j] += mean[j];
-            }
-        }
-        
-        System.out.println("*b = x * pr.dir * v^T_p=");
-        for (i = 0; i < b.length; ++i) {
-            for (j = 0; j < b[i].length; ++j) {
-                System.out.printf("%11.3e  ", b[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
-        
-        System.out.println("*B =");
-        for (i = 0; i < bReconstruction.length; ++i) {
-            for (j = 0; j < bReconstruction[i].length; ++j) {
-                System.out.printf("%11.3e  ", bReconstruction[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
-        
-        xMinusB = MatrixUtil.copy(x);
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                //xMinusB[i][j] -= mean[j];
-                xMinusB[i][j] -= b[i][0];
-            }
-        }
-        System.out.println("*x:");
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", x[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
-        System.out.println("*(x - (m + B*a))^2:");
-        for (i = 0; i < xMinusB.length; ++i) {
-            for (j = 0; j < xMinusB[i].length; ++j) {
-                System.out.printf("%11.3e  ", xMinusB[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.flush();
-        
     }
     
     /**

@@ -1,10 +1,8 @@
 package algorithms.matrix;
 
-import algorithms.graphs.GraphUtil;
 import algorithms.graphs.Laplacian;
 import algorithms.matrix.MatrixUtil.ProjectionResults;
 import algorithms.util.FormatArray;
-import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
@@ -733,7 +731,7 @@ public class MatrixUtilTest extends TestCase {
          a[2] = new double[]{11, 90};
          
          double[] expected = new double[]{10, 100};
-         double[] mean = MatrixUtil.mean(a);
+         double[] mean = MatrixUtil.columnMeans(a);
          
          assertEquals(expected.length, mean.length);
          

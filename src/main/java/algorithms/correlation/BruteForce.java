@@ -1,7 +1,6 @@
 package algorithms.correlation;
 
 import algorithms.matrix.MatrixUtil;
-import java.util.Arrays;
 
 /**
  * implemented from 
@@ -79,7 +78,7 @@ public class BruteForce {
         int i, j;
         
         // mean of each column:
-        double[] mean = MatrixUtil.mean(a);
+        double[] mean = MatrixUtil.columnMeans(a);
         // r.t. nRows * nCols
         double[][] diffs = new double[nRows][];
         for (i = 0; i < nRows; ++i) {

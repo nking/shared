@@ -345,7 +345,7 @@ public class StandardizationTest extends TestCase {
             
             assertEquals(st.length, data.length);
             
-            mean2 = MatrixUtil.mean(st);
+            mean2 = MatrixUtil.columnMeans(st);
             stDev2 = MatrixUtil.standardDeviation(st);
             assertEquals(nDimensions, mean2.length);
             assertEquals(nDimensions, stDev2.length);

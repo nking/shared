@@ -158,7 +158,7 @@ public class Standardization {
         // then calculate the standard deviation and divide the data by it.
         double[][] out = MatrixUtil.copy(data);
         
-        double[] mean = MatrixUtil.mean(out);
+        double[] mean = MatrixUtil.columnMeans(out);
         System.arraycopy(mean, 0, outputMean, 0, mean.length);
 
         int i;
@@ -203,7 +203,7 @@ public class Standardization {
 
         double[][] out = MatrixUtil.zeros(m, n);
 
-        double[] mean = MatrixUtil.mean(data);
+        double[] mean = MatrixUtil.columnMeans(data);
 
         int i;
         int j;

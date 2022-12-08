@@ -59,7 +59,41 @@ public class PrincipalComponents {
 
     /**
      * calculate the principal components of the unit standardized data x
-     * using SVD.
+     * using Singular Value Decomposition.
+     * NOTE: the data need to be zero centered first.
+     *
+     <pre>
+     the method follows:
+     http://www.cs.toronto.edu/~jepson/csc420/
+     combined with the book by Strang "Introduction to Linear Algebra"
+     also useful:
+     https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
+     and https://online.stat.psu.edu/stat505/book/export/html/670 for testing results,
+     </pre>
+     <pre>
+     NOTE:
+     variance-covariance(standardized data) == correlation(unstandardized data) == correlation(zero mean centered data).
+     therefore, pca using the standardized data == pca using the correlation matrix.
+     Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
+     </pre>
+     * @param x is a 2-dimensional array of k vectors of length n in format
+     *    double[n][k].  n is the number of samples, and k is the number of
+     *    variables, a.k.a. dimensions.
+     *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
+     *    If the variance and scale of the variables are different, then unit standard normalization should be used.
+     @param nComponents the number of principal components to return.
+     @return the principal axes, the principal components, and
+     a few statistics of the CUR decomposition of A, up to the
+     nComponents dimension.  Note that if the rank of the A is
+     less than nComponents, then only the number of components as rank is returned.
+     */
+    public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
+        return calcPrincipalComponents(x, nComponents, true);
+    }
+
+    /**
+     * calculate the principal components of the unit standardized data x
+     * using Singular Value Decomposition or CUR Decomposition.
      * NOTE: the data need to be zero centered first.
      *
      <pre>
@@ -88,7 +122,7 @@ public class PrincipalComponents {
      nComponents dimension.  Note that if the rank of the A is
      less than nComponents, then only the number of components as rank is returned.
      */
-    public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
+    public static PCAStats calcPrincipalComponents(double[][] x, int nComponents, boolean useSVD) throws NotConvergedException {
 
         int n = x.length;
         int nDimensions = x[0].length;
@@ -138,13 +172,26 @@ public class PrincipalComponents {
                and the coords of the newly transformed data are on row_0 for the first data point, etc.
         */
 
-        SVD svd = SVD.factorize(new DenseMatrix(x));
-
         // U is mxm
         // S is mxn
         // V is nxn
 
-        double[] s = svd.getS();
+        double[][] u;
+        double[] s;
+        double[][] vT;
+        if (useSVD) {
+            SVD svd = SVD.factorize(new DenseMatrix(x));
+            s = svd.getS();
+            vT = MatrixUtil.convertToRowMajor(svd.getVt());
+            u = MatrixUtil.convertToRowMajor(svd.getU());
+        } else {
+            CURDecomposition.CUR cur = CURDecomposition.calculateDecomposition(x, nComponents);
+            MatrixUtil.SVDProducts svd = cur.getApproximateSVD();
+            s = svd.s;
+            vT = svd.vT;
+            u = svd.u;
+        }
+
         int i;
         int j;
         int rank = 0;
@@ -172,19 +219,18 @@ public class PrincipalComponents {
         double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);
 
         // COLUMNS of v are the principal axes, a.k.a. principal directions
-        double[][] vT = MatrixUtil.convertToRowMajor(svd.getVt());
+
         double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);
 
         // X*V = U * diag(s) = principal components
-        DenseMatrix u = svd.getU();
-        double[][] uP = MatrixUtil.zeros(u.numRows(), nComponents);
+        double[][] uP = MatrixUtil.zeros(u.length, nComponents);
         // principal components for "1 sigma".  if need 2 sigma, multiply pc by 2,...
-        double[][] pC = MatrixUtil.zeros(u.numRows(), nComponents);
-        for (i = 0; i < u.numRows(); ++i) {
+        double[][] pC = MatrixUtil.zeros(u.length, nComponents);
+        for (i = 0; i < u.length; ++i) {
             for (j = 0; j < nComponents; ++j) {
                 // row u_i * diag(s[j])
-                pC[i][j] = u.get(i, j) * svd.getS()[j];
-                uP[i][j] = u.get(i, j);
+                pC[i][j] = u[i][j] * s[j];
+                uP[i][j] = u[i][j];
             }
         }
         //checked, same as pC = U * diag(s)
@@ -247,140 +293,6 @@ public class PrincipalComponents {
     }
 
     /**
-     * calculate the principal components of the unit standardized data x
-     * using CUR decomposition.
-     * NOTE: the data need to be zero centered first.
-     *
-     <pre>
-     the method follows:
-     http://www.cs.toronto.edu/~jepson/csc420/
-     combined with the book by Strang "Introduction to Linear Algebra"
-     and the book by Leskovec, Rajaraman, and Ullman "Mining of Massive Datasets".
-     http://www.mmds.org/mmds/v2.1/ch11-dimred.pdf
-     also useful:
-     https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
-     and https://online.stat.psu.edu/stat505/book/export/html/670
-     </pre>
-     <pre>
-     NOTE:
-     variance-covariance(standardized data) == correlation(unstandardized data) == correlation(zero mean centered data).
-     therefore, pca using the standardized data == pca using the correlation matrix.
-     Also, the eigen of cov(standardized) == eigen of cor(unstandardized).
-     </pre>
-     * @param x is a 2-dimensional array of k vectors of length n in format
-     *    double[n][k].  n is the number of samples, and k is the number of
-     *    variables, a.k.a. dimensions.
-     *          x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
-     *      If the variance and scale of the variables are different, then unit standard normalization should be used.
-     * @param nComponents the number of principal components to return.
-     * @return the principal axes, the principal components, and
-     * a few statistics of the CUR decomposition of A, up to the
-     * nComponents dimension.  Note that if the rank of the A is
-     * less than nComponents, then only the number of components as rank is returned.
-     */
-    public static PCAStats calcPrincipalComponentsUsingCURDecomp(double[][] x, int nComponents) throws NotConvergedException {
-
-        int n = x.length;
-        int nDimensions = x[0].length;
-        
-        if (nComponents > nDimensions) {
-            throw new IllegalArgumentException("x has " + nDimensions + " but " 
-                + " nComponents principal components were requested.");
-        }
-        
-        double eps = 1.e-15;
-
-        CURDecomposition.CUR cur = CURDecomposition.calculateDecomposition(x, nComponents);
-
-        // U is mxm
-        // S is mxn
-        // V is nxn
-
-        MatrixUtil.SVDProducts svd = cur.getApproximateSVD();
-        double[] s = svd.s;
-        int i;
-        int j;
-        int rank = 0;
-        for (i = 0; i < s.length; ++i) {
-            if (Math.abs(s[i]) > eps) {
-                rank++;
-            }
-        }
-        
-        if (nComponents > rank) {
-            nComponents = rank;
-        }
-
-        double sumEvTrunc = 0;
-        double[] eig = new double[rank];
-        double sumEVTotal = 0;
-        for (i = 0; i < eig.length; ++i) {
-            eig[i] = (s[i] * s[i])/((double)n - 1.);
-            sumEVTotal += eig[i];
-            if (i < rank) {
-                sumEvTrunc = sumEVTotal;
-            }
-        }
-        //residual fractional eigenvalue is 1-(sum_{i=0 to nComponents-1}(s[i]) / sum_{i=0 to n-1}(s[i]))
-        double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);
-
-        // COLUMNS of v are the principal axes, a.k.a. principal directions
-        double[][] vT = svd.vT;
-        double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);
-
-        // // X*V = U * diag(s) = principal components
-        // principal components for "1 sigma".  if need 2 sigma, multiply pc by 2,...
-        double[][] pC = MatrixUtil.zeros(svd.u.length, nComponents);
-        for (i = 0; i < svd.u.length; ++i) {
-            for (j = 0; j < nComponents; ++j) {
-                // row u_i * diag(s[j])
-                pC[i][j] = svd.u[i][j] * svd.s[j];
-            }
-        }
-
-        PCAStats stats = new PCAStats();
-        stats.nComponents = nComponents;
-        stats.principalAxes = pA;
-        stats.principalComponents = pC;
-        stats.eigenValues = eig;
-
-        double total = 0;
-        for (j = 0; j < eig.length; ++j) {
-            total += eig[j];
-        }
-        double[] fracs = new double[rank];
-        for (j = 0; j < rank; ++j) {
-            fracs[j] = eig[j]/total;
-        }
-        double[] c = Arrays.copyOf(fracs, fracs.length);
-        for (j = 1; j < c.length; ++j) {
-            c[j] += c[j-1];
-        }
-        stats.cumulativeProportion = c;
-        
-        double ssdP = 0;
-        for (j = nComponents; j < nDimensions; ++j) {
-            ssdP += eig[j];
-        }
-        stats.ssdP = ssdP;
-        stats.fractionVariance = (total - ssdP)/total;
-
-        System.out.printf("ssd_p=%.5e\n", stats.ssdP);
-        System.out.printf("fractionVariance=%.5e\n", stats.fractionVariance);
-
-        System.out.printf("eig=%s\n", FormatArray.toString(eig, "%.4e"));
-        System.out.printf("s fractions of total = \n%s\n",
-                FormatArray.toString(fracs, "%.4e"));
-        System.out.printf("eigenvalue cumulativeProportion=\n%s\n",
-                FormatArray.toString(stats.cumulativeProportion, "%.4e"));
-        System.out.printf("principal axes=\n%s\n", FormatArray.toString(pA, "%.4e"));
-        System.out.printf("principal components (=u_p*s)=\n%s\n", FormatArray.toString(pC, "%.4e"));
-        System.out.flush();
-
-        return stats;
-    }
-    
-    /**
      * reconstruct an image from x, given principal directions.
      * from http://www.cs.toronto.edu/~jepson/csc420/
      * combined with the book by Strang "Introduction to Linear Algebra" 
@@ -392,25 +304,56 @@ public class PrincipalComponents {
      *         where a_0 is
      *            a_0 = arg min_{a} ||⃗x − (m⃗_s + U _p * a)||^2
      * </pre>
-     * @param x a 2-dimensional array of k vectors of length n in format
-     *    double[n][k] which is double[nSamples][nDimensions] for which to apply
-     *    the principal axes transformation on.
+     *
+     * @param m the means of each column of x (used in the zero-correction of x).  the length is k
+     *          where k is the number of columns in x before
+     *          dimension reduction.
      * @param stats the statistics of the principal axes derived from
      * SVD of the covariance of the training data.
-     * @return 
+     * @return the reconstruction of x.  size is [n x k]
      */
-    public static double[][] reconstruct(double[][] x, PCAStats stats) {
-        
-        /* find the 'a' which minimizes ||⃗x − (m⃗_s + p * a)||^2
-        ⃗
-        then the reconstruction is r(⃗a ) = m⃗ + U ⃗a 
-        */
+    public static double[][] reconstruct(double[] m, PCAStats stats) {
 
-        //TODO: revisit this
+        int p = stats.nComponents;
+        int k = stats._s.length;
+        int n = stats.principalComponents.length;
 
-        double[][] b = stats.principalComponents;
-        
-        return b;
+        if (n != stats.uP.length) {
+            throw new IllegalArgumentException("n must be stats.principalComponents.length which must be equal to " +
+                    "stats.principalComponents.length");
+        }
+        if (k != m.length) {
+            throw new IllegalArgumentException("m.length must equal k == stats.principalAxes.length");
+        }
+
+        //U_p is stats.uP
+
+        //find the 'a' which minimizes ||⃗x − (m⃗_s + p * a)||^2
+        //then the reconstruction is r(⃗a ) = m⃗ + U ⃗a
+
+        // U_p is [n X p]
+        // x_j is [n X 1]
+        // a_j is [p X 1]
+        // A is [p X k]
+
+        // reconstruction of x0 is
+        //   U_p * a_0
+        //   [n X p] * [p X 1] = [n X 1];
+
+        int i;
+        int j;
+
+        double[][] re = MatrixUtil.multiply(stats.principalComponents,
+                stats.principalAxes);
+        //reconstructions = stats.principalComponents dot stats.pA + column means
+        //    which is u_P * s dot pA
+        //[n X p] * [p X k] = [n X k]
+        for (i = 0; i < re.length; ++i) {
+            for (j = 0; j < re[i].length; ++j) {
+                re[i][j] += m[j];
+            }
+        }
+        return re;
     }
     
     public static class PCAStats {
@@ -422,14 +365,16 @@ public class PrincipalComponents {
 
         /**
          * principal axes a.k.a. principal directions of the data.
-         * These are the first nComponents columns of the SVD V matrix.
+         * These are the first nComponents columns of the SVD(X).V matrix.
          * When considering X as sample covariance, Note that SVD(A^T*A).U and V are both == SVD(A).V.
+         * the size is [k X k] where k is x[0].length.
          */
         double[][] principalAxes;
 
         /**
          * principal components are the data projected onto the principal axes.
          * principal components = X*V = U * D where X = SVD(X).U * diag(SVD(X).s) * SVD(X).vT
+         * The size is [n X p] where n is x.length and p is the number of components.
          */
         double[][] principalComponents;
         

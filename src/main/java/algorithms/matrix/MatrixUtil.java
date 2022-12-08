@@ -3,11 +3,8 @@ package algorithms.matrix;
 import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.misc.Misc0;
-import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
-import algorithms.util.SimpleLinkedListNode;
-import com.github.fommil.netlib.LAPACK;
 import gnu.trove.list.array.TDoubleArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -3952,7 +3949,7 @@ public class MatrixUtil {
      * @param a matrix
      * @return mean of each column as an array of size a[0].length
      */
-    public static double[] mean(double[][] a) {
+    public static double[] columnMeans(double[][] a) {
         int nSamples = a.length;
         int nVariables = a[0].length;
 
@@ -3970,6 +3967,29 @@ public class MatrixUtil {
     }
 
     /**
+     * given a, return the mean of each row of a.
+     * @param a matrix
+     * @return mean of each row as an array of size a.length
+     */
+    public static double[] rowMeans(double[][] a) {
+        int nSamples = a.length;
+        int nVariables = a[0].length;
+
+        int i, j;
+        double[] mean = new double[nSamples];
+        double sum;
+        for (i = 0; i < nSamples; ++i) {
+            sum = 0;
+            for (j = 0; j < nVariables; ++j) {
+                sum += (a[i][j]);
+            }
+            mean[i] = sum/(double)nVariables;
+        }
+        return mean;
+    }
+
+
+    /**
      * given a as vectors of data of nSamples of nVariables, return the
      * mean of each of the variables.
      * note that the format must be a[nSamples][nVariables],
@@ -3982,7 +4002,7 @@ public class MatrixUtil {
         int nSamples = a.length;
         int nVars = a[0].length;
 
-        double[] c = mean(a);
+        double[] c = columnMeans(a);
 
         double[] out = new double[nVars];
         int i, d;
