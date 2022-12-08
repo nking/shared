@@ -277,7 +277,7 @@ public class PolygonAndPointPlotter {
                     dataSB.append(",\n");
                 }
                 dataSB.append("    {x:").append(xPoints[i]).append(", y:").append(yPoints[i]);
-                if (xErrPoints != null) {
+                if (xErrPoints != null && xErrPoints.length> 0) {
                     dataSB.append(", dx:").append(xErrPoints[i]).append(", dy:").append(yErrPoints[i]);
                 }
                 dataSB.append("}");
