@@ -97,18 +97,18 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L97">        SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pdfs.colPDF);</span>
 <span class="fc" id="L98">        c.r = MatrixUtil.transpose(c.r);</span>
         
-<span class="fc" id="L100">        double[][] u = _calculateU(a, r.indexesUnique, c.indexesUnique);</span>
+<span class="nc" id="L100">        double[][] u = _calculateU(a, r.indexesUnique, c.indexesUnique);</span>
         
-<span class="fc" id="L102">        CUR cur = new CUR();</span>
-<span class="fc" id="L103">        cur._rowsSelected = r.indexesUnique;</span>
-<span class="fc" id="L104">        cur._colsSelected = c.indexesUnique;</span>
-<span class="fc" id="L105">        cur.c = c.r;</span>
-<span class="fc" id="L106">        cur.r = r.r;</span>
-<span class="fc" id="L107">        cur.u = u;</span>
-<span class="fc" id="L108">        cur.result = MatrixUtil.multiply(cur.getC(), cur.getU());</span>
-<span class="fc" id="L109">        cur.result = MatrixUtil.multiply(cur.getResult(), cur.getR());</span>
+<span class="nc" id="L102">        CUR cur = new CUR();</span>
+<span class="nc" id="L103">        cur._rowsSelected = r.indexesUnique;</span>
+<span class="nc" id="L104">        cur._colsSelected = c.indexesUnique;</span>
+<span class="nc" id="L105">        cur.c = c.r;</span>
+<span class="nc" id="L106">        cur.r = r.r;</span>
+<span class="nc" id="L107">        cur.u = u;</span>
+<span class="nc" id="L108">        cur.result = MatrixUtil.multiply(cur.getC(), cur.getU());</span>
+<span class="nc" id="L109">        cur.result = MatrixUtil.multiply(cur.getResult(), cur.getR());</span>
         
-<span class="fc" id="L111">        return cur;        </span>
+<span class="nc" id="L111">        return cur;        </span>
     }
     
     static CDFs _calculateCDFs(double[][] a, int k) {
@@ -298,16 +298,16 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L298">            j = selectedRowIdxs[i];</span>
 <span class="pc bnc" id="L299" title="All 4 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
             
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">            if (!freq.containsKey(j)) {</span>
-<span class="nc" id="L302">                continue;</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">            if (!freq.containsKey(j)) {</span>
+<span class="fc" id="L302">                continue;</span>
             }
             
 <span class="fc" id="L305">            d = freq.get(j);</span>
             
 <span class="fc" id="L307">            factor = 1./Math.sqrt(k * rowPDF[j]);</span>
             
-<span class="pc bpc" id="L309" title="1 of 2 branches missed.">            if (d &gt; 1) {</span>
-<span class="nc" id="L310">                factor *= Math.sqrt(d);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">            if (d &gt; 1) {</span>
+<span class="fc" id="L310">                factor *= Math.sqrt(d);</span>
             }
             
             //extract row j from a and multiply each item by factor
@@ -358,8 +358,8 @@ import no.uib.cipr.matrix.SVD;
             }
         }
         
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (rank == 0) {</span>
-<span class="nc" id="L362">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">        if (rank == 0) {</span>
+<span class="fc" id="L362">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
             + &quot; the number of selected indexes is too small&quot;);
         }
         
@@ -367,7 +367,7 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L367">        double[][] sInvSq = MatrixUtil.zeros(nr, nc);</span>
 <span class="fc" id="L368">        int len = Math.min(nr, nc);</span>
 <span class="fc bfc" id="L369" title="All 2 branches covered.">        for (i = 0; i &lt; len; ++i) {</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">            if (s[i] &gt; eps) {</span>
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">            if (s[i] &gt; eps) {</span>
 <span class="fc" id="L371">                sInvSq[i][i] = 1./(s[i]*s[i]);</span>
             }
         }

@@ -213,8 +213,8 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L213">            x.val = val;</span>
 <span class="nc" id="L214">            return x;</span>
         }
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
-<span class="nc" id="L217">            return putRoot(x, key, val, replaced);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="fc" id="L217">            return putRoot(x, key, val, replaced);</span>
         }
 <span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
 <span class="fc" id="L220">            x.left  = put(x.left,  key, val, replaced);</span>
@@ -272,20 +272,20 @@ adapted from http://algs4.cs.princeton.edu/92search/
         RangeSearchNode&lt;Key, Value&gt; x, Key key, Value val,
         Object[] replaced) {
         
-<span class="nc bnc" id="L275" title="All 2 branches missed.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
-<span class="nc" id="L276">        int cmp = key.compareTo(x.key);</span>
-<span class="nc bnc" id="L277" title="All 2 branches missed.">        if (cmp == 0) {</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="fc" id="L276">        int cmp = key.compareTo(x.key);</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
 <span class="nc" id="L278">            replaced[0] = x.val;</span>
 <span class="nc" id="L279">            x.val = val;</span>
 <span class="nc" id="L280">            return x; </span>
-<span class="nc bnc" id="L281" title="All 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
-<span class="nc" id="L282">            x.left  = putRoot(x.left,  key, val, replaced); </span>
-<span class="nc" id="L283">            x = rotR(x); </span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
+<span class="fc" id="L282">            x.left  = putRoot(x.left,  key, val, replaced); </span>
+<span class="fc" id="L283">            x = rotR(x); </span>
         } else { 
 <span class="nc" id="L285">            x.right = putRoot(x.right, key, val, replaced); </span>
 <span class="nc" id="L286">            x = rotL(x); </span>
         }
-<span class="nc" id="L288">        return x;</span>
+<span class="fc" id="L288">        return x;</span>
     }
 
    /***************************************************************************

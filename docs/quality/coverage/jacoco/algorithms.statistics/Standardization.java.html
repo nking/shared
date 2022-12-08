@@ -158,7 +158,7 @@ import java.util.Arrays;
         // then calculate the standard deviation and divide the data by it.
 <span class="fc" id="L159">        double[][] out = MatrixUtil.copy(data);</span>
         
-<span class="fc" id="L161">        double[] mean = MatrixUtil.mean(out);</span>
+<span class="fc" id="L161">        double[] mean = MatrixUtil.columnMeans(out);</span>
 <span class="fc" id="L162">        System.arraycopy(mean, 0, outputMean, 0, mean.length);</span>
 
         int i;
@@ -203,7 +203,7 @@ import java.util.Arrays;
 
 <span class="fc" id="L204">        double[][] out = MatrixUtil.zeros(m, n);</span>
 
-<span class="fc" id="L206">        double[] mean = MatrixUtil.mean(data);</span>
+<span class="fc" id="L206">        double[] mean = MatrixUtil.columnMeans(data);</span>
 
         int i;
         int j;
